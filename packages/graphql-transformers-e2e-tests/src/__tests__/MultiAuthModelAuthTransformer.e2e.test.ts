@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { Auth } from 'aws-amplify';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
@@ -7,25 +9,24 @@ import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
-import * as fs from 'fs';
-import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import { default as S3 } from 'aws-sdk/clients/s3';
-import { S3Client } from '../S3Client';
-import * as path from 'path';
-import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { default as moment } from 'moment';
-import { createUserPool, createUserPoolClient, configureAmplify, signupUser, authenticateUser } from '../cognitoUtils';
 import Role from 'cloudform-types/types/iam/role';
 import UserPoolClient from 'cloudform-types/types/cognito/userPoolClient';
 import IdentityPool from 'cloudform-types/types/cognito/identityPool';
 import IdentityPoolRoleAttachment from 'cloudform-types/types/cognito/identityPoolRoleAttachment';
 import AWS = require('aws-sdk');
+import { createUserPool, createUserPoolClient, configureAmplify, signupUser, authenticateUser } from '../cognitoUtils';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
+import { S3Client } from '../S3Client';
+import { CloudFormationClient } from '../CloudFormationClient';
 import 'isomorphic-fetch';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
+
 import { resolveTestRegion } from '../testSetup';
 
 // To overcome of the way of how AmplifyJS picks up currentUserCredentials
@@ -303,6 +304,9 @@ beforeAll(async () => {
             },
             Action: 'sts:AssumeRoleWithWebIdentity',
             Condition: {
+              StringEquals: {
+                'cognito-identity.amazonaws.com:aud': { Ref: 'IdentityPool' },
+              },
               'ForAnyValue:StringLike': {
                 'cognito-identity.amazonaws.com:amr': 'authenticated',
               },
@@ -325,6 +329,9 @@ beforeAll(async () => {
             },
             Action: 'sts:AssumeRoleWithWebIdentity',
             Condition: {
+              StringEquals: {
+                'cognito-identity.amazonaws.com:aud': { Ref: 'IdentityPool' },
+              },
               'ForAnyValue:StringLike': {
                 'cognito-identity.amazonaws.com:amr': 'unauthenticated',
               },
@@ -604,7 +611,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test(`Test 'public' authStrategy`, async () => {
+test(`'public' authStrategy`, async () => {
   try {
     const createMutation = gql`
       mutation {
@@ -668,7 +675,7 @@ test(`Test 'public' authStrategy`, async () => {
   }
 });
 
-test(`Test 'public' provider: 'iam' authStrategy`, async () => {
+test(`'public' provider: 'iam' authStrategy`, async () => {
   try {
     const createMutation = gql`
       mutation {
@@ -732,7 +739,7 @@ test(`Test 'public' provider: 'iam' authStrategy`, async () => {
   }
 });
 
-test(`Test 'private' authStrategy`, async () => {
+test(`'private' authStrategy`, async () => {
   try {
     const createMutation = gql`
       mutation {
@@ -796,7 +803,7 @@ test(`Test 'private' authStrategy`, async () => {
   }
 });
 
-test(`Test 'private' provider: 'iam' authStrategy`, async () => {
+test(`'private' provider: 'iam' authStrategy`, async () => {
   // This test reuses the unauth role, but any IAM credentials would work
   // in real world scenarios, we've to see if provider override works.
   try {
@@ -862,7 +869,7 @@ test(`Test 'private' provider: 'iam' authStrategy`, async () => {
   }
 });
 
-test(`Test 'private' provider: 'iam' authStrategy`, async () => {
+test(`'private' provider: 'iam' authStrategy`, async () => {
   // This test reuses the unauth role, but any IAM credentials would work
   // in real world scenarios, we've to see if provider override works.
 

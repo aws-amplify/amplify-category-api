@@ -1,15 +1,15 @@
+import path from 'path';
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import { getProjectMeta, getBackendAmplifyMeta } from 'amplify-category-api-e2e-core';
 import Amplify, { Auth } from 'aws-amplify';
 import fs from 'fs-extra';
-import path from 'path';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 
 const tempPassword = 'tempPassword';
 
-//setupUser will add user to a cognito group and make its status to be "CONFIRMED",
-//if groupName is specified, add the user to the group.
-export async function setupUser(userPoolId: string, username: string, password: string, groupName?: string) {
+// setupUser will add user to a cognito group and make its status to be "CONFIRMED",
+// if groupName is specified, add the user to the group.
+export async function setupUser(userPoolId: string, username: string, password: string, groupName?: string | string[]) {
   const region = userPoolId.split('_')[0]; // UserPoolId is in format `region_randomid`
   const cognitoClient = getConfiguredCognitoClient(region);
   await cognitoClient
@@ -25,13 +25,25 @@ export async function setupUser(userPoolId: string, username: string, password: 
   await authenticateUser(username, tempPassword, password);
 
   if (groupName) {
-    await cognitoClient
-      .adminAddUserToGroup({
-        UserPoolId: userPoolId,
-        Username: username,
-        GroupName: groupName,
-      })
-      .promise();
+    if (Array.isArray(groupName)) {
+      groupName.forEach(async (group) => {
+        await cognitoClient
+          .adminAddUserToGroup({
+            UserPoolId: userPoolId,
+            Username: username,
+            GroupName: group,
+          })
+          .promise();
+      });
+    } else {
+      await cognitoClient
+        .adminAddUserToGroup({
+          UserPoolId: userPoolId,
+          Username: username,
+          GroupName: groupName,
+        })
+        .promise();
+    }
   }
 }
 
@@ -101,7 +113,15 @@ export function getConfiguredAppsyncClientAPIKeyAuth(url: string, region: string
   });
 }
 
-export function getConfiguredAppsyncClientIAMAuth(url: string, region: string): any {
+export const getConfiguredAppsyncClientIAMAuth = (
+  url: string,
+  region: string,
+  credentials?: {
+    accessKeyId: string;
+    secretAccessKey: string;
+    sessionToken: string;
+  },
+): any => {
   return new AWSAppSyncClient({
     url,
     region,
@@ -109,13 +129,25 @@ export function getConfiguredAppsyncClientIAMAuth(url: string, region: string): 
     auth: {
       type: AUTH_TYPE.AWS_IAM,
       credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-        sessionToken: process.env.AWS_SESSION_TOKEN,
+        accessKeyId: credentials?.accessKeyId ?? process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: credentials?.secretAccessKey ?? process.env.AWS_SECRET_ACCESS_KEY,
+        sessionToken: credentials?.sessionToken ?? process.env.AWS_SESSION_TOKEN,
       },
     },
   });
-}
+};
+
+export const getConfiguredAppsyncClientLambdaAuth = (url: string, region: string, token: string): any => {
+  return new AWSAppSyncClient({
+    url,
+    region,
+    disableOffline: true,
+    auth: {
+      type: AUTH_TYPE.AWS_LAMBDA,
+      token,
+    },
+  });
+};
 
 export async function signInUser(username: string, password: string) {
   const user = await Auth.signIn(username, password);

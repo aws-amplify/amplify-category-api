@@ -1,3 +1,4 @@
+import * as path from 'path';
 import {
   addApiWithoutSchema,
   apiGqlCompile,
@@ -10,7 +11,6 @@ import {
   setTransformConfig,
   updateApiSchema,
 } from 'amplify-category-api-e2e-core';
-import * as path from 'path';
 
 describe('GraphQL transformer v2 - Custom transformers', () => {
   let projRoot: string;

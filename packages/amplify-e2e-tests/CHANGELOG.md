@@ -3,6 +3,220 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.22.7](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.6...amplify-category-api-e2e-tests@3.22.7) (2024-07-15)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+## [3.22.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.5...amplify-category-api-e2e-tests@3.22.6) (2024-07-02)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+## [3.22.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.4...amplify-category-api-e2e-tests@3.22.5) (2024-07-01)
+
+### Bug Fixes
+
+- auth to use validateUsingSource in place of auth filter to show error message ([#2523](https://github.com/aws-amplify/amplify-category-api/issues/2523)) ([b7d83f9](https://github.com/aws-amplify/amplify-category-api/commit/b7d83f991f85eaffb2408cff98e1880c7fa680ef))
+
+## [3.22.4](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.3...amplify-category-api-e2e-tests@3.22.4) (2024-06-25)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+## [3.22.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.2...amplify-category-api-e2e-tests@3.22.3) (2024-05-15)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+## [3.22.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.1...amplify-category-api-e2e-tests@3.22.2) (2024-05-10)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+## [3.22.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.0...amplify-category-api-e2e-tests@3.22.1) (2024-05-01)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+# [3.22.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.21.1...amplify-category-api-e2e-tests@3.22.0) (2024-04-26)
+
+### Features
+
+- deprecate iam auth provider and rename it to identityPool ([#2320](https://github.com/aws-amplify/amplify-category-api/issues/2320)) ([#2394](https://github.com/aws-amplify/amplify-category-api/issues/2394)) ([383985b](https://github.com/aws-amplify/amplify-category-api/commit/383985ba20dcb04acada10593f8398b7dae79190))
+
+## [3.21.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.21.0...amplify-category-api-e2e-tests@3.21.1) (2024-04-16)
+
+### Bug Fixes
+
+- **api:** protect sql relational fields when using owner rule ([#2463](https://github.com/aws-amplify/amplify-category-api/issues/2463)) ([53cabe2](https://github.com/aws-amplify/amplify-category-api/commit/53cabe2316a32c5cc6e2f9522d82aa92fd5c0689))
+
+# [3.21.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.20.3...amplify-category-api-e2e-tests@3.21.0) (2024-04-11)
+
+### Features
+
+- Fetch SNS topic ARN from SQL manifest ([#2345](https://github.com/aws-amplify/amplify-category-api/issues/2345)) ([fca256e](https://github.com/aws-amplify/amplify-category-api/commit/fca256e7cabf5af838b28b26c4ae0c3c8b1583eb))
+
+## [3.20.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.20.2...amplify-category-api-e2e-tests@3.20.3) (2024-03-28)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+## [3.20.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.20.1...amplify-category-api-e2e-tests@3.20.2) (2024-03-13)
+
+### Bug Fixes
+
+- field auth resolver to use "validateUsingSource" auth util method ([#2170](https://github.com/aws-amplify/amplify-category-api/issues/2170)) ([b344d0d](https://github.com/aws-amplify/amplify-category-api/commit/b344d0d3b4b0ad430dd3572954b2e93ea887b28d))
+- **rds:** userpool & iam e2e tests ([#2238](https://github.com/aws-amplify/amplify-category-api/issues/2238)) ([52726b3](https://github.com/aws-amplify/amplify-category-api/commit/52726b30889a69c0031f04f0f4c915b3ae1e381c))
+
+## [3.20.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.20.0...amplify-category-api-e2e-tests@3.20.1) (2024-02-28)
+
+### Bug Fixes
+
+- **api:** clean stale cdk amplify table roles ([#2249](https://github.com/aws-amplify/amplify-category-api/issues/2249)) ([b7cd81d](https://github.com/aws-amplify/amplify-category-api/commit/b7cd81d763e17eb31d6f4fc0dde8391fe0579d8f))
+- cleanup script to run in all regions ([1a04aa7](https://github.com/aws-amplify/amplify-category-api/commit/1a04aa70dec5c105d0801e74ba6ad3061ca63006))
+
+# [3.20.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.19.4...amplify-category-api-e2e-tests@3.20.0) (2024-02-05)
+
+### Features
+
+- **api:** generate typescript data schema from sql schema internal representation ([#2225](https://github.com/aws-amplify/amplify-category-api/issues/2225)) ([460b077](https://github.com/aws-amplify/amplify-category-api/commit/460b0776af82932d2b42a2b7720b49b91fdbd45c))
+
+## [3.19.4](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.19.3...amplify-category-api-e2e-tests@3.19.4) (2024-01-30)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+## [3.19.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.19.2...amplify-category-api-e2e-tests@3.19.3) (2024-01-22)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+## [3.19.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.19.1...amplify-category-api-e2e-tests@3.19.2) (2023-12-18)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+## [3.19.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.19.0...amplify-category-api-e2e-tests@3.19.1) (2023-12-14)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+# [3.19.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.18.3...amplify-category-api-e2e-tests@3.19.0) (2023-12-06)
+
+### Features
+
+- combine heterogeneous data sources ([#2109](https://github.com/aws-amplify/amplify-category-api/issues/2109)) ([fd58bb5](https://github.com/aws-amplify/amplify-category-api/commit/fd58bb5af4249220d17c9751acf677955aed74ea))
+
+## [3.18.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.18.2...amplify-category-api-e2e-tests@3.18.3) (2023-11-22)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+## [3.18.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.18.1...amplify-category-api-e2e-tests@3.18.2) (2023-11-18)
+
+### Bug Fixes
+
+- regionalize lambda layer patching SNS topics ([#2079](https://github.com/aws-amplify/amplify-category-api/issues/2079)) ([6006c86](https://github.com/aws-amplify/amplify-category-api/commit/6006c86cd4ee624b24c184fab523fcdcdb38be63))
+
+## [3.18.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.18.0...amplify-category-api-e2e-tests@3.18.1) (2023-11-16)
+
+### Bug Fixes
+
+- Rename VPC Endpoint CDK prefix ([#2072](https://github.com/aws-amplify/amplify-category-api/issues/2072)) ([00824c1](https://github.com/aws-amplify/amplify-category-api/commit/00824c137a07fd04d325e02465ca6be3805f78c2))
+
+# [3.18.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.17.6...amplify-category-api-e2e-tests@3.18.0) (2023-11-15)
+
+### Bug Fixes
+
+- **api:** make id optional if not a string type ([48ecac0](https://github.com/aws-amplify/amplify-category-api/commit/48ecac0989097106a531ebb898abbda7a0f1745c))
+- Change 'rds' to 'sql' in public-facing symbols ([#2069](https://github.com/aws-amplify/amplify-category-api/issues/2069)) ([ff374dd](https://github.com/aws-amplify/amplify-category-api/commit/ff374dd8398d3f1138a31669b1a5962122039437))
+- preserve null value from mysql and pg schemas ([#2049](https://github.com/aws-amplify/amplify-category-api/issues/2049)) ([d96176e](https://github.com/aws-amplify/amplify-category-api/commit/d96176e9a94b25f6c169c38a79c7135645a8eab7))
+- relational auth cases; preserve auth rule schema edits, added multi-auth e2e tests ([#1965](https://github.com/aws-amplify/amplify-category-api/issues/1965)) ([df085b2](https://github.com/aws-amplify/amplify-category-api/commit/df085b2bf75dded743809b59386272070fc92251))
+
+### Features
+
+- add refersTo directive transformer for model renaming ([#1830](https://github.com/aws-amplify/amplify-category-api/issues/1830)) ([afbd6f2](https://github.com/aws-amplify/amplify-category-api/commit/afbd6f282bc411313ce098a53a87bb8c6481aa48))
+- **api:** add enum support for postgres import ([2e63cec](https://github.com/aws-amplify/amplify-category-api/commit/2e63cecf1f04ec39b644f0ee0842ee79a4b4c149))
+- **api:** custom queries support using sql directive ([5214037](https://github.com/aws-amplify/amplify-category-api/commit/52140374ca974956c5d5eac09fec91a51cfc9027))
+- **api:** specify include or exclude tables option to generate schema ([1fa52a1](https://github.com/aws-amplify/amplify-category-api/commit/1fa52a1f0c0d7bf82caebc94241774ac3b5c8aa1))
+- infer and preserve field mappings in schema ([4f8e7f4](https://github.com/aws-amplify/amplify-category-api/commit/4f8e7f43e6ba3e64702baffe60b8b4870d37ffb6))
+- infer refersTo for models in the import flow and preserve edits during schema regeneration ([#1845](https://github.com/aws-amplify/amplify-category-api/issues/1845)) ([2631c02](https://github.com/aws-amplify/amplify-category-api/commit/2631c027395a35d9841669f2aa034af93cbeb9fc))
+- refersTo supports field name mappings on RDS models ([#1865](https://github.com/aws-amplify/amplify-category-api/issues/1865)) ([ee60011](https://github.com/aws-amplify/amplify-category-api/commit/ee60011f5c41d0442e1096dd16d80e94b900745a))
+
+## [3.17.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.17.5...amplify-category-api-e2e-tests@3.17.6) (2023-11-02)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+## [3.17.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.17.4...amplify-category-api-e2e-tests@3.17.5) (2023-10-27)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+## [3.17.4](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.17.3...amplify-category-api-e2e-tests@3.17.4) (2023-10-21)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+## [3.17.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.17.2...amplify-category-api-e2e-tests@3.17.3) (2023-10-12)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+## [3.17.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.17.1...amplify-category-api-e2e-tests@3.17.2) (2023-10-05)
+
+### Bug Fixes
+
+- iam auth values can be passed as cdk tokens ([#1919](https://github.com/aws-amplify/amplify-category-api/issues/1919)) ([9297fa5](https://github.com/aws-amplify/amplify-category-api/commit/9297fa5cda87697645ad0c78b84c3004b32ac319))
+
+## [3.17.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.17.0...amplify-category-api-e2e-tests@3.17.1) (2023-10-02)
+
+### Bug Fixes
+
+- change the ttl to integer ([#1901](https://github.com/aws-amplify/amplify-category-api/issues/1901)) ([9cfaa02](https://github.com/aws-amplify/amplify-category-api/commit/9cfaa02b429f3933d44c5dd117105a816d24ef6c))
+
+# [3.17.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.16.0...amplify-category-api-e2e-tests@3.17.0) (2023-09-28)
+
+### Features
+
+- bump graphql construct to stable/v1 ([#1876](https://github.com/aws-amplify/amplify-category-api/issues/1876)) ([9f66e9c](https://github.com/aws-amplify/amplify-category-api/commit/9f66e9c5610bc47a2ab75775a46135aeca8df990))
+
+# [3.16.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.15.1...amplify-category-api-e2e-tests@3.16.0) (2023-09-27)
+
+### Features
+
+- rename authorizationConfig into authorizationModes, and move adminRoles up ([#1888](https://github.com/aws-amplify/amplify-category-api/issues/1888)) ([7148814](https://github.com/aws-amplify/amplify-category-api/commit/714881476a962cb0f681bc68a7f309fe43e97a60))
+
+## [3.15.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.15.0...amplify-category-api-e2e-tests@3.15.1) (2023-09-20)
+
+### Bug Fixes
+
+- update cdk e2e tests to use the updated outputs ([dd018de](https://github.com/aws-amplify/amplify-category-api/commit/dd018de774b0edea891c19dee3e30aedb8edb0dd))
+
+# [3.15.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.14.2...amplify-category-api-e2e-tests@3.15.0) (2023-09-13)
+
+### Features
+
+- enable jsii builds for the api construct ([#1840](https://github.com/aws-amplify/amplify-category-api/issues/1840)) ([f6e9aff](https://github.com/aws-amplify/amplify-category-api/commit/f6e9aff2b7e8ad620e1899d29c8cb330b4d6a30f))
+
+## [3.14.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.14.1...amplify-category-api-e2e-tests@3.14.2) (2023-08-30)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+## [3.14.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.14.0...amplify-category-api-e2e-tests@3.14.1) (2023-08-28)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+# [3.14.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.13.1...amplify-category-api-e2e-tests@3.14.0) (2023-08-09)
+
+### Bug Fixes
+
+- allow update on operations create, read, update ([#1762](https://github.com/aws-amplify/amplify-category-api/issues/1762)) ([7247ae8](https://github.com/aws-amplify/amplify-category-api/commit/7247ae8d5312b07e155d175da038ea869f790e83))
+
+### Features
+
+- bump major version of transformer packages ([2458c84](https://github.com/aws-amplify/amplify-category-api/commit/2458c8426da5772aa669d37e11f99ee9c6c5ac2e))
+
+## [3.13.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.13.0...amplify-category-api-e2e-tests@3.13.1) (2023-08-07)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+# [3.13.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.12.10...amplify-category-api-e2e-tests@3.13.0) (2023-07-21)
+
+### Features
+
+- **graphql:** add vpc support for import workflow ([44170f9](https://github.com/aws-amplify/amplify-category-api/commit/44170f9f6ea4c7fe8b30604037067c4d36f71d2e))
+- **graphql:** vpc support for sql lambda ([9cc4407](https://github.com/aws-amplify/amplify-category-api/commit/9cc4407bdc4799fe548919808961911a3d5995c7))
+
+## [3.12.10](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.12.9...amplify-category-api-e2e-tests@3.12.10) (2023-07-17)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
 ## [3.12.9](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.12.8...amplify-category-api-e2e-tests@3.12.9) (2023-07-07)
 
 **Note:** Version bump only for package amplify-category-api-e2e-tests

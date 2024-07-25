@@ -1,13 +1,12 @@
 import {
   DirectiveWrapper,
   generateGetArgumentsInput,
-  IAM_AUTH_ROLE_PARAMETER,
-  IAM_UNAUTH_ROLE_PARAMETER,
   MappingTemplate,
   TransformerContractError,
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { HttpDirective } from '@aws-amplify/graphql-directives';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import * as cdk from 'aws-cdk-lib';
 import {
@@ -71,26 +70,12 @@ const URL_REGEX = /(http(s)?:\/\/)|(\/.*)/g;
 const VALID_PROTOCOLS_REGEX = /^http(s)?:\/\//;
 const HTTP_DIRECTIVE_STACK = 'HttpStack';
 const RESOLVER_VERSION = '2018-05-29';
-const directiveDefinition = /* GraphQL */ `
-  directive @http(method: HttpMethod = GET, url: String!, headers: [HttpHeader] = []) on FIELD_DEFINITION
-  enum HttpMethod {
-    GET
-    POST
-    PUT
-    DELETE
-    PATCH
-  }
-  input HttpHeader {
-    key: String
-    value: String
-  }
-`;
 
 export class HttpTransformer extends TransformerPluginBase {
   private directiveList: HttpDirectiveConfiguration[] = [];
 
   constructor() {
-    super('amplify-http-transformer', directiveDefinition);
+    super('amplify-http-transformer', HttpDirective.definition);
   }
 
   field = (
@@ -203,7 +188,7 @@ export class HttpTransformer extends TransformerPluginBase {
     }
 
     const stack: cdk.Stack = context.stackManager.createStack(HTTP_DIRECTIVE_STACK);
-    const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
+    const env = context.synthParameters.amplifyEnvironmentName;
     const region = stack.region;
 
     stack.templateOptions.templateFormatVersion = '2010-09-09';
@@ -224,7 +209,7 @@ export class HttpTransformer extends TransformerPluginBase {
 }
 
 function createResolver(stack: cdk.Stack, dataSourceId: string, context: TransformerContextProvider, config: HttpDirectiveConfiguration) {
-  const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
+  const env = context.synthParameters.amplifyEnvironmentName;
   const region = stack.region;
 
   const { method, supportsBody } = config;
@@ -289,20 +274,13 @@ function createResolver(stack: cdk.Stack, dataSourceId: string, context: Transfo
   );
 
   if (authModes.includes(AuthorizationType.IAM)) {
-    const authRoleParameter = (context.stackManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
-    const unauthRoleParameter = (context.stackManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
+    const authRole = context.synthParameters.authenticatedUserRoleName;
+    const unauthRole = context.synthParameters.unauthenticatedUserRoleName;
+    const account = cdk.Stack.of(context.stackManager.scope).account;
 
     requestTemplate.push(
-      qref(
-        `$ctx.stash.put("authRole", "arn:aws:sts::${
-          cdk.Stack.of(context.stackManager.rootStack).account
-        }:assumed-role/${authRoleParameter}/CognitoIdentityCredentials")`,
-      ),
-      qref(
-        `$ctx.stash.put("unauthRole", "arn:aws:sts::${
-          cdk.Stack.of(context.stackManager.rootStack).account
-        }:assumed-role/${unauthRoleParameter}/CognitoIdentityCredentials")`,
-      ),
+      qref(`$ctx.stash.put("authRole", "arn:aws:sts::${account}:assumed-role/${authRole}/CognitoIdentityCredentials")`),
+      qref(`$ctx.stash.put("unauthRole", "arn:aws:sts::${account}:assumed-role/${unauthRole}/CognitoIdentityCredentials")`),
     );
   }
 
@@ -352,7 +330,7 @@ function createResolver(stack: cdk.Stack, dataSourceId: string, context: Transfo
   );
 }
 
-function replaceEnvAndRegion(env: cdk.CfnParameter, region: string, value: string): string {
+function replaceEnvAndRegion(env: string, region: string, value: string): string {
   const vars: {
     [key: string]: string;
   } = {};

@@ -1,0 +1,8 @@
+**/__mocks__/**
+**/__tests__/**
+src
+publish-notification-lambda
+rds-lambda
+rds-patching-lambda
+tsconfig.json
+tsconfig.tsbuildinfo

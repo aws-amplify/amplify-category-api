@@ -1,9 +1,9 @@
 import { ConflictResolution } from 'amplify-headless-interface';
+import { ResolverConfig, ConflictHandlerType } from 'graphql-transformer-core';
 import {
   conflictResolutionToResolverConfig,
   resolverConfigToConflictResolution,
 } from '../../../../provider-utils/awscloudformation/utils/resolver-config-to-conflict-resolution-bi-di-mapper';
-import { ResolverConfig, ConflictHandlerType } from 'graphql-transformer-core';
 
 describe('transform ConflictResolution to ResolverConfig', () => {
   it('maps properties correctly', () => {

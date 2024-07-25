@@ -1,10 +1,10 @@
-import { getTestCaseRegistry } from '../test-case-registry';
-import { v1transformerProvider } from '../v1-transformer-provider';
-import { v2transformerProvider } from '../v2-transformer-provider';
-import { migrateSchema } from '../migrate-schema-wrapper';
-import { getNestedStackDiffRules } from '../nested-stack-diff-rules';
 import * as cdkDiff from '@aws-cdk/cloudformation-diff';
 import { ResourceImpact } from '@aws-cdk/cloudformation-diff';
+import { getTestCaseRegistry } from '../test-case-registry';
+import { v1transformerProvider } from '../v1-transformer-provider';
+import { v2Transform } from '../v2-transformer-provider';
+import { migrateSchema } from '../migrate-schema-wrapper';
+import { getNestedStackDiffRules } from '../nested-stack-diff-rules';
 
 describe('v1 to v2 migration', () => {
   test.concurrent.each(getTestCaseRegistry())(
@@ -18,8 +18,7 @@ describe('v1 to v2 migration', () => {
       const migratedSchema = await migrateSchema(schema);
 
       // run v2 transformer
-      const v2transformer = v2transformerProvider(v2TransformerConfig);
-      const v2result = v2transformer.transform(migratedSchema);
+      const v2result = v2Transform(migratedSchema, v2TransformerConfig);
 
       // get initial nested stack names
       // TODO will probably have to update the logic a bit if we want to test @searchable migrations here as that will create a SearchableStack that we need to account for

@@ -1,7 +1,7 @@
 import { getDirectiveArguments } from 'graphql-transformer-core';
 import { graphqlName, toUpper, plurality } from 'graphql-transformer-common';
-import { ModelQuery, ModelMutation } from './AuthRule';
 import { DirectiveNode, ObjectTypeDefinitionNode } from 'graphql';
+import { ModelQuery, ModelMutation } from './AuthRule';
 
 export interface QueryNameMap {
   get?: string;

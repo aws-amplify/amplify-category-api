@@ -1,12 +1,14 @@
 /* eslint-disable testing-library/await-async-utils */
 import { join, parse } from 'path';
-import { EOL } from 'os';
+import * as os from 'os';
 import * as fs from 'fs-extra';
 import { types } from 'util';
 import retimer from 'retimer';
 import * as pty from 'node-pty';
 import chalk from 'chalk';
 import _ from 'lodash';
+import strip from 'strip-ansi';
+
 
 // https://notes.burke.libbey.me/ansi-escape-codes/
 const KEY_UP_ARROW = '\x1b[A';
@@ -21,7 +23,7 @@ const DEFAULT_NO_OUTPUT_TIMEOUT = process.env.AMPLIFY_TEST_TIMEOUT_SEC
 const EXIT_CODE_TIMEOUT = 2;
 const EXIT_CODE_GENERIC_ERROR = 3;
 
-const RETURN = EOL;
+const RETURN = os.EOL;
 
 type RecordingHeader = {
   version: 2;
@@ -173,7 +175,7 @@ class Recorder {
   private renderPrompt(cwd: string, cmd?: string, args?: string[]) {
     const separator = '\u2b80';
     const basePrompt = `${chalk.bgBlack('user@host') + chalk.black(separator)}${chalk.bgBlue(cwd) + chalk.blue(separator)}`;
-    const cmdPrompt = cmd ? `${cmd} ${args.length ? args.join(' ') : ''}` : '';
+    const cmdPrompt = cmd ? `${cmd} ${args?.length ? args?.join(' ') : ''}` : '';
     return `${basePrompt} ${cmdPrompt}\r\n`;
   }
 }
@@ -259,7 +261,7 @@ const chain = (context: Context): ExecutionContext => {
     pauseRecording: (): ExecutionContext => {
       let _pauseRecording: ExecutionStep = {
         fn: () => {
-          context.process.pauseRecording();
+          context.process?.pauseRecording();
           return true;
         },
         name: '_pauseRecording',
@@ -274,7 +276,7 @@ const chain = (context: Context): ExecutionContext => {
     resumeRecording: (): ExecutionContext => {
       let _resumeRecording: ExecutionStep = {
         fn: data => {
-          context.process.resumeRecording();
+          context.process?.resumeRecording();
           return true;
         },
         name: '_resumeRecording',
@@ -323,7 +325,7 @@ const chain = (context: Context): ExecutionContext => {
     sendLine: function (line: string): ExecutionContext {
       let _sendline: ExecutionStep = {
         fn: () => {
-          context.process.write(`${line}${RETURN}`);
+          context.process?.write(`${line}${RETURN}`);
           return true;
         },
         name: '_sendline',
@@ -337,7 +339,7 @@ const chain = (context: Context): ExecutionContext => {
     sendCarriageReturn: function (): ExecutionContext {
       let _sendline: ExecutionStep = {
         fn: () => {
-          context.process.write(RETURN);
+          context.process?.write(RETURN);
           return true;
         },
         name: '_sendline',
@@ -351,7 +353,7 @@ const chain = (context: Context): ExecutionContext => {
     send: function (line: string): ExecutionContext {
       var _send: ExecutionStep = {
         fn: () => {
-          context.process.write(line);
+          context.process?.write(line);
           return true;
         },
         name: '_send',
@@ -367,7 +369,7 @@ const chain = (context: Context): ExecutionContext => {
       var _send: ExecutionStep = {
         fn: () => {
           for (let i = 0; i < repetitions; ++i) {
-            context.process.write(KEY_DOWN_ARROW);
+            context.process?.write(KEY_DOWN_ARROW);
           }
           return true;
         },
@@ -384,7 +386,7 @@ const chain = (context: Context): ExecutionContext => {
       var _send: ExecutionStep = {
         fn: () => {
           for (let i = 0; i < repetitions; ++i) {
-            context.process.write(KEY_UP_ARROW);
+            context.process?.write(KEY_UP_ARROW);
           }
           return true;
         },
@@ -399,7 +401,7 @@ const chain = (context: Context): ExecutionContext => {
     sendConfirmYes: function (): ExecutionContext {
       var _send: ExecutionStep = {
         fn: () => {
-          context.process.write(`Y${RETURN}`);
+          context.process?.write(`Y${RETURN}`);
           return true;
         },
         name: '_send',
@@ -413,7 +415,7 @@ const chain = (context: Context): ExecutionContext => {
     sendYes: function (): ExecutionContext {
       var _send: ExecutionStep = {
         fn: () => {
-          context.process.write(`Y`);
+          context.process?.write(`Y`);
           return true;
         },
         name: '_send',
@@ -427,7 +429,7 @@ const chain = (context: Context): ExecutionContext => {
     sendConfirmNo: function (): ExecutionContext {
       var _send: ExecutionStep = {
         fn: () => {
-          context.process.write(`N${RETURN}`);
+          context.process?.write(`N${RETURN}`);
           return true;
         },
         name: '_send',
@@ -441,7 +443,7 @@ const chain = (context: Context): ExecutionContext => {
     sendNo: function (): ExecutionContext {
       var _send: ExecutionStep = {
         fn: () => {
-          context.process.write(`N`);
+          context.process?.write(`N`);
           return true;
         },
         name: '_send',
@@ -455,7 +457,7 @@ const chain = (context: Context): ExecutionContext => {
     sendCtrlC: function (): ExecutionContext {
       var _send: ExecutionStep = {
         fn: () => {
-          context.process.write(`${CONTROL_C}${RETURN}`);
+          context.process?.write(`${CONTROL_C}${RETURN}`);
           return true;
         },
         name: '_send',
@@ -469,7 +471,7 @@ const chain = (context: Context): ExecutionContext => {
     sendCtrlA: function (): ExecutionContext {
       var _send: ExecutionStep = {
         fn: () => {
-          context.process.write(`${CONTROL_A}`);
+          context.process?.write(`${CONTROL_A}`);
           return true;
         },
         name: '_send',
@@ -483,7 +485,7 @@ const chain = (context: Context): ExecutionContext => {
     sendEof: function (): ExecutionContext {
       var _sendEof: ExecutionStep = {
         fn: () => {
-          context.process.sendEof();
+          context.process?.sendEof();
           return true;
         },
         shift: true,
@@ -532,7 +534,7 @@ const chain = (context: Context): ExecutionContext => {
 
     const exitHandler = (code: number, signal: any) => {
       noOutputTimer.clear();
-      context.process.removeOnExitHandlers(exitHandler);
+      context.process?.removeOnExitHandlers(exitHandler);
       if (logDumpFile) {
         logDumpFile.close();
       }
@@ -547,7 +549,7 @@ const chain = (context: Context): ExecutionContext => {
                 .join('\n')
             : 'No output';
           const err = new Error(
-            `Killed the process as no output receive for ${context.noOutputTimeout / 1000} Sec. The no output timeout is set to ${
+            `Killed the process as no output received for ${context.noOutputTimeout / 1000} Sec. The no output timeout is set to ${
               context.noOutputTimeout / 1000
             } seconds.\n\nLast 10 lines:👇🏽👇🏽👇🏽👇🏽\n\n\n\n\n${lastScreen}\n\n\n👆🏼👆🏼👆🏼👆🏼`,
           );
@@ -590,7 +592,7 @@ const chain = (context: Context): ExecutionContext => {
 
       if (kill) {
         try {
-          context.process.kill();
+          context.process?.kill();
         } catch (ex) {}
       }
 
@@ -693,18 +695,18 @@ const chain = (context: Context): ExecutionContext => {
     // 2. Removing case sensitivity (if necessary)
     // 3. Splitting `data` into multiple lines.
     //
-    function onLine(data: string | Buffer) {
+    function onLine(data: string) {
       noOutputTimer.reschedule(context.noOutputTimeout);
       data = data.toString();
       if (logDumpFile && spinnerRegex.test(data) === false && strip(data).trim().length > 0) {
-        logDumpFile.write(`${data}${EOL}`);
+        logDumpFile.write(`${data}${os.EOL}`);
       }
 
       if (context.stripColors) {
         data = strip(data);
       }
 
-      var lines = data.split(EOL).filter(function (line) {
+      var lines = data.split(os.EOL).filter(function (line) {
         return line.length > 0 && line !== '\r';
       });
       stdout = stdout.concat(lines);

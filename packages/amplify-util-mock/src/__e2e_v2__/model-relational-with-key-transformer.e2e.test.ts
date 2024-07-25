@@ -1,10 +1,5 @@
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { HasManyTransformer, BelongsToTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { PrimaryKeyTransformer, IndexTransformer } from '@aws-amplify/graphql-index-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
-import { deploy, launchDDBLocal, terminateDDB, logDebug, GraphQLClient } from '../__e2e__/utils';
+import { deploy, launchDDBLocal, terminateDDB, logDebug, GraphQLClient, defaultTransformParams, transformAndSynth } from '../__e2e__/utils';
 
 let GRAPHQL_CLIENT: GraphQLClient;
 let GRAPHQL_ENDPOINT: string;
@@ -64,21 +59,14 @@ describe('@model with relational transformers', () => {
         project: DProject @belongsTo(fields: ["dTeamProjectId"])
       }`;
     try {
-      const transformer = new GraphQLTransform({
-        transformers: [
-          new ModelTransformer(),
-          new IndexTransformer(),
-          new PrimaryKeyTransformer(),
-          new HasOneTransformer(),
-          new HasManyTransformer(),
-          new BelongsToTransformer(),
-          new AuthTransformer(),
-        ],
+      const out = transformAndSynth({
+        ...defaultTransformParams,
+        schema: validSchema,
         transformParameters: {
+          ...defaultTransformParams.transformParameters,
           respectPrimaryKeyAttributesOnConnectionField: false,
         },
       });
-      const out = transformer.transform(validSchema);
 
       let ddbClient;
       ({ dbPath, emulator: ddbEmulator, client: ddbClient } = await launchDDBLocal());

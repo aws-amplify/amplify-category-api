@@ -9,11 +9,19 @@ import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityservice
 import { default as S3 } from 'aws-sdk/clients/s3';
 import { ResourceConstants } from 'graphql-transformer-common';
 import gql from 'graphql-tag';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import 'isomorphic-fetch';
 import { default as moment } from 'moment';
 import { CloudFormationClient } from '../CloudFormationClient';
-import { configureAmplify, createIdentityPool, createUserPool, createUserPoolClient, signupUser, authenticateUser } from '../cognitoUtils';
+import {
+  configureAmplify,
+  createIdentityPool,
+  createUserPool,
+  createUserPoolClient,
+  signupUser,
+  authenticateUser,
+  setIdentityPoolRoles,
+} from '../cognitoUtils';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { IAMHelper } from '../IAMHelper';
 import { LambdaHelper } from '../LambdaHelper';
@@ -21,6 +29,7 @@ import { S3Client } from '../S3Client';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
+
 import { resolveTestRegion } from '../testSetup';
 
 const REGION = resolveTestRegion();
@@ -72,7 +81,7 @@ beforeAll(async () => {
     const policy = await IAM_HELPER.createLambdaExecutionPolicy(LAMBDA_EXECUTION_POLICY_NAME);
     await wait(5000);
     LAMBDA_EXECUTION_POLICY_ARN = policy.Policy.Arn;
-    await IAM_HELPER.attachLambdaExecutionPolicy(policy.Policy.Arn, role.Role.RoleName);
+    await IAM_HELPER.attachPolicy(policy.Policy.Arn, role.Role.RoleName);
     await wait(10000);
     await LAMBDA_HELPER.createFunction(ECHO_FUNCTION_NAME, role.Role.Arn, 'echoResolverFunction');
   } catch (e) {
@@ -91,7 +100,8 @@ beforeAll(async () => {
     console.warn(`Could not create bucket: ${e}`);
   }
 
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig: {
       defaultAuthentication: {
         authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -111,17 +121,24 @@ beforeAll(async () => {
     },
     transformers: [new ModelTransformer(), new FunctionTransformer(), new AuthTransformer()],
   });
-  const out = transformer.transform(validSchema);
 
   // create userpool
   const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
-  USER_POOL_ID = userPoolResponse.UserPool.Id;
+  USER_POOL_ID = userPoolResponse.UserPool!.Id!;
   const userPoolClientResponse = await createUserPoolClient(cognitoClient, USER_POOL_ID, `UserPool${STACK_NAME}`);
-  const userPoolClientId = userPoolClientResponse.UserPoolClient.ClientId;
-  // create auth and unauth roles
-  const roles = await iamHelper.createRoles(AUTH_ROLE_NAME, UNAUTH_ROLE_NAME);
+  const userPoolClientId = userPoolClientResponse.UserPoolClient!.ClientId!;
+
   // create identity pool
   IDENTITY_POOL_ID = await createIdentityPool(identityClient, `IdentityPool${STACK_NAME}`, {
+    providerName: `cognito-idp.${REGION}.amazonaws.com/${USER_POOL_ID}`,
+    clientId: userPoolClientId,
+  });
+
+  // create auth and unauth roles
+  const roles = await iamHelper.createRoles(AUTH_ROLE_NAME, UNAUTH_ROLE_NAME, IDENTITY_POOL_ID);
+
+  // set roles on identity pool
+  await setIdentityPoolRoles(identityClient, IDENTITY_POOL_ID, {
     authRoleArn: roles.authRole.Arn,
     unauthRoleArn: roles.unauthRole.Arn,
     providerName: `cognito-idp.${REGION}.amazonaws.com/${USER_POOL_ID}`,
@@ -198,7 +215,7 @@ afterAll(async () => {
     console.warn(`Error during function cleanup: ${e}`);
   }
   try {
-    await IAM_HELPER.detachLambdaExecutionPolicy(LAMBDA_EXECUTION_POLICY_ARN, LAMBDA_EXECUTION_ROLE_NAME);
+    await IAM_HELPER.detachPolicy(LAMBDA_EXECUTION_POLICY_ARN, LAMBDA_EXECUTION_ROLE_NAME);
   } catch (e) {
     console.warn(`Error during policy dissociation: ${e}`);
   }
@@ -217,7 +234,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test('Test calling echo function as a user via IAM', async () => {
+test('calling echo function as a user via IAM', async () => {
   const query = gql`
     query {
       echo(msg: "Hello")

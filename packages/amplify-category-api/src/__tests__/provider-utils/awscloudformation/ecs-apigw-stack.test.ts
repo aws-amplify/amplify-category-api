@@ -18,6 +18,11 @@ describe('ecs stack', () => {
       currentStackName: 'testStack',
       dependsOn: [
         {
+          attributes: ['Name', 'Arn', 'StreamArn'],
+          category: 'storage',
+          resourceName: 'posts',
+        },
+        {
           category: '',
           resourceName: 'NetworkStack',
           attributes: ['ClusterName', 'VpcId', 'VpcCidrBlock', 'SubnetIds', 'VpcLinkId', 'CloudMapNamespaceId'],
@@ -33,11 +38,52 @@ describe('ecs stack', () => {
       isInitialDeploy: false,
       restrictAccess: false,
       taskPorts: [],
-      policies: [],
+      policies: [
+        {
+          Effect: 'Allow',
+          Action: ['dynamodb:Get*', 'dynamodb:BatchGetItem', 'dynamodb:List*', 'dynamodb:Describe*', 'dynamodb:Scan', 'dynamodb:Query'],
+          Resource: [
+            {
+              Ref: 'storagepostsArn',
+            },
+            {
+              'Fn::Join': [
+                '/',
+                [
+                  {
+                    Ref: 'storagepostsArn',
+                  },
+                  'index/*',
+                ],
+              ],
+            },
+          ],
+        },
+        {
+          Effect: 'Allow',
+          Action: 's3:ListBucket',
+        },
+      ],
     });
 
     const cfn = ecsStack.toCloudFormation();
     expect(cfn).toBeDefined();
+    const ecsDeployRolePolicy = findResourceWithPrefix(cfn, 'EcsDeployActionRoleDefaultPolicy');
+    expect(ecsDeployRolePolicy).toBeDefined();
+    expect(ecsDeployRolePolicy.Properties.PolicyDocument.Statement).toHaveLength(4);
+    expect(ecsDeployRolePolicy.Properties.PolicyDocument.Statement[0]).toMatchObject({
+      Action: 'ecs:TagResource',
+      Effect: 'Allow',
+      Resource: '*',
+    });
     expect(cfn).toMatchSnapshot();
   });
+
+  const findResourceWithPrefix = (cfn: any, prefix: string) => {
+    for (const key in cfn.Resources) {
+      if (key.startsWith(prefix)) {
+        return cfn.Resources[key];
+      }
+    }
+  };
 });

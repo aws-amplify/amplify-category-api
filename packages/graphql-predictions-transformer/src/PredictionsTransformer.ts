@@ -1,3 +1,4 @@
+import path = require('path');
 import {
   ObjectTypeDefinitionNode,
   FieldDefinitionNode,
@@ -5,14 +6,15 @@ import {
   valueFromASTUntyped,
   ArgumentNode,
   InputValueDefinitionNode,
+  parse,
 } from 'graphql';
-import { getActionInputType, makeActionInputObject, getActionInputName, addInputArgument, createInputValueAction } from './definitions';
-import { Transformer, gql, TransformerContext, InvalidDirectiveError } from 'graphql-transformer-core';
+import { Transformer, TransformerContext, InvalidDirectiveError } from 'graphql-transformer-core';
+import { PredictionsDirectiveV1 } from '@aws-amplify/graphql-directives';
 import { ResolverResourceIDs, PredictionsResourceIDs } from 'graphql-transformer-common';
+import { Fn } from 'cloudform-types';
+import { getActionInputType, makeActionInputObject, getActionInputName, addInputArgument, createInputValueAction } from './definitions';
 import { ResourceFactory, ActionPolicyMap } from './resources';
 import { allowedActions } from './predictions_utils';
-import { Fn } from 'cloudform-types';
-import path = require('path');
 
 const PREDICTIONS_DIRECTIVE_STACK = 'PredictionsDirectiveStack';
 
@@ -22,22 +24,11 @@ export type PredictionsConfig = {
 
 export class PredictionsTransformer extends Transformer {
   resources: ResourceFactory;
+
   predictionsConfig: PredictionsConfig;
 
   constructor(predictionsConfig?: PredictionsConfig) {
-    super(
-      'PredictionsTransformer',
-      gql`
-        # where the parent this field is defined on is a query type
-        directive @predictions(actions: [PredictionsActions!]!) on FIELD_DEFINITION
-        enum PredictionsActions {
-          identifyText
-          identifyLabels
-          convertTextToSpeech
-          translateText
-        }
-      `,
-    );
+    super('PredictionsTransformer', parse(PredictionsDirectiveV1.definition));
     this.resources = new ResourceFactory();
     this.predictionsConfig = predictionsConfig;
   }

@@ -9,7 +9,7 @@ import {
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { ResolverResourceIDs, toCamelCase } from 'graphql-transformer-common';
-import { generateAuthExpressionForSandboxMode, generateResolverKey, ModelVTLGenerator } from '../resolvers';
+import { generatePostAuthExpression, generateResolverKey, ModelVTLGenerator } from '../resolvers';
 import { ModelDirectiveConfiguration, SubscriptionLevel } from '../directive';
 import { ModelTransformerOptions } from '../types';
 
@@ -20,13 +20,21 @@ import { ModelTransformerOptions } from '../types';
  */
 export abstract class ModelResourceGenerator {
   protected datasourceMap: Record<string, DataSourceProvider> = {};
+
   private resolverMap: Record<string, TransformerResolverProvider> = {};
+
   protected generatorType = 'ModelResourceGenerator';
+
   private enabled = false;
+
   private provisioned = false;
+
   private unprovisioned = false;
+
   protected models: Array<ObjectTypeDefinitionNode> = new Array<ObjectTypeDefinitionNode>();
+
   protected modelDirectiveMap: Map<string, ModelDirectiveConfiguration> = new Map<string, ModelDirectiveConfiguration>();
+
   protected options: ModelTransformerOptions;
 
   constructor(options: ModelTransformerOptions = {}) {
@@ -120,11 +128,11 @@ export abstract class ModelResourceGenerator {
         resolver.addToSlot(
           'postAuth',
           MappingTemplate.s3MappingTemplateFromString(
-            generateAuthExpressionForSandboxMode(context.transformParameters.sandboxModeEnabled),
+            generatePostAuthExpression(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess),
             `${query.typeName}.${query.fieldName}.{slotName}.{slotIndex}.req.vtl`,
           ),
         );
-        resolver.mapToStack(context.stackManager.getStackFor(query.resolverLogicalId, def!.name.value));
+        resolver.setScope(context.stackManager.getScopeFor(query.resolverLogicalId, def!.name.value));
         context.resolvers.addResolver(query.typeName, query.fieldName, resolver);
       });
 
@@ -154,11 +162,11 @@ export abstract class ModelResourceGenerator {
         resolver.addToSlot(
           'postAuth',
           MappingTemplate.s3MappingTemplateFromString(
-            generateAuthExpressionForSandboxMode(context.transformParameters.sandboxModeEnabled),
+            generatePostAuthExpression(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess),
             `${mutation.typeName}.${mutation.fieldName}.{slotName}.{slotIndex}.req.vtl`,
           ),
         );
-        resolver.mapToStack(context.stackManager.getStackFor(mutation.resolverLogicalId, def!.name.value));
+        resolver.setScope(context.stackManager.getScopeFor(mutation.resolverLogicalId, def!.name.value));
         context.resolvers.addResolver(mutation.typeName, mutation.fieldName, resolver);
       });
 
@@ -200,12 +208,12 @@ export abstract class ModelResourceGenerator {
             resolver.addToSlot(
               'postAuth',
               MappingTemplate.s3MappingTemplateFromString(
-                generateAuthExpressionForSandboxMode(context.transformParameters.sandboxModeEnabled),
+                generatePostAuthExpression(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess),
                 `${subscription.typeName}.${subscription.fieldName}.{slotName}.{slotIndex}.req.vtl`,
               ),
             );
           }
-          resolver.mapToStack(context.stackManager.getStackFor(subscription.resolverLogicalId, def!.name.value));
+          resolver.setScope(context.stackManager.getScopeFor(subscription.resolverLogicalId, def!.name.value));
           context.resolvers.addResolver(subscription.typeName, subscription.fieldName, resolver);
         });
       }
@@ -244,7 +252,7 @@ export abstract class ModelResourceGenerator {
         resolverLogicalId,
         dataSource,
         MappingTemplate.s3MappingTemplateFromString(
-          vtlGenerator.generateGetRequestTemplate(requestConfig),
+          vtlGenerator.generateGetRequestTemplate(requestConfig, ctx),
           `${typeName}.${fieldName}.req.vtl`,
         ),
         MappingTemplate.s3MappingTemplateFromString(
@@ -284,7 +292,7 @@ export abstract class ModelResourceGenerator {
         resolverLogicalId,
         dataSource,
         MappingTemplate.s3MappingTemplateFromString(
-          vtlGenerator.generateListRequestTemplate(requestConfig),
+          vtlGenerator.generateListRequestTemplate(requestConfig, ctx),
           `${typeName}.${fieldName}.req.vtl`,
         ),
         MappingTemplate.s3MappingTemplateFromString(
@@ -330,7 +338,7 @@ export abstract class ModelResourceGenerator {
         resolverLogicalId,
         dataSource,
         MappingTemplate.s3MappingTemplateFromString(
-          vtlGenerator.generateCreateRequestTemplate(requestConfig),
+          vtlGenerator.generateCreateRequestTemplate(requestConfig, ctx),
           `${typeName}.${fieldName}.req.vtl`,
         ),
         MappingTemplate.s3MappingTemplateFromString(
@@ -344,10 +352,22 @@ export abstract class ModelResourceGenerator {
         operationName: fieldName,
         modelConfig: this.modelDirectiveMap.get(type.name.value)!,
       };
+
+      // check for implicit id field
+      const outputType = ctx.output.getObject(type.name.value);
+      const initializeIdField = !!outputType?.fields!.find(
+        (field) =>
+          field.name.value === 'id' &&
+          ((field.type.kind === 'NonNullType' &&
+            field.type.type.kind === 'NamedType' &&
+            (field.type.type.name.value === 'ID' || field.type.type.name.value === 'String')) ||
+            (field.type.kind === 'NamedType' && (field.type.name.value === 'ID' || field.type.name.value === 'String'))),
+      );
+
       resolver.addToSlot(
         'init',
         MappingTemplate.s3MappingTemplateFromString(
-          vtlGenerator.generateCreateInitSlotTemplate(initSlotConfig),
+          vtlGenerator.generateCreateInitSlotTemplate(initSlotConfig, initializeIdField),
           `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`,
         ),
       );
@@ -391,7 +411,7 @@ export abstract class ModelResourceGenerator {
         resolverLogicalId,
         dataSource,
         MappingTemplate.s3MappingTemplateFromString(
-          vtlGenerator.generateUpdateRequestTemplate(requestConfig),
+          vtlGenerator.generateUpdateRequestTemplate(requestConfig, ctx),
           `${typeName}.${fieldName}.req.vtl`,
         ),
         MappingTemplate.s3MappingTemplateFromString(
@@ -452,7 +472,7 @@ export abstract class ModelResourceGenerator {
         resolverLogicalId,
         dataSource,
         MappingTemplate.s3MappingTemplateFromString(
-          vtlGenerator.generateDeleteRequestTemplate(requestConfig),
+          vtlGenerator.generateDeleteRequestTemplate(requestConfig, ctx),
           `${typeName}.${fieldName}.req.vtl`,
         ),
         MappingTemplate.s3MappingTemplateFromString(

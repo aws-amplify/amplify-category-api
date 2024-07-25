@@ -1,12 +1,12 @@
+import path from 'path';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { default as S3 } from 'aws-sdk/clients/s3';
 import * as fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { default as moment } from 'moment';
-import path from 'path';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { GraphQLClient } from '../GraphQLClient';
@@ -50,13 +50,13 @@ beforeAll(async () => {
   } catch (e) {
     console.warn(`Could not create bucket: ${e}`);
   }
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new ModelTransformer(), new PredictionsTransformer({ bucketName: BUCKET_NAME })],
     transformParameters: {
       sandboxModeEnabled: true,
     },
   });
-  const out = transformer.transform(validSchema);
   const finishedStack = await deploy(
     customS3Client,
     cf,
@@ -84,7 +84,7 @@ afterAll(async () => {
   await cleanupStackAfterTest(BUCKET_NAME, STACK_NAME, cf);
 });
 
-test('test translate and convert text to speech', async () => {
+test('translate and convert text to speech', async () => {
   // logic to test graphql
   const response = await GRAPHQL_CLIENT.query(
     `query SpeakTranslatedText($input: SpeakTranslatedTextInput!) {
@@ -109,8 +109,9 @@ test('test translate and convert text to speech', async () => {
   expect(pollyURL).toMatch(/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/);
 });
 
-test('test translate text individually', async () => {
-  const germanTranslation = /((\bDies\b)|(\bdas\b)|(\bder\b)) ist ein ((\bStimmtest\b)|(\Sprachtest\b)|(\bStimmetest\b))/i;
+test('translate text individually', async () => {
+  const germanTranslation =
+    /((\bDies\b)|(\bdas\b)|(\bder\b)) ist ein ((\bStimmtest\b)|(\Sprachtest\b)|(\bStimmetest\b)|(\bStimmentest\b))/i;
   const response = await GRAPHQL_CLIENT.query(
     `query TranslateThis($input: TranslateThisInput!) {
       translateThis(input: $input)
@@ -130,7 +131,7 @@ test('test translate text individually', async () => {
   expect(translatedText).toMatch(germanTranslation);
 });
 
-test('test identify image text', async () => {
+test('identify image text', async () => {
   const file = path.join(__dirname, 'test-data', 'amazon.png');
   const buffer = fs.readFileSync(file);
 
@@ -158,7 +159,7 @@ test('test identify image text', async () => {
   expect(response.data.translateImageText).toEqual('Available on amazon R');
 });
 
-test('test identify labels', async () => {
+test('identify labels', async () => {
   const file = path.join(__dirname, 'test-data', 'dogs.png');
   const buffer = fs.readFileSync(file);
 

@@ -1,5 +1,5 @@
-import { getTemplateReferences } from '../util/getTemplateReferences';
 import { Template, Fn, AppSync, DynamoDB } from 'cloudform-types';
+import { getTemplateReferences } from '../util/getTemplateReferences';
 
 const template: Template = {
   Parameters: {
@@ -52,8 +52,8 @@ const template: Template = {
   },
 };
 
-test('Test getTemplateReferences', () => {
-  const referenceMap = getTemplateReferences(template); //JSON.parse(JSON.stringify(template, null, 4)));
+test('getTemplateReferences', () => {
+  const referenceMap = getTemplateReferences(template); // JSON.parse(JSON.stringify(template, null, 4)));
   expect(referenceMap).toBeTruthy();
   expect(referenceMap.env).toEqual([['Conditions', 'IsProd', 'Fn::Equals', '0']]);
   expect(referenceMap.API.sort()).toEqual(

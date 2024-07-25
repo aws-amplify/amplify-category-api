@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 #change: added type Post definition which is omitted in the doc
 #error: connection field auth does not work as described, when query user, posts are always null
@@ -20,7 +20,7 @@ type Post @model(queries: null)
 }
 
 ##fieldLevelAuth2`;
-//mutations
+// mutations
 export const mutation1 = `
 mutation CreateUser {
     createUser(input: {
@@ -71,7 +71,7 @@ export const expected_result_mutation2 = {
   },
 };
 
-//queries
+// queries
 export const query = `
  query GetUser {
     getUser(id: "1") {

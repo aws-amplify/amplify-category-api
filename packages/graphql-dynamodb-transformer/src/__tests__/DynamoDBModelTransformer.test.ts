@@ -12,8 +12,9 @@ import {
   NamedTypeNode,
 } from 'graphql';
 import { FeatureFlagProvider, GraphQLTransform, TRANSFORM_BASE_VERSION, TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
-import { DynamoDBModelTransformer } from '../DynamoDBModelTransformer';
 import { getBaseType } from 'graphql-transformer-common';
+import { DynamoDBModelTransformer } from '../DynamoDBModelTransformer';
+
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
     if (name === 'improvePluralization') {
@@ -28,7 +29,7 @@ const featureFlags = {
   getObject: jest.fn(),
 };
 
-test('Test DynamoDBModelTransformer validation happy case', () => {
+test('DynamoDBModelTransformer validation happy case', () => {
   const validSchema = `
     type Post @model {
         id: ID!
@@ -45,7 +46,7 @@ test('Test DynamoDBModelTransformer validation happy case', () => {
   expect(out).toBeDefined();
 });
 
-test('Test DynamoDBModelTransformer with query overrides', () => {
+test('DynamoDBModelTransformer with query overrides', () => {
   const validSchema = `type Post @model(queries: { get: "customGetPost", list: "customListPost" }) {
         id: ID!
         title: String!
@@ -80,7 +81,7 @@ test('Test DynamoDBModelTransformer with query overrides', () => {
   expect(subField.directives[0].name.value).toEqual('aws_subscribe');
 });
 
-test('Test DynamoDBModelTransformer with mutation overrides', () => {
+test('DynamoDBModelTransformer with mutation overrides', () => {
   const validSchema = `type Post @model(mutations: { create: "customCreatePost", update: "customUpdatePost", delete: "customDeletePost" }) {
         id: ID!
         title: String!
@@ -102,7 +103,7 @@ test('Test DynamoDBModelTransformer with mutation overrides', () => {
   expectFields(mutationType, ['customCreatePost', 'customUpdatePost', 'customDeletePost']);
 });
 
-test('Test DynamoDBModelTransformer with only create mutations', () => {
+test('DynamoDBModelTransformer with only create mutations', () => {
   const validSchema = `type Post @model(mutations: { create: "customCreatePost" }) {
         id: ID!
         title: String!
@@ -125,7 +126,7 @@ test('Test DynamoDBModelTransformer with only create mutations', () => {
   doNotExpectFields(mutationType, ['updatePost']);
 });
 
-test('Test DynamoDBModelTransformer with multiple model directives', () => {
+test('DynamoDBModelTransformer with multiple model directives', () => {
   const validSchema = `
     type Post @model {
         id: ID!
@@ -178,7 +179,7 @@ test('Test DynamoDBModelTransformer with multiple model directives', () => {
   expect(verifyInputCount(parsed, 'ModelUserFilterInput', 1)).toBeTruthy();
 });
 
-test('Test DynamoDBModelTransformer with filter', () => {
+test('DynamoDBModelTransformer with filter', () => {
   const validSchema = `
     type Post @model {
         id: ID!
@@ -211,7 +212,7 @@ test('Test DynamoDBModelTransformer with filter', () => {
   expect(verifyInputCount(parsed, 'ModelPostFilterInput', 1)).toBeTruthy();
 });
 
-test('Test DynamoDBModelTransformer with mutations set to null', () => {
+test('DynamoDBModelTransformer with mutations set to null', () => {
   const validSchema = `type Post @model(mutations: null) {
           id: ID!
           title: String!
@@ -231,7 +232,7 @@ test('Test DynamoDBModelTransformer with mutations set to null', () => {
   const mutationType = getObjectType(parsed, 'Mutation');
   expect(mutationType).not.toBeDefined();
 });
-test('Test DynamoDBModelTransformer with queries set to null', () => {
+test('DynamoDBModelTransformer with queries set to null', () => {
   const validSchema = `type Post @model(queries: null) {
           id: ID!
           title: String!
@@ -253,7 +254,7 @@ test('Test DynamoDBModelTransformer with queries set to null', () => {
   const queryType = getObjectType(parsed, 'Query');
   expect(queryType).not.toBeDefined();
 });
-test('Test DynamoDBModelTransformer with subscriptions set to null', () => {
+test('DynamoDBModelTransformer with subscriptions set to null', () => {
   const validSchema = `type Post @model(subscriptions: null) {
           id: ID!
           title: String!
@@ -277,7 +278,7 @@ test('Test DynamoDBModelTransformer with subscriptions set to null', () => {
   const subscriptionType = getObjectType(parsed, 'Subscription');
   expect(subscriptionType).not.toBeDefined();
 });
-test('Test DynamoDBModelTransformer with queries and mutations set to null', () => {
+test('DynamoDBModelTransformer with queries and mutations set to null', () => {
   const validSchema = `type Post @model(queries: null, mutations: null, subscriptions: null) {
           id: ID!
           title: String!
@@ -301,7 +302,7 @@ test('Test DynamoDBModelTransformer with queries and mutations set to null', () 
   const subscriptionType = getObjectType(parsed, 'Subscription');
   expect(subscriptionType).not.toBeDefined();
 });
-test('Test DynamoDBModelTransformer with advanced subscriptions', () => {
+test('DynamoDBModelTransformer with advanced subscriptions', () => {
   const validSchema = `type Post @model(subscriptions: {
             onCreate: ["onFeedUpdated", "onCreatePost"],
             onUpdate: ["onFeedUpdated"],
@@ -336,7 +337,7 @@ test('Test DynamoDBModelTransformer with advanced subscriptions', () => {
   expect(mutList).toContain('deletePost');
 });
 
-test('Test DynamoDBModelTransformer with non-model types and enums', () => {
+test('DynamoDBModelTransformer with non-model types and enums', () => {
   const validSchema = `
     type Post @model {
         id: ID!
@@ -391,7 +392,7 @@ test('Test DynamoDBModelTransformer with non-model types and enums', () => {
   expect(verifyInputCount(parsed, 'TagInput', 1)).toBeTruthy();
 });
 
-test('Test DynamoDBModelTransformer with mutation input overrides when mutations are disabled', () => {
+test('DynamoDBModelTransformer with mutation input overrides when mutations are disabled', () => {
   const validSchema = `type Post @model(mutations: null) {
         id: ID!
         title: String!
@@ -425,7 +426,7 @@ test('Test DynamoDBModelTransformer with mutation input overrides when mutations
   expectFieldsOnInputType(deletePostInput, ['different3']);
 });
 
-test('Test DynamoDBModelTransformer with mutation input overrides when mutations are enabled', () => {
+test('DynamoDBModelTransformer with mutation input overrides when mutations are enabled', () => {
   const validSchema = `type Post @model {
         id: ID!
         title: String!
@@ -460,7 +461,7 @@ test('Test DynamoDBModelTransformer with mutation input overrides when mutations
   expectFieldsOnInputType(deletePostInput, ['different3']);
 });
 
-test('Test non model objects contain id as a type for fields', () => {
+test('non model objects contain id as a type for fields', () => {
   const validSchema = `
     type Post @model {
       id: ID!
@@ -489,7 +490,7 @@ test('Test non model objects contain id as a type for fields', () => {
   verifyMatchingTypes(commentObjectIDField.type, commentInputIDField.type);
 });
 
-test('Test schema includes attribute enum when only queries specified', () => {
+test('schema includes attribute enum when only queries specified', () => {
   const validSchema = `
     type Entity @model(mutations: null, subscriptions: null) {
       id: ID!
@@ -509,7 +510,7 @@ test('Test schema includes attribute enum when only queries specified', () => {
   expect(result.schema).toMatchSnapshot();
 });
 
-test('Test only get does not generate superfluous input and filter types', () => {
+test('only get does not generate superfluous input and filter types', () => {
   const validSchema = `
   type Entity @model(mutations: null, subscriptions: null, queries: {get: "getEntity"}) {
     id: ID!
@@ -529,7 +530,7 @@ test('Test only get does not generate superfluous input and filter types', () =>
   expect(result.schema).toMatchSnapshot();
 });
 
-test('Test timestamp parameters when generating resolvers and output schema', () => {
+test('timestamp parameters when generating resolvers and output schema', () => {
   const validSchema = `
   type Post @model(timestamps: { createdAt: "createdOn", updatedAt: "updatedOn"}) {
     id: ID!
@@ -549,7 +550,7 @@ test('Test timestamp parameters when generating resolvers and output schema', ()
   expect(result.resolvers['Mutation.updatePost.req.vtl']).toMatchSnapshot();
 });
 
-test('Test resolver template not to auto generate createdAt and updatedAt when the type in schema is not AWSDateTime', () => {
+test('resolver template not to auto generate createdAt and updatedAt when the type in schema is not AWSDateTime', () => {
   const validSchema = `
   type Post @model {
     id: ID!
@@ -571,7 +572,7 @@ test('Test resolver template not to auto generate createdAt and updatedAt when t
   expect(result.resolvers['Mutation.updatePost.req.vtl']).toMatchSnapshot();
 });
 
-test('Test create and update mutation input should have timestamps as nullable fields when the type makes it non-nullable', () => {
+test('create and update mutation input should have timestamps as nullable fields when the type makes it non-nullable', () => {
   const validSchema = `
   type Post @model {
     id: ID!
@@ -593,7 +594,7 @@ test('Test create and update mutation input should have timestamps as nullable f
   expect(result.resolvers['Mutation.updatePost.req.vtl']).toMatchSnapshot();
 });
 
-test('Test not to include createdAt and updatedAt field when timestamps is set to null', () => {
+test('not to include createdAt and updatedAt field when timestamps is set to null', () => {
   const validSchema = `
   type Post @model(timestamps: null) {
     id: ID!

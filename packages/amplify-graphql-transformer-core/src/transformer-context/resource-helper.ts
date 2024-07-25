@@ -1,16 +1,21 @@
-import { GraphQLAPIProvider, ModelFieldMap, TransformerResourceHelperProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { CfnParameter, Token } from 'aws-cdk-lib';
+import {
+  GraphQLAPIProvider,
+  ModelFieldMap,
+  SynthParameters,
+  TransformerResourceHelperProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
+import { Token } from 'aws-cdk-lib';
 import { ModelResourceIDs } from 'graphql-transformer-common';
 import md5 from 'md5';
-import { ModelFieldMapImpl } from './model-field-map';
-import { StackManager } from './stack-manager';
 import { DirectiveNode, FieldNode, ObjectTypeDefinitionNode, ObjectTypeExtensionNode } from 'graphql';
+import { ModelFieldMapImpl } from './model-field-map';
 
 /**
  * Contains helper methods for transformers to access and compile context about resource generation
  */
 export class TransformerResourceHelper implements TransformerResourceHelperProvider {
   private api?: GraphQLAPIProvider;
+
   private exclusionSet = new Set<string>();
 
   // a mapping of models that have been renamed with @mapsTo
@@ -19,7 +24,7 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
   // a map of objects that define fields of a model that are renamed
   readonly #modelFieldMaps = new Map<string, ModelFieldMap>();
 
-  constructor(private stackManager: StackManager) {
+  constructor(private synthParameters: SynthParameters) {
     // set the model name mapping in ModelResourceIDs to use the same mapping as this class
     // yes, it would be better if ModelResourceIDs didn't have a bunch of static methods and this map could be injected into that class
     // but it would also be better if I could eat chocolate cake all day
@@ -33,8 +38,7 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
     if (!this.api) {
       throw new Error('API not initialized');
     }
-    this.ensureEnv();
-    const env = (this.stackManager.getParameter('env') as CfnParameter).valueAsString;
+    const env = this.synthParameters.amplifyEnvironmentName;
     const { apiId } = this.api!;
     const baseName = this.#modelNameMap.get(modelName) ?? modelName;
     return `${baseName}-${apiId}-${env}`;
@@ -44,8 +48,7 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
     if (!this.api) {
       throw new Error('API not initialized');
     }
-    this.ensureEnv();
-    const env = (this.stackManager.getParameter('env') as CfnParameter).valueAsString;
+    const env = this.synthParameters.amplifyEnvironmentName;
     const { apiId } = this.api!;
     // 38 = 26(apiId) + 10(env) + 2(-)
     const shortName = `${Token.isUnresolved(name) ? name : name.slice(0, 64 - 38 - 6)}${md5(name).slice(0, 6)}`;
@@ -106,7 +109,7 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
   /**
    * Gets a list of all the model names that have an entry in the field map
    */
-  getModelFieldMapKeys = () => [...this.#modelFieldMaps.keys()];
+  getModelFieldMapKeys = (): string[] => [...this.#modelFieldMaps.keys()];
 
   /**
    * In some cases a directive may be added to a schema during preprocessing for the sake of external use, but should be ignored by the
@@ -137,15 +140,6 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
     directive: DirectiveNode,
   ): boolean => {
     return this.exclusionSet.has(this.convertDirectiveConfigToKey(object, field, directive));
-  };
-
-  private ensureEnv = (): void => {
-    if (!this.stackManager.getParameter('env')) {
-      this.stackManager.addParameter('env', {
-        type: 'String',
-        default: 'NONE',
-      });
-    }
   };
 
   private convertDirectiveConfigToKey = (

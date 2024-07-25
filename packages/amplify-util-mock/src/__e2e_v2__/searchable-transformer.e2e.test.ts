@@ -1,8 +1,5 @@
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { deploy, launchDDBLocal, logDebug, GraphQLClient, terminateDDB } from '../__e2e__/utils';
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
+import { deploy, launchDDBLocal, logDebug, GraphQLClient, terminateDDB, defaultTransformParams, transformAndSynth } from '../__e2e__/utils';
 
 jest.setTimeout(2000000);
 
@@ -20,13 +17,15 @@ describe('@searchable transformer', () => {
       }`;
 
     try {
-      const transformer = new GraphQLTransform({
-        transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+      const out = transformAndSynth({
+        ...defaultTransformParams,
+        schema: validSchema,
         transformParameters: {
+          ...defaultTransformParams.transformParameters,
           sandboxModeEnabled: true,
         },
       });
-      const out = await transformer.transform(validSchema);
+
       let ddbClient;
       ({ dbPath, emulator: ddbEmulator, client: ddbClient } = await launchDDBLocal());
       const result = await deploy(out, ddbClient);

@@ -1,6 +1,6 @@
 import { DynamoDB } from 'aws-sdk';
-import { createTables, describeTables, getUpdateTableInput, updateTables } from './utils';
 import { CreateTableInput } from 'aws-sdk/clients/dynamodb';
+import { createTables, describeTables, getUpdateTableInput, updateTables } from './utils';
 
 export type MockDynamoDBConfig = {
   tables: { Properties: CreateTableInput }[];

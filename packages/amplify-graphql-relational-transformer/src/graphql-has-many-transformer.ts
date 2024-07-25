@@ -1,29 +1,36 @@
 /* eslint-disable no-param-reassign */
+import { HasManyDirective } from '@aws-amplify/graphql-directives';
 import {
   DirectiveWrapper,
-  generateGetArgumentsInput,
   InvalidDirectiveError,
   TransformerPluginBase,
+  generateGetArgumentsInput,
+  getStrategyDbTypeFromModel,
+  getStrategyDbTypeFromTypeNode,
 } from '@aws-amplify/graphql-transformer-core';
 import {
+  ModelDataSourceStrategy,
+  ModelDataSourceStrategyDbType,
   TransformerContextProvider,
+  TransformerPreProcessContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { getBaseType, isListType, isNonNullType, makeField, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
 import {
   DirectiveNode,
   DocumentNode,
   FieldDefinitionNode,
   InterfaceTypeDefinitionNode,
+  NamedTypeNode,
   ObjectTypeDefinitionNode,
   ObjectTypeExtensionNode,
+  Kind,
 } from 'graphql';
+import { getBaseType, isListType, isNonNullType, makeField, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
 import produce from 'immer';
 import { WritableDraft } from 'immer/dist/types/types-external';
-import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { makeQueryConnectionWithKeyResolver, updateTableForConnection } from './resolvers';
+import { getHasManyDirectiveTransformer } from './has-many/has-many-directive-transformer-factory';
 import {
   addFieldsToDefinition,
   convertSortKeyFieldsToSortKeyConnectionFields,
@@ -33,32 +40,19 @@ import {
 } from './schema';
 import { HasManyDirectiveConfiguration } from './types';
 import {
-  ensureFieldsArray,
   getConnectionAttributeName,
-  getFieldsNodes,
   getObjectPrimaryKey,
   getRelatedType,
-  getRelatedTypeIndex,
-  registerHasManyForeignKeyMappings,
   validateDisallowedDataStoreRelationships,
   validateModelDirective,
   validateRelatedModelDirective,
 } from './utils';
 
-const directiveName = 'hasMany';
-const defaultLimit = 100;
-const directiveDefinition = `
-  directive @${directiveName}(indexName: String, fields: [String!], limit: Int = ${defaultLimit}) on FIELD_DEFINITION
-`;
-
-/**
- * Transformer for @hasMany directive
- */
 export class HasManyTransformer extends TransformerPluginBase {
   private directiveList: HasManyDirectiveConfiguration[] = [];
 
   constructor() {
-    super('amplify-has-many-transformer', directiveDefinition);
+    super('amplify-has-many-transformer', HasManyDirective.definition);
   }
 
   field = (
@@ -70,11 +64,11 @@ export class HasManyTransformer extends TransformerPluginBase {
     const directiveWrapped = new DirectiveWrapper(directive);
     const args = directiveWrapped.getArguments(
       {
-        directiveName,
+        directiveName: HasManyDirective.name,
         object: parent as ObjectTypeDefinitionNode,
         field: definition,
         directive,
-        limit: defaultLimit,
+        limit: HasManyDirective.defaults.limit,
       } as HasManyDirectiveConfiguration,
       generateGetArgumentsInput(context.transformParameters),
     );
@@ -95,7 +89,7 @@ export class HasManyTransformer extends TransformerPluginBase {
       const objectDefs = filteredDefs as Array<WritableDraft<ObjectTypeDefinitionNode | ObjectTypeExtensionNode>>;
       // First iteration builds a map of the hasMany connecting fields that need to exist, second iteration ensures they exist
       objectDefs?.forEach((def) => {
-        const filteredFields = def?.fields?.filter((field) => field?.directives?.some((dir) => dir.name.value === directiveName));
+        const filteredFields = def?.fields?.filter((field) => field?.directives?.some((dir) => dir.name.value === HasManyDirective.name));
         filteredFields?.forEach((field) => {
           const baseFieldType = getBaseType(field.type);
           const connectionAttributeName = getConnectionAttributeName(
@@ -133,13 +127,10 @@ export class HasManyTransformer extends TransformerPluginBase {
    */
   prepare = (context: TransformerPrepareStepContextProvider): void => {
     this.directiveList.forEach((config) => {
-      registerHasManyForeignKeyMappings({
-        transformParameters: context.transformParameters,
-        resourceHelper: context.resourceHelper,
-        thisTypeName: config.object.name.value,
-        thisFieldName: config.field.name.value,
-        relatedType: config.relatedType,
-      });
+      const modelName = config.object.name.value;
+      const dbType = getStrategyDbTypeFromModel(context as TransformerContextProvider, modelName);
+      const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType, config);
+      dataSourceBasedTransformer.prepare(context, config);
     });
   };
 
@@ -147,7 +138,9 @@ export class HasManyTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      config.relatedTypeIndex = getRelatedTypeIndex(config, context, config.indexName);
+      const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
+      const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType, config);
+      dataSourceBasedTransformer.transformSchema(ctx, config);
       ensureHasManyConnectionField(config, context);
       extendTypeWithConnection(config, context);
     }
@@ -157,24 +150,54 @@ export class HasManyTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      updateTableForConnection(config, context);
-      makeQueryConnectionWithKeyResolver(config, context);
+      const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
+      const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType, config);
+      dataSourceBasedTransformer.generateResolvers(ctx, config);
     }
   };
 }
 
 const validate = (config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-  const { field } = config;
-
-  ensureFieldsArray(config);
-  validateModelDirective(config);
-
-  if (!isListType(field.type)) {
-    throw new InvalidDirectiveError(`@${directiveName} must be used with a list. Use @hasOne for non-list types.`);
+  const { field, object } = config;
+  if (!ctx.transformParameters.allowGen1Patterns) {
+    const modelName = object.name.value;
+    const fieldName = field.name.value;
+    if (field.type.kind === Kind.NON_NULL_TYPE) {
+      throw new InvalidDirectiveError(
+        `@${HasManyDirective.name} cannot be used on required fields. Modify ${modelName}.${fieldName} to be optional.`,
+      );
+    }
+    if (config.fields) {
+      throw new InvalidDirectiveError(
+        `fields argument on @${HasManyDirective.name} is disallowed. Modify ${modelName}.${fieldName} to use references instead.`,
+      );
+    }
   }
 
-  config.fieldNodes = getFieldsNodes(config, ctx);
+  if (!isListType(field.type)) {
+    throw new InvalidDirectiveError(`@${HasManyDirective.name} must be used with a list. Use @hasOne for non-list types.`);
+  }
+
+  let dbType: ModelDataSourceStrategyDbType;
+  try {
+    // getStrategyDbTypeFromTypeNode throws if a datasource is not found for the model. We want to catch that condition
+    // here to provide a friendlier error message, since the most likely error scenario is that the customer neglected to annotate one
+    // of the types with `@model`.
+    // Since this transformer gets invoked on both sides of the `belongsTo` relationship, a failure at this point is about the
+    // field itself, not the related type.
+    dbType = getStrategyDbTypeFromTypeNode(field.type, ctx);
+  } catch {
+    throw new InvalidDirectiveError(
+      `Object type ${(field.type as NamedTypeNode)?.name.value ?? field.name} must be annotated with @model.`,
+    );
+  }
+
   config.relatedType = getRelatedType(config, ctx);
+
+  const dataSourceBasedTransformer = getHasManyDirectiveTransformer(dbType, config);
+  dataSourceBasedTransformer.validate(ctx, config);
+  validateModelDirective(config);
+
   config.connectionFields = [];
   validateRelatedModelDirective(config);
   validateDisallowedDataStoreRelationships(config, ctx);

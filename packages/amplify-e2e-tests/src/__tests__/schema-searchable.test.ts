@@ -3,12 +3,16 @@ import {
   deleteProject,
   createNewProjectDir,
   deleteProjectDir,
-  refreshCredentials,
+  tryScheduleCredentialRefresh,
 } from 'amplify-category-api-e2e-core';
 import { testSchema } from '../schema-api-directives';
 
 describe('api directives @searchable', () => {
   let projectDir: string;
+
+  beforeAll(() => {
+    tryScheduleCredentialRefresh();
+  });
 
   beforeEach(async () => {
     projectDir = await createNewProjectDir('searchable');
@@ -16,8 +20,7 @@ describe('api directives @searchable', () => {
   });
 
   afterEach(async () => {
-    const newCreds = refreshCredentials();
-    await deleteProject(projectDir, newCreds);
+    await deleteProject(projectDir);
     deleteProjectDir(projectDir);
   });
 

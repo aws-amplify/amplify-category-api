@@ -1,6 +1,6 @@
 import { TransformerContextProvider, TransformerLog, TransformerLogLevel } from '@aws-amplify/graphql-transformer-interfaces';
-import { AuthRule } from '.';
 import { AccessControlMatrix } from '../accesscontrol';
+import { AuthRule } from '.';
 
 /**
  * Displays a warning when a default owner field is used and the feature flag is
@@ -20,6 +20,22 @@ export const defaultIdentityClaimWarning = (context: TransformerContextProvider,
       'more: https://docs.amplify.aws/cli/migration/identity-claim-changes/'
     );
   }
+};
+
+/**
+ * Displays a warning when a deprecated 'iam' auth provider is used in schema.
+ */
+export const deprecatedIAMProviderWarning = (rules: AuthRule[]): string | undefined => {
+  const hasDeprecatedIAMProvider = rules.some((rule) => rule.provider === 'iam');
+
+  if (hasDeprecatedIAMProvider) {
+    return (
+      "WARNING: Schema is using an @auth directive with deprecated provider 'iam'." +
+      " Replace 'iam' provider with 'identityPool' provider."
+    );
+  }
+
+  return undefined;
 };
 
 /**

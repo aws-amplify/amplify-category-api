@@ -4,7 +4,7 @@ export async function runTest(projectDir: string, testModule: any) {
   await runMultiAutTest(projectDir, testModule);
 }
 
-//schema
+// schema
 export const schema = `
 type Post @model
   @auth (
@@ -24,7 +24,7 @@ type Post @model
 }
 
 ##combingAuthRules1`;
-//mutations
+// mutations
 export const mutation = `
 mutation CreatePost(
     $input: CreatePostInput!

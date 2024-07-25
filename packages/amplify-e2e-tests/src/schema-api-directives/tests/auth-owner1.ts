@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 # The simplest case
 type Post @model @auth(rules: [{allow: owner}]) {
@@ -7,7 +7,7 @@ type Post @model @auth(rules: [{allow: owner}]) {
 }
 
 ##owner1`;
-//mutations
+// mutations
 export const mutation = `
 mutation CreatePost(
     $input: CreatePostInput!

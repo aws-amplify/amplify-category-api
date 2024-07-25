@@ -23,6 +23,7 @@ import {
   raw,
 } from 'graphql-mapping-template';
 import { ResourceConstants, setArgs } from 'graphql-transformer-common';
+
 const authFilter = ref('ctx.stash.authFilter');
 
 /**

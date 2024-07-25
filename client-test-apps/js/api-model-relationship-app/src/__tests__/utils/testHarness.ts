@@ -3,6 +3,7 @@ import { existsSync, PathLike, rmSync, lstatSync } from 'fs';
 import cypress from 'cypress';
 import { setup, teardown } from 'jest-dev-server';
 import { AmplifyCLI } from './amplifyCLI';
+import { SpawndChildProcess } from 'spawnd';
 
 jest.setTimeout(20 * 60 * 1000); // 20 minutes
 
@@ -58,6 +59,8 @@ const cleanupJSGeneratedFiles = (projectRoot: string) => {
 };
 
 export const executeAmplifyTestHarness = (testName: string, projectRoot: string, setupApp: (cli: AmplifyCLI) => Promise<void>) => {
+  let serverProcs: SpawndChildProcess[] | undefined;
+
   describe(testName, () => {
     const cli = new AmplifyCLI(projectRoot);
 
@@ -71,11 +74,12 @@ export const executeAmplifyTestHarness = (testName: string, projectRoot: string,
       }
 
       if (getTestExecutionStages().has(TestExecutionStage.CYPRESS_EXECUTE) || getTestExecutionStages().has(TestExecutionStage.CYPRESS_WATCH)) {
-        await setup({
+        serverProcs = await setup({
           command: `yarn start`,
           launchTimeout: 5 * 60 * 1000,
+          host: '127.0.0.1',
           port: 3000,
-        })
+        });
       }
     });
   
@@ -91,7 +95,9 @@ export const executeAmplifyTestHarness = (testName: string, projectRoot: string,
       }
   
       if (getTestExecutionStages().has(TestExecutionStage.CYPRESS_EXECUTE) || getTestExecutionStages().has(TestExecutionStage.CYPRESS_WATCH)) {
-        await teardown();
+        if (serverProcs) {
+          await teardown(serverProcs);
+        }
       }
     });
   

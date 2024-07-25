@@ -1,9 +1,14 @@
 import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
-import { ModelResourceIDs, toPascalCase } from 'graphql-transformer-common';
-import { InputFieldWrapper, InputObjectDefinitionWrapper, ObjectDefinitionWrapper } from '@aws-amplify/graphql-transformer-core';
-import { makeConditionFilterInput } from './common';
+import { ModelResourceIDs, getBaseType, toPascalCase } from 'graphql-transformer-common';
+import {
+  InputFieldWrapper,
+  InputObjectDefinitionWrapper,
+  ObjectDefinitionWrapper,
+  isDynamoDbModel,
+} from '@aws-amplify/graphql-transformer-core';
 import { ModelDirectiveConfiguration } from '../directive';
+import { makeConditionFilterInput } from './common';
 
 /**
  * Generate input used for update mutation
@@ -104,7 +109,15 @@ export const makeCreateInputField = (
   const typeName = objectWrapped.name;
   const name = ModelResourceIDs.ModelCreateInputObjectName(typeName);
 
-  const hasIdField = objectWrapped.hasField('id');
+  const idFieldName = 'id';
+  const hasIdField = objectWrapped.hasField(idFieldName);
+  let shouldAutogenerateIdField = false;
+  if (hasIdField) {
+    const idField = objectWrapped.getField(idFieldName);
+    const idBaseType = getBaseType(idField.type);
+    shouldAutogenerateIdField = idBaseType === 'ID' || idBaseType === 'String';
+  }
+
   const fieldsToRemove = objectWrapped
     .fields!.filter((field) => {
       if (knownModelTypes.has(field.getTypeName())) {
@@ -126,7 +139,7 @@ export const makeCreateInputField = (
     input.addField(InputFieldWrapper.create('id', 'ID', true));
   } else {
     const idField = input.fields.find((f) => f.name === 'id');
-    if (idField) {
+    if (idField && shouldAutogenerateIdField) {
       idField.makeNullable();
     }
   }
@@ -154,11 +167,27 @@ export const makeMutationConditionInput = (
   ctx: TransformerTransformSchemaStepContextProvider,
   name: string,
   object: ObjectTypeDefinitionNode,
+  modelDirectiveConfig: ModelDirectiveConfiguration,
 ): InputObjectTypeDefinitionNode => {
   const input = makeConditionFilterInput(ctx, name, object);
   const idField = input.fields.find((f) => f.name === 'id' && f.getTypeName() === 'ModelIDInput');
   if (idField) {
     input.removeField(idField);
   }
+
+  // add implicit timestamp fields to filter
+  if (isDynamoDbModel(ctx, object.name.value)) {
+    if (!(modelDirectiveConfig?.timestamps === null)) {
+      Object.values({ createdAt: 'createdAt', updatedAt: 'updatedAt', ...(modelDirectiveConfig?.timestamps || {}) }).forEach(
+        (timeStampFieldName) => {
+          if (!!timeStampFieldName && !input.hasField(timeStampFieldName!)) {
+            const field = InputFieldWrapper.create(timeStampFieldName, 'ModelStringInput', true);
+            input.addField(field);
+          }
+        },
+      );
+    }
+  }
+
   return input.serialize();
 };

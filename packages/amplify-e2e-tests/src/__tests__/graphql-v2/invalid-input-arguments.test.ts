@@ -1,6 +1,13 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPush } from 'amplify-category-api-e2e-core';
-import { addApiWithBlankSchemaAndConflictDetection, updateApiSchema, getProjectMeta } from 'amplify-category-api-e2e-core';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
+import {
+  initJSProjectWithProfile,
+  deleteProject,
+  amplifyPush,
+  addApiWithBlankSchemaAndConflictDetection,
+  updateApiSchema,
+  getProjectMeta,
+  createNewProjectDir,
+  deleteProjectDir,
+} from 'amplify-category-api-e2e-core';
 import { API } from 'aws-amplify';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 

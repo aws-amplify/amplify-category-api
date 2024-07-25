@@ -17,7 +17,7 @@ export async function runTest(projectDir: string, testModule: any) {
   await testQueries(testModule, appSyncClient);
 }
 
-//schema
+// schema
 export const schema = `
 type Post @model @auth(rules: [{allow: public}]) {
   id: ID!
@@ -25,7 +25,7 @@ type Post @model @auth(rules: [{allow: public}]) {
 }
 
 ##public1`;
-//mutations
+// mutations
 export const mutation1 = `
 mutation CreatePost(
     $input: CreatePostInput!

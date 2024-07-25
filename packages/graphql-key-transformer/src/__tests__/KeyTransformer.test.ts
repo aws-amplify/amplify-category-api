@@ -1,7 +1,8 @@
 import { parse, InputObjectTypeDefinitionNode, DefinitionNode, DocumentNode, Kind } from 'graphql';
 import { GraphQLTransform, InvalidDirectiveError, SyncConfig, ConflictHandlerType, FeatureFlagProvider } from 'graphql-transformer-core';
-import { KeyTransformer } from '../KeyTransformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { KeyTransformer } from '../KeyTransformer';
+
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
     if (name === 'improvePluralization') {
@@ -87,7 +88,7 @@ test('KeyTransformer should fail if referencing a field that does not exist.', (
   expect(() => transformer.transform(invalidSchema)).toThrowError(InvalidDirectiveError);
 });
 
-test('Test that a primary @key fails if pointing to nullable fields.', () => {
+test('that a primary @key fails if pointing to nullable fields.', () => {
   const invalidSchema = `
     type Test @key(fields: ["email"]) {
         id: ID!
@@ -103,7 +104,7 @@ test('Test that a primary @key fails if pointing to nullable fields.', () => {
   expect(() => transformer.transform(invalidSchema)).toThrowError(InvalidDirectiveError);
 });
 
-test('Test that model with an LSI but no primary sort key will fail.', () => {
+test('that model with an LSI but no primary sort key will fail.', () => {
   const invalidSchema = `
     type Test @key(fields: ["id"]) @key(name: "SomeLSI", fields: ["id", "email"]) {
         id: ID!
@@ -259,7 +260,7 @@ test('Check KeyTransformer Resolver Code when sync enabled', () => {
   expect(out.resolvers).toMatchSnapshot();
 });
 
-test('Test that sort direction and filter input are generated if default list query does not exist', () => {
+test('that sort direction and filter input are generated if default list query does not exist', () => {
   const validSchema = `
     type Todo
       @model(queries: { get: "getTodo" })
@@ -327,7 +328,7 @@ function getInputType(doc: DocumentNode, type: string): InputObjectTypeDefinitio
 }
 
 describe('check schema input', () => {
-  it('@model mutation with user defined null args ', () => {
+  it('@model mutation with user defined null args', () => {
     const validSchema = /* GraphQL */ `
       type Call
         @model(queries: null, mutations: null)
@@ -369,7 +370,7 @@ describe('check schema input', () => {
     expect(senderIdField).toBeUndefined();
   });
 
-  it('@model mutation with user defined create args ', () => {
+  it('@model mutation with user defined create args', () => {
     const validSchema = /* GraphQL */ `
       type Call
         @model(queries: null, mutations: { delete: "testDelete" })

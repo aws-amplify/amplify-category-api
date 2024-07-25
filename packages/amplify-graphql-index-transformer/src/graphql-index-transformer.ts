@@ -10,6 +10,7 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { IndexDirective } from '@aws-amplify/graphql-directives';
 import {
   DirectiveNode,
   EnumTypeDefinitionNode,
@@ -24,20 +25,16 @@ import { addKeyConditionInputs, ensureQueryField, updateMutationConditionInput }
 import { IndexDirectiveConfiguration } from './types';
 import { generateKeyAndQueryNameForConfig, validateNotSelfReferencing } from './utils';
 
-const directiveName = 'index';
-const directiveDefinition = `
-  directive @${directiveName}(name: String, sortKeyFields: [String], queryField: String) repeatable on FIELD_DEFINITION
-`;
-
 /**
  *
  */
 export class IndexTransformer extends TransformerPluginBase {
   private directiveList: IndexDirectiveConfiguration[] = [];
+
   private resolverMap: Map<TransformerResolverProvider, string> = new Map();
 
   constructor() {
-    super('amplify-index-transformer', directiveDefinition);
+    super('amplify-index-transformer', IndexDirective.definition);
   }
 
   field = (
@@ -103,7 +100,13 @@ export class IndexTransformer extends TransformerPluginBase {
  * compute the name based on the field name, and sortKeyFields.
  */
 const getOrGenerateDefaultName = (config: IndexDirectiveConfiguration): string => {
+  const indexNameRegex = /^[A-Za-z0-9_\-\.]{3,255}$/;
   if (config.name) {
+    if (!indexNameRegex.test(config.name)) {
+      throw new Error(
+        `The indexName is invalid. It should be between 3 and 255 characters. Only A–Z, a–z, 0–9, underscore characters, hyphens, and periods allowed.`,
+      );
+    }
     return config.name;
   }
 
@@ -157,7 +160,7 @@ const validate = (config: IndexDirectiveConfiguration, ctx: TransformerContextPr
   const modelDirective = object.directives!.find((directive) => directive.name.value === 'model');
 
   if (!modelDirective) {
-    throw new InvalidDirectiveError(`The @${directiveName} directive may only be added to object definitions annotated with @model.`);
+    throw new InvalidDirectiveError(`The @${IndexDirective.name} directive may only be added to object definitions annotated with @model.`);
   }
 
   config.modelDirective = modelDirective;
@@ -188,11 +191,11 @@ const validate = (config: IndexDirectiveConfiguration, ctx: TransformerContextPr
       }
 
       if (
-        peerDirective.name.value === directiveName &&
+        peerDirective.name.value === IndexDirective.name &&
         peerDirective.arguments!.some((arg: any) => arg.name.value === 'name' && arg.value.value === name)
       ) {
         throw new InvalidDirectiveError(
-          `You may only supply one @${directiveName} with the name '${name}' on type '${object.name.value}'.`,
+          `You may only supply one @${IndexDirective.name} with the name '${name}' on type '${object.name.value}'.`,
         );
       }
     }

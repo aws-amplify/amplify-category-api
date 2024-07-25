@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 type Post @model {
   id: ID!
@@ -13,7 +13,7 @@ type Comment @model @key(name: "byPost", fields: ["postID", "content"]) {
 }
 
 ##connection/hasMany`;
-//mutations
+// mutations
 export const mutation1 = `
 mutation CreatePost {
   createPost(input: { id: "a-post-id", title: "Post Title" }) {
@@ -47,7 +47,7 @@ export const expected_result_mutation2 = {
   },
 };
 
-//queries
+// queries
 export const query = `
 query getPost {
   getPost(id: "a-post-id") {

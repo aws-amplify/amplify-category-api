@@ -8,9 +8,11 @@ export class NoopFeatureFlagProvider implements FeatureFlagProvider {
   getBoolean(featureName: string, options?: boolean): boolean {
     return this.getValue<boolean>(featureName, options);
   }
+
   getNumber(featureName: string, options?: number): number {
     return this.getValue<number>(featureName, options);
   }
+
   getObject(): object {
     // Todo: for future extensibility
     throw new Error('Not implemented');

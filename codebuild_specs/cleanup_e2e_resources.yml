@@ -9,3 +9,7 @@ phases:
   build:
     commands:
       - source ./shared-scripts.sh && _cleanupE2EResources
+artifacts:
+  files:
+    - '**/*'
+  base-directory: $CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/amplify-e2e-reports

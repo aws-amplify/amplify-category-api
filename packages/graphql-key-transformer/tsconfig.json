@@ -6,6 +6,7 @@
     "outDir": "lib"
   },
   "references": [
+    { "path": "../amplify-graphql-directives" },
     { "path": "../graphql-dynamodb-transformer" },
     { "path": "../graphql-mapping-template" },
     { "path": "../graphql-transformer-common" },

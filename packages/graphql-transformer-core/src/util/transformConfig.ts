@@ -1,11 +1,12 @@
 import * as path from 'path';
 import { Template } from 'cloudform-types';
+import _ from 'lodash';
+import { parse, Kind, ObjectTypeDefinitionNode, print, InputObjectTypeDefinitionNode, StringValueNode } from 'graphql';
+import { ApiCategorySchemaNotFoundError } from '../errors';
 import { throwIfNotJSONExt } from './fileUtils';
 import { ProjectOptions } from './amplifyUtils';
+
 const fs = require('fs-extra');
-import _ from 'lodash';
-import { parse, Kind, ObjectTypeDefinitionNode } from 'graphql';
-import { ApiCategorySchemaNotFoundError } from '../errors';
 
 export const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
 export const TRANSFORM_BASE_VERSION = 4;
@@ -50,6 +51,12 @@ export type ResolverConfig = {
     [key: string]: SyncConfig;
   };
 };
+
+type SchemaReaderConfig = {
+  amplifyType: InputObjectTypeDefinitionNode;
+  schema: string;
+};
+
 /**
  * The transform config is specified in transform.conf.json within an Amplify
  * API project directory.
@@ -163,9 +170,15 @@ interface ProjectConfiguration {
     [k: string]: Template;
   };
   config: TransformConfig;
-  modelToDatasourceMap: Map<string, DatasourceType>;
+
+  /** TODO: Remove this type when we migrate our SQL E2E tests to use the CDK construct rather than the Gen1 CLI to provision an API. This
+   * is not compatible with transformer internals. */
+  modelToDatasourceMap: Map<string, DataSourceType>;
+  /** TODO: Remove this type when we migrate our SQL E2E tests to use the CDK construct rather than the Gen1 CLI to provision an API. This
+   * is not compatible with transformer internals. */
+  customQueries: Map<string, string>;
 }
-export async function loadProject(projectDirectory: string, opts?: ProjectOptions): Promise<ProjectConfiguration> {
+export const loadProject = async (projectDirectory: string, opts?: ProjectOptions): Promise<ProjectConfiguration> => {
   // Schema
   const { schema, modelToDatasourceMap } = await readSchema(projectDirectory);
 
@@ -200,6 +213,23 @@ export async function loadProject(projectDirectory: string, opts?: ProjectOption
         const pipelineFunctionPath = path.join(pipelineFunctionDirectory, pipelineFunctionFile);
         pipelineFunctions[pipelineFunctionFile] = await fs.readFile(pipelineFunctionPath, 'utf8');
       }
+    }
+  }
+
+  // Load Custom Queries
+  const customQueries = new Map<string, string>();
+  const customQueriesDirectoryName = 'sql-statements';
+  const customQueriesDirectory = path.join(projectDirectory, customQueriesDirectoryName);
+  const customQueriesDirExists = await fs.exists(customQueriesDirectory);
+  if (customQueriesDirExists) {
+    const queryFiles = await fs.readdir(customQueriesDirectory);
+    for (const queryFile of queryFiles) {
+      if (!queryFile.endsWith('.sql')) {
+        continue;
+      }
+      const queryFileName = path.parse(queryFile).name;
+      const queryFilePath = path.join(customQueriesDirectory, queryFile);
+      customQueries.set(queryFileName, await fs.readFile(queryFilePath, 'utf8'));
     }
   }
 
@@ -251,8 +281,9 @@ export async function loadProject(projectDirectory: string, opts?: ProjectOption
     schema,
     config,
     modelToDatasourceMap,
+    customQueries,
   };
-}
+};
 
 /**
  * Given a project directory read the schema from disk. The schema may be a
@@ -260,27 +291,38 @@ export async function loadProject(projectDirectory: string, opts?: ProjectOption
  * Preference is given to the `schema.graphql` if provided.
  * @param projectDirectory The project directory.
  */
-export async function readSchema(projectDirectory: string): Promise<{ schema: string; modelToDatasourceMap: Map<string, DatasourceType> }> {
-  let modelToDatasourceMap = new Map<string, DatasourceType>();
-  const schemaFilePaths = [path.join(projectDirectory, 'schema.graphql'), path.join(projectDirectory, 'schema.rds.graphql')];
+export const readSchema = async (
+  projectDirectory: string,
+): Promise<{ schema: string; modelToDatasourceMap: Map<string, DataSourceType> }> => {
+  let modelToDatasourceMap = new Map<string, DataSourceType>();
+  const schemaFilePaths = [path.join(projectDirectory, 'schema.graphql'), path.join(projectDirectory, 'schema.sql.graphql')];
 
-  const existingSchemaFiles = schemaFilePaths.filter((path) => fs.existsSync(path));
+  const existingSchemaFiles = schemaFilePaths.filter((p) => fs.existsSync(p));
   const schemaDirectoryPath = path.join(projectDirectory, 'schema');
-
+  let amplifyInputType;
   let schema = '';
   if (!_.isEmpty(existingSchemaFiles)) {
-    // Schema.graphql contains the models for DynamoDB datasource
-    // Schema.rds.graphql contains the models for imported 'MySQL' datasource
-    // Intentionally using 'for ... of ...' instead of 'object.foreach' to process this in sequence
+    // Schema.graphql contains the models for DynamoDB datasource.
+    // Schema.sql.graphql contains the models for imported 'MYSQL' datasource.
+    // Intentionally using 'for ... of ...' instead of 'object.foreach' to process this in sequence.
     for (const file of existingSchemaFiles) {
-      const datasourceType = file.endsWith('.rds.graphql') ? constructDataSourceType('MySQL', false) : constructDataSourceType('DDB');
       const fileSchema = (await fs.readFile(file)).toString();
+      const { amplifyType, schema: fileSchemaWithoutAmplifyInput } = removeAmplifyInput(fileSchema);
+      const datasourceType = file.endsWith('.sql.graphql')
+        ? constructDataSourceType(getRDSDBTypeFromInput(amplifyType), false)
+        : constructDataSourceType('DYNAMODB');
       modelToDatasourceMap = new Map([...modelToDatasourceMap.entries(), ...constructDataSourceMap(fileSchema, datasourceType).entries()]);
-      schema += fileSchema;
+      if (amplifyType) {
+        amplifyInputType = mergeTypeFields(amplifyInputType, amplifyType);
+      }
+      schema += fileSchemaWithoutAmplifyInput;
+    }
+    if (amplifyInputType) {
+      schema = print(amplifyInputType) + schema;
     }
   } else if (fs.existsSync(schemaDirectoryPath)) {
     // Schema folder is used only for DynamoDB datasource
-    const datasourceType = constructDataSourceType('DDB');
+    const datasourceType = constructDataSourceType('DYNAMODB');
     const schemaInDirectory = (await readSchemaDocuments(schemaDirectoryPath)).join('\n');
     modelToDatasourceMap = new Map([
       ...modelToDatasourceMap.entries(),
@@ -294,7 +336,54 @@ export async function readSchema(projectDirectory: string): Promise<{ schema: st
     schema,
     modelToDatasourceMap,
   };
-}
+};
+
+const getRDSDBTypeFromInput = (amplifyType: InputObjectTypeDefinitionNode): DBType => {
+  const engineInput = amplifyType.fields.find((f) => f.name.value === 'engine');
+  if (!engineInput) {
+    throw new Error('engine is not defined in the RDS schema file');
+  }
+  const engine = (engineInput?.defaultValue as StringValueNode)?.value;
+  switch (engine) {
+    case 'mysql':
+      return 'MYSQL';
+    case 'postgres':
+      return 'POSTGRES';
+    default:
+      throw new Error(`engine ${engine} specified in the RDS schema file is not supported`);
+  }
+};
+
+export const removeAmplifyInput = (schema: string): SchemaReaderConfig => {
+  const parsedSchema = parse(schema);
+  const amplifyType = parsedSchema.definitions.find(
+    (obj) => obj.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && obj.name.value === 'AMPLIFY',
+  ) as InputObjectTypeDefinitionNode;
+  const schemaWithoutAmplifyInput = parsedSchema.definitions.filter(
+    (obj) => obj.kind !== Kind.INPUT_OBJECT_TYPE_DEFINITION || obj.name.value !== 'AMPLIFY',
+  );
+  (parsedSchema as any).definitions = schemaWithoutAmplifyInput;
+  return {
+    amplifyType,
+    schema: print(parsedSchema),
+  };
+};
+
+const mergeTypeFields = (typeA: InputObjectTypeDefinitionNode, typeB: InputObjectTypeDefinitionNode): InputObjectTypeDefinitionNode => {
+  if (!typeA && !typeB) {
+    return undefined;
+  }
+  if (!typeA || !typeB) {
+    return typeA || typeB;
+  }
+  const type = typeA as any;
+  typeB.fields.forEach((field) => {
+    if (!type.fields.find((f) => f.name.value === field.name.value)) {
+      type.fields.push(field);
+    }
+  });
+  return type;
+};
 
 async function readSchemaDocuments(schemaDirectoryPath: string): Promise<string[]> {
   const files = await fs.readdir(schemaDirectoryPath);
@@ -317,27 +406,69 @@ async function readSchemaDocuments(schemaDirectoryPath: string): Promise<string[
   return schemaDocuments;
 }
 
-export type DBType = 'MySQL' | 'DDB';
+/**
+ * Supported transformable database types. TODO: Remove this type when we migrate our SQL E2E tests to use the CDK construct rather than the
+ * Gen1 CLI to provision an API. That said, the DBType values in this type are compatible with those in `ModelDataSourceStrategyDbType`, so
+ * it's safe to use these values as-is in the transformer internals.
+ */
+export type DBType = 'DYNAMODB' | 'MYSQL' | 'POSTGRES';
 
-export interface DatasourceType {
+/**
+ * Configuration for a datasource. Defines the underlying database engine, and instructs the tranformer whether to provision the database
+ * storage or whether it already exists. TODO: Remove this type when we migrate our SQL E2E tests to use the CDK construct rather than the
+ * Gen1 CLI to provision an API. This is not compatible with transformer internals.
+ */
+export interface DataSourceType {
   dbType: DBType;
   provisionDB: boolean;
+  provisionStrategy: DataSourceProvisionStrategy;
 }
 
-function constructDataSourceType(dbType: DBType, provisionDB: boolean = true): DatasourceType {
+/** TODO: Remove this type when we migrate our SQL E2E tests to use the CDK construct rather than the Gen1 CLI to provision an API. This
+ * is not compatible with transformer internals. */
+export const enum DynamoDBProvisionStrategy {
+  /**
+   * Use default cloud formation resource of `AWS::DynamoDB::Table`
+   */
+  DEFAULT = 'DEFAULT',
+  /**
+   * Use custom resource type `Custom::AmplifyDynamoDBTable`
+   */
+  AMPLIFY_TABLE = 'AMPLIFY_TABLE',
+}
+
+/** TODO: Remove this type when we migrate our SQL E2E tests to use the CDK construct rather than the Gen1 CLI to provision an API. This
+ * is not compatible with transformer internals. */
+export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy;
+
+/** TODO: Remove this when we migrate our SQL E2E tests to use the CDK construct rather than the Gen1 CLI to provision an API. This
+ * is not compatible with transformer internals. */
+const constructDataSourceType = (
+  dbType: DBType,
+  provisionDB = true,
+  provisionStrategy = DynamoDBProvisionStrategy.DEFAULT,
+): DataSourceType => {
   return {
     dbType,
     provisionDB,
+    provisionStrategy,
   };
-}
+};
 
-function constructDataSourceMap(schema: string, datasourceType: DatasourceType): Map<string, DatasourceType> {
+/**
+ * Constructs a map of model names to datasource types for the specified schema. Used by the transformer to auto-generate a model mapping if
+ * the customer has not provided an explicit one.
+ * @param schema the annotated GraphQL schema
+ * @param datasourceType the datasource type for each model to be associated with
+ * @returns a map of model names to datasource types
+ */
+const constructDataSourceMap = (schema: string, datasourceType: DataSourceType): Map<string, DataSourceType> => {
   const parsedSchema = parse(schema);
-  const result = new Map<string, DatasourceType>();
+  const result = new Map<string, DataSourceType>();
   parsedSchema.definitions
     .filter((obj) => obj.kind === Kind.OBJECT_TYPE_DEFINITION && obj.directives.some((dir) => dir.name.value === MODEL_DIRECTIVE_NAME))
     .forEach((type) => {
       result.set((type as ObjectTypeDefinitionNode).name.value, datasourceType);
     });
   return result;
-}
+};

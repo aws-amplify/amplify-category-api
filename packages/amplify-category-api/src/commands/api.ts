@@ -1,6 +1,6 @@
+import * as path from 'path';
 import { $TSContext, AmplifyCategories } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
-import * as path from 'path';
 
 export const name = AmplifyCategories.API;
 
@@ -55,6 +55,18 @@ export const run = async (context: $TSContext) => {
     {
       name: 'override',
       description: 'Generates overrides file to apply custom modifications to CloudFormation',
+    },
+    {
+      name: 'import',
+      description: 'Imports existing datasource to GraphQL API',
+    },
+    {
+      name: 'generate-schema',
+      description: 'Generates the GraphQL schema from the Data Source',
+    },
+    {
+      name: 'update-secrets',
+      description: 'Updates the API plugin related secrets',
     },
   ];
 

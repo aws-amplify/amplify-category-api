@@ -1,19 +1,18 @@
+import * as fs from 'fs';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
-import * as fs from 'fs';
-import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import { default as S3 } from 'aws-sdk/clients/s3';
-import { CreateBucketRequest } from 'aws-sdk/clients/s3';
+import { default as S3, CreateBucketRequest } from 'aws-sdk/clients/s3';
 import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { default as moment } from 'moment';
 import { GraphQLClient } from '../GraphQLClient';
 import { S3Client } from '../S3Client';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
-import { default as moment } from 'moment';
+import { CloudFormationClient } from '../CloudFormationClient';
 import {
   createUserPool,
   createUserPoolClient,
@@ -27,6 +26,7 @@ import 'isomorphic-fetch';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
+
 import { resolveTestRegion } from '../testSetup';
 
 const region = resolveTestRegion();
@@ -241,7 +241,7 @@ afterAll(async () => {
 /**
  * Tests
  */
-test('Test creating a post and immediately view it via the User.posts connection.', async () => {
+test('creating a post and immediately view it via the User.posts connection.', async () => {
   const createUser1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createUser(input: { id: "user1@test.com" }) {
@@ -332,7 +332,7 @@ test('Testing reading an owner protected field as a non owner', async () => {
   expect(response3.data.getFieldProtected.ownerOnly).toEqual('owner-protected');
 });
 
-test('Test that @connection resolvers respect @model read operations.', async () => {
+test('that @connection resolvers respect @model read operations.', async () => {
   const response1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createOpenTopLevel(input: { id: "1", owner: "${USERNAME1}", name: "open" }) {
@@ -400,7 +400,7 @@ test('Test that @connection resolvers respect @model read operations.', async ()
 });
 
 // Per field auth in mutations
-test('Test that owners cannot set the field of a FieldProtected object unless authorized.', async () => {
+test('that owners cannot set the field of a FieldProtected object unless authorized.', async () => {
   const response1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createFieldProtected(input: { id: "2", owner: "${USERNAME1}", ownerOnly: "owner-protected" }) {
@@ -448,7 +448,7 @@ test('Test that owners cannot set the field of a FieldProtected object unless au
   expect(response3.errors).toHaveLength(1);
 });
 
-test('Test that owners cannot update the field of a FieldProtected object unless authorized.', async () => {
+test('that owners cannot update the field of a FieldProtected object unless authorized.', async () => {
   const response1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createFieldProtected(input: { owner: "${USERNAME1}", ownerOnly: "owner-protected" }) {

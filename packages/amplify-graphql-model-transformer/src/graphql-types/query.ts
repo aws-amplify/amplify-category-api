@@ -2,6 +2,7 @@ import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/grap
 import { InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { FieldWrapper, ObjectDefinitionWrapper } from '@aws-amplify/graphql-transformer-core';
 import { makeConditionFilterInput, makeSubscriptionFilterInput } from './common';
+
 export const makeListQueryFilterInput = (
   ctx: TransformerTransformSchemaStepContextProvider,
   name: string,

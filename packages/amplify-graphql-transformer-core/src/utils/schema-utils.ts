@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { ModelDataSourceStrategyDbType, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
-import { ListValueNode, ObjectTypeDefinitionNode, StringValueNode } from 'graphql';
-import { ModelResourceIDs } from 'graphql-transformer-common';
+import { ListValueNode, ObjectTypeDefinitionNode, StringValueNode, TypeNode } from 'graphql';
+import { ModelResourceIDs, getBaseType } from 'graphql-transformer-common';
+import { getModelDataSourceStrategy } from './model-datasource-strategy-utils';
 
 /**
  * getKeySchema
@@ -46,4 +47,13 @@ export const getSortKeyFieldNames = (type: ObjectTypeDefinitionNode): string[] =
   });
 
   return sortKeyFieldNames;
+};
+
+/**
+ * Get ModelDataSourceStrategyDbType from the transformer context
+ */
+export const getStrategyDbTypeFromTypeNode = (type: TypeNode, ctx: TransformerContextProvider): ModelDataSourceStrategyDbType => {
+  const baseTypeName = getBaseType(type);
+  const strategy = getModelDataSourceStrategy(ctx, baseTypeName);
+  return strategy.dbType;
 };

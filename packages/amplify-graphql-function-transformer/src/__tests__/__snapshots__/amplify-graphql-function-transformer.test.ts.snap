@@ -53,3 +53,38 @@ $util.toJson($ctx.result)
   "Query.echo.res.vtl": "$util.toJson($ctx.prev.result)",
 }
 `;
+
+exports[`includes auth info in stash 1`] = `
+Object {
+  "Fn::Join": Array [
+    "",
+    Array [
+      "## [Start] Stash resolver specific context.. **
+$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
+$util.qr($ctx.stash.put(\\"fieldName\\", \\"myFunction\\"))
+$util.qr($ctx.stash.put(\\"authRole\\", \\"arn:aws:sts::",
+      Object {
+        "Ref": "AWS::AccountId",
+      },
+      ":assumed-role/",
+      Object {
+        "Ref": "referencetotransformerrootstackauthRoleNameFB872D50Ref",
+      },
+      "/CognitoIdentityCredentials\\"))
+$util.qr($ctx.stash.put(\\"unauthRole\\", \\"arn:aws:sts::",
+      Object {
+        "Ref": "AWS::AccountId",
+      },
+      ":assumed-role/",
+      Object {
+        "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef",
+      },
+      "/CognitoIdentityCredentials\\"))
+$util.qr($ctx.stash.put(\\"identityPoolId\\", \\"fake-test-id\\"))
+$util.qr($ctx.stash.put(\\"adminRoles\\", [\\"fake-test-role\\"]))
+{}
+## [End] Stash resolver specific context.. **",
+    ],
+  ],
+}
+`;

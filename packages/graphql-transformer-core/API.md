@@ -10,7 +10,6 @@ import { Condition } from 'cloudform-types/types/dataTypes';
 import { ConditionIntrinsicFunction } from 'cloudform-types';
 import { default as default_2 } from 'cloudform-types/types/dynamoDb/table';
 import { default as default_3 } from 'cloudform-types/types/iam/role';
-import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import { Diff as Diff_2 } from 'deep-diff';
 import { DirectiveDefinitionNode } from 'graphql';
 import { DirectiveNode } from 'graphql';
@@ -34,10 +33,8 @@ import { Readable } from 'stream';
 import Resource from 'cloudform-types/types/resource';
 import { ScalarTypeDefinitionNode } from 'graphql';
 import { SchemaDefinitionNode } from 'graphql';
-import { StackMapping as StackMapping_3 } from '@aws-amplify/graphql-transformer-interfaces';
 import Template from 'cloudform-types/types/template';
-import { Template as Template_2 } from 'cloudform-types';
-import { Template as Template_3 } from '@aws-amplify/graphql-transformer-interfaces';
+import { Template as Template_3 } from 'cloudform-types';
 import { TypeDefinitionNode } from 'graphql';
 import { TypeSystemDefinitionNode } from 'graphql';
 import { UnionTypeDefinitionNode } from 'graphql';
@@ -55,13 +52,13 @@ export class ApiCategorySchemaNotFoundError extends Error {
 // @public (undocumented)
 export function buildAPIProject(opts: ProjectOptions): Promise<{
     resolvers: Record<string, string>;
-    stacks: Record<string, Template_3>;
-    stackMapping: StackMapping_3;
+    stacks: Record<string, Template_4>;
+    stackMapping: StackMapping_4;
     pipelineFunctions: Record<string, string>;
     functions: Record<string, string>;
     schema: string;
     userOverriddenSlots: string[];
-    rootStack: Template_3;
+    rootStack: Template_4;
 }>;
 
 // Warning: (ae-forgotten-export) The symbol "DiffableProject" needs to be exported by the entry point index.d.ts
@@ -115,17 +112,27 @@ export const enum ConflictHandlerType {
 }
 
 // @public (undocumented)
-export interface DatasourceType {
+export type DataSourceProvisionStrategy = DynamoDBProvisionStrategy;
+
+// @public (undocumented)
+export interface DataSourceType {
     // (undocumented)
     dbType: DBType;
     // (undocumented)
     provisionDB: boolean;
+    // (undocumented)
+    provisionStrategy: DataSourceProvisionStrategy;
 }
 
 // @public (undocumented)
-export type DBType = 'MySQL' | 'DDB';
+export type DBType = 'DYNAMODB' | 'MYSQL' | 'POSTGRES';
 
-export { DeploymentResources }
+// Warning: (ae-forgotten-export) The symbol "ResolversFunctionsAndSchema" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "NestedStacks" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export interface DeploymentResources extends ResolversFunctionsAndSchema, NestedStacks {
+}
 
 // @public (undocumented)
 export class DestructiveMigrationError extends Error {
@@ -136,6 +143,14 @@ export class DestructiveMigrationError extends Error {
 
 // @public (undocumented)
 export type DiffRule = (diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject) => void;
+
+// @public (undocumented)
+export const enum DynamoDBProvisionStrategy {
+    // (undocumented)
+    AMPLIFY_TABLE = "AMPLIFY_TABLE",
+    // (undocumented)
+    DEFAULT = "DEFAULT"
+}
 
 // @public (undocumented)
 export interface FeatureFlagProvider {
@@ -263,7 +278,7 @@ export { loadConfig as readTransformerConfiguration }
 // Warning: (ae-forgotten-export) The symbol "ProjectConfiguration" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-function loadProject(projectDirectory: string, opts?: ProjectOptions): Promise<ProjectConfiguration>;
+const loadProject: (projectDirectory: string, opts?: ProjectOptions) => Promise<ProjectConfiguration>;
 export { loadProject }
 export { loadProject as readProjectConfiguration }
 
@@ -292,12 +307,17 @@ export const PARAMETERS_FILE_NAME = "parameters.json";
 export type ProjectRule = (diffs: Diff[], currentBuild: DiffableProject, nextBuild: DiffableProject) => void;
 
 // @public (undocumented)
-function readSchema(projectDirectory: string): Promise<{
+const readSchema: (projectDirectory: string) => Promise<{
     schema: string;
-    modelToDatasourceMap: Map<string, DatasourceType>;
+    modelToDatasourceMap: Map<string, DataSourceType>;
 }>;
 export { readSchema as readProjectSchema }
 export { readSchema }
+
+// Warning: (ae-forgotten-export) The symbol "SchemaReaderConfig" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export const removeAmplifyInput: (schema: string) => SchemaReaderConfig;
 
 // @public (undocumented)
 export type ResolverConfig = {
@@ -595,12 +615,17 @@ export class UnknownDirectiveError extends Error {
 // Warning: (ae-forgotten-export) The symbol "UploadOptions" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export function uploadAPIProject(opts: UploadOptions): Promise<void>;
+export const uploadAPIProject: (opts: UploadOptions) => Promise<void>;
 
 // @public (undocumented)
 function writeConfig(projectDir: string, config: TransformConfig): Promise<TransformConfig>;
 export { writeConfig }
 export { writeConfig as writeTransformerConfiguration }
+
+// Warnings were encountered during analysis:
+//
+// src/util/amplifyUtils.ts:49:56 - (ae-forgotten-export) The symbol "Template_4" needs to be exported by the entry point index.d.ts
+// src/util/amplifyUtils.ts:52:3 - (ae-forgotten-export) The symbol "StackMapping_4" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

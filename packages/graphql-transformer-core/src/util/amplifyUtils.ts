@@ -1,13 +1,13 @@
-import * as fs from 'fs-extra';
 import * as path from 'path';
-import glob from 'glob';
+import * as fs from 'fs-extra';
+import * as glob from 'glob';
 import { CloudFormation, Fn, Template } from 'cloudform-types';
-import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
-import { GraphQLTransform, StackMapping } from '../GraphQLTransform';
 import { ResourceConstants } from 'graphql-transformer-common';
+import { DeploymentResources } from '../deployment-resources';
+import { GraphQLTransform, StackMapping } from '../GraphQLTransform';
+import { FeatureFlagProvider } from '../FeatureFlags';
 import { readFromPath, writeToPath, throwIfNotJSONExt, emptyDirectory, handleFile, FileHandler } from './fileUtils';
 import { writeConfig, TransformConfig, TransformMigrationConfig, loadProject, readSchema, loadConfig } from './transformConfig';
-import { FeatureFlagProvider } from '../FeatureFlags';
 import {
   cantAddAndRemoveGSIAtSameTimeRule,
   getCantAddLSILaterRule,
@@ -190,13 +190,13 @@ async function ensureMissingStackMappings(config: ProjectOptions) {
       const lastDeployedStack = JSON.parse(copyOfCloudBackend.build[config.rootStackFileName]);
       const resourceIdsInStack = Object.keys(lastDeployedStack.Resources);
       for (const resourceId of resourceIdsInStack) {
-        if (stackMapping[resourceId] && 'root' !== stackMapping[resourceId]) {
+        if (stackMapping[resourceId] && stackMapping[resourceId] !== 'root') {
           missingStackMappings[resourceId] = 'root';
         }
       }
       const outputIdsInStack = Object.keys(lastDeployedStack.Outputs || {});
       for (const outputId of outputIdsInStack) {
-        if (stackMapping[outputId] && 'root' !== stackMapping[outputId]) {
+        if (stackMapping[outputId] && stackMapping[outputId] !== 'root') {
           missingStackMappings[outputId] = 'root';
         }
       }
@@ -343,9 +343,9 @@ export interface UploadOptions {
  * Reads deployment assets from disk and uploads to the cloud via an uploader.
  * @param opts Deployment options.
  */
-export async function uploadDeployment(opts: UploadOptions) {
+export const uploadDeployment = async (opts: UploadOptions): Promise<void> => {
   if (!opts.directory) {
-    throw new Error(`You must provide a 'directory'`);
+    throw new Error("You must provide a 'directory'");
   }
 
   if (!fs.existsSync(opts.directory)) {
@@ -353,15 +353,12 @@ export async function uploadDeployment(opts: UploadOptions) {
   }
 
   if (!opts.upload || typeof opts.upload !== 'function') {
-    throw new Error(`You must provide an 'upload' function`);
+    throw new Error("You must provide an 'upload' function");
   }
 
   const { directory, upload } = opts;
 
-  var fileNames = glob.sync('**/*', {
-    cwd: directory,
-    nodir: true,
-  });
+  const fileNames = getS3KeyNamesFromDirectory(directory);
 
   const uploadPromises = fileNames.map(async (fileName) => {
     const resourceContent = fs.createReadStream(path.join(directory, fileName));
@@ -370,7 +367,30 @@ export async function uploadDeployment(opts: UploadOptions) {
   });
 
   await Promise.all(uploadPromises);
-}
+};
+
+/**
+ * Generate the S3 keys for the files under the given directory
+ * @param directory path of directory
+ * @returns array of keys for S3 upload
+ */
+export const getS3KeyNamesFromDirectory = (directory: string): string[] => {
+  const fileNames = glob.sync('**/*', {
+    cwd: directory,
+    nodir: true,
+    /**
+     * Return / delimited paths, even on Windows.
+     * On posix systems, this has no effect.
+     * But, on Windows, it means that paths will be / delimited, and absolute paths will be their full resolved UNC forms,
+     * eg instead of 'C:\\foo\\bar', it would return '//?/C:/foo/bar'
+     *
+     * For Amplify CLI usage, this flag is required for `glob` version GREATER THAN 7.2.0
+     * The backslash "\" will be generated in the S3 key without it, which causes the wrong S3 path URI when the files are upload to S3
+     */
+    posix: true,
+  });
+  return fileNames;
+};
 
 /**
  * Writes a deployment to disk at a path.
@@ -600,7 +620,7 @@ async function updateToIntermediateProject(projectDirectory: string, project: Am
         }
         break;
       }
-      case 'AWS::AppSync::GraphQLSchema':
+      case 'AWS::AppSync::GraphQLSchema': {
         const alteredResource = { ...resource };
         alteredResource.Properties.DefinitionS3Location = {
           'Fn::Sub': [
@@ -617,6 +637,7 @@ async function updateToIntermediateProject(projectDirectory: string, project: Am
         };
         filteredResources[key] = alteredResource;
         break;
+      }
       default:
         break; // Everything else will live in a nested stack.
     }

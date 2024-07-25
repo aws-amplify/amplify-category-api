@@ -44,17 +44,17 @@ const featureFlags = {
  * We test this schema with the same set of rules multiple times. This protects against a subtle bug in the stack mapping
  * that caused the order to impact the stack that a resource got mapped to.
  */
-test('Test that every resource exists in the correct stack given a complex schema with overlapping names.', () => {
+test('that every resource exists in the correct stack given a complex schema with overlapping names.', () => {
   const schema = [userType, userPostType, postType].join('\n');
   transpileAndCheck(schema);
 });
 
-test('Test that every resource exists in the correct stack given a complex schema with overlapping names. Rotation 1.', () => {
+test('that every resource exists in the correct stack given a complex schema with overlapping names. Rotation 1.', () => {
   const schema = [userPostType, postType, userType].join('\n');
   transpileAndCheck(schema);
 });
 
-test('Test that every resource exists in the correct stack given a complex schema with overlapping names. Rotation 2.', () => {
+test('that every resource exists in the correct stack given a complex schema with overlapping names. Rotation 2.', () => {
   const schema = [postType, userType, userPostType].join('\n');
   transpileAndCheck(schema);
 });

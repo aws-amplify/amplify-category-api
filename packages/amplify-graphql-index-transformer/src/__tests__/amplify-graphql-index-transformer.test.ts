@@ -1,15 +1,39 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import {
   ConflictHandlerType,
-  GraphQLTransform,
-  SyncConfig,
+  constructDataSourceStrategies,
+  DDB_DB_TYPE,
+  DDB_DEFAULT_DATASOURCE_STRATEGY,
+  MYSQL_DB_TYPE,
   validateModelSchema,
-  StackManager,
 } from '@aws-amplify/graphql-transformer-core';
-import { Template, AmplifyApiGraphQlResourceStackTemplate } from '@aws-amplify/graphql-transformer-interfaces';
 import { Template as AssertionTemplate } from 'aws-cdk-lib/assertions';
-import { DocumentNode, parse } from 'graphql';
+import { DocumentNode, InputObjectTypeDefinitionNode, parse } from 'graphql';
+import {
+  AmplifyApiGraphQlResourceStackTemplate,
+  mockSqlDataSourceStrategy,
+  Template,
+  testTransform,
+} from '@aws-amplify/graphql-transformer-test-utils';
+import { Construct } from 'constructs';
 import { IndexTransformer, PrimaryKeyTransformer } from '..';
+import * as resolverUtils from '../resolvers/resolvers';
+
+test('throws if index name is invalid', () => {
+  const schema = `
+    type Test @model {
+      id: ID! @index(name: "Canary/$")
+    }`;
+
+  expect(() =>
+    testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+    }),
+  ).toThrow(
+    'The indexName is invalid. It should be between 3 and 255 characters. Only A–Z, a–z, 0–9, underscore characters, hyphens, and periods allowed.',
+  );
+});
 
 test('throws if @index is used in a non-@model type', () => {
   const schema = `
@@ -17,13 +41,12 @@ test('throws if @index is used in a non-@model type', () => {
       id: ID! @index(name: "index1")
     }`;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new IndexTransformer()],
-  });
-
-  expect(() => {
-    transformer.transform(schema);
-  }).toThrow('The @index directive may only be added to object definitions annotated with @model.');
+  expect(() =>
+    testTransform({
+      schema,
+      transformers: [new IndexTransformer()],
+    }),
+  ).toThrow('The @index directive may only be added to object definitions annotated with @model.');
 });
 
 test('throws if the same index name is defined multiple times on an object', () => {
@@ -33,13 +56,12 @@ test('throws if the same index name is defined multiple times on an object', () 
       email: String! @index(name: "index1")
     }`;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer()],
-  });
-
-  expect(() => {
-    transformer.transform(schema);
-  }).toThrow("You may only supply one @index with the name 'index1' on type 'Test'.");
+  expect(() =>
+    testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+    }),
+  ).toThrow("You may only supply one @index with the name 'index1' on type 'Test'.");
 });
 
 test('throws if an invalid LSI is created', () => {
@@ -54,20 +76,22 @@ test('throws if an invalid LSI is created', () => {
     foo: ID!
   }`;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer(), new PrimaryKeyTransformer()],
-  });
-
   const sortKeyFieldsError =
     "Invalid @index 'index1'. You may not create an index where the partition key is the same as that of the primary key unless the primary key has a sort field. You cannot have a local secondary index without a sort key in the primary key.";
 
-  expect(() => {
-    transformer.transform(schema);
-  }).toThrow(sortKeyFieldsError);
+  expect(() =>
+    testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new IndexTransformer(), new PrimaryKeyTransformer()],
+    }),
+  ).toThrow(sortKeyFieldsError);
 
-  expect(() => {
-    transformer.transform(schemaEmptySortKeyFields);
-  }).toThrow(sortKeyFieldsError);
+  expect(() =>
+    testTransform({
+      schema: schemaEmptySortKeyFields,
+      transformers: [new ModelTransformer(), new IndexTransformer(), new PrimaryKeyTransformer()],
+    }),
+  ).toThrow(sortKeyFieldsError);
 });
 
 test('throws if an LSI is missing sort fields', () => {
@@ -89,27 +113,38 @@ test('throws if an LSI is missing sort fields', () => {
       foo: ID!
     }`;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    transformParameters: {
-      secondaryKeyAsGSI: false,
-    },
-  });
-
   const sortKeyFieldsError =
     "Invalid @index 'index1'. You may not create an index where the partition key is the same as that of the primary key unless the index has a sort field. You cannot have a local secondary index without a sort key in the index.";
 
-  expect(() => {
-    transformer.transform(schema);
-  }).toThrow(sortKeyFieldsError);
+  expect(() =>
+    testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
+      transformParameters: {
+        secondaryKeyAsGSI: false,
+      },
+    }),
+  ).toThrow(sortKeyFieldsError);
 
-  expect(() => {
-    transformer.transform(schemaInverted);
-  }).toThrow(sortKeyFieldsError);
+  expect(() =>
+    testTransform({
+      schema: schemaInverted,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
+      transformParameters: {
+        secondaryKeyAsGSI: false,
+      },
+    }),
+  ).toThrow(sortKeyFieldsError);
 
-  expect(() => {
-    transformer.transform(schemaEmptySortKeyFields);
-  }).toThrow(sortKeyFieldsError);
+  expect(() =>
+    testTransform({
+      schema: schemaEmptySortKeyFields,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
+      transformParameters: {
+        secondaryKeyAsGSI: false,
+      },
+    }),
+  ).toThrow(sortKeyFieldsError);
 });
 
 test('throws if @index is used on a non-scalar field', () => {
@@ -123,13 +158,12 @@ test('throws if @index is used on a non-scalar field', () => {
       email: String
     }`;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer()],
-  });
-
-  expect(() => {
-    transformer.transform(schema);
-  }).toThrow("Index 'wontwork' on type 'Test.id' cannot be a non-scalar.");
+  expect(() =>
+    testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+    }),
+  ).toThrow("Index 'wontwork' on type 'Test.id' cannot be a non-scalar.");
 });
 
 test('throws if @index uses a sort key field that does not exist', () => {
@@ -139,13 +173,12 @@ test('throws if @index uses a sort key field that does not exist', () => {
       email: String
     }`;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer()],
-  });
-
-  expect(() => {
-    transformer.transform(schema);
-  }).toThrow("Can't find field 'doesnotexist' in Test, but it was specified in index 'wontwork'.");
+  expect(() =>
+    testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+    }),
+  ).toThrow("Can't find field 'doesnotexist' in Test, but it was specified in index 'wontwork'.");
 });
 
 test('throws if @index uses a sort key field that is a non-scalar', () => {
@@ -159,13 +192,12 @@ test('throws if @index uses a sort key field that is a non-scalar', () => {
       email: NonScalar
     }`;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer()],
-  });
-
-  expect(() => {
-    transformer.transform(schema);
-  }).toThrow("The sort key of index 'wontwork' on type 'Test.email' cannot be a non-scalar.");
+  expect(() =>
+    testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+    }),
+  ).toThrow("The sort key of index 'wontwork' on type 'Test.email' cannot be a non-scalar.");
 });
 
 test('throws if @index refers to itself', () => {
@@ -175,13 +207,12 @@ test('throws if @index refers to itself', () => {
       email: String
     }`;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer()],
-  });
-
-  expect(() => {
-    transformer.transform(schema);
-  }).toThrow("@index field 'id' cannot reference itself.");
+  expect(() =>
+    testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+    }),
+  ).toThrow("@index field 'id' cannot reference itself.");
 });
 
 test('throws if @index is specified on a list', () => {
@@ -191,13 +222,12 @@ test('throws if @index is specified on a list', () => {
       email: String
     }`;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer()],
-  });
-
-  expect(() => {
-    transformer.transform(schema);
-  }).toThrow("Index 'GSI' on type 'Test.strings' cannot be a non-scalar.");
+  expect(() =>
+    testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+    }),
+  ).toThrow("Index 'GSI' on type 'Test.strings' cannot be a non-scalar.");
 });
 
 test('throws if @index sort key fields are a list', () => {
@@ -208,13 +238,12 @@ test('throws if @index sort key fields are a list', () => {
       email: String
     }`;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer()],
-  });
-
-  expect(() => {
-    transformer.transform(schema);
-  }).toThrow("The sort key of index 'GSI' on type 'Test.strings' cannot be a non-scalar.");
+  expect(() =>
+    testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+    }),
+  ).toThrow("The sort key of index 'GSI' on type 'Test.strings' cannot be a non-scalar.");
 });
 
 test('@index with multiple sort keys adds a query field and GSI correctly', () => {
@@ -224,10 +253,10 @@ test('@index with multiple sort keys adds a query field and GSI correctly', () =
       kind: Int!
       date: AWSDateTime!
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new IndexTransformer()],
   });
-  const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
   const stack = out.stacks.Test;
 
@@ -308,10 +337,10 @@ test('@index with a single sort key adds a query field and GSI correctly', () =>
       category: String! @index(name: "CategoryGSI", sortKeyFields: ["createdAt"], queryField: "testsByCategory")
       description: String
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new IndexTransformer()],
   });
-  const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
   const stack = out.stacks.Test;
 
@@ -372,10 +401,10 @@ test('@index with no sort key field adds a query field and GSI correctly', () =>
       id: ID!
       email: String! @index(name: "GSI_Email", queryField: "testsByEmail")
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new IndexTransformer()],
   });
-  const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
   const stack = out.stacks.Test;
 
@@ -431,13 +460,13 @@ test('@index with no queryField does not generate a query field', () => {
       id: ID!
       email: String! @index(name: "GSI_Email")
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new IndexTransformer()],
     transformParameters: {
       enableAutoIndexQueryNames: false,
     },
   });
-  const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
 
   validateModelSchema(schema);
@@ -457,10 +486,10 @@ test('creates a primary key and a secondary index', () => {
       category: String! @index(name: "CategoryGSI", sortKeyFields: ["createdAt"], queryField: "testsByCategory")
       description: String
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
   });
-  const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
   const stack = out.stacks.Test;
 
@@ -532,10 +561,10 @@ test('connection type is generated for custom query when queries is set to null'
       type: String!
       language: String!
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new IndexTransformer()],
   });
-  const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
 
   validateModelSchema(schema);
@@ -555,10 +584,10 @@ test('does not remove default primary key when primary key is not overidden', ()
       createdAt: AWSDateTime!
     }
   `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new IndexTransformer()],
   });
-  const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
 
   validateModelSchema(schema);
@@ -578,10 +607,10 @@ test('sort direction and filter input are generated if default list query does n
       description: String
       createdAt: AWSDateTime @index(name: "byCreatedAt", queryField: "byCreatedAt")
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new IndexTransformer()],
   });
-  const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
 
   validateModelSchema(schema);
@@ -592,6 +621,53 @@ test('sort direction and filter input are generated if default list query does n
   expect(todoInputType).toBeDefined();
 });
 
+test('enum input types within the filter input are generated if default list query does not exist', () => {
+  const inputSchema = `
+    type Todo @model(queries: { get: "getTodo", list: null }) {
+      id: ID!
+      description: String
+      createdAt: AWSDateTime @index(name: "byCreatedAt", queryField: "byCreatedAt")
+      status: Status!
+      statusList: [Status!]
+    }
+    enum Status {
+      progress
+      completed
+      rejected
+    }
+  `;
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new IndexTransformer()],
+  });
+  const schema = parse(out.schema);
+
+  validateModelSchema(schema);
+
+  const todoInputType = schema.definitions.find(
+    (d: any) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'ModelTodoFilterInput',
+  );
+  expect(todoInputType).toBeDefined();
+  const enumInputType = schema.definitions.find(
+    (d: any) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'ModelStatusInput',
+  ) as InputObjectTypeDefinitionNode;
+  expect(enumInputType).toBeDefined();
+  const enumInputTypeFields = enumInputType.fields;
+  expect(enumInputTypeFields).toBeDefined();
+  expect(enumInputTypeFields?.length).toBe(2);
+  const enumInputTypeFieldNames = enumInputTypeFields?.map((f) => f.name.value);
+  expect(enumInputTypeFieldNames).toEqual(['eq', 'ne']);
+  const enumInputListType = schema.definitions.find(
+    (d: any) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'ModelStatusListInput',
+  ) as InputObjectTypeDefinitionNode;
+  expect(enumInputListType).toBeDefined();
+  const enumInputListTypeFields = enumInputListType.fields;
+  expect(enumInputListTypeFields).toBeDefined();
+  expect(enumInputListTypeFields?.length).toBe(4);
+  const enumInputListTypeFieldNames = enumInputListTypeFields?.map((f) => f.name.value);
+  expect(enumInputListTypeFieldNames).toEqual(['eq', 'ne', 'contains', 'notContains']);
+});
+
 test('@index adds an LSI with secondaryKeyAsGSI FF set to false', () => {
   const inputSchema = `
     type Test @model {
@@ -599,13 +675,13 @@ test('@index adds an LSI with secondaryKeyAsGSI FF set to false', () => {
       createdAt: AWSDateTime!
       updatedAt: AWSDateTime!
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
     transformParameters: {
       secondaryKeyAsGSI: false,
     },
   });
-  const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
   const stack = out.stacks.Test;
 
@@ -646,10 +722,10 @@ test('@index adds a GSI with secondaryKeyAsGSI FF set to true', () => {
       createdAt: AWSDateTime!
       updatedAt: AWSDateTime!
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
   });
-  const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
   const stack = out.stacks.Test;
 
@@ -694,10 +770,10 @@ test('validate resolver code', () => {
     enum Status {
       DELIVERED IN_TRANSIT PENDING UNKNOWN
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
   });
-  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   expect(out.resolvers).toMatchSnapshot();
   validateModelSchema(parse(out.schema));
@@ -722,10 +798,10 @@ it('@model mutation with user defined null args', () => {
     input DeleteCallInput {
       receiverId: ID!
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
   });
-  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
 
@@ -757,10 +833,10 @@ it('@model mutation with user defined create args', () => {
     input DeleteCallInput {
       receiverId: ID!
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
   });
-  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
 
@@ -792,10 +868,11 @@ it('@model mutation with default', () => {
     input DeleteCallInput {
       receiverId: ID!
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
   });
-  const out = transformer.transform(inputSchema);
+
   expect(out).toBeDefined();
   const schema = parse(out.schema);
 
@@ -837,10 +914,11 @@ it('@model mutation with queries', () => {
     input DeleteCallInput {
       receiverId: ID!
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
   });
-  const out = transformer.transform(inputSchema);
+
   expect(out).toBeDefined();
   const schema = parse(out.schema);
 
@@ -882,10 +960,11 @@ it('id field should be optional in updateInputObjects when it is not a primary k
       createdAt: AWSDateTime!
     }
   `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
   });
-  const out = transformer.transform(inputSchema);
+
   expect(out).toBeDefined();
   const schema = parse(out.schema);
 
@@ -912,10 +991,11 @@ test('GSI composite sort keys are wrapped in conditional to check presence in mu
       age: Int
     }
   `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
   });
-  const out = transformer.transform(inputSchema);
+
   expect(out).toBeDefined();
   const schema = parse(out.schema);
 
@@ -937,19 +1017,17 @@ it('should support index/primary key with sync resolvers', () => {
     }
   `;
 
-  const config: SyncConfig = {
-    ConflictDetection: 'VERSION',
-    ConflictHandler: ConflictHandlerType.AUTOMERGE,
-  };
-
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
     resolverConfig: {
-      project: config,
+      project: {
+        ConflictDetection: 'VERSION',
+        ConflictHandler: ConflictHandlerType.AUTOMERGE,
+      },
     },
   });
 
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
 
   const definition = out.schema;
@@ -968,19 +1046,17 @@ it('sync query resolver renders without overrides', () => {
     }
   `;
 
-  const config: SyncConfig = {
-    ConflictDetection: 'VERSION',
-    ConflictHandler: ConflictHandlerType.AUTOMERGE,
-  };
-
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
     resolverConfig: {
-      project: config,
+      project: {
+        ConflictDetection: 'VERSION',
+        ConflictHandler: ConflictHandlerType.AUTOMERGE,
+      },
     },
   });
 
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
 
   const expectedSyncDeltaSyncTtlConfig = '#set( $minLastSync = $util.time.nowEpochMilliSeconds() - 1800000 )';
@@ -1001,19 +1077,18 @@ it('sync query resolver renders with deltaSyncTableTTL override', () => {
     }
   `;
 
-  const config: SyncConfig = {
-    ConflictDetection: 'VERSION',
-    ConflictHandler: ConflictHandlerType.AUTOMERGE,
-  };
-
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new ModelTransformer(), new IndexTransformer(), new PrimaryKeyTransformer()],
     resolverConfig: {
-      project: config,
+      project: {
+        ConflictDetection: 'VERSION',
+        ConflictHandler: ConflictHandlerType.AUTOMERGE,
+      },
     },
     overrideConfig: {
       overrideFlag: true,
-      applyOverride: (stackManager: StackManager) =>
+      applyOverride: (_: Construct) =>
         ({
           models: {
             Song: {
@@ -1030,7 +1105,6 @@ it('sync query resolver renders with deltaSyncTableTTL override', () => {
     },
   });
 
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
 
   const expectedSyncDeltaSyncTtlConfig = '#set( $minLastSync = $util.time.nowEpochMilliSeconds() - 900000 )';
@@ -1049,11 +1123,11 @@ test('LSI creation regression test', () => {
       index: ID! @index(name: "index1", sortKeyFields: ["id"])
     }`;
 
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new IndexTransformer(), new PrimaryKeyTransformer()],
   });
 
-  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -1066,13 +1140,12 @@ test('it throws an understandable error on boolean sort keys', () => {
     completed: Boolean!
   }`;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer(), new PrimaryKeyTransformer()],
-  });
-
-  expect(() => {
-    transformer.transform(inputSchema);
-  }).toThrowErrorMatchingInlineSnapshot('"Sort Key Condition could not be constructed for field \'completed\'"');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new IndexTransformer(), new PrimaryKeyTransformer()],
+    }),
+  ).toThrowErrorMatchingInlineSnapshot('"Sort Key Condition could not be constructed for field \'completed\'"');
 });
 
 describe('automatic name generation', () => {
@@ -1081,13 +1154,13 @@ describe('automatic name generation', () => {
     modelName: string,
     inputSchema: string,
   ): { schema: DocumentNode; stack: Template } => {
-    const transformer = new GraphQLTransform({
+    const transformerOutput = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer(), new IndexTransformer()],
       transformParameters: {
         enableAutoIndexQueryNames,
       },
     });
-    const transformerOutput = transformer.transform(inputSchema);
     const schema = parse(transformerOutput.schema);
     validateModelSchema(schema);
     return { schema, stack: transformerOutput.stacks[modelName] };
@@ -1309,5 +1382,228 @@ describe('automatic name generation', () => {
     const errorMessage = 'Explicit null value not allowed for name field on @index';
     expect(() => transform(true, modelName, schema)).toThrow(errorMessage);
     expect(() => transform(false, modelName, schema)).toThrow(errorMessage);
+  });
+});
+
+describe('Index query resolver creation', () => {
+  const schema = /* GrahphQL */ `
+      type Test @model {
+        category: String! @index(name: null)
+      }
+    `;
+
+  const mysqlStrategy = mockSqlDataSourceStrategy();
+
+  const dataSourceStrategies = constructDataSourceStrategies(schema, mysqlStrategy);
+
+  const modelName = 'Test';
+  const mockResolver = {
+    addToSlot: jest.fn(),
+    setScope: jest.fn(),
+  };
+  const mockModelFieldMap = {
+    getMappedFields: jest.fn(),
+    addResolverReference: jest.fn(),
+  };
+  const mockConfig = {
+    name: 'byUsername',
+    object: { name: { value: modelName } },
+    queryField: 'queryByUsername',
+  };
+  let mockContext: any;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockContext = constructMockContext();
+  });
+
+  it('sets appropriate resolver reference if field mappings are present for a RDS model', () => {
+    mockContext.dataSourceStrategies = dataSourceStrategies;
+    mockContext.api.host.getDataSource.mockReturnValue({});
+    mockModelFieldMap.getMappedFields.mockReturnValue([{ details: 'description' }]);
+    resolverUtils.makeQueryResolver(mockConfig as any, mockContext as any, MYSQL_DB_TYPE);
+
+    expect(mockContext.resolvers.addResolver).toBeCalledWith('Query', 'queryByUsername', mockResolver);
+    expect(mockModelFieldMap.addResolverReference).toBeCalledWith({
+      typeName: 'Query',
+      fieldName: 'queryByUsername',
+      isList: false,
+    });
+  });
+
+  it('does not set resolver reference if field mappings are not present for a RDS model', () => {
+    mockContext.dataSourceStrategies = dataSourceStrategies;
+    mockContext.api.host.getDataSource.mockReturnValue({});
+    mockModelFieldMap.getMappedFields.mockReturnValue([]);
+    resolverUtils.makeQueryResolver(mockConfig as any, mockContext as any, MYSQL_DB_TYPE);
+
+    expect(mockContext.resolvers.addResolver).toBeCalledWith('Query', 'queryByUsername', mockResolver);
+    expect(mockModelFieldMap.addResolverReference).not.toBeCalled();
+  });
+
+  it('does not set resolver reference for a DDB model', () => {
+    const mockResolverUtils = jest.spyOn(resolverUtils, 'getVTLGenerator');
+    mockResolverUtils.mockReturnValueOnce({
+      generateIndexQueryRequestTemplate: jest.fn().mockReturnValue('mock template'),
+      generatePrimaryKeyVTL: jest.fn().mockReturnValue('mock template'),
+    });
+    mockContext.dataSourceStrategies = {
+      Test: DDB_DEFAULT_DATASOURCE_STRATEGY,
+    };
+    const mockTable = {
+      stack: {
+        node: {
+          id: 'UserTable',
+        },
+      },
+    };
+    mockContext.api.host.getDataSource.mockReturnValue({});
+    mockContext.dataSources.get.mockReturnValue({
+      ds: { stack: { node: { findChild: jest.fn().mockReturnValue(mockTable) } } },
+    });
+    mockModelFieldMap.getMappedFields.mockReturnValue([{ details: 'description' }]);
+    resolverUtils.makeQueryResolver(mockConfig as any, mockContext as any, DDB_DB_TYPE);
+
+    // The resolver is added with correct type and field names
+    expect(mockContext.resolvers.addResolver).toBeCalledWith('Query', 'queryByUsername', mockResolver);
+    // Even if the field mapping exists, the resolver reference is not added for DDB models
+    expect(mockModelFieldMap.addResolverReference).not.toBeCalled();
+  });
+
+  const constructMockContext = () => {
+    return {
+      api: {
+        host: {
+          getDataSource: jest.fn(),
+        },
+      },
+      output: {
+        getQueryTypeName: jest.fn().mockReturnValue('Query'),
+      },
+      resolvers: {
+        generateQueryResolver: jest.fn().mockReturnValue(mockResolver),
+        addResolver: jest.fn(),
+      },
+      resourceHelper: {
+        getModelFieldMap: jest.fn().mockReturnValue(mockModelFieldMap),
+        getModelNameMapping: jest.fn().mockReturnValue(modelName),
+      },
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
+      stackManager: {
+        getScopeFor: jest.fn(),
+      },
+      dataSources: {
+        get: jest.fn(),
+      },
+      synthParameters: {},
+    };
+  };
+});
+
+describe('auth', () => {
+  const API_KEY = 'API Key Authorization';
+  const IAM_AUTH_TYPE = 'IAM Authorization';
+
+  const schema = /* GraphQL */ `
+    type Test @model {
+      id: ID!
+      description: String @index(name: "index1")
+    }
+  `;
+
+  it('sandbox auth enabled should add apiKey if not default mode of auth', () => {
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
+      synthParameters: {
+        enableIamAccess: false,
+      },
+      authConfig: {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [
+          {
+            authenticationType: 'API_KEY',
+          },
+        ],
+      },
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).toContain('aws_api_key');
+    expect(out.schema).not.toContain('aws_iam');
+    expect(out.schema).toMatchSnapshot();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toBeDefined();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toContain(API_KEY);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).not.toContain(IAM_AUTH_TYPE);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toMatchSnapshot();
+  });
+
+  it('iam auth enabled should add aws_iam if not default mode of auth', () => {
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: false,
+      },
+      synthParameters: {
+        enableIamAccess: true,
+      },
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).not.toContain('aws_api_key');
+    expect(out.schema).toContain('aws_iam');
+    expect(out.schema).toMatchSnapshot();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toBeDefined();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).not.toContain(API_KEY);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toContain(IAM_AUTH_TYPE);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toMatchSnapshot();
+  });
+
+  it('iam and sandbox auth enabled should add aws_iam and aws_api_key if not default mode of auth', () => {
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
+      synthParameters: {
+        enableIamAccess: true,
+      },
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).toContain('aws_api_key');
+    expect(out.schema).toContain('aws_iam');
+    expect(out.schema).toMatchSnapshot();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toBeDefined();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toContain(API_KEY);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toContain(IAM_AUTH_TYPE);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toMatchSnapshot();
+  });
+
+  it('iam and sandbox auth disable should not add service directives', () => {
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: false,
+      },
+      synthParameters: {
+        enableIamAccess: false,
+      },
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).not.toContain('aws_api_key');
+    expect(out.schema).not.toContain('aws_iam');
+    expect(out.schema).toMatchSnapshot();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toBeDefined();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).not.toContain(API_KEY);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).not.toContain(IAM_AUTH_TYPE);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toMatchSnapshot();
   });
 });

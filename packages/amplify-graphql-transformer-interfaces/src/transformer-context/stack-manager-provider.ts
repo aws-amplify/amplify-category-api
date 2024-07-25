@@ -1,11 +1,22 @@
-import { CfnParameter, CfnParameterProps, Stack } from 'aws-cdk-lib';
+import { CfnParameter, Stack } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 
 export interface StackManagerProvider {
-  readonly rootStack: Stack;
+  readonly scope: Construct;
   getStack: (stackName: string) => Stack;
   createStack: (stackName: string) => Stack;
   hasStack: (stackName: string) => boolean;
-  getStackFor: (resourceId: string, defaultStackName?: string) => Stack;
-  addParameter: (name: string, props: CfnParameterProps) => CfnParameter;
+  getScopeFor: (resourceId: string, defaultStackName?: string) => Construct;
+
+  /**
+   * Retrieve the given scope for a stack name.
+   * @deprecated use getScopeFor instead.
+   */
+  getStackFor: (resourceId: string, defaultStackName?: string) => Construct;
+
+  /**
+   * Try and retrieve a parameter for the given name.
+   * @deprecated use context.synthParameters instead.
+   */
   getParameter: (name: string) => CfnParameter | void;
 }

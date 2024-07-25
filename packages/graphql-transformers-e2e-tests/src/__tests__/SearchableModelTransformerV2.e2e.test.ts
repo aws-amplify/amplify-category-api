@@ -1,14 +1,14 @@
 import { ResourceConstants } from 'graphql-transformer-common';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { CloudFormationClient } from '../CloudFormationClient';
-import { S3Client } from '../S3Client';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import { GraphQLClient } from '../GraphQLClient';
-import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { default as moment } from 'moment';
 import { default as S3 } from 'aws-sdk/clients/s3';
+import { CloudFormationClient } from '../CloudFormationClient';
+import { S3Client } from '../S3Client';
+import { GraphQLClient } from '../GraphQLClient';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { resolveTestRegion } from '../testSetup';
 
 const region = resolveTestRegion();
@@ -82,19 +82,19 @@ beforeAll(async () => {
       count: Int
     }
     `;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new SearchableModelTransformer()],
-    transformParameters: {
-      sandboxModeEnabled: true,
-    },
-  });
   try {
     await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
   } catch (e) {
     console.error(`Failed to create bucket: ${e}`);
   }
   try {
-    const out = transformer.transform(validSchema);
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
+    });
     const finishedStack = await deploy(
       customS3Client,
       cf,

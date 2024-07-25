@@ -1,13 +1,7 @@
-import { Transformer, TransformerContext, getDirectiveArguments, gql, InvalidDirectiveError } from 'graphql-transformer-core';
-import { DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode } from 'graphql';
-import { ResourceFactory } from './resources';
-import {
-  makeSearchableScalarInputObject,
-  makeSearchableXFilterInputObject,
-  makeSearchableSortDirectionEnumObject,
-  makeSearchableXSortableFieldsEnumObject,
-  makeSearchableXSortInputObject,
-} from './definitions';
+import path = require('path');
+import { Transformer, TransformerContext, getDirectiveArguments, InvalidDirectiveError } from 'graphql-transformer-core';
+import { SearchableDirectiveV1 } from '@aws-amplify/graphql-directives';
+import { DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode, parse } from 'graphql';
 import {
   makeNamedType,
   blankObjectExtension,
@@ -18,10 +12,21 @@ import {
   makeInputValueDefinition,
   STANDARD_SCALARS,
   makeNonNullType,
+  ResolverResourceIDs,
+  SearchableResourceIDs,
+  ModelResourceIDs,
+  getBaseType,
+  ResourceConstants,
 } from 'graphql-transformer-common';
 import { Expression, str } from 'graphql-mapping-template';
-import { ResolverResourceIDs, SearchableResourceIDs, ModelResourceIDs, getBaseType, ResourceConstants } from 'graphql-transformer-common';
-import path = require('path');
+import {
+  makeSearchableScalarInputObject,
+  makeSearchableXFilterInputObject,
+  makeSearchableSortDirectionEnumObject,
+  makeSearchableXSortableFieldsEnumObject,
+  makeSearchableXSortInputObject,
+} from './definitions';
+import { ResourceFactory } from './resources';
 
 const STACK_NAME = 'SearchableStack';
 const nonKeywordTypes = ['Int', 'Float', 'Boolean', 'AWSTimestamp', 'AWSDate', 'AWSDateTime'];
@@ -41,15 +46,7 @@ export class SearchableModelTransformer extends Transformer {
   resources: ResourceFactory;
 
   constructor() {
-    super(
-      `SearchableModelTransformer`,
-      gql`
-        directive @searchable(queries: SearchableQueryMap) on OBJECT
-        input SearchableQueryMap {
-          search: String
-        }
-      `,
-    );
+    super(`SearchableModelTransformer`, parse(SearchableDirectiveV1.definition));
     this.resources = new ResourceFactory();
   }
 

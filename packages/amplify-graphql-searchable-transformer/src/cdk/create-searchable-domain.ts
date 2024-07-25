@@ -5,6 +5,7 @@ import { IRole, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { CfnParameter, Fn, RemovalPolicy } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { ResourceConstants } from 'graphql-transformer-common';
+import { setResourceName } from '@aws-amplify/graphql-transformer-core';
 
 export const createSearchableDomain = (
   stack: Construct,
@@ -33,6 +34,7 @@ export const createSearchableDomain = (
   });
 
   const cfnDomain = domain.node.defaultChild as CfnDomain;
+  setResourceName(domain, { name: OpenSearchDomainLogicalID, setOnDefaultChild: true });
 
   // CDK started to append hash to logical id of search domain.
   // This line overrides that behavior to avoid deletion and re-creation of existing domains.
@@ -57,8 +59,10 @@ export const createSearchableDomainRole = (
   if (!roleName) {
     throw new Error(`Could find role name parameter for ${OpenSearchAccessIAMRoleName}`);
   }
-  return new Role(stack, OpenSearchAccessIAMRoleLogicalID, {
+  const role = new Role(stack, OpenSearchAccessIAMRoleLogicalID, {
     assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
     roleName: context.resourceHelper.generateIAMRoleName(roleName),
   });
+  setResourceName(role, { name: OpenSearchAccessIAMRoleLogicalID, setOnDefaultChild: true });
+  return role;
 };

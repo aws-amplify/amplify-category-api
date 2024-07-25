@@ -1,12 +1,12 @@
-import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as fs from 'fs-extra';
 import _ from 'lodash';
 import { Template, ResourceBase } from 'cloudform-types';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { diff as getDiffs, Diff as DeepDiff } from 'deep-diff';
-import { readFromPath } from './fileUtils';
 import { InvalidMigrationError, InvalidGSIMigrationError, DestructiveMigrationError } from '../errors';
 import { TRANSFORM_CONFIG_FILE_NAME } from '..';
+import { readFromPath } from './fileUtils';
 
 type Diff = DeepDiff<DiffableProject, DiffableProject>;
 export type DiffRule = (diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject) => void;

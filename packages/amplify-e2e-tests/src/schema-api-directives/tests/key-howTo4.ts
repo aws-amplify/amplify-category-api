@@ -3,7 +3,7 @@ import { addApiWithBlankSchemaAndConflictDetection, amplifyPush, updateApiSchema
 import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../authHelper';
 import { testQueries, testMutations } from '../common';
 
-//schema
+// schema
 export const schemaName = 'selective_sync.graphql';
 export const schema = `
 type Comment @model
@@ -20,7 +20,7 @@ type Comment @model
 }
 
 ##key/howTo4`;
-//mutations
+// mutations
 export const mutation1 = `
  mutation CreateComment{
     createComment(input: {
@@ -97,7 +97,7 @@ export const mutation4 = `
        }
      }`;
 
-//query1 with no filter
+// query1 with no filter
 export const query1 = `
 query SyncComments {
   syncComments(filter: {and: [{username: {eq: "user2"}}, {createdAt: {gt: "2010-01-01T00:00Z"}}]}) {
@@ -137,7 +137,7 @@ export const expected_result_query1 = {
     },
   },
 };
-//query1 with filter
+// query1 with filter
 export const query2 = `
 query SyncComments {
   syncComments(filter: {and: [{username: {eq: "user2"}}, {createdAt: {gt: "2010-01-01T00:00Z"}}, { content: {eq : "order1"}}]}) {
@@ -170,7 +170,7 @@ export const expected_result_query2 = {
   },
 };
 
-//query1 with no PK and all filter
+// query1 with no PK and all filter
 export const query3 = `
 query SyncComments {
   syncComments(filter: {and: [ {createdAt : {gt : "2019-01-01T00:00Z"}}]}) {
@@ -203,7 +203,7 @@ export const expected_result_query3 = {
   },
 };
 
-//query1 with no PK and "or" filter
+// query1 with no PK and "or" filter
 export const query4 = `
 query SyncComments {
   syncComments(filter: {and: [ {data1 : {lt : "example4"}},{username : {eq : "user1"}}]}) {
@@ -236,7 +236,7 @@ export const expected_result_query4 = {
   },
 };
 
-//query1 with no and and or in filter object
+// query1 with no and and or in filter object
 export const query5 = `
 query SyncComments {
   syncComments(filter: { data1 : {lt : "example4"}, username : {eq : "user1"}}) {

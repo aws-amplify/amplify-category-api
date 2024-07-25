@@ -1,19 +1,19 @@
+import * as path from 'path';
 import { Octokit } from '@octokit/rest';
 import * as fs from 'fs-extra';
 import inquirer from 'inquirer';
-import * as path from 'path';
 import { v4 as uuid } from 'uuid';
+import { $TSContext, JSONUtilities, pathManager, readCFNTemplate } from '@aws-amplify/amplify-cli-core';
+import * as cdk from 'aws-cdk-lib';
 import { provider as cloudformationProviderName } from '../../../provider-utils/awscloudformation/aws-constants';
 import { getContainers } from '../../../provider-utils/awscloudformation/docker-compose';
 import Container from '../docker-compose/ecs-objects/container';
 import { EcsStack } from '../ecs-apigw-stack';
 import { API_TYPE, ResourceDependency } from '../../../provider-utils/awscloudformation/service-walkthroughs/containers-walkthrough';
 import { getGitHubOwnerRepoFromPath } from '../../../provider-utils/awscloudformation/utils/github';
-import { $TSContext, JSONUtilities, pathManager, readCFNTemplate } from '@aws-amplify/amplify-cli-core';
 import { DEPLOYMENT_MECHANISM } from '../base-api-stack';
-import { setExistingSecretArns } from './containers/set-existing-secret-arns';
 import { category } from '../../../category-constants';
-import * as cdk from 'aws-cdk-lib';
+import { setExistingSecretArns } from './containers/set-existing-secret-arns';
 
 export const cfnFileName = (resourceName: string) => `${resourceName}-cloudformation-template.json`;
 
@@ -142,14 +142,15 @@ export async function processDockerConfig(
   for await (const fileName of containerDefinitionFileNames) {
     switch (deploymentMechanism) {
       case DEPLOYMENT_MECHANISM.FULLY_MANAGED:
-      case DEPLOYMENT_MECHANISM.SELF_MANAGED:
+      case DEPLOYMENT_MECHANISM.SELF_MANAGED: {
         const filePath = path.normalize(path.join(srcPath, fileName));
 
         if (fs.existsSync(filePath)) {
           containerDefinitionFiles[fileName] = fs.readFileSync(filePath).toString();
         }
         break;
-      case DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED:
+      }
+      case DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED: {
         const { path: repoUri, tokenSecretArn } = gitHubInfo;
 
         const { SecretString: gitHubToken } = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'retrieveSecret', {
@@ -180,6 +181,7 @@ export async function processDockerConfig(
           }
         }
         break;
+      }
       default: {
         const exhaustiveCheck: never = deploymentMechanism;
         throw new Error(`Unhandled type [${exhaustiveCheck}]`);

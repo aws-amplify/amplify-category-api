@@ -4,13 +4,13 @@ import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
 import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
-import { CloudFormationClient } from '../CloudFormationClient';
-import { S3Client } from '../S3Client';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import { GraphQLClient } from '../GraphQLClient';
-import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { default as moment } from 'moment';
 import { default as S3 } from 'aws-sdk/clients/s3';
+import { CloudFormationClient } from '../CloudFormationClient';
+import { S3Client } from '../S3Client';
+import { GraphQLClient } from '../GraphQLClient';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import addStringSets from '../stringSetMutations';
 import { resolveTestRegion } from '../testSetup';
 
@@ -209,7 +209,7 @@ afterAll(async () => {
   await cleanupStackAfterTest(BUCKET_NAME, STACK_NAME, cf);
 });
 
-test('Test searchPosts with sort field on a string field', async () => {
+test('searchPosts with sort field on a string field', async () => {
   const firstQuery = await runQuery(
     `query {
         searchPosts(sort: {
@@ -262,7 +262,7 @@ test('Test searchPosts with sort field on a string field', async () => {
   expect(firstItemOfThirdQuery).toEqual(fourthItemOfFirstQuery);
 });
 
-test('Test searchPosts with offset pagination', async () => {
+test('searchPosts with offset pagination', async () => {
   const firstQuery = await runQuery(
     `query {
         searchPosts(from: 0, limit: 999, sort: {
@@ -303,7 +303,7 @@ test('Test searchPosts with offset pagination', async () => {
   expect(secondItems.find((i) => i.id === firstItem.id)).not.toBeDefined();
 });
 
-test('Test searchPosts with sort on date type', async () => {
+test('searchPosts with sort on date type', async () => {
   const query = await runQuery(
     `query {
         searchPosts(
@@ -324,7 +324,7 @@ test('Test searchPosts with sort on date type', async () => {
   expect(recentItem > oldestItem);
 });
 
-test('Test searchPosts query without filter', async () => {
+test('searchPosts query without filter', async () => {
   const response = await runQuery(
     `query {
         searchPosts {
@@ -338,7 +338,7 @@ test('Test searchPosts query without filter', async () => {
   expect(items.length).toBeGreaterThan(0);
 });
 
-test('Test searchPosts query with basic filter', async () => {
+test('searchPosts query with basic filter', async () => {
   const response = await runQuery(
     `query {
         searchPosts(filter: {
@@ -354,7 +354,7 @@ test('Test searchPosts query with basic filter', async () => {
   expect(items.length).toEqual(7);
 });
 
-test('Test searchPosts query with non-recursive filter', async () => {
+test('searchPosts query with non-recursive filter', async () => {
   const response = await runQuery(
     `query {
         searchPosts(filter: {
@@ -382,7 +382,7 @@ test('Test searchPosts query with non-recursive filter', async () => {
   expect(items[0].isPublished).toEqual(true);
 });
 
-test('Test searchPosts query with recursive filter 1', async () => {
+test('searchPosts query with recursive filter 1', async () => {
   const response = await runQuery(
     `query {
         searchPosts(filter: {
@@ -414,7 +414,7 @@ test('Test searchPosts query with recursive filter 1', async () => {
   expect(items[0].isPublished).toEqual(true);
 });
 
-test('Test searchPosts query with recursive filter 2', async () => {
+test('searchPosts query with recursive filter 2', async () => {
   const response = await runQuery(
     `query {
         searchPosts(filter: {
@@ -439,7 +439,7 @@ test('Test searchPosts query with recursive filter 2', async () => {
   expect(items.length).toEqual(5);
 });
 
-test('Test searchPosts query with recursive filter 3', async () => {
+test('searchPosts query with recursive filter 3', async () => {
   const response = await runQuery(
     `query {
         searchPosts(filter: {
@@ -477,7 +477,7 @@ test('Test searchPosts query with recursive filter 3', async () => {
   expect(items[0].isPublished).toEqual(false);
 });
 
-test('Test searchPosts query with recursive filter 4', async () => {
+test('searchPosts query with recursive filter 4', async () => {
   const response = await runQuery(
     `query {
         searchPosts(filter: {
@@ -518,7 +518,7 @@ test('Test searchPosts query with recursive filter 4', async () => {
   expect(items[0].isPublished).toEqual(false);
 });
 
-test('Test searchPosts query with recursive filter 5', async () => {
+test('searchPosts query with recursive filter 5', async () => {
   const response = await runQuery(
     `query {
         searchPosts(filter: {
@@ -559,7 +559,7 @@ test('Test searchPosts query with recursive filter 5', async () => {
   expect(items[0].isPublished).toEqual(false);
 });
 
-test('Test searchPosts query with recursive filter 6', async () => {
+test('searchPosts query with recursive filter 6', async () => {
   const response = await runQuery(
     `query {
         searchPosts(filter: {
@@ -592,7 +592,7 @@ test('Test searchPosts query with recursive filter 6', async () => {
   expect(items.length).toEqual(0);
 });
 
-test('Test deletePosts syncing with Elasticsearch', async () => {
+test('deletePosts syncing with Elasticsearch', async () => {
   // Create Post
   const title = 'to be deleted';
   const postToBeDeletedResponse = await runQuery(getCreatePostsMutation('test author new', title, 1157, 1000, 22.2, true));
@@ -655,7 +655,7 @@ test('Test deletePosts syncing with Elasticsearch', async () => {
   expect(items2.length).toEqual(0);
 });
 
-test('Test updatePost syncing with Elasticsearch', async () => {
+test('updatePost syncing with Elasticsearch', async () => {
   // Create Post
   const author = 'test author update new';
   const title = 'to be updated new';
@@ -869,7 +869,7 @@ test('query for books by Agatha Christie with model using @key', async () => {
   });
 });
 
-test('test searches with datastore enabled types', async () => {
+test('searches with datastore enabled types', async () => {
   const createTodoResponse = await createTodo({ id: '001', name: 'get milk' });
   expect(createTodoResponse).toBeDefined();
   let todoName = createTodoResponse.data.createTodo.name;
@@ -901,7 +901,7 @@ test('test searches with datastore enabled types', async () => {
 });
 
 // Test for issue https://github.com/aws-amplify/amplify-cli/issues/5140
-test('test searches with @key with integer field', async () => {
+test('searches with @key with integer field', async () => {
   const comment = await GRAPHQL_CLIENT.query(
     `mutation createComment($createCommentInput: CreateCommentInput!){
     createComment(input: $createCommentInput) {

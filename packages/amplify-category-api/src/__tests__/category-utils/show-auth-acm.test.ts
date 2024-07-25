@@ -8,7 +8,7 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
   },
 }));
 
-describe('show-auth-acm helper: ', () => {
+describe('show-auth-acm helper:', () => {
   let functionArguments: { sdl: string; node: 'Blog' };
 
   it('...the show-auth-acm helper should be exported', () => {

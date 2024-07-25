@@ -1,7 +1,7 @@
 import { AuthProvider, AuthStrategy, AuthTransformer, ModelOperation } from '@aws-amplify/graphql-auth-transformer';
 import { AppSyncGraphQLExecutionContext } from '@aws-amplify/amplify-appsync-simulator/lib/utils/graphql-runner';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AmplifyAppSyncSimulatorAuthenticationType } from '@aws-amplify/amplify-appsync-simulator';
 import { plurality } from 'graphql-transformer-common';
@@ -238,12 +238,12 @@ const testResolverLogic = (
       ${hasPartialAccess ? `noAccessField: String ${authRuleDirectiveNoOps}` : ''}
     }`;
 
-  const transformer: GraphQLTransform = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer()],
   });
 
-  const out = transformer.transform(validSchema);
   const templates = getOperationRelatedTemplates(operation, 'Profile');
 
   templates.forEach((templateName) => {

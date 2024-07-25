@@ -1,9 +1,7 @@
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
-import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { GraphQLClient } from './utils/graphql-client';
-import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
+import { defaultTransformParams, deploy, launchDDBLocal, logDebug, terminateDDB, transformAndSynth } from './utils/index';
+
+jest.setTimeout(1000 * 30);
 
 let graphqlClient;
 let server;
@@ -20,13 +18,14 @@ beforeAll(async () => {
     }
     `;
   try {
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer(), new AuthTransformer(), new MapsToTransformer()],
+    const out = transformAndSynth({
+      ...defaultTransformParams,
+      schema: validSchema,
       transformParameters: {
+        ...defaultTransformParams.transformParameters,
         useSubUsernameForDefaultIdentityClaim: false,
       },
     });
-    const out = transformer.transform(validSchema);
 
     let ddbClient;
     ({ dbPath, emulator: ddbEmulator, client: ddbClient } = await launchDDBLocal());

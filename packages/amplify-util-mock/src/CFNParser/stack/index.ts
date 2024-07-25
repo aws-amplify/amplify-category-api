@@ -90,16 +90,16 @@ export function getDependencyResources(node: object | any[], params: Record<stri
   if (isPlainObject(node) && Object.keys(node).length === 1) {
     const fnName = Object.keys(node)[0];
     const fnArgs = node[fnName];
-    if ('Ref' === fnName) {
+    if (fnName === 'Ref') {
       const resourceName = fnArgs;
       if (!Object.keys(params).includes(resourceName)) {
         result.push(resourceName);
       }
-    } else if ('Fn::GetAtt' === fnName) {
+    } else if (fnName === 'Fn::GetAtt') {
       const resourceName = fnArgs[0];
       result.push(resourceName);
     } else if (typeof fnArgs !== 'string') {
-      for (var i = 0; i < fnArgs.length; i++) {
+      for (let i = 0; i < fnArgs.length; i++) {
         result = [...result, ...getDependencyResources(fnArgs[i], params)];
       }
     }

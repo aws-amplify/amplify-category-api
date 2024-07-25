@@ -1,8 +1,8 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { TransformerLog, TransformerLogLevel, TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthTransformer } from '../../graphql-auth-transformer';
 import { defaultIdentityClaimWarning } from '../../utils/warnings';
-import { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 
 describe('defaultIdentityClaimWarning', () => {
   describe('owner based @auth', () => {
@@ -91,10 +91,10 @@ describe('defaultIdentityClaimWarning', () => {
 });
 
 describe('ownerCanReassignWarning', () => {
-  const OWNER_MAY_REASSIGN_MESSAGE = 'owners may reassign ownership';
   const OWNER_ENABLED_PROVIDERS = ['userPools', 'oidc'];
-  const transformTestSchema = (schema: string): GraphQLTransform => {
-    const transform = new GraphQLTransform({
+  const executeTransformAndReturnLogs = (schema: string): string[] =>
+    testTransform({
+      schema,
       authConfig: {
         defaultAuthentication: { authenticationType: 'API_KEY' },
         additionalAuthenticationProviders: [
@@ -113,11 +113,7 @@ describe('ownerCanReassignWarning', () => {
       transformParameters: {
         useSubUsernameForDefaultIdentityClaim: false,
       },
-    });
-
-    transform.transform(schema);
-    return transform;
-  };
+    }).logs;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -126,31 +122,32 @@ describe('ownerCanReassignWarning', () => {
   OWNER_ENABLED_PROVIDERS.forEach((provider: string) => {
     describe(`${provider} provider`, () => {
       test('warns on owner auth rule without field-level auth', () => {
-        const transform = transformTestSchema(`
+        expect(
+          executeTransformAndReturnLogs(`
           type Blog @model @auth(rules: [{ allow: owner, provider: ${provider} }]) {
             id: ID!
             owner: String
             description: String
           }
-        `);
-
-        expect(transform.getLogs()).toMatchSnapshot();
+        `),
+        ).toMatchSnapshot();
       });
 
       test('does not warn on owner auth rule with field-level auth', () => {
-        const transform = transformTestSchema(`
+        expect(
+          executeTransformAndReturnLogs(`
           type Blog @model @auth(rules: [{ allow: owner, provider: ${provider} }]) {
             id: ID!
             owner: String @auth(rules: [{ allow: owner, provider: ${provider}, operations: [read, delete] }])
             description: String
           }
-        `);
-
-        expect(transform.getLogs()).toMatchSnapshot();
+        `),
+        ).toMatchSnapshot();
       });
 
       test('warns on multiple schemas with multiple reassignable owners each', () => {
-        const transform = transformTestSchema(`
+        expect(
+          executeTransformAndReturnLogs(`
           type Todo @model @auth(rules: [
             { allow: owner, provider: ${provider} }
             { allow: owner, provider: ${provider}, ownerField: "writer" }
@@ -168,13 +165,13 @@ describe('ownerCanReassignWarning', () => {
             owner: String
             description: String
           }
-        `);
-
-        expect(transform.getLogs()).toMatchSnapshot();
+        `),
+        ).toMatchSnapshot();
       });
 
       test('does not warn on custom owner fields with field-level overrides', () => {
-        const transform = transformTestSchema(`
+        expect(
+          executeTransformAndReturnLogs(`
           type Todo @model @auth(rules: [
             { allow: owner, provider: ${provider} }
             { allow: owner, provider: ${provider} ownerField: "writer" }
@@ -186,13 +183,13 @@ describe('ownerCanReassignWarning', () => {
             editors: [String] @auth(rules: [{ allow: owner, provider: ${provider}, operations: [read] }])
             owner: String @auth(rules: [{ allow: owner, provider: ${provider}, operations: [read] }])
           }
-        `);
-
-        expect(transform.getLogs()).toMatchSnapshot();
+        `),
+        ).toMatchSnapshot();
       });
 
       test('does not warn on single custom owner fields with field-level override', () => {
-        const transform = transformTestSchema(`
+        expect(
+          executeTransformAndReturnLogs(`
           type Todo @model @auth(rules: [
             { allow: owner, provider: ${provider} ownerField: "writer" }
           ]) {
@@ -200,13 +197,13 @@ describe('ownerCanReassignWarning', () => {
             description: String
             writer: String @auth(rules: [{ allow: owner, provider: ${provider}, ownerField: "writer", operations: [read] }])
           }
-        `);
-
-        expect(transform.getLogs()).toMatchSnapshot();
+        `),
+        ).toMatchSnapshot();
       });
 
       test('malformed field-level auth will continue to warn', () => {
-        const transform = transformTestSchema(`
+        expect(
+          executeTransformAndReturnLogs(`
           type Todo @model(subscriptions: null) @auth(rules: [
             { allow: owner, provider: ${provider}, ownerField: "writer" }
             { allow: owner, provider: ${provider}, operations: [read] }
@@ -215,31 +212,28 @@ describe('ownerCanReassignWarning', () => {
             description: String
             writer: String @auth(rules: [{ allow: owner, provider: ${provider}, operations: [read] }])
           }
-        `);
-
-        expect(transform.getLogs()).toMatchSnapshot();
+        `),
+        ).toMatchSnapshot();
       });
 
       test('should warn on implicit owner field', () => {
-        const transform = transformTestSchema(`
+        expect(
+          executeTransformAndReturnLogs(`
           type Blog @model @auth(rules: [{ allow: owner, provider: ${provider} }]) {
             id: ID!
             description: String
           }
-        `);
-
-        expect(transform.getLogs()).toMatchSnapshot();
+        `),
+        ).toMatchSnapshot();
       });
     });
   });
 });
 
 describe('ownerFieldCaseWarning', () => {
-  const OWNER_FIELD_CASE_MESSAGE = expect.stringContaining(
-    'are getting added to your schema but could be referencing the same owner field. ',
-  );
-  const transformTestSchema = (schema: string): GraphQLTransform => {
-    const transformer = new GraphQLTransform({
+  const executeTransformAndReturnLogs = (schema: string): string[] =>
+    testTransform({
+      schema,
       authConfig: {
         defaultAuthentication: { authenticationType: 'AMAZON_COGNITO_USER_POOLS' },
         additionalAuthenticationProviders: [],
@@ -248,10 +242,8 @@ describe('ownerFieldCaseWarning', () => {
       transformParameters: {
         useSubUsernameForDefaultIdentityClaim: false,
       },
-    });
-    transformer.transform(schema);
-    return transformer;
-  };
+    }).logs;
+
   test('does not show message with case matching fields', () => {
     const validSchema = `
 type Invoice
@@ -269,8 +261,7 @@ type Invoice
   customerId: ID!
 }
 `;
-    const transform = transformTestSchema(validSchema);
-    expect(transform.getLogs()).toMatchSnapshot();
+    expect(executeTransformAndReturnLogs(validSchema)).toMatchSnapshot();
   });
 
   test('does not show message with no auth rules', () => {
@@ -283,8 +274,7 @@ type Invoice
   customerId: ID!
 }
 `;
-    const transform = transformTestSchema(validSchema);
-    expect(transform.getLogs()).toMatchSnapshot();
+    expect(executeTransformAndReturnLogs(validSchema)).toMatchSnapshot();
   });
   test('shows message once with one case mismatch in fields', () => {
     const oneCaseMismatchSchema = `
@@ -303,8 +293,7 @@ type Invoice
   customerId: ID!
 }
 `;
-    const transform = transformTestSchema(oneCaseMismatchSchema);
-    expect(transform.getLogs()).toMatchSnapshot();
+    expect(executeTransformAndReturnLogs(oneCaseMismatchSchema)).toMatchSnapshot();
   });
 
   test('shows message twice with two case mismatch in fields', () => {
@@ -324,8 +313,7 @@ type Invoice
   customerId: ID!
 }
 `;
-    const transform = transformTestSchema(twoCaseMismatchSchema);
-    expect(transform.getLogs()).toMatchSnapshot();
+    expect(executeTransformAndReturnLogs(twoCaseMismatchSchema)).toMatchSnapshot();
   });
   test('shows message with implicit owner field', () => {
     const twoCaseMismatchSchema = `
@@ -345,7 +333,64 @@ type Invoice
   Owner: String
 }
 `;
-    const transform = transformTestSchema(twoCaseMismatchSchema);
-    expect(transform.getLogs()).toMatchSnapshot();
+    expect(executeTransformAndReturnLogs(twoCaseMismatchSchema)).toMatchSnapshot();
+  });
+});
+
+describe('deprecatedIAMProviderWarning', () => {
+  const executeTransformAndReturnLogs = (schema: string): Array<TransformerLog> =>
+    testTransform({
+      schema,
+      authConfig: {
+        defaultAuthentication: { authenticationType: 'AWS_IAM' },
+        additionalAuthenticationProviders: [],
+      },
+      transformers: [new ModelTransformer(), new AuthTransformer()],
+      transformParameters: {
+        useSubUsernameForDefaultIdentityClaim: false,
+      },
+    }).logs;
+
+  test('does not show message when identityPool provider is used', () => {
+    const schema = `
+type Invoice
+  @model
+  @auth(
+    rules: [
+      { allow: private, provider: identityPool }
+    ]
+  ) {
+  id: ID!
+  items: [String]
+  storeId: ID!
+  customerId: ID!
+}
+`;
+    const logs = executeTransformAndReturnLogs(schema);
+    expect(logs.length).toBe(0);
+  });
+
+  test('shows message when iam provider is used', () => {
+    const schema = `
+type Invoice
+  @model
+  @auth(
+    rules: [
+      { allow: private, provider: iam }
+    ]
+  ) {
+  id: ID!
+  items: [String]
+  storeId: ID!
+  customerId: ID!
+}
+`;
+    const logs = executeTransformAndReturnLogs(schema);
+    expect(logs.length).toBe(1);
+    const log = logs[0];
+    expect(log.level).toBe(TransformerLogLevel.WARN);
+    expect(log.message).toBe(
+      "WARNING: Schema is using an @auth directive with deprecated provider 'iam'. Replace 'iam' provider with 'identityPool' provider.",
+    );
   });
 });

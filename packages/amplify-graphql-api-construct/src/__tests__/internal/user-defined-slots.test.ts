@@ -1,28 +1,9 @@
-import { Code, FunctionRuntime, MappingTemplate } from 'aws-cdk-lib/aws-appsync';
+import { MappingTemplate } from 'aws-cdk-lib/aws-appsync';
 import { getSlotName, parseUserDefinedSlots, validateFunctionSlots, separateSlots } from '../../internal/user-defined-slots';
 import { FunctionSlot } from '../../types';
 
 describe('user-defined-slots', () => {
   describe('validateFunctionSlots', () => {
-    it('throws on unexpected property', () => {
-      expect(() => {
-        validateFunctionSlots([
-          {
-            typeName: 'Mutation',
-            fieldName: 'createTodo',
-            slotName: 'postUpdate',
-            slotIndex: 1,
-            function: {
-              code: Code.fromInline('Hi there'),
-              runtime: FunctionRuntime.JS_1_0_0,
-            },
-          },
-        ]);
-      }).toThrowErrorMatchingInlineSnapshot(
-        '"Unexpected property found on function slot, only requestMappingTemplate and responseMappingTemplate supported"',
-      );
-    });
-
     it('throws on missing properties', () => {
       expect(() => {
         validateFunctionSlots([

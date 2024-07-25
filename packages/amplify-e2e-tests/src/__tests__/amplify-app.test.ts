@@ -1,3 +1,4 @@
+import { createNewProjectDir, deleteProject, deleteProjectDir, isCI } from 'amplify-category-api-e2e-core';
 import {
   amplifyAppAndroid,
   amplifyAppIos,
@@ -7,7 +8,6 @@ import {
   amplifyPush,
   addIntegAccountInConfig,
 } from '../amplify-app-helpers/amplify-app-setup';
-import { createNewProjectDir, deleteProject, deleteProjectDir, isCI } from 'amplify-category-api-e2e-core';
 import {
   validateProject,
   validateProjectConfig,

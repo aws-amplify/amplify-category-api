@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 #change: added actual type definition for public subscription levl
 type Post @model (subscriptions: { level: public })
@@ -10,7 +10,7 @@ type Post @model (subscriptions: { level: public })
   content: String
 }`;
 
-//subscriptions
+// subscriptions
 export const subscription = `
 #extra
 subscription OnCreatePost {

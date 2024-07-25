@@ -12,19 +12,10 @@ import {
   ManyToManyTransformer,
 } from '@aws-amplify/graphql-relational-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
-import { ConflictHandlerType, GraphQLTransform, GraphQLTransformOptions } from '@aws-amplify/graphql-transformer-core';
+import { ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { schemas, TransformerPlatform, TransformerSchema, TransformerVersion } from '..';
-
-type Writeable<T> = { -readonly [P in keyof T]: T[P] };
-const defaultDataStoreConfig = {
-  resolverConfig: {
-    project: {
-      ConflictDetection: 'VERSION',
-      ConflictHandler: ConflictHandlerType.AUTOMERGE,
-    },
-  },
-} as any;
 
 for (const [name, schema] of Object.entries(schemas)) {
   test(`schema '${name}' passes or fails as expected`, () => {
@@ -33,51 +24,75 @@ for (const [name, schema] of Object.entries(schemas)) {
     }
 
     if (isPlatformSupported(schema, TransformerPlatform.api)) {
-      expectToPass(name, schema, createV2Transformer());
+      expectToPass(name, () =>
+        testTransform({
+          schema: schema.sdl,
+          transformers: getV2DefaultTransformerList(),
+        }),
+      );
     } else {
-      expectToFail(name, schema, createV2Transformer());
+      expectToFail(name, () =>
+        testTransform({
+          schema: schema.sdl,
+          transformers: getV2DefaultTransformerList(),
+        }),
+      );
     }
 
     if (isPlatformSupported(schema, TransformerPlatform.dataStore)) {
-      expectToPass(name, schema, createV2Transformer({ ...defaultDataStoreConfig }));
+      expectToPass(name, () =>
+        testTransform({
+          schema: schema.sdl,
+          transformers: getV2DefaultTransformerList(),
+          resolverConfig: {
+            project: {
+              ConflictDetection: 'VERSION',
+              ConflictHandler: ConflictHandlerType.AUTOMERGE,
+            },
+          },
+        }),
+      );
     } else {
-      expectToFail(name, schema, createV2Transformer({ ...defaultDataStoreConfig }));
+      expectToFail(name, () =>
+        testTransform({
+          schema: schema.sdl,
+          transformers: getV2DefaultTransformerList(),
+          resolverConfig: {
+            project: {
+              ConflictDetection: 'VERSION',
+              ConflictHandler: ConflictHandlerType.AUTOMERGE,
+            },
+          },
+        }),
+      );
     }
   });
 }
 
-function expectToPass(name: string, schema: TransformerSchema, transformer: GraphQLTransform): void {
+const expectToPass = (name: string, transform: () => any): void => {
   try {
-    transformer.transform(schema.sdl);
+    transform();
   } catch (err) {
     console.log(err);
     throw new Error(`schema '${name}' unexpectedly failed with error: ${err}`);
   }
-}
+};
 
-function expectToFail(name: string, schema: TransformerSchema, transformer: GraphQLTransform): void {
+const expectToFail = (name: string, transform: () => any): void => {
   try {
-    transformer.transform(schema.sdl);
+    transform();
   } catch (err) {
     return;
   }
 
   throw new Error(`schema '${name}' unexpectedly passed`);
-}
+};
 
-function createV2Transformer(options: Partial<Writeable<GraphQLTransformOptions>> = {}): GraphQLTransform {
-  options.transformers ??= getV2DefaultTransformerList();
-  return new GraphQLTransform(options as GraphQLTransformOptions);
-}
-
-function getV2DefaultTransformerList(): TransformerPluginProvider[] {
+const getV2DefaultTransformerList = (): TransformerPluginProvider[] => {
   const modelTransformer = new ModelTransformer();
   const indexTransformer = new IndexTransformer();
   const hasOneTransformer = new HasOneTransformer();
-  const authTransformer = new AuthTransformer({
-    adminRoles: ['testAdminRoleName'],
-    identityPoolId: 'identityPoolId',
-  });
+  const authTransformer = new AuthTransformer();
 
   return [
     modelTransformer,
@@ -94,12 +109,12 @@ function getV2DefaultTransformerList(): TransformerPluginProvider[] {
     authTransformer,
     new SearchableModelTransformer(),
   ];
-}
+};
 
-function isTransformerVersionSupported(schema: TransformerSchema, version: TransformerVersion): boolean {
+const isTransformerVersionSupported = (schema: TransformerSchema, version: TransformerVersion): boolean => {
   return (schema.transformerVersion & version) !== 0;
-}
+};
 
-function isPlatformSupported(schema: TransformerSchema, platform: TransformerPlatform): boolean {
+const isPlatformSupported = (schema: TransformerSchema, platform: TransformerPlatform): boolean => {
   return (schema.supportedPlatforms & platform) !== 0;
-}
+};

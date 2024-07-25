@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 type Project @model {
   id: ID!
@@ -13,7 +13,7 @@ type Team @model {
 }
 
 ##connection/hasOne2`;
-//mutations
+// mutations
 export const mutation1 = `
  mutation {
     createTeam(input: {

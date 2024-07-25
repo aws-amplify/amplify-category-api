@@ -23,9 +23,9 @@ export const AuthModePicker = ({ initialAuthMode, onAuthModeUpdates }: AuthModeP
       value={overrideAuthMode}
       onChange={(e) => setOverrideAuthMode(e.target.value as unknown as SetStateAction<OverrideAuthMode>)}
     >
-      <Radio value='unset'>Not Set</Radio>
-      <Radio value='API_KEY'>API Key</Radio>
-      <Radio value='AMAZON_COGNITO_USER_POOLS'>User Pool</Radio>
+      <Radio value='unset' crossOrigin={undefined}>Not Set</Radio>
+      <Radio value='API_KEY' crossOrigin={undefined}>API Key</Radio>
+      <Radio value='AMAZON_COGNITO_USER_POOLS' crossOrigin={undefined}>User Pool</Radio>
     </RadioGroupField>
   );
 };

@@ -12,20 +12,25 @@ import {
   Template,
   writeCFNTemplate,
 } from '@aws-amplify/amplify-cli-core';
-import { formatter, printer } from '@aws-amplify/amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as vm from 'vm2';
 import { AmplifyApigwResourceStack, ApigwInputs, CrudOperation, Path } from '.';
 import { ApigwInputState } from '../apigw-input-state';
 import { ADMIN_QUERIES_NAME } from '../../../category-constants';
+
 export class ApigwStackTransform {
   cliInputs: ApigwInputs;
+
   resourceTemplateObj: AmplifyApigwResourceStack | undefined;
+
   cliInputsState: ApigwInputState;
+
   cfn: Template;
+
   cfnInputParams: Record<string, any>;
+
   resourceName: string;
+
   private _app: cdk.App;
 
   constructor(context: $TSContext, resourceName: string, cliInputState?: ApigwInputState) {
@@ -177,7 +182,7 @@ export class ApigwStackTransform {
       : this.resourceTemplateObj.generateStackResources(this.resourceName);
   }
 
-  async applyOverrides() {
+  async applyOverrides(): Promise<void> {
     const backendDir = pathManager.getBackendDirPath();
     const overrideFilePath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.API, this.resourceName);
     const overrideJSFilePath = path.join(overrideFilePath, 'build', 'override.js');
@@ -186,54 +191,35 @@ export class ApigwStackTransform {
 
     // skip if packageManager or override.ts not found
     if (isBuild) {
-      let override;
+      const { envName } = stateManager.getLocalEnvInfo();
+      const { projectName } = stateManager.getProjectConfig();
+      const projectInfo = {
+        envName,
+        projectName,
+      };
       try {
-        ({ override } = await import(overrideJSFilePath));
-      } catch {
-        formatter.list(['No override file found', `To override ${this.resourceName} run "amplify override api"`]);
-        override = undefined;
-      }
-
-      if (override && typeof override === 'function') {
-        let overrideCode: string;
-        try {
-          overrideCode = await fs.readFile(overrideJSFilePath, 'utf-8');
-        } catch (error) {
-          formatter.list(['No override file found', `To override ${this.resourceName} run amplify override api`]);
-          return;
+        // TODO: Invoke `runOverride` from CLI core once core refactor is done, and
+        // this function can become async https://github.com/aws-amplify/amplify-cli/blob/7bc0b5654a585104a537c1a3f9615bd672435b58/packages/amplify-cli-core/src/overrides-manager/override-runner.ts#L4
+        // before importing the override file, we should clear the require cache to avoid
+        // importing an outdated version of the override file
+        // see: https://github.com/nodejs/modules/issues/307
+        // and https://stackoverflow.com/questions/9210542/node-js-require-cache-possible-to-invalidate
+        delete require.cache[require.resolve(overrideJSFilePath)];
+        // eslint-disable-next-line import/no-dynamic-require
+        const overrideImport = require(overrideJSFilePath);
+        if (overrideImport && overrideImport?.override && typeof overrideImport?.override === 'function') {
+          await overrideImport.override(this.resourceTemplateObj as AmplifyApigwResourceStack, projectInfo);
         }
-
-        const sandboxNode = new vm.NodeVM({
-          console: 'inherit',
-          timeout: 5000,
-          sandbox: {},
-          require: {
-            context: 'sandbox',
-            builtin: ['path'],
-            external: true,
+      } catch (err) {
+        throw new AmplifyError(
+          'InvalidOverrideError',
+          {
+            message: 'Executing overrides failed.',
+            details: err.message,
+            resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
           },
-        });
-        const { envName } = stateManager.getLocalEnvInfo();
-        const { projectName } = stateManager.getProjectConfig();
-        const projectInfo = {
-          envName,
-          projectName,
-        };
-        try {
-          await sandboxNode
-            .run(overrideCode, overrideJSFilePath)
-            .override(this.resourceTemplateObj as AmplifyApigwResourceStack, projectInfo);
-        } catch (err) {
-          throw new AmplifyError(
-            'InvalidOverrideError',
-            {
-              message: 'Executing overrides failed.',
-              details: err.message,
-              resolution: 'There may be runtime errors in your overrides file. If so, fix the errors and try again.',
-            },
-            err,
-          );
-        }
+          err,
+        );
       }
     }
   }
@@ -256,7 +242,7 @@ export class ApigwStackTransform {
   }
 }
 
-function convertCrudOperationsToCfnPermissions(crudOps: CrudOperation[]) {
+export function convertCrudOperationsToCfnPermissions(crudOps: CrudOperation[]) {
   const opMap: Record<CrudOperation, string[]> = {
     [CrudOperation.CREATE]: ['/POST'],
     [CrudOperation.READ]: ['/GET'],

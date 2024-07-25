@@ -1,9 +1,10 @@
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform, StackManager } from '@aws-amplify/graphql-transformer-core';
-import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as path from 'path';
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
+import { Construct } from 'constructs';
 import { applyFileBasedOverride } from '../../../graphql-transformer/override';
 
 jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'testEnvName' });
@@ -22,14 +23,14 @@ test('it overrides expected resources', () => {
       content: String!
     }
  `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
     overrideConfig: {
-      applyOverride: (stackManager: StackManager) => applyFileBasedOverride(stackManager, path.join(__dirname, 'searchable-overrides')),
+      applyOverride: (scope: Construct) => applyFileBasedOverride(scope, path.join(__dirname, 'searchable-overrides')),
       overrideFlag: true,
     },
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   const searchableStack = out.stacks.SearchableStack;
   Template.fromJSON(searchableStack).hasResourceProperties('AWS::AppSync::DataSource', {
@@ -74,6 +75,9 @@ test('it overrides expected resources', () => {
     EncryptionAtRestOptions: {
       Enabled: true,
       KmsKeyId: '1a2a3a4-1a2a-3a4a-5a6a-1a2a3a4a5a6a',
+    },
+    DomainEndpointOptions: {
+      EnforceHTTPS: true,
     },
   });
   Template.fromJSON(searchableStack).hasResourceProperties('AWS::AppSync::Resolver', {

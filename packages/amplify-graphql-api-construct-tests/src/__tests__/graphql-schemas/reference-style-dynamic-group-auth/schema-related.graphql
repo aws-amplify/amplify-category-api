@@ -1,0 +1,15 @@
+type RelatedMany @model @auth(rules: [{ allow: groups, groupsField: "groups" }]) {
+  id: String! @primaryKey
+  content: String
+  groups: [String]
+  primaryId: String
+  primary: Primary @belongsTo(references: ["primaryId"])
+}
+
+type RelatedOne @model @auth(rules: [{ allow: groups, groupsField: "groups" }]) {
+  id: String! @primaryKey
+  content: String
+  groups: [String]
+  primaryId: String
+  primary: Primary @belongsTo(references: ["primaryId"])
+}

@@ -3,27 +3,28 @@ import { GraphQLTransform, gql } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { FunctionTransformer } from 'graphql-function-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
-import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { default as moment } from 'moment';
-import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
-import { S3Client } from '../S3Client';
 import { default as S3 } from 'aws-sdk/clients/s3';
-import { LambdaHelper } from '../LambdaHelper';
-import { IAMHelper } from '../IAMHelper';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import AWS from 'aws-sdk';
-import { createUserPool, createUserPoolClient, configureAmplify, signupUser, authenticateUser } from '../cognitoUtils';
 import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import Role from 'cloudform-types/types/iam/role';
 import UserPoolClient from 'cloudform-types/types/cognito/userPoolClient';
 import IdentityPool from 'cloudform-types/types/cognito/identityPool';
 import IdentityPoolRoleAttachment from 'cloudform-types/types/cognito/identityPoolRoleAttachment';
 import { Auth } from 'aws-amplify';
+import { createUserPool, createUserPoolClient, configureAmplify, signupUser, authenticateUser } from '../cognitoUtils';
+import { IAMHelper } from '../IAMHelper';
+import { LambdaHelper } from '../LambdaHelper';
+import { S3Client } from '../S3Client';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
+import { CloudFormationClient } from '../CloudFormationClient';
 import 'isomorphic-fetch';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
+
 import { resolveTestRegion } from '../testSetup';
 
 const REGION = resolveTestRegion();
@@ -110,7 +111,7 @@ beforeAll(async () => {
     const policy = await IAM_HELPER.createLambdaExecutionPolicy(LAMBDA_EXECUTION_POLICY_NAME);
     await wait(5000);
     LAMBDA_EXECUTION_POLICY_ARN = policy.Policy.Arn;
-    await IAM_HELPER.attachLambdaExecutionPolicy(policy.Policy.Arn, role.Role.RoleName);
+    await IAM_HELPER.attachPolicy(policy.Policy.Arn, role.Role.RoleName);
     await wait(10000);
     await LAMBDA_HELPER.createFunction(ECHO_FUNCTION_NAME, role.Role.Arn, 'echoResolverFunction');
   } catch (e) {
@@ -150,6 +151,9 @@ beforeAll(async () => {
           },
           Action: 'sts:AssumeRoleWithWebIdentity',
           Condition: {
+            StringEquals: {
+              'cognito-identity.amazonaws.com:aud': { Ref: 'IdentityPool' },
+            },
             'ForAnyValue:StringLike': {
               'cognito-identity.amazonaws.com:amr': 'authenticated',
             },
@@ -172,6 +176,9 @@ beforeAll(async () => {
           },
           Action: 'sts:AssumeRoleWithWebIdentity',
           Condition: {
+            StringEquals: {
+              'cognito-identity.amazonaws.com:aud': { Ref: 'IdentityPool' },
+            },
             'ForAnyValue:StringLike': {
               'cognito-identity.amazonaws.com:amr': 'unauthenticated',
             },
@@ -425,7 +432,7 @@ afterAll(async () => {
     console.warn(`Error during function cleanup: ${e}`);
   }
   try {
-    await IAM_HELPER.detachLambdaExecutionPolicy(LAMBDA_EXECUTION_POLICY_ARN, LAMBDA_EXECUTION_ROLE_NAME);
+    await IAM_HELPER.detachPolicy(LAMBDA_EXECUTION_POLICY_ARN, LAMBDA_EXECUTION_ROLE_NAME);
   } catch (e) {
     console.warn(`Error during policy dissociation: ${e}`);
   }
@@ -444,7 +451,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test('Test calling echo function as a user via IAM', async () => {
+test('calling echo function as a user via IAM', async () => {
   const query = gql`
     query {
       echo(msg: "Hello")

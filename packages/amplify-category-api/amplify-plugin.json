@@ -12,7 +12,10 @@
     "rebuild",
     "remove",
     "update",
-    "help"
+    "help",
+    "import",
+    "generate-schema",
+    "update-secrets"
   ],
   "commandAliases": {
     "configure": "update"

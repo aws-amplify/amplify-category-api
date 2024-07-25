@@ -6,17 +6,16 @@ import {
   addFeatureFlag,
   createRandomName,
   addAuthWithDefault,
-} from 'amplify-category-api-e2e-core';
-import {
   addApiWithoutSchema,
   updateApiSchema,
   getProjectMeta,
   createNewProjectDir,
   deleteProjectDir,
-  refreshCredentials,
+  tryScheduleCredentialRefresh,
 } from 'amplify-category-api-e2e-core';
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+
 (global as any).fetch = require('node-fetch');
 
 jest.setTimeout(120 * 60 * 1000); // Set timeout to 2 hour because of creating/deleting searchable instance
@@ -25,6 +24,10 @@ describe('transformer model searchable migration test', () => {
   let projRoot: string;
   let projectName: string;
   let appSyncClient = undefined;
+
+  beforeAll(() => {
+    tryScheduleCredentialRefresh();
+  });
 
   beforeEach(async () => {
     projectName = createRandomName();
@@ -36,8 +39,7 @@ describe('transformer model searchable migration test', () => {
   });
 
   afterEach(async () => {
-    const newCreds = refreshCredentials();
-    await deleteProject(projRoot, newCreds);
+    await deleteProject(projRoot);
     deleteProjectDir(projRoot);
   });
 
@@ -55,7 +57,6 @@ describe('transformer model searchable migration test', () => {
     await addFeatureFlag(projRoot, 'graphqltransformer', 'transformerVersion', 2);
     await addFeatureFlag(projRoot, 'graphqltransformer', 'useExperimentalPipelinedTransformer', true);
 
-    refreshCredentials();
     await updateApiSchema(projRoot, projectName, v2Schema);
     await amplifyPushUpdate(projRoot);
 

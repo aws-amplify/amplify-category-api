@@ -1,5 +1,5 @@
-import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { GetArgumentsOptions } from '@aws-amplify/graphql-transformer-core';
+import { AuthDirective } from '@aws-amplify/graphql-directives';
 
 /**
  * AuthStrategy
@@ -8,7 +8,7 @@ export type AuthStrategy = 'owner' | 'groups' | 'public' | 'private' | 'custom';
 /**
  * AuthProvider
  */
-export type AuthProvider = 'apiKey' | 'iam' | 'oidc' | 'userPools' | 'function';
+export type AuthProvider = 'apiKey' | 'iam' | 'identityPool' | 'oidc' | 'userPools' | 'function';
 /**
  * ModelMutation
  */
@@ -33,32 +33,8 @@ export interface SearchableConfig {
 
 export type GetAuthRulesOptions = GetArgumentsOptions & {
   isField?: boolean;
+  isSqlDataSource?: boolean;
 };
-
-/**
- * AuthTransformerConfig
- */
-export interface AuthTransformerConfig {
-  /** used mainly in the before step to pass the authConfig from the transformer core down to the directive */
-  authConfig?: AppSyncAuthConfiguration;
-  /** using the iam provider the resolvers checks will lets the roles in this list pass through the acm */
-  adminRoles?: Array<string>;
-  /** when authorizing private/public @auth can also check authenticated/unauthenticated status for a given identityPoolId */
-  identityPoolId?: string;
-}
-
-/**
- * RolesByProvider
- */
-export interface RolesByProvider {
-  cognitoStaticRoles: Array<RoleDefinition>;
-  cognitoDynamicRoles: Array<RoleDefinition>;
-  oidcStaticRoles: Array<RoleDefinition>;
-  oidcDynamicRoles: Array<RoleDefinition>;
-  iamRoles: Array<RoleDefinition>;
-  apiKeyRoles: Array<RoleDefinition>;
-  lambdaRoles: Array<RoleDefinition>;
-}
 
 /**
  * AuthRule
@@ -74,23 +50,6 @@ export interface AuthRule {
   operations?: ModelOperation[];
   // Used only for IAM provider to decide if an IAM policy needs to be generated. IAM auth with AdminUI does not need IAM policies
   generateIAMPolicy?: boolean;
-}
-
-/**
- * RoleDefinition
- */
-export interface RoleDefinition {
-  provider: AuthProvider;
-  strategy: AuthStrategy;
-  static: boolean;
-  claim?: string;
-  entity?: string;
-  // specific to mutations
-  allowedFields?: Array<string>;
-  nullAllowedFields?: Array<string>;
-  areAllFieldsAllowed?: boolean;
-  areAllFieldsNullAllowed?: boolean;
-  isEntityList?: boolean;
 }
 
 /**
@@ -112,45 +71,9 @@ export interface ConfiguredAuthProviders {
   hasIAM: boolean;
   hasLambda: boolean;
   hasAdminRolesEnabled: boolean;
-  adminRoles: Array<string>;
-  identityPoolId?: string;
+  hasIdentityPoolId: boolean;
+  shouldAddDefaultServiceDirective: boolean;
+  genericIamAccessEnabled: boolean;
 }
 
-export const authDirectiveDefinition = `
-  directive @auth(rules: [AuthRule!]!) on OBJECT | FIELD_DEFINITION
-  input AuthRule {
-    allow: AuthStrategy!
-    provider: AuthProvider
-    identityClaim: String
-    groupClaim: String
-    ownerField: String
-    groupsField: String
-    groups: [String]
-    operations: [ModelOperation]
-  }
-  enum AuthStrategy {
-    owner
-    groups
-    private
-    public
-    custom
-  }
-  enum AuthProvider {
-    apiKey
-    iam
-    oidc
-    userPools
-    function
-  }
-  enum ModelOperation {
-    create
-    update
-    delete
-    read
-    list
-    get
-    sync
-    listen
-    search
-  }
-`;
+export const authDirectiveDefinition = AuthDirective.definition;

@@ -1,8 +1,15 @@
 import { print } from 'graphql';
 import { EXTRA_DIRECTIVES_DOCUMENT } from './transformation/validation';
 
-export { GraphQLTransform, GraphQLTransformOptions, SyncUtils } from './transformation';
-export { OverrideConfig, UserDefinedSlot, UserDefinedResolver } from './transformation/types';
+export {
+  constructDataSourceStrategies,
+  constructSqlDirectiveDataSourceStrategies,
+  getModelTypeNames,
+  GraphQLTransform,
+  GraphQLTransformOptions,
+  SyncUtils,
+} from './transformation';
+export { UserDefinedSlot, UserDefinedResolver } from './transformation/types';
 export { validateModelSchema } from './transformation/validation';
 export {
   ConflictDetectionType,
@@ -13,24 +20,59 @@ export {
   SyncConfigServer,
   SyncConfigLambda,
   TransformConfig,
-  TransformerProjectConfig,
-  DatasourceType,
-  DBType,
 } from './config/index';
 export {
-  GetArgumentsOptions,
-  generateGetArgumentsInput,
-  getTable,
-  getKeySchema,
-  getSortKeyFieldNames,
-  getParameterStoreSecretPath,
+  APICategory,
   collectDirectives,
   collectDirectivesByTypeNames,
+  constructArrayFieldsStatement,
+  constructAuthFilterStatement,
+  constructFieldMappingInput,
+  constructNonScalarFieldsStatement,
   DirectiveWrapper,
-  IAM_AUTH_ROLE_PARAMETER,
-  IAM_UNAUTH_ROLE_PARAMETER,
-  APICategory,
+  fieldsWithSqlDirective,
+  generateGetArgumentsInput,
+  GetArgumentsOptions,
+  getArrayFields,
+  getConditionInputName,
+  getConnectionName,
+  getDefaultStrategyNameForDbType,
+  getField,
+  getFilterInputName,
+  getImportedRDSTypeFromStrategyDbType,
+  getKeySchema,
+  getModelDataSourceNameForTypeName,
+  getModelDataSourceStrategy,
+  getNonScalarFields,
+  getParameterStoreSecretPath,
+  getPrimaryKeyFieldNodes,
+  getPrimaryKeyFields,
+  getResourceName,
+  getResourceNamesForStrategy,
+  getResourceNamesForStrategyName,
+  getSortKeyFieldNames,
+  getStrategyDbTypeFromModel,
+  getStrategyDbTypeFromTypeNode,
+  getSubscriptionFilterInputName,
+  getTable,
+  getType,
+  isAmplifyDynamoDbModelDataSourceStrategy,
+  isBuiltInGraphqlNode,
+  isDefaultDynamoDbModelDataSourceStrategy,
+  isDynamoDbModel,
+  isDynamoDbType,
+  isModelType,
+  isMutationNode,
+  isObjectTypeDefinitionNode,
+  isQueryNode,
+  isSqlDbType,
+  isSqlModel,
+  isSqlStrategy,
+  normalizeDbType,
+  setResourceName,
+  SQLLambdaResourceNames,
 } from './utils';
+export type { SetResourceNameProps } from './utils';
 export * from './utils/operation-names';
 export * from './errors';
 export {
@@ -41,15 +83,18 @@ export {
 } from './transformation/transformer-plugin-base';
 export { TransformerResolver, StackManager } from './transformer-context';
 export {
+  DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
   DDB_DB_TYPE,
+  DDB_DEFAULT_DATASOURCE_STRATEGY,
   ImportAppSyncAPIInputs,
+  ImportedDataSourceConfig,
   ImportedDataSourceType,
   ImportedRDSType,
   MYSQL_DB_TYPE,
-  RDS_SCHEMA_FILE_NAME,
+  POSTGRES_DB_TYPE,
   RDSConnectionSecrets,
-  ImportedDataSourceConfig,
   RDSDataSourceConfig,
+  SQL_SCHEMA_FILE_NAME,
 } from './types';
 /**
  * Returns the extra set of directives that are supported by AppSync service.
@@ -58,7 +103,7 @@ export const getAppSyncServiceExtraDirectives = (): string => {
   return print(EXTRA_DIRECTIVES_DOCUMENT);
 };
 
-export { MappingTemplate, TransformerNestedStack } from './cdk-compat';
+export { MappingTemplate } from './cdk-compat';
 export {
   EnumWrapper,
   FieldWrapper,

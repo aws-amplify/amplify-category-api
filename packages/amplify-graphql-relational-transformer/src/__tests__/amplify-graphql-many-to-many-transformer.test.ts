@@ -2,9 +2,15 @@
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  DDB_DEFAULT_DATASOURCE_STRATEGY,
+  GraphQLTransform,
+  constructDataSourceStrategies,
+  validateModelSchema,
+} from '@aws-amplify/graphql-transformer-core';
+import { AppSyncAuthConfiguration, ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, ObjectTypeDefinitionNode, parse } from 'graphql';
+import { DeploymentResources, mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { HasOneTransformer, ManyToManyTransformer } from '..';
 import { hasGeneratedDirective, hasGeneratedField } from './test-helpers';
 
@@ -153,6 +159,25 @@ test('fails if second half of relation uses the wrong type', () => {
   const transformer = createTransformer();
 
   expect(() => transformer.transform(inputSchema)).toThrowError(`@manyToMany relation 'FooBar' expects 'Baz' but got 'Foo'.`);
+});
+
+test('fails if used on a SQL model', () => {
+  const inputSchema = `
+    type Foo @model {
+      id: ID! @primaryKey
+      bars: [Bar] @manyToMany(relationName: "FooBar")
+    }
+
+    type Bar @model {
+      id: ID! @primaryKey
+      foos: [Foo] @manyToMany(relationName: "FooBar")
+    }`;
+
+  const mySqlStrategy = mockSqlDataSourceStrategy();
+
+  const dataSourceStrategies = constructDataSourceStrategies(inputSchema, mySqlStrategy);
+  const transformer = createTransformer(undefined, dataSourceStrategies);
+  expect(() => transformer.transform(inputSchema)).toThrowError('@manyToMany directive cannot be used on a SQL model.');
 });
 
 test('valid schema', () => {
@@ -429,7 +454,10 @@ test('creates join table with implicitly defined primary keys', () => {
 });
 
 describe('Pre Processing Many To Many Tests', () => {
-  let transformer: GraphQLTransform;
+  let transformer: {
+    transform: (inputSchema: string) => DeploymentResources;
+    preProcessSchema: (schema: DocumentNode) => DocumentNode;
+  };
 
   beforeEach(() => {
     transformer = createTransformer();
@@ -638,8 +666,14 @@ describe('Pre Processing Many To Many Tests', () => {
   });
 });
 
-function createTransformer(authConfig?: AppSyncAuthConfiguration) {
-  const transformerAuthConfig: AppSyncAuthConfiguration = authConfig ?? {
+function createTransformer(
+  overrideAuthConfig?: AppSyncAuthConfiguration,
+  overrideDataSourceStrategies?: Record<string, ModelDataSourceStrategy>,
+): {
+  transform: (schema: string) => DeploymentResources & { logs: any[] };
+  preProcessSchema: (schema: DocumentNode) => DocumentNode;
+} {
+  const authConfig: AppSyncAuthConfiguration = overrideAuthConfig ?? {
     defaultAuthentication: {
       authenticationType: 'API_KEY',
     },
@@ -650,25 +684,36 @@ function createTransformer(authConfig?: AppSyncAuthConfiguration) {
   const indexTransformer = new IndexTransformer();
   const hasOneTransformer = new HasOneTransformer();
   const primaryKeyTransformer = new PrimaryKeyTransformer();
-  const transformer = new GraphQLTransform({
-    authConfig: transformerAuthConfig,
-    transformers: [
-      modelTransformer,
-      primaryKeyTransformer,
-      indexTransformer,
-      hasOneTransformer,
-      new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
-      authTransformer,
-    ],
-    transformParameters: {
-      shouldDeepMergeDirectiveConfigDefaults: false,
-      enableAutoIndexQueryNames: false,
-      respectPrimaryKeyAttributesOnConnectionField: false,
-      populateOwnerFieldForStaticGroupAuth: false,
-    },
-  });
+  const manyToManyTransformer = new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer);
+  const transformers = [
+    modelTransformer,
+    primaryKeyTransformer,
+    indexTransformer,
+    hasOneTransformer,
+    manyToManyTransformer,
+    authTransformer,
+  ];
+  const transformParameters = {
+    shouldDeepMergeDirectiveConfigDefaults: false,
+    enableAutoIndexQueryNames: false,
+    respectPrimaryKeyAttributesOnConnectionField: false,
+    populateOwnerFieldForStaticGroupAuth: false,
+  };
 
-  return transformer;
+  return {
+    transform: (schema: string) => {
+      const dataSourceStrategies = overrideDataSourceStrategies ?? constructDataSourceStrategies(schema, DDB_DEFAULT_DATASOURCE_STRATEGY);
+      return testTransform({
+        schema,
+        authConfig,
+        transformers,
+        transformParameters,
+        dataSourceStrategies,
+      });
+    },
+    preProcessSchema: (schema: DocumentNode) =>
+      new GraphQLTransform({ authConfig, transformers, transformParameters }).preProcessSchema(schema),
+  };
 }
 
 function expectObjectAndFields(schema: DocumentNode, type: String, fields: String[]) {

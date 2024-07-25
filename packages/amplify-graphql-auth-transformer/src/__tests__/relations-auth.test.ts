@@ -1,7 +1,7 @@
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthTransformer } from '../graphql-auth-transformer';
 
@@ -33,7 +33,8 @@ describe('@auth with custom primary keys', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       authConfig,
       transformers: [
         new ModelTransformer(),
@@ -44,7 +45,6 @@ describe('@auth with custom primary keys', () => {
         new AuthTransformer(),
       ],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     expect(out.resolvers['Mutation.createPostMetadata.auth.1.req.vtl']).toContain(

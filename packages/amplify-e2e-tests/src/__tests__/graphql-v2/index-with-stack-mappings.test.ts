@@ -1,3 +1,4 @@
+import * as path from 'path';
 import {
   initJSProjectWithProfile,
   deleteProject,
@@ -10,9 +11,7 @@ import {
   setStackMapping,
   getProjectMeta,
 } from 'amplify-category-api-e2e-core';
-import * as path from 'path';
 import * as fs from 'fs-extra';
-import { assertNotNull } from '@aws-amplify/graphql-transformer-core/lib/cdk-compat/stack-synthesizer';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
 
@@ -24,6 +23,13 @@ import gql from 'graphql-tag';
 const projectName = 'indexmap';
 const mappedResolverStack = 'MappedResolvers';
 const providerName = 'awscloudformation';
+
+// eslint-disable-next-line func-style, prefer-arrow/prefer-arrow-functions
+function assertNotNull<A>(x: A | undefined): asserts x is NonNullable<A> {
+  if (x === null && x === undefined) {
+    throw new Error('You must call bindStack() first');
+  }
+}
 
 const getMappedStackPath = (projRoot: string): string =>
   path.join(projRoot, 'amplify', 'backend', 'api', projectName, 'build', 'stacks', `${mappedResolverStack}.json`);

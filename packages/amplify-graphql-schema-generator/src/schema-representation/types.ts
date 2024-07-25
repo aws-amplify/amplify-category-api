@@ -50,12 +50,15 @@ export interface DefaultValue {
 
 export class Field {
   public default: DefaultValue | undefined = undefined;
+
   public length: number | null | undefined;
+
   constructor(public name: string, public type: FieldType) {}
 }
 
 export class Index {
   private fields: string[] = [];
+
   constructor(public name: string) {}
 
   public getFields(): string[] {
@@ -69,7 +72,9 @@ export class Index {
 
 export class Model {
   private fields: Field[] = [];
+
   private primaryKey: Index | undefined = undefined;
+
   private indexes: Index[] = [];
 
   constructor(private name: string) {}

@@ -2,6 +2,8 @@
 import {
   DirectiveWrapper,
   generateGetArgumentsInput,
+  getStrategyDbTypeFromTypeNode,
+  getStrategyDbTypeFromModel,
   InvalidDirectiveError,
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
@@ -10,14 +12,19 @@ import {
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
+  TransformerPreProcessContextProvider,
+  ModelDataSourceStrategyDbType,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { HasOneDirective } from '@aws-amplify/graphql-directives';
 import {
   ArgumentNode,
   DirectiveNode,
   DocumentNode,
   FieldDefinitionNode,
   InterfaceTypeDefinitionNode,
+  NamedTypeNode,
   ObjectTypeDefinitionNode,
+  Kind,
 } from 'graphql';
 import {
   getBaseType,
@@ -30,9 +37,7 @@ import {
   makeValueNode,
 } from 'graphql-transformer-common';
 import { produce } from 'immer';
-import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { WritableDraft } from 'immer/dist/types/types-external';
-import { makeGetItemConnectionWithKeyResolver } from './resolvers';
 import {
   addFieldsToDefinition,
   convertSortKeyFieldsToSortKeyConnectionFields,
@@ -41,22 +46,15 @@ import {
 } from './schema';
 import { HasOneDirectiveConfiguration, ObjectDefinition } from './types';
 import {
-  ensureFieldsArray,
   getConnectionAttributeName,
-  getFieldsNodes,
   getObjectPrimaryKey,
   getRelatedType,
-  getRelatedTypeIndex,
-  registerHasOneForeignKeyMappings,
   validateDisallowedDataStoreRelationships,
   validateModelDirective,
   validateRelatedModelDirective,
 } from './utils';
-
-const directiveName = 'hasOne';
-const directiveDefinition = `
-  directive @${directiveName}(fields: [String!]) on FIELD_DEFINITION
-`;
+import { getGenerator } from './resolver/generator-factory';
+import { getHasOneDirectiveTransformer } from './has-one/has-one-directive-transformer-factory';
 
 /**
  * Transformer for @hasOne directive
@@ -65,7 +63,7 @@ export class HasOneTransformer extends TransformerPluginBase {
   private directiveList: HasOneDirectiveConfiguration[] = [];
 
   constructor() {
-    super('amplify-has-one-transformer', directiveDefinition);
+    super('amplify-has-one-transformer', HasOneDirective.definition);
   }
 
   field = (
@@ -77,7 +75,7 @@ export class HasOneTransformer extends TransformerPluginBase {
     const directiveWrapped = new DirectiveWrapper(directive);
     const args = directiveWrapped.getArguments(
       {
-        directiveName,
+        directiveName: HasOneDirective.name,
         object: parent as ObjectTypeDefinitionNode,
         field: definition,
         directive,
@@ -102,7 +100,7 @@ export class HasOneTransformer extends TransformerPluginBase {
       );
 
       objectDefs?.forEach((def) => {
-        const filteredFields = def?.fields?.filter((field) => field?.directives?.some((dir) => dir.name.value === directiveName));
+        const filteredFields = def?.fields?.filter((field) => field?.directives?.some((dir) => dir.name.value === HasOneDirective.name));
         filteredFields?.forEach((field) => {
           field?.directives?.forEach((dir) => {
             const connectionAttributeName = getConnectionAttributeName(
@@ -158,13 +156,10 @@ export class HasOneTransformer extends TransformerPluginBase {
    */
   prepare = (context: TransformerPrepareStepContextProvider): void => {
     this.directiveList.forEach((config) => {
-      registerHasOneForeignKeyMappings({
-        transformParameters: context.transformParameters,
-        resourceHelper: context.resourceHelper,
-        thisTypeName: config.object.name.value,
-        thisFieldName: config.field.name.value,
-        relatedType: config.relatedType,
-      });
+      const modelName = config.object.name.value;
+      const dbType = getStrategyDbTypeFromModel(context as TransformerContextProvider, modelName);
+      const dataSourceBasedTransformer = getHasOneDirectiveTransformer(dbType, config);
+      dataSourceBasedTransformer.prepare(context, config);
     });
   };
 
@@ -172,7 +167,9 @@ export class HasOneTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      config.relatedTypeIndex = getRelatedTypeIndex(config, context);
+      const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
+      const dataSourceBasedTransformer = getHasOneDirectiveTransformer(dbType, config);
+      dataSourceBasedTransformer.transformSchema(ctx, config);
       ensureHasOneConnectionField(config, context);
     }
   };
@@ -181,23 +178,53 @@ export class HasOneTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      makeGetItemConnectionWithKeyResolver(config, context);
+      const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
+      const dataSourceBasedTransformer = getHasOneDirectiveTransformer(dbType, config);
+      dataSourceBasedTransformer.generateResolvers(ctx, config);
     }
   };
 }
 
 const validate = (config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-  const { field } = config;
+  const { field, object } = config;
+  if (!ctx.transformParameters.allowGen1Patterns) {
+    const modelName = object.name.value;
+    const fieldName = field.name.value;
+    if (field.type.kind === Kind.NON_NULL_TYPE) {
+      throw new InvalidDirectiveError(
+        `@${HasOneDirective.name} cannot be used on required fields. Modify ${modelName}.${fieldName} to be optional.`,
+      );
+    }
+    if (config.fields) {
+      throw new InvalidDirectiveError(
+        `fields argument on @${HasOneDirective.name} is disallowed. Modify ${modelName}.${fieldName} to use references instead.`,
+      );
+    }
+  }
 
-  ensureFieldsArray(config);
+  let dbType: ModelDataSourceStrategyDbType;
+  try {
+    // getStrategyDbTypeFromTypeNode throws if a datasource is not found for the model. We want to catch that condition
+    // here to provide a friendlier error message, since the most likely error scenario is that the customer neglected to annotate one
+    // of the types with `@model`.
+    // Since this transformer gets invoked on both sides of the `belongsTo` relationship, a failure at this point is about the
+    // field itself, not the related type.
+    dbType = getStrategyDbTypeFromTypeNode(field.type, ctx);
+  } catch {
+    throw new InvalidDirectiveError(
+      `Object type ${(field.type as NamedTypeNode)?.name.value ?? field.name} must be annotated with @model.`,
+    );
+  }
+
+  config.relatedType = getRelatedType(config, ctx);
+  const dataSourceBasedTransformer = getHasOneDirectiveTransformer(dbType, config);
+  dataSourceBasedTransformer.validate(ctx, config);
   validateModelDirective(config);
 
   if (isListType(field.type)) {
-    throw new InvalidDirectiveError(`@${directiveName} cannot be used with lists. Use @hasMany instead.`);
+    throw new InvalidDirectiveError(`@${HasOneDirective.name} cannot be used with lists. Use @hasMany instead.`);
   }
 
-  config.fieldNodes = getFieldsNodes(config, ctx);
-  config.relatedType = getRelatedType(config, ctx);
   config.connectionFields = [];
   validateRelatedModelDirective(config);
   validateDisallowedDataStoreRelationships(config, ctx);

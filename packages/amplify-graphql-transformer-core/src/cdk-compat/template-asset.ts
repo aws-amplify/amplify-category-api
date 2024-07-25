@@ -1,18 +1,22 @@
 /* eslint-disable max-classes-per-file */
+import * as crypto from 'crypto';
 import {
   InlineMappingTemplateProvider,
   MappingTemplateType,
+  S3Asset,
   S3MappingFunctionCodeProvider,
   S3MappingTemplateProvider,
+  AssetProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Construct } from 'constructs';
-import * as crypto from 'crypto';
-import { FileAsset } from './file-asset';
 
 export class S3MappingFunctionCode implements S3MappingFunctionCodeProvider {
   public readonly type = MappingTemplateType.S3_LOCATION;
-  private asset?: FileAsset;
+
+  private asset?: S3Asset;
+
   private fileName: string;
+
   private filePath: string;
 
   constructor(fileName: string, filePath: string) {
@@ -20,9 +24,9 @@ export class S3MappingFunctionCode implements S3MappingFunctionCodeProvider {
     this.filePath = filePath;
   }
 
-  bind(scope: Construct): FileAsset {
+  bind(scope: Construct, assetProvider: AssetProvider): S3Asset {
     if (!this.asset) {
-      this.asset = new FileAsset(scope, `Code${this.fileName}`, {
+      this.asset = assetProvider.provide(scope, `Code${this.fileName}`, {
         fileContent: this.filePath,
         fileName: this.fileName,
       });
@@ -30,10 +34,14 @@ export class S3MappingFunctionCode implements S3MappingFunctionCodeProvider {
     return this.asset;
   }
 }
+
 export class S3MappingTemplate implements S3MappingTemplateProvider {
   private content: string;
+
   private name: string;
-  private asset?: FileAsset;
+
+  private asset?: S3Asset;
+
   public readonly type = MappingTemplateType.S3_LOCATION;
 
   static fromInlineTemplate(code: string, templateName?: string): S3MappingTemplate {
@@ -46,15 +54,15 @@ export class S3MappingTemplate implements S3MappingTemplateProvider {
     this.name = name || `mapping-template-${assetHash}.vtl`;
   }
 
-  bind(scope: Construct): string {
+  bind(scope: Construct, assetProvider: AssetProvider): string {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
-      this.asset = new FileAsset(scope, `Template${this.name}`, {
+      this.asset = assetProvider.provide(scope, `Template${this.name}`, {
         fileContent: this.content,
         fileName: this.name,
       });
     }
-    return this.asset.s3Url;
+    return this.asset.s3ObjectUrl;
   }
 
   /**
@@ -80,6 +88,7 @@ export class InlineTemplate implements InlineMappingTemplateProvider {
 
   // eslint-disable-next-line no-useless-constructor
   constructor(private content: string) {}
+
   bind(): string {
     return this.content;
   }

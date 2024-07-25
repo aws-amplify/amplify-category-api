@@ -1,7 +1,8 @@
 import { ObjectTypeDefinitionNode, parse, DocumentNode, Kind, InputObjectTypeDefinitionNode } from 'graphql';
 import { GraphQLTransform } from 'graphql-transformer-core';
-import { VersionedModelTransformer } from '../VersionedModelTransformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { VersionedModelTransformer } from '../VersionedModelTransformer';
+
 const getInputType =
   (schemaDoc: DocumentNode) =>
   (name: string): InputObjectTypeDefinitionNode =>
@@ -25,7 +26,7 @@ const featureFlags = {
   getObject: jest.fn(),
 };
 
-test('Test VersionedModelTransformer validation happy case', () => {
+test('VersionedModelTransformer validation happy case', () => {
   const validSchema = `
     type Post @model @versioned {
         id: ID!
@@ -50,7 +51,7 @@ test('Test VersionedModelTransformer validation happy case', () => {
   // Use e2e tests to test resolver logic.
 });
 
-test('Test VersionedModelTransformer validation fails when provided version field of wrong type.', () => {
+test('VersionedModelTransformer validation fails when provided version field of wrong type.', () => {
   const validSchema = `
     type Post @model @versioned {
         id: ID!
@@ -71,7 +72,7 @@ test('Test VersionedModelTransformer validation fails when provided version fiel
   }
 });
 
-test('Test VersionedModelTransformer version field replaced by non-null if provided as nullable.', () => {
+test('VersionedModelTransformer version field replaced by non-null if provided as nullable.', () => {
   const validSchema = `
     type Post @model @versioned {
         id: ID!

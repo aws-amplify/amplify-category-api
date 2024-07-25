@@ -3,13 +3,13 @@ import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { PredictionsTransformer } from 'graphql-predictions-transformer';
-import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import { GraphQLClient } from '../GraphQLClient';
 import { default as moment } from 'moment';
+import { default as S3 } from 'aws-sdk/clients/s3';
+import { CloudFormationClient } from '../CloudFormationClient';
+import { GraphQLClient } from '../GraphQLClient';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
-import { default as S3 } from 'aws-sdk/clients/s3';
 import { resolveTestRegion } from '../testSetup';
 
 const AWS_REGION = resolveTestRegion();
@@ -101,7 +101,7 @@ afterAll(async () => {
   await cleanupStackAfterTest(BUCKET_NAME, STACK_NAME, cf);
 });
 
-test('test translate and convert text to speech', async () => {
+test('translate and convert text to speech', async () => {
   // logic to test graphql
   const response = await GRAPHQL_CLIENT.query(
     `query SpeakTranslatedText($input: SpeakTranslatedTextInput!) {
@@ -126,8 +126,9 @@ test('test translate and convert text to speech', async () => {
   expect(pollyURL).toMatch(/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/);
 });
 
-test('test translate text individually', async () => {
-  const germanTranslation = /((\bDies\b)|(\bdas\b)|(\bder\b)) ist ein ((\bStimmtest\b)|(\Sprachtest\b)|(\bStimmetest\b))/i;
+test('translate text individually', async () => {
+  const germanTranslation =
+    /((\bDies\b)|(\bdas\b)|(\bder\b)) ist ein ((\bStimmtest\b)|(\Sprachtest\b)|(\bStimmetest\b)|(\bStimmentest\b))/i;
   const response = await GRAPHQL_CLIENT.query(
     `query TranslateThis($input: TranslateThisInput!) {
       translateThis(input: $input)

@@ -22,9 +22,14 @@ import {
   UnionTypeDefinitionNode,
   UnionTypeExtensionNode,
 } from 'graphql';
-import { stripDirectives } from '../utils/strip-directives';
-import { DEFAULT_SCHEMA_DEFINITION } from '../utils/defaultSchema';
 import { TransformerContextOutputProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { stripDirectives } from '../utils/strip-directives';
+import {
+  DEFAULT_SCHEMA_DEFINITION,
+  DEFAULT_QUERY_OPERATION,
+  DEFAULT_MUTATION_OPERATION,
+  DEFAULT_SUBSCRIPTION_OPERATION,
+} from '../utils/defaultSchema';
 
 const AMPLIFY = 'AMPLIFY';
 
@@ -72,13 +77,14 @@ export class TransformerOutput implements TransformerContextOutputProvider {
         case Kind.INTERFACE_TYPE_DEFINITION:
         case Kind.INPUT_OBJECT_TYPE_DEFINITION:
         case Kind.ENUM_TYPE_DEFINITION:
-        case Kind.UNION_TYPE_DEFINITION:
+        case Kind.UNION_TYPE_DEFINITION: {
           const typeDef = inputDef as TypeDefinitionNode;
           if (this.isAmplifyInput(typeDef.name.value)) break;
           if (!this.getType(typeDef.name.value)) {
             this.addType(typeDef);
           }
           break;
+        }
         case Kind.SCHEMA_DEFINITION:
           if (!this.getSchema()) {
             const typeDef = inputDef as SchemaDefinitionNode;
@@ -96,37 +102,38 @@ export class TransformerOutput implements TransformerContextOutputProvider {
         default:
         /* pass any others */
       }
+    }
 
-      // We add the extension nodes last so that the order of input documents does not matter.
-      // At this point, all input documents have been processed so the base types will be present.
-      for (const ext of extensionNodes) {
-        switch (ext.kind) {
-          case Kind.OBJECT_TYPE_EXTENSION:
-            this.addObjectExtension(ext);
-            break;
-          case Kind.INTERFACE_TYPE_EXTENSION:
-            this.addInterfaceExtension(ext);
-            break;
-          case Kind.UNION_TYPE_EXTENSION:
-            this.addUnionExtension(ext);
-            break;
-          case Kind.ENUM_TYPE_EXTENSION:
-            this.addEnumExtension(ext);
-            break;
-          case Kind.INPUT_OBJECT_TYPE_EXTENSION:
-            this.addInputExtension(ext);
-            break;
-          // case Kind.SCALAR_TYPE_EXTENSION:
-          default:
-            continue;
-        }
-      }
-      // If no schema definition is provided then fill with the default one.
-      if (!this.getSchema()) {
-        this.putSchema(DEFAULT_SCHEMA_DEFINITION);
+    // We add the extension nodes last so that the order of input documents does not matter.
+    // At this point, all input documents have been processed so the base types will be present.
+    for (const ext of extensionNodes) {
+      switch (ext.kind) {
+        case Kind.OBJECT_TYPE_EXTENSION:
+          this.addObjectExtension(ext);
+          break;
+        case Kind.INTERFACE_TYPE_EXTENSION:
+          this.addInterfaceExtension(ext);
+          break;
+        case Kind.UNION_TYPE_EXTENSION:
+          this.addUnionExtension(ext);
+          break;
+        case Kind.ENUM_TYPE_EXTENSION:
+          this.addEnumExtension(ext);
+          break;
+        case Kind.INPUT_OBJECT_TYPE_EXTENSION:
+          this.addInputExtension(ext);
+          break;
+        // case Kind.SCALAR_TYPE_EXTENSION:
+        default:
+          continue;
       }
     }
+    // If no schema definition is provided then fill with the default one.
+    if (!this.getSchema()) {
+      this.putSchema(DEFAULT_SCHEMA_DEFINITION);
+    }
   }
+
   public getTypeDefinitionsOfKind(kind: string) {
     const typeDefs: TypeDefinitionNode[] = [];
     for (const key of Object.keys(this.nodeMap)) {
@@ -141,9 +148,11 @@ export class TransformerOutput implements TransformerContextOutputProvider {
   public putSchema(obj: SchemaDefinitionNode) {
     this.nodeMap.__schema = obj;
   }
+
   public getSchema(): SchemaDefinitionNode {
     return this.nodeMap.__schema as SchemaDefinitionNode;
   }
+
   public getQueryTypeName(): string | undefined {
     const schemaNode = this.getSchema();
     const queryTypeName = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'query');
@@ -151,10 +160,21 @@ export class TransformerOutput implements TransformerContextOutputProvider {
       return queryTypeName.type.name.value;
     }
   }
+
   public getQuery(): ObjectTypeDefinitionNode | undefined {
     const queryTypeName = this.getQueryTypeName();
     if (queryTypeName) {
       return this.nodeMap[queryTypeName] as ObjectTypeDefinitionNode | undefined;
+    }
+  }
+
+  public addDefaultQuery(): void {
+    this.addOperationType(DEFAULT_QUERY_OPERATION);
+  }
+
+  public ensureQuery(): void {
+    if (!this.getQueryTypeName()) {
+      this.addDefaultQuery();
     }
   }
 
@@ -173,6 +193,16 @@ export class TransformerOutput implements TransformerContextOutputProvider {
     }
   }
 
+  public addDefaultMutation(): void {
+    this.addOperationType(DEFAULT_MUTATION_OPERATION);
+  }
+
+  public ensureMutation(): void {
+    if (!this.getMutationTypeName()) {
+      this.addDefaultMutation();
+    }
+  }
+
   public getSubscriptionTypeName(): string | undefined {
     const schemaNode = this.getSchema();
     const subscriptionTypeName = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'subscription');
@@ -188,6 +218,16 @@ export class TransformerOutput implements TransformerContextOutputProvider {
     }
   }
 
+  public addDefaultSubscription(): void {
+    this.addOperationType(DEFAULT_SUBSCRIPTION_OPERATION);
+  }
+
+  public ensureSubscription(): void {
+    if (!this.getSubscriptionTypeName()) {
+      this.addDefaultSubscription();
+    }
+  }
+
   /**
    * Add a generic type.
    * @param obj The type to add
@@ -198,6 +238,7 @@ export class TransformerOutput implements TransformerContextOutputProvider {
     }
     this.nodeMap[obj.name.value] = obj;
   }
+
   public putType(obj: TypeDefinitionNode) {
     this.nodeMap[obj.name.value] = obj;
   }
@@ -208,6 +249,16 @@ export class TransformerOutput implements TransformerContextOutputProvider {
 
   public hasType(name: string): boolean {
     return name in this.nodeMap;
+  }
+
+  public addOperationType(operation: OperationTypeDefinitionNode) {
+    const schemaNode = this.getSchema();
+    if (schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === operation.operation)) {
+      throw new Error(`Conflicting ${operation.operation} operation found.`);
+    } else {
+      const updatedSchema = TransformerOutput.makeSchema([...schemaNode.operationTypes, operation]);
+      this.putSchema(updatedSchema);
+    }
   }
 
   /**
@@ -257,6 +308,7 @@ export class TransformerOutput implements TransformerContextOutputProvider {
    * @param fields The fields to add the query type.
    */
   public addQueryFields(fields: FieldDefinitionNode[]) {
+    this.ensureQuery();
     const queryTypeName = this.getQueryTypeName();
     if (queryTypeName) {
       if (!this.getType(queryTypeName)) {
@@ -274,6 +326,7 @@ export class TransformerOutput implements TransformerContextOutputProvider {
    * @param fields The fields to add the mutation type.
    */
   public addMutationFields(fields: FieldDefinitionNode[]) {
+    this.ensureMutation();
     const mutationTypeName = this.getMutationTypeName();
     if (mutationTypeName) {
       if (!this.getType(mutationTypeName)) {
@@ -291,6 +344,7 @@ export class TransformerOutput implements TransformerContextOutputProvider {
    * @param fields The fields to add the subscription type.
    */
   public addSubscriptionFields(fields: FieldDefinitionNode[]) {
+    this.ensureSubscription();
     const subscriptionTypeName = this.getSubscriptionTypeName();
     if (subscriptionTypeName) {
       if (!this.getType(subscriptionTypeName)) {
@@ -543,6 +597,22 @@ export class TransformerOutput implements TransformerContextOutputProvider {
     this.nodeMap[inp.name.value] = inp;
   }
 
+  public updateInput(obj: InputObjectTypeDefinitionNode) {
+    if (!this.nodeMap[obj.name.value]) {
+      throw new Error(`Type ${obj.name.value} does not exist.`);
+    }
+    this.nodeMap[obj.name.value] = obj;
+  }
+
+  public getInput(name: string): InputObjectTypeDefinitionNode | undefined {
+    if (this.nodeMap[name]) {
+      const node = this.nodeMap[name];
+      if (node.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION) {
+        return node as InputObjectTypeDefinitionNode;
+      }
+    }
+  }
+
   /**
    * Add an enum type definition node to the context.
    * @param en The enum type definition node to add.
@@ -609,6 +679,7 @@ export class TransformerOutput implements TransformerContextOutputProvider {
       },
     };
   }
+
   private static makeSchema(operationTypes: OperationTypeDefinitionNode[]): SchemaDefinitionNode {
     return {
       kind: Kind.SCHEMA_DEFINITION,

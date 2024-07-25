@@ -6,21 +6,15 @@ import { FunctionSlot } from '../types';
  * @param functionSlots the slot inputs to validate.
  */
 export const validateFunctionSlots = (functionSlots: FunctionSlot[]): void => {
-  functionSlots.forEach(
-    ({ function: { code, runtime, dataSource, name, description, responseMappingTemplate, requestMappingTemplate } }) => {
-      if (code || runtime || dataSource || name || description) {
-        throw new Error('Unexpected property found on function slot, only requestMappingTemplate and responseMappingTemplate supported');
-      }
-      if (!requestMappingTemplate && !responseMappingTemplate) {
-        throw new Error('Expected at least one of either requestMappingTemplate or responseMappingTemplate');
-      }
-    },
-  );
+  functionSlots.forEach(({ function: { responseMappingTemplate, requestMappingTemplate } }) => {
+    if (!requestMappingTemplate && !responseMappingTemplate) {
+      throw new Error('Expected at least one of either requestMappingTemplate or responseMappingTemplate');
+    }
+  });
 };
 
 /**
- * Short term hack, but we'll partition any slots have both a request and response mapping template into two,
- * to make the existing system work.
+ * We'll partition any slots have both a request and response mapping template into two to make the existing system work.
  * @param functionSlots the possibly consolidated slots.
  * @returns no longer consolidated slots.
  */

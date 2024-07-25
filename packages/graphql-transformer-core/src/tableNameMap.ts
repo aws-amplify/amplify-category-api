@@ -1,5 +1,5 @@
-import { InvalidDirectiveError } from '.';
 import { collectDirectivesByType } from './collectDirectives';
+import { InvalidDirectiveError } from '.';
 
 // this must be kept in sync with the directive name defined in the MapsToTransformer
 // it probably won't change though as this would be a breaking API change

@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 type User @model {
   id: ID!
@@ -7,7 +7,7 @@ type User @model {
 }
 
 ##fieldLevelAuth1`;
-//mutations
+// mutations
 export const mutation = `
 mutation CreateUser(
     $input: CreateUserInput!
@@ -35,7 +35,7 @@ export const expected_result_mutation = {
   },
 };
 
-//queries
+// queries
 export const query = `
  query GetUser {
     getUser(id: "1") {

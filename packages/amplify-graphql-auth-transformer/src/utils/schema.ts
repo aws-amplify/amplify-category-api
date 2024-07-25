@@ -30,7 +30,8 @@ import {
 } from 'graphql-transformer-common';
 import md5 from 'md5';
 import { RELATIONAL_DIRECTIVES } from './constants';
-import { RelationalPrimaryMapConfig, RoleDefinition, SearchableConfig } from './definitions';
+import { RelationalPrimaryMapConfig, SearchableConfig } from './definitions';
+import { RoleDefinition } from './role-definition';
 
 /**
  * collectFieldNames
@@ -114,9 +115,6 @@ export const getSearchableConfig = (
  - if they don't have the same length then we throw an error
  - All of the fields specified are checked against the ctx.source.relatedField
    since this isn't a many relational we don't need to get values from ctx.args
- */
-/**
- *
  */
 export const getRelationalPrimaryMap = (
   ctx: TransformerContextProvider,

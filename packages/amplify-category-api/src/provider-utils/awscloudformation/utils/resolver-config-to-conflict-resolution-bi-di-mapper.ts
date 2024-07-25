@@ -62,13 +62,14 @@ const resolutionStrategyToSyncConfigMap: Record<string, (rs: ResolutionStrategy)
   }),
   LAMBDA: (resolutionStrategy: LambdaResolutionStrategy) => {
     switch (resolutionStrategy.resolver.type) {
-      case 'EXISTING':
+      case 'EXISTING': {
         const { name, region, arn } = resolutionStrategy.resolver;
         return {
           ConflictHandler: ConflictHandlerType.LAMBDA,
           ConflictDetection: 'VERSION',
           LambdaConflictHandler: { name, region, lambdaArn: arn },
         };
+      }
       case 'NEW':
         throw new Error(
           'Tried to convert LambdaResolutionStrategy "NEW" to SyncConfig. New resources must be generated prior to this conversion and then replaced with a LambdaResolutionStrategy of type "EXISTING"',

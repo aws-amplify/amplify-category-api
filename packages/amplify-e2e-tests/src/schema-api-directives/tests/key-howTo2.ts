@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 type Order @model @key(fields: ["customerEmail", "createdAt"]) {
   customerEmail: String!
@@ -7,7 +7,7 @@ type Order @model @key(fields: ["customerEmail", "createdAt"]) {
 }
 
 #key/howTo2`;
-//mutations
+// mutations
 export const mutation1 = `
 mutation CreateOrder(
     $input: CreateOrderInput!
@@ -48,7 +48,7 @@ export const input_mutation2 = {
   },
 };
 
-//queries
+// queries
 export const query = `
 query ListOrdersForCustomerIn2019 {
   listOrders(customerEmail: "me@email.com", createdAt: { beginsWith: "2019" }) {

@@ -31,6 +31,7 @@ export const ARTIFACT_STORAGE_PATH_ALLOW_LIST_CODEBUILD = [
   '$CODEBUILD_SRC_DIR/packages/graphql-transformers-e2e-tests/',
   '$CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/',
   '$CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/amplify-e2e-reports',
-  '$CODEBUILD_SRC_DIR/packages/amplify-migration-tests/',
-  '$CODEBUILD_SRC_DIR/packages/amplify-migration-tests/amplify-migration-reports',
+  '$CODEBUILD_SRC_DIR/client-test-apps/js/api-model-relationship-app/test-results',
+  '$CODEBUILD_SRC_DIR/client-test-apps/js/api-model-relationship-app/cypress/screenshots',
+  '$CODEBUILD_SRC_DIR/client-test-apps/js/api-model-relationship-app/cypress/videos',
 ];

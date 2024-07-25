@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 type Todo @model
   @auth(rules: [{ allow: owner, operations: [create, delete] }]) {
@@ -8,7 +8,7 @@ type Todo @model
 }
 
 ##auth/owner7`;
-//mutations
+// mutations
 export const mutation1 = `
 mutation CreateTodo(
     $input: CreateTodoInput!

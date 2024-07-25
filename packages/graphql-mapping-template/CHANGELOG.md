@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.20.16](https://github.com/aws-amplify/amplify-category-api/compare/graphql-mapping-template@4.20.15...graphql-mapping-template@4.20.16) (2024-04-26)
+
+### Bug Fixes
+
+- ddb references hasOne returns record if multiple exist ([#2497](https://github.com/aws-amplify/amplify-category-api/issues/2497)) ([c105138](https://github.com/aws-amplify/amplify-category-api/commit/c1051384780c732ea2ddb98301994bda55bb62d9))
+
+## [4.20.15](https://github.com/aws-amplify/amplify-category-api/compare/graphql-mapping-template@4.20.14...graphql-mapping-template@4.20.15) (2024-02-28)
+
+**Note:** Version bump only for package graphql-mapping-template
+
+## [4.20.14](https://github.com/aws-amplify/amplify-category-api/compare/graphql-mapping-template@4.20.13...graphql-mapping-template@4.20.14) (2023-12-18)
+
+**Note:** Version bump only for package graphql-mapping-template
+
+## [4.20.13](https://github.com/aws-amplify/amplify-category-api/compare/graphql-mapping-template@4.20.12...graphql-mapping-template@4.20.13) (2023-12-06)
+
+**Note:** Version bump only for package graphql-mapping-template
+
+## [4.20.12](https://github.com/aws-amplify/amplify-category-api/compare/graphql-mapping-template@4.20.11...graphql-mapping-template@4.20.12) (2023-08-30)
+
+**Note:** Version bump only for package graphql-mapping-template
+
+## [4.20.11](https://github.com/aws-amplify/amplify-category-api/compare/graphql-mapping-template@4.20.10...graphql-mapping-template@4.20.11) (2023-07-21)
+
+**Note:** Version bump only for package graphql-mapping-template
+
+## [4.20.10](https://github.com/aws-amplify/amplify-category-api/compare/graphql-mapping-template@4.20.9...graphql-mapping-template@4.20.10) (2023-07-17)
+
+**Note:** Version bump only for package graphql-mapping-template
+
 ## [4.20.9](https://github.com/aws-amplify/amplify-category-api/compare/graphql-mapping-template@4.20.8...graphql-mapping-template@4.20.9) (2023-06-29)
 
 **Note:** Version bump only for package graphql-mapping-template

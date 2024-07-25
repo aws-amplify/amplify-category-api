@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 #error: missing the owner field, 
 #change: added the missign owner field
@@ -19,7 +19,7 @@ type Todo @model
 }
 
 ##fieldLevelAuth6`;
-//mutations
+// mutations
 export const mutation1 = `
 mutation CreateTodo {
     createTodo(input: {

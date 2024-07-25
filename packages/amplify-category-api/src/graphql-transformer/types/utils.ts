@@ -3,12 +3,12 @@ import { Construct } from 'constructs';
 import _ from 'lodash';
 import {
   AmplifyApiGraphQlResourceStackTemplate,
-  AppsyncStackCommon,
   FunctionDirectiveStack,
+  AppsyncStackCommon,
   HttpsDirectiveStack,
-  ModelDirectiveStack,
   OpenSearchDirectiveStack,
-} from '@aws-amplify/graphql-transformer-interfaces';
+  ModelDirectiveStack,
+} from '../cdk-compat/amplify-api-resource-stack-types';
 import { ConstructResourceMeta } from './types';
 
 export const stacksTypes: Record<string, string> = {

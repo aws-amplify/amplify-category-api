@@ -1,5 +1,5 @@
 import { DeletionPolicy, AppSync } from 'cloudform-types';
-import { DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
+import { DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode, FieldDefinitionNode, parse } from 'graphql';
 import {
   blankObject,
   makeConnectionField,
@@ -12,7 +12,8 @@ import {
   ResolverResourceIDs,
   getBaseType,
 } from 'graphql-transformer-common';
-import { getDirectiveArguments, gql, Transformer, TransformerContext, SyncConfig, InvalidDirectiveError } from 'graphql-transformer-core';
+import { getDirectiveArguments, Transformer, TransformerContext, SyncConfig, InvalidDirectiveError } from 'graphql-transformer-core';
+import { ModelDirectiveV1 } from '@aws-amplify/graphql-directives';
 import {
   getNonModelObjectArray,
   makeCreateInputObject,
@@ -62,41 +63,11 @@ export const CONDITIONS_MINIMUM_VERSION = 5;
  * }
  */
 
-export const directiveDefinition = gql`
-  directive @model(
-    queries: ModelQueryMap
-    mutations: ModelMutationMap
-    subscriptions: ModelSubscriptionMap
-    timestamps: TimestampConfiguration
-  ) on OBJECT
-  input ModelMutationMap {
-    create: String
-    update: String
-    delete: String
-  }
-  input ModelQueryMap {
-    get: String
-    list: String
-  }
-  input ModelSubscriptionMap {
-    onCreate: [String]
-    onUpdate: [String]
-    onDelete: [String]
-    level: ModelSubscriptionLevel
-  }
-  enum ModelSubscriptionLevel {
-    off
-    public
-    on
-  }
-  input TimestampConfiguration {
-    createdAt: String
-    updatedAt: String
-  }
-`;
+export const directiveDefinition = parse(ModelDirectiveV1.definition);
 
 export class DynamoDBModelTransformer extends Transformer {
   resources: ResourceFactory;
+
   opts: DynamoDBModelTransformerOptions;
 
   constructor(opts: DynamoDBModelTransformerOptions = {}) {
@@ -168,7 +139,7 @@ export class DynamoDBModelTransformer extends Transformer {
     // TODO: Handle types with more than a single "id" hash key
     const typeName = def.name.value;
     this.setSyncConfig(ctx, typeName);
-    const isSyncEnabled = this.opts.SyncConfig ? true : false;
+    const isSyncEnabled = !!this.opts.SyncConfig;
     const tableLogicalID = ModelResourceIDs.ModelTableResourceID(typeName);
     const iamRoleLogicalID = ModelResourceIDs.ModelTableIAMRoleID(typeName);
     const dataSourceRoleLogicalID = ModelResourceIDs.ModelTableDataSourceID(typeName);
@@ -279,7 +250,7 @@ export class DynamoDBModelTransformer extends Transformer {
     nonModelArray: ObjectTypeDefinitionNode[],
   ) => {
     const typeName = def.name.value;
-    const isSyncEnabled = this.opts.SyncConfig ? true : false;
+    const isSyncEnabled = !!this.opts.SyncConfig;
 
     const mutationFields = [];
     // Get any name overrides provided by the user. If an empty map it provided
@@ -422,7 +393,7 @@ export class DynamoDBModelTransformer extends Transformer {
     let shouldMakeList = true;
     let getFieldNameOverride = undefined;
     let listFieldNameOverride = undefined;
-    const isSyncEnabled = this.opts.SyncConfig ? true : false;
+    const isSyncEnabled = !!this.opts.SyncConfig;
 
     // Figure out which queries to make and if they have name overrides.
     // If queries is undefined (default), create all queries

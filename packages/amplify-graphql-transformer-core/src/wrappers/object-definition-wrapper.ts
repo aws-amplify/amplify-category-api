@@ -27,16 +27,21 @@ import {
 import { DirectiveWrapper } from '../utils/directive-wrapper';
 
 export class GenericFieldWrapper {
-  protected type: TypeNode;
+  public type: TypeNode;
+
   public readonly directives: DirectiveWrapper[];
+
   public loc?: Location;
+
   public name: string;
+
   constructor(field: FieldDefinitionNode | InputValueDefinitionNode) {
     this.type = field.type;
     this.name = field.name.value;
     this.loc = field.loc;
     this.directives = (field.directives || []).map((d) => new DirectiveWrapper(d));
   }
+
   isList = (): boolean => {
     return this.isListType(this.type);
   };
@@ -94,6 +99,7 @@ export class GenericFieldWrapper {
     }
     return node;
   };
+
   public getTypeName = (): string => {
     return this.getBaseType().name.value;
   };
@@ -126,9 +132,13 @@ export class GenericFieldWrapper {
 
 export class InputFieldWrapper extends GenericFieldWrapper {
   public readonly argumenets?: InputValueDefinitionNode[];
+
   public readonly description?: StringValueNode;
+
   public type: TypeNode;
+
   public readonly name: string;
+
   public readonly loc?: Location;
 
   constructor(protected field: InputValueDefinitionNode) {
@@ -210,7 +220,9 @@ export class InputFieldWrapper extends GenericFieldWrapper {
 }
 export class FieldWrapper extends GenericFieldWrapper {
   public readonly argumenets?: InputValueDefinitionNode[];
+
   public readonly description?: StringValueNode;
+
   public readonly loc?: Location;
 
   // arguments to be added
@@ -259,8 +271,11 @@ export class FieldWrapper extends GenericFieldWrapper {
 
 export class ObjectDefinitionWrapper {
   public readonly directives?: DirectiveWrapper[];
+
   public readonly fields: FieldWrapper[];
+
   public readonly name: string;
+
   constructor(private node: ObjectTypeDefinitionNode) {
     this.directives = (node.directives || []).map((d) => new DirectiveWrapper(d));
     this.fields = (node.fields || []).map((f) => new FieldWrapper(f));
@@ -281,7 +296,7 @@ export class ObjectDefinitionWrapper {
 
   hasField = (name: string): boolean => {
     const field = this.fields.find((f) => f.name === name);
-    return field ? true : false;
+    return !!field;
   };
 
   getField = (name: string): FieldWrapper => {
@@ -323,8 +338,11 @@ export class ObjectDefinitionWrapper {
 
 export class InputObjectDefinitionWrapper {
   public readonly directives?: DirectiveWrapper[];
+
   public readonly fields: InputFieldWrapper[];
+
   public readonly name: string;
+
   constructor(private node: InputObjectTypeDefinitionNode) {
     this.directives = (node.directives || []).map((d) => new DirectiveWrapper(d));
     this.fields = (node.fields || []).map((f) => new InputFieldWrapper(f));
@@ -338,9 +356,10 @@ export class InputObjectDefinitionWrapper {
       directives: this.directives?.map((d) => d.serialize()),
     };
   };
+
   hasField = (name: string): boolean => {
     const field = this.fields.find((f) => f.name === name);
-    return field ? true : false;
+    return !!field;
   };
 
   getField = (name: string): InputFieldWrapper => {
@@ -407,8 +426,11 @@ export class InputObjectDefinitionWrapper {
 
 export class EnumWrapper {
   public readonly name: string;
+
   public values: string[];
+
   public directives: DirectiveWrapper[];
+
   constructor(private node: EnumTypeDefinitionNode) {
     this.name = node.name.value;
     this.values = node.values?.map((v) => v.name.value) || [];
@@ -436,6 +458,7 @@ export class EnumWrapper {
       })),
     };
   };
+
   static create = (name: string, values: string[] = []): EnumWrapper => {
     const wrappedEnum = new EnumWrapper({
       kind: 'EnumTypeDefinition',

@@ -1,9 +1,9 @@
 jest.mock('../RelationalDBResolverGenerator');
 
-import { RelationalDBTemplateGenerator } from '../RelationalDBTemplateGenerator';
-import { TemplateContext } from '../RelationalDBSchemaTransformer';
 import { parse } from 'graphql';
 import { ResourceConstants as CommonResourceConstants } from 'graphql-transformer-common';
+import { RelationalDBTemplateGenerator } from '../RelationalDBTemplateGenerator';
+import { TemplateContext } from '../RelationalDBSchemaTransformer';
 import { ResourceConstants } from '../ResourceConstants';
 
 const schema = parse(`
@@ -42,7 +42,7 @@ const templateGenerator = new RelationalDBTemplateGenerator(context);
  * Test for verifying that provided a valid TemplateContext, we are
  * generating the base cloudform template (the cfn specs sans resolvers)
  */
-test('Test Base CloudForm Template Generation', () => {
+test('Base CloudForm Template Generation', () => {
   const template = templateGenerator.createTemplate(emptyCliContext);
 
   expect(template).toBeDefined();
@@ -61,7 +61,7 @@ test('Test Base CloudForm Template Generation', () => {
  * Test for verifying that provided a base template, we are generating
  * a template with the Relational Resolvers attached.
  */
-test('Test Adding Resolvers to CloudForm Template', () => {
+test('Adding Resolvers to CloudForm Template', () => {
   const baseTemplate = templateGenerator.createTemplate(emptyCliContext);
   expect(baseTemplate).toBeDefined();
   expect(baseTemplate.Resources).toBeDefined();
@@ -75,7 +75,7 @@ test('Test Adding Resolvers to CloudForm Template', () => {
  * Test for verifying that provided a base template, we are generating the
  * cfn template as a JSON string.
  */
-test('Test Printing the cloudform template as a JSON', () => {
+test('Printing the cloudform template as a JSON', () => {
   const baseTemplate = templateGenerator.createTemplate(emptyCliContext);
   expect(baseTemplate).toBeDefined();
 

@@ -3,6 +3,181 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.5.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.5.2...amplify-category-api-util-mock@6.5.3) (2024-07-15)
+
+### Bug Fixes
+
+- add translation behavior to disable gen 1 patterns ([#2670](https://github.com/aws-amplify/amplify-category-api/issues/2670)) ([38d1a71](https://github.com/aws-amplify/amplify-category-api/commit/38d1a718ec2b0290f514780c6d1d5f0790ba7764))
+
+## [6.5.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.5.1...amplify-category-api-util-mock@6.5.2) (2024-07-02)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.5.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.5.0...amplify-category-api-util-mock@6.5.1) (2024-07-01)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+# [6.5.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.4.21...amplify-category-api-util-mock@6.5.0) (2024-06-25)
+
+### Features
+
+- allow subscriptions to inherit primary model auth rules for relational fields behind a feature flag ([#2649](https://github.com/aws-amplify/amplify-category-api/issues/2649)) ([56a853a](https://github.com/aws-amplify/amplify-category-api/commit/56a853ace0026de97395cfa17ca156cf360ac5c2))
+
+## [6.4.21](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.4.20...amplify-category-api-util-mock@6.4.21) (2024-06-06)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.4.20](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.4.19...amplify-category-api-util-mock@6.4.20) (2024-06-04)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.4.19](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.4.18...amplify-category-api-util-mock@6.4.19) (2024-05-15)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.4.18](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.4.17...amplify-category-api-util-mock@6.4.18) (2024-05-10)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.4.17](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.4.16...amplify-category-api-util-mock@6.4.17) (2024-05-01)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.4.16](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.4.15...amplify-category-api-util-mock@6.4.16) (2024-04-26)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.4.15](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.4.14...amplify-category-api-util-mock@6.4.15) (2024-04-16)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.4.14](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.4.13...amplify-category-api-util-mock@6.4.14) (2024-04-11)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.4.13](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.4.12...amplify-category-api-util-mock@6.4.13) (2024-03-28)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.4.12](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.4.11...amplify-category-api-util-mock@6.4.12) (2024-03-13)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.4.11](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.4.10...amplify-category-api-util-mock@6.4.11) (2024-02-28)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.4.10](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.4.9...amplify-category-api-util-mock@6.4.10) (2024-02-05)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.4.9](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.4.8...amplify-category-api-util-mock@6.4.9) (2024-01-30)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.4.8](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.4.7...amplify-category-api-util-mock@6.4.8) (2024-01-22)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.4.7](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.4.6...amplify-category-api-util-mock@6.4.7) (2023-12-21)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.4.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.4.5...amplify-category-api-util-mock@6.4.6) (2023-12-18)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.4.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.4.4...amplify-category-api-util-mock@6.4.5) (2023-12-14)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.4.4](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.4.3...amplify-category-api-util-mock@6.4.4) (2023-12-06)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.4.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.4.2...amplify-category-api-util-mock@6.4.3) (2023-11-22)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.4.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.4.1...amplify-category-api-util-mock@6.4.2) (2023-11-18)
+
+### Bug Fixes
+
+- regionalize lambda layer patching SNS topics ([#2079](https://github.com/aws-amplify/amplify-category-api/issues/2079)) ([6006c86](https://github.com/aws-amplify/amplify-category-api/commit/6006c86cd4ee624b24c184fab523fcdcdb38be63))
+
+## [6.4.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.4.0...amplify-category-api-util-mock@6.4.1) (2023-11-16)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+# [6.4.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.3.6...amplify-category-api-util-mock@6.4.0) (2023-11-15)
+
+### Features
+
+- add refersTo directive transformer for model renaming ([#1830](https://github.com/aws-amplify/amplify-category-api/issues/1830)) ([afbd6f2](https://github.com/aws-amplify/amplify-category-api/commit/afbd6f282bc411313ce098a53a87bb8c6481aa48))
+- transformer behavior of replacing table upon gsi updates ([#2067](https://github.com/aws-amplify/amplify-category-api/issues/2067)) ([c4b7530](https://github.com/aws-amplify/amplify-category-api/commit/c4b7530e0880b34d411fc2732fa199e4a28bcea1))
+
+## [6.3.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.3.5...amplify-category-api-util-mock@6.3.6) (2023-11-02)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.3.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.3.4...amplify-category-api-util-mock@6.3.5) (2023-10-21)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.3.4](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.3.3...amplify-category-api-util-mock@6.3.4) (2023-10-12)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.3.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.3.2...amplify-category-api-util-mock@6.3.3) (2023-10-05)
+
+### Bug Fixes
+
+- iam auth values can be passed as cdk tokens ([#1919](https://github.com/aws-amplify/amplify-category-api/issues/1919)) ([9297fa5](https://github.com/aws-amplify/amplify-category-api/commit/9297fa5cda87697645ad0c78b84c3004b32ac319))
+
+## [6.3.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.3.1...amplify-category-api-util-mock@6.3.2) (2023-10-03)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.3.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.3.0...amplify-category-api-util-mock@6.3.1) (2023-10-02)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+# [6.3.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.2.4...amplify-category-api-util-mock@6.3.0) (2023-09-20)
+
+### Features
+
+- disable amplify cfn outputs for cdk apps ([0c72d18](https://github.com/aws-amplify/amplify-category-api/commit/0c72d1822f8e5ccb3e04a0a49049a459b5fb49e6))
+
+## [6.2.4](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.2.3...amplify-category-api-util-mock@6.2.4) (2023-09-13)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.2.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.2.2...amplify-category-api-util-mock@6.2.3) (2023-09-07)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.2.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.2.1...amplify-category-api-util-mock@6.2.2) (2023-08-30)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.2.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.2.0...amplify-category-api-util-mock@6.2.1) (2023-08-28)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+# [6.2.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.1.13...amplify-category-api-util-mock@6.2.0) (2023-08-09)
+
+### Features
+
+- bump major version of transformer packages ([2458c84](https://github.com/aws-amplify/amplify-category-api/commit/2458c8426da5772aa669d37e11f99ee9c6c5ac2e))
+
+## [6.1.13](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.1.12...amplify-category-api-util-mock@6.1.13) (2023-07-21)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
+## [6.1.12](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.1.11...amplify-category-api-util-mock@6.1.12) (2023-07-17)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
 ## [6.1.11](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.1.10...amplify-category-api-util-mock@6.1.11) (2023-07-07)
 
 **Note:** Version bump only for package amplify-category-api-util-mock

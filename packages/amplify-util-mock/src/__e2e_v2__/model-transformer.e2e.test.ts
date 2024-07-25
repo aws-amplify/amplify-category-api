@@ -1,8 +1,5 @@
-import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
-import { deploy, launchDDBLocal, terminateDDB, logDebug, GraphQLClient } from '../__e2e__/utils';
+import { deploy, launchDDBLocal, terminateDDB, logDebug, GraphQLClient, defaultTransformParams, transformAndSynth } from '../__e2e__/utils';
 
 let GRAPHQL_ENDPOINT: string;
 let GRAPHQL_CLIENT: GraphQLClient;
@@ -53,10 +50,10 @@ describe('@model transformer', () => {
       }`;
 
     try {
-      const transformer = new GraphQLTransform({
-        transformers: [new ModelTransformer(), new AuthTransformer()],
+      const out = transformAndSynth({
+        ...defaultTransformParams,
+        schema: validSchema,
       });
-      const out = await transformer.transform(validSchema);
       let ddbClient;
       ({ dbPath, emulator: ddbEmulator, client: ddbClient } = await launchDDBLocal());
       const result = await deploy(out, ddbClient);
@@ -119,7 +116,7 @@ describe('@model transformer', () => {
   /**
    * Test queries below
    */
-  test('Test createAuthor mutation', async () => {
+  test('createAuthor mutation', async () => {
     try {
       const response = await GRAPHQL_CLIENT.query(
         `mutation($input: CreateAuthorInput!) {
@@ -151,7 +148,7 @@ describe('@model transformer', () => {
     }
   });
 
-  test('Test createPost mutation', async () => {
+  test('createPost mutation', async () => {
     try {
       const response = await GRAPHQL_CLIENT.query(
         `mutation {
@@ -174,7 +171,7 @@ describe('@model transformer', () => {
     }
   });
 
-  test('Test query on get query with null field', async () => {
+  test('query on get query with null field', async () => {
     const createResponse = await GRAPHQL_CLIENT.query(
       `
       mutation {
@@ -210,7 +207,7 @@ describe('@model transformer', () => {
     }
   });
 
-  test('Test updatePost mutation', async () => {
+  test('updatePost mutation', async () => {
     try {
       const createResponse = await GRAPHQL_CLIENT.query(
         `mutation {
@@ -243,7 +240,7 @@ describe('@model transformer', () => {
     }
   });
 
-  test('Test createPost and updatePost mutation with a client generated id.', async () => {
+  test('createPost and updatePost mutation with a client generated id.', async () => {
     try {
       const clientId = 'a-client-side-generated-id';
       const createResponse = await GRAPHQL_CLIENT.query(
@@ -315,7 +312,7 @@ describe('@model transformer', () => {
     }
   });
 
-  test('Test deletePost mutation', async () => {
+  test('deletePost mutation', async () => {
     try {
       const createResponse = await GRAPHQL_CLIENT.query(
         `mutation {
@@ -359,7 +356,7 @@ describe('@model transformer', () => {
     }
   });
 
-  test('Test getPost query', async () => {
+  test('getPost query', async () => {
     try {
       const createResponse = await GRAPHQL_CLIENT.query(
         `mutation {
@@ -390,7 +387,7 @@ describe('@model transformer', () => {
     }
   });
 
-  test('Test listPosts query', async () => {
+  test('listPosts query', async () => {
     try {
       const createResponse = await GRAPHQL_CLIENT.query(
         `mutation {
@@ -425,7 +422,7 @@ describe('@model transformer', () => {
     }
   });
 
-  test('Test listPosts query with filter', async () => {
+  test('listPosts query with filter', async () => {
     try {
       const createResponse = await GRAPHQL_CLIENT.query(
         `mutation {
@@ -466,7 +463,7 @@ describe('@model transformer', () => {
     }
   });
 
-  test('Test enum filters List', async () => {
+  test('enum filters List', async () => {
     try {
       await GRAPHQL_CLIENT.query(
         `mutation {
@@ -631,7 +628,7 @@ describe('@model transformer', () => {
     }
   });
 
-  test('Test createPost mutation with non-model types', async () => {
+  test('createPost mutation with non-model types', async () => {
     try {
       const response = await GRAPHQL_CLIENT.query(
         `mutation CreatePost($input: CreatePostInput!) {
@@ -684,7 +681,7 @@ describe('@model transformer', () => {
     }
   });
 
-  test('Test updatePost mutation with non-model types', async () => {
+  test('updatePost mutation with non-model types', async () => {
     try {
       const createResponse = await GRAPHQL_CLIENT.query(
         `mutation {

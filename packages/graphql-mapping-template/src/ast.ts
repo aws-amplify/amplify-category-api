@@ -64,7 +64,7 @@ export function or(expressions: Expression[]): OrNode {
   };
 }
 
-/**Node
+/** Node
  * WrapsNodeNode an expression in (...) for order of operations.
  */
 export interface ParensNode {
@@ -105,6 +105,22 @@ export interface NotEqualsNode {
 export function notEquals(leftExpr: Expression, rightExpr: Expression): NotEqualsNode {
   return {
     kind: 'NotEquals',
+    leftExpr,
+    rightExpr,
+  };
+}
+
+/**
+ * Compares to expressions with greater than (>)
+ */
+export interface GreaterThanNode {
+  kind: 'GreaterThan';
+  leftExpr: Expression;
+  rightExpr: Expression;
+}
+export function greaterThan(leftExpr: Expression, rightExpr: Expression): GreaterThanNode {
+  return {
+    kind: 'GreaterThan',
     leftExpr,
     rightExpr,
   };
@@ -407,6 +423,7 @@ export type Expression =
   | ParensNode
   | EqualsNode
   | NotEqualsNode
+  | GreaterThanNode
   | ForEachNode
   | StringNode
   | RawNode

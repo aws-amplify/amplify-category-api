@@ -48,6 +48,7 @@ export class VelocityTemplateSimulator {
       },
     });
   }
+
   render(template: string, payload: AppSyncVTLPayload) {
     const ctxParameters: AppSyncVTLRenderContext = { source: {}, arguments: { input: {} }, stash: {}, ...payload.context };
     const vtlInfo: any = { fieldNodes: [], fragments: {}, path: { key: '' }, ...(payload.info ?? {}) };

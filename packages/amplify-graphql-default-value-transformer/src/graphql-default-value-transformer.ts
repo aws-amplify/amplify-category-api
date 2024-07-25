@@ -3,6 +3,7 @@ import {
   generateGetArgumentsInput,
   InputObjectDefinitionWrapper,
   InvalidDirectiveError,
+  isDynamoDbModel,
   MappingTemplate,
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
@@ -12,6 +13,7 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { DefaultDirective } from '@aws-amplify/graphql-directives';
 import {
   DirectiveNode,
   EnumTypeDefinitionNode,
@@ -26,11 +28,6 @@ import { methodCall, printBlock, qref, raw, ref, str } from 'graphql-mapping-tem
 import { getBaseType, isEnum, isListType, isScalarOrEnum, ModelResourceIDs, toCamelCase } from 'graphql-transformer-common';
 import { DefaultValueDirectiveConfiguration } from './types';
 import { TypeValidators } from './validators';
-
-const directiveName = 'default';
-const directiveDefinition = `
-  directive @${directiveName}(value: String!) on FIELD_DEFINITION
-`;
 
 const nonStringTypes = ['Int', 'Float', 'Boolean', 'AWSTimestamp', 'AWSJSON'];
 
@@ -79,14 +76,20 @@ const validate = (ctx: TransformerSchemaVisitStepContextProvider, config: Defaul
   validateModelDirective(config);
   validateFieldType(ctx, config.field.type);
   validateDirectiveArguments(config.directive);
-  validateDefaultValueType(ctx, config);
+
+  // Validate the default values only for the DynamoDB datasource.
+  // For SQL, the database determines and sets the default value. We will not validate the value in transformers.
+  const isDynamoDB = isDynamoDbModel(ctx, config.object.name.value);
+  if (isDynamoDB) {
+    validateDefaultValueType(ctx, config);
+  }
 };
 
 export class DefaultValueTransformer extends TransformerPluginBase {
   private directiveMap = new Map<string, DefaultValueDirectiveConfiguration[]>();
 
   constructor() {
-    super('amplify-default-value-transformer', directiveDefinition);
+    super('amplify-default-value-transformer', DefaultDirective.definition);
   }
 
   field = (
@@ -128,6 +131,12 @@ export class DefaultValueTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const typeName of this.directiveMap.keys()) {
+      // Set the default value only for DDB datasource. For RDS, the database will set the value.
+      const isDynamoDB = isDynamoDbModel(ctx, typeName);
+      if (!isDynamoDB) {
+        continue;
+      }
+
       const snippets: string[] = [];
       for (const config of this.directiveMap.get(typeName)!) {
         const fieldName = config.field.name.value;

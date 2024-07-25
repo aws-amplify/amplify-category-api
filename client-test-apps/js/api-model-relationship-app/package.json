@@ -12,14 +12,14 @@
     "@types/jest": "^27.5.2",
     "@types/jest-dev-server": "^5.0.0",
     "@types/node": "^16.11.56",
-    "@types/react": "^18.0.18",
+    "@types/react": "18.2.42",
     "@types/react-dom": "^18.0.6",
     "aws-amplify": "^4.3.30",
     "cross-env": "^7.0.3",
     "cypress": "^10.4.0",
     "hjson": "^3.2.2",
     "ini": "^3.0.1",
-    "jest-dev-server": "~7.0.1",
+    "jest-dev-server": "~9.0.1",
     "jest-junit": "^14.0.1",
     "lodash": "^4.17.21",
     "node-pty": "^0.10.1",
@@ -64,5 +64,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "axios": "axios/dist/node/axios.cjs"
+    }
   }
 }

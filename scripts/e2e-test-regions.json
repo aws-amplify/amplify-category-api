@@ -1,0 +1,21 @@
+[
+  { "name": "ap-east-1", "optIn": true, "cognitoSupported": false, "betaLayerDeployed": true },
+  { "name": "ap-northeast-1", "optIn": false, "cognitoSupported": true, "betaLayerDeployed": true },
+  { "name": "ap-northeast-2", "optIn": false, "cognitoSupported": true, "betaLayerDeployed": true },
+  { "name": "ap-south-1", "optIn": false, "cognitoSupported": true, "betaLayerDeployed": true },
+  { "name": "ap-southeast-1", "optIn": false, "cognitoSupported": true, "betaLayerDeployed": true },
+  { "name": "ap-southeast-2", "optIn": false, "cognitoSupported": true, "betaLayerDeployed": true },
+  { "name": "ca-central-1", "optIn": false, "cognitoSupported": true, "betaLayerDeployed": true },
+  { "name": "eu-central-1", "optIn": false, "cognitoSupported": true, "betaLayerDeployed": true },
+  { "name": "eu-north-1", "optIn": false, "cognitoSupported": true, "betaLayerDeployed": true },
+  { "name": "eu-south-1", "optIn": true, "cognitoSupported": true, "betaLayerDeployed": true },
+  { "name": "eu-west-1", "optIn": false, "cognitoSupported": true, "betaLayerDeployed": true },
+  { "name": "eu-west-2", "optIn": false, "cognitoSupported": true, "betaLayerDeployed": true },
+  { "name": "eu-west-3", "optIn": false, "cognitoSupported": true, "betaLayerDeployed": true },
+  { "name": "me-south-1", "optIn": true, "cognitoSupported": true, "betaLayerDeployed": false },
+  { "name": "sa-east-1", "optIn": false, "cognitoSupported": true, "betaLayerDeployed": true },
+  { "name": "us-east-1", "optIn": false, "cognitoSupported": true, "betaLayerDeployed": true },
+  { "name": "us-east-2", "optIn": false, "cognitoSupported": true, "betaLayerDeployed": true },
+  { "name": "us-west-1", "optIn": false, "cognitoSupported": true, "betaLayerDeployed": true },
+  { "name": "us-west-2", "optIn": false, "cognitoSupported": true, "betaLayerDeployed": true }
+]

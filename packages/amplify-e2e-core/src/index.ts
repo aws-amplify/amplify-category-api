@@ -1,19 +1,18 @@
 import * as os from 'os';
 import * as path from 'path';
+import { spawnSync, execSync } from 'child_process';
 import * as fs from 'fs-extra';
 import * as ini from 'ini';
 
-import { spawnSync, execSync } from 'child_process';
 import { v4 as uuid } from 'uuid';
 import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { gt } from 'semver';
+import { sleep } from '.';
 
-export * from './configure/';
-export * from './init/';
-export * from './utils/';
+export * from './configure';
+export * from './init';
+export * from './utils';
 export * from './categories';
-export * from './utils/sdk-calls';
-export * from './export/';
 export { addFeatureFlag } from './utils/feature-flags';
 export * from './cli-version-controller';
 
@@ -54,14 +53,6 @@ export function getScriptRunnerPath(testingWithLatestCodebase = false) {
   return process.execPath;
 }
 
-export function getNpxPath() {
-  let npxPath = 'npx';
-  if (process.platform === 'win32') {
-    npxPath = getScriptRunnerPath().replace('node.exe', 'npx.cmd');
-  }
-  return npxPath;
-}
-
 export function getNpmPath() {
   let npmPath = 'npm';
   if (process.platform === 'win32') {
@@ -71,7 +62,7 @@ export function getNpmPath() {
 }
 
 export function isCI(): boolean {
-  return process.env.CI && (process.env.CIRCLECI || process.env.CODEBUILD) ? true : false;
+  return !!(process.env.CI && process.env.CODEBUILD);
 }
 
 export function injectSessionToken(profileName: string) {
@@ -83,6 +74,10 @@ export function injectSessionToken(profileName: string) {
 
 export function npmInstall(cwd: string) {
   spawnSync('npm', ['install'], { cwd });
+}
+
+export function npmTest(cwd: string) {
+  spawnSync('npm', ['test'], { cwd });
 }
 
 export async function installAmplifyCLI(version: string = 'latest') {
@@ -108,10 +103,10 @@ export async function installAmplifyCLI(version: string = 'latest') {
   console.log('PATH SET:', process.env.AMPLIFY_PATH);
 }
 
-export async function createNewProjectDir(
+export const createNewProjectDir = async (
   projectName: string,
   prefix = path.join(fs.realpathSync(os.tmpdir()), amplifyTestsDir),
-): Promise<string> {
+): Promise<string> => {
   const currentHash = execSync('git rev-parse --short HEAD', { cwd: __dirname }).toString().trim();
   let projectDir;
   do {
@@ -120,9 +115,20 @@ export async function createNewProjectDir(
   } while (fs.existsSync(projectDir));
 
   fs.ensureDirSync(projectDir);
-  console.log(projectDir);
+
+  if (!process.env.SKIP_CREATE_PROJECT_DIR_INITIAL_DELAY) {
+    // createProjectDir(..) is something that nearly every test uses
+    // Commands like 'init' would collide with each other if they occurred too close to one another.
+    // Especially for nexpect output waiting
+    // This makes it a perfect candidate for staggering test start times
+    const initialDelay = Math.floor(Math.random() * 180 * 1000); // between 0 to 3 min
+    console.log(`Waiting for ${initialDelay} ms`);
+    await sleep(initialDelay);
+  }
+
+  console.log(`projectDir: ${projectDir}`);
   return projectDir;
-}
+};
 
 export const createTempDir = () => {
   const osTempDir = fs.realpathSync(os.tmpdir());

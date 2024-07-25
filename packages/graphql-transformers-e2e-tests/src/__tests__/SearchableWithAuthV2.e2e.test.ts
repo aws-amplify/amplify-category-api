@@ -2,18 +2,18 @@ import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-tran
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { CloudFormationClient } from '../CloudFormationClient';
-import { S3Client } from '../S3Client';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import moment from 'moment';
 import { S3, CognitoIdentityServiceProvider as CognitoClient, CognitoIdentity } from 'aws-sdk';
 import { AWS } from '@aws-amplify/core';
 import { Auth } from 'aws-amplify';
-import { IAMHelper } from '../IAMHelper';
 import gql from 'graphql-tag';
+import { IAMHelper } from '../IAMHelper';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
+import { S3Client } from '../S3Client';
+import { CloudFormationClient } from '../CloudFormationClient';
 import {
   addUserToGroup,
   authenticateUser,
@@ -23,9 +23,11 @@ import {
   createUserPool,
   createUserPoolClient,
   signupUser,
+  setIdentityPoolRoles,
 } from '../cognitoUtils';
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
+
 import { resolveTestRegion } from '../testSetup';
 
 const AWS_REGION = resolveTestRegion();
@@ -152,50 +154,59 @@ beforeAll(async () => {
     secret: String @auth(rules: [{ allow: groups, groups: ["admin"] }, { allow: groups, groupsField: "groupsField" }])
     }
   `;
-  const transformer = new GraphQLTransform({
-    authConfig: {
-      defaultAuthentication: {
-        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-      },
-      additionalAuthenticationProviders: [
-        {
-          authenticationType: 'API_KEY',
-          apiKeyConfig: {
-            description: 'E2E Test API Key',
-            apiKeyExpirationDays: 300,
-          },
-        },
-        {
-          authenticationType: 'AWS_IAM',
-        },
-      ],
-    },
-    transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
-    transformParameters: {
-      useSubUsernameForDefaultIdentityClaim: false,
-      populateOwnerFieldForStaticGroupAuth: false,
-    },
-  });
   const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
-  USER_POOL_ID = userPoolResponse.UserPool.Id;
+  USER_POOL_ID = userPoolResponse.UserPool!.Id!;
   const userPoolClientResponse = await createUserPoolClient(cognitoClient, USER_POOL_ID, `UserPool${STACK_NAME}`);
-  const userPoolClientId = userPoolClientResponse.UserPoolClient.ClientId;
-  // create auth and unauthroles
-  const { authRole, unauthRole } = await iamHelper.createRoles(AUTH_ROLE_NAME, UNAUTH_ROLE_NAME);
+  const userPoolClientId = userPoolClientResponse.UserPoolClient!.ClientId!;
+
   // create identitypool
   IDENTITY_POOL_ID = await createIdentityPool(identityClient, `IdentityPool${STACK_NAME}`, {
+    providerName: `cognito-idp.${AWS_REGION}.amazonaws.com/${USER_POOL_ID}`,
+    clientId: userPoolClientId,
+  });
+
+  // create auth and unauthroles
+  const { authRole, unauthRole } = await iamHelper.createRoles(AUTH_ROLE_NAME, UNAUTH_ROLE_NAME, IDENTITY_POOL_ID);
+
+  // set roles on identity pool
+  await setIdentityPoolRoles(identityClient, IDENTITY_POOL_ID, {
     authRoleArn: authRole.Arn,
     unauthRoleArn: unauthRole.Arn,
     providerName: `cognito-idp.${AWS_REGION}.amazonaws.com/${USER_POOL_ID}`,
     clientId: userPoolClientId,
   });
+
   try {
     await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
   } catch (e) {
     console.error(`Failed to create bucket: ${e}`);
   }
   try {
-    const out = transformer.transform(validSchema);
+    const out = testTransform({
+      schema: validSchema,
+      authConfig: {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [
+          {
+            authenticationType: 'API_KEY',
+            apiKeyConfig: {
+              description: 'E2E Test API Key',
+              apiKeyExpirationDays: 300,
+            },
+          },
+          {
+            authenticationType: 'AWS_IAM',
+          },
+        ],
+      },
+      transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
+      transformParameters: {
+        useSubUsernameForDefaultIdentityClaim: false,
+        populateOwnerFieldForStaticGroupAuth: false,
+      },
+    });
     const finishedStack = await deploy(
       customS3Client,
       cf,
@@ -337,7 +348,7 @@ afterAll(async () => {
  */
 
 // cognito owner check
-test('test Comments as owner', async () => {
+test('Comments as owner', async () => {
   const ownerResponse: any = await GRAPHQL_CLIENT_1.query({
     query: gql`
       query SearchComments {
@@ -358,7 +369,7 @@ test('test Comments as owner', async () => {
 });
 
 // cognito static group check
-test('test Comments as user in writer group', async () => {
+test('Comments as user in writer group', async () => {
   const writerResponse: any = await GRAPHQL_CLIENT_2.query({
     query: gql`
       query SearchComments {
@@ -405,7 +416,7 @@ test('test Comments as user in writer group', async () => {
 });
 
 // cognito test as unauthorized user
-test('test Comments as user that is not an owner nor is in writer group', async () => {
+test('Comments as user that is not an owner nor is in writer group', async () => {
   const user3Response: any = await GRAPHQL_CLIENT_3.query({
     query: gql`
       query SearchComments {
@@ -426,7 +437,7 @@ test('test Comments as user that is not an owner nor is in writer group', async 
 });
 
 // cognito dynamic group check
-test('test Todo as user in the dynamic group admin', async () => {
+test('Todo as user in the dynamic group admin', async () => {
   const adminResponse: any = await GRAPHQL_CLIENT_2.query({
     query: gql`
       query SearchTodos {
@@ -465,7 +476,7 @@ test('test Todo as user in the dynamic group admin', async () => {
 });
 
 // iam test
-test('test Post as authorized user', async () => {
+test('Post as authorized user', async () => {
   const authUser: any = await GRAPHQL_IAM_AUTH_CLIENT.query({
     query: gql`
       query SearchPosts {
@@ -509,7 +520,7 @@ test('test Post as authorized user', async () => {
 });
 
 // test apikey 2nd scenario
-test('test searchPosts with apikey and secret removed', async () => {
+test('searchPosts with apikey and secret removed', async () => {
   const apiKeyResponse: any = await GRAPHQL_APIKEY_CLIENT.query({
     query: gql`
       query SearchPosts {
@@ -548,7 +559,7 @@ test('test searchPosts with apikey and secret removed', async () => {
 });
 
 // test iam/apiKey schema with unauth user
-test('test post as an cognito user that is not allowed in this schema', async () => {
+test('post as an cognito user that is not allowed in this schema', async () => {
   try {
     await GRAPHQL_CLIENT_3.query({
       query: gql`
@@ -570,7 +581,7 @@ test('test post as an cognito user that is not allowed in this schema', async ()
   }
 });
 
-test('test that apikey is not allowed to query aggregations on secret for post', async () => {
+test('that apikey is not allowed to query aggregations on secret for post', async () => {
   try {
     await GRAPHQL_APIKEY_CLIENT.query({
       query: gql`
@@ -597,7 +608,7 @@ test('test that apikey is not allowed to query aggregations on secret for post',
   }
 });
 
-test('test that iam can run aggregations on secret field', async () => {
+test('that iam can run aggregations on secret field', async () => {
   try {
     const response: any = await GRAPHQL_IAM_AUTH_CLIENT.query({
       query: gql`
@@ -644,7 +655,7 @@ test('test that iam can run aggregations on secret field', async () => {
   }
 });
 
-test('test that admin can run aggregate query on protected field', async () => {
+test('that admin can run aggregate query on protected field', async () => {
   try {
     const response: any = await GRAPHQL_CLIENT_2.query({
       query: gql`
@@ -687,7 +698,7 @@ test('test that admin can run aggregate query on protected field', async () => {
   }
 });
 
-test('test that member in writer group has writer group auth when running aggregate query', async () => {
+test('that member in writer group has writer group auth when running aggregate query', async () => {
   try {
     const response: any = await GRAPHQL_CLIENT_4.query({
       query: gql`
@@ -730,7 +741,7 @@ test('test that member in writer group has writer group auth when running aggreg
   }
 });
 
-test('test that an owner is not authorized to perform an agg query on the secret field', async () => {
+test('that an owner is not authorized to perform an agg query on the secret field', async () => {
   try {
     const response: any = await GRAPHQL_CLIENT_1.query({
       query: gql`
@@ -760,7 +771,7 @@ test('test that an owner is not authorized to perform an agg query on the secret
     expect(err).not.toBeDefined();
   }
 });
-test('test that an owner can run aggregations on records which belong to them', async () => {
+test('that an owner can run aggregations on records which belong to them', async () => {
   try {
     const response: any = await GRAPHQL_CLIENT_1.query({
       query: gql`

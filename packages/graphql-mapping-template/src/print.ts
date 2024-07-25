@@ -30,6 +30,7 @@ import {
   ReturnNode,
   parens,
   IsNullOrEmptyNode,
+  GreaterThanNode,
 } from './ast';
 
 const TAB = '  ';
@@ -68,6 +69,10 @@ function printParens(node: ParensNode, indent: string = ''): string {
 
 function printEquals(node: EqualsNode, indent: string = ''): string {
   return `${indent}${printExpr(node.leftExpr)} == ${printExpr(node.rightExpr)}`;
+}
+
+function printGreaterThan(node: GreaterThanNode, indent: string = ''): string {
+  return `${indent}${printExpr(node.leftExpr)} > ${printExpr(node.rightExpr)}`;
 }
 
 function printNotEquals(node: NotEqualsNode, indent: string = ''): string {
@@ -164,7 +169,7 @@ function printNewLine(node: NewLineNode): string {
 }
 
 function printReturn(node: ReturnNode, indent: string = ''): string {
-  var suffix: string = '';
+  let suffix: string = '';
   if (node.value !== undefined) {
     suffix = printParens(parens(node.value));
   }
@@ -190,6 +195,8 @@ function printExpr(expr: Expression, indent: string = ''): string {
       return printEquals(expr, indent);
     case 'NotEquals':
       return printNotEquals(expr, indent);
+    case 'GreaterThan':
+      return printGreaterThan(expr, indent);
     case 'ForEach':
       return printForEach(expr, indent);
     case 'String':

@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 type Post @model @auth(rules: [{allow: owner}]) {
   id: ID!
@@ -7,7 +7,7 @@ type Post @model @auth(rules: [{allow: owner}]) {
 
 ##auth generatesOwner`;
 
-//mutations
+// mutations
 export const mutation1 = `
 mutation CreatePost(
     $input: CreatePostInput!

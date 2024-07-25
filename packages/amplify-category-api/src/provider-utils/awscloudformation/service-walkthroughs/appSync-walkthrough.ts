@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { Duration, Expiration } from 'aws-cdk-lib';
 import {
   $TSContext,
@@ -19,7 +20,6 @@ import * as fs from 'fs-extra';
 import { collectDirectivesByTypeNames, readProjectConfiguration } from 'graphql-transformer-core';
 import inquirer, { CheckboxQuestion, ListChoiceOptions, ListQuestion } from 'inquirer';
 import _ from 'lodash';
-import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import { category } from '../../../category-constants';
 import { rootAssetDir } from '../aws-constants';
@@ -295,7 +295,7 @@ export const serviceApiInputWalkthrough = async (context: $TSContext, serviceMet
     let { basicApiSettings } = await inquirer.prompt([basicInfoQuestion]);
 
     switch (basicApiSettings) {
-      case 'API_NAME':
+      case 'API_NAME': {
         const resourceQuestions = [
           {
             type: inputs[1].type,
@@ -313,6 +313,7 @@ export const serviceApiInputWalkthrough = async (context: $TSContext, serviceMet
         resourceAnswers[inputs[0].key] = resourceAnswers[inputs[1].key];
         allDefaultValues[inputs[1].key] = resourceAnswers[inputs[1].key];
         break;
+      }
       case 'API_AUTH_MODE':
         // Ask additonal questions
         ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context));

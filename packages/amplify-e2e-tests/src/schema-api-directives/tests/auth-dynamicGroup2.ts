@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 type Post @model @auth(rules: [{allow: groups, groupsField: "group"}]) {
   id: ID!
@@ -7,7 +7,7 @@ type Post @model @auth(rules: [{allow: groups, groupsField: "group"}]) {
 }
 
 ##dynamicGroup2`;
-//mutations
+// mutations
 export const mutation1 = `
 mutation CreatePost(
     $input: CreatePostInput!

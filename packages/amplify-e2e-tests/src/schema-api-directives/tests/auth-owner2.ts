@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 # The long form way
 type Post
@@ -14,7 +14,7 @@ type Post
 }
 
 ##owner2`;
-//mutations
+// mutations
 export const mutation = `
 mutation CreatePost(
     $input: CreatePostInput!

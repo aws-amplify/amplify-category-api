@@ -1,10 +1,11 @@
 import { parse } from 'graphql';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { PrimaryKeyTransformer, IndexTransformer } from '@aws-amplify/graphql-index-transformer';
-import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { validateModelSchema, constructDataSourceStrategies, MYSQL_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import { HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
+import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
+import { testTransform, mockSqlDataSourceStrategy } from '@aws-amplify/graphql-transformer-test-utils';
 import { AuthTransformer } from '../graphql-auth-transformer';
 import { getField, getObjectType } from './test-helpers';
 
@@ -23,11 +24,11 @@ describe('owner based @auth', () => {
         createdAt: String
         updatedAt: String
       }`;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const resources = out.rootStack.Resources;
     expect(resources).toBeDefined();
@@ -49,11 +50,11 @@ describe('owner based @auth', () => {
         createdAt: String
         updatedAt: String
       }`;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const resources = out.rootStack.Resources;
     expect(resources).toBeDefined();
@@ -79,11 +80,11 @@ describe('owner based @auth', () => {
       createdAt: String
       updatedAt: String
     }`;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const resources = out.rootStack.Resources;
     expect(resources).toBeDefined();
@@ -107,11 +108,11 @@ describe('owner based @auth', () => {
       id: ID!
       title: String!
     }`;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out.resolvers['Post.owner.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Post.owner.res.vtl']).toMatchSnapshot();
   });
@@ -131,12 +132,12 @@ describe('owner based @auth', () => {
       title: String
       postOwner: String
     }`;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
     });
 
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     // expect 'postOwner' as an argument for subscription operations
@@ -176,12 +177,12 @@ describe('owner based @auth', () => {
       },
       additionalAuthenticationProviders: [],
     };
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
     });
 
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     // expect 'owner' and 'editors' as arguments for subscription operations
@@ -219,10 +220,6 @@ describe('owner based @auth', () => {
       },
       additionalAuthenticationProviders: [],
     };
-    const transformer = new GraphQLTransform({
-      authConfig,
-      transformers: [new ModelTransformer(), new AuthTransformer()],
-    });
     const validSchema = `
     type Post @model
               @auth(rules: [
@@ -234,7 +231,11 @@ describe('owner based @auth', () => {
               title: String
           }
     `;
-    const out = transformer.transform(validSchema);
+    const out = testTransform({
+      schema: validSchema,
+      authConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer()],
+    });
     expect(out).toBeDefined();
 
     const schema = parse(out.schema);
@@ -270,11 +271,11 @@ describe('owner based @auth', () => {
       },
       additionalAuthenticationProviders: [],
     };
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);
     const postType = getObjectType(schema, 'Post');
@@ -309,11 +310,11 @@ describe('owner based @auth', () => {
       },
       additionalAuthenticationProviders: [],
     };
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       authConfig,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);
     const familyMemberType = getObjectType(schema, 'FamilyMember');
@@ -366,7 +367,8 @@ describe('owner based @auth', () => {
       additionalAuthenticationProviders: [],
     };
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       authConfig,
       transformParameters: {
         secondaryKeyAsGSI: false,
@@ -380,7 +382,6 @@ describe('owner based @auth', () => {
       ],
     });
 
-    const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);
     validateModelSchema(schema);
@@ -403,7 +404,8 @@ describe('owner based @auth', () => {
       additionalAuthenticationProviders: [],
     };
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       authConfig,
       transformParameters: {
         secondaryKeyAsGSI: false,
@@ -417,7 +419,6 @@ describe('owner based @auth', () => {
       ],
     });
 
-    const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);
     validateModelSchema(schema);
@@ -438,12 +439,11 @@ describe('owner based @auth', () => {
       updatedAt: String
     }`;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
     });
-
-    const out = transformer.transform(validSchema);
 
     expect(out).toBeDefined();
     const resources = out.rootStack.Resources;
@@ -454,6 +454,162 @@ describe('owner based @auth', () => {
     expect(out.resolvers['Mutation.deletePost.auth.1.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Query.getPost.auth.1.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Query.listPosts.auth.1.req.vtl']).toMatchSnapshot();
+  });
+
+  it('should successfully transform simple valid schema with implicit fields', async () => {
+    const authConfig: AppSyncAuthConfiguration = {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [],
+    };
+    const validSchema = `
+      type Todo @model @auth(rules: [{ allow: owner }]) {
+        content: String
+      }
+    `;
+
+    const out = testTransform({
+      schema: validSchema,
+      authConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer()],
+    });
+    expect(out).toBeDefined();
+
+    validateModelSchema(parse(out.schema));
+    parse(out.schema);
+    expect(out.schema).toMatchSnapshot();
+  });
+
+  it('should not add duplicate implicit field when already included', async () => {
+    const authConfig: AppSyncAuthConfiguration = {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [],
+    };
+    const validSchema = `
+      type Todo @model @auth(rules: [{ allow: owner }]) {
+        owner: String
+        content: String
+      }
+    `;
+
+    const out = testTransform({
+      schema: validSchema,
+      authConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer()],
+    });
+    expect(out).toBeDefined();
+
+    validateModelSchema(parse(out.schema));
+    parse(out.schema);
+    expect(out.schema).toMatchSnapshot();
+  });
+
+  it('should successfully transform simple valid schema with implicit fields', async () => {
+    const authConfig: AppSyncAuthConfiguration = {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [],
+    };
+    const validSchema = `
+      type Todo @model @auth(rules: [{ allow: owner }]) {
+        id: ID! @primaryKey
+        content: String
+      }
+    `;
+
+    const out = testTransform({
+      schema: validSchema,
+      authConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: constructDataSourceStrategies(validSchema, mockSqlDataSourceStrategy()),
+    });
+    expect(out).toBeDefined();
+
+    validateModelSchema(parse(out.schema));
+    parse(out.schema);
+    expect(out.schema).toMatchSnapshot();
+  });
+
+  it('should not add subscription filter with implicit owner field when subscription is disabled', async () => {
+    const authConfig: AppSyncAuthConfiguration = {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [],
+    };
+    const validSchema = `
+      type Todo @model(subscriptions: null) @auth(rules: [{ allow: owner }]) {
+        owner: String
+        content: String
+      }
+    `;
+
+    const out = testTransform({
+      schema: validSchema,
+      authConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer()],
+    });
+    expect(out).toBeDefined();
+
+    validateModelSchema(parse(out.schema));
+    parse(out.schema);
+    expect(out.schema).toMatchSnapshot();
+  });
+
+  test('@auth in bidirectional relational schema using references', () => {
+    const inputSchema = `
+      type Primary @model @auth(rules: [{ allow: owner }]) {
+        id: String! @primaryKey
+        owner: String
+        relatedMany: [RelatedMany] @hasMany(references: ["primaryId"])
+        relatedOne: RelatedOne @hasOne(references: ["primaryId"])
+      }
+
+      type RelatedMany @model @auth(rules: [{ allow: owner }]) {
+        id: String! @primaryKey
+        owner: String
+        primaryId: String
+        primary: Primary @belongsTo(references: ["primaryId"])
+      }
+
+      type RelatedOne @model @auth(rules: [{ allow: owner }]) {
+        id: String! @primaryKey
+        owner: String
+        primaryId: String
+        primary: Primary @belongsTo(references: ["primaryId"])
+      }
+    `;
+
+    const authConfig: AppSyncAuthConfiguration = {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [],
+    };
+
+    const out = testTransform({
+      schema: inputSchema,
+      authConfig,
+      transformParameters: {
+        secondaryKeyAsGSI: false,
+      },
+      transformers: [
+        new ModelTransformer(),
+        new HasManyTransformer(),
+        new HasOneTransformer(),
+        new BelongsToTransformer(),
+        new PrimaryKeyTransformer(),
+        new AuthTransformer(),
+      ],
+    });
+
+    expect(out).toBeDefined();
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
   });
 
   describe('with identity claim feature flag disabled', () => {
@@ -471,11 +627,11 @@ describe('owner based @auth', () => {
           createdAt: String
           updatedAt: String
         }`;
-      const transformer = new GraphQLTransform({
+      const out = testTransform({
+        schema: validSchema,
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
       });
-      const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
       const resources = out.rootStack.Resources;
       expect(resources).toBeDefined();
@@ -499,14 +655,14 @@ describe('owner based @auth', () => {
           createdAt: String
           updatedAt: String
         }`;
-      const transformer = new GraphQLTransform({
+      const out = testTransform({
+        schema: validSchema,
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
         transformParameters: {
           useSubUsernameForDefaultIdentityClaim: false,
         },
       });
-      const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
       const resources = out.rootStack.Resources;
       expect(resources).toBeDefined();
@@ -534,14 +690,14 @@ describe('owner based @auth', () => {
           createdAt: String
           updatedAt: String
         }`;
-      const transformer = new GraphQLTransform({
+      const out = testTransform({
+        schema: validSchema,
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
         transformParameters: {
           useSubUsernameForDefaultIdentityClaim: false,
         },
       });
-      const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
       const resources = out.rootStack.Resources;
       expect(resources).toBeDefined();
@@ -570,11 +726,11 @@ describe('owner based @auth', () => {
           title: String
           postOwner: String
         }`;
-      const transformer = new GraphQLTransform({
+      const out = testTransform({
+        schema: validSchema,
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
       });
-      const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
 
       // expect 'postOwner' as an argument for subscription operations
@@ -614,11 +770,11 @@ describe('owner based @auth', () => {
         },
         additionalAuthenticationProviders: [],
       };
-      const transformer = new GraphQLTransform({
+      const out = testTransform({
+        schema: validSchema,
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
       });
-      const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
 
       // expect 'owner' and 'editors' as arguments for subscription operations
@@ -656,10 +812,6 @@ describe('owner based @auth', () => {
         },
         additionalAuthenticationProviders: [],
       };
-      const transformer = new GraphQLTransform({
-        authConfig,
-        transformers: [new ModelTransformer(), new AuthTransformer()],
-      });
       const validSchema = `
       type Post @model
                 @auth(rules: [
@@ -671,7 +823,11 @@ describe('owner based @auth', () => {
                 title: String
             }
       `;
-      const out = transformer.transform(validSchema);
+      const out = testTransform({
+        schema: validSchema,
+        authConfig,
+        transformers: [new ModelTransformer(), new AuthTransformer()],
+      });
       expect(out).toBeDefined();
 
       const schema = parse(out.schema);
@@ -707,11 +863,11 @@ describe('owner based @auth', () => {
         },
         additionalAuthenticationProviders: [],
       };
-      const transformer = new GraphQLTransform({
+      const out = testTransform({
+        schema: validSchema,
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
       });
-      const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
       const schema = parse(out.schema);
       const postType = getObjectType(schema, 'Post');
@@ -746,14 +902,14 @@ describe('owner based @auth', () => {
         },
         additionalAuthenticationProviders: [],
       };
-      const transformer = new GraphQLTransform({
+      const out = testTransform({
+        schema: validSchema,
         authConfig,
         transformParameters: {
           useSubUsernameForDefaultIdentityClaim: false,
         },
         transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()],
       });
-      const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
       const schema = parse(out.schema);
       const familyMemberType = getObjectType(schema, 'FamilyMember');
@@ -806,7 +962,8 @@ describe('owner based @auth', () => {
         additionalAuthenticationProviders: [],
       };
 
-      const transformer = new GraphQLTransform({
+      const out = testTransform({
+        schema: inputSchema,
         authConfig,
         transformParameters: {
           secondaryKeyAsGSI: false,
@@ -821,7 +978,6 @@ describe('owner based @auth', () => {
         ],
       });
 
-      const out = transformer.transform(inputSchema);
       expect(out).toBeDefined();
       const schema = parse(out.schema);
       validateModelSchema(schema);
@@ -844,7 +1000,8 @@ describe('owner based @auth', () => {
         additionalAuthenticationProviders: [],
       };
 
-      const transformer = new GraphQLTransform({
+      const out = testTransform({
+        schema: inputSchema,
         authConfig,
         transformParameters: {
           secondaryKeyAsGSI: false,
@@ -859,7 +1016,6 @@ describe('owner based @auth', () => {
         ],
       });
 
-      const out = transformer.transform(inputSchema);
       expect(out).toBeDefined();
       const schema = parse(out.schema);
       validateModelSchema(schema);
@@ -885,14 +1041,13 @@ describe('owner based @auth', () => {
           owner: String!
         }`;
 
-      const transformer = new GraphQLTransform({
-        authConfig,
-        transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer()],
-      });
-
-      expect(() => {
-        transformer.transform(schema);
-      }).toThrow(
+      expect(() =>
+        testTransform({
+          schema,
+          authConfig,
+          transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer()],
+        }),
+      ).toThrow(
         "The primary key's sort key type 'owner' cannot be used as an owner @auth field too. Please use another field for the sort key.",
       );
     });
@@ -904,15 +1059,14 @@ describe('owner based @auth', () => {
           owner: String!
         }`;
 
-      const transformer = new GraphQLTransform({
+      const out = testTransform({
+        schema,
         authConfig,
         transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer()],
         transformParameters: {
           useSubUsernameForDefaultIdentityClaim: false,
         },
       });
-
-      const out = transformer.transform(schema);
       expect(out).toBeDefined();
     });
 
@@ -923,12 +1077,11 @@ describe('owner based @auth', () => {
           owner: String!
         }`;
 
-      const transformer = new GraphQLTransform({
+      const out = testTransform({
+        schema,
         authConfig,
         transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer()],
       });
-
-      const out = transformer.transform(schema);
       expect(out).toBeDefined();
     });
 
@@ -939,15 +1092,14 @@ describe('owner based @auth', () => {
           owner: String!
         }`;
 
-      const transformer = new GraphQLTransform({
+      const out = testTransform({
+        schema,
         authConfig,
         transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer()],
         transformParameters: {
           useSubUsernameForDefaultIdentityClaim: false,
         },
       });
-
-      const out = transformer.transform(schema);
       expect(out).toBeDefined();
     });
 
@@ -958,20 +1110,19 @@ describe('owner based @auth', () => {
           myOwnerField: String!
         }`;
 
-      const transformer = new GraphQLTransform({
-        authConfig,
-        transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer()],
-      });
-
-      expect(() => {
-        transformer.transform(schema);
-      }).toThrow(
+      expect(() =>
+        testTransform({
+          schema,
+          authConfig,
+          transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer()],
+        }),
+      ).toThrow(
         "The primary key's sort key type 'myOwnerField' cannot be used as an owner @auth field too. Please use another field for the sort key.",
       );
     });
 
     describe('owner field as part of global secondary index', () => {
-      test('handles ownerfield as part of sortKeyFields of GSI with default identity claim ', () => {
+      test('handles ownerfield as part of sortKeyFields of GSI with default identity claim', () => {
         const schema = `
           type Note @model @auth(rules: [{ allow: owner }]) 
           {  
@@ -982,15 +1133,15 @@ describe('owner based @auth', () => {
           }
         `;
 
-        const transformer = new GraphQLTransform({
+        const out = testTransform({
+          schema,
           authConfig,
           transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer(), new IndexTransformer()],
         });
 
-        const out = transformer.transform(schema);
-        expect(out.resolvers['Note.notesByNoteTypeAndOwner.auth.1.req.vtl']).toMatchSnapshot();
+        expect(out.resolvers['Query.notesByNoteTypeAndOwner.auth.1.req.vtl']).toMatchSnapshot();
       });
-      test('handles ownerfield as part of sortKeyFields of GSI with username identity claim ', () => {
+      test('handles ownerfield as part of sortKeyFields of GSI with username identity claim', () => {
         const schema = `
           type Note @model @auth(rules: [{ allow: owner, identityClaim: "username" }]) 
           {  
@@ -1001,15 +1152,14 @@ describe('owner based @auth', () => {
           }
         `;
 
-        const transformer = new GraphQLTransform({
+        const out = testTransform({
+          schema,
           authConfig,
           transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer(), new IndexTransformer()],
         });
-
-        const out = transformer.transform(schema);
-        expect(out.resolvers['Note.notesByNoteTypeAndOwner.auth.1.req.vtl']).toMatchSnapshot();
+        expect(out.resolvers['Query.notesByNoteTypeAndOwner.auth.1.req.vtl']).toMatchSnapshot();
       });
-      test('handles ownerfield as GSI field with default identity claim ', () => {
+      test('handles ownerfield as GSI field with default identity claim', () => {
         const schema = `
           type Note @model @auth(rules: [{ allow: owner }]) 
           {  
@@ -1020,15 +1170,14 @@ describe('owner based @auth', () => {
           }
         `;
 
-        const transformer = new GraphQLTransform({
+        const out = testTransform({
+          schema,
           authConfig,
           transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer(), new IndexTransformer()],
         });
-
-        const out = transformer.transform(schema);
-        expect(out.resolvers['Note.notesByOwner.auth.1.req.vtl']).toMatchSnapshot();
+        expect(out.resolvers['Query.notesByOwner.auth.1.req.vtl']).toMatchSnapshot();
       });
-      test('handles ownerfield as GSI field with username identity claim ', () => {
+      test('handles ownerfield as GSI field with username identity claim', () => {
         const schema = `
           type Note @model @auth(rules: [{ allow: owner, identityClaim: "username" }]) 
           {  
@@ -1039,13 +1188,12 @@ describe('owner based @auth', () => {
           }
         `;
 
-        const transformer = new GraphQLTransform({
+        const out = testTransform({
+          schema,
           authConfig,
           transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer(), new IndexTransformer()],
         });
-
-        const out = transformer.transform(schema);
-        expect(out.resolvers['Note.notesByOwner.auth.1.req.vtl']).toMatchSnapshot();
+        expect(out.resolvers['Query.notesByOwner.auth.1.req.vtl']).toMatchSnapshot();
       });
     });
   });
@@ -1065,14 +1213,14 @@ describe('owner based @auth', () => {
           createdAt: String
           updatedAt: String
         }`;
-      const transformer = new GraphQLTransform({
+      const out = testTransform({
+        schema: validSchema,
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
         transformParameters: {
           populateOwnerFieldForStaticGroupAuth: false,
         },
       });
-      const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
       const resources = out.rootStack.Resources;
       expect(resources).toBeDefined();
@@ -1096,14 +1244,14 @@ describe('owner based @auth', () => {
           createdAt: String
           updatedAt: String
         }`;
-      const transformer = new GraphQLTransform({
+      const out = testTransform({
+        schema: validSchema,
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
         transformParameters: {
           populateOwnerFieldForStaticGroupAuth: false,
         },
       });
-      const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
       const resources = out.rootStack.Resources;
       expect(resources).toBeDefined();
@@ -1127,14 +1275,14 @@ describe('owner based @auth', () => {
           createdAt: String
           updatedAt: String
         }`;
-      const transformer = new GraphQLTransform({
+      const out = testTransform({
+        schema: validSchema,
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
         transformParameters: {
           populateOwnerFieldForStaticGroupAuth: false,
         },
       });
-      const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
       const resources = out.rootStack.Resources;
       expect(resources).toBeDefined();
@@ -1158,14 +1306,14 @@ describe('owner based @auth', () => {
           createdAt: String
           updatedAt: String
         }`;
-      const transformer = new GraphQLTransform({
+      const out = testTransform({
+        schema: validSchema,
         authConfig,
         transformers: [new ModelTransformer(), new AuthTransformer()],
         transformParameters: {
           populateOwnerFieldForStaticGroupAuth: false,
         },
       });
-      const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
       const resources = out.rootStack.Resources;
       expect(resources).toBeDefined();

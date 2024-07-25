@@ -1,8 +1,13 @@
 import { AuthorizationConfig, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import { Duration, Expiration } from 'aws-cdk-lib';
-import { AppSyncAuthConfiguration, AppSyncAuthConfigurationEntry, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
-import { StackManager } from '../transformer-context/stack-manager';
+import {
+  AppSyncAuthConfiguration,
+  AppSyncAuthConfigurationEntry,
+  AppSyncAuthMode,
+  SynthParameters,
+  StackManagerProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
 
 const authTypeMap: Record<AppSyncAuthMode, any> = {
   API_KEY: AuthorizationType.API_KEY,
@@ -12,17 +17,24 @@ const authTypeMap: Record<AppSyncAuthMode, any> = {
   AWS_LAMBDA: 'AWS_LAMBDA',
 };
 
-export const IAM_AUTH_ROLE_PARAMETER = 'authRoleName';
-export const IAM_UNAUTH_ROLE_PARAMETER = 'unauthRoleName';
-
-export function adoptAuthModes(stack: StackManager, authConfig: AppSyncAuthConfiguration): AuthorizationConfig {
+export const adoptAuthModes = (
+  stackManager: StackManagerProvider,
+  synthParameters: SynthParameters,
+  authConfig: AppSyncAuthConfiguration,
+): AuthorizationConfig => {
   return {
-    defaultAuthorization: adoptAuthMode(stack, authConfig.defaultAuthentication),
-    additionalAuthorizationModes: authConfig.additionalAuthenticationProviders?.map((entry) => adoptAuthMode(stack, entry)),
+    defaultAuthorization: adoptAuthMode(stackManager, synthParameters, authConfig.defaultAuthentication),
+    additionalAuthorizationModes: authConfig.additionalAuthenticationProviders?.map((entry) =>
+      adoptAuthMode(stackManager, synthParameters, entry),
+    ),
   };
-}
+};
 
-export function adoptAuthMode(stackManager: StackManager, entry: AppSyncAuthConfigurationEntry): any {
+export const adoptAuthMode = (
+  stackManager: StackManagerProvider,
+  synthParameters: SynthParameters,
+  entry: AppSyncAuthConfigurationEntry,
+): any => {
   const authType = authTypeMap[entry.authenticationType];
   switch (entry.authenticationType) {
     case AuthorizationType.API_KEY:
@@ -35,17 +47,17 @@ export function adoptAuthMode(stackManager: StackManager, entry: AppSyncAuthConf
             : undefined,
         },
       };
-    case AuthorizationType.USER_POOL:
-      const userPoolId = stackManager.addParameter('AuthCognitoUserPoolId', {
-        type: 'String',
-      }).valueAsString;
-      const rootStack = stackManager.rootStack;
+    case AuthorizationType.USER_POOL: {
+      if (!synthParameters.userPoolId) {
+        throw new Error('Expected userPoolId to be present in synth parameters when user pool auth is specified.');
+      }
       return {
         authorizationType: authType,
         userPoolConfig: {
-          userPool: UserPool.fromUserPoolId(rootStack, 'transformer-user-pool', userPoolId),
+          userPool: UserPool.fromUserPoolId(stackManager.scope, 'transformer-user-pool', synthParameters.userPoolId),
         },
       };
+    }
     case AuthorizationType.IAM:
       return {
         authorizationType: authType,
@@ -64,6 +76,7 @@ export function adoptAuthMode(stackManager: StackManager, entry: AppSyncAuthConf
       return {
         authorizationType: authType,
         lambdaAuthorizerConfig: {
+          lambdaArn: entry.lambdaAuthorizerConfig!.lambdaArn,
           lambdaFunction: entry.lambdaAuthorizerConfig!.lambdaFunction,
           ttlSeconds: strToNumber(entry.lambdaAuthorizerConfig!.ttlSeconds),
         },
@@ -71,11 +84,11 @@ export function adoptAuthMode(stackManager: StackManager, entry: AppSyncAuthConf
     default:
       throw new Error('Invalid auth config');
   }
-}
+};
 
-function strToNumber(input: string | number | undefined): number | undefined {
+const strToNumber = (input: string | number | undefined): number | undefined => {
   if (typeof input === 'string') {
     return Number.parseInt(input, 10);
   }
   return input;
-}
+};

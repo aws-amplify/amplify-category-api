@@ -1,10 +1,11 @@
 import * as cdk from 'aws-cdk-lib';
+import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 interface PolicyDocument {
   [key: string]: any;
 }
 
-export const createPolicyDocumentForManagedPolicy = (resources: Set<string>) => {
+export const createPolicyDocumentForManagedPolicy = (context: TransformerContextProvider, resources: Set<string>) => {
   const policyDocuments = new Array<PolicyDocument>();
   let policyDocumentResources = new Array<string>();
   let resourceSize = 0;
@@ -37,7 +38,7 @@ export const createPolicyDocumentForManagedPolicy = (resources: Set<string>) => 
     if (fieldName !== 'null') {
       policyDocumentResources.push(
         cdk.Fn.sub('arn:aws:appsync:${AWS::Region}:${AWS::AccountId}:apis/${apiId}/types/${typeName}/fields/${fieldName}', {
-          apiId: cdk.Fn.getAtt('GraphQLAPI', 'ApiId').toString(),
+          apiId: context.api.apiId,
           typeName,
           fieldName,
         }).toString(),
@@ -46,7 +47,7 @@ export const createPolicyDocumentForManagedPolicy = (resources: Set<string>) => 
     } else {
       policyDocumentResources.push(
         cdk.Fn.sub('arn:aws:appsync:${AWS::Region}:${AWS::AccountId}:apis/${apiId}/types/${typeName}/*', {
-          apiId: cdk.Fn.getAtt('GraphQLAPI', 'ApiId').toString(),
+          apiId: context.api.apiId,
           typeName,
         }).toString(),
       );

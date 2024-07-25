@@ -1,22 +1,4 @@
-import {
-  config,
-  DynamoDB,
-  S3,
-  CognitoIdentityServiceProvider,
-  Lambda,
-  LexModelBuildingService,
-  Rekognition,
-  AppSync,
-  CloudWatchLogs,
-  CloudWatchEvents,
-  Kinesis,
-  CloudFormation,
-  AmplifyBackend,
-  IAM,
-  SSM,
-  Location,
-} from 'aws-sdk';
-import * as path from 'path';
+import { config, DynamoDB, S3, CognitoIdentityServiceProvider, Lambda, AppSync, CloudFormation, AmplifyBackend, IAM } from 'aws-sdk';
 import _ from 'lodash';
 
 export const getDDBTable = async (tableName: string, region: string) => {
@@ -24,6 +6,11 @@ export const getDDBTable = async (tableName: string, region: string) => {
   if (tableName) {
     return await service.describeTable({ TableName: tableName }).promise();
   }
+};
+
+export const getDDBTableTags = async (tableName: string, region: string) => {
+  const service = new DynamoDB({ region });
+  return await service.listTagsOfResource({ ResourceArn: tableName }).promise();
 };
 
 export const checkIfBucketExists = async (bucketName: string, region: string) => {
@@ -45,30 +32,6 @@ export const bucketNotExists = async (bucket: string) => {
       return false;
     }
     throw error;
-  }
-};
-
-export const getBucketEncryption = async (bucket: string) => {
-  const s3 = new S3();
-  const params = {
-    Bucket: bucket,
-  };
-  try {
-    const result = await s3.getBucketEncryption(params).promise();
-    return result.ServerSideEncryptionConfiguration;
-  } catch (err) {
-    throw new Error(`Error fetching SSE info for bucket ${bucket}. Underlying error was [${err.message}]`);
-  }
-};
-
-export const getBucketKeys = async (params: S3.ListObjectsRequest) => {
-  const s3 = new S3();
-
-  try {
-    const result = await s3.listObjects(params).promise();
-    return result.Contents.map((contentObj) => contentObj.Key);
-  } catch (err) {
-    throw new Error(`Error fetching keys for bucket ${params.Bucket}. Underlying error was [${err.message}]`);
   }
 };
 
@@ -128,14 +91,6 @@ export const getUserPool = async (userpoolId, region) => {
   return res;
 };
 
-export const getMFAConfiguration = async (
-  userPoolId: string,
-  region: string,
-): Promise<CognitoIdentityServiceProvider.GetUserPoolMfaConfigResponse> => {
-  config.update({ region });
-  return await new CognitoIdentityServiceProvider().getUserPoolMfaConfig({ UserPoolId: userPoolId }).promise();
-};
-
 export const getLambdaFunction = async (functionName: string, region: string) => {
   const lambda = new Lambda({ region });
   try {
@@ -164,49 +119,9 @@ export const getUserPoolClients = async (userPoolId: string, clientIds: string[]
   return res;
 };
 
-export const getBot = async (botName: string, region: string) => {
-  const service = new LexModelBuildingService({ region });
-  return await service.getBot({ name: botName, versionOrAlias: '$LATEST' }).promise();
-};
-
-export const getFunction = async (functionName: string, region: string) => {
-  const service = new Lambda({ region });
-  return await service.getFunction({ FunctionName: functionName }).promise();
-};
-
-export const getLayerVersion = async (functionArn: string, region: string) => {
-  const service = new Lambda({ region });
-  return await service.getLayerVersionByArn({ Arn: functionArn }).promise();
-};
-
-export const listVersions = async (layerName: string, region: string) => {
-  const service = new Lambda({ region });
-  return await service.listLayerVersions({ LayerName: layerName }).promise();
-};
-
-export const invokeFunction = async (functionName: string, payload: string, region: string) => {
-  const service = new Lambda({ region });
-  return await service.invoke({ FunctionName: functionName, Payload: payload }).promise();
-};
-
-export const getCollection = async (collectionId: string, region: string) => {
-  const service = new Rekognition({ region });
-  return await service.describeCollection({ CollectionId: collectionId }).promise();
-};
-
 export const getTable = async (tableName: string, region: string) => {
   const service = new DynamoDB({ region });
   return await service.describeTable({ TableName: tableName }).promise();
-};
-
-export const getEventSourceMappings = async (functionName: string, region: string) => {
-  const service = new Lambda({ region });
-  return (await service.listEventSourceMappings({ FunctionName: functionName }).promise()).EventSourceMappings;
-};
-
-export const deleteTable = async (tableName: string, region: string) => {
-  const service = new DynamoDB({ region });
-  return await service.deleteTable({ TableName: tableName }).promise();
 };
 
 export const putItemInTable = async (tableName: string, region: string, item: unknown) => {
@@ -227,25 +142,6 @@ export const getAppSyncApi = async (appSyncApiId: string, region: string) => {
 export const listAppSyncFunctions = async (appSyncApiId: string, region: string) => {
   const service = new AppSync({ region });
   return await service.listFunctions({ apiId: appSyncApiId }).promise();
-};
-
-export const getCloudWatchLogs = async (region: string, logGroupName: string, logStreamName: string | undefined = undefined) => {
-  const cloudwatchlogs = new CloudWatchLogs({ region, retryDelayOptions: { base: 500 } });
-
-  let targetStreamName = logStreamName;
-  if (targetStreamName === undefined) {
-    const describeStreamsResp = await cloudwatchlogs
-      .describeLogStreams({ logGroupName, descending: true, orderBy: 'LastEventTime' })
-      .promise();
-    if (describeStreamsResp.logStreams === undefined || describeStreamsResp.logStreams.length == 0) {
-      return [];
-    }
-
-    targetStreamName = describeStreamsResp.logStreams[0].logStreamName;
-  }
-
-  const logsResp = await cloudwatchlogs.getLogEvents({ logGroupName, logStreamName: targetStreamName }).promise();
-  return logsResp.events || [];
 };
 
 export const describeCloudFormationStack = async (stackName: string, region: string, profileConfig?: any) => {
@@ -287,37 +183,6 @@ export const getTableResourceId = async (region: string, table: string, StackId:
   return null;
 };
 
-export const putKinesisRecords = async (data: string, partitionKey: string, streamName: string, region: string) => {
-  const kinesis = new Kinesis({ region });
-
-  return await kinesis
-    .putRecords({
-      Records: [
-        {
-          Data: data,
-          PartitionKey: partitionKey,
-        },
-      ],
-      StreamName: streamName,
-    })
-    .promise();
-};
-
-export const getCloudWatchEventRule = async (targetName: string, region: string) => {
-  config.update({ region });
-  const service = new CloudWatchEvents();
-  var params = {
-    TargetArn: targetName /* required */,
-  };
-  let ruleName;
-  try {
-    ruleName = await service.listRuleNamesByTarget(params).promise();
-  } catch (e) {
-    console.log(e);
-  }
-  return ruleName;
-};
-
 export const setupAmplifyAdminUI = async (appId: string, region: string) => {
   const amplifyBackend = new AmplifyBackend({ region });
 
@@ -346,67 +211,32 @@ export const listAttachedRolePolicies = async (roleName: string, region: string)
   return (await service.listAttachedRolePolicies({ RoleName: roleName }).promise()).AttachedPolicies;
 };
 
-export const getPermissionsBoundary = async (roleName: string, region) => {
-  const iamClient = new IAM({ region });
-  return (await iamClient.getRole({ RoleName: roleName }).promise())?.Role?.PermissionsBoundary?.PermissionsBoundaryArn;
-};
-
-export const getSSMParameters = async (region: string, appId: string, envName: string, funcName: string, parameterNames: string[]) => {
-  const ssmClient = new SSM({ region });
-  if (!parameterNames || parameterNames.length === 0) {
-    throw new Error('no parameterNames specified');
+export const getBucketNameFromModelSchemaS3Uri = (uri: string | null): string | null => {
+  const pattern = /(s3:\/\/)(.*)(\/.*)/;
+  const matches = uri.match(pattern);
+  // Sample Input Uri looks like 's3://bucket-name/model-schema.graphql'.
+  // The output of string.match returns an array which looks like the below. The third element is the bucket name.
+  // [
+  //     "s3://bucket-name/model-schema.graphql",
+  //     "s3://",
+  //     "bucket-name",
+  //     "/model-schema.graphql"
+  // ]
+  const BUCKET_NAME_INDEX = 2;
+  if (!matches) {
+    return null;
   }
-  return await ssmClient
-    .getParameters({
-      Names: parameterNames.map((name) => path.posix.join('/amplify', appId, envName, `AMPLIFY_${funcName}_${name}`)),
-      WithDecryption: true,
-    })
-    .promise();
-};
-//Amazon location service calls
-export const getMap = async (mapName: string, region: string) => {
-  const service = new Location({ region });
-  return await service
-    .describeMap({
-      MapName: mapName,
-    })
-    .promise();
+  if (matches.length && matches.length > BUCKET_NAME_INDEX) {
+    return matches[BUCKET_NAME_INDEX];
+  }
+  return null;
 };
 
-export const getPlaceIndex = async (placeIndexName: string, region: string) => {
-  const service = new Location({ region });
-  return await service
-    .describePlaceIndex({
-      IndexName: placeIndexName,
-    })
-    .promise();
-};
-
-export const getGeofenceCollection = async (geofenceCollectionName: string, region: string) => {
-  const service = new Location({ region });
-  return await service
-    .describeGeofenceCollection({
-      CollectionName: geofenceCollectionName,
-    })
-    .promise();
-};
-
-export const getGeofence = async (geofenceCollectionName: string, geofenceId: string, region: string) => {
-  const service = new Location({ region });
-  return (
-    await service.getGeofence({
-      CollectionName: geofenceCollectionName,
-      GeofenceId: geofenceId,
-    })
-  ).promise();
-};
-
-export const listGeofences = async (geofenceCollectionName: string, region: string, nextToken: string = null) => {
-  const service = new Location({ region });
-  return (
-    await service.listGeofences({
-      CollectionName: geofenceCollectionName,
-      NextToken: nextToken,
-    })
-  ).promise();
+export const getBucketCorsPolicy = async (bucketName: string, region: string): Promise<Record<string, any>[]> => {
+  const service = new S3({ region });
+  const params = {
+    Bucket: bucketName,
+  };
+  const corsPolicy = await service.getBucketCors(params).promise();
+  return corsPolicy.CORSRules;
 };

@@ -1,18 +1,53 @@
-import { iff, ref, notEquals, methodCall, compoundExpression, obj, printBlock, toJson, str, not } from 'graphql-mapping-template';
+import {
+  iff,
+  ref,
+  methodCall,
+  compoundExpression,
+  obj,
+  printBlock,
+  toJson,
+  str,
+  not,
+  Expression,
+  and,
+  equals,
+  ret,
+  qref,
+  QuietReferenceNode,
+} from 'graphql-mapping-template';
 
 const API_KEY = 'API Key Authorization';
+const IAM_AUTH_TYPE = 'IAM Authorization';
 /**
- * Util function to generate sandbox mode expression
+ * Util function to generate post auth expression
+ *
+ * 1. Pass through if 'ctx.stash.hasAuth' is true (auth directive is present)
+ * 2. Pass through for API key auth type if sandbox is enabled.
+ * 3. Pass through for IAM auth type if generic IAM access is enabled and principal is not coming from Cognito.
+ * 4. Otherwise, rejects as unauthorized.
+ *
+ * @param isSandboxModeEnabled a flag indicating if sandbox is enabled.
+ * @param genericIamAccessEnabled a flag indicating if generic IAM access is enabled.
+ * @returns an expression.
  */
-export const generateAuthExpressionForSandboxMode = (enabled: boolean): string => {
-  let exp;
+export const generatePostAuthExpression = (isSandboxModeEnabled: boolean, genericIamAccessEnabled: boolean | undefined): string => {
+  const expressions: Array<Expression> = [];
+  if (isSandboxModeEnabled) {
+    expressions.push(iff(equals(methodCall(ref('util.authType')), str(API_KEY)), ret(toJson(obj({})))));
+  }
+  if (genericIamAccessEnabled) {
+    const isNonCognitoIAMPrincipal = and([
+      equals(ref('util.authType()'), str(IAM_AUTH_TYPE)),
+      methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityPoolId')),
+      methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityId')),
+    ]);
+    expressions.push(iff(isNonCognitoIAMPrincipal, ret(toJson(obj({})))));
+  }
+  expressions.push(methodCall(ref('util.unauthorized')));
 
-  if (enabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY)), methodCall(ref('util.unauthorized')));
-  else exp = methodCall(ref('util.unauthorized'));
-
-  return printBlock(`Sandbox Mode ${enabled ? 'Enabled' : 'Disabled'}`)(
-    compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), exp), toJson(obj({}))]),
-  );
+  return printBlock(
+    `Sandbox Mode ${isSandboxModeEnabled ? 'Enabled' : 'Disabled'}, IAM Access ${genericIamAccessEnabled ? 'Enabled' : 'Disabled'}`,
+  )(compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), compoundExpression(expressions)), toJson(obj({}))]));
 };
 
 /**
@@ -22,4 +57,11 @@ export const generateAuthExpressionForSandboxMode = (enabled: boolean): string =
  */
 export const generateResolverKey = (typeName: string, fieldName: string): string => {
   return `${typeName}.${fieldName}`;
+};
+
+/**
+ * Add set default value for id field to util.autoId.
+ */
+export const defaultAutoId = (): QuietReferenceNode => {
+  return qref(methodCall(ref('ctx.stash.defaultValues.put'), str('id'), methodCall(ref('util.autoId'))));
 };

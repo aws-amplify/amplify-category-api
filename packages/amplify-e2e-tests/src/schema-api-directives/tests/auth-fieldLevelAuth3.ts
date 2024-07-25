@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 #error: there is no "username" field, which is required as the ownerfield
 #change: change "email" to "username"
@@ -17,7 +17,7 @@ type Employee @model {
 }
 
 ##fieldLevelAuth3`;
-//mutations
+// mutations
 export const mutation = `
 mutation CreateEmployee(
     $input: CreateEmployeeInput!
@@ -46,7 +46,7 @@ export const expected_result_mutation = {
   },
 };
 
-//queries
+// queries
 export const query = `
  query GetEmployee {
     getEmployee(id: "1") {

@@ -1,9 +1,10 @@
-import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as fs from 'fs-extra';
 import * as chokidar from 'chokidar';
 
 export class ResolverOverrides {
   private overrides: Set<string>;
+
   private contentMap: Map<string, string>;
 
   constructor(
@@ -160,6 +161,7 @@ export class ResolverOverrides {
   private getRelativePath(filePath: string) {
     return path.relative(this.resolverTemplateRoot, filePath);
   }
+
   private getAbsPath(filename: string) {
     return path.normalize(path.join(this.resolverTemplateRoot, filename));
   }
@@ -171,6 +173,7 @@ export class ResolverOverrides {
   onChange(path: string): boolean {
     return this.onFileChange(path);
   }
+
   onUnlink(path: string): boolean {
     const relativePath = this.getRelativePath(path);
     this.contentMap.delete(relativePath);
@@ -180,6 +183,7 @@ export class ResolverOverrides {
     }
     return false;
   }
+
   get resolverTemplateRoot() {
     return this._rootFolder;
   }

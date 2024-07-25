@@ -1,6 +1,6 @@
+import * as path from 'path';
 import { $TSContext, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import { parametersFileName } from './aws-constants';
 import { addPolicyResourceNameToPaths, copyCfnTemplate } from './legacy-add-resource';
 import { serviceMetadataFor } from './utils/dynamic-imports';

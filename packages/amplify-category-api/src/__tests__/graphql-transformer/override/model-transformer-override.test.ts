@@ -1,13 +1,14 @@
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform, StackManager } from '@aws-amplify/graphql-transformer-core';
 import path from 'path';
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
+import { Construct } from 'constructs';
 import { applyFileBasedOverride } from '../../../graphql-transformer/override';
 
 jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'testEnvName' });
 jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
 
-describe('ModelTransformer: ', () => {
+describe('ModelTransformer:', () => {
   it('should override  model objects when given override config', () => {
     const validSchema = `
       type Post @model {
@@ -19,14 +20,14 @@ describe('ModelTransformer: ', () => {
         text: String!
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       overrideConfig: {
-        applyOverride: (stackManager: StackManager) => applyFileBasedOverride(stackManager, path.join(__dirname, 'model-overrides')),
+        applyOverride: (scope: Construct) => applyFileBasedOverride(scope, path.join(__dirname, 'model-overrides')),
         overrideFlag: true,
       },
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const postStack = out.stacks.Post;
     const commentStack = out.stacks.Comment;
@@ -46,15 +47,14 @@ describe('ModelTransformer: ', () => {
         text: String!
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       overrideConfig: {
-        applyOverride: (stackManager: StackManager) =>
-          applyFileBasedOverride(stackManager, path.join(__dirname, 'non-existing-override-directory')),
+        applyOverride: (scope: Construct) => applyFileBasedOverride(scope, path.join(__dirname, 'non-existing-override-directory')),
         overrideFlag: true,
       },
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const postStack = out.stacks.Post;
     const commentStack = out.stacks.Comment;

@@ -1,6 +1,6 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthTransformer } from '../graphql-auth-transformer';
@@ -19,11 +19,11 @@ test('happy case with static groups', () => {
     createdAt: String
     updatedAt: String
   }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.rootStack!.Resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
     'AMAZON_COGNITO_USER_POOLS',
@@ -45,11 +45,11 @@ test('Static groups with a single group provided as string does not error', () =
       createdAt: String
       updatedAt: String
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: invalidSchema,
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
   });
-  const out = transformer.transform(invalidSchema);
   expect(out).toBeDefined();
 });
 
@@ -69,11 +69,11 @@ test('happy case with dynamic groups', () => {
         updatedAt: String
     }
     `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
   });
-  const out = transformer.transform(validSchema);
 
   expect(out).toBeDefined();
   expect(out.rootStack!.Resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
@@ -113,11 +113,11 @@ test("'groups' @auth with dynamic groups and custom claim on index query", () =>
         updatedAt: String
     }
     `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer(), new IndexTransformer()],
   });
-  const out = transformer.transform(validSchema);
 
   expect(out).toBeDefined();
   expect(out.rootStack!.Resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
@@ -129,10 +129,10 @@ test("'groups' @auth with dynamic groups and custom claim on index query", () =>
   expect(out.resolvers['Query.listPosts.auth.1.req.vtl']).toContain('#set( $role0 = $util.parseJson($role0) )');
   expect(out.resolvers['Query.listPosts.auth.1.req.vtl']).toContain('#set( $role0 = [$role0] )');
 
-  expect(out.resolvers['Post.postsByUser.auth.1.req.vtl']).toContain('#if( $util.isString($role0) )');
-  expect(out.resolvers['Post.postsByUser.auth.1.req.vtl']).toContain('#if( $util.isList($util.parseJson($role0)) )');
-  expect(out.resolvers['Post.postsByUser.auth.1.req.vtl']).toContain('#set( $role0 = $util.parseJson($role0) )');
-  expect(out.resolvers['Post.postsByUser.auth.1.req.vtl']).toContain('#set( $role0 = [$role0] )');
+  expect(out.resolvers['Query.postsByUser.auth.1.req.vtl']).toContain('#if( $util.isString($role0) )');
+  expect(out.resolvers['Query.postsByUser.auth.1.req.vtl']).toContain('#if( $util.isList($util.parseJson($role0)) )');
+  expect(out.resolvers['Query.postsByUser.auth.1.req.vtl']).toContain('#set( $role0 = $util.parseJson($role0) )');
+  expect(out.resolvers['Query.postsByUser.auth.1.req.vtl']).toContain('#set( $role0 = [$role0] )');
 });
 
 test('validation on @auth on a non-@model type', () => {
@@ -150,11 +150,13 @@ test('validation on @auth on a non-@model type', () => {
         createdAt: String
         updatedAt: String
     }`;
-  const transformer = new GraphQLTransform({
-    authConfig,
-    transformers: [new ModelTransformer(), new AuthTransformer()],
-  });
-  expect(() => transformer.transform(invalidSchema)).toThrowError('Types annotated with @auth must also be annotated with @model.');
+  expect(() =>
+    testTransform({
+      schema: invalidSchema,
+      authConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer()],
+    }),
+  ).toThrowError('Types annotated with @auth must also be annotated with @model.');
 });
 
 test('empty groups list', () => {
@@ -172,11 +174,13 @@ test('empty groups list', () => {
       createdAt: String
       updatedAt: String
     }`;
-  const transformer = new GraphQLTransform({
-    authConfig,
-    transformers: [new ModelTransformer(), new AuthTransformer()],
-  });
-  expect(() => transformer.transform(invalidSchema)).toThrowError('@auth rules using groups cannot have an empty list');
+  expect(() =>
+    testTransform({
+      schema: invalidSchema,
+      authConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer()],
+    }),
+  ).toThrowError('@auth rules using groups cannot have an empty list');
 });
 
 test('no @auth rules list', () => {
@@ -194,11 +198,13 @@ test('no @auth rules list', () => {
       createdAt: String
       updatedAt: String
     }`;
-  const transformer = new GraphQLTransform({
-    authConfig,
-    transformers: [new ModelTransformer(), new AuthTransformer()],
-  });
-  expect(() => transformer.transform(invalidSchema)).toThrowError('@auth on Post does not have any auth rules.');
+  expect(() =>
+    testTransform({
+      schema: invalidSchema,
+      authConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer()],
+    }),
+  ).toThrowError('@auth on Post does not have any auth rules.');
 });
 
 test('dynamic group auth generates authorized fields list correctly', () => {
@@ -216,11 +222,11 @@ test('dynamic group auth generates authorized fields list correctly', () => {
       allowedGroups: [String]
     }
   `;
-  const transformer = new GraphQLTransform({
+  const result = testTransform({
+    schema,
     authConfig,
     transformers: [new ModelTransformer(), new AuthTransformer()],
   });
-  const result = transformer.transform(schema);
   // ideally this could be a more specific test rather than a big snapshot test
   // the part we are looking for here is that the allowedFields and nullAllowedFields are set to
   // groupAllowedFields0 and groupNullAllowedFields0, respectively.
@@ -301,11 +307,11 @@ describe('Dynamic group subscription auth tests', () => {
           updatedAt: String
       }
       `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
     });
-    const out = transformer.transform(validSchema);
 
     expect(out).toBeDefined();
     expect(out.rootStack!.Resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
@@ -352,11 +358,11 @@ describe('Dynamic group subscription auth tests', () => {
         group: String
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
     });
-    const out = transformer.transform(validSchema);
 
     expect(out).toBeDefined();
     expect(out.rootStack!.Resources![ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
@@ -408,14 +414,14 @@ describe('Group field as part of secondary index', () => {
           group: String
       }
       `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
     });
-    const out = transformer.transform(validSchema);
 
     expect(out).toBeDefined();
-    expect(out.resolvers['Note.notesByNoteTypeAndGroup.auth.1.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['Query.notesByNoteTypeAndGroup.auth.1.req.vtl']).toMatchSnapshot();
   });
   test('group field as GSI field', () => {
     const authConfig: AppSyncAuthConfiguration = {
@@ -433,13 +439,13 @@ describe('Group field as part of secondary index', () => {
           group: String! @index(name: "notesByGroup", queryField: "notesByGroup")
       }
       `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
     });
-    const out = transformer.transform(validSchema);
 
     expect(out).toBeDefined();
-    expect(out.resolvers['Note.notesByGroup.auth.1.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['Query.notesByGroup.auth.1.req.vtl']).toMatchSnapshot();
   });
 });

@@ -1,4 +1,4 @@
-//special handling needed becasue we need to set up the function in a differnt region
+// special handling needed becasue we need to set up the function in a differnt region
 import path from 'path';
 import fs from 'fs-extra';
 
@@ -37,8 +37,6 @@ export async function runTest(projectDir: string, testModule: any) {
     const appSyncClient = getConfiguredAppsyncClientAPIKeyAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region, apiKey);
 
     await testQueries(testModule, appSyncClient);
-  } catch (e) {
-    throw e;
   } finally {
     await deleteFunctionProject(functionProjectDirPath);
   }
@@ -71,7 +69,7 @@ async function setupFunction(functionProjectDirPath: string, functionRegion: str
 
   const amplifyMeta = getProjectMeta(functionProjectDirPath);
 
-  //return the actual function name in the other region
+  // return the actual function name in the other region
   return amplifyMeta.function[functionName].output.Name;
 }
 
@@ -93,7 +91,7 @@ function updateFunctionNameAndRegionInSchema(projectDir: string, functionName: s
   fs.writeFileSync(amplifySchemaFilePath, amplifySchemaFileContents);
 }
 
-//schema
+// schema
 export const schema = `
 #change: replace the dummy function name with  "<function-name>" placeholder, the test will replace it with the actual function name
 #change: replaced the dummy region "us-east-1" with the  "<function-region>" placeholder, the test will replace is with the actual region of the function
@@ -102,7 +100,7 @@ type Query {
 }
 `;
 
-//functions
+// functions
 export const func = `
 //#extra
 //create the lambda function in region other than the amplify project region
@@ -111,7 +109,7 @@ exports.handler = async event => {
 };
 `;
 
-//queries
+// queries
 export const query = `
 #extra
 query Echo {

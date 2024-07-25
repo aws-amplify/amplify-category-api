@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
+import { parse } from 'graphql';
 import { RelationalDBResolverGenerator } from '../RelationalDBResolverGenerator';
 import { TemplateContext } from '../RelationalDBSchemaTransformer';
-import { parse } from 'graphql';
 
 jest.mock('fs-extra', () => ({
   writeFileSync: jest.fn(),
@@ -13,7 +13,7 @@ afterEach(() => jest.clearAllMocks());
  * Test for verifying that provided a template context, the resolver generator
  * creates the CRUDL AppSync Resolver resources.
  */
-test('Test Basic CRUDL Resolver Generation', () => {
+test('Basic CRUDL Resolver Generation', () => {
   // SETUP
   const schema = parse(`
       type Pet {

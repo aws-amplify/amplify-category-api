@@ -1,4 +1,4 @@
-//special handling needed becasue we need to set up the function in a differnt region
+// special handling needed becasue we need to set up the function in a differnt region
 import path from 'path';
 import fs from 'fs-extra';
 import {
@@ -9,7 +9,7 @@ import {
   addAuthWithDefault,
 } from 'amplify-category-api-e2e-core';
 
-import { updateFunctionNameInSchema } from '../functionTester';
+import { updateFunctionNameInSchema, randomizedFunctionName } from '../functionTester';
 
 import {
   configureAmplify,
@@ -21,8 +21,6 @@ import {
 } from '../authHelper';
 
 import { updateSchemaInTestProject, testQueries } from '../common';
-
-import { randomizedFunctionName } from '../functionTester';
 
 const GROUPNAME = 'Admin';
 const USERNAME = 'user1';
@@ -83,7 +81,7 @@ export async function addFunctionWithAuthAccess(projectDir: string, testModule: 
   return functionName;
 }
 
-//functions
+// functions
 export const func = `
 /* Amplify Params - DO NOT EDIT
 You can access the following resource attributes as environment variables from your Lambda function
@@ -149,7 +147,7 @@ exports.handler = async event => {
   throw new Error('Resolver not found.');
 };
 `;
-//schema
+// schema
 const env = '${env}';
 export const schema = `
 #change: replaced "ResolverFunction" with the "<function-name>" placeholder, the test will replace it with the actual function name
@@ -188,7 +186,7 @@ enum UserStatus {
 }
 `;
 
-//queries
+// queries
 export const query = `
 query {
   me {

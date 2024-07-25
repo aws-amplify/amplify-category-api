@@ -1,4 +1,9 @@
-import { APIIAMResourceProvider, GraphQLAPIProvider, TransformHostProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  AssetProvider,
+  APIIAMResourceProvider,
+  GraphQLAPIProvider,
+  TransformHostProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import {
   ApiKeyConfig,
   AuthorizationConfig,
@@ -9,14 +14,17 @@ import {
   OpenIdConnectConfig,
   UserPoolConfig,
   UserPoolDefaultAction,
+  CfnApiKey,
+  CfnGraphQLApi,
+  CfnGraphQLSchema,
 } from 'aws-cdk-lib/aws-appsync';
-import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
 import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import { ArnFormat, CfnResource, Duration, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { TransformerSchema } from './cdk-compat/schema-asset';
 import { DefaultTransformHost } from './transform-host';
+import { setResourceName } from './utils';
 
 export interface GraphqlApiProps {
   /**
@@ -116,6 +124,7 @@ export type TransformerAPIProps = GraphqlApiProps & {
   readonly sandboxModeEnabled?: boolean;
   readonly environmentName?: string;
   readonly disableResolverDeduping?: boolean;
+  readonly assetProvider: AssetProvider;
 };
 export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   /**
@@ -179,9 +188,17 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
    */
   public readonly environmentName?: string;
 
+  /**
+   * The asset manager to store file assets in a temporary directory.
+   */
+  public readonly assetProvider: AssetProvider;
+
   private schemaResource: CfnGraphQLSchema;
+
   private api: CfnGraphQLApi;
+
   private apiKeyResource?: CfnApiKey;
+
   private authorizationConfig?: Required<any>;
 
   constructor(scope: Construct, id: string, props: TransformerAPIProps) {
@@ -215,6 +232,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     this.graphqlUrl = this.api.attrGraphQlUrl;
     this.name = this.api.name;
     this.schema = props.schema ?? new TransformerSchema();
+    this.assetProvider = props.assetProvider;
     this.schemaResource = this.schema.bind(this);
 
     const hasApiKey = modes.some((mode) => mode.authorizationType === AuthorizationType.API_KEY);
@@ -327,6 +345,8 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
       managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs')],
     });
+    setResourceName(role, { name: 'ApiLogsRole', setOnDefaultChild: true });
+
     return {
       cloudWatchLogsRoleArn: role.roleArn,
       excludeVerboseContent: config.excludeVerboseContent,
@@ -363,7 +383,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       return undefined;
     }
     return {
-      authorizerUri: this.lambdaArnKey(config.lambdaFunction),
+      authorizerUri: config.lambdaArn ?? this.lambdaArnKey(config.lambdaFunction),
       authorizerResultTtlInSeconds: config.ttlSeconds,
       identityValidationExpression: '',
     };

@@ -1,5 +1,5 @@
-import { isValidNumber } from 'libphonenumber-js';
 import * as net from 'net';
+import { isValidNumber } from 'libphonenumber-js';
 
 const TIME_REGEX = /^([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(\.\d{1,})?(([Z])|([+|-]([01][0-9]|2[0-3]):[0-5][0-9]))$/;
 const RFC_3339_REGEX_DATE = /^(\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01]))$/;
@@ -105,18 +105,32 @@ interface Indexable {
 
 export class TypeValidators implements Indexable {
   [key: string]: any;
+
   ID = validateString;
+
   String = validateString;
+
   Int = validateInt;
+
   Float = validateFloat;
+
   Boolean = validateBoolean;
+
   AWSJSON = validateJson;
+
   AWSDate = validateAwsDate;
+
   AWSTime = validateAwsTime;
+
   AWSDateTime = validateAwsDateTime;
+
   AWSTimestamp = validateAwsTimestamp;
+
   AWSEmail = validateAwsEmail;
+
   AWSURL = validateAwsUrl;
+
   AWSPhone = validateAwsPhone;
+
   AWSIPAddress = validateAwsIpAddress;
 }

@@ -1,7 +1,7 @@
+import * as path from 'path';
 import { $TSContext, AmplifyCategories, pathManager, stateManager, FeatureFlags } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { attemptV2TransformerMigration, revertV2Migration } from '@aws-amplify/graphql-transformer-migrator';
-import * as path from 'path';
 import { checkAppsyncApiResourceMigration } from '../../provider-utils/awscloudformation/utils/check-appsync-api-migration';
 
 const subcommand = 'migrate';

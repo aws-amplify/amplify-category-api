@@ -1,6 +1,6 @@
+import * as path from 'path';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import { migrateResourceToSupportOverride } from '../../../../provider-utils/awscloudformation/utils/migrate-api-override-resource';
-import * as path from 'path';
 
 jest.mock('@aws-amplify/amplify-prompts');
 jest.mock('fs-extra');

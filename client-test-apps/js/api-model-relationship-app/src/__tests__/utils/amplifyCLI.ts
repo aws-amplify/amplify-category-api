@@ -41,8 +41,8 @@ const setProjectFileTags = (projectPath: string, tags: Tag[]): void => {
   JSONUtilities.writeJson(tagFilePath, tags);
 };
 
-const addCircleCITags = (projectPath: string): void => {
-  if (process.env && process.env['CIRCLECI']) {
+const addCITags = (projectPath: string): void => {
+  if (process.env && process.env['CODEBUILD']) {
     const tags = getProjectTags(projectPath);
 
     const addTagIfNotExist = (key: string, value: string): void => {
@@ -57,14 +57,12 @@ const addCircleCITags = (projectPath: string): void => {
     const sanitizeTagValue = (value: string): string => {
       return value.replace(/[^ a-z0-9_.:/=+\-@]/gi, '');
     };
+    if (process.env['CODEBUILD']) {
+      addTagIfNotExist('codebuild', sanitizeTagValue(process.env['CODEBUILD'] || 'N/A'));
+      addTagIfNotExist('codebuild:batch_build_identifier', sanitizeTagValue(process.env['CODEBUILD_BATCH_BUILD_IDENTIFIER'] || 'N/A'));
+      addTagIfNotExist('codebuild:build_id', sanitizeTagValue(process.env['CODEBUILD_BUILD_ID'] || 'N/A'));
+    }
 
-    addTagIfNotExist('circleci', sanitizeTagValue(process.env['CIRCLECI'] || 'N/A'));
-    addTagIfNotExist('circleci:branch', sanitizeTagValue(process.env['CIRCLE_BRANCH'] || 'N/A'));
-    addTagIfNotExist('circleci:sha1', sanitizeTagValue(process.env['CIRCLE_SHA1'] || 'N/A'));
-    addTagIfNotExist('circleci:workflow_id', sanitizeTagValue(process.env['CIRCLE_WORKFLOW_ID'] || 'N/A'));
-    addTagIfNotExist('circleci:build_id', sanitizeTagValue(process.env['CIRCLE_BUILD_NUM'] || 'N/A'));
-    addTagIfNotExist('circleci:build_url', sanitizeTagValue(process.env['CIRCLE_BUILD_URL'] || 'N/A'));
-    addTagIfNotExist('circleci:job', sanitizeTagValue(process.env['CIRCLE_JOB'] || 'N/A'));
 
     setProjectFileTags(projectPath, tags);
   }
@@ -159,7 +157,7 @@ const amplifyConfigure = (settings: AmplifyConfiguration): Promise<void> => {
     .runAsync();
 };
 
-const isCI = () => process.env.CI && (process.env.CIRCLECI || process.env.CODEBUILD);
+const isCI = () => process.env.CI && process.env.CODEBUILD;
 
  async function setupAmplify() {
   if (isCI()) {
@@ -251,7 +249,7 @@ export class AmplifyCLI {
     const s = { ...defaultSettings, ...settings };
     let env: any;
 
-    addCircleCITags(this.projectRoot);
+    addCITags(this.projectRoot);
 
     if (s.disableAmplifyAppCreation === true) {
       env = {
@@ -271,7 +269,10 @@ export class AmplifyCLI {
 
     if (s?.name?.length > 20) console.warn('Project names should not be longer than 20 characters. This may cause tests to break.');
 
-    const chain = spawn(getCLIPath(), cliArgs, { cwd: this.projectRoot, env, disableCIDetection: s.disableCIDetection })
+    const cliPath = getCLIPath();
+    console.log(`Using CLI path '${cliPath}'`);
+    console.log(`Project root: '${this.projectRoot}'`);
+    const chain = spawn(cliPath, cliArgs, { cwd: this.projectRoot, env, disableCIDetection: s.disableCIDetection })
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
@@ -303,7 +304,7 @@ export class AmplifyCLI {
     }
 
     chain
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+      .wait('Help improve Amplify CLI')
       .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/);
 

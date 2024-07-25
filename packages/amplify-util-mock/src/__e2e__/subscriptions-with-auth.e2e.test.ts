@@ -1,11 +1,11 @@
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
-import { deploy, launchDDBLocal, terminateDDB } from './utils/index';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
 import AWS = require('aws-sdk');
 import gql from 'graphql-tag';
+import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
+import { deploy, launchDDBLocal, terminateDDB } from './utils/index';
 import 'isomorphic-fetch';
 import { GraphQLClient } from './utils/graphql-client';
 
@@ -131,7 +131,7 @@ beforeAll(async () => {
       }),
     ],
     featureFlags: {
-      getBoolean: (name) => (name === 'improvePluralization' ? true : false),
+      getBoolean: (name) => name === 'improvePluralization',
     } as FeatureFlagProvider,
   });
 
@@ -221,7 +221,7 @@ afterAll(async () => {
 /**
  * Tests
  */
-test('Test that only authorized members are allowed to view subscriptions', async () => {
+test('that only authorized members are allowed to view subscriptions', async () => {
   // subscribe to create students as user 2
   const observer = APPSYNC_CLIENT_2.subscribe({
     query: gql`
@@ -259,7 +259,7 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
   return subscriptionPromise;
 });
 
-test('Test a subscription on update', async () => {
+test('a subscription on update', async () => {
   // susbcribe to update students as user 2
   const subscriptionPromise = new Promise((resolve, _) => {
     const observer = APPSYNC_CLIENT_2.subscribe({
@@ -307,7 +307,7 @@ test('Test a subscription on update', async () => {
   return subscriptionPromise;
 });
 
-test('Test a subscription on delete', async () => {
+test('a subscription on delete', async () => {
   // subscribe to onDelete as user 2
   const subscriptionPromise = new Promise((resolve, _) => {
     const observer = APPSYNC_CLIENT_2.subscribe({
@@ -351,7 +351,7 @@ test('Test a subscription on delete', async () => {
   return subscriptionPromise;
 });
 
-test('test that group is only allowed to listen to subscriptions and listen to onCreate', async () => {
+test('that group is only allowed to listen to subscriptions and listen to onCreate', async () => {
   const memberID = '001';
   const memberName = 'username00';
   // test that a user that only read can't mutate
@@ -458,7 +458,7 @@ test('authoirzed group is allowed to listen to onDelete', async () => {
 });
 
 // ownerField Tests
-test('Test subscription onCreatePost with ownerField', async () => {
+test('subscription onCreatePost with ownerField', async () => {
   const subscriptionPromise = new Promise((resolve, _) => {
     const observer = APPSYNC_CLIENT_1.subscribe({
       query: gql`

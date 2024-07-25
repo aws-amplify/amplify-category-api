@@ -1,13 +1,14 @@
 import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { getSchemaDeployer, SchemaDeployer } from '../deploySchema';
 
 describe('@mapsTo transformer', () => {
   jest.setTimeout(1000 * 60 * 15); // 15 minutes
-  const transformerFactory = () =>
-    new GraphQLTransform({
+  const transform = (schema: string) =>
+    testTransform({
+      schema,
       transformParameters: {
         respectPrimaryKeyAttributesOnConnectionField: false,
         sandboxModeEnabled: true,
@@ -45,7 +46,7 @@ describe('@mapsTo transformer', () => {
 
   let testSchemaDeployer: SchemaDeployer;
   beforeEach(async () => {
-    testSchemaDeployer = await getSchemaDeployer('mapsToTest', transformerFactory);
+    testSchemaDeployer = await getSchemaDeployer('mapsToTest', transform);
   });
 
   afterEach(async () => {

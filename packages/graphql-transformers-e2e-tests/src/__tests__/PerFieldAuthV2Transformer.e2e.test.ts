@@ -1,15 +1,15 @@
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import * as fs from 'fs';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { CognitoIdentityServiceProvider as CognitoClient, S3 } from 'aws-sdk';
+import { default as moment } from 'moment';
+import { CloudFormationClient } from '../CloudFormationClient';
 import { GraphQLClient } from '../GraphQLClient';
 import { S3Client } from '../S3Client';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
-import { default as moment } from 'moment';
-import * as fs from 'fs';
 import {
   createUserPool,
   createUserPoolClient,
@@ -23,6 +23,7 @@ import 'isomorphic-fetch';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
+
 import { resolveTestRegion } from '../testSetup';
 
 const region = resolveTestRegion();
@@ -171,25 +172,26 @@ beforeAll(async () => {
           { allow: groups, groups: ["Admin"], operations: [create, read] },
           { allow: owner, ownerField: "owner1", operations : [read, update]}])
     }`;
-  const transformer = new GraphQLTransform({
-    authConfig: {
-      defaultAuthentication: {
-        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-      },
-      additionalAuthenticationProviders: [],
-    },
-    transformers: [new ModelTransformer(), new AuthTransformer()],
-    transformParameters: {
-      useSubUsernameForDefaultIdentityClaim: false,
-    },
-  });
+
   const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
   USER_POOL_ID = userPoolResponse.UserPool.Id;
   const userPoolClientResponse = await createUserPoolClient(cognitoClient, USER_POOL_ID, `UserPool${STACK_NAME}`);
   const userPoolClientId = userPoolClientResponse.UserPoolClient.ClientId;
   try {
     // Clean the bucket
-    const out = transformer.transform(validSchema);
+    const out = testTransform({
+      schema: validSchema,
+      authConfig: {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [],
+      },
+      transformers: [new ModelTransformer(), new AuthTransformer()],
+      transformParameters: {
+        useSubUsernameForDefaultIdentityClaim: false,
+      },
+    });
 
     const finishedStack = await deploy(
       customS3Client,
@@ -257,7 +259,7 @@ afterAll(async () => {
 /**
  * Tests
  */
-test('Test that only Admins can create Employee records.', async () => {
+test('that only Admins can create Employee records.', async () => {
   const createUser1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createEmployee(input: { e_mail: "user2@test.com", salary: 100 }) {
@@ -298,7 +300,7 @@ test('Test that only Admins can create Employee records.', async () => {
   expect(tryToCreateAsNonAdmin2.errors).toHaveLength(1);
 });
 
-test('Test that only Admins may update salary & e_mail.', async () => {
+test('that only Admins may update salary & e_mail.', async () => {
   const createUser1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createEmployee(input: { e_mail: "user2@test.com", salary: 100 }) {
@@ -380,7 +382,7 @@ test('Test that only Admins may update salary & e_mail.', async () => {
   expect(updateAsAdmin2.data.updateEmployee.salary).toEqual(99);
 });
 
-test('Test that owners may update their bio.', async () => {
+test('that owners may update their bio.', async () => {
   const createUser1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createEmployee(input: { e_mail: "user2@test.com", salary: 100 }) {
@@ -412,7 +414,7 @@ test('Test that owners may update their bio.', async () => {
   expect(tryToUpdateAsNonAdmin.data.updateEmployee.salary).toEqual(100);
 });
 
-test('Test that everyone may view employee bios.', async () => {
+test('that everyone may view employee bios.', async () => {
   const createUser1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createEmployee(input: { e_mail: "user3@test.com", salary: 100, bio: "Likes long walks on the beach" }) {
@@ -468,7 +470,7 @@ test('Test that everyone may view employee bios.', async () => {
   expect(seenId).toEqual(true);
 });
 
-test('Test that only owners may "delete" i.e. update the field to null.', async () => {
+test('that only owners may "delete" i.e. update the field to null.', async () => {
   const createUser1 = await GRAPHQL_CLIENT_1.query(
     `mutation {
         createEmployee(input: { e_mail: "user3@test.com", salary: 200, notes: "note1" }) {
@@ -533,7 +535,7 @@ test('Test that only owners may "delete" i.e. update the field to null.', async 
   expect(deleteNotes.data.updateEmployee.notes).toBeNull();
 });
 
-test('Test with auth with subscriptions on default behavior', async () => {
+test('with auth with subscriptions on default behavior', async () => {
   /**
    * client 1 and 2 are in the same user pool though client 1 should
    * not be able to see notes if they are created by client 2

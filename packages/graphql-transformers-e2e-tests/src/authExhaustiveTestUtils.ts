@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import { AuthProvider, AuthStrategy, AuthTransformer, ModelOperation } from '@aws-amplify/graphql-auth-transformer';
 import { JWTToken } from '@aws-amplify/amplify-appsync-simulator';
 import { Auth } from 'aws-amplify';
@@ -5,8 +6,7 @@ import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { CognitoIdentity, S3 } from 'aws-sdk';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import * as crypto from 'crypto';
-import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import { AppSyncAuthConfiguration, SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import gql from 'graphql-tag';
 import { plurality, ResourceConstants } from 'graphql-transformer-common';
 import { v4 } from 'uuid';
@@ -23,11 +23,13 @@ import {
   createUserPool,
   createUserPoolClient,
   signupUser,
+  setIdentityPoolRoles,
 } from './cognitoUtils';
 import { cleanupStackAfterTest, deploy } from './deployNestedStacks';
 import { IAMHelper } from './IAMHelper';
 import { S3Client } from './S3Client';
 import { resolveTestRegion } from './testSetup';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 
 const REGION = resolveTestRegion();
 const IAM_HELPER = new IAMHelper(REGION);
@@ -138,6 +140,7 @@ export const createGraphQLClient = async (
             disableOffline: true,
           });
         }
+        case 'identityPool':
         case 'iam': {
           await Auth.signOut();
           const unauthCreds = await Auth.currentCredentials();
@@ -192,6 +195,7 @@ export const createGraphQLClient = async (
             },
           });
         }
+        case 'identityPool':
         case 'iam': {
           await Auth.signIn(USERNAME1, REAL_PASSWORD);
           const authCreds = await Auth.currentCredentials();
@@ -450,6 +454,7 @@ export const deploySchema = async (
   unauthRoleName: string,
   buildDir: string,
   buildTimestamp: string,
+  synthParameters?: Partial<SynthParameters>,
 ) => {
   jest.setTimeout(1000 * 60 * 30);
 
@@ -462,12 +467,18 @@ export const deploySchema = async (
   }
 
   const userPoolResource = await createUserPool(COGNITO_CLIENT, `UserPool${stackName}`);
-  const userPoolId = userPoolResource.UserPool.Id;
+  const userPoolId = userPoolResource.UserPool!.Id!;
   const userPoolClientResponse = await createUserPoolClient(COGNITO_CLIENT, userPoolId, `UserPool${stackName}`);
-  const userPoolClientId = userPoolClientResponse.UserPoolClient.ClientId;
+  const userPoolClientId = userPoolClientResponse.UserPoolClient!.ClientId!;
 
-  const roles = await IAM_HELPER.createRoles(authRoleName, unauthRoleName);
   const identityPoolId = await createIdentityPool(IDENTITY_CLIENT, `IdentityPool${stackName}`, {
+    providerName: `cognito-idp.${REGION}.amazonaws.com/${userPoolId}`,
+    clientId: userPoolClientId,
+  });
+
+  const roles = await IAM_HELPER.createRoles(authRoleName, unauthRoleName, identityPoolId);
+
+  await setIdentityPoolRoles(IDENTITY_CLIENT, identityPoolId, {
     authRoleArn: roles.authRole.Arn,
     unauthRoleArn: roles.unauthRole.Arn,
     providerName: `cognito-idp.${REGION}.amazonaws.com/${userPoolId}`,
@@ -476,12 +487,13 @@ export const deploySchema = async (
   });
 
   const authConfig: AppSyncAuthConfiguration = generateAuthConfig(REGION, userPoolId, userPoolClientId);
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema,
     authConfig,
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer({ identityPoolId })],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer()],
+    synthParameters,
   });
 
-  const out = transformer.transform(schema);
   const customS3Client = new S3Client(REGION);
 
   const finishedStack = await deploy(

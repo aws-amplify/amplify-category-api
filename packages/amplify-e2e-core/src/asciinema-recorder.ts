@@ -18,13 +18,21 @@ export type Recording = {
 
 export class Recorder {
   private isPaused: boolean = false;
+
   private childProcess: pty.IPty;
+
   private onDataHandlers: ((data: string) => void)[] = [];
+
   private onExitHandlers: ((exitCode: number, signal: string | number) => void)[] = [];
+
   private startTime: number;
+
   private recording: Recording;
+
   private cwd: string;
+
   private exitCode: number | undefined;
+
   constructor(
     private cmd: string,
     private args: string[],
@@ -83,6 +91,7 @@ export class Recorder {
   addOnExitHandlers(fn: (code: number, signal: string | number) => void) {
     this.onExitHandlers.push(fn);
   }
+
   removeOnExitHandlers(fn: (code: number, signal: string | number) => void): boolean {
     const idx = this.onExitHandlers.indexOf(fn);
     if (idx === -1) {

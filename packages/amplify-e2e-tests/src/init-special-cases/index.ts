@@ -1,7 +1,7 @@
 import path from 'path';
+import os from 'os';
 import { nspawn as spawn, getCLIPath, singleSelect, amplifyRegions, addCITags, KEY_DOWN_ARROW } from 'amplify-category-api-e2e-core';
 import fs from 'fs-extra';
-import os from 'os';
 
 export async function initWithoutCredentialFileAndNoNewUserSetup(projRoot) {
   const settings = {
@@ -30,8 +30,6 @@ export async function initWithoutCredentialFileAndNoNewUserSetup(projRoot) {
       fs.renameSync(credentialsFilePath, credentialsFilePathHide);
     }
     await initWorkflow(projRoot, settings);
-  } catch (e) {
-    throw e;
   } finally {
     if (fs.existsSync(configFilePathHide)) {
       fs.renameSync(configFilePathHide, configFilePath);
@@ -88,7 +86,7 @@ async function initWorkflow(cwd: string, settings: { accessKeyId: string; secret
     singleSelect(chain, settings.region, amplifyRegions);
 
     chain
-      .wait('Help improve Amplify CLI by sharing non sensitive configurations on failures')
+      .wait('Help improve Amplify CLI')
       .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {

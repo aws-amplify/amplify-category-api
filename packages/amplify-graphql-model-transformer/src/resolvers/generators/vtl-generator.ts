@@ -1,3 +1,4 @@
+import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelDirectiveConfiguration } from '../../directive';
 
 export type ModelRequestConfig = {
@@ -31,14 +32,14 @@ export type ModelDefaultResponseConfig = ModelRequestConfig & {
 };
 
 export interface ModelVTLGenerator {
-  generateUpdateRequestTemplate(config: ModelUpdateRequestConfig): string;
-  generateCreateRequestTemplate(config: ModelCreateRequestConfig): string;
-  generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig): string;
-  generateDeleteRequestTemplate(config: ModelDeleteRequestConfig): string;
+  generateUpdateRequestTemplate(config: ModelUpdateRequestConfig, ctx: TransformerContextProvider): string;
+  generateCreateRequestTemplate(config: ModelCreateRequestConfig, ctx: TransformerContextProvider): string;
+  generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig, initializeIdField: boolean): string;
+  generateDeleteRequestTemplate(config: ModelDeleteRequestConfig, ctx: TransformerContextProvider): string;
   generateUpdateInitSlotTemplate(config: ModelUpdateInitSlotConfig): string;
-  generateGetRequestTemplate(config: ModelRequestConfig): string;
+  generateGetRequestTemplate(config: ModelRequestConfig, ctx: TransformerContextProvider): string;
   generateGetResponseTemplate(config: ModelGetResponseConfig): string;
-  generateListRequestTemplate(config: ModelRequestConfig): string;
+  generateListRequestTemplate(config: ModelRequestConfig, ctx: TransformerContextProvider): string;
   generateSyncRequestTemplate(config: ModelRequestConfig): string;
   generateSubscriptionRequestTemplate(): string;
   generateSubscriptionResponseTemplate(): string;

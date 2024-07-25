@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 type Post @model @versioned {
   id: ID!
@@ -7,7 +7,7 @@ type Post @model @versioned {
 }
 
 ##versioned/usage`;
-//mutations
+// mutations
 export const mutation1 = `
 #change: add id: "1" in the input, so update mutation can be carried out
 mutation Create {

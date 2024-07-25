@@ -1,7 +1,5 @@
-import { GraphQLAPIProvider, TransformerResourceHelperProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { CfnParameter } from 'aws-cdk-lib';
+import { GraphQLAPIProvider, TransformerResourceHelperProvider, SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerResourceHelper } from '../../transformer-context/resource-helper';
-import { StackManager } from '../../transformer-context/stack-manager';
 
 const testEnv = 'testenv';
 const testApiId = 'testtest123';
@@ -99,8 +97,9 @@ describe('getModelFieldMapKeys', () => {
 
 const getResourceHelper = (bindApi = true) => {
   const resourceHelper = new TransformerResourceHelper({
-    getParameter: () => ({ valueAsString: testEnv } as CfnParameter),
-  } as unknown as StackManager);
+    amplifyEnvironmentName: testEnv,
+    apiName: 'testApi',
+  } as SynthParameters);
   if (bindApi) {
     resourceHelper.bind({ apiId: testApiId } as GraphQLAPIProvider);
   }

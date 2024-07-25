@@ -5,7 +5,9 @@ import { TransformerSchemaHelper } from './schema-helper';
 
 export class TransformerPreProcessContext implements TransformerPreProcessContextProvider {
   inputDocument: DocumentNode;
+
   transformParameters: TransformParameters;
+
   schemaHelper: TransformerSchemaHelperProvider;
 
   constructor(inputDocument: DocumentNode, transformParameters: TransformParameters) {

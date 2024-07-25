@@ -7,6 +7,7 @@
 import { AppSyncDataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
 import * as cdk from 'aws-cdk-lib';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
+import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql';
 import { EnumTypeDefinitionNode } from 'graphql';
@@ -20,6 +21,8 @@ import { InputValueDefinitionNode } from 'graphql';
 import { MutationFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { QueryFieldType } from '@aws-amplify/graphql-transformer-interfaces';
+import { QuietReferenceNode } from 'graphql-mapping-template';
+import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { SubscriptionFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { SyncConfig } from '@aws-amplify/graphql-transformer-core';
 import { TransformerBeforeStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -45,21 +48,24 @@ export const addModelConditionInputs: (ctx: TransformerTransformSchemaStepContex
 export const createEnumModelFilters: (ctx: TransformerTransformSchemaStepContextProvider, type: ObjectTypeDefinitionNode) => InputObjectTypeDefinitionNode[];
 
 // @public (undocumented)
+export const defaultAutoId: () => QuietReferenceNode;
+
+// @public (undocumented)
 export class DynamoDBModelVTLGenerator implements ModelVTLGenerator {
     // (undocumented)
-    generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig): string;
+    generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig, initializeIdField: boolean): string;
     // (undocumented)
-    generateCreateRequestTemplate(config: ModelCreateRequestConfig): string;
+    generateCreateRequestTemplate(config: ModelCreateRequestConfig, ctx: TransformerContextProvider): string;
     // (undocumented)
     generateDefaultResponseMappingTemplate(config: ModelDefaultResponseConfig): string;
     // (undocumented)
-    generateDeleteRequestTemplate(config: ModelUpdateRequestConfig): string;
+    generateDeleteRequestTemplate(config: ModelUpdateRequestConfig, ctx: TransformerContextProvider): string;
     // (undocumented)
-    generateGetRequestTemplate(config: ModelRequestConfig): string;
+    generateGetRequestTemplate(config: ModelRequestConfig, ctx: TransformerContextProvider): string;
     // (undocumented)
     generateGetResponseTemplate(config: ModelUpdateRequestConfig): string;
     // (undocumented)
-    generateListRequestTemplate(config: ModelRequestConfig): string;
+    generateListRequestTemplate(config: ModelRequestConfig, ctx: TransformerContextProvider): string;
     // (undocumented)
     generateSubscriptionRequestTemplate(): string;
     // (undocumented)
@@ -69,7 +75,7 @@ export class DynamoDBModelVTLGenerator implements ModelVTLGenerator {
     // (undocumented)
     generateUpdateInitSlotTemplate(config: ModelCreateInitSlotConfig): string;
     // (undocumented)
-    generateUpdateRequestTemplate(config: ModelUpdateRequestConfig): string;
+    generateUpdateRequestTemplate(config: ModelUpdateRequestConfig, ctx: TransformerContextProvider): string;
 }
 
 // @public (undocumented)
@@ -79,10 +85,10 @@ export const extendTypeWithDirectives: (ctx: TransformerTransformSchemaStepConte
 export const generateApplyDefaultsToInputTemplate: (target: string) => Expression;
 
 // @public (undocumented)
-export const generateAuthExpressionForSandboxMode: (enabled: boolean) => string;
+export function generateModelScalarFilterInputName(typeName: string, includeFilter: boolean, isSubscriptionFilter?: boolean): string;
 
 // @public (undocumented)
-export function generateModelScalarFilterInputName(typeName: string, includeFilter: boolean, isSubscriptionFilter?: boolean): string;
+export const generatePostAuthExpression: (isSandboxModeEnabled: boolean, genericIamAccessEnabled: boolean | undefined) => string;
 
 // @public (undocumented)
 export const generateResolverKey: (typeName: string, fieldName: string) => string;
@@ -118,7 +124,7 @@ export function makeModelScalarFilterInputObject(type: string, supportsCondition
 export const makeModelSortDirectionEnumObject: () => EnumTypeDefinitionNode;
 
 // @public (undocumented)
-export const makeMutationConditionInput: (ctx: TransformerTransformSchemaStepContextProvider, name: string, object: ObjectTypeDefinitionNode) => InputObjectTypeDefinitionNode;
+export const makeMutationConditionInput: (ctx: TransformerTransformSchemaStepContextProvider, name: string, object: ObjectTypeDefinitionNode, modelDirectiveConfig: ModelDirectiveConfiguration) => InputObjectTypeDefinitionNode;
 
 // @public (undocumented)
 export function makeSizeInputType(): InputObjectTypeDefinitionNode;
@@ -195,7 +201,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     // (undocumented)
     before: (ctx: TransformerBeforeStepContextProvider) => void;
     // (undocumented)
-    createIAMRole: (context: TransformerContextProvider, def: ObjectTypeDefinitionNode, stack: cdk.Stack, tableName: string) => iam.Role;
+    createIAMRole: (context: TransformerContextProvider, def: ObjectTypeDefinitionNode, stack: cdk.Stack, tableName: string) => iam.IRole;
     // (undocumented)
     ensureModelSortDirectionEnum: (ctx: TransformerValidationStepContextProvider) => void;
     // (undocumented)
@@ -282,19 +288,19 @@ export type ModelUpdateRequestConfig = ModelRequestConfig & {
 // @public (undocumented)
 export interface ModelVTLGenerator {
     // (undocumented)
-    generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig): string;
+    generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig, initializeIdField: boolean): string;
     // (undocumented)
-    generateCreateRequestTemplate(config: ModelCreateRequestConfig): string;
+    generateCreateRequestTemplate(config: ModelCreateRequestConfig, ctx: TransformerContextProvider): string;
     // (undocumented)
     generateDefaultResponseMappingTemplate(config: ModelDefaultResponseConfig): string;
     // (undocumented)
-    generateDeleteRequestTemplate(config: ModelDeleteRequestConfig): string;
+    generateDeleteRequestTemplate(config: ModelDeleteRequestConfig, ctx: TransformerContextProvider): string;
     // (undocumented)
-    generateGetRequestTemplate(config: ModelRequestConfig): string;
+    generateGetRequestTemplate(config: ModelRequestConfig, ctx: TransformerContextProvider): string;
     // (undocumented)
     generateGetResponseTemplate(config: ModelGetResponseConfig): string;
     // (undocumented)
-    generateListRequestTemplate(config: ModelRequestConfig): string;
+    generateListRequestTemplate(config: ModelRequestConfig, ctx: TransformerContextProvider): string;
     // (undocumented)
     generateSubscriptionRequestTemplate(): string;
     // (undocumented)
@@ -304,31 +310,45 @@ export interface ModelVTLGenerator {
     // (undocumented)
     generateUpdateInitSlotTemplate(config: ModelUpdateInitSlotConfig): string;
     // (undocumented)
-    generateUpdateRequestTemplate(config: ModelUpdateRequestConfig): string;
+    generateUpdateRequestTemplate(config: ModelUpdateRequestConfig, ctx: TransformerContextProvider): string;
 }
 
 // @public (undocumented)
 export const OPERATION_KEY = "__operation";
 
 // @public (undocumented)
-export const propagateApiKeyToNestedTypes: (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode, seenNonModelTypes: Set<string>) => void;
+export const propagateDirectivesToNestedTypes: (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode, seenNonModelTypes: Set<string>, serviceDirectives: DirectiveNode[]) => void;
+
+// Warning: (ae-forgotten-export) The symbol "ModelResourceGenerator" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export class RdsModelResourceGenerator extends ModelResourceGenerator {
+    // (undocumented)
+    generateResources(context: TransformerContextProvider, strategyOverride?: SQLLambdaModelDataSourceStrategy): void;
+    // (undocumented)
+    protected readonly generatorType = "RdsModelResourceGenerator";
+    // (undocumented)
+    getVTLGenerator(): ModelVTLGenerator;
+    // (undocumented)
+    setFieldMappingResolverReferences(context: TransformerContextProvider): void;
+}
 
 // @public (undocumented)
 export class RDSModelVTLGenerator implements ModelVTLGenerator {
     // (undocumented)
-    generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig): string;
+    generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig, initializeIdField: boolean): string;
     // (undocumented)
-    generateCreateRequestTemplate(config: ModelCreateRequestConfig): string;
+    generateCreateRequestTemplate(config: ModelCreateRequestConfig, ctx: TransformerContextProvider): string;
     // (undocumented)
     generateDefaultResponseMappingTemplate(config: ModelDefaultResponseConfig): string;
     // (undocumented)
-    generateDeleteRequestTemplate(config: ModelUpdateRequestConfig): string;
+    generateDeleteRequestTemplate(config: ModelUpdateRequestConfig, ctx: TransformerContextProvider): string;
     // (undocumented)
-    generateGetRequestTemplate(config: ModelRequestConfig): string;
+    generateGetRequestTemplate(config: ModelRequestConfig, ctx: TransformerContextProvider): string;
     // (undocumented)
     generateGetResponseTemplate(config: ModelUpdateRequestConfig): string;
     // (undocumented)
-    generateListRequestTemplate(config: ModelRequestConfig): string;
+    generateListRequestTemplate(config: ModelRequestConfig, ctx: TransformerContextProvider): string;
     // (undocumented)
     generateSubscriptionRequestTemplate(): string;
     // (undocumented)
@@ -338,7 +358,7 @@ export class RDSModelVTLGenerator implements ModelVTLGenerator {
     // (undocumented)
     generateUpdateInitSlotTemplate(config: ModelCreateInitSlotConfig): string;
     // (undocumented)
-    generateUpdateRequestTemplate(config: ModelUpdateRequestConfig): string;
+    generateUpdateRequestTemplate(config: ModelUpdateRequestConfig, ctx: TransformerContextProvider): string;
 }
 
 // @public (undocumented)

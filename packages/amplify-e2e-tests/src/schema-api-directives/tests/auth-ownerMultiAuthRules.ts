@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 #error: need to add "create" in the editors' operations in order for the mutation #5 to succeed
 type Draft
@@ -20,7 +20,7 @@ type Draft
 
 ##auth/multiAuthRules
 `;
-//mutations
+// mutations
 export const mutation1 = `
 #1
 mutation CreateDraft {
@@ -32,11 +32,11 @@ mutation CreateDraft {
   }
 }
 `;
-//#change: for the id field, changed "..." to "<check-defined>"
-//so the test bench will check it is defined instead of checking for a particular id
-//the same change is applied to the following mutation results
-//#change: change the owner from "someone@my-domain.com" to "user1" as it is the user setup by the test bench
-//the same change is applied to the following mutaiton results
+// #change: for the id field, changed "..." to "<check-defined>"
+// so the test bench will check it is defined instead of checking for a particular id
+// the same change is applied to the following mutation results
+// #change: change the owner from "someone@my-domain.com" to "user1" as it is the user setup by the test bench
+// the same change is applied to the following mutaiton results
 export const expected_result_mutation1 = {
   data: {
     createDraft: {

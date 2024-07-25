@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-dynamodb-simulator",
-  "version": "2.4.10",
+  "version": "2.4.17",
   "description": "DynamoDB emulator NodeJS wrapper",
   "private": "true",
   "repository": {
@@ -32,7 +32,7 @@
     "which": "^2.0.2"
   },
   "peerDependencies": {
-    "@aws-amplify/amplify-cli-core": "4.0.4"
+    "@aws-amplify/amplify-cli-core": "^4.3.9"
   },
   "devDependencies": {
     "get-port": "^5.1.1",
@@ -44,6 +44,12 @@
   },
   "jest": {
     "testEnvironment": "node",
-    "collectCoverage": true
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/__tests__/"
+    ]
   }
 }

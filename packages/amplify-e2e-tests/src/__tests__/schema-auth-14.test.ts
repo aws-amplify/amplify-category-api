@@ -18,7 +18,7 @@ describe('api directives @auth batch 14', () => {
 
   describe('javascript libraries', () => {
     beforeEach(async () => {
-      projectDir = await createNewProjectDir('auth1');
+      projectDir = await createNewProjectDir('auth14');
       await initJSProjectWithProfile(projectDir, {});
       addFeatureFlag(projectDir, 'graphqlTransformer', 'useSubUsernameForDefaultIdentityClaim', true);
     });
@@ -30,6 +30,11 @@ describe('api directives @auth batch 14', () => {
 
     it('auth owner8', async () => {
       const testResult = await testSchema(projectDir, 'auth', 'owner8');
+      expect(testResult).toBeTruthy();
+    });
+
+    it('auth owner12', async () => {
+      const testResult = await testSchema(projectDir, 'auth', 'owner12');
       expect(testResult).toBeTruthy();
     });
   });

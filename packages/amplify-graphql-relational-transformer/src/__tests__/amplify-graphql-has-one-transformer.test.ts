@@ -1,8 +1,15 @@
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { ConflictHandlerType, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import {
+  ConflictHandlerType,
+  DDB_DEFAULT_DATASOURCE_STRATEGY,
+  GraphQLTransform,
+  constructDataSourceStrategies,
+  validateModelSchema,
+} from '@aws-amplify/graphql-transformer-core';
 import { DocumentNode, Kind, parse } from 'graphql';
-import { HasManyTransformer, HasOneTransformer } from '..';
+import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
 import { hasGeneratedField } from './test-helpers';
 
 test('fails if @hasOne was used on an object that is not a model type', () => {
@@ -17,11 +24,13 @@ test('fails if @hasOne was used on an object that is not a model type', () => {
       id: ID!
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new HasOneTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('@hasOne must be on an @model object type field.');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new HasOneTransformer()],
+    }),
+  ).toThrowError('@hasOne must be on an @model object type field.');
 });
 
 test('fails if @hasOne was used with a related type that is not a model', () => {
@@ -36,11 +45,17 @@ test('fails if @hasOne was used with a related type that is not a model', () => 
       id: ID!
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new HasOneTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('Object type Test1 must be annotated with @model.');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new HasOneTransformer()],
+      dataSourceStrategies: {
+        Test: DDB_DEFAULT_DATASOURCE_STRATEGY,
+        Test1: DDB_DEFAULT_DATASOURCE_STRATEGY,
+      },
+    }),
+  ).toThrowError('Object type Test1 must be annotated with @model.');
 });
 
 test('fails if the related type does not exist', () => {
@@ -55,11 +70,13 @@ test('fails if the related type does not exist', () => {
       id: ID!
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new HasOneTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('Unknown type "Test2". Did you mean "Test" or "Test1"?');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new HasOneTransformer()],
+    }),
+  ).toThrowError('Unknown type "Test2". Did you mean "Test" or "Test1"?');
 });
 
 test('fails if an empty list of fields is passed in', () => {
@@ -74,11 +91,13 @@ test('fails if an empty list of fields is passed in', () => {
       id: ID!
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new HasOneTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('No fields passed to @hasOne directive.');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new HasOneTransformer()],
+    }),
+  ).toThrowError('No fields passed to @hasOne directive.');
 });
 
 test('fails if any of the fields passed in are not in the parent model', () => {
@@ -94,11 +113,13 @@ test('fails if any of the fields passed in are not in the parent model', () => {
       friendID: ID!
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('name is not a field in Test');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
+    }),
+  ).toThrowError('name is not a field in Test');
 });
 
 test('fails if @hasOne field does not match related type primary key', () => {
@@ -114,11 +135,13 @@ test('fails if @hasOne field does not match related type primary key', () => {
       friendID: ID!
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new HasOneTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('email field is not of type ID');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new HasOneTransformer()],
+    }),
+  ).toThrowError('email field is not of type ID');
 });
 
 test('fails if sort key type does not match related type sort key', () => {
@@ -134,11 +157,13 @@ test('fails if sort key type does not match related type sort key', () => {
       friendID: ID!
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('email field is not of type ID');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
+    }),
+  ).toThrowError('email field is not of type ID');
 });
 
 test('fails if partial sort key is provided', () => {
@@ -154,13 +179,13 @@ test('fails if partial sort key is provided', () => {
       friendID: ID!
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError(
-    'Invalid @hasOne directive on testObj. Partial sort keys are not accepted.',
-  );
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
+    }),
+  ).toThrowError('Invalid @hasOne directive on testObj. Partial sort keys are not accepted.');
 });
 
 test('accepts @hasOne without a sort key', () => {
@@ -178,11 +203,12 @@ test('accepts @hasOne without a sort key', () => {
     }
     `;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
-  });
-
-  expect(() => transformer.transform(inputSchema)).not.toThrowError();
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
+    }),
+  ).not.toThrowError();
 });
 
 test('fails if used as a has many relation', () => {
@@ -197,11 +223,13 @@ test('fails if used as a has many relation', () => {
       id: ID! @primaryKey
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('@hasOne cannot be used with lists. Use @hasMany instead.');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
+    }),
+  ).toThrowError('@hasOne cannot be used with lists. Use @hasMany instead.');
 });
 
 test('fails if object type fields are provided', () => {
@@ -216,11 +244,13 @@ test('fails if object type fields are provided', () => {
       id: ID! @primaryKey
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('All fields provided to @hasOne must be scalar or enum fields.');
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
+    }),
+  ).toThrowError('All fields provided to @hasOne must be scalar or enum fields.');
 });
 
 test('creates has one relationship with explicit fields', () => {
@@ -236,11 +266,11 @@ test('creates has one relationship with explicit fields', () => {
       friendID: ID!
       email: String!
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
   });
 
-  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -277,11 +307,11 @@ test('creates has one relationship with implicit fields', () => {
       friendID: ID!
       email: String!
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
   });
 
-  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -324,11 +354,11 @@ test('creates has one relationship with composite sort key.', () => {
       email: String!
       name: String!
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
   });
 
-  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -365,11 +395,11 @@ test('@hasOne and @hasMany can point at each other if DataStore is not enabled',
       id: ID!
       blog: Blog @hasOne
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new HasOneTransformer(), new HasManyTransformer()],
   });
 
-  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -386,11 +416,11 @@ test('@hasOne and @hasOne can point at each other if DataStore is not enabled', 
       id: ID!
       blog: Blog @hasOne
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new HasOneTransformer()],
   });
 
-  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -407,19 +437,19 @@ test('@hasOne and @hasMany cannot point at each other if DataStore is enabled', 
       id: ID!
       blog: Blog @hasOne
     }`;
-  const transformer = new GraphQLTransform({
-    resolverConfig: {
-      project: {
-        ConflictDetection: 'VERSION',
-        ConflictHandler: ConflictHandlerType.AUTOMERGE,
-      },
-    },
-    transformers: [new ModelTransformer(), new HasOneTransformer(), new HasManyTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError(
-    'Post and Blog cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.',
-  );
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      resolverConfig: {
+        project: {
+          ConflictDetection: 'VERSION',
+          ConflictHandler: ConflictHandlerType.AUTOMERGE,
+        },
+      },
+      transformers: [new ModelTransformer(), new HasOneTransformer(), new HasManyTransformer()],
+    }),
+  ).toThrowError('Post and Blog cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.');
 });
 
 test('@hasOne and @hasOne cannot point at each other if DataStore is enabled', () => {
@@ -433,19 +463,19 @@ test('@hasOne and @hasOne cannot point at each other if DataStore is enabled', (
       id: ID!
       blog: Blog @hasOne
     }`;
-  const transformer = new GraphQLTransform({
-    resolverConfig: {
-      project: {
-        ConflictDetection: 'VERSION',
-        ConflictHandler: ConflictHandlerType.AUTOMERGE,
-      },
-    },
-    transformers: [new ModelTransformer(), new HasOneTransformer()],
-  });
 
-  expect(() => transformer.transform(inputSchema)).toThrowError(
-    'Blog and Post cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.',
-  );
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      resolverConfig: {
+        project: {
+          ConflictDetection: 'VERSION',
+          ConflictHandler: ConflictHandlerType.AUTOMERGE,
+        },
+      },
+      transformers: [new ModelTransformer(), new HasOneTransformer()],
+    }),
+  ).toThrowError('Blog and Post cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.');
 });
 
 test('recursive @hasOne relationships are supported if DataStore is enabled', () => {
@@ -454,7 +484,8 @@ test('recursive @hasOne relationships are supported if DataStore is enabled', ()
       id: ID!
       posts: Blog @hasOne
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     resolverConfig: {
       project: {
         ConflictDetection: 'VERSION',
@@ -464,7 +495,6 @@ test('recursive @hasOne relationships are supported if DataStore is enabled', ()
     transformers: [new ModelTransformer(), new HasOneTransformer()],
   });
 
-  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -614,17 +644,17 @@ describe('@hasOne connection field nullability tests', () => {
         description: String
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
     });
 
-    const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);
     validateModelSchema(schema);
     const connectionFieldName1 = 'todoTaskTaskid';
     const connectionFieldName2 = 'todoTaskName';
-    //Type definition
+    // Type definition
     const objType = schema.definitions.find((def: any) => def.name && def.name.value === 'Todo') as any;
     expect(objType).toBeDefined();
     const relatedField1 = objType.fields.find((f: any) => f.name.value === connectionFieldName1);
@@ -635,7 +665,7 @@ describe('@hasOne connection field nullability tests', () => {
     expect(relatedField2).toBeDefined();
     expect(relatedField2.type.kind).toBe(Kind.NAMED_TYPE);
     expect(relatedField2.type.name.value).toBe('String');
-    //Create Input
+    // Create Input
     const createInput = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTodoInput') as any;
     expect(createInput).toBeDefined();
     expect(createInput.fields.length).toEqual(6);
@@ -647,7 +677,7 @@ describe('@hasOne connection field nullability tests', () => {
     expect(createInputConnectedField2).toBeDefined();
     expect(createInputConnectedField2.type.kind).toBe(Kind.NAMED_TYPE);
     expect(createInputConnectedField2.type.name.value).toBe('String');
-    //Update Input
+    // Update Input
     const updateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTodoInput') as any;
     expect(updateInput).toBeDefined();
     expect(updateInput.fields.length).toEqual(6);
@@ -676,17 +706,17 @@ describe('@hasOne connection field nullability tests', () => {
         description: String
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
     });
 
-    const out = transformer.transform(inputSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);
     validateModelSchema(schema);
     const connectionFieldName1 = 'todoTaskTaskid';
     const connectionFieldName2 = 'todoTaskName';
-    //Type definition
+    // Type definition
     const objType = schema.definitions.find((def: any) => def.name && def.name.value === 'Todo') as any;
     expect(objType).toBeDefined();
     const relatedField1 = objType.fields.find((f: any) => f.name.value === connectionFieldName1);
@@ -697,7 +727,7 @@ describe('@hasOne connection field nullability tests', () => {
     expect(relatedField2).toBeDefined();
     expect(relatedField2.type.kind).toBe(Kind.NON_NULL_TYPE);
     expect(relatedField2.type.type.name.value).toBe('String');
-    //Create Input
+    // Create Input
     const createInput = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTodoInput') as any;
     expect(createInput).toBeDefined();
     expect(createInput.fields.length).toEqual(6);
@@ -709,7 +739,7 @@ describe('@hasOne connection field nullability tests', () => {
     expect(createInputConnectedField2).toBeDefined();
     expect(createInputConnectedField2.type.kind).toBe(Kind.NON_NULL_TYPE);
     expect(createInputConnectedField2.type.type.name.value).toBe('String');
-    //Update Input
+    // Update Input
     const updateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTodoInput') as any;
     expect(updateInput).toBeDefined();
     expect(updateInput.fields.length).toEqual(6);
@@ -721,5 +751,69 @@ describe('@hasOne connection field nullability tests', () => {
     expect(updateInputConnectedField2).toBeDefined();
     expect(updateInputConnectedField2.type.kind).toBe(Kind.NAMED_TYPE);
     expect(updateInputConnectedField2.type.name.value).toBe('String');
+  });
+});
+
+describe('@hasOne directive with RDS datasource', () => {
+  const mySqlStrategy = mockSqlDataSourceStrategy();
+
+  test('happy case should generate correct resolvers', () => {
+    const inputSchema = `
+      type User @model {
+        id: String! @primaryKey
+        name: String
+        profile: Profile @hasOne(references: ["userId"])
+      }
+      type Profile @model {
+        id: String! @primaryKey
+        createdAt: AWSDateTime
+        userId: String!
+        user: User @belongsTo(references: ["userId"])
+      }
+    `;
+
+    const out = testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
+      dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
+    });
+    expect(out).toBeDefined();
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
+    expect(out.schema).toMatchSnapshot();
+    expect(out.resolvers['User.profile.req.vtl']).toBeDefined();
+    expect(out.resolvers['User.profile.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['User.profile.res.vtl']).toBeDefined();
+    expect(out.resolvers['User.profile.res.vtl']).toMatchSnapshot();
+  });
+
+  test('composite key should generate correct resolvers', () => {
+    const inputSchema = `
+      type User @model {
+        firstName: String! @primaryKey(sortKeyFields: ["lastName"])
+        lastName: String!
+        profile: Profile @hasOne(references: ["userFirstName", "userLastName"])
+      }
+      type Profile @model {
+        profileId: String! @primaryKey
+        userFirstName: String
+        userLastName: String
+        user: User @belongsTo(references: ["userFirstName", "userLastName"])
+      }
+    `;
+
+    const out = testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
+      dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
+    });
+    expect(out).toBeDefined();
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
+    expect(out.schema).toMatchSnapshot();
+    expect(out.resolvers['User.profile.req.vtl']).toBeDefined();
+    expect(out.resolvers['User.profile.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['User.profile.res.vtl']).toBeDefined();
+    expect(out.resolvers['User.profile.res.vtl']).toMatchSnapshot();
   });
 });

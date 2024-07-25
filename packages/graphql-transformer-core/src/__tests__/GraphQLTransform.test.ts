@@ -2,7 +2,7 @@ import { ObjectTypeDefinitionNode, DirectiveNode, parse } from 'graphql';
 import { GraphQLTransform } from '../GraphQLTransform';
 import { TransformerContext } from '../TransformerContext';
 import { Transformer } from '../Transformer';
-import { getDirectiveArguments, gql } from '../util';
+import { getDirectiveArguments, gql, removeAmplifyInput } from '../util';
 
 class ValidObjectTransformer extends Transformer {
   constructor() {
@@ -30,7 +30,7 @@ class InvalidObjectTransformer extends Transformer {
   }
 }
 
-test('Test graphql transformer supports empty schema', () => {
+test('graphql transformer supports empty schema', () => {
   const emptySchema = ``;
   const transformer = new GraphQLTransform({
     transformers: [new ValidObjectTransformer()],
@@ -42,7 +42,7 @@ test('Test graphql transformer supports empty schema', () => {
   expect(out?.resolvers).toEqual({});
 });
 
-test('Test graphql transformer validation happy case', () => {
+test('graphql transformer validation happy case', () => {
   const validSchema = `type Post @ObjectDirective { id: ID! }`;
   const transformer = new GraphQLTransform({
     transformers: [new ValidObjectTransformer()],
@@ -51,7 +51,7 @@ test('Test graphql transformer validation happy case', () => {
   expect(out).toBeDefined();
 });
 
-test('Test graphql transformer validation. Transformer does not implement required method.', () => {
+test('graphql transformer validation. Transformer does not implement required method.', () => {
   const validSchema = `type Post @ObjectDirective { id: ID! }`;
   const transformer = new GraphQLTransform({
     transformers: [new InvalidObjectTransformer()],
@@ -63,7 +63,7 @@ test('Test graphql transformer validation. Transformer does not implement requir
   }
 });
 
-test('Test graphql transformer validation. Unknown directive.', () => {
+test('graphql transformer validation. Unknown directive.', () => {
   const invalidSchema = `type Post @UnknownDirective { id: ID! }`;
   const transformer = new GraphQLTransform({
     transformers: [new InvalidObjectTransformer()],
@@ -89,7 +89,7 @@ class PingTransformer extends Transformer {
   };
 }
 
-test('Test graphql transformer validation on bad shapes. @ping directive.', () => {
+test('graphql transformer validation on bad shapes. @ping directive.', () => {
   const invalidSchema = `type Post @ping(config: { bad: "shape" }) { id: ID! }`;
   const transformer = new GraphQLTransform({
     transformers: [new PingTransformer()],
@@ -103,7 +103,7 @@ test('Test graphql transformer validation on bad shapes. @ping directive.', () =
   }
 });
 
-test('Test graphql transformer returns correct number of arguments from directive', () => {
+test('graphql transformer returns correct number of arguments from directive', () => {
   const validSchema = `type Post @model(queries: { list: "listPost" }, mutations: {create: "createCustom"}) { name: String! }`;
   const transformer = new ValidObjectTransformer();
   const doc = parse(validSchema);
@@ -111,4 +111,14 @@ test('Test graphql transformer returns correct number of arguments from directiv
   const map: any = getDirectiveArguments(def.directives[0]);
   expect(map).not.toBeNull();
   expect(Object.keys(map)).toEqual(expect.arrayContaining(['mutations', 'queries']));
+});
+
+test('Remove amplify input should work', () => {
+  const { schema } = removeAmplifyInput(`
+    input AMPLIFY {
+      globalAuthRule: AuthRule = { allow: public }
+    }
+    type Post @model { id: ID! }
+  `);
+  expect(schema).toMatchSnapshot();
 });

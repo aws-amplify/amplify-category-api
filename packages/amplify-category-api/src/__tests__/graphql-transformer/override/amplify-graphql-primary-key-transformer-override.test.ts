@@ -1,8 +1,10 @@
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform, StackManager, ConflictHandlerType, SyncConfig } from '@aws-amplify/graphql-transformer-core';
 import * as path from 'path';
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { ConflictHandlerType, SyncConfig } from '@aws-amplify/graphql-transformer-core';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { Construct } from 'constructs';
 import { applyFileBasedOverride } from '../../../graphql-transformer/override';
 
 jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'testEnvName' });
@@ -19,25 +21,23 @@ test('it overrides expected resources', () => {
     ConflictHandler: ConflictHandlerType.AUTOMERGE,
   };
 
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
     resolverConfig: {
       project: config,
     },
     overrideConfig: {
-      applyOverride: (stackManager: StackManager) => {
-        return applyFileBasedOverride(stackManager, path.join(__dirname, 'primary-key-overrides'));
-      },
+      applyOverride: (scope: Construct) => applyFileBasedOverride(scope, path.join(__dirname, 'primary-key-overrides')),
       overrideFlag: true,
     },
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
-  expect(out.stacks.Test.Resources.CreateTestResolver).toMatchSnapshot();
-  expect(out.stacks.Test.Resources.GetTestResolver).toMatchSnapshot();
-  expect(out.stacks.Test.Resources.ListTestResolver).toMatchSnapshot();
-  expect(out.stacks.Test.Resources.DeleteTestResolver).toMatchSnapshot();
-  expect(out.stacks.Test.Resources.UpdateTestResolver).toMatchSnapshot();
-  expect(out.stacks.Test.Resources.SyncTestResolver).toMatchSnapshot();
-  expect(out.stacks.Test.Resources.TestDataSource).toMatchSnapshot();
+  expect(out.stacks.Test.Resources!.CreateTestResolver).toMatchSnapshot();
+  expect(out.stacks.Test.Resources!.GetTestResolver).toMatchSnapshot();
+  expect(out.stacks.Test.Resources!.ListTestResolver).toMatchSnapshot();
+  expect(out.stacks.Test.Resources!.DeleteTestResolver).toMatchSnapshot();
+  expect(out.stacks.Test.Resources!.UpdateTestResolver).toMatchSnapshot();
+  expect(out.stacks.Test.Resources!.SyncTestResolver).toMatchSnapshot();
+  expect(out.stacks.Test.Resources!.TestDataSource).toMatchSnapshot();
 });

@@ -87,6 +87,14 @@ function _buildLinux {
   yarn build-tests
   storeCacheForBuildJob
 }
+
+# used when build is not necessary for codebuild project
+function _installLinux {
+  _setShell
+  echo "Linux Install"
+  yarn run production-install
+  storeCacheForBuildJob
+}
 function _testLinux {
   echo "Run Unit Test"
   loadCacheFromBuildJob
@@ -102,15 +110,19 @@ function _verifyYarnLock {
   loadCacheFromBuildJob
   yarn verify-yarn-lock
 }
+function _verifyDependencyLicensesExtract {
+  echo "Verify Dependency Licenses Extract"
+  loadCacheFromBuildJob
+  yarn verify-dependency-licenses-extract
+}
 function _verifyCDKVersion {
   echo "Verify CDK Version"
   loadCacheFromBuildJob
-  yarn ts-node .circleci/validate_cdk_version.ts
+  yarn ts-node scripts/validate_cdk_version.ts
 }
 function _mockE2ETests {
   echo "Mock E2E Tests"
   loadCacheFromBuildJob
-  source .circleci/local_publish_helpers.sh
   cd packages/amplify-util-mock/
   yarn e2e
 }
@@ -123,11 +135,23 @@ function _publishToLocalRegistry {
     echo "Publish To Local Registry"
     loadCacheFromBuildJob
     if [ -z "$BRANCH_NAME" ]; then
-      export BRANCH_NAME="$(git symbolic-ref HEAD --short 2>/dev/null)"
-      if [ "$BRANCH_NAME" = "" ] ; then
-        BRANCH_NAME="$(git rev-parse HEAD | xargs git name-rev | cut -d' ' -f2 | sed 's/remotes\/origin\///g')";
+      if [ -z "$CODEBUILD_WEBHOOK_TRIGGER" ]; then
+        export BRANCH_NAME="$(git symbolic-ref HEAD --short 2>/dev/null)"
+        if [ "$BRANCH_NAME" = "" ] ; then
+          BRANCH_NAME="$(git rev-parse HEAD | xargs git name-rev | cut -d' ' -f2 | sed 's/remotes\/origin\///g')";
+        fi
+      elif [[ "$CODEBUILD_WEBHOOK_TRIGGER" == "pr/"* ]]; then
+        export BRANCH_NAME=${CODEBUILD_WEBHOOK_BASE_REF##*/}
       fi
     fi
+    echo $BRANCH_NAME
+
+    # Increase buffer size to avoid error when git operations return large response on CI
+    if [ "$CI" = "true" ]; then
+      git config http.version HTTP/1.1
+      git config http.postBuffer 157286400
+    fi
+
     git checkout $BRANCH_NAME
   
     # Fetching git tags from upstream
@@ -135,9 +159,11 @@ function _publishToLocalRegistry {
     # Can be removed when using team account
     echo "fetching tags"
     git fetch --tags https://github.com/aws-amplify/amplify-category-api
+    # Create the folder to avoid failure when no packages are published due to no change detected
+    rm -rf ../verdaccio-cache && mkdir ../verdaccio-cache
 
     source codebuild_specs/scripts/local_publish_helpers.sh
-    startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+    startLocalRegistry "$(pwd)/codebuild_specs/scripts/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     git config user.email not@used.com
     git config user.name "Doesnt Matter"
@@ -148,10 +174,19 @@ function _publishToLocalRegistry {
       yarn lerna publish --exact --dist-tag=latest --preid=$NPM_TAG --conventional-commits --conventional-prerelease --no-verify-access --yes --no-commit-hooks --no-push --no-git-tag-version
     fi
     unsetNpmRegistryUrl
+
     # copy [verdaccio-cache] to s3
     storeCache $CODEBUILD_SRC_DIR/../verdaccio-cache verdaccio-cache
 
     _generateChangeLog
+}
+function _publishLocalWorkspace {
+    source codebuild_specs/scripts/local_publish_helpers.sh
+    startLocalRegistry "$(pwd)/codebuild_specs/scripts/verdaccio.yaml"
+    setNpmRegistryUrlToLocal
+    setNpmTag
+    yarn publish-to-verdaccio
+    unsetNpmRegistryUrl
 }
 function _generateChangeLog {
     echo "Generate Change Log"
@@ -164,10 +199,16 @@ function _generateChangeLog {
 function _installCLIFromLocalRegistry {
     echo "Start verdaccio, install CLI"
     source codebuild_specs/scripts/local_publish_helpers.sh
-    startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+    startLocalRegistry "$(pwd)/codebuild_specs/scripts/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     changeNpmGlobalPath
-    npm install -g @aws-amplify/cli-internal@12.2.0-aws-cdk-lib-2-28.0
+    # set longer timeout to avoid socket timeout error
+    npm config set fetch-retries 5
+    npm config set fetch-timeout 600000
+    npm config set fetch-retry-mintimeout 30000
+    npm config set fetch-retry-maxtimeout 180000
+    npm config set maxsockets 1
+    npm install -g @aws-amplify/cli-internal
     echo "using Amplify CLI version: "$(amplify --version)
     npm list -g --depth=1 | grep -e '@aws-amplify/amplify-category-api' -e 'amplify-codegen'
     unsetNpmRegistryUrl
@@ -186,54 +227,51 @@ function _loadTestAccountCredentials {
     export AWS_SECRET_ACCESS_KEY=$(echo $creds | jq -c -r ".Credentials.SecretAccessKey")
     export AWS_SESSION_TOKEN=$(echo $creds | jq -c -r ".Credentials.SessionToken")
 }
-function _runE2ETestsLinux {
-    echo "RUN E2E Tests Linux"
+function _setupE2ETestsLinux {
+    echo "Setup E2E Tests Linux"
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
-    _installCLIFromLocalRegistry  
+    _installCLIFromLocalRegistry
     _loadTestAccountCredentials
     _setShell
+}
+
+function _setupCDKTestsLinux {
+    echo "Setup E2E Tests Linux"
+    loadCacheFromBuildJob
+    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+    _installCLIFromLocalRegistry
+    yarn package
+    _loadTestAccountCredentials
+    _setShell
+}
+
+function _runE2ETestsLinux {
+    echo "RUN E2E Tests Linux"
     retry runE2eTest
 }
+
+function _runCDKTestsLinux {
+    echo "RUN CDK Tests Linux"
+    retry runCDKTest
+}
+
 function _runGqlE2ETests {
     echo "RUN GraphQL E2E tests"
     loadCacheFromBuildJob
     _loadTestAccountCredentials
     retry runGraphQLE2eTest
 }
-function _runMigrationV5Test {
-    echo RUN Migration V5 Test
+function _runCanaryTest {
+    echo RUN Canary Test
     loadCacheFromBuildJob
-    yarn setup-dev
-    source codebuild_specs/scripts/local_publish_helpers.sh
-    changeNpmGlobalPath
-    cd packages/amplify-migration-tests
+    loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+    _installCLIFromLocalRegistry  
     _loadTestAccountCredentials
-    retry yarn run migration_v5.2.0 --no-cache --detectOpenHandles --forceExit $TEST_SUITE
-}
-function _runMigrationV6Test {
-    echo RUN Migration V6 Test
-    loadCacheFromBuildJob
-    yarn setup-dev
-    source codebuild_specs/scripts/local_publish_helpers.sh
-    changeNpmGlobalPath
-    cd packages/amplify-migration-tests
-    _loadTestAccountCredentials
-    retry yarn run migration_v6.1.0 --no-cache --detectOpenHandles --forceExit $TEST_SUITE
-}
-function _runMigrationV10Test {
-    echo RUN Migration V10 Test
-    loadCacheFromBuildJob
-    yarn setup-dev
-    source codebuild_specs/scripts/local_publish_helpers.sh
-    changeNpmGlobalPath
-    cd packages/amplify-migration-tests
-    unset IS_AMPLIFY_CI
-    echo $IS_AMPLIFY_CI
-    _loadTestAccountCredentials
-    npm i -g @aws-amplify/cli@10.5.1
-    /root/.amplify/bin/amplify -v
-    retry yarn run migration_v10.5.1 --no-cache --detectOpenHandles --forceExit $TEST_SUITE
+    _setShell
+    cd client-test-apps/js/api-model-relationship-app
+    yarn --network-timeout 180000
+    retry yarn test:ci
 }
 function _scanArtifacts {
     if ! yarn ts-node codebuild_specs/scripts/scan_artifacts.ts; then
@@ -249,7 +287,13 @@ function _cleanupE2EResources {
   echo "Running clean up script"
   build_batch_arn=$(aws codebuild batch-get-builds --ids $CODEBUILD_BUILD_ID | jq -r -c '.builds[0].buildBatchArn')
   echo "Cleanup resources for batch build $build_batch_arn"
-  yarn clean-cb-e2e-resources --buildBatchArn $build_batch_arn
+  yarn clean-e2e-resources buildBatchArn $build_batch_arn
+}
+function _unassumeTestAccountCredentials {
+    echo "Unassume Role"
+    unset AWS_ACCESS_KEY_ID
+    unset AWS_SECRET_ACCESS_KEY
+    unset AWS_SESSION_TOKEN
 }
 
 # The following functions are forked from circleci local publish helper
@@ -257,10 +301,26 @@ function _cleanupE2EResources {
 function useChildAccountCredentials {
     if [ -z "$USE_PARENT_ACCOUNT" ]; then
         export AWS_PAGER=""
+        export AWS_MAX_ATTEMPTS=5
+        export AWS_STS_REGIONAL_ENDPOINTS=regional
         parent_acct=$(aws sts get-caller-identity | jq -cr '.Account')
         child_accts=$(aws organizations list-accounts | jq -c "[.Accounts[].Id | select(. != \"$parent_acct\")]")
         org_size=$(echo $child_accts | jq 'length')
-        pick_acct=$(echo $child_accts | jq -cr ".[$RANDOM % $org_size]")
+        opt_in_regions=$(jq -r '.[] | select(.optIn == true) | .name' $CODEBUILD_SRC_DIR/scripts/e2e-test-regions.json)
+        if echo "$opt_in_regions" | grep -qw "$CLI_REGION"; then
+            child_accts=$(echo $child_accts | jq -cr '.[]')
+            for child_acct in $child_accts; do
+                # Get enabled opt-in regions for the child account
+                enabled_regions=$(aws account list-regions --account-id $child_acct --region-opt-status-contains ENABLED)
+                # Check if given opt-in region is enabled for the child account
+                if echo "$enabled_regions" | jq -e ".Regions[].RegionName == \"$CLI_REGION\""; then
+                    pick_acct=$child_acct
+                    break
+                fi
+            done
+        else
+            pick_acct=$(echo $child_accts | jq -cr ".[$RANDOM % $org_size]")
+        fi
         session_id=$((1 + $RANDOM % 10000))
         if [[ -z "$pick_acct" || -z "$session_id" ]]; then
           echo "Unable to find a child account. Falling back to parent AWS account"
@@ -287,30 +347,30 @@ function retry {
     MAX_ATTEMPTS=2
     SLEEP_DURATION=5
     FIRST_RUN=true
-    n=0
+    RUN_INDEX=0
     FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then
         rm -f $FAILED_TEST_REGEX_FILE
     fi
-    until [ $n -ge $MAX_ATTEMPTS ]
+    until [ $RUN_INDEX -ge $MAX_ATTEMPTS ]
     do
         echo "Attempting $@ with max retries $MAX_ATTEMPTS"
         setAwsAccountCredentials
-        "$@" && break
-        n=$[$n+1]
+        RUN_INDEX="$RUN_INDEX" "$@" && break
+        RUN_INDEX=$[$RUN_INDEX+1]
         FIRST_RUN=false
-        echo "Attempt $n completed."
+        echo "Attempt $RUN_INDEX completed."
         sleep $SLEEP_DURATION
     done
-    if [ $n -ge $MAX_ATTEMPTS ]; then
+    if [ $RUN_INDEX -ge $MAX_ATTEMPTS ]; then
         echo "failed: ${@}" >&2
         exit 1
     fi
 
     resetAwsAccountCredentials
     TEST_SUITE=${TEST_SUITE:-"TestSuiteNotSet"}
-    aws cloudwatch put-metric-data --metric-name FlakyE2ETests --namespace amplify-category-api-e2e-tests --unit Count --value $n --dimensions testFile=$TEST_SUITE --profile amplify-integ-test-user || true
-    echo "Attempt $n succeeded."
+    aws cloudwatch put-metric-data --metric-name FlakyE2ETests --namespace amplify-category-api-e2e-tests --unit Count --value $RUN_INDEX --dimensions testFile=$TEST_SUITE --profile amplify-integ-test-user || true
+    echo "Attempt $RUN_INDEX succeeded."
     exit 0 # don't fail the step if putting the metric fails
 }
 
@@ -366,6 +426,22 @@ function runE2eTest {
     fi
 }
 
+function runCDKTest {
+    FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
+
+    if [ -z "$FIRST_RUN" ] || [ "$FIRST_RUN" == "true" ]; then
+        cd $(pwd)/packages/amplify-graphql-api-construct-tests
+    fi
+
+    if [ -f  $FAILED_TEST_REGEX_FILE ]; then
+        # read the content of failed tests
+        failedTests=$(<$FAILED_TEST_REGEX_FILE)
+        yarn run e2e --maxWorkers=4 $TEST_SUITE -t "$failedTests"
+    else
+        yarn run e2e --maxWorkers=4 $TEST_SUITE
+    fi
+}
+
 function runGraphQLE2eTest {
     FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
 
@@ -382,43 +458,65 @@ function runGraphQLE2eTest {
     fi
 }
 
-# Accepts the value as an input parameter, i.e. 1 for success, 0 for failure.
-# Only executes if IS_CANARY env variable is set
-function emitCanarySuccessMetric {
-    if [[ "$CIRCLE_BRANCH" = main ]]; then
-        USE_PARENT_ACCOUNT=1
-        setAwsAccountCredentials
-        aws cloudwatch \
-            put-metric-data \
-            --metric-name CanarySuccessRate \
-            --namespace amplify-category-api-e2e-tests \
-            --unit Count \
-            --value 1 \
-            --dimensions branch=main \
-            --region us-west-2
-    fi
-}
-
-function emitCanaryFailureMetric {
-    if [[ "$CIRCLE_BRANCH" = main ]]; then
-        USE_PARENT_ACCOUNT=1
-        setAwsAccountCredentials
-        aws cloudwatch \
-            put-metric-data \
-            --metric-name CanarySuccessRate \
-            --namespace amplify-category-api-e2e-tests \
-            --unit Count \
-            --value 0 \
-            --dimensions branch=main \
-            --region us-west-2
-    fi
-}
-
 function _deploy {
+  _setShell
   echo "Deploy"
-  loadCacheFromBuildJob
   echo "Authenticate with NPM"
   PUBLISH_TOKEN=$(echo "$NPM_PUBLISH_TOKEN" | jq -r '.token')
   echo "//registry.npmjs.org/:_authToken=$PUBLISH_TOKEN" > ~/.npmrc
   ./codebuild_specs/scripts/publish.sh
+}
+
+function _deprecate {
+  loadCacheFromBuildJob
+  echo "Deprecate"
+
+  echo "creating private package manifest"
+  ./scripts/create-private-package-manifest.sh
+  echo "Authenticate with NPM"
+  if [ "$USE_NPM_REGISTRY" == "true" ]; then
+      PUBLISH_TOKEN=$(echo "$NPM_PUBLISH_TOKEN" | jq -r '.token')
+      echo "//registry.npmjs.org/:_authToken=$PUBLISH_TOKEN" > ~/.npmrc
+  else
+    yarn verdaccio-clean
+    source codebuild_specs/scripts/local_publish_helpers.sh
+    startLocalRegistry "$(pwd)/codebuild_specs/scripts/verdaccio.yaml"
+    setNpmRegistryUrlToLocal
+  fi
+  yarn deprecate
+  unsetNpmRegistryUrl
+}
+
+# Accepts the value as an input parameter, i.e. 1 for success, 0 for failure.
+function _emitCanaryMetric {
+  aws cloudwatch \
+    put-metric-data \
+    --metric-name CanarySuccessRate \
+    --namespace amplify-category-api-e2e-tests \
+    --unit Count \
+    --value $CODEBUILD_BUILD_SUCCEEDING \
+    --dimensions branch=main \
+    --region us-west-2
+}
+
+function _emitCreateApiCanaryMetric {
+  aws cloudwatch \
+    put-metric-data \
+    --metric-name CreateApiCanarySuccessRate \
+    --namespace amplify-category-api-e2e-tests \
+    --unit Count \
+    --value $CODEBUILD_BUILD_SUCCEEDING \
+    --dimensions branch=main,region=$CLI_REGION \
+    --region us-west-2
+}
+
+function _emitCDKConstructCanaryMetric {
+  aws cloudwatch \
+    put-metric-data \
+    --metric-name $CANARY_METRIC_NAME \
+    --namespace amplify-graphql-api-construct-tests \
+    --unit Count \
+    --value $CODEBUILD_BUILD_SUCCEEDING \
+    --dimensions branch=release,region=$CLI_REGION \
+    --region us-west-2
 }

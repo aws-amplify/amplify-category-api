@@ -3,7 +3,7 @@
   "main": "./dist/index.js",
   "private": true,
   "types": "./dist/index.d.ts",
-  "version": "0.2.3",
+  "version": "0.3.2",
   "files": [
     "dist",
     "!**/__tests__/**/*"
@@ -12,7 +12,8 @@
     "build": "tsc && yarn size",
     "clean": "rimraf -rf build node_modules dist coverage",
     "test": "jest --coverage",
-    "size": "size-limit"
+    "size": "size-limit",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "devDependencies": {
     "@size-limit/preset-small-lib": "6.0.4",
@@ -32,7 +33,7 @@
   "size-limit": [
     {
       "path": "./dist/index.js",
-      "limit": "5 KB",
+      "limit": "6 KB",
       "ignore": [
         "graphql"
       ]

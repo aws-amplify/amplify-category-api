@@ -1,8 +1,9 @@
 import { ResourceConstants } from 'graphql-transformer-common';
-import { CfnParameter, Stack } from 'aws-cdk-lib';
+import { CfnParameter } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import { ALLOWABLE_SEARCHABLE_INSTANCE_TYPES } from '../constants';
 
-export const createParametersStack = (stack: Stack): Map<string, CfnParameter> => {
+export const createParametersStack = (scope: Construct): Map<string, CfnParameter> => {
   const {
     OpenSearchAccessIAMRoleName,
     OpenSearchStreamingLambdaHandlerName,
@@ -20,7 +21,7 @@ export const createParametersStack = (stack: Stack): Map<string, CfnParameter> =
   return new Map<string, CfnParameter>([
     [
       OpenSearchAccessIAMRoleName,
-      new CfnParameter(stack, OpenSearchAccessIAMRoleName, {
+      new CfnParameter(scope, OpenSearchAccessIAMRoleName, {
         description: 'The name of the IAM role assumed by AppSync for OpenSearch.',
         default: 'AppSyncOpenSearchRole',
       }),
@@ -28,7 +29,7 @@ export const createParametersStack = (stack: Stack): Map<string, CfnParameter> =
 
     [
       OpenSearchStreamingLambdaHandlerName,
-      new CfnParameter(stack, OpenSearchStreamingLambdaHandlerName, {
+      new CfnParameter(scope, OpenSearchStreamingLambdaHandlerName, {
         description: 'The name of the lambda handler.',
         default: 'python_streaming_function.lambda_handler',
       }),
@@ -36,7 +37,7 @@ export const createParametersStack = (stack: Stack): Map<string, CfnParameter> =
 
     [
       OpenSearchStreamingLambdaRuntime,
-      new CfnParameter(stack, OpenSearchStreamingLambdaRuntime, {
+      new CfnParameter(scope, OpenSearchStreamingLambdaRuntime, {
         // eslint-disable-next-line no-multi-str
         description:
           'The lambda runtime \
@@ -47,7 +48,7 @@ export const createParametersStack = (stack: Stack): Map<string, CfnParameter> =
 
     [
       OpenSearchStreamingFunctionName,
-      new CfnParameter(stack, OpenSearchStreamingFunctionName, {
+      new CfnParameter(scope, OpenSearchStreamingFunctionName, {
         description: 'The name of the streaming lambda function.',
         default: 'DdbToEsFn',
       }),
@@ -55,7 +56,7 @@ export const createParametersStack = (stack: Stack): Map<string, CfnParameter> =
 
     [
       OpenSearchStreamBatchSize,
-      new CfnParameter(stack, OpenSearchStreamBatchSize, {
+      new CfnParameter(scope, OpenSearchStreamBatchSize, {
         description: 'The maximum number of records to stream to OpenSearch per batch.',
         type: 'Number',
         default: 100,
@@ -64,7 +65,7 @@ export const createParametersStack = (stack: Stack): Map<string, CfnParameter> =
 
     [
       OpenSearchStreamMaximumBatchingWindowInSeconds,
-      new CfnParameter(stack, OpenSearchStreamMaximumBatchingWindowInSeconds, {
+      new CfnParameter(scope, OpenSearchStreamMaximumBatchingWindowInSeconds, {
         description: 'The maximum amount of time in seconds to wait for DynamoDB stream records before sending to streaming lambda.',
         type: 'Number',
         default: 1,
@@ -73,7 +74,7 @@ export const createParametersStack = (stack: Stack): Map<string, CfnParameter> =
 
     [
       OpenSearchAccessIAMRoleName,
-      new CfnParameter(stack, OpenSearchStreamingIAMRoleName, {
+      new CfnParameter(scope, OpenSearchStreamingIAMRoleName, {
         description: 'The name of the streaming lambda function IAM role.',
         default: 'SearchLambdaIAMRole',
       }),
@@ -81,7 +82,7 @@ export const createParametersStack = (stack: Stack): Map<string, CfnParameter> =
 
     [
       OpenSearchDebugStreamingLambda,
-      new CfnParameter(stack, OpenSearchDebugStreamingLambda, {
+      new CfnParameter(scope, OpenSearchDebugStreamingLambda, {
         description: 'Enable debug logs for the Dynamo -> OpenSearch streaming lambda.',
         default: 0,
         type: 'Number',
@@ -91,7 +92,7 @@ export const createParametersStack = (stack: Stack): Map<string, CfnParameter> =
 
     [
       OpenSearchInstanceCount,
-      new CfnParameter(stack, OpenSearchInstanceCount, {
+      new CfnParameter(scope, OpenSearchInstanceCount, {
         description: 'The number of instances to launch into the OpenSearch domain.',
         default: 1,
         type: 'Number',
@@ -100,7 +101,7 @@ export const createParametersStack = (stack: Stack): Map<string, CfnParameter> =
 
     [
       OpenSearchInstanceType,
-      new CfnParameter(stack, OpenSearchInstanceType, {
+      new CfnParameter(scope, OpenSearchInstanceType, {
         description: 'The type of instance to launch into the OpenSearch domain.',
         default: 't2.small.elasticsearch',
         allowedValues: ALLOWABLE_SEARCHABLE_INSTANCE_TYPES,
@@ -109,7 +110,7 @@ export const createParametersStack = (stack: Stack): Map<string, CfnParameter> =
 
     [
       OpenSearchEBSVolumeGB,
-      new CfnParameter(stack, OpenSearchEBSVolumeGB, {
+      new CfnParameter(scope, OpenSearchEBSVolumeGB, {
         description: 'The size in GB of the EBS volumes that contain our data.',
         default: 10,
         type: 'Number',

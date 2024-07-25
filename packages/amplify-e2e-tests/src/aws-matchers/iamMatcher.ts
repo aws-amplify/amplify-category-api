@@ -7,7 +7,7 @@ export const toBeIAMRoleWithArn = async (roleName: string, arn?: string) => {
   try {
     const { Role: role } = await iam.getRole({ RoleName: roleName }).promise();
     if (arn) {
-      pass = role.Arn === arn ? true : false;
+      pass = role.Arn === arn;
       if (pass) {
         message = `role name ${roleName} has arn ${arn}`;
       } else {

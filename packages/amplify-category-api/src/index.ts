@@ -1,3 +1,4 @@
+import * as path from 'path';
 import {
   $TSContext,
   AmplifyCategories,
@@ -11,10 +12,14 @@ import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-paramete
 import { printer } from '@aws-amplify/amplify-prompts';
 import { validateAddApiRequest, validateUpdateApiRequest } from 'amplify-util-headless-input';
 import * as fs from 'fs-extra';
-import * as path from 'path';
-import { RDS_SCHEMA_FILE_NAME, ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { SQL_SCHEMA_FILE_NAME, ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import _ from 'lodash';
 import { run } from './commands/api/console';
-import { getAppSyncAuthConfig, getAppSyncResourceName } from './provider-utils/awscloudformation/utils/amplify-meta-utils';
+import {
+  getAppSyncAuthConfig,
+  getAppSyncResourceName,
+  getAPIResourceDir,
+} from './provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { provider } from './provider-utils/awscloudformation/aws-constants';
 import { ApigwStackTransform } from './provider-utils/awscloudformation/cdk-stack-builder';
 import { getCfnApiArtifactHandler } from './provider-utils/awscloudformation/cfn-api-artifact-handler';
@@ -22,14 +27,13 @@ import { askAuthQuestions } from './provider-utils/awscloudformation/service-wal
 import { authConfigToAppSyncAuthType } from './provider-utils/awscloudformation/utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { checkAppsyncApiResourceMigration } from './provider-utils/awscloudformation/utils/check-appsync-api-migration';
 import { getAppSyncApiResourceName } from './provider-utils/awscloudformation/utils/getAppSyncApiName';
-import { getAPIResourceDir } from './provider-utils/awscloudformation/utils/amplify-meta-utils';
-import { configureMultiEnvDBSecrets } from './provider-utils/awscloudformation/utils/rds-secrets/multi-env-database-secrets';
+import { configureMultiEnvDBSecrets } from './provider-utils/awscloudformation/utils/rds-resources/multi-env-database-secrets';
 import {
   deleteConnectionSecrets,
   getSecretsKey,
   getDatabaseName,
-} from './provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
-import _ from 'lodash';
+  removeVpcSchemaInspectorLambda,
+} from './provider-utils/awscloudformation/utils/rds-resources/database-resources';
 import { AmplifyGraphQLTransformerErrorConverter } from './errors/amplify-error-converter';
 
 export { NETWORK_STACK_LOGICAL_ID } from './category-constants';
@@ -151,7 +155,7 @@ export const initEnv = async (context: $TSContext): Promise<void> => {
 
   // proceed if there are any existing imported Relational Data Sources
   const apiResourceDir = getAPIResourceDir(resourceName);
-  const pathToSchemaFile = path.join(apiResourceDir, RDS_SCHEMA_FILE_NAME);
+  const pathToSchemaFile = path.join(apiResourceDir, SQL_SCHEMA_FILE_NAME);
   if (fs.existsSync(pathToSchemaFile)) {
     // read and validate the RDS connection parameters
     const secretsKey = await getSecretsKey();
@@ -299,14 +303,16 @@ export const executeAmplifyHeadlessCommand = async (context: $TSContext, headles
  */
 export const handleAmplifyEvent = async (context: $TSContext, args: any): Promise<void> => {
   switch (args.event) {
-    case 'InternalOnlyPostEnvRemove':
+    case 'InternalOnlyPostEnvRemove': {
       const meta = stateManager.getMeta();
       const apiName = getAppSyncResourceName(meta);
       if (!apiName) {
         return;
       }
       await deleteConnectionSecrets(context, apiName, args?.data?.envName);
+      await removeVpcSchemaInspectorLambda(context);
       break;
+    }
     default:
     // other event handlers not implemented
   }

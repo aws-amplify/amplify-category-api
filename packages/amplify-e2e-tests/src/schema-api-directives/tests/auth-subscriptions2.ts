@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 #error: remove duplicate @model in doc
 #error: there's the ending "{" 
@@ -11,7 +11,7 @@ type Post @model
   content: String
 }`;
 
-//subscriptions
+// subscriptions
 export const subscription = `
 #extra
 subscription OnCreatePost {

@@ -2,14 +2,17 @@ import { AttributeType, BillingMode, StreamViewType, Table } from 'aws-cdk-lib/a
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
-import { TransformerContext } from '../transformer-context';
-import { ResolverConfig, SyncConfig, SyncConfigLambda } from '../config/transformer-config';
 import {
-  StackManagerProvider,
+  SynthParameters,
   TransformerContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { Construct } from 'constructs';
+// eslint-disable-next-line import/no-cycle
+import { TransformerContext } from '../transformer-context';
+import { ResolverConfig, SyncConfig, SyncConfigLambda } from '../config/transformer-config';
+import { setResourceName } from '../utils';
 
 type DeltaSyncConfig = {
   DeltaSyncTableName: any;
@@ -18,9 +21,9 @@ type DeltaSyncConfig = {
 };
 
 export function createSyncTable(context: TransformerContext) {
-  const stack = context.stackManager.getStackFor(SyncResourceIDs.syncTableName);
+  const scope = context.stackManager.getScopeFor(SyncResourceIDs.syncTableName);
   const tableName = context.resourceHelper.generateTableName(SyncResourceIDs.syncTableName);
-  new Table(stack, SyncResourceIDs.syncDataSourceID, {
+  const syncTable = new Table(scope, SyncResourceIDs.syncDataSourceID, {
     tableName,
     partitionKey: {
       name: SyncResourceIDs.syncPrimaryKey,
@@ -35,18 +38,20 @@ export function createSyncTable(context: TransformerContext) {
     billingMode: BillingMode.PAY_PER_REQUEST,
     timeToLiveAttribute: '_ttl',
   });
+  setResourceName(syncTable, { name: SyncResourceIDs.syncTableName, setOnDefaultChild: true });
 
-  createSyncIAMRole(context, stack, tableName);
+  createSyncIAMRole(context, scope, tableName);
 }
 
-function createSyncIAMRole(context: TransformerContext, stack: cdk.Stack, tableName: string) {
-  const role = new iam.Role(stack, SyncResourceIDs.syncIAMRoleName, {
+function createSyncIAMRole(context: TransformerContext, scope: Construct, tableName: string) {
+  const role = new iam.Role(scope, SyncResourceIDs.syncIAMRoleName, {
     roleName: context.resourceHelper.generateIAMRoleName(SyncResourceIDs.syncIAMRoleName),
     assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
   });
+  setResourceName(role, { name: SyncResourceIDs.syncIAMRoleName, setOnDefaultChild: true });
 
   role.attachInlinePolicy(
-    new iam.Policy(stack, 'DynamoDBAccess', {
+    new iam.Policy(scope, 'DynamoDBAccess', {
       statements: [
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
@@ -108,7 +113,7 @@ export function getSyncConfig(ctx: TransformerTransformSchemaStepContextProvider
 
   if (syncConfig && isLambdaSyncConfig(syncConfig) && !syncConfig.LambdaConflictHandler.lambdaArn) {
     const { name, region } = syncConfig.LambdaConflictHandler;
-    const syncLambdaArn = syncLambdaArnResource(ctx.stackManager, name, region);
+    const syncLambdaArn = syncLambdaArnResource(ctx.synthParameters, name, region);
     syncConfig.LambdaConflictHandler.lambdaArn = syncLambdaArn;
   }
 
@@ -128,27 +133,25 @@ export function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncCo
 
 export function createSyncLambdaIAMPolicy(
   context: TransformerContextProvider,
-  stack: cdk.Stack,
+  scope: Construct,
   name: string,
   region?: string,
 ): iam.Policy {
-  return new iam.Policy(stack, 'InvokeLambdaFunction', {
+  return new iam.Policy(scope, 'InvokeLambdaFunction', {
     statements: [
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['lambda:InvokeFunction'],
-        resources: [syncLambdaArnResource(context.stackManager, name, region)],
+        resources: [syncLambdaArnResource(context.synthParameters, name, region)],
       }),
     ],
   });
 }
 
-function syncLambdaArnResource(stackManager: StackManagerProvider, name: string, region?: string): string {
+function syncLambdaArnResource(synthParameters: SynthParameters, name: string, region?: string): string {
   const substitutions = {};
   if (referencesEnv(name)) {
-    Object.assign(substitutions, {
-      env: stackManager.getParameter(ResourceConstants.PARAMETERS.Env),
-    });
+    Object.assign(substitutions, { env: synthParameters.amplifyEnvironmentName });
   }
   return cdk.Fn.conditionIf(
     ResourceConstants.CONDITIONS.HasEnvironmentParameter,

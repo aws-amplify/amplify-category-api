@@ -1,36 +1,33 @@
 import { DirectiveWrapper, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
-import { AppSyncAuthMode, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { Stack } from 'aws-cdk-lib';
-import { ObjectTypeDefinitionNode } from 'graphql';
-import { MODEL_OPERATIONS, READ_MODEL_OPERATIONS } from './constants';
 import {
-  AuthProvider,
-  AuthRule,
-  AuthTransformerConfig,
-  ConfiguredAuthProviders,
-  GetAuthRulesOptions,
-  ModelOperation,
-  RoleDefinition,
-  RolesByProvider,
-} from './definitions';
+  AppSyncAuthMode,
+  TransformerBeforeStepContextProvider,
+  TransformerContextProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
+import { ObjectTypeDefinitionNode } from 'graphql';
+import { Construct } from 'constructs';
+import { MODEL_OPERATIONS, READ_MODEL_OPERATIONS } from './constants';
+import { AuthProvider, AuthRule, ConfiguredAuthProviders, GetAuthRulesOptions, ModelOperation } from './definitions';
+import { RoleDefinition, RolesByProvider } from './role-definition';
 
 export * from './constants';
 export * from './definitions';
 export * from './validations';
 export * from './schema';
 export * from './iam';
+export * from './role-definition';
 
 /**
  * Splits roles into key value pairs by auth type
  */
 export const splitRoles = (roles: Array<RoleDefinition>): RolesByProvider => ({
-  cognitoStaticRoles: roles.filter((r) => r.static && r.provider === 'userPools'),
-  cognitoDynamicRoles: roles.filter((r) => !r.static && r.provider === 'userPools'),
-  oidcStaticRoles: roles.filter((r) => r.static && r.provider === 'oidc'),
-  oidcDynamicRoles: roles.filter((r) => !r.static && r.provider === 'oidc'),
-  iamRoles: roles.filter((r) => r.provider === 'iam'),
-  apiKeyRoles: roles.filter((r) => r.provider === 'apiKey'),
-  lambdaRoles: roles.filter((r) => r.provider === 'function'),
+  cognitoStaticRoles: roles.filter((r) => r.static && isAuthProviderEqual(r.provider, 'userPools')),
+  cognitoDynamicRoles: roles.filter((r) => !r.static && isAuthProviderEqual(r.provider, 'userPools')),
+  oidcStaticRoles: roles.filter((r) => r.static && isAuthProviderEqual(r.provider, 'oidc')),
+  oidcDynamicRoles: roles.filter((r) => !r.static && isAuthProviderEqual(r.provider, 'oidc')),
+  iamRoles: roles.filter((r) => isAuthProviderEqual(r.provider, 'identityPool')),
+  apiKeyRoles: roles.filter((r) => isAuthProviderEqual(r.provider, 'apiKey')),
+  lambdaRoles: roles.filter((r) => isAuthProviderEqual(r.provider, 'function')),
 });
 
 /**
@@ -44,16 +41,18 @@ export const getAuthDirectiveRules = (authDir: DirectiveWrapper, options?: GetAu
       operations.splice(indexOfRead, 1);
       operations.push('get');
       operations.push('list');
-      operations.push('search');
-      operations.push('sync');
       operations.push('listen');
+      if (!options?.isSqlDataSource) {
+        operations.push('search');
+        operations.push('sync');
+      }
       // eslint-disable-next-line no-param-reassign
       rule.operations = operations as ModelOperation[];
     }
   };
 
   const { rules } = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] }, options);
-  rules.forEach((rule) => {
+  rules?.forEach((rule) => {
     const operations: (ModelOperation | 'read')[] = rule.operations ?? MODEL_OPERATIONS;
 
     // In case a customer defines a single dynamic group as a string, put it to an array
@@ -102,7 +101,7 @@ export const getAuthDirectiveRules = (authDir: DirectiveWrapper, options?: GetAu
       }
     }
 
-    if (rule.provider === 'iam') {
+    if (isAuthProviderEqual(rule.provider, 'identityPool')) {
       // eslint-disable-next-line no-param-reassign
       rule.generateIAMPolicy = true;
     }
@@ -116,12 +115,12 @@ export const getAuthDirectiveRules = (authDir: DirectiveWrapper, options?: GetAu
 /**
  * gets stack name if the field is paired with function, predictions, or by itself
  */
-export const getStackForField = (
+export const getScopeForField = (
   ctx: TransformerContextProvider,
   obj: ObjectTypeDefinitionNode,
   fieldName: string,
   hasModelDirective: boolean,
-): Stack => {
+): Construct => {
   const fieldNode = obj.fields.find((f) => f.name.value === fieldName);
   const fieldDirectives = fieldNode.directives.map((d) => d.name.value);
   if (fieldDirectives.includes('function')) {
@@ -130,19 +129,24 @@ export const getStackForField = (
   if (fieldDirectives.includes('predictions')) {
     return ctx.stackManager.getStack('PredictionsDirectiveStack');
   }
+  if (fieldDirectives.includes('sql')) {
+    return ctx.stackManager.getStack('CustomSQLStack');
+  }
   if (hasModelDirective) {
     return ctx.stackManager.getStack(obj.name.value);
   }
-  return ctx.stackManager.rootStack;
+  return ctx.stackManager.scope;
 };
 
 /**
  * Returns auth provider passed on config
  */
-export const getConfiguredAuthProviders = (config: AuthTransformerConfig): ConfiguredAuthProviders => {
+export const getConfiguredAuthProviders = (context: TransformerBeforeStepContextProvider): ConfiguredAuthProviders => {
+  const { authConfig, synthParameters } = context;
+  const { adminRoles, identityPoolId } = synthParameters;
   const providers = [
-    config.authConfig.defaultAuthentication.authenticationType,
-    ...config.authConfig.additionalAuthenticationProviders.map((p) => p.authenticationType),
+    authConfig.defaultAuthentication.authenticationType,
+    ...authConfig.additionalAuthenticationProviders.map((p) => p.authenticationType),
   ];
   const getAuthProvider = (authType: AppSyncAuthMode): AuthProvider => {
     switch (authType) {
@@ -151,7 +155,7 @@ export const getConfiguredAuthProviders = (config: AuthTransformerConfig): Confi
       case 'API_KEY':
         return 'apiKey';
       case 'AWS_IAM':
-        return 'iam';
+        return 'identityPool';
       case 'OPENID_CONNECT':
         return 'oidc';
       case 'AWS_LAMBDA':
@@ -161,17 +165,39 @@ export const getConfiguredAuthProviders = (config: AuthTransformerConfig): Confi
     }
   };
   const hasIAM = providers.some((p) => p === 'AWS_IAM');
+  const hasAdminRolesEnabled = hasIAM && adminRoles?.length > 0;
+  /**
+   * When AdminUI or generic IAM access is enabled, all the types and operations get IAM auth. If the default auth mode is
+   * not IAM all the fields will need to have the default auth mode directive to ensure both IAM and default
+   * auth modes are allowed to access
+   * default auth provider needs to be added if AdminUI or generic IAM access is enabled and default auth type is not IAM
+   */
+  const shouldAddDefaultServiceDirective =
+    (hasAdminRolesEnabled || context.synthParameters.enableIamAccess) && authConfig.defaultAuthentication.authenticationType !== 'AWS_IAM';
   const configuredProviders: ConfiguredAuthProviders = {
-    default: getAuthProvider(config.authConfig.defaultAuthentication.authenticationType),
-    onlyDefaultAuthProviderConfigured: config.authConfig.additionalAuthenticationProviders.length === 0,
-    hasAdminRolesEnabled: hasIAM && config.adminRoles?.length > 0,
-    adminRoles: config.adminRoles,
-    identityPoolId: config.identityPoolId,
+    default: getAuthProvider(authConfig.defaultAuthentication.authenticationType),
+    onlyDefaultAuthProviderConfigured: authConfig.additionalAuthenticationProviders.length === 0,
+    hasAdminRolesEnabled,
+    hasIdentityPoolId: identityPoolId !== null && identityPoolId !== undefined,
     hasApiKey: providers.some((p) => p === 'API_KEY'),
     hasUserPools: providers.some((p) => p === 'AMAZON_COGNITO_USER_POOLS'),
     hasOIDC: providers.some((p) => p === 'OPENID_CONNECT'),
     hasLambda: providers.some((p) => p === 'AWS_LAMBDA'),
     hasIAM,
+    shouldAddDefaultServiceDirective,
+    genericIamAccessEnabled: synthParameters.enableIamAccess,
   };
   return configuredProviders;
+};
+
+export const isAuthProviderEqual = (provider: AuthProvider, otherProvider: AuthProvider): boolean => {
+  if (provider === otherProvider) {
+    return true;
+  }
+
+  if ((provider === 'iam' || provider === 'identityPool') && (otherProvider === 'iam' || otherProvider === 'identityPool')) {
+    return true;
+  }
+
+  return false;
 };

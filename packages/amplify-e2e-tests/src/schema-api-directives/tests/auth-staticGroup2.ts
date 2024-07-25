@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 type Draft @model
   @auth(rules: [
@@ -20,7 +20,7 @@ type Draft @model
 }
 
 #staticGroup2`;
-//mutations
+// mutations
 export const mutation1 = `
 mutation CreateDraft(
     $input: CreateDraftInput!

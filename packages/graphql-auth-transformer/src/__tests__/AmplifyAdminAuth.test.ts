@@ -1,7 +1,8 @@
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-import { ModelAuthTransformer } from '../ModelAuthTransformer';
 import _ from 'lodash';
+import { ModelAuthTransformer } from '../ModelAuthTransformer';
+
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
     if (name === 'improvePluralization') {
@@ -13,7 +14,7 @@ const featureFlags = {
   getObject: jest.fn(),
 };
 
-test('Test simple model with public auth rule and amplify admin app is present', () => {
+test('simple model with public auth rule and amplify admin app is present', () => {
   const validSchema = `
     type Post @model @auth(rules: [{allow: public}]) {
         id: ID!
@@ -46,7 +47,7 @@ test('Test simple model with public auth rule and amplify admin app is present',
   expect(out.schema).toContain('Post @aws_api_key @aws_iam');
 });
 
-test('Test simple model with public auth rule and amplify admin app is not enabled', () => {
+test('simple model with public auth rule and amplify admin app is not enabled', () => {
   const validSchema = `
       type Post @model @auth(rules: [{allow: public}]) {
           id: ID!
@@ -75,7 +76,7 @@ test('Test simple model with public auth rule and amplify admin app is not enabl
   expect(out.schema).not.toContain('Post @aws_api_key @aws_iam');
 });
 
-test('Test simple model with private auth rule and amplify admin app is present', () => {
+test('simple model with private auth rule and amplify admin app is present', () => {
   const validSchema = `
       type Post @model @auth(rules: [{allow: groups, groups: ["Admin", "Dev"]}]) {
           id: ID!
@@ -108,7 +109,7 @@ test('Test simple model with private auth rule and amplify admin app is present'
   expect(out.schema).toContain('Post @aws_iam @aws_cognito_user_pools');
 });
 
-test('Test simple model with private auth rule and amplify admin app not enabled', () => {
+test('simple model with private auth rule and amplify admin app not enabled', () => {
   const validSchema = `
       type Post @model @auth(rules: [{allow: groups, groups: ["Admin", "Dev"]}]) {
           id: ID!
@@ -141,7 +142,7 @@ test('Test simple model with private auth rule and amplify admin app not enabled
   expect(out.schema).not.toContain('Post @aws_cognito_user_pools @aws_iam');
 });
 
-test('Test model with public auth rule without all operations and amplify admin app is present', () => {
+test('model with public auth rule without all operations and amplify admin app is present', () => {
   const validSchema = `
       type Post @model @auth(rules: [{allow: public, operations: [read, update]}]) {
           id: ID!
@@ -186,7 +187,7 @@ test('Test model with public auth rule without all operations and amplify admin 
   expect(policyResources).toHaveLength(0);
 });
 
-test('Test simple model with private auth rule, few operations, and amplify admin app enabled', () => {
+test('simple model with private auth rule, few operations, and amplify admin app enabled', () => {
   const validSchema = `
       type Post @model @auth(rules: [{allow: groups, groups: ["Admin", "Dev"], operations: [read]}]) {
           id: ID!
@@ -230,7 +231,7 @@ test('Test simple model with private auth rule, few operations, and amplify admi
   expect(policyResources).toHaveLength(0);
 });
 
-test('Test simple model with private IAM auth rule, few operations, and amplify admin app is not enabled', () => {
+test('simple model with private IAM auth rule, few operations, and amplify admin app is not enabled', () => {
   const validSchema = `
       type Post @model @auth(rules: [{allow: private, provider: iam, operations: [read]}]) {
           id: ID!
@@ -269,7 +270,7 @@ test('Test simple model with private IAM auth rule, few operations, and amplify 
   expect(out.schema).toContain('listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection @aws_iam');
 });
 
-test('Test simple model with AdminUI enabled should add IAM policy only for fields that have explicit IAM auth', () => {
+test('simple model with AdminUI enabled should add IAM policy only for fields that have explicit IAM auth', () => {
   const validSchema = `
       type Post @model @auth(rules: [{allow: private, provider: iam, operations: [read]}]) {
           id: ID!

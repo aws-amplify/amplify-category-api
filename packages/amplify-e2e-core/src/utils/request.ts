@@ -1,5 +1,6 @@
-const https = require('https');
 import fetch from 'node-fetch';
+
+const https = require('https');
 
 export function post({ body, ...options }) {
   return new Promise((resolve, reject) => {

@@ -14,6 +14,7 @@ import {
   cfnCondition,
 } from '../../CFNParser/intrinsic-functions';
 import { CloudFormationParseContext } from '../../CFNParser/types';
+
 describe('intrinsic-functions', () => {
   describe('cfnJoin', () => {
     const cfnContext: CloudFormationParseContext = {

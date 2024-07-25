@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 type Order @model
   @key(name: "byCustomerByStatusByDate", fields: ["customerID", "status", "date"])
@@ -68,7 +68,7 @@ type Product @model {
   orders: [Order] @connection(keyName: "byProduct", fields: ["id"])
   inventories: [Inventory] @connection(fields: ["id"])
 }`;
-//mutations
+// mutations
 export const mutation1 = `
 # first
 mutation createWarehouse {
@@ -176,7 +176,7 @@ mutation createOrder {
   }
 }`;
 
-//queries
+// queries
 export const query1 = `
 ##1. Look up employee details by employee ID:
 #This can simply be done by querying the employee model with an employee ID, no @key or @connection is needed to make this work.

@@ -1,4 +1,4 @@
-import { generateAuthExpressionForSubscriptions } from '../../resolvers/subscriptions';
+import { generateAuthExpressionForSubscriptions } from '../../vtl-generator/ddb/resolvers/subscriptions';
 import { AuthProvider, ConfiguredAuthProviders, RoleDefinition } from '../../utils';
 
 const configFromPartial = (partialConfig: Partial<ConfiguredAuthProviders>): ConfiguredAuthProviders =>
@@ -9,8 +9,7 @@ const configFromPartial = (partialConfig: Partial<ConfiguredAuthProviders>): Con
     hasIAM: false,
     hasLambda: false,
     hasAdminRolesEnabled: false,
-    adminRoles: ['TESTADMINROLE1', 'TESTADMINROLE2'],
-    identityPoolId: 'TESTIDENTIFYPOOLID',
+    hasIdentityPoolId: true,
     ...partialConfig,
   } as unknown as ConfiguredAuthProviders);
 
@@ -27,11 +26,27 @@ const defaultRoleDefinitions: Record<AuthProvider, Array<RoleDefinition>> = {
       provider: 'iam',
       strategy: 'public',
       static: true,
+      claim: 'unauthRole',
     },
     {
       provider: 'iam',
       strategy: 'private',
       static: true,
+      claim: 'authRole',
+    },
+  ],
+  identityPool: [
+    {
+      provider: 'identityPool',
+      strategy: 'public',
+      static: true,
+      claim: 'unauthRole',
+    },
+    {
+      provider: 'identityPool',
+      strategy: 'private',
+      static: true,
+      claim: 'authRole',
     },
   ],
   userPools: [
@@ -105,33 +120,61 @@ describe('subscriptions', () => {
       });
 
       it('renders for iam auth with no admin roles', () => {
-        const adminRolesDisabledExpr1 = generateAuthExpressionForSubscriptions(
-          configFromPartial({
-            hasIAM: true,
-            adminRoles: [],
-          }),
-          defaultRoleDefinitions.iam,
-        );
-        const adminRolesDisabledExpr2 = generateAuthExpressionForSubscriptions(
-          configFromPartial({
-            hasIAM: true,
-            hasAdminRolesEnabled: false,
-          }),
-          defaultRoleDefinitions.iam,
-        );
-        const adminRolesDisabledExpr3 = generateAuthExpressionForSubscriptions(
-          configFromPartial({
-            hasIAM: true,
-            hasAdminRolesEnabled: false,
-            adminRoles: [],
-          }),
-          defaultRoleDefinitions.iam,
-        );
-        // All 3 should be equivalent
-        expect(adminRolesDisabledExpr1).toEqual(adminRolesDisabledExpr2);
-        expect(adminRolesDisabledExpr1).toEqual(adminRolesDisabledExpr3);
+        expect(
+          generateAuthExpressionForSubscriptions(
+            configFromPartial({
+              hasIAM: true,
+              hasAdminRolesEnabled: false,
+            }),
+            defaultRoleDefinitions.iam,
+          ),
+        ).toMatchSnapshot();
+      });
 
-        expect(adminRolesDisabledExpr1).toMatchSnapshot();
+      it('renders for iam access', () => {
+        expect(
+          generateAuthExpressionForSubscriptions(
+            configFromPartial({
+              hasIAM: true,
+              hasAdminRolesEnabled: false,
+              genericIamAccessEnabled: true,
+            }),
+            [],
+          ),
+        ).toMatchSnapshot();
+      });
+
+      it('renders for iam access with roles', () => {
+        expect(
+          generateAuthExpressionForSubscriptions(
+            configFromPartial({
+              hasIAM: true,
+              hasAdminRolesEnabled: false,
+              genericIamAccessEnabled: true,
+            }),
+            defaultRoleDefinitions.iam,
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+
+    describe('identityPool', () => {
+      it('renders for simple identityPool auth', () => {
+        expect(
+          generateAuthExpressionForSubscriptions(configFromPartial({ hasIAM: true }), defaultRoleDefinitions.identityPool),
+        ).toMatchSnapshot();
+      });
+
+      it('renders for identityPool auth with no admin roles', () => {
+        expect(
+          generateAuthExpressionForSubscriptions(
+            configFromPartial({
+              hasIAM: true,
+              hasAdminRolesEnabled: false,
+            }),
+            defaultRoleDefinitions.identityPool,
+          ),
+        ).toMatchSnapshot();
       });
     });
 
@@ -192,6 +235,43 @@ describe('subscriptions', () => {
             hasUserPools: true,
           }),
           [...defaultRoleDefinitions.iam, ...defaultRoleDefinitions.userPools],
+        ),
+      ).toMatchSnapshot();
+    });
+
+    it('renders for apiKey + identityPool', () => {
+      expect(
+        generateAuthExpressionForSubscriptions(
+          configFromPartial({
+            hasApiKey: true,
+            hasIAM: true,
+          }),
+          [...defaultRoleDefinitions.apiKey, ...defaultRoleDefinitions.identityPool],
+        ),
+      ).toMatchSnapshot();
+    });
+
+    it('renders for apiKey + identityPool + userPools', () => {
+      expect(
+        generateAuthExpressionForSubscriptions(
+          configFromPartial({
+            hasApiKey: true,
+            hasIAM: true,
+            hasUserPools: true,
+          }),
+          [...defaultRoleDefinitions.apiKey, ...defaultRoleDefinitions.identityPool, ...defaultRoleDefinitions.userPools],
+        ),
+      ).toMatchSnapshot();
+    });
+
+    it('renders for identityPool + userPools', () => {
+      expect(
+        generateAuthExpressionForSubscriptions(
+          configFromPartial({
+            hasIAM: true,
+            hasUserPools: true,
+          }),
+          [...defaultRoleDefinitions.identityPool, ...defaultRoleDefinitions.userPools],
         ),
       ).toMatchSnapshot();
     });

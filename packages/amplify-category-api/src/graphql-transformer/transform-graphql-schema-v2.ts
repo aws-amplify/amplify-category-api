@@ -1,29 +1,57 @@
-import { RDSConnectionSecrets, MYSQL_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
+import path from 'path';
+import {
+  constructSqlDirectiveDataSourceStrategies,
+  DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
+  DDB_DEFAULT_DATASOURCE_STRATEGY,
+  getDefaultStrategyNameForDbType,
+  getImportedRDSTypeFromStrategyDbType,
+  isDynamoDbType,
+  isSqlDbType,
+  UserDefinedSlot,
+} from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncAuthConfiguration,
-  DeploymentResources,
+  DataSourceStrategiesProvider,
+  ModelDataSourceStrategy,
+  ModelDataSourceStrategyDbType,
+  ModelDataSourceStrategySqlDbType,
+  RDSLayerMapping,
+  RDSSNSTopicMapping,
+  SQLLambdaModelDataSourceStrategy,
+  SqlDirectiveDataSourceStrategy,
+  SqlModelDataSourceDbConnectionConfig,
   TransformerLog,
   TransformerLogLevel,
+  VpcConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
-import { printer } from '@aws-amplify/amplify-prompts';
-import fs from 'fs-extra';
+import * as fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { sanityCheckProject } from 'graphql-transformer-core';
 import _ from 'lodash';
-import path from 'path';
+import { executeTransform } from '@aws-amplify/graphql-transformer';
+import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
+import { getHostVpc } from '@aws-amplify/graphql-schema-generator';
+import fetch from 'node-fetch';
+import {
+  getConnectionSecrets,
+  getExistingConnectionDbConnectionConfig,
+  getSecretsKey,
+} from '../provider-utils/awscloudformation/utils/rds-resources/database-resources';
+import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
+import { checkForUnsupportedDirectives, containsSqlModelOrDirective } from '../provider-utils/awscloudformation/utils/rds-resources/utils';
 import { isAuthModeUpdated } from './auth-mode-compare';
-import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
+import { getAdminRoles, getIdentityPoolId, mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
 import { generateTransformerOptions } from './transformer-options-v2';
 import { TransformerProjectOptions } from './transformer-options-types';
-import { getExistingConnectionSecretNames, getSecretsKey } from '../provider-utils/awscloudformation/utils/rds-secrets/database-secrets';
-import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
-import { executeTransform } from '@aws-amplify/graphql-transformer';
+import { DeploymentResources } from './cdk-compat/deployment-resources';
+import { TransformManager } from './cdk-compat/transform-manager';
 
 const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';
 const SCHEMA_DIR_NAME = 'schema';
 const PROVIDER_NAME = 'awscloudformation';
+const USE_BETA_SQL_LAYER = 'use-beta-sql-layer';
 
 /**
  * Transform GraphQL Schema
@@ -51,7 +79,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
     .filter((r) => !resources.includes(r))
     .filter((r) => {
       const buildDir = path.normalize(path.join(backEndDir, AmplifyCategories.API, r.resourceName, 'build'));
-      return !fs.existsSync(buildDir);
+      return !fs.pathExistsSync(buildDir);
     });
   resources = resources.concat(resourceNeedCompile);
 
@@ -88,7 +116,7 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
 
   const parametersFilePath = path.join(resourceDir, PARAMETERS_FILENAME);
 
-  if (!parameters && fs.existsSync(parametersFilePath)) {
+  if (!parameters && fs.pathExistsSync(parametersFilePath)) {
     try {
       parameters = JSONUtilities.readJson(parametersFilePath);
 
@@ -143,6 +171,8 @@ export const transformGraphQLSchemaV2 = async (context: $TSContext, options): Pr
     fs.ensureDirSync(buildDir);
   }
 
+  // The buildConfig.projectConfig returned by `generateTransformerOptions` is not actually compatible with DataSourceStrategiesProvider. We
+  // will correct that in buildAPIProject.
   const buildConfig: TransformerProjectOptions = await generateTransformerOptions(context, options);
   if (!buildConfig) {
     return undefined;
@@ -163,23 +193,190 @@ place .graphql files in a directory at ${schemaDirPath}`);
   return transformerOutput;
 };
 
+const getAuthenticationTypesForAuthConfig = (authConfig?: AppSyncAuthConfiguration): (string | undefined)[] =>
+  [authConfig?.defaultAuthentication, ...(authConfig?.additionalAuthenticationProviders ?? [])].map(
+    (authConfigEntry) => authConfigEntry?.authenticationType,
+  );
+
+const hasIamAuth = (authConfig?: AppSyncAuthConfiguration): boolean =>
+  getAuthenticationTypesForAuthConfig(authConfig).some((authType) => authType === 'AWS_IAM');
+
+const hasUserPoolAuth = (authConfig?: AppSyncAuthConfiguration): boolean =>
+  getAuthenticationTypesForAuthConfig(authConfig).some((authType) => authType === 'AMAZON_COGNITO_USER_POOLS');
+
+/**
+ * Given an array of DataSourceType shapes from the Gen1 CLI import flow, finds the single SQL database type. Throws an error if more than
+ * one SQL database type is detected.
+ */
+const getSqlDbTypeFromDataSourceTypes = (
+  dataSourceTypes: Array<{
+    dbType: ModelDataSourceStrategyDbType;
+    provisionDB: boolean;
+    provisionStrategy: 'DEFAULT' | 'AMPLIFY_TABLE';
+  }>,
+): ModelDataSourceStrategySqlDbType | undefined => {
+  const dbTypes = Object.values(dataSourceTypes)
+    .map((dsType) => dsType.dbType)
+    .filter(isSqlDbType);
+  if (dbTypes.length === 0) {
+    return undefined;
+  }
+  if (new Set(dbTypes).size > 1) {
+    throw new Error(`Multiple imported SQL datasource types ${Array.from(dbTypes)} are detected. Only one type is supported.`);
+  }
+  return dbTypes[0];
+};
+
+/**
+ * The `projectConfig` argument to `fixUpDataSourceStrategiesProvider` is a `ProjectConfiguration` from the Gen1 CLI import flow. That type
+ * is not exported, and don't want to pollute the Gen2 / CDK compat interfaces with those legacy attributes, so instead we'll strongly type
+ * the fields we're interested in operating on.
+ */
+interface Gen1ProjectConfiguration {
+  schema: string;
+  modelToDatasourceMap: Map<
+    string,
+    {
+      dbType: ModelDataSourceStrategyDbType;
+      provisionDB: boolean;
+      provisionStrategy: 'DEFAULT' | 'AMPLIFY_TABLE';
+    }
+  >;
+  customQueries: Map<string, string>;
+}
+
+/**
+ * Utility to fix up the project config generated by the Gen1 CLI flow into the ModelDataSourceStrategy types expected by the transformer
+ * internals. Internally, this function makes network calls to retrieve the database connection parameter info from SSM, and uses those
+ * values to discover VPC configurations for the database.
+ */
+const fixUpDataSourceStrategiesProvider = async (
+  context: $TSContext,
+  projectConfig: Gen1ProjectConfiguration,
+): Promise<DataSourceStrategiesProvider> => {
+  const modelToDatasourceMap = projectConfig.modelToDatasourceMap ?? new Map();
+  const datasourceMapValues: Array<{
+    dbType: ModelDataSourceStrategyDbType;
+    provisionDB: boolean;
+    provisionStrategy: 'DEFAULT' | 'AMPLIFY_TABLE';
+  }> = modelToDatasourceMap ? Array.from(modelToDatasourceMap.values()) : [];
+
+  // We allow a DynamoDB and SQL data source to live alongside each other, although we don't (yet) support relationships between them. We'll
+  // process the dbTypes separately so we can validate that there is only one SQL source.
+  const dataSourceStrategies: Record<string, ModelDataSourceStrategy> = {};
+  modelToDatasourceMap.forEach((value, key) => {
+    if (!isDynamoDbType(value.dbType)) {
+      return;
+    }
+    switch (value.provisionStrategy) {
+      case 'DEFAULT':
+        dataSourceStrategies[key] = DDB_DEFAULT_DATASOURCE_STRATEGY;
+        break;
+      case 'AMPLIFY_TABLE':
+        dataSourceStrategies[key] = DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY;
+        break;
+      default:
+        throw new Error(`Unsupported provisionStrategy ${value.provisionStrategy}`);
+    }
+  });
+
+  const sqlDbType = getSqlDbTypeFromDataSourceTypes(datasourceMapValues);
+  let sqlDirectiveDataSourceStrategies: SqlDirectiveDataSourceStrategy[] | undefined;
+  if (sqlDbType) {
+    const dbConnectionConfig = getDbConnectionConfig();
+    const vpcConfiguration = await isSqlLambdaVpcConfigRequired(context, sqlDbType);
+    const strategy: SQLLambdaModelDataSourceStrategy = {
+      name: getDefaultStrategyNameForDbType(sqlDbType),
+      dbType: sqlDbType,
+      dbConnectionConfig,
+      vpcConfiguration,
+    };
+    modelToDatasourceMap.forEach((value, key) => {
+      if (!isSqlDbType(value.dbType)) {
+        return;
+      }
+      dataSourceStrategies[key] = strategy;
+    });
+
+    let customSqlStatements: Record<string, string> | undefined;
+    if (typeof projectConfig.customQueries === 'object') {
+      customSqlStatements = {};
+      (projectConfig.customQueries as Map<string, string>).forEach((value, key) => {
+        customSqlStatements[key] = value;
+      });
+    }
+
+    sqlDirectiveDataSourceStrategies = constructSqlDirectiveDataSourceStrategies(projectConfig.schema, strategy, customSqlStatements);
+  }
+
+  return {
+    dataSourceStrategies,
+    sqlDirectiveDataSourceStrategies,
+  };
+};
+
 /**
  * buildAPIProject
+ *
+ * Note that SQL-backed API support is quite limited in this function. Notably:
+ * - It requires there is only one SQL data source in the API
+ * - It does not support declaring a SQL schema without a `@model` tied to a SQL data source
+ *
+ * TODO: Remove SQL handling from Gen1 CLI.
  */
 const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOptions): Promise<DeploymentResources | undefined> => {
+  // The incoming opts.projectConfig is not actually compatible with DataSourceStrategiesProvider. We will correct that in this function.
+
   const schema = opts.projectConfig.schema.toString();
   // Skip building the project if the schema is blank
   if (!schema) {
     return undefined;
   }
 
-  const transformOutput = executeTransform({
+  const { dataSourceStrategies, sqlDirectiveDataSourceStrategies } = await fixUpDataSourceStrategiesProvider(
+    context,
+    opts.projectConfig as unknown as Gen1ProjectConfiguration,
+  );
+
+  checkForUnsupportedDirectives(schema, { dataSourceStrategies });
+
+  const useBetaSqlLayer = context?.input?.options?.[USE_BETA_SQL_LAYER] ?? false;
+
+  // Read the RDS Mapping S3 Manifest only if the schema contains SQL models or @sql directives.
+  let rdsLayerMapping: RDSLayerMapping | undefined = undefined;
+  let rdsSnsTopicMapping: RDSSNSTopicMapping | undefined = undefined;
+  if (containsSqlModelOrDirective(dataSourceStrategies, sqlDirectiveDataSourceStrategies)) {
+    rdsLayerMapping = await getRDSLayerMapping(context, useBetaSqlLayer);
+    rdsSnsTopicMapping = await getRDSSNSTopicMapping(context, useBetaSqlLayer);
+  }
+
+  const transformManager = new TransformManager(
+    opts.overrideConfig,
+    hasIamAuth(opts.authConfig),
+    hasUserPoolAuth(opts.authConfig),
+    await getAdminRoles(context, opts.resourceName),
+    await getIdentityPoolId(context),
+  );
+
+  executeTransform({
     ...opts,
+    scope: transformManager.rootStack,
+    nestedStackProvider: transformManager.getNestedStackProvider(),
+    assetProvider: transformManager.getAssetProvider(),
+    parameterProvider: transformManager.getParameterProvider(),
+    synthParameters: transformManager.getSynthParameters(),
     schema,
-    modelToDatasourceMap: opts.projectConfig.modelToDatasourceMap,
-    datasourceSecretParameterLocations: await getDatasourceSecretMap(context),
+    dataSourceStrategies,
+    sqlDirectiveDataSourceStrategies,
     printTransformerLog,
+    rdsLayerMapping,
+    rdsSnsTopicMapping,
   });
+
+  const transformOutput: DeploymentResources = {
+    ...transformManager.generateDeploymentResources(),
+    userOverriddenSlots: opts.userDefinedSlots ? getUserOverridenSlots(opts.userDefinedSlots) : [],
+  };
 
   const builtProject = mergeUserConfigWithTransformOutput(opts.projectConfig, transformOutput, opts);
 
@@ -200,15 +397,71 @@ const buildAPIProject = async (context: $TSContext, opts: TransformerProjectOpti
   return builtProject;
 };
 
-const getDatasourceSecretMap = async (context: $TSContext): Promise<Map<string, RDSConnectionSecrets>> => {
-  const outputMap = new Map<string, RDSConnectionSecrets>();
-  const apiName = getAppSyncAPIName();
-  const secretsKey = await getSecretsKey();
-  const rdsSecretPaths = await getExistingConnectionSecretNames(context, apiName, secretsKey);
-  if (rdsSecretPaths) {
-    outputMap.set(MYSQL_DB_TYPE, rdsSecretPaths);
+export const getUserOverridenSlots = (userDefinedSlots: Record<string, UserDefinedSlot[]>): string[] =>
+  Object.values(userDefinedSlots)
+    .flat()
+    .flatMap((slot) => [slot.requestResolver?.fileName, slot.responseResolver?.fileName])
+    .flat()
+    .filter((slotName) => slotName !== undefined);
+
+const getRDSLayerMapping = async (context: $TSContext, useBetaSqlLayer = false): Promise<RDSLayerMapping> => {
+  const bucket = `${ResourceConstants.RESOURCES.SQLLayerManifestBucket}${useBetaSqlLayer ? '-beta' : ''}`;
+  const region = context.amplify.getProjectMeta().providers.awscloudformation.Region;
+  const url = `https://${bucket}.s3.amazonaws.com/${ResourceConstants.RESOURCES.SQLLayerVersionManifestKeyPrefix}${region}`;
+  const response = await fetch(url);
+  if (response.status === 200) {
+    const result = await response.text();
+    const mapping = {
+      [region]: {
+        layerRegion: result,
+      },
+    };
+    return mapping as RDSLayerMapping;
+  } else {
+    throw new Error(`Unable to retrieve layer mapping from ${url} with status code ${response.status}.`);
   }
-  return outputMap;
+};
+
+const getRDSSNSTopicMapping = async (context: $TSContext, useBetaSqlLayer = false): Promise<RDSSNSTopicMapping> => {
+  const bucket = `${ResourceConstants.RESOURCES.SQLLayerManifestBucket}${useBetaSqlLayer ? '-beta' : ''}`;
+  const region = context.amplify.getProjectMeta().providers.awscloudformation.Region;
+  const url = `https://${bucket}.s3.amazonaws.com/${ResourceConstants.RESOURCES.SQLSNSTopicARNManifestKeyPrefix}${region}`;
+  const response = await fetch(url);
+  if (response.status === 200) {
+    const result = await response.text();
+    const mapping = {
+      [region]: {
+        topicArn: result,
+      },
+    };
+    return mapping as RDSSNSTopicMapping;
+  } else {
+    throw new Error(`Unable to retrieve sns topic ARN mapping from ${url} with status code ${response.status}.`);
+  }
+};
+
+const isSqlLambdaVpcConfigRequired = async (context: $TSContext, dbType: ModelDataSourceStrategyDbType): Promise<VpcConfig | undefined> => {
+  // If the database is in VPC, we will use the same VPC configuration for the SQL lambda.
+  // Customers are required to add inbound rule for port 443 from the private subnet in the Security Group.
+  // https://docs.aws.amazon.com/systems-manager/latest/userguide/setup-create-vpc.html#vpc-requirements-and-limitations
+  const vpcSubnetConfig = await getSQLLambdaVpcConfig(context, dbType);
+
+  return vpcSubnetConfig;
+};
+
+const getDbConnectionConfig = (): SqlModelDataSourceDbConnectionConfig => {
+  const apiName = getAppSyncAPIName();
+  const secretsKey = getSecretsKey();
+  const paths = getExistingConnectionDbConnectionConfig(apiName, secretsKey);
+  return paths;
+};
+
+const getSQLLambdaVpcConfig = async (context: $TSContext, dbType: ModelDataSourceStrategyDbType): Promise<VpcConfig> => {
+  const [secretsKey, engine] = [getSecretsKey(), getImportedRDSTypeFromStrategyDbType(dbType)];
+  const { secrets } = await getConnectionSecrets(context, secretsKey, engine);
+  const region = context.amplify.getProjectMeta().providers.awscloudformation.Region;
+  const vpcConfig = await getHostVpc(secrets.host, region);
+  return vpcConfig;
 };
 
 const printTransformerLog = (log: TransformerLog): void => {

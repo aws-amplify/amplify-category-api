@@ -1,7 +1,5 @@
-import fs from 'fs-extra';
 import * as path from 'path';
-import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
-import { TransformerProjectConfig } from '@aws-amplify/graphql-transformer-core';
+import fs from 'fs-extra';
 import rimraf from 'rimraf';
 import {
   $TSContext,
@@ -15,6 +13,8 @@ import { CloudFormation, Fn } from 'cloudform-types';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { pullAllBy, find } from 'lodash';
 import { printer } from '@aws-amplify/amplify-prompts';
+import { DeploymentResources } from './cdk-compat/deployment-resources';
+import { TransformerProjectConfig } from './cdk-compat/project-config';
 
 const PARAMETERS_FILE_NAME = 'parameters.json';
 const CUSTOM_ROLES_FILE_NAME = 'custom-roles.json';
@@ -23,7 +23,7 @@ const AMPLIFY_MANAGE_ROLE = '_Manage-only/CognitoIdentityCredentials';
 const PROVIDER_NAME = 'awscloudformation';
 
 interface CustomRolesConfig {
-  adminRoleNames?: Array<string>;
+  adminRoleNames?: Array<string> | string;
 }
 
 export const getIdentityPoolId = async (ctx: $TSContext): Promise<string | undefined> => {
@@ -73,7 +73,10 @@ export const getAdminRoles = async (ctx: $TSContext, apiResourceName: string | u
     if (fs.existsSync(customRoleFile)) {
       const customRoleConfig = JSONUtilities.readJson<CustomRolesConfig>(customRoleFile);
       if (customRoleConfig && customRoleConfig.adminRoleNames) {
-        const adminRoleNames = customRoleConfig.adminRoleNames
+        const customAdminRoles = Array.isArray(customRoleConfig.adminRoleNames)
+          ? customRoleConfig.adminRoleNames
+          : [customRoleConfig.adminRoleNames];
+        const adminRoleNames = customAdminRoles
           // eslint-disable-next-line no-template-curly-in-string
           .map((r) => (r.includes('${env}') ? r.replace('${env}', currentEnv) : r));
         adminRoles.push(...adminRoleNames);

@@ -1,7 +1,7 @@
+import path from 'path';
 import { $TSContext, AmplifyCategories, pathManager } from '@aws-amplify/amplify-cli-core';
 
 import fs from 'fs-extra';
-import path from 'path';
 import { PROVIDER_NAME } from '../graphql-transformer/constants';
 
 export const APPSYNC_RESOURCE_SERVICE = 'AppSync';

@@ -1,8 +1,14 @@
 import {
+  DDB_DEFAULT_DATASOURCE_STRATEGY,
   DirectiveWrapper,
   InvalidDirectiveError,
   TransformerPluginBase,
   generateGetArgumentsInput,
+  getModelDataSourceNameForTypeName,
+  getModelDataSourceStrategy,
+  isAmplifyDynamoDbModelDataSourceStrategy,
+  isDefaultDynamoDbModelDataSourceStrategy,
+  isSqlModel,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   FieldMapEntry,
@@ -13,7 +19,10 @@ import {
   TransformerTransformSchemaStepContextProvider,
   TransformerValidationStepContextProvider,
   TransformerPreProcessContextProvider,
+  DataSourceStrategiesProvider,
+  ModelDataSourceStrategy,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { ManyToManyDirective } from '@aws-amplify/graphql-directives';
 import {
   DirectiveNode,
   DocumentNode,
@@ -47,7 +56,7 @@ import {
   registerManyToManyForeignKeyMappings,
   validateModelDirective,
 } from './utils';
-import { makeQueryConnectionWithKeyResolver, updateTableForConnection } from './resolvers';
+import { updateTableForConnection } from './resolvers';
 import {
   ensureHasManyConnectionField,
   extendTypeWithConnection,
@@ -57,12 +66,7 @@ import {
   getSortKeyFieldsNoContext,
 } from './schema';
 import { HasOneTransformer } from './graphql-has-one-transformer';
-
-const directiveName = 'manyToMany';
-const defaultLimit = 100;
-const directiveDefinition = `
-  directive @${directiveName}(relationName: String!, limit: Int = ${defaultLimit}) on FIELD_DEFINITION
-`;
+import { DDBRelationalResolverGenerator } from './resolver/ddb-generator';
 
 /**
  * ManyToManyTransformer
@@ -73,10 +77,15 @@ const directiveDefinition = `
  */
 export class ManyToManyTransformer extends TransformerPluginBase {
   private relationMap = new Map<string, ManyToManyRelation>();
+
   private directiveList: ManyToManyDirectiveConfiguration[] = [];
+
   private modelTransformer: ModelTransformer;
+
   private indexTransformer: IndexTransformer;
+
   private hasOneTransformer: HasOneTransformer;
+
   private authProvider: TransformerAuthProvider;
 
   constructor(
@@ -85,7 +94,7 @@ export class ManyToManyTransformer extends TransformerPluginBase {
     hasOneTransformer: HasOneTransformer,
     authProvider: TransformerAuthProvider,
   ) {
-    super('amplify-many-to-many-transformer', directiveDefinition);
+    super('amplify-many-to-many-transformer', ManyToManyDirective.definition);
     this.modelTransformer = modelTransformer;
     this.indexTransformer = indexTransformer;
     this.hasOneTransformer = hasOneTransformer;
@@ -101,11 +110,11 @@ export class ManyToManyTransformer extends TransformerPluginBase {
     const directiveWrapped = new DirectiveWrapper(directive);
     const args = directiveWrapped.getArguments(
       {
-        directiveName,
+        directiveName: ManyToManyDirective.name,
         object: parent as ObjectTypeDefinitionNode,
         field: definition,
         directive,
-        limit: defaultLimit,
+        limit: ManyToManyDirective.defaults.limit,
       } as ManyToManyDirectiveConfiguration,
       generateGetArgumentsInput(context.transformParameters),
     );
@@ -114,18 +123,21 @@ export class ManyToManyTransformer extends TransformerPluginBase {
     args.connectionFields = [];
 
     if (!isListType(definition.type)) {
-      throw new InvalidDirectiveError(`@${directiveName} must be used with a list.`);
+      throw new InvalidDirectiveError(`@${ManyToManyDirective.name} must be used with a list.`);
     }
 
     addDirectiveToRelationMap(this.relationMap, args);
     this.directiveList.push(args);
+
+    this.relationMap.forEach((manyToManyRelation, _) => addJoinTableToDatasourceStrategies(context, manyToManyRelation));
   };
 
   /** During the preProcess step, modify the document node and return it
    * so that it represents any schema modifications the plugin needs
    */
   mutateSchema = (context: TransformerPreProcessContextProvider): DocumentNode => {
-    const manyToManyMap = new Map<string, ManyToManyPreProcessContext[]>(); // Relation name is the key, each array should be length 2 (two models being connected)
+    // Relation name is the key, each array should be length 2 (two models being connected)
+    const manyToManyMap = new Map<string, ManyToManyPreProcessContext[]>();
     const newDocument: DocumentNode = produce(context.inputDocument, (draftDoc) => {
       const filteredDefs = draftDoc?.definitions?.filter(
         (def) => def.kind === 'ObjectTypeExtension' || def.kind === 'ObjectTypeDefinition',
@@ -135,7 +147,7 @@ export class ManyToManyTransformer extends TransformerPluginBase {
       objectDefs?.forEach((def) => {
         def?.fields?.forEach((field) => {
           field?.directives
-            ?.filter((dir) => dir.name.value === directiveName)
+            ?.filter((dir) => dir.name.value === ManyToManyDirective.name)
             ?.forEach((dir) => {
               const relationArg = dir?.arguments?.find((arg) => arg.name.value === 'relationName');
               if (relationArg?.value?.kind === 'StringValue') {
@@ -277,27 +289,42 @@ export class ManyToManyTransformer extends TransformerPluginBase {
       const { directive1, directive2, name } = relation;
 
       if (!directive2) {
-        throw new InvalidDirectiveError(`@${directiveName} relation '${name}' must be used in exactly two locations.`);
+        throw new InvalidDirectiveError(`@${ManyToManyDirective.name} relation '${name}' must be used in exactly two locations.`);
       }
 
       const d1ExpectedType = getBaseType(directive1.field.type);
       const d2ExpectedType = getBaseType(directive2.field.type);
 
+      if (isSqlModel(ctx, d1ExpectedType) || isSqlModel(ctx, d2ExpectedType)) {
+        throw new InvalidDirectiveError(`@${ManyToManyDirective.name} directive cannot be used on a SQL model.`);
+      }
+
+      const d1Strategy = getModelDataSourceStrategy(ctx, d1ExpectedType);
+      const d2Strategy = getModelDataSourceStrategy(ctx, d2ExpectedType);
+      if (
+        (isDefaultDynamoDbModelDataSourceStrategy(d1Strategy) && !isDefaultDynamoDbModelDataSourceStrategy(d2Strategy)) ||
+        (isAmplifyDynamoDbModelDataSourceStrategy(d1Strategy) && !isAmplifyDynamoDbModelDataSourceStrategy(d2Strategy))
+      ) {
+        throw new InvalidDirectiveError(
+          `@${ManyToManyDirective.name} directive cannot be used to relate models with a different DynamoDB-based strategies.`,
+        );
+      }
+
       if (d1ExpectedType !== directive2.object.name.value) {
         throw new InvalidDirectiveError(
-          `@${directiveName} relation '${name}' expects '${d1ExpectedType}' but got '${directive2.object.name.value}'.`,
+          `@${ManyToManyDirective.name} relation '${name}' expects '${d1ExpectedType}' but got '${directive2.object.name.value}'.`,
         );
       }
 
       if (d2ExpectedType !== directive1.object.name.value) {
         throw new InvalidDirectiveError(
-          `@${directiveName} relation '${name}' expects '${d2ExpectedType}' but got '${directive1.object.name.value}'.`,
+          `@${ManyToManyDirective.name} relation '${name}' expects '${d2ExpectedType}' but got '${directive1.object.name.value}'.`,
         );
       }
 
       if (ctx.output.hasType(name)) {
         throw new InvalidDirectiveError(
-          `@${directiveName} relation name '${name}' (derived from '${directive1.relationName}') already exists as a type in the schema.`,
+          `@${ManyToManyDirective.name} relation name '${name}' (derived from '${directive1.relationName}') already exists as a type in the schema.`,
         );
       }
     });
@@ -456,7 +483,7 @@ export class ManyToManyTransformer extends TransformerPluginBase {
         renamedFields.push({ originalFieldName: d2FieldNameIdOrig, currentFieldName: d2FieldNameId });
       }
 
-      if (renamedFields.length) {
+      if (renamedFields.length && !isSqlModel(context as TransformerContextProvider, name)) {
         registerManyToManyForeignKeyMappings({
           resourceHelper: ctx.resourceHelper,
           typeName: name,
@@ -486,11 +513,32 @@ export class ManyToManyTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       updateTableForConnection(config, context);
-      makeQueryConnectionWithKeyResolver(config, context);
+      new DDBRelationalResolverGenerator().makeHasManyGetItemsConnectionWithKeyResolver(config, context);
     }
   };
 }
 
+/**
+ * Adds the join table created by the transformer to the context's `dataSourceStrategies`. NOTE: This is the only place in the transformer
+ * chain where we use a default value for the ModelDataSourceStrategy. All other models must be explicitly set by the caller in the
+ * transformer context, but the many to many join table will always be created using the DynamoDB default provisioning strategy.
+ */
+const addJoinTableToDatasourceStrategies = (ctx: DataSourceStrategiesProvider, manyToManyRelation: ManyToManyRelation): void => {
+  // We enforce elsewhere that both sides of the many to many relationship must share the same strategy. We'll use that strategy here for
+  // the join table
+  const {
+    name: relationName,
+    directive1: {
+      object: {
+        name: { value: typeName },
+      },
+    },
+  } = manyToManyRelation;
+  const parentStrategy = getModelDataSourceStrategy(ctx, typeName);
+  ctx.dataSourceStrategies[relationName] = parentStrategy;
+};
+
+// eslint-disable-next-line func-style, prefer-arrow/prefer-arrow-functions
 function addDirectiveToRelationMap(map: Map<string, ManyToManyRelation>, directive: ManyToManyDirectiveConfiguration): void {
   const { relationName } = directive;
   const gqlName = getGraphqlRelationName(relationName);
@@ -505,16 +553,18 @@ function addDirectiveToRelationMap(map: Map<string, ManyToManyRelation>, directi
   }
 
   if (relation.directive2) {
-    throw new InvalidDirectiveError(`@${directiveName} relation '${relationName}' must be used in exactly two locations.`);
+    throw new InvalidDirectiveError(`@${ManyToManyDirective.name} relation '${relationName}' must be used in exactly two locations.`);
   }
 
   relation.directive2 = directive;
 }
 
+// eslint-disable-next-line func-style, prefer-arrow/prefer-arrow-functions
 function getGraphqlRelationName(name: string): string {
   return graphqlName(toUpper(name));
 }
 
+// eslint-disable-next-line func-style, prefer-arrow/prefer-arrow-functions, @typescript-eslint/explicit-function-return-type
 function createJoinTableAuthDirective(
   table1: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
   table2: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
@@ -529,5 +579,6 @@ function createJoinTableAuthDirective(
     return;
   }
 
+  // eslint-disable-next-line consistent-return
   return makeDirective('auth', [makeArgument('rules', { kind: Kind.LIST, values: rules })]);
 }

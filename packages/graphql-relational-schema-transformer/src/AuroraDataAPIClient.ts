@@ -4,7 +4,9 @@
  */
 export class AuroraDataAPIClient {
   AWS: any;
+
   RDS: any;
+
   Params: DataApiParams;
 
   setRDSClient(rdsClient: any) {
@@ -94,17 +96,25 @@ export class AuroraDataAPIClient {
 
 export class DataApiParams {
   database: string;
+
   secretArn: string;
+
   resourceArn: string;
+
   sql: string;
 }
 
 export class ColumnDescription {
   Field: string;
+
   Type: string;
+
   Null: string;
+
   Key: string;
+
   Default: string;
+
   Extra: string;
 }
 

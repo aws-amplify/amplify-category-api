@@ -2,7 +2,7 @@ import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import { AWS } from '@aws-amplify/core';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { API, Auth } from 'aws-amplify';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { CognitoIdentity, CognitoIdentityServiceProvider as CognitoClient, S3 } from 'aws-sdk';
@@ -22,6 +22,7 @@ import {
   createUserPool,
   createUserPoolClient,
   signupUser,
+  setIdentityPoolRoles,
 } from '../cognitoUtils';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { IAMHelper } from '../IAMHelper';
@@ -257,7 +258,37 @@ beforeAll(async () => {
     STARTED
     COMPLETED
   }`;
-  const transformer = new GraphQLTransform({
+  try {
+    await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
+  } catch (e) {
+    console.error(`Failed to create bucket: ${e}`);
+  }
+
+  // create userpool
+  const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
+  USER_POOL_ID = userPoolResponse.UserPool!.Id!;
+  const userPoolClientResponse = await createUserPoolClient(cognitoClient, USER_POOL_ID, `UserPool${STACK_NAME}`);
+  const userPoolClientId = userPoolClientResponse.UserPoolClient!.ClientId!;
+
+  // create identitypool
+  IDENTITY_POOL_ID = await createIdentityPool(identityClient, `IdentityPool${STACK_NAME}`, {
+    providerName: `cognito-idp.${AWS_REGION}.amazonaws.com/${USER_POOL_ID}`,
+    clientId: userPoolClientId,
+  });
+
+  // create auth and unauthroles
+  const { authRole, unauthRole } = await iamHelper.createRoles(AUTH_ROLE_NAME, UNAUTH_ROLE_NAME, IDENTITY_POOL_ID);
+
+  // set roles on identity pool
+  await setIdentityPoolRoles(identityClient, IDENTITY_POOL_ID, {
+    authRoleArn: authRole.Arn,
+    unauthRoleArn: unauthRole.Arn,
+    providerName: `cognito-idp.${AWS_REGION}.amazonaws.com/${USER_POOL_ID}`,
+    clientId: userPoolClientId,
+  });
+
+  const out = testTransform({
+    schema: validSchema,
     authConfig: {
       defaultAuthentication: {
         authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -280,28 +311,6 @@ beforeAll(async () => {
       useSubUsernameForDefaultIdentityClaim: false,
     },
   });
-
-  try {
-    await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
-  } catch (e) {
-    console.error(`Failed to create bucket: ${e}`);
-  }
-
-  // create userpool
-  const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
-  USER_POOL_ID = userPoolResponse.UserPool.Id;
-  const userPoolClientResponse = await createUserPoolClient(cognitoClient, USER_POOL_ID, `UserPool${STACK_NAME}`);
-  const userPoolClientId = userPoolClientResponse.UserPoolClient.ClientId;
-  // create auth and unauthroles
-  const { authRole, unauthRole } = await iamHelper.createRoles(AUTH_ROLE_NAME, UNAUTH_ROLE_NAME);
-  // create identitypool
-  IDENTITY_POOL_ID = await createIdentityPool(identityClient, `IdentityPool${STACK_NAME}`, {
-    authRoleArn: authRole.Arn,
-    unauthRoleArn: unauthRole.Arn,
-    providerName: `cognito-idp.${AWS_REGION}.amazonaws.com/${USER_POOL_ID}`,
-    clientId: userPoolClientId,
-  });
-  const out = transformer.transform(validSchema);
   const finishedStack = await deploy(
     customS3Client,
     cf,

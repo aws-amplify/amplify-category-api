@@ -1,6 +1,5 @@
 import Template from 'cloudform-types/types/template';
 import { AppSync, Fn, StringParameter, Refs, NumberParameter, IAM, Value } from 'cloudform-types';
-import { AuthRule, AuthProvider } from './AuthRule';
 import {
   str,
   ref,
@@ -36,11 +35,12 @@ import GraphQLApi, {
   AdditionalAuthenticationProvider,
   OpenIDConnectConfig,
 } from 'cloudform-types/types/appSync/graphQlApi';
-import * as Transformer from './ModelAuthTransformer';
 import { FieldDefinitionNode } from 'graphql';
+import ManagedPolicy from 'cloudform-types/types/iam/managedPolicy';
+import * as Transformer from './ModelAuthTransformer';
 
 import { DEFAULT_OWNER_FIELD, DEFAULT_IDENTITY_FIELD, DEFAULT_GROUPS_FIELD, DEFAULT_GROUP_CLAIM } from './constants';
-import ManagedPolicy from 'cloudform-types/types/iam/managedPolicy';
+import { AuthRule, AuthProvider } from './AuthRule';
 
 function replaceIfUsername(identityClaim: string): string {
   return identityClaim === 'username' ? 'cognito:username' : identityClaim;
@@ -396,6 +396,7 @@ groupsField: "${rule.groupsField || DEFAULT_GROUPS_FIELD}", groupClaim: "${rule.
       this.ownershipAuthorizationExpressionForSubscriptions(rules, variableToCheck, variableToSet),
     ]);
   }
+
   public ownershipAuthorizationExpressionForSubscriptions(
     rules: AuthRule[],
     variableToCheck: string = 'ctx.args',
@@ -1021,7 +1022,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
     const createPolicy = (newPolicyResources) =>
       new IAM.ManagedPolicy({
         Roles: [
-          //HACK double casting needed because it cannot except Ref
+          // HACK double casting needed because it cannot except Ref
           { Ref: `${authPiece}RoleName` } as unknown as Value<string>,
         ],
         PolicyDocument: {

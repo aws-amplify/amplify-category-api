@@ -7,20 +7,19 @@ env:
     CI: true
     CODEBUILD: true
     NODE_OPTIONS: --max-old-space-size=8096
-    # mock values to test artifact scanning
-    ENV_VAR_WITH_SECRETS: 'MOCK_ENV_VAR_FOR_SCANNING_SECRETS'
-    MOCK_ENV_VAR_FOR_SCANNING_SECRETS: 'abc123xyz'
 phases:
   build:
     commands:
-      # you can provide a codebuild source version to use old cache and skip all other jobs :)
+      - codebuild-breakpoint
+      - source ./shared-scripts.sh && _setupE2ETestsLinux
       - source ./shared-scripts.sh && _runE2ETestsLinux
   post_build:
     commands:
+      - source ./shared-scripts.sh && _unassumeTestAccountCredentials
       - aws sts get-caller-identity
       - source ./shared-scripts.sh && _scanArtifacts
 
 artifacts:
   files:
-    - $CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/amplify-e2e-reports/*
-  discard-paths: yes
+    - '**/*'
+  base-directory: $CODEBUILD_SRC_DIR/packages/amplify-e2e-tests/amplify-e2e-reports

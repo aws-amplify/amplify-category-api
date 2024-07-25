@@ -1,3 +1,4 @@
+import * as path from 'path';
 import {
   addAuthWithGroupsAndAdminAPI,
   addRestApi,
@@ -15,7 +16,6 @@ import {
 } from 'amplify-category-api-e2e-core';
 import { pathManager, stateManager, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import fetch from 'node-fetch';
 

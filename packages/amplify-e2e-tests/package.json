@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-e2e-tests",
-  "version": "3.12.9",
+  "version": "3.22.7",
   "description": "E2e test suite",
   "repository": {
     "type": "git",
@@ -20,35 +20,39 @@
     "e2e": "npm run setup-profile && jest --verbose --forceExit",
     "build-tests": "tsc --build tsconfig.tests.json",
     "setup-profile": "ts-node ./src/configure_tests.ts",
-    "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts",
     "clean-stale-test-buckets": "ts-node ./src/cleanup-stale-test-buckets.ts",
-    "clean-cb-e2e-resources": "ts-node ./src/cleanup-e2e-resources-codebuild.ts"
+    "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-app": "^5.0.4",
-    "@aws-amplify/graphql-transformer-core": "1.3.7",
-    "amplify-category-api-e2e-core": "4.1.9",
+    "@aws-amplify/amplify-app": "^5.0.35",
+    "@aws-amplify/graphql-schema-generator": "0.9.3",
+    "@aws-amplify/graphql-transformer-core": "2.9.3",
+    "amplify-category-api-e2e-core": "4.8.4",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-sdk": "^2.1113.0",
-    "axios": "^0.26.0",
+    "axios": "^1.6.0",
     "circleci-api": "^4.1.4",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "fs-extra": "^8.1.0",
     "generate-password": "~1.7.0",
+    "graphql": "^15.5.0",
     "graphql-tag": "^2.10.1",
-    "graphql-transformer-core": "8.1.7",
+    "graphql-transformer-common": "4.31.1",
+    "graphql-transformer-core": "8.2.13",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
+    "pluralize": "^8.0.0",
     "uuid": "^8.3.2",
     "ws": "^7.5.7",
     "yargs": "^15.1.0"
   },
   "peerDependencies": {
-    "@aws-amplify/amplify-cli-core": "4.0.4"
+    "@aws-amplify/amplify-cli-core": "^4.3.9"
   },
   "devDependencies": {
+    "@aws-amplify/graphql-transformer-interfaces": "3.10.1",
     "@types/lodash": "^4.14.149",
     "@types/ws": "^7.4.4",
     "ts-node": "^8.10.2"
@@ -69,10 +73,7 @@
     ],
     "collectCoverage": false,
     "collectCoverageFrom": [
-      "src/**/*.ts",
-      "!**/node_modules/**",
-      "!src/__tests__/**",
-      "!**/*.d.ts"
+      "src/**/*.ts"
     ],
     "reporters": [
       "default",
@@ -109,7 +110,15 @@
       "ts-jest": {
         "diagnostics": false
       }
-    }
+    },
+    "moduleNameMapper": {
+      "axios": "axios/dist/node/axios.cjs",
+      "^csv-parse/sync": "<rootDir>/../../node_modules/csv-parse/dist/cjs/sync.cjs"
+    },
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/__tests__/"
+    ]
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",

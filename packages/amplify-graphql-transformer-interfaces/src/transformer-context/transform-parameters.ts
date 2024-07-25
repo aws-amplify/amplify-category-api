@@ -5,15 +5,22 @@
  * have different default behaviors.
  */
 export type TransformParameters = {
-  // General Model Params
+  // General Params
+  enableTransformerCfnOutputs: boolean;
+
+  // Model Params
   shouldDeepMergeDirectiveConfigDefaults: boolean;
   disableResolverDeduping: boolean;
   sandboxModeEnabled: boolean;
+  allowDestructiveGraphqlSchemaUpdates: boolean;
+  replaceTableUponGsiUpdate: boolean;
+  allowGen1Patterns: boolean;
 
   // Auth Params
   useSubUsernameForDefaultIdentityClaim: boolean;
   populateOwnerFieldForStaticGroupAuth: boolean;
   suppressApiKeyGeneration: boolean;
+  subscriptionsInheritPrimaryAuth: boolean;
 
   // Index Params
   secondaryKeyAsGSI: boolean;

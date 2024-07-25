@@ -1,10 +1,5 @@
-import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { deploy, launchDDBLocal, terminateDDB, logDebug, GraphQLClient } from '../__e2e__/utils';
-import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
+import { deploy, launchDDBLocal, terminateDDB, logDebug, GraphQLClient, defaultTransformParams, transformAndSynth } from '../__e2e__/utils';
 
 let GRAPHQL_CLIENT: GraphQLClient;
 let GRAPHQL_ENDPOINT: string;
@@ -42,21 +37,14 @@ describe('@model with relational transformer', () => {
     }`;
 
     try {
-      const transformer = new GraphQLTransform({
-        transformers: [
-          new ModelTransformer(),
-          new IndexTransformer(),
-          new PrimaryKeyTransformer(),
-          new HasOneTransformer(),
-          new HasManyTransformer(),
-          new BelongsToTransformer(),
-          new AuthTransformer(),
-        ],
+      const out = transformAndSynth({
+        ...defaultTransformParams,
+        schema: validSchema,
         transformParameters: {
+          ...defaultTransformParams.transformParameters,
           respectPrimaryKeyAttributesOnConnectionField: false,
         },
       });
-      const out = transformer.transform(validSchema);
 
       let ddbClient;
       ({ dbPath, emulator: ddbEmulator, client: ddbClient } = await launchDDBLocal());
@@ -93,7 +81,7 @@ describe('@model with relational transformer', () => {
    * Test queries below
    */
 
-  test('Test queryPost query', async () => {
+  test('queryPost query', async () => {
     const createResponse = await GRAPHQL_CLIENT.query(
       `mutation {
           createPost(input: { title: "Test Query" }) {
@@ -143,7 +131,7 @@ describe('@model with relational transformer', () => {
     expect(items[0].id).toEqual(createCommentResponse.data.createComment.id);
   });
 
-  test('Test create comment without a post and then querying the comment.', async () => {
+  test('create comment without a post and then querying the comment.', async () => {
     const comment1 = 'a comment and a date! - 1';
 
     try {
@@ -184,7 +172,7 @@ describe('@model with relational transformer', () => {
     }
   });
 
-  test('Test default limit is 50', async () => {
+  test('default limit is 50', async () => {
     const postID = 'e2eConnectionPost';
     const postTitle = 'samplePost';
     const createPost = await GRAPHQL_CLIENT.query(

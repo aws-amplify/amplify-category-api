@@ -1,0 +1,24 @@
+version: 0.2
+env:
+  shell: bash
+  variables:
+    AMPLIFY_DIR: /root/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin
+    AMPLIFY_PATH: /root/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin/amplify
+    CI: true
+    CODEBUILD: true
+    NODE_OPTIONS: --max-old-space-size=8096
+phases:
+  build:
+    commands:
+      - source ./shared-scripts.sh && _runCanaryTest
+  post_build:
+    commands:
+      - aws sts get-caller-identity
+      - source ./shared-scripts.sh && _scanArtifacts && _emitCanaryMetric
+
+artifacts:
+  files:
+    - $CODEBUILD_SRC_DIR/client-test-apps/js/api-model-relationship-app/test-results/*
+    - $CODEBUILD_SRC_DIR/client-test-apps/js/api-model-relationship-app/cypress/screenshots/*
+    - $CODEBUILD_SRC_DIR/client-test-apps/js/api-model-relationship-app/cypress/videos/*
+  discard-paths: yes

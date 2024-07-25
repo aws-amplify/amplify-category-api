@@ -1,5 +1,5 @@
-import { IContainerDefinitions, PortMappings, IBuildConfig, ContainerHealthCheck, IContainerHealthCheckItem } from './types';
 import { ListOrDict } from '../compose-spec/v1';
+import { IContainerDefinitions, PortMappings, IBuildConfig, ContainerHealthCheck, IContainerHealthCheckItem } from './types';
 
 class Container implements IContainerDefinitions {
   readonly defaultLogConfiguration = {
@@ -10,22 +10,33 @@ class Container implements IContainerDefinitions {
   };
 
   build: string | IBuildConfig | undefined;
+
   name: string;
+
   portMappings: PortMappings;
+
   logConfiguration = this.defaultLogConfiguration;
 
   command?: string[];
+
   entrypoint?: string[];
+
   env_file?: string[];
+
   environment?: Record<string, string>;
+
   image?: string;
+
   healthcheck?: ContainerHealthCheck;
+
   working_dir?: string;
+
   user?: string;
+
   secrets: Set<string>;
 
   constructor(
-    build: string | IBuildConfig | undefined, //Really for CodeBuild. Do we need in this class?
+    build: string | IBuildConfig | undefined, // Really for CodeBuild. Do we need in this class?
     name: string,
     portMappings: PortMappings,
     command?: string | string[] | undefined,

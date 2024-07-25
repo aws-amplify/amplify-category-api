@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { mergeTypeDefs } from '@graphql-tools/merge';
 import {
   $TSContext,
@@ -18,9 +19,8 @@ import {
 } from 'graphql-relational-schema-transformer';
 import inquirer from 'inquirer';
 import _ from 'lodash';
-import * as path from 'path';
-import { supportedDataSources } from '../../provider-utils/supported-datasources';
 import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
+import { supportedDataSources } from '../../provider-utils/supported-datasources';
 
 const subcommand = 'add-graphql-datasource';
 const category = 'api';
@@ -121,13 +121,13 @@ export const run = async (context: $TSContext): Promise<void> => {
 
       fs.writeFileSync(graphqlSchemaFilePath, graphql.print(concatGraphQLSchemaDoc), 'utf8');
     } else if (fs.existsSync(schemaDirectoryPath)) {
-      const rdsSchemaFilePath = path.join(schemaDirectoryPath, 'rds.graphql');
+      const rdsSchemaFilePath = path.join(schemaDirectoryPath, 'sql.graphql');
 
       fs.writeFileSync(rdsSchemaFilePath, graphql.print(rdsGraphQLSchemaDoc), 'utf8');
     } else {
       throw new AmplifyError('ApiCategorySchemaNotFoundError', {
         message: 'No schema found',
-        resolution: `Your RDS schema should be in either ${graphqlSchemaFilePath} or schema directory ${schemaDirectoryPath}`,
+        resolution: `Your SQL schema should be in either ${graphqlSchemaFilePath} or schema directory ${schemaDirectoryPath}`,
       });
     }
 

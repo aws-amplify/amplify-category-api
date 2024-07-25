@@ -18,7 +18,7 @@ describe('api directives @auth batch 15', () => {
 
   describe('ios libraries', () => {
     beforeEach(async () => {
-      projectDir = await createNewProjectDir('auth1');
+      projectDir = await createNewProjectDir('auth15');
       await initIosProjectWithProfile(projectDir, {});
       addFeatureFlag(projectDir, 'graphqlTransformer', 'useSubUsernameForDefaultIdentityClaim', true);
     });

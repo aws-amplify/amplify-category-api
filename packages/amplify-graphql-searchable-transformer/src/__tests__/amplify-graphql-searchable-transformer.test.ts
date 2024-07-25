@@ -1,9 +1,12 @@
-import { ConflictHandlerType, GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { parse } from 'graphql';
+import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { SearchableModelTransformer } from '..';
 import { ALLOWABLE_SEARCHABLE_INSTANCE_TYPES } from '../constants';
+import { describe } from 'jest-circus';
 
 test('SearchableModelTransformer validation happy case', () => {
   const validSchema = `
@@ -14,13 +17,33 @@ test('SearchableModelTransformer validation happy case', () => {
         updatedAt: String
     }
     `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   parse(out.schema);
   expect(out.schema).toMatchSnapshot();
+});
+
+test('Throws error for Searchable RDS Models', () => {
+  const validSchema = `
+    type Post @model @searchable {
+        id: ID! @primaryKey
+        title: String!
+        createdAt: String
+        updatedAt: String
+    }
+  `;
+  expect(() =>
+    testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new SearchableModelTransformer()],
+      dataSourceStrategies: {
+        Post: mockSqlDataSourceStrategy(),
+      },
+    }),
+  ).toThrowErrorMatchingInlineSnapshot(`"@searchable is not supported on \\"Post\\" model as it uses RDS datasource."`);
 });
 
 test('SearchableModelTransformer vtl', () => {
@@ -32,11 +55,11 @@ test('SearchableModelTransformer vtl', () => {
         updatedAt: String
     }
     `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
   });
 
-  const out = transformer.transform(validSchema);
   expect(parse(out.schema)).toBeDefined();
   expect(out.resolvers['Query.searchPosts.req.vtl']).toBeDefined();
   expect(out.resolvers['Query.searchPosts.req.vtl']).toContain('$util.qr($aggregateValues.put("$aggItem.name", $aggregateValue))');
@@ -52,7 +75,8 @@ test('SearchableModelTransformer with datastore enabled vtl', () => {
         updatedAt: String
     }
     `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
     resolverConfig: {
       project: {
@@ -62,7 +86,6 @@ test('SearchableModelTransformer with datastore enabled vtl', () => {
     },
   });
 
-  const out = transformer.transform(validSchema);
   expect(parse(out.schema)).toBeDefined();
   expect(out.resolvers['Query.searchPosts.req.vtl']).toBeDefined();
   expect(out.resolvers['Query.searchPosts.req.vtl']).toContain('$util.qr($aggregateValues.put("$aggItem.name", $aggregateValue))');
@@ -79,10 +102,10 @@ test('SearchableModelTransformer with query overrides', () => {
         updatedAt: String
     }
     `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(parse(out.schema)).toBeDefined();
   expect(out.schema).toMatchSnapshot();
@@ -96,13 +119,13 @@ test('SearchableModelTransformer with only create mutations', () => {
         updatedAt: String
     }
     `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
     transformParameters: {
       shouldDeepMergeDirectiveConfigDefaults: false,
     },
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.schema).toBeDefined();
   expect(out.schema).toMatchSnapshot();
@@ -122,10 +145,10 @@ test('SearchableModelTransformer with multiple model searchable directives', () 
         name: String!
     }
     `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.schema).toBeDefined();
   expect(out.schema).toMatchSnapshot();
@@ -140,10 +163,10 @@ test('SearchableModelTransformer with sort fields', () => {
         updatedAt: String
     }
     `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.schema).toBeDefined();
   expect(out.schema).toMatchSnapshot();
@@ -169,10 +192,10 @@ test('it generates expected resources', () => {
       content: String!
     }
  `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   const searchableStack = out.stacks.SearchableStack;
   Template.fromJSON(searchableStack).hasResourceProperties('AWS::IAM::Role', {
@@ -208,6 +231,9 @@ test('it generates expected resources', () => {
     EBSOptions: Match.anyValue(),
     ElasticsearchClusterConfig: Match.anyValue(),
     ElasticsearchVersion: '7.10',
+    DomainEndpointOptions: {
+      EnforceHTTPS: true,
+    },
   });
   Template.fromJSON(searchableStack).hasResource('AWS::Elasticsearch::Domain', {
     UpdateReplacePolicy: 'Delete',
@@ -279,7 +305,7 @@ test('it generates expected resources', () => {
           {
             'Fn::GetAtt': ['OpenSearchDomain', 'DomainEndpoint'],
           },
-          '"))\n$util.toJson({})',
+          '"))\n$util.qr($ctx.stash.put("adminRoles", []))\n$util.toJson({})',
         ],
       ],
     },
@@ -343,10 +369,10 @@ test('SearchableModelTransformer enum type generates StringFilterInput', () => {
       HOURLY
     }
     `;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   parse(out.schema);
   expect(out.schema).toMatchSnapshot();
@@ -360,7 +386,8 @@ describe('SearchableModelTransformer with datastore enabled and sort field defin
         title: String!
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer(), new SearchableModelTransformer()],
       resolverConfig: {
         project: {
@@ -370,7 +397,6 @@ describe('SearchableModelTransformer with datastore enabled and sort field defin
       },
     });
 
-    const out = transformer.transform(validSchema);
     expect(parse(out.schema)).toBeDefined();
     expect(out.resolvers['Query.searchPosts.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Query.searchPosts.res.vtl']).toMatchSnapshot();
@@ -390,10 +416,10 @@ describe('nodeToNodeEncryption transformParameter', () => {
     }
   `;
   it('synthesizes w/ nodeToNodeEncryption disabled by default', () => {
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema,
       transformers: [new ModelTransformer(), new SearchableModelTransformer()],
     });
-    const out = transformer.transform(schema);
     expect(out).toBeDefined();
     const searchableStack = out.stacks.SearchableStack;
     Template.fromJSON(searchableStack).hasResourceProperties('AWS::Elasticsearch::Domain', {
@@ -404,13 +430,13 @@ describe('nodeToNodeEncryption transformParameter', () => {
   });
 
   it('synthesizes w/ nodeToNodeEncryption enabled if specified', () => {
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema,
       transformers: [new ModelTransformer(), new SearchableModelTransformer()],
       transformParameters: {
         enableSearchNodeToNodeEncryption: true,
       },
     });
-    const out = transformer.transform(schema);
     expect(out).toBeDefined();
     const searchableStack = out.stacks.SearchableStack;
     Template.fromJSON(searchableStack).hasResourceProperties('AWS::Elasticsearch::Domain', {
@@ -418,5 +444,91 @@ describe('nodeToNodeEncryption transformParameter', () => {
         Enabled: true,
       },
     });
+  });
+});
+
+describe('auth', () => {
+  const schema = /* GraphQL */ `
+    type Todo @model @searchable {
+      content: String!
+    }
+  `;
+
+  it('sandbox auth enabled should add apiKey if not default mode of auth', () => {
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
+      synthParameters: {
+        enableIamAccess: false,
+      },
+      authConfig: {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [
+          {
+            authenticationType: 'API_KEY',
+          },
+        ],
+      },
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).toContain('aws_api_key');
+    expect(out.schema).not.toContain('aws_iam');
+    expect(out.schema).toMatchSnapshot();
+  });
+
+  it('iam auth enabled should add aws_iam if not default mode of auth', () => {
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: false,
+      },
+      synthParameters: {
+        enableIamAccess: true,
+      },
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).not.toContain('aws_api_key');
+    expect(out.schema).toContain('aws_iam');
+    expect(out.schema).toMatchSnapshot();
+  });
+
+  it('iam and sandbox auth enabled should add aws_iam and aws_api_key if not default mode of auth', () => {
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
+      synthParameters: {
+        enableIamAccess: true,
+      },
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).toContain('aws_api_key');
+    expect(out.schema).toContain('aws_iam');
+    expect(out.schema).toMatchSnapshot();
+  });
+
+  it('iam and sandbox auth disable should not add service directives', () => {
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: false,
+      },
+      synthParameters: {
+        enableIamAccess: false,
+      },
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).not.toContain('aws_api_key');
+    expect(out.schema).not.toContain('aws_iam');
+    expect(out.schema).toMatchSnapshot();
   });
 });

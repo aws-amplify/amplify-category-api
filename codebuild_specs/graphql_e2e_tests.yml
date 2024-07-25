@@ -11,6 +11,7 @@ env:
 phases:
   build:
     commands:
+      - codebuild-breakpoint
       - source ./shared-scripts.sh && _runGqlE2ETests
   post_build:
     commands:

@@ -1,17 +1,27 @@
+/* eslint-disable max-classes-per-file, no-underscore-dangle */
 import {
+  AppSyncAuthConfiguration,
+  AssetProvider,
+  SqlDirectiveDataSourceStrategy,
+  DataSourceStrategiesProvider,
   GraphQLAPIProvider,
+  ModelDataSourceStrategy,
+  NestedStackProvider,
+  RDSLayerMapping,
+  RDSLayerMappingProvider,
+  RDSSNSTopicMappingProvider,
   StackManagerProvider,
+  SynthParameters,
+  TransformerContextMetadataProvider,
   TransformerContextOutputProvider,
   TransformerContextProvider,
   TransformerDataSourceManagerProvider,
-  AppSyncAuthConfiguration,
-  AmplifyApiGraphQlResourceStackTemplate,
+  TransformParameterProvider,
+  TransformParameters,
+  RDSSNSTopicMapping,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
-import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
-import { App } from 'aws-cdk-lib';
 import { DocumentNode } from 'graphql';
-import { DatasourceType } from '../config/project-config';
+import { Construct } from 'constructs';
 import { ResolverConfig } from '../config/transformer-config';
 import { TransformerDataSourceManager } from './datasource';
 import { TransformerOutput } from './output';
@@ -19,9 +29,8 @@ import { TransformerContextProviderRegistry } from './provider-registry';
 import { ResolverManager } from './resolver';
 import { TransformerResourceHelper } from './resource-helper';
 import { StackManager } from './stack-manager';
-import { RDSConnectionSecrets } from '../types';
 
-export { TransformerResolver } from './resolver';
+export { TransformerResolver, NONE_DATA_SOURCE_NAME } from './resolver';
 export { StackManager } from './stack-manager';
 export class TransformerContextMetadata implements TransformerContextMetadataProvider {
   /**
@@ -37,49 +46,98 @@ export class TransformerContextMetadata implements TransformerContextMetadataPro
     this.metadata[key] = val;
   }
 
-  public has(key: string) {
+  public has(key: string): boolean {
     return this.metadata[key] !== undefined;
   }
 }
 
+export interface TransformerContextConstructorOptions
+  extends DataSourceStrategiesProvider,
+    RDSLayerMappingProvider,
+    RDSSNSTopicMappingProvider {
+  assetProvider: AssetProvider;
+  authConfig: AppSyncAuthConfiguration;
+  inputDocument: DocumentNode;
+  nestedStackProvider: NestedStackProvider;
+  parameterProvider: TransformParameterProvider | undefined;
+  resolverConfig?: ResolverConfig;
+  scope: Construct;
+  stackMapping: Record<string, string>;
+  synthParameters: SynthParameters;
+  transformParameters: TransformParameters;
+}
+
 export class TransformerContext implements TransformerContextProvider {
   public readonly output: TransformerContextOutputProvider;
+
   public readonly resolvers: ResolverManager;
+
   public readonly dataSources: TransformerDataSourceManagerProvider;
+
   public readonly providerRegistry: TransformerContextProviderRegistry;
+
   public readonly stackManager: StackManagerProvider;
+
+  public readonly assetProvider: AssetProvider;
+
   public readonly resourceHelper: TransformerResourceHelper;
+
   public readonly transformParameters: TransformParameters;
+
   public _api?: GraphQLAPIProvider;
+
   public readonly authConfig: AppSyncAuthConfiguration;
+
   private resolverConfig: ResolverConfig | undefined;
-  public readonly modelToDatasourceMap: Map<string, DatasourceType>;
-  public readonly datasourceSecretParameterLocations: Map<string, RDSConnectionSecrets>;
+
+  public readonly dataSourceStrategies: Record<string, ModelDataSourceStrategy>;
+
+  public readonly sqlDirectiveDataSourceStrategies: SqlDirectiveDataSourceStrategy[];
+
+  public readonly rdsLayerMapping?: RDSLayerMapping;
+
+  public readonly rdsSnsTopicMapping?: RDSSNSTopicMapping;
 
   public metadata: TransformerContextMetadata;
-  constructor(
-    app: App,
-    public readonly inputDocument: DocumentNode,
-    modelToDatasourceMap: Map<string, DatasourceType>,
-    stackMapping: Record<string, string>,
-    authConfig: AppSyncAuthConfiguration,
-    transformParameters: TransformParameters,
-    resolverConfig?: ResolverConfig,
-    datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>,
-  ) {
-    this.output = new TransformerOutput(inputDocument);
-    this.resolvers = new ResolverManager();
-    this.dataSources = new TransformerDataSourceManager();
-    this.providerRegistry = new TransformerContextProviderRegistry();
-    const stackManager = new StackManager(app, stackMapping);
-    this.stackManager = stackManager;
+
+  public readonly synthParameters: SynthParameters;
+
+  public readonly inputDocument: DocumentNode;
+
+  constructor(options: TransformerContextConstructorOptions) {
+    const {
+      assetProvider,
+      authConfig,
+      sqlDirectiveDataSourceStrategies,
+      dataSourceStrategies,
+      inputDocument,
+      nestedStackProvider,
+      parameterProvider,
+      rdsLayerMapping,
+      rdsSnsTopicMapping,
+      resolverConfig,
+      scope,
+      stackMapping,
+      synthParameters,
+      transformParameters,
+    } = options;
     this.authConfig = authConfig;
-    this.resourceHelper = new TransformerResourceHelper(stackManager);
-    this.transformParameters = transformParameters;
-    this.resolverConfig = resolverConfig;
+    this.sqlDirectiveDataSourceStrategies = sqlDirectiveDataSourceStrategies ?? [];
+    this.dataSources = new TransformerDataSourceManager();
+    this.dataSourceStrategies = dataSourceStrategies;
+    this.inputDocument = inputDocument;
     this.metadata = new TransformerContextMetadata();
-    this.modelToDatasourceMap = modelToDatasourceMap;
-    this.datasourceSecretParameterLocations = datasourceSecretParameterLocations ?? new Map<string, RDSConnectionSecrets>();
+    this.output = new TransformerOutput(inputDocument);
+    this.providerRegistry = new TransformerContextProviderRegistry();
+    this.rdsLayerMapping = rdsLayerMapping;
+    this.rdsSnsTopicMapping = rdsSnsTopicMapping;
+    this.resolverConfig = resolverConfig;
+    this.resolvers = new ResolverManager();
+    this.resourceHelper = new TransformerResourceHelper(synthParameters);
+    this.stackManager = new StackManager(scope, nestedStackProvider, parameterProvider, stackMapping);
+    this.assetProvider = assetProvider;
+    this.synthParameters = synthParameters;
+    this.transformParameters = transformParameters;
   }
 
   /**
@@ -87,10 +145,11 @@ export class TransformerContext implements TransformerContextProvider {
    * @param api API instance available publicaly when the transformation starts
    * @internal
    */
-  public bind(api: GraphQLAPIProvider) {
+  public bind(api: GraphQLAPIProvider): void {
     this._api = api;
     this.resourceHelper.bind(api);
   }
+
   public get api(): GraphQLAPIProvider {
     if (!this._api) {
       throw new Error('API is not initialized till generateResolver step');

@@ -22,27 +22,56 @@ import {
   not,
   notEquals,
   printBlock,
+  equals,
+  ret,
+  and,
 } from 'graphql-mapping-template';
 import { ResourceConstants, setArgs } from 'graphql-transformer-common';
 
 const authFilter = ref('ctx.stash.authFilter');
 const API_KEY = 'API Key Authorization';
+const IAM_AUTH_TYPE = 'IAM Authorization';
 const allowedAggFieldsList = 'allowedAggFields';
 
-export const sandboxMappingTemplate = (enabled: boolean, fields: Array<string>): string => {
-  let sandboxExp: Expression;
-  if (enabled) {
-    sandboxExp = ifElse(
-      notEquals(methodCall(ref('util.authType')), str(API_KEY)),
-      methodCall(ref('util.unauthorized')),
-      qref(methodCall(ref('ctx.stash.put'), str(allowedAggFieldsList), raw(JSON.stringify(fields)))),
-    );
-  } else {
-    sandboxExp = methodCall(ref('util.unauthorized'));
+/**
+ * Generates post auth resolver expression.
+ *
+ * 1. Pass through if 'ctx.stash.hasAuth' is true (auth directive is present)
+ * 2. Pass through for API key auth type if sandbox is enabled.
+ * 3. Pass through for IAM auth type if generic IAM access is enabled and principal is not coming from Cognito.
+ * 4. Otherwise, rejects as unauthorized.
+ *
+ * @param isSandboxModeEnabled a flag indicating if sandbox is enabled.
+ * @param genericIamAccessEnabled a flag indicating if generic IAM access is enabled.
+ * @param fields list of fields authorized to access.
+ * @returns an expression.
+ */
+export const postAuthMappingTemplate = (
+  isSandboxModeEnabled: boolean,
+  genericIamAccessEnabled: boolean | undefined,
+  fields: Array<string>,
+): string => {
+  const expressions: Array<Expression> = [];
+  const ifAuthorizedExpression: Expression = compoundExpression([
+    qref(methodCall(ref('ctx.stash.put'), str(allowedAggFieldsList), raw(JSON.stringify(fields)))),
+    ret(toJson(obj({}))),
+  ]);
+  if (isSandboxModeEnabled) {
+    expressions.push(iff(equals(methodCall(ref('util.authType')), str(API_KEY)), ifAuthorizedExpression));
   }
-  return printBlock(`Sandbox Mode ${enabled ? 'Enabled' : 'Disabled'}`)(
-    compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), sandboxExp), toJson(obj({}))]),
-  );
+  if (genericIamAccessEnabled) {
+    const isNonCognitoIAMPrincipal = and([
+      equals(ref('util.authType()'), str(IAM_AUTH_TYPE)),
+      methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityPoolId')),
+      methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityId')),
+    ]);
+    expressions.push(iff(isNonCognitoIAMPrincipal, ifAuthorizedExpression));
+  }
+  expressions.push(methodCall(ref('util.unauthorized')));
+
+  return printBlock(
+    `Sandbox Mode ${isSandboxModeEnabled ? 'Enabled' : 'Disabled'}, IAM Access ${genericIamAccessEnabled ? 'Enabled' : 'Disabled'}`,
+  )(compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), compoundExpression(expressions)), toJson(obj({}))]));
 };
 
 const getSourceMapper = (includeVersion: boolean): Expression[] => {

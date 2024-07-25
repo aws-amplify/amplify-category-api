@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 #error: missing the closing ) in the model level @auth annotation
 #error: missing the owner field, 
@@ -14,7 +14,7 @@ type Todo
 }
 
 ##fieldLevelAuth7`;
-//mutations
+// mutations
 export const mutation1 = `
 mutation CreateTodo {
     createTodo(input: {

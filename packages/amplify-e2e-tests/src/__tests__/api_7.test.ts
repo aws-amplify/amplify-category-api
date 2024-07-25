@@ -1,3 +1,4 @@
+import path from 'path';
 import {
   addApiWithoutSchema,
   amplifyOverrideApi,
@@ -14,7 +15,6 @@ import {
   updateApiSchema,
 } from 'amplify-category-api-e2e-core';
 import * as fs from 'fs-extra';
-import path from 'path';
 
 describe('amplify add api (GraphQL)', () => {
   let projRoot: string;
@@ -32,7 +32,7 @@ describe('amplify add api (GraphQL)', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init a project and add the simple_model api with transformer version 1', async () => {
+  it('init a project and add the simple_model api with overides and transformer version 2', async () => {
     const envName = 'devtest';
     const projName = 'simplemodel';
     const cliInputsFilePath = path.join(projRoot, 'amplify', 'backend', 'api', `${projName}`, 'cli-inputs.json');

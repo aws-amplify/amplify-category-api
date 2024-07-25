@@ -255,17 +255,17 @@ export function getArgumentNode(argument: string): ArgumentNode {
  */
 export function getGraphQLTypeFromMySQLType(dbType: string): string {
   const normalizedType = dbType.toUpperCase().split('(')[0];
-  if (`BOOL` == normalizedType) {
+  if (normalizedType == `BOOL`) {
     return `Boolean`;
-  } else if (`JSON` == normalizedType) {
+  } else if (normalizedType == `JSON`) {
     return `AWSJSON`;
-  } else if (`TIME` == normalizedType) {
+  } else if (normalizedType == `TIME`) {
     return `AWSTime`;
-  } else if (`DATE` == normalizedType) {
+  } else if (normalizedType == `DATE`) {
     return `AWSDate`;
-  } else if (`DATETIME` == normalizedType) {
+  } else if (normalizedType == `DATETIME`) {
     return `AWSDateTime`;
-  } else if (`TIMESTAMP` == normalizedType) {
+  } else if (normalizedType == `TIMESTAMP`) {
     return `AWSTimestamp`;
   } else if (intTypes.indexOf(normalizedType) > -1) {
     return `Int`;

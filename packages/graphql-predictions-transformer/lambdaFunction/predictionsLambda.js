@@ -1,4 +1,6 @@
-const AWS = require('aws-sdk');
+const { Polly } = require('@aws-sdk/client-polly');
+const { getSynthesizeSpeechUrl } = require('@aws-sdk/polly-request-presigner');
+
 exports.handler = function (event, context, callback) {
   if (event && event.action === 'convertTextToSpeech') {
     convertTextToSpeech(event, callback);
@@ -6,6 +8,7 @@ exports.handler = function (event, context, callback) {
     callback(Error('Action not configured.'));
   }
 };
+
 /**
  * This function does the following for the textToSpeech action
  * - Synthesize Speech
@@ -13,22 +16,20 @@ exports.handler = function (event, context, callback) {
  * @param {*} event
  * @param {*} callback
  */
-function convertTextToSpeech(event, callback) {
-  const pollyParams = {
-    OutputFormat: 'mp3',
-    SampleRate: '8000',
-    Text: event.text,
-    TextType: 'text',
-    VoiceId: event.voiceID,
-  };
-  const polly = new AWS.Polly();
-  const signer = new AWS.Polly.Presigner(pollyParams, polly);
-  signer.getSynthesizeSpeechUrl(pollyParams, function (err, url) {
-    if (err) {
-      console.log(err, err.stack);
-      callback(Error(err));
-    } else {
-      callback(null, { url: url });
-    }
-  });
+async function convertTextToSpeech(event, callback) {
+  try {
+    const params = {
+      OutputFormat: 'mp3',
+      SampleRate: '8000',
+      Text: event.text,
+      TextType: 'text',
+      VoiceId: event.voiceID,
+    };
+    const client = new Polly();
+    const url = await getSynthesizeSpeechUrl({ client, params });
+    callback(null, { url: url });
+  } catch (err) {
+    console.log(err, err.stack);
+    callback(Error(err));
+  }
 }

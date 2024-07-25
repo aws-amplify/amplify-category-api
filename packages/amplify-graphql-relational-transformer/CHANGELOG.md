@@ -3,6 +3,201 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.5.8...@aws-amplify/graphql-relational-transformer@2.5.9) (2024-07-15)
+
+### Bug Fixes
+
+- add nonScalarFields and arrayFields to schemas with mapped names ([#2689](https://github.com/aws-amplify/amplify-category-api/issues/2689)) ([4feb898](https://github.com/aws-amplify/amplify-category-api/commit/4feb898ae21710bb86dd900faef082c24bc08960)), closes [#2581](https://github.com/aws-amplify/amplify-category-api/issues/2581)
+- add translation behavior to disable gen 1 patterns ([#2670](https://github.com/aws-amplify/amplify-category-api/issues/2670)) ([38d1a71](https://github.com/aws-amplify/amplify-category-api/commit/38d1a718ec2b0290f514780c6d1d5f0790ba7764))
+
+## [2.5.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.5.7...@aws-amplify/graphql-relational-transformer@2.5.8) (2024-07-02)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+## [2.5.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.5.6...@aws-amplify/graphql-relational-transformer@2.5.7) (2024-07-01)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+## [2.5.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.5.5...@aws-amplify/graphql-relational-transformer@2.5.6) (2024-06-25)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+## [2.5.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.5.4...@aws-amplify/graphql-relational-transformer@2.5.5) (2024-06-06)
+
+### Bug Fixes
+
+- fix selection sets for SQL models with optional dependencies ([#2587](https://github.com/aws-amplify/amplify-category-api/issues/2587)) ([f6b68d9](https://github.com/aws-amplify/amplify-category-api/commit/f6b68d9cf1ce8ff0509e63dcd09447d97303e5c6))
+
+## [2.5.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.5.3...@aws-amplify/graphql-relational-transformer@2.5.4) (2024-06-04)
+
+### Bug Fixes
+
+- redact relational field in mutation & subscription based on model auth rules ([#2536](https://github.com/aws-amplify/amplify-category-api/issues/2536)) ([f72f40e](https://github.com/aws-amplify/amplify-category-api/commit/f72f40e941f5b48966b60f40222abd80505fb034))
+
+## [2.5.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.5.2...@aws-amplify/graphql-relational-transformer@2.5.3) (2024-05-15)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+## [2.5.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.5.1...@aws-amplify/graphql-relational-transformer@2.5.2) (2024-05-10)
+
+### Bug Fixes
+
+- fix reference-style relationship validation ([#2533](https://github.com/aws-amplify/amplify-category-api/issues/2533)) ([7b3cf0e](https://github.com/aws-amplify/amplify-category-api/commit/7b3cf0e6fe1d19dffd97723a57deaee693ab448b))
+
+## [2.5.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.5.0...@aws-amplify/graphql-relational-transformer@2.5.1) (2024-05-01)
+
+### Bug Fixes
+
+- **graphql-relational-transformer:** nullability enforcement for references relational fields ([#2510](https://github.com/aws-amplify/amplify-category-api/issues/2510)) ([d540097](https://github.com/aws-amplify/amplify-category-api/commit/d54009736092410b2d6e78ebf116a38298bf03ce))
+
+# [2.5.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.4.4...@aws-amplify/graphql-relational-transformer@2.5.0) (2024-04-26)
+
+### Bug Fixes
+
+- add non-scalar and array fields to SQL relations ([#2501](https://github.com/aws-amplify/amplify-category-api/issues/2501)) ([511f020](https://github.com/aws-amplify/amplify-category-api/commit/511f0202583e3e2110a2c22f3bfd24845ea038c0))
+- auto generated id when timestamps: null ([#2470](https://github.com/aws-amplify/amplify-category-api/issues/2470)) ([936a4f9](https://github.com/aws-amplify/amplify-category-api/commit/936a4f9b40ae21a7bd4250616c8d83835bb75784))
+- ddb references hasOne returns record if multiple exist ([#2497](https://github.com/aws-amplify/amplify-category-api/issues/2497)) ([c105138](https://github.com/aws-amplify/amplify-category-api/commit/c1051384780c732ea2ddb98301994bda55bb62d9))
+- **graphql-relational-transformer:** ddb references relationships with composite sortkeys ([#2425](https://github.com/aws-amplify/amplify-category-api/issues/2425)) ([0c45218](https://github.com/aws-amplify/amplify-category-api/commit/0c45218556794b43faed450cfdba4e36fb8d7436))
+- hasMany belongsTo dynamodb references composite primary key ([#2471](https://github.com/aws-amplify/amplify-category-api/issues/2471)) ([6f49747](https://github.com/aws-amplify/amplify-category-api/commit/6f497472703bbc97e7d35e2fae8423fc820934d4))
+- propagate operation in references-style ddb resolver ([#2447](https://github.com/aws-amplify/amplify-category-api/issues/2447)) ([460cf21](https://github.com/aws-amplify/amplify-category-api/commit/460cf217ce55ac3ef09749c552aac3a487cded69))
+- relational bidirectionality validation and improved error messages ([#2482](https://github.com/aws-amplify/amplify-category-api/issues/2482)) ([568fbc3](https://github.com/aws-amplify/amplify-category-api/commit/568fbc365e4945693f685ba8896d2e5f14031f2d))
+
+### Features
+
+- **graphql-relational-transformer:** DDB references relational directives support (tagged-release.0) ([#2370](https://github.com/aws-amplify/amplify-category-api/issues/2370)) ([bdaaabf](https://github.com/aws-amplify/amplify-category-api/commit/bdaaabfb76d23b2331613c413b9760a01f9e1d8a))
+
+## [2.4.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.4.3...@aws-amplify/graphql-relational-transformer@2.4.4) (2024-04-16)
+
+### Bug Fixes
+
+- **api:** protect sql relational fields when using owner rule ([#2463](https://github.com/aws-amplify/amplify-category-api/issues/2463)) ([53cabe2](https://github.com/aws-amplify/amplify-category-api/commit/53cabe2316a32c5cc6e2f9522d82aa92fd5c0689))
+
+## [2.4.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.4.2...@aws-amplify/graphql-relational-transformer@2.4.3) (2024-04-11)
+
+### Bug Fixes
+
+- propagate mutation context to relational fields ([#2416](https://github.com/aws-amplify/amplify-category-api/issues/2416)) ([fd7f6fb](https://github.com/aws-amplify/amplify-category-api/commit/fd7f6fbc17c199331c4b04debaff69ea0424cd74))
+
+## [2.4.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.4.1...@aws-amplify/graphql-relational-transformer@2.4.2) (2024-03-28)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+## [2.4.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.4.0...@aws-amplify/graphql-relational-transformer@2.4.1) (2024-03-13)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+# [2.4.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.3.6...@aws-amplify/graphql-relational-transformer@2.4.0) (2024-02-28)
+
+### Features
+
+- add implicit fields to filter input ([#2236](https://github.com/aws-amplify/amplify-category-api/issues/2236)) ([f7ec601](https://github.com/aws-amplify/amplify-category-api/commit/f7ec6014d4eecfede186129a6ea19041780bafb3))
+
+## [2.3.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.3.5...@aws-amplify/graphql-relational-transformer@2.3.6) (2024-02-05)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+## [2.3.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.3.4...@aws-amplify/graphql-relational-transformer@2.3.5) (2024-01-30)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+## [2.3.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.3.3...@aws-amplify/graphql-relational-transformer@2.3.4) (2024-01-22)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+## [2.3.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.3.2...@aws-amplify/graphql-relational-transformer@2.3.3) (2023-12-21)
+
+### Bug Fixes
+
+- Fix manyToMany relationships with Amplify managed table strategies ([#2151](https://github.com/aws-amplify/amplify-category-api/issues/2151)) ([2dccaa6](https://github.com/aws-amplify/amplify-category-api/commit/2dccaa6e76deb33627bb31ca90f6f126d53239d7))
+
+## [2.3.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.3.1...@aws-amplify/graphql-relational-transformer@2.3.2) (2023-12-18)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+## [2.3.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.3.0...@aws-amplify/graphql-relational-transformer@2.3.1) (2023-12-14)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+# [2.3.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.2.3...@aws-amplify/graphql-relational-transformer@2.3.0) (2023-12-06)
+
+### Features
+
+- combine heterogeneous data sources ([#2109](https://github.com/aws-amplify/amplify-category-api/issues/2109)) ([fd58bb5](https://github.com/aws-amplify/amplify-category-api/commit/fd58bb5af4249220d17c9751acf677955aed74ea))
+
+## [2.2.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.2.2...@aws-amplify/graphql-relational-transformer@2.2.3) (2023-11-22)
+
+### Bug Fixes
+
+- Allow custom SQL statements without model declarations ([#2087](https://github.com/aws-amplify/amplify-category-api/issues/2087)) ([ea5b26c](https://github.com/aws-amplify/amplify-category-api/commit/ea5b26cd554f5c74b6431cbad6ccf60ab556478f))
+
+## [2.2.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.2.1...@aws-amplify/graphql-relational-transformer@2.2.2) (2023-11-18)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+## [2.2.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.2.0...@aws-amplify/graphql-relational-transformer@2.2.1) (2023-11-16)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+# [2.2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.1.8...@aws-amplify/graphql-relational-transformer@2.2.0) (2023-11-15)
+
+### Bug Fixes
+
+- Change 'rds' to 'sql' in public-facing symbols ([#2069](https://github.com/aws-amplify/amplify-category-api/issues/2069)) ([ff374dd](https://github.com/aws-amplify/amplify-category-api/commit/ff374dd8398d3f1138a31669b1a5962122039437))
+
+### Features
+
+- add managed table support in API construct ([#2024](https://github.com/aws-amplify/amplify-category-api/issues/2024)) ([96a0d94](https://github.com/aws-amplify/amplify-category-api/commit/96a0d94fa872a5329da120f53be139833449b815)), closes [#1849](https://github.com/aws-amplify/amplify-category-api/issues/1849) [#1903](https://github.com/aws-amplify/amplify-category-api/issues/1903) [#1940](https://github.com/aws-amplify/amplify-category-api/issues/1940) [#1971](https://github.com/aws-amplify/amplify-category-api/issues/1971) [#1973](https://github.com/aws-amplify/amplify-category-api/issues/1973)
+- add postgres engine and update types as needed ([#1979](https://github.com/aws-amplify/amplify-category-api/issues/1979)) ([5257d53](https://github.com/aws-amplify/amplify-category-api/commit/5257d53f1d4d02be71b34ddf6757f22dd5d74aff))
+- add refersTo directive transformer for model renaming ([#1830](https://github.com/aws-amplify/amplify-category-api/issues/1830)) ([afbd6f2](https://github.com/aws-amplify/amplify-category-api/commit/afbd6f282bc411313ce098a53a87bb8c6481aa48))
+- **api:** rds has many support ([42b4c9f](https://github.com/aws-amplify/amplify-category-api/commit/42b4c9f770dec01f02b397ad2a231232395d577d))
+- refersTo supports field name mappings on RDS models ([#1865](https://github.com/aws-amplify/amplify-category-api/issues/1865)) ([ee60011](https://github.com/aws-amplify/amplify-category-api/commit/ee60011f5c41d0442e1096dd16d80e94b900745a))
+
+## [2.1.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.1.7...@aws-amplify/graphql-relational-transformer@2.1.8) (2023-11-02)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+## [2.1.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.1.6...@aws-amplify/graphql-relational-transformer@2.1.7) (2023-10-12)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+## [2.1.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.1.5...@aws-amplify/graphql-relational-transformer@2.1.6) (2023-10-05)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+## [2.1.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.1.4...@aws-amplify/graphql-relational-transformer@2.1.5) (2023-10-02)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+## [2.1.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.1.3...@aws-amplify/graphql-relational-transformer@2.1.4) (2023-09-20)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+## [2.1.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.1.2...@aws-amplify/graphql-relational-transformer@2.1.3) (2023-09-07)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+## [2.1.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.1.1...@aws-amplify/graphql-relational-transformer@2.1.2) (2023-08-30)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+## [2.1.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.1.0...@aws-amplify/graphql-relational-transformer@2.1.1) (2023-08-28)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+# [2.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@1.2.9...@aws-amplify/graphql-relational-transformer@2.1.0) (2023-08-09)
+
+### Features
+
+- bump major version of transformer packages ([2458c84](https://github.com/aws-amplify/amplify-category-api/commit/2458c8426da5772aa669d37e11f99ee9c6c5ac2e))
+
+## [1.2.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@1.2.8...@aws-amplify/graphql-relational-transformer@1.2.9) (2023-07-21)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
+## [1.2.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@1.2.7...@aws-amplify/graphql-relational-transformer@1.2.8) (2023-07-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
 ## [1.2.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@1.2.6...@aws-amplify/graphql-relational-transformer@1.2.7) (2023-07-07)
 
 **Note:** Version bump only for package @aws-amplify/graphql-relational-transformer

@@ -1,15 +1,23 @@
 import {
   AppSyncAuthConfiguration,
-  DeploymentResources,
   GraphQLAPIProvider,
-  Template,
   TransformerPluginProvider,
   TransformHostProvider,
   TransformerLog,
+  NestedStackProvider,
+  SynthParameters,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
+import type {
+  AssetProvider,
+  StackManagerProvider,
+  TransformParameterProvider,
+  TransformParameters,
+  DataSourceStrategiesProvider,
+  RDSLayerMappingProvider,
+  RDSSNSTopicMappingProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
-import { App, Aws, CfnOutput, Fn } from 'aws-cdk-lib';
+import { Aws, CfnOutput, Fn, Stack } from 'aws-cdk-lib';
 import {
   EnumTypeDefinitionNode,
   EnumValueDefinitionNode,
@@ -27,16 +35,18 @@ import {
 } from 'graphql';
 import _ from 'lodash';
 import { DocumentNode } from 'graphql/language';
+import { Construct } from 'constructs';
 import { ResolverConfig } from '../config/transformer-config';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
-import { TransformerContext } from '../transformer-context';
+import { TransformerContext, NONE_DATA_SOURCE_NAME } from '../transformer-context';
 import { TransformerOutput } from '../transformer-context/output';
-import { StackManager } from '../transformer-context/stack-manager';
-import { adoptAuthModes, IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } from '../utils/authType';
-import * as SyncUtils from './sync-utils';
+import { adoptAuthModes } from '../utils/authType';
 import { MappingTemplate } from '../cdk-compat';
-import { UserDefinedSlot, OverrideConfig, DatasourceTransformationConfig } from './types';
+import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
+import { defaultTransformParameters } from '../transformer-context/transform-parameters';
+import * as SyncUtils from './sync-utils';
+import { UserDefinedSlot } from './types';
 import {
   makeSeenTransformationKey,
   matchArgumentDirective,
@@ -44,13 +54,9 @@ import {
   matchEnumValueDirective,
   matchFieldDirective,
   matchInputFieldDirective,
-  removeAmplifyInputDefinition,
   sortTransformerPlugins,
 } from './utils';
 import { validateAuthModes, validateModelSchema } from './validation';
-import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
-import { DatasourceType } from '../config/project-config';
-import { defaultTransformParameters } from '../transformer-context/transform-parameters';
 
 /**
  * Returns whether typeof the provided object is function.
@@ -76,22 +82,34 @@ export interface GraphQLTransformOptions {
   readonly stackMapping?: StackMapping;
   // transform config which can change the behavior of the transformer
   readonly authConfig?: AppSyncAuthConfiguration;
-  readonly stacks?: Record<string, Template>;
   readonly transformParameters?: Partial<TransformParameters>;
   readonly host?: TransformHostProvider;
   readonly userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   readonly resolverConfig?: ResolverConfig;
-  readonly overrideConfig?: OverrideConfig;
 }
+
+export interface TransformOption extends DataSourceStrategiesProvider, RDSLayerMappingProvider, RDSSNSTopicMappingProvider {
+  scope: Construct;
+  nestedStackProvider: NestedStackProvider;
+  parameterProvider?: TransformParameterProvider;
+  assetProvider: AssetProvider;
+  synthParameters: SynthParameters;
+  schema: string;
+}
+
 export type StackMapping = { [resourceId: string]: string };
+
 export class GraphQLTransform {
   private transformers: TransformerPluginProvider[];
+
   private stackMappingOverrides: StackMapping;
-  private app: App | undefined;
+
   private readonly authConfig: AppSyncAuthConfiguration;
+
   private readonly resolverConfig?: ResolverConfig;
+
   private readonly userDefinedSlots: Record<string, UserDefinedSlot[]>;
-  private readonly overrideConfig?: OverrideConfig;
+
   private readonly transformParameters: TransformParameters;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true
@@ -123,7 +141,6 @@ export class GraphQLTransform {
 
     this.stackMappingOverrides = options.stackMapping || {};
     this.userDefinedSlots = options.userDefinedSlots || ({} as Record<string, UserDefinedSlot[]>);
-    this.overrideConfig = options.overrideConfig;
     this.resolverConfig = options.resolverConfig || {};
     this.transformParameters = {
       ...defaultTransformParameters,
@@ -166,23 +183,37 @@ export class GraphQLTransform {
    * the schema. Each transformer returns a new context that is passed
    * on to the next transformer. At the end of the transformation a
    * cloudformation template is returned.
-   * @param schema The model schema.
-   * @param datasourceConfig Additional supporting configuration when additional datasources are added
    */
-  public transform(schema: string, datasourceConfig?: DatasourceTransformationConfig): DeploymentResources {
+  public transform({
+    assetProvider,
+    dataSourceStrategies,
+    nestedStackProvider,
+    parameterProvider,
+    rdsLayerMapping,
+    rdsSnsTopicMapping,
+    schema,
+    scope,
+    sqlDirectiveDataSourceStrategies,
+    synthParameters,
+  }: TransformOption): void {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
-    this.app = new App();
-    const context = new TransformerContext(
-      this.app,
-      parsedDocument,
-      datasourceConfig?.modelToDatasourceMap ?? new Map<string, DatasourceType>(),
-      this.stackMappingOverrides,
-      this.authConfig,
-      this.transformParameters,
-      this.resolverConfig,
-      datasourceConfig?.datasourceSecretParameterLocations,
-    );
+    const context = new TransformerContext({
+      assetProvider,
+      authConfig: this.authConfig,
+      dataSourceStrategies: dataSourceStrategies,
+      inputDocument: parsedDocument,
+      nestedStackProvider,
+      parameterProvider,
+      rdsLayerMapping,
+      rdsSnsTopicMapping,
+      resolverConfig: this.resolverConfig,
+      scope,
+      sqlDirectiveDataSourceStrategies: sqlDirectiveDataSourceStrategies ?? [],
+      stackMapping: this.stackMappingOverrides,
+      synthParameters,
+      transformParameters: this.transformParameters,
+    });
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),
       {
@@ -268,9 +299,14 @@ export class GraphQLTransform {
     }
 
     // Synth the API and make it available to allow transformer plugins to manipulate the API
-    const stackManager = context.stackManager as StackManager;
     const output: TransformerOutput = context.output as TransformerOutput;
-    const api = this.generateGraphQlApi(stackManager, output);
+    const api = this.generateGraphQlApi(
+      context.stackManager,
+      context.assetProvider,
+      context.synthParameters,
+      output,
+      context.transformParameters,
+    );
 
     // generate resolvers
     (context as TransformerContext).bind(api);
@@ -300,33 +336,35 @@ export class GraphQLTransform {
       }
     }
     this.collectResolvers(context, context.api);
-    if (this.overrideConfig?.overrideFlag) {
-      this.overrideConfig?.applyOverride(stackManager);
-    }
-    return this.synthesize(context);
+    this.ensureNoneDataSource(context.api);
   }
 
-  protected generateGraphQlApi(stackManager: StackManager, output: TransformerOutput): GraphQLApi {
+  protected generateGraphQlApi(
+    stackManager: StackManagerProvider,
+    assetProvider: AssetProvider,
+    synthParameters: SynthParameters,
+    output: TransformerOutput,
+    transformParameters: TransformParameters,
+  ): GraphQLApi {
     // Todo: Move this to its own transformer plugin to support modifying the API
     // Like setting the auth mode and enabling logging and such
 
-    const { rootStack } = stackManager;
-    const authorizationConfig = adoptAuthModes(stackManager, this.authConfig);
-    const apiName = stackManager.addParameter('AppSyncApiName', {
-      default: 'AppSyncSimpleTransform',
-      type: 'String',
-    }).valueAsString;
-    const envName = stackManager.getParameter('env');
-    if (!envName) {
-      throw new Error('Parameter `env` not configured properly.');
-    }
-    const api = new GraphQLApi(rootStack, 'GraphQLAPI', {
-      name: `${apiName}-${envName.valueAsString}`,
+    const { scope } = stackManager;
+    const authorizationConfig = adoptAuthModes(stackManager, synthParameters, this.authConfig);
+    const apiName = synthParameters.apiName;
+    const env = synthParameters.amplifyEnvironmentName;
+    // N.B. changing the GraphqlApi Name is a 'No Interruptions' action,
+    // so theoretically this optional env suffix behavior should be safe to apply retroactively to CLI users.
+    // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appsync-graphqlapi.html#aws-resource-appsync-graphqlapi-properties
+    const name = env === 'NONE' ? apiName : `${apiName}-${env}`;
+    const api = new GraphQLApi(scope, 'GraphQLAPI', {
+      name,
       authorizationConfig,
       host: this.options.host,
       sandboxModeEnabled: this.transformParameters.sandboxModeEnabled,
-      environmentName: envName.valueAsString,
+      environmentName: env,
       disableResolverDeduping: this.transformParameters.disableResolverDeduping,
+      assetProvider,
     });
     const authModes = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].map(
       (mode) => mode?.authorizationType,
@@ -345,86 +383,31 @@ export class GraphQLTransform {
         expires: apiKeyExpirationDays,
       });
 
-      new CfnOutput(rootStack, 'GraphQLAPIKeyOutput', {
-        value: apiKey.attrApiKey,
+      if (transformParameters.enableTransformerCfnOutputs) {
+        new CfnOutput(Stack.of(scope), 'GraphQLAPIKeyOutput', {
+          value: apiKey.attrApiKey,
+          description: 'Your GraphQL API ID.',
+          exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiKey']),
+        });
+      }
+    }
+
+    if (transformParameters.enableTransformerCfnOutputs) {
+      new CfnOutput(Stack.of(scope), 'GraphQLAPIIdOutput', {
+        value: api.apiId,
         description: 'Your GraphQL API ID.',
-        exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiKey']),
+        exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiId']),
+      });
+
+      new CfnOutput(Stack.of(scope), 'GraphQLAPIEndpointOutput', {
+        value: api.graphqlUrl,
+        description: 'Your GraphQL API endpoint.',
+        exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiEndpoint']),
       });
     }
 
-    if (authModes.includes(AuthorizationType.IAM)) {
-      stackManager.addParameter(IAM_AUTH_ROLE_PARAMETER, { type: 'String' });
-      stackManager.addParameter(IAM_UNAUTH_ROLE_PARAMETER, { type: 'String' });
-    }
-
-    new CfnOutput(rootStack, 'GraphQLAPIIdOutput', {
-      value: api.apiId,
-      description: 'Your GraphQL API ID.',
-      exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiId']),
-    });
-
-    new CfnOutput(rootStack, 'GraphQLAPIEndpointOutput', {
-      value: api.graphqlUrl,
-      description: 'Your GraphQL API endpoint.',
-      exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiEndpoint']),
-    });
     api.addToSchema(output.buildSchema());
     return api;
-  }
-
-  private synthesize(context: TransformerContext): DeploymentResources {
-    const stackManager: StackManager = context.stackManager as StackManager;
-    // eslint-disable-next-line no-unused-expressions
-    this.app?.synth({ force: true, skipValidation: true });
-
-    const templates = stackManager.getCloudFormationTemplates();
-    const rootStackTemplate = templates.get('transformer-root-stack');
-    const childStacks: Record<string, Template> = {};
-    for (const [templateName, template] of templates.entries()) {
-      if (templateName !== 'transformer-root-stack') {
-        childStacks[templateName] = template;
-      }
-    }
-
-    const fileAssets = stackManager.getMappingTemplates();
-    const pipelineFunctions: Record<string, string> = {};
-    const resolvers: Record<string, string> = {};
-    const functions: Record<string, string> = {};
-    for (const [templateName, template] of fileAssets) {
-      if (templateName.startsWith('pipelineFunctions/')) {
-        pipelineFunctions[templateName.replace('pipelineFunctions/', '')] = template;
-      } else if (templateName.startsWith('resolvers/')) {
-        resolvers[templateName.replace('resolvers/', '')] = template;
-      } else if (templateName.startsWith('functions/')) {
-        functions[templateName.replace('functions/', '')] = template;
-      }
-    }
-    const compiledSchema = fileAssets.get('schema.graphql') || '';
-    const schema = removeAmplifyInputDefinition(compiledSchema);
-
-    const resolverEntries = context.resolvers.collectResolvers();
-    const userOverriddenSlots: string[] = [];
-    for (const [resolverName] of resolverEntries) {
-      const userSlots = this.userDefinedSlots[resolverName] || [];
-
-      userSlots.forEach((slot) => {
-        const fileName = slot.requestResolver?.fileName;
-        if (fileName && fileName in resolvers) {
-          userOverriddenSlots.push(fileName);
-        }
-      });
-    }
-
-    return {
-      userOverriddenSlots,
-      functions,
-      pipelineFunctions,
-      stackMapping: {},
-      resolvers,
-      schema,
-      stacks: childStacks,
-      rootStack: rootStackTemplate!,
-    };
   }
 
   private collectResolvers(context: TransformerContext, api: GraphQLAPIProvider): void {
@@ -749,5 +732,14 @@ export class GraphQLTransform {
 
   public getLogs(): TransformerLog[] {
     return this.logs;
+  }
+
+  private ensureNoneDataSource(api: GraphQLAPIProvider): void {
+    if (!api.host.hasDataSource(NONE_DATA_SOURCE_NAME)) {
+      api.host.addNoneDataSource(NONE_DATA_SOURCE_NAME, {
+        name: NONE_DATA_SOURCE_NAME,
+        description: 'None Data Source for Pipeline functions',
+      });
+    }
   }
 }

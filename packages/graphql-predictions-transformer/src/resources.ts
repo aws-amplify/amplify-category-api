@@ -18,11 +18,10 @@ import {
   comment,
   HttpMappingTemplate,
 } from 'graphql-mapping-template';
-import { iamActions } from './predictions_utils';
 import { IAM, Fn, AppSync, Lambda } from 'cloudform-types';
-import { HttpConfig, LambdaConfig } from 'cloudform-types/types/appSync/dataSource';
-import DataSource from 'cloudform-types/types/appSync/dataSource';
+import DataSource, { HttpConfig, LambdaConfig } from 'cloudform-types/types/appSync/dataSource';
 import { Policy } from 'cloudform-types/types/iam/group';
+import { iamActions } from './predictions_utils';
 
 // tslint:disable: no-magic-numbers
 export interface PredictionsDSConfig {

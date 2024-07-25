@@ -1,3 +1,4 @@
+import path from 'path';
 import {
   $TSContext,
   $TSMeta,
@@ -10,25 +11,25 @@ import {
   stateManager,
 } from '@aws-amplify/amplify-cli-core';
 import { AppSyncAuthConfiguration, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { collectDirectivesByTypeNames, OverrideConfig, StackManager } from '@aws-amplify/graphql-transformer-core';
+import { collectDirectivesByTypeNames } from '@aws-amplify/graphql-transformer-core';
 import { getSanityCheckRules, loadProject } from 'graphql-transformer-core';
-import path from 'path';
 import fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
 import _ from 'lodash';
 import { printer } from '@aws-amplify/amplify-prompts';
-import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
-import { getAdminRoles, getIdentityPoolId } from './utils';
+import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
+import { Construct } from 'constructs';
+import { contextUtil } from '../category-utils/context-util';
+import { shouldEnableNodeToNodeEncryption } from '../provider-utils/awscloudformation/current-backend-state/searchable-node-to-node-encryption';
 import { schemaHasSandboxModeEnabled, showGlobalSandboxModeWarning, showSandboxModePrompts } from './sandbox-mode-helpers';
 import { importTransformerModule } from './transformer-factory';
 import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
 import { DESTRUCTIVE_UPDATES_FLAG, PARAMETERS_FILENAME, PROVIDER_NAME, ROOT_APPSYNC_S3_KEY } from './constants';
 import { TransformerProjectOptions } from './transformer-options-types';
-import { contextUtil } from '../category-utils/context-util';
 import { searchablePushChecks } from './api-utils';
-import { shouldEnableNodeToNodeEncryption } from '../provider-utils/awscloudformation/current-backend-state/searchable-node-to-node-encryption';
 import { parseUserDefinedSlots } from './user-defined-slots';
 import { applyFileBasedOverride } from './override';
+import { OverrideConfig } from './cdk-compat/transform-manager';
 
 export const APPSYNC_RESOURCE_SERVICE = 'AppSync';
 
@@ -148,11 +149,6 @@ export const generateTransformerOptions = async (context: $TSContext, options: a
     }
   }
 
-  // for auth transformer we get any admin roles and a cognito identity pool to check for
-  // potential authenticated roles outside of the provided authRole
-  const adminRoles = await getAdminRoles(context, resourceName);
-  const identityPoolId = await getIdentityPoolId(context);
-
   // for the predictions directive get storage config
   const s3Resource = s3ResourceAlreadyExists();
   const storageConfig = s3Resource ? getBucketName(s3Resource) : undefined;
@@ -169,6 +165,8 @@ export const generateTransformerOptions = async (context: $TSContext, options: a
     S3DeploymentRootKey: deploymentRootKey,
   };
 
+  // The project configuration loaded here uses the Gen1 CLI DataSourceTypes and modelToDatasourceMap to hold model information. We'll
+  // convert it to the supported ModelDataSourceStrategy types later.
   const project = await loadProject(resourceDir);
 
   const lastDeployedProjectConfig = fs.existsSync(previouslyDeployedBackendDir)
@@ -228,23 +226,22 @@ export const generateTransformerOptions = async (context: $TSContext, options: a
   };
 
   const overrideConfig: OverrideConfig = {
-    applyOverride: (stackManager: StackManager) => applyFileBasedOverride(stackManager),
+    applyOverride: (scope: Construct) => applyFileBasedOverride(scope),
     ...options.overrideConfig,
   };
 
   return {
     ...options,
+    resourceName,
     buildParameters,
     projectDirectory: resourceDir,
     transformersFactoryArgs: {
       storageConfig,
-      authConfig,
-      adminRoles,
-      identityPoolId,
       customTransformers: await loadCustomTransformersV2(resourceDir),
     },
     rootStackFileName: 'cloudformation-template.json',
     currentCloudBackendDirectory: previouslyDeployedBackendDir,
+    // Reminder that `project` has type `any`, and is not actually compatible with DataSourceStrategiesProvider. We will correct that later.
     projectConfig: project,
     lastDeployedProjectConfig,
     authConfig,
@@ -281,6 +278,7 @@ const generateTransformParameters = (
     secondaryKeyAsGSI: featureFlagProvider.getBoolean('secondaryKeyAsGSI'),
     enableAutoIndexQueryNames: featureFlagProvider.getBoolean('enableAutoIndexQueryNames'),
     respectPrimaryKeyAttributesOnConnectionField: featureFlagProvider.getBoolean('respectPrimaryKeyAttributesOnConnectionField'),
+    subscriptionsInheritPrimaryAuth: featureFlagProvider.getBoolean('subscriptionsInheritPrimaryAuth'),
     suppressApiKeyGeneration: suppressApiKeyGeneration(parameters),
     disableResolverDeduping: projectConfig.DisableResolverDeduping ?? false,
     enableSearchNodeToNodeEncryption: shouldEnableNodeToNodeEncryption(
@@ -289,6 +287,10 @@ const generateTransformParameters = (
       pathManager.getCurrentCloudBackendDirPath(),
     ),
     sandboxModeEnabled,
+    enableTransformerCfnOutputs: true,
+    allowDestructiveGraphqlSchemaUpdates: false,
+    replaceTableUponGsiUpdate: false,
+    allowGen1Patterns: true,
   };
 };
 

@@ -1,5 +1,6 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform, ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
+import { ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AuthTransformer } from '../graphql-auth-transformer';
 
 test('single auth model is enabled with conflict resolution', () => {
@@ -10,7 +11,8 @@ test('single auth model is enabled with conflict resolution', () => {
       createdAt: String
       updatedAt: String
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig: {
       defaultAuthentication: {
         authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -28,7 +30,6 @@ test('single auth model is enabled with conflict resolution', () => {
       useSubUsernameForDefaultIdentityClaim: false,
     },
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.schema).toContain(
     'syncPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String, lastSync: AWSTimestamp): ModelPostConnection',
@@ -44,7 +45,8 @@ test('multi auth model with conflict resolution', () => {
       createdAt: String
       updatedAt: String
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig: {
       defaultAuthentication: {
         authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -62,7 +64,6 @@ test('multi auth model with conflict resolution', () => {
       useSubUsernameForDefaultIdentityClaim: false,
     },
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.schema).toContain(
     'syncPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String, lastSync: AWSTimestamp): ModelPostConnection @aws_iam @aws_cognito_user_pools',
@@ -94,7 +95,8 @@ test('multi auth model with field auth with conflict resolution', () => {
         ])
     }`;
 
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig: {
       defaultAuthentication: {
         authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -109,7 +111,6 @@ test('multi auth model with field auth with conflict resolution', () => {
     },
     transformers: [new ModelTransformer(), new AuthTransformer()],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.resolvers['Mutation.updateTest.auth.1.res.vtl']).toMatchSnapshot();
 });

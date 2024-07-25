@@ -4,13 +4,13 @@ import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
-import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
+import { default as S3 } from 'aws-sdk/clients/s3';
+import { default as moment } from 'moment';
+import { CloudFormationClient } from '../CloudFormationClient';
 import { GraphQLClient } from '../GraphQLClient';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
-import { default as S3 } from 'aws-sdk/clients/s3';
-import { default as moment } from 'moment';
 import { resolveTestRegion } from '../testSetup';
 
 const region = resolveTestRegion();
@@ -202,7 +202,7 @@ afterAll(async () => {
  * Test queries below
  */
 
-test('Test Parent.child getItem', async () => {
+test('Parent.child getItem', async () => {
   const createChild = await GRAPHQL_CLIENT.query(
     `mutation {
         createChild(input: { id: "1", name: "child1" }) {
@@ -245,7 +245,7 @@ test('Test Parent.child getItem', async () => {
   expect(child.name).toEqual(createParent.data.createParent.childName);
 });
 
-test('Test Child.parents query', async () => {
+test('Child.parents query', async () => {
   const createChild = await GRAPHQL_CLIENT.query(
     `mutation {
         createChild(input: { id: "2", name: "child2" }) {
@@ -295,7 +295,7 @@ test('Test Child.parents query', async () => {
   expect(items[0].childName).toEqual(createParent1.data.createParent.childName);
 });
 
-test('Test PostModel.singleAuthor GetItem with composite sortkey', async () => {
+test('PostModel.singleAuthor GetItem with composite sortkey', async () => {
   const createUser = await GRAPHQL_CLIENT.query(
     `mutation {
         createUser(input: { id: "123", name: "Bob", surname: "Rob" }) {
@@ -349,7 +349,7 @@ test('Test PostModel.singleAuthor GetItem with composite sortkey', async () => {
   expect(author.surname).toEqual(createUser.data.createUser.surname);
 });
 
-test('Test PostModel.authors query with composite sortkey', async () => {
+test('PostModel.authors query with composite sortkey', async () => {
   const createUser = await GRAPHQL_CLIENT.query(
     `mutation {
         createUserModel(input: { id: "123", rollNumber: 1, name: "Bob", surname: "Rob" }) {
@@ -433,7 +433,7 @@ test('Test PostModel.authors query with composite sortkey', async () => {
   expect(items[1].name).toEqual(createUser2.data.createUserModel.name);
 });
 
-test(`Test the default limit.`, async () => {
+test(`the default limit.`, async () => {
   for (let i = 0; i < 51; i++) {
     await GRAPHQL_CLIENT.query(
       `mutation {
@@ -469,7 +469,7 @@ test(`Test the default limit.`, async () => {
   expect(createResponse.data.createPost.authors.items.length).toEqual(50);
 });
 
-test('Test PostModel.authors query with composite sortkey passed as arg.', async () => {
+test('PostModel.authors query with composite sortkey passed as arg.', async () => {
   const createUser = await GRAPHQL_CLIENT.query(
     `mutation {
         createUser(input: { id: "123", name: "Bobby", surname: "Rob" }) {
@@ -518,7 +518,7 @@ test('Test PostModel.authors query with composite sortkey passed as arg.', async
   expect(items[0].surname).toEqual(createUser.data.createUser.surname);
 });
 
-test('Test User.authorPosts.posts query followed by getItem (intermediary model)', async () => {
+test('User.authorPosts.posts query followed by getItem (intermediary model)', async () => {
   const createPostAuthor = await GRAPHQL_CLIENT.query(
     `mutation {
         createPostAuthor(input: { authorID: "123", postID: "321" }) {
@@ -555,7 +555,7 @@ test('Test User.authorPosts.posts query followed by getItem (intermediary model)
   expect(items[0].post.postContents).toEqual(['potato']);
 });
 
-test('Test User.friendship.friend query (reflexive has many).', async () => {
+test('User.friendship.friend query (reflexive has many).', async () => {
   const createUser = await GRAPHQL_CLIENT.query(
     `mutation {
         createUser(input: { id: "12", name: "Bobby", surname: "Rob" }) {

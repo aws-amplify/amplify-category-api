@@ -33,7 +33,7 @@ import {
   toUpper,
   wrapNonNull,
 } from 'graphql-transformer-common';
-import { getSortKeyFieldNames } from '@aws-amplify/graphql-transformer-core';
+import { getSortKeyFieldNames, getSubscriptionFilterInputName } from '@aws-amplify/graphql-transformer-core';
 import { WritableDraft } from 'immer/dist/types/types-external';
 import {
   BelongsToDirectiveConfiguration,
@@ -104,7 +104,7 @@ const generateFilterAndKeyConditionInputs = (config: HasManyDirectiveConfigurati
     ctx.output.addInput(tableXQueryFilterInput);
   }
 
-  if (relatedTypeIndex.length === 2) {
+  if (relatedTypeIndex && relatedTypeIndex.length === 2) {
     const sortKeyType = relatedTypeIndex[1].type;
     const baseType = getBaseType(sortKeyType);
     const namedType = makeNamedType(baseType);
@@ -126,11 +126,18 @@ const ensureModelSortDirectionEnum = (ctx: TransformerContextProvider): void => 
 /**
  * ensureHasOneConnectionField
  */
-export const ensureHasOneConnectionField = (config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-  const { field, fieldNodes, object, relatedType } = config;
+export const ensureHasOneConnectionField = (
+  config: HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+): void => {
+  const { field, fieldNodes, references, object, relatedType } = config;
 
   // If fields were explicitly provided to the directive, there is nothing else to do here.
-  if (fieldNodes.length > 0) {
+  if (fieldNodes?.length > 0) {
+    return;
+  }
+
+  if (references && references.length > 0) {
     return;
   }
 
@@ -165,7 +172,7 @@ export const ensureHasOneConnectionField = (config: HasOneDirectiveConfiguration
   const createInput = ctx.output.getType(createInputName) as InputObjectTypeDefinitionNode;
 
   if (createInput) {
-    //HasOne connenction fields in create input should respect the nullability of the relational field
+    // HasOne connenction fields in create input should respect the nullability of the relational field
     updateInputWithConnectionFields(
       ctx,
       createInput,
@@ -181,7 +188,7 @@ export const ensureHasOneConnectionField = (config: HasOneDirectiveConfiguration
   const updateInputName = ModelResourceIDs.ModelUpdateInputObjectName(object.name.value);
   const updateInput = ctx.output.getType(updateInputName) as InputObjectTypeDefinitionNode;
   if (updateInput) {
-    //Connection fields in update input should be always nullable which stays consistent with other fields
+    // Connection fields in update input should be always nullable which stays consistent with other fields
     updateInputWithConnectionFields(
       ctx,
       updateInput,
@@ -222,6 +229,21 @@ export const ensureHasOneConnectionField = (config: HasOneDirectiveConfiguration
     );
   }
 
+  const subscriptionFilterInputName = getSubscriptionFilterInputName(object.name.value);
+  const filterSubscriptionInput = ctx.output.getType(subscriptionFilterInputName) as InputObjectTypeDefinitionNode;
+  if (filterSubscriptionInput) {
+    updateFilterConnectionInputWithConnectionFields(
+      ctx,
+      filterSubscriptionInput,
+      object,
+      connectionAttributeName,
+      primaryKeyConnectionFieldType,
+      field,
+      sortKeyFields,
+      true,
+    );
+  }
+
   config.connectionFields.push(connectionAttributeName);
   config.connectionFields.push(
     ...getSortKeyFieldNames(relatedType).map((it) => getSortKeyConnectionAttributeName(object.name.value, field.name.value, it)),
@@ -235,8 +257,8 @@ export const ensureHasOneConnectionField = (config: HasOneDirectiveConfiguration
  *    but does not add additional fields as this will be handled by the hasMany directive
  */
 export const ensureBelongsToConnectionField = (config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-  const { relationType, relatedType, relatedField } = config;
-  if (relationType === 'hasOne') {
+  const { relationType, relatedType, references, relatedField } = config;
+  if (relationType === 'hasOne' || (references && references.length > 0)) {
     ensureHasOneConnectionField(config, ctx);
   } else {
     // hasMany
@@ -259,10 +281,14 @@ export const ensureHasManyConnectionField = (
   config: HasManyDirectiveConfiguration | ManyToManyDirectiveConfiguration,
   ctx: TransformerContextProvider,
 ): void => {
-  const { field, fieldNodes, object, relatedType } = config;
+  const { field, fieldNodes, object, relatedType, references } = config;
 
   // If fields were explicitly provided to the directive, there is nothing else to do here.
-  if (fieldNodes.length > 0) {
+  if (fieldNodes?.length > 0) {
+    return;
+  }
+
+  if (references && references.length > 0) {
     return;
   }
 
@@ -301,7 +327,7 @@ export const ensureHasManyConnectionField = (
   const createInput = ctx.output.getType(createInputName) as InputObjectTypeDefinitionNode;
 
   if (createInput) {
-    //HasMany connenction fields in create input should respect the nullability of the belongsTo field of connected model
+    // HasMany connenction fields in create input should respect the nullability of the belongsTo field of connected model
     updateInputWithConnectionFields(
       ctx,
       createInput,
@@ -318,7 +344,7 @@ export const ensureHasManyConnectionField = (
   const updateInput = ctx.output.getType(updateInputName) as InputObjectTypeDefinitionNode;
 
   if (updateInput) {
-    //Connection fields in update input should be always nullable which stays consistent with other fields
+    // Connection fields in update input should be always nullable which stays consistent with other fields
     updateInputWithConnectionFields(
       ctx,
       updateInput,
@@ -356,6 +382,21 @@ export const ensureHasManyConnectionField = (
       primaryKeyConnectionFieldType,
       field,
       sortKeyFields,
+    );
+  }
+
+  const subscriptionFilterInputName = getSubscriptionFilterInputName(object.name.value);
+  const filterSubscriptionInput = ctx.output.getType(subscriptionFilterInputName) as InputObjectTypeDefinitionNode;
+  if (filterSubscriptionInput) {
+    updateFilterConnectionInputWithConnectionFields(
+      ctx,
+      filterSubscriptionInput,
+      object,
+      connectionAttributeName,
+      primaryKeyConnectionFieldType,
+      field,
+      sortKeyFields,
+      true,
     );
   }
 };
@@ -417,7 +458,7 @@ const makeModelConnectionField = (config: HasManyDirectiveConfiguration): FieldD
   ];
 
   // Add sort key input if necessary.
-  if (fields.length < 2 && relatedTypeIndex.length > 1) {
+  if (fields && fields.length < 2 && relatedTypeIndex.length > 1) {
     let fieldName;
     let namedType;
 
@@ -626,13 +667,14 @@ const updateFilterConnectionInputWithConnectionFields = (
   primaryKeyConnectionFieldType: string,
   field: FieldDefinitionNode,
   sortKeyFields: FieldDefinitionNode[],
+  isSubscriptionFilter = false,
 ): void => {
   const updatedFields = [...input.fields!];
   updatedFields.push(
     ...getFilterConnectionInputFieldsWithConnectionField(
       updatedFields,
       connectionAttributeName,
-      generateModelScalarFilterInputName(primaryKeyConnectionFieldType, false),
+      generateModelScalarFilterInputName(primaryKeyConnectionFieldType, false, isSubscriptionFilter),
     ),
   );
   sortKeyFields.forEach((it) => {
@@ -640,7 +682,7 @@ const updateFilterConnectionInputWithConnectionFields = (
       ...getFilterConnectionInputFieldsWithConnectionField(
         updatedFields,
         getSortKeyConnectionAttributeName(object.name.value, field.name.value, it.name.value),
-        generateModelScalarFilterInputName(getBaseType(it.type), false),
+        generateModelScalarFilterInputName(getBaseType(it.type), false, isSubscriptionFilter),
       ),
     );
   });

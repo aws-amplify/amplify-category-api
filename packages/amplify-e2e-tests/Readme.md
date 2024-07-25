@@ -1,6 +1,6 @@
 # Amplify CLI E2E tests
 
-This packages contains end to end tests that are run in CircleCI to ensure that your changes are not breaking the CLI. Each test in this package creates resources in the cloud.
+This packages contains end to end tests that are run in CI/CD to ensure that your changes are not breaking the CLI. Each test in this package creates resources in the cloud.
 
 ## Setup
 

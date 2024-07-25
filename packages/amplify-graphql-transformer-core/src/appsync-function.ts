@@ -1,9 +1,10 @@
 import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { BackedDataSource, BaseDataSource } from 'aws-cdk-lib/aws-appsync';
-import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
+import { BackedDataSource, BaseDataSource, CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
 import { Construct } from 'constructs';
 import { InlineTemplate } from './cdk-compat/template-asset';
 import { GraphQLApi } from './graphql-api';
+import { setResourceName } from './utils';
+
 export interface BaseFunctionConfigurationProps {
   /**
    * The request mapping template for this resolver
@@ -42,6 +43,7 @@ export class AppSyncFunctionConfiguration extends Construct {
    * the ARN of the resolver
    */
   public readonly arn: string;
+
   public readonly functionId: string;
 
   private function: CfnFunctionConfiguration;
@@ -49,8 +51,8 @@ export class AppSyncFunctionConfiguration extends Construct {
   constructor(scope: Construct, id: string, props: FunctionConfigurationProps) {
     super(scope, id);
 
-    const requestTemplate = props.requestMappingTemplate.bind(this);
-    const responseTemplate = props.responseMappingTemplate.bind(this);
+    const requestTemplate = props.requestMappingTemplate.bind(this, props.api.assetProvider);
+    const responseTemplate = props.responseMappingTemplate.bind(this, props.api.assetProvider);
     this.function = new CfnFunctionConfiguration(this, `${id}.AppSyncFunction`, {
       name: id,
       apiId: props.api.apiId,
@@ -64,7 +66,7 @@ export class AppSyncFunctionConfiguration extends Construct {
         ? { responseMappingTemplate: responseTemplate }
         : { responseMappingTemplateS3Location: responseTemplate }),
     });
-
+    setResourceName(this.function, { name: id });
     props.api.addSchemaDependency(this.function);
     if (props.dataSource instanceof BackedDataSource) {
       this.function.addDependency(props.dataSource?.ds);

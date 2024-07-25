@@ -1,3 +1,4 @@
+import path from 'path';
 import {
   initJSProjectWithProfile,
   deleteProject,
@@ -12,7 +13,6 @@ import {
 import _ from 'lodash';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import AWS from 'aws-sdk';
-import path from 'path';
 
 const customIAMPolicy: CustomIAMPolicy = {
   Effect: 'Allow',
@@ -63,7 +63,7 @@ it(`should init and deploy a api container, attach custom policies to the Fargat
       Name: '/amplify/testCustomPolicies',
     })
     .promise();
-  var ssmParameterArn = getParaResponse.Parameter.ARN;
+  let ssmParameterArn = getParaResponse.Parameter.ARN;
 
   customIAMPolicy.Resource.push(ssmParameterArn);
   const customPoliciesPath = getCustomPoliciesPath(projRoot, 'api', name);

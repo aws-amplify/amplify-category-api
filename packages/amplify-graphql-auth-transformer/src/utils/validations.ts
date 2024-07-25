@@ -1,6 +1,18 @@
-import { DirectiveWrapper, InvalidDirectiveError, generateGetArgumentsInput } from '@aws-amplify/graphql-transformer-core';
-import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  DirectiveWrapper,
+  InvalidDirectiveError,
+  generateGetArgumentsInput,
+  isModelType,
+  isSqlModel,
+} from '@aws-amplify/graphql-transformer-core';
+import type {
+  TransformParameters,
+  TransformerContextProvider,
+  DataSourceStrategiesProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
+import { ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode } from 'graphql';
 import { AuthRule, ConfiguredAuthProviders } from './definitions';
+import { isAuthProviderEqual } from './index';
 
 export const validateRuleAuthStrategy = (rule: AuthRule, configuredAuthProviders: ConfiguredAuthProviders) => {
   //
@@ -31,9 +43,9 @@ found '${rule.provider}' assigned.`,
   // Public
   //
   if (rule.allow === 'public') {
-    if (rule.provider && rule.provider !== 'apiKey' && rule.provider !== 'iam') {
+    if (rule.provider && !isAuthProviderEqual(rule.provider, 'apiKey') && !isAuthProviderEqual(rule.provider, 'identityPool')) {
       throw new InvalidDirectiveError(
-        `@auth directive with 'public' strategy only supports 'apiKey' (default) and 'iam' providers, but \
+        `@auth directive with 'public' strategy only supports 'apiKey' (default) and 'identityPool' providers, but \
 found '${rule.provider}' assigned.`,
       );
     }
@@ -43,9 +55,14 @@ found '${rule.provider}' assigned.`,
   // Private
   //
   if (rule.allow === 'private') {
-    if (rule.provider && rule.provider !== 'userPools' && rule.provider !== 'iam' && rule.provider !== 'oidc') {
+    if (
+      rule.provider &&
+      !isAuthProviderEqual(rule.provider, 'userPools') &&
+      !isAuthProviderEqual(rule.provider, 'identityPool') &&
+      !isAuthProviderEqual(rule.provider, 'oidc')
+    ) {
       throw new InvalidDirectiveError(
-        `@auth directive with 'private' strategy only supports 'userPools' (default) and 'iam' providers, but \
+        `@auth directive with 'private' strategy only supports 'userPools' (default) and 'identityPool' providers, but \
 found '${rule.provider}' assigned.`,
       );
     }
@@ -82,6 +99,10 @@ found '${rule.provider}' assigned.`,
     throw new InvalidDirectiveError(
       `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.`,
     );
+  } else if (rule.provider === 'identityPool' && configuredAuthProviders.hasIAM === false) {
+    throw new InvalidDirectiveError(
+      `@auth directive with 'identityPool' provider found, but the project has no IAM authentication provider configured.`,
+    );
   } else if (rule.provider === 'function' && configuredAuthProviders.hasLambda === false) {
     throw new InvalidDirectiveError(
       `@auth directive with 'function' provider found, but the project has no Lambda authentication provider configured.`,
@@ -89,13 +110,45 @@ found '${rule.provider}' assigned.`,
   }
 };
 
-export const validateRules = (rules: AuthRule[], configuredAuthProviders: ConfiguredAuthProviders, typeName: string) => {
+export const validateRules = (
+  rules: AuthRule[],
+  configuredAuthProviders: ConfiguredAuthProviders,
+  typeName: string,
+  dataSourceStrategies: DataSourceStrategiesProvider,
+): void => {
   if (rules.length === 0) {
     throw new InvalidDirectiveError(`@auth on ${typeName} does not have any auth rules.`);
   }
   for (const rule of rules) {
     validateRuleAuthStrategy(rule, configuredAuthProviders);
     commonRuleValidation(rule);
+    validateRuleOperations(rule, dataSourceStrategies, typeName);
+  }
+};
+
+const validateRuleOperations = (
+  rule: AuthRule,
+  dataSourceStrategies: DataSourceStrategiesProvider,
+  typeName: string,
+  fieldName?: string,
+): void => {
+  if (!isModelType(dataSourceStrategies, typeName) || !isSqlModel(dataSourceStrategies, typeName)) {
+    return;
+  }
+  if (!rule.operations || rule.operations.length === 0) {
+    return;
+  }
+  if (rule.operations.includes('sync')) {
+    throw new InvalidDirectiveError(
+      `@auth on ${typeName}${fieldName ? `.${fieldName}` : ''} cannot specify 'sync' operation as it is not supported for SQL data sources`,
+    );
+  }
+  if (rule.operations.includes('search')) {
+    throw new InvalidDirectiveError(
+      `@auth on ${typeName}${
+        fieldName ? `.${fieldName}` : ''
+      } cannot specify 'search' operation as it is not supported for SQL data sources`,
+    );
   }
 };
 
@@ -105,7 +158,9 @@ export const validateFieldRules = (
   parentHasModelDirective: boolean,
   fieldName: string,
   transformParameters: TransformParameters,
-) => {
+  parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+  dataSourceStrategies: DataSourceStrategiesProvider,
+): void => {
   const rules = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] }, generateGetArgumentsInput(transformParameters)).rules;
 
   if (rules.length === 0) {
@@ -125,6 +180,9 @@ are already on an operation already.`,
 operations will be generated by the CLI.`,
       );
     }
+
+    const typeName = parent.name.value;
+    validateRuleOperations(rule, dataSourceStrategies, typeName, fieldName);
   }
 };
 

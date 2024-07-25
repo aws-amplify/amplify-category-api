@@ -1,12 +1,6 @@
-import {
-  DirectiveWrapper,
-  generateGetArgumentsInput,
-  IAM_AUTH_ROLE_PARAMETER,
-  IAM_UNAUTH_ROLE_PARAMETER,
-  MappingTemplate,
-  TransformerPluginBase,
-} from '@aws-amplify/graphql-transformer-core';
+import { DirectiveWrapper, generateGetArgumentsInput, MappingTemplate, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { FunctionDirective } from '@aws-amplify/graphql-directives';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import * as cdk from 'aws-cdk-lib';
@@ -23,15 +17,12 @@ type FunctionDirectiveConfiguration = {
 };
 
 const FUNCTION_DIRECTIVE_STACK = 'FunctionDirectiveStack';
-const directiveDefinition = /* GraphQL */ `
-  directive @function(name: String!, region: String, accountId: String) repeatable on FIELD_DEFINITION
-`;
 
 export class FunctionTransformer extends TransformerPluginBase {
   private resolverGroups: Map<FieldDefinitionNode, FunctionDirectiveConfiguration[]> = new Map();
 
-  constructor() {
-    super('amplify-function-transformer', directiveDefinition);
+  constructor(private readonly functionNameMap?: Record<string, lambda.IFunction>) {
+    super('amplify-function-transformer', FunctionDirective.definition);
   }
 
   field = (
@@ -65,7 +56,7 @@ export class FunctionTransformer extends TransformerPluginBase {
 
     const stack: cdk.Stack = context.stackManager.createStack(FUNCTION_DIRECTIVE_STACK);
     const createdResources = new Map<string, any>();
-    const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
+    const env = context.synthParameters.amplifyEnvironmentName;
 
     stack.templateOptions.templateFormatVersion = '2010-09-09';
     stack.templateOptions.description = 'An auto-generated nested stack for the @function directive.';
@@ -74,21 +65,20 @@ export class FunctionTransformer extends TransformerPluginBase {
       expression: cdk.Fn.conditionNot(cdk.Fn.conditionEquals(env, ResourceConstants.NONE)),
     });
 
-    this.resolverGroups.forEach((resolverFns, fieldDefinition) => {
+    this.resolverGroups.forEach((resolverFns) => {
       resolverFns.forEach((config) => {
         // Create data sources that register Lambdas and IAM roles.
         const dataSourceId = FunctionResourceIDs.FunctionDataSourceID(config.name, config.region, config.accountId);
 
         if (!createdResources.has(dataSourceId)) {
-          const dataSourceStack = context.stackManager.getStackFor(dataSourceId, FUNCTION_DIRECTIVE_STACK);
-          const dataSource = context.api.host.addLambdaDataSource(
-            dataSourceId,
-            lambda.Function.fromFunctionAttributes(stack, `${dataSourceId}Function`, {
-              functionArn: lambdaArnResource(env, config.name, config.region, config.accountId),
-            }),
-            {},
-            dataSourceStack,
-          );
+          const referencedFunction: lambda.IFunction =
+            this.functionNameMap && config.name in this.functionNameMap
+              ? this.functionNameMap[config.name]
+              : lambda.Function.fromFunctionAttributes(stack, `${dataSourceId}Function`, {
+                  functionArn: lambdaArnResource(env, config.name, config.region, config.accountId),
+                });
+          const dataSourceScope = context.stackManager.getScopeFor(dataSourceId, FUNCTION_DIRECTIVE_STACK);
+          const dataSource = context.api.host.addLambdaDataSource(dataSourceId, referencedFunction, {}, dataSourceScope);
           createdResources.set(dataSourceId, dataSource);
         }
 
@@ -97,7 +87,7 @@ export class FunctionTransformer extends TransformerPluginBase {
         let func = createdResources.get(functionId);
 
         if (func === undefined) {
-          const funcStack = context.stackManager.getStackFor(functionId, FUNCTION_DIRECTIVE_STACK);
+          const funcScope = context.stackManager.getScopeFor(functionId, FUNCTION_DIRECTIVE_STACK);
           func = context.api.host.addAppSyncFunction(
             functionId,
             MappingTemplate.s3MappingTemplateFromString(
@@ -128,7 +118,7 @@ export class FunctionTransformer extends TransformerPluginBase {
               `${functionId}.res.vtl`,
             ),
             dataSourceId,
-            funcStack,
+            funcScope,
           );
 
           createdResources.set(functionId, func);
@@ -146,26 +136,26 @@ export class FunctionTransformer extends TransformerPluginBase {
           (mode) => mode?.authenticationType,
         );
         if (authModes.includes(AuthorizationType.IAM)) {
-          const authRoleParameter = (context.stackManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
-          const unauthRoleParameter = (context.stackManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
+          const authRole = context.synthParameters.authenticatedUserRoleName;
+          const unauthRole = context.synthParameters.unauthenticatedUserRoleName;
+          const account = cdk.Stack.of(context.stackManager.scope).account;
           requestTemplate.push(
-            qref(
-              `$ctx.stash.put("authRole", "arn:aws:sts::${
-                cdk.Stack.of(context.stackManager.rootStack).account
-              }:assumed-role/${authRoleParameter}/CognitoIdentityCredentials")`,
-            ),
-            qref(
-              `$ctx.stash.put("unauthRole", "arn:aws:sts::${
-                cdk.Stack.of(context.stackManager.rootStack).account
-              }:assumed-role/${unauthRoleParameter}/CognitoIdentityCredentials")`,
-            ),
+            qref(`$ctx.stash.put("authRole", "arn:aws:sts::${account}:assumed-role/${authRole}/CognitoIdentityCredentials")`),
+            qref(`$ctx.stash.put("unauthRole", "arn:aws:sts::${account}:assumed-role/${unauthRole}/CognitoIdentityCredentials")`),
           );
+
+          const identityPoolId = context.synthParameters.identityPoolId;
+          if (identityPoolId) {
+            requestTemplate.push(qref(`$ctx.stash.put("identityPoolId", "${identityPoolId}")`));
+          }
+          const adminRoles = context.synthParameters.adminRoles ?? [];
+          requestTemplate.push(qref(`$ctx.stash.put("adminRoles", ${JSON.stringify(adminRoles)})`));
         }
         requestTemplate.push(obj({}));
 
         if (resolver === undefined) {
           // TODO: update function to use resolver manager.
-          const resolverStack = context.stackManager.getStackFor(resolverId, FUNCTION_DIRECTIVE_STACK);
+          const resolverScope = context.stackManager.getScopeFor(resolverId, FUNCTION_DIRECTIVE_STACK);
           resolver = context.api.host.addResolver(
             config.resolverTypeName,
             config.resolverFieldName,
@@ -177,7 +167,7 @@ export class FunctionTransformer extends TransformerPluginBase {
             resolverId,
             undefined,
             [],
-            resolverStack,
+            resolverScope,
           );
           createdResources.set(resolverId, resolver);
         }
@@ -188,18 +178,20 @@ export class FunctionTransformer extends TransformerPluginBase {
   };
 }
 
-function lambdaArnResource(env: cdk.CfnParameter, name: string, region?: string, accountId?: string): string {
+const lambdaArnResource = (env: string, name: string, region?: string, accountId?: string): string => {
   const substitutions: { [key: string]: string } = {};
+  // eslint-disable-next-line no-template-curly-in-string
   if (name.includes('${env}')) {
-    substitutions.env = env as unknown as string;
+    substitutions.env = env;
   }
   return cdk.Fn.conditionIf(
     ResourceConstants.CONDITIONS.HasEnvironmentParameter,
     cdk.Fn.sub(lambdaArnKey(name, region, accountId), substitutions),
     cdk.Fn.sub(lambdaArnKey(name.replace(/(-\${env})/, ''), region, accountId)),
   ).toString();
-}
+};
 
-function lambdaArnKey(name: string, region?: string, accountId?: string): string {
+const lambdaArnKey = (name: string, region?: string, accountId?: string): string => {
+  // eslint-disable-next-line no-template-curly-in-string
   return `arn:aws:lambda:${region ? region : '${AWS::Region}'}:${accountId ? accountId : '${AWS::AccountId}'}:function:${name}`;
-}
+};

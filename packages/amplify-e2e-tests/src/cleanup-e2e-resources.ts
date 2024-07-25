@@ -1,42 +1,28 @@
 /* eslint-disable spellcheck/spell-checker, camelcase, jsdoc/require-jsdoc, @typescript-eslint/no-explicit-any */
-import { CircleCI, GitType, CircleCIOptions } from 'circleci-api';
+import path from 'path';
+import { CodeBuild } from 'aws-sdk';
 import { config } from 'dotenv';
 import yargs from 'yargs';
 import * as aws from 'aws-sdk';
 import _ from 'lodash';
 import fs from 'fs-extra';
-import path from 'path';
 import { deleteS3Bucket, sleep } from 'amplify-category-api-e2e-core';
 
-// Ensure to update scripts/split-e2e-tests.ts is also updated this gets updated
-const AWS_REGIONS_TO_RUN_TESTS = [
-  'us-east-1',
-  'us-east-2',
-  'us-west-2',
-  'eu-west-2',
-  'eu-central-1',
-  'ap-northeast-1',
-  'ap-southeast-1',
-  'ap-southeast-2',
-];
+type TestRegion = {
+  name: string;
+  optIn: boolean;
+};
 
-const reportPath = path.normalize(path.join(__dirname, '..', 'amplify-e2e-reports', 'stale-resources.json'));
+const repoRoot = path.join(__dirname, '..', '..', '..');
+const supportedRegionsPath = path.join(repoRoot, 'scripts', 'e2e-test-regions.json');
+const suportedRegions: TestRegion[] = JSON.parse(fs.readFileSync(supportedRegionsPath, 'utf-8'));
+const testRegions = suportedRegions.map((region) => region.name);
+
+const reportPathDir = path.normalize(path.join(__dirname, '..', 'amplify-e2e-reports'));
 
 const MULTI_JOB_APP = '<Amplify App reused by multiple apps>';
 const ORPHAN = '<orphan>';
 const UNKNOWN = '<unknown>';
-
-type CircleCIJobDetails = {
-  build_url: string;
-  branch: string;
-  build_num: number;
-  outcome: string;
-  canceled: string;
-  infrastructure_fail: boolean;
-  status: string;
-  committer_name: null;
-  workflows: { workflow_id: string };
-};
 
 type StackInfo = {
   stackName: string;
@@ -44,7 +30,8 @@ type StackInfo = {
   resourcesFailedToDelete?: string[];
   tags: Record<string, string>;
   region: string;
-  cciInfo: CircleCIJobDetails;
+  jobId: string;
+  cbInfo?: CodeBuild.Build;
 };
 
 type AmplifyAppInfo = {
@@ -56,19 +43,22 @@ type AmplifyAppInfo = {
 
 type S3BucketInfo = {
   name: string;
-  cciInfo?: CircleCIJobDetails;
+  jobId?: string;
+  region: string;
+  cbInfo?: CodeBuild.Build;
 };
 
 type IamRoleInfo = {
   name: string;
-  cciInfo?: CircleCIJobDetails;
+  cbInfo?: CodeBuild.Build;
 };
 
 type ReportEntry = {
   jobId?: string;
-  workflowId?: string;
-  lifecycle?: string;
-  cciJobDetails?: CircleCIJobDetails;
+  buildBatchArn?: string;
+  buildComplete?: boolean;
+  cbJobDetails?: CodeBuild.Build;
+  buildStatus?: string;
   amplifyApps: Record<string, AmplifyAppInfo>;
   stacks: Record<string, StackInfo>;
   buckets: Record<string, S3BucketInfo>;
@@ -77,12 +67,12 @@ type ReportEntry = {
 
 type JobFilterPredicate = (job: ReportEntry) => boolean;
 
-type CCIJobInfo = {
-  workflowId: string;
-  workflowName: string;
-  lifecycle: string;
-  cciJobDetails: string;
-  status: string;
+type CBJobInfo = {
+  buildBatchArn: string;
+  projectName: string;
+  buildComplete: boolean;
+  cbJobDetails: CodeBuild.Build;
+  buildStatus: string;
 };
 
 type AWSAccountInfo = {
@@ -93,9 +83,11 @@ type AWSAccountInfo = {
 };
 
 const BUCKET_TEST_REGEX = /test/;
-const IAM_TEST_REGEX = /!RotateE2eAwsToken-e2eTestContextRole|-integtest$|^amplify-|^eu-|^us-|^ap-/;
+const IAM_TEST_REGEX =
+  /!RotateE2eAwsToken-e2eTestContextRole|-integtest$|^amplify-|^eu-|^us-|^ap-|^auth-exhaustive-tests|rds-schema-inspector-integtest|^amplify_e2e_tests_lambda|^JsonMockStack-jsonMockApi|^SubscriptionAuth|^cdkamplifytable[0-9]*-|^MutationConditionTest-|^SearchableAuth|^SubscriptionRTFTests-|^NonModelAuthV2FunctionTransformerTests-|^MultiAuthV2Transformer|^FunctionTransformerTests/;
 const STALE_DURATION_MS = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
 
+const isCI = (): boolean => !!(process.env.CI && process.env.CODEBUILD);
 /*
  * Exit on expired token as all future requests will fail.
  */
@@ -126,7 +118,17 @@ const getOrphanS3TestBuckets = async (account: AWSAccountInfo): Promise<S3Bucket
   const s3Client = new aws.S3(getAWSConfig(account));
   const listBucketResponse = await s3Client.listBuckets().promise();
   const staleBuckets = listBucketResponse.Buckets.filter(testBucketStalenessFilter);
-  return staleBuckets.map((it) => ({ name: it.Name }));
+
+  const bucketInfos = await Promise.all(
+    staleBuckets.map(async (staleBucket): Promise<S3BucketInfo> => {
+      const region = await getBucketRegion(account, staleBucket.Name);
+      return {
+        name: staleBucket.Name,
+        region,
+      };
+    }),
+  );
+  return bucketInfos;
 };
 
 /**
@@ -153,17 +155,30 @@ const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccount
 });
 
 /**
- * Returns a list of Amplify Apps in the region. The apps includes information about the CircleCI build that created the app
+ * Returns a list of Amplify Apps in the region. The apps includes information about the CodeBuild that created the app
  * This is determined by looking at tags of the backend environments that are associated with the Apps
  * @param account aws account to query for amplify Apps
  * @param region aws region to query for amplify Apps
  * @returns Promise<AmplifyAppInfo[]> a list of Amplify Apps in the region with build info
  */
 const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<AmplifyAppInfo[]> => {
-  const amplifyClient = new aws.Amplify(getAWSConfig(account, region));
-  const amplifyApps = await amplifyClient.listApps({ maxResults: 50 }).promise(); // keeping it to 50 as max supported is 50
+  const config = getAWSConfig(account, region);
+  const amplifyClient = new aws.Amplify(config);
   const result: AmplifyAppInfo[] = [];
-  for (const app of amplifyApps.apps) {
+  let amplifyApps = { apps: [] };
+  try {
+    amplifyApps = await amplifyClient.listApps({ maxResults: 50 }).promise(); // keeping it to 50 as max supported is 50
+  } catch (e) {
+    if (e?.code === 'UnrecognizedClientException') {
+      // Do not fail the cleanup and continue
+      console.log(`Listing apps for account ${account.accountId}-${region} failed with error with code ${e?.code}. Skipping.`);
+      return result;
+    } else {
+      throw e;
+    }
+  }
+
+  for (const app of amplifyApps?.apps) {
     const backends: Record<string, StackInfo> = {};
     try {
       const backendEnvironments = await amplifyClient.listBackendEnvironments({ appId: app.appId, maxResults: 50 }).promise();
@@ -187,17 +202,17 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
 };
 
 /**
- * Return the CircleCI job id looking at `circleci:build_id` in the tags
+ * Return the CodeBuild job id looking at `codebuild:build_id` in the tags
  * @param tags Tags associated with the resource
  * @returns build number or undefined
  */
-const getJobId = (tags: aws.CloudFormation.Tags = []): number | undefined => {
-  const jobId = tags.find((tag) => tag.Key === 'circleci:build_id')?.Value;
-  return jobId && Number.parseInt(jobId, 10);
+const getJobId = (tags: aws.CloudFormation.Tags = []): string | undefined => {
+  const jobId = tags.find((tag) => tag.Key === 'codebuild:build_id')?.Value;
+  return jobId;
 };
 
 /**
- * Gets detail about a stack including the details about CircleCI job that created the stack. If a stack
+ * Gets detail about a stack including the details about CodeBuild job that created the stack. If a stack
  * has status of `DELETE_FAILED` then it also includes the list of physical id of resources that caused
  * deletion failures
  *
@@ -226,31 +241,42 @@ const getStackDetails = async (stackName: string, account: AWSAccountInfo, regio
     resourcesFailedToDelete,
     region,
     tags: tags.reduce((acc, tag) => ({ ...acc, [tag.Key]: tag.Value }), {}),
-    cciInfo: jobId && (await getJobCircleCIDetails(jobId)),
+    jobId,
   };
 };
 
 const getStacks = async (account: AWSAccountInfo, region: string): Promise<StackInfo[]> => {
   const cfnClient = new aws.CloudFormation(getAWSConfig(account, region));
-  const stacks = await cfnClient
-    .listStacks({
-      StackStatusFilter: [
-        'CREATE_COMPLETE',
-        'ROLLBACK_FAILED',
-        'DELETE_FAILED',
-        'UPDATE_COMPLETE',
-        'UPDATE_ROLLBACK_FAILED',
-        'UPDATE_ROLLBACK_COMPLETE',
-        'IMPORT_COMPLETE',
-        'IMPORT_ROLLBACK_FAILED',
-        'IMPORT_ROLLBACK_COMPLETE',
-      ],
-    })
-    .promise();
+  const results: StackInfo[] = [];
+  let stacks;
+  try {
+    stacks = await cfnClient
+      .listStacks({
+        StackStatusFilter: [
+          'CREATE_COMPLETE',
+          'ROLLBACK_FAILED',
+          'DELETE_FAILED',
+          'UPDATE_COMPLETE',
+          'UPDATE_ROLLBACK_FAILED',
+          'UPDATE_ROLLBACK_COMPLETE',
+          'IMPORT_COMPLETE',
+          'IMPORT_ROLLBACK_FAILED',
+          'IMPORT_ROLLBACK_COMPLETE',
+        ],
+      })
+      .promise();
+  } catch (e) {
+    if (e?.code === 'InvalidClientTokenId') {
+      // Do not fail the cleanup and continue
+      console.log(`Listing stacks for account ${account.accountId}-${region} failed with error with code ${e?.code}. Skipping.`);
+      return results;
+    } else {
+      throw e;
+    }
+  }
 
   // We are interested in only the root stacks that are deployed by amplify-cli
   const rootStacks = stacks.StackSummaries.filter((stack) => !stack.RootId);
-  const results: StackInfo[] = [];
   for (const stack of rootStacks) {
     try {
       const details = await getStackDetails(stack.StackName, account, region);
@@ -264,111 +290,134 @@ const getStacks = async (account: AWSAccountInfo, region: string): Promise<Stack
   return results;
 };
 
-const getCircleCIClient = (): CircleCI => {
-  const options: CircleCIOptions = {
-    token: process.env.CIRCLECI_TOKEN,
-    vcs: {
-      repo: process.env.CIRCLE_PROJECT_REPONAME,
-      owner: process.env.CIRCLE_PROJECT_USERNAME,
-      type: GitType.GITHUB,
-    },
-  };
-  return new CircleCI(options);
+const getCodeBuildClient = (): CodeBuild => {
+  return new CodeBuild({
+    apiVersion: '2016-10-06',
+    region: 'us-east-1',
+  });
 };
 
-const getJobCircleCIDetails = async (jobId: number): Promise<CircleCIJobDetails> => {
-  const client = getCircleCIClient();
-  const result = await client.build(jobId);
+const getJobCodeBuildDetails = async (jobIds: string[]): Promise<CodeBuild.Build[]> => {
+  if (jobIds.length === 0) {
+    return [];
+  }
+  const client = getCodeBuildClient();
+  try {
+    const { builds } = await client.batchGetBuilds({ ids: jobIds }).promise();
+    return builds;
+  } catch (e) {
+    console.log(e);
+  }
+};
 
-  const r = _.pick(result, [
-    'build_url',
-    'branch',
-    'build_num',
-    'outcome',
-    'canceled',
-    'infrastructure_fail',
-    'status',
-    'committer_name',
-    'workflows.workflow_id',
-    'lifecycle',
-  ]) as unknown as CircleCIJobDetails;
-  return r;
+const getBucketRegion = async (account: AWSAccountInfo, bucketName: string): Promise<string> => {
+  const awsConfig = getAWSConfig(account);
+  const s3Client = new aws.S3(awsConfig);
+  const location = await s3Client.getBucketLocation({ Bucket: bucketName }).promise();
+  const region = location.LocationConstraint ?? 'us-east-1';
+  return region;
 };
 
 const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> => {
-  const s3Client = new aws.S3(getAWSConfig(account));
+  const awsConfig = getAWSConfig(account);
+  const s3Client = new aws.S3(awsConfig);
   const buckets = await s3Client.listBuckets().promise();
   const result: S3BucketInfo[] = [];
   for (const bucket of buckets.Buckets) {
+    let region: string | undefined;
     try {
-      const bucketDetails = await s3Client.getBucketTagging({ Bucket: bucket.Name }).promise();
+      region = await getBucketRegion(account, bucket.Name);
+      // Operations on buckets created in opt-in regions appear to require region-specific clients
+      const regionalizedClient = new aws.S3({
+        region,
+        ...(awsConfig as object),
+      });
+      const bucketDetails = await regionalizedClient.getBucketTagging({ Bucket: bucket.Name }).promise();
       const jobId = getJobId(bucketDetails.TagSet);
       if (jobId) {
         result.push({
           name: bucket.Name,
-          cciInfo: await getJobCircleCIDetails(jobId),
+          jobId,
+          region,
         });
       }
     } catch (e) {
-      if (e.code !== 'NoSuchTagSet' && e.code !== 'NoSuchBucket') {
+      // TODO: Why do we process the bucket even with these particular errors?
+      if (e.code === 'NoSuchTagSet' || e.code === 'NoSuchBucket') {
+        result.push({
+          name: bucket.Name,
+          region: region ?? 'us-east-1',
+        });
+      } else if (e.code === 'InvalidToken') {
+        // We see some buckets in some accounts that were somehow created in an opt-in region different from the one to which the account is
+        // actually opted in. We don't quite know how this happened, but for now, we'll make a note of the inconsistency and continue
+        // processing the rest of the buckets.
+        console.error(`Skipping processing ${account.accountId}, bucket ${bucket.Name}`, e);
+      } else {
         throw e;
       }
-      result.push({
-        name: bucket.Name,
-      });
     }
   }
   return result;
 };
 
 /**
- * extract and moves CircleCI job details
+ * extract and moves CodeBuild job details
  */
-const extractCCIJobInfo = (record: S3BucketInfo | StackInfo | AmplifyAppInfo): CCIJobInfo => ({
-  workflowId: _.get(record, ['0', 'cciInfo', 'workflows', 'workflow_id']),
-  workflowName: _.get(record, ['0', 'cciInfo', 'workflows', 'workflow_name']),
-  lifecycle: _.get(record, ['0', 'cciInfo', 'lifecycle']),
-  cciJobDetails: _.get(record, ['0', 'cciInfo']),
-  status: _.get(record, ['0', 'cciInfo', 'status']),
-});
+const extractCCIJobInfo = (record: S3BucketInfo | StackInfo | AmplifyAppInfo, buildInfos: Record<string, CodeBuild.Build[]>): CBJobInfo => {
+  const buildId = _.get(record, ['0', 'jobId']);
+  return {
+    buildBatchArn: _.get(buildInfos, [buildId, '0', 'buildBatchArn']),
+    projectName: _.get(buildInfos, [buildId, '0', 'projectName']),
+    buildComplete: _.get(buildInfos, [buildId, '0', 'buildComplete']),
+    cbJobDetails: _.get(buildInfos, [buildId, '0']),
+    buildStatus: _.get(buildInfos, [buildId, '0', 'buildStatus']),
+  };
+};
 
 /**
- * Merges stale resources and returns a list grouped by the CircleCI jobId. Amplify Apps that don't have
- * any backend environment are grouped as Orphan apps and apps that have Backend created by different CircleCI jobs are
- * grouped as MULTI_JOB_APP. Any resource that do not have a CircleCI job is grouped under UNKNOWN
+ * Merges stale resources and returns a list grouped by the CodeBuild jobId. Amplify Apps that don't have
+ * any backend environment are grouped as Orphan apps and apps that have Backend created by different CodeBuild jobs are
+ * grouped as MULTI_JOB_APP. Any resource that do not have a CodeBuild job is grouped under UNKNOWN
  */
-const mergeResourcesByCCIJob = (
+const mergeResourcesByCCIJob = async (
   amplifyApp: AmplifyAppInfo[],
   cfnStacks: StackInfo[],
   s3Buckets: S3BucketInfo[],
   orphanS3Buckets: S3BucketInfo[],
   orphanIamRoles: IamRoleInfo[],
-): Record<string, ReportEntry> => {
+): Promise<Record<string, ReportEntry>> => {
   const result: Record<string, ReportEntry> = {};
 
-  const stacksByJobId = _.groupBy(cfnStacks, (stack: StackInfo) => _.get(stack, ['cciInfo', 'build_num'], UNKNOWN));
+  const stacksByJobId = _.groupBy(cfnStacks, (stack: StackInfo) => _.get(stack, ['jobId'], UNKNOWN));
 
-  const bucketByJobId = _.groupBy(s3Buckets, (bucketInfo: S3BucketInfo) => _.get(bucketInfo, ['cciInfo', 'build_num'], UNKNOWN));
+  const bucketByJobId = _.groupBy(s3Buckets, (bucketInfo: S3BucketInfo) => _.get(bucketInfo, ['jobId'], UNKNOWN));
 
   const amplifyAppByJobId = _.groupBy(amplifyApp, (appInfo: AmplifyAppInfo) => {
     if (Object.keys(appInfo.backends).length === 0) {
       return ORPHAN;
     }
 
-    const buildIds = _.groupBy(appInfo.backends, (backendInfo) => _.get(backendInfo, ['cciInfo', 'build_num'], UNKNOWN));
+    const buildIds = _.groupBy(appInfo.backends, (backendInfo) => _.get(backendInfo, ['jobId'], UNKNOWN));
     if (Object.keys(buildIds).length === 1) {
       return Object.keys(buildIds)[0];
     }
 
     return MULTI_JOB_APP;
   });
-
+  const codeBuildJobIds: string[] = _.uniq([
+    ...Object.keys(stacksByJobId),
+    ...Object.keys(bucketByJobId),
+    ...Object.keys(amplifyAppByJobId),
+  ]).filter((jobId: string) => jobId !== UNKNOWN && jobId !== ORPHAN && jobId !== MULTI_JOB_APP);
+  const buildInfos = await getJobCodeBuildDetails(codeBuildJobIds);
+  const buildInfosByJobId = _.groupBy(buildInfos, (build: CodeBuild.Build) => _.get(build, ['id']));
   _.mergeWith(
     result,
     _.pickBy(amplifyAppByJobId, (__, key) => key !== MULTI_JOB_APP),
     (val, src, key) => ({
       ...val,
-      ...extractCCIJobInfo(src),
+      ...extractCCIJobInfo(src, buildInfosByJobId),
       jobId: key,
       amplifyApps: src,
     }),
@@ -380,7 +429,7 @@ const mergeResourcesByCCIJob = (
     (__: unknown, key: string) => key !== ORPHAN,
     (val, src, key) => ({
       ...val,
-      ...extractCCIJobInfo(src),
+      ...extractCCIJobInfo(src, buildInfosByJobId),
       jobId: key,
       stacks: src,
     }),
@@ -388,7 +437,7 @@ const mergeResourcesByCCIJob = (
 
   _.mergeWith(result, bucketByJobId, (val, src, key) => ({
     ...val,
-    ...extractCCIJobInfo(src),
+    ...extractCCIJobInfo(src, buildInfosByJobId),
     jobId: key,
     buckets: src,
   }));
@@ -438,7 +487,7 @@ const deleteIamRoles = async (account: AWSAccountInfo, accountIndex: number, rol
   // Sending consecutive delete role requests is throwing Rate limit exceeded exception.
   // We introduce a brief delay between batches
   const batchSize = 20;
-  for (var i = 0; i < roles.length; i += batchSize) {
+  for (let i = 0; i < roles.length; i += batchSize) {
     const rolesToDelete = roles.slice(i, i + batchSize);
     await Promise.all(rolesToDelete.map((role) => deleteIamRole(account, accountIndex, role)));
     await sleep(5000);
@@ -512,8 +561,12 @@ const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucke
   const { name } = bucket;
   try {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting S3 Bucket ${name}`);
-    const s3 = new aws.S3(getAWSConfig(account));
-    await deleteS3Bucket(name, s3);
+    const awsConfig = getAWSConfig(account);
+    const regionalizedS3Client = new aws.S3({
+      region: bucket.region,
+      ...(awsConfig as object),
+    });
+    await deleteS3Bucket(name, regionalizedS3Client);
   } catch (e) {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting bucket ${name} failed with error ${e.message}`);
     if (e.code === 'ExpiredTokenException') {
@@ -542,7 +595,8 @@ const deleteCfnStack = async (account: AWSAccountInfo, accountIndex: number, sta
   }
 };
 
-const generateReport = (jobs: _.Dictionary<ReportEntry>): void => {
+const generateReport = (jobs: _.Dictionary<ReportEntry>, accountIdx: number): void => {
+  const reportPath = path.join(reportPathDir, `stale-resources-${accountIdx}.json`);
   fs.ensureFileSync(reportPath);
   fs.writeFileSync(reportPath, JSON.stringify(jobs, null, 4));
 };
@@ -577,25 +631,22 @@ const deleteResources = async (
 };
 
 /**
- * Grab the right CircleCI filter based on args passed in.
+ * Grab the right CodeBuild filter based on args passed in.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getFilterPredicate = (args: any): JobFilterPredicate => {
   const filterByJobId = (jobId: string) => (job: ReportEntry) => job.jobId === jobId;
-  const filterByWorkflowId = (workflowId: string) => (job: ReportEntry) => job.workflowId === workflowId;
-  const filterAllStaleResources = () => (job: ReportEntry) => job.lifecycle === 'finished' || job.jobId === ORPHAN;
+  const filterByBuildBatchArn = (buildBatchArn: string) => (job: ReportEntry) => job.buildBatchArn === buildBatchArn;
+  const filterAllStaleResources = () => (job: ReportEntry) => job.buildComplete || job.jobId === ORPHAN;
 
   if (args._.length === 0) {
     return filterAllStaleResources();
   }
-  if (args._[0] === 'workflow') {
-    return filterByWorkflowId(args.workflowId as string);
+  if (args._[0] === 'buildBatchArn') {
+    return filterByBuildBatchArn(args.buildBatchArn as string);
   }
   if (args._[0] === 'job') {
-    if (Number.isNaN(args.jobId)) {
-      throw new Error('job-id should be integer');
-    }
-    return filterByJobId((args.jobId as number).toString());
+    return filterByJobId(args.jobId as string);
   }
   throw Error('Invalid args config');
 };
@@ -605,17 +656,33 @@ const getFilterPredicate = (args: any): JobFilterPredicate => {
  * to get all accounts within the root account organization.
  */
 const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
-  const stsRes = new aws.STS({
+  // This script runs using the codebuild project role to begin with
+  const stsClient = new aws.STS({
     apiVersion: '2011-06-15',
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    sessionToken: process.env.AWS_SESSION_TOKEN,
   });
-  const parentAccountIdentity = await stsRes.getCallerIdentity().promise();
+  const assumeRoleResForE2EParent = await stsClient
+    .assumeRole({
+      RoleArn: process.env.TEST_ACCOUNT_ROLE,
+      RoleSessionName: `testSession${Math.floor(Math.random() * 100000)}`,
+      // One hour
+      DurationSeconds: 1 * 60 * 60,
+    })
+    .promise();
+  const e2eParentAccountCred = {
+    accessKeyId: assumeRoleResForE2EParent.Credentials.AccessKeyId,
+    secretAccessKey: assumeRoleResForE2EParent.Credentials.SecretAccessKey,
+    sessionToken: assumeRoleResForE2EParent.Credentials.SessionToken,
+  };
+  const stsClientForE2E = new aws.STS({
+    apiVersion: '2011-06-15',
+    credentials: e2eParentAccountCred,
+  });
+  const parentAccountIdentity = await stsClientForE2E.getCallerIdentity().promise();
   const orgApi = new aws.Organizations({
     apiVersion: '2016-11-28',
     // the region where the organization exists
     region: 'us-east-1',
+    credentials: e2eParentAccountCred,
   });
   try {
     const orgAccounts = await orgApi.listAccounts().promise();
@@ -623,14 +690,11 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
       if (account.Id === parentAccountIdentity.Account) {
         return {
           accountId: account.Id,
-          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-          sessionToken: process.env.AWS_SESSION_TOKEN,
+          ...e2eParentAccountCred,
         };
       }
-
       const randomNumber = Math.floor(Math.random() * 100000);
-      const assumeRoleRes = await stsRes
+      const assumeRoleRes = await stsClientForE2E
         .assumeRole({
           RoleArn: `arn:aws:iam::${account.Id}:role/OrganizationAccountAccessRole`,
           RoleSessionName: `testSession${randomNumber}`,
@@ -654,17 +718,15 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
     return [
       {
         accountId: parentAccountIdentity.Account,
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-        sessionToken: process.env.AWS_SESSION_TOKEN,
+        ...e2eParentAccountCred,
       },
     ];
   }
 };
 
 const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, filterPredicate: JobFilterPredicate): Promise<void> => {
-  const appPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getAmplifyApps(account, region));
-  const stackPromises = AWS_REGIONS_TO_RUN_TESTS.map((region) => getStacks(account, region));
+  const appPromises = testRegions.map((region) => getAmplifyApps(account, region));
+  const stackPromises = testRegions.map((region) => getStacks(account, region));
   const bucketPromise = getS3Buckets(account);
   const orphanBucketPromise = getOrphanS3TestBuckets(account);
   const orphanIamRolesPromise = getOrphanTestIamRoles(account);
@@ -675,10 +737,10 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const orphanBuckets = await orphanBucketPromise;
   const orphanIamRoles = await orphanIamRolesPromise;
 
-  const allResources = mergeResourcesByCCIJob(apps, stacks, buckets, orphanBuckets, orphanIamRoles);
+  const allResources = await mergeResourcesByCCIJob(apps, stacks, buckets, orphanBuckets, orphanIamRoles);
   const staleResources = _.pickBy(allResources, filterPredicate);
 
-  generateReport(staleResources);
+  generateReport(staleResources, accountIndex);
   await deleteResources(account, accountIndex, staleResources);
   console.log(`${generateAccountInfo(account, accountIndex)} Cleanup done!`);
 };
@@ -697,9 +759,9 @@ const generateAccountInfo = (account: AWSAccountInfo, accountIndex: number): str
 const cleanup = async (): Promise<void> => {
   const args = yargs
     .command('*', 'clean up all the stale resources')
-    .command('workflow <workflow-id>', 'clean all the resources created by workflow', (_yargs) => {
-      _yargs.positional('workflowId', {
-        describe: 'Workflow Id of the workflow',
+    .command('buildBatchArn <build-batch-arn>', 'clean all the resources created by batch build', (_yargs) => {
+      _yargs.positional('buildBatchArn', {
+        describe: 'ARN of batch build',
         type: 'string',
         demandOption: '',
       });
@@ -707,7 +769,7 @@ const cleanup = async (): Promise<void> => {
     .command('job <jobId>', 'clean all the resource created by a job', (_yargs) => {
       _yargs.positional('jobId', {
         describe: 'job id of the job',
-        type: 'number',
+        type: 'string',
       });
     })
     .help().argv;
@@ -715,7 +777,9 @@ const cleanup = async (): Promise<void> => {
 
   const filterPredicate = getFilterPredicate(args);
   const accounts = await getAccountsToCleanup();
-
+  accounts.map((account, i) => {
+    console.log(`${generateAccountInfo(account, i)} is under cleanup`);
+  });
   await Promise.all(accounts.map((account, i) => cleanupAccount(account, i, filterPredicate)));
   console.log('Done cleaning all accounts!');
 };

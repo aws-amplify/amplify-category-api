@@ -16,8 +16,9 @@ import {
   set,
 } from 'graphql-mapping-template';
 import { HttpResourceIDs, ResourceConstants } from 'graphql-transformer-common';
-import { HttpHeader } from './HttpTransformer';
 import Template from 'cloudform-types/types/template';
+import { HttpHeader } from './HttpTransformer';
+
 export class ResourceFactory {
   public makeParams() {
     return {};

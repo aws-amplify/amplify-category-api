@@ -1,5 +1,5 @@
-import { getVersionFromArgs, releasesRequest, semverToGithubTag } from './github-common';
 import { join } from 'path';
+import { getVersionFromArgs, releasesRequest, semverToGithubTag } from './github-common';
 
 /**
  * This function expects a pre-release of 'version' to already exist

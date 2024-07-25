@@ -1,17 +1,16 @@
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AuthTransformer } from '..';
 import { AcmTest, acmTests } from './acm-test-library';
 
 const testSchemaACM = (test: AcmTest): void => {
   const authTransformer = new AuthTransformer();
-  const transformer = new GraphQLTransform({
+  testTransform({
+    schema: test.sdl,
     authConfig: test.authConfig,
     transformers: [new ModelTransformer(), new IndexTransformer(), new PrimaryKeyTransformer(), authTransformer],
   });
-
-  transformer.transform(test.sdl);
 
   test.models.forEach((model) => {
     const acm = (authTransformer as any).authModelConfig.get(model.name);

@@ -1,7 +1,7 @@
 import { join } from 'path';
 import { valid, lte } from 'semver';
-import { getVersionFromArgs, githubTagToSemver, releasesRequest, semverToGithubTag, uploadReleaseFile } from './github-common';
 import { readFile } from 'fs-extra';
+import { getVersionFromArgs, githubTagToSemver, releasesRequest, semverToGithubTag, uploadReleaseFile } from './github-common';
 import { unifiedChangelogPath } from './constants';
 
 /**

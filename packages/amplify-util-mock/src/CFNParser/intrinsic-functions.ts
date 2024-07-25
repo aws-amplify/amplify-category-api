@@ -1,5 +1,5 @@
-import { CloudFormationParseContext } from './types';
 import { isPlainObject } from 'lodash';
+import { CloudFormationParseContext } from './types';
 import { importModelTableResolver } from './import-model-table-resolver';
 
 export function cfnJoin(valNode: [string, string[]], { params, conditions, resources, exports }: CloudFormationParseContext, processValue) {

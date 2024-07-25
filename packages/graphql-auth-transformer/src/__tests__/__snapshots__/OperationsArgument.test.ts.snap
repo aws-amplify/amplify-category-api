@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Test "create", "update", "delete" auth operations 1`] = `
+exports[`"create", "update", "delete" auth operations 1`] = `
 "#if( $ctx.error )
 $util.error($ctx.error.message, $ctx.error.type)
 #else
@@ -8,7 +8,7 @@ $util.toJson($ctx.result)
 #end"
 `;
 
-exports[`Test "create", "update", "delete" auth operations 2`] = `
+exports[`"create", "update", "delete" auth operations 2`] = `
 "#if( $ctx.error )
 $util.error($ctx.error.message, $ctx.error.type)
 #else
@@ -16,7 +16,7 @@ $util.toJson($ctx.result)
 #end"
 `;
 
-exports[`Test "create", "update", "delete" auth operations 3`] = `
+exports[`"create", "update", "delete" auth operations 3`] = `
 "## [Start] Set default values. **
 $util.qr($context.args.input.put(\\"id\\", $util.defaultIfNull($ctx.args.input.id, $util.autoId())))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -111,7 +111,7 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 ## [End] Prepare DynamoDB PutItem Request. **"
 `;
 
-exports[`Test "create", "update", "delete" auth operations 4`] = `
+exports[`"create", "update", "delete" auth operations 4`] = `
 "## [Start] Determine request authentication mode **
 #if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
   #set( $authMode = \\"userPools\\" )
@@ -341,7 +341,7 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 }"
 `;
 
-exports[`Test "create", "update", "delete" auth operations 5`] = `
+exports[`"create", "update", "delete" auth operations 5`] = `
 "## [Start] Determine request authentication mode **
 #if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
   #set( $authMode = \\"userPools\\" )
@@ -499,13 +499,13 @@ exports[`Test "create", "update", "delete" auth operations 5`] = `
 }"
 `;
 
-exports[`Test that checks subscription resolvers are created without auth logic 1`] = `"$util.toJson(null)"`;
+exports[`that checks subscription resolvers are created without auth logic 1`] = `"$util.toJson(null)"`;
 
-exports[`Test that checks subscription resolvers are created without auth logic 2`] = `"$util.toJson(null)"`;
+exports[`that checks subscription resolvers are created without auth logic 2`] = `"$util.toJson(null)"`;
 
-exports[`Test that checks subscription resolvers are created without auth logic 3`] = `"$util.toJson(null)"`;
+exports[`that checks subscription resolvers are created without auth logic 3`] = `"$util.toJson(null)"`;
 
-exports[`Test that checks subscription resolvers are generated with auth logic 1`] = `
+exports[`that checks subscription resolvers are generated with auth logic 1`] = `
 "## [Start] Determine request authentication mode **
 #if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
   #set( $authMode = \\"userPools\\" )
@@ -560,7 +560,7 @@ exports[`Test that checks subscription resolvers are generated with auth logic 1
 $util.toJson(null)"
 `;
 
-exports[`Test that checks subscription resolvers are generated with auth logic 2`] = `
+exports[`that checks subscription resolvers are generated with auth logic 2`] = `
 "## [Start] Determine request authentication mode **
 #if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
   #set( $authMode = \\"userPools\\" )
@@ -615,7 +615,7 @@ exports[`Test that checks subscription resolvers are generated with auth logic 2
 $util.toJson(null)"
 `;
 
-exports[`Test that checks subscription resolvers are generated with auth logic 3`] = `
+exports[`that checks subscription resolvers are generated with auth logic 3`] = `
 "## [Start] Determine request authentication mode **
 #if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
   #set( $authMode = \\"userPools\\" )
@@ -670,7 +670,7 @@ exports[`Test that checks subscription resolvers are generated with auth logic 3
 $util.toJson(null)"
 `;
 
-exports[`Test that operation overwrites queries in auth operations 1`] = `
+exports[`that operation overwrites queries in auth operations 1`] = `
 "#if( $ctx.error )
 $util.error($ctx.error.message, $ctx.error.type)
 #else
@@ -678,7 +678,7 @@ $util.toJson($ctx.result)
 #end"
 `;
 
-exports[`Test that operation overwrites queries in auth operations 2`] = `
+exports[`that operation overwrites queries in auth operations 2`] = `
 "#if( $ctx.error )
 $util.error($ctx.error.message, $ctx.error.type)
 #else
@@ -686,7 +686,7 @@ $util.toJson($ctx.result)
 #end"
 `;
 
-exports[`Test that operation overwrites queries in auth operations 3`] = `
+exports[`that operation overwrites queries in auth operations 3`] = `
 "## [Start] Set default values. **
 $util.qr($context.args.input.put(\\"id\\", $util.defaultIfNull($ctx.args.input.id, $util.autoId())))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -781,7 +781,7 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 ## [End] Prepare DynamoDB PutItem Request. **"
 `;
 
-exports[`Test that operation overwrites queries in auth operations 4`] = `
+exports[`that operation overwrites queries in auth operations 4`] = `
 "## [Start] Determine request authentication mode **
 #if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
   #set( $authMode = \\"userPools\\" )
@@ -1011,7 +1011,7 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 }"
 `;
 
-exports[`Test that operation overwrites queries in auth operations 5`] = `
+exports[`that operation overwrites queries in auth operations 5`] = `
 "## [Start] Determine request authentication mode **
 #if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
   #set( $authMode = \\"userPools\\" )
@@ -1169,7 +1169,7 @@ exports[`Test that operation overwrites queries in auth operations 5`] = `
 }"
 `;
 
-exports[`Test that subscriptions are only generated if the respective mutation operation exists 1`] = `
+exports[`that subscriptions are only generated if the respective mutation operation exists 1`] = `
 "## [Start] Determine request authentication mode **
 #if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
   #set( $authMode = \\"userPools\\" )
@@ -1212,7 +1212,7 @@ exports[`Test that subscriptions are only generated if the respective mutation o
 $util.toJson(null)"
 `;
 
-exports[`Test that subscriptions are only generated if the respective mutation operation exists 2`] = `
+exports[`that subscriptions are only generated if the respective mutation operation exists 2`] = `
 "## [Start] Determine request authentication mode **
 #if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
   #set( $authMode = \\"userPools\\" )

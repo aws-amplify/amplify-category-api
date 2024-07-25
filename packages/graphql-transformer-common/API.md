@@ -58,6 +58,9 @@ export const DEFAULT_SCALARS: ScalarMap;
 export function defineUnionType(name: string, types?: NamedTypeNode[]): UnionTypeDefinitionNode;
 
 // @public (undocumented)
+export const directiveExists: (definition: ObjectTypeDefinitionNode, name: string) => DirectiveNode;
+
+// @public (undocumented)
 export function extendFieldWithDirectives(field: FieldDefinitionNode, directives: DirectiveNode[]): FieldDefinitionNode;
 
 // @public (undocumented)
@@ -65,6 +68,9 @@ export function extensionWithDirectives(object: ObjectTypeExtensionNode, directi
 
 // @public (undocumented)
 export function extensionWithFields(object: ObjectTypeExtensionNode, fields: FieldDefinitionNode[]): ObjectTypeExtensionNode;
+
+// @public (undocumented)
+export const findObjectDefinition: (document: DocumentNode, name: string) => ObjectTypeDefinitionNode | undefined;
 
 // @public (undocumented)
 export class FunctionResourceIDs {
@@ -85,6 +91,9 @@ export function getBaseType(type: TypeNode): string;
 export function getDirectiveArgument(directive: DirectiveNode, arg: string, dflt?: any): any;
 
 // @public (undocumented)
+export const getNonModelTypes: (document: DocumentNode) => DefinitionNode[];
+
+// @public (undocumented)
 export function graphqlName(val: string): string;
 
 // @public (undocumented)
@@ -94,13 +103,25 @@ export class HttpResourceIDs {
 }
 
 // @public (undocumented)
+export const isArrayOrObject: (type: TypeNode, enums: EnumTypeDefinitionNode[]) => boolean;
+
+// @public (undocumented)
 export function isEnum(type: TypeNode, document: DocumentNode): DefinitionNode;
 
 // @public (undocumented)
 export function isListType(type: TypeNode): boolean;
 
 // @public (undocumented)
+export const isNamedType: (type: TypeNode) => boolean;
+
+// @public (undocumented)
+export const isNonModelType: (definition: DefinitionNode) => boolean;
+
+// @public (undocumented)
 export function isNonNullType(type: TypeNode): boolean;
+
+// @public (undocumented)
+export const isOfType: (type: TypeNode, name: string) => boolean;
 
 // @public (undocumented)
 export function isScalar(type: TypeNode): any;
@@ -386,14 +407,17 @@ export class ResourceConstants {
         OpenSearchStreamingLambdaIAMRoleLogicalID: string;
         OpenSearchStreamingLambdaFunctionLogicalID: string;
         OpenSearchDataSourceLogicalID: string;
-        RDSLambdaIAMRoleLogicalID: string;
-        RDSLambdaLogicalID: string;
-        RDSLambdaDataSourceLogicalID: string;
-        RDSLambdaDataSourceLogicalName: string;
+        SQLLayerManifestBucket: string;
+        SQLLayerManifestBucketRegion: string;
+        SQLLayerVersionManifestKeyPrefix: string;
+        SQLSNSTopicARNManifestKeyPrefix: string;
         NoneDataSource: string;
         AuthCognitoUserPoolLogicalID: string;
         AuthCognitoUserPoolNativeClientLogicalID: string;
         AuthCognitoUserPoolJSClientLogicalID: string;
+        TableManagerOnEventHandlerLogicalID: string;
+        TableManagerIsCompleteHandlerLogicalID: string;
+        TableManagerCustomProviderLogicalID: string;
     };
     // (undocumented)
     static readonly SNIPPETS: {
@@ -474,6 +498,35 @@ export function toUpper(word: string): string;
 
 // @public (undocumented)
 export const transformedArgsRef: ReferenceNode;
+
+// @public (undocumented)
+export const TYPESCRIPT_DATA_SCHEMA_CONSTANTS: {
+    SCHEMA_PACKAGE: string;
+    SCHEMA_PACKAGE_INTERNALS: string;
+    BACKEND_PACKAGE: string;
+    MODEL_METHOD: string;
+    SCHEMA_METHOD: string;
+    IDENTIFIER_METHOD: string;
+    ARRAY_METHOD: string;
+    REQUIRED_METHOD: string;
+    STRING_METHOD: string;
+    ENUM_METHOD: string;
+    REFERENCE_A: string;
+    EXPORT_VARIABLE_NAME: string;
+    INTERNALS_CONFIGURE_METHOD: string;
+    BACKEND_SECRET_METHOD: string;
+    PROPERTY_VPC: string;
+    PROPERTY_VPC_ID: string;
+    PROPERTY_SECURITY_GROUP_IDS: string;
+    PROPERTY_AZ_CONFIG: string;
+    PROPERTY_SUBNET_ID: string;
+    PROPERTY_AZ: string;
+    PROPERTY_DATABASE: string;
+    PROPERTY_CONNECTION_URI: string;
+    PROPERTY_SSL_CERTIFICATE: string;
+    PROPERTY_ENGINE: string;
+    PROPERTY_IDENTIFIER: string;
+};
 
 // @public (undocumented)
 export function unwrapNonNull(type: TypeNode): any;

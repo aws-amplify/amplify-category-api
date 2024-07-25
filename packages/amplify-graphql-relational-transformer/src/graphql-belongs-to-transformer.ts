@@ -1,40 +1,44 @@
 /* eslint-disable no-param-reassign */
 import {
+  DDB_DB_TYPE,
   DirectiveWrapper,
-  generateGetArgumentsInput,
   InvalidDirectiveError,
   TransformerPluginBase,
+  generateGetArgumentsInput,
+  getStrategyDbTypeFromModel,
+  getStrategyDbTypeFromTypeNode,
 } from '@aws-amplify/graphql-transformer-core';
 import {
+  ModelDataSourceStrategyDbType,
   TransformerContextProvider,
+  TransformerPreProcessContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
-  TransformerPreProcessContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { DirectiveNode, DocumentNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
+import { BelongsToDirective } from '@aws-amplify/graphql-directives';
+import {
+  DirectiveNode,
+  DocumentNode,
+  FieldDefinitionNode,
+  InterfaceTypeDefinitionNode,
+  NamedTypeNode,
+  ObjectTypeDefinitionNode,
+  Kind,
+} from 'graphql';
 import { getBaseType, isListType, isNonNullType, makeField, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
 import produce from 'immer';
 import { WritableDraft } from 'immer/dist/types/types-external';
-import { makeGetItemConnectionWithKeyResolver } from './resolvers';
+import { getBelongsToDirectiveTransformer } from './belongs-to/belongs-to-directive-transformer-factory';
 import { ensureBelongsToConnectionField } from './schema';
 import { BelongsToDirectiveConfiguration, ObjectDefinition } from './types';
 import {
-  ensureFieldsArray,
   getConnectionAttributeName,
-  getFieldsNodes,
   getObjectPrimaryKey,
   getRelatedType,
-  getRelatedTypeIndex,
-  registerHasOneForeignKeyMappings,
   validateModelDirective,
   validateRelatedModelDirective,
 } from './utils';
-
-const directiveName = 'belongsTo';
-const directiveDefinition = `
-  directive @${directiveName}(fields: [String!]) on FIELD_DEFINITION
-`;
 
 /**
  * Transformer for @belongsTo directive
@@ -43,7 +47,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
   private directiveList: BelongsToDirectiveConfiguration[] = [];
 
   constructor() {
-    super('amplify-belongs-to-transformer', directiveDefinition);
+    super('amplify-belongs-to-transformer', BelongsToDirective.definition);
   }
 
   field = (
@@ -55,7 +59,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
     const directiveWrapped = new DirectiveWrapper(directive);
     const args = directiveWrapped.getArguments(
       {
-        directiveName,
+        directiveName: BelongsToDirective.name,
         object: parent as ObjectTypeDefinitionNode,
         field: definition,
         directive,
@@ -82,7 +86,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
 
       objectDefs?.forEach((def) => {
         const filteredFields = def?.fields?.filter((field) =>
-          field?.directives?.some((dir) => dir.name.value === directiveName && objectTypeMap.get(getBaseType(field.type))),
+          field?.directives?.some((dir) => dir.name.value === BelongsToDirective.name && objectTypeMap.get(getBaseType(field.type))),
         );
         filteredFields?.forEach((field) => {
           const relatedType = objectTypeMap.get(getBaseType(field.type));
@@ -123,25 +127,21 @@ export class BelongsToTransformer extends TransformerPluginBase {
    * During the prepare step, register any foreign keys that are renamed due to a model rename
    */
   prepare = (context: TransformerPrepareStepContextProvider): void => {
-    this.directiveList
-      .filter((config) => config.relationType === 'hasOne')
-      .forEach((config) => {
-        // a belongsTo with hasOne behaves the same as hasOne
-        registerHasOneForeignKeyMappings({
-          transformParameters: context.transformParameters,
-          resourceHelper: context.resourceHelper,
-          thisTypeName: config.object.name.value,
-          thisFieldName: config.field.name.value,
-          relatedType: config.relatedType,
-        });
-      });
+    this.directiveList.forEach((config) => {
+      const modelName = config.object.name.value;
+      const dbType = getStrategyDbTypeFromModel(context as TransformerContextProvider, modelName);
+      const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType, config);
+      dataSourceBasedTransformer.prepare(context, config);
+    });
   };
 
   transformSchema = (ctx: TransformerTransformSchemaStepContextProvider): void => {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      config.relatedTypeIndex = getRelatedTypeIndex(config, context);
+      const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
+      const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType, config);
+      dataSourceBasedTransformer.transformSchema(ctx, config);
       ensureBelongsToConnectionField(config, context);
     }
   };
@@ -150,23 +150,53 @@ export class BelongsToTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      makeGetItemConnectionWithKeyResolver(config, context);
+      const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
+      const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType, config);
+      dataSourceBasedTransformer.generateResolvers(ctx, config);
     }
   };
 }
 
 const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field, object } = config;
+  if (!ctx.transformParameters.allowGen1Patterns) {
+    const modelName = object.name.value;
+    const fieldName = field.name.value;
+    if (field.type.kind === Kind.NON_NULL_TYPE) {
+      throw new InvalidDirectiveError(
+        `@${BelongsToDirective.name} cannot be used on required fields. Modify ${modelName}.${fieldName} to be optional.`,
+      );
+    }
+    if (config.fields) {
+      throw new InvalidDirectiveError(
+        `fields argument on @${BelongsToDirective.name} is disallowed. Modify ${modelName}.${fieldName} to use references instead.`,
+      );
+    }
+  }
 
-  ensureFieldsArray(config);
+  let dbType: ModelDataSourceStrategyDbType;
+  try {
+    // getStrategyDbTypeFromTypeNode throws if a datasource is not found for the model. We want to catch that condition
+    // here to provide a friendlier error message, since the most likely error scenario is that the customer neglected to annotate one
+    // of the types with `@model`.
+    // Since this transformer gets invoked on both sides of the `belongsTo` relationship, a failure at this point is about the
+    // field itself, not the related type.
+    dbType = getStrategyDbTypeFromTypeNode(field.type, ctx);
+  } catch {
+    throw new InvalidDirectiveError(
+      `Object type ${(field.type as NamedTypeNode)?.name.value ?? field.name} must be annotated with @model.`,
+    );
+  }
+
+  config.relatedType = getRelatedType(config, ctx);
+  const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType, config);
+  dataSourceBasedTransformer.validate(ctx, config);
   validateModelDirective(config);
 
   if (isListType(field.type)) {
-    throw new InvalidDirectiveError(`@${directiveName} cannot be used with lists.`);
+    throw new InvalidDirectiveError(`@${BelongsToDirective.name} cannot be used with lists.`);
   }
 
-  config.fieldNodes = getFieldsNodes(config, ctx);
-  config.relatedType = getRelatedType(config, ctx);
   config.connectionFields = [];
   validateRelatedModelDirective(config);
 
@@ -185,9 +215,9 @@ const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerConte
     });
   });
 
-  if (!isBiRelation) {
+  if (!isBiRelation && dbType === DDB_DB_TYPE) {
     throw new InvalidDirectiveError(
-      `${config.relatedType.name.value} must have a relationship with ${object.name.value} in order to use @${directiveName}.`,
+      `${config.relatedType.name.value} must have a relationship with ${object.name.value} in order to use @${BelongsToDirective.name}.`,
     );
   }
 };

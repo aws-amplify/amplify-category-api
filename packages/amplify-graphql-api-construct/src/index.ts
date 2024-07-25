@@ -1,13 +1,19 @@
+/* ATTENTION
+ *
+ * If you modify this file you must also modify packages/amplify-data-construct/src/index.ts to have the same exports
+ */
 export type {
   IAMAuthorizationConfig,
+  IdentityPoolAuthorizationConfig,
   UserPoolAuthorizationConfig,
   OIDCAuthorizationConfig,
   ApiKeyAuthorizationConfig,
   LambdaAuthorizationConfig,
-  AuthorizationConfig,
-  AmplifyGraphqlApiSchema,
+  AuthorizationModes,
+  PartialTranslationBehavior,
   AmplifyGraphqlApiProps,
   AmplifyGraphqlApiResources,
+  AmplifyGraphqlApiCfnResources,
   FunctionSlotBase,
   MutationFunctionSlot,
   QueryFunctionSlot,
@@ -15,14 +21,28 @@ export type {
   FunctionSlot,
   FunctionSlotOverride,
   ConflictResolution,
+  DataStoreConfiguration,
   ConflictDetectionType,
-  ConflictHandlerType,
   OptimisticConflictResolutionStrategy,
   CustomConflictResolutionStrategy,
   AutomergeConflictResolutionStrategy,
   ConflictResolutionStrategyBase,
   ConflictResolutionStrategy,
-  SchemaTranslationBehavior,
+  TranslationBehavior,
+  IAmplifyGraphqlDefinition,
+  IBackendOutputStorageStrategy,
+  IBackendOutputEntry,
+  AddFunctionProps,
 } from './types';
 export { AmplifyGraphqlApi } from './amplify-graphql-api';
-// No-op change to trigger publish
+export { AmplifyGraphqlDefinition } from './amplify-graphql-definition';
+export {
+  AmplifyDynamoDbTableWrapper,
+  TimeToLiveSpecification,
+  ProvisionedThroughput,
+  SSESpecification,
+  SSEType,
+  StreamSpecification,
+} from './amplify-dynamodb-table-wrapper';
+export { SQLLambdaModelDataSourceStrategyFactory } from './sql-model-datasource-strategy';
+export * from './model-datasource-strategy-types';

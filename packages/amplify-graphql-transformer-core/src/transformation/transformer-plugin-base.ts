@@ -33,10 +33,13 @@ import { InvalidTransformerError } from '../errors';
  */
 export abstract class TransformerPluginBase implements TransformerPluginProvider {
   public readonly name: string;
+
   public readonly directive: DirectiveDefinitionNode;
 
   public readonly typeDefinitions: TypeDefinitionNode[];
+
   private logs: TransformerLog[];
+
   constructor(
     name: string,
     document: DocumentNode | string,

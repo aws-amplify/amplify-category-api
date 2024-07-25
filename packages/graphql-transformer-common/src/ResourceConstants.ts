@@ -2,7 +2,9 @@ export class ResourceConstants {
   public static NONE = 'NONE';
 
   public static DEFAULT_PAGE_LIMIT = 100;
+
   public static DEFAULT_SYNC_QUERY_PAGE_LIMIT = 100;
+
   public static DEFAULT_SEARCHABLE_PAGE_LIMIT = 100;
 
   public static readonly RESOURCES = {
@@ -27,11 +29,37 @@ export class ResourceConstants {
     OpenSearchStreamingLambdaFunctionLogicalID: 'OpenSearchStreamingLambdaFunction',
     OpenSearchDataSourceLogicalID: 'OpenSearchDataSource',
 
-    // RDS
-    RDSLambdaIAMRoleLogicalID: 'RDSLambdaIAMRole',
-    RDSLambdaLogicalID: 'RDSLambdaLogicalID',
-    RDSLambdaDataSourceLogicalID: 'RDSLambdaDataSource',
-    RDSLambdaDataSourceLogicalName: 'RDSLambdaDatabase',
+    // SQL Lambda global resources
+    // Lambda Layer version resolution. LayerVersion ARNs are stored at `{bucket}/{prefix}{region}`, as in:
+    // `amplify-rds-layer-resources/sql-layer-versions/us-west-2`
+
+    /**
+     * The bucket name where the manifest files are stored.
+     *
+     * DO NOT CHANGE THIS VALUE. It is a well-known value shared amongst multiple components of the patching infrastructure.
+     */
+    SQLLayerManifestBucket: 'amplify-rds-layer-resources',
+
+    /**
+     * The region in which the version manifest bucket was created.
+     *
+     * DO NOT CHANGE THIS VALUE. It is a well-known value shared amongst multiple components of the patching infrastructure.
+     */
+    SQLLayerManifestBucketRegion: 'us-east-1',
+
+    /**
+     * The prefix of the manifest file that stores the SQL layer ARNs.
+     *
+     * DO NOT CHANGE THIS VALUE. It is a well-known value shared amongst multiple components of the patching infrastructure.
+     */
+    SQLLayerVersionManifestKeyPrefix: 'sql-layer-versions/',
+
+    /**
+     * The prefix of the manifest file that stores the SNS topic ARNs that the patching lambda subscribes to.
+     *
+     * DO NOT CHANGE THIS VALUE. It is a well-known value shared amongst multiple components of the patching infrastructure.
+     */
+    SQLSNSTopicARNManifestKeyPrefix: 'sql-sns-topic-versions/',
 
     // Local. Try not to collide with model data sources.
     NoneDataSource: 'NoneDataSource',
@@ -40,7 +68,13 @@ export class ResourceConstants {
     AuthCognitoUserPoolLogicalID: 'AuthCognitoUserPool',
     AuthCognitoUserPoolNativeClientLogicalID: 'AuthCognitoUserPoolNativeClient',
     AuthCognitoUserPoolJSClientLogicalID: 'AuthCognitoUserPoolJSClient',
+
+    // Amplify Table Manager
+    TableManagerOnEventHandlerLogicalID: 'TableManagerOnEventHandler',
+    TableManagerIsCompleteHandlerLogicalID: 'TableManagerIsCompleteHandler',
+    TableManagerCustomProviderLogicalID: 'TableManagerCustomProvider',
   };
+
   public static PARAMETERS = {
     // cli
     Env: 'env',
@@ -91,7 +125,9 @@ export class ResourceConstants {
     // Auth
     AuthCognitoUserPoolId: 'AuthCognitoUserPoolId',
   };
+
   public static MAPPINGS = {};
+
   public static CONDITIONS = {
     // Environment
     HasEnvironmentParameter: 'HasEnvironmentParameter',
@@ -105,6 +141,7 @@ export class ResourceConstants {
     ShouldCreateAPIKey: 'ShouldCreateAPIKey',
     APIKeyExpirationEpochIsPositive: 'APIKeyExpirationEpochIsPositive',
   };
+
   public static OUTPUTS = {
     // AppSync
     GraphQLAPIEndpointOutput: 'GraphQLAPIEndpointOutput',
@@ -128,6 +165,7 @@ export class ResourceConstants {
     AuthCognitoUserPoolNativeClientOutput: 'AuthCognitoUserPoolNativeClientId',
     AuthCognitoUserPoolJSClientOutput: 'AuthCognitoUserPoolJSClientId',
   };
+
   public static METADATA = {};
 
   public static readonly SNIPPETS = {

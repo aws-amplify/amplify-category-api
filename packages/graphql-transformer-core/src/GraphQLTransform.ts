@@ -15,7 +15,7 @@ import {
   TypeSystemDefinitionNode,
   UnionTypeDefinitionNode,
 } from 'graphql';
-import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
+import { SyncResourceIDs } from 'graphql-transformer-common';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from './errors';
 import { TransformerContext } from './TransformerContext';
 import { Transformer } from './Transformer';
@@ -23,8 +23,8 @@ import { ITransformer } from './ITransformer';
 import { validateModelSchema } from './validation';
 import { TransformFormatter } from './TransformFormatter';
 import { TransformConfig, SyncUtils } from './util';
-import { SyncResourceIDs } from 'graphql-transformer-common';
 import { FeatureFlagProvider, NoopFeatureFlagProvider } from './FeatureFlags';
+import { DeploymentResources } from './DeploymentResources';
 
 function isFunction(obj: any) {
   return obj && typeof obj === 'function';
@@ -197,8 +197,11 @@ export interface GraphQLTransformOptions {
 export type StackMapping = { [resourceId: string]: string };
 export class GraphQLTransform {
   private transformers: ITransformer[];
+
   private stackMappingOverrides: StackMapping;
+
   private transformConfig: TransformConfig;
+
   private featureFlags: FeatureFlagProvider;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true

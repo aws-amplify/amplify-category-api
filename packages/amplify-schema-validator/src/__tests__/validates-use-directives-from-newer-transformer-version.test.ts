@@ -1,6 +1,6 @@
 import { validateSchemaWithContext } from '..';
-import { readSchema } from './helpers/readSchema';
 import { ValidateSchemaProps } from '../helpers/schema-validator-props';
+import { readSchema } from './helpers/readSchema';
 
 const schemaProps: ValidateSchemaProps = {
   graphqlTransformerVersion: 1,

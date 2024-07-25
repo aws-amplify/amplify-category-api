@@ -1,18 +1,19 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { CloudFormationClient } from '../CloudFormationClient';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { CognitoIdentityServiceProvider as CognitoClient, S3, CognitoIdentity } from 'aws-sdk';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { AWS } from '@aws-amplify/core';
-import { Auth } from 'aws-amplify';
+import { Auth, API } from 'aws-amplify';
 import gql from 'graphql-tag';
-import { S3Client } from '../S3Client';
-import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { default as moment } from 'moment';
 import { BelongsToTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import * as Observable from 'zen-observable';
+import { S3Client } from '../S3Client';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import {
   createUserPool,
   createUserPoolClient,
@@ -22,13 +23,12 @@ import {
   signupUser,
   authenticateUser,
   createIdentityPool,
+  setIdentityPoolRoles,
 } from '../cognitoUtils';
 import 'isomorphic-fetch';
-import { API } from 'aws-amplify';
-import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import { withTimeOut } from '../promiseWithTimeout';
 import { IAMHelper } from '../IAMHelper';
-import * as Observable from 'zen-observable';
+import { CloudFormationClient } from '../CloudFormationClient';
 
 // tslint:disable: no-use-before-declare
 // to deal with bug in cognito-identity-js
@@ -253,7 +253,37 @@ beforeAll(async () => {
     task: Task @belongsTo @auth(rules: [{allow: private, provider: iam}])
   }
   `;
-  const transformer = new GraphQLTransform({
+  try {
+    await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
+  } catch (e) {
+    console.error(`Failed to create bucket: ${e}`);
+  }
+
+  // create userpool
+  const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
+  USER_POOL_ID = userPoolResponse.UserPool!.Id!;
+  const userPoolClientResponse = await createUserPoolClient(cognitoClient, USER_POOL_ID, `UserPool${STACK_NAME}`);
+  const userPoolClientId = userPoolClientResponse.UserPoolClient!.ClientId!;
+
+  // create identitypool
+  IDENTITY_POOL_ID = await createIdentityPool(identityClient, `IdentityPool${STACK_NAME}`, {
+    providerName: `cognito-idp.${AWS_REGION}.amazonaws.com/${USER_POOL_ID}`,
+    clientId: userPoolClientId,
+  });
+
+  // create auth and unauthroles
+  const { authRole, unauthRole } = await iamHelper.createRoles(AUTH_ROLE_NAME, UNAUTH_ROLE_NAME, IDENTITY_POOL_ID);
+
+  // set roles on identity pool
+  await setIdentityPoolRoles(identityClient, IDENTITY_POOL_ID, {
+    authRoleArn: authRole.Arn,
+    unauthRoleArn: unauthRole.Arn,
+    providerName: `cognito-idp.${AWS_REGION}.amazonaws.com/${USER_POOL_ID}`,
+    clientId: userPoolClientId,
+  });
+
+  const out = testTransform({
+    schema: validSchema,
     authConfig: {
       defaultAuthentication: {
         authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -276,28 +306,6 @@ beforeAll(async () => {
       useSubUsernameForDefaultIdentityClaim: false,
     },
   });
-
-  try {
-    await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
-  } catch (e) {
-    console.error(`Failed to create bucket: ${e}`);
-  }
-
-  // create userpool
-  const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
-  USER_POOL_ID = userPoolResponse.UserPool.Id;
-  const userPoolClientResponse = await createUserPoolClient(cognitoClient, USER_POOL_ID, `UserPool${STACK_NAME}`);
-  const userPoolClientId = userPoolClientResponse.UserPoolClient.ClientId;
-  // create auth and unauthroles
-  const { authRole, unauthRole } = await iamHelper.createRoles(AUTH_ROLE_NAME, UNAUTH_ROLE_NAME);
-  // create identitypool
-  IDENTITY_POOL_ID = await createIdentityPool(identityClient, `IdentityPool${STACK_NAME}`, {
-    authRoleArn: authRole.Arn,
-    unauthRoleArn: unauthRole.Arn,
-    providerName: `cognito-idp.${AWS_REGION}.amazonaws.com/${USER_POOL_ID}`,
-    clientId: userPoolClientId,
-  });
-  const out = transformer.transform(validSchema);
   const finishedStack = await deploy(
     customS3Client,
     cf,
@@ -397,7 +405,7 @@ afterAll(async () => {
  */
 
 // tests using cognito
-test('Test that only authorized members are allowed to view subscriptions', async () => {
+test('that only authorized members are allowed to view subscriptions', async () => {
   // subscribe to create students as user 2
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
@@ -441,7 +449,7 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
   });
 });
 
-test('Test a subscription on update', async () => {
+test('a subscription on update', async () => {
   // subscribe to update students as user 2
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME2, REAL_PASSWORD);
@@ -495,7 +503,7 @@ test('Test a subscription on update', async () => {
   });
 });
 
-test('Test a subscription on delete', async () => {
+test('a subscription on delete', async () => {
   // subscribe to onDelete as user 2
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME2, REAL_PASSWORD);
@@ -550,7 +558,7 @@ test('Test a subscription on delete', async () => {
   });
 });
 
-test('test that group is only allowed to listen to subscriptions and listen to onCreate', async () => {
+test('that group is only allowed to listen to subscriptions and listen to onCreate', async () => {
   const memberID = '001';
   const memberName = 'username00';
   // test that a user that only read can't mutate
@@ -705,7 +713,7 @@ test('authorized group is allowed to listen to onDelete', async () => {
 });
 
 // ownerField Tests
-test('Test subscription onCreatePost with ownerField', async () => {
+test('subscription onCreatePost with ownerField', async () => {
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const observer = API.graphql({
@@ -744,7 +752,7 @@ test('Test subscription onCreatePost with ownerField', async () => {
   });
 });
 
-test('Test onCreatePost with incorrect owner argument should throw an error', async () => {
+test('onCreatePost with incorrect owner argument should throw an error', async () => {
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const failedObserver = API.graphql({
@@ -779,7 +787,7 @@ test('Test onCreatePost with incorrect owner argument should throw an error', as
 });
 
 // iam tests
-test('Test that IAM can listen and read to onCreatePost', async () => {
+test('that IAM can listen and read to onCreatePost', async () => {
   const postID = 'subscriptionID';
   const postTitle = 'titleMadeByPostOwner';
 
@@ -826,7 +834,7 @@ test('Test that IAM can listen and read to onCreatePost', async () => {
   await subscriptionPromise;
 });
 
-test('test that subcsription with apiKey', async () => {
+test('that subcsription with apiKey', async () => {
   reconfigureAmplifyAPI('API_KEY', API_KEY);
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const observer = API.graphql({
@@ -868,7 +876,7 @@ test('test that subcsription with apiKey', async () => {
   });
 });
 
-test('test that subscription with apiKey onUpdate', async () => {
+test('that subscription with apiKey onUpdate', async () => {
   reconfigureAmplifyAPI('API_KEY', API_KEY);
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const observer = API.graphql({
@@ -924,7 +932,7 @@ test('test that subscription with apiKey onUpdate', async () => {
   });
 });
 
-test('test that subscription with apiKey onDelete', async () => {
+test('that subscription with apiKey onDelete', async () => {
   reconfigureAmplifyAPI('API_KEY', API_KEY);
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const observer = API.graphql({
@@ -972,7 +980,7 @@ test('test that subscription with apiKey onDelete', async () => {
   });
 });
 
-test('Test onCreateOwnerInvalidClaim with invalid owner claims fails', async () => {
+test('onCreateOwnerInvalidClaim with invalid owner claims fails', async () => {
   reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
   await Auth.signIn(USERNAME2, REAL_PASSWORD);
   const failedObserver = API.graphql({

@@ -1,3 +1,5 @@
+import fs = require('fs');
+import path = require('path');
 import {
   ObjectTypeDefinitionNode,
   parse,
@@ -10,9 +12,6 @@ import {
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 
-import fs = require('fs');
-import path = require('path');
-
 jest.setTimeout(2000000);
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
@@ -24,7 +23,7 @@ const featureFlags = {
   getNumber: jest.fn(),
   getObject: jest.fn(),
 };
-test('Test custom root types with additional fields.', () => {
+test('custom root types with additional fields.', () => {
   const validSchema = `
     type Query {
         additionalQueryField: String
@@ -94,7 +93,7 @@ function verifyInputCount(doc: DocumentNode, type: string, count: number): boole
 }
 
 function cleanUpFiles(directory: string) {
-  var files = fs.readdirSync(directory);
+  let files = fs.readdirSync(directory);
   for (const file of files) {
     const dir = path.join(directory, file);
     if (!fs.lstatSync(dir).isDirectory()) {

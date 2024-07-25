@@ -1,5 +1,12 @@
-import { AppSyncAuthConfiguration, TransformerPluginProvider, TransformerPluginType } from '@aws-amplify/graphql-transformer-interfaces';
-import { App } from 'aws-cdk-lib';
+import {
+  AppSyncAuthConfiguration,
+  NestedStackProvider,
+  TransformParameters,
+  TransformerPluginProvider,
+  TransformerPluginType,
+} from '@aws-amplify/graphql-transformer-interfaces';
+import { App, NestedStack, Stack } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import { GraphQLApi } from '../../graphql-api';
 import { GraphQLTransform } from '../../transformation/transform';
 import { TransformerOutput } from '../../transformer-context/output';
@@ -7,9 +14,22 @@ import { StackManager } from '../../transformer-context/stack-manager';
 
 class TestGraphQLTransform extends GraphQLTransform {
   testGenerateGraphQlApi(stackManager: StackManager, output: TransformerOutput): GraphQLApi {
-    return this.generateGraphQlApi(stackManager, output);
+    return this.generateGraphQlApi(
+      stackManager,
+      { provide: jest.fn() },
+      {
+        amplifyEnvironmentName: 'NONE',
+        apiName: 'testApi',
+      },
+      output,
+      { enableTransformerCfnOutputs: true } as TransformParameters,
+    );
   }
 }
+
+const testNestedStackProvider: NestedStackProvider = {
+  provide: (scope: Construct, name: string): Stack => new NestedStack(scope, name),
+};
 
 const mockTransformer: TransformerPluginProvider = {
   pluginType: TransformerPluginType.DATA_SOURCE_PROVIDER,
@@ -50,15 +70,17 @@ describe('GraphQLTransform', () => {
       transform: TestGraphQLTransform;
       isAPIKeyExpected: boolean;
     }): void => {
-      const stackManager = new StackManager(new App(), {});
+      const app = new App();
+      const stack = new Stack(app, 'TestStack');
+      const stackManager = new StackManager(stack, testNestedStackProvider, undefined, {});
       const transformerOutput = {
         buildSchema: jest.fn(() => ''),
       } as unknown as TransformerOutput;
       transform.testGenerateGraphQlApi(stackManager, transformerOutput);
       if (isAPIKeyExpected) {
-        expect(stackManager.rootStack.node.tryFindChild('GraphQLAPIKeyOutput')).toBeDefined();
+        expect(stackManager.scope.node.tryFindChild('GraphQLAPIKeyOutput')).toBeDefined();
       } else {
-        expect(stackManager.rootStack.node.tryFindChild('GraphQLAPIKeyOutput')).toBeUndefined();
+        expect(stackManager.scope.node.tryFindChild('GraphQLAPIKeyOutput')).toBeUndefined();
       }
     };
 
@@ -77,7 +99,9 @@ describe('GraphQLTransform', () => {
 
     it('can be invoked', () => {
       const transform = new TestGraphQLTransform({ transformers: [mockTransformer] });
-      const stackManager = new StackManager(new App(), {});
+      const app = new App();
+      const stack = new Stack(app, 'TestStack');
+      const stackManager = new StackManager(stack, testNestedStackProvider, undefined, {});
       const transformerOutput = {
         buildSchema: jest.fn(() => ''),
       } as unknown as TransformerOutput;

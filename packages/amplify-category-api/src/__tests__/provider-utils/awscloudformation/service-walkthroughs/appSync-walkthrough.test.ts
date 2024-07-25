@@ -101,7 +101,7 @@ describe('get IAM policies', () => {
 });
 
 describe('correct Auth Config', () => {
-  it('dont configure additional auth types ', async () => {
+  it('dont configure additional auth types', async () => {
     const authConfig_mock = {
       defaultAuthentication: {
         authenticationType: 'AWS_IAM',

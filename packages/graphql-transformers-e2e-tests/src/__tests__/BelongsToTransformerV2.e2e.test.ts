@@ -1,6 +1,6 @@
 /* eslint-disable max-lines-per-function */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { getSchemaDeployer, SchemaDeployer } from '../deploySchema';
@@ -8,13 +8,14 @@ import { getSchemaDeployer, SchemaDeployer } from '../deploySchema';
 jest.setTimeout(1000 * 60 * 10); // 10 minutes
 
 describe('@belongsTo transformer', () => {
-  const transformerFactory = () =>
-    new GraphQLTransform({
+  const transform = (schema: string) =>
+    testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new BelongsToTransformer(), new HasManyTransformer(), new HasOneTransformer()],
       transformParameters: {
         respectPrimaryKeyAttributesOnConnectionField: false,
         sandboxModeEnabled: true,
       },
-      transformers: [new ModelTransformer(), new BelongsToTransformer(), new HasManyTransformer(), new HasOneTransformer()],
     });
   const validSchema = /* GraphQL */ `
     type Blog @model {
@@ -38,7 +39,7 @@ describe('@belongsTo transformer', () => {
   `;
   let testSchemaDeployer: SchemaDeployer;
   beforeEach(async () => {
-    testSchemaDeployer = await getSchemaDeployer('belongsToV2Test', transformerFactory);
+    testSchemaDeployer = await getSchemaDeployer('belongsToV2Test', transform);
   });
 
   afterEach(async () => {

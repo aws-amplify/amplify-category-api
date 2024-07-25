@@ -32,7 +32,14 @@ export type LayerPushSettings = {
 /**
  * Function to test amplify push with verbose status
  */
-export function amplifyPush(cwd: string, testingWithLatestCodebase = false): Promise<void> {
+export function amplifyPush(
+  cwd: string,
+  testingWithLatestCodebase = false,
+  settings?: {
+    skipCodegen?: boolean;
+    useBetaSqlLayer?: boolean;
+  },
+): Promise<void> {
   return new Promise((resolve, reject) => {
     // Test detailed status
     spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
@@ -43,19 +50,33 @@ export function amplifyPush(cwd: string, testingWithLatestCodebase = false): Pro
         }
       });
     // Test amplify push
-    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    const pushOptions = ['push'];
+    if (settings?.useBetaSqlLayer) {
+      pushOptions.push('--use-beta-sql-layer');
+    }
+    const pushCommands = spawn(getCLIPath(testingWithLatestCodebase), pushOptions, {
+      cwd,
+      stripColors: true,
+      noOutputTimeout: pushTimeoutMS,
+    })
       .wait('Are you sure you want to continue?')
-      .sendConfirmYes()
-      .wait('Do you want to generate code for your newly created GraphQL API')
-      .sendConfirmNo()
-      .wait(/.*/)
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+      .sendConfirmYes();
+
+    if (!settings?.skipCodegen) {
+      pushCommands
+        .wait('Do you want to generate code for your newly created GraphQL API')
+        .sendConfirmNo()
+        .wait('Do you want to generate code for your newly created GraphQL API')
+        .sendConfirmNo();
+    }
+
+    pushCommands.wait(/.*/).run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
 }
 
@@ -115,17 +136,6 @@ export function amplifyPushForce(cwd: string, testingWithLatestCodebase = false)
 }
 
 /**
- * Function to test amplify push with --force and --yes flag
- */
-export function amplifyPushForceWithYesFlag(cwd: string, testingWithLatestCodebase = false): Promise<void> {
-  return spawn(getCLIPath(testingWithLatestCodebase), ['push', '--force', '--yes'], {
-    cwd,
-    stripColors: true,
-    noOutputTimeout: pushTimeoutMS,
-  }).runAsync();
-}
-
-/**
  * * Used to stop an iterative deployment
  * * Waits on the table stack to be complete and for the next stack to update in order to cancel the push
  */
@@ -141,12 +151,19 @@ export function cancelIterativeAmplifyPush(
       .wait(`Deploying iterative update ${idx.current} of ${idx.max} into`)
       .wait(/.*AWS::AppSync::GraphQLSchema.*UPDATE_IN_PROGRESS.*/)
       .sendCtrlC()
-      .run((err: Error) => {
-        if (err && !/Process exited with non zero exit code 130/.test(err.message)) {
-          reject(err);
-        } else {
-          resolve();
+      .run((err: Error, signal) => {
+        if (err) {
+          if (process.env.CODEBUILD) {
+            // In codebuild the code 130 is not sent but with exit code 2
+            // This is to catch the error in that scenario so that the test will proceed
+            if (!/Killed the process as no output received/.test(err.message)) {
+              reject(err);
+            }
+          } else if (!/Process exited with non zero exit code 130/.test(err.message)) {
+            reject(err);
+          }
         }
+        resolve();
       });
   });
 }
@@ -285,70 +302,6 @@ export function amplifyPushUpdateForDependentModel(
 }
 
 /**
- * Function to test amplify push when deploying a layer
- * * this function expects a single layer's content to be modified
- */
-export function amplifyPushLayer(cwd: string, settings: LayerPushSettings, testingWithLatestCodebase = false): Promise<void> {
-  const defaultSettings: LayerPushSettings = {
-    acceptSuggestedLayerVersionConfigurations: true,
-    migrateLegacyLayer: false,
-    usePreviousPermissions: true,
-  };
-
-  const effectiveSettings = {
-    ...defaultSettings,
-    ...settings,
-  };
-
-  return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
-      .wait('Are you sure you want to continue?')
-      .sendConfirmYes();
-
-    if (settings.migrateLegacyLayer === true) {
-      chain
-        .wait('⚠️  Amplify updated the way Lambda layers work to better support team workflows and additional features.')
-        .wait('Continue?')
-        .sendConfirmYes();
-    }
-
-    chain.wait('Suggested configuration for new layer versions:').wait('Accept the suggested layer version configurations?');
-
-    if (effectiveSettings.acceptSuggestedLayerVersionConfigurations === true) {
-      chain.sendConfirmYes();
-    } else {
-      chain.sendConfirmNo();
-
-      chain.wait('What permissions do you want to grant to this new layer version');
-
-      if (effectiveSettings.usePreviousPermissions === true) {
-        chain.sendCarriageReturn(); // The same permission as the latest layer version
-      } else {
-        chain.sendKeyDown().sendCarriageReturn(); // Only accessible by the current account. You can always edit this later with: amplify update function
-      }
-
-      // Description prompt
-      chain.wait('Description');
-
-      if (effectiveSettings.layerDescription) {
-        chain.sendLine(effectiveSettings.layerDescription);
-      } else {
-        // Accept default description
-        chain.sendCarriageReturn();
-      }
-    }
-
-    chain.run((err: Error) => {
-      if (!err) {
-        resolve();
-      } else {
-        reject(err);
-      }
-    });
-  });
-}
-
-/**
  * Function to test amplify push with iterativeRollback flag option
  */
 export function amplifyPushIterativeRollback(cwd: string, testingWithLatestCodebase = false) {
@@ -363,45 +316,6 @@ export function amplifyPushIterativeRollback(cwd: string, testingWithLatestCodeb
           reject(err);
         }
       });
-  });
-}
-
-/**
- * Function to test amplify push with missing environment variable
- */
-export function amplifyPushMissingEnvVar(cwd: string, newEnvVarValue: string) {
-  return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
-      .wait('Enter the missing environment variable value of')
-      .sendLine(newEnvVarValue)
-      .wait('Are you sure you want to continue?')
-      .sendConfirmYes()
-      .run((err) => (err ? reject(err) : resolve()));
-  });
-}
-
-/**
- * Function to test amplify push with missing function secrets
- */
-export function amplifyPushMissingFuncSecret(cwd: string, newSecretValue: string) {
-  return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
-      .wait('does not have a value in this environment. Specify one now:')
-      .sendLine(newSecretValue)
-      .wait('Are you sure you want to continue?')
-      .sendConfirmYes()
-      .run((err) => (err ? reject(err) : resolve()));
-  });
-}
-
-/**
- * Function to test amplify push with no changes in the resources
- */
-export function amplifyPushWithNoChanges(cwd: string, testingWithLatestCodebase = false): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
-      .wait('No changes detected')
-      .run((err: Error) => (err ? reject(err) : resolve()));
   });
 }
 

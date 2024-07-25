@@ -191,6 +191,8 @@ module.exports = {
         '@typescript-eslint/unbound-method': 'off',
         'jest/unbound-method': 'error',
         '@typescript-eslint/no-explicit-any': 'off',
+        // jest describe/test can be very long
+        'max-lines-per-function': 'off',
       },
     },
   ],
@@ -222,6 +224,9 @@ module.exports = {
     // Ignore CHANGELOG.md files
     '/packages/*/CHANGELOG.md',
 
+    '/packages/amplify-graphql-model-transformer/rds-lambda',
+    '/packages/amplify-graphql-model-transformer/rds-patching-lambda',
+    '/packages/amplify-graphql-model-transformer/publish-notification-lambda',
     'client-test-apps',
   ],
 };

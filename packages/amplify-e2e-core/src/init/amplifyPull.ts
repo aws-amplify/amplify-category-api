@@ -75,23 +75,3 @@ export const amplifyPull = (
       }
     });
   });
-
-export const amplifyPullSandbox = (cwd: string, settings: { sandboxId: string; appType: string; framework: string }): Promise<any> =>
-  new Promise((resolve, reject) => {
-    const args = ['pull', '--sandboxId', settings.sandboxId];
-
-    spawn(getCLIPath(), args, { cwd, stripColors: true })
-      .wait('What type of app are you building')
-      .sendKeyUp()
-      .sendLine(settings.appType)
-      .wait('What javascript framework are you using')
-      .sendLine(settings.framework)
-      .wait('Successfully generated models.')
-      .run((err: Error) => {
-        if (!err) {
-          resolve({});
-        } else {
-          reject(err);
-        }
-      });
-  });

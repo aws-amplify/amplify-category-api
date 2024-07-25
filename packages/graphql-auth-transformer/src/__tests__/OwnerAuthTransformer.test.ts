@@ -4,6 +4,7 @@ import { ResourceConstants } from 'graphql-transformer-common';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelAuthTransformer } from '../ModelAuthTransformer';
 import { getObjectType, getField } from './test-helpers';
+
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
     if (name === 'improvePluralization') {
@@ -15,7 +16,7 @@ const featureFlags = {
   getObject: jest.fn(),
 };
 
-test('Test ModelAuthTransformer validation happy case', () => {
+test('ModelAuthTransformer validation happy case', () => {
   const validSchema = `
     type Post @model @auth(rules: [{allow: owner}]) {
         id: ID!
@@ -45,7 +46,7 @@ test('Test ModelAuthTransformer validation happy case', () => {
   );
 });
 
-test('Test OwnerField with Subscriptions', () => {
+test('OwnerField with Subscriptions', () => {
   const validSchema = `
         type Post @model
             @auth(rules: [
@@ -90,7 +91,7 @@ test('Test OwnerField with Subscriptions', () => {
   );
 });
 
-test('Test multiple owner rules with Subscriptions', () => {
+test('multiple owner rules with Subscriptions', () => {
   const validSchema = `
         type Post @model
             @auth(rules: [
@@ -197,7 +198,7 @@ describe('add missing implicit owner fields to type', () => {
       transformer = runTransformer(validSchema);
     });
 
-    test('Test implicit owner fields get added to the type when addMissingOwnerFields feature flag is set', () => {
+    test('implicit owner fields get added to the type when addMissingOwnerFields feature flag is set', () => {
       const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
       const schema = parse(out.schema);
@@ -213,7 +214,7 @@ describe('add missing implicit owner fields to type', () => {
       expect((customOwner as any).type.name.value).toEqual('String');
     });
 
-    test('Test implicit owner fields does not get added to the type when addMissingOwnerFields feature flag is not set', () => {
+    test('implicit owner fields does not get added to the type when addMissingOwnerFields feature flag is not set', () => {
       (ff.getBoolean as any).mockImplementation(() => false);
       const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
@@ -244,7 +245,7 @@ describe('add missing implicit owner fields to type', () => {
     beforeEach(() => {
       transformer = runTransformer(validSchema);
     });
-    test('Test implicit owner fields from field level auth get added to the type when addMissingOwnerFields feature flag is set', () => {
+    test('implicit owner fields from field level auth get added to the type when addMissingOwnerFields feature flag is set', () => {
       const out = transformer.transform(validSchema);
       expect(out).toBeDefined();
       const schema = parse(out.schema);
@@ -260,7 +261,7 @@ describe('add missing implicit owner fields to type', () => {
       expect((customOwner as any).type.name.value).toEqual('String');
     });
 
-    test('Test implicit owner fields from field level auth does not get added to the type when addMissingOwnerFields feature flag is not set', () => {
+    test('implicit owner fields from field level auth does not get added to the type when addMissingOwnerFields feature flag is not set', () => {
       (ff.getBoolean as any).mockImplementation(() => false);
       const out = transformer.transform(validSchema);
       expect(out).toBeDefined();

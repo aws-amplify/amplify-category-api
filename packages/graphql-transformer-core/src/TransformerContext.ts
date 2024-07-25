@@ -19,8 +19,6 @@ import {
   OperationTypeDefinitionNode,
   InterfaceTypeDefinitionNode,
 } from 'graphql';
-import blankTemplate from './util/blankTemplate';
-import DefaultSchemaDefinition from './defaultSchema';
 import {
   InterfaceTypeExtensionNode,
   UnionTypeExtensionNode,
@@ -30,9 +28,12 @@ import {
   InputObjectTypeExtensionNode,
   InputValueDefinitionNode,
 } from 'graphql/language/ast';
-import { ResolverConfig } from './util';
 import { makeOperationType } from 'graphql-transformer-common';
+import blankTemplate from './util/blankTemplate';
+import DefaultSchemaDefinition from './defaultSchema';
+import { ResolverConfig } from './util';
 import { FeatureFlagProvider } from './FeatureFlags';
+
 export interface MappingParameters {
   [key: string]: {
     [key: string]: {
@@ -150,12 +151,13 @@ export class TransformerContext {
         case Kind.INTERFACE_TYPE_DEFINITION:
         case Kind.INPUT_OBJECT_TYPE_DEFINITION:
         case Kind.ENUM_TYPE_DEFINITION:
-        case Kind.UNION_TYPE_DEFINITION:
+        case Kind.UNION_TYPE_DEFINITION: {
           const typeDef = inputDef as TypeDefinitionNode;
           if (!this.getType(typeDef.name.value)) {
             this.addType(typeDef);
           }
           break;
+        }
         case Kind.SCHEMA_DEFINITION:
           if (!this.getSchema()) {
             const typeDef = inputDef as SchemaDefinitionNode;

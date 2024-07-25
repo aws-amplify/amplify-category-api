@@ -3,11 +3,11 @@ import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { VersionedModelTransformer } from 'graphql-versioned-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
-import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import { GraphQLClient } from '../GraphQLClient';
 import { default as moment } from 'moment';
 import { default as S3 } from 'aws-sdk/clients/s3';
+import { GraphQLClient } from '../GraphQLClient';
+import { CloudFormationClient } from '../CloudFormationClient';
 import { S3Client } from '../S3Client';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { resolveTestRegion } from '../testSetup';
@@ -92,7 +92,7 @@ beforeAll(async () => {
     expect(finishedStack).toBeDefined();
 
     // Arbitrary wait to make sure everything is ready.
-    //await cf.wait(10, () => Promise.resolve())
+    // await cf.wait(10, () => Promise.resolve())
     expect(finishedStack).toBeDefined();
     const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
     const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput);
@@ -114,7 +114,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test('Test createPost mutation', async () => {
+test('createPost mutation', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Hello, World!" }) {
@@ -134,7 +134,7 @@ test('Test createPost mutation', async () => {
   expect(response.data.createPost.version).toEqual(1);
 });
 
-test('Test updatePost mutation', async () => {
+test('updatePost mutation', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Test Update" }) {
@@ -168,7 +168,7 @@ test('Test updatePost mutation', async () => {
   expect(updateResponse.data.updatePost.version).toEqual(2);
 });
 
-test('Test failed updatePost mutation with wrong version', async () => {
+test('failed updatePost mutation with wrong version', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Test Update" }) {
@@ -203,7 +203,7 @@ test('Test failed updatePost mutation with wrong version', async () => {
   expect((updateResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
 });
 
-test('Test deletePost mutation', async () => {
+test('deletePost mutation', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Test Delete" }) {
@@ -233,7 +233,7 @@ test('Test deletePost mutation', async () => {
   expect(deleteResponse.data.deletePost.version).toEqual(createResponse.data.createPost.version);
 });
 
-test('Test deletePost mutation with wrong version', async () => {
+test('deletePost mutation with wrong version', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {
         createPost(input: { title: "Test Delete" }) {

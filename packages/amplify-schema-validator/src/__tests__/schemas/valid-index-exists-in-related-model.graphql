@@ -1,7 +1,7 @@
 type Test @model {
   id: ID!
   email: String
-  testObj: Test1 @hasMany(indexName: "byUser")
+  testObj: [Test1] @hasMany(indexName: "byUser")
 }
 
 type Test1 @model {

@@ -3,6 +3,7 @@ import { Engine } from './engine';
 
 export class Schema {
   private models: Model[] = [];
+
   constructor(private engine: Engine) {}
 
   public getModels(): Model[] {

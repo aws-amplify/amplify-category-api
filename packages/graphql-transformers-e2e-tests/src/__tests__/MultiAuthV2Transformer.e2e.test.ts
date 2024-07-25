@@ -3,14 +3,15 @@ import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-in
 import { HasOneTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import { CloudFormationClient } from '../CloudFormationClient';
-import { S3Client } from '../S3Client';
-import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { CognitoIdentityServiceProvider as CognitoClient, S3, CognitoIdentity, IAM } from 'aws-sdk';
 import moment from 'moment';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import { ResourceConstants } from 'graphql-transformer-common';
+import gql from 'graphql-tag';
+import AWS = require('aws-sdk');
+import { IAMHelper } from '../IAMHelper';
 import {
   createUserPool,
   createIdentityPool,
@@ -20,15 +21,16 @@ import {
   signupUser,
   createGroup,
   addUserToGroup,
+  setIdentityPoolRoles,
 } from '../cognitoUtils';
-import { IAMHelper } from '../IAMHelper';
-import { ResourceConstants } from 'graphql-transformer-common';
-import gql from 'graphql-tag';
-import AWS = require('aws-sdk');
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
+import { S3Client } from '../S3Client';
+import { CloudFormationClient } from '../CloudFormationClient';
 import 'isomorphic-fetch';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
+
 import { resolveTestRegion } from '../testSetup';
 
 const AWS_REGION = resolveTestRegion();
@@ -86,8 +88,16 @@ beforeAll(async () => {
       id: ID!
       title: String
     }
+    
+    # Allow anyone to access. This is translated to Cognito Identity Pool with unauth role.
+    type PostPublicIdentityPool @model @auth(rules: [{ allow: public, provider: identityPool }]) {
+      id: ID!
+      title: String
+    }
 
     # Allow anyone to access. This is translated to IAM with unauth role.
+    # Note: IAM is deprecated and renamed to Cognito Identity Pool. 
+    # This is kept to test backwards compatibility.
     type PostPublicIAM @model @auth(rules: [{ allow: public, provider: iam }]) {
       id: ID!
       title: String
@@ -98,15 +108,64 @@ beforeAll(async () => {
       id: ID!
       title: String
     }
-
+    
     # Allow anyone with a sigv4 signed request with relevant policy to access.
-    type PostPrivateIAM @model @auth(rules: [{ allow: private, provider: iam }]) {
+    type PostPrivateIdentityPool @model @auth(rules: [{ allow: private, provider: identityPool }]) {
       id: ID!
       title: String
     }
 
+    # Allow anyone with a sigv4 signed request with relevant policy to access.
+    # Note: IAM is deprecated and renamed to Cognito Identity Pool. 
+    # This is kept to test backwards compatibility.
+    type PostPrivateIAM @model @auth(rules: [{ allow: private, provider: iam }]) {
+      id: ID!
+      title: String
+    }
+    
     # I have a model that is protected by userPools by default.
     # I want to call createPost from my lambda.
+    type PostOwnerIdentityPool
+      @model
+      @auth(
+        rules: [
+          # The cognito user pool owner can CRUD.
+          { allow: owner }
+          # A lambda function using Identity Pool can call Mutation.createPost.
+          { allow: private, provider: identityPool, operations: [create] }
+        ]
+      ) {
+      id: ID!
+      title: String
+      owner: String
+    }
+
+    type PostSecretFieldIdentityPool
+      @model
+      @auth(
+        rules: [
+          # The cognito user pool and can CRUD.
+          { allow: private }
+          # iam user can also have CRUD
+          { allow: private, provider: identityPool }
+        ]
+      ) {
+      id: ID
+      title: String
+      owner: String
+      secret: String
+        @auth(
+          rules: [
+            # Only a lambda function using Identity Pool can create/read/update this field
+            { allow: private, provider: iam, operations: [create,read,update] }
+          ]
+        )
+    }
+
+    # I have a model that is protected by userPools by default.
+    # I want to call createPost from my lambda.
+    # Note: IAM is deprecated and renamed to Cognito Identity Pool. 
+    # This is kept to test backwards compatibility.
     type PostOwnerIAM
       @model
       @auth(
@@ -157,6 +216,29 @@ beforeAll(async () => {
       post: PostConnection @hasOne
     }
 
+    type PostIdentityPoolWithKeys
+      @model
+      @auth(
+        rules: [
+          # API Key can CRUD
+          { allow: public }
+          # Identity Pool can read
+          { allow: public, provider: identityPool, operations: [read] }
+        ]
+      ) {
+      id: ID!
+      title: String
+      type: String
+        @index(
+          name: "byDate"
+          sortKeyFields: ["date"]
+          queryField: "getPostIdentityPoolWithKeysByDate"
+        )
+      date: AWSDateTime
+    }
+
+    # Note: IAM is deprecated and renamed to Cognito Identity Pool. 
+    # This is kept to test backwards compatibility.
     type PostIAMWithKeys
       @model
       @auth(
@@ -177,8 +259,77 @@ beforeAll(async () => {
         )
       date: AWSDateTime
     }
+    
+    # This type is for the managed policy slicing, only deployment test in this e2e
+    type TodoWithExtraLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongNameIdentityPool
+      @model(subscriptions: null)
+      @auth(rules: [{ allow: private, provider: identityPool }]) {
+      id: ID!
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename001: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename002: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename003: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename004: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename005: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename006: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename007: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename008: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename009: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename010: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename011: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename012: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename013: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename014: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename015: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename016: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename017: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename018: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename019: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename020: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename021: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename022: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename023: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename024: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename025: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename026: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename027: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename028: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename029: String!
+        @auth(rules: [{ allow: private, provider: identityPool }])
+      namenamenamenamenamenamenamenamenamenamenamenamenamenamename030: String!
+      description: String
+    }
 
     # This type is for the managed policy slicing, only deployment test in this e2e
+    # Note: IAM is deprecated and renamed to Cognito Identity Pool. 
+    # This is kept to test backwards compatibility.
     type TodoWithExtraLongLongLongLongLongLongLongLongLongLongLongLongLongLongLongName
       @model(subscriptions: null)
       @auth(rules: [{ allow: private, provider: iam }]) {
@@ -255,16 +406,21 @@ beforeAll(async () => {
 
   // create userpool
   const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
-  USER_POOL_ID = userPoolResponse.UserPool.Id;
+  USER_POOL_ID = userPoolResponse.UserPool!.Id!;
   const userPoolClientResponse = await createUserPoolClient(cognitoClient, USER_POOL_ID, `UserPool${STACK_NAME}`);
-  const userPoolClientId = userPoolClientResponse.UserPoolClient.ClientId;
-  // create auth and unauthroles
-  const roles = await iamHelper.createRoles(AUTH_ROLE_NAME, UNAUTH_ROLE_NAME);
-  // create admin group role
-  const customGroupRole = await iamHelper.createRoleForCognitoGroup(CUSTOM_GROUP_ROLE_NAME);
-  await createGroup(USER_POOL_ID, CUSTOM_GROUP_NAME, customGroupRole.Arn);
+  const userPoolClientId = userPoolClientResponse.UserPoolClient!.ClientId!;
+
   // create identitypool
   IDENTITY_POOL_ID = await createIdentityPool(identityClient, `IdentityPool${STACK_NAME}`, {
+    providerName: `cognito-idp.${AWS_REGION}.amazonaws.com/${USER_POOL_ID}`,
+    clientId: userPoolClientId,
+  });
+
+  // create auth and unauthroles
+  const roles = await iamHelper.createRoles(AUTH_ROLE_NAME, UNAUTH_ROLE_NAME, IDENTITY_POOL_ID);
+
+  // set roles on identity pool
+  await setIdentityPoolRoles(identityClient, IDENTITY_POOL_ID, {
     authRoleArn: roles.authRole.Arn,
     unauthRoleArn: roles.unauthRole.Arn,
     providerName: `cognito-idp.${AWS_REGION}.amazonaws.com/${USER_POOL_ID}`,
@@ -272,7 +428,12 @@ beforeAll(async () => {
     useTokenAuth: true,
   });
 
-  const transformer = new GraphQLTransform({
+  // create admin group role
+  const customGroupRole = await iamHelper.createRoleForCognitoGroup(CUSTOM_GROUP_ROLE_NAME, IDENTITY_POOL_ID);
+  await createGroup(USER_POOL_ID, CUSTOM_GROUP_NAME, customGroupRole.Arn);
+
+  const out = testTransform({
+    schema: validSchema,
     authConfig: {
       defaultAuthentication: {
         authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -296,13 +457,12 @@ beforeAll(async () => {
       new PrimaryKeyTransformer(),
       new HasOneTransformer(),
       new HasManyTransformer(),
-      new AuthTransformer({ identityPoolId: IDENTITY_POOL_ID }),
+      new AuthTransformer(),
     ],
     transformParameters: {
       useSubUsernameForDefaultIdentityClaim: false,
     },
   });
-  const out = transformer.transform(validSchema);
   const finishedStack = await deploy(
     customS3Client,
     cf,
@@ -427,7 +587,7 @@ afterAll(async () => {
   }
 });
 
-test("test 'public' authStrategy", async () => {
+test("'public' authStrategy", async () => {
   try {
     const createMutation = gql`
       mutation {
@@ -477,7 +637,7 @@ test("test 'public' authStrategy", async () => {
   }
 });
 
-test(`Test 'public' provider: 'iam' authStrategy`, async () => {
+test(`'public' provider: 'iam' authStrategy`, async () => {
   try {
     const createMutation = gql`
       mutation {
@@ -532,7 +692,62 @@ test(`Test 'public' provider: 'iam' authStrategy`, async () => {
   }
 });
 
-test(`Test 'private' authStrategy`, async () => {
+test(`'public' provider: 'identityPool' authStrategy`, async () => {
+  try {
+    const createMutation = gql`
+      mutation {
+        createPostPublicIdentityPool(input: { title: "Hello, World!" }) {
+          id
+          title
+        }
+      }
+    `;
+
+    const getQuery = gql`
+      query ($id: ID!) {
+        getPostPublicIdentityPool(id: $id) {
+          id
+          title
+        }
+      }
+    `;
+
+    const response = await IAM_UNAUTHCLIENT.mutate<any>({
+      mutation: createMutation,
+      fetchPolicy: 'no-cache',
+    });
+    expect(response.data.createPostPublicIdentityPool.id).toBeDefined();
+    expect(response.data.createPostPublicIdentityPool.title).toEqual('Hello, World!');
+
+    const postId = response.data.createPostPublicIdentityPool.id;
+
+    // Authenticate User Pools user must fail
+    await expect(
+      USER_POOL_AUTH_CLIENT.query({
+        query: getQuery,
+        fetchPolicy: 'no-cache',
+        variables: {
+          id: postId,
+        },
+      }),
+    ).rejects.toThrow('GraphQL error: Not Authorized to access getPostPublicIdentityPool on type Query');
+
+    // API Key must fail
+    await expect(
+      APIKEY_GRAPHQL_CLIENT.query({
+        query: getQuery,
+        fetchPolicy: 'no-cache',
+        variables: {
+          id: postId,
+        },
+      }),
+    ).rejects.toThrow('GraphQL error: Not Authorized to access getPostPublicIdentityPool on type Query');
+  } catch (e) {
+    expect(e).not.toBeDefined();
+  }
+});
+
+test(`'private' authStrategy`, async () => {
   try {
     const createMutation = gql`
       mutation {
@@ -587,7 +802,7 @@ test(`Test 'private' authStrategy`, async () => {
   }
 });
 
-test(`Test only allow private iam arn`, async () => {
+test(`only allow private iam arn`, async () => {
   try {
     const createMutation = gql`
       mutation {
@@ -666,7 +881,86 @@ test(`Test only allow private iam arn`, async () => {
   }
 });
 
-test(`Test 'private' provider: 'iam' authStrategy`, async () => {
+test(`only allow private identityPool arn`, async () => {
+  try {
+    const createMutation = gql`
+      mutation {
+        createPostPrivateIdentityPool(input: { title: "Hello, World!" }) {
+          id
+          title
+        }
+      }
+    `;
+
+    const getQuery = gql`
+      query ($id: ID!) {
+        getPostPrivateIdentityPool(id: $id) {
+          id
+          title
+        }
+      }
+    `;
+
+    const response = await IAM_AUTHCLIENT.mutate<any>({
+      mutation: createMutation,
+      fetchPolicy: 'no-cache',
+    });
+    expect(response.data.createPostPrivateIdentityPool.id).toBeDefined();
+    expect(response.data.createPostPrivateIdentityPool.title).toEqual('Hello, World!');
+
+    const postId = response.data.createPostPrivateIdentityPool.id;
+
+    // Authenticate User Pools user must fail
+    await expect(
+      USER_POOL_AUTH_CLIENT.query({
+        query: getQuery,
+        fetchPolicy: 'no-cache',
+        variables: {
+          id: postId,
+        },
+      }),
+    ).rejects.toThrow('GraphQL error: Not Authorized to access getPostPrivateIdentityPool on type Query');
+
+    // API Key must fail
+    await expect(
+      APIKEY_GRAPHQL_CLIENT.query({
+        query: getQuery,
+        fetchPolicy: 'no-cache',
+        variables: {
+          id: postId,
+        },
+      }),
+    ).rejects.toThrow('GraphQL error: Not Authorized to access getPostPrivateIdentityPool on type Query');
+
+    // public iam user must fail
+    await expect(
+      IAM_UNAUTHCLIENT.query({
+        query: getQuery,
+        fetchPolicy: 'no-cache',
+        variables: {
+          id: postId,
+        },
+      }),
+    ).rejects.toThrow('Network error: Response not successful: Received status code 401');
+
+    // we expect the custom group client to fail even if their signed in they'll still recieve a 401
+    // because the attached role does not have a policy to access the api
+    await expect(
+      IAM_CUSTOM_GROUP_CLIENT.query({
+        query: getQuery,
+        fetchPolicy: 'no-cache',
+        variables: {
+          id: postId,
+        },
+      }),
+    ).rejects.toThrow('Network error: Response not successful: Received status code 401');
+  } catch (e) {
+    console.error(e);
+    expect(e).not.toBeDefined();
+  }
+});
+
+test(`'private' provider: 'iam' authStrategy`, async () => {
   // This test reuses the unauth role, but any IAM credentials would work
   // in real world scenarios, we've to see if provider override works.
 
@@ -752,6 +1046,98 @@ test(`Test 'private' provider: 'iam' authStrategy`, async () => {
         variables: { id: postIdOwner },
       }),
     ).rejects.toThrow('GraphQL error: Not Authorized to access getPostOwnerIAM on type Query');
+  } catch (e) {
+    console.error(e);
+    expect(e).not.toBeDefined();
+  }
+});
+
+test(`'private' provider: 'identityPool' authStrategy`, async () => {
+  // This test reuses the unauth role, but any IAM credentials would work
+  // in real world scenarios, we've to see if provider override works.
+
+  // - Create UserPool - Verify owner
+  // - Create IAM - Verify owner (blank)
+  // - Get UserPool owner - Verify success
+  // - Get UserPool non-owner - Verify deny
+  // - Get IdentityPool - Verify deny
+  // - Get API Key - Verify deny
+
+  try {
+    const createMutation = gql`
+      mutation {
+        createPostOwnerIdentityPool(input: { title: "Hello, World!" }) {
+          id
+          title
+          owner
+        }
+      }
+    `;
+
+    const getQuery = gql`
+      query ($id: ID!) {
+        getPostOwnerIdentityPool(id: $id) {
+          id
+          title
+          owner
+        }
+      }
+    `;
+
+    const response = await USER_POOL_AUTH_CLIENT.mutate<any>({
+      mutation: createMutation,
+      fetchPolicy: 'no-cache',
+    });
+    expect(response.data.createPostOwnerIdentityPool.id).toBeDefined();
+    expect(response.data.createPostOwnerIdentityPool.title).toEqual('Hello, World!');
+    expect(response.data.createPostOwnerIdentityPool.owner).toEqual(USERNAME1);
+
+    const postIdOwner = response.data.createPostOwnerIdentityPool.id;
+
+    const responseIAM = await IAM_AUTHCLIENT.mutate<any>({
+      mutation: createMutation,
+      fetchPolicy: 'no-cache',
+    });
+    expect(responseIAM.data.createPostOwnerIdentityPool.id).toBeDefined();
+    expect(responseIAM.data.createPostOwnerIdentityPool.title).toEqual('Hello, World!');
+    expect(responseIAM.data.createPostOwnerIdentityPool.owner).toBeNull();
+
+    const postIdIAM = responseIAM.data.createPostOwnerIdentityPool.id;
+
+    const responseGetUserPool = await USER_POOL_AUTH_CLIENT.query<any>({
+      query: getQuery,
+      fetchPolicy: 'no-cache',
+      variables: {
+        id: postIdOwner,
+      },
+    });
+
+    expect(responseGetUserPool.data.getPostOwnerIdentityPool.id).toBeDefined();
+    expect(responseGetUserPool.data.getPostOwnerIdentityPool.title).toEqual('Hello, World!');
+    expect(responseGetUserPool.data.getPostOwnerIdentityPool.owner).toEqual(USERNAME1);
+
+    await expect(
+      USER_POOL_AUTH_CLIENT.query({
+        query: getQuery,
+        fetchPolicy: 'no-cache',
+        variables: { id: postIdIAM },
+      }),
+    ).rejects.toThrow('GraphQL error: Not Authorized to access getPostOwnerIdentityPool on type Query');
+
+    await expect(
+      IAM_UNAUTHCLIENT.query({
+        query: getQuery,
+        fetchPolicy: 'no-cache',
+        variables: { id: postIdOwner },
+      }),
+    ).rejects.toThrow('Network error: Response not successful: Received status code 401');
+
+    await expect(
+      APIKEY_GRAPHQL_CLIENT.query({
+        query: getQuery,
+        variables: { id: postIdOwner },
+      }),
+    ).rejects.toThrow('GraphQL error: Not Authorized to access getPostOwnerIdentityPool on type Query');
   } catch (e) {
     console.error(e);
     expect(e).not.toBeDefined();
@@ -849,6 +1235,97 @@ describe(`Test IAM protected field operations`, () => {
   });
 });
 
+describe(`Test IdentityPool protected field operations`, () => {
+  // This test reuses the unauth role, but any IAM credentials would work
+  // in real world scenarios, we've to see if provider override works.
+
+  const createMutation = gql`
+    mutation {
+      createPostSecretFieldIdentityPool(input: { title: "Hello, World!" }) {
+        id
+        title
+      }
+    }
+  `;
+
+  const createMutationWithSecret = gql`
+    mutation {
+      createPostSecretFieldIdentityPool(input: { title: "Hello, World!", secret: "42" }) {
+        id
+        title
+        secret
+      }
+    }
+  `;
+
+  const getQuery = gql`
+    query ($id: ID!) {
+      getPostSecretFieldIdentityPool(id: $id) {
+        id
+        title
+      }
+    }
+  `;
+
+  const getQueryWithSecret = gql`
+    query ($id: ID!) {
+      getPostSecretFieldIdentityPool(id: $id) {
+        id
+        title
+        secret
+      }
+    }
+  `;
+
+  let postIdNoSecret = '';
+  let postIdSecret = '';
+
+  beforeAll(async () => {
+    try {
+      // - Create UserPool - no secret - Success
+      const response = await USER_POOL_AUTH_CLIENT.mutate<any>({
+        mutation: createMutation,
+        fetchPolicy: 'no-cache',
+      });
+
+      postIdNoSecret = response.data.createPostSecretFieldIdentityPool.id;
+
+      // - Create IAM - with secret - Success
+      const responseIAMSecret = await IAM_AUTHCLIENT.mutate<any>({
+        mutation: createMutationWithSecret,
+        fetchPolicy: 'no-cache',
+      });
+
+      postIdSecret = responseIAMSecret.data.createPostSecretFieldIdentityPool.id;
+    } catch (e) {
+      expect(e).not.toBeDefined();
+    }
+  });
+
+  it('Get UserPool - Succeed', async () => {
+    const responseGetUserPool = await USER_POOL_AUTH_CLIENT.query<any>({
+      query: getQuery,
+      fetchPolicy: 'no-cache',
+      variables: {
+        id: postIdNoSecret,
+      },
+    });
+    expect(responseGetUserPool.data.getPostSecretFieldIdentityPool.id).toBeDefined();
+    expect(responseGetUserPool.data.getPostSecretFieldIdentityPool.title).toEqual('Hello, World!');
+  });
+
+  it('Get UserPool with secret - Fail', async () => {
+    expect.assertions(1);
+    await expect(
+      USER_POOL_AUTH_CLIENT.query({
+        query: getQueryWithSecret,
+        fetchPolicy: 'no-cache',
+        variables: { id: postIdSecret },
+      }),
+    ).rejects.toThrow('GraphQL error: Not Authorized to access secret on type PostSecretFieldIdentityPool');
+  });
+});
+
 describe(`IAM Tests`, () => {
   const createMutation = gql`
     mutation {
@@ -897,6 +1374,61 @@ describe(`IAM Tests`, () => {
     expect(response.data.getPostIAMWithKeysByDate.items).toBeDefined();
     expect(response.data.getPostIAMWithKeysByDate.items.length).toEqual(1);
     const post = response.data.getPostIAMWithKeysByDate.items[0];
+    expect(post.id).toEqual(postId);
+    expect(post.title).toEqual('Hello, World!');
+    expect(post.type).toEqual('Post');
+    expect(post.date).toEqual('2019-01-01T00:00:00Z');
+  });
+});
+
+describe(`IdentityPool Tests`, () => {
+  const createMutation = gql`
+    mutation {
+      createPostIdentityPoolWithKeys(input: { title: "Hello, World!", type: "Post", date: "2019-01-01T00:00:00Z" }) {
+        id
+        title
+        type
+        date
+      }
+    }
+  `;
+
+  const getPostIAMWithKeysByDate = gql`
+    query {
+      getPostIdentityPoolWithKeysByDate(type: "Post") {
+        items {
+          id
+          title
+          type
+          date
+        }
+      }
+    }
+  `;
+
+  let postId = '';
+
+  beforeAll(async () => {
+    try {
+      // - Create API Key - Success
+      const response = await APIKEY_GRAPHQL_CLIENT.mutate<any>({
+        mutation: createMutation,
+        fetchPolicy: 'no-cache',
+      });
+      postId = response.data.createPostIdentityPoolWithKeys.id;
+    } catch (e) {
+      expect(e).not.toBeDefined();
+    }
+  });
+
+  it('Execute @key query - Succeed', async () => {
+    const response = await IAM_UNAUTHCLIENT.query<any>({
+      query: getPostIAMWithKeysByDate,
+      fetchPolicy: 'no-cache',
+    });
+    expect(response.data.getPostIdentityPoolWithKeysByDate.items).toBeDefined();
+    expect(response.data.getPostIdentityPoolWithKeysByDate.items.length).toEqual(1);
+    const post = response.data.getPostIdentityPoolWithKeysByDate.items[0];
     expect(post.id).toEqual(postId);
     expect(post.title).toEqual('Hello, World!');
     expect(post.type).toEqual('Post');

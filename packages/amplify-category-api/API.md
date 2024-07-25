@@ -8,7 +8,6 @@ import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import * as cdk from 'aws-cdk-lib';
 import * as cloudmap from 'aws-cdk-lib/aws-servicediscovery';
 import { Construct } from 'constructs';
-import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
 import { DeploymentResources as DeploymentResources_2 } from 'graphql-transformer-core';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
@@ -167,6 +166,8 @@ export const showApiAuthAcm: (context: $TSContext, modelName: string) => Promise
 // @public (undocumented)
 export const transformCategoryStack: (context: $TSContext, resource: Record<string, any>) => Promise<void>;
 
+// Warning: (ae-forgotten-export) The symbol "DeploymentResources" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
 export const transformGraphQLSchema: (context: $TSContext, options: any) => Promise<DeploymentResources | DeploymentResources_2 | undefined>;
 

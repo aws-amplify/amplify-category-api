@@ -3,7 +3,8 @@ import {
   generateGetArgumentsInput,
   InvalidDirectiveError,
   TransformerPluginBase,
-  DatasourceType,
+  isSqlDbType,
+  getModelDataSourceStrategy,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
@@ -11,6 +12,7 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { PrimaryKeyDirective } from '@aws-amplify/graphql-directives';
 import {
   DirectiveNode,
   EnumTypeDefinitionNode,
@@ -34,17 +36,13 @@ import {
 import { PrimaryKeyDirectiveConfiguration } from './types';
 import { validateNotSelfReferencing, validateNotOwnerAuth, lookupResolverName } from './utils';
 
-const directiveName = 'primaryKey';
-const directiveDefinition = `
-  directive @${directiveName}(sortKeyFields: [String]) on FIELD_DEFINITION
-`;
-
 export class PrimaryKeyTransformer extends TransformerPluginBase {
   private directiveList: PrimaryKeyDirectiveConfiguration[] = [];
+
   private resolverMap: Map<TransformerResolverProvider, string> = new Map();
 
   constructor() {
-    super('amplify-primary-key-transformer', directiveDefinition);
+    super('amplify-primary-key-transformer', PrimaryKeyDirective.definition);
   }
 
   field = (
@@ -101,14 +99,14 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
 
   generateResolvers = (ctx: TransformerContextProvider): void => {
     for (const config of this.directiveList) {
-      const dbInfo = ctx.modelToDatasourceMap.get(config.object.name.value);
-      const vtlGenerator = getVTLGenerator(dbInfo);
+      const dbType = getModelDataSourceStrategy(ctx, config.object.name.value).dbType;
+      const vtlGenerator = getVTLGenerator(dbType);
       vtlGenerator.generatePrimaryKeyVTL(config, ctx, this.resolverMap);
     }
   };
 }
 
-function validate(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
+const validate = (config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { object, field, sortKeyFields } = config;
 
   validateNotSelfReferencing(config);
@@ -118,7 +116,9 @@ function validate(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerCont
   });
 
   if (!modelDirective) {
-    throw new InvalidDirectiveError(`The @${directiveName} directive may only be added to object definitions annotated with @model.`);
+    throw new InvalidDirectiveError(
+      `The @${PrimaryKeyDirective.name} directive may only be added to object definitions annotated with @model.`,
+    );
   }
 
   config.modelDirective = modelDirective;
@@ -133,7 +133,7 @@ function validate(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerCont
     }
 
     for (const directive of objectField.directives!) {
-      if (directive.name.value === directiveName) {
+      if (directive.name.value === PrimaryKeyDirective.name) {
         throw new InvalidDirectiveError(`You may only supply one primary key on type '${object.name.value}'.`);
       }
     }
@@ -176,9 +176,9 @@ function validate(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerCont
 
     config.sortKey.push(sortField);
   }
-}
+};
 
-export function updateListField(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
+export const updateListField = (config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const resolverName = lookupResolverName(config, ctx, 'list');
   let query = ctx.output.getQuery();
 
@@ -189,9 +189,9 @@ export function updateListField(config: PrimaryKeyDirectiveConfiguration, ctx: T
   let listField = query.fields!.find((field: FieldDefinitionNode) => field.name.value === resolverName) as FieldDefinitionNode;
   if (listField) {
     const args = [createHashField(config)];
+    const dbType = getModelDataSourceStrategy(ctx, config.object.name.value).dbType;
 
-    const dbInfo = ctx.modelToDatasourceMap.get(config.object.name.value);
-    if (dbInfo?.dbType !== 'MySQL') {
+    if (!dbType || !isSqlDbType(dbType)) {
       const sortField = tryAndCreateSortField(config, ctx);
       if (sortField) {
         args.push(sortField);
@@ -214,4 +214,4 @@ export function updateListField(config: PrimaryKeyDirectiveConfiguration, ctx: T
     };
     ctx.output.updateObject(query);
   }
-}
+};

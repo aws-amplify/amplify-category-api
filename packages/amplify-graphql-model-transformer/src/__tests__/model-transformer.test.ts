@@ -1,7 +1,18 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { ConflictHandlerType, GraphQLTransform, SyncConfig, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, ListValueNode, NamedTypeNode, parse } from 'graphql';
+import {
+  ConflictHandlerType,
+  validateModelSchema,
+  MYSQL_DB_TYPE,
+  POSTGRES_DB_TYPE,
+  constructDataSourceStrategies,
+  getResourceNamesForStrategy,
+} from '@aws-amplify/graphql-transformer-core';
+import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, NamedTypeNode, parse } from 'graphql';
 import { getBaseType } from 'graphql-transformer-common';
+import { Template } from 'aws-cdk-lib/assertions';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { VpcConfig, ModelDataSourceStrategySqlDbType, SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   doNotExpectFields,
   expectFields,
@@ -13,9 +24,22 @@ import {
   verifyInputCount,
   verifyMatchingTypes,
 } from './test-utils/helpers';
-import { Template } from 'aws-cdk-lib/assertions';
 
-describe('ModelTransformer: ', () => {
+describe('ModelTransformer:', () => {
+  const sqlDatasources: ModelDataSourceStrategySqlDbType[] = [MYSQL_DB_TYPE, POSTGRES_DB_TYPE];
+
+  const makeStrategy = (dbType: ModelDataSourceStrategySqlDbType): SQLLambdaModelDataSourceStrategy => ({
+    name: `${dbType}Strategy`,
+    dbType,
+    dbConnectionConfig: {
+      databaseNameSsmPath: '/databaseNameSsmPath',
+      hostnameSsmPath: '/hostnameSsmPath',
+      passwordSsmPath: '/passwordSsmPath',
+      portSsmPath: '/portSsmPath',
+      usernameSsmPath: '/usernameSsmPath',
+    },
+  });
+
   it('should successfully transform simple valid schema', async () => {
     const validSchema = `
       type Post @model {
@@ -24,10 +48,10 @@ describe('ModelTransformer: ', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     validateModelSchema(parse(out.schema));
@@ -42,10 +66,10 @@ describe('ModelTransformer: ', () => {
           title: String!
       }
       `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     validateModelSchema(parse(out.schema));
@@ -65,7 +89,8 @@ describe('ModelTransformer: ', () => {
           title: String!
       }
       `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: alsoValidSchema,
       transformers: [new ModelTransformer()],
       resolverConfig: {
         project: {
@@ -74,13 +99,35 @@ describe('ModelTransformer: ', () => {
         },
       },
     });
-    const out = transformer.transform(alsoValidSchema);
     expect(out).toBeDefined();
 
     validateModelSchema(parse(out.schema));
     parse(out.schema);
     expect(out.schema).toMatchSnapshot();
     expect(out.schema).toContain('input NonModelTypeInput');
+  });
+
+  it('id with non string type should require the field on create mutation', async () => {
+    const validSchema = `
+      type Task @model {
+          id: Int!
+          title: String!
+      }
+      `;
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer()],
+    });
+    expect(out).toBeDefined();
+
+    validateModelSchema(parse(out.schema));
+    const schema = parse(out.schema);
+    expect(out.schema).toMatchSnapshot();
+    const createTaskInput = getInputType(schema, 'CreateTaskInput');
+    expectFieldsOnInputType(createTaskInput!, ['id', 'title']);
+    const idField = createTaskInput!.fields!.find((f) => f.name.value === 'id');
+    expect(idField).toBeDefined();
+    expect(idField?.type.kind).toEqual('NonNullType');
   });
 
   it('should support custom query overrides', () => {
@@ -92,11 +139,10 @@ describe('ModelTransformer: ', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     const definition = out.schema;
@@ -135,11 +181,10 @@ describe('ModelTransformer: ', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -158,10 +203,10 @@ describe('ModelTransformer: ', () => {
             updatedAt: String
         }
         `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -179,11 +224,10 @@ describe('ModelTransformer: ', () => {
         updatedAt: String
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -203,10 +247,10 @@ describe('ModelTransformer: ', () => {
         updatedAt: String
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -228,10 +272,10 @@ describe('ModelTransformer: ', () => {
             updatedAt: String
         }
         `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -262,10 +306,10 @@ describe('ModelTransformer: ', () => {
           different3: String
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -297,10 +341,10 @@ describe('ModelTransformer: ', () => {
         different3: String
     }
   `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -321,10 +365,10 @@ describe('ModelTransformer: ', () => {
         str: String
       }
     `;
-    const transformer = new GraphQLTransform({
+    const result = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const result = transformer.transform(validSchema);
     expect(result).toBeDefined();
     expect(result.schema).toBeDefined();
     const schema = parse(result.schema);
@@ -354,10 +398,10 @@ describe('ModelTransformer: ', () => {
       query: Query
     }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const parsed = parse(out.schema);
     validateModelSchema(parsed);
@@ -381,10 +425,10 @@ describe('ModelTransformer: ', () => {
         text: String!
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -408,12 +452,12 @@ describe('ModelTransformer: ', () => {
         str: String
       }
     `;
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer()],
-    });
-    expect(() => transformer.transform(invalidSchema)).toThrowError(
-      "'Subscription' is a reserved type name and currently in use within the default schema element.",
-    );
+    expect(() =>
+      testTransform({
+        schema: invalidSchema,
+        transformers: [new ModelTransformer()],
+      }),
+    ).toThrowError("'Subscription' is a reserved type name and currently in use within the default schema element.");
   });
 
   it('should not add default primary key when ID is defined', () => {
@@ -423,10 +467,10 @@ describe('ModelTransformer: ', () => {
         str: String
       }
     `;
-    const transformer = new GraphQLTransform({
+    const result = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const result = transformer.transform(validSchema);
     expect(result).toBeDefined();
     expect(result.schema).toBeDefined();
     const schema = parse(result.schema);
@@ -451,14 +495,14 @@ describe('ModelTransformer: ', () => {
         updatedAt: String
       }
     `;
-    const transformer = new GraphQLTransform({
+
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       transformParameters: {
         shouldDeepMergeDirectiveConfigDefaults: false,
       },
     });
-
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -485,11 +529,10 @@ describe('ModelTransformer: ', () => {
           name: String!
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     const definition = out.schema;
@@ -534,11 +577,10 @@ describe('ModelTransformer: ', () => {
         lastStatus: Status!
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -575,10 +617,10 @@ describe('ModelTransformer: ', () => {
           JEDI
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     const definition = out.schema;
@@ -607,7 +649,7 @@ describe('ModelTransformer: ', () => {
     expect(verifyInputCount(parsed, 'TagInput', 1)).toBeTruthy();
   });
 
-  it('it should generate filter inputs', () => {
+  it('should generate filter inputs', () => {
     const validSchema = `
       type Post @model {
           id: ID!
@@ -615,10 +657,10 @@ describe('ModelTransformer: ', () => {
           createdAt: String
           updatedAt: String
       }`;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     const definition = out.schema;
@@ -648,10 +690,10 @@ describe('ModelTransformer: ', () => {
       title: String!
     }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -675,10 +717,10 @@ describe('ModelTransformer: ', () => {
         updatedAt: String
     }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -697,13 +739,13 @@ describe('ModelTransformer: ', () => {
       str: String
     }
     `;
-    const transformer = new GraphQLTransform({
+    const result = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       transformParameters: {
         shouldDeepMergeDirectiveConfigDefaults: false,
       },
     });
-    const result = transformer.transform(validSchema);
     expect(result).toBeDefined();
     expect(result.schema).toBeDefined();
     expect(result.schema).toMatchSnapshot();
@@ -718,7 +760,8 @@ describe('ModelTransformer: ', () => {
       str: String
     }
     `;
-    const transformer = new GraphQLTransform({
+    const result = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       resolverConfig: {
         project: {
@@ -727,7 +770,6 @@ describe('ModelTransformer: ', () => {
         },
       },
     });
-    const result = transformer.transform(validSchema);
     expect(result).toBeDefined();
     expect(result.schema).toBeDefined();
     expect(result.schema).toMatchSnapshot();
@@ -747,7 +789,8 @@ describe('ModelTransformer: ', () => {
     updatedAt: AWSTimestamp
   }
   `;
-    const transformer = new GraphQLTransform({
+    const result = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       resolverConfig: {
         project: {
@@ -756,7 +799,6 @@ describe('ModelTransformer: ', () => {
         },
       },
     });
-    const result = transformer.transform(validSchema);
     expect(result).toBeDefined();
     expect(result.schema).toBeDefined();
     expect(result.schema).toMatchSnapshot();
@@ -776,7 +818,8 @@ describe('ModelTransformer: ', () => {
         updatedAt: AWSDateTime!
       }
     `;
-    const transformer = new GraphQLTransform({
+    const result = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       resolverConfig: {
         project: {
@@ -785,8 +828,6 @@ describe('ModelTransformer: ', () => {
         },
       },
     });
-
-    const result = transformer.transform(validSchema);
     expect(result).toBeDefined();
     expect(result.schema).toBeDefined();
     expect(result.schema).toMatchSnapshot();
@@ -804,7 +845,8 @@ describe('ModelTransformer: ', () => {
       str: String
     }
     `;
-    const transformer = new GraphQLTransform({
+    const result = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       resolverConfig: {
         project: {
@@ -813,7 +855,6 @@ describe('ModelTransformer: ', () => {
         },
       },
     });
-    const result = transformer.transform(validSchema);
     expect(result).toBeDefined();
     expect(result.schema).toBeDefined();
     expect(result.schema).toMatchSnapshot();
@@ -835,7 +876,8 @@ describe('ModelTransformer: ', () => {
         id: ID!
       }
     `;
-    const transformer = new GraphQLTransform({
+    const result = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       resolverConfig: {
         project: {
@@ -844,8 +886,6 @@ describe('ModelTransformer: ', () => {
         },
       },
     });
-
-    const result = transformer.transform(validSchema);
     expect(result).toBeDefined();
     expect(result.schema).toBeDefined();
     expect(result.schema).toMatchSnapshot();
@@ -905,7 +945,8 @@ describe('ModelTransformer: ', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const result = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       resolverConfig: {
         project: {
@@ -914,7 +955,6 @@ describe('ModelTransformer: ', () => {
         },
       },
     });
-    const result = transformer.transform(validSchema);
     expect(result).toBeDefined();
     expect(result.schema).toBeDefined();
     const schema = parse(result.schema);
@@ -943,10 +983,10 @@ describe('ModelTransformer: ', () => {
         jsonField: AWSJSON
       }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     validateModelSchema(parse(out.schema));
   });
@@ -959,18 +999,16 @@ describe('ModelTransformer: ', () => {
       }
     `;
 
-    const config: SyncConfig = {
-      ConflictDetection: 'VERSION',
-      ConflictHandler: ConflictHandlerType.AUTOMERGE,
-    };
-
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       resolverConfig: {
-        project: config,
+        project: {
+          ConflictDetection: 'VERSION',
+          ConflictHandler: ConflictHandlerType.AUTOMERGE,
+        },
       },
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     const definition = out.schema;
@@ -990,21 +1028,19 @@ describe('ModelTransformer: ', () => {
       }
     `;
 
-    const config: SyncConfig = {
-      ConflictDetection: 'VERSION',
-      ConflictHandler: ConflictHandlerType.LAMBDA,
-      LambdaConflictHandler: {
-        name: 'myLambdaConflictHandler',
-      },
-    };
-
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       resolverConfig: {
-        project: config,
+        project: {
+          ConflictDetection: 'VERSION',
+          ConflictHandler: ConflictHandlerType.LAMBDA,
+          LambdaConflictHandler: {
+            name: 'myLambdaConflictHandler',
+          },
+        },
       },
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     const definition = out.schema;
@@ -1023,19 +1059,16 @@ describe('ModelTransformer: ', () => {
           updatedAt: String
       }
     `;
-
-    const config: SyncConfig = {
-      ConflictDetection: 'VERSION',
-      ConflictHandler: ConflictHandlerType.OPTIMISTIC,
-    };
-
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       resolverConfig: {
-        project: config,
+        project: {
+          ConflictDetection: 'VERSION',
+          ConflictHandler: ConflictHandlerType.OPTIMISTIC,
+        },
       },
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     const definition = out.schema;
@@ -1053,18 +1086,16 @@ describe('ModelTransformer: ', () => {
       }
     `;
 
-    const config: SyncConfig = {
-      ConflictDetection: 'VERSION',
-      ConflictHandler: ConflictHandlerType.AUTOMERGE,
-    };
-
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       resolverConfig: {
-        project: config,
+        project: {
+          ConflictDetection: 'VERSION',
+          ConflictHandler: ConflictHandlerType.AUTOMERGE,
+        },
       },
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     const definition = out.schema;
@@ -1118,11 +1149,10 @@ describe('ModelTransformer: ', () => {
       name: String
     }`;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     const definition = out.schema;
@@ -1151,19 +1181,19 @@ describe('ModelTransformer: ', () => {
       name: String
     }`;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
       resolverConfig: {
         project: {
           ConflictDetection: 'VERSION',
           ConflictHandler: ConflictHandlerType.AUTOMERGE,
         },
       },
-      transformers: [new ModelTransformer()],
-      transformParameters: {
-        sandboxModeEnabled: true,
-      },
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);
     validateModelSchema(schema);
@@ -1230,7 +1260,12 @@ describe('ModelTransformer: ', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
       resolverConfig: {
         project: {
           ConflictDetection: 'VERSION',
@@ -1250,12 +1285,7 @@ describe('ModelTransformer: ', () => {
           },
         },
       },
-      transformers: [new ModelTransformer()],
-      transformParameters: {
-        sandboxModeEnabled: true,
-      },
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const schema = parse(out.schema);
     validateModelSchema(schema);
@@ -1331,13 +1361,13 @@ describe('ModelTransformer: ', () => {
     const validSchema = `type Todo @model {
       name: String
     }`;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
       transformParameters: {
         sandboxModeEnabled: true,
       },
     });
-    const out = transformer.transform(validSchema);
 
     const rootStack = out.rootStack;
     expect(rootStack).toBeDefined();
@@ -1348,7 +1378,7 @@ describe('ModelTransformer: ', () => {
     expect(todoStack.Parameters).toMatchObject(modelParams);
   });
 
-  it('global auth enabled should add apiKey if not default mode of auth', () => {
+  it('sandbox auth enabled should add apiKey if not default mode of auth', () => {
     const validSchema = `
     type Post @model {
       id: ID!
@@ -1360,7 +1390,12 @@ describe('ModelTransformer: ', () => {
       id: ID
       tags: [Tag]
     }`;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
       authConfig: {
         defaultAuthentication: {
           authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -1371,12 +1406,7 @@ describe('ModelTransformer: ', () => {
           },
         ],
       },
-      transformers: [new ModelTransformer()],
-      transformParameters: {
-        sandboxModeEnabled: true,
-      },
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     const schema = parse(out.schema);
@@ -1385,11 +1415,13 @@ describe('ModelTransformer: ', () => {
     const postType = getObjectType(schema, 'Post')!;
     expect(postType).toBeDefined();
     expect(postType.directives).toBeDefined();
+    expect(postType.directives!.length).toEqual(1);
     expect(postType.directives!.some((dir) => dir.name.value === 'aws_api_key')).toEqual(true);
 
     const tagType = getObjectType(schema, 'Tag')!;
     expect(tagType).toBeDefined();
     expect(tagType.directives).toBeDefined();
+    expect(tagType.directives!.length).toEqual(1);
     expect(tagType.directives!.some((dir) => dir.name.value === 'aws_api_key')).toEqual(true);
 
     // check operations
@@ -1405,6 +1437,136 @@ describe('ModelTransformer: ', () => {
     }
   });
 
+  it('iam auth enabled should add aws_iam if not default mode of auth', () => {
+    const validSchema = `
+    type Post @model {
+      id: ID!
+      title: String!
+      tags: [Tag]
+    }
+
+    type Tag {
+      id: ID
+      tags: [Tag]
+    }`;
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: false,
+      },
+      authConfig: {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [
+          {
+            authenticationType: 'AWS_IAM',
+          },
+        ],
+      },
+      synthParameters: {
+        enableIamAccess: true,
+      },
+    });
+    expect(out).toBeDefined();
+
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
+
+    const postType = getObjectType(schema, 'Post')!;
+    expect(postType).toBeDefined();
+    expect(postType.directives).toBeDefined();
+    expect(postType.directives!.length).toEqual(1);
+    expect(postType.directives!.some((dir) => dir.name.value === 'aws_iam')).toEqual(true);
+
+    const tagType = getObjectType(schema, 'Tag')!;
+    expect(tagType).toBeDefined();
+    expect(tagType.directives).toBeDefined();
+    expect(tagType.directives!.length).toEqual(1);
+    expect(tagType.directives!.some((dir) => dir.name.value === 'aws_iam')).toEqual(true);
+
+    // check operations
+    const queryType = getObjectType(schema, 'Query')!;
+    expect(queryType).toBeDefined();
+    const mutationType = getObjectType(schema, 'Mutation')!;
+    expect(mutationType).toBeDefined();
+    const subscriptionType = getObjectType(schema, 'Subscription')!;
+    expect(subscriptionType).toBeDefined();
+
+    for (const field of [...queryType.fields!, ...mutationType.fields!, ...subscriptionType.fields!]) {
+      expect(field.directives!.some((dir) => dir.name.value === 'aws_iam')).toEqual(true);
+    }
+  });
+
+  it('iam and sandbox auth enabled should add aws_iam and aws_api_key if not default mode of auth', () => {
+    const validSchema = `
+    type Post @model {
+      id: ID!
+      title: String!
+      tags: [Tag]
+    }
+
+    type Tag {
+      id: ID
+      tags: [Tag]
+    }`;
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
+      authConfig: {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [
+          {
+            authenticationType: 'AWS_IAM',
+          },
+          {
+            authenticationType: 'API_KEY',
+          },
+        ],
+      },
+      synthParameters: {
+        enableIamAccess: true,
+      },
+    });
+    expect(out).toBeDefined();
+
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
+
+    const postType = getObjectType(schema, 'Post')!;
+    expect(postType).toBeDefined();
+    expect(postType.directives).toBeDefined();
+    expect(postType.directives!.length).toEqual(2);
+    expect(postType.directives!.some((dir) => dir.name.value === 'aws_iam')).toEqual(true);
+    expect(postType.directives!.some((dir) => dir.name.value === 'aws_api_key')).toEqual(true);
+
+    const tagType = getObjectType(schema, 'Tag')!;
+    expect(tagType).toBeDefined();
+    expect(tagType.directives).toBeDefined();
+    expect(tagType.directives!.length).toEqual(2);
+    expect(tagType.directives!.some((dir) => dir.name.value === 'aws_iam')).toEqual(true);
+    expect(tagType.directives!.some((dir) => dir.name.value === 'aws_api_key')).toEqual(true);
+
+    // check operations
+    const queryType = getObjectType(schema, 'Query')!;
+    expect(queryType).toBeDefined();
+    const mutationType = getObjectType(schema, 'Mutation')!;
+    expect(mutationType).toBeDefined();
+    const subscriptionType = getObjectType(schema, 'Subscription')!;
+    expect(subscriptionType).toBeDefined();
+
+    for (const field of [...queryType.fields!, ...mutationType.fields!, ...subscriptionType.fields!]) {
+      expect(field.directives!.some((dir) => dir.name.value === 'aws_iam')).toEqual(true);
+      expect(field.directives!.some((dir) => dir.name.value === 'aws_api_key')).toEqual(true);
+    }
+  });
+
   it('maps model resolvers to specified stack', () => {
     const inputSchema = /* GraphQL */ `
       type Blog @model {
@@ -1412,15 +1574,14 @@ describe('ModelTransformer: ', () => {
         name: String!
       }
     `;
-    const transformer = new GraphQLTransform({
+    const result = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer()],
       stackMapping: {
         CreateBlogResolver: 'myCustomStack1',
         UpdateBlogResolver: 'myCustomStack2',
       },
     });
-
-    const result = transformer.transform(inputSchema);
     expect(Object.keys(result.stacks.myCustomStack1.Resources!).includes('CreateBlogResolver')).toBe(true);
     expect(Object.keys(result.stacks.myCustomStack2.Resources!).includes('UpdateBlogResolver')).toBe(true);
 
@@ -1443,10 +1604,10 @@ describe('ModelTransformer: ', () => {
     type Query {
       todo: Todo @aws_lambda
     }`;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
     const schema = parse(out.schema);
@@ -1462,10 +1623,10 @@ describe('ModelTransformer: ', () => {
         id: ID!
     }
     `;
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -1486,10 +1647,10 @@ describe('ModelTransformer: ', () => {
       }
     `;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       transformers: [new ModelTransformer()],
     });
-    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
     expect(definition).toBeDefined();
@@ -1503,5 +1664,656 @@ describe('ModelTransformer: ', () => {
     expectFieldsOnInputType(updateTodoInput!, ['id']);
     const updateTodoIdField = getFieldOnInputType(updateTodoInput!, 'id');
     expect(updateTodoIdField.type.kind).toBe('NonNullType');
+  });
+
+  sqlDatasources.forEach((dbType) => {
+    it('should successfully transform simple rds valid schema', async () => {
+      const validSchema = `
+        type Post @model {
+          id: ID! @primaryKey
+          title: String!
+        }
+      `;
+
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        dataSourceStrategies: constructDataSourceStrategies(validSchema, makeStrategy(dbType)),
+      });
+      expect(out).toBeDefined();
+
+      validateModelSchema(parse(out.schema));
+      parse(out.schema);
+    });
+
+    it('should successfully transform rds schema with array and object fields', async () => {
+      const validSchema = `
+        type Note @model {
+            id: ID! @primaryKey
+            content: String!
+            tags: [String!]
+            attachments: Attachment
+        }
+
+        type Attachment {
+          report: String!
+          image: String!
+        }
+      `;
+
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        dataSourceStrategies: constructDataSourceStrategies(validSchema, makeStrategy(dbType)),
+      });
+      expect(out).toBeDefined();
+
+      validateModelSchema(parse(out.schema));
+      parse(out.schema);
+      expect(out.schema).toMatchSnapshot();
+      expect(out.resolvers).toMatchSnapshot();
+    });
+
+    it('sql lambda with vpc config should generate correct stack', async () => {
+      const validSchema = `
+        type Note @model {
+            id: ID! @primaryKey
+            content: String!
+        }
+      `;
+
+      const vpcConfiguration: VpcConfig = {
+        vpcId: 'vpc-123',
+        securityGroupIds: ['sg-123'],
+        subnetAvailabilityZoneConfig: [
+          {
+            subnetId: 'sub-123',
+            availabilityZone: 'az-123',
+          },
+          {
+            subnetId: 'sub-456',
+            availabilityZone: 'az-456',
+          },
+        ],
+      };
+      const vpcStrategy: SQLLambdaModelDataSourceStrategy = {
+        ...makeStrategy(dbType),
+        vpcConfiguration,
+      };
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        dataSourceStrategies: constructDataSourceStrategies(validSchema, vpcStrategy),
+      });
+      expect(out).toBeDefined();
+
+      const resourceNames = getResourceNamesForStrategy(vpcStrategy);
+
+      validateModelSchema(parse(out.schema));
+      expect(out.stacks).toBeDefined();
+      expect(out.stacks[resourceNames.sqlStack]).toBeDefined();
+      expect(out.stacks[resourceNames.sqlStack].Resources).toBeDefined();
+      const resourcesIds = Object.keys(out.stacks[resourceNames.sqlStack].Resources!) as string[];
+      const sqlLambda =
+        out.stacks[resourceNames.sqlStack].Resources![
+          resourcesIds.find((resource) => resource.startsWith(resourceNames.sqlLambdaFunction))!
+        ];
+      expect(sqlLambda).toBeDefined();
+      expect(sqlLambda.Properties).toBeDefined();
+      expect(sqlLambda.Properties?.VpcConfig).toBeDefined();
+      expect(sqlLambda.Properties?.VpcConfig?.SubnetIds).toBeDefined();
+      expect(sqlLambda.Properties?.VpcConfig?.SubnetIds).toEqual(expect.arrayContaining(['sub-123', 'sub-456']));
+      expect(sqlLambda.Properties?.VpcConfig?.SecurityGroupIds).toBeDefined();
+      expect(sqlLambda.Properties?.VpcConfig?.SecurityGroupIds).toEqual(expect.arrayContaining(['sg-123']));
+    });
+
+    it('should fail if SQL model has no primary key defined', async () => {
+      const invalidSchema = `
+        type Note @model {
+            id: ID!
+            content: String!
+        }
+      `;
+
+      expect(() =>
+        testTransform({
+          schema: invalidSchema,
+          transformers: [new ModelTransformer()],
+          dataSourceStrategies: constructDataSourceStrategies(invalidSchema, makeStrategy(dbType)),
+        }),
+      ).toThrowError('SQL model "Note" must contain a primary key field');
+    });
+
+    it('should compute and render the array fields correctly in the resolver', () => {
+      const validSchema = `
+        type Post @model {
+          id: ID! @primaryKey
+          info: Info
+          tags: [String!]
+        }
+        type Info {
+          name: String
+        }
+      `;
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        dataSourceStrategies: constructDataSourceStrategies(validSchema, makeStrategy(dbType)),
+      });
+      const expectedSnippets = [
+        '#set( $lambdaInput.args.metadata.nonScalarFields = ["info", "tags"] )',
+        '#set( $lambdaInput.args.metadata.arrayFields = ["tags"] )',
+      ];
+      expect(out).toBeDefined();
+      expectedSnippets.forEach((snippet) => {
+        expect(out.resolvers['Mutation.createPost.req.vtl']).toContain(snippet);
+        expect(out.resolvers['Mutation.updatePost.req.vtl']).toContain(snippet);
+        expect(out.resolvers['Mutation.deletePost.req.vtl']).toContain(snippet);
+        expect(out.resolvers['Query.getPost.req.vtl']).toContain(snippet);
+        expect(out.resolvers['Query.listPosts.req.vtl']).toContain(snippet);
+      });
+    });
+  });
+
+  describe('remove null timestamp fields from input', () => {
+    it('updatedAt null', () => {
+      const validSchema = `
+        type UpdatedAtNull @model(timestamps: { updatedAt: null }) {
+            id: ID!
+            title: String!
+        }
+      `;
+
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer()],
+      });
+      expect(out).toBeDefined();
+
+      validateModelSchema(parse(out.schema));
+      expect(out.schema).toMatchSnapshot();
+    });
+
+    it('createdAt null', () => {
+      const validSchema = `
+        type CreatedAtNull @model(timestamps: { createdAt: null }) {
+            id: ID!
+            title: String!
+        }
+      `;
+
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer()],
+      });
+      expect(out).toBeDefined();
+
+      validateModelSchema(parse(out.schema));
+      expect(out.schema).toMatchSnapshot();
+    });
+
+    it('createdAt null and updatedAt null', () => {
+      const validSchema = `
+        type CreatedAtAndUpdatedAtNull @model(timestamps: { createdAt: null, updatedAt: null }) {
+            id: ID!
+            title: String!
+        }
+      `;
+
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer()],
+      });
+      expect(out).toBeDefined();
+
+      validateModelSchema(parse(out.schema));
+      expect(out.schema).toMatchSnapshot();
+    });
+
+    it('timestamps null', () => {
+      const validSchema = `
+        type TimeStampsNull @model(timestamps: null) {
+            id: ID!
+            title: String!
+        }
+      `;
+
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer()],
+      });
+      expect(out).toBeDefined();
+
+      validateModelSchema(parse(out.schema));
+      expect(out.schema).toMatchSnapshot();
+    });
+
+    it('custom createdAt and updatedAt null', () => {
+      const validSchema = `
+        type CustomCreatedAtAndUpdatedAtNull @model(timestamps: { createdAt: "createdOn", updatedAt: null }) {
+            id: ID!
+            title: String!
+        }
+      `;
+
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer()],
+      });
+      expect(out).toBeDefined();
+
+      validateModelSchema(parse(out.schema));
+      expect(out.schema).toMatchSnapshot();
+    });
+  });
+
+  describe('autoId', () => {
+    describe('dynamodb', () => {
+      it('should include autoId for basic ID', async () => {
+        const schema = `
+          type Post @model {
+              id: ID!
+              title: String!
+          }
+        `;
+
+        const out = testTransform({
+          schema,
+          transformers: [new ModelTransformer()],
+        });
+        expect(out.resolvers['Mutation.createPost.init.1.req.vtl']).toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+      });
+
+      it('should include autoId for implicit ID', async () => {
+        const schema = `
+          type Post @model {
+            title: String!
+          }
+        `;
+
+        const out = testTransform({
+          schema,
+          transformers: [new ModelTransformer()],
+        });
+        expect(out.resolvers['Mutation.createPost.init.1.req.vtl']).toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+      });
+
+      it('should include autoId for id with @primaryKey', async () => {
+        const schema = `
+          type Post @model {
+            id: ID! @primaryKey
+            title: String!
+          }
+        `;
+
+        const out = testTransform({
+          schema,
+          transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        });
+        expect(out.resolvers['Mutation.createPost.init.1.req.vtl']).toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+      });
+
+      it('should include autoId when timestamps are null with explicit id', async () => {
+        const schema = `
+          type Post @model(timestamps: null) {
+              id: ID!
+              title: String!
+          }
+        `;
+
+        const out = testTransform({
+          schema,
+          transformers: [new ModelTransformer()],
+        });
+        expect(out.resolvers['Mutation.createPost.init.1.req.vtl']).toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+      });
+
+      it('should include autoId when timestamps are null with implicit id', async () => {
+        const schema = `
+          type Post @model(timestamps: null) {
+              title: String!
+          }
+        `;
+
+        const out = testTransform({
+          schema,
+          transformers: [new ModelTransformer()],
+        });
+        expect(out.resolvers['Mutation.createPost.init.1.req.vtl']).toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+      });
+
+      it('should include autoId when id is type String', async () => {
+        const schema = `
+          type Post @model {
+              id: String
+              title: String!
+          }
+        `;
+
+        const out = testTransform({
+          schema,
+          transformers: [new ModelTransformer()],
+        });
+        expect(out.resolvers['Mutation.createPost.init.1.req.vtl']).toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+      });
+
+      it('should not include autoId when id is type Int, Float, or Boolean', async () => {
+        const schema = `
+          type Foo @model {
+              id: Int
+              title: String!
+          }
+
+          type Bar @model {
+              id: Float
+              title: String!
+          }
+
+          type Baz @model {
+              id: Boolean
+              title: String!
+          }
+        `;
+
+        const out = testTransform({
+          schema,
+          transformers: [new ModelTransformer()],
+        });
+        expect(out.resolvers['Mutation.createFoo.init.1.req.vtl']).not.toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+        expect(out.resolvers['Mutation.createBar.init.1.req.vtl']).not.toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+        expect(out.resolvers['Mutation.createBaz.init.1.req.vtl']).not.toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+      });
+
+      it('should not include autoId when using a custom primary key', async () => {
+        const schema = `
+          type Post @model {
+              postId: ID! @primaryKey
+              title: String!
+          }
+        `;
+
+        const out = testTransform({
+          schema,
+          transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        });
+        expect(out.resolvers['Mutation.createPost.init.1.req.vtl']).not.toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+      });
+
+      it('should include autoId when using a custom primary key and an explict id', async () => {
+        const schema = `
+          type Post @model {
+              id: ID!
+              postId: ID! @primaryKey
+              title: String!
+          }
+        `;
+
+        const out = testTransform({
+          schema,
+          transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        });
+        expect(out.resolvers['Mutation.createPost.init.1.req.vtl']).toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+      });
+    });
+
+    describe('sql', () => {
+      it('should include autoId for basic ID', async () => {
+        const schema = `
+          type Post @model {
+              id: ID!
+              postId: ID! @primaryKey
+              title: String!
+          }
+        `;
+
+        const out = testTransform({
+          schema,
+          transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+          dataSourceStrategies: constructDataSourceStrategies(schema, makeStrategy(MYSQL_DB_TYPE)),
+        });
+        expect(out.resolvers['Mutation.createPost.init.1.req.vtl']).toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+      });
+
+      it('should not include autoId when id field is not included', async () => {
+        const schema = `
+          type Post @model {
+              postId: ID! @primaryKey
+              title: String!
+          }
+        `;
+
+        const out = testTransform({
+          schema,
+          transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+          dataSourceStrategies: constructDataSourceStrategies(schema, makeStrategy(MYSQL_DB_TYPE)),
+        });
+        expect(out.resolvers['Mutation.createPost.init.1.req.vtl']).not.toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+      });
+
+      it('should include autoId for id with @primaryKey', async () => {
+        const schema = `
+          type Post @model {
+            id: ID! @primaryKey
+            title: String!
+          }
+        `;
+
+        const out = testTransform({
+          schema,
+          transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        });
+        expect(out.resolvers['Mutation.createPost.init.1.req.vtl']).toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+      });
+
+      it('should include autoId when timestamps are null', async () => {
+        const schema = `
+          type Post @model(timestamps: null) {
+              id: ID!
+              postId: ID! @primaryKey
+              title: String!
+          }
+        `;
+
+        const out = testTransform({
+          schema,
+          transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+          dataSourceStrategies: constructDataSourceStrategies(schema, makeStrategy(MYSQL_DB_TYPE)),
+        });
+        expect(out.resolvers['Mutation.createPost.init.1.req.vtl']).toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+      });
+
+      it('should include autoId when id is type String', async () => {
+        const schema = `
+          type Post @model {
+              id: String
+              postId: ID! @primaryKey
+              title: String!
+          }
+        `;
+
+        const out = testTransform({
+          schema,
+          transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+          dataSourceStrategies: constructDataSourceStrategies(schema, makeStrategy(MYSQL_DB_TYPE)),
+        });
+        expect(out.resolvers['Mutation.createPost.init.1.req.vtl']).toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+      });
+
+      it('should not include autoId when id is type Int, Float, or Boolean', async () => {
+        const schema = `
+          type Foo @model {
+              id: Int
+              fooId: ID! @primaryKey
+              title: String!
+          }
+
+          type Bar @model {
+              id: Float
+              barId: ID! @primaryKey
+              title: String!
+          }
+
+          type Baz @model {
+              id: Boolean
+              bazId: ID! @primaryKey
+              title: String!
+          }
+        `;
+
+        const out = testTransform({
+          schema,
+          transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+          dataSourceStrategies: constructDataSourceStrategies(schema, makeStrategy(MYSQL_DB_TYPE)),
+        });
+        expect(out.resolvers['Mutation.createFoo.init.1.req.vtl']).not.toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+        expect(out.resolvers['Mutation.createBar.init.1.req.vtl']).not.toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+        expect(out.resolvers['Mutation.createBaz.init.1.req.vtl']).not.toContain(
+          '$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))',
+        );
+      });
+    });
+  });
+
+  describe('No global auth', () => {
+    it('sandbox mode + IAM access enabled', () => {
+      const schema = `
+      type Post @model {
+          id: ID! @primaryKey
+          title: String!
+      }
+    `;
+
+      const out = testTransform({
+        schema,
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        transformParameters: {
+          sandboxModeEnabled: true,
+        },
+        synthParameters: {
+          enableIamAccess: true,
+        },
+      });
+
+      const parsed = parse(out.schema);
+      validateModelSchema(parsed);
+
+      const postType = getObjectType(parsed, 'Post')!;
+      expect(postType).toBeDefined();
+      expect(postType.directives).toBeDefined();
+      expect(postType.directives!.length).toEqual(2);
+      const directiveNames = postType.directives!.map((dir) => dir.name.value);
+      expect(directiveNames).toContain('aws_api_key');
+      expect(directiveNames).toContain('aws_iam');
+    });
+
+    it('sandbox mode + default authentication not API_KEY', () => {
+      const schema = `
+      type Post @model {
+          id: ID! @primaryKey
+          title: String!
+      }
+    `;
+
+      const out = testTransform({
+        schema,
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        transformParameters: {
+          sandboxModeEnabled: true,
+        },
+        authConfig: {
+          defaultAuthentication: {
+            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+          },
+          additionalAuthenticationProviders: [
+            {
+              authenticationType: 'API_KEY',
+            },
+          ],
+        },
+      });
+
+      const parsed = parse(out.schema);
+      validateModelSchema(parsed);
+
+      const postType = getObjectType(parsed, 'Post')!;
+      expect(postType).toBeDefined();
+      expect(postType.directives).toBeDefined();
+      expect(postType.directives!.length).toEqual(1);
+      const directiveNames = postType.directives!.map((dir) => dir.name.value);
+      expect(directiveNames).toContain('aws_api_key');
+    });
+
+    it('IAM access enabled + default authentication not AWS_IAM', () => {
+      const schema = `
+      type Post @model {
+          id: ID! @primaryKey
+          title: String!
+      }
+    `;
+
+      const out = testTransform({
+        schema,
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        synthParameters: {
+          enableIamAccess: true,
+        },
+        authConfig: {
+          defaultAuthentication: {
+            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+          },
+          additionalAuthenticationProviders: [
+            {
+              authenticationType: 'AWS_IAM',
+            },
+          ],
+        },
+      });
+
+      const parsed = parse(out.schema);
+      validateModelSchema(parsed);
+
+      const postType = getObjectType(parsed, 'Post')!;
+      expect(postType).toBeDefined();
+      expect(postType.directives).toBeDefined();
+      expect(postType.directives!.length).toEqual(1);
+      const directiveNames = postType.directives!.map((dir) => dir.name.value);
+      expect(directiveNames).toContain('aws_iam');
+    });
   });
 });

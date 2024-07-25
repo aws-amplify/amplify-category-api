@@ -1,7 +1,7 @@
-'use strict';
 import { Match, Template } from 'aws-cdk-lib/assertions';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { FunctionTransformer } from '..';
 
 test('for @function with only name, it generates the expected resources', () => {
@@ -11,11 +11,10 @@ test('for @function with only name, it generates the expected resources', () => 
     }
     `;
 
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new FunctionTransformer()],
   });
-
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
   parse(out.schema);
@@ -147,11 +146,10 @@ test('for @function with account ID, it generates the expected resources', () =>
     }
     `;
 
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new FunctionTransformer()],
   });
-
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
   parse(out.schema);
@@ -290,10 +288,10 @@ test('two @function directives for the same lambda should produce a single datas
     }
     `;
 
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new FunctionTransformer()],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   parse(out.schema);
   expect(out.stacks).toBeDefined();
@@ -313,10 +311,10 @@ test('two @function directives for the same field should be valid', () => {
     }
     `;
 
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new FunctionTransformer()],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   parse(out.schema);
   expect(out.stacks).toBeDefined();
@@ -341,10 +339,33 @@ test('@function directive applied to Object should throw Error', () => {
     }
     `;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new FunctionTransformer()],
+  expect(() =>
+    testTransform({
+      schema: invalidSchema,
+      transformers: [new FunctionTransformer()],
+    }),
+  ).toThrow('Directive "@function" may not be used on OBJECT.');
+});
+
+test('includes auth info in stash', () => {
+  const validSchema = `
+    type Query {
+      myFunction(userId: ID!): String
+        @function(name: "myFunc-\${env}")
+        @auth(rules: [{ allow: private, provider: iam }])
+    }
+    `;
+
+  const out = testTransform({
+    schema: validSchema,
+    transformers: [new AuthTransformer(), new FunctionTransformer()],
+    synthParameters: { identityPoolId: 'fake-test-id', adminRoles: ['fake-test-role'] },
+    authConfig: {
+      defaultAuthentication: {
+        authenticationType: 'AWS_IAM',
+      },
+      additionalAuthenticationProviders: [],
+    },
   });
-  expect(() => {
-    transformer.transform(invalidSchema);
-  }).toThrow('Directive "@function" may not be used on OBJECT.');
+  expect(out.stacks.FunctionDirectiveStack.Resources!.QuerymyFunctionResolver.Properties.RequestMappingTemplate).toMatchSnapshot();
 });

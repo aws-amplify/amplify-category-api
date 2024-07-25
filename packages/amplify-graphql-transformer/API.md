@@ -5,16 +5,20 @@
 ```ts
 
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import { DatasourceType } from '@aws-amplify/graphql-transformer-core';
-import { DeploymentResources } from '@aws-amplify/graphql-transformer-interfaces';
+import { AssetProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { Construct } from 'constructs';
+import type { DataSourceStrategiesProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { OverrideConfig } from '@aws-amplify/graphql-transformer-core';
-import { RDSConnectionSecrets } from '@aws-amplify/graphql-transformer-core';
+import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import type { RDSLayerMappingProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import type { RDSSNSTopicMappingProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResolverConfig } from '@aws-amplify/graphql-transformer-core';
-import { Template } from '@aws-amplify/graphql-transformer-interfaces';
+import { SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
+import { TransformParameterProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 
 // @public (undocumented)
@@ -24,14 +28,17 @@ export const constructTransform: (config: TransformConfig) => GraphQLTransform;
 export const constructTransformerChain: (options?: TransformerFactoryArgs) => TransformerPluginProvider[];
 
 // @public (undocumented)
-export const executeTransform: (config: ExecuteTransformConfig) => DeploymentResources;
+export const executeTransform: (config: ExecuteTransformConfig) => void;
 
 // @public (undocumented)
-export type ExecuteTransformConfig = TransformConfig & {
+export type ExecuteTransformConfig = TransformConfig & DataSourceStrategiesProvider & RDSLayerMappingProvider & RDSSNSTopicMappingProvider & {
     schema: string;
-    modelToDatasourceMap?: Map<string, DatasourceType>;
-    datasourceSecretParameterLocations?: Map<string, RDSConnectionSecrets>;
     printTransformerLog?: (log: TransformerLog) => void;
+    scope: Construct;
+    nestedStackProvider: NestedStackProvider;
+    parameterProvider?: TransformParameterProvider;
+    assetProvider: AssetProvider;
+    synthParameters: SynthParameters;
 };
 
 // @public (undocumented)
@@ -39,8 +46,6 @@ export type TransformConfig = {
     transformersFactoryArgs: TransformerFactoryArgs;
     resolverConfig?: ResolverConfig;
     authConfig?: AppSyncAuthConfiguration;
-    stacks?: Record<string, Template>;
-    overrideConfig?: OverrideConfig;
     userDefinedSlots?: Record<string, UserDefinedSlot[]>;
     stackMapping?: Record<string, string>;
     transformParameters: TransformParameters;
@@ -48,11 +53,10 @@ export type TransformConfig = {
 
 // @public (undocumented)
 export type TransformerFactoryArgs = {
-    authConfig?: any;
     storageConfig?: any;
-    adminRoles?: Array<string>;
-    identityPoolId?: string;
     customTransformers?: TransformerPluginProvider[];
+    functionNameMap?: Record<string, IFunction>;
+    allowGen1Patterns?: boolean;
 };
 
 // (No @packageDocumentation comment for this package)

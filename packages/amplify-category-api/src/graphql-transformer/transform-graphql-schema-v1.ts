@@ -1,8 +1,7 @@
-import fs from 'fs-extra';
 import path from 'path';
+import fs from 'fs-extra';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
-import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
 import {
   $TSContext,
   AmplifyCategories,
@@ -14,9 +13,9 @@ import {
   JSONUtilities,
   pathManager,
   stateManager,
+  exitOnNextTick,
 } from '@aws-amplify/amplify-cli-core';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { isAuthModeUpdated } from './auth-mode-compare';
 import {
   collectDirectivesByTypeNames,
   readTransformerConfiguration,
@@ -30,7 +29,8 @@ import {
   buildAPIProject,
   getSanityCheckRules,
 } from 'graphql-transformer-core';
-import { exitOnNextTick } from '@aws-amplify/amplify-cli-core';
+import { isAuthModeUpdated } from './auth-mode-compare';
+import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
 import { searchablePushChecks } from './api-utils';
 import { getTransformerFactoryV1 } from './transformer-factory';
 
@@ -218,7 +218,7 @@ export async function transformGraphQLSchemaV1(context, options) {
   }
   resources = resources.filter((resource) => resource.service === 'AppSync');
   // check if api is in update status or create status
-  const isNewAppSyncAPI: boolean = resourcesToBeCreated.filter((resource) => resource.service === 'AppSync').length === 0 ? false : true;
+  const isNewAppSyncAPI: boolean = resourcesToBeCreated.filter((resource) => resource.service === 'AppSync').length !== 0;
 
   if (!resourceDir) {
     // There can only be one appsync resource

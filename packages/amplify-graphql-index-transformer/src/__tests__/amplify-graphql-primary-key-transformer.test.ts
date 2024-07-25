@@ -1,10 +1,10 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform, validateModelSchema, DatasourceType } from '@aws-amplify/graphql-transformer-core';
-
+import { constructDataSourceStrategies, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Kind, parse } from 'graphql';
-import { PrimaryKeyTransformer } from '..';
 import _ from 'lodash';
+import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { PrimaryKeyTransformer } from '..';
 
 test('throws if multiple primary keys are defined on an object', () => {
   const schema = `
@@ -13,13 +13,12 @@ test('throws if multiple primary keys are defined on an object', () => {
       email: String! @primaryKey
     }`;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-  });
-
-  expect(() => {
-    transformer.transform(schema);
-  }).toThrow(`You may only supply one primary key on type 'Test'.`);
+  expect(() =>
+    testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+    }),
+  ).toThrow("You may only supply one primary key on type 'Test'.");
 });
 
 test('throws if partition key is nullable', () => {
@@ -29,13 +28,12 @@ test('throws if partition key is nullable', () => {
       email: String
     }`;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-  });
-
-  expect(() => {
-    transformer.transform(schema);
-  }).toThrow(`The primary key on type 'Test' must reference non-null fields.`);
+  expect(() =>
+    testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+    }),
+  ).toThrow("The primary key on type 'Test' must reference non-null fields.");
 });
 
 test('throws if sort key is nullable', () => {
@@ -45,13 +43,12 @@ test('throws if sort key is nullable', () => {
       email: String
     }`;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-  });
-
-  expect(() => {
-    transformer.transform(schema);
-  }).toThrow(`The primary key on type 'Test' must reference non-null fields.`);
+  expect(() =>
+    testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+    }),
+  ).toThrow("The primary key on type 'Test' must reference non-null fields.");
 });
 
 test('throws if @primaryKey is used in a non-@model type', () => {
@@ -61,13 +58,12 @@ test('throws if @primaryKey is used in a non-@model type', () => {
       email: String
     }`;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new PrimaryKeyTransformer()],
-  });
-
-  expect(() => {
-    transformer.transform(schema);
-  }).toThrow('The @primaryKey directive may only be added to object definitions annotated with @model.');
+  expect(() =>
+    testTransform({
+      schema,
+      transformers: [new PrimaryKeyTransformer()],
+    }),
+  ).toThrow('The @primaryKey directive may only be added to object definitions annotated with @model.');
 });
 
 test('throws if @primaryKey is used on a non-scalar field', () => {
@@ -81,13 +77,12 @@ test('throws if @primaryKey is used on a non-scalar field', () => {
       email: String
     }`;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-  });
-
-  expect(() => {
-    transformer.transform(schema);
-  }).toThrow(`The primary key on type 'Test.id' cannot be a non-scalar.`);
+  expect(() =>
+    testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+    }),
+  ).toThrow("The primary key on type 'Test.id' cannot be a non-scalar.");
 });
 
 test('throws if @primaryKey uses a sort key field that does not exist', () => {
@@ -97,13 +92,12 @@ test('throws if @primaryKey uses a sort key field that does not exist', () => {
       email: String
     }`;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-  });
-
-  expect(() => {
-    transformer.transform(schema);
-  }).toThrow(`Can't find field 'doesnotexist' in Test, but it was specified in the primary key.`);
+  expect(() =>
+    testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+    }),
+  ).toThrow("Can't find field 'doesnotexist' in Test, but it was specified in the primary key.");
 });
 
 test('throws if @primaryKey uses a sort key field that is a non-scalar', () => {
@@ -117,13 +111,12 @@ test('throws if @primaryKey uses a sort key field that is a non-scalar', () => {
       email: NonScalar
     }`;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-  });
-
-  expect(() => {
-    transformer.transform(schema);
-  }).toThrow(`The primary key's sort key on type 'Test.email' cannot be a non-scalar.`);
+  expect(() =>
+    testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+    }),
+  ).toThrow("The primary key's sort key on type 'Test.email' cannot be a non-scalar.");
 });
 
 test('throws if @primaryKey refers to itself', () => {
@@ -133,13 +126,12 @@ test('throws if @primaryKey refers to itself', () => {
       email: String
     }`;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-  });
-
-  expect(() => {
-    transformer.transform(schema);
-  }).toThrow(`@primaryKey field 'id' cannot reference itself.`);
+  expect(() =>
+    testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+    }),
+  ).toThrow("@primaryKey field 'id' cannot reference itself.");
 });
 
 test('throws if @primaryKey is specified on a list', () => {
@@ -149,13 +141,12 @@ test('throws if @primaryKey is specified on a list', () => {
       email: String
     }`;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-  });
-
-  expect(() => {
-    transformer.transform(schema);
-  }).toThrow(`The primary key on type 'Test.strings' cannot be a non-scalar.`);
+  expect(() =>
+    testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+    }),
+  ).toThrow("The primary key on type 'Test.strings' cannot be a non-scalar.");
 });
 
 test('throws if @primaryKey sort key fields are a list', () => {
@@ -166,13 +157,12 @@ test('throws if @primaryKey sort key fields are a list', () => {
       email: String
     }`;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-  });
-
-  expect(() => {
-    transformer.transform(schema);
-  }).toThrow(`The primary key's sort key on type 'Test.strings' cannot be a non-scalar.`);
+  expect(() =>
+    testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+    }),
+  ).toThrow("The primary key's sort key on type 'Test.strings' cannot be a non-scalar.");
 });
 
 test('handles sortKeyFields being a string instead of an array', () => {
@@ -186,13 +176,12 @@ test('handles sortKeyFields being a string instead of an array', () => {
       email: NonScalar
     }`;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-  });
-
-  expect(() => {
-    transformer.transform(schema);
-  }).toThrow(`The primary key's sort key on type 'Test.email' cannot be a non-scalar.`);
+  expect(() =>
+    testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+    }),
+  ).toThrow("The primary key's sort key on type 'Test.email' cannot be a non-scalar.");
 });
 
 test('a primary key with no sort key is properly configured', () => {
@@ -201,10 +190,10 @@ test('a primary key with no sort key is properly configured', () => {
       email: String! @primaryKey
     }`;
 
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
   });
-  const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
   const stack = out.stacks.Test;
 
@@ -243,10 +232,10 @@ test('a primary key with a single sort key field is properly configured', () => 
       kind: Int!
     }`;
 
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
   });
-  const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
   const stack = out.stacks.Test;
 
@@ -281,10 +270,10 @@ test('a primary key with a composite sort key is properly configured', () => {
       andAnother: String!
     }`;
 
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
   });
-  const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
   const stack = out.stacks.Test;
 
@@ -355,10 +344,10 @@ test('enums are supported in keys', () => {
       lastStatus: Status!
     }`;
 
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
   });
-  const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
   const stack = out.stacks.Test;
 
@@ -390,10 +379,10 @@ test('user provided id fields are not removed', () => {
       email: String! @primaryKey
     }`;
 
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
   });
-  const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
   const stack = out.stacks.Test;
 
@@ -417,15 +406,14 @@ test('null resolvers on @model are supported', () => {
       id: ID! @primaryKey
     }`;
 
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
   });
-  const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
 
   validateModelSchema(schema);
 
-  const stack = out.stacks.Test;
   const definitions = schema.definitions.filter((d: any) => {
     return (
       (d.kind === Kind.OBJECT_TYPE_DEFINITION && ['Query', 'Mutation', 'Subscription'].includes(d.name.value)) ||
@@ -455,15 +443,14 @@ test('@model null resolvers can be overridden', () => {
       id: ID!
     }`;
 
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
   });
-  const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
 
   validateModelSchema(schema);
 
-  const stack = out.stacks.Test;
   const definitions = schema.definitions
     .filter((d: any) => {
       return (
@@ -487,15 +474,14 @@ test('resolvers can be renamed by @model', () => {
       email: String!
     }`;
 
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
   });
-  const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
 
   validateModelSchema(schema);
 
-  const stack = out.stacks.Test;
   const query: any = schema.definitions.find((d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === 'Query');
   const mutation: any = schema.definitions.find((d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === 'Mutation');
 
@@ -531,15 +517,14 @@ test('individual resolvers can be made null by @model', () => {
       email: String!
     }`;
 
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
   });
-  const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
 
   validateModelSchema(schema);
 
-  const stack = out.stacks.Test;
   const query: any = schema.definitions.find((d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === 'Query');
 
   expect(out.resolvers).toMatchSnapshot();
@@ -557,10 +542,10 @@ it('id field should be optional in updateInputObjects when it is not a primary k
       serviceId: ID!
       owner: String! @primaryKey(sortKeyFields: "serviceId")
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
   });
-  const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
 
   validateModelSchema(schema);
@@ -581,10 +566,10 @@ test('primary key with id as partition key is not required on createInput', () =
       email: String!
       kind: Int!
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
   });
-  const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
 
   validateModelSchema(schema);
@@ -614,10 +599,10 @@ test('primary key with id and createdAt is not required on createInput', () => {
       email: String!
       createdAt: AWSDateTime!
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
   });
-  const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
 
   validateModelSchema(schema);
@@ -646,11 +631,11 @@ test('key with complex fields updates the input objects', () => {
       email: String! @primaryKey
       nonNullListInputOfNonNullStrings: [String!]!
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
   });
 
-  const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
 
   validateModelSchema(schema);
@@ -690,10 +675,10 @@ test('list queries use correct pluralization', () => {
     type Boss @model {
       id: ID! @primaryKey
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
   });
-  const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
   const query: any = schema.definitions.find((d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === 'Query');
   expect(query).toBeDefined();
@@ -712,11 +697,11 @@ test('lowercase model names generate the correct get/list query arguments', () =
       lastName: String!
       firstName: String
     }`;
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
   });
 
-  const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
 
   validateModelSchema(schema);
@@ -740,12 +725,8 @@ test('lowercase model names generate the correct get/list query arguments', () =
   expect(listQuery.arguments[5].name.value).toEqual('sortDirection');
 });
 
-describe('RDS primary key transformer tests', () => {
-  const modelToDatasourceMap = new Map<string, DatasourceType>();
-  modelToDatasourceMap.set('Test', {
-    dbType: 'MySQL',
-    provisionDB: false,
-  });
+describe('SQL primary key transformer tests', () => {
+  const mySqlStrategy = mockSqlDataSourceStrategy();
 
   it('a primary key with a single sort key field is properly configured', () => {
     const inputSchema = `
@@ -754,10 +735,11 @@ describe('RDS primary key transformer tests', () => {
         kind: Int!
       }`;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
     });
-    const out = transformer.transform(inputSchema, { modelToDatasourceMap });
     const schema = parse(out.schema);
     const stack = out.stacks.Test;
 
@@ -781,10 +763,11 @@ describe('RDS primary key transformer tests', () => {
         email: String! @primaryKey
       }`;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
     });
-    const out = transformer.transform(inputSchema, { modelToDatasourceMap });
     const schema = parse(out.schema);
     const stack = out.stacks.Test;
 
@@ -823,10 +806,11 @@ describe('RDS primary key transformer tests', () => {
         andAnother: String!
       }`;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
     });
-    const out = transformer.transform(inputSchema, { modelToDatasourceMap });
     const schema = parse(out.schema);
     const stack = out.stacks.Test;
 
@@ -887,15 +871,15 @@ describe('RDS primary key transformer tests', () => {
         id: ID! @primaryKey
       }`;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
     });
-    const out = transformer.transform(inputSchema, { modelToDatasourceMap });
     const schema = parse(out.schema);
 
     validateModelSchema(schema);
 
-    const stack = out.stacks.Test;
     const definitions = schema.definitions.filter((d: any) => {
       return (
         (d.kind === Kind.OBJECT_TYPE_DEFINITION && ['Query', 'Mutation', 'Subscription'].includes(d.name.value)) ||
@@ -925,15 +909,15 @@ describe('RDS primary key transformer tests', () => {
         id: ID!
       }`;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
     });
-    const out = transformer.transform(inputSchema, { modelToDatasourceMap });
     const schema = parse(out.schema);
 
     validateModelSchema(schema);
 
-    const stack = out.stacks.Test;
     const definitions = schema.definitions
       .filter((d: any) => {
         return (
@@ -957,15 +941,15 @@ describe('RDS primary key transformer tests', () => {
         email: String!
       }`;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
     });
-    const out = transformer.transform(inputSchema, { modelToDatasourceMap });
     const schema = parse(out.schema);
 
     validateModelSchema(schema);
 
-    const stack = out.stacks.Test;
     const query: any = schema.definitions.find((d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === 'Query');
     const mutation: any = schema.definitions.find((d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === 'Mutation');
 
@@ -1001,15 +985,15 @@ describe('RDS primary key transformer tests', () => {
         email: String!
       }`;
 
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
     });
-    const out = transformer.transform(inputSchema, { modelToDatasourceMap });
     const schema = parse(out.schema);
 
     validateModelSchema(schema);
 
-    const stack = out.stacks.Test;
     const query: any = schema.definitions.find((d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === 'Query');
 
     expect(out.resolvers).toMatchSnapshot();

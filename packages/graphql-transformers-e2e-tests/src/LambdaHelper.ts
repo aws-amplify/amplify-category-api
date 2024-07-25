@@ -1,12 +1,13 @@
-import { Credentials, Lambda } from 'aws-sdk';
 import * as fs from 'fs';
 import * as path from 'path';
+import { Credentials, Lambda } from 'aws-sdk';
 import { resolveTestRegion } from './testSetup';
 
 const REGION = resolveTestRegion();
 
 export class LambdaHelper {
   client: Lambda;
+
   constructor(region: string = REGION, credentials?: Credentials) {
     this.client = new Lambda({
       region,
@@ -23,7 +24,7 @@ export class LambdaHelper {
         Code: {
           ZipFile: zipContents,
         },
-        Runtime: 'nodejs14.x',
+        Runtime: 'nodejs18.x',
         Handler: `${filePrefix}.handler`,
         Role: roleArn,
       })

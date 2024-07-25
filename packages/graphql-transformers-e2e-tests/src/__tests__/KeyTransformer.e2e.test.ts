@@ -3,13 +3,13 @@ import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
-import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import { GraphQLClient } from '../GraphQLClient';
 import { default as moment } from 'moment';
+import { default as S3 } from 'aws-sdk/clients/s3';
+import { CloudFormationClient } from '../CloudFormationClient';
+import { GraphQLClient } from '../GraphQLClient';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
-import { default as S3 } from 'aws-sdk/clients/s3';
 import { resolveTestRegion } from '../testSetup';
 
 const region = resolveTestRegion();
@@ -152,7 +152,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test('Test next token with key', async () => {
+test('next token with key', async () => {
   const status = 'PENDING';
   const createdAt = '2019-06-06T00:01:01.000Z';
   // createItems
@@ -192,13 +192,13 @@ test('Test next token with key', async () => {
   await deleteItem('order4', status, createdAt);
 });
 
-test('Test getX with a two part primary key.', async () => {
+test('getX with a two part primary key.', async () => {
   const order1 = await createOrder('test@gmail.com', '1');
   const getOrder1 = await getOrder('test@gmail.com', order1.data.createOrder.createdAt);
   expect(getOrder1.data.getOrder.orderId).toEqual('1');
 });
 
-test('Test updateX with a two part primary key.', async () => {
+test('updateX with a two part primary key.', async () => {
   const order2 = await createOrder('test3@gmail.com', '2');
   let getOrder2 = await getOrder('test3@gmail.com', order2.data.createOrder.createdAt);
   expect(getOrder2.data.getOrder.orderId).toEqual('2');
@@ -208,7 +208,7 @@ test('Test updateX with a two part primary key.', async () => {
   expect(getOrder2.data.getOrder.orderId).toEqual('3');
 });
 
-test('Test deleteX with a two part primary key.', async () => {
+test('deleteX with a two part primary key.', async () => {
   const order2 = await createOrder('test2@gmail.com', '2');
   let getOrder2 = await getOrder('test2@gmail.com', order2.data.createOrder.createdAt);
   expect(getOrder2.data.getOrder.orderId).toEqual('2');
@@ -218,14 +218,14 @@ test('Test deleteX with a two part primary key.', async () => {
   expect(getOrder2.data.getOrder).toBeNull();
 });
 
-test('Test getX with a three part primary key', async () => {
+test('getX with a three part primary key', async () => {
   const item1 = await createItem('1', 'PENDING', 'item1');
   const getItem1 = await getItem('1', 'PENDING', item1.data.createItem.createdAt);
   expect(getItem1.data.getItem.orderId).toEqual('1');
   expect(getItem1.data.getItem.status).toEqual('PENDING');
 });
 
-test('Test updateX with a three part primary key.', async () => {
+test('updateX with a three part primary key.', async () => {
   const item2 = await createItem('2', 'PENDING', 'item2');
   let getItem2 = await getItem('2', 'PENDING', item2.data.createItem.createdAt);
   expect(getItem2.data.getItem.orderId).toEqual('2');
@@ -235,7 +235,7 @@ test('Test updateX with a three part primary key.', async () => {
   expect(getItem2.data.getItem.name).toEqual('item2.1');
 });
 
-test('Test deleteX with a three part primary key.', async () => {
+test('deleteX with a three part primary key.', async () => {
   const item3 = await createItem('3', 'IN_TRANSIT', 'item3');
   let getItem3 = await getItem('3', 'IN_TRANSIT', item3.data.createItem.createdAt);
   expect(getItem3.data.getItem.name).toEqual('item3');
@@ -245,7 +245,7 @@ test('Test deleteX with a three part primary key.', async () => {
   expect(getItem3.data.getItem).toBeNull();
 });
 
-test('Test listX with three part primary key.', async () => {
+test('listX with three part primary key.', async () => {
   const hashKey = 'TEST_LIST_ID';
   await createItem(hashKey, 'IN_TRANSIT', 'list1', '2018-01-01T00:01:01.000Z');
   await createItem(hashKey, 'PENDING', 'list2', '2018-06-01T00:01:01.000Z');
@@ -282,7 +282,7 @@ test('Test listX with three part primary key.', async () => {
   await deleteItem(hashKey, 'PENDING', '2018-09-01T00:01:01.000Z');
 });
 
-test('Test query with three part secondary key.', async () => {
+test('query with three part secondary key.', async () => {
   const hashKey = 'UNKNOWN';
   await createItem('order1', 'UNKNOWN', 'list1', '2018-01-01T00:01:01.000Z');
   await createItem('order2', 'UNKNOWN', 'list2', '2018-06-01T00:01:01.000Z');
@@ -314,7 +314,7 @@ test('Test query with three part secondary key.', async () => {
   await deleteItem('order3', hashKey, '2018-09-01T00:01:01.000Z');
 });
 
-test('Test query with three part secondary key, where sort key is an enum.', async () => {
+test('query with three part secondary key, where sort key is an enum.', async () => {
   const hashKey = '2018-06-01T00:01:01.000Z';
   const sortKey = 'UNKNOWN';
   await createItem('order1', sortKey, 'list1', '2018-01-01T00:01:01.000Z');
@@ -347,7 +347,7 @@ test('Test query with three part secondary key, where sort key is an enum.', asy
   await deleteItem('order3', sortKey, '2018-09-01T00:01:01.000Z');
 });
 
-test('Test create/update mutation validation with three part secondary key.', async () => {
+test('create/update mutation validation with three part secondary key.', async () => {
   const createResponseMissingLastSortKey = await createShippingUpdate({ orderId: 'order1', itemId: 'item1', name: '42' });
   expect(createResponseMissingLastSortKey.data.createShippingUpdate).toBeNull();
   expect(createResponseMissingLastSortKey.errors).toHaveLength(1);
@@ -393,13 +393,13 @@ test('Test create/update mutation validation with three part secondary key.', as
   expect(updateResponseMissingNoKeys.data.updateShippingUpdate.name).toEqual('testing2');
 });
 
-test('Test Customer Create with list member and secondary key', async () => {
+test('Customer Create with list member and secondary key', async () => {
   await createCustomer('customer1@email.com', ['thing1', 'thing2'], 'customerusr1');
   const getCustomer1 = await getCustomer('customer1@email.com');
   expect(getCustomer1.data.getCustomer.addresslist).toEqual(['thing1', 'thing2']);
 });
 
-test('Test cannot overwrite customer record with custom primary key', async () => {
+test('cannot overwrite customer record with custom primary key', async () => {
   await createCustomer('customer42@email.com', ['thing1', 'thing2'], 'customerusr42');
   const response = await createCustomer('customer42@email.com', ['thing2'], 'customerusr43');
   expect(response.errors).toBeDefined();
@@ -411,19 +411,19 @@ test('Test cannot overwrite customer record with custom primary key', async () =
   );
 });
 
-test('Test Customer Mutation with list member', async () => {
+test('Customer Mutation with list member', async () => {
   await updateCustomer('customer1@email.com', ['thing3', 'thing4'], 'new_customerusr1');
   const getCustomer1 = await getCustomer('customer1@email.com');
   expect(getCustomer1.data.getCustomer.addresslist).toEqual(['thing3', 'thing4']);
 });
 
-test('Test Customer Mutation with list member', async () => {
+test('Customer Mutation with list member', async () => {
   await updateCustomer('customer1@email.com', ['thing3', 'thing4'], 'new_customerusr1');
   const getCustomer1 = await getCustomer('customer1@email.com');
   expect(getCustomer1.data.getCustomer.addresslist).toEqual(['thing3', 'thing4']);
 });
 
-test('Test @key directive with customer sortDirection', async () => {
+test('@key directive with customer sortDirection', async () => {
   await createOrder('testorder1@email.com', '1', '2016-03-10T00:45:08+00:00');
   await createOrder('testorder1@email.com', '2', '2018-05-22T21:45:08+00:00');
   await createOrder('testorder1@email.com', '3', '2019-06-27T12:00:08+00:00');
@@ -438,7 +438,7 @@ test('Test @key directive with customer sortDirection', async () => {
 // orderId: string, itemId: string, status: string, name?: string
 // DELIVERED IN_TRANSIT PENDING UNKNOWN
 // (orderId: string, itemId: string, sortDirection: string)
-test('Test @key directive with sortDirection on GSI', async () => {
+test('@key directive with sortDirection on GSI', async () => {
   await createShippingUpdate({ orderId: 'order1', itemId: 'product1', status: 'PENDING', name: 'order1Name1' });
   await createShippingUpdate({ orderId: 'order1', itemId: 'product2', status: 'IN_TRANSIT', name: 'order1Name2' });
   await createShippingUpdate({ orderId: 'order1', itemId: 'product3', status: 'DELIVERED', name: 'order1Name3' });
@@ -451,7 +451,7 @@ test('Test @key directive with sortDirection on GSI', async () => {
   expect(newShippingUpdates.data.shippingUpdates.items[0].name).toEqual('order1Name4');
 });
 
-test('Test @key directive supports auto Id and createdAt fields in create mutation', async () => {
+test('@key directive supports auto Id and createdAt fields in create mutation', async () => {
   const result = await GRAPHQL_CLIENT.query(
     `mutation CreateModelWithIdAndCreatedAtAsKey{
         createModelWithIdAndCreatedAtAsKey(input:{ name: "John Doe" }) {
@@ -466,7 +466,7 @@ test('Test @key directive supports auto Id and createdAt fields in create mutati
   expect(result.data.createModelWithIdAndCreatedAtAsKey.name).toEqual('John Doe');
 });
 
-test('Test sortDirection validation error for List on KeyedBlog type', async () => {
+test('sortDirection validation error for List on KeyedBlog type', async () => {
   const result = await GRAPHQL_CLIENT.query(
     `mutation CreateKeyedBlog($input: CreateKeyedBlogInput!) {
         createKeyedBlog(input: $input) {
@@ -503,7 +503,7 @@ test('Test sortDirection validation error for List on KeyedBlog type', async () 
   expect(listResult.errors[0].message).toEqual('sortDirection is not supported for List operations without a Sort key defined.');
 });
 
-test('Test sortDirection validation error for List on KeyedSortedBlog type', async () => {
+test('sortDirection validation error for List on KeyedSortedBlog type', async () => {
   const result = await GRAPHQL_CLIENT.query(
     `mutation CreateKeyedSortedBlog($input: CreateKeyedSortedBlogInput!) {
         createKeyedSortedBlog(input: $input) {

@@ -2,9 +2,9 @@
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, ObjectTypeDefinitionNode, Kind, parse } from 'graphql';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { HasManyTransformer, BelongsToTransformer, HasOneTransformer } from '..';
 
 const iamDefaultConfig: AppSyncAuthConfiguration = {
@@ -39,11 +39,11 @@ test('per-field auth on relational field', () => {
     },
     additionalAuthenticationProviders: [{ authenticationType: 'AWS_IAM' }],
   };
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig,
     transformers: [new ModelTransformer(), new HasManyTransformer(), new AuthTransformer()],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
 
   expect(out.resolvers['Post.comments.auth.1.req.vtl']).toContain(
@@ -70,6 +70,7 @@ test('ModelXConnection type is getting the directives added, when a field has @h
     postUserId: ID! @index(name: "byUser")
     message: String
   }`;
+
   const transformer = getTransformer(withAuthModes(iamDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
   const out = transformer.transform(validSchema);
   const schemaDoc = parse(out.schema);
@@ -127,17 +128,21 @@ test('ModelXConnection type is getting the directives added, when a field has @c
   expect((modelPostEditorConnectionType as any).directives.some((dir: any) => dir.name.value === 'aws_cognito_user_pools')).toBe(true);
 });
 
-const getTransformer = (authConfig: AppSyncAuthConfiguration) =>
-  new GraphQLTransform({
-    authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new IndexTransformer(),
-      new HasManyTransformer(),
-      new BelongsToTransformer(),
-      new AuthTransformer(),
-    ],
-  });
+const getTransformer = (authConfig: AppSyncAuthConfiguration) => ({
+  transform: (schema: string) => {
+    return testTransform({
+      schema,
+      authConfig,
+      transformers: [
+        new ModelTransformer(),
+        new IndexTransformer(),
+        new HasManyTransformer(),
+        new BelongsToTransformer(),
+        new AuthTransformer(),
+      ],
+    });
+  },
+});
 
 const withAuthModes = (authConfig: AppSyncAuthConfiguration, authModes: AppSyncAuthMode[]): AppSyncAuthConfiguration => {
   const newAuthConfig = {
@@ -210,11 +215,11 @@ test('auth with hasMany relation - only partition key', () => {
     },
     additionalAuthenticationProviders: [],
   };
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig,
     transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer(), new AuthTransformer()],
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
 
   const schemaDoc = parse(out.schema);
@@ -252,26 +257,25 @@ test('auth with hasOne relation mismatch fields count - missing sort key must th
     },
     additionalAuthenticationProviders: [],
   };
-  const transformer = new GraphQLTransform({
-    authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new PrimaryKeyTransformer(),
-      new HasOneTransformer(),
-      new HasManyTransformer(),
-      new BelongsToTransformer(),
-      new AuthTransformer(),
-    ],
-    transformParameters: {
-      respectPrimaryKeyAttributesOnConnectionField: false,
-      enableAutoIndexQueryNames: false,
-      shouldDeepMergeDirectiveConfigDefaults: false,
-    },
-  });
-  let out;
-  expect(() => {
-    out = transformer.transform(validSchema);
-  }).toThrowError('Invalid @hasOne on Student:scores. Provided fields do not match the size of primary key(s) for StudentScore');
+  expect(() =>
+    testTransform({
+      schema: validSchema,
+      authConfig,
+      transformers: [
+        new ModelTransformer(),
+        new PrimaryKeyTransformer(),
+        new HasOneTransformer(),
+        new HasManyTransformer(),
+        new BelongsToTransformer(),
+        new AuthTransformer(),
+      ],
+      transformParameters: {
+        respectPrimaryKeyAttributesOnConnectionField: false,
+        enableAutoIndexQueryNames: false,
+        shouldDeepMergeDirectiveConfigDefaults: false,
+      },
+    }),
+  ).toThrowError('Invalid @hasOne on Student:scores. Provided fields do not match the size of primary key(s) for StudentScore');
 });
 
 test('auth with hasOne relation match fields count - single sort key do not throw error', () => {
@@ -304,7 +308,10 @@ test('auth with hasOne relation match fields count - single sort key do not thro
     },
     additionalAuthenticationProviders: [],
   };
-  const transformer = new GraphQLTransform({
+
+  // Graphql transform should not throw an error
+  testTransform({
+    schema: validSchema,
     authConfig,
     transformers: [
       new ModelTransformer(),
@@ -315,9 +322,6 @@ test('auth with hasOne relation match fields count - single sort key do not thro
       new AuthTransformer(),
     ],
   });
-
-  // Graphql transform should not throw an error
-  const out = transformer.transform(validSchema);
 });
 
 test('auth with hasOne relation mismatch fields count - partial missing sort key must throw an error', () => {
@@ -352,21 +356,20 @@ test('auth with hasOne relation mismatch fields count - partial missing sort key
     },
     additionalAuthenticationProviders: [],
   };
-  const transformer = new GraphQLTransform({
-    authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new PrimaryKeyTransformer(),
-      new HasOneTransformer(),
-      new HasManyTransformer(),
-      new BelongsToTransformer(),
-      new AuthTransformer(),
-    ],
-  });
-  let out;
-  expect(() => {
-    out = transformer.transform(validSchema);
-  }).toThrowError('Invalid @hasOne directive on scores. Partial sort keys are not accepted.');
+  expect(() =>
+    testTransform({
+      schema: validSchema,
+      authConfig,
+      transformers: [
+        new ModelTransformer(),
+        new PrimaryKeyTransformer(),
+        new HasOneTransformer(),
+        new HasManyTransformer(),
+        new BelongsToTransformer(),
+        new AuthTransformer(),
+      ],
+    }),
+  ).toThrowError('Invalid @hasOne directive on scores. Partial sort keys are not accepted.');
 });
 
 test('auth with hasOne relation match fields count - multiple sort keys do not throw error', () => {
@@ -401,7 +404,10 @@ test('auth with hasOne relation match fields count - multiple sort keys do not t
     },
     additionalAuthenticationProviders: [],
   };
-  const transformer = new GraphQLTransform({
+
+  // Graphql transform should not throw an error
+  testTransform({
+    schema: validSchema,
     authConfig,
     transformers: [
       new ModelTransformer(),
@@ -412,8 +418,5 @@ test('auth with hasOne relation match fields count - multiple sort keys do not t
       new AuthTransformer(),
     ],
   });
-
-  // Graphql transform should not throw an error
-  const out = transformer.transform(validSchema);
 });
 /* eslint-enable */

@@ -43,7 +43,7 @@ export type CloudFormationFnSplit = {
   'Fn::Split': [string, ...CloudFormationIntrinsicFunction[]]; // limit subset (Fn::Base64,Fn::FindInMap,Fn::GetAtt,Fn::GetAZs,Fn::If,Fn::ImportValue,Fn::Join,Fn::Select,Fn::Sub,Ref)
 };
 export type CloudFormationFnSub = {
-  'Fn::Sub': [string, ...CloudFormationIntrinsicFunction[]]; //Fn::Base64,Fn::FindInMap,Fn::GetAtt,Fn::GetAZs,Fn::If,Fn::ImportValue,Fn::Join,Fn::Select,Ref
+  'Fn::Sub': [string, ...CloudFormationIntrinsicFunction[]]; // Fn::Base64,Fn::FindInMap,Fn::GetAtt,Fn::GetAZs,Fn::If,Fn::ImportValue,Fn::Join,Fn::Select,Ref
 };
 export type CloudFormationIntrinsicConditionFunction =
   | CloudFormationFnIf

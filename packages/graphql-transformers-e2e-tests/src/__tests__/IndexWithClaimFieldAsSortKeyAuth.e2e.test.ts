@@ -1,14 +1,16 @@
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
-import { S3Client } from '../S3Client';
 import { S3, CognitoIdentityServiceProvider as CognitoClient } from 'aws-sdk';
 import { default as moment } from 'moment';
+import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import gql from 'graphql-tag';
+import { CloudFormationClient } from '../CloudFormationClient';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
+import { S3Client } from '../S3Client';
 import {
   addUserToGroup,
   authenticateUser,
@@ -20,9 +22,8 @@ import {
 } from '../cognitoUtils';
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
+
 import { resolveTestRegion } from '../testSetup';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import gql from 'graphql-tag';
 
 const region = resolveTestRegion();
 
@@ -93,7 +94,8 @@ beforeAll(async () => {
     const indexTransformer = new IndexTransformer();
     const authTransformer = new AuthTransformer();
     const primaryKeyTransformer = new PrimaryKeyTransformer();
-    const transformer = new GraphQLTransform({
+    out = testTransform({
+      schema: validSchema,
       authConfig: {
         defaultAuthentication: {
           authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -102,7 +104,6 @@ beforeAll(async () => {
       },
       transformers: [modelTransformer, primaryKeyTransformer, indexTransformer, authTransformer],
     });
-    out = transformer.transform(validSchema);
   } catch (e) {
     console.error(`Failed to transform schema: ${e}`);
     expect(true).toEqual(false);
@@ -192,7 +193,7 @@ afterAll(async () => {
  * Test queries below
  */
 
-test('when identity claim is sub::username, user1 should not access user2 records when logging in with user1 and querying with GSI ', async () => {
+test('when identity claim is sub::username, user1 should not access user2 records when logging in with user1 and querying with GSI', async () => {
   await createNote1(USER_POOL_AUTH_CLIENT_1, { noteId: 'i1-u1', noteType: 't1' });
   await createNote1(USER_POOL_AUTH_CLIENT_1, { noteId: 'i2-u1', noteType: 't1' });
   await createNote1(USER_POOL_AUTH_CLIENT_1, { noteId: 'i3-u1', noteType: 't1' });
@@ -216,7 +217,7 @@ test('when identity claim is sub::username, user1 should not access user2 record
   expect(resultItems.filter((item) => item.owner === USERNAME2).length).toBe(0);
 });
 
-test('when identity claim is username, user1 should not access user2 records when logging in with user1 and querying with GSI ', async () => {
+test('when identity claim is username, user1 should not access user2 records when logging in with user1 and querying with GSI', async () => {
   await createNote2(USER_POOL_AUTH_CLIENT_1, { noteId: 'i1-u1', noteType: 't1', owner: USERNAME1 });
   await createNote2(USER_POOL_AUTH_CLIENT_1, { noteId: 'i2-u1', noteType: 't1', owner: USERNAME1 });
   await createNote2(USER_POOL_AUTH_CLIENT_1, { noteId: 'i3-u1', noteType: 't1', owner: USERNAME1 });
@@ -238,7 +239,7 @@ test('when identity claim is username, user1 should not access user2 records whe
   expect(resultItems.filter((item) => item.owner === USERNAME2).length).toBe(0);
 });
 
-test('when dynamic group auth is applied, user1 should not access user2 records when logging in with user1 and querying with GSI ', async () => {
+test('when dynamic group auth is applied, user1 should not access user2 records when logging in with user1 and querying with GSI', async () => {
   await createNote3(USER_POOL_AUTH_CLIENT_1, { noteId: 'i1-u1', noteType: 't1', group: ADMIN_GROUP_NAME });
   await createNote3(USER_POOL_AUTH_CLIENT_1, { noteId: 'i2-u1', noteType: 't1', group: ADMIN_GROUP_NAME });
   await createNote3(USER_POOL_AUTH_CLIENT_1, { noteId: 'i3-u1', noteType: 't1', group: ADMIN_GROUP_NAME });

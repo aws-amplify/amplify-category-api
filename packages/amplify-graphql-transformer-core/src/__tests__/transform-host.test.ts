@@ -1,13 +1,14 @@
-import { App } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import { DefaultTransformHost } from '../transform-host';
-import { GraphQLApi, TransformerAPIProps } from '../graphql-api';
+import { GraphQLApi } from '../graphql-api';
 import { InlineTemplate } from '../cdk-compat/template-asset';
-import { TransformerRootStack } from '../cdk-compat/root-stack';
 
 describe('addResolver', () => {
   const app = new App();
-  const stack = new TransformerRootStack(app, 'test-root-stack');
-  const transformHost = new DefaultTransformHost({ api: new GraphQLApi(stack, 'testId', { name: 'testApiName' }) });
+  const stack = new Stack(app, 'test-root-stack');
+  const transformHost = new DefaultTransformHost({
+    api: new GraphQLApi(stack, 'testId', { name: 'testApiName', assetProvider: { provide: jest.fn() } }),
+  });
 
   it('generates resolver name with hash for non-alphanumeric type names', () => {
     const cfnResolver = transformHost.addResolver(

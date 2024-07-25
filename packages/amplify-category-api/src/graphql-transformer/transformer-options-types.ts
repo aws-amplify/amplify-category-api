@@ -1,16 +1,20 @@
 /**
  * ProjectOptions Type Definition
  */
-import { AppSyncAuthConfiguration, Template } from '@aws-amplify/graphql-transformer-interfaces';
+import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
-import { OverrideConfig, ResolverConfig, TransformerProjectConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
+import { ResolverConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 import { DiffRule, ProjectRule } from 'graphql-transformer-core';
 import { TransformerFactoryArgs } from '@aws-amplify/graphql-transformer';
+import { Template } from './cdk-compat/deployment-resources';
+import { TransformerProjectConfig } from './cdk-compat/project-config';
+import { OverrideConfig } from './cdk-compat/transform-manager';
 
 /**
  * Transformer Options used to create a GraphQL Transform and compile a GQL API
  */
 export type TransformerProjectOptions = {
+  resourceName: string;
   buildParameters: {
     S3DeploymentBucket: string;
     S3DeploymentRootKey: string;

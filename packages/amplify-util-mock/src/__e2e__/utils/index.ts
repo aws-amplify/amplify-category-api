@@ -1,13 +1,17 @@
+import * as path from 'path';
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
 import * as dynamoEmulator from 'amplify-category-api-dynamodb-simulator';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import { v4 } from 'uuid';
+import { DynamoDB } from 'aws-sdk';
+import { functionRuntimeContributorFactory } from 'amplify-nodejs-function-runtime-provider';
+import { ExecuteTransformConfig, executeTransform } from '@aws-amplify/graphql-transformer';
+import { DeploymentResources, TransformManager } from '@aws-amplify/graphql-transformer-test-utils';
+import { AppSyncAuthConfiguration, ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { DDB_DEFAULT_DATASOURCE_STRATEGY, constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
 import { processTransformerStacks } from '../../CFNParser/appsync-resource-processor';
 import { configureDDBDataSource, createAndUpdateTable } from '../../utils/dynamo-db';
 import { getFunctionDetails } from './lambda-helper';
-import { DynamoDB } from 'aws-sdk';
-import { functionRuntimeContributorFactory } from 'amplify-nodejs-function-runtime-provider';
 
 const invoke = functionRuntimeContributorFactory({}).invoke;
 
@@ -18,6 +22,55 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
     getAmplifyPackageLibDirPath: jest.fn().mockReturnValue('../amplify-dynamodb-simulator'),
   },
 }));
+
+const getAuthenticationTypesForAuthConfig = (authConfig?: AppSyncAuthConfiguration): (string | undefined)[] =>
+  [authConfig?.defaultAuthentication, ...(authConfig?.additionalAuthenticationProviders ?? [])].map(
+    (authConfigEntry) => authConfigEntry?.authenticationType,
+  );
+
+const hasIamAuth = (authConfig?: AppSyncAuthConfiguration): boolean =>
+  getAuthenticationTypesForAuthConfig(authConfig).some((authType) => authType === 'AWS_IAM');
+
+const hasUserPoolAuth = (authConfig?: AppSyncAuthConfiguration): boolean =>
+  getAuthenticationTypesForAuthConfig(authConfig).some((authType) => authType === 'AMAZON_COGNITO_USER_POOLS');
+
+export const transformAndSynth = (
+  options: Omit<ExecuteTransformConfig, 'scope' | 'nestedStackProvider' | 'assetProvider' | 'synthParameters' | 'dataSourceStrategies'> & {
+    dataSourceStrategies?: Record<string, ModelDataSourceStrategy>;
+  },
+): DeploymentResources => {
+  const transformManager = new TransformManager();
+  executeTransform({
+    ...options,
+    scope: transformManager.rootStack,
+    nestedStackProvider: transformManager.getNestedStackProvider(),
+    assetProvider: transformManager.getAssetProvider(),
+    synthParameters: transformManager.getSynthParameters(hasIamAuth(options.authConfig), hasUserPoolAuth(options.authConfig)),
+    dataSourceStrategies: options.dataSourceStrategies ?? constructDataSourceStrategies(options.schema, DDB_DEFAULT_DATASOURCE_STRATEGY),
+  });
+  return transformManager.generateDeploymentResources();
+};
+
+export const defaultTransformParams: Pick<ExecuteTransformConfig, 'transformersFactoryArgs' | 'transformParameters'> = {
+  transformersFactoryArgs: {},
+  transformParameters: {
+    shouldDeepMergeDirectiveConfigDefaults: true,
+    disableResolverDeduping: false,
+    sandboxModeEnabled: false,
+    useSubUsernameForDefaultIdentityClaim: true,
+    subscriptionsInheritPrimaryAuth: false,
+    populateOwnerFieldForStaticGroupAuth: true,
+    suppressApiKeyGeneration: false,
+    secondaryKeyAsGSI: true,
+    enableAutoIndexQueryNames: true,
+    respectPrimaryKeyAttributesOnConnectionField: true,
+    enableSearchNodeToNodeEncryption: false,
+    enableTransformerCfnOutputs: true,
+    allowDestructiveGraphqlSchemaUpdates: false,
+    replaceTableUponGsiUpdate: false,
+    allowGen1Patterns: true,
+  },
+};
 
 export async function launchDDBLocal() {
   let dbPath;

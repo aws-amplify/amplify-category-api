@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`test auth logic is enabled for iam/apiKey auth rules in response es resolver 1`] = `
+exports[`auth logic is enabled for iam/apiKey auth rules in response es resolver 1`] = `
 "type Post @aws_api_key @aws_iam {
   id: ID!
   content: String

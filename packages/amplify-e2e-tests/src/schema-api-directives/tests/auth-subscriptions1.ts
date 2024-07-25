@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 type Post @model
 @auth(rules: [{allow: owner}])
@@ -9,7 +9,7 @@ type Post @model
   content: String
 }`;
 
-//subscriptions
+// subscriptions
 export const subscription = `
 #error: syntax error
 #change: changed "Bob" to "user1"

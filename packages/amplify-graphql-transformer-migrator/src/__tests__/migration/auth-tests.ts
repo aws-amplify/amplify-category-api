@@ -1,5 +1,5 @@
-import { migrateGraphQLSchema } from '../../schema-migrator';
 import { parse } from 'graphql';
+import { migrateGraphQLSchema } from '../../schema-migrator';
 
 function migrateAndValidate(inputSchema: string, defaultAuth: string = 'apiKey'): void {
   const docNode = parse(inputSchema);

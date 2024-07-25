@@ -3,13 +3,13 @@ import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { FunctionTransformer } from 'graphql-function-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
-import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import { GraphQLClient } from '../GraphQLClient';
 import { default as moment } from 'moment';
+import { default as S3 } from 'aws-sdk/clients/s3';
+import { CloudFormationClient } from '../CloudFormationClient';
+import { GraphQLClient } from '../GraphQLClient';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
-import { default as S3 } from 'aws-sdk/clients/s3';
 import { LambdaHelper } from '../LambdaHelper';
 import { IAMHelper } from '../IAMHelper';
 import { resolveTestRegion } from '../testSetup';
@@ -89,7 +89,7 @@ beforeAll(async () => {
     const policy = await IAM_HELPER.createLambdaExecutionPolicy(LAMBDA_EXECUTION_POLICY_NAME);
     await wait(5000);
     LAMBDA_EXECUTION_POLICY_ARN = policy.Policy.Arn;
-    await IAM_HELPER.attachLambdaExecutionPolicy(policy.Policy.Arn, role.Role.RoleName);
+    await IAM_HELPER.attachPolicy(policy.Policy.Arn, role.Role.RoleName);
     await wait(10000);
     await LAMBDA_HELPER.createFunction(ECHO_FUNCTION_NAME, role.Role.Arn, 'echoFunction');
     await LAMBDA_HELPER.createFunction(HELLO_FUNCTION_NAME, role.Role.Arn, 'hello');
@@ -150,7 +150,7 @@ afterAll(async () => {
     console.warn(`Error during function cleanup: ${e}`);
   }
   try {
-    await IAM_HELPER.detachLambdaExecutionPolicy(LAMBDA_EXECUTION_POLICY_ARN, LAMBDA_EXECUTION_ROLE_NAME);
+    await IAM_HELPER.detachPolicy(LAMBDA_EXECUTION_POLICY_ARN, LAMBDA_EXECUTION_ROLE_NAME);
   } catch (e) {
     console.warn(`Error during policy dissociation: ${e}`);
   }
@@ -169,7 +169,7 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test('Test simple echo function', async () => {
+test('simple echo function', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         echo(msg: "Hello") {
@@ -187,7 +187,7 @@ test('Test simple echo function', async () => {
   expect(response.data.echo.fieldName).toEqual('echo');
 });
 
-test('Test simple echoEnv function', async () => {
+test('simple echoEnv function', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         echoEnv(msg: "Hello") {
@@ -205,7 +205,7 @@ test('Test simple echoEnv function', async () => {
   expect(response.data.echoEnv.fieldName).toEqual('echoEnv');
 });
 
-test('Test simple duplicate function', async () => {
+test('simple duplicate function', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         duplicate(msg: "Hello") {
@@ -223,7 +223,7 @@ test('Test simple duplicate function', async () => {
   expect(response.data.duplicate.fieldName).toEqual('duplicate');
 });
 
-test('Test pipeline of @function(s)', async () => {
+test('pipeline of @function(s)', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         pipeline(msg: "IGNORED")
@@ -233,7 +233,7 @@ test('Test pipeline of @function(s)', async () => {
   expect(response.data.pipeline).toEqual('Hello, world!');
 });
 
-test('Test pipelineReverse of @function(s)', async () => {
+test('pipelineReverse of @function(s)', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `query {
         pipelineReverse(msg: "Hello") {

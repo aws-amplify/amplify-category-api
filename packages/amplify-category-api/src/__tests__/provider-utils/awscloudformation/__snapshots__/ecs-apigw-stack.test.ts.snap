@@ -66,6 +66,9 @@ Object {
       "ap-southeast-3": Object {
         "states": "states.ap-southeast-3.amazonaws.com",
       },
+      "ap-southeast-4": Object {
+        "states": "states.ap-southeast-4.amazonaws.com",
+      },
       "ca-central-1": Object {
         "states": "states.ca-central-1.amazonaws.com",
       },
@@ -98,6 +101,9 @@ Object {
       },
       "eu-west-3": Object {
         "states": "states.eu-west-3.amazonaws.com",
+      },
+      "il-central-1": Object {
+        "states": "states.il-central-1.amazonaws.com",
       },
       "me-central-1": Object {
         "states": "states.me-central-1.amazonaws.com",
@@ -220,6 +226,15 @@ Object {
       "Type": "String",
     },
     "rootStackName": Object {
+      "Type": "String",
+    },
+    "storagepostsArn": Object {
+      "Type": "String",
+    },
+    "storagepostsName": Object {
+      "Type": "String",
+    },
+    "storagepostsStreamArn": Object {
       "Type": "String",
     },
   },
@@ -655,7 +670,7 @@ Object {
                 "Name": "Deploy",
                 "RoleArn": Object {
                   "Fn::GetAtt": Array [
-                    "ApiPipelinePipelineDeployCodePipelineActionRoleEA4B81BD",
+                    "EcsDeployActionRole15B757E5",
                     "Arn",
                   ],
                 },
@@ -735,126 +750,6 @@ Object {
         ],
       },
       "Type": "AWS::IAM::Policy",
-    },
-    "ApiPipelinePipelineDeployCodePipelineActionRoleDefaultPolicyB03FE2A4": Object {
-      "DependsOn": Array [
-        "Service",
-      ],
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
-                "ecs:DescribeServices",
-                "ecs:DescribeTaskDefinition",
-                "ecs:DescribeTasks",
-                "ecs:ListTasks",
-                "ecs:RegisterTaskDefinition",
-                "ecs:UpdateService",
-              ],
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-            Object {
-              "Action": "iam:PassRole",
-              "Condition": Object {
-                "StringEqualsIfExists": Object {
-                  "iam:PassedToService": Array [
-                    "ec2.amazonaws.com",
-                    "ecs-tasks.amazonaws.com",
-                  ],
-                },
-              },
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-            Object {
-              "Action": Array [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
-              ],
-              "Effect": "Allow",
-              "Resource": Array [
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":s3:::",
-                      Object {
-                        "Ref": "deploymentBucketName",
-                      },
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":s3:::",
-                      Object {
-                        "Ref": "deploymentBucketName",
-                      },
-                      "/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "ApiPipelinePipelineDeployCodePipelineActionRoleDefaultPolicyB03FE2A4",
-        "Roles": Array [
-          Object {
-            "Ref": "ApiPipelinePipelineDeployCodePipelineActionRoleEA4B81BD",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "ApiPipelinePipelineDeployCodePipelineActionRoleEA4B81BD": Object {
-      "DependsOn": Array [
-        "Service",
-      ],
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": Object {
-                "AWS": Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":iam::",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":root",
-                    ],
-                  ],
-                },
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-      },
-      "Type": "AWS::IAM::Role",
     },
     "ApiPipelinePipelinePredeployCodePipelineActionRole387C06F4": Object {
       "DependsOn": Array [
@@ -1051,7 +946,7 @@ Object {
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::GetAtt": Array [
-                  "ApiPipelinePipelineDeployCodePipelineActionRoleEA4B81BD",
+                  "EcsDeployActionRole15B757E5",
                   "Arn",
                 ],
               },
@@ -1247,13 +1142,14 @@ Object {
       ],
       "Properties": Object {
         "Code": Object {
-          "ZipFile": "const AWS = require('aws-sdk');
+          "ZipFile": "const { CloudFormation } = require('@aws-sdk/client-cloudformation');
+const { CodePipeline } = require('@aws-sdk/client-codepipeline');
 
 const stageName = 'Source';
 const actionName = 'Source';
 
-const codePipeline = new AWS.CodePipeline();
-const cloudFormation = new AWS.CloudFormation();
+const codePipeline = new CodePipeline();
+const cloudFormation = new CloudFormation();
 
 exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
   const { pipelineName, artifactBucketName, artifactKey, deploymentMechanism } = ResourceProperties;
@@ -1265,7 +1161,7 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
       return { IsComplete: true };
     case 'Update':
       const [, StackName] = StackId.split('/');
-      const { Stacks } = await cloudFormation.describeStacks({ StackName }).promise();
+      const { Stacks } = await cloudFormation.describeStacks({ StackName });
       const [{ StackStatus }] = Stacks;
 
       if (StackStatus.includes('ROLLBACK')) {
@@ -1276,7 +1172,7 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
   let stages;
 
   try {
-    const { pipeline } = await codePipeline.getPipeline({ name: pipelineName }).promise();
+    const { pipeline } = await codePipeline.getPipeline({ name: pipelineName });
 
     ({ stages } = pipeline);
   } catch (error) {
@@ -1328,7 +1224,7 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
   let execution;
 
   try {
-    const { pipelineExecutionSummaries } = await codePipeline.listPipelineExecutions({ pipelineName }).promise();
+    const { pipelineExecutionSummaries } = await codePipeline.listPipelineExecutions({ pipelineName });
 
     [execution] = pipelineExecutionSummaries;
   } catch (error) {
@@ -1364,7 +1260,7 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
             "Arn",
           ],
         },
-        "Runtime": "nodejs16.x",
+        "Runtime": "nodejs18.x",
         "Timeout": 15,
       },
       "Type": "AWS::Lambda::Function",
@@ -1483,7 +1379,7 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
             "Arn",
           ],
         },
-        "Runtime": "nodejs16.x",
+        "Runtime": "nodejs18.x",
         "Timeout": 15,
       },
       "Type": "AWS::Lambda::Function",
@@ -1557,7 +1453,7 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
             "Arn",
           ],
         },
-        "Runtime": "nodejs14.x",
+        "Runtime": "nodejs18.x",
         "Timeout": 900,
       },
       "Type": "AWS::Lambda::Function",
@@ -1702,7 +1598,7 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
             "Arn",
           ],
         },
-        "Runtime": "nodejs14.x",
+        "Runtime": "nodejs18.x",
         "Timeout": 900,
       },
       "Type": "AWS::Lambda::Function",
@@ -1851,7 +1747,7 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
             "Arn",
           ],
         },
-        "Runtime": "nodejs14.x",
+        "Runtime": "nodejs18.x",
         "Timeout": 900,
       },
       "Type": "AWS::Lambda::Function",
@@ -2162,6 +2058,125 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
       "Type": "AWS::CloudFormation::CustomResource",
       "UpdateReplacePolicy": "Delete",
     },
+    "EcsDeployActionRole15B757E5": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":root",
+                    ],
+                  ],
+                },
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "EcsDeployActionRoleDefaultPolicy0BE60A75": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "ecs:TagResource",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "ecs:DescribeServices",
+                "ecs:DescribeTaskDefinition",
+                "ecs:DescribeTasks",
+                "ecs:ListTasks",
+                "ecs:RegisterTaskDefinition",
+                "ecs:UpdateService",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": "iam:PassRole",
+              "Condition": Object {
+                "StringEqualsIfExists": Object {
+                  "iam:PassedToService": Array [
+                    "ec2.amazonaws.com",
+                    "ecs-tasks.amazonaws.com",
+                  ],
+                },
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":s3:::",
+                      Object {
+                        "Ref": "deploymentBucketName",
+                      },
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":s3:::",
+                      Object {
+                        "Ref": "deploymentBucketName",
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "EcsDeployActionRoleDefaultPolicy0BE60A75",
+        "Roles": Array [
+          Object {
+            "Ref": "EcsDeployActionRole15B757E5",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "OptionsRoute": Object {
       "Properties": Object {
         "ApiId": Object {
@@ -2189,25 +2204,24 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
       ],
       "Properties": Object {
         "Code": Object {
-          "ZipFile": "const AWS = require('aws-sdk');
+          "ZipFile": "const { CodePipeline } = require('@aws-sdk/client-codepipeline');
+const { ECS } = require('@aws-sdk/client-ecs');
 
-const codepipeline = new AWS.CodePipeline();
-const ecs = new AWS.ECS();
+const codepipeline = new CodePipeline();
+const ecs = new ECS();
 
 const { DESIRED_COUNT: desiredCountStr, CLUSTER_NAME: cluster, SERVICE_NAME: service } = process.env;
 
 const desiredCount = parseInt(desiredCountStr, 10);
 
 exports.handler = async function({ 'CodePipeline.job': { id: jobId } }) {
-  await ecs
-    .updateService({
-      service,
-      cluster,
-      desiredCount,
-    })
-    .promise();
+  await ecs.updateService({
+    service,
+    cluster,
+    desiredCount,
+  });
 
-  return await codepipeline.putJobSuccessResult({ jobId }).promise();
+  return await codepipeline.putJobSuccessResult({ jobId });
 };
 ",
         },
@@ -2227,7 +2241,7 @@ exports.handler = async function({ 'CodePipeline.job': { id: jobId } }) {
             "Arn",
           ],
         },
-        "Runtime": "nodejs16.x",
+        "Runtime": "nodejs18.x",
         "Timeout": 15,
       },
       "Type": "AWS::Lambda::Function",
@@ -2487,6 +2501,53 @@ exports.handler = async function({ 'CodePipeline.job': { id: jobId } }) {
         "Roles": Array [
           Object {
             "Ref": "TaskDefinitionExecutionRole8D61C2FB",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "TaskDefinitionTaskRoleDefaultPolicy282E8624": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "dynamodb:Get*",
+                "dynamodb:BatchGetItem",
+                "dynamodb:List*",
+                "dynamodb:Describe*",
+                "dynamodb:Scan",
+                "dynamodb:Query",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Ref": "storagepostsArn",
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "/",
+                    Array [
+                      Object {
+                        "Ref": "storagepostsArn",
+                      },
+                      "index/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            Object {
+              "Action": "s3:ListBucket",
+              "Effect": "Allow",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "TaskDefinitionTaskRoleDefaultPolicy282E8624",
+        "Roles": Array [
+          Object {
+            "Ref": "TaskDefinitionTaskRoleFD40A61D",
           },
         ],
       },

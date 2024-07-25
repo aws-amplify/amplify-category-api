@@ -1,4 +1,3 @@
-import { amplifyAppAndroid, amplifyAppAngular, amplifyAppIos, amplifyAppReact } from '../amplify-app-helpers/amplify-app-setup';
 import {
   addFeatureFlag,
   generateModelsWithUnknownTypeError,
@@ -7,6 +6,7 @@ import {
   createNewProjectDir,
   deleteProjectDir,
 } from 'amplify-category-api-e2e-core';
+import { amplifyAppAndroid, amplifyAppAngular, amplifyAppIos, amplifyAppReact } from '../amplify-app-helpers/amplify-app-setup';
 
 // This is to fix the issue of error not rejected in the codebuild,
 async function testModelsWithUnknownType(projRoot: string): Promise<void> {

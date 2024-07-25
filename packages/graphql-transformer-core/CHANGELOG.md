@@ -3,6 +3,99 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.2.13](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@8.2.12...graphql-transformer-core@8.2.13) (2024-07-15)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+## [8.2.12](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@8.2.11...graphql-transformer-core@8.2.12) (2024-07-02)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+## [8.2.11](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@8.2.10...graphql-transformer-core@8.2.11) (2024-06-25)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+## [8.2.10](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@8.2.9...graphql-transformer-core@8.2.10) (2024-04-26)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+## [8.2.9](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@8.2.8...graphql-transformer-core@8.2.9) (2024-04-11)
+
+### Bug Fixes
+
+- propagate mutation context to relational fields ([#2416](https://github.com/aws-amplify/amplify-category-api/issues/2416)) ([fd7f6fb](https://github.com/aws-amplify/amplify-category-api/commit/fd7f6fbc17c199331c4b04debaff69ea0424cd74))
+
+## [8.2.8](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@8.2.7...graphql-transformer-core@8.2.8) (2024-03-28)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+## [8.2.7](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@8.2.6...graphql-transformer-core@8.2.7) (2024-02-28)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+## [8.2.6](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@8.2.5...graphql-transformer-core@8.2.6) (2024-02-05)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+## [8.2.5](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@8.2.4...graphql-transformer-core@8.2.5) (2024-01-22)
+
+### Bug Fixes
+
+- **glob:** remove backslash in s3 upload key ([#2178](https://github.com/aws-amplify/amplify-category-api/issues/2178)) ([4ae480e](https://github.com/aws-amplify/amplify-category-api/commit/4ae480e35321caa0baddc7fed6aa14a349dba2ec))
+
+## [8.2.4](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@8.2.3...graphql-transformer-core@8.2.4) (2023-12-18)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+## [8.2.3](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@8.2.2...graphql-transformer-core@8.2.3) (2023-12-06)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+## [8.2.2](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@8.2.1...graphql-transformer-core@8.2.2) (2023-11-18)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+## [8.2.1](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@8.2.0...graphql-transformer-core@8.2.1) (2023-11-16)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+# [8.2.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@8.1.13...graphql-transformer-core@8.2.0) (2023-11-15)
+
+### Bug Fixes
+
+- Change 'rds' to 'sql' in public-facing symbols ([#2069](https://github.com/aws-amplify/amplify-category-api/issues/2069)) ([ff374dd](https://github.com/aws-amplify/amplify-category-api/commit/ff374dd8398d3f1138a31669b1a5962122039437))
+
+### Features
+
+- add managed table support in API construct ([#2024](https://github.com/aws-amplify/amplify-category-api/issues/2024)) ([96a0d94](https://github.com/aws-amplify/amplify-category-api/commit/96a0d94fa872a5329da120f53be139833449b815)), closes [#1849](https://github.com/aws-amplify/amplify-category-api/issues/1849) [#1903](https://github.com/aws-amplify/amplify-category-api/issues/1903) [#1940](https://github.com/aws-amplify/amplify-category-api/issues/1940) [#1971](https://github.com/aws-amplify/amplify-category-api/issues/1971) [#1973](https://github.com/aws-amplify/amplify-category-api/issues/1973)
+- add postgres engine and update types as needed ([#1979](https://github.com/aws-amplify/amplify-category-api/issues/1979)) ([5257d53](https://github.com/aws-amplify/amplify-category-api/commit/5257d53f1d4d02be71b34ddf6757f22dd5d74aff))
+- Add SQL database support to AmplifyGraphqlApi construct ([#1986](https://github.com/aws-amplify/amplify-category-api/issues/1986)) ([2ff63a5](https://github.com/aws-amplify/amplify-category-api/commit/2ff63a540387d96cf10d8ae1975858a76d9ba045)), closes [#1917](https://github.com/aws-amplify/amplify-category-api/issues/1917) [#1983](https://github.com/aws-amplify/amplify-category-api/issues/1983)
+- **api:** custom queries support using sql directive ([5214037](https://github.com/aws-amplify/amplify-category-api/commit/52140374ca974956c5d5eac09fec91a51cfc9027))
+
+## [8.1.13](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@8.1.12...graphql-transformer-core@8.1.13) (2023-10-21)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+## [8.1.12](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@8.1.11...graphql-transformer-core@8.1.12) (2023-08-30)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+## [8.1.11](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@8.1.10...graphql-transformer-core@8.1.11) (2023-08-28)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+## [8.1.10](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@8.1.9...graphql-transformer-core@8.1.10) (2023-08-09)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+## [8.1.9](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@8.1.8...graphql-transformer-core@8.1.9) (2023-07-21)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+## [8.1.8](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@8.1.7...graphql-transformer-core@8.1.8) (2023-07-17)
+
+**Note:** Version bump only for package graphql-transformer-core
+
 ## [8.1.7](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-core@8.1.6...graphql-transformer-core@8.1.7) (2023-07-07)
 
 **Note:** Version bump only for package graphql-transformer-core

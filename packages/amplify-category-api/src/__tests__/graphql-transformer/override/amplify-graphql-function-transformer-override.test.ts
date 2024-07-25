@@ -1,9 +1,10 @@
-import { GraphQLTransform, StackManager } from '@aws-amplify/graphql-transformer-core';
-import { stateManager } from '@aws-amplify/amplify-cli-core';
-import { applyFileBasedOverride } from '../../../graphql-transformer/override';
-import { parse } from 'graphql';
 import * as path from 'path';
+import { stateManager } from '@aws-amplify/amplify-cli-core';
+import { parse } from 'graphql';
 import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { Construct } from 'constructs';
+import { applyFileBasedOverride } from '../../../graphql-transformer/override';
 
 jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'testEnvName' });
 jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'testProjectName' });
@@ -15,14 +16,14 @@ test('it ovderrides the expected resources', () => {
     }
       `;
 
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new FunctionTransformer()],
     overrideConfig: {
-      applyOverride: (stackManager: StackManager) => applyFileBasedOverride(stackManager, path.join(__dirname, 'function-overrides')),
+      applyOverride: (scope: Construct) => applyFileBasedOverride(scope, path.join(__dirname, 'function-overrides')),
       overrideFlag: true,
     },
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   parse(out.schema);
   expect(out.stacks).toBeDefined();
@@ -38,15 +39,14 @@ test('it skips override if override file does not exist', () => {
     }
       `;
 
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     transformers: [new FunctionTransformer()],
     overrideConfig: {
-      applyOverride: (stackManager: StackManager) =>
-        applyFileBasedOverride(stackManager, path.join(__dirname, 'non-existing-override-directory')),
+      applyOverride: (scope: Construct) => applyFileBasedOverride(scope, path.join(__dirname, 'non-existing-override-directory')),
       overrideFlag: true,
     },
   });
-  const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   parse(out.schema);
   expect(out.stacks).toBeDefined();

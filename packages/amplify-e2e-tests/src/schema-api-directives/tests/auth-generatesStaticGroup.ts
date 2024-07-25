@@ -1,4 +1,4 @@
-//schema
+// schema
 export const schema = `
 #error: though harmless, groups is probably unintentionally put here, and it's misleading, for static group auth, it does not need such field.
 type Post @model @auth(rules: [{allow: groups, groups: ["Admin"]}]) {
@@ -8,7 +8,7 @@ type Post @model @auth(rules: [{allow: groups, groups: ["Admin"]}]) {
 }
 
 ##generatesStaticGroup`;
-//mutations
+// mutations
 export const mutation1 = `
 mutation CreatePost(
     $input: CreatePostInput!

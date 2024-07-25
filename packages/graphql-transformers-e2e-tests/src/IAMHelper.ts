@@ -1,10 +1,13 @@
 import { IAM, Credentials } from 'aws-sdk';
 import { resolveTestRegion } from './testSetup';
+import { default as STS } from 'aws-sdk/clients/sts';
 
 const REGION = resolveTestRegion();
 
 export class IAMHelper {
   client: IAM;
+  sts = new STS();
+
   constructor(region: string = REGION, credentials?: Credentials) {
     this.client = new IAM({
       region,
@@ -15,7 +18,11 @@ export class IAMHelper {
   /**
    * Creates auth and unauth roles
    */
-  async createRoles(authRoleName: string, unauthRoleName: string): Promise<{ authRole: IAM.Role; unauthRole: IAM.Role }> {
+  async createRoles(
+    authRoleName: string,
+    unauthRoleName: string,
+    identityPoolId: string,
+  ): Promise<{ authRole: IAM.Role; unauthRole: IAM.Role }> {
     const authRole = await this.client
       .createRole({
         RoleName: authRoleName,
@@ -27,7 +34,15 @@ export class IAMHelper {
             "Principal": {
               "Federated": "cognito-identity.amazonaws.com"
             },
-            "Action": "sts:AssumeRoleWithWebIdentity"
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+              "StringEquals": {
+                "cognito-identity.amazonaws.com:aud": "${identityPoolId}"
+              },
+              "ForAnyValue:StringLike": {
+                "cognito-identity.amazonaws.com:amr": "authenticated"
+              }
+            }
           }
         ]
       }`,
@@ -44,7 +59,15 @@ export class IAMHelper {
             "Principal": {
               "Federated": "cognito-identity.amazonaws.com"
             },
-            "Action": "sts:AssumeRoleWithWebIdentity"
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+              "StringEquals": {
+                "cognito-identity.amazonaws.com:aud": "${identityPoolId}"
+              },
+              "ForAnyValue:StringLike": {
+                "cognito-identity.amazonaws.com:amr": "unauthenticated"
+              }
+            }
           }
         ]
       }`,
@@ -53,7 +76,8 @@ export class IAMHelper {
 
     return { authRole: authRole.Role, unauthRole: unauthRole.Role };
   }
-  async createRoleForCognitoGroup(name: string): Promise<IAM.Role> {
+
+  async createRoleForCognitoGroup(name: string, identityPoolId: string): Promise<IAM.Role> {
     const role = await this.client
       .createRole({
         RoleName: name,
@@ -65,7 +89,15 @@ export class IAMHelper {
             "Principal": {
               "Federated": "cognito-identity.amazonaws.com"
             },
-            "Action": "sts:AssumeRoleWithWebIdentity"
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+              "StringEquals": {
+                "cognito-identity.amazonaws.com:aud": "${identityPoolId}"
+              },
+              "ForAnyValue:StringLike": {
+                "cognito-identity.amazonaws.com:amr": "authenticated"
+              }
+            }
           }
         ]
       }`,
@@ -116,7 +148,7 @@ export class IAMHelper {
       .promise();
   }
 
-  async attachLambdaExecutionPolicy(policyArn: string, roleName: string) {
+  async attachPolicy(policyArn: string, roleName: string) {
     return await this.client
       .attachRolePolicy({
         PolicyArn: policyArn,
@@ -133,11 +165,56 @@ export class IAMHelper {
     return await this.client.deleteRole({ RoleName: roleName }).promise();
   }
 
-  async detachLambdaExecutionPolicy(policyArn: string, roleName: string) {
+  async detachPolicy(policyArn: string, roleName: string) {
     return await this.client
       .detachRolePolicy({
         PolicyArn: policyArn,
         RoleName: roleName,
+      })
+      .promise();
+  }
+
+  async createRole(name: string): Promise<IAM.Role> {
+    const accountDetails = await this.sts.getCallerIdentity({}).promise();
+    const currentAccountId = accountDetails.Account;
+    const role = await this.client
+      .createRole({
+        RoleName: name,
+        AssumeRolePolicyDocument: `{
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": "sts:AssumeRole",
+              "Principal": {
+                "AWS": "${currentAccountId}"
+              },
+              "Condition": {}
+            }
+          ]
+        }`,
+      })
+      .promise();
+    return role.Role;
+  }
+
+  async createAppSyncDataPolicy(policyName: string, region: string, appsyncApiIds: Array<string>) {
+    const accountDetails = await this.sts.getCallerIdentity({}).promise();
+    const currentAccountId = accountDetails.Account;
+    const policyStatement = {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Effect: 'Allow',
+          Action: ['appsync:GraphQL'],
+          Resource: appsyncApiIds.map((appsyncApiId) => `arn:aws:appsync:${region}:${currentAccountId}:apis/${appsyncApiId}/*`),
+        },
+      ],
+    };
+    return await this.client
+      .createPolicy({
+        PolicyDocument: JSON.stringify(policyStatement),
+        PolicyName: policyName,
       })
       .promise();
   }

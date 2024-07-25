@@ -1,10 +1,11 @@
-const AWS = require('aws-sdk');
+const { CloudFormation } = require('@aws-sdk/client-cloudformation');
+const { CodePipeline } = require('@aws-sdk/client-codepipeline');
 
 const stageName = 'Source';
 const actionName = 'Source';
 
-const codePipeline = new AWS.CodePipeline();
-const cloudFormation = new AWS.CloudFormation();
+const codePipeline = new CodePipeline();
+const cloudFormation = new CloudFormation();
 
 exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
   const { pipelineName, artifactBucketName, artifactKey, deploymentMechanism } = ResourceProperties;
@@ -16,7 +17,7 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
       return { IsComplete: true };
     case 'Update':
       const [, StackName] = StackId.split('/');
-      const { Stacks } = await cloudFormation.describeStacks({ StackName }).promise();
+      const { Stacks } = await cloudFormation.describeStacks({ StackName });
       const [{ StackStatus }] = Stacks;
 
       if (StackStatus.includes('ROLLBACK')) {
@@ -27,7 +28,7 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
   let stages;
 
   try {
-    const { pipeline } = await codePipeline.getPipeline({ name: pipelineName }).promise();
+    const { pipeline } = await codePipeline.getPipeline({ name: pipelineName });
 
     ({ stages } = pipeline);
   } catch (error) {
@@ -79,7 +80,7 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
   let execution;
 
   try {
-    const { pipelineExecutionSummaries } = await codePipeline.listPipelineExecutions({ pipelineName }).promise();
+    const { pipelineExecutionSummaries } = await codePipeline.listPipelineExecutions({ pipelineName });
 
     [execution] = pipelineExecutionSummaries;
   } catch (error) {

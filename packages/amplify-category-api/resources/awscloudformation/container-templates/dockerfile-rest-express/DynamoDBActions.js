@@ -1,5 +1,7 @@
-const AWS = require('aws-sdk');
-const docClient = new AWS.DynamoDB.DocumentClient();
+const { DynamoDBDocument } = require('@aws-sdk/lib-dynamodb');
+const { DynamoDB } = require('@aws-sdk/client-dynamodb');
+
+const docClient = DynamoDBDocument.from(new DynamoDB());
 
 const TableName = process.env.STORAGE_POSTS_NAME;
 
@@ -16,7 +18,7 @@ const addPostToDDB = async ({ id, title, author, description, topic }) => {
         TableName: TableName
     }
     try {
-        const data = await docClient.put(params).promise()
+        const data = await docClient.put(params)
         return params.Item;
     } catch (err) {
         console.log('Error: ' + err);
@@ -30,7 +32,7 @@ const scanPostsFromDDB = async () => {
     }
 
     try {
-        const data = await docClient.scan(params).promise();
+        const data = await docClient.scan(params);
         return data.Items;
     } catch (err) {
         console.log('Error: ' + err);
@@ -45,7 +47,7 @@ const getPostFromDDB = async (id) => {
         Key: { id: key },
     }
     try {
-        const data = await docClient.get(params).promise()
+        const data = await docClient.get(params)
         return data.Item;
     } catch (err) {
         console.log('Error: ' + err);

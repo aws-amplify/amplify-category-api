@@ -5,9 +5,11 @@ export class AmplifyCLIFeatureFlagAdapterBase implements FeatureFlagProvider {
   getBoolean(featureName: string, defaultValue?: boolean): boolean {
     return this.getValue<boolean>(featureName, 'boolean', defaultValue);
   }
+
   getNumber(featureName: string, defaultValue?: number): number {
     return this.getValue<number>(featureName, 'number', defaultValue);
   }
+
   getObject(): object {
     // Todo: for future extensibility
     throw new Error('Not implemented');

@@ -1,5 +1,5 @@
-const ddbSimulator = require('..');
 const fs = require('fs-extra');
+const ddbSimulator = require('..');
 
 jest.mock('@aws-amplify/amplify-cli-core', () => ({
   pathManager: {

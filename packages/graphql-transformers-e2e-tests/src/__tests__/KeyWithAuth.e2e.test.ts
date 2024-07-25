@@ -1,18 +1,18 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
-import * as fs from 'fs';
-import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import { default as S3 } from 'aws-sdk/clients/s3';
+import { default as moment } from 'moment';
+import { CloudFormationClient } from '../CloudFormationClient';
 import { GraphQLClient } from '../GraphQLClient';
 import { S3Client } from '../S3Client';
-import * as path from 'path';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
-import { default as moment } from 'moment';
 import {
   createUserPool,
   createUserPoolClient,
@@ -26,6 +26,7 @@ import 'isomorphic-fetch';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
+
 import { resolveTestRegion } from '../testSetup';
 
 const region = resolveTestRegion();
@@ -219,60 +220,60 @@ afterAll(async () => {
 /**
  * Test queries below
  */
-test('Test createOrder mutation as admin', async () => {
+test('createOrder mutation as admin', async () => {
   const response = await createOrder(GRAPHQL_CLIENT_1, USERNAME2, 'order1');
   expect(response.data.createOrder.customerEmail).toBeDefined();
   expect(response.data.createOrder.orderId).toEqual('order1');
   expect(response.data.createOrder.createdAt).toBeDefined();
 });
 
-test('Test createOrder mutation as owner', async () => {
+test('createOrder mutation as owner', async () => {
   const response = await createOrder(GRAPHQL_CLIENT_2, USERNAME2, 'order2');
   expect(response.data.createOrder.customerEmail).toBeDefined();
   expect(response.data.createOrder.orderId).toEqual('order2');
   expect(response.data.createOrder.createdAt).toBeDefined();
 });
 
-test('Test createOrder mutation as owner', async () => {
+test('createOrder mutation as owner', async () => {
   const response = await createOrder(GRAPHQL_CLIENT_3, USERNAME2, 'order3');
   expect(response.data.createOrder).toBeNull();
   expect(response.errors).toHaveLength(1);
 });
 
-test('Test list orders as owner', async () => {
+test('list orders as owner', async () => {
   await createOrder(GRAPHQL_CLIENT_3, USERNAME3, 'owned1');
   await createOrder(GRAPHQL_CLIENT_3, USERNAME3, 'owned2');
   const listResponse = await listOrders(GRAPHQL_CLIENT_3, USERNAME3, { beginsWith: 'owned' });
   expect(listResponse.data.listOrders.items).toHaveLength(2);
 });
 
-test('Test list orders as non owner', async () => {
+test('list orders as non owner', async () => {
   await createOrder(GRAPHQL_CLIENT_3, USERNAME3, 'unowned1');
   await createOrder(GRAPHQL_CLIENT_3, USERNAME3, 'unowned2');
   const listResponse = await listOrders(GRAPHQL_CLIENT_2, USERNAME3, { beginsWith: 'unowned' });
   expect(listResponse.data.listOrders.items).toHaveLength(0);
 });
 
-test('Test get orders as owner', async () => {
+test('get orders as owner', async () => {
   await createOrder(GRAPHQL_CLIENT_2, USERNAME2, 'myobj');
   const getResponse = await getOrder(GRAPHQL_CLIENT_2, USERNAME2, 'myobj');
   expect(getResponse.data.getOrder.orderId).toEqual('myobj');
 });
 
-test('Test get orders as non-owner', async () => {
+test('get orders as non-owner', async () => {
   await createOrder(GRAPHQL_CLIENT_2, USERNAME2, 'notmyobj');
   const getResponse = await getOrder(GRAPHQL_CLIENT_3, USERNAME2, 'notmyobj');
   expect(getResponse.data.getOrder).toBeNull();
   expect(getResponse.errors).toHaveLength(1);
 });
 
-test('Test query orders as owner', async () => {
+test('query orders as owner', async () => {
   await createOrder(GRAPHQL_CLIENT_3, USERNAME3, 'ownedby3a');
   const listResponse = await ordersByOrderId(GRAPHQL_CLIENT_3, 'ownedby3a');
   expect(listResponse.data.ordersByOrderId.items).toHaveLength(1);
 });
 
-test('Test query orders as non owner', async () => {
+test('query orders as non owner', async () => {
   await createOrder(GRAPHQL_CLIENT_3, USERNAME3, 'notownedby2a');
   const listResponse = await ordersByOrderId(GRAPHQL_CLIENT_2, 'notownedby2a');
   expect(listResponse.data.ordersByOrderId.items).toHaveLength(0);

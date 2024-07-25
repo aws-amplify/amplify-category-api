@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Remove amplify input should work 1`] = `
+"type Post @model {
+  id: ID!
+}
+"
+`;

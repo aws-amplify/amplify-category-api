@@ -1,6 +1,6 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, ObjectTypeDefinitionNode, Kind, FieldDefinitionNode, parse } from 'graphql';
 import { AuthTransformer, SEARCHABLE_AGGREGATE_TYPES } from '..';
@@ -44,11 +44,11 @@ test('auth logic is enabled on owner/static rules in os request', () => {
     },
     additionalAuthenticationProviders: [],
   };
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig,
     transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
   });
-  const out = transformer.transform(validSchema);
   // expect response resolver to contain auth logic for owner rule
   expect(out).toBeDefined();
   expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain('$util.qr($ownerClaimsList0.add($ownerClaim0))');
@@ -73,41 +73,156 @@ test('auth logic is enabled for iam/apiKey auth rules', () => {
             secret: String @auth(rules: [{ allow: private, provider: iam }]) # only auth role can do crud on this
         }
     `;
-  const authConfig: AppSyncAuthConfiguration = {
-    defaultAuthentication: {
-      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+  const authConfigs: Array<AppSyncAuthConfiguration> = [
+    {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [
+        {
+          authenticationType: 'API_KEY',
+          apiKeyConfig: {
+            description: 'E2E Test API Key',
+            apiKeyExpirationDays: 300,
+          },
+        },
+        {
+          authenticationType: 'AWS_IAM',
+        },
+      ],
     },
-    additionalAuthenticationProviders: [
-      {
+    {
+      defaultAuthentication: {
         authenticationType: 'API_KEY',
         apiKeyConfig: {
           description: 'E2E Test API Key',
           apiKeyExpirationDays: 300,
         },
       },
-      {
+      additionalAuthenticationProviders: [
+        {
+          authenticationType: 'AWS_IAM',
+        },
+      ],
+    },
+    {
+      defaultAuthentication: {
         authenticationType: 'AWS_IAM',
       },
-    ],
-  };
-  const transformer = new GraphQLTransform({
-    authConfig,
-    transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
+      additionalAuthenticationProviders: [
+        {
+          authenticationType: 'API_KEY',
+          apiKeyConfig: {
+            description: 'E2E Test API Key',
+            apiKeyExpirationDays: 300,
+          },
+        },
+      ],
+    },
+  ];
+  authConfigs.forEach((authConfig) => {
+    const out = testTransform({
+      schema: validSchema,
+      authConfig,
+      transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).toBeDefined();
+    const schemaDoc = parse(out.schema);
+    SEARCHABLE_AGGREGATE_TYPES.forEach((aggregateType) => {
+      const objectType = getObjectType(schemaDoc, aggregateType);
+      expect(objectType).toBeDefined();
+      expectMultiple(objectType!, expectedDirectives);
+    });
+    // expect the searchable types to have the auth directives for total providers
+    // expect the allowed fields for agg to exclude secret
+    expect(out.resolvers['Query.searchPosts.auth.1.req.vtl']).toContain(
+      '#set( $allowedAggFields = ["createdAt","updatedAt","id","content"] )',
+    );
   });
-  const out = transformer.transform(validSchema);
-  expect(out).toBeDefined();
-  expect(out.schema).toBeDefined();
-  const schemaDoc = parse(out.schema);
-  SEARCHABLE_AGGREGATE_TYPES.forEach((aggregateType) => {
-    const objectType = getObjectType(schemaDoc, aggregateType);
-    expect(objectType).toBeDefined();
-    expectMultiple(objectType!, expectedDirectives);
+});
+
+test('auth logic is enabled for identityPool/apiKey auth rules', () => {
+  const expectedDirectives = ['aws_api_key', 'aws_iam'];
+  const validSchema = `
+        type Post @model
+            @searchable
+            @auth(rules: [
+                { allow: public, provider: apiKey } # api key is allowed
+                { allow: private, provider: identityPool } # auth roles are allowed
+            ]) {
+            id: ID!
+            content: String
+            secret: String @auth(rules: [{ allow: private, provider: identityPool }]) # only auth role can do crud on this
+        }
+    `;
+  const authConfigs: Array<AppSyncAuthConfiguration> = [
+    {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [
+        {
+          authenticationType: 'API_KEY',
+          apiKeyConfig: {
+            description: 'E2E Test API Key',
+            apiKeyExpirationDays: 300,
+          },
+        },
+        {
+          authenticationType: 'AWS_IAM',
+        },
+      ],
+    },
+    {
+      defaultAuthentication: {
+        authenticationType: 'API_KEY',
+        apiKeyConfig: {
+          description: 'E2E Test API Key',
+          apiKeyExpirationDays: 300,
+        },
+      },
+      additionalAuthenticationProviders: [
+        {
+          authenticationType: 'AWS_IAM',
+        },
+      ],
+    },
+    {
+      defaultAuthentication: {
+        authenticationType: 'AWS_IAM',
+      },
+      additionalAuthenticationProviders: [
+        {
+          authenticationType: 'API_KEY',
+          apiKeyConfig: {
+            description: 'E2E Test API Key',
+            apiKeyExpirationDays: 300,
+          },
+        },
+      ],
+    },
+  ];
+  authConfigs.forEach((authConfig) => {
+    const out = testTransform({
+      schema: validSchema,
+      authConfig,
+      transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).toBeDefined();
+    const schemaDoc = parse(out.schema);
+    SEARCHABLE_AGGREGATE_TYPES.forEach((aggregateType) => {
+      const objectType = getObjectType(schemaDoc, aggregateType);
+      expect(objectType).toBeDefined();
+      expectMultiple(objectType!, expectedDirectives);
+    });
+    // expect the searchable types to have the auth directives for total providers
+    // expect the allowed fields for agg to exclude secret
+    expect(out.resolvers['Query.searchPosts.auth.1.req.vtl']).toContain(
+      '#set( $allowedAggFields = ["createdAt","updatedAt","id","content"] )',
+    );
   });
-  // expect the searchable types to have the auth directives for total providers
-  // expect the allowed fields for agg to exclude secret
-  expect(out.resolvers['Query.searchPosts.auth.1.req.vtl']).toContain(
-    '#set( $allowedAggFields = ["createdAt","updatedAt","id","content"] )',
-  );
 });
 
 test('aggregate items are added to stash for iam public auth rule', () => {
@@ -132,11 +247,44 @@ test('aggregate items are added to stash for iam public auth rule', () => {
       },
     ],
   };
-  const transformer = new GraphQLTransform({
+  const out = testTransform({
+    schema: validSchema,
     authConfig,
     transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
   });
-  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  expect(out.schema).toBeDefined();
+  // expect to set allowed agg fields in stash before return
+  expect(out.resolvers['Query.searchTodos.auth.1.req.vtl']).toContain('$util.qr($ctx.stash.put("allowedAggFields", $allowedAggFields))');
+});
+
+test('aggregate items are added to stash for identityPool public auth rule', () => {
+  const validSchema = `
+    type Todo @model @searchable
+    @auth(
+      rules: [
+        { allow: groups, groups: ["Admin"] }
+        { allow: public, provider: identityPool }
+      ]
+    ) {
+    id: ID!
+    createdDate: AWSDateTime
+  }`;
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    },
+    additionalAuthenticationProviders: [
+      {
+        authenticationType: 'AWS_IAM',
+      },
+    ],
+  };
+  const out = testTransform({
+    schema: validSchema,
+    authConfig,
+    transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
+  });
   expect(out).toBeDefined();
   expect(out.schema).toBeDefined();
   // expect to set allowed agg fields in stash before return
@@ -163,11 +311,11 @@ describe('identity flag feature flag disabled', () => {
       },
       additionalAuthenticationProviders: [],
     };
-    const transformer = new GraphQLTransform({
+    const out = testTransform({
+      schema: validSchema,
       authConfig,
       transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
     });
-    const out = transformer.transform(validSchema);
     // expect response resolver to contain auth logic for owner rule
     expect(out).toBeDefined();
     expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain('$util.qr($ownerClaimsList0.add($ownerClaim0))');

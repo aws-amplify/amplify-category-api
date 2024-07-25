@@ -1,16 +1,8 @@
-import {
-  Transformer,
-  TransformerContext,
-  InvalidDirectiveError,
-  gql,
-  getDirectiveArguments,
-  getFieldArguments,
-} from 'graphql-transformer-core';
+import { Transformer, TransformerContext, InvalidDirectiveError, getDirectiveArguments, getFieldArguments } from 'graphql-transformer-core';
+import { AuthDirectiveV1 } from '@aws-amplify/graphql-directives';
 import GraphQLAPI from 'cloudform-types/types/appSync/graphQlApi';
 import Resolver from 'cloudform-types/types/appSync/resolver';
 import { StringParameter } from 'cloudform-types';
-import { ResourceFactory } from './resources';
-import { AuthRule, ModelQuery, ModelMutation, ModelOperation, AuthProvider } from './AuthRule';
 import {
   ObjectTypeDefinitionNode,
   DirectiveNode,
@@ -22,6 +14,7 @@ import {
   NamedTypeNode,
   InputObjectTypeDefinitionNode,
   TypeDefinitionNode,
+  parse,
 } from 'graphql';
 import {
   ResourceConstants,
@@ -39,6 +32,8 @@ import {
   ModelResourceIDs,
 } from 'graphql-transformer-common';
 import { Expression, print, raw, iff, forEach, set, ref, list, compoundExpression, newline, comment, not } from 'graphql-mapping-template';
+import { AuthRule, ModelQuery, ModelMutation, ModelOperation, AuthProvider } from './AuthRule';
+import { ResourceFactory } from './resources';
 import { ModelDirectiveConfiguration, ModelDirectiveOperationType, ModelSubscriptionLevel } from './ModelDirectiveConfiguration';
 
 import { OWNER_AUTH_STRATEGY, GROUPS_AUTH_STRATEGY, DEFAULT_OWNER_FIELD, AUTH_NON_MODEL_TYPES } from './constants';
@@ -156,92 +151,21 @@ export type ConfiguredAuthProviders = {
 
 export class ModelAuthTransformer extends Transformer {
   resources: ResourceFactory;
+
   config: ModelAuthTransformerConfig;
+
   configuredAuthProviders: ConfiguredAuthProviders;
+
   generateIAMPolicyforUnauthRole: boolean;
+
   generateIAMPolicyforAuthRole: boolean;
+
   authPolicyResources: Set<string>;
+
   unauthPolicyResources: Set<string>;
 
   constructor(config?: ModelAuthTransformerConfig) {
-    super(
-      'ModelAuthTransformer',
-      gql`
-        directive @auth(rules: [AuthRule!]!) on OBJECT | FIELD_DEFINITION
-        input AuthRule {
-          # Specifies the auth rule's strategy. Allowed values are 'owner', 'groups', 'public', 'private'.
-          allow: AuthStrategy!
-
-          # Legacy name for identityClaim
-          identityField: String @deprecated(reason: "The 'identityField' argument is replaced by the 'identityClaim'.")
-
-          # Specifies the name of the provider to use for the rule. This overrides the default provider
-          # when 'public' and 'private' AuthStrategy is used. Specifying a provider for 'owner' or 'groups'
-          # are not allowed.
-          provider: AuthProvider
-
-          # Specifies the name of the claim to look for on the request's JWT token
-          # from Cognito User Pools (and in the future OIDC) that contains the identity
-          # of the user. If 'allow' is 'groups', this value should point to a list of groups
-          # in the claims. If 'allow' is 'owner', this value should point to the logged in user identity string.
-          # Defaults to "cognito:username" for Cognito User Pools auth.
-          identityClaim: String
-
-          # Allows for custom config of 'groups' which is validated against the JWT
-          # Specifies a static list of groups that should have access to the object
-          groupClaim: String
-
-          # Allowed when the 'allow' argument is 'owner'.
-          # Specifies the field of type String or [String] that contains owner(s) that can access the object.
-          ownerField: String # defaults to "owner"
-          # Allowed when the 'allow' argument is 'groups'.
-          # Specifies the field of type String or [String] that contains group(s) that can access the object.
-          groupsField: String
-
-          # Allowed when the 'allow' argument is 'groups'.
-          # Specifies a static list of groups that should have access to the object.
-          groups: [String]
-
-          # Specifies operations to which this auth rule should be applied.
-          operations: [ModelOperation]
-
-          # Deprecated. It is recommended to use the 'operations' arguments.
-          queries: [ModelQuery]
-            @deprecated(reason: "The 'queries' argument will be replaced by the 'operations' argument in a future release.")
-
-          # Deprecated. It is recommended to use the 'operations' arguments.
-          mutations: [ModelMutation]
-            @deprecated(reason: "The 'mutations' argument will be replaced by the 'operations' argument in a future release.")
-        }
-        enum AuthStrategy {
-          owner
-          groups
-          private
-          public
-        }
-        enum AuthProvider {
-          apiKey
-          iam
-          oidc
-          userPools
-        }
-        enum ModelOperation {
-          create
-          update
-          delete
-          read
-        }
-        enum ModelQuery @deprecated(reason: "ModelQuery will be replaced by the 'ModelOperation' in a future release.") {
-          get
-          list
-        }
-        enum ModelMutation @deprecated(reason: "ModelMutation will be replaced by the 'ModelOperation' in a future release.") {
-          create
-          update
-          delete
-        }
-      `,
-    );
+    super('ModelAuthTransformer', parse(AuthDirectiveV1.definition));
 
     if (config && config.authConfig) {
       this.config = config;
@@ -1963,11 +1887,9 @@ operations will be generated by the CLI.`,
     }
 
     // if there are any public, private, and/or static group rules then the owner argument is optional
-    return rules.find(
+    return !!rules.find(
       (rule) => (rule.allow === GROUPS_AUTH_STRATEGY && !rule.groupsField) || rule.allow === 'private' || rule.allow === 'public',
-    )
-      ? true
-      : false;
+    );
   }
 
   private addSubscriptionOwnerArgument(ctx: TransformerContext, resolver: Resolver, ownerRules: AuthRule[], makeNonNull: boolean = false) {
@@ -2281,10 +2203,10 @@ found '${rule.provider}' assigned.`,
     return {
       default: getAuthProvider(this.config.authConfig.defaultAuthentication.authenticationType),
       onlyDefaultAuthProviderConfigured: this.config.authConfig.additionalAuthenticationProviders.length === 0,
-      hasApiKey: providers.find((p) => p === 'API_KEY') ? true : false,
-      hasUserPools: providers.find((p) => p === 'AMAZON_COGNITO_USER_POOLS') ? true : false,
-      hasOIDC: providers.find((p) => p === 'OPENID_CONNECT') ? true : false,
-      hasIAM: providers.find((p) => p === 'AWS_IAM') ? true : false,
+      hasApiKey: !!providers.find((p) => p === 'API_KEY'),
+      hasUserPools: !!providers.find((p) => p === 'AMAZON_COGNITO_USER_POOLS'),
+      hasOIDC: !!providers.find((p) => p === 'OPENID_CONNECT'),
+      hasIAM: !!providers.find((p) => p === 'AWS_IAM'),
     };
   }
 

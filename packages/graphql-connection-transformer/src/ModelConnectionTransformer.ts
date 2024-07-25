@@ -1,4 +1,5 @@
-import { Transformer, TransformerContext, InvalidDirectiveError, gql, getDirectiveArguments } from 'graphql-transformer-core';
+import { Transformer, TransformerContext, InvalidDirectiveError, getDirectiveArguments } from 'graphql-transformer-core';
+import { ConnectionDirectiveV1 } from '@aws-amplify/graphql-directives';
 import {
   DirectiveNode,
   ObjectTypeDefinitionNode,
@@ -7,8 +8,8 @@ import {
   InterfaceTypeDefinitionNode,
   InputObjectTypeDefinitionNode,
   EnumTypeDefinitionNode,
+  parse,
 } from 'graphql';
-import { ResourceFactory } from './resources';
 import {
   makeModelConnectionType,
   makeModelConnectionField,
@@ -33,10 +34,12 @@ import {
   attributeTypeFromScalar,
   makeScalarKeyConditionForType,
   makeNamedType,
+  ResolverResourceIDs,
+  ModelResourceIDs,
 } from 'graphql-transformer-common';
-import { ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common';
-import { updateInputWithConnectionField } from './definitions';
 import Table, { KeySchema, GlobalSecondaryIndex, LocalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
+import { updateInputWithConnectionField } from './definitions';
+import { ResourceFactory } from './resources';
 
 const CONNECTION_STACK_NAME = 'ConnectionStack';
 
@@ -164,19 +167,7 @@ export class ModelConnectionTransformer extends Transformer {
   resources: ResourceFactory;
 
   constructor() {
-    super(
-      'ModelConnectionTransformer',
-      gql`
-        directive @connection(
-          name: String
-          keyField: String
-          sortField: String
-          keyName: String
-          limit: Int
-          fields: [String!]
-        ) on FIELD_DEFINITION
-      `,
-    );
+    super('ModelConnectionTransformer', parse(ConnectionDirectiveV1.definition));
     this.resources = new ResourceFactory();
   }
 

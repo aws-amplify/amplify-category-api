@@ -1,16 +1,16 @@
-import { default as S3 } from 'aws-sdk/clients/s3';
-import moment from 'moment';
-import { GraphQLTransform } from '../../amplify-graphql-transformer-core/lib';
-import { CloudFormationClient } from './CloudFormationClient';
-import { GraphQLClient } from './GraphQLClient';
-import { S3Client } from './S3Client';
 import * as path from 'path';
 import * as os from 'os';
-import { cleanupStackAfterTest, deploy } from './deployNestedStacks';
+import { default as S3 } from 'aws-sdk/clients/s3';
+import moment from 'moment';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { ResourceConstants } from 'graphql-transformer-common';
 import * as fs from 'fs-extra';
+import { CloudFormationClient } from './CloudFormationClient';
+import { GraphQLClient } from './GraphQLClient';
+import { S3Client } from './S3Client';
+import { cleanupStackAfterTest, deploy } from './deployNestedStacks';
 import { resolveTestRegion } from './testSetup';
+import { DeploymentResources } from '@aws-amplify/graphql-transformer-test-utils';
 
 const region = resolveTestRegion();
 const cf = new CloudFormationClient(region);
@@ -44,7 +44,7 @@ export type SchemaDeployer = {
  * @param schema The schema to transform
  * @returns A GraphQL client pointing to an AppSync API with the provided schema deployed to it
  */
-export const getSchemaDeployer = async (testId: string, transformerFactory: () => GraphQLTransform): Promise<SchemaDeployer> => {
+export const getSchemaDeployer = async (testId: string, transform: (schema: string) => DeploymentResources): Promise<SchemaDeployer> => {
   const initialTimestamp = moment().format('YYYYMMDDHHmmss');
   const stackName = `${testId}-${initialTimestamp}`;
   const testBucketName = `${testId}-bucket-${initialTimestamp}`.toLowerCase();
@@ -62,7 +62,7 @@ export const getSchemaDeployer = async (testId: string, transformerFactory: () =
   return {
     deploy: async (schema: string) => {
       const deployTimestamp = moment().format('YYYYMMDDHHmmss');
-      const out = transformerFactory().transform(schema);
+      const out = transform(schema);
       const finishedStack = await deploy(
         customS3Client,
         cf,

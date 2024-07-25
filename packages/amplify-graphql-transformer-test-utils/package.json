@@ -1,0 +1,79 @@
+{
+  "name": "@aws-amplify/graphql-transformer-test-utils",
+  "version": "0.5.6",
+  "description": "Test utils for graphql transformers",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-category-api.git",
+    "directory": "packages/amplify-graphql-transformer-test-utils"
+  },
+  "private": true,
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rimraf lib tsconfig.tsbuildinfo node_modules",
+    "test": "jest",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
+  },
+  "keywords": [
+    "test",
+    "cloudformation",
+    "aws",
+    "amplify",
+    "api"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@aws-amplify/graphql-transformer-core": "2.9.3",
+    "@aws-amplify/graphql-transformer-interfaces": "3.10.1"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.6",
+    "rimraf": "^3.0.0",
+    "ts-jest": "26.4.4"
+  },
+  "peerDependencies": {
+    "aws-cdk-lib": "^2.129.0",
+    "constructs": "^10.3.0"
+  },
+  "jest": {
+    "testURL": "http://localhost",
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "collectCoverage": true,
+    "coverageProvider": "v8",
+    "coverageThreshold": {
+      "global": {
+        "branches": 58,
+        "functions": 46,
+        "lines": 46
+      }
+    },
+    "coverageReporters": [
+      "clover",
+      "text"
+    ],
+    "testEnvironment": "../../FixJestEnvironment.js",
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/__tests__/"
+    ]
+  }
+}
