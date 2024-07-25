@@ -180,6 +180,20 @@ Object {
     "streamViewType": "NEW_AND_OLD_IMAGES",
   },
   "tableName": "mockTableName",
+  "tags": Array [
+    Object {
+      "Key": "key1",
+      "Value": "value1",
+    },
+    Object {
+      "Key": "key2",
+      "Value": "value2",
+    },
+    Object {
+      "Key": "key3",
+      "Value": "value3",
+    },
+  ],
 }
 `;
 
@@ -240,6 +254,20 @@ Object {
     "StreamViewType": "NEW_AND_OLD_IMAGES",
   },
   "TableName": "mockTableName",
+  "Tags": Array [
+    Object {
+      "Key": "key1",
+      "Value": "value1",
+    },
+    Object {
+      "Key": "key2",
+      "Value": "value2",
+    },
+    Object {
+      "Key": "key3",
+      "Value": "value3",
+    },
+  ],
 }
 `;
 
