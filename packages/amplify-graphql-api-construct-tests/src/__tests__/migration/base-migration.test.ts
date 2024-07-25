@@ -6,9 +6,9 @@ import {
 } from 'amplify-category-api-e2e-core';
 import { initCDKProject, cdkDeploy, cdkDestroy, createGen1ProjectForMigration, writeTableMap, deleteDDBTables } from '../../commands';
 import { graphql } from '../../graphql-request';
-import { DURATION_1_HOUR } from '../../utils/duration-constants';
+import { DURATION_20_MINUTES } from '../../utils/duration-constants';
 
-jest.setTimeout(DURATION_1_HOUR);
+jest.setTimeout(DURATION_20_MINUTES);
 
 describe('Base Migration', () => {
   let gen1ProjRoot: string;
