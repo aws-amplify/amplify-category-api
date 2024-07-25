@@ -106,7 +106,8 @@ export const invokeLambdaMappingTemplate = (
             sessionId: ctx.args.sessionId,
             sender: 'user',
             content: ctx.args.content,
-            createdAt: ctx.stash.defaultValues.createdAt
+            createdAt: ctx.stash.defaultValues.createdAt,
+            updatedAt: ctx.stash.defaultValues.updatedAt,
         };
         return response;
       }`);
