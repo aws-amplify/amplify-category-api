@@ -227,6 +227,6 @@ export const writeTableMap = (projRoot: string, tableMap: string): void => {
  * @param tableNames table names to delete
  */
 export const deleteDDBTables = async (tableNames: string[]): Promise<void> => {
-  const client = new DynamoDBClient();
+  const client = new DynamoDBClient({ region: process.env.CLI_REGION || 'us-west-2' });
   await Promise.allSettled(tableNames.map((tableName) => client.send(new DeleteTableCommand({ TableName: tableName }))));
 }
