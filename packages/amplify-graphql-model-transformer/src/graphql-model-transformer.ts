@@ -342,8 +342,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         );
       });
     });
-    // if (context.transformParameters.enableGen2Migration && context.transformParameters.enableTransformerCfnOutputs) {
-    if (true) {
+    if (context.transformParameters.enableGen2Migration && context.transformParameters.enableTransformerCfnOutputs) {
       const { scope } = context.stackManager;
       // TODO: decide final naming before merge to main
       new cdk.CfnOutput(cdk.Stack.of(scope), 'DataSourceMappingOutput', {
