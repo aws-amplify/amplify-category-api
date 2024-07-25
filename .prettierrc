@@ -6,5 +6,6 @@
   "bracketSpacing": true,
   "semi": true,
   "useTabs": false,
-  "bracketSameLine": false
+  "bracketSameLine": false,
+  "plugins": ["prettier-plugin-organize-imports"]
 }
