@@ -196,6 +196,8 @@ export const createGen1ProjectForMigration = async (
   await amplifyPush(projRoot);
 
   // TODO: can't use feature flag until released in CLI
+  // The test should do a second push after enabling the feature flag to start the migration
+  // Add the feature flag and push before merging to main.
   // addFeatureFlag(projRoot, 'graphqltransformer', 'enableGen2Migration', true);
   // await amplifyPush(projRoot);
 
