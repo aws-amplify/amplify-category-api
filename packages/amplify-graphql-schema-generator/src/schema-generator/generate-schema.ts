@@ -1,19 +1,19 @@
 import { DirectiveWrapper, EnumWrapper, FieldWrapper, ObjectDefinitionWrapper } from '@aws-amplify/graphql-transformer-core';
 import {
-  EnumValueDefinitionNode,
-  Kind,
-  print,
-  DocumentNode,
-  InputObjectTypeDefinitionNode,
-  ListValueNode,
-  StringValueNode,
   DirectiveNode,
+  DocumentNode,
+  EnumValueDefinitionNode,
+  InputObjectTypeDefinitionNode,
+  Kind,
+  ListValueNode,
   ObjectTypeDefinitionNode,
+  print,
+  StringValueNode,
 } from 'graphql';
+import { toCamelCase, toPascalCase } from 'graphql-transformer-common';
+import { singular } from 'pluralize';
 import { EnumType, Field, FieldType, Index, Model, Schema } from '../schema-representation';
 import { applySchemaOverrides } from './schema-overrides';
-import { singular } from 'pluralize';
-import { toCamelCase, toPascalCase } from 'graphql-transformer-common';
 
 export const generateGraphQLSchema = (schema: Schema, existingSchemaDocument?: DocumentNode | undefined): string => {
   const models = schema.getModels();

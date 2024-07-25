@@ -1,7 +1,7 @@
-import * as path from 'path';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
-import { cdkDestroy } from '../commands';
+import * as path from 'path';
 import { setupBackend, testGraphQLOperations } from '../canary-tests-common';
+import { cdkDestroy } from '../commands';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
 
 jest.setTimeout(DURATION_1_HOUR);

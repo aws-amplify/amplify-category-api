@@ -1,14 +1,14 @@
+import { Output } from 'aws-sdk/clients/cloudformation';
+import { default as S3 } from 'aws-sdk/clients/s3';
+import { ModelAuthTransformer } from 'graphql-auth-transformer';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { PredictionsTransformer } from 'graphql-predictions-transformer';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { GraphQLTransform } from 'graphql-transformer-core';
-import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-import { ModelAuthTransformer } from 'graphql-auth-transformer';
-import { PredictionsTransformer } from 'graphql-predictions-transformer';
-import { Output } from 'aws-sdk/clients/cloudformation';
 import { default as moment } from 'moment';
-import { default as S3 } from 'aws-sdk/clients/s3';
 import { CloudFormationClient } from '../CloudFormationClient';
-import { GraphQLClient } from '../GraphQLClient';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
+import { GraphQLClient } from '../GraphQLClient';
 import { S3Client } from '../S3Client';
 import { resolveTestRegion } from '../testSetup';
 

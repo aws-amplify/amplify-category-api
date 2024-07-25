@@ -1,4 +1,3 @@
-import path from 'path';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
@@ -7,6 +6,7 @@ import { default as S3 } from 'aws-sdk/clients/s3';
 import * as fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { default as moment } from 'moment';
+import path from 'path';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { GraphQLClient } from '../GraphQLClient';

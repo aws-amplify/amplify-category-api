@@ -1,6 +1,5 @@
 import { CloudFormationResource, ProcessedLambdaFunction } from '../stack/types';
 import { CloudFormationParseContext } from '../types';
-import { lambdaEventSourceHandler, lambdaFunctionHandler } from './lambda';
 import {
   appSyncAPIKeyResourceHandler,
   appSyncAPIResourceHandler,
@@ -11,6 +10,7 @@ import {
   dynamoDBResourceHandler,
 } from './appsync';
 import { iamPolicyResourceHandler, iamRoleResourceHandler } from './iam';
+import { lambdaEventSourceHandler, lambdaFunctionHandler } from './lambda';
 import { openSearchDomainHandler } from './opensearch';
 
 export type CloudFormationResourceProcessorFn = (

@@ -1,13 +1,13 @@
-import * as path from 'path';
 import { $TSContext, pathManager } from '@aws-amplify/amplify-cli-core';
-import { AddApiRequest, UpdateApiRequest } from 'amplify-headless-interface';
 import { printer } from '@aws-amplify/amplify-prompts';
+import { AddApiRequest, UpdateApiRequest } from 'amplify-headless-interface';
 import * as fs from 'fs-extra';
 import { writeTransformerConfiguration } from 'graphql-transformer-core';
 import _ from 'lodash';
-import { AppsyncApiInputState } from '../../../provider-utils/awscloudformation/api-input-manager/appsync-api-input-state';
+import * as path from 'path';
 import { category } from '../../../category-constants';
 import { ApiArtifactHandler } from '../../../provider-utils/api-artifact-handler';
+import { AppsyncApiInputState } from '../../../provider-utils/awscloudformation/api-input-manager/appsync-api-input-state';
 import { rootAssetDir } from '../../../provider-utils/awscloudformation/aws-constants';
 import { getCfnApiArtifactHandler } from '../../../provider-utils/awscloudformation/cfn-api-artifact-handler';
 import {

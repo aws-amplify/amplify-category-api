@@ -1,25 +1,25 @@
-import * as fs from 'fs';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { ResourceConstants } from 'graphql-transformer-common';
-import { Output } from 'aws-sdk/clients/cloudformation';
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { CognitoIdentityServiceProvider as CognitoClient, S3 } from 'aws-sdk';
+import { Output } from 'aws-sdk/clients/cloudformation';
+import * as fs from 'fs';
+import { ResourceConstants } from 'graphql-transformer-common';
+import 'isomorphic-fetch';
 import { default as moment } from 'moment';
-import { GraphQLClient } from '../GraphQLClient';
-import { S3Client } from '../S3Client';
-import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { CloudFormationClient } from '../CloudFormationClient';
 import {
+  addUserToGroup,
+  authenticateUser,
+  configureAmplify,
+  createGroup,
   createUserPool,
   createUserPoolClient,
-  createGroup,
-  addUserToGroup,
-  configureAmplify,
   signupUser,
-  authenticateUser,
 } from '../cognitoUtils';
-import 'isomorphic-fetch';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
+import { GraphQLClient } from '../GraphQLClient';
+import { S3Client } from '../S3Client';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');

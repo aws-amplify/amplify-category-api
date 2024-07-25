@@ -1,10 +1,15 @@
+import { ModelDirective } from '@aws-amplify/graphql-directives';
 import {
   DDB_DB_TYPE,
   DirectiveWrapper,
   FieldWrapper,
   generateGetArgumentsInput,
+  getConditionInputName,
+  getConnectionName,
   getFieldNameFor,
+  getFilterInputName,
   getModelDataSourceStrategy,
+  getSubscriptionFilterInputName,
   InputObjectDefinitionWrapper,
   InvalidDirectiveError,
   isAmplifyDynamoDbModelDataSourceStrategy,
@@ -14,14 +19,11 @@ import {
   ObjectDefinitionWrapper,
   SyncUtils,
   TransformerModelBase,
-  getFilterInputName,
-  getConditionInputName,
-  getSubscriptionFilterInputName,
-  getConnectionName,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncDataSourceType,
   DataSourceInstance,
+  DataSourceStrategiesProvider,
   MutationFieldType,
   QueryFieldType,
   SubscriptionFieldType,
@@ -33,12 +35,10 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
   TransformerValidationStepContextProvider,
-  DataSourceStrategiesProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { ModelDirective } from '@aws-amplify/graphql-directives';
+import * as cdk from 'aws-cdk-lib';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as cdk from 'aws-cdk-lib';
 import {
   DirectiveNode,
   FieldDefinitionNode,
@@ -58,6 +58,8 @@ import {
   makeValueNode,
   toUpper,
 } from 'graphql-transformer-common';
+import { API_KEY_DIRECTIVE, AWS_IAM_DIRECTIVE } from './definitions';
+import { ModelDirectiveConfiguration, SubscriptionLevel } from './directive';
 import {
   addDirectivesToOperation,
   addModelConditionInputs,
@@ -66,20 +68,18 @@ import {
   makeCreateInputField,
   makeDeleteInputField,
   makeListQueryFilterInput,
-  makeSubscriptionQueryFilterInput,
   makeListQueryModel,
   makeModelSortDirectionEnumObject,
   makeMutationConditionInput,
+  makeSubscriptionQueryFilterInput,
   makeUpdateInputField,
   propagateDirectivesToNestedTypes,
 } from './graphql-types';
-import { API_KEY_DIRECTIVE, AWS_IAM_DIRECTIVE } from './definitions';
-import { ModelDirectiveConfiguration, SubscriptionLevel } from './directive';
-import { ModelResourceGenerator } from './resources/model-resource-generator';
+import { AmplifyDynamoModelResourceGenerator } from './resources/amplify-dynamodb-table/amplify-dynamo-model-resource-generator';
 import { DynamoModelResourceGenerator } from './resources/dynamo-model-resource-generator';
+import { ModelResourceGenerator } from './resources/model-resource-generator';
 import { RdsModelResourceGenerator } from './resources/rds-model-resource-generator';
 import { ModelTransformerOptions } from './types';
-import { AmplifyDynamoModelResourceGenerator } from './resources/amplify-dynamodb-table/amplify-dynamo-model-resource-generator';
 
 /**
  * Nullable

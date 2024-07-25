@@ -1,5 +1,5 @@
-import * as path from 'path';
 import * as execa from 'execa';
+import * as path from 'path';
 
 // This list contains a platform agnostic list of paths where artifacts are stored after each test.
 import { ARTIFACT_STORAGE_PATH_ALLOW_LIST_CODEBUILD } from './artifact-storage-path-allow-list-codebuild';

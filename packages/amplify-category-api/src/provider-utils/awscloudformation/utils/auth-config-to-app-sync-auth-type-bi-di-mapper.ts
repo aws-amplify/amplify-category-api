@@ -1,9 +1,9 @@
 import {
-  AppSyncAuthType,
   AppSyncAPIKeyAuthType,
+  AppSyncAuthType,
   AppSyncCognitoUserPoolsAuthType,
-  AppSyncOpenIDConnectAuthType,
   AppSyncLambdaAuthType,
+  AppSyncOpenIDConnectAuthType,
 } from 'amplify-headless-interface';
 import _ from 'lodash';
 

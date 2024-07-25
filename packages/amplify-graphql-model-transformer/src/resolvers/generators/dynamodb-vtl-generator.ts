@@ -1,17 +1,17 @@
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
-  generateUpdateRequestTemplate,
-  generateCreateRequestTemplate,
   generateCreateInitSlotTemplate,
+  generateCreateRequestTemplate,
+  generateDefaultResponseMappingTemplate,
   generateDeleteRequestTemplate,
-  generateUpdateInitSlotTemplate,
   generateGetRequestTemplate,
   generateGetResponseTemplate,
   generateListRequestTemplate,
-  generateSyncRequestTemplate,
   generateSubscriptionRequestTemplate,
   generateSubscriptionResponseTemplate,
-  generateDefaultResponseMappingTemplate,
+  generateSyncRequestTemplate,
+  generateUpdateInitSlotTemplate,
+  generateUpdateRequestTemplate,
 } from '../dynamodb';
 import {
   ModelCreateInitSlotConfig,

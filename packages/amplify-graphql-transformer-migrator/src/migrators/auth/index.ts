@@ -1,5 +1,5 @@
-import { isModelType } from '../model';
 import { createArgumentNode, createDirectiveNode, createListValueNode } from '../generators';
+import { isModelType } from '../model';
 import { migrateDefaultAuthMode } from './defaultAuth';
 import { migrateOwnerAuth } from './ownerAuth';
 

@@ -20,16 +20,16 @@ declare global {
   }
 }
 
-import { types, format } from 'util';
 import { AssertionError } from 'assert';
+import * as fs from 'fs-extra';
+import * as os from 'os';
 import { EOL } from 'os';
 import { join, parse } from 'path';
-import * as os from 'os';
+import { format, types } from 'util';
+import { getScriptRunnerPath, isTestingWithLatestCodebase } from '..';
+import { Recorder } from '../asciinema-recorder';
 import strip = require('strip-ansi');
 import retimer = require('retimer');
-import * as fs from 'fs-extra';
-import { Recorder } from '../asciinema-recorder';
-import { getScriptRunnerPath, isTestingWithLatestCodebase } from '..';
 
 export const RETURN = process.platform === 'win32' ? '\r' : EOL;
 const DEFAULT_NO_OUTPUT_TIMEOUT = process.env.AMPLIFY_TEST_TIMEOUT_SEC

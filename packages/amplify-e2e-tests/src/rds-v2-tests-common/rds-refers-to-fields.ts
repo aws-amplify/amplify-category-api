@@ -1,3 +1,4 @@
+import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import {
   addApiWithoutSchema,
   amplifyPush,
@@ -12,12 +13,11 @@ import {
   setupRDSInstanceAndData,
   sleep,
 } from 'amplify-category-api-e2e-core';
+import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { existsSync, writeFileSync } from 'fs-extra';
 import generator from 'generate-password';
 import path from 'path';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { GQLQueryHelper } from '../query-utils/gql-helper';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { SQL_TESTS_USE_BETA } from './sql-e2e-config';
 
 // to deal with bug in cognito-identity-js

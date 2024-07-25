@@ -1,15 +1,15 @@
-import { TransformerPluginBase, isSqlModel, isDynamoDbModel } from '@aws-amplify/graphql-transformer-core';
+import { MapsToDirective } from '@aws-amplify/graphql-directives';
+import { isDynamoDbModel, isSqlModel, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
   TransformerPluginType,
   TransformerPreProcessContextProvider,
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { MapsToDirective } from '@aws-amplify/graphql-directives';
-import { ObjectTypeDefinitionNode, DirectiveNode, ObjectTypeExtensionNode } from 'graphql';
+import { DirectiveNode, ObjectTypeDefinitionNode, ObjectTypeExtensionNode } from 'graphql';
 import { createMappingLambda } from './field-mapping-lambda';
 import { attachFilterAndConditionInputMappingSlot, attachInputMappingSlot, attachResponseMappingSlot } from './field-mapping-resolvers';
-import { shouldBeAppliedToModel, getMappedName, updateTypeMapping, setTypeMappingInSchema } from './graphql-name-mapping';
+import { getMappedName, setTypeMappingInSchema, shouldBeAppliedToModel, updateTypeMapping } from './graphql-name-mapping';
 
 export class MapsToTransformer extends TransformerPluginBase {
   constructor() {

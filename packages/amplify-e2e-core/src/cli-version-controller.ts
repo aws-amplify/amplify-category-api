@@ -1,7 +1,7 @@
-import * as path from 'path';
-import * as os from 'os';
-import * as fs from 'fs-extra';
 import execa from 'execa';
+import * as fs from 'fs-extra';
+import * as os from 'os';
+import * as path from 'path';
 import * as e2eCore from '.';
 
 /**

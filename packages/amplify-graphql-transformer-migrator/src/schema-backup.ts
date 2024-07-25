@@ -1,5 +1,5 @@
-import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as path from 'path';
 
 export const backupLocation = (resourceDir: string) => path.join(resourceDir, '.migration-backup');
 

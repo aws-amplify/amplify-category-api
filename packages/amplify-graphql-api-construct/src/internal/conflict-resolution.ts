@@ -1,5 +1,5 @@
-import { ResolverConfig, SyncConfig, ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
-import { ConflictResolutionStrategy, ConflictResolution } from '../types';
+import { ConflictHandlerType, ResolverConfig, SyncConfig } from '@aws-amplify/graphql-transformer-core';
+import { ConflictResolution, ConflictResolutionStrategy } from '../types';
 
 /**
  * Convert project conflict resolution config to transformer ResolverConfig object.

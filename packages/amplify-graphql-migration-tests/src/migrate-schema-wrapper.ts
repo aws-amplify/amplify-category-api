@@ -1,6 +1,6 @@
+import { prompter } from '@aws-amplify/amplify-prompts';
 import { runMigration } from '@aws-amplify/graphql-transformer-migrator';
 import * as fs from 'fs-extra';
-import { prompter } from '@aws-amplify/amplify-prompts';
 
 jest.mock('fs-extra');
 jest.mock('@aws-amplify/amplify-prompts');

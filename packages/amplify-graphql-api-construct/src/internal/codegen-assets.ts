@@ -1,4 +1,4 @@
-import { RemovalPolicy, Fn } from 'aws-cdk-lib';
+import { Fn, RemovalPolicy } from 'aws-cdk-lib';
 import { Bucket, HttpMethods, IBucket } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';

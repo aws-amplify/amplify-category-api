@@ -1,7 +1,7 @@
 import { DDB_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
-import { HasOneDirectiveConfiguration, HasManyDirectiveConfiguration } from '../types';
 import { getGenerator } from '../resolver/generator-factory';
 import { setFieldMappingResolverReference } from '../resolvers';
+import { HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from '../types';
 
 /**
  * Utility to create a partial of a given type for mocking purposes. Getting the right fields in place is on you.

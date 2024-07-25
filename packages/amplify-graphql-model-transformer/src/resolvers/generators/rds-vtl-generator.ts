@@ -1,15 +1,16 @@
+import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { generateSubscriptionRequestTemplate, generateSubscriptionResponseTemplate } from '../dynamodb';
 import {
+  generateCreateInitSlotTemplate,
   generateDefaultLambdaResponseMappingTemplate,
   generateGetLambdaResponseTemplate,
-  generateLambdaRequestTemplate,
-  generateCreateInitSlotTemplate,
   generateLambdaCreateRequestTemplate,
-  generateUpdateInitSlotTemplate,
-  generateLambdaUpdateRequestTemplate,
   generateLambdaDeleteRequestTemplate,
   generateLambdaListRequestTemplate,
+  generateLambdaRequestTemplate,
+  generateLambdaUpdateRequestTemplate,
+  generateUpdateInitSlotTemplate,
 } from '../rds';
-import { generateSubscriptionRequestTemplate, generateSubscriptionResponseTemplate } from '../dynamodb';
 import {
   ModelCreateInitSlotConfig,
   ModelCreateRequestConfig,
@@ -18,7 +19,6 @@ import {
   ModelUpdateRequestConfig,
   ModelVTLGenerator,
 } from './vtl-generator';
-import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 // TODO: This class is created only to show the class structure. This needs a revisit to generate correct resolvers for RDS.
 export class RDSModelVTLGenerator implements ModelVTLGenerator {

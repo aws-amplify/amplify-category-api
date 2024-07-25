@@ -1,11 +1,9 @@
-import * as path from 'path';
-import { Construct } from 'constructs';
-import { ExecuteTransformConfig, executeTransform } from '@aws-amplify/graphql-transformer';
-import { NestedStack, Stack } from 'aws-cdk-lib';
-import { AttributionMetadataStorage, StackMetadataBackendOutputStorageStrategy } from '@aws-amplify/backend-output-storage';
-import { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
+import type { AwsAppsyncAuthenticationType, GraphqlOutput } from '@aws-amplify/backend-output-schemas';
 import { graphqlOutputKey } from '@aws-amplify/backend-output-schemas';
-import type { GraphqlOutput, AwsAppsyncAuthenticationType } from '@aws-amplify/backend-output-schemas';
+import { AttributionMetadataStorage, StackMetadataBackendOutputStorageStrategy } from '@aws-amplify/backend-output-storage';
+import { executeTransform, ExecuteTransformConfig } from '@aws-amplify/graphql-transformer';
+import { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
+import { NestedStack, Stack } from 'aws-cdk-lib';
 import {
   AppsyncFunction,
   DataSourceOptions,
@@ -23,34 +21,36 @@ import {
 } from 'aws-cdk-lib/aws-appsync';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IDomain } from 'aws-cdk-lib/aws-elasticsearch';
-import { IDomain as IOpenSearchDomain } from 'aws-cdk-lib/aws-opensearchservice';
 import { IEventBus } from 'aws-cdk-lib/aws-events';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { IDomain as IOpenSearchDomain } from 'aws-cdk-lib/aws-opensearchservice';
 import { IServerlessCluster } from 'aws-cdk-lib/aws-rds';
 import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
-import { parseUserDefinedSlots, validateFunctionSlots, separateSlots } from './internal/user-defined-slots';
-import type {
-  AmplifyGraphqlApiResources,
-  AmplifyGraphqlApiProps,
-  FunctionSlot,
-  IBackendOutputStorageStrategy,
-  AddFunctionProps,
-  DataStoreConfiguration,
-  IAmplifyGraphqlDefinition,
-} from './types';
+import { Construct } from 'constructs';
+import * as path from 'path';
 import {
+  AssetProvider,
+  CodegenAssets,
   convertAuthorizationModesToTransformerAuthConfig,
   convertToResolverConfig,
   defaultTranslationBehavior,
-  AssetProvider,
-  getGeneratedResources,
-  getGeneratedFunctionSlots,
-  CodegenAssets,
   getAdditionalAuthenticationTypes,
+  getGeneratedFunctionSlots,
+  getGeneratedResources,
   validateAuthorizationModes,
 } from './internal';
 import { getStackForScope, walkAndProcessNodes } from './internal/construct-tree';
 import { getDataSourceStrategiesProvider } from './internal/data-source-config';
+import { parseUserDefinedSlots, separateSlots, validateFunctionSlots } from './internal/user-defined-slots';
+import type {
+  AddFunctionProps,
+  AmplifyGraphqlApiProps,
+  AmplifyGraphqlApiResources,
+  DataStoreConfiguration,
+  FunctionSlot,
+  IAmplifyGraphqlDefinition,
+  IBackendOutputStorageStrategy,
+} from './types';
 
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.

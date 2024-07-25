@@ -1,10 +1,10 @@
-import * as path from 'path';
-import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { pathManager } from '@aws-amplify/amplify-cli-core';
-import { DocumentNode } from 'graphql/language';
-import { visit } from 'graphql';
-import { collectDirectives, collectDirectivesByTypeNames, APICategory } from '@aws-amplify/graphql-transformer-core';
+import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
+import { APICategory, collectDirectives, collectDirectivesByTypeNames } from '@aws-amplify/graphql-transformer-core';
 import * as fs from 'fs-extra';
+import { visit } from 'graphql';
+import { DocumentNode } from 'graphql/language';
+import * as path from 'path';
 import { listContainsOnlySetString } from './utils';
 
 export function graphQLUsingSQL(apiName: string): boolean {

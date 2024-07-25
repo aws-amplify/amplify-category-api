@@ -1,8 +1,8 @@
-import _ from 'lodash';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import _ from 'lodash';
 import { AuthTransformer } from '../graphql-auth-transformer';
-import { expectStashValueLike, expectNoStashValueLike } from './test-helpers';
+import { expectNoStashValueLike, expectStashValueLike } from './test-helpers';
 
 const ADMIN_UI_ROLES = ['us-fake-1_uuid_Full-access/CognitoIdentityCredentials', 'us-fake-1_uuid_Manage-only/CognitoIdentityCredentials'];
 const ADMIN_UI_ADMIN_ROLES =

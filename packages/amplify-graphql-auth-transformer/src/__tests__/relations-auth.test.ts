@@ -1,8 +1,8 @@
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AuthTransformer } from '../graphql-auth-transformer';
 
 describe('@auth with custom primary keys', () => {

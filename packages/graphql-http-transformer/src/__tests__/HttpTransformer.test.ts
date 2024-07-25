@@ -1,6 +1,6 @@
 import { parse } from 'graphql';
-import { GraphQLTransform } from 'graphql-transformer-core';
 import { ResolverResourceIDs } from 'graphql-transformer-common';
+import { GraphQLTransform } from 'graphql-transformer-core';
 import { HttpTransformer } from '../HttpTransformer';
 
 test('HttpTransformer with four basic requests', () => {

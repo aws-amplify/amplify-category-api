@@ -1,33 +1,29 @@
-import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, Kind, TypeNode, FieldDefinitionNode } from 'graphql';
+import { FieldDefinitionNode, InputObjectTypeDefinitionNode, InputValueDefinitionNode, Kind, TypeNode } from 'graphql';
 import {
-  compoundExpression,
   block,
-  iff,
-  raw,
-  set,
-  ref,
-  qref,
-  obj,
-  str,
-  printBlock,
-  list,
-  forEach,
+  compoundExpression,
   Expression,
-  newline,
-  ReferenceNode,
+  forEach,
   ifElse,
+  iff,
+  newline,
+  obj,
+  qref,
+  raw,
+  ref,
+  set,
+  str,
 } from 'graphql-mapping-template';
 import {
+  DEFAULT_SCALARS,
+  getBaseType,
+  isScalar,
+  makeInputObjectDefinition,
+  makeInputValueDefinition,
   makeListType,
   makeNamedType,
-  getBaseType,
-  makeInputValueDefinition,
-  DEFAULT_SCALARS,
-  makeInputObjectDefinition,
-  isScalar,
 } from './definition';
 import { ModelResourceIDs } from './ModelResourceIDs';
-import { toCamelCase } from './util';
 
 // Key conditions
 const STRING_KEY_CONDITIONS = ['eq', 'le', 'lt', 'ge', 'gt', 'between', 'beginsWith'];

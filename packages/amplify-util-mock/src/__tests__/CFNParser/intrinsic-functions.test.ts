@@ -1,17 +1,17 @@
 import {
-  cfnJoin,
-  cfnSub,
+  cfnAnd,
+  cfnCondition,
+  cfnEquals,
   cfnGetAtt,
-  cfnSplit,
+  cfnIf,
+  cfnImportValue,
+  cfnJoin,
+  cfnNot,
+  cfnOr,
   cfnRef,
   cfnSelect,
-  cfnIf,
-  cfnEquals,
-  cfnNot,
-  cfnAnd,
-  cfnOr,
-  cfnImportValue,
-  cfnCondition,
+  cfnSplit,
+  cfnSub,
 } from '../../CFNParser/intrinsic-functions';
 import { CloudFormationParseContext } from '../../CFNParser/types';
 

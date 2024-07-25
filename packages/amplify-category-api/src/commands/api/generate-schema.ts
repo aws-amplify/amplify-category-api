@@ -1,21 +1,21 @@
-import * as path from 'path';
 import { $TSContext, AmplifyError, ApiCategoryFacade } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
-import fs from 'fs-extra';
-import _ from 'lodash';
-import { SQL_SCHEMA_FILE_NAME, ImportedDataSourceConfig, ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { graphqlSchemaFromSQLSchema } from '@aws-amplify/graphql-schema-generator';
-import { getAppSyncAPIName, getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
-import {
-  storeConnectionSecrets,
-  getSecretsKey,
-  getDatabaseName,
-  getConnectionSecrets,
-} from '../../provider-utils/awscloudformation/utils/rds-resources/database-resources';
-import { writeSchemaFile, generateRDSSchema } from '../../provider-utils/awscloudformation/utils/graphql-schema-utils';
-import { PREVIEW_BANNER } from '../../category-constants';
+import { ImportedDataSourceConfig, ImportedRDSType, SQL_SCHEMA_FILE_NAME } from '@aws-amplify/graphql-transformer-core';
+import fs from 'fs-extra';
 import { parse } from 'graphql';
+import _ from 'lodash';
+import * as path from 'path';
+import { PREVIEW_BANNER } from '../../category-constants';
+import { getAPIResourceDir, getAppSyncAPIName } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
+import { generateRDSSchema, writeSchemaFile } from '../../provider-utils/awscloudformation/utils/graphql-schema-utils';
 import { getEngineInput } from '../../provider-utils/awscloudformation/utils/rds-input-utils';
+import {
+  getConnectionSecrets,
+  getDatabaseName,
+  getSecretsKey,
+  storeConnectionSecrets,
+} from '../../provider-utils/awscloudformation/utils/rds-resources/database-resources';
 
 const subcommand = 'generate-schema';
 

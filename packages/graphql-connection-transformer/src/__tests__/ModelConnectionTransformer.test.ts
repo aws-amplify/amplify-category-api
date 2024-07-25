@@ -1,16 +1,16 @@
 import {
-  ObjectTypeDefinitionNode,
-  parse,
-  FieldDefinitionNode,
-  DocumentNode,
   DefinitionNode,
-  Kind,
+  DocumentNode,
+  FieldDefinitionNode,
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
+  Kind,
+  ObjectTypeDefinitionNode,
+  parse,
 } from 'graphql';
-import { GraphQLTransform, TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
-import { ResolverResourceIDs, ModelResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { ModelResourceIDs, ResolverResourceIDs, ResourceConstants } from 'graphql-transformer-common';
+import { GraphQLTransform, TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import { ModelConnectionTransformer } from '../ModelConnectionTransformer';
 
 const featureFlags = {

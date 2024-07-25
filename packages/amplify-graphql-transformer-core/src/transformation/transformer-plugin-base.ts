@@ -1,29 +1,29 @@
 /* eslint-disable max-classes-per-file */
 import {
-  TransformerPluginType,
-  TransformerModelProvider,
   AppSyncDataSourceType,
-  TransformerContextProvider,
-  TransformerResolverProvider,
-  QueryFieldType,
-  MutationFieldType,
-  SubscriptionFieldType,
   DataSourceInstance,
-  TransformerPluginProvider,
-  TransformerModelEnhancementProvider,
+  MutationFieldType,
+  QueryFieldType,
+  SubscriptionFieldType,
   TransformerAuthProvider,
+  TransformerContextProvider,
   TransformerLog,
   TransformerLogLevel,
+  TransformerModelEnhancementProvider,
+  TransformerModelProvider,
+  TransformerPluginProvider,
+  TransformerPluginType,
+  TransformerResolverProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 
 import {
   DirectiveDefinitionNode,
-  TypeDefinitionNode,
   DocumentNode,
+  InputValueDefinitionNode,
   Kind,
   ObjectTypeDefinitionNode,
   parse,
-  InputValueDefinitionNode,
+  TypeDefinitionNode,
 } from 'graphql';
 
 import { InvalidTransformerError } from '../errors';

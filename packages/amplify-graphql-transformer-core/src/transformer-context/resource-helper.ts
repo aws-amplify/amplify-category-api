@@ -5,9 +5,9 @@ import {
   TransformerResourceHelperProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Token } from 'aws-cdk-lib';
+import { DirectiveNode, FieldNode, ObjectTypeDefinitionNode, ObjectTypeExtensionNode } from 'graphql';
 import { ModelResourceIDs } from 'graphql-transformer-common';
 import md5 from 'md5';
-import { DirectiveNode, FieldNode, ObjectTypeDefinitionNode, ObjectTypeExtensionNode } from 'graphql';
 import { ModelFieldMapImpl } from './model-field-map';
 
 /**

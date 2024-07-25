@@ -1,42 +1,42 @@
-import { DynamoDB, AppSync, IAM, Fn, StringParameter, NumberParameter, Refs, IntrinsicFunction, DeletionPolicy } from 'cloudform-types';
+import { AppSync, DeletionPolicy, DynamoDB, Fn, IAM, IntrinsicFunction, NumberParameter, Refs, StringParameter } from 'cloudform-types';
 import Output from 'cloudform-types/types/output';
+import Template from 'cloudform-types/types/template';
+import { InputObjectTypeDefinitionNode } from 'graphql';
 import {
-  DynamoDBMappingTemplate,
-  printBlock,
-  str,
-  print,
-  ref,
-  obj,
-  set,
-  nul,
-  ifElse,
-  compoundExpression,
-  qref,
-  bool,
-  equals,
-  iff,
-  raw,
-  comment,
-  forEach,
-  list,
   and,
-  RESOLVER_VERSION_ID,
+  bool,
+  comment,
+  compoundExpression,
+  DynamoDBMappingTemplate,
+  equals,
   Expression,
+  forEach,
+  ifElse,
+  iff,
+  list,
+  nul,
+  obj,
+  print,
+  printBlock,
+  qref,
+  raw,
+  ref,
+  RESOLVER_VERSION_ID,
+  set,
+  str,
 } from 'graphql-mapping-template';
 import {
-  ResourceConstants,
-  plurality,
-  graphqlName,
-  toUpper,
-  ModelResourceIDs,
-  SyncResourceIDs,
   getBaseType,
+  graphqlName,
+  ModelResourceIDs,
+  plurality,
+  ResourceConstants,
+  SyncResourceIDs,
+  toUpper,
 } from 'graphql-transformer-common';
-import { plural } from 'pluralize';
 import { SyncConfig, SyncUtils } from 'graphql-transformer-core';
-import Template from 'cloudform-types/types/template';
 import md5 from 'md5';
-import { InputObjectTypeDefinitionNode } from 'graphql';
+import { plural } from 'pluralize';
 
 type MutationResolverInput = {
   type: string;

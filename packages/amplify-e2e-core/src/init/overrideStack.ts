@@ -1,4 +1,4 @@
-import { nspawn as spawn, getCLIPath } from '..';
+import { getCLIPath, nspawn as spawn } from '..';
 
 export function amplifyOverrideApi(cwd: string, settings: any) {
   const args = ['override', 'api'];

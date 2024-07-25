@@ -1,6 +1,6 @@
-import * as apigw2 from 'aws-cdk-lib/aws-apigatewayv2';
 import * as apigw2alpha from '@aws-cdk/aws-apigatewayv2-alpha';
 import * as cdk from 'aws-cdk-lib';
+import * as apigw2 from 'aws-cdk-lib/aws-apigatewayv2';
 import { Construct } from 'constructs';
 import { ContainersStack, ContainersStackProps } from './base-api-stack';
 import { API_TYPE } from './service-walkthroughs/containers-walkthrough';

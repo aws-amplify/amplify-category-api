@@ -1,3 +1,10 @@
+import {
+  EnumWrapper,
+  FieldWrapper,
+  InputFieldWrapper,
+  InputObjectDefinitionWrapper,
+  ObjectDefinitionWrapper,
+} from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider, TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   DirectiveNode,
@@ -22,16 +29,8 @@ import {
   makeValueNode,
   ModelResourceIDs,
   STANDARD_SCALARS,
-  APPSYNC_DEFINED_SCALARS,
   toPascalCase,
 } from 'graphql-transformer-common';
-import {
-  EnumWrapper,
-  FieldWrapper,
-  InputFieldWrapper,
-  InputObjectDefinitionWrapper,
-  ObjectDefinitionWrapper,
-} from '@aws-amplify/graphql-transformer-core';
 import {
   ATTRIBUTE_TYPES,
   BOOLEAN_CONDITIONS,
@@ -45,11 +44,11 @@ import {
   SIZE_CONDITIONS,
   STRING_CONDITIONS,
   STRING_FUNCTIONS,
-  SUBSCRIPTION_STRING_CONDITIONS,
+  SUBSCRIPTION_BOOLEAN_CONDITIONS,
+  SUBSCRIPTION_FLOAT_CONDITIONS,
   SUBSCRIPTION_ID_CONDITIONS,
   SUBSCRIPTION_INT_CONDITIONS,
-  SUBSCRIPTION_FLOAT_CONDITIONS,
-  SUBSCRIPTION_BOOLEAN_CONDITIONS,
+  SUBSCRIPTION_STRING_CONDITIONS,
 } from '../definitions';
 
 /**

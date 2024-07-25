@@ -1,9 +1,9 @@
-import path from 'path';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { parse } from 'graphql';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
 import { HttpTransformer } from '@aws-amplify/graphql-http-transformer';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { Construct } from 'constructs';
+import { parse } from 'graphql';
+import path from 'path';
 import { applyFileBasedOverride } from '../../../graphql-transformer/override';
 
 jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'testEnvName' });

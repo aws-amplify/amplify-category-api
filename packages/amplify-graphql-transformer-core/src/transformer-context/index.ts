@@ -2,14 +2,15 @@
 import {
   AppSyncAuthConfiguration,
   AssetProvider,
-  SqlDirectiveDataSourceStrategy,
   DataSourceStrategiesProvider,
   GraphQLAPIProvider,
   ModelDataSourceStrategy,
   NestedStackProvider,
   RDSLayerMapping,
   RDSLayerMappingProvider,
+  RDSSNSTopicMapping,
   RDSSNSTopicMappingProvider,
+  SqlDirectiveDataSourceStrategy,
   StackManagerProvider,
   SynthParameters,
   TransformerContextMetadataProvider,
@@ -18,10 +19,9 @@ import {
   TransformerDataSourceManagerProvider,
   TransformParameterProvider,
   TransformParameters,
-  RDSSNSTopicMapping,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { DocumentNode } from 'graphql';
 import { Construct } from 'constructs';
+import { DocumentNode } from 'graphql';
 import { ResolverConfig } from '../config/transformer-config';
 import { TransformerDataSourceManager } from './datasource';
 import { TransformerOutput } from './output';
@@ -30,7 +30,7 @@ import { ResolverManager } from './resolver';
 import { TransformerResourceHelper } from './resource-helper';
 import { StackManager } from './stack-manager';
 
-export { TransformerResolver, NONE_DATA_SOURCE_NAME } from './resolver';
+export { NONE_DATA_SOURCE_NAME, TransformerResolver } from './resolver';
 export { StackManager } from './stack-manager';
 export class TransformerContextMetadata implements TransformerContextMetadataProvider {
   /**

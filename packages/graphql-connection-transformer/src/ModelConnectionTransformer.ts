@@ -1,43 +1,43 @@
-import { Transformer, TransformerContext, InvalidDirectiveError, getDirectiveArguments } from 'graphql-transformer-core';
 import { ConnectionDirectiveV1 } from '@aws-amplify/graphql-directives';
+import Table, { GlobalSecondaryIndex, KeySchema, LocalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
 import {
   DirectiveNode,
-  ObjectTypeDefinitionNode,
-  Kind,
-  FieldDefinitionNode,
-  InterfaceTypeDefinitionNode,
-  InputObjectTypeDefinitionNode,
   EnumTypeDefinitionNode,
+  FieldDefinitionNode,
+  InputObjectTypeDefinitionNode,
+  InterfaceTypeDefinitionNode,
+  Kind,
+  ObjectTypeDefinitionNode,
   parse,
 } from 'graphql';
 import {
-  makeModelConnectionType,
-  makeModelConnectionField,
-  makeScalarFilterInputs,
-  makeModelXFilterInputObject,
-  makeModelSortDirectionEnumObject,
-  SortKeyFieldInfoTypeName,
   CONDITIONS_MINIMUM_VERSION,
   makeAttributeTypeEnum,
   makeEnumFilterInputObjects,
+  makeModelConnectionField,
+  makeModelConnectionType,
+  makeModelSortDirectionEnumObject,
+  makeModelXFilterInputObject,
+  makeScalarFilterInputs,
+  SortKeyFieldInfoTypeName,
 } from 'graphql-dynamodb-transformer';
 import {
-  getBaseType,
-  isListType,
-  getDirectiveArgument,
+  attributeTypeFromScalar,
   blankObject,
+  getBaseType,
+  getDirectiveArgument,
+  isListType,
+  isNonNullType,
   isScalar,
   isScalarOrEnum,
+  makeNamedType,
+  makeScalarKeyConditionForType,
+  ModelResourceIDs,
+  ResolverResourceIDs,
   STANDARD_SCALARS,
   toCamelCase,
-  isNonNullType,
-  attributeTypeFromScalar,
-  makeScalarKeyConditionForType,
-  makeNamedType,
-  ResolverResourceIDs,
-  ModelResourceIDs,
 } from 'graphql-transformer-common';
-import Table, { KeySchema, GlobalSecondaryIndex, LocalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
+import { getDirectiveArguments, InvalidDirectiveError, Transformer, TransformerContext } from 'graphql-transformer-core';
 import { updateInputWithConnectionField } from './definitions';
 import { ResourceFactory } from './resources';
 

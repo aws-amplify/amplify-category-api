@@ -1,6 +1,6 @@
-import { join, parse, sep } from 'path';
 import * as execa from 'execa';
 import * as fs from 'fs-extra';
+import { join, parse, sep } from 'path';
 import { unifiedChangelogPath } from './constants';
 /**
  * This script is intended to be run after running `yarn publish-to-verdaccio` when all CHANGELOG file changes are staged but not committed

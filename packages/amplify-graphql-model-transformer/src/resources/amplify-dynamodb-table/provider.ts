@@ -1,4 +1,4 @@
-import { aws_lambda, aws_iam, Duration } from 'aws-cdk-lib';
+import { aws_iam, aws_lambda, Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 /**

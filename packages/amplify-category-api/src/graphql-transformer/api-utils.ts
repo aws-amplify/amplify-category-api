@@ -1,10 +1,10 @@
-import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import {
   $TSContext,
   AmplifyCategories,
   ApiCategoryFacade,
   getGraphQLTransformerOpenSearchProductionDocLink,
 } from '@aws-amplify/amplify-cli-core';
+import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { ResourceConstants } from 'graphql-transformer-common';
 

@@ -1,38 +1,38 @@
 /* eslint-disable no-use-before-define */
+import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import {
-  IAMClient,
+  AttachRolePolicyCommand,
+  CreatePolicyCommand,
+  CreatePolicyCommandOutput,
   CreateRoleCommand,
+  CreateRoleCommandOutput,
   GetRoleCommand,
   GetRoleCommandOutput,
-  CreateRoleCommandOutput,
-  Role,
-  CreatePolicyCommand,
+  IAMClient,
   Policy,
-  CreatePolicyCommandOutput,
-  AttachRolePolicyCommand,
+  Role,
   waitUntilPolicyExists,
   waitUntilRoleExists,
 } from '@aws-sdk/client-iam';
 import {
-  LambdaClient,
   CreateFunctionCommand,
   CreateFunctionCommandInput,
+  DeleteFunctionCommand,
+  FunctionConfiguration,
+  GetFunctionCommand,
+  GetFunctionCommandOutput,
   InvokeCommand,
+  LambdaClient,
   LogType,
   UpdateFunctionCodeCommand,
   UpdateFunctionCodeCommandInput,
-  GetFunctionCommand,
-  GetFunctionCommandOutput,
   waitUntilFunctionActive,
-  FunctionConfiguration,
-  DeleteFunctionCommand,
 } from '@aws-sdk/client-lambda';
 import * as fs from 'fs-extra';
 import ora from 'ora';
-import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import { checkHostInDBClusters } from './vpc-helper-cluster';
-import { checkHostInDBProxies } from './vpc-helper-proxy';
 import { checkHostInDBInstances } from './vpc-helper-instance';
+import { checkHostInDBProxies } from './vpc-helper-proxy';
 
 const spinner = ora('');
 

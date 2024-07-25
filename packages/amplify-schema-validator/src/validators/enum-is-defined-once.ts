@@ -1,4 +1,4 @@
-import { DocumentNode, Kind, EnumTypeDefinitionNode } from 'graphql';
+import { DocumentNode, EnumTypeDefinitionNode, Kind } from 'graphql';
 import { ValidationError } from '../exceptions/validation-error';
 
 /**

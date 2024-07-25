@@ -1,6 +1,6 @@
-import { parse, InputObjectTypeDefinitionNode, DefinitionNode, DocumentNode, Kind } from 'graphql';
-import { GraphQLTransform, InvalidDirectiveError, SyncConfig, ConflictHandlerType, FeatureFlagProvider } from 'graphql-transformer-core';
+import { DefinitionNode, DocumentNode, InputObjectTypeDefinitionNode, Kind, parse } from 'graphql';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { ConflictHandlerType, GraphQLTransform, InvalidDirectiveError, SyncConfig } from 'graphql-transformer-core';
 import { KeyTransformer } from '../KeyTransformer';
 
 const featureFlags = {

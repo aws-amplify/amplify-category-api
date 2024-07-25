@@ -1,23 +1,23 @@
 import {
   DirectiveDefinitionNode,
-  parse,
   DirectiveNode,
-  ObjectTypeDefinitionNode,
-  InterfaceTypeDefinitionNode,
-  FieldDefinitionNode,
-  UnionTypeDefinitionNode,
-  Kind,
+  DocumentNode,
   EnumTypeDefinitionNode,
-  ScalarTypeDefinitionNode,
+  EnumValueDefinitionNode,
+  FieldDefinitionNode,
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
-  EnumValueDefinitionNode,
+  InterfaceTypeDefinitionNode,
+  Kind,
+  ObjectTypeDefinitionNode,
+  parse,
+  ScalarTypeDefinitionNode,
   TypeDefinitionNode,
-  DocumentNode,
+  UnionTypeDefinitionNode,
 } from 'graphql';
-import { TransformerContext } from './TransformerContext';
-import { ITransformer } from './ITransformer';
 import { InvalidTransformerError } from './errors';
+import { ITransformer } from './ITransformer';
+import { TransformerContext } from './TransformerContext';
 
 /**
  * A GraphQLTransformer takes a context object, processes it, and

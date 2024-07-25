@@ -1,5 +1,3 @@
-import { readdirSync, readFileSync } from 'fs';
-import * as path from 'path';
 import {
   addApiWithoutSchema,
   addFeatureFlag,
@@ -16,6 +14,8 @@ import {
   updateApiSchema,
   validateRestApiMeta,
 } from 'amplify-category-api-e2e-core';
+import { readdirSync, readFileSync } from 'fs';
+import * as path from 'path';
 
 describe('amplify add api (REST and GRAPHQL)', () => {
   let projRoot: string;

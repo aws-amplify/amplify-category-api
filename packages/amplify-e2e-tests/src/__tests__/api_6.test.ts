@@ -1,18 +1,18 @@
 import {
-  createNewProjectDir,
-  initJSProjectWithProfile,
   addApiWithoutSchema,
+  addFunction,
   amplifyPush,
+  amplifyPushAuth,
+  amplifyPushDestructiveApiUpdate,
+  createNewProjectDir,
   deleteProject,
   deleteProjectDir,
-  putItemInTable,
-  scanTable,
-  rebuildApi,
   getProjectMeta,
+  initJSProjectWithProfile,
+  putItemInTable,
+  rebuildApi,
+  scanTable,
   updateApiSchema,
-  amplifyPushDestructiveApiUpdate,
-  addFunction,
-  amplifyPushAuth,
 } from 'amplify-category-api-e2e-core';
 
 const projName = 'apitest';

@@ -1,6 +1,6 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
 import { ModelDataSourceStrategy } from '@aws-amplify/graphql-api-construct';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 
 export interface TestDefinition {
   schema: string;

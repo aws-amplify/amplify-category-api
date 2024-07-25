@@ -1,9 +1,9 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
-import { SSMClient, PutParameterCommand, DeleteParameterCommand } from '@aws-sdk/client-ssm';
+import { DeleteParameterCommand, PutParameterCommand, SSMClient } from '@aws-sdk/client-ssm';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
+import * as fs from 'fs-extra';
 import * as generator from 'generate-password';
-import { initCDKProject, cdkDestroy, cdkDeploy } from '../../commands';
+import * as path from 'path';
+import { cdkDeploy, cdkDestroy, initCDKProject } from '../../commands';
 import { SqlDatabaseDetails, SqlDatatabaseController } from '../../sql-datatabase-controller';
 import {
   dbDetailsToModelDataSourceStrategy,

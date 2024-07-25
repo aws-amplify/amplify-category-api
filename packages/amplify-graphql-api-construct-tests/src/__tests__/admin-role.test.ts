@@ -1,7 +1,7 @@
-import * as path from 'path';
-import * as crypto from 'crypto';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
-import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
+import * as crypto from 'crypto';
+import * as path from 'path';
+import { cdkDeploy, cdkDestroy, initCDKProject } from '../commands';
 import { graphql } from '../graphql-request';
 import { invokeGraphqlProxyLambda } from '../lambda-request';
 import { DURATION_1_HOUR } from '../utils/duration-constants';

@@ -1,4 +1,4 @@
-import { Kind, ObjectTypeDefinitionNode, StringValueNode, parse } from 'graphql';
+import { Kind, ObjectTypeDefinitionNode, parse, StringValueNode } from 'graphql';
 import { ModelDataSourceStrategy } from '../model-datasource-strategy-types';
 
 const MODEL_DIRECTIVE_NAME = 'model';

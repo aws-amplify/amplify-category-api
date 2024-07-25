@@ -1,5 +1,5 @@
-import { toPascalCase } from 'graphql-transformer-common';
 import { FieldDefinitionNode, ListValueNode, ObjectTypeDefinitionNode, StringValueNode, ValueNode } from 'graphql';
+import { toPascalCase } from 'graphql-transformer-common';
 import { getField } from './graphql-utils';
 
 /**

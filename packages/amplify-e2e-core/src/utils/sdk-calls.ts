@@ -1,4 +1,4 @@
-import { config, DynamoDB, S3, CognitoIdentityServiceProvider, Lambda, AppSync, CloudFormation, AmplifyBackend, IAM } from 'aws-sdk';
+import { AmplifyBackend, AppSync, CloudFormation, CognitoIdentityServiceProvider, config, DynamoDB, IAM, Lambda, S3 } from 'aws-sdk';
 import _ from 'lodash';
 
 export const getDDBTable = async (tableName: string, region: string) => {

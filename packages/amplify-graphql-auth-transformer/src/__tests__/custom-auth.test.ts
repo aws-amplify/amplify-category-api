@@ -1,7 +1,7 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthTransformer } from '../graphql-auth-transformer';
 
 test('happy case with lambda auth mode as default auth mode', () => {

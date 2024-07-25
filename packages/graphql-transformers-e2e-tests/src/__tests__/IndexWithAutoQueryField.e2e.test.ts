@@ -1,15 +1,15 @@
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { ResourceConstants } from 'graphql-transformer-common';
 import { Output } from 'aws-sdk/clients/cloudformation';
+import { ResourceConstants } from 'graphql-transformer-common';
 // eslint-disable-next-line import/no-named-default
 import { default as moment } from 'moment';
 // eslint-disable-next-line import/no-named-default
 import { default as S3 } from 'aws-sdk/clients/s3';
 import { CloudFormationClient } from '../CloudFormationClient';
-import { GraphQLClient } from '../GraphQLClient';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
+import { GraphQLClient } from '../GraphQLClient';
 import { S3Client } from '../S3Client';
 import { resolveTestRegion } from '../testSetup';
 

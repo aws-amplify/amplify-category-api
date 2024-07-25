@@ -1,3 +1,4 @@
+import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import {
   addApi,
   amplifyPush,
@@ -5,28 +6,27 @@ import {
   deleteDBInstance,
   deleteProject,
   deleteProjectDir,
+  getProjectMeta,
   importRDSDatabase,
   initJSProjectWithProfile,
   setupRDSInstanceAndData,
   sleep,
   updateAuthAddUserGroups,
-  getProjectMeta,
 } from 'amplify-category-api-e2e-core';
-import { existsSync, writeFileSync, removeSync } from 'fs-extra';
+import { existsSync, removeSync, writeFileSync } from 'fs-extra';
 import generator from 'generate-password';
 import path from 'path';
-import { schema, sqlCreateStatements } from './auth-test-schemas/userpool-apikey';
+import { GQLQueryHelper } from '../query-utils/gql-helper';
 import {
-  configureAppSyncClients,
-  checkOperationResult,
-  checkListItemExistence,
   appendAmplifyInput,
+  checkListItemExistence,
+  checkOperationResult,
+  configureAppSyncClients,
   getAppSyncEndpoint,
 } from '../rds-v2-test-utils';
-import { setupUser, getUserPoolId, signInUser, configureAmplify } from '../schema-api-directives';
-import { GQLQueryHelper } from '../query-utils/gql-helper';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { SQL_TESTS_USE_BETA } from '../rds-v2-tests-common/sql-e2e-config';
+import { configureAmplify, getUserPoolId, setupUser, signInUser } from '../schema-api-directives';
+import { schema, sqlCreateStatements } from './auth-test-schemas/userpool-apikey';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');

@@ -1,4 +1,3 @@
-import * as cdk from 'aws-cdk-lib';
 import {
   $TSContext,
   AmplifyCategories,
@@ -12,11 +11,12 @@ import {
   Template,
   writeCFNTemplate,
 } from '@aws-amplify/amplify-cli-core';
+import * as cdk from 'aws-cdk-lib';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { AmplifyApigwResourceStack, ApigwInputs, CrudOperation, Path } from '.';
-import { ApigwInputState } from '../apigw-input-state';
 import { ADMIN_QUERIES_NAME } from '../../../category-constants';
+import { ApigwInputState } from '../apigw-input-state';
 
 export class ApigwStackTransform {
   cliInputs: ApigwInputs;

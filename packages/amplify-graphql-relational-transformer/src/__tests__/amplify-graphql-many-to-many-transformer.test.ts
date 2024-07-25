@@ -3,14 +3,14 @@ import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import {
+  constructDataSourceStrategies,
   DDB_DEFAULT_DATASOURCE_STRATEGY,
   GraphQLTransform,
-  constructDataSourceStrategies,
   validateModelSchema,
 } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration, ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
-import { DocumentNode, ObjectTypeDefinitionNode, parse } from 'graphql';
 import { DeploymentResources, mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { DocumentNode, ObjectTypeDefinitionNode, parse } from 'graphql';
 import { HasOneTransformer, ManyToManyTransformer } from '..';
 import { hasGeneratedDirective, hasGeneratedField } from './test-helpers';
 

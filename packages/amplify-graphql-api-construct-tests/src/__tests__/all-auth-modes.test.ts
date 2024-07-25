@@ -1,6 +1,6 @@
-import * as path from 'path';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
-import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
+import * as path from 'path';
+import { cdkDeploy, cdkDestroy, initCDKProject } from '../commands';
 import { graphql, graphqlRequestWithLambda } from '../graphql-request';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
 

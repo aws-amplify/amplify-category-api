@@ -1,17 +1,17 @@
-import { AttributeType, BillingMode, StreamViewType, Table } from 'aws-cdk-lib/aws-dynamodb';
-import * as cdk from 'aws-cdk-lib';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import { ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
 import {
   SynthParameters,
   TransformerContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import * as cdk from 'aws-cdk-lib';
+import { AttributeType, BillingMode, StreamViewType, Table } from 'aws-cdk-lib/aws-dynamodb';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
+import { ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
 // eslint-disable-next-line import/no-cycle
-import { TransformerContext } from '../transformer-context';
 import { ResolverConfig, SyncConfig, SyncConfigLambda } from '../config/transformer-config';
+import { TransformerContext } from '../transformer-context';
 import { setResourceName } from '../utils';
 
 type DeltaSyncConfig = {

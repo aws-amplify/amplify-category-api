@@ -1,5 +1,5 @@
-import { ConflictResolution, PerModelResolutionstrategy, ResolutionStrategy, LambdaResolutionStrategy } from 'amplify-headless-interface';
-import { ResolverConfig, SyncConfig, ConflictHandlerType, SyncConfigLAMBDA } from 'graphql-transformer-core';
+import { ConflictResolution, LambdaResolutionStrategy, PerModelResolutionstrategy, ResolutionStrategy } from 'amplify-headless-interface';
+import { ConflictHandlerType, ResolverConfig, SyncConfig, SyncConfigLAMBDA } from 'graphql-transformer-core';
 import _ from 'lodash';
 
 export const conflictResolutionToResolverConfig = (conflictResolution: ConflictResolution = {}): ResolverConfig => {

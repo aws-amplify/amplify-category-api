@@ -3,9 +3,9 @@ import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AppSyncAuthConfiguration, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
-import { DocumentNode, ObjectTypeDefinitionNode, Kind, parse } from 'graphql';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { HasManyTransformer, BelongsToTransformer, HasOneTransformer } from '..';
+import { DocumentNode, Kind, ObjectTypeDefinitionNode, parse } from 'graphql';
+import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
 
 const iamDefaultConfig: AppSyncAuthConfiguration = {
   defaultAuthentication: {

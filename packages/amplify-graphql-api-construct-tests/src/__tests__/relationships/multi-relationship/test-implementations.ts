@@ -1,10 +1,10 @@
 import { cdkDeploy } from '../../../commands';
-import {
-  doCreateRelatedOne,
-  doCreateRelatedMany,
-  doCreatePrimary,
-} from '../../graphql-schemas/multi-relationship/operation-implementations';
 import { ONE_MINUTE } from '../../../utils/duration-constants';
+import {
+  doCreatePrimary,
+  doCreateRelatedMany,
+  doCreateRelatedOne,
+} from '../../graphql-schemas/multi-relationship/operation-implementations';
 
 // #region Test setup
 interface CommonSetupInput {

@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
-import { AmplifyDynamoDBTable, CUSTOM_DDB_CFN_TYPE } from '../resources/amplify-dynamodb-table/amplify-dynamodb-table-construct';
-import { AttributeType, StreamViewType, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { Template } from 'aws-cdk-lib/assertions';
+import { AttributeType, StreamViewType, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
+import { AmplifyDynamoDBTable, CUSTOM_DDB_CFN_TYPE } from '../resources/amplify-dynamodb-table/amplify-dynamodb-table-construct';
 
 describe('Amplify DynamoDB Table Construct Tests', () => {
   it('render the default amplify dynamodb table in correct form', () => {

@@ -1,26 +1,26 @@
 // special handling needed becasue we need to set up the function in a differnt region
-import path from 'path';
-import fs from 'fs-extra';
 import {
-  amplifyPush,
-  addFunction,
   addApiWithCognitoUserPoolAuthTypeWhenAuthExists,
-  updateAuthAddUserGroups,
   addAuthWithDefault,
+  addFunction,
+  amplifyPush,
+  updateAuthAddUserGroups,
 } from 'amplify-category-api-e2e-core';
+import fs from 'fs-extra';
+import path from 'path';
 
-import { updateFunctionNameInSchema, randomizedFunctionName } from '../functionTester';
+import { randomizedFunctionName, updateFunctionNameInSchema } from '../functionTester';
 
 import {
   configureAmplify,
-  getUserPoolId,
   getCognitoResourceName,
+  getConfiguredAppsyncClientCognitoAuth,
+  getUserPoolId,
   setupUser,
   signInUser,
-  getConfiguredAppsyncClientCognitoAuth,
 } from '../authHelper';
 
-import { updateSchemaInTestProject, testQueries } from '../common';
+import { testQueries, updateSchemaInTestProject } from '../common';
 
 const GROUPNAME = 'Admin';
 const USERNAME = 'user1';

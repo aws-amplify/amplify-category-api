@@ -1,6 +1,6 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
 import { readJsonFile } from 'amplify-category-api-e2e-core';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 
 export function verifyPlugin(pluginDirPath: string): boolean {
   if (fs.existsSync(pluginDirPath) && fs.statSync(pluginDirPath).isDirectory()) {

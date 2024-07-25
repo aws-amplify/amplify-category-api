@@ -1,6 +1,6 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import { legacyUpdateResource } from '../../../provider-utils/awscloudformation/legacy-update-resource';
 import { category } from '../../../category-constants';
+import { legacyUpdateResource } from '../../../provider-utils/awscloudformation/legacy-update-resource';
 
 jest.mock('fs-extra');
 jest.mock('@aws-amplify/amplify-cli-core', () => ({

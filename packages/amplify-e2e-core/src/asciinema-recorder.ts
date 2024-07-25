@@ -1,5 +1,5 @@
-import * as pty from 'node-pty';
 import chalk from 'chalk';
+import * as pty from 'node-pty';
 
 export type RecordingHeader = {
   version: 2;

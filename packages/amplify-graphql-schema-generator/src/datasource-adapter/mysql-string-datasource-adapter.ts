@@ -1,5 +1,5 @@
 import { EnumType, Field, FieldDataType, FieldType, Index } from '../schema-representation';
-import { StringDataSourceAdapter, EmptySchemaError, InvalidSchemaError } from './string-datasource-adapter';
+import { EmptySchemaError, InvalidSchemaError, StringDataSourceAdapter } from './string-datasource-adapter';
 
 export interface MySQLIndex {
   tableName: string;

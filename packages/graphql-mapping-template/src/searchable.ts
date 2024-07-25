@@ -1,5 +1,5 @@
+import { bool, BooleanNode, CompoundExpressionNode, Expression, ListNode, obj, ObjectNode, raw, str } from './ast';
 import { print } from './print';
-import { obj, Expression, str, ObjectNode, raw, CompoundExpressionNode, ListNode, BooleanNode, bool } from './ast';
 
 const RESOLVER_VERSION_ID = '2018-05-29';
 

@@ -1,15 +1,15 @@
-import { v4 } from 'uuid';
+import {
+  AmplifyAppSyncAuthenticationProviderConfig,
+  AmplifyAppSyncSimulator,
+  AppSyncGraphQLExecutionContext,
+  AppSyncVTLRenderContext,
+  IAMToken,
+  JWTToken,
+  VelocityTemplate,
+} from '@aws-amplify/amplify-appsync-simulator';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLResolveInfo } from 'graphql';
-import {
-  AmplifyAppSyncSimulator,
-  AmplifyAppSyncAuthenticationProviderConfig,
-  VelocityTemplate,
-  AppSyncVTLRenderContext,
-  AppSyncGraphQLExecutionContext,
-  JWTToken,
-  IAMToken,
-} from '@aws-amplify/amplify-appsync-simulator';
+import { v4 } from 'uuid';
 
 const DEFAULT_SCHEMA = `
   type Query {

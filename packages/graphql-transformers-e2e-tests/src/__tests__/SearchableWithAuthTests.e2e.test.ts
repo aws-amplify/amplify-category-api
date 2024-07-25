@@ -1,32 +1,32 @@
-import * as fs from 'fs';
-import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-import { ModelAuthTransformer } from 'graphql-auth-transformer';
-import { ModelConnectionTransformer } from 'graphql-connection-transformer';
-import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
-import { GraphQLTransform } from 'graphql-transformer-core';
-import { ResourceConstants } from 'graphql-transformer-common';
-import { Output } from 'aws-sdk/clients/cloudformation';
-import { default as S3, CreateBucketRequest } from 'aws-sdk/clients/s3';
-import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { AWS } from '@aws-amplify/core';
 import { Auth } from 'aws-amplify';
+import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import { Output } from 'aws-sdk/clients/cloudformation';
+import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { CreateBucketRequest, default as S3 } from 'aws-sdk/clients/s3';
+import * as fs from 'fs';
+import { ModelAuthTransformer } from 'graphql-auth-transformer';
+import { ModelConnectionTransformer } from 'graphql-connection-transformer';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
 import gql from 'graphql-tag';
+import { ResourceConstants } from 'graphql-transformer-common';
+import { GraphQLTransform } from 'graphql-transformer-core';
+import 'isomorphic-fetch';
 import { default as moment } from 'moment';
-import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { CloudFormationClient } from '../CloudFormationClient';
-import { S3Client } from '../S3Client';
 import {
+  addIAMRolesToCFNStack,
+  addUserToGroup,
+  authenticateUser,
+  configureAmplify,
+  createGroup,
   createUserPool,
   createUserPoolClient,
-  addIAMRolesToCFNStack,
-  createGroup,
-  addUserToGroup,
-  configureAmplify,
   signupUser,
-  authenticateUser,
 } from '../cognitoUtils';
-import 'isomorphic-fetch';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
+import { S3Client } from '../S3Client';
 
 // To overcome of the way of how AmplifyJS picks up currentUserCredentials
 const anyAWS = AWS as any;

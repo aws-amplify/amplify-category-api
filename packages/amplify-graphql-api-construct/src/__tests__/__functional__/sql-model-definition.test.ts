@@ -1,8 +1,8 @@
+import { getResourceNamesForStrategy } from '@aws-amplify/graphql-transformer-core';
+import { mockSqlDataSourceStrategy } from '@aws-amplify/graphql-transformer-test-utils';
 import * as cdk from 'aws-cdk-lib';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
-import { CfnFunction, CfnAlias } from 'aws-cdk-lib/aws-lambda';
-import { mockSqlDataSourceStrategy } from '@aws-amplify/graphql-transformer-test-utils';
-import { getResourceNamesForStrategy } from '@aws-amplify/graphql-transformer-core';
+import { CfnAlias, CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 

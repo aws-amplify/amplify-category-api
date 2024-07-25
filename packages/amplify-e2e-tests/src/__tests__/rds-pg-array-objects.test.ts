@@ -1,3 +1,5 @@
+import { getDefaultStrategyNameForDbType, getResourceNamesForStrategyName, normalizeDbType } from '@aws-amplify/graphql-transformer-core';
+import { ModelDataSourceStrategySqlDbType } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   addApiWithoutSchema,
   amplifyPush,
@@ -7,21 +9,19 @@ import {
   deleteProjectDir,
   getAppSyncApi,
   getProjectMeta,
+  getResource,
   importRDSDatabase,
   initJSProjectWithProfile,
-  getResource,
-  sleep,
   setupRDSInstanceAndData,
+  sleep,
   updateSchema,
 } from 'amplify-category-api-e2e-core';
+import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { existsSync, readFileSync } from 'fs-extra';
 import generator from 'generate-password';
 import { ObjectTypeDefinitionNode, parse, print } from 'graphql';
-import path from 'path';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
-import { getDefaultStrategyNameForDbType, getResourceNamesForStrategyName, normalizeDbType } from '@aws-amplify/graphql-transformer-core';
-import { ModelDataSourceStrategySqlDbType } from '@aws-amplify/graphql-transformer-interfaces';
+import path from 'path';
 import { SQL_TESTS_USE_BETA } from '../rds-v2-tests-common/sql-e2e-config';
 
 // to deal with bug in cognito-identity-js

@@ -1,5 +1,5 @@
-import { InputValueDefinitionNode, InputObjectTypeDefinitionNode, Kind, FieldDefinitionNode } from 'graphql';
-import { makeNamedType, makeNonNullType, makeListType } from 'graphql-transformer-common';
+import { FieldDefinitionNode, InputObjectTypeDefinitionNode, InputValueDefinitionNode, Kind } from 'graphql';
+import { makeListType, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
 
 function inputValueDefinition(inputValue: string, namedType: string, isNonNull: boolean = false): InputValueDefinitionNode {
   return {

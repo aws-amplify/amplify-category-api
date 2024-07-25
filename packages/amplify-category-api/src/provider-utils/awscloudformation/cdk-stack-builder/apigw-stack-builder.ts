@@ -2,12 +2,12 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable no-underscore-dangle */
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import * as cdk from 'aws-cdk-lib';
 import * as apigw from 'aws-cdk-lib/aws-apigateway';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { ADMIN_QUERIES_NAME } from '../../../category-constants';

@@ -1,13 +1,12 @@
 import {
   addApiWithoutSchema,
-  updateApiSchema,
   amplifyPush,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
   getProjectMeta,
-  getSchemaPath,
   initJSProjectWithProfile,
+  updateApiSchema,
 } from 'amplify-category-api-e2e-core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';

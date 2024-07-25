@@ -1,22 +1,21 @@
-import { join } from 'path';
 import {
-  initJSProjectWithProfile,
-  deleteProject,
-  createNewProjectDir,
-  deleteProjectDir,
   addApiWithoutSchema,
   addCustomResolver,
-  apiGqlCompile,
-  updateApiSchema,
-  writeToCustomResourcesJson,
   amplifyPush,
   amplifyPushGraphQlWithCognitoPrompt,
-  generateModels,
   amplifyPushUpdate,
+  apiGqlCompile,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  generateModels,
+  initJSProjectWithProfile,
+  updateApiSchema,
   updateConfig,
+  writeToCustomResourcesJson,
 } from 'amplify-category-api-e2e-core';
 import * as fs from 'fs-extra';
-import _ from 'lodash';
+import { join } from 'path';
 
 describe('user created resolvers', () => {
   let projectDir: string;

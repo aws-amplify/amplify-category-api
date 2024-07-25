@@ -1,56 +1,55 @@
+import { getKeySchema, getTable, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
+import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import {
-  compoundExpression,
-  Expression,
-  obj,
-  printBlock,
   and,
+  bool,
+  compoundExpression,
   equals,
+  Expression,
+  forEach,
+  ifElse,
   iff,
+  list,
   methodCall,
   not,
-  ref,
-  str,
-  bool,
-  forEach,
-  list,
+  nul,
+  obj,
+  or,
+  parens,
+  printBlock,
   qref,
   raw,
+  ref,
   set,
-  ifElse,
-  nul,
-  parens,
-  or,
+  str,
 } from 'graphql-mapping-template';
-import { aws_dynamodb as dynamodb } from 'aws-cdk-lib';
 import {
   COGNITO_AUTH_TYPE,
-  OIDC_AUTH_TYPE,
-  RoleDefinition,
-  splitRoles,
   ConfiguredAuthProviders,
-  IS_AUTHORIZED_FLAG,
   fieldIsList,
-  RelationalPrimaryMapConfig,
-  IDENTITY_CLAIM_DELIMITER,
   getPartitionKey,
   getRelationalPrimaryMap,
+  IDENTITY_CLAIM_DELIMITER,
+  IS_AUTHORIZED_FLAG,
+  OIDC_AUTH_TYPE,
+  RelationalPrimaryMapConfig,
+  RoleDefinition,
+  splitRoles,
 } from '../../../utils';
 import { setHasAuthExpression } from '../../common';
 import {
-  getIdentityClaimExp,
-  getOwnerClaim,
   apiKeyExpression,
-  iamExpression,
-  lambdaExpression,
   emptyPayload,
+  generateInvalidClaimsCondition,
   generateOwnerClaimExpression,
   generateOwnerClaimListExpression,
   generateOwnerMultiClaimExpression,
-  generateInvalidClaimsCondition,
+  getIdentityClaimExp,
+  getOwnerClaim,
+  iamExpression,
+  lambdaExpression,
 } from './helpers';
-import { InvalidDirectiveError, getKeySchema, getTable } from '@aws-amplify/graphql-transformer-core';
-import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
   const staticRoleExpression: Array<Expression> = [];

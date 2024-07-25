@@ -1,18 +1,18 @@
-import * as crypto from 'crypto';
-import { AuthProvider, AuthStrategy, AuthTransformer, ModelOperation } from '@aws-amplify/graphql-auth-transformer';
 import { JWTToken } from '@aws-amplify/amplify-appsync-simulator';
+import { AuthProvider, AuthStrategy, AuthTransformer, ModelOperation } from '@aws-amplify/graphql-auth-transformer';
+import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { AppSyncAuthConfiguration, SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { Auth } from 'aws-amplify';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { CognitoIdentity, S3 } from 'aws-sdk';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import { AppSyncAuthConfiguration, SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
+import * as crypto from 'crypto';
 import gql from 'graphql-tag';
 import { plurality, ResourceConstants } from 'graphql-transformer-common';
 import { v4 } from 'uuid';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { CloudFormationClient } from './CloudFormationClient';
 import {
   addUserToGroup,
@@ -22,14 +22,13 @@ import {
   createIdentityPool,
   createUserPool,
   createUserPoolClient,
-  signupUser,
   setIdentityPoolRoles,
+  signupUser,
 } from './cognitoUtils';
 import { cleanupStackAfterTest, deploy } from './deployNestedStacks';
 import { IAMHelper } from './IAMHelper';
 import { S3Client } from './S3Client';
 import { resolveTestRegion } from './testSetup';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 
 const REGION = resolveTestRegion();
 const IAM_HELPER = new IAMHelper(REGION);

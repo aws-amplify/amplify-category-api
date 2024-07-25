@@ -1,9 +1,9 @@
-import path from 'path';
-import _ from 'lodash';
+import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { EnumTypeDefinitionNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
 import { compoundExpression, Expression, iff, list, methodCall, not, obj, qref, ref, set, str } from 'graphql-mapping-template';
 import { isArrayOrObject, isListType } from 'graphql-transformer-common';
-import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import _ from 'lodash';
+import path from 'path';
 
 import { APICategory } from './api-category';
 

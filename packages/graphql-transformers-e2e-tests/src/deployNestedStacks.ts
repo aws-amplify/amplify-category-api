@@ -1,11 +1,11 @@
+import { CognitoIdentity, CognitoIdentityServiceProvider } from 'aws-sdk';
 import * as fs from 'fs';
-import * as path from 'path';
 import { DeploymentResources } from 'graphql-transformer-core';
-import { CognitoIdentityServiceProvider, CognitoIdentity } from 'aws-sdk';
-import { deleteUserPool, deleteIdentityPool } from './cognitoUtils';
+import * as path from 'path';
 import { CloudFormationClient } from './CloudFormationClient';
-import { S3Client } from './S3Client';
+import { deleteIdentityPool, deleteUserPool } from './cognitoUtils';
 import emptyBucket from './emptyBucket';
+import { S3Client } from './S3Client';
 
 function deleteDirectory(directory: string) {
   const files = fs.readdirSync(directory);

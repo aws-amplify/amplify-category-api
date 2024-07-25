@@ -1,6 +1,6 @@
-import { GraphQLTransform } from 'graphql-transformer-core';
-import { ResourceConstants } from 'graphql-transformer-common';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { ResourceConstants } from 'graphql-transformer-common';
+import { GraphQLTransform } from 'graphql-transformer-core';
 import { ModelAuthTransformer } from '../ModelAuthTransformer';
 
 const featureFlags = {

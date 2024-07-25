@@ -1,13 +1,7 @@
-import { Kind, DocumentNode } from 'graphql';
-import { makeInputValueDefinition, makeNamedType } from 'graphql-transformer-common';
-import { InputObjectDefinitionWrapper, InputFieldWrapper } from '@aws-amplify/graphql-transformer-core';
+import { InputFieldWrapper, InputObjectDefinitionWrapper } from '@aws-amplify/graphql-transformer-core';
+import { DocumentNode, Kind } from 'graphql';
 import { TransformerOutput } from '../../transformer-context/output';
-import {
-  DEFAULT_SCHEMA_DEFINITION,
-  DEFAULT_QUERY_OPERATION,
-  DEFAULT_MUTATION_OPERATION,
-  DEFAULT_SUBSCRIPTION_OPERATION,
-} from '../../utils/defaultSchema';
+import { DEFAULT_MUTATION_OPERATION, DEFAULT_QUERY_OPERATION, DEFAULT_SCHEMA_DEFINITION } from '../../utils/defaultSchema';
 
 describe('TransformerOutput', () => {
   test('iterate over each document definition once', () => {

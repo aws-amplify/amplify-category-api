@@ -1,18 +1,18 @@
-import path from 'path';
-import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { $TSContext, CloudformationProviderFacade, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
-import { VersionedModelTransformer } from 'graphql-versioned-transformer';
 import { FunctionTransformer } from 'graphql-function-transformer';
 import { HttpTransformer } from 'graphql-http-transformer';
-import { PredictionsTransformer } from 'graphql-predictions-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
-import { $TSContext, pathManager, stateManager, CloudformationProviderFacade } from '@aws-amplify/amplify-cli-core';
-import { printer } from '@aws-amplify/amplify-prompts';
-import { readTransformerConfiguration, TRANSFORM_CONFIG_FILE_NAME, ITransformer, TransformConfig } from 'graphql-transformer-core';
+import { PredictionsTransformer } from 'graphql-predictions-transformer';
+import { ITransformer, readTransformerConfiguration, TransformConfig, TRANSFORM_CONFIG_FILE_NAME } from 'graphql-transformer-core';
+import { VersionedModelTransformer } from 'graphql-versioned-transformer';
 import importFrom from 'import-from';
 import importGlobal from 'import-global';
+import path from 'path';
 
 const PROVIDER_NAME = 'awscloudformation';
 

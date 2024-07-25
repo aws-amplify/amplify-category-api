@@ -1,5 +1,5 @@
-import { S3, STS, Organizations } from 'aws-sdk';
 import { deleteS3Bucket } from 'amplify-category-api-e2e-core';
+import { Organizations, S3, STS } from 'aws-sdk';
 
 const TEST_BUCKET_REGEX = /test/;
 const BUCKET_STALE_DURATION_MS = 6 * 60 * 60 * 1000; // 6 hours in milliseconds

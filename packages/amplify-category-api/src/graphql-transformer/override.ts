@@ -1,13 +1,13 @@
-import { CfnResource } from 'aws-cdk-lib';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import _ from 'lodash';
 import { pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import { CfnResource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import * as fs from 'fs-extra';
+import _ from 'lodash';
+import * as path from 'path';
 import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
+import { AmplifyApiGraphQlResourceStackTemplate } from './cdk-compat/amplify-api-resource-stack-types';
 import { ConstructResourceMeta } from './types/types';
 import { convertToAppsyncResourceObj, getStackMeta } from './types/utils';
-import { AmplifyApiGraphQlResourceStackTemplate } from './cdk-compat/amplify-api-resource-stack-types';
 
 /**
  *

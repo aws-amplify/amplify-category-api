@@ -1,6 +1,6 @@
 import { attributeTypeFromType, overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
-import { InvalidDirectiveError, MappingTemplate, getTable } from '@aws-amplify/graphql-transformer-core';
+import { getTable, InvalidDirectiveError, MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
@@ -24,7 +24,7 @@ import {
   set,
   str,
 } from 'graphql-mapping-template';
-import { ModelResourceIDs, ResourceConstants, graphqlName, toCamelCase, toUpper } from 'graphql-transformer-common';
+import { graphqlName, ModelResourceIDs, ResourceConstants, toCamelCase, toUpper } from 'graphql-transformer-common';
 import { getSortKeyFields } from './schema';
 import { HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from './types';
 import { getConnectionAttributeName, getObjectPrimaryKey } from './utils';

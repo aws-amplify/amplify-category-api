@@ -1,4 +1,4 @@
-import { Stack, aws_iam, aws_lambda } from 'aws-cdk-lib';
+import { aws_iam, aws_lambda, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import path from 'path';
 import { Provider } from '../resources/amplify-dynamodb-table/provider';

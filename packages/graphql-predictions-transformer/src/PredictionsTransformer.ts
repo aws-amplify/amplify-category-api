@@ -1,20 +1,20 @@
 import path = require('path');
-import {
-  ObjectTypeDefinitionNode,
-  FieldDefinitionNode,
-  DirectiveNode,
-  valueFromASTUntyped,
-  ArgumentNode,
-  InputValueDefinitionNode,
-  parse,
-} from 'graphql';
-import { Transformer, TransformerContext, InvalidDirectiveError } from 'graphql-transformer-core';
 import { PredictionsDirectiveV1 } from '@aws-amplify/graphql-directives';
-import { ResolverResourceIDs, PredictionsResourceIDs } from 'graphql-transformer-common';
 import { Fn } from 'cloudform-types';
-import { getActionInputType, makeActionInputObject, getActionInputName, addInputArgument, createInputValueAction } from './definitions';
-import { ResourceFactory, ActionPolicyMap } from './resources';
+import {
+  ArgumentNode,
+  DirectiveNode,
+  FieldDefinitionNode,
+  InputValueDefinitionNode,
+  ObjectTypeDefinitionNode,
+  parse,
+  valueFromASTUntyped,
+} from 'graphql';
+import { PredictionsResourceIDs, ResolverResourceIDs } from 'graphql-transformer-common';
+import { InvalidDirectiveError, Transformer, TransformerContext } from 'graphql-transformer-core';
+import { addInputArgument, createInputValueAction, getActionInputName, getActionInputType, makeActionInputObject } from './definitions';
 import { allowedActions } from './predictions_utils';
+import { ActionPolicyMap, ResourceFactory } from './resources';
 
 const PREDICTIONS_DIRECTIVE_STACK = 'PredictionsDirectiveStack';
 

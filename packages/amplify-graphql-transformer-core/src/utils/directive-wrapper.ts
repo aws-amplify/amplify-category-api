@@ -1,6 +1,6 @@
-import { ArgumentNode, DirectiveNode, NameNode, valueFromASTUntyped, ValueNode, Location } from 'graphql';
-import _ from 'lodash';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
+import { ArgumentNode, DirectiveNode, Location, NameNode, valueFromASTUntyped, ValueNode } from 'graphql';
+import _ from 'lodash';
 
 export type GetArgumentsOptions = {
   deepMergeArguments?: boolean;

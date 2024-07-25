@@ -1,20 +1,20 @@
-import * as os from 'os';
-import * as path from 'path';
-import { spawnSync, execSync } from 'child_process';
+import { execSync, spawnSync } from 'child_process';
 import * as fs from 'fs-extra';
 import * as ini from 'ini';
+import * as os from 'os';
+import * as path from 'path';
 
-import { v4 as uuid } from 'uuid';
 import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { gt } from 'semver';
+import { v4 as uuid } from 'uuid';
 import { sleep } from '.';
 
+export * from './categories';
+export * from './cli-version-controller';
 export * from './configure';
 export * from './init';
 export * from './utils';
-export * from './categories';
 export { addFeatureFlag } from './utils/feature-flags';
-export * from './cli-version-controller';
 
 declare global {
   namespace NodeJS {

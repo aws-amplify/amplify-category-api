@@ -1,4 +1,4 @@
-import { DocumentNode, Kind, ObjectTypeDefinitionNode, ListValueNode, StringValueNode } from 'graphql';
+import { DocumentNode, Kind, ListValueNode, ObjectTypeDefinitionNode, StringValueNode } from 'graphql';
 import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
 
 /**

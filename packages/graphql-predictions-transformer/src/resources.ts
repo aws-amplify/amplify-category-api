@@ -1,26 +1,26 @@
-import { ResourceConstants, PredictionsResourceIDs } from 'graphql-transformer-common';
-import {
-  obj,
-  str,
-  print,
-  int,
-  ref,
-  iff,
-  compoundExpression,
-  ifElse,
-  raw,
-  set,
-  forEach,
-  ObjectNode,
-  CompoundExpressionNode,
-  qref,
-  toJson,
-  comment,
-  HttpMappingTemplate,
-} from 'graphql-mapping-template';
-import { IAM, Fn, AppSync, Lambda } from 'cloudform-types';
+import { AppSync, Fn, IAM, Lambda } from 'cloudform-types';
 import DataSource, { HttpConfig, LambdaConfig } from 'cloudform-types/types/appSync/dataSource';
 import { Policy } from 'cloudform-types/types/iam/group';
+import {
+  comment,
+  compoundExpression,
+  CompoundExpressionNode,
+  forEach,
+  HttpMappingTemplate,
+  ifElse,
+  iff,
+  int,
+  obj,
+  ObjectNode,
+  print,
+  qref,
+  raw,
+  ref,
+  set,
+  str,
+  toJson,
+} from 'graphql-mapping-template';
+import { PredictionsResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { iamActions } from './predictions_utils';
 
 // tslint:disable: no-magic-numbers

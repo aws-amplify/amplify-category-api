@@ -1,13 +1,14 @@
-import { MappingTemplate, getModelDataSourceNameForTypeName, getKeySchema, getTable } from '@aws-amplify/graphql-transformer-core';
+import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
+import { getKeySchema, getModelDataSourceNameForTypeName, getTable, MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { ObjectTypeDefinitionNode } from 'graphql';
 import {
-  DynamoDBMappingTemplate,
-  Expression,
-  ObjectNode,
   and,
   bool,
   compoundExpression,
+  DynamoDBMappingTemplate,
   equals,
+  Expression,
   forEach,
   ifElse,
   iff,
@@ -18,6 +19,7 @@ import {
   not,
   nul,
   obj,
+  ObjectNode,
   or,
   print,
   qref,
@@ -28,19 +30,17 @@ import {
   toJson,
 } from 'graphql-mapping-template';
 import {
-  ModelResourceIDs,
-  NONE_VALUE,
-  ResolverResourceIDs,
   applyCompositeKeyConditionExpression,
   applyKeyConditionExpression,
   attributeTypeFromScalar,
+  ModelResourceIDs,
+  NONE_VALUE,
+  ResolverResourceIDs,
   setArgs,
   toCamelCase,
 } from 'graphql-transformer-common';
-import { ObjectTypeDefinitionNode } from 'graphql';
-import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
-import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from '../types';
 import { condenseRangeKey } from '../resolvers';
+import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from '../types';
 import { RelationalResolverGenerator } from './generator';
 
 const SORT_KEY_VALUE = 'sortKeyValue';

@@ -1,33 +1,33 @@
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { AWS } from '@aws-amplify/core';
+import { API, Auth } from 'aws-amplify';
+import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import { Output } from 'aws-sdk/clients/cloudformation';
+import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { CreateBucketRequest, default as S3 } from 'aws-sdk/clients/s3';
+import { Cognito as cfnCognito, IAM as cfnIAM } from 'cloudform-types';
 import * as fs from 'fs';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-import { GraphQLTransform } from 'graphql-transformer-core';
-import { ResourceConstants } from 'graphql-transformer-common';
-import { Output } from 'aws-sdk/clients/cloudformation';
-import { default as S3, CreateBucketRequest } from 'aws-sdk/clients/s3';
-import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { AWS } from '@aws-amplify/core';
-import { Auth, API } from 'aws-amplify';
 import gql from 'graphql-tag';
-import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
-import * as Observable from 'zen-observable';
+import { ResourceConstants } from 'graphql-transformer-common';
+import { GraphQLTransform } from 'graphql-transformer-core';
+import 'isomorphic-fetch';
 import { default as moment } from 'moment';
-import { IAM as cfnIAM, Cognito as cfnCognito } from 'cloudform-types';
-import { S3Client } from '../S3Client';
-import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
+import * as Observable from 'zen-observable';
+import { CloudFormationClient } from '../CloudFormationClient';
 import {
+  addUserToGroup,
+  authenticateUser,
+  configureAmplify,
+  createGroup,
   createUserPool,
   createUserPoolClient,
-  createGroup,
-  addUserToGroup,
-  configureAmplify,
   signupUser,
-  authenticateUser,
 } from '../cognitoUtils';
-import 'isomorphic-fetch';
-import { CloudFormationClient } from '../CloudFormationClient';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { withTimeOut } from '../promiseWithTimeout';
+import { S3Client } from '../S3Client';
 
 import { resolveTestRegion } from '../testSetup';
 

@@ -1,26 +1,26 @@
 import {
-  AssetProvider,
   APIIAMResourceProvider,
+  AssetProvider,
   GraphQLAPIProvider,
   TransformHostProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import * as cdk from 'aws-cdk-lib';
+import { ArnFormat, CfnResource, Duration, Stack } from 'aws-cdk-lib';
 import {
   ApiKeyConfig,
   AuthorizationConfig,
   AuthorizationMode,
   AuthorizationType,
+  CfnApiKey,
+  CfnGraphQLApi,
+  CfnGraphQLSchema,
   GraphqlApiBase,
   LogConfig,
   OpenIdConnectConfig,
   UserPoolConfig,
   UserPoolDefaultAction,
-  CfnApiKey,
-  CfnGraphQLApi,
-  CfnGraphQLSchema,
 } from 'aws-cdk-lib/aws-appsync';
 import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import * as cdk from 'aws-cdk-lib';
-import { ArnFormat, CfnResource, Duration, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { TransformerSchema } from './cdk-compat/schema-asset';
 import { DefaultTransformHost } from './transform-host';

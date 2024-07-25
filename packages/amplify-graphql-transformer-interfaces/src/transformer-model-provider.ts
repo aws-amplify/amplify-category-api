@@ -1,6 +1,6 @@
-import { ObjectTypeDefinitionNode, DirectiveDefinitionNode, InputValueDefinitionNode } from 'graphql';
-import { TransformerResolverProvider, TransformerContextProvider, AppSyncDataSourceType, DataSourceInstance } from './transformer-context';
+import { DirectiveDefinitionNode, InputValueDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { TransformerPluginProvider } from '.';
+import { AppSyncDataSourceType, DataSourceInstance, TransformerContextProvider, TransformerResolverProvider } from './transformer-context';
 
 /**
  * QueryFieldType

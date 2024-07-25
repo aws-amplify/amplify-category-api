@@ -1,6 +1,6 @@
-import * as path from 'path';
-import { nspawn as spawn, KEY_DOWN_ARROW, isCI } from 'amplify-category-api-e2e-core';
+import { isCI, KEY_DOWN_ARROW, nspawn as spawn } from 'amplify-category-api-e2e-core';
 import * as fs from 'fs-extra';
+import * as path from 'path';
 
 const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
 const amplifyAppBinPath = path.join(__dirname, '..', '..', 'node_modules', '.bin', 'amplify-app');

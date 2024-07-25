@@ -1,16 +1,16 @@
 import {
+  DirectiveDefinitionNode,
   DirectiveNode,
-  ObjectTypeDefinitionNode,
-  InterfaceTypeDefinitionNode,
-  FieldDefinitionNode,
-  UnionTypeDefinitionNode,
   EnumTypeDefinitionNode,
-  ScalarTypeDefinitionNode,
+  EnumValueDefinitionNode,
+  FieldDefinitionNode,
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
-  EnumValueDefinitionNode,
-  DirectiveDefinitionNode,
+  InterfaceTypeDefinitionNode,
+  ObjectTypeDefinitionNode,
+  ScalarTypeDefinitionNode,
   TypeDefinitionNode,
+  UnionTypeDefinitionNode,
 } from 'graphql';
 import { TransformerContext } from './TransformerContext';
 

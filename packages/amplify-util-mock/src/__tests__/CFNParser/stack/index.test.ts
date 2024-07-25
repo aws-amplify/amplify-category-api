@@ -1,21 +1,21 @@
 import {
-  mergeParameters,
-  processConditions,
-  sortResources,
+  CFN_PSEUDO_PARAMS,
   filterResourcesBasedOnConditions,
-  processResources,
-  processOutputs,
-  processExports,
+  getDependencyResources,
+  mergeParameters,
   nestedStackHandler,
   processCloudFormationStack,
-  CFN_PSEUDO_PARAMS,
-  getDependencyResources,
+  processConditions,
+  processExports,
+  processOutputs,
+  processResources,
+  sortResources,
 } from '../../../CFNParser/stack';
 import {
-  CloudFormationResources,
   CloudFormationOutputs,
-  CloudFormationTemplate,
   CloudFormationResource,
+  CloudFormationResources,
+  CloudFormationTemplate,
   CloudFormationTemplateFetcher,
 } from '../../../CFNParser/stack/types';
 

@@ -1,8 +1,8 @@
-import AppSync from 'cloudform-types/types/appSync';
-import Template from 'cloudform-types/types/template';
 import { Fn, StringParameter } from 'cloudform-types';
-import { ResourceConstants } from 'graphql-transformer-common';
+import AppSync from 'cloudform-types/types/appSync';
 import Resource from 'cloudform-types/types/resource';
+import Template from 'cloudform-types/types/template';
+import { ResourceConstants } from 'graphql-transformer-common';
 
 const RESOLVERS_DIRECTORY_NAME = 'resolvers';
 const STACKS_DIRECTORY_NAME = 'stacks';

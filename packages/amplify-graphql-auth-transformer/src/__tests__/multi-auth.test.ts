@@ -1,7 +1,7 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { DeploymentResources, getResourceWithKeyPrefix, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AppSyncAuthConfiguration, AppSyncAuthConfigurationOIDCEntry, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
-import { DocumentNode, ObjectTypeDefinitionNode, Kind, FieldDefinitionNode, parse, InputValueDefinitionNode } from 'graphql';
+import { DeploymentResources, getResourceWithKeyPrefix, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { DocumentNode, FieldDefinitionNode, InputValueDefinitionNode, Kind, ObjectTypeDefinitionNode, parse } from 'graphql';
 import { AuthTransformer } from '../graphql-auth-transformer';
 import { expectStashValueLike } from './test-helpers';
 

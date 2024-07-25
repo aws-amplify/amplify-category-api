@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import {
   addAuthIdentityPoolAndUserPoolWithOAuth,
@@ -11,9 +10,10 @@ import {
 import * as aws from 'aws-sdk';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
+import * as path from 'path';
 import { v4 as uuid } from 'uuid';
-import { AppClientSettings, DynamoDBProjectDetails } from './types';
 import { AuthProjectDetails, createIDPAndUserPoolWithOAuthSettings, createUserPoolOnlyWithOAuthSettings, StorageProjectDetails } from '.';
+import { AppClientSettings, DynamoDBProjectDetails } from './types';
 
 export const getShortId = (): string => {
   const [shortId] = uuid().split('-');

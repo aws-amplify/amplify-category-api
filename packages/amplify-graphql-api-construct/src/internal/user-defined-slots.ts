@@ -1,4 +1,4 @@
-import { UserDefinedSlot, UserDefinedResolver } from '@aws-amplify/graphql-transformer-core';
+import { UserDefinedResolver, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 import { FunctionSlot } from '../types';
 
 /**

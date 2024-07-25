@@ -1,6 +1,3 @@
-import * as path from 'path';
-import fs from 'fs-extra';
-import rimraf from 'rimraf';
 import {
   $TSContext,
   AmplifyCategories,
@@ -9,10 +6,13 @@ import {
   pathManager,
   stateManager,
 } from '@aws-amplify/amplify-cli-core';
-import { CloudFormation, Fn } from 'cloudform-types';
-import { ResourceConstants } from 'graphql-transformer-common';
-import { pullAllBy, find } from 'lodash';
 import { printer } from '@aws-amplify/amplify-prompts';
+import { CloudFormation, Fn } from 'cloudform-types';
+import fs from 'fs-extra';
+import { ResourceConstants } from 'graphql-transformer-common';
+import { find, pullAllBy } from 'lodash';
+import * as path from 'path';
+import rimraf from 'rimraf';
 import { DeploymentResources } from './cdk-compat/deployment-resources';
 import { TransformerProjectConfig } from './cdk-compat/project-config';
 

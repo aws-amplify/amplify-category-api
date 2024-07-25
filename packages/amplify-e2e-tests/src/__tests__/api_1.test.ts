@@ -1,24 +1,24 @@
-import path from 'path';
-import { existsSync } from 'fs';
 import {
+  addApiWithoutSchema,
   amplifyPush,
   amplifyPushUpdate,
-  deleteProject,
-  initFlutterProjectWithProfile,
-  initJSProjectWithProfile,
-  addApiWithoutSchema,
-  updateApiSchema,
-  createNewProjectDir,
-  deleteProjectDir,
-  getAppSyncApi,
-  getProjectMeta,
-  initIosProjectWithProfile,
-  getDDBTable,
-  removeHeadlessApi,
-  getAwsIOSConfig,
-  getAmplifyIOSConfig,
   amplifyPushWithoutCodegen,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  getAmplifyIOSConfig,
+  getAppSyncApi,
+  getAwsIOSConfig,
+  getDDBTable,
+  getProjectMeta,
+  initFlutterProjectWithProfile,
+  initIosProjectWithProfile,
+  initJSProjectWithProfile,
+  removeHeadlessApi,
+  updateApiSchema,
 } from 'amplify-category-api-e2e-core';
+import { existsSync } from 'fs';
+import path from 'path';
 
 describe('amplify add api (GraphQL)', () => {
   let projRoot: string;

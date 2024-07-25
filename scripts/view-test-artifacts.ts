@@ -6,14 +6,14 @@
  * that is printed when the script begins.
  */
 
-import * as process from 'process';
-import * as path from 'path';
-import * as os from 'os';
 import * as fs from 'fs-extra';
+import * as os from 'os';
+import * as path from 'path';
+import * as process from 'process';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { CodeBuild, S3, SharedIniFileCredentials } from 'aws-sdk';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { SingleBar, Presets } from 'cli-progress';
+import { Presets, SingleBar } from 'cli-progress';
 import execa from 'execa';
 
 const E2E_PROFILE_NAME = 'AmplifyAPIE2EProd';

@@ -1,11 +1,11 @@
 /**
  * ProjectOptions Type Definition
  */
-import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
-import { ResolverConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
-import { DiffRule, ProjectRule } from 'graphql-transformer-core';
 import { TransformerFactoryArgs } from '@aws-amplify/graphql-transformer';
+import { ResolverConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
+import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
+import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import { DiffRule, ProjectRule } from 'graphql-transformer-core';
 import { Template } from './cdk-compat/deployment-resources';
 import { TransformerProjectConfig } from './cdk-compat/project-config';
 import { OverrideConfig } from './cdk-compat/transform-manager';

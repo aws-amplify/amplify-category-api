@@ -1,10 +1,10 @@
-import { Fn, CloudFormation, StringParameter } from 'cloudform-types';
+import { CloudFormation, Fn, StringParameter } from 'cloudform-types';
 import Output from 'cloudform-types/types/output';
-import { Template, NestedStacks } from '../DeploymentResources';
-import { getTemplateReferences } from './getTemplateReferences';
-import getIn from './getIn';
-import setIn from './setIn';
+import { NestedStacks, Template } from '../DeploymentResources';
 import blankTemplate from './blankTemplate';
+import getIn from './getIn';
+import { getTemplateReferences } from './getTemplateReferences';
+import setIn from './setIn';
 
 /**
  * Stack resources

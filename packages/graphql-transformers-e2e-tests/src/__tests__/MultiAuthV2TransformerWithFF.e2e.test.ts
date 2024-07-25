@@ -1,32 +1,32 @@
-import { Auth } from 'aws-amplify';
-import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { HasOneTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
+import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { Output } from 'aws-sdk/clients/cloudformation';
-import { CognitoIdentityServiceProvider as CognitoClient, S3, CognitoIdentity, IAM } from 'aws-sdk';
-import moment from 'moment';
+import { Auth } from 'aws-amplify';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { ResourceConstants } from 'graphql-transformer-common';
+import { CognitoIdentity, CognitoIdentityServiceProvider as CognitoClient, S3 } from 'aws-sdk';
+import { Output } from 'aws-sdk/clients/cloudformation';
 import gql from 'graphql-tag';
-import AWS = require('aws-sdk');
-import { IAMHelper } from '../IAMHelper';
+import { ResourceConstants } from 'graphql-transformer-common';
+import 'isomorphic-fetch';
+import moment from 'moment';
+import { CloudFormationClient } from '../CloudFormationClient';
 import {
-  createUserPool,
-  createIdentityPool,
-  createUserPoolClient,
-  configureAmplify,
-  authenticateUser,
-  signupUser,
-  createGroup,
   addUserToGroup,
+  authenticateUser,
+  configureAmplify,
+  createGroup,
+  createIdentityPool,
+  createUserPool,
+  createUserPoolClient,
   setIdentityPoolRoles,
+  signupUser,
 } from '../cognitoUtils';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
+import { IAMHelper } from '../IAMHelper';
 import { S3Client } from '../S3Client';
-import { CloudFormationClient } from '../CloudFormationClient';
-import 'isomorphic-fetch';
+import AWS = require('aws-sdk');
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');

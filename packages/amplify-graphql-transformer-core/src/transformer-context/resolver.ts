@@ -9,11 +9,11 @@ import {
   TransformerResolverProvider,
   TransformerResolversManagerProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
 import { isResolvableObject, Lazy, Stack } from 'aws-cdk-lib';
+import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
+import { Construct } from 'constructs';
 import { toPascalCase } from 'graphql-transformer-common';
 import { dedent } from 'ts-dedent';
-import { Construct } from 'constructs';
 import { MappingTemplate, S3MappingTemplate } from '../cdk-compat';
 import { InvalidDirectiveError } from '../errors';
 // eslint-disable-next-line import/no-cycle

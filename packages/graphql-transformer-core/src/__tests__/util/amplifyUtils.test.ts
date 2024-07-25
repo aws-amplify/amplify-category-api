@@ -1,5 +1,5 @@
-import { getS3KeyNamesFromDirectory, getSanityCheckRules, SanityCheckRules } from '../../util/amplifyUtils';
 import mock from 'mock-fs';
+import { getS3KeyNamesFromDirectory, getSanityCheckRules, SanityCheckRules } from '../../util/amplifyUtils';
 
 const buildMockedFeatureFlags = (flagValue: boolean) => {
   return {

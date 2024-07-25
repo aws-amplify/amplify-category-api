@@ -1,4 +1,4 @@
-import { GraphQLAPIProvider, TransformerResourceHelperProvider, SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
+import { GraphQLAPIProvider, SynthParameters, TransformerResourceHelperProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerResourceHelper } from '../../transformer-context/resource-helper';
 
 const testEnv = 'testenv';

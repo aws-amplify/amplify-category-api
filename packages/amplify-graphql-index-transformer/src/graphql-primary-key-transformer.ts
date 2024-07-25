@@ -1,10 +1,11 @@
+import { PrimaryKeyDirective } from '@aws-amplify/graphql-directives';
 import {
   DirectiveWrapper,
   generateGetArgumentsInput,
-  InvalidDirectiveError,
-  TransformerPluginBase,
-  isSqlDbType,
   getModelDataSourceStrategy,
+  InvalidDirectiveError,
+  isSqlDbType,
+  TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
@@ -12,7 +13,6 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { PrimaryKeyDirective } from '@aws-amplify/graphql-directives';
 import {
   DirectiveNode,
   EnumTypeDefinitionNode,
@@ -25,16 +25,16 @@ import { isListType, isNonNullType, isScalarOrEnum, makeInputValueDefinition, ma
 import { constructSyncVTL, getVTLGenerator } from './resolvers/resolvers';
 import {
   addKeyConditionInputs,
+  createHashField,
+  ensureModelSortDirectionEnum,
   removeAutoCreatedPrimaryKey,
+  tryAndCreateSortField,
   updateGetField,
   updateInputObjects,
   updateMutationConditionInput,
-  createHashField,
-  ensureModelSortDirectionEnum,
-  tryAndCreateSortField,
 } from './schema';
 import { PrimaryKeyDirectiveConfiguration } from './types';
-import { validateNotSelfReferencing, validateNotOwnerAuth, lookupResolverName } from './utils';
+import { lookupResolverName, validateNotOwnerAuth, validateNotSelfReferencing } from './utils';
 
 export class PrimaryKeyTransformer extends TransformerPluginBase {
   private directiveList: PrimaryKeyDirectiveConfiguration[] = [];

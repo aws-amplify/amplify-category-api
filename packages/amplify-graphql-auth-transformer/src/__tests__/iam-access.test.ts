@@ -1,10 +1,10 @@
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { AuthTransformer } from '../graphql-auth-transformer';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { BelongsToTransformer } from '@aws-amplify/graphql-relational-transformer/src';
+import { constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
+import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { AuthTransformer } from '../graphql-auth-transformer';
 
 const IAM_ACCESS_CHECK_DDB =
   '#if( $util.authType() == "IAM Authorization" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )';

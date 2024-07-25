@@ -1,16 +1,16 @@
-import { ResourceConstants } from 'graphql-transformer-common';
-import { GraphQLTransform, ConflictHandlerType } from 'graphql-transformer-core';
-import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-import { KeyTransformer } from 'graphql-key-transformer';
-import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
-import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import { default as moment } from 'moment';
 import { default as S3 } from 'aws-sdk/clients/s3';
+import { ModelAuthTransformer } from 'graphql-auth-transformer';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
+import { KeyTransformer } from 'graphql-key-transformer';
+import { ResourceConstants } from 'graphql-transformer-common';
+import { ConflictHandlerType, GraphQLTransform } from 'graphql-transformer-core';
+import { default as moment } from 'moment';
 import { CloudFormationClient } from '../CloudFormationClient';
-import { S3Client } from '../S3Client';
-import { GraphQLClient } from '../GraphQLClient';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
+import { GraphQLClient } from '../GraphQLClient';
+import { S3Client } from '../S3Client';
 import addStringSets from '../stringSetMutations';
 import { resolveTestRegion } from '../testSetup';
 

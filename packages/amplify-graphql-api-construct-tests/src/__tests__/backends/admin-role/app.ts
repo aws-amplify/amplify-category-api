@@ -1,14 +1,14 @@
 #!/usr/bin/env node
-import 'source-map-support/register';
-import { App, Stack, Duration, RemovalPolicy, CfnOutput } from 'aws-cdk-lib';
-import { Role, PolicyDocument, PolicyStatement, ServicePrincipal, Effect } from 'aws-cdk-lib/aws-iam';
-import { UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
-import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { IdentityPool, UserPoolAuthenticationProvider } from '@aws-cdk/aws-cognito-identitypool-alpha';
+import { App, CfnOutput, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
+import { Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import 'source-map-support/register';
 // @ts-ignore
 import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';
-import * as path from 'path';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import * as path from 'path';
 
 const packageJson = require('../package.json');
 

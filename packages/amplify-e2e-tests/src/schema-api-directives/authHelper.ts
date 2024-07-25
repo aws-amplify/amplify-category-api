@@ -1,9 +1,9 @@
-import path from 'path';
-import { CognitoIdentityServiceProvider } from 'aws-sdk';
-import { getProjectMeta, getBackendAmplifyMeta } from 'amplify-category-api-e2e-core';
+import { getBackendAmplifyMeta, getProjectMeta } from 'amplify-category-api-e2e-core';
 import Amplify, { Auth } from 'aws-amplify';
-import fs from 'fs-extra';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import { CognitoIdentityServiceProvider } from 'aws-sdk';
+import fs from 'fs-extra';
+import path from 'path';
 
 const tempPassword = 'tempPassword';
 

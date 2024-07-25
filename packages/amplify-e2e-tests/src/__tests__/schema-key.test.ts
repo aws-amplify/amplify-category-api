@@ -1,9 +1,9 @@
 import {
-  initJSProjectWithProfile,
-  deleteProject,
   createNewProjectDir,
-  deleteProjectDir,
   createRandomName,
+  deleteProject,
+  deleteProjectDir,
+  initJSProjectWithProfile,
 } from 'amplify-category-api-e2e-core';
 import { testSchema } from '../schema-api-directives';
 

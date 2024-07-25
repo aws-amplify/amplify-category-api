@@ -1,4 +1,4 @@
-import { FeatureFlagProvider, NoopFeatureFlagProvider } from '../FeatureFlags';
+import { NoopFeatureFlagProvider } from '../FeatureFlags';
 
 describe('NoopFeatureFlagProvider', () => {
   const ff = new NoopFeatureFlagProvider();

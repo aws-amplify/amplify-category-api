@@ -1,8 +1,8 @@
 import { GraphQLAPIProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { BaseDataSource } from 'aws-cdk-lib/aws-appsync';
 import { IRole } from 'aws-cdk-lib/aws-iam';
-import { ResourceConstants } from 'graphql-transformer-common';
 import { Construct } from 'constructs';
+import { ResourceConstants } from 'graphql-transformer-common';
 
 export const createSearchableDataSource = (
   scope: Construct,

@@ -1,6 +1,6 @@
 import * as fs from 'fs';
+import knex from 'knex';
 import * as path from 'path';
-import knex, { Knex } from 'knex';
 
 export const establishDBConnection = (config: any): any => {
   const databaseConfig = {

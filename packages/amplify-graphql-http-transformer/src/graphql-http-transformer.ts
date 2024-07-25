@@ -1,3 +1,4 @@
+import { HttpDirective } from '@aws-amplify/graphql-directives';
 import {
   DirectiveWrapper,
   generateGetArgumentsInput,
@@ -6,9 +7,8 @@ import {
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { HttpDirective } from '@aws-amplify/graphql-directives';
-import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import * as cdk from 'aws-cdk-lib';
+import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import {
   DirectiveNode,
   FieldDefinitionNode,
@@ -18,16 +18,6 @@ import {
   Kind,
   ObjectTypeDefinitionNode,
 } from 'graphql';
-import {
-  HttpResourceIDs,
-  isScalar,
-  makeInputValueDefinition,
-  makeNamedType,
-  makeNonNullType,
-  ModelResourceIDs,
-  ResourceConstants,
-  unwrapNonNull,
-} from 'graphql-transformer-common';
 import {
   and,
   comment,
@@ -45,6 +35,15 @@ import {
   set,
   str,
 } from 'graphql-mapping-template';
+import {
+  HttpResourceIDs,
+  isScalar,
+  makeInputValueDefinition,
+  makeNamedType,
+  makeNonNullType,
+  ModelResourceIDs,
+  unwrapNonNull,
+} from 'graphql-transformer-common';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 

@@ -1,12 +1,12 @@
+import { FunctionDirective } from '@aws-amplify/graphql-directives';
 import { DirectiveWrapper, generateGetArgumentsInput, MappingTemplate, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { FunctionDirective } from '@aws-amplify/graphql-directives';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import * as cdk from 'aws-cdk-lib';
-import { obj, str, ref, printBlock, compoundExpression, qref, raw, iff, Expression } from 'graphql-mapping-template';
+import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { DirectiveNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
+import { compoundExpression, Expression, iff, obj, printBlock, qref, raw, ref, str } from 'graphql-mapping-template';
 import { FunctionResourceIDs, ResolverResourceIDs, ResourceConstants } from 'graphql-transformer-common';
-import { DirectiveNode, ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
 
 type FunctionDirectiveConfiguration = {
   name: string;

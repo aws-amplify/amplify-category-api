@@ -1,8 +1,8 @@
+import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { constructDataSourceStrategies, getResourceNamesForStrategy, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { parse } from 'graphql';
 import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { parse } from 'graphql';
 import { DefaultValueTransformer } from '..';
 
 describe('DefaultValueModelTransformer:', () => {

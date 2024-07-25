@@ -1,17 +1,17 @@
 import {
-  initJSProjectWithProfile,
-  deleteProject,
-  amplifyPush,
-  validateNodeModulesDirRemoval,
-  updateFunction,
+  addAuthViaAPIWithTrigger,
   addAuthwithUserPoolGroupsViaAPIWithTrigger,
+  amplifyPush,
   createNewProjectDir,
+  deleteProject,
   deleteProjectDir,
+  getLambdaFunction,
   getProjectMeta,
   getUserPool,
   getUserPoolClients,
-  getLambdaFunction,
-  addAuthViaAPIWithTrigger,
+  initJSProjectWithProfile,
+  updateFunction,
+  validateNodeModulesDirRemoval,
 } from 'amplify-category-api-e2e-core';
 
 const defaultsSettings = {

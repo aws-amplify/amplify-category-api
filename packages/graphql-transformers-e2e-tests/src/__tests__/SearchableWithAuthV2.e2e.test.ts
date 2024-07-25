@@ -1,18 +1,15 @@
-import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { ResourceConstants } from 'graphql-transformer-common';
-import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { Output } from 'aws-sdk/clients/cloudformation';
-import moment from 'moment';
-import { S3, CognitoIdentityServiceProvider as CognitoClient, CognitoIdentity } from 'aws-sdk';
 import { AWS } from '@aws-amplify/core';
+import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { Auth } from 'aws-amplify';
+import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import { CognitoIdentity, CognitoIdentityServiceProvider as CognitoClient, S3 } from 'aws-sdk';
+import { Output } from 'aws-sdk/clients/cloudformation';
 import gql from 'graphql-tag';
-import { IAMHelper } from '../IAMHelper';
-import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
-import { S3Client } from '../S3Client';
+import { ResourceConstants } from 'graphql-transformer-common';
+import moment from 'moment';
 import { CloudFormationClient } from '../CloudFormationClient';
 import {
   addUserToGroup,
@@ -22,9 +19,12 @@ import {
   createIdentityPool,
   createUserPool,
   createUserPoolClient,
-  signupUser,
   setIdentityPoolRoles,
+  signupUser,
 } from '../cognitoUtils';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
+import { IAMHelper } from '../IAMHelper';
+import { S3Client } from '../S3Client';
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 

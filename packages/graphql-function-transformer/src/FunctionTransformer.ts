@@ -1,9 +1,9 @@
-import { Transformer, TransformerContext, getDirectiveArguments, TransformerContractError } from 'graphql-transformer-core';
 import { FunctionDirectiveV1 } from '@aws-amplify/graphql-directives';
-import { obj, str, ref, printBlock, compoundExpression, qref, raw, iff } from 'graphql-mapping-template';
-import { ResolverResourceIDs, FunctionResourceIDs, ResourceConstants } from 'graphql-transformer-common';
-import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode, parse } from 'graphql';
-import { AppSync, IAM, Fn } from 'cloudform-types';
+import { AppSync, Fn, IAM } from 'cloudform-types';
+import { DirectiveNode, FieldDefinitionNode, ObjectTypeDefinitionNode, parse } from 'graphql';
+import { compoundExpression, iff, obj, printBlock, qref, raw, ref, str } from 'graphql-mapping-template';
+import { FunctionResourceIDs, ResolverResourceIDs, ResourceConstants } from 'graphql-transformer-common';
+import { getDirectiveArguments, Transformer, TransformerContext, TransformerContractError } from 'graphql-transformer-core';
 import { lambdaArnResource } from './lambdaArns';
 
 const FUNCTION_DIRECTIVE_STACK = 'FunctionDirectiveStack';

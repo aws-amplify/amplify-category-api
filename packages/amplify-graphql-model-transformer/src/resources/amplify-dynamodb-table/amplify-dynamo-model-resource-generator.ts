@@ -1,16 +1,16 @@
-import * as cdk from 'aws-cdk-lib';
-import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ModelResourceIDs, ResourceConstants } from 'graphql-transformer-common';
-import { ObjectTypeDefinitionNode } from 'graphql';
 import { setResourceName } from '@aws-amplify/graphql-transformer-core';
+import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import * as cdk from 'aws-cdk-lib';
+import { aws_iam, aws_lambda, Duration } from 'aws-cdk-lib';
 import { AttributeType, StreamViewType, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
-import { Duration, aws_iam, aws_lambda } from 'aws-cdk-lib';
-import { DynamoModelResourceGenerator } from '../dynamo-model-resource-generator';
+import { ObjectTypeDefinitionNode } from 'graphql';
+import { ModelResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import * as path from 'path';
+import { DynamoModelResourceGenerator } from '../dynamo-model-resource-generator';
 import { AmplifyDynamoDBTable } from './amplify-dynamodb-table-construct';
-import { WaiterStateMachine } from './waiter-state-machine';
 import { Provider } from './provider';
+import { WaiterStateMachine } from './waiter-state-machine';
 
 /**
  * AmplifyDynamoModelResourceGenerator is a subclass of DynamoModelResourceGenerator,

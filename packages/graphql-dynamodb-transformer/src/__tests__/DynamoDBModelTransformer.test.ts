@@ -1,18 +1,18 @@
 import {
+  DefinitionNode,
+  DocumentNode,
+  FieldDefinitionNode,
+  InputObjectTypeDefinitionNode,
+  InputValueDefinitionNode,
+  Kind,
+  ListValueNode,
+  NamedTypeNode,
   ObjectTypeDefinitionNode,
   parse,
-  FieldDefinitionNode,
-  DocumentNode,
-  DefinitionNode,
-  Kind,
-  InputObjectTypeDefinitionNode,
-  ListValueNode,
-  InputValueDefinitionNode,
   TypeNode,
-  NamedTypeNode,
 } from 'graphql';
-import { FeatureFlagProvider, GraphQLTransform, TRANSFORM_BASE_VERSION, TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import { getBaseType } from 'graphql-transformer-common';
+import { FeatureFlagProvider, GraphQLTransform, TRANSFORM_BASE_VERSION, TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from '../DynamoDBModelTransformer';
 
 const featureFlags = {

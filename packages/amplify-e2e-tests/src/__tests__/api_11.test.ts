@@ -2,6 +2,8 @@
 import {
   addApiWithBlankSchemaAndConflictDetection,
   amplifyPush,
+  amplifyPushUpdate,
+  apiDisableDataStore,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -10,8 +12,6 @@ import {
   getTransformConfig,
   initJSProjectWithProfile,
   updateApiSchema,
-  amplifyPushUpdate,
-  apiDisableDataStore,
 } from 'amplify-category-api-e2e-core';
 import { existsSync } from 'fs';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';

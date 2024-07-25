@@ -1,6 +1,6 @@
-import * as path from 'path';
 import * as fs from 'fs-extra';
 import fetch, { RequestInit } from 'node-fetch';
+import * as path from 'path';
 
 /**
  * Some constants and utils shared by github-prerelease and github-release

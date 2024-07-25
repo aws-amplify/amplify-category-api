@@ -1,10 +1,10 @@
+import { AuthProvider, AuthStrategy } from '../../utils/definitions';
 import {
-  RoleDefinition,
-  isIdenticalAuthRole,
-  isFieldRoleHavingAccessToBothSide,
   isDynamicAuthOrCustomAuth,
+  isFieldRoleHavingAccessToBothSide,
+  isIdenticalAuthRole,
+  RoleDefinition,
 } from '../../utils/role-definition';
-import { AuthStrategy, AuthProvider } from '../../utils/definitions';
 
 describe('RoleDefinition', () => {
   const authStrategies: AuthStrategy[] = ['owner', 'groups', 'public', 'private', 'custom'];

@@ -1,5 +1,5 @@
-import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as path from 'path';
 
 export function getFunctionDetails(fnName: string) {
   const lambdaFolder = path.join(__dirname, 'lambda_functions');

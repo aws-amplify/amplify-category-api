@@ -1,7 +1,7 @@
 import { EOL } from 'os';
+import { DistTagMover } from './dist_tag_mover';
 import { GitClient } from './git_client';
 import { NpmClient } from './npm_client';
-import { DistTagMover } from './dist_tag_mover';
 
 /**
  * Orchestrates the process of marking the packages in a release as deprecated and moving related npm dist-tags back to the previous package versions

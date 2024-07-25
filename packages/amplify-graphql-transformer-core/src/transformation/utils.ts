@@ -1,4 +1,10 @@
 import {
+  ModelDataSourceStrategy,
+  SqlDirectiveDataSourceStrategy,
+  TransformerPluginProvider,
+  TransformerPluginType,
+} from '@aws-amplify/graphql-transformer-interfaces';
+import {
   DefinitionNode,
   DirectiveDefinitionNode,
   DirectiveNode,
@@ -13,13 +19,6 @@ import {
   TypeDefinitionNode,
   TypeSystemDefinitionNode,
 } from 'graphql';
-import {
-  ModelDataSourceStrategy,
-  SqlDirectiveDataSourceStrategy,
-  SQLLambdaModelDataSourceStrategy,
-  TransformerPluginProvider,
-  TransformerPluginType,
-} from '@aws-amplify/graphql-transformer-interfaces';
 import _ from 'lodash';
 import { fieldsWithSqlDirective, isMutationNode, isQueryNode, isSqlStrategy } from '../utils';
 

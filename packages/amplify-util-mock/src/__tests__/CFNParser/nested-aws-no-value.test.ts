@@ -1,6 +1,6 @@
+import { parseValue } from '../../CFNParser/field-parser';
 import { CloudFormationTemplate } from '../../CFNParser/stack/types';
 import { CloudFormationParseContext } from '../../CFNParser/types';
-import { parseValue } from '../../CFNParser/field-parser';
 
 describe('cloudformation templates', () => {
   const nestedNoValue: CloudFormationTemplate = {

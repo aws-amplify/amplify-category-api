@@ -1,7 +1,7 @@
-import { GraphQLTransform } from 'graphql-transformer-core';
+import { DocumentNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode, parse } from 'graphql';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { FunctionTransformer } from 'graphql-function-transformer';
-import { ObjectTypeDefinitionNode, DocumentNode, Kind, parse, FieldDefinitionNode } from 'graphql';
+import { GraphQLTransform } from 'graphql-transformer-core';
 import { ModelAuthTransformer } from '../ModelAuthTransformer';
 
 const featureFlags = {

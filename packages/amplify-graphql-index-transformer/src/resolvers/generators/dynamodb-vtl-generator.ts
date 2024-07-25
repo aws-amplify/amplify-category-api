@@ -20,8 +20,8 @@ import {
   str,
 } from 'graphql-mapping-template';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { replaceDdbPrimaryKey, updateResolvers, setQuerySnippet } from '../resolvers';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../../types';
+import { replaceDdbPrimaryKey, setQuerySnippet, updateResolvers } from '../resolvers';
 import { IndexVTLGenerator } from './vtl-generator';
 
 export class DynamoDBIndexVTLGenerator implements IndexVTLGenerator {

@@ -5,8 +5,8 @@
 /* eslint-disable prefer-const */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable func-style */
-import * as https from 'https';
 import { SFN, StartExecutionInput, StartExecutionOutput } from '@aws-sdk/client-sfn';
+import * as https from 'https';
 
 const FRAMEWORK_HANDLER_TIMEOUT = 900000; // 15 minutes
 

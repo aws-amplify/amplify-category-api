@@ -1,21 +1,21 @@
-import * as path from 'path';
 import {
-  createNewProjectDir,
-  initJSProjectWithProfile,
-  deleteProject,
-  deleteProjectDir,
-  amplifyPushIterativeRollback,
-  getDDBTable,
-  getBackendAmplifyMeta,
   addApiWithoutSchema,
   addFeatureFlag,
   amplifyPush,
-  updateApiSchema,
-  getTableResourceId,
-  getNestedStackID,
+  amplifyPushIterativeRollback,
   cancelIterativeAmplifyPush,
+  createNewProjectDir,
   createRandomName,
+  deleteProject,
+  deleteProjectDir,
+  getBackendAmplifyMeta,
+  getDDBTable,
+  getNestedStackID,
+  getTableResourceId,
+  initJSProjectWithProfile,
+  updateApiSchema,
 } from 'amplify-category-api-e2e-core';
+import * as path from 'path';
 
 describe('Iterative Rollback - removing two @keys', () => {
   let projectDir: string;

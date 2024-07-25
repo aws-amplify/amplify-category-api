@@ -2,18 +2,18 @@ import { cdkDeploy } from '../../../commands';
 import { addCognitoUserToGroup, createCognitoUser, signInCognitoUser } from '../../../utils';
 import { ONE_MINUTE } from '../../../utils/duration-constants';
 import {
-  doCreateRelatedOne,
-  doCreateRelatedMany,
   doCreatePrimary,
-  doUpdatePrimary,
+  doCreateRelatedMany,
+  doCreateRelatedOne,
   doGetPrimary,
-  doListPrimaries,
-  doUpdateRelatedOne,
-  doGetRelatedOne,
-  doListRelatedOnes,
-  doUpdateRelatedMany,
   doGetRelatedMany,
+  doGetRelatedOne,
+  doListPrimaries,
   doListRelatedManies,
+  doListRelatedOnes,
+  doUpdatePrimary,
+  doUpdateRelatedMany,
+  doUpdateRelatedOne,
 } from '../../graphql-schemas/reference-style-static-group-auth/operation-implementations';
 
 // #region Test stack setup

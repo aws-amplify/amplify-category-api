@@ -1,8 +1,8 @@
 import { EOL } from 'os';
 import { v4 as uuid } from 'uuid';
-import { nspawn as spawn, getCLIPath, singleSelect, addCITags } from '..';
-import { KEY_DOWN_ARROW } from '../utils';
+import { addCITags, getCLIPath, nspawn as spawn, singleSelect } from '..';
 import { amplifyRegions } from '../configure';
+import { KEY_DOWN_ARROW } from '../utils';
 
 const defaultSettings = {
   name: EOL,

@@ -1,17 +1,17 @@
-import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
+import { DefaultValueTransformer } from '@aws-amplify/graphql-default-value-transformer';
 import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
 import { HttpTransformer } from '@aws-amplify/graphql-http-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import {
   BelongsToTransformer,
   HasManyTransformer,
   HasOneTransformer,
   ManyToManyTransformer,
 } from '@aws-amplify/graphql-relational-transformer';
-import { DefaultValueTransformer } from '@aws-amplify/graphql-default-value-transformer';
-import { TransformerPluginProvider, AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import { AppSyncAuthConfiguration, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { V2TransformerTestConfig } from './test-case-types';
 
 export const v2Transform = (schema: string, config: Partial<V2TransformerTestConfig> = {}): DeploymentResources =>

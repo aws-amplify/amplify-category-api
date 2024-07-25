@@ -1,10 +1,10 @@
-import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-import { ModelConnectionTransformer } from 'graphql-connection-transformer';
-import { VersionedModelTransformer } from 'graphql-versioned-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
+import { ModelConnectionTransformer } from 'graphql-connection-transformer';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { HttpTransformer } from 'graphql-http-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
 import { GraphQLTransform } from 'graphql-transformer-core';
+import { VersionedModelTransformer } from 'graphql-versioned-transformer';
 import { featureFlagProviderStub } from './feature-flag-stub';
 import { V1TransformerTestConfig } from './test-case-types';
 

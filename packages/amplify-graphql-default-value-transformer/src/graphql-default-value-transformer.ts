@@ -1,3 +1,4 @@
+import { DefaultDirective } from '@aws-amplify/graphql-directives';
 import {
   DirectiveWrapper,
   generateGetArgumentsInput,
@@ -13,7 +14,6 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { DefaultDirective } from '@aws-amplify/graphql-directives';
 import {
   DirectiveNode,
   EnumTypeDefinitionNode,

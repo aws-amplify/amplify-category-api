@@ -1,10 +1,10 @@
-import * as path from 'path';
 import { Template } from 'cloudform-types';
+import { InputObjectTypeDefinitionNode, Kind, ObjectTypeDefinitionNode, parse, print, StringValueNode } from 'graphql';
 import _ from 'lodash';
-import { parse, Kind, ObjectTypeDefinitionNode, print, InputObjectTypeDefinitionNode, StringValueNode } from 'graphql';
+import * as path from 'path';
 import { ApiCategorySchemaNotFoundError } from '../errors';
-import { throwIfNotJSONExt } from './fileUtils';
 import { ProjectOptions } from './amplifyUtils';
+import { throwIfNotJSONExt } from './fileUtils';
 
 const fs = require('fs-extra');
 

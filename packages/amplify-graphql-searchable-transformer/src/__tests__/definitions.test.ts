@@ -1,4 +1,4 @@
-import { makeSearchableScalarInputObject, makeSearchableXFilterInputObject } from '../definitions';
+import { makeSearchableScalarInputObject } from '../definitions';
 
 describe('makeSearchableScalarInputObject', () => {
   ['ID', 'String', 'Boolean', 'Int', 'Float'].forEach((type: string) => {

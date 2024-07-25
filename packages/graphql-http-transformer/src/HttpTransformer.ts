@@ -1,18 +1,17 @@
-import { Transformer, TransformerContext, TransformerContractError } from 'graphql-transformer-core';
 import { HttpDirectiveV1 } from '@aws-amplify/graphql-directives';
 import {
   DirectiveNode,
-  ObjectTypeDefinitionNode,
-  Kind,
   FieldDefinitionNode,
-  InterfaceTypeDefinitionNode,
   InputValueDefinitionNode,
-  print,
+  InterfaceTypeDefinitionNode,
+  Kind,
+  ObjectTypeDefinitionNode,
   parse,
 } from 'graphql';
-import { getDirectiveArgument, isScalar, ResolverResourceIDs, HttpResourceIDs } from 'graphql-transformer-common';
+import { getDirectiveArgument, HttpResourceIDs, isScalar, ResolverResourceIDs } from 'graphql-transformer-common';
+import { Transformer, TransformerContext, TransformerContractError } from 'graphql-transformer-core';
+import { makeHttpArgument, makeHttpBodyInputObject, makeHttpQueryInputObject, makeUrlParamInputObject } from './definitions';
 import { ResourceFactory } from './resources';
-import { makeUrlParamInputObject, makeHttpArgument, makeHttpQueryInputObject, makeHttpBodyInputObject } from './definitions';
 
 const HTTP_STACK_NAME = 'HttpStack';
 

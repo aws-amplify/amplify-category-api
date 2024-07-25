@@ -1,8 +1,8 @@
-import * as path from 'path';
-import { AmplifyStorageSimulator } from 'amplify-storage-simulator';
-import * as fs from 'fs-extra';
 import { getInvoker } from '@aws-amplify/amplify-category-function';
 import { $TSContext, JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { AmplifyStorageSimulator } from 'amplify-storage-simulator';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 import { getAmplifyMeta, getMockDataDirectory } from '../utils';
 import { ConfigOverrideManager } from '../utils/config-override';
 import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';

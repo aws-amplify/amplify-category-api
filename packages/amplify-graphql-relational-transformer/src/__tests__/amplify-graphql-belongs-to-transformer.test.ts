@@ -1,8 +1,8 @@
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform, constructDataSourceStrategies, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { DocumentNode, Kind, parse } from 'graphql';
+import { constructDataSourceStrategies, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { DocumentNode, Kind, parse } from 'graphql';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
 
 test('fails if @belongsTo was used on an object that is not a model type', () => {

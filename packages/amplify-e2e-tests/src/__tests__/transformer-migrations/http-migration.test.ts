@@ -1,15 +1,15 @@
 import {
-  initJSProjectWithProfile,
-  deleteProject,
+  addApiWithoutSchema,
+  addAuthWithDefault,
+  addFeatureFlag,
   amplifyPush,
   amplifyPushForce,
-  addFeatureFlag,
-  createRandomName,
-  addAuthWithDefault,
-  addApiWithoutSchema,
-  updateApiSchema,
   createNewProjectDir,
+  createRandomName,
+  deleteProject,
   deleteProjectDir,
+  initJSProjectWithProfile,
+  updateApiSchema,
 } from 'amplify-category-api-e2e-core';
 
 describe('transformer @http migration test', () => {

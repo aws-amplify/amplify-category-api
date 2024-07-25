@@ -1,7 +1,7 @@
-import * as path from 'path';
+import { getScriptRunnerPath, nspawn as spawn, sleep } from 'amplify-category-api-e2e-core';
 import * as fs from 'fs';
 import { copySync, moveSync, readFileSync, writeFileSync } from 'fs-extra';
-import { getScriptRunnerPath, sleep, nspawn as spawn } from 'amplify-category-api-e2e-core';
+import * as path from 'path';
 
 /**
  * Retrieve the path to the `npx` executable for interacting with the aws-cdk cli.

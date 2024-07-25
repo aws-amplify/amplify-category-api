@@ -1,29 +1,29 @@
-import Output from 'cloudform-types/types/output';
+import { Elasticsearch, Fn, Lambda, NumberParameter, Refs, StringParameter } from 'cloudform-types';
 import AppSync from 'cloudform-types/types/appSync';
 import IAM from 'cloudform-types/types/iam';
+import Output from 'cloudform-types/types/output';
 import Template from 'cloudform-types/types/template';
-import { Fn, StringParameter, NumberParameter, Lambda, Elasticsearch, Refs } from 'cloudform-types';
 import {
-  ElasticsearchMappingTemplate,
-  print,
-  str,
-  ref,
-  obj,
-  set,
-  iff,
-  list,
-  raw,
-  forEach,
-  compoundExpression,
-  qref,
-  toJson,
-  ifElse,
-  int,
-  Expression,
   bool,
+  compoundExpression,
+  ElasticsearchMappingTemplate,
+  Expression,
+  forEach,
+  ifElse,
+  iff,
+  int,
+  list,
   methodCall,
+  obj,
+  print,
+  qref,
+  raw,
+  ref,
+  set,
+  str,
+  toJson,
 } from 'graphql-mapping-template';
-import { toUpper, plurality, graphqlName, ResourceConstants, ModelResourceIDs } from 'graphql-transformer-common';
+import { graphqlName, ModelResourceIDs, plurality, ResourceConstants, toUpper } from 'graphql-transformer-common';
 import { MappingParameters } from 'graphql-transformer-core';
 
 /**

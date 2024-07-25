@@ -1,5 +1,5 @@
-import { graphqlName, toUpper, toCamelCase } from './util';
 import { DEFAULT_SCALARS } from './definition';
+import { graphqlName, toCamelCase, toUpper } from './util';
 
 export class ModelResourceIDs {
   static #modelNameMap: Map<string, string>;

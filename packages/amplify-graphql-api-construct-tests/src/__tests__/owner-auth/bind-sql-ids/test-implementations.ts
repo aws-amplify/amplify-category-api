@@ -1,14 +1,14 @@
 import {
-  doCreateRelatedOne,
-  doCreateRelatedMany,
   doCreatePrimary,
+  doCreateRelatedMany,
+  doCreateRelatedOne,
   doGetPrimary,
-  doUpdateRelatedOne,
+  doGetRelatedMany,
   doGetRelatedOne,
+  doListRelatedManies,
   doListRelatedOnes,
   doUpdateRelatedMany,
-  doGetRelatedMany,
-  doListRelatedManies,
+  doUpdateRelatedOne,
 } from '../../graphql-schemas/reference-style-owner-auth/operation-implementations';
 
 export const testProtectsHasMany = async (

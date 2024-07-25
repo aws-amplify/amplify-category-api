@@ -1,7 +1,7 @@
 import { DocumentNode, Kind, ListValueNode, ObjectTypeDefinitionNode, StringValueNode } from 'graphql';
 import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
-import { resolveFieldTypeName } from '../helpers/resolve-field-type-name';
 import { getObjectWithName } from '../helpers/get-object-with-name';
+import { resolveFieldTypeName } from '../helpers/resolve-field-type-name';
 
 /**
  * Validates that every @belongsTo fields match related type primary key

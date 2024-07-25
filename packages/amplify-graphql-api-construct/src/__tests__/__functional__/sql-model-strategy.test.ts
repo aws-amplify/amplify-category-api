@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { SQLLambdaModelDataSourceStrategyFactory, isSqlModelDataSourceDbConnectionConfig } from '../../sql-model-datasource-strategy';
 import { SQLLambdaModelDataSourceStrategy } from '../../model-datasource-strategy-types';
+import { isSqlModelDataSourceDbConnectionConfig, SQLLambdaModelDataSourceStrategyFactory } from '../../sql-model-datasource-strategy';
 
 describe('SQL bound API definitions', () => {
   let tmpDir: string;

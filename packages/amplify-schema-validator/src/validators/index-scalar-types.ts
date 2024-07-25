@@ -1,7 +1,7 @@
-import { DocumentNode, Kind, ObjectTypeDefinitionNode, FieldDefinitionNode, EnumTypeDefinitionNode } from 'graphql';
+import { DocumentNode, EnumTypeDefinitionNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
 import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
-import { isScalarOrEnum } from '../helpers/is-scalar-or-enum';
 import { getTypeDefinitionsOfKind } from '../helpers/get-type-definitions-of-kind';
+import { isScalarOrEnum } from '../helpers/is-scalar-or-enum';
 
 /**
  * Validates that every @index directive is of a scalar type

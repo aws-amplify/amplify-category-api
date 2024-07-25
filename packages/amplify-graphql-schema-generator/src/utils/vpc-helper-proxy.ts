@@ -1,8 +1,8 @@
-import { RDSClient, DescribeDBProxiesCommand, DescribeDBProxiesCommandOutput, DescribeDBProxiesCommandInput } from '@aws-sdk/client-rds';
+import { SubnetAvailabilityZone, VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import { DescribeSubnetsCommand, DescribeSubnetsCommandInput, DescribeSubnetsCommandOutput, EC2Client } from '@aws-sdk/client-ec2';
-import { VpcConfig, SubnetAvailabilityZone } from '@aws-amplify/graphql-transformer-interfaces';
-import { DB_ENGINES } from './supported-db-engines';
+import { DescribeDBProxiesCommand, DescribeDBProxiesCommandInput, DescribeDBProxiesCommandOutput, RDSClient } from '@aws-sdk/client-rds';
 import { filterSubnetAvailabilityZones } from './filter-subnet-availability-zones';
+import { DB_ENGINES } from './supported-db-engines';
 
 // When region is not provided, it will use the region configured in the AWS profile.
 export const checkHostInDBProxies = async (hostname: string, region?: string): Promise<VpcConfig | undefined> => {

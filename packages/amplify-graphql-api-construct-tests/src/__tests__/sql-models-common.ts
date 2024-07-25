@@ -1,6 +1,6 @@
+import { GetProvisionedConcurrencyConfigCommand, LambdaClient } from '@aws-sdk/client-lambda';
 import * as path from 'path';
-import { LambdaClient, GetProvisionedConcurrencyConfigCommand } from '@aws-sdk/client-lambda';
-import { initCDKProject, cdkDeploy } from '../commands';
+import { cdkDeploy, initCDKProject } from '../commands';
 import { graphql } from '../graphql-request';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { ONE_MINUTE } from '../utils/duration-constants';

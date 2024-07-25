@@ -1,7 +1,7 @@
+import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { parse } from 'graphql';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { FunctionTransformer } from '..';
 
 test('for @function with only name, it generates the expected resources', () => {

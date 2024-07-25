@@ -1,17 +1,17 @@
 import {
-  TypeDefinitionNode,
-  SchemaDefinitionNode,
-  ObjectTypeDefinitionNode,
-  TypeSystemDefinitionNode,
+  EnumTypeDefinitionNode,
+  EnumTypeExtensionNode,
   FieldDefinitionNode,
-  ObjectTypeExtensionNode,
+  InputObjectTypeDefinitionNode,
   InputObjectTypeExtensionNode,
   InterfaceTypeExtensionNode,
-  UnionTypeExtensionNode,
-  EnumTypeExtensionNode,
-  InputObjectTypeDefinitionNode,
-  EnumTypeDefinitionNode,
+  ObjectTypeDefinitionNode,
+  ObjectTypeExtensionNode,
+  SchemaDefinitionNode,
+  TypeDefinitionNode,
+  TypeSystemDefinitionNode,
   UnionTypeDefinitionNode,
+  UnionTypeExtensionNode,
 } from 'graphql';
 
 export interface TransformerContextOutputProvider {

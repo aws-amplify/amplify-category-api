@@ -1,5 +1,5 @@
 import { InputObjectTypeDefinitionNode } from 'graphql';
-import { makeInputValueDefinition, makeNonNullType, makeNamedType } from 'graphql-transformer-common';
+import { makeInputValueDefinition, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
 
 export function updateInputWithConnectionField(
   input: InputObjectTypeDefinitionNode,

@@ -1,15 +1,18 @@
-import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as path from 'path';
 
-import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
-import { initCDKProject, cdkDeploy, cdkDestroy } from '../../../commands';
+import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
+import { cdkDeploy, cdkDestroy, initCDKProject } from '../../../commands';
 import { createCognitoUser, signInCognitoUser, TestDefinition, writeStackConfig, writeTestDefinitions } from '../../../utils';
 import { DURATION_1_HOUR } from '../../../utils/duration-constants';
 import {
   testCreatePrimaryRedactedForDifferentOwners,
+  testCreatePrimaryRedactedForSameOwner,
   testCreateRelatedManyRedactedForDifferentOwners,
+  testCreateRelatedManyRedactedForSameOwner,
   testCreateRelatedOneRedactedForDifferentOwners,
+  testCreateRelatedOneRedactedForSameOwner,
   testGetPrimaryRedactedForDifferentOwners,
   testGetPrimaryUnauthorizedForDifferentOwner,
   testGetPrimaryVisibleForSameOwner,
@@ -25,14 +28,11 @@ import {
   testListRelatedOnesRedactedForDifferentOwners,
   testListRelatedOnesVisibleForSameOwner,
   testUpdatePrimaryRedactedForDifferentOwners,
-  testUpdateRelatedManyRedactedForDifferentOwners,
-  testUpdateRelatedOneRedactedForDifferentOwners,
-  testCreatePrimaryRedactedForSameOwner,
   testUpdatePrimaryRedactedForSameOwner,
-  testCreateRelatedOneRedactedForSameOwner,
-  testUpdateRelatedOneRedactedForSameOwner,
-  testCreateRelatedManyRedactedForSameOwner,
+  testUpdateRelatedManyRedactedForDifferentOwners,
   testUpdateRelatedManyRedactedForSameOwner,
+  testUpdateRelatedOneRedactedForDifferentOwners,
+  testUpdateRelatedOneRedactedForSameOwner,
 } from './test-implementations';
 
 jest.setTimeout(DURATION_1_HOUR);

@@ -1,6 +1,6 @@
 import { isPlainObject } from 'lodash';
-import { CloudFormationParseContext } from './types';
 import { importModelTableResolver } from './import-model-table-resolver';
+import { CloudFormationParseContext } from './types';
 
 export function cfnJoin(valNode: [string, string[]], { params, conditions, resources, exports }: CloudFormationParseContext, processValue) {
   if (!(Array.isArray(valNode) && valNode.length === 2 && Array.isArray(valNode[1]))) {

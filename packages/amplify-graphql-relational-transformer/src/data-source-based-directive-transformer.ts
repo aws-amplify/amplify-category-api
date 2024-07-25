@@ -1,7 +1,7 @@
 import {
+  ModelDataSourceStrategyDbType,
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
-  ModelDataSourceStrategyDbType,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from './types';

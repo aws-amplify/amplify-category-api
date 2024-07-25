@@ -1,7 +1,7 @@
-import path from 'path';
 import { createNewProjectDir, deleteProjectDir, generateUnauthSQL } from 'amplify-category-api-e2e-core';
-import { existsSync, writeFileSync, readFileSync } from 'fs-extra';
+import { existsSync, readFileSync, writeFileSync } from 'fs-extra';
 import { ObjectTypeDefinitionNode, parse } from 'graphql';
+import path from 'path';
 
 describe('Unauth SQL generate schema', () => {
   let projRoot;

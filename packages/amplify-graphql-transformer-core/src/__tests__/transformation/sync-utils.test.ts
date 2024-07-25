@@ -1,7 +1,7 @@
 import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { CfnParameter } from 'aws-cdk-lib';
 import { SynthParameters } from '@aws-amplify/graphql-transformer-interfaces/src';
-import { ConflictHandlerType, SyncConfigLambda, ResolverConfig } from '../../config/transformer-config';
+import { CfnParameter } from 'aws-cdk-lib';
+import { ConflictHandlerType, ResolverConfig, SyncConfigLambda } from '../../config/transformer-config';
 import { getSyncConfig } from '../../transformation/sync-utils';
 
 describe('getSyncConfig', () => {

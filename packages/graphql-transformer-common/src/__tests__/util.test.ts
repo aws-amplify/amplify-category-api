@@ -1,4 +1,4 @@
-import { toCamelCase, toPascalCase, toUpper, toLower } from '../util';
+import { toCamelCase, toPascalCase } from '../util';
 
 describe('To camelCase conversions', () => {
   it('should handle empty list', () => {

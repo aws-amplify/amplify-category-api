@@ -1,13 +1,13 @@
-export { getMockDataDirectory } from './mock-data-directory';
 export { addMockDataToGitIgnore } from './git-ignore';
+export { getMockDataDirectory } from './mock-data-directory';
 export async function getAmplifyMeta(context: any) {
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
   return context.amplify.readJsonFile(amplifyMetaFilePath);
 }
 
-import * as which from 'which';
 import * as execa from 'execa';
 import * as semver from 'semver';
+import * as which from 'which';
 
 const minJavaVersion = '>=1.8 <= 2.0 ||  >=8.0';
 

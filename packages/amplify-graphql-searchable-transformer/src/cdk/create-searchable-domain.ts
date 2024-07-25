@@ -1,11 +1,11 @@
+import { setResourceName } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { CfnParameter, Fn, RemovalPolicy } from 'aws-cdk-lib';
 import { EbsDeviceVolumeType } from 'aws-cdk-lib/aws-ec2';
 import { CfnDomain, Domain, ElasticsearchVersion } from 'aws-cdk-lib/aws-elasticsearch';
 import { IRole, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { CfnParameter, Fn, RemovalPolicy } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { setResourceName } from '@aws-amplify/graphql-transformer-core';
 
 export const createSearchableDomain = (
   stack: Construct,

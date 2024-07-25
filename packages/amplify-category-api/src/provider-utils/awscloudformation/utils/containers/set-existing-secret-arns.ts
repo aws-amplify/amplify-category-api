@@ -1,5 +1,5 @@
-import _ from 'lodash';
 import * as cdk from 'aws-cdk-lib';
+import _ from 'lodash';
 
 /**
  * Check if the template contains existing secret configuration and if so, add it to the secretsMap

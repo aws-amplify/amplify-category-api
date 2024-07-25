@@ -1,6 +1,6 @@
-import { collectDirectivesByType } from 'graphql-transformer-core';
-import { parse } from 'graphql';
 import { $TSContext, FeatureFlags, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import { parse } from 'graphql';
+import { collectDirectivesByType } from 'graphql-transformer-core';
 import {
   displayAuthNotification,
   hasFieldAuthDirectives,

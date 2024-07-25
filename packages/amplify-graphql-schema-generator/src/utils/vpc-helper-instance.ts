@@ -1,12 +1,12 @@
-import {
-  RDSClient,
-  DescribeDBInstancesCommand,
-  DescribeDBInstancesCommandOutput,
-  DescribeDBInstancesCommandInput,
-} from '@aws-sdk/client-rds';
 import { SubnetAvailabilityZone, VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
-import { DB_ENGINES } from './supported-db-engines';
+import {
+  DescribeDBInstancesCommand,
+  DescribeDBInstancesCommandInput,
+  DescribeDBInstancesCommandOutput,
+  RDSClient,
+} from '@aws-sdk/client-rds';
 import { filterSubnetAvailabilityZones } from './filter-subnet-availability-zones';
+import { DB_ENGINES } from './supported-db-engines';
 
 // When region is not provided, it will use the region configured in the AWS profile.
 export const checkHostInDBInstances = async (hostname: string, region?: string): Promise<VpcConfig | undefined> => {

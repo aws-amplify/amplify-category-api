@@ -1,5 +1,4 @@
-import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { TransformerContextOutputProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerContextOutputProvider, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Kind, NameNode, ObjectTypeDefinitionNode } from 'graphql';
 import { getPartitionKeyField, getSortKeyFields } from '../schema';
 

@@ -1,10 +1,10 @@
-import { GraphQLTransform } from 'graphql-transformer-core';
+import { ModelAuthTransformer } from 'graphql-auth-transformer';
+import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
-import { ModelConnectionTransformer } from 'graphql-connection-transformer';
-import { HttpTransformer } from 'graphql-http-transformer';
-import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { FunctionTransformer } from 'graphql-function-transformer';
+import { HttpTransformer } from 'graphql-http-transformer';
+import { GraphQLTransform } from 'graphql-transformer-core';
 import { expectExactKeys } from '../testUtil';
 
 const userType = `

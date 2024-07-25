@@ -1,12 +1,12 @@
 // special handling needed to test prediction
 // This test will faile due to a possible AppSync bug, see details below the test code
-import path from 'path';
-import fs from 'fs-extra';
+import { addApi, addAuthWithDefault, addS3Storage, amplifyPush, getBackendAmplifyMeta } from 'amplify-category-api-e2e-core';
 import aws from 'aws-sdk';
+import fs from 'fs-extra';
 import gql from 'graphql-tag';
-import { addAuthWithDefault, addS3Storage, getBackendAmplifyMeta, addApi, amplifyPush } from 'amplify-category-api-e2e-core';
+import path from 'path';
 
-import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../authHelper';
+import { configureAmplify, getApiKey, getConfiguredAppsyncClientAPIKeyAuth } from '../authHelper';
 import { updateSchemaInTestProject } from '../common';
 
 const imageKey = 'public/myimage.jpg';

@@ -1,17 +1,17 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
-import * as dynamoEmulator from 'amplify-category-api-dynamodb-simulator';
 import { AmplifyAppSyncSimulator, AmplifyAppSyncSimulatorConfig } from '@aws-amplify/amplify-appsync-simulator';
+import * as dynamoEmulator from 'amplify-category-api-dynamodb-simulator';
 import { add, generate, isCodegenConfigured, switchToSDLSchema } from 'amplify-codegen';
 import * as chokidar from 'chokidar';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 
 import { getInvoker } from '@aws-amplify/amplify-category-function';
-import { getAmplifyMeta, getMockDataDirectory, checkJavaVersion } from '../utils';
 import { processAppSyncResources } from '../CFNParser';
+import { timeConstrainedInvoker } from '../func';
+import { checkJavaVersion, getAmplifyMeta, getMockDataDirectory } from '../utils';
 import { ConfigOverrideManager } from '../utils/config-override';
 import { configureDDBDataSource, createAndUpdateTable } from '../utils/dynamo-db';
 import { getMockConfig } from '../utils/mock-config-file';
-import { timeConstrainedInvoker } from '../func';
 import { lambdaArnToConfig } from './lambda-arn-to-config';
 import { ResolverOverrides } from './resolver-overrides';
 import { runTransformer } from './run-graphql-transformer';

@@ -1,11 +1,11 @@
-import { AuthProvider, AuthStrategy, AuthTransformer, ModelOperation } from '@aws-amplify/graphql-auth-transformer';
+import { AmplifyAppSyncSimulatorAuthenticationType } from '@aws-amplify/amplify-appsync-simulator';
 import { AppSyncGraphQLExecutionContext } from '@aws-amplify/amplify-appsync-simulator/lib/utils/graphql-runner';
+import { AuthProvider, AuthStrategy, AuthTransformer, ModelOperation } from '@aws-amplify/graphql-auth-transformer';
+import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { AmplifyAppSyncSimulatorAuthenticationType } from '@aws-amplify/amplify-appsync-simulator';
 import { plurality } from 'graphql-transformer-common';
-import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { AppSyncVTLContext, getGenericToken, getIAMToken, getJWTToken, VelocityTemplateSimulator } from '../../velocity';
 
 const USER_POOL_ID = 'us-fake-1ID';

@@ -1,10 +1,10 @@
 import { AppSyncAuthConfiguration, AppSyncAuthConfigurationEntry, SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { CfnGraphQLApi } from 'aws-cdk-lib/aws-appsync';
-import { isArray } from 'lodash';
 import { IRole, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { isArray } from 'lodash';
 import {
-  AuthorizationModes,
   ApiKeyAuthorizationConfig,
+  AuthorizationModes,
   LambdaAuthorizationConfig,
   OIDCAuthorizationConfig,
   UserPoolAuthorizationConfig,

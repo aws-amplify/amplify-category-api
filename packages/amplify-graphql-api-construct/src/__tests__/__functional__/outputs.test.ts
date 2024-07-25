@@ -1,12 +1,12 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import * as cdk from 'aws-cdk-lib';
-import { Template, Match } from 'aws-cdk-lib/assertions';
 import { graphqlOutputKey } from '@aws-amplify/backend-output-schemas';
+import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
+import { mockSqlDataSourceStrategy, SCHEMAS } from '@aws-amplify/graphql-transformer-test-utils';
+import * as cdk from 'aws-cdk-lib';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import { ArnPrincipal, Role } from 'aws-cdk-lib/aws-iam';
-import { SCHEMAS, mockSqlDataSourceStrategy } from '@aws-amplify/graphql-transformer-test-utils';
-import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
+import * as fs from 'fs';
+import * as path from 'path';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 

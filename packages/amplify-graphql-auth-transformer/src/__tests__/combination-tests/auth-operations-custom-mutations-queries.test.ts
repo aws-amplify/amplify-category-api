@@ -7,19 +7,19 @@
  * actually pass will fail. As of this writing, this works as expected, but be aware of the behavior.
  */
 
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { SqlTransformer } from '@aws-amplify/graphql-sql-transformer';
+import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthTransformer } from '../../graphql-auth-transformer';
 import {
-  TestTable,
   convertToTestArgumentArray,
   ddbDataSourceStrategies,
   makeTransformationExpectation,
   sqlDataSourceStrategies,
   testRules,
+  TestTable,
 } from './snapshot-utils';
 
 const schemas = {

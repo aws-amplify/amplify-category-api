@@ -1,12 +1,12 @@
-import * as path from 'path';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
-import fs from 'fs-extra';
 import { SQL_SCHEMA_FILE_NAME } from '@aws-amplify/graphql-transformer-core';
+import fs from 'fs-extra';
+import * as path from 'path';
+import { PREVIEW_BANNER } from '../../category-constants';
 import { importAppSyncAPIWalkthrough } from '../../provider-utils/awscloudformation/service-walkthroughs/import-appsync-api-walkthrough';
 import { getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
-import { writeSchemaFile, generateRDSSchema } from '../../provider-utils/awscloudformation/utils/graphql-schema-utils';
-import { PREVIEW_BANNER } from '../../category-constants';
+import { generateRDSSchema, writeSchemaFile } from '../../provider-utils/awscloudformation/utils/graphql-schema-utils';
 
 const subcommand = 'import';
 

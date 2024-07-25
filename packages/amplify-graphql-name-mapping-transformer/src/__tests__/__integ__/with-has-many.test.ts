@@ -1,11 +1,11 @@
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { DeploymentResources, mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { BelongsToTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { DDB_DEFAULT_DATASOURCE_STRATEGY, constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
-import { ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { RefersToTransformer } from '../../graphql-refers-to-transformer';
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { BelongsToTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
+import { constructDataSourceStrategies, DDB_DEFAULT_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
+import { ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { DeploymentResources, mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { MapsToTransformer } from '../../graphql-maps-to-transformer';
+import { RefersToTransformer } from '../../graphql-refers-to-transformer';
 import {
   expectedResolversForModelWithRenamedField,
   testRelationalArrayFieldsMapping,

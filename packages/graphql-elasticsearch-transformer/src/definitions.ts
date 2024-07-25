@@ -1,14 +1,14 @@
 import {
-  ObjectTypeDefinitionNode,
-  InputValueDefinitionNode,
-  InputObjectTypeDefinitionNode,
-  FieldDefinitionNode,
-  Kind,
-  TypeNode,
   EnumTypeDefinitionNode,
   EnumValueDefinitionNode,
+  FieldDefinitionNode,
+  InputObjectTypeDefinitionNode,
+  InputValueDefinitionNode,
+  Kind,
+  ObjectTypeDefinitionNode,
+  TypeNode,
 } from 'graphql';
-import { graphqlName, makeNamedType, isScalar, makeListType, getBaseType, SearchableResourceIDs } from 'graphql-transformer-common';
+import { getBaseType, graphqlName, isScalar, makeListType, makeNamedType, SearchableResourceIDs } from 'graphql-transformer-common';
 
 const ID_CONDITIONS = [
   'ne',

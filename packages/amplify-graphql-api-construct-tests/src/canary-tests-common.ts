@@ -1,5 +1,5 @@
+import { cdkDeploy, initCDKProject } from './commands';
 import { graphql } from './graphql-request';
-import { initCDKProject, cdkDeploy, cdkDestroy } from './commands';
 
 export const setupBackend = async (projRoot: string, templatePath: string) => {
   const name = await initCDKProject(projRoot, templatePath);

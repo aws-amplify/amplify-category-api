@@ -1,33 +1,33 @@
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { ResourceConstants } from 'graphql-transformer-common';
-import { Output } from 'aws-sdk/clients/cloudformation';
-import { CognitoIdentityServiceProvider as CognitoClient, S3, CognitoIdentity } from 'aws-sdk';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { AWS } from '@aws-amplify/core';
-import { Auth, API } from 'aws-amplify';
-import gql from 'graphql-tag';
-import { default as moment } from 'moment';
-import 'isomorphic-fetch';
-import * as Observable from 'zen-observable';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
-import { S3Client } from '../S3Client';
-import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
+import { AWS } from '@aws-amplify/core';
+import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { API, Auth } from 'aws-amplify';
+import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import { CognitoIdentity, CognitoIdentityServiceProvider as CognitoClient, S3 } from 'aws-sdk';
+import { Output } from 'aws-sdk/clients/cloudformation';
+import gql from 'graphql-tag';
+import { ResourceConstants } from 'graphql-transformer-common';
+import 'isomorphic-fetch';
+import { default as moment } from 'moment';
+import * as Observable from 'zen-observable';
+import { CloudFormationClient } from '../CloudFormationClient';
 import {
+  addUserToGroup,
+  authenticateUser,
+  configureAmplify,
+  createGroup,
+  createIdentityPool,
   createUserPool,
   createUserPoolClient,
-  createGroup,
-  addUserToGroup,
-  configureAmplify,
-  signupUser,
-  authenticateUser,
-  createIdentityPool,
   setIdentityPoolRoles,
+  signupUser,
 } from '../cognitoUtils';
-import { withTimeOut } from '../promiseWithTimeout';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { IAMHelper } from '../IAMHelper';
-import { CloudFormationClient } from '../CloudFormationClient';
+import { withTimeOut } from '../promiseWithTimeout';
+import { S3Client } from '../S3Client';
 
 // tslint:disable: no-use-before-declare
 // to deal with bug in cognito-identity-js

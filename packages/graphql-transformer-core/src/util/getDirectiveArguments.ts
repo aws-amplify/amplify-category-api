@@ -1,4 +1,4 @@
-import { DirectiveNode, ArgumentNode, valueFromASTUntyped } from 'graphql';
+import { ArgumentNode, DirectiveNode, valueFromASTUntyped } from 'graphql';
 /**
  * Given a directive returns a plain JS map of its arguments
  * @param arguments The list of argument nodes to reduce.

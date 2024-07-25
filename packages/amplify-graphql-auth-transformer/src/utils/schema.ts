@@ -8,14 +8,14 @@ import {
   getTable,
   InvalidDirectiveError,
 } from '@aws-amplify/graphql-transformer-core';
-import {
-  QueryFieldType,
-  MutationFieldType,
-  TransformerTransformSchemaStepContextProvider,
-  TransformerContextProvider,
-} from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
-import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode, NamedTypeNode } from 'graphql';
+import {
+  MutationFieldType,
+  QueryFieldType,
+  TransformerContextProvider,
+  TransformerTransformSchemaStepContextProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
+import { DirectiveNode, FieldDefinitionNode, NamedTypeNode, ObjectTypeDefinitionNode } from 'graphql';
 import {
   blankObjectExtension,
   extendFieldWithDirectives,

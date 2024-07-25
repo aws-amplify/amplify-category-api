@@ -1,27 +1,27 @@
-import * as path from 'path';
+import { CloudFormation, Fn, Template } from 'cloudform-types';
 import * as fs from 'fs-extra';
 import * as glob from 'glob';
-import { CloudFormation, Fn, Template } from 'cloudform-types';
 import { ResourceConstants } from 'graphql-transformer-common';
+import * as path from 'path';
 import { DeploymentResources } from '../deployment-resources';
-import { GraphQLTransform, StackMapping } from '../GraphQLTransform';
 import { FeatureFlagProvider } from '../FeatureFlags';
-import { readFromPath, writeToPath, throwIfNotJSONExt, emptyDirectory, handleFile, FileHandler } from './fileUtils';
-import { writeConfig, TransformConfig, TransformMigrationConfig, loadProject, readSchema, loadConfig } from './transformConfig';
+import { GraphQLTransform, StackMapping } from '../GraphQLTransform';
+import { emptyDirectory, FileHandler, handleFile, readFromPath, throwIfNotJSONExt, writeToPath } from './fileUtils';
 import {
   cantAddAndRemoveGSIAtSameTimeRule,
-  getCantAddLSILaterRule,
-  getCantRemoveLSILater,
   cantEditGSIKeySchemaRule,
-  getCantEditKeySchemaRule,
-  getCantEditLSIKeySchemaRule,
   cantHaveMoreThan500ResourcesRule,
-  DiffRule,
-  sanityCheckProject,
-  ProjectRule,
   cantMutateMultipleGSIAtUpdateTimeRule,
   cantRemoveTableAfterCreation,
+  DiffRule,
+  getCantAddLSILaterRule,
+  getCantEditKeySchemaRule,
+  getCantEditLSIKeySchemaRule,
+  getCantRemoveLSILater,
+  ProjectRule,
+  sanityCheckProject,
 } from './sanity-check';
+import { loadConfig, loadProject, readSchema, TransformConfig, TransformMigrationConfig, writeConfig } from './transformConfig';
 
 export const CLOUDFORMATION_FILE_NAME = 'cloudformation-template.json';
 export const PARAMETERS_FILE_NAME = 'parameters.json';

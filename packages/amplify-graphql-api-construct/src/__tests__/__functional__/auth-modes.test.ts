@@ -1,9 +1,9 @@
+import { mockSqlDataSourceStrategy } from '@aws-amplify/graphql-transformer-test-utils';
 import * as cdk from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { Template } from 'aws-cdk-lib/assertions';
-import { mockSqlDataSourceStrategy } from '@aws-amplify/graphql-transformer-test-utils';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 

@@ -1,9 +1,9 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { constructDataSourceStrategies, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Kind, parse } from 'graphql';
 import _ from 'lodash';
-import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { PrimaryKeyTransformer } from '..';
 
 test('throws if multiple primary keys are defined on an object', () => {

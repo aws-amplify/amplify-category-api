@@ -1,13 +1,13 @@
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import {
   DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
   DDB_DEFAULT_DATASOURCE_STRATEGY,
   validateModelSchema,
 } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { parse } from 'graphql';
 import { ModelTransformer } from '../graphql-model-transformer';
-import { CUSTOM_DDB_CFN_TYPE } from '../resources/amplify-dynamodb-table/amplify-dynamodb-table-construct';
 import { ITERATIVE_TABLE_STACK_NAME } from '../resources/amplify-dynamodb-table/amplify-dynamo-model-resource-generator';
+import { CUSTOM_DDB_CFN_TYPE } from '../resources/amplify-dynamodb-table/amplify-dynamodb-table-construct';
 
 describe('ModelTransformer:', () => {
   it('should successfully transform simple valid schema', async () => {

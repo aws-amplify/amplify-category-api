@@ -1,19 +1,19 @@
+import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
 import {
-  InvalidDirectiveError,
-  MappingTemplate,
   getModelDataSourceNameForTypeName,
   getPrimaryKeyFields,
   getTable,
+  InvalidDirectiveError,
+  MappingTemplate,
 } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
-  DynamoDBMappingTemplate,
-  Expression,
-  ObjectNode,
   and,
   bool,
   compoundExpression,
+  DynamoDBMappingTemplate,
   equals,
+  Expression,
   forEach,
   greaterThan,
   ifElse,
@@ -25,6 +25,7 @@ import {
   not,
   nul,
   obj,
+  ObjectNode,
   or,
   print,
   qref,
@@ -35,7 +36,6 @@ import {
   toJson,
 } from 'graphql-mapping-template';
 import { ModelResourceIDs, NONE_VALUE, ResolverResourceIDs, setArgs } from 'graphql-transformer-common';
-import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
 import { condenseRangeKey } from '../resolvers';
 import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from '../types';
 import { DDBRelationalResolverGenerator } from './ddb-generator';

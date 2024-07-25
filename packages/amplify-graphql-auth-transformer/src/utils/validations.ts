@@ -1,16 +1,12 @@
 import {
   DirectiveWrapper,
-  InvalidDirectiveError,
   generateGetArgumentsInput,
+  InvalidDirectiveError,
   isModelType,
   isSqlModel,
 } from '@aws-amplify/graphql-transformer-core';
-import type {
-  TransformParameters,
-  TransformerContextProvider,
-  DataSourceStrategiesProvider,
-} from '@aws-amplify/graphql-transformer-interfaces';
-import { ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode } from 'graphql';
+import type { DataSourceStrategiesProvider, TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
+import { InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { AuthRule, ConfiguredAuthProviders } from './definitions';
 import { isAuthProviderEqual } from './index';
 

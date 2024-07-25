@@ -1,16 +1,16 @@
 import { Kind, print } from 'graphql';
 import { toUpper } from 'graphql-transformer-common';
-import { TemplateContext, RelationalDBSchemaTransformer, TableContext } from '../RelationalDBSchemaTransformer';
-import { RelationalDBParsingException } from '../RelationalDBParsingException';
 import { IRelationalDBReader } from '../IRelationalDBReader';
+import { RelationalDBParsingException } from '../RelationalDBParsingException';
+import { RelationalDBSchemaTransformer, TableContext, TemplateContext } from '../RelationalDBSchemaTransformer';
 import {
+  getFieldDefinition,
+  getGraphQLTypeFromMySQLType,
+  getInputTypeDefinition,
+  getInputValueDefinition,
   getNamedType,
   getNonNullType,
-  getInputValueDefinition,
-  getGraphQLTypeFromMySQLType,
   getTypeDefinition,
-  getFieldDefinition,
-  getInputTypeDefinition,
 } from '../RelationalDBSchemaTransformerUtils';
 
 const testDBName = 'testdb';

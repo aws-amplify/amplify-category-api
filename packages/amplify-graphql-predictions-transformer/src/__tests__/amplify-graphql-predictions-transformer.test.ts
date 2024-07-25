@@ -1,7 +1,7 @@
-import { Match, Template } from 'aws-cdk-lib/assertions';
 import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { parse } from 'graphql';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { Match, Template } from 'aws-cdk-lib/assertions';
+import { parse } from 'graphql';
 import { PredictionsTransformer } from '..';
 
 test('does not generate any resources if @predictions is unused', () => {

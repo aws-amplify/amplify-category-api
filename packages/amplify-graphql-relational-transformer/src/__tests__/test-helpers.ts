@@ -1,5 +1,5 @@
-import { getBaseType } from 'graphql-transformer-common';
 import { DirectiveNode, DocumentNode } from 'graphql';
+import { getBaseType } from 'graphql-transformer-common';
 
 export const hasGeneratedField = (
   doc: DocumentNode,

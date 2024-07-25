@@ -1,9 +1,9 @@
+import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { constructDataSourceStrategies, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { parse } from 'graphql';
-import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { AuthTransformer } from '../graphql-auth-transformer';
 
 describe('Verify RDS Model level Auth rules on queries:', () => {

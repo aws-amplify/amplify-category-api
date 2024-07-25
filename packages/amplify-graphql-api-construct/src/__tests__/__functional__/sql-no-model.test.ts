@@ -1,9 +1,9 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
+import { getResourceNamesForStrategy } from '@aws-amplify/graphql-transformer-core';
+import { mockSqlDataSourceStrategy, SCHEMAS } from '@aws-amplify/graphql-transformer-test-utils';
 import * as cdk from 'aws-cdk-lib';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
-import { SCHEMAS, mockSqlDataSourceStrategy } from '@aws-amplify/graphql-transformer-test-utils';
-import { getResourceNamesForStrategy } from '@aws-amplify/graphql-transformer-core';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 

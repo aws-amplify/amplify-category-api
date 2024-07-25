@@ -1,7 +1,7 @@
+import { DistTagMover } from './components/dist_tag_mover';
 import { GitClient } from './components/git_client';
 import { NpmClient } from './components/npm_client';
 import { ReleaseDeprecator } from './components/release_deprecator';
-import { DistTagMover } from './components/dist_tag_mover';
 
 (async () => {
   const deprecationMessage = process.env.DEPRECATION_MESSAGE;

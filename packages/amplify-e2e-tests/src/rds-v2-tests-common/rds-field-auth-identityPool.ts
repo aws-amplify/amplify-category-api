@@ -1,3 +1,5 @@
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import {
   addApiWithAllAuthModes,
   amplifyPush,
@@ -12,21 +14,18 @@ import {
   importRDSDatabase,
   initJSProjectWithProfile,
   setupRDSInstanceAndData,
-  sleep,
 } from 'amplify-category-api-e2e-core';
+import { API, Auth } from 'aws-amplify';
 import { existsSync, writeFileSync } from 'fs-extra';
 import generator from 'generate-password';
-import path from 'path';
-import { GQLQueryHelper } from '../query-utils/gql-helper';
-import { configureAmplify, getConfiguredAppsyncClientIAMAuth, getUserPoolId, setupUser, signInUser } from '../schema-api-directives';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
-import { SQL_TESTS_USE_BETA } from './sql-e2e-config';
-import { getDefaultDatabasePort } from '../rds-v2-test-utils';
-import { API, Auth } from 'aws-amplify';
 import gql from 'graphql-tag';
-import { reconfigureAmplifyAPI, withTimeOut } from '../utils/api';
-import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import path from 'path';
 import { Observable, ZenObservable } from 'zen-observable-ts';
+import { GQLQueryHelper } from '../query-utils/gql-helper';
+import { getDefaultDatabasePort } from '../rds-v2-test-utils';
+import { configureAmplify, getConfiguredAppsyncClientIAMAuth, getUserPoolId, setupUser, signInUser } from '../schema-api-directives';
+import { reconfigureAmplifyAPI, withTimeOut } from '../utils/api';
+import { SQL_TESTS_USE_BETA } from './sql-e2e-config';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');

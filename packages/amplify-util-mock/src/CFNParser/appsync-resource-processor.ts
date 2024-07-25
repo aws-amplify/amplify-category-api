@@ -7,7 +7,7 @@ import {
 } from './resource-processors';
 import { AppSyncAPIKeyProcessedResource, AppSyncAPIProcessedResource } from './resource-processors/appsync';
 import { processCloudFormationStack } from './stack/index';
-import { CloudFormationTemplateFetcher, CloudFormationTemplate } from './stack/types';
+import { CloudFormationTemplate, CloudFormationTemplateFetcher } from './stack/types';
 
 const CFN_DEFAULT_PARAMS = {
   'AWS::Region': 'us-east-1-fake',

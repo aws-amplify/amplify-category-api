@@ -1,13 +1,13 @@
 import {
-  initJSProjectWithProfile,
-  deleteProject,
+  addApiWithoutSchema,
+  addFeatureFlag,
   amplifyPush,
   amplifyPushUpdate,
-  addFeatureFlag,
-  addApiWithoutSchema,
-  updateApiSchema,
   createNewProjectDir,
+  deleteProject,
   deleteProjectDir,
+  initJSProjectWithProfile,
+  updateApiSchema,
 } from 'amplify-category-api-e2e-core';
 
 describe('amplify add api', () => {

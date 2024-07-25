@@ -1,4 +1,4 @@
-import { DocumentNode, Kind, ObjectTypeDefinitionNode, StringValueNode } from 'graphql';
+import { DocumentNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
 import { ValidationError } from '../exceptions/validation-error';
 
 /**

@@ -1,5 +1,5 @@
-import { getNonModelTypes } from '../definition';
 import { ObjectTypeDefinitionNode, parse } from 'graphql';
+import { getNonModelTypes } from '../definition';
 
 const testModel = `
     type Post @model {

@@ -1,8 +1,8 @@
-import { join } from 'path';
-import { valid, lte } from 'semver';
 import { readFile } from 'fs-extra';
-import { getVersionFromArgs, githubTagToSemver, releasesRequest, semverToGithubTag, uploadReleaseFile } from './github-common';
+import { join } from 'path';
+import { lte, valid } from 'semver';
 import { unifiedChangelogPath } from './constants';
+import { getVersionFromArgs, githubTagToSemver, releasesRequest, semverToGithubTag, uploadReleaseFile } from './github-common';
 
 /**
  * Script for uploading packaged binaries of the CLI to GitHub releases.

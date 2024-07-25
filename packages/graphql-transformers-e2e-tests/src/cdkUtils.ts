@@ -1,6 +1,6 @@
-import path from 'path';
-import fs from 'fs-extra';
 import * as execa from 'execa';
+import fs from 'fs-extra';
+import path from 'path';
 
 const jsonServerRootDirectory = path.join(__dirname, '..', 'resources', 'jsonServer');
 

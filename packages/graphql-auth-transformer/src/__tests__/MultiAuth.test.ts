@@ -1,9 +1,9 @@
-import { ObjectTypeDefinitionNode, FieldDefinitionNode, parse, DocumentNode, Kind, InputValueDefinitionNode, NamedTypeNode } from 'graphql';
-import { GraphQLTransform } from 'graphql-transformer-core';
-import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { DocumentNode, FieldDefinitionNode, InputValueDefinitionNode, Kind, ObjectTypeDefinitionNode, parse } from 'graphql';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
-import { ModelAuthTransformer, AppSyncAuthConfiguration, AppSyncAuthMode } from '../ModelAuthTransformer';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { GraphQLTransform } from 'graphql-transformer-core';
 import { KeyTransformer } from '../../../graphql-key-transformer/src/KeyTransformer';
+import { AppSyncAuthConfiguration, AppSyncAuthMode, ModelAuthTransformer } from '../ModelAuthTransformer';
 
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {

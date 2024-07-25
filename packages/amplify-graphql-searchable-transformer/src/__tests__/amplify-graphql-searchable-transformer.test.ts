@@ -1,12 +1,12 @@
-import { ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
+import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
+import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { parse } from 'graphql';
-import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { describe } from 'jest-circus';
 import { SearchableModelTransformer } from '..';
 import { ALLOWABLE_SEARCHABLE_INSTANCE_TYPES } from '../constants';
-import { describe } from 'jest-circus';
 
 test('SearchableModelTransformer validation happy case', () => {
   const validSchema = `

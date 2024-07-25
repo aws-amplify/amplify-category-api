@@ -1,7 +1,7 @@
-import { ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
+import { ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { MapsToTransformer } from '../../graphql-maps-to-transformer';
 import { expectedResolversForModelWithRenamedField } from './common';
 

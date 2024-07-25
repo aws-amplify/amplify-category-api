@@ -1,16 +1,16 @@
 import {
-  ObjectTypeDefinitionNode,
   DirectiveNode,
-  InterfaceTypeDefinitionNode,
-  UnionTypeDefinitionNode,
-  ScalarTypeDefinitionNode,
-  InputObjectTypeDefinitionNode,
-  FieldDefinitionNode,
-  InputValueDefinitionNode,
-  EnumValueDefinitionNode,
-  EnumTypeDefinitionNode,
-  Kind,
   DocumentNode,
+  EnumTypeDefinitionNode,
+  EnumValueDefinitionNode,
+  FieldDefinitionNode,
+  InputObjectTypeDefinitionNode,
+  InputValueDefinitionNode,
+  InterfaceTypeDefinitionNode,
+  Kind,
+  ObjectTypeDefinitionNode,
+  ScalarTypeDefinitionNode,
+  UnionTypeDefinitionNode,
 } from 'graphql';
 
 export function stripDirectives(doc: DocumentNode, except: string[] = []): DocumentNode {

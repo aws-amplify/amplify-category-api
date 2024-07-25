@@ -1,3 +1,3 @@
-import { resolve, join } from 'path';
+import { join, resolve } from 'path';
 
 export const unifiedChangelogPath = resolve(join(__dirname, '..', 'UNIFIED_CHANGELOG.md'));

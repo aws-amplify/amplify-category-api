@@ -1,11 +1,11 @@
+import { addApi, addFunction, amplifyPush } from 'amplify-category-api-e2e-core';
+import fs from 'fs-extra';
 import path from 'path';
 import { v4 as uuid } from 'uuid';
-import fs from 'fs-extra';
-import { amplifyPush, addFunction, addApi } from 'amplify-category-api-e2e-core';
 
 import { configureAmplify, getApiKey, getConfiguredAppsyncClientAPIKeyAuth } from './authHelper';
 
-import { updateSchemaInTestProject, testQueries } from './common';
+import { testQueries, updateSchemaInTestProject } from './common';
 
 export async function runFunctionTest(projectDir: string, testModule: any) {
   const functionName = await addSimpleFunction(projectDir, testModule, 'func');

@@ -1,9 +1,9 @@
+import { Fn, StringParameter } from 'cloudform-types';
 import DataSource from 'cloudform-types/types/appSync/dataSource';
 import IAM from 'cloudform-types/types/iam';
-import { Fn, StringParameter } from 'cloudform-types';
 import Template from 'cloudform-types/types/template';
-import { TemplateContext } from './RelationalDBSchemaTransformer';
 import { RelationalDBResolverGenerator } from './RelationalDBResolverGenerator';
+import { TemplateContext } from './RelationalDBSchemaTransformer';
 import { ResourceConstants } from './ResourceConstants';
 
 /**

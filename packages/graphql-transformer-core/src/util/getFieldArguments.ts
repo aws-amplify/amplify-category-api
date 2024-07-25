@@ -1,5 +1,5 @@
-import { getBaseType } from 'graphql-transformer-common';
 import { FieldDefinitionNode } from 'graphql';
+import { getBaseType } from 'graphql-transformer-common';
 /**
  * Given a Type returns a plain JS map of its arguments
  * @param arguments The list of argument nodes to reduce.

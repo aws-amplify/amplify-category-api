@@ -2,9 +2,9 @@ const getParamMock = jest.fn();
 
 import {
   $TSContext,
-  stateManager,
-  getGraphQLTransformerOpenSearchProductionDocLink,
   ApiCategoryFacade,
+  getGraphQLTransformerOpenSearchProductionDocLink,
+  stateManager,
 } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { searchablePushChecks } from '../../graphql-transformer/api-utils';

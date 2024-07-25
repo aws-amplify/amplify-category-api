@@ -1,8 +1,6 @@
-import { StringDataSourceAdapter, PostgresStringDataSourceAdapter } from '../datasource-adapter';
+import { PostgresStringDataSourceAdapter, StringDataSourceAdapter } from '../datasource-adapter';
 import { Field, FieldType, Index } from '../schema-representation';
-import { generateGraphQLSchema, isComputeExpression } from '../schema-generator';
 import { schemas } from './__utils__/schemas';
-import { gql } from 'graphql-transformer-core';
 
 class TestStringDataSourceAdapter extends StringDataSourceAdapter {
   public getTablesList(): string[] {

@@ -1,16 +1,18 @@
+import { config } from 'dotenv';
 import * as path from 'path';
 import * as rimraf from 'rimraf';
-import { config } from 'dotenv';
 import { v4 as uuid } from 'uuid';
 
 export * from './add-ci-tags';
 export * from './api';
 export * from './appsync';
+export * from './credentials-rotator';
 export * from './getAppId';
 export * from './headless';
 export * from './nexpect';
 export * from './overrides';
 export * from './projectMeta';
+export * from './rds';
 export * from './readJsonFile';
 export * from './request';
 export * from './retrier';
@@ -18,8 +20,6 @@ export * from './sdk-calls';
 export * from './selectors';
 export * from './sleep';
 export * from './transformConfig';
-export * from './rds';
-export * from './credentials-rotator';
 
 // run dotenv config to update env variable
 config();

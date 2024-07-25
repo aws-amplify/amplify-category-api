@@ -1,7 +1,7 @@
-import * as path from 'path';
-import * as fs from 'fs';
+import { DBEngineType, Engine, Field, generateTypescriptDataSchema, Model, Schema } from '@aws-amplify/graphql-schema-generator';
 import { createNewProjectDir, deleteProjectDir, npmInstall, npmTest } from 'amplify-category-api-e2e-core';
-import { DBEngineType, Engine, Field, Model, Schema, generateTypescriptDataSchema } from '@aws-amplify/graphql-schema-generator';
+import * as fs from 'fs';
+import * as path from 'path';
 
 describe('validate generated typescript data schema', () => {
   let projectDir: string;

@@ -1,22 +1,22 @@
 import { Duration } from 'aws-cdk-lib';
 import {
   BaseDataSource,
+  CfnResolver,
   DynamoDbDataSource,
   GraphqlApiBase,
   HttpDataSource,
   LambdaDataSource,
   NoneDataSource,
-  CfnResolver,
 } from 'aws-cdk-lib/aws-appsync';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
-import { IFunction, ILayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { IRole } from 'aws-cdk-lib/aws-iam';
+import { IFunction, ILayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import {
   AppSyncFunctionConfigurationProvider,
   DataSourceOptions,
-  SearchableDataSourceOptions,
   MappingTemplateProvider,
+  SearchableDataSourceOptions,
 } from './graphql-api-provider';
 import { VpcConfig } from './model-datasource';
 

@@ -1,8 +1,8 @@
 import { DirectiveNode, ObjectTypeDefinitionNode, parse } from 'graphql';
 import { cloneDeep } from 'lodash';
-import { getFieldNameFor } from '../../utils/operation-names';
 import { DirectiveWrapper } from '../../utils';
 import { needsDeepMerge } from '../../utils/directive-wrapper';
+import { getFieldNameFor } from '../../utils/operation-names';
 
 describe('Transformer Core Util Tests', () => {
   describe(': Directive Wrapper tests', () => {

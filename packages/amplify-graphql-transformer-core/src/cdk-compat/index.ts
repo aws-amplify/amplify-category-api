@@ -1,1 +1,1 @@
-export { S3MappingTemplate, MappingTemplate, InlineTemplate } from './template-asset';
+export { InlineTemplate, MappingTemplate, S3MappingTemplate } from './template-asset';

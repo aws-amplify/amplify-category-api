@@ -1,26 +1,26 @@
 import {
-  getNextAtomicUpdate,
-  toCreateTableInput,
-  getStreamUpdate,
-  getTtlUpdate,
-  getSseUpdate,
-  getPointInTimeRecoveryUpdate,
-  getDeletionProtectionUpdate,
-  extractOldTableInputFromEvent,
-  isTtlModified,
-} from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
-import * as ddbTableManagerLambda from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
-import * as CustomDDB from '../resources/amplify-dynamodb-table/amplify-table-types';
-import {
+  ContinuousBackupsDescription,
   TableDescription,
-  UpdateTableCommandInput,
-  UpdateTimeToLiveCommandInput,
   TimeToLiveDescription,
   UpdateContinuousBackupsCommandInput,
-  ContinuousBackupsDescription,
+  UpdateTableCommandInput,
+  UpdateTimeToLiveCommandInput,
 } from '@aws-sdk/client-dynamodb';
-import { extractTableInputFromEvent } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
 import { RequestType } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda-types';
+import * as ddbTableManagerLambda from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
+import {
+  extractOldTableInputFromEvent,
+  extractTableInputFromEvent,
+  getDeletionProtectionUpdate,
+  getNextAtomicUpdate,
+  getPointInTimeRecoveryUpdate,
+  getSseUpdate,
+  getStreamUpdate,
+  getTtlUpdate,
+  isTtlModified,
+  toCreateTableInput,
+} from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
+import * as CustomDDB from '../resources/amplify-dynamodb-table/amplify-table-types';
 
 jest.spyOn(ddbTableManagerLambda, 'getLambdaTags').mockReturnValue(
   Promise.resolve([

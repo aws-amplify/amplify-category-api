@@ -1,4 +1,4 @@
-import { print, parse } from 'graphql';
+import { parse, print } from 'graphql';
 import { applySchemaOverrides, findMatchingField } from '../schema-generator';
 
 jest.spyOn(global.console, 'warn');

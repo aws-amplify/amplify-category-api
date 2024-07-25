@@ -1,18 +1,17 @@
 /* eslint-disable */
-import path from 'path';
-import fs from 'fs-extra';
-import _ from 'lodash';
-import gql from 'graphql-tag';
 import { addApi, amplifyPush, updateAuthAddUserGroups } from 'amplify-category-api-e2e-core';
+import fs from 'fs-extra';
+import gql from 'graphql-tag';
+import path from 'path';
 
 import {
-  setupUser,
-  getUserPoolId,
-  getApiKey,
   configureAmplify,
-  signInUser,
+  getApiKey,
   getConfiguredAppsyncClientAPIKeyAuth,
   getConfiguredAppsyncClientCognitoAuth,
+  getUserPoolId,
+  setupUser,
+  signInUser,
 } from './authHelper';
 
 const GROUPNAME = 'Admin';

@@ -1,14 +1,14 @@
-import * as os from 'os';
-import { SchemaFile } from 'aws-cdk-lib/aws-appsync';
 import { isSqlStrategy } from '@aws-amplify/graphql-transformer-core';
-import { IAmplifyGraphqlDefinition } from './types';
+import { SchemaFile } from 'aws-cdk-lib/aws-appsync';
+import * as os from 'os';
 import { constructDataSourceStrategies } from './internal';
-import { CustomSqlDataSourceStrategy, ModelDataSourceStrategy } from './model-datasource-strategy-types';
 import {
   constructCustomSqlDataSourceStrategies,
   schemaByMergingDefinitions,
   validateDataSourceStrategy,
 } from './internal/data-source-config';
+import { CustomSqlDataSourceStrategy, ModelDataSourceStrategy } from './model-datasource-strategy-types';
+import { IAmplifyGraphqlDefinition } from './types';
 
 export const DEFAULT_MODEL_DATA_SOURCE_STRATEGY: ModelDataSourceStrategy = {
   dbType: 'DYNAMODB',

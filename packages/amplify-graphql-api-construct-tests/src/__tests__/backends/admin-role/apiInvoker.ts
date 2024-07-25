@@ -1,7 +1,7 @@
 import * as crypto from '@aws-crypto/sha256-js';
 import { defaultProvider } from '@aws-sdk/credential-provider-node';
-import { SignatureV4 } from '@aws-sdk/signature-v4';
 import { HttpRequest } from '@aws-sdk/protocol-http';
+import { SignatureV4 } from '@aws-sdk/signature-v4';
 import { default as fetch, Request } from 'node-fetch';
 import type { GraphqlProxiedLambdaResponse } from '../../../lambda-request';
 

@@ -5,7 +5,6 @@ import { HttpTransformer } from '@aws-amplify/graphql-http-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { MapsToTransformer, RefersToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { SqlTransformer } from '@aws-amplify/graphql-sql-transformer';
 import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
 import {
   BelongsToTransformer,
@@ -14,25 +13,26 @@ import {
   ManyToManyTransformer,
 } from '@aws-amplify/graphql-relational-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
-import {
-  AppSyncAuthConfiguration,
-  TransformerPluginProvider,
-  TransformerLog,
-  TransformerLogLevel,
-  NestedStackProvider,
-  AssetProvider,
-  SynthParameters,
-  TransformParameterProvider,
-} from '@aws-amplify/graphql-transformer-interfaces';
+import { SqlTransformer } from '@aws-amplify/graphql-sql-transformer';
+import { GraphQLTransform, ResolverConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 import type {
   DataSourceStrategiesProvider,
   RDSLayerMappingProvider,
   RDSSNSTopicMappingProvider,
   TransformParameters,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { GraphQLTransform, ResolverConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
-import { Construct } from 'constructs';
+import {
+  AppSyncAuthConfiguration,
+  AssetProvider,
+  NestedStackProvider,
+  SynthParameters,
+  TransformerLog,
+  TransformerLogLevel,
+  TransformerPluginProvider,
+  TransformParameterProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { Construct } from 'constructs';
 
 /**
  * Arguments passed into a TransformerFactory

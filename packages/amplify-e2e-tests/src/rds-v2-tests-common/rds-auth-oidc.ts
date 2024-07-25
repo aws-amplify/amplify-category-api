@@ -1,43 +1,43 @@
+import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import {
   addApi,
+  addAuthWithPreTokenGenerationTrigger,
   amplifyPush,
   createNewProjectDir,
   deleteDBInstance,
   deleteProject,
   deleteProjectDir,
-  addAuthWithPreTokenGenerationTrigger,
+  getProjectMeta,
   importRDSDatabase,
   initJSProjectWithProfile,
   setupRDSInstanceAndData,
   sleep,
   updateAuthAddUserGroups,
-  getProjectMeta,
 } from 'amplify-category-api-e2e-core';
-import { existsSync, writeFileSync, removeSync } from 'fs-extra';
+import { existsSync, removeSync, writeFileSync } from 'fs-extra';
 import generator from 'generate-password';
+import { gql } from 'graphql-tag';
 import path from 'path';
-import { schema as generateSchema, sqlCreateStatements } from '../__tests__/auth-test-schemas/oidc-provider';
 import {
-  createModelOperationHelpers,
-  configureAppSyncClients,
-  checkOperationResult,
-  checkListItemExistence,
   appendAmplifyInput,
+  checkListItemExistence,
+  checkOperationResult,
+  configureAppSyncClients,
+  createModelOperationHelpers,
   getAppSyncEndpoint,
-  updatePreAuthTrigger,
   getDefaultDatabasePort,
+  updatePreAuthTrigger,
 } from '../rds-v2-test-utils';
 import {
-  setupUser,
-  getUserPoolId,
-  signInUser,
-  getUserPoolIssUrl,
-  getAppClientIDWeb,
   configureAmplify,
+  getAppClientIDWeb,
   getConfiguredAppsyncClientOIDCAuth,
+  getUserPoolId,
+  getUserPoolIssUrl,
+  setupUser,
+  signInUser,
 } from '../schema-api-directives';
-import { gql } from 'graphql-tag';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { schema as generateSchema, sqlCreateStatements } from '../__tests__/auth-test-schemas/oidc-provider';
 import { SQL_TESTS_USE_BETA } from './sql-e2e-config';
 
 // to deal with bug in cognito-identity-js

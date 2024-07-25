@@ -1,4 +1,3 @@
-import path from 'path';
 import {
   $TSContext,
   $TSMeta,
@@ -10,26 +9,27 @@ import {
   pathManager,
   stateManager,
 } from '@aws-amplify/amplify-cli-core';
-import { AppSyncAuthConfiguration, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { collectDirectivesByTypeNames } from '@aws-amplify/graphql-transformer-core';
-import { getSanityCheckRules, loadProject } from 'graphql-transformer-core';
+import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
+import { AppSyncAuthConfiguration, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { Construct } from 'constructs';
 import fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
+import { getSanityCheckRules, loadProject } from 'graphql-transformer-core';
 import _ from 'lodash';
-import { printer } from '@aws-amplify/amplify-prompts';
-import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
-import { Construct } from 'constructs';
+import path from 'path';
 import { contextUtil } from '../category-utils/context-util';
 import { shouldEnableNodeToNodeEncryption } from '../provider-utils/awscloudformation/current-backend-state/searchable-node-to-node-encryption';
+import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
+import { searchablePushChecks } from './api-utils';
+import { OverrideConfig } from './cdk-compat/transform-manager';
+import { DESTRUCTIVE_UPDATES_FLAG, PARAMETERS_FILENAME, PROVIDER_NAME, ROOT_APPSYNC_S3_KEY } from './constants';
+import { applyFileBasedOverride } from './override';
 import { schemaHasSandboxModeEnabled, showGlobalSandboxModeWarning, showSandboxModePrompts } from './sandbox-mode-helpers';
 import { importTransformerModule } from './transformer-factory';
-import { AmplifyCLIFeatureFlagAdapter } from './amplify-cli-feature-flag-adapter';
-import { DESTRUCTIVE_UPDATES_FLAG, PARAMETERS_FILENAME, PROVIDER_NAME, ROOT_APPSYNC_S3_KEY } from './constants';
 import { TransformerProjectOptions } from './transformer-options-types';
-import { searchablePushChecks } from './api-utils';
 import { parseUserDefinedSlots } from './user-defined-slots';
-import { applyFileBasedOverride } from './override';
-import { OverrideConfig } from './cdk-compat/transform-manager';
 
 export const APPSYNC_RESOURCE_SERVICE = 'AppSync';
 

@@ -1,8 +1,8 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import { DocumentNode, ObjectTypeDefinitionNode, Kind, FieldDefinitionNode, parse } from 'graphql';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { DocumentNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode, parse } from 'graphql';
 import { AuthTransformer, SEARCHABLE_AGGREGATE_TYPES } from '..';
 
 const getObjectType = (doc: DocumentNode, type: string): ObjectTypeDefinitionNode | undefined =>

@@ -1,6 +1,6 @@
-import * as path from 'path';
 import { createNewProjectDir, deleteProjectDir, getDDBTable } from 'amplify-category-api-e2e-core';
-import { cdkDestroy, initCDKProject, cdkDeploy, updateCDKAppWithTemplate } from '../commands';
+import * as path from 'path';
+import { cdkDeploy, cdkDestroy, initCDKProject, updateCDKAppWithTemplate } from '../commands';
 
 jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
 

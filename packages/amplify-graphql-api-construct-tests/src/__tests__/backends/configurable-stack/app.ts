@@ -1,10 +1,4 @@
 #!/usr/bin/env node
-import 'source-map-support/register';
-import * as fs from 'fs';
-import * as path from 'path';
-import { App, Aspects, CfnOutput, Duration, IAspect, RemovalPolicy, Stack, TagManager, Tags } from 'aws-cdk-lib';
-import { CfnUserPoolGroup, UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
-import { CfnFunction, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
 import {
   AmplifyGraphqlApi,
   AmplifyGraphqlDefinition,
@@ -12,7 +6,13 @@ import {
   IAmplifyGraphqlDefinition,
   ModelDataSourceStrategy,
 } from '@aws-amplify/graphql-api-construct';
+import { App, Aspects, CfnOutput, Duration, IAspect, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { CfnUserPoolGroup, UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
+import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { IConstruct } from 'constructs';
+import * as fs from 'fs';
+import * as path from 'path';
+import 'source-map-support/register';
 
 // This app defines a CDK stack that is configured with various command files written into the project root directory. To use it:
 // - Write test definition(s) to `projRoot/*-test-definition.json`

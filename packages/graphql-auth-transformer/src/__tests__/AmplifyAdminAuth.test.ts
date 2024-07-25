@@ -1,5 +1,5 @@
-import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { GraphQLTransform } from 'graphql-transformer-core';
 import _ from 'lodash';
 import { ModelAuthTransformer } from '../ModelAuthTransformer';
 

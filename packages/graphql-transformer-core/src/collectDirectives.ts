@@ -1,16 +1,16 @@
 import {
-  ObjectTypeDefinitionNode,
   DirectiveNode,
-  InterfaceTypeDefinitionNode,
-  UnionTypeDefinitionNode,
-  ScalarTypeDefinitionNode,
-  InputObjectTypeDefinitionNode,
-  FieldDefinitionNode,
-  InputValueDefinitionNode,
-  EnumValueDefinitionNode,
   EnumTypeDefinitionNode,
-  parse,
+  EnumValueDefinitionNode,
+  FieldDefinitionNode,
+  InputObjectTypeDefinitionNode,
+  InputValueDefinitionNode,
+  InterfaceTypeDefinitionNode,
   Kind,
+  ObjectTypeDefinitionNode,
+  parse,
+  ScalarTypeDefinitionNode,
+  UnionTypeDefinitionNode,
 } from 'graphql';
 
 export function collectDirectiveNames(sdl: string): string[] {

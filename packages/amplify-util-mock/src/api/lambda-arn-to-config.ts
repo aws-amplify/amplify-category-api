@@ -1,9 +1,9 @@
-import { keys } from 'lodash';
-import { $TSContext, stateManager, getGraphQLTransformerFunctionDocLink, ApiCategoryFacade } from '@aws-amplify/amplify-cli-core';
-import _ = require('lodash');
 import { ServiceName } from '@aws-amplify/amplify-category-function';
-import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
+import { $TSContext, ApiCategoryFacade, getGraphQLTransformerFunctionDocLink, stateManager } from '@aws-amplify/amplify-cli-core';
+import { keys } from 'lodash';
 import { ProcessedLambdaFunction } from '../CFNParser/stack/types';
+import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
+import _ = require('lodash');
 
 /**
  * Attempts to match an arn object against the array of lambdas configured in the project

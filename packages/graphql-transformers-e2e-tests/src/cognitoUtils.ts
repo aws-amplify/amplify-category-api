@@ -1,21 +1,21 @@
 import Amplify, { Auth } from 'aws-amplify';
+import { CognitoIdentity, CognitoIdentityServiceProvider as CognitoClient } from 'aws-sdk';
 import {
+  AdminAddUserToGroupRequest,
   CreateGroupRequest,
   CreateGroupResponse,
-  AdminAddUserToGroupRequest,
-  CreateUserPoolResponse,
-  CreateUserPoolRequest,
   CreateUserPoolClientRequest,
   CreateUserPoolClientResponse,
+  CreateUserPoolRequest,
+  CreateUserPoolResponse,
   DeleteUserPoolRequest,
   DeleteUserRequest,
 } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { Cognito as cfnCognito, IAM as cfnIAM } from 'cloudform-types';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { IAM as cfnIAM, Cognito as cfnCognito } from 'cloudform-types';
-import { CognitoIdentityServiceProvider as CognitoClient, CognitoIdentity } from 'aws-sdk';
-import TestStorage from './TestStorage';
-import { resolveTestRegion } from './testSetup';
 import { DeploymentResources } from 'graphql-transformer-core';
+import { resolveTestRegion } from './testSetup';
+import TestStorage from './TestStorage';
 
 const region = resolveTestRegion();
 

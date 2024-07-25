@@ -1,8 +1,6 @@
-import { StringDataSourceAdapter, MySQLStringDataSourceAdapter } from '../datasource-adapter';
-import { Engine, Field, FieldType, Index, Model, Schema } from '../schema-representation';
-import { generateGraphQLSchema, isComputeExpression } from '../schema-generator';
+import { MySQLStringDataSourceAdapter, StringDataSourceAdapter } from '../datasource-adapter';
+import { Field, FieldType, Index } from '../schema-representation';
 import { schemas } from './__utils__/schemas';
-import { gql } from 'graphql-transformer-core';
 
 class TestStringDataSourceAdapter extends StringDataSourceAdapter {
   public getTablesList(): string[] {

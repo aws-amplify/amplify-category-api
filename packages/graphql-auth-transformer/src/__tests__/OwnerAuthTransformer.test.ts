@@ -1,9 +1,9 @@
 import { parse } from 'graphql';
-import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
-import { ResourceConstants } from 'graphql-transformer-common';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { ResourceConstants } from 'graphql-transformer-common';
+import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
 import { ModelAuthTransformer } from '../ModelAuthTransformer';
-import { getObjectType, getField } from './test-helpers';
+import { getField, getObjectType } from './test-helpers';
 
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {

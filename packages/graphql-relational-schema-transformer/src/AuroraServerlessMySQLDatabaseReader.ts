@@ -1,16 +1,16 @@
 import { toUpper } from 'graphql-transformer-common';
-import { TemplateContext, TableContext } from './RelationalDBSchemaTransformer';
-import {
-  getNamedType,
-  getNonNullType,
-  getInputValueDefinition,
-  getGraphQLTypeFromMySQLType,
-  getTypeDefinition,
-  getFieldDefinition,
-  getInputTypeDefinition,
-} from './RelationalDBSchemaTransformerUtils';
 import { AuroraDataAPIClient } from './AuroraDataAPIClient';
 import { IRelationalDBReader } from './IRelationalDBReader';
+import { TableContext, TemplateContext } from './RelationalDBSchemaTransformer';
+import {
+  getFieldDefinition,
+  getGraphQLTypeFromMySQLType,
+  getInputTypeDefinition,
+  getInputValueDefinition,
+  getNamedType,
+  getNonNullType,
+  getTypeDefinition,
+} from './RelationalDBSchemaTransformerUtils';
 
 /**
  * A class to manage interactions with a Aurora Serverless MySQL Relational Databse

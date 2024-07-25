@@ -1,20 +1,20 @@
-import { Construct } from 'constructs';
+import { getResourceName } from '@aws-amplify/graphql-transformer-core';
+import { CfnResource, NestedStack } from 'aws-cdk-lib';
 import {
+  CfnApiKey,
+  CfnDataSource,
+  CfnFunctionConfiguration,
   CfnGraphQLApi,
   CfnGraphQLSchema,
-  CfnApiKey,
   CfnResolver,
-  CfnFunctionConfiguration,
-  CfnDataSource,
   GraphqlApi,
 } from 'aws-cdk-lib/aws-appsync';
-import { CfnTable, Table, ITable } from 'aws-cdk-lib/aws-dynamodb';
+import { CfnTable, ITable, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { CfnRole, Role } from 'aws-cdk-lib/aws-iam';
-import { CfnResource, NestedStack } from 'aws-cdk-lib';
-import { getResourceName } from '@aws-amplify/graphql-transformer-core';
 import { CfnFunction, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
-import { AmplifyGraphqlApiResources, FunctionSlot } from '../types';
+import { Construct } from 'constructs';
 import { AmplifyDynamoDbTableWrapper } from '../amplify-dynamodb-table-wrapper';
+import { AmplifyGraphqlApiResources, FunctionSlot } from '../types';
 import { walkAndProcessNodes } from './construct-tree';
 
 /**

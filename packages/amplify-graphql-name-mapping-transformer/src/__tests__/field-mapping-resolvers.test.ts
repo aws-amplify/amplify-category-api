@@ -1,5 +1,5 @@
 import { FieldMapEntry, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { attachInputMappingSlot, attachResponseMappingSlot, attachFieldMappingSlot } from '../field-mapping-resolvers';
+import { attachFieldMappingSlot, attachInputMappingSlot, attachResponseMappingSlot } from '../field-mapping-resolvers';
 
 const addToSlot_mock = jest.fn();
 

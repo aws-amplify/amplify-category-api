@@ -1,26 +1,26 @@
-import path from 'path';
-import { existsSync } from 'fs';
 import {
-  amplifyPush,
-  deleteProject,
-  initJSProjectWithProfile,
   addApiWithoutSchema,
-  updateApiSchema,
-  updateApiWithMultiAuth,
+  addFunction,
+  addV1RDSDataSource,
+  amplifyPush,
+  amplifyPushForce,
+  amplifyPushUpdateForDependentModel,
   createNewProjectDir,
+  createRandomName,
+  deleteProject,
   deleteProjectDir,
   getAppSyncApi,
+  getBackendAmplifyMeta,
+  getDDBTable,
   getProjectMeta,
   getTransformConfig,
-  getDDBTable,
-  addFunction,
-  getBackendAmplifyMeta,
-  amplifyPushUpdateForDependentModel,
-  amplifyPushForce,
-  createRandomName,
-  addV1RDSDataSource,
+  initJSProjectWithProfile,
+  updateApiSchema,
+  updateApiWithMultiAuth,
 } from 'amplify-category-api-e2e-core';
+import { existsSync } from 'fs';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
+import path from 'path';
 
 describe('amplify add api (GraphQL)', () => {
   let projRoot: string;

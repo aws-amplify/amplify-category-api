@@ -7,6 +7,7 @@ import {
   cfnEquals,
   cfnGetAtt,
   cfnIf,
+  cfnImportValue,
   cfnJoin,
   cfnNot,
   cfnOr,
@@ -14,7 +15,6 @@ import {
   cfnSelect,
   cfnSplit,
   cfnSub,
-  cfnImportValue,
 } from './intrinsic-functions';
 
 const intrinsicFunctionMap = {

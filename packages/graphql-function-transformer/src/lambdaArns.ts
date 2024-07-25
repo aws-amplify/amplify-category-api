@@ -1,4 +1,4 @@
-import { Fn, Refs } from 'cloudform-types';
+import { Fn } from 'cloudform-types';
 import { ResourceConstants } from 'graphql-transformer-common';
 
 export function lambdaArnResource(name: string, region?: string) {

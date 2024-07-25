@@ -1,28 +1,28 @@
 import path = require('path');
-import { Transformer, TransformerContext, getDirectiveArguments, InvalidDirectiveError } from 'graphql-transformer-core';
 import { SearchableDirectiveV1 } from '@aws-amplify/graphql-directives';
-import { DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode, parse } from 'graphql';
-import {
-  makeNamedType,
-  blankObjectExtension,
-  makeField,
-  extensionWithFields,
-  blankObject,
-  makeListType,
-  makeInputValueDefinition,
-  STANDARD_SCALARS,
-  makeNonNullType,
-  ResolverResourceIDs,
-  SearchableResourceIDs,
-  ModelResourceIDs,
-  getBaseType,
-  ResourceConstants,
-} from 'graphql-transformer-common';
+import { DirectiveNode, InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode, parse } from 'graphql';
 import { Expression, str } from 'graphql-mapping-template';
 import {
+  blankObject,
+  blankObjectExtension,
+  extensionWithFields,
+  getBaseType,
+  makeField,
+  makeInputValueDefinition,
+  makeListType,
+  makeNamedType,
+  makeNonNullType,
+  ModelResourceIDs,
+  ResolverResourceIDs,
+  ResourceConstants,
+  SearchableResourceIDs,
+  STANDARD_SCALARS,
+} from 'graphql-transformer-common';
+import { getDirectiveArguments, InvalidDirectiveError, Transformer, TransformerContext } from 'graphql-transformer-core';
+import {
   makeSearchableScalarInputObject,
-  makeSearchableXFilterInputObject,
   makeSearchableSortDirectionEnumObject,
+  makeSearchableXFilterInputObject,
   makeSearchableXSortableFieldsEnumObject,
   makeSearchableXSortInputObject,
 } from './definitions';

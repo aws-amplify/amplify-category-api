@@ -1,10 +1,10 @@
 import {
-  TransformerProviderRegistry,
-  TransformerModelProvider,
   TransformerModelEnhancementProvider,
+  TransformerModelProvider,
+  TransformerProviderRegistry,
 } from '@aws-amplify/graphql-transformer-interfaces';
 
-import { ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode } from 'graphql';
+import { InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 
 export class TransformerContextProviderRegistry implements TransformerProviderRegistry {
   private dataSourceProviderRegistry: Map<string, TransformerModelProvider> = new Map();

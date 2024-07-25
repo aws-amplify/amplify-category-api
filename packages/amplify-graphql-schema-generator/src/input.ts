@@ -1,5 +1,5 @@
-import { print, InputObjectTypeDefinitionNode, DocumentNode } from 'graphql';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { DocumentNode, InputObjectTypeDefinitionNode, print } from 'graphql';
 
 type AmplifyInputEntry = {
   name: string;

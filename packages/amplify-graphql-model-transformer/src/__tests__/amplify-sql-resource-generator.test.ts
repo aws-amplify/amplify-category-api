@@ -1,13 +1,13 @@
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import {
-  MYSQL_DB_TYPE,
   constructDataSourceStrategies,
   getResourceNamesForStrategy,
+  MYSQL_DB_TYPE,
   validateModelSchema,
 } from '@aws-amplify/graphql-transformer-core';
-import { parse } from 'graphql';
 import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
-import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { parse } from 'graphql';
 import { ModelTransformer } from '../graphql-model-transformer';
 
 describe('ModelTransformer with SQL data sources:', () => {
