@@ -114,6 +114,7 @@ describe('References Migration', () => {
         }
       `,
     );
+    // the create mutations are later verified with list queries
     expect(gen1PrimaryResult.statusCode).toEqual(200);
 
     const gen1Primary = gen1PrimaryResult.body.data.createPrimary;

@@ -117,6 +117,7 @@ describe('Many-to-many Migration', () => {
         }
       `,
     );
+    // the create mutations are later verified with list queries
     expect(gen1PostResult.statusCode).toEqual(200);
 
     const gen1Post = gen1PostResult.body.data.createPost;

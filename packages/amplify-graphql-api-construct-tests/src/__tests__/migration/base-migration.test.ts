@@ -1,9 +1,5 @@
 import * as path from 'path';
-import {
-  createNewProjectDir,
-  deleteProjectDir,
-  deleteProject,
-} from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir, deleteProject } from 'amplify-category-api-e2e-core';
 import { initCDKProject, cdkDeploy, cdkDestroy, createGen1ProjectForMigration, deleteDDBTables } from '../../commands';
 import { graphql } from '../../graphql-request';
 import { TestDefinition, writeStackConfig, writeTestDefinitions } from '../../utils';
@@ -71,7 +67,7 @@ describe('Migration with basic schema', () => {
           provisionStrategy: 'IMPORTED_AMPLIFY_TABLE' as const,
           tableName: dataSourceMapping.Todo,
         },
-      }
+      },
     };
     writeStackConfig(gen2ProjRoot, { prefix: gen2ProjFolderName });
     writeTestDefinitions(testDefinitions, gen2ProjRoot);
@@ -91,6 +87,7 @@ describe('Migration with basic schema', () => {
         }
       `,
     );
+    // the create mutations are later verified with list queries
     expect(gen1Result.statusCode).toEqual(200);
 
     const gen1Todo = gen1Result.body.data.createTodo;
