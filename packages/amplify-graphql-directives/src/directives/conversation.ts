@@ -17,11 +17,16 @@ const name = 'conversation';
 
 const definition = /* GraphQL */ `
   directive @${name}(
-    aiModel: String,
-    functionName: String,
-    systemPrompt: String,
-    tools: [String]
+    aiModel: String
+    functionName: String
+    systemPrompt: String
+    tools: [ToolMap]
   ) on FIELD_DEFINITION
+
+  input ToolMap {
+    name: String
+    description: String
+  }
 `;
 const defaults = {};
 

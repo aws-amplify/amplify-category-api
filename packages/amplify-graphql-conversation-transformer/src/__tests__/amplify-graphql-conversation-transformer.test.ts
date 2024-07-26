@@ -63,7 +63,7 @@ test('conversation route valid schema', () => {
           aiModel: "Claude3Haiku",
           functionName: "conversation-handler",
           systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
-          tools: ["getTemperature", "plus"]
+          tools: [{ name: "myToolQuery", description: "does a thing" }, { name: "anotherToolQuery", description: "does a different thing" }]
         )
     }
   `;
@@ -106,7 +106,6 @@ test('conversation route valid schema', () => {
   expect(out.resolvers).toBeDefined();
   expect(out.resolvers).toMatchSnapshot();
 });
-
 
 test('conversation route without tools', () => {
   const authConfig: AppSyncAuthConfiguration = {
@@ -173,7 +172,7 @@ test('conversation route without tools', () => {
   ];
 
   const processed = new GraphQLTransform({ transformers }).preProcessSchema(parse(inputSchema));
-  console.log(print(processed))
+  console.log(print(processed));
 
   const out = testTransform({
     schema: inputSchema,

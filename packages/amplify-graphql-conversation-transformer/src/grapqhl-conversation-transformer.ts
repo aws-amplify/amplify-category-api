@@ -74,10 +74,15 @@ export type ConversationDirectiveConfiguration = {
   responseMutationInputTypeName: string;
   responseMutationName: string;
   systemPrompt: string;
-  tools: string[];
+  tools: ToolDefinition[];
   toolSpec: Tools;
   conversationModel: ConversationModel;
   messageModel: MessageModel;
+};
+
+type ToolDefinition = {
+  name: string;
+  description: string;
 };
 
 type Tools = {
@@ -105,8 +110,8 @@ type Property = {
   description: string;
 };
 
-const processTools = (toolNames: string[], ctx: TransformerContextProvider): Tools | undefined => {
-  if (!toolNames || toolNames.length === 0) {
+const processTools = (toolDefinitions: ToolDefinition[], ctx: TransformerContextProvider): Tools | undefined => {
+  if (!toolDefinitions || toolDefinitions.length === 0) {
     return undefined;
   }
   const { fields } = ctx.output.getType('Query') as ObjectTypeDefinitionNode;
@@ -116,11 +121,12 @@ const processTools = (toolNames: string[], ctx: TransformerContextProvider): Too
   }
 
   let tools: Tool[] = [];
-  for (const toolName of toolNames) {
-    const matchingQueryField = fields.find((field) => field.name.value === toolName);
+  for (const toolDefinition of toolDefinitions) {
+    const { name, description } = toolDefinition;
+    const matchingQueryField = fields.find((field) => field.name.value === name);
     if (!matchingQueryField) {
       // TODO: better error message.
-      throw new InvalidDirectiveError(`Tool ${toolName} defined in @conversation directive but no matching Query field definition`);
+      throw new InvalidDirectiveError(`Tool ${name} defined in @conversation directive but no matching Query field definition`);
     }
 
     let toolProperties: Record<string, Property> = {};
@@ -141,9 +147,8 @@ const processTools = (toolNames: string[], ctx: TransformerContextProvider): Too
 
     const tool: Tool = {
       toolSpec: {
-        name: toolName,
-        // Take description as directive input
-        description: toolName,
+        name,
+        description,
         inputSchema: {
           json: {
             type: 'object',
@@ -347,7 +352,10 @@ export class ConversationTransformer extends TransformerPluginBase {
       ctx.resolvers.addResolver('Subscription', onAssistantResponseSubscriptionFieldName, onAssistantResponseSubscriptionResolver);
       // ------ assitant response subscription resolver -----
 
-      const functionDataSourceScope = ctx.stackManager.getScopeFor(functionDataSourceId, `${capitalizedFieldName}ConversationDirectiveLambdaStack`);
+      const functionDataSourceScope = ctx.stackManager.getScopeFor(
+        functionDataSourceId,
+        `${capitalizedFieldName}ConversationDirectiveLambdaStack`,
+      );
       const functionDataSource = ctx.api.host.addLambdaDataSource(functionDataSourceId, referencedFunction, {}, functionDataSourceScope);
       const invokeLambdaFunction = invokeLambdaMappingTemplate(directive, ctx);
 
