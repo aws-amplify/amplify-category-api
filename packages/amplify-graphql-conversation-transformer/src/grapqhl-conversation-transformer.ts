@@ -205,7 +205,12 @@ export class ConversationTransformer extends TransformerPluginBase {
         );
       } else {
         const defaultConversationHandler = new ConversationHandler(functionStack, `${capitalizedFieldName}DefaultConversationHandler`, {
-          modelId: bedrockModelId,
+          allowedModels: [
+            {
+              modelId: bedrockModelId,
+              region: functionStack.region,
+            }
+          ]
         });
         functionDataSourceId = FunctionResourceIDs.FunctionDataSourceID(`${capitalizedFieldName}DefaultConversationHandler`);
         referencedFunction = defaultConversationHandler.resources.lambda;
