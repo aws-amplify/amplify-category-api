@@ -58,6 +58,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Effect } from 'aws-cdk-lib/aws-iam';
 import { overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
 // TODO why '@aws-amplify/backend-ai/conversation/constructs' doesn't work here? Due to file system import ?
+// Edit: This is because of tsconfig in data repo, i.e.   "moduleResolution": "node", see https://stackoverflow.com/questions/58990498/package-json-exports-field-not-working-with-typescript
 import * as backendAi from '@aws-amplify/backend-ai';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 
