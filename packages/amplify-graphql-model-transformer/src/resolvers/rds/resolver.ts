@@ -197,7 +197,7 @@ export const createRdsLambda = (
  * because it would have no effect.
  */
 export const createLayerVersionCustomResource = (
-  scope: Construct, 
+  scope: Construct,
   resourceNames: SQLLambdaResourceNames,
   context: TransformerContextProvider,
 ): AwsCustomResource => {
@@ -246,7 +246,7 @@ export const createLayerVersionCustomResource = (
  * into the customer account.
  */
 export const createSNSTopicARNCustomResource = (
-  scope: Construct, 
+  scope: Construct,
   resourceNames: SQLLambdaResourceNames,
   context: TransformerContextProvider,
 ): AwsCustomResource => {
@@ -279,7 +279,7 @@ export const createSNSTopicARNCustomResource = (
       },
       // Make the physical ID change each time we do a deployment, so we always check for the latest version. This means we will never have
       // a strictly no-op deployment, but the SQL Lambda configuration won't change unless the actual layer value changes
-      physicalResourceId: PhysicalResourceId.of(physicalIdValue)
+      physicalResourceId: PhysicalResourceId.of(physicalIdValue),
     },
     policy: AwsCustomResourcePolicy.fromSdkCalls({
       resources: [manifestArn],

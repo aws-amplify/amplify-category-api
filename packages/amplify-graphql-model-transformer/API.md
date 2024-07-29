@@ -5,7 +5,10 @@
 ```ts
 
 import { AppSyncDataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
+import { AwsCustomResource } from 'aws-cdk-lib/custom-resources';
 import * as cdk from 'aws-cdk-lib';
+import { CfnMapping } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveNode } from 'graphql';
@@ -14,15 +17,23 @@ import { EnumTypeDefinitionNode } from 'graphql';
 import { Expression } from 'graphql-mapping-template';
 import { FieldDefinitionNode } from 'graphql';
 import { FieldWrapper } from '@aws-amplify/graphql-transformer-core';
+import { GraphQLAPIProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { InputObjectDefinitionWrapper } from '@aws-amplify/graphql-transformer-core';
 import { InputObjectTypeDefinitionNode } from 'graphql';
 import { InputValueDefinitionNode } from 'graphql';
+import { IRole } from 'aws-cdk-lib/aws-iam';
 import { MutationFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode } from 'graphql';
+import { ProvisionedConcurrencyConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import { QueryFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { QuietReferenceNode } from 'graphql-mapping-template';
+import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
+import { RDSSNSTopicMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { SQLLambdaResourceNames } from '@aws-amplify/graphql-transformer-core';
+import { SqlModelDataSourceDbConnectionConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import { SubscriptionFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { SyncConfig } from '@aws-amplify/graphql-transformer-core';
 import { TransformerBeforeStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -34,6 +45,7 @@ import { TransformerResolverProvider } from '@aws-amplify/graphql-transformer-in
 import { TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerValidationStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
 export const addDirectivesToField: (ctx: TransformerTransformSchemaStepContextProvider, typeName: string, fieldName: string, directives: Array<DirectiveNode>) => void;
@@ -46,6 +58,36 @@ export const addModelConditionInputs: (ctx: TransformerTransformSchemaStepContex
 
 // @public (undocumented)
 export const createEnumModelFilters: (ctx: TransformerTransformSchemaStepContextProvider, type: ObjectTypeDefinitionNode) => InputObjectTypeDefinitionNode[];
+
+// @public (undocumented)
+export const createLayerVersionCustomResource: (scope: Construct, resourceNames: SQLLambdaResourceNames, context: TransformerContextProvider) => AwsCustomResource;
+
+// @public (undocumented)
+export const createRdsLambda: (scope: Construct, apiGraphql: GraphQLAPIProvider, lambdaRole: IRole, layerVersionArn: string, resourceNames: SQLLambdaResourceNames, credentialStorageMethod: CredentialStorageMethod | undefined, environment?: {
+    [key: string]: string;
+} | undefined, sqlLambdaVpcConfig?: VpcConfig, sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig) => IFunction;
+
+// @public (undocumented)
+export const createRdsLambdaRole: (roleName: string, scope: Construct, secretEntry: SqlModelDataSourceDbConnectionConfig, resourceNames: SQLLambdaResourceNames, sslCertSsmPath?: string | string[]) => IRole;
+
+// @public (undocumented)
+export const createRdsPatchingLambda: (scope: Construct, apiGraphql: GraphQLAPIProvider, lambdaRole: IRole, resourceNames: SQLLambdaResourceNames, environment?: {
+    [key: string]: string;
+} | undefined, sqlLambdaVpcConfig?: VpcConfig) => IFunction;
+
+// @public (undocumented)
+export const createRdsPatchingLambdaRole: (roleName: string, scope: Construct, functionArn: string, resourceNames: SQLLambdaResourceNames) => IRole;
+
+// @public (undocumented)
+export const createSNSTopicARNCustomResource: (scope: Construct, resourceNames: SQLLambdaResourceNames, context: TransformerContextProvider) => AwsCustomResource;
+
+// @public (undocumented)
+export enum CredentialStorageMethod {
+    // (undocumented)
+    SECRETS_MANAGER = "SECRETS_MANAGER",
+    // (undocumented)
+    SSM = "SSM"
+}
 
 // @public (undocumented)
 export const defaultAutoId: () => QuietReferenceNode;
@@ -85,6 +127,30 @@ export const extendTypeWithDirectives: (ctx: TransformerTransformSchemaStepConte
 export const generateApplyDefaultsToInputTemplate: (target: string) => Expression;
 
 // @public (undocumented)
+export const generateCreateInitSlotTemplate: (modelConfig: ModelDirectiveConfiguration, initializeIdField: boolean) => string;
+
+// @public (undocumented)
+export const generateDefaultLambdaResponseMappingTemplate: (isSyncEnabled: boolean, mutation?: boolean) => string;
+
+// @public (undocumented)
+export const generateGetLambdaResponseTemplate: (isSyncEnabled: boolean) => string;
+
+// @public (undocumented)
+export const generateLambdaCreateRequestTemplate: (tableName: string, operationName: string, ctx: TransformerContextProvider) => string;
+
+// @public (undocumented)
+export const generateLambdaDeleteRequestTemplate: (tableName: string, operationName: string, modelIndexFields: string[], ctx: TransformerContextProvider) => string;
+
+// @public (undocumented)
+export const generateLambdaListRequestTemplate: (tableName: string, operation: string, operationName: string, ctx: TransformerContextProvider) => string;
+
+// @public (undocumented)
+export const generateLambdaRequestTemplate: (tableName: string, operation: string, operationName: string, ctx: TransformerContextProvider, emptyAuthFilter?: boolean) => string;
+
+// @public (undocumented)
+export const generateLambdaUpdateRequestTemplate: (tableName: string, operationName: string, modelIndexFields: string[], ctx: TransformerContextProvider) => string;
+
+// @public (undocumented)
 export function generateModelScalarFilterInputName(typeName: string, includeFilter: boolean, isSubscriptionFilter?: boolean): string;
 
 // @public (undocumented)
@@ -92,6 +158,12 @@ export const generatePostAuthExpression: (isSandboxModeEnabled: boolean, generic
 
 // @public (undocumented)
 export const generateResolverKey: (typeName: string, fieldName: string) => string;
+
+// @public (undocumented)
+export const generateUpdateInitSlotTemplate: (modelConfig: ModelDirectiveConfiguration) => string;
+
+// @public (undocumented)
+export const getSsmEndpoint: (scope: Construct, resourceNames: SQLLambdaResourceNames, sqlLambdaVpcConfig?: VpcConfig) => string;
 
 // @public (undocumented)
 export const getSubscriptionFilterInputName: (name: string) => string;
@@ -317,6 +389,9 @@ export interface ModelVTLGenerator {
 export const OPERATION_KEY = "__operation";
 
 // @public (undocumented)
+export type OPERATIONS = 'CREATE' | 'UPDATE' | 'DELETE' | 'GET' | 'LIST' | 'SYNC';
+
+// @public (undocumented)
 export const propagateDirectivesToNestedTypes: (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode, seenNonModelTypes: Set<string>, serviceDirectives: DirectiveNode[]) => void;
 
 // Warning: (ae-forgotten-export) The symbol "ModelResourceGenerator" needs to be exported by the entry point index.d.ts
@@ -363,6 +438,12 @@ export class RDSModelVTLGenerator implements ModelVTLGenerator {
 
 // @public (undocumented)
 export const removeSubscriptionFilterInputAttribute: (ctx: TransformerTransformSchemaStepContextProvider, typeName: string, fieldName: string) => void;
+
+// @public (undocumented)
+export const setRDSLayerMappings: (scope: Construct, mapping: RDSLayerMapping, resourceNames: SQLLambdaResourceNames) => CfnMapping;
+
+// @public (undocumented)
+export const setRDSSNSTopicMappings: (scope: Construct, mapping: RDSSNSTopicMapping, resourceNames: SQLLambdaResourceNames) => CfnMapping;
 
 // @public (undocumented)
 export enum SubscriptionLevel {

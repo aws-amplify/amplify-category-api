@@ -146,6 +146,16 @@ export interface AssetProvider {
     provide: (scope: Construct, name: string, props: AssetProps) => S3Asset;
 }
 
+// @public (undocumented)
+export interface BranchIdentifier {
+    // (undocumented)
+    branchId: string;
+    // (undocumented)
+    branchName: string;
+    // (undocumented)
+    deploymentType: 'branch';
+}
+
 // Warning: (ae-forgotten-export) The symbol "NoneDataSourceProvider" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -178,6 +188,9 @@ export interface DefaultDynamoDbModelDataSourceStrategy extends ModelDataSourceS
     // (undocumented)
     readonly provisionStrategy: 'DEFAULT';
 }
+
+// @public (undocumented)
+export type DeploymentIdentifier = SandboxIdentifier | BranchIdentifier;
 
 // @public (undocumented)
 export interface DynamoDbDataSourceOptions extends DataSourceOptions {
@@ -369,6 +382,14 @@ export interface S3MappingTemplateProvider {
     getTemplateHash: () => string;
     // (undocumented)
     type: MappingTemplateType.S3_LOCATION;
+}
+
+// @public (undocumented)
+export interface SandboxIdentifier {
+    // (undocumented)
+    deploymentId: string;
+    // (undocumented)
+    deploymentType: 'sandbox';
 }
 
 // @public (undocumented)
@@ -590,6 +611,8 @@ export interface TransformerContextProvider extends DataSourceStrategiesProvider
     authConfig: AppSyncAuthConfiguration;
     // (undocumented)
     dataSources: TransformerDataSourceManagerProvider;
+    // (undocumented)
+    deploymentIdentifier?: DeploymentIdentifier;
     // (undocumented)
     getResolverConfig: <ResolverConfig>() => ResolverConfig | undefined;
     // (undocumented)

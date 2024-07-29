@@ -23,6 +23,7 @@ import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces'
 import { DataSourceStrategiesProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DefaultDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DefinitionNode } from 'graphql';
+import { DeploymentIdentifier } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveDefinitionNode } from 'graphql';
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql/language';
@@ -309,7 +310,7 @@ export class GraphQLTransform {
     // Warning: (ae-forgotten-export) The symbol "TransformOption" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    transform({ assetProvider, dataSourceStrategies, nestedStackProvider, parameterProvider, rdsLayerMapping, rdsSnsTopicMapping, schema, scope, sqlDirectiveDataSourceStrategies, synthParameters, }: TransformOption): void;
+    transform({ assetProvider, dataSourceStrategies, nestedStackProvider, parameterProvider, rdsLayerMapping, rdsSnsTopicMapping, schema, scope, sqlDirectiveDataSourceStrategies, synthParameters, deploymentIdentifier, }: TransformOption): void;
 }
 
 // @public (undocumented)

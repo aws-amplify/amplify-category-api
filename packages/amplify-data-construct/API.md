@@ -15,6 +15,7 @@ import { AmplifyDynamoDbTableWrapper } from '@aws-amplify/graphql-api-construct'
 import { ApiKeyAuthorizationConfig } from '@aws-amplify/graphql-api-construct';
 import { AuthorizationModes } from '@aws-amplify/graphql-api-construct';
 import { AutomergeConflictResolutionStrategy } from '@aws-amplify/graphql-api-construct';
+import { BranchIdentifier } from '@aws-amplify/graphql-api-construct';
 import { ConflictDetectionType } from '@aws-amplify/graphql-api-construct';
 import { ConflictResolution } from '@aws-amplify/graphql-api-construct';
 import { ConflictResolutionStrategy } from '@aws-amplify/graphql-api-construct';
@@ -23,6 +24,7 @@ import { CustomConflictResolutionStrategy } from '@aws-amplify/graphql-api-const
 import { CustomSqlDataSourceStrategy } from '@aws-amplify/graphql-api-construct';
 import { DataStoreConfiguration } from '@aws-amplify/graphql-api-construct';
 import { DefaultDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-api-construct';
+import { DeploymentIdentifier } from '@aws-amplify/graphql-api-construct';
 import { FunctionSlot } from '@aws-amplify/graphql-api-construct';
 import { FunctionSlotBase } from '@aws-amplify/graphql-api-construct';
 import { FunctionSlotOverride } from '@aws-amplify/graphql-api-construct';
@@ -42,6 +44,7 @@ import { PartialTranslationBehavior } from '@aws-amplify/graphql-api-construct';
 import { ProvisionedConcurrencyConfig } from '@aws-amplify/graphql-api-construct';
 import { ProvisionedThroughput } from '@aws-amplify/graphql-api-construct';
 import { QueryFunctionSlot } from '@aws-amplify/graphql-api-construct';
+import { SandboxIdentifier } from '@aws-amplify/graphql-api-construct';
 import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-api-construct';
 import { SQLLambdaModelDataSourceStrategyFactory } from '@aws-amplify/graphql-api-construct';
 import { SqlModelDataSourceDbConnectionConfig } from '@aws-amplify/graphql-api-construct';
@@ -82,6 +85,8 @@ export { AuthorizationModes }
 
 export { AutomergeConflictResolutionStrategy }
 
+export { BranchIdentifier }
+
 export { ConflictDetectionType }
 
 export { ConflictResolution }
@@ -97,6 +102,8 @@ export { CustomSqlDataSourceStrategy }
 export { DataStoreConfiguration }
 
 export { DefaultDynamoDbModelDataSourceStrategy }
+
+export { DeploymentIdentifier }
 
 export { FunctionSlot }
 
@@ -135,6 +142,8 @@ export { ProvisionedConcurrencyConfig }
 export { ProvisionedThroughput }
 
 export { QueryFunctionSlot }
+
+export { SandboxIdentifier }
 
 export { SQLLambdaModelDataSourceStrategy }
 

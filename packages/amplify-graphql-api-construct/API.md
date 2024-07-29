@@ -128,6 +128,7 @@ export interface AmplifyGraphqlApiProps {
     readonly conflictResolution?: ConflictResolution;
     readonly dataStoreConfiguration?: DataStoreConfiguration;
     readonly definition: IAmplifyGraphqlDefinition;
+    readonly deploymentIdentifier?: DeploymentIdentifier;
     readonly functionNameMap?: Record<string, IFunction>;
     readonly functionSlots?: FunctionSlot[];
     readonly outputStorageStrategy?: IBackendOutputStorageStrategy;
@@ -179,6 +180,16 @@ export interface AutomergeConflictResolutionStrategy extends ConflictResolutionS
 }
 
 // @public
+export interface BranchIdentifier {
+    // (undocumented)
+    readonly branchId: string;
+    // (undocumented)
+    readonly branchName: string;
+    // (undocumented)
+    readonly deploymentType: 'branch';
+}
+
+// @public
 export type ConflictDetectionType = 'VERSION' | 'NONE';
 
 // @public @deprecated
@@ -219,6 +230,9 @@ export interface DefaultDynamoDbModelDataSourceStrategy {
     // (undocumented)
     readonly provisionStrategy: 'DEFAULT';
 }
+
+// @public
+export type DeploymentIdentifier = SandboxIdentifier | BranchIdentifier;
 
 // @public
 export type FunctionSlot = MutationFunctionSlot | QueryFunctionSlot | SubscriptionFunctionSlot;
@@ -346,6 +360,14 @@ export interface ProvisionedThroughput {
 export interface QueryFunctionSlot extends FunctionSlotBase {
     readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preDataLoad' | 'postDataLoad' | 'finish';
     readonly typeName: 'Query';
+}
+
+// @public
+export interface SandboxIdentifier {
+    // (undocumented)
+    readonly deploymentId: string;
+    // (undocumented)
+    readonly deploymentType: 'sandbox';
 }
 
 // @public

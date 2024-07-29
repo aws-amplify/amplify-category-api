@@ -8,6 +8,7 @@ import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-inter
 import { AssetProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Construct } from 'constructs';
 import type { DataSourceStrategiesProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import type { DeploymentIdentifier } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -39,6 +40,7 @@ export type ExecuteTransformConfig = TransformConfig & DataSourceStrategiesProvi
     parameterProvider?: TransformParameterProvider;
     assetProvider: AssetProvider;
     synthParameters: SynthParameters;
+    deploymentIdentifier?: DeploymentIdentifier;
 };
 
 // @public (undocumented)
