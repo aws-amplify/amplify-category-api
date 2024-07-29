@@ -57,7 +57,8 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import { Effect } from 'aws-cdk-lib/aws-iam';
 import { overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
-import { ConversationHandler } from '@aws-amplify/backend-ai';
+// TODO why '@aws-amplify/backend-ai/conversation/constructs' doesn't work here? Due to file system import ?
+import * as backendAi from '@aws-amplify/backend-ai';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 
 export type ConversationDirectiveConfiguration = {
@@ -204,7 +205,7 @@ export class ConversationTransformer extends TransformerPluginBase {
           }),
         );
       } else {
-        const defaultConversationHandler = new ConversationHandler(functionStack, `${capitalizedFieldName}DefaultConversationHandler`, {
+        const defaultConversationHandler = new backendAi.conversation.constructs.ConversationHandler(functionStack, `${capitalizedFieldName}DefaultConversationHandler`, {
           allowedModels: [
             {
               modelId: bedrockModelId,
