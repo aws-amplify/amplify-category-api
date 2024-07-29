@@ -27,9 +27,9 @@ import {
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
   InterfaceTypeDefinitionNode,
+  Kind,
   NamedTypeNode,
   ObjectTypeDefinitionNode,
-  TypeSystemDefinitionNode,
 } from 'graphql';
 import {
   FunctionResourceIDs,
@@ -93,9 +93,15 @@ type Tool = {
   toolSpec: ToolSpec;
 };
 
+type GraphQlRequestInputMetadata = {
+  selectionSet: string[];
+  propertyTypes: Record<string, string>;
+};
+
 type ToolSpec = {
   name: string;
   description: string;
+  gqlRequestInputMetadata?: GraphQlRequestInputMetadata;
   inputSchema: {
     json: {
       type: string;
@@ -108,6 +114,16 @@ type ToolSpec = {
 type Property = {
   type: string;
   description: string;
+};
+
+const getObjectTypeFromName = (name: string, ctx: TransformerContextProvider): ObjectTypeDefinitionNode => {
+  const node = ctx.inputDocument.definitions.find((d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === name) as
+    | ObjectTypeDefinitionNode
+    | undefined;
+  if (!node) {
+    throw Error(`Could not find type definition for ${name}`);
+  }
+  return node;
 };
 
 const processTools = (toolDefinitions: ToolDefinition[], ctx: TransformerContextProvider): Tools | undefined => {
@@ -139,11 +155,46 @@ const processTools = (toolDefinitions: ToolDefinition[], ctx: TransformerContext
         const description = type;
         toolProperties = { ...toolProperties, [fieldArgument.name.value]: { type, description } };
 
+        // TODO: Handle list types
         if (fieldArgument.type.kind === 'NonNullType') {
           required.push(fieldArgument.name.value);
         }
       }
     }
+
+    const empty: GraphQlRequestInputMetadata = {
+      selectionSet: [],
+      propertyTypes: {},
+    };
+
+    const gqlRequestInputMetadata: GraphQlRequestInputMetadata | undefined = fieldArguments?.reduce((acc, fieldArgument) => {
+      const { selectionSet, propertyTypes } = acc;
+      const name = fieldArgument.name.value;
+      const returnType = matchingQueryField.type;
+      if (returnType.kind === 'ListType') {
+        // TODO: handle list types
+        throw Error('not supporting list type responses');
+      } else if (returnType.kind === 'NamedType') {
+        const type = getObjectTypeFromName(returnType.name.value, ctx);
+        const fields = type.fields?.map((field) => field.name.value);
+        if (fields) {
+          selectionSet.push(...fields);
+        } else {
+          // TODO: handle
+        }
+      } else if (returnType.kind === 'NonNullType') {
+        const baseType = getBaseType(returnType);
+        const type = getObjectTypeFromName(baseType, ctx);
+        const fields = type.fields?.map((field) => field.name.value);
+        if (fields) {
+          selectionSet.push(...fields);
+        } else {
+          // TODO: handle
+        }
+      }
+      propertyTypes[name] = getBaseType(fieldArgument.type);
+      return { selectionSet, propertyTypes };
+    }, empty);
 
     const tool: Tool = {
       toolSpec: {
@@ -156,6 +207,7 @@ const processTools = (toolDefinitions: ToolDefinition[], ctx: TransformerContext
             required,
           },
         },
+        gqlRequestInputMetadata,
       },
     };
     tools.push(tool);
@@ -285,9 +337,9 @@ export class ConversationTransformer extends TransformerPluginBase {
       let functionDataSourceId: string;
       let referencedFunction: IFunction;
       if (directive.functionName) {
-        functionDataSourceId = FunctionResourceIDs.FunctionDataSourceID(directive.functionName);
+        functionDataSourceId = FunctionResourceIDs.FunctionDataSourceID(directive.functionName!);
         referencedFunction = lambda.Function.fromFunctionAttributes(functionStack, `${functionDataSourceId}Function`, {
-          functionArn: lambdaArnResource(directive.functionName),
+          functionArn: lambdaArnResource(directive.functionName!),
         });
 
         // -------------------------------------------------------------------------------------------------------------------------------
@@ -306,7 +358,12 @@ export class ConversationTransformer extends TransformerPluginBase {
         );
       } else {
         const defaultConversationHandler = new ConversationHandler(functionStack, `${capitalizedFieldName}DefaultConversationHandler`, {
-          modelId: bedrockModelId,
+          allowedModels: [
+            {
+              modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
+              region: 'us-west-2',
+            },
+          ],
         });
         functionDataSourceId = FunctionResourceIDs.FunctionDataSourceID(`${capitalizedFieldName}DefaultConversationHandler`);
         referencedFunction = defaultConversationHandler.resources.lambda;
