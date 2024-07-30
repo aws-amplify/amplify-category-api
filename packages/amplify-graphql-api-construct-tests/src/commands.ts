@@ -11,10 +11,7 @@ import {
   sleep,
   updateApiSchema,
 } from 'amplify-category-api-e2e-core';
-import {
-  DynamoDBClient,
-  DeleteTableCommand,
-} from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient, DeleteTableCommand } from '@aws-sdk/client-dynamodb';
 
 /**
  * Retrieve the path to the `npx` executable for interacting with the aws-cdk cli.
@@ -176,7 +173,7 @@ export const updateCDKAppWithTemplate = (cwd: string, templatePath: string): voi
 
 /**
  * Helper function to create a gen 1 project with for migration.
- * 
+ *
  * @param name project name
  * @param projRoot project root directory
  * @param schema schema file to use
@@ -220,4 +217,4 @@ export const createGen1ProjectForMigration = async (
 export const deleteDDBTables = async (tableNames: string[]): Promise<void> => {
   const client = new DynamoDBClient({ region: process.env.CLI_REGION || 'us-west-2' });
   await Promise.allSettled(tableNames.map((tableName) => client.send(new DeleteTableCommand({ TableName: tableName }))));
-}
+};
