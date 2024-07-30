@@ -15,7 +15,6 @@ import type {
   DataSourceStrategiesProvider,
   RDSLayerMappingProvider,
   RDSSNSTopicMappingProvider,
-  DeploymentIdentifier,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { Aws, CfnOutput, Fn, Stack } from 'aws-cdk-lib';
@@ -96,7 +95,6 @@ export interface TransformOption extends DataSourceStrategiesProvider, RDSLayerM
   assetProvider: AssetProvider;
   synthParameters: SynthParameters;
   schema: string;
-  deploymentIdentifier?: DeploymentIdentifier;
 }
 
 export type StackMapping = { [resourceId: string]: string };
@@ -197,7 +195,6 @@ export class GraphQLTransform {
     scope,
     sqlDirectiveDataSourceStrategies,
     synthParameters,
-    deploymentIdentifier,
   }: TransformOption): void {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
@@ -216,7 +213,6 @@ export class GraphQLTransform {
       stackMapping: this.stackMappingOverrides,
       synthParameters,
       transformParameters: this.transformParameters,
-      deploymentIdentifier,
     });
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),

@@ -7,17 +7,22 @@ import { SQLLambdaResourceNames } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 describe('CustomResources', () => {
-    const resourceNames = {
-        sqlLayerVersionResolverCustomResource: 'TestLayerVersionCustomResource',
-        sqlSNSTopicARNResolverCustomResource: 'TestSNSTopicARNCustomResource'
-    } as SQLLambdaResourceNames;
-    const context = {
-        deploymentIdentifier: {
-            deploymentType: 'sandbox'
-        }
-    } as TransformerContextProvider;
-    const layerVersionCustomResourceType = 'Custom::SQLLayerVersionCustomResource';
-    const snsTopicARNCustomResourceType = 'Custom::SQLSNSTopicARNCustomResource';
+  const resourceNames = {
+    sqlLayerVersionResolverCustomResource: 'TestLayerVersionCustomResource',
+    sqlSNSTopicARNResolverCustomResource: 'TestSNSTopicARNCustomResource',
+  } as SQLLambdaResourceNames;
+  const context = {
+    synthParameters: {
+      amplifyEnvironmentName: 'testAmplifyEnvironmentName',
+      apiName: 'testAPIName',
+      deploymentIdentifier: {
+        deploymentType: 'sandbox',
+        deploymentId: 'testDeploymentId',
+      },
+    },
+  } as TransformerContextProvider;
+  const layerVersionCustomResourceType = 'Custom::SQLLayerVersionCustomResource';
+  const snsTopicARNCustomResourceType = 'Custom::SQLSNSTopicARNCustomResource';
 
     let app: App;
     let stack: Stack;

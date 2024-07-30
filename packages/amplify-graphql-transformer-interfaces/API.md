@@ -502,6 +502,7 @@ export type SynthParameters = {
     identityPoolId?: string;
     adminRoles?: string[];
     enableIamAccess?: boolean;
+    deploymentIdentifier?: DeploymentIdentifier;
 };
 
 // @public (undocumented)
@@ -944,6 +945,7 @@ export interface VpcConfig {
 // Warnings were encountered during analysis:
 //
 // src/graphql-api-provider.ts:36:3 - (ae-forgotten-export) The symbol "OpenIDConnectConfig" needs to be exported by the entry point index.d.ts
+// src/transformer-context/synth-parameters.ts:10:3 - (ae-forgotten-export) The symbol "DeploymentIdentifier" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
