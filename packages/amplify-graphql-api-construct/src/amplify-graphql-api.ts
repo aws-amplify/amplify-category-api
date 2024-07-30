@@ -204,6 +204,7 @@ export class AmplifyGraphqlApi extends Construct {
         amplifyEnvironmentName: amplifyEnvironmentName,
         apiName: props.apiName ?? id,
         ...authSynthParameters,
+        deploymentIdentifier,
       },
       schema: definition.schema,
       userDefinedSlots: parseUserDefinedSlots(separatedFunctionSlots),
@@ -225,7 +226,6 @@ export class AmplifyGraphqlApi extends Construct {
       rdsLayerMapping: undefined,
       rdsSnsTopicMapping: undefined,
       ...getDataSourceStrategiesProvider(definition),
-      deploymentIdentifier,
     };
 
     executeTransform(executeTransformConfig);

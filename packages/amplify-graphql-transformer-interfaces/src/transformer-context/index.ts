@@ -17,9 +17,6 @@ export {
   TransformerSecrets,
   TransformerTransformSchemaStepContextProvider,
   TransformerValidationStepContextProvider,
-  DeploymentIdentifier,
-  SandboxIdentifier,
-  BranchIdentifier,
 } from './transformer-context-provider';
 export { TransformerSchemaHelperProvider } from './schema-helper-provider';
 export { TransformerPreProcessContextProvider } from './transformer-preprocess-context-provider';

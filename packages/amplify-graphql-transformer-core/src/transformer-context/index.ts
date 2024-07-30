@@ -19,7 +19,6 @@ import {
   TransformParameterProvider,
   TransformParameters,
   RDSSNSTopicMapping,
-  DeploymentIdentifier,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode } from 'graphql';
 import { Construct } from 'constructs';
@@ -66,7 +65,6 @@ export interface TransformerContextConstructorOptions
   stackMapping: Record<string, string>;
   synthParameters: SynthParameters;
   transformParameters: TransformParameters;
-  deploymentIdentifier?: DeploymentIdentifier;
 }
 
 export class TransformerContext implements TransformerContextProvider {
@@ -106,8 +104,6 @@ export class TransformerContext implements TransformerContextProvider {
 
   public readonly inputDocument: DocumentNode;
 
-  public readonly deploymentIdentifier?: DeploymentIdentifier;
-
   constructor(options: TransformerContextConstructorOptions) {
     const {
       assetProvider,
@@ -124,7 +120,6 @@ export class TransformerContext implements TransformerContextProvider {
       stackMapping,
       synthParameters,
       transformParameters,
-      deploymentIdentifier,
     } = options;
     this.authConfig = authConfig;
     this.sqlDirectiveDataSourceStrategies = sqlDirectiveDataSourceStrategies ?? [];
@@ -143,7 +138,6 @@ export class TransformerContext implements TransformerContextProvider {
     this.assetProvider = assetProvider;
     this.synthParameters = synthParameters;
     this.transformParameters = transformParameters;
-    this.deploymentIdentifier = deploymentIdentifier;
   }
 
   /**
