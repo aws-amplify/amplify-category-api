@@ -55,7 +55,6 @@ import { WritableDraft } from 'immer/dist/internal';
 import { dedent } from 'ts-dedent';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
-import { Effect } from 'aws-cdk-lib/aws-iam';
 import { overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
 // TODO why '@aws-amplify/backend-ai/conversation/constructs' doesn't work here? Due to file system import ?
 // Edit: This is because of tsconfig in data repo, i.e.   "moduleResolution": "node", see https://stackoverflow.com/questions/58990498/package-json-exports-field-not-working-with-typescript
@@ -179,7 +178,6 @@ export class ConversationTransformer extends TransformerPluginBase {
 
       const bedrockModelId = getBedrockModelId(directive.aiModel);
 
-      // TODO: Support single function for multiple routes.
       // TODO: Do we really need to create a nested stack here?
       const functionStack = ctx.stackManager.createStack(`${capitalizedFieldName}ConversationDirectiveLambdaStack`);
       let functionDataSourceId: string;
@@ -189,22 +187,6 @@ export class ConversationTransformer extends TransformerPluginBase {
         referencedFunction = lambda.Function.fromFunctionAttributes(functionStack, `${functionDataSourceId}Function`, {
           functionArn: lambdaArnResource(directive.functionName),
         });
-
-        // -------------------------------------------------------------------------------------------------------------------------------
-        // TODO: This should probs be deleted. Adding the policy to the IFunction we have here doesn't work
-        const invokeModelPolicyStatement = new cdk.aws_iam.PolicyStatement({
-          actions: ['bedrock:InvokeModel'],
-          effect: Effect.ALLOW,
-          resources: [`arn:aws:bedrock:\${AWS::Region}::foundation-model/${bedrockModelId}`],
-        });
-
-
-        referencedFunction.role?.attachInlinePolicy(
-          new cdk.aws_iam.Policy(functionStack, 'ConversationRouteLambdaRolePolicyBedrockConverse', {
-            statements: [invokeModelPolicyStatement],
-            policyName: 'ConversationRouteLambdaRolePolicyBedrockConverse',
-          }),
-        );
       } else {
         const defaultConversationHandler = new backendAi.conversation.constructs.ConversationHandler(functionStack, `${capitalizedFieldName}DefaultConversationHandler`, {
           allowedModels: [
