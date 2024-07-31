@@ -209,11 +209,11 @@ export const createLayerVersionCustomResource = (
 
   const resourceName = resourceNames.sqlLayerVersionResolverCustomResource;
 
-  // if deployment type is sandbox, use id in the format: resourceName-YYYY-MM-DD to avoid multiple deployments in the same day
-  // if deployment type is branch, use id in the original format
+  // If deployment type is sandbox, use only ${resourceName} as a fixed id
+  // Otherwise, add a unique timestamp to id
   let physicalIdValue: string;
-  if (context?.synthParameters?.deploymentIdentifier?.deploymentType === 'sandbox') {
-    physicalIdValue = `${resourceName}-${new Date().toISOString().substring(0, 10)}`;
+  if (isSandboxDeployment(context)) {
+    physicalIdValue = `${resourceName}`;
   } else {
     physicalIdValue = `${resourceName}-${Date.now().toString()}`;
   }
@@ -258,11 +258,11 @@ export const createSNSTopicARNCustomResource = (
 
   const resourceName = resourceNames.sqlSNSTopicARNResolverCustomResource;
 
-  // if deployment type is sandbox, use id in the format: resourceName-YYYY-MM-DD to avoid multiple deployments in the same day
-  // if deployment type is branch, use id in the original format
+  // If deployment type is sandbox, use only ${resourceName} as a fixed id
+  // Otherwise, add a unique timestamp to id
   let physicalIdValue: string;
-  if (context?.synthParameters?.deploymentIdentifier?.deploymentType === 'sandbox') {
-    physicalIdValue = `${resourceName}-${new Date().toISOString().substring(0, 10)}`;
+  if (isSandboxDeployment(context)) {
+    physicalIdValue = `${resourceName}`;
   } else {
     physicalIdValue = `${resourceName}-${Date.now().toString()}`;
   }
@@ -288,6 +288,13 @@ export const createSNSTopicARNCustomResource = (
   });
 
   return customResource;
+};
+
+// Type predicate to check if the deployment type is 'sandbox'
+export const isSandboxDeployment = (
+  context: TransformerContextProvider
+): context is TransformerContextProvider & { deploymentIdentifier: { deploymentType: 'sandbox' } } => {
+  return context?.synthParameters?.deploymentIdentifier?.deploymentType === 'sandbox';
 };
 
 const addVpcEndpoint = (
