@@ -50,10 +50,10 @@ describe('CustomResources', () => {
         const createProperties = JSON.parse(customResource.Properties.Create['Fn::Join'][1].join(''));
         const updateProperties = JSON.parse(customResource.Properties.Update['Fn::Join'][1].join(''));
 
-        const expectedPhysicalId = `TestLayerVersionCustomResource-${new Date().toISOString().substring(0, 10)}`;
-        expect(createProperties.physicalResourceId.id).toEqual(expectedPhysicalId);
-        expect(updateProperties.physicalResourceId.id).toEqual(expectedPhysicalId);
-    });
+    const expectedPhysicalId = 'TestLayerVersionCustomResource';
+    expect(createProperties.physicalResourceId.id).toEqual(expectedPhysicalId);
+    expect(updateProperties.physicalResourceId.id).toEqual(expectedPhysicalId);
+  });
 
     it('should create a SNS topic ARN custom resource with correct physical ID format for sandbox deployment', () => {
         createSNSTopicARNCustomResource(stack, resourceNames, context);
@@ -74,8 +74,8 @@ describe('CustomResources', () => {
         const createProperties = JSON.parse(customResource.Properties.Create['Fn::Join'][1].join(''));
         const updateProperties = JSON.parse(customResource.Properties.Update['Fn::Join'][1].join(''));
 
-        const expectedPhysicalId = `TestSNSTopicARNCustomResource-${new Date().toISOString().substring(0, 10)}`;
-        expect(createProperties.physicalResourceId.id).toEqual(expectedPhysicalId);
-        expect(updateProperties.physicalResourceId.id).toEqual(expectedPhysicalId);
-    });
-})
+    const expectedPhysicalId = 'TestSNSTopicARNCustomResource';
+    expect(createProperties.physicalResourceId.id).toEqual(expectedPhysicalId);
+    expect(updateProperties.physicalResourceId.id).toEqual(expectedPhysicalId);
+  });
+});
