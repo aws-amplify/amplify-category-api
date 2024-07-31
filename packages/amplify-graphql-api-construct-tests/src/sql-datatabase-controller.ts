@@ -9,9 +9,11 @@ import {
   RDSConfig,
   SqlEngine,
   setupRDSInstanceAndData,
+  setupRDSClusterAndData,
   storeDbConnectionConfig,
   storeDbConnectionStringConfig,
   storeDbConnectionConfigWithSecretsManager,
+  deleteDBCluster,
 } from 'amplify-category-api-e2e-core';
 import {
   isSqlModelDataSourceSecretsManagerDbConnectionConfig,
@@ -49,27 +51,22 @@ export class SqlDatatabaseController {
   constructor(private readonly setupQueries: Array<string>, private readonly options: RDSConfig) {}
 
   setupDatabase = async (): Promise<SqlDatabaseDetails> => {
-    console.log(`Setting up database '${this.options.identifier}'`);
+    let dbConfig;
+    if (this.options.engine === 'postgres') {
+      dbConfig = await setupRDSClusterAndData(this.options, this.setupQueries);
+    } else {
+      dbConfig = await setupRDSInstanceAndData(this.options, this.setupQueries);
+    }
 
-    const dbConfig = await setupRDSInstanceAndData(this.options, this.setupQueries);
     if (!dbConfig) {
       throw new Error('Failed to setup RDS instance');
     }
 
-    const { secretArn } = await storeDbConnectionConfigWithSecretsManager({
-      region: this.options.region,
-      username: this.options.username,
-      password: dbConfig.password,
-      secretName: `${this.options.identifier}-secret`,
-    });
-    if (!secretArn) {
-      throw new Error('Failed to store db connection config for secrets manager');
-    }
     const dbConnectionConfigSecretsManager = {
       databaseName: this.options.dbname,
       hostname: dbConfig.endpoint,
       port: dbConfig.port,
-      secretArn,
+      secretArn: dbConfig.secretArn,
     };
     console.log(`Stored db connection config in Secrets manager: ${JSON.stringify(dbConnectionConfigSecretsManager)}`);
 
@@ -166,7 +163,11 @@ export class SqlDatatabaseController {
       return;
     }
 
-    await deleteDBInstance(this.options.identifier, this.options.region);
+    if (this.options.engine === 'postgres') {
+      await deleteDBCluster(this.options.identifier, this.options.region);
+    } else {
+      await deleteDBInstance(this.options.identifier, this.options.region);
+    }
 
     const { connectionConfigs } = this.databaseDetails;
 
