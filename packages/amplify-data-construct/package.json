@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/data-construct",
-  "version": "1.9.3",
+  "version": "1.9.4-update-awaiter-s3-key.0",
   "description": "AppSync GraphQL Api Construct using Amplify GraphQL Transformer - Aliased to use `Data` name scheme.",
   "repository": {
     "type": "git",
@@ -75,7 +75,7 @@
   "dependencies": {
     "@aws-amplify/backend-output-schemas": "^0.4.0",
     "@aws-amplify/backend-output-storage": "^0.2.2",
-    "@aws-amplify/graphql-api-construct": "1.11.3",
+    "@aws-amplify/graphql-api-construct": "1.11.4-update-awaiter-s3-key.0",
     "@aws-amplify/graphql-auth-transformer": "3.6.4",
     "@aws-amplify/graphql-default-value-transformer": "2.3.12",
     "@aws-amplify/graphql-directives": "1.1.0",

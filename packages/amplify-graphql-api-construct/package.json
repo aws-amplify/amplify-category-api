@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-api-construct",
-  "version": "1.11.3",
+  "version": "1.11.4-update-awaiter-s3-key.0",
   "description": "AppSync GraphQL Api Construct using Amplify GraphQL Transformer.",
   "repository": {
     "type": "git",

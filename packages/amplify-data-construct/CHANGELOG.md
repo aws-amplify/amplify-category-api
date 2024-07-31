@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.4-update-awaiter-s3-key.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.9.3...@aws-amplify/data-construct@1.9.4-update-awaiter-s3-key.0) (2024-07-31)
+
+**Note:** Version bump only for package @aws-amplify/data-construct
+
 ## [1.9.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.9.2...@aws-amplify/data-construct@1.9.3) (2024-07-25)
 
 **Note:** Version bump only for package @aws-amplify/data-construct
