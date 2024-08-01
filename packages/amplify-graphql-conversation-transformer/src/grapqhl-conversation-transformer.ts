@@ -34,6 +34,7 @@ import {
   makeDirective,
   makeField,
   makeInputValueDefinition,
+  makeListType,
   makeNamedType,
   makeNonNullType,
   makeValueNode,
@@ -463,21 +464,9 @@ const makeAssistantResponseMutationInput = (messageModelName: string): InputObje
     kind: 'InputObjectTypeDefinition',
     name: { kind: 'Name', value: inputName },
     fields: [
-      {
-        kind: 'InputValueDefinition',
-        name: { kind: 'Name', value: 'conversationId' },
-        type: makeNamedType('ID'),
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: { kind: 'Name', value: 'content' },
-        type: makeNamedType('String'),
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: { kind: 'Name', value: 'associatedUserMessageId' },
-        type: makeNamedType('ID'),
-      },
+      makeInputValueDefinition('conversationId', makeNamedType('ID')),
+      makeInputValueDefinition('content', makeListType(makeNamedType('ContentBlockInput'))),
+      makeInputValueDefinition('associatedUserMessageId', makeNamedType('ID')),
     ],
   };
 };

@@ -29,7 +29,6 @@ export const readHistoryMappingTemplate = (fieldName: string): { req: MappingTem
           index,
           scanIndexForward: false,
         }
-
       }
       `);
 
@@ -41,12 +40,12 @@ export const readHistoryMappingTemplate = (fieldName: string): { req: MappingTem
         const messagesWithAssistantResponse = ctx.result.items
           .filter((message) => message.assistantContent !== undefined)
           .reduce((acc, current) => {
-              acc.push({ role: 'user', content: [{ text: current.content }] });
-              acc.push({ role: 'assistant', content: [{ text: current.assistantContent }] });
+              acc.push({ role: 'user', content: current.content });
+              acc.push({ role: 'assistant', content: current.assistantContent });
               return acc;
           }, [])
 
-        const currentMessage = { role: 'user', content: [{ text: ctx.prev.result.content }] };
+        const currentMessage = { role: 'user', content: ctx.prev.result.content };
         const items = [...messagesWithAssistantResponse, currentMessage];
         return { items };
       }`);

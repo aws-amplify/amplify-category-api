@@ -122,7 +122,7 @@ const makeConversationMessageModel = (
   const content = makeField('content', [], makeListType(makeNamedType('ContentBlock')));
   const context = makeField('context', [], makeNamedType('AWSJSON'));
   const uiComponents = makeField('uiComponents', [], makeListType(makeNamedType('AWSJSON')));
-  const assistantContent = makeField('assistantContent', [], makeNamedType('String'));
+  const assistantContent = makeField('assistantContent', [], makeListType(makeNamedType('ContentBlock')));
 
   const object = {
     ...blankObject(modelName),
