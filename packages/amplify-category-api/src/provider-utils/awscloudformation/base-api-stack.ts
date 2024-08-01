@@ -15,7 +15,7 @@ import { NETWORK_STACK_LOGICAL_ID } from '../../category-constants';
 import Container from './docker-compose/ecs-objects/container';
 import { GitHubSourceActionInfo, PipelineWithAwaiter } from './pipeline-with-awaiter';
 
-const PIPELINE_AWAITER_ZIP = 'custom-resource-pipeline-awaiter.zip';
+const PIPELINE_AWAITER_ZIP = 'custom-resource-pipeline-awaiter-18.zip';
 
 export enum DEPLOYMENT_MECHANISM {
   /**
