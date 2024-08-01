@@ -22,7 +22,7 @@ export const assistantMutationResolver = (): { req: MappingTemplateProvider; res
                 key: { id: associatedUserMessageId },
                 condition: {
                     owner: { eq: owner },
-                    sessionId: { eq: conversationId }
+                    conversationId: { eq: conversationId }
                 },
                 update: {
                     assistantContent: content,
@@ -50,8 +50,8 @@ export const assistantMutationResolver = (): { req: MappingTemplateProvider; res
             return {
               id: associatedUserMessageId,
               content,
-              sessionId: conversationId,
-              sender: 'assistant',
+              conversationId,
+              role: 'assistant',
               owner: ctx.stash.owner,
               createdAt,
               updatedAt,

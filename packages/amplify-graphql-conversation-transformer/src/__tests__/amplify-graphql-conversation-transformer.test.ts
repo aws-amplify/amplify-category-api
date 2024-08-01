@@ -43,27 +43,27 @@ test('conversation route valid schema', () => {
       plus(a: Int, b: Int): Int
     }
 
-    enum ConversationMessageSender {
+    enum ConversationParticipantRole {
       user
       assistant
     }
 
     interface ConversationMessage {
       id: ID!
-      sessionId: ID!
-      sender: ConversationMessageSender
+      conversationId: ID!
+      role: ConversationParticipantRole
       content: String
       context: AWSJSON
       uiComponents: [AWSJSON]
     }
 
     type Mutation {
-        pirateChat(id: ID, sessionId: ID!, content: String): ConversationMessage
+        pirateChat(id: ID, conversationId: ID!, content: String): ConversationMessage
         @conversation(
           aiModel: "Claude3Haiku",
           functionName: "conversation-handler",
           systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
-          tools: [{ name: "myToolQuery", description: "does a thing" }, { name: "anotherToolQuery", description: "does a different thing" }]
+          tools: [{ name: "getTemperature", description: "does a thing" }, { name: "plus", description: "does a different thing" }]
         )
     }
   `;
@@ -128,22 +128,22 @@ test('conversation route without tools', () => {
       bar: Int
     }
 
-    enum ConversationMessageSender {
+    enum ConversationParticipantRole {
       user
       assistant
     }
 
     interface ConversationMessage {
       id: ID!
-      sessionId: ID!
-      sender: ConversationMessageSender
+      conversationId: ID!
+      role: ConversationParticipantRole
       content: String
       context: AWSJSON
       uiComponents: [AWSJSON]
     }
 
     type Mutation {
-        pirateChat(id: ID, sessionId: ID!, content: String): ConversationMessage
+        pirateChat(id: ID, conversationId: ID!, content: String): ConversationMessage
         @conversation(
           aiModel: "Claude3Haiku",
           functionName: "conversation-handler",

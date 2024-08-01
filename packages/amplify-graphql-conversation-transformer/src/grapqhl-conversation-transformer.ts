@@ -26,15 +26,11 @@ import {
   FieldDefinitionNode,
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
-  InterfaceTypeDefinitionNode,
-  Kind,
-  NamedTypeNode,
-  ObjectTypeDefinitionNode,
+  InterfaceTypeDefinitionNode, NamedTypeNode,
+  ObjectTypeDefinitionNode
 } from 'graphql';
 import {
-  FunctionResourceIDs,
-  getBaseType,
-  makeArgument,
+  FunctionResourceIDs, makeArgument,
   makeDirective,
   makeField,
   makeInputValueDefinition,
@@ -42,7 +38,7 @@ import {
   makeNonNullType,
   makeValueNode,
   ResolverResourceIDs,
-  ResourceConstants,
+  ResourceConstants
 } from 'graphql-transformer-common';
 import produce from 'immer';
 import { WritableDraft } from 'immer/dist/internal';
@@ -61,9 +57,10 @@ import { getBedrockModelId } from './utils/bedrock-model-id';
 import { conversationMessageSubscriptionMappingTamplate } from './resolvers/assistant-messages-subscription-resolver';
 import { createConversationModel, ConversationModel } from './graphql-types/session-model';
 import { createMessageModel, MessageModel } from './graphql-types/message-model';
-import { convertGraphQlTypeToJsonSchemaType } from './utils/graphql-json-schema-type';
 import { ConversationHandler } from '@aws-amplify/backend-ai';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { type ToolDefinition, type Tools, processTools } from './utils/tools';
+
 
 export type ConversationDirectiveConfiguration = {
   parent: ObjectTypeDefinitionNode;
@@ -80,141 +77,7 @@ export type ConversationDirectiveConfiguration = {
   messageModel: MessageModel;
 };
 
-type ToolDefinition = {
-  name: string;
-  description: string;
-};
 
-type Tools = {
-  tools: Tool[];
-};
-
-type Tool = {
-  toolSpec: ToolSpec;
-};
-
-type GraphQlRequestInputMetadata = {
-  selectionSet: string[];
-  propertyTypes: Record<string, string>;
-};
-
-type ToolSpec = {
-  name: string;
-  description: string;
-  gqlRequestInputMetadata?: GraphQlRequestInputMetadata;
-  inputSchema: {
-    json: {
-      type: string;
-      properties: Record<string, Property>;
-      required: string[];
-    };
-  };
-};
-
-type Property = {
-  type: string;
-  description: string;
-};
-
-const getObjectTypeFromName = (name: string, ctx: TransformerContextProvider): ObjectTypeDefinitionNode => {
-  const node = ctx.inputDocument.definitions.find((d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === name) as
-    | ObjectTypeDefinitionNode
-    | undefined;
-  if (!node) {
-    throw Error(`Could not find type definition for ${name}`);
-  }
-  return node;
-};
-
-const processTools = (toolDefinitions: ToolDefinition[], ctx: TransformerContextProvider): Tools | undefined => {
-  if (!toolDefinitions || toolDefinitions.length === 0) {
-    return undefined;
-  }
-  const { fields } = ctx.output.getType('Query') as ObjectTypeDefinitionNode;
-  if (!fields) {
-    // TODO: better error message.
-    throw new InvalidDirectiveError('tools must be queries -- no queries found');
-  }
-
-  let tools: Tool[] = [];
-  for (const toolDefinition of toolDefinitions) {
-    const { name, description } = toolDefinition;
-    const matchingQueryField = fields.find((field) => field.name.value === name);
-    if (!matchingQueryField) {
-      // TODO: better error message.
-      throw new InvalidDirectiveError(`Tool ${name} defined in @conversation directive but no matching Query field definition`);
-    }
-
-    let toolProperties: Record<string, Property> = {};
-    let required: string[] = [];
-    const fieldArguments = matchingQueryField.arguments;
-    if (fieldArguments && fieldArguments.length > 0) {
-      for (const fieldArgument of fieldArguments) {
-        const type = convertGraphQlTypeToJsonSchemaType(getBaseType(fieldArgument.type));
-        // TODO: How do we allow this to be defined in the directive?
-        const description = type;
-        toolProperties = { ...toolProperties, [fieldArgument.name.value]: { type, description } };
-
-        // TODO: Handle list types
-        if (fieldArgument.type.kind === 'NonNullType') {
-          required.push(fieldArgument.name.value);
-        }
-      }
-    }
-
-    const empty: GraphQlRequestInputMetadata = {
-      selectionSet: [],
-      propertyTypes: {},
-    };
-
-    const gqlRequestInputMetadata: GraphQlRequestInputMetadata | undefined = fieldArguments?.reduce((acc, fieldArgument) => {
-      const { selectionSet, propertyTypes } = acc;
-      const name = fieldArgument.name.value;
-      const returnType = matchingQueryField.type;
-      if (returnType.kind === 'ListType') {
-        // TODO: handle list types
-        throw Error('not supporting list type responses');
-      } else if (returnType.kind === 'NamedType') {
-        const type = getObjectTypeFromName(returnType.name.value, ctx);
-        const fields = type.fields?.map((field) => field.name.value);
-        if (fields) {
-          selectionSet.push(...fields);
-        } else {
-          // TODO: handle
-        }
-      } else if (returnType.kind === 'NonNullType') {
-        const baseType = getBaseType(returnType);
-        const type = getObjectTypeFromName(baseType, ctx);
-        const fields = type.fields?.map((field) => field.name.value);
-        if (fields) {
-          selectionSet.push(...fields);
-        } else {
-          // TODO: handle
-        }
-      }
-      propertyTypes[name] = getBaseType(fieldArgument.type);
-      return { selectionSet, propertyTypes };
-    }, empty);
-
-    const tool: Tool = {
-      toolSpec: {
-        name,
-        description,
-        inputSchema: {
-          json: {
-            type: 'object',
-            properties: toolProperties,
-            required,
-          },
-        },
-        gqlRequestInputMetadata,
-      },
-    };
-    tools.push(tool);
-  }
-
-  return { tools };
-};
 
 export class ConversationTransformer extends TransformerPluginBase {
   private directives: ConversationDirectiveConfiguration[] = [];
@@ -259,7 +122,7 @@ export class ConversationTransformer extends TransformerPluginBase {
     const capitalizedFieldName = capitalizeFirstLetter(config.field.name.value);
     const conversationModelName = `Conversation${capitalizedFieldName}`;
     const messageModelName = `ConversationMessage${capitalizedFieldName}`;
-    const referenceFieldName = 'sessionId';
+    const referenceFieldName = 'conversationId';
     if (definition.type.kind !== 'NamedType' || definition.type.name.value !== 'ConversationMessage') {
       throw new InvalidDirectiveError('@conversation return type must be ConversationMessage');
     }
@@ -300,16 +163,11 @@ export class ConversationTransformer extends TransformerPluginBase {
       throw new Error('No conversation directives found despite expecting them in mutateSchema of conversation-transformer');
     }
     const document: DocumentNode = produce(ctx.inputDocument, (draft: WritableDraft<DocumentNode>) => {
-      // once
-      // const conversationEventSender = makeConversationEventSenderType();
-      // draft.definitions.push(conversationEventSender as WritableDraft<EnumTypeDefinitionNode>);
-
-      // for each directive
       for (const conversationDirectiveField of conversationDirectiveFields) {
         const fieldName = capitalizeFirstLetter(conversationDirectiveField.name.value);
         const conversationModelName = `Conversation${fieldName}`;
         const messageModelName = `ConversationMessage${fieldName}`;
-        const referenceFieldName = 'sessionId';
+        const referenceFieldName = 'conversationId';
 
         const { conversationModel } = createConversationModel(conversationModelName, messageModelName, referenceFieldName);
         const { messageModel } = createMessageModel(messageModelName, conversationModelName, referenceFieldName, named);
@@ -418,7 +276,7 @@ export class ConversationTransformer extends TransformerPluginBase {
 
       const messageModelName = directive.messageModel.messageModel.name.value;
       const conversationModelName = directive.conversationModel.conversationModel.name.value;
-      const referenceFieldName = 'sessionId';
+      const referenceFieldName = 'conversationId';
       const messageModel = directive.messageModel.messageModel;
 
       const conversationMessagesTable = getTable(ctx, messageModel);
@@ -426,7 +284,7 @@ export class ConversationTransformer extends TransformerPluginBase {
       const gsiPartitionKeyType = 'S';
       const gsiSortKeyName = 'createdAt';
       const gsiSortKeyType = 'S';
-      const indexName = 'gsi-ConversationMessage.sessionId.createdAt';
+      const indexName = 'gsi-ConversationMessage.conversationId.createdAt';
       addGlobalSecondaryIndex(
         conversationMessagesTable,
         indexName,
@@ -678,7 +536,7 @@ const makeConversationMessageSubscription = (
   const awsSubscribeDirective = makeDirective('aws_subscribe', [makeArgument('mutations', makeValueNode([onMutationName]))]);
   const cognitoAuthDirective = makeDirective('aws_cognito_user_pools', []);
 
-  const args: InputValueDefinitionNode[] = [makeInputValueDefinition('sessionId', makeNamedType('ID'))];
+  const args: InputValueDefinitionNode[] = [makeInputValueDefinition('conversationId', makeNamedType('ID'))];
   const subscriptionField = makeField(subscriptionName, args, makeNamedType(conversationMessageTypeName), [
     awsSubscribeDirective,
     cognitoAuthDirective,

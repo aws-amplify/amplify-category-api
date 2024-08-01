@@ -10,7 +10,7 @@ export const verifySessionOwnerMappingTemplate = (): { req: MappingTemplateProvi
         const query = {
           expression: 'id = :id',
           expressionValues: util.dynamodb.toMapValues({
-            ':id': ctx.args.sessionId
+            ':id': ctx.args.conversationId
           })
         };
 

@@ -83,7 +83,7 @@ const createMessageSessionFieldBelongsToDirective = (referenceFieldName: string)
 };
 
 const createMessageSessionField = (belongsToDirective: DirectiveNode, typeName: string): FieldDefinitionNode => {
-  return makeField('session', [], makeNamedType(typeName), [belongsToDirective]);
+  return makeField('conversation', [], makeNamedType(typeName), [belongsToDirective]);
 };
 
 const makeConversationMessageModel = (
@@ -108,7 +108,7 @@ const makeConversationMessageModel = (
     {
       conversationSessionId: ID!
       session: ConversationSession<route-name> @belongsTo(references: ["conversationSessionId"])
-      sender: ConversationEventSenderType! // "user" | "assistant"
+      role: ConversationEventSenderType! // "user" | "assistant"
       message: String!
       context: AWSJSON
       uiComponents: [AWSJSON]
@@ -117,9 +117,9 @@ const makeConversationMessageModel = (
 
   // fields
   const id = makeField('id', [], wrapNonNull(makeNamedType('ID')));
-  const sessionId = makeField(referenceFieldName, [], wrapNonNull(makeNamedType('ID')));
-  const sender = makeField('sender', [], makeNamedType('ConversationMessageSender'));
-  const content = makeField('content', [], makeNamedType('String'));
+  const conversationId = makeField(referenceFieldName, [], wrapNonNull(makeNamedType('ID')));
+  const role = makeField('role', [], makeNamedType('ConversationParticipantRole'));
+  const content = makeField('content', [], makeListType(makeNamedType('ContentBlock')));
   const context = makeField('context', [], makeNamedType('AWSJSON'));
   const uiComponents = makeField('uiComponents', [], makeListType(makeNamedType('AWSJSON')));
   const assistantContent = makeField('assistantContent', [], makeNamedType('String'));
@@ -127,7 +127,7 @@ const makeConversationMessageModel = (
   const object = {
     ...blankObject(modelName),
     interfaces: [conversationMessageInterface],
-    fields: [id, sessionId, sessionField, sender, content, context, uiComponents, assistantContent],
+    fields: [id, conversationId, sessionField, role, content, context, uiComponents, assistantContent],
     directives: typeDirectives,
   };
 

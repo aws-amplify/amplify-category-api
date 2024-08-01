@@ -8,19 +8,19 @@ export const readHistoryMappingTemplate = (fieldName: string): { req: MappingTem
     // #set( $ctx.args.filter = { "and": [ { "or": $authRuntimeFilter }, $ctx.args.filter ]} )
     const req = MappingTemplate.inlineTemplateFromString(dedent`
       export function request(ctx) {
-        const { sessionId } = ctx.args;
+        const { conversationId } = ctx.args;
         const { authFilter } = ctx.stash;
 
         const limit = 100;
         const query = {
-          expression: 'sessionId = :sessionId',
+          expression: 'conversationId = :conversationId',
           expressionValues: util.dynamodb.toMapValues({
-            ':sessionId': ctx.args.sessionId
+            ':conversationId': ctx.args.conversationId
           })
         };
 
         const filter = JSON.parse(util.transform.toDynamoDBFilterExpression(authFilter));
-        const index = 'gsi-ConversationMessage.sessionId.createdAt';
+        const index = 'gsi-ConversationMessage.conversationId.createdAt';
 
         return {
           operation: 'Query',

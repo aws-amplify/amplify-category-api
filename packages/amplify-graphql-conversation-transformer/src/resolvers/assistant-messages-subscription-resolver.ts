@@ -36,7 +36,7 @@ export const conversationMessageSubscriptionMappingTamplate = (): { req: Mapping
         if (!isAuthorized && ctx.stash.authFilter.length === 0) {
           util.unauthorized();
         }
-        ctx.args.filter = { ...ctx.args.filter, and: [{ sessionId: { eq: ctx.args.sessionId  }}]};
+        ctx.args.filter = { ...ctx.args.filter, and: [{ conversationId: { eq: ctx.args.conversationId  }}]};
         return { version: '2018-05-29', payload: {} };
       }
     `);

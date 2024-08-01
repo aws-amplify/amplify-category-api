@@ -103,8 +103,8 @@ export const invokeLambdaMappingTemplate = (
         const response = {
             __typename: '${config.messageModel.messageModel.name.value}',
             id: ctx.stash.defaultValues.id,
-            sessionId: ctx.args.sessionId,
-            sender: 'user',
+            conversationId: ctx.args.conversationId,
+            role: 'user',
             content: ctx.args.content,
             createdAt: ctx.stash.defaultValues.createdAt,
             updatedAt: ctx.stash.defaultValues.updatedAt,

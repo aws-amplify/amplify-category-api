@@ -12,7 +12,7 @@ export const writeMessageToTableMappingTemplate = (fieldName: string): { req: Ma
       const defaultValues = ctx.stash.defaultValues ?? {};
       const message = {
           __typename: 'ConversationMessage${fieldName}',
-          sender: 'user',
+          role: 'user',
           ...args,
           ...defaultValues,
       };
