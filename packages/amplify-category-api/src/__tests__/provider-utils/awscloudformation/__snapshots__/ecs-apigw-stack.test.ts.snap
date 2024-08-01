@@ -204,7 +204,7 @@ Object {
       "Type": "String",
     },
     "awaiterS3Key": Object {
-      "Default": "custom-resource-pipeline-awaiter.zip",
+      "Default": "custom-resource-pipeline-awaiter-18.zip",
       "Type": "String",
     },
     "deploymentBucketName": Object {
