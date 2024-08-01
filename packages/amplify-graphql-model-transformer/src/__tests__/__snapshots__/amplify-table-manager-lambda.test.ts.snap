@@ -575,7 +575,7 @@ Object {
   "BillingModeSummary": Object {
     "BillingMode": "PROVISIONED",
   },
-  "DeletionProtectionEnabled": undefined,
+  "DeletionProtectionEnabled": false,
   "GlobalSecondaryIndexes": Array [
     Object {
       "IndexName": "byName2",
