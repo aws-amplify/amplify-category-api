@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.12.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.12.4...@aws-amplify/amplify-category-api@5.12.5) (2024-08-01)
+
+### Bug Fixes
+
+- update awaiter s3 key ([#2732](https://github.com/aws-amplify/amplify-category-api/issues/2732)) ([08db67b](https://github.com/aws-amplify/amplify-category-api/commit/08db67b4e291995f4050d845771228859af9e799))
+
 ## [5.12.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.12.3...@aws-amplify/amplify-category-api@5.12.4) (2024-07-25)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api
