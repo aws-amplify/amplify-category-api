@@ -14,6 +14,7 @@ import {
   storeDbConnectionStringConfig,
   storeDbConnectionConfigWithSecretsManager,
   deleteDBCluster,
+  isOptInRegion,
 } from 'amplify-category-api-e2e-core';
 import {
   isSqlModelDataSourceSecretsManagerDbConnectionConfig,
@@ -47,12 +48,20 @@ export interface SqlDatabaseDetails {
  */
 export class SqlDatatabaseController {
   private databaseDetails: SqlDatabaseDetails | undefined;
+  private useDataAPI: boolean;
 
-  constructor(private readonly setupQueries: Array<string>, private readonly options: RDSConfig) {}
+  constructor(private readonly setupQueries: Array<string>, private readonly options: RDSConfig) {
+    // Data API is not supported in opted-in regions
+    if (options.engine === 'postgres' && !isOptInRegion(options.region)) {
+      this.useDataAPI = true;
+    } else {
+      this.useDataAPI = false;
+    }
+  }
 
   setupDatabase = async (): Promise<SqlDatabaseDetails> => {
     let dbConfig;
-    if (this.options.engine === 'postgres') {
+    if (this.useDataAPI) {
       dbConfig = await setupRDSClusterAndData(this.options, this.setupQueries);
     } else {
       dbConfig = await setupRDSInstanceAndData(this.options, this.setupQueries);
@@ -163,7 +172,7 @@ export class SqlDatatabaseController {
       return;
     }
 
-    if (this.options.engine === 'postgres') {
+    if (this.useDataAPI) {
       await deleteDBCluster(this.options.identifier, this.options.region);
     } else {
       await deleteDBInstance(this.options.identifier, this.options.region);

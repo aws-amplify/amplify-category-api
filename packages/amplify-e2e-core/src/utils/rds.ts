@@ -338,7 +338,7 @@ export const setupRDSClusterAndData = async (
   const { secretArn } = await storeDbConnectionConfigWithSecretsManager({
     region: config.region,
     username: config.username,
-    password: config.password,
+    password: dbCluster.password,
     secretName: `${config.identifier}-secret`,
   });
 
