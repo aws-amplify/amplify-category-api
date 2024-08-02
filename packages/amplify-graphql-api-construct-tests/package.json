@@ -106,7 +106,11 @@
     "coveragePathIgnorePatterns": [
       "/__tests__/",
       "/node_modules/"
-    ]
+    ],
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    }
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",
