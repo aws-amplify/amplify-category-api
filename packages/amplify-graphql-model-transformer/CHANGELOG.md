@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.11.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.11.2...@aws-amplify/graphql-model-transformer@2.11.3) (2024-07-25)
+
+### Bug Fixes
+
+- add tags to dynamodb tables ([#2694](https://github.com/aws-amplify/amplify-category-api/issues/2694)) ([e8070b9](https://github.com/aws-amplify/amplify-category-api/commit/e8070b94077a706ba95ed94cdd52f27f15490ea2))
+
 ## [2.11.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.11.1...@aws-amplify/graphql-model-transformer@2.11.2) (2024-07-15)
 
 **Note:** Version bump only for package @aws-amplify/graphql-model-transformer
