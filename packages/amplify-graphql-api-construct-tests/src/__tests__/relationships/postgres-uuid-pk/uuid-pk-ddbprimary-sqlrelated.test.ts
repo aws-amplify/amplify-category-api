@@ -23,7 +23,6 @@ describe('PostgreSQL tables with UUID primary keys', () => {
   const region = process.env.CLI_REGION ?? 'us-west-2';
   const baseProjFolderName = path.basename(__filename, '.test.ts');
 
-  // sufficient password length that meets the requirements for RDS cluster/instance
   const dbname = generateDBName();
   const [dbUsername, dbIdentifier] = generator.generateMultiple(2);
   let dbDetails: SqlDatabaseDetails;
