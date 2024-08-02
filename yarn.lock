@@ -965,10 +965,55 @@
     tslib "^2.0.0"
     uuid "^3.0.0"
 
-"@aws-sdk/client-dynamodb@^3.624.0":
-  version "3.651.1"
-  resolved "https://registry.npmjs.org/@aws-sdk/client-dynamodb/-/client-dynamodb-3.651.1.tgz#41e892d91d33b6503f54c4753c537eb298deda68"
-  integrity sha512-HrZ01VVoJeL1Ye94xVA/LIL1aY+sSmoCshcYnY9Wl2Xgs/QDCA8y+Q+Yvcyoua949X32wXPAhmXRjeuIfY7MNg==
+"@aws-sdk/client-dynamodb@3.338.0":
+  version "3.338.0"
+  resolved "https://registry.npmjs.org/@aws-sdk/client-dynamodb/-/client-dynamodb-3.338.0.tgz#a63999ef6c764a8572ef76f8d4d375567cc295ed"
+  integrity sha512-m1tYFDdO2KxD9LvAEZEzixgfFpvNnXz5LHjCG/oVaGCPPMB91AyuyW4NkloCJ0gxmY4WqaHPvWMkwuJ4RJsU7Q==
+  dependencies:
+    "@aws-crypto/sha256-browser" "3.0.0"
+    "@aws-crypto/sha256-js" "3.0.0"
+    "@aws-sdk/client-sts" "3.338.0"
+    "@aws-sdk/config-resolver" "3.338.0"
+    "@aws-sdk/credential-provider-node" "3.338.0"
+    "@aws-sdk/fetch-http-handler" "3.338.0"
+    "@aws-sdk/hash-node" "3.338.0"
+    "@aws-sdk/invalid-dependency" "3.338.0"
+    "@aws-sdk/middleware-content-length" "3.338.0"
+    "@aws-sdk/middleware-endpoint" "3.338.0"
+    "@aws-sdk/middleware-endpoint-discovery" "3.338.0"
+    "@aws-sdk/middleware-host-header" "3.338.0"
+    "@aws-sdk/middleware-logger" "3.338.0"
+    "@aws-sdk/middleware-recursion-detection" "3.338.0"
+    "@aws-sdk/middleware-retry" "3.338.0"
+    "@aws-sdk/middleware-serde" "3.338.0"
+    "@aws-sdk/middleware-signing" "3.338.0"
+    "@aws-sdk/middleware-stack" "3.338.0"
+    "@aws-sdk/middleware-user-agent" "3.338.0"
+    "@aws-sdk/node-config-provider" "3.338.0"
+    "@aws-sdk/node-http-handler" "3.338.0"
+    "@aws-sdk/smithy-client" "3.338.0"
+    "@aws-sdk/types" "3.338.0"
+    "@aws-sdk/url-parser" "3.338.0"
+    "@aws-sdk/util-base64" "3.310.0"
+    "@aws-sdk/util-body-length-browser" "3.310.0"
+    "@aws-sdk/util-body-length-node" "3.310.0"
+    "@aws-sdk/util-defaults-mode-browser" "3.338.0"
+    "@aws-sdk/util-defaults-mode-node" "3.338.0"
+    "@aws-sdk/util-endpoints" "3.338.0"
+    "@aws-sdk/util-retry" "3.338.0"
+    "@aws-sdk/util-user-agent-browser" "3.338.0"
+    "@aws-sdk/util-user-agent-node" "3.338.0"
+    "@aws-sdk/util-utf8" "3.310.0"
+    "@aws-sdk/util-waiter" "3.338.0"
+    "@smithy/protocol-http" "^1.0.1"
+    "@smithy/types" "^1.0.0"
+    tslib "^2.5.0"
+    uuid "^8.3.2"
+
+"@aws-sdk/client-dynamodb@^3.431.0":
+  version "3.431.0"
+  resolved "https://registry.npmjs.org/@aws-sdk/client-dynamodb/-/client-dynamodb-3.431.0.tgz#b9537f7e134633d74e6f1f3fad5b9056d2eb31ad"
+  integrity sha512-b5a8NoRndja4W7N/gbNfN1HUVheULjvThC5jgx004f1NmNVD/SJp1gQEpR1SlEZFeowOYnsqewJ/3KNFPiGVNA==
   dependencies:
     "@aws-crypto/sha256-browser" "5.2.0"
     "@aws-crypto/sha256-js" "5.2.0"
@@ -3258,10 +3303,20 @@
     "@aws-sdk/types" "3.6.1"
     tslib "^1.8.0"
 
-"@aws-sdk/middleware-endpoint-discovery@3.649.0":
-  version "3.649.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/middleware-endpoint-discovery/-/middleware-endpoint-discovery-3.649.0.tgz#c20dc678d9e2a5a969c37fe69c12007b61454bd3"
-  integrity sha512-deyv8Vx2a7+63NVrOURfUlyfxPbpbtJSPHLbQikHthuEs3dYol/5LXr1VonFe9dlzHRa1ZPMnA2ibOBmUCwz5g==
+"@aws-sdk/middleware-endpoint-discovery@3.338.0":
+  version "3.338.0"
+  resolved "https://registry.npmjs.org/@aws-sdk/middleware-endpoint-discovery/-/middleware-endpoint-discovery-3.338.0.tgz#e0389025e1528f0af37379a3014b29426de2dfce"
+  integrity sha512-LD2iQ7h65Q89Ef2rEo/tJqSsj6V4UpLjlbbnL7PkDSzOJNCIgRItH1nEXEHL6g94Kef5MQEzAKEg5W/H0ygJ3Q==
+  dependencies:
+    "@aws-sdk/endpoint-cache" "3.310.0"
+    "@aws-sdk/protocol-http" "3.338.0"
+    "@aws-sdk/types" "3.338.0"
+    tslib "^2.5.0"
+
+"@aws-sdk/middleware-endpoint-discovery@3.430.0":
+  version "3.430.0"
+  resolved "https://registry.npmjs.org/@aws-sdk/middleware-endpoint-discovery/-/middleware-endpoint-discovery-3.430.0.tgz#1b742f33106fbe4c832122d803f807f2d2239031"
+  integrity sha512-7VF8p3HJbj3kKRKnr3M90KJcGt2451I5gKDA4lulw7/lx0EP7TKI/I2YNhdpke8Xwx5v2kVepn9+X0WE18aMzg==
   dependencies:
     "@aws-sdk/endpoint-cache" "3.572.0"
     "@aws-sdk/types" "3.649.0"
