@@ -83,12 +83,15 @@
     "moduleNameMapper": {
       "^csv-parse/sync": "<rootDir>/../../node_modules/csv-parse/dist/cjs/sync.cjs"
     },
-    "testEnvironment": "../../FixJestEnvironment.js",
     "collectCoverageFrom": [
       "src/**/*.ts"
     ],
     "coveragePathIgnorePatterns": [
       "/__tests__/"
-    ]
+    ],
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    }
   }
 }
