@@ -3,9 +3,15 @@ import { Construct } from 'constructs';
 import { ExecuteTransformConfig, executeTransform } from '@aws-amplify/graphql-transformer';
 import { NestedStack, Stack } from 'aws-cdk-lib';
 import { AttributionMetadataStorage, StackMetadataBackendOutputStorageStrategy } from '@aws-amplify/backend-output-storage';
-import { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
+import { 
+  TransformParameters, 
+  DeploymentIdentifier,
+  SandboxDeploymentIdentifier,
+  BranchDeploymentIdentifier,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { graphqlOutputKey } from '@aws-amplify/backend-output-schemas';
 import type { GraphqlOutput, AwsAppsyncAuthenticationType } from '@aws-amplify/backend-output-schemas';
+import { CDKContextKey } from '@aws-amplify/platform-core';
 import {
   AppsyncFunction,
   DataSourceOptions,
@@ -153,7 +159,6 @@ export class AmplifyGraphqlApi extends Construct {
       functionNameMap,
       outputStorageStrategy,
       dataStoreConfiguration,
-      deploymentIdentifier,
     } = props;
 
     if (conflictResolution && dataStoreConfiguration) {
@@ -185,6 +190,8 @@ export class AmplifyGraphqlApi extends Construct {
     }
 
     const assetProvider = new AssetProvider(this);
+
+    const deploymentIdentifier = this.getDeploymentIdentifier();
 
     const mergedTranslationBehavior = {
       ...defaultTranslationBehavior,
@@ -275,6 +282,27 @@ export class AmplifyGraphqlApi extends Construct {
     }
 
     outputStorageStrategy.addBackendOutputEntry(graphqlOutputKey, output);
+  }
+
+  /**
+   * Gets the deployment information from the context.
+   * @returns the deployment identifier.
+   */
+  private getDeploymentIdentifier(): DeploymentIdentifier {
+    const deploymentType = this.node.tryGetContext(CDKContextKey.DEPLOYMENT_TYPE);
+
+    if (deploymentType === 'sandbox') {
+      return {
+        deploymentType: deploymentType,
+        namespace: this.node.tryGetContext(CDKContextKey.BACKEND_NAMESPACE),
+      } as SandboxDeploymentIdentifier;
+    } else {
+      return {
+        deploymentType: deploymentType,
+        namespace: this.node.tryGetContext(CDKContextKey.BACKEND_NAMESPACE),
+        name: this.node.tryGetContext(CDKContextKey.BACKEND_NAME),
+      } as BranchDeploymentIdentifier;
+    }
   }
 
   /**

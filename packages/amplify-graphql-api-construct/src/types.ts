@@ -786,34 +786,7 @@ export interface AmplifyGraphqlApiProps {
    * For more information, refer to https://docs.amplify.aws/lib/datastore/getting-started/q/platform/js/
    */
   readonly dataStoreConfiguration?: DataStoreConfiguration;
-
-  /**
-   * The deployment identifier for the current deployment.
-   */
-  readonly deploymentIdentifier?: DeploymentIdentifier;
 }
-
-/**
- * Identifier for sandbox deployments.
- */
-export interface SandboxIdentifier {
-  readonly deploymentType: 'sandbox';
-  readonly deploymentId: string;
-}
-
-/**
- * Identifier for branch deployments.
- */
-export interface BranchIdentifier {
-  readonly deploymentType: 'branch';
-  readonly branchName: string;
-  readonly branchId: string;
-}
-
-/**
- * The deployment identifier for the current deployment.
- */
-export type DeploymentIdentifier = SandboxIdentifier | BranchIdentifier;
 
 /**
  * L1 CDK resources from the Api which were generated as part of the transform.
