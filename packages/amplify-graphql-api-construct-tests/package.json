@@ -26,6 +26,7 @@
     "@aws-amplify/graphql-api-construct": "1.11.2",
     "@aws-cdk/aws-cognito-identitypool-alpha": "2.129.0-alpha.0",
     "@aws-sdk/client-cognito-identity-provider": "3.338.0",
+    "@aws-sdk/client-dynamodb": "3.338.0",
     "@aws-sdk/client-lambda": "3.338.0",
     "@aws-sdk/client-rds": "3.338.0",
     "@aws-sdk/client-ssm": "3.338.0",
