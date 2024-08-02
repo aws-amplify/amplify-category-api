@@ -225,7 +225,7 @@ export const ensureReferencesArray = (
  */
 const getReferencesAssociatedField = (
   config: ReferencesRelationalDirectiveConfiguration,
-): { associatedField: FieldDefinitionNode; associatedReferences: string[] } => {
+): { associatedField: FieldDefinitionNode; associatedReferences: string[]; associatedRelationalDirective: DirectiveNode } => {
   const { object } = config;
 
   const expectedBidirectionalErrorMessages = (): string => {
@@ -282,6 +282,7 @@ const getReferencesAssociatedField = (
       {
         associatedField,
         associatedReferences,
+        associatedRelationalDirective,
       },
     ];
   });
@@ -779,4 +780,12 @@ export const getObjectPrimaryKey = (object: ObjectTypeDefinitionNode): FieldDefi
   });
 
   return primaryKey;
+};
+
+export const getOverrideIndexName = (config: HasOneDirectiveConfiguration | HasManyDirectiveConfiguration): string | undefined => {
+  const { associatedRelationalDirective } = getReferencesAssociatedField(config);
+  const overrideIndexArgument = (associatedRelationalDirective.arguments || []).find(
+    (argument) => argument.name.value === 'overrideIndexName',
+  );
+  return (overrideIndexArgument?.value as StringValueNode)?.value;
 };
