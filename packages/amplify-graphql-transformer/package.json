@@ -48,7 +48,7 @@
     "@types/node": "^12.12.6",
     "fs-extra": "^8.1.0",
     "rimraf": "^3.0.0",
-    "ts-jest": "26.4.4"
+    "ts-jest": "^29.0.0"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.152.0",
@@ -81,12 +81,15 @@
       "clover",
       "text"
     ],
-    "testEnvironment": "../../FixJestEnvironment.js",
     "collectCoverageFrom": [
       "src/**/*.ts"
     ],
     "coveragePathIgnorePatterns": [
       "/__tests__/"
-    ]
+    ],
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    }
   }
 }

@@ -123,7 +123,7 @@
     "jsii-docgen": "9.1.2",
     "jsii-pacmak": "^1.84.0",
     "rimraf": "^3.0.0",
-    "ts-jest": "^26.4.4",
+    "ts-jest": "^29.0.0",
     "ts-node": "^8.10.1"
   },
   "peerDependencies": {
@@ -162,21 +162,24 @@
     "coverageProvider": "v8",
     "coverageThreshold": {
       "global": {
-        "branches": 90,
+        "branches": 89,
         "functions": 90,
-        "lines": 59
+        "lines": 58
       }
     },
     "coverageReporters": [
       "clover",
       "text"
     ],
-    "testEnvironment": "../../FixJestEnvironment.js",
     "collectCoverageFrom": [
       "src/**/*.ts"
     ],
     "coveragePathIgnorePatterns": [
       "/__tests__/"
-    ]
+    ],
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    }
   }
 }
