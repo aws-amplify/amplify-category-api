@@ -119,12 +119,15 @@
     "moduleNameMapper": {
       "axios": "axios/dist/node/axios.cjs"
     },
-    "testEnvironment": "../../FixJestEnvironment.js",
     "coveragePathIgnorePatterns": [
       "/__tests__/",
       "/lib/",
       "/node_modules"
-    ]
+    ],
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    }
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",
