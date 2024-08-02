@@ -33,9 +33,6 @@ export type {
   IBackendOutputStorageStrategy,
   IBackendOutputEntry,
   AddFunctionProps,
-  DeploymentIdentifier,
-  SandboxIdentifier,
-  BranchIdentifier,
 } from './types';
 export { AmplifyGraphqlApi } from './amplify-graphql-api';
 export { AmplifyGraphqlDefinition } from './amplify-graphql-definition';

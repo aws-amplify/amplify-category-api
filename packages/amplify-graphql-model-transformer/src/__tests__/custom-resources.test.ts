@@ -17,7 +17,7 @@ describe('CustomResources', () => {
       apiName: 'testAPIName',
       deploymentIdentifier: {
         deploymentType: 'sandbox',
-        deploymentId: 'testDeploymentId',
+        namespace: 'testNamespace',
       },
     },
   } as TransformerContextProvider;
