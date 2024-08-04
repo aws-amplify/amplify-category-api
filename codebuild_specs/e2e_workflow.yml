@@ -30,12 +30,6 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
       depend-on:
         - build_linux
-    - identifier: verify_cdk_version
-      buildspec: codebuild_specs/verify_cdk_version.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-      depend-on:
-        - build_linux
     - identifier: verify_api_extract
       buildspec: codebuild_specs/verify_api_extract.yml
       env:
@@ -144,22 +138,23 @@ batch:
           CLI_REGION: ap-east-1
       depend-on:
         - publish_to_local_registry
-    - identifier: resolvers_sync_query_datastore_api_6_api_lambda_auth
+    - identifier: api_canary_sa_east_1_resolvers_sync_query_datastore_api_6
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/resolvers.test.ts|src/__tests__/graphql-v2/sync_query_datastore.test.ts|src/__tests__/api_6.test.ts|src/__tests__/graphql-v2/api_lambda_auth.test.ts
-          CLI_REGION: us-east-2
+            src/__tests__/api_canary.test.ts|src/__tests__/resolvers.test.ts|src/__tests__/graphql-v2/sync_query_datastore.test.ts|src/__tests__/api_6.test.ts
+          CLI_REGION: sa-east-1
       depend-on:
         - publish_to_local_registry
-    - identifier: api_9
+    - identifier: api_lambda_auth_api_9
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          TEST_SUITE: src/__tests__/api_9.test.ts
+          TEST_SUITE: >-
+            src/__tests__/graphql-v2/api_lambda_auth.test.ts|src/__tests__/api_9.test.ts
           CLI_REGION: us-west-1
       depend-on:
         - publish_to_local_registry
@@ -779,177 +774,6 @@ batch:
           CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
-    - identifier: api_canary_ap_east_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: ap-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_ap_northeast_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: ap-northeast-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_ap_northeast_2
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: ap-northeast-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_ap_south_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: ap-south-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_ap_southeast_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: ap-southeast-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_ap_southeast_2
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: ap-southeast-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_ca_central_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: ca-central-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_eu_central_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: eu-central-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_eu_north_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: eu-north-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_eu_south_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: eu-south-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_eu_west_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: eu-west-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_eu_west_2
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: eu-west-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_eu_west_3
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: eu-west-3
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_me_south_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: me-south-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_sa_east_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: sa-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_us_east_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: us-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_us_east_2
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: us-east-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_us_west_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: us-west-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_us_west_2
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_SMALL
-        variables:
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: us-west-2
-      depend-on:
-        - publish_to_local_registry
     - identifier: api_11
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
@@ -1028,7 +852,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/schema-searchable.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: ap-south-1
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
@@ -1047,7 +871,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/graphql-v2/searchable-datastore.test.ts
-          CLI_REGION: sa-east-1
+          CLI_REGION: eu-west-1
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
@@ -1076,7 +900,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-had-node-to-node.test.ts
-          CLI_REGION: us-west-1
+          CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: searchable_previous_deployment_no_node_to_node
@@ -1086,7 +910,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-no-node-to-node.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
     - identifier: api_2
@@ -1104,7 +928,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/transformer-migrations/searchable-migration.test.ts
-          CLI_REGION: ap-south-1
+          CLI_REGION: us-west-2
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
