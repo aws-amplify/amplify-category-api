@@ -1,7 +1,0 @@
-type Primary @model(subscriptions: { level: off }) @auth(rules: [{ allow: groups, groupsField: "groups" }]) {
-  id: String! @primaryKey
-  content: String
-  groups: [String]
-  relatedMany: [RelatedMany] @hasMany(references: ["primaryId"])
-  relatedOne: RelatedOne @hasOne(references: ["primaryId"])
-}

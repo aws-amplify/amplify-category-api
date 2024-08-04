@@ -1,7 +1,0 @@
-type RelatedMany @model {
-  id: ID! @primaryKey
-  primaryId1: String
-  primaryId2: String
-  primary1: Primary @belongsTo(references: ["primaryId1"])
-  primary2: Primary @belongsTo(references: ["primaryId2"])
-}
