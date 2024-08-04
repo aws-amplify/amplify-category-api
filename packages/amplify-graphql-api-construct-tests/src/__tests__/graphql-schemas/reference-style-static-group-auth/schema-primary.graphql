@@ -1,7 +1,0 @@
-# For this test, "Group1" owns Primary, "Group2" owns Related, and "Group3" is an Admin who owns both
-type Primary @model @auth(rules: [{ allow: groups, groups: ["Group1", "Group3"] }]) {
-  id: String! @primaryKey
-  content: String
-  relatedMany: [RelatedMany] @hasMany(references: ["primaryId"])
-  relatedOne: RelatedOne @hasOne(references: ["primaryId"])
-}

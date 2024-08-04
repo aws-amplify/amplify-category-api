@@ -1,8 +1,0 @@
-type Primary @model {
-  id: ID! @primaryKey
-  content: String
-  relatedMany1: [RelatedMany] @hasMany(references: ["primaryId1"])
-  relatedMany2: [RelatedMany] @hasMany(references: ["primaryId2"])
-  relatedOne1: RelatedOne @hasOne(references: ["primaryId1"])
-  relatedOne2: RelatedOne @hasOne(references: ["primaryId2"])
-}

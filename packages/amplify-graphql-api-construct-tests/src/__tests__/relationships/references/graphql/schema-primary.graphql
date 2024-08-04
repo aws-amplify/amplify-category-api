@@ -1,5 +1,0 @@
-type Primary @model {
-  id: ID! @primaryKey
-  relatedMany: [RelatedMany] @hasMany(references: "primaryId")
-  relatedOne: RelatedOne @hasOne(references: "primaryId")
-}
