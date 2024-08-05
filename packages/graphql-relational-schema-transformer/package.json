@@ -50,7 +50,7 @@
     ],
     "transform": {
       "^.+\\.tsx?$": ["ts-jest", {
-        diagnostics: false
+        "diagnostics": false
       }]
     },
     "testURL": "http://localhost",
