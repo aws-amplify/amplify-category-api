@@ -116,9 +116,6 @@
       "json",
       "node"
     ],
-    "moduleNameMapper": {
-      "axios": "axios/dist/node/axios.cjs"
-    },
     "coveragePathIgnorePatterns": [
       "/__tests__/",
       "/lib/",

@@ -106,9 +106,6 @@
         "tsconfig": "<rootDir>/tsconfig.tests.json"
       }
     },
-    "moduleNameMapper": {
-      "axios": "axios/dist/node/axios.cjs"
-    },
     "coveragePathIgnorePatterns": [
       "/node_modules",
       "/__tests__/"
