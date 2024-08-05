@@ -146,6 +146,16 @@ export interface AssetProvider {
     provide: (scope: Construct, name: string, props: AssetProps) => S3Asset;
 }
 
+// @public (undocumented)
+export interface BranchDeploymentIdentifier {
+    // (undocumented)
+    deploymentType: 'branch';
+    // (undocumented)
+    name: string;
+    // (undocumented)
+    namespace: string;
+}
+
 // Warning: (ae-forgotten-export) The symbol "NoneDataSourceProvider" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -178,6 +188,9 @@ export interface DefaultDynamoDbModelDataSourceStrategy extends ModelDataSourceS
     // (undocumented)
     readonly provisionStrategy: 'DEFAULT';
 }
+
+// @public (undocumented)
+export type DeploymentIdentifier = SandboxDeploymentIdentifier | BranchDeploymentIdentifier;
 
 // @public (undocumented)
 export interface DynamoDbDataSourceOptions extends DataSourceOptions {
@@ -369,6 +382,14 @@ export interface S3MappingTemplateProvider {
     getTemplateHash: () => string;
     // (undocumented)
     type: MappingTemplateType.S3_LOCATION;
+}
+
+// @public (undocumented)
+export interface SandboxDeploymentIdentifier {
+    // (undocumented)
+    deploymentType: 'sandbox';
+    // (undocumented)
+    namespace: string;
 }
 
 // @public (undocumented)
@@ -945,7 +966,6 @@ export interface VpcConfig {
 // Warnings were encountered during analysis:
 //
 // src/graphql-api-provider.ts:36:3 - (ae-forgotten-export) The symbol "OpenIDConnectConfig" needs to be exported by the entry point index.d.ts
-// src/transformer-context/synth-parameters.ts:10:3 - (ae-forgotten-export) The symbol "DeploymentIdentifier" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

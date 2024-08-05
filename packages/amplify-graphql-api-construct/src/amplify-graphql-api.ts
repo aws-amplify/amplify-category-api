@@ -3,8 +3,8 @@ import { Construct } from 'constructs';
 import { ExecuteTransformConfig, executeTransform } from '@aws-amplify/graphql-transformer';
 import { NestedStack, Stack } from 'aws-cdk-lib';
 import { AttributionMetadataStorage, StackMetadataBackendOutputStorageStrategy } from '@aws-amplify/backend-output-storage';
-import { 
-  TransformParameters, 
+import {
+  TransformParameters,
   DeploymentIdentifier,
   SandboxDeploymentIdentifier,
   BranchDeploymentIdentifier,
