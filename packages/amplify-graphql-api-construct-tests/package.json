@@ -100,9 +100,6 @@
         "diagnostics": false
       }
     },
-    "moduleNameMapper": {
-      "axios": "axios/dist/node/axios.cjs"
-    },
     "coveragePathIgnorePatterns": [
       "/__tests__/",
       "/node_modules/"
