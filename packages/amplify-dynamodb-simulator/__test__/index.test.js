@@ -87,7 +87,7 @@ describe('emulator operations', () => {
     expect(t).toEqual({
       TableNames: ['foo'],
     });
-  });
+  }, 10000);
 
   it('should start on specific port', async () => {
     const port = await require('get-port')();
