@@ -5,9 +5,9 @@ import {
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
+import { getGenerator } from '../resolver/generator-factory';
 import { HasOneDirectiveConfiguration } from '../types';
 import { ensureFieldsArray, getFieldsNodes, getRelatedTypeIndex, registerHasOneForeignKeyMappings } from '../utils';
-import { getGenerator } from '../resolver/generator-factory';
 
 /**
  * HasOneDirectiveDDBFieldsTransformer executes transformations based on `@hasOne(fields: [String!])` configurations

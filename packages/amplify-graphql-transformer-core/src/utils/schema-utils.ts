@@ -3,7 +3,7 @@ import { ModelDataSourceStrategyDbType, TransformerContextProvider } from '@aws-
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import { ListValueNode, ObjectTypeDefinitionNode, StringValueNode, TypeNode } from 'graphql';
-import { ModelResourceIDs, getBaseType } from 'graphql-transformer-common';
+import { getBaseType, ModelResourceIDs } from 'graphql-transformer-common';
 import { getModelDataSourceStrategy } from './model-datasource-strategy-utils';
 
 /**

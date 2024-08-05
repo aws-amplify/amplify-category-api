@@ -1,3 +1,4 @@
+import { DURATION_30_MINUTES } from '../../utils/duration-constants';
 import {
   API_POST_PROCESSOR_SET_PROVISIONED_THROUGHPUT_TWO_GSIS,
   COUNT_1_THOUSAND,
@@ -5,7 +6,6 @@ import {
   SCHEMA_FOUR_FIELDS_FINAL_TWO_INDEXED,
   SCHEMA_FOUR_FIELDS_INITIAL_TWO_INDEXED,
 } from '../deploy-velocity/deploy-velocity-constants';
-import { DURATION_30_MINUTES } from '../../utils/duration-constants';
 import {
   recordCountDataProvider,
   recordCountDataValidator,

@@ -1,8 +1,8 @@
 import {
-  initJSProjectWithProfile,
-  deleteProject,
   createNewProjectDir,
+  deleteProject,
   deleteProjectDir,
+  initJSProjectWithProfile,
   tryScheduleCredentialRefresh,
 } from 'amplify-category-api-e2e-core';
 import { testSchema } from '../schema-api-directives';

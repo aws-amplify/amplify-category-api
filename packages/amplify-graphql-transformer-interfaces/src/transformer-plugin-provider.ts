@@ -1,27 +1,27 @@
 import {
+  DirectiveDefinitionNode,
   DirectiveNode,
-  ObjectTypeDefinitionNode,
-  InterfaceTypeDefinitionNode,
-  FieldDefinitionNode,
-  UnionTypeDefinitionNode,
+  DocumentNode,
   EnumTypeDefinitionNode,
-  ScalarTypeDefinitionNode,
+  EnumValueDefinitionNode,
+  FieldDefinitionNode,
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
-  EnumValueDefinitionNode,
-  DirectiveDefinitionNode,
+  InterfaceTypeDefinitionNode,
+  ObjectTypeDefinitionNode,
+  ScalarTypeDefinitionNode,
   TypeDefinitionNode,
-  DocumentNode,
+  UnionTypeDefinitionNode,
 } from 'graphql';
+import { TransformerPreProcessContextProvider } from './transformer-context';
 import {
   TransformerBeforeStepContextProvider,
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
-  TransformerValidationStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
+  TransformerValidationStepContextProvider,
 } from './transformer-context/transformer-context-provider';
-import { TransformerPreProcessContextProvider } from './transformer-context';
 import { TransformerLog } from './transformer-log';
 
 export enum TransformerPluginType {

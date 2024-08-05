@@ -1,6 +1,6 @@
-import { Kind, DocumentNode, parse, SchemaDefinitionNode } from 'graphql/language';
-import { validate, ValidationRule } from 'graphql/validation';
+import { DocumentNode, Kind, parse, SchemaDefinitionNode } from 'graphql/language';
 import { buildASTSchema } from 'graphql/utilities/buildASTSchema';
+import { validate, ValidationRule } from 'graphql/validation';
 
 // Spec Section: "Subscriptions with Single Root Field"
 import { SingleFieldSubscriptionsRule } from 'graphql/validation/rules/SingleFieldSubscriptionsRule';
@@ -41,32 +41,32 @@ import { OverlappingFieldsCanBeMergedRule } from 'graphql/validation/rules/Overl
 // Spec Section: "Input Object Field Uniqueness"
 import { UniqueInputFieldNamesRule } from 'graphql/validation/rules/UniqueInputFieldNamesRule';
 
-import { ProvidedRequiredArgumentsRule } from 'graphql/validation/rules/ProvidedRequiredArgumentsRule';
-import { UniqueOperationNamesRule } from 'graphql/validation/rules/UniqueOperationNamesRule';
-import { LoneAnonymousOperationRule } from 'graphql/validation/rules/LoneAnonymousOperationRule';
-import { UniqueFragmentNamesRule } from 'graphql/validation/rules/UniqueFragmentNamesRule';
 import { KnownFragmentNamesRule } from 'graphql/validation/rules/KnownFragmentNamesRule';
-import { NoUnusedFragmentsRule } from 'graphql/validation/rules/NoUnusedFragmentsRule';
-import { PossibleFragmentSpreadsRule } from 'graphql/validation/rules/PossibleFragmentSpreadsRule';
+import { LoneAnonymousOperationRule } from 'graphql/validation/rules/LoneAnonymousOperationRule';
 import { NoFragmentCyclesRule } from 'graphql/validation/rules/NoFragmentCyclesRule';
-import { UniqueVariableNamesRule } from 'graphql/validation/rules/UniqueVariableNamesRule';
 import { NoUndefinedVariablesRule } from 'graphql/validation/rules/NoUndefinedVariablesRule';
+import { NoUnusedFragmentsRule } from 'graphql/validation/rules/NoUnusedFragmentsRule';
 import { NoUnusedVariablesRule } from 'graphql/validation/rules/NoUnusedVariablesRule';
+import { PossibleFragmentSpreadsRule } from 'graphql/validation/rules/PossibleFragmentSpreadsRule';
+import { ProvidedRequiredArgumentsRule } from 'graphql/validation/rules/ProvidedRequiredArgumentsRule';
 import { UniqueDirectivesPerLocationRule } from 'graphql/validation/rules/UniqueDirectivesPerLocationRule';
+import { UniqueFragmentNamesRule } from 'graphql/validation/rules/UniqueFragmentNamesRule';
+import { UniqueOperationNamesRule } from 'graphql/validation/rules/UniqueOperationNamesRule';
+import { UniqueVariableNamesRule } from 'graphql/validation/rules/UniqueVariableNamesRule';
 
 // AuthMode Types
-import { AppSyncAuthConfiguration, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
-import { validateSDL } from 'graphql/validation/validate';
 import {
-  AwsSubscribeDirective,
-  AwsAuthDirective,
   AwsApiKeyDirective,
-  AwsIamDirective,
-  AwsOidcDirective,
+  AwsAuthDirective,
   AwsCognitoUserPoolsDirective,
+  AwsIamDirective,
   AwsLambdaDirective,
+  AwsOidcDirective,
+  AwsSubscribeDirective,
   DeprecatedDirective,
 } from '@aws-amplify/graphql-directives';
+import { AppSyncAuthConfiguration, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
+import { validateSDL } from 'graphql/validation/validate';
 
 /**
  * This set includes all validation rules defined by the GraphQL spec.

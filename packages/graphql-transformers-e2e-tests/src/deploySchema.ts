@@ -1,16 +1,16 @@
-import * as path from 'path';
-import * as os from 'os';
-import { default as S3 } from 'aws-sdk/clients/s3';
-import moment from 'moment';
+import { DeploymentResources } from '@aws-amplify/graphql-transformer-test-utils';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import { ResourceConstants } from 'graphql-transformer-common';
+import { default as S3 } from 'aws-sdk/clients/s3';
 import * as fs from 'fs-extra';
+import { ResourceConstants } from 'graphql-transformer-common';
+import moment from 'moment';
+import * as os from 'os';
+import * as path from 'path';
 import { CloudFormationClient } from './CloudFormationClient';
+import { cleanupStackAfterTest, deploy } from './deployNestedStacks';
 import { GraphQLClient } from './GraphQLClient';
 import { S3Client } from './S3Client';
-import { cleanupStackAfterTest, deploy } from './deployNestedStacks';
 import { resolveTestRegion } from './testSetup';
-import { DeploymentResources } from '@aws-amplify/graphql-transformer-test-utils';
 
 const region = resolveTestRegion();
 const cf = new CloudFormationClient(region);

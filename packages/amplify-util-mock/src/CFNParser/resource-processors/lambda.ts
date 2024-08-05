@@ -1,4 +1,3 @@
-import { CloudFormationParseContext } from '../types';
 import { parseValue } from '../field-parser';
 import {
   CloudFormationResource,
@@ -6,6 +5,7 @@ import {
   ProcessedLambdaEventSource,
   ProcessedLambdaFunction,
 } from '../stack/types';
+import { CloudFormationParseContext } from '../types';
 
 /**
  * Handles the parsing of a lambda CFN resource into relevant bits of information

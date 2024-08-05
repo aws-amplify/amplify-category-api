@@ -1,5 +1,3 @@
-import * as path from 'path';
-import { mergeTypeDefs } from '@graphql-tools/merge';
 import {
   $TSContext,
   AmplifyError,
@@ -9,7 +7,9 @@ import {
   ResourceDoesNotExistError,
   stateManager,
 } from '@aws-amplify/amplify-cli-core';
+import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { printer } from '@aws-amplify/amplify-prompts';
+import { mergeTypeDefs } from '@graphql-tools/merge';
 import * as fs from 'fs-extra';
 import * as graphql from 'graphql';
 import {
@@ -18,8 +18,7 @@ import {
   RelationalDBTemplateGenerator,
 } from 'graphql-relational-schema-transformer';
 import inquirer from 'inquirer';
-import _ from 'lodash';
-import { getEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
+import * as path from 'path';
 import { supportedDataSources } from '../../provider-utils/supported-datasources';
 
 const subcommand = 'add-graphql-datasource';

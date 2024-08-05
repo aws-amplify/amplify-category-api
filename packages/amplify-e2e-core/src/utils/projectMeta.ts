@@ -1,9 +1,8 @@
 /* eslint-disable */
-import * as path from 'path';
-import * as os from 'os';
-import * as fs from 'fs-extra';
-import _ from 'lodash';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import * as fs from 'fs-extra';
+import * as os from 'os';
+import * as path from 'path';
 
 function getAWSConfigAndroidPath(projRoot: string): string {
   return path.join(projRoot, 'app', 'src', 'main', 'res', 'raw', 'awsconfiguration.json');

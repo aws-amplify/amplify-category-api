@@ -1,6 +1,6 @@
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
-import { constructDefaultGlobalAmplifyInput, readRDSGlobalAmplifyInput, constructRDSGlobalAmplifyInput } from '../input';
 import { parse } from 'graphql';
+import { constructDefaultGlobalAmplifyInput, constructRDSGlobalAmplifyInput, readRDSGlobalAmplifyInput } from '../input';
 
 jest.mock('fs-extra', () => ({
   readFileSync: jest.fn(),

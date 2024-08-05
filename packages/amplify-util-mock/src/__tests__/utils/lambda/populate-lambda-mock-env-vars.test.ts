@@ -1,7 +1,7 @@
-import * as path from 'path';
+import { $TSContext, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import { loadConfigurationForEnv } from '@aws-amplify/amplify-provider-awscloudformation';
-import { stateManager, pathManager, $TSContext } from '@aws-amplify/amplify-cli-core';
 import * as dotenv from 'dotenv';
+import * as path from 'path';
 import { ProcessedLambdaFunction } from '../../../CFNParser/stack/types';
 import { populateLambdaMockEnvVars } from '../../../utils/lambda/populate-lambda-mock-env-vars';
 

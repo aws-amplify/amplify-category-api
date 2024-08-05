@@ -1,3 +1,4 @@
+import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import {
   addApiWithAllAuthModes,
   amplifyPush,
@@ -18,9 +19,6 @@ import { existsSync, removeSync, writeFileSync } from 'fs-extra';
 import generator from 'generate-password';
 import path from 'path';
 import { GQLQueryHelper } from '../query-utils/gql-helper';
-import { configureAmplify, getConfiguredAppsyncClientCognitoAuth, getUserPoolId, setupUser, signInUser } from '../schema-api-directives';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
-import { SQL_TESTS_USE_BETA } from './sql-e2e-config';
 import {
   appendAmplifyInputWithoutGlobalAuthRule,
   checkListItemExistence,
@@ -28,13 +26,15 @@ import {
   checkOperationResult,
   configureAppSyncClients,
   createModelOperationHelpers,
-  expectNullFields,
   expectedFieldErrors,
   expectedOperationError,
+  expectNullFields,
   getDefaultDatabasePort,
   omit,
 } from '../rds-v2-test-utils';
+import { configureAmplify, getConfiguredAppsyncClientCognitoAuth, getUserPoolId, setupUser, signInUser } from '../schema-api-directives';
 import { schema, sqlCreateStatements } from '../__tests__/auth-test-schemas/userpool-static-dynamic-fields';
+import { SQL_TESTS_USE_BETA } from './sql-e2e-config';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');

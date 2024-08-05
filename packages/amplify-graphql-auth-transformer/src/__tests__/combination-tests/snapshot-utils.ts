@@ -1,9 +1,9 @@
 import {
   ConflictHandlerType,
+  constructDataSourceStrategies,
   DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
   DDB_DEFAULT_DATASOURCE_STRATEGY,
   SyncConfig,
-  constructDataSourceStrategies,
 } from '@aws-amplify/graphql-transformer-core';
 
 import {
@@ -12,7 +12,7 @@ import {
   SQLLambdaModelDataSourceStrategy,
   TransformerPluginProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { TestTransformParameters, mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { mockSqlDataSourceStrategy, testTransform, TestTransformParameters } from '@aws-amplify/graphql-transformer-test-utils';
 
 /** A utility type to store auth rules to iterate over in combination tests. */
 export type TestRules = Record<

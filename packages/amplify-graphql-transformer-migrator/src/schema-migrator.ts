@@ -1,15 +1,16 @@
-import * as path from 'path';
-import * as os from 'os';
+import { printer, prompter } from '@aws-amplify/amplify-prompts';
+import { SchemaValidationError, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import * as fs from 'fs-extra';
+import * as glob from 'glob';
 import { Kind, parse, print, visit } from 'graphql';
 import { DocumentNode } from 'graphql/language';
-import { printer, prompter } from '@aws-amplify/amplify-prompts';
-import { validateModelSchema, SchemaValidationError } from '@aws-amplify/graphql-transformer-core';
-import * as glob from 'glob';
-import { migrateKeys } from './migrators/key';
+import * as os from 'os';
+import * as path from 'path';
+import { GRAPHQL_DIRECTIVES_SCHEMA } from './constants/graphql-directives';
 import { migrateAuth } from './migrators/auth';
 import { migrateConnection } from './migrators/connection';
-import { combineSchemas, getDefaultAuth, replaceFile, SchemaDocument } from './utils';
+import { migrateKeys } from './migrators/key';
+import { backupLocation, backupSchemas, doesBackupExist, restoreSchemas } from './schema-backup';
 import {
   authRuleUsesQueriesOrMutations,
   detectCustomRootTypes,
@@ -19,8 +20,7 @@ import {
   graphQLUsingSQL,
 } from './schema-inspector';
 import { backupCliJson, revertTransformerVersion, updateTransformerVersion } from './state-migrator';
-import { GRAPHQL_DIRECTIVES_SCHEMA } from './constants/graphql-directives';
-import { backupLocation, backupSchemas, doesBackupExist, restoreSchemas } from './schema-backup';
+import { combineSchemas, getDefaultAuth, replaceFile, SchemaDocument } from './utils';
 
 const cliToMigratorAuthMap: Map<string, string> = new Map<string, string>([
   ['API_KEY', 'apiKey'],

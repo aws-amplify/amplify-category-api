@@ -1,9 +1,8 @@
 jest.mock('../RelationalDBResolverGenerator');
 
 import { parse } from 'graphql';
-import { ResourceConstants as CommonResourceConstants } from 'graphql-transformer-common';
-import { RelationalDBTemplateGenerator } from '../RelationalDBTemplateGenerator';
 import { TemplateContext } from '../RelationalDBSchemaTransformer';
+import { RelationalDBTemplateGenerator } from '../RelationalDBTemplateGenerator';
 import { ResourceConstants } from '../ResourceConstants';
 
 const schema = parse(`

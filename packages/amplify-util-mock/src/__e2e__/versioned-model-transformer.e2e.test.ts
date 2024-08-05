@@ -2,7 +2,7 @@ import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
 import { VersionedModelTransformer } from 'graphql-versioned-transformer';
 import { GraphQLClient } from './utils/graphql-client';
-import { deploy, launchDDBLocal, terminateDDB, logDebug } from './utils/index';
+import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
 
 jest.setTimeout(20000);
 

@@ -1,7 +1,6 @@
-import _ from 'lodash';
 import { addApiWithBlankSchemaAndConflictDetection, amplifyPush, updateApiSchema } from 'amplify-category-api-e2e-core';
-import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../authHelper';
-import { testQueries, testMutations } from '../common';
+import { configureAmplify, getApiKey, getConfiguredAppsyncClientAPIKeyAuth } from '../authHelper';
+import { testMutations, testQueries } from '../common';
 
 // schema
 export const schemaName = 'selective_sync.graphql';

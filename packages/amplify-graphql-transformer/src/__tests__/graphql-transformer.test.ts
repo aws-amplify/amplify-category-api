@@ -1,23 +1,23 @@
-import * as path from 'path';
-import * as os from 'os';
+import { constructDataSourceStrategies, DDB_DEFAULT_DATASOURCE_STRATEGY, GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncAuthConfiguration,
   AssetProps,
   TransformerLogLevel,
   TransformerPluginProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { DDB_DEFAULT_DATASOURCE_STRATEGY, GraphQLTransform, constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
 import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces/src';
 import { NestedStack, Stack } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
+import * as os from 'os';
+import * as path from 'path';
 import {
-  constructTransformerChain,
   constructTransform,
+  constructTransformerChain,
+  defaultPrintTransformerLog,
   executeTransform,
   TransformConfig,
-  defaultPrintTransformerLog,
 } from '../graphql-transformer';
 
 const numOfTransformers = 16;

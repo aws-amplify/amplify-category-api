@@ -1,5 +1,5 @@
 import { DeploymentResources } from '@aws-amplify/graphql-transformer-test-utils';
-import { ObjectTypeDefinitionNode, FieldDefinitionNode, DocumentNode, Kind } from 'graphql';
+import { DocumentNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
 
 /**
  * Gets a type from Doc Node

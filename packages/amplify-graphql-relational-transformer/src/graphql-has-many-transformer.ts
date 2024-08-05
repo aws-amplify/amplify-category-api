@@ -2,18 +2,17 @@
 import { HasManyDirective } from '@aws-amplify/graphql-directives';
 import {
   DirectiveWrapper,
-  InvalidDirectiveError,
-  TransformerPluginBase,
   generateGetArgumentsInput,
   getStrategyDbTypeFromModel,
   getStrategyDbTypeFromTypeNode,
+  InvalidDirectiveError,
+  TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
 import {
-  ModelDataSourceStrategy,
   ModelDataSourceStrategyDbType,
   TransformerContextProvider,
-  TransformerPreProcessContextProvider,
   TransformerPrepareStepContextProvider,
+  TransformerPreProcessContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
@@ -22,10 +21,10 @@ import {
   DocumentNode,
   FieldDefinitionNode,
   InterfaceTypeDefinitionNode,
+  Kind,
   NamedTypeNode,
   ObjectTypeDefinitionNode,
   ObjectTypeExtensionNode,
-  Kind,
 } from 'graphql';
 import { getBaseType, isListType, isNonNullType, makeField, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
 import produce from 'immer';

@@ -1,7 +1,6 @@
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
-import { aws_dynamodb as dynamodb } from 'aws-cdk-lib';
-import { ConfiguredAuthProviders, RelationalPrimaryMapConfig, RoleDefinition } from '../utils';
+import { ConfiguredAuthProviders, RoleDefinition } from '../utils';
 
 export interface AuthVTLGenerator {
   generateAuthExpressionForCreate: (

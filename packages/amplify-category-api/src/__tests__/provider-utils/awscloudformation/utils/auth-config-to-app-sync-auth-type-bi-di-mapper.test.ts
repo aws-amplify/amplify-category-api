@@ -5,8 +5,8 @@ import {
   AppSyncOpenIDConnectAuthType,
 } from 'amplify-headless-interface';
 import {
-  authConfigToAppSyncAuthType,
   appSyncAuthTypeToAuthConfig,
+  authConfigToAppSyncAuthType,
 } from '../../../../provider-utils/awscloudformation/utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 
 describe('authConfig to AppSyncAuthType', () => {

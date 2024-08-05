@@ -1,5 +1,5 @@
-import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as path from 'path';
 import { getMockDataDirectory } from './mock-data-directory';
 
 export function addMockDataToGitIgnore(context) {

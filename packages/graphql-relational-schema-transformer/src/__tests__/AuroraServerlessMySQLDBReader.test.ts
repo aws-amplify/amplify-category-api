@@ -1,8 +1,8 @@
 import { Kind } from 'graphql';
 import { toUpper } from 'graphql-transformer-common';
-import { TemplateContext, TableContext } from '../RelationalDBSchemaTransformer';
-import { AuroraServerlessMySQLDatabaseReader } from '../AuroraServerlessMySQLDatabaseReader';
 import { AuroraDataAPIClient, ColumnDescription } from '../AuroraDataAPIClient';
+import { AuroraServerlessMySQLDatabaseReader } from '../AuroraServerlessMySQLDatabaseReader';
+import { TableContext, TemplateContext } from '../RelationalDBSchemaTransformer';
 
 const dbRegion = 'us-east-1';
 const secretStoreArn = 'secretStoreArn';

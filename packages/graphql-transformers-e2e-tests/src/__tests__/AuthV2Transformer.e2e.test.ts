@@ -1,27 +1,27 @@
-import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
+import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
+import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import { default as S3 } from 'aws-sdk/clients/s3';
-import moment from 'moment';
 import { ResourceConstants } from 'graphql-transformer-common';
+import moment from 'moment';
 import { CloudFormationClient } from '../CloudFormationClient';
-import { S3Client } from '../S3Client';
-import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import {
-  createUserPool,
-  createUserPoolClient,
-  configureAmplify,
   addUserToGroup,
   authenticateUser,
+  configureAmplify,
   createGroup,
+  createUserPool,
+  createUserPoolClient,
   signupUser,
 } from '../cognitoUtils';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { GraphQLClient } from '../GraphQLClient';
+import { S3Client } from '../S3Client';
 import { resolveTestRegion } from '../testSetup';
 
 const region = resolveTestRegion();

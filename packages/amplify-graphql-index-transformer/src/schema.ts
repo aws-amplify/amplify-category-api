@@ -1,4 +1,5 @@
 import { createEnumModelFilters, makeModelSortDirectionEnumObject } from '@aws-amplify/graphql-model-transformer';
+import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   EnumTypeDefinitionNode,
@@ -32,7 +33,6 @@ import {
   withNamedNodeNamed,
   wrapNonNull,
 } from 'graphql-transformer-common';
-import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from './types';
 import { lookupResolverName } from './utils';
 

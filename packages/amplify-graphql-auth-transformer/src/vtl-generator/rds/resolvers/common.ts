@@ -1,9 +1,11 @@
+import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
+import { FieldDefinitionNode } from 'graphql';
 import {
-  Expression,
   and,
   bool,
   compoundExpression,
   equals,
+  Expression,
   forEach,
   ifElse,
   iff,
@@ -18,13 +20,11 @@ import {
   qref,
   raw,
   ref,
+  ret,
   set,
   str,
   toJson,
-  ret,
 } from 'graphql-mapping-template';
-import { FieldDefinitionNode } from 'graphql';
-import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
 import {
   API_KEY_AUTH_TYPE,
   DEFAULT_UNIQUE_IDENTITY_CLAIM,

@@ -1,11 +1,11 @@
-import { parse } from 'graphql';
+import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { PrimaryKeyTransformer, IndexTransformer } from '@aws-amplify/graphql-index-transformer';
-import { validateModelSchema, constructDataSourceStrategies, MYSQL_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
-import { ResourceConstants } from 'graphql-transformer-common';
-import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { testTransform, mockSqlDataSourceStrategy } from '@aws-amplify/graphql-transformer-test-utils';
+import { constructDataSourceStrategies, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { parse } from 'graphql';
+import { ResourceConstants } from 'graphql-transformer-common';
 import { AuthTransformer } from '../graphql-auth-transformer';
 import { getField, getObjectType } from './test-helpers';
 

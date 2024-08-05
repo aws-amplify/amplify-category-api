@@ -1,5 +1,5 @@
-import * as cdk from 'aws-cdk-lib';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import * as cdk from 'aws-cdk-lib';
 
 interface PolicyDocument {
   [key: string]: any;

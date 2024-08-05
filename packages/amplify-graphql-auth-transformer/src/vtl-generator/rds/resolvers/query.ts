@@ -1,21 +1,21 @@
+import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
+import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import {
   compoundExpression,
   equals,
   ifElse,
+  iff,
   methodCall,
+  not,
   nul,
   printBlock,
+  qref,
   ref,
   set,
   str,
   toJson,
-  iff,
-  not,
-  qref,
 } from 'graphql-mapping-template';
-import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
-import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
 import { ConfiguredAuthProviders, RoleDefinition } from '../../../utils';
 import { constructAuthFilter, emptyPayload, generateAuthRulesFromRoles, generateIAMAccessCheck, validateAuthResult } from './common';
 

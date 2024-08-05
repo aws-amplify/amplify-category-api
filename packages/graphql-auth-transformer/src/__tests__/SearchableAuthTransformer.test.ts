@@ -1,6 +1,6 @@
-import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
+import { GraphQLTransform } from 'graphql-transformer-core';
 import { ModelAuthTransformer } from '../ModelAuthTransformer';
 
 const featureFlags = {

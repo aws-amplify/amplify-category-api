@@ -1,5 +1,5 @@
 import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
-import { TransformerResolverProvider, FieldMapEntry, ReadonlyArray } from '@aws-amplify/graphql-transformer-interfaces';
+import { FieldMapEntry, ReadonlyArray, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { LambdaDataSource } from 'aws-cdk-lib/aws-appsync';
 import {
   and,

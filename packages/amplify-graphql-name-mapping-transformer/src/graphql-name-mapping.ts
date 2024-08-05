@@ -1,15 +1,17 @@
-import { TransformerPreProcessContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  ObjectTypeDefinitionNode,
-  DirectiveNode,
-  Kind,
-  DefinitionNode,
-  DocumentNode,
-  ObjectTypeExtensionNode,
-  FieldDefinitionNode,
-} from 'graphql';
 import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
-import { TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  TransformerPreProcessContextProvider,
+  TransformerSchemaVisitStepContextProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  DefinitionNode,
+  DirectiveNode,
+  DocumentNode,
+  FieldDefinitionNode,
+  Kind,
+  ObjectTypeDefinitionNode,
+  ObjectTypeExtensionNode,
+} from 'graphql';
 
 export const setTypeMappingInSchema = (context: TransformerPreProcessContextProvider, directiveName: string) => {
   context.inputDocument?.definitions?.forEach((def) => {

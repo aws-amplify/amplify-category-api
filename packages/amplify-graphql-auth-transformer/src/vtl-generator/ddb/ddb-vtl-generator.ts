@@ -1,21 +1,20 @@
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
-import { aws_dynamodb as dynamodb } from 'aws-cdk-lib';
-import { ConfiguredAuthProviders, RoleDefinition, RelationalPrimaryMapConfig } from '../../utils';
+import { ConfiguredAuthProviders, RoleDefinition } from '../../utils';
 import { AuthVTLGenerator } from '../vtl-generator';
 import {
   generateAuthExpressionForCreate,
-  generateAuthExpressionForUpdate,
-  generateAuthRequestExpression,
   generateAuthExpressionForDelete,
   generateAuthExpressionForField,
-  generateFieldAuthResponse,
   generateAuthExpressionForQueries,
+  generateAuthExpressionForRelationQuery,
   generateAuthExpressionForSearchQueries,
   generateAuthExpressionForSubscriptions,
-  setDeniedFieldFlag,
-  generateAuthExpressionForRelationQuery,
+  generateAuthExpressionForUpdate,
+  generateAuthRequestExpression,
+  generateFieldAuthResponse,
   generateFieldResolverForOwner,
+  setDeniedFieldFlag,
 } from './resolvers';
 import { generatePostAuthExpressionForField } from './resolvers/field';
 

@@ -1,20 +1,20 @@
 import { Kind } from 'graphql';
 import {
-  getNamedType,
-  getOperationFieldDefinition,
-  getNonNullType,
-  getInputValueDefinition,
-  getTypeDefinition,
-  getFieldDefinition,
-  getDirectiveNode,
-  getOperationTypeDefinition,
-  getNameNode,
-  getListValueNode,
-  getStringValueNode,
-  getInputTypeDefinition,
   getArgumentNode,
+  getDirectiveNode,
+  getFieldDefinition,
   getGraphQLTypeFromMySQLType,
+  getInputTypeDefinition,
+  getInputValueDefinition,
+  getListValueNode,
+  getNamedType,
+  getNameNode,
+  getNonNullType,
+  getOperationFieldDefinition,
+  getOperationTypeDefinition,
   getSingletonListTypeNode,
+  getStringValueNode,
+  getTypeDefinition,
 } from '../RelationalDBSchemaTransformerUtils';
 
 test('operation type node creation', () => {

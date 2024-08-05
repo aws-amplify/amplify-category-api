@@ -1,16 +1,16 @@
-import * as path from 'path';
 import {
-  createNewProjectDir,
-  initJSProjectWithProfile,
-  deleteProject,
-  deleteProjectDir,
+  addApiWithoutSchema,
   addFeatureFlag,
   amplifyPush,
-  updateApiSchema,
   amplifyPushUpdate,
-  addApiWithoutSchema,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  initJSProjectWithProfile,
+  updateApiSchema,
   updateApiWithMultiAuth,
 } from 'amplify-category-api-e2e-core';
+import * as path from 'path';
 
 describe('Schema iterative update - add new @models and @key', () => {
   let projectDir: string;

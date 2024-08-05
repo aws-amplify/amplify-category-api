@@ -1,46 +1,46 @@
-import Template from 'cloudform-types/types/template';
-import { AppSync, Fn, StringParameter, Refs, NumberParameter, IAM, Value } from 'cloudform-types';
-import {
-  str,
-  ref,
-  obj,
-  set,
-  iff,
-  list,
-  raw,
-  forEach,
-  compoundExpression,
-  qref,
-  equals,
-  comment,
-  or,
-  Expression,
-  and,
-  not,
-  parens,
-  toJson,
-  block,
-  print,
-  ifElse,
-  newline,
-  methodCall,
-  RESOLVER_VERSION_ID,
-  isNullOrEmpty,
-  ret,
-} from 'graphql-mapping-template';
-import { ResourceConstants, NONE_VALUE } from 'graphql-transformer-common';
+import { AppSync, Fn, IAM, NumberParameter, Refs, StringParameter, Value } from 'cloudform-types';
 import GraphQLApi, {
-  GraphQLApiProperties,
-  UserPoolConfig,
   AdditionalAuthenticationProvider,
+  GraphQLApiProperties,
   OpenIDConnectConfig,
+  UserPoolConfig,
 } from 'cloudform-types/types/appSync/graphQlApi';
-import { FieldDefinitionNode } from 'graphql';
 import ManagedPolicy from 'cloudform-types/types/iam/managedPolicy';
+import Template from 'cloudform-types/types/template';
+import { FieldDefinitionNode } from 'graphql';
+import {
+  and,
+  block,
+  comment,
+  compoundExpression,
+  equals,
+  Expression,
+  forEach,
+  ifElse,
+  iff,
+  isNullOrEmpty,
+  list,
+  methodCall,
+  newline,
+  not,
+  obj,
+  or,
+  parens,
+  print,
+  qref,
+  raw,
+  ref,
+  RESOLVER_VERSION_ID,
+  ret,
+  set,
+  str,
+  toJson,
+} from 'graphql-mapping-template';
+import { NONE_VALUE, ResourceConstants } from 'graphql-transformer-common';
 import * as Transformer from './ModelAuthTransformer';
 
-import { DEFAULT_OWNER_FIELD, DEFAULT_IDENTITY_FIELD, DEFAULT_GROUPS_FIELD, DEFAULT_GROUP_CLAIM } from './constants';
-import { AuthRule, AuthProvider } from './AuthRule';
+import { AuthProvider, AuthRule } from './AuthRule';
+import { DEFAULT_GROUPS_FIELD, DEFAULT_GROUP_CLAIM, DEFAULT_IDENTITY_FIELD, DEFAULT_OWNER_FIELD } from './constants';
 
 function replaceIfUsername(identityClaim: string): string {
   return identityClaim === 'username' ? 'cognito:username' : identityClaim;

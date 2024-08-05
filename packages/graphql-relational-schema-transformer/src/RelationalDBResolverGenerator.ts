@@ -9,20 +9,20 @@ import {
   obj,
   print,
   ref,
+  ReferenceNode,
   ret,
   set,
   str,
-  ReferenceNode,
   StringNode,
 } from 'graphql-mapping-template';
 import { graphqlName, plurality, toUpper } from 'graphql-transformer-common';
 
+import { Fn } from 'cloudform-types';
 import AppSync from 'cloudform-types/types/appSync';
 import { DocumentNode } from 'graphql';
-import { Fn } from 'cloudform-types';
 import { RelationalDBMappingTemplate } from './RelationalDBMappingTemplate';
-import { ResourceConstants } from './ResourceConstants';
 import { TemplateContext } from './RelationalDBSchemaTransformer';
+import { ResourceConstants } from './ResourceConstants';
 
 const s3BaseUrl = 's3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}';
 const resolverFileName = 'ResolverFileName';

@@ -1,7 +1,7 @@
 import { App, Stack } from 'aws-cdk-lib';
-import { DefaultTransformHost } from '../transform-host';
-import { GraphQLApi } from '../graphql-api';
 import { InlineTemplate } from '../cdk-compat/template-asset';
+import { GraphQLApi } from '../graphql-api';
+import { DefaultTransformHost } from '../transform-host';
 
 describe('addResolver', () => {
   const app = new App();

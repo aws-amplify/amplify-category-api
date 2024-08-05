@@ -1,6 +1,6 @@
+import { ICredentials } from '@aws-amplify/core';
 import { AdminCreateUserCommand, CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 import Amplify, { Auth } from 'aws-amplify';
-import { ICredentials } from '@aws-amplify/core';
 import { AuthConstructStackOutputs } from './types';
 
 export class CognitoIdentityPoolCredentialsFactory {

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
+import { App, Duration, Stack } from 'aws-cdk-lib';
 import 'source-map-support/register';
-import { App, Stack, Duration } from 'aws-cdk-lib';
 // @ts-ignore
 import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';
 

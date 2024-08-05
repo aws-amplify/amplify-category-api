@@ -1,9 +1,9 @@
+import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { AppSyncAuthConfiguration, ModelDataSourceStrategy, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { getModelTypeNames } from '@aws-amplify/graphql-transformer-core';
+import { AppSyncAuthConfiguration, ModelDataSourceStrategy, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AuthTransformer } from '../graphql-auth-transformer';
 import { ddbDataSourceStrategies, sqlDataSourceStrategies } from './combination-tests/snapshot-utils';
 

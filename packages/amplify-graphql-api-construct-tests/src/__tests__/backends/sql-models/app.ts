@@ -1,12 +1,12 @@
 #!/usr/bin/env node
+import { App, CfnOutput, Duration, Stack } from 'aws-cdk-lib';
 import 'source-map-support/register';
-import { App, Stack, Duration, CfnOutput } from 'aws-cdk-lib';
 // @ts-ignore
 import {
   AmplifyGraphqlApi,
   AmplifyGraphqlDefinition,
-  SqlModelDataSourceDbConnectionConfig,
   ModelDataSourceStrategySqlDbType,
+  SqlModelDataSourceDbConnectionConfig,
 } from '@aws-amplify/graphql-api-construct';
 
 interface DBDetails {

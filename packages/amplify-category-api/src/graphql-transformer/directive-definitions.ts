@@ -1,11 +1,11 @@
-import { getAppSyncServiceExtraDirectives } from '@aws-amplify/graphql-transformer-core';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import { print } from 'graphql';
-import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { constructTransformerChain } from '@aws-amplify/graphql-transformer';
+import { getAppSyncServiceExtraDirectives } from '@aws-amplify/graphql-transformer-core';
+import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { print } from 'graphql';
 import { getTransformerFactoryV1 } from './transformer-factory';
-import { getTransformerVersion } from './transformer-version';
 import { loadCustomTransformersV2 } from './transformer-options-v2';
+import { getTransformerVersion } from './transformer-version';
 
 /**
  * Return the set of directive definitions for the project, includes both appsync and amplify supported directives.

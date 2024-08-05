@@ -1,5 +1,4 @@
-import _ from 'lodash';
-import { getProjectMeta, getBackendAmplifyMeta, getTeamProviderInfo, getBackendConfig } from 'amplify-category-api-e2e-core';
+import { getBackendAmplifyMeta, getBackendConfig, getProjectMeta, getTeamProviderInfo } from 'amplify-category-api-e2e-core';
 import { AuthProjectDetails, DynamoDBProjectDetails, readRootStack, StorageProjectDetails } from '.';
 
 export const expectAuthProjectDetailsMatch = (projectDetails: AuthProjectDetails, ogProjectDetails: AuthProjectDetails) => {

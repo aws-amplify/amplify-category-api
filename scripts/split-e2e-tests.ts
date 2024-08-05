@@ -1,7 +1,7 @@
-import { join } from 'path';
-import * as glob from 'glob';
 import * as fs from 'fs-extra';
+import * as glob from 'glob';
 import * as yaml from 'js-yaml';
+import { join } from 'path';
 
 type TestRegion = {
   name: string;

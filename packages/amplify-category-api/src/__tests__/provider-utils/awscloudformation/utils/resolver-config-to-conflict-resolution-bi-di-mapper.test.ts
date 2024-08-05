@@ -1,5 +1,5 @@
 import { ConflictResolution } from 'amplify-headless-interface';
-import { ResolverConfig, ConflictHandlerType } from 'graphql-transformer-core';
+import { ConflictHandlerType, ResolverConfig } from 'graphql-transformer-core';
 import {
   conflictResolutionToResolverConfig,
   resolverConfigToConflictResolution,

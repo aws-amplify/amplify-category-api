@@ -2,8 +2,8 @@ const execa = require('execa');
 import { writeFile } from 'fs/promises';
 import { EOL } from 'os';
 import * as path from 'path';
-import { releaseTagToNameAndVersion } from './release_tag_to_name_and_version';
 import privatePackages from './private_packages';
+import { releaseTagToNameAndVersion } from './release_tag_to_name_and_version';
 
 /**
  * Client for programmatically  interacting with the local git cli

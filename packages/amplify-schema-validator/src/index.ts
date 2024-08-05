@@ -2,36 +2,36 @@
 /* eslint-disable global-require */
 
 import { parse } from 'graphql';
-import { validateIndexScalarTypes } from './validators/index-scalar-types';
-import { validateRequireBelongsToRelation } from './validators/relation-required-with-belongs-to';
-import { validateManyToManyTwoLocations } from './validators/two-many-to-many-locations';
-import { validateFieldsMatchInParentModel } from './validators/fields-match-in-parent-model';
 import { ValidationError } from './exceptions/validation-error';
-import { validateFieldIsDefinedOnce } from './validators/field-is-defined-once';
-import { validateAuthIsAnnotatedWithModel } from './validators/auth-must-be-annotated-with-model';
-import { verifyIndexSortKeyFieldsExistInModel } from './validators/sort-key-field-exists';
-import { validateReservedTypeNames } from './validators/reserved-type-name';
-import { validateCorrectTypeInManyToManyRelation } from './validators/correct-type-in-many-to-many-relation';
-import { validateReservedFieldNames } from './validators/reserved-field-name';
-import { validateRelationNameDoesNotConflictWithTypeName } from './validators/relationname-doesnot-conflict-with-typename';
-import { validateBelongsToFieldsMatchRelatedTypePrimaryKey } from './validators/belongs-to-fields-match-related-type-primary-key';
-import { validateTypeIsDefinedOnce } from './validators/type-is-defined-once';
-import { validateIndexIsDefinedOnce } from './validators/index-is-defined-once-in-model';
-import { validateIndexExistsInRelatedModel } from './validators/index-exists-in-related-model';
-import { validateEnumIsDefinedOnce } from './validators/enum-is-defined-once';
-import { validateKeyExistsInRelatedModel } from './validators/key-exists-in-related-model';
-import { validateBelongsToIsUsedWhenDatastoreInUse } from './validators/use-belongsto-when-datastore-inuse';
-import { validateDirectivesFromOlderTransformerVersionAreNotUsed } from './validators/use-directives-from-older-transformer-version';
-import { validateDirectivesFromNewerTransformerVersionAreNotUsed } from './validators/use-directives-from-newer-transformer-version';
 import { ValidateSchemaProps } from './helpers/schema-validator-props';
-import { validateFieldNamesAreUniqueWithRelationsPresent } from './validators/unique-field-names-with-relation';
-import { validateManyToManyHasRelationName } from './validators/many-to-many-has-a-relationname';
-import { validateHasOneNotUsedWithLists } from './validators/hasOne-cannot-be-used-with-lists';
-import { validateHasManyIsUsedWithLists } from './validators/hasMany-must-be-used-with-lists';
-import { validateObjectIsAnnotatedWithModel } from './validators/object-must-be-annotated-with-model';
-import { validateRelationshipNamesAreNotInverseOfRelationName } from './validators/relationshipname-not-inverseof-relationname';
-import { validateOwnerFieldTypeString } from './validators/owner-field-type-string';
+import { validateAuthIsAnnotatedWithModel } from './validators/auth-must-be-annotated-with-model';
+import { validateBelongsToFieldsMatchRelatedTypePrimaryKey } from './validators/belongs-to-fields-match-related-type-primary-key';
+import { validateCorrectTypeInManyToManyRelation } from './validators/correct-type-in-many-to-many-relation';
 import { validateDefaultDirective } from './validators/default-directive-validation';
+import { validateEnumIsDefinedOnce } from './validators/enum-is-defined-once';
+import { validateFieldIsDefinedOnce } from './validators/field-is-defined-once';
+import { validateFieldsMatchInParentModel } from './validators/fields-match-in-parent-model';
+import { validateHasManyIsUsedWithLists } from './validators/hasMany-must-be-used-with-lists';
+import { validateHasOneNotUsedWithLists } from './validators/hasOne-cannot-be-used-with-lists';
+import { validateIndexExistsInRelatedModel } from './validators/index-exists-in-related-model';
+import { validateIndexIsDefinedOnce } from './validators/index-is-defined-once-in-model';
+import { validateIndexScalarTypes } from './validators/index-scalar-types';
+import { validateKeyExistsInRelatedModel } from './validators/key-exists-in-related-model';
+import { validateManyToManyHasRelationName } from './validators/many-to-many-has-a-relationname';
+import { validateObjectIsAnnotatedWithModel } from './validators/object-must-be-annotated-with-model';
+import { validateOwnerFieldTypeString } from './validators/owner-field-type-string';
+import { validateRequireBelongsToRelation } from './validators/relation-required-with-belongs-to';
+import { validateRelationNameDoesNotConflictWithTypeName } from './validators/relationname-doesnot-conflict-with-typename';
+import { validateRelationshipNamesAreNotInverseOfRelationName } from './validators/relationshipname-not-inverseof-relationname';
+import { validateReservedFieldNames } from './validators/reserved-field-name';
+import { validateReservedTypeNames } from './validators/reserved-type-name';
+import { verifyIndexSortKeyFieldsExistInModel } from './validators/sort-key-field-exists';
+import { validateManyToManyTwoLocations } from './validators/two-many-to-many-locations';
+import { validateTypeIsDefinedOnce } from './validators/type-is-defined-once';
+import { validateFieldNamesAreUniqueWithRelationsPresent } from './validators/unique-field-names-with-relation';
+import { validateBelongsToIsUsedWhenDatastoreInUse } from './validators/use-belongsto-when-datastore-inuse';
+import { validateDirectivesFromNewerTransformerVersionAreNotUsed } from './validators/use-directives-from-newer-transformer-version';
+import { validateDirectivesFromOlderTransformerVersionAreNotUsed } from './validators/use-directives-from-older-transformer-version';
 
 const allValidators = [
   validateIndexScalarTypes,

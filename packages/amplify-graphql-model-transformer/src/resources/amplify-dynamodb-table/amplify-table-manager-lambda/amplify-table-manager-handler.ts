@@ -9,22 +9,21 @@ import {
   DynamoDB,
   GlobalSecondaryIndexDescription,
   KeySchemaElement,
+  ListTagsOfResourceCommand,
   Projection,
   ResourceNotFoundException,
   TableDescription,
+  Tag as DynamoDBTag,
   TimeToLiveDescription,
   UpdateContinuousBackupsCommandInput,
   UpdateTableCommandInput,
   UpdateTimeToLiveCommandInput,
-  ListTagsOfResourceCommand,
-  Tag as DynamoDBTag,
 } from '@aws-sdk/client-dynamodb';
 import { Lambda, ListTagsCommand } from '@aws-sdk/client-lambda';
 import { OnEventResponse } from '../amplify-table-manager-lambda-types';
 import * as cfnResponse from './cfn-response';
 import { startExecution } from './outbound';
 import { getEnv, log } from './util';
-import { CfnTag } from 'aws-cdk-lib';
 
 const ddbClient = new DynamoDB();
 const lambdaClient = new Lambda();

@@ -1,6 +1,6 @@
-import { ResourceConstants } from 'graphql-transformer-common';
 import { CfnParameter } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import { ResourceConstants } from 'graphql-transformer-common';
 import { ALLOWABLE_SEARCHABLE_INSTANCE_TYPES } from '../constants';
 
 export const createParametersStack = (scope: Construct): Map<string, CfnParameter> => {

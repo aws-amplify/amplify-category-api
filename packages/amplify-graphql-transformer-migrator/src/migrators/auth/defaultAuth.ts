@@ -1,5 +1,5 @@
+import { addAuthRuleToNode, hasAuthDirectives } from '.';
 import { createAuthRule } from '../generators';
-import { hasAuthDirectives, addAuthRuleToNode } from '.';
 
 const defaultAuthModeMap: Map<string, string> = new Map<string, string>([
   ['apiKey', 'public'],

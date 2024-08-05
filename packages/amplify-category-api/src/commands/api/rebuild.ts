@@ -1,5 +1,5 @@
 import { $TSContext, AmplifyCategories, FeatureFlags, stateManager } from '@aws-amplify/amplify-cli-core';
-import { printer, prompter, exact } from '@aws-amplify/amplify-prompts';
+import { exact, printer, prompter } from '@aws-amplify/amplify-prompts';
 
 const subcommand = 'rebuild';
 

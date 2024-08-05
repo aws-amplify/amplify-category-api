@@ -1,4 +1,4 @@
-import { DataApiParams, AuroraDataAPIClient } from '../AuroraDataAPIClient';
+import { AuroraDataAPIClient, DataApiParams } from '../AuroraDataAPIClient';
 
 const region = 'us-east-1';
 const secretStoreArn = 'secretStoreArn';

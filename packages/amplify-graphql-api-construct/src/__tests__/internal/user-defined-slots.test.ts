@@ -1,5 +1,5 @@
 import { MappingTemplate } from 'aws-cdk-lib/aws-appsync';
-import { getSlotName, parseUserDefinedSlots, validateFunctionSlots, separateSlots } from '../../internal/user-defined-slots';
+import { getSlotName, parseUserDefinedSlots, separateSlots, validateFunctionSlots } from '../../internal/user-defined-slots';
 import { FunctionSlot } from '../../types';
 
 describe('user-defined-slots', () => {

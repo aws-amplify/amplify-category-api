@@ -7,15 +7,15 @@ import {
   MYSQL_DB_TYPE,
   validateModelSchema,
 } from '@aws-amplify/graphql-transformer-core';
-import { Template as AssertionTemplate } from 'aws-cdk-lib/assertions';
-import { DocumentNode, InputObjectTypeDefinitionNode, parse } from 'graphql';
 import {
   AmplifyApiGraphQlResourceStackTemplate,
   mockSqlDataSourceStrategy,
   Template,
   testTransform,
 } from '@aws-amplify/graphql-transformer-test-utils';
+import { Template as AssertionTemplate } from 'aws-cdk-lib/assertions';
 import { Construct } from 'constructs';
+import { DocumentNode, InputObjectTypeDefinitionNode, parse } from 'graphql';
 import { IndexTransformer, PrimaryKeyTransformer } from '..';
 import * as resolverUtils from '../resolvers/resolvers';
 

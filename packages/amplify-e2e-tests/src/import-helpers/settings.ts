@@ -1,9 +1,9 @@
 import {
-  AddAuthUserPoolOnlyWithOAuthSettings,
-  AddAuthUserPoolOnlyNoOAuthSettings,
   AddAuthIdentityPoolAndUserPoolWithOAuthSettings,
-  AddStorageSettings,
+  AddAuthUserPoolOnlyNoOAuthSettings,
+  AddAuthUserPoolOnlyWithOAuthSettings,
   AddDynamoDBSettings,
+  AddStorageSettings,
 } from 'amplify-category-api-e2e-core';
 
 export const createNoOAuthSettings = (projectPrefix: string, shortId: string): AddAuthUserPoolOnlyNoOAuthSettings => {

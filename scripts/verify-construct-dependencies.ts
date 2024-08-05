@@ -1,7 +1,7 @@
-import * as process from 'process';
-import * as path from 'path';
-import * as fs from 'fs';
 import * as lockfile from '@yarnpkg/lockfile';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as process from 'process';
 
 type DepsClosure = {
   repoDeps: Array<string>;

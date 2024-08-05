@@ -1,13 +1,13 @@
 import * as cdk from 'aws-cdk-lib';
-import * as events from 'aws-cdk-lib/aws-events';
+import { Template } from 'aws-cdk-lib/assertions';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as elasticsearch from 'aws-cdk-lib/aws-elasticsearch';
+import * as events from 'aws-cdk-lib/aws-events';
+import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import * as opensearch from 'aws-cdk-lib/aws-opensearchservice';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import * as ssm from 'aws-cdk-lib/aws-secretsmanager';
-import { Template } from 'aws-cdk-lib/assertions';
-import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 

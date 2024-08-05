@@ -1,9 +1,9 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { Construct } from 'constructs';
+import { AssetProps, AssetProvider as AssetProviderInterface, S3Asset } from '@aws-amplify/graphql-transformer-interfaces';
 import * as cdk from 'aws-cdk-lib';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
-import { AssetProps, S3Asset, AssetProvider as AssetProviderInterface } from '@aws-amplify/graphql-transformer-interfaces';
+import { Construct } from 'constructs';
+import * as fs from 'fs';
+import * as path from 'path';
 
 const TEMP_PREFIX = 'transformer-assets';
 const FUNCTION_PREFIX = 'functions';

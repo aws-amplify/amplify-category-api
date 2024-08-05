@@ -1,10 +1,10 @@
-import { ModelDataSourceStrategyDbType } from '@aws-amplify/graphql-transformer-interfaces';
-import { HasManyDirectiveConfiguration } from '../types';
-import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
-import { HasManyDirectiveDDBFieldsTransformer } from './has-many-directive-ddb-fields-transformer';
-import { HasManyDirectiveSQLTransformer } from './has-many-directive-sql-transformer';
-import { HasManyDirectiveDDBReferencesTransformer } from './has-many-directive-ddb-references-transformer';
 import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
+import { ModelDataSourceStrategyDbType } from '@aws-amplify/graphql-transformer-interfaces';
+import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
+import { HasManyDirectiveConfiguration } from '../types';
+import { HasManyDirectiveDDBFieldsTransformer } from './has-many-directive-ddb-fields-transformer';
+import { HasManyDirectiveDDBReferencesTransformer } from './has-many-directive-ddb-references-transformer';
+import { HasManyDirectiveSQLTransformer } from './has-many-directive-sql-transformer';
 
 const hasManyDirectiveMySqlTransformer = new HasManyDirectiveSQLTransformer();
 const hasManyDirectivePostgresTransformer = new HasManyDirectiveSQLTransformer();

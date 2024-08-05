@@ -1,6 +1,6 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { TransformerLog, TransformerLogLevel, TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AuthTransformer } from '../../graphql-auth-transformer';
 import { defaultIdentityClaimWarning } from '../../utils/warnings';
 

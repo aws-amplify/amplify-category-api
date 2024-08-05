@@ -1,5 +1,5 @@
 import { DataSourceInstance, TransformerDataSourceManagerProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode } from 'graphql';
+import { InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 
 export class TransformerDataSourceManager implements TransformerDataSourceManagerProvider {
   private dataSourceMap: Map<string, DataSourceInstance> = new Map();

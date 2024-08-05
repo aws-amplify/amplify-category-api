@@ -1,9 +1,9 @@
 import {
   AppSyncAuthConfiguration,
   NestedStackProvider,
-  TransformParameters,
   TransformerPluginProvider,
   TransformerPluginType,
+  TransformParameters,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { App, NestedStack, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';

@@ -1,8 +1,8 @@
-import { DataSourceAdapter, MySQLDataSourceAdapter } from '../datasource-adapter';
-import { getMySQLSchemaQuery } from '../datasource-adapter/mysql-datasource-adapter';
-import { Engine, Field, FieldType, Index, Model, Schema } from '../schema-representation';
-import { generateGraphQLSchema, isComputeExpression } from '../schema-generator';
 import { gql } from 'graphql-transformer-core';
+import { DataSourceAdapter } from '../datasource-adapter';
+import { getMySQLSchemaQuery } from '../datasource-adapter/mysql-datasource-adapter';
+import { generateGraphQLSchema, isComputeExpression } from '../schema-generator';
+import { Engine, Field, FieldType, Index, Model, Schema } from '../schema-representation';
 
 class TestDataSourceAdapter extends DataSourceAdapter {
   public async initialize(): Promise<void> {

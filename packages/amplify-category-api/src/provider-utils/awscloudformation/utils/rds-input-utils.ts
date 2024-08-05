@@ -1,8 +1,8 @@
-import * as fs from 'fs-extra';
-import _ from 'lodash';
-import { DocumentNode, StringValueNode } from 'graphql';
 import { readRDSGlobalAmplifyInput } from '@aws-amplify/graphql-schema-generator';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import * as fs from 'fs-extra';
+import { DocumentNode, StringValueNode } from 'graphql';
+import _ from 'lodash';
 
 export const readRDSSchema = (pathToSchemaFile: string): string | undefined => {
   if (!fs.existsSync(pathToSchemaFile)) {

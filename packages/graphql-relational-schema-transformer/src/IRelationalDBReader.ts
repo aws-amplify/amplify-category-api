@@ -1,4 +1,4 @@
-import { TemplateContext, TableContext } from './RelationalDBSchemaTransformer';
+import { TableContext, TemplateContext } from './RelationalDBSchemaTransformer';
 
 /**
  * An interface to manage interactions with a relational database across

@@ -1,20 +1,20 @@
 import {
-  initJSProjectWithProfile,
-  deleteProject,
+  addApiWithoutSchema,
+  addAuthWithDefault,
+  addFeatureFlag,
   amplifyPush,
   amplifyPushUpdate,
-  addFeatureFlag,
-  createRandomName,
-  addAuthWithDefault,
-  addApiWithoutSchema,
-  updateApiSchema,
-  getProjectMeta,
   createNewProjectDir,
+  createRandomName,
+  deleteProject,
   deleteProjectDir,
+  getProjectMeta,
+  initJSProjectWithProfile,
   tryScheduleCredentialRefresh,
+  updateApiSchema,
 } from 'amplify-category-api-e2e-core';
-import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import gql from 'graphql-tag';
 
 (global as any).fetch = require('node-fetch');
 

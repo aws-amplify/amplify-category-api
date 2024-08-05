@@ -1,10 +1,10 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import * as os from 'os';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 import { AmplifyGraphqlDefinition, DEFAULT_MODEL_DATA_SOURCE_STRATEGY } from '../amplify-graphql-definition';
-import { IAmplifyGraphqlDefinition } from '../types';
 import { ModelDataSourceStrategy, SQLLambdaModelDataSourceStrategy } from '../model-datasource-strategy-types';
+import { IAmplifyGraphqlDefinition } from '../types';
 
 const TEST_SCHEMA = /* GraphQL */ `
   type Todo @model {

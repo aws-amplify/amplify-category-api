@@ -1,6 +1,5 @@
 import { ModelDataSourceStrategySqlDbType, SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { Construct, MetadataEntry } from 'constructs';
-import { ResourceConstants } from 'graphql-transformer-common';
 
 const resourceNameKey = 'graphqltransformer:resourceName';
 

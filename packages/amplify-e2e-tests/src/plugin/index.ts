@@ -1,7 +1,7 @@
 export * from './new-plugin';
 export * from './verifyPluginStructure';
 
-import { nspawn as spawn, getCLIPath } from 'amplify-category-api-e2e-core';
+import { getCLIPath, nspawn as spawn } from 'amplify-category-api-e2e-core';
 
 export function help(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {

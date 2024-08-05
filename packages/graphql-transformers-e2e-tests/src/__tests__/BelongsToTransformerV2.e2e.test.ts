@@ -1,8 +1,8 @@
 /* eslint-disable max-lines-per-function */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { getSchemaDeployer, SchemaDeployer } from '../deploySchema';
 
 jest.setTimeout(1000 * 60 * 10); // 10 minutes

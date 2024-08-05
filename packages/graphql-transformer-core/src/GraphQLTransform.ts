@@ -16,15 +16,15 @@ import {
   UnionTypeDefinitionNode,
 } from 'graphql';
 import { SyncResourceIDs } from 'graphql-transformer-common';
-import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from './errors';
-import { TransformerContext } from './TransformerContext';
-import { Transformer } from './Transformer';
-import { ITransformer } from './ITransformer';
-import { validateModelSchema } from './validation';
-import { TransformFormatter } from './TransformFormatter';
-import { TransformConfig, SyncUtils } from './util';
-import { FeatureFlagProvider, NoopFeatureFlagProvider } from './FeatureFlags';
 import { DeploymentResources } from './DeploymentResources';
+import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from './errors';
+import { FeatureFlagProvider, NoopFeatureFlagProvider } from './FeatureFlags';
+import { ITransformer } from './ITransformer';
+import { Transformer } from './Transformer';
+import { TransformerContext } from './TransformerContext';
+import { TransformFormatter } from './TransformFormatter';
+import { SyncUtils, TransformConfig } from './util';
+import { validateModelSchema } from './validation';
 
 function isFunction(obj: any) {
   return obj && typeof obj === 'function';

@@ -1,4 +1,4 @@
-import { nspawn as spawn, getCLIPath, isCI } from 'amplify-category-api-e2e-core';
+import { getCLIPath, isCI, nspawn as spawn } from 'amplify-category-api-e2e-core';
 
 export function addEnvironment(cwd: string, settings: { envName: string; numLayers?: number }): Promise<void> {
   return new Promise((resolve, reject) => {

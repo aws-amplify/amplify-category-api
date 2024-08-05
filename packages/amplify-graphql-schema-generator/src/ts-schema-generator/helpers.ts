@@ -1,6 +1,6 @@
-import ts from 'typescript';
-import { TYPESCRIPT_DATA_SCHEMA_CONSTANTS } from 'graphql-transformer-common';
 import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import { TYPESCRIPT_DATA_SCHEMA_CONSTANTS } from 'graphql-transformer-common';
+import ts from 'typescript';
 import { DBEngineType, Field, FieldType, Model, Schema } from '../schema-representation';
 
 const GQL_TYPESCRIPT_DATA_SCHEMA_TYPE_MAP = {

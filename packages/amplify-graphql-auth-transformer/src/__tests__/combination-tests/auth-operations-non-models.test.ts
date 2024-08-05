@@ -7,17 +7,17 @@
  * actually pass will fail. As of this writing, this works as expected, but be aware of the behavior.
  */
 
+import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { AuthTransformer } from '../../graphql-auth-transformer';
 import {
-  TestTable,
   convertToTestArgumentArray,
   ddbDataSourceStrategies,
   makeTransformationExpectation,
   sqlDataSourceStrategies,
   testRules,
+  TestTable,
 } from './snapshot-utils';
 
 const ddbSchemaTemplate = /* GraphQL */ `

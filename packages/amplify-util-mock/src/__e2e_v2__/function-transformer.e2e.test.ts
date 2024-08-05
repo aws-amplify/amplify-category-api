@@ -1,5 +1,5 @@
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
-import { deploy, logDebug, GraphQLClient, defaultTransformParams, transformAndSynth } from '../__e2e__/utils';
+import { defaultTransformParams, deploy, GraphQLClient, logDebug, transformAndSynth } from '../__e2e__/utils';
 
 jest.setTimeout(2000000);
 

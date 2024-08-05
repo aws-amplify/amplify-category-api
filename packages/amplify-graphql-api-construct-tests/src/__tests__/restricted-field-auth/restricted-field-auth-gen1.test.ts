@@ -1,9 +1,9 @@
-import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as path from 'path';
 
-import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
-import { initCDKProject, cdkDeploy, cdkDestroy } from '../../commands';
+import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
+import { cdkDeploy, cdkDestroy, initCDKProject } from '../../commands';
 import {
   createCognitoUser,
   doAppSyncGraphqlMutation,

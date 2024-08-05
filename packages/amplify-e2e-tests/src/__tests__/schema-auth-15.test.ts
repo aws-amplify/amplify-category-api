@@ -1,10 +1,10 @@
 import {
-  initIosProjectWithProfile,
-  initFlutterProjectWithProfile,
-  deleteProject,
-  createNewProjectDir,
-  deleteProjectDir,
   addFeatureFlag,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  initFlutterProjectWithProfile,
+  initIosProjectWithProfile,
 } from 'amplify-category-api-e2e-core';
 import { testSchema } from '../schema-api-directives';
 

@@ -1,5 +1,5 @@
-import * as crypto from 'crypto';
 import AWSAppSyncClient from 'aws-appsync';
+import * as crypto from 'crypto';
 import { gql } from 'graphql-transformer-core';
 
 /**

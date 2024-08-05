@@ -1,11 +1,11 @@
 import {
+  FieldDefinitionNode,
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
   InterfaceTypeDefinitionNode,
   ObjectTypeDefinitionNode,
-  FieldDefinitionNode,
 } from 'graphql';
-import { makeInputValueDefinition, makeNonNullType, makeNamedType, ModelResourceIDs, unwrapNonNull } from 'graphql-transformer-common';
+import { makeInputValueDefinition, makeNamedType, makeNonNullType, ModelResourceIDs, unwrapNonNull } from 'graphql-transformer-common';
 
 export function makeHttpArgument(name: string, inputType: InputObjectTypeDefinitionNode, makeNonNull: boolean): InputValueDefinitionNode {
   // the URL params type that we create will need to be non-null, so build in some flexibility here

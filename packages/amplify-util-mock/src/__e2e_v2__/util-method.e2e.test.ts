@@ -1,12 +1,12 @@
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
 import {
+  defaultTransformParams,
   deploy,
+  GraphQLClient,
   launchDDBLocal,
-  terminateDDB,
   logDebug,
   reDeploy,
-  GraphQLClient,
-  defaultTransformParams,
+  terminateDDB,
   transformAndSynth,
 } from '../__e2e__/utils';
 

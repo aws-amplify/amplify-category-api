@@ -1,16 +1,19 @@
-import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as path from 'path';
 
-import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
-import { initCDKProject, cdkDestroy } from '../../../commands';
+import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
+import { cdkDestroy, initCDKProject } from '../../../commands';
 import { TestDefinition, writeStackConfig, writeTestDefinitions } from '../../../utils';
 import { DURATION_1_HOUR } from '../../../utils/duration-constants';
 import {
   deployStackAndCreateUsers,
   testCreatePrimaryRedactsRelatedForDifferentOwningGroup,
+  testCreatePrimaryRedactsRelatedForSameOwningGroup,
   testCreateRelatedManyRedactsPrimaryForDifferentOwningGroup,
+  testCreateRelatedManyRedactsPrimaryForSameOwningGroup,
   testCreateRelatedOneRedactsPrimaryForDifferentOwningGroup,
+  testCreateRelatedOneRedactsPrimaryForSameOwningGroup,
   testGetPrimaryDoesNotRedactRelatedForSameOwningGroup,
   testGetPrimaryRedactsRelatedForDifferentOwningGroup,
   testGetPrimaryUnauthorizedForDifferentOwner,
@@ -26,14 +29,11 @@ import {
   testListRelatedOnesRedactsPrimaryForDifferentOwningGroup,
   testOwningGroupCanGrantOtherGroupsPermissions,
   testUpdatePrimaryRedactsRelatedForDifferentOwningGroup,
-  testUpdateRelatedManyRedactsPrimaryForDifferentOwningGroup,
-  testUpdateRelatedOneRedactsPrimaryForDifferentOwningGroup,
-  testCreatePrimaryRedactsRelatedForSameOwningGroup,
   testUpdatePrimaryRedactsRelatedForSameOwningGroup,
-  testCreateRelatedOneRedactsPrimaryForSameOwningGroup,
-  testUpdateRelatedOneRedactsPrimaryForSameOwningGroup,
-  testCreateRelatedManyRedactsPrimaryForSameOwningGroup,
+  testUpdateRelatedManyRedactsPrimaryForDifferentOwningGroup,
   testUpdateRelatedManyRedactsPrimaryForSameOwningGroup,
+  testUpdateRelatedOneRedactsPrimaryForDifferentOwningGroup,
+  testUpdateRelatedOneRedactsPrimaryForSameOwningGroup,
 } from './test-implementations';
 
 jest.setTimeout(DURATION_1_HOUR);

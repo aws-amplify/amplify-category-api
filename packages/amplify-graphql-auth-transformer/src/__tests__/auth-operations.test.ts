@@ -1,7 +1,7 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import { ConflictHandlerType, SyncConfig } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AccessControlMatrix } from '../accesscontrol';
 import { AuthTransformer } from '../graphql-auth-transformer';

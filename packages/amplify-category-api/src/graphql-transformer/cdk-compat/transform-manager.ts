@@ -1,19 +1,19 @@
-import { App, CfnParameter, Stack } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
 import type {
+  AssetProps,
   AssetProvider,
   NestedStackProvider,
   S3Asset,
-  AssetProps,
   SynthParameters,
   TransformParameterProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { DeploymentResources, Template } from './deployment-resources';
-import { TransformerStackSythesizer } from './stack-synthesizer';
-import { TransformerNestedStack } from './nested-stack';
-import { TransformerRootStack } from './root-stack';
+import { App, CfnParameter, Stack } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import { AmplifyApiGraphQlResourceStackTemplate } from './amplify-api-resource-stack-types';
 import { AmplifyS3Asset } from './amplify-s3-asset';
+import { DeploymentResources, Template } from './deployment-resources';
+import { TransformerNestedStack } from './nested-stack';
+import { TransformerRootStack } from './root-stack';
+import { TransformerStackSythesizer } from './stack-synthesizer';
 
 export type OverrideConfig = {
   overrideFlag: boolean;

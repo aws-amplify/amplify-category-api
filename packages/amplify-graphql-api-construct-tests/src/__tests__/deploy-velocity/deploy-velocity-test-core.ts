@@ -1,10 +1,10 @@
-import * as path from 'path';
-import * as fs from 'fs';
+import { AmplifyGraphqlApi } from '@aws-amplify/graphql-api-construct';
 import { faker } from '@faker-js/faker';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
-import { AmplifyGraphqlApi } from '@aws-amplify/graphql-api-construct';
-import { initCDKProject, cdkDeploy, cdkDestroy } from '../../commands';
-import { ValidateGraphqlOptions, validateGraphql } from '../../graphql-request';
+import * as fs from 'fs';
+import * as path from 'path';
+import { cdkDeploy, cdkDestroy, initCDKProject } from '../../commands';
+import { validateGraphql, ValidateGraphqlOptions } from '../../graphql-request';
 import { DURATION_90_MINUTES } from '../../utils/duration-constants';
 
 jest.setTimeout(DURATION_90_MINUTES);

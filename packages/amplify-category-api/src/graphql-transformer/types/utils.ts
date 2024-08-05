@@ -3,11 +3,11 @@ import { Construct } from 'constructs';
 import _ from 'lodash';
 import {
   AmplifyApiGraphQlResourceStackTemplate,
-  FunctionDirectiveStack,
   AppsyncStackCommon,
+  FunctionDirectiveStack,
   HttpsDirectiveStack,
-  OpenSearchDirectiveStack,
   ModelDirectiveStack,
+  OpenSearchDirectiveStack,
 } from '../cdk-compat/amplify-api-resource-stack-types';
 import { ConstructResourceMeta } from './types';
 

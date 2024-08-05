@@ -18,7 +18,6 @@ import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { existsSync } from 'fs';
 import gql from 'graphql-tag';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
-import _ from 'lodash';
 import * as path from 'path';
 
 const providerName = 'awscloudformation';

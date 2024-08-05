@@ -7,15 +7,15 @@ import {
   HasOneTransformer,
   ManyToManyTransformer,
 } from '@aws-amplify/graphql-relational-transformer';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import { ResourceConstants } from 'graphql-transformer-common';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { default as S3 } from 'aws-sdk/clients/s3';
+import { ResourceConstants } from 'graphql-transformer-common';
 import { default as moment } from 'moment';
 import { CloudFormationClient } from '../CloudFormationClient';
-import { GraphQLClient } from '../GraphQLClient';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
+import { GraphQLClient } from '../GraphQLClient';
 import { S3Client } from '../S3Client';
 import { resolveTestRegion } from '../testSetup';
 

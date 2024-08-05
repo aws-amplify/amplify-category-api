@@ -1,4 +1,4 @@
-import * as path from 'path';
+import * as cdk from 'aws-cdk-lib';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as codepipelineactions from 'aws-cdk-lib/aws-codepipeline-actions';
@@ -7,10 +7,10 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as cdk from 'aws-cdk-lib';
 import * as custom from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
+import * as path from 'path';
 import { DEPLOYMENT_MECHANISM } from './base-api-stack';
 import { getGitHubOwnerRepoFromPath } from './utils/github';
 

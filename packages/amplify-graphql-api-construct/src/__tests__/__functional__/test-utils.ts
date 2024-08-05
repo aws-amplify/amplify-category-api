@@ -1,7 +1,7 @@
-import * as cdk from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
 import { DDB_DEFAULT_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
 import { ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import * as cdk from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 import { IAmplifyGraphqlDefinition } from '../../types';

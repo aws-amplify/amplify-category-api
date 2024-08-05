@@ -21,8 +21,8 @@ import {
   createIdentityPool,
   createUserPool,
   createUserPoolClient,
-  signupUser,
   setIdentityPoolRoles,
+  signupUser,
 } from '../cognitoUtils';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { IAMHelper } from '../IAMHelper';

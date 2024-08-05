@@ -1,6 +1,6 @@
-import * as path from 'path';
 import * as fs from 'fs-extra';
-import { runTest, runAuthTest } from './common';
+import * as path from 'path';
+import { runAuthTest, runTest } from './common';
 import { runFunctionTest } from './functionTester';
 
 // The contents in the test files might be modified from its original version in the Amplify CLI doc,

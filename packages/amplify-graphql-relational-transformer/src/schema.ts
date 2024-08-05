@@ -1,4 +1,5 @@
 import { generateModelScalarFilterInputName, makeModelSortDirectionEnumObject } from '@aws-amplify/graphql-model-transformer';
+import { getSortKeyFieldNames, getSubscriptionFilterInputName } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   DirectiveNode,
@@ -33,7 +34,6 @@ import {
   toUpper,
   wrapNonNull,
 } from 'graphql-transformer-common';
-import { getSortKeyFieldNames, getSubscriptionFilterInputName } from '@aws-amplify/graphql-transformer-core';
 import { WritableDraft } from 'immer/dist/types/types-external';
 import {
   BelongsToDirectiveConfiguration,

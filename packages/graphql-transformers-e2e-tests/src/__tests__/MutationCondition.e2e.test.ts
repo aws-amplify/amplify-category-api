@@ -1,38 +1,38 @@
-import { GraphQLTransform, TRANSFORM_CURRENT_VERSION, TRANSFORM_BASE_VERSION } from 'graphql-transformer-core';
-import { KeyTransformer } from 'graphql-key-transformer';
-import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-import { parse } from 'graphql/language/parser';
 import {
+  DefinitionNode,
   DocumentNode,
+  FieldDefinitionNode,
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
-  DefinitionNode,
   Kind,
   ObjectTypeDefinitionNode,
-  FieldDefinitionNode,
 } from 'graphql';
-import { VersionedModelTransformer } from 'graphql-versioned-transformer';
-import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
+import { ModelConnectionTransformer } from 'graphql-connection-transformer';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { KeyTransformer } from 'graphql-key-transformer';
+import { GraphQLTransform, TRANSFORM_BASE_VERSION, TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
+import { VersionedModelTransformer } from 'graphql-versioned-transformer';
+import { parse } from 'graphql/language/parser';
 
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import gql from 'graphql-tag';
-import { ResourceConstants } from 'graphql-transformer-common';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import { default as S3 } from 'aws-sdk/clients/s3';
-import { default as moment } from 'moment';
-import Role from 'cloudform-types/types/iam/role';
-import UserPoolClient from 'cloudform-types/types/cognito/userPoolClient';
 import IdentityPool from 'cloudform-types/types/cognito/identityPool';
 import IdentityPoolRoleAttachment from 'cloudform-types/types/cognito/identityPoolRoleAttachment';
-import AWS = require('aws-sdk');
-import { createUserPool, createUserPoolClient, configureAmplify, signupUser, authenticateUser } from '../cognitoUtils';
+import UserPoolClient from 'cloudform-types/types/cognito/userPoolClient';
+import Role from 'cloudform-types/types/iam/role';
+import gql from 'graphql-tag';
+import { ResourceConstants } from 'graphql-transformer-common';
+import 'isomorphic-fetch';
+import { default as moment } from 'moment';
+import { CloudFormationClient } from '../CloudFormationClient';
+import { authenticateUser, configureAmplify, createUserPool, createUserPoolClient, signupUser } from '../cognitoUtils';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
-import { CloudFormationClient } from '../CloudFormationClient';
-import 'isomorphic-fetch';
 import { resolveTestRegion } from '../testSetup';
+import AWS = require('aws-sdk');
 
 const REGION = resolveTestRegion();
 

@@ -1,8 +1,8 @@
 /* eslint-disable import/namespace */
-import * as path from 'path';
-import * as fs from 'fs-extra';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 import { cdkDeploy, cdkDestroy, initCDKProject } from '../../../commands';
 import { TestDefinition, writeStackConfig, writeTestDefinitions } from '../../../utils';
 import { DURATION_1_HOUR } from '../../../utils/duration-constants';

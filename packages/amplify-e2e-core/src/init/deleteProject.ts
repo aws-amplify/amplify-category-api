@@ -1,4 +1,4 @@
-import { nspawn as spawn, retry, getCLIPath, describeCloudFormationStack } from '..';
+import { describeCloudFormationStack, getCLIPath, nspawn as spawn, retry } from '..';
 import { getBackendAmplifyMeta } from '../utils';
 
 export const deleteProject = async (cwd: string, profileConfig?: any, usingLatestCodebase = false): Promise<void> => {

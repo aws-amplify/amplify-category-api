@@ -1,6 +1,6 @@
 import { parse } from 'graphql';
-import * as Directives from '..';
 import type { Directive } from '..';
+import * as Directives from '..';
 import { AppSyncDirectives, DefaultDirectives, V1Directives, V2Directives } from '..';
 
 describe('Directive Definitions', () => {

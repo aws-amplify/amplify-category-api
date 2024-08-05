@@ -1,4 +1,4 @@
-import { SchemaDefinitionNode, OperationTypeDefinitionNode, Kind } from 'graphql';
+import { Kind, OperationTypeDefinitionNode, SchemaDefinitionNode } from 'graphql';
 
 export const DEFAULT_QUERY_OPERATION: OperationTypeDefinitionNode = {
   kind: Kind.OPERATION_TYPE_DEFINITION,

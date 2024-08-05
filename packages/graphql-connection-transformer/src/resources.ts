@@ -1,37 +1,37 @@
-import Table, { GlobalSecondaryIndex, KeySchema, Projection, AttributeDefinition } from 'cloudform-types/types/dynamoDb/table';
-import Resolver from 'cloudform-types/types/appSync/resolver';
-import Template from 'cloudform-types/types/template';
 import { Fn, Refs } from 'cloudform-types';
-import { ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode } from 'graphql';
+import Resolver from 'cloudform-types/types/appSync/resolver';
+import Table, { AttributeDefinition, GlobalSecondaryIndex, KeySchema, Projection } from 'cloudform-types/types/dynamoDb/table';
+import Template from 'cloudform-types/types/template';
+import { InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import {
-  DynamoDBMappingTemplate,
-  str,
-  print,
-  ref,
-  obj,
-  set,
-  nul,
-  ObjectNode,
-  ifElse,
-  compoundExpression,
   bool,
+  compoundExpression,
+  DynamoDBMappingTemplate,
   equals,
-  iff,
-  raw,
   Expression,
-  or,
+  ifElse,
+  iff,
   list,
+  nul,
+  obj,
+  ObjectNode,
+  or,
+  print,
+  raw,
+  ref,
+  set,
+  str,
 } from 'graphql-mapping-template';
 import {
-  ResourceConstants,
-  ModelResourceIDs,
-  DEFAULT_SCALARS,
-  NONE_VALUE,
-  NONE_INT_VALUE,
+  applyCompositeKeyConditionExpression,
   applyKeyConditionExpression,
   attributeTypeFromScalar,
+  DEFAULT_SCALARS,
+  ModelResourceIDs,
+  NONE_INT_VALUE,
+  NONE_VALUE,
+  ResourceConstants,
   toCamelCase,
-  applyCompositeKeyConditionExpression,
 } from 'graphql-transformer-common';
 import { InvalidDirectiveError } from 'graphql-transformer-core';
 

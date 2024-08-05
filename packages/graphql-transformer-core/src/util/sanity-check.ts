@@ -1,11 +1,11 @@
-import * as path from 'path';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { Template } from 'cloudform-types';
+import { Diff as DeepDiff, diff as getDiffs } from 'deep-diff';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
-import { Template, ResourceBase } from 'cloudform-types';
-import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
-import { diff as getDiffs, Diff as DeepDiff } from 'deep-diff';
-import { InvalidMigrationError, InvalidGSIMigrationError, DestructiveMigrationError } from '../errors';
+import * as path from 'path';
 import { TRANSFORM_CONFIG_FILE_NAME } from '..';
+import { DestructiveMigrationError, InvalidGSIMigrationError, InvalidMigrationError } from '../errors';
 import { readFromPath } from './fileUtils';
 
 type Diff = DeepDiff<DiffableProject, DiffableProject>;

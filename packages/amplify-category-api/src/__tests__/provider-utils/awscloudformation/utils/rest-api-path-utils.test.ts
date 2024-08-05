@@ -1,7 +1,7 @@
 import {
-  validatePathName,
   checkForPathOverlap,
   formatCFNPathParamsForExpressJs,
+  validatePathName,
 } from '../../../../provider-utils/awscloudformation/utils/rest-api-path-utils';
 
 const stubOtherPaths = ['/other/path', '/sub/path', '/path/{with}/{params}'];

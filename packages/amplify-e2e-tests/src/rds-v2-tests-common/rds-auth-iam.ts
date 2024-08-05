@@ -1,4 +1,4 @@
-import path from 'path';
+import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import {
   addApiWithAllAuthModes,
   amplifyPush,
@@ -6,26 +6,26 @@ import {
   deleteDBInstance,
   deleteProject,
   deleteProjectDir,
+  enableUserPoolUnauthenticatedAccess,
   getAppSyncApi,
   getProjectMeta,
   importRDSDatabase,
   initJSProjectWithProfile,
   setupRDSInstanceAndData,
   sleep,
-  enableUserPoolUnauthenticatedAccess,
 } from 'amplify-category-api-e2e-core';
+import { Auth } from 'aws-amplify';
 import { existsSync, writeFileSync } from 'fs-extra';
 import generator from 'generate-password';
-import { Auth } from 'aws-amplify';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import path from 'path';
 import { GQLQueryHelper } from '../query-utils/gql-helper';
 import {
   configureAmplify,
+  getConfiguredAppsyncClientAPIKeyAuth,
   getConfiguredAppsyncClientIAMAuth,
+  getConfiguredAppsyncClientLambdaAuth,
   setupUser,
   signInUser,
-  getConfiguredAppsyncClientAPIKeyAuth,
-  getConfiguredAppsyncClientLambdaAuth,
 } from '../schema-api-directives';
 import { getUserPoolId } from '../schema-api-directives/authHelper';
 import { SQL_TESTS_USE_BETA } from './sql-e2e-config';

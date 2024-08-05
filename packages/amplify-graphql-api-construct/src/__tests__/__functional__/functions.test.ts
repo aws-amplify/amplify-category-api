@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Match, Template } from 'aws-cdk-lib/assertions';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 import { IAmplifyGraphqlDefinition } from '../../types';

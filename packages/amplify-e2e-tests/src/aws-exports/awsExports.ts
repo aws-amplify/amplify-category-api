@@ -1,5 +1,5 @@
-import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as path from 'path';
 
 export function getAWSExportsPath(projRoot: string): string {
   return path.join(projRoot, 'src', 'aws-exports.js');

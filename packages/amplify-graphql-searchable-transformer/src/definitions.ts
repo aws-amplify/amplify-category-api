@@ -1,31 +1,31 @@
+import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
+import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
-  ObjectTypeDefinitionNode,
-  InputValueDefinitionNode,
-  InputObjectTypeDefinitionNode,
-  FieldDefinitionNode,
-  Kind,
-  TypeNode,
+  DirectiveNode,
   DocumentNode,
   EnumTypeDefinitionNode,
   EnumValueDefinitionNode,
-  DirectiveNode,
+  FieldDefinitionNode,
+  InputObjectTypeDefinitionNode,
+  InputValueDefinitionNode,
+  Kind,
   NamedTypeNode,
+  ObjectTypeDefinitionNode,
+  TypeNode,
 } from 'graphql';
 import {
-  graphqlName,
-  makeNamedType,
-  isScalar,
-  isEnum,
-  makeListType,
-  makeNonNullType,
-  getBaseType,
-  SearchableResourceIDs,
   blankObjectExtension,
-  extensionWithDirectives,
   extendFieldWithDirectives,
+  extensionWithDirectives,
+  getBaseType,
+  graphqlName,
+  isEnum,
+  isScalar,
+  makeListType,
+  makeNamedType,
+  makeNonNullType,
+  SearchableResourceIDs,
 } from 'graphql-transformer-common';
-import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 
 const ID_CONDITIONS = [
   'ne',

@@ -1,11 +1,11 @@
+import { isSqlDbType } from '@aws-amplify/graphql-transformer-core';
 import * as fs from 'fs';
 import * as path from 'path';
-import { isSqlDbType } from '@aws-amplify/graphql-transformer-core';
 import {
   SQLLambdaModelDataSourceStrategy,
   SqlModelDataSourceDbConnectionConfig,
-  SqlModelDataSourceSsmDbConnectionConfig,
   SqlModelDataSourceSecretsManagerDbConnectionConfig,
+  SqlModelDataSourceSsmDbConnectionConfig,
   SqlModelDataSourceSsmDbConnectionStringConfig,
 } from './model-datasource-strategy-types';
 

@@ -1,5 +1,5 @@
-import { DeploymentResources as DeploymentResourcesV1 } from 'graphql-transformer-core';
 import { $TSContext, ApiCategoryFacade } from '@aws-amplify/amplify-cli-core';
+import { DeploymentResources as DeploymentResourcesV1 } from 'graphql-transformer-core';
 import { AmplifyGraphQLTransformerErrorConverter } from '../errors/amplify-error-converter';
 import { DeploymentResources as DeploymentResourcesV2 } from './cdk-compat/deployment-resources';
 import { transformGraphQLSchemaV1 } from './transform-graphql-schema-v1';

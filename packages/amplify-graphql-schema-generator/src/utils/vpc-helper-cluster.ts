@@ -1,13 +1,13 @@
+import { SubnetAvailabilityZone, VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import {
-  RDSClient,
   DescribeDBClustersCommand,
-  DescribeDBClustersCommandOutput,
   DescribeDBClustersCommandInput,
+  DescribeDBClustersCommandOutput,
   DescribeDBSubnetGroupsCommand,
+  RDSClient,
 } from '@aws-sdk/client-rds';
-import { VpcConfig, SubnetAvailabilityZone } from '@aws-amplify/graphql-transformer-interfaces';
-import { DB_ENGINES } from './supported-db-engines';
 import { filterSubnetAvailabilityZones } from './filter-subnet-availability-zones';
+import { DB_ENGINES } from './supported-db-engines';
 
 // When region is not provided, it will use the region configured in the AWS profile.
 export const checkHostInDBClusters = async (hostname: string, region?: string): Promise<VpcConfig | undefined> => {

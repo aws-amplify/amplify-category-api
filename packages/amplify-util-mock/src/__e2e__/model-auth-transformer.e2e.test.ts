@@ -1,10 +1,10 @@
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
+import 'isomorphic-fetch';
 import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
 import { GraphQLClient } from './utils/graphql-client';
 import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
-import 'isomorphic-fetch';
 
 jest.setTimeout(2000000);
 

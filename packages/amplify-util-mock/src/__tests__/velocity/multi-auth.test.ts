@@ -1,9 +1,9 @@
+import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionContext } from '@aws-amplify/amplify-appsync-simulator';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncGraphQLExecutionContext } from '@aws-amplify/amplify-appsync-simulator';
-import { testTransform, DeploymentResources } from '@aws-amplify/graphql-transformer-test-utils';
-import { VelocityTemplateSimulator, AppSyncVTLContext, getGenericToken } from '../../velocity';
+import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { AppSyncVTLContext, getGenericToken, VelocityTemplateSimulator } from '../../velocity';
 
 type TestTransform = {
   transform: (schema: string) => DeploymentResources;

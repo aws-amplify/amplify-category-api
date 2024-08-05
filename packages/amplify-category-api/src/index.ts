@@ -1,4 +1,3 @@
-import * as path from 'path';
 import {
   $TSContext,
   AmplifyCategories,
@@ -10,33 +9,37 @@ import {
 } from '@aws-amplify/amplify-cli-core';
 import { ensureEnvParamManager } from '@aws-amplify/amplify-environment-parameters';
 import { printer } from '@aws-amplify/amplify-prompts';
+import { SQL_SCHEMA_FILE_NAME } from '@aws-amplify/graphql-transformer-core';
 import { validateAddApiRequest, validateUpdateApiRequest } from 'amplify-util-headless-input';
 import * as fs from 'fs-extra';
-import { SQL_SCHEMA_FILE_NAME, ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import _ from 'lodash';
+import * as path from 'path';
 import { run } from './commands/api/console';
-import {
-  getAppSyncAuthConfig,
-  getAppSyncResourceName,
-  getAPIResourceDir,
-} from './provider-utils/awscloudformation/utils/amplify-meta-utils';
+import { AmplifyGraphQLTransformerErrorConverter } from './errors/amplify-error-converter';
 import { provider } from './provider-utils/awscloudformation/aws-constants';
 import { ApigwStackTransform } from './provider-utils/awscloudformation/cdk-stack-builder';
 import { getCfnApiArtifactHandler } from './provider-utils/awscloudformation/cfn-api-artifact-handler';
 import { askAuthQuestions } from './provider-utils/awscloudformation/service-walkthroughs/appSync-walkthrough';
+import {
+  getAPIResourceDir,
+  getAppSyncAuthConfig,
+  getAppSyncResourceName,
+} from './provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { authConfigToAppSyncAuthType } from './provider-utils/awscloudformation/utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { checkAppsyncApiResourceMigration } from './provider-utils/awscloudformation/utils/check-appsync-api-migration';
 import { getAppSyncApiResourceName } from './provider-utils/awscloudformation/utils/getAppSyncApiName';
-import { configureMultiEnvDBSecrets } from './provider-utils/awscloudformation/utils/rds-resources/multi-env-database-secrets';
 import {
   deleteConnectionSecrets,
   getSecretsKey,
-  getDatabaseName,
   removeVpcSchemaInspectorLambda,
 } from './provider-utils/awscloudformation/utils/rds-resources/database-resources';
-import { AmplifyGraphQLTransformerErrorConverter } from './errors/amplify-error-converter';
+import { configureMultiEnvDBSecrets } from './provider-utils/awscloudformation/utils/rds-resources/multi-env-database-secrets';
 
 export { NETWORK_STACK_LOGICAL_ID } from './category-constants';
+export { isDataStoreEnabled } from './category-utils/is-datastore-enabled';
+export { showApiAuthAcm } from './category-utils/show-auth-acm';
+export * from './force-updates';
+export * from './graphql-transformer';
 export { addAdminQueriesApi, updateAdminQueriesApi } from './provider-utils/awscloudformation';
 export { DEPLOYMENT_MECHANISM } from './provider-utils/awscloudformation/base-api-stack';
 // eslint-disable-next-line spellcheck/spell-checker
@@ -53,10 +56,6 @@ export {
 export { getAuthConfig } from './provider-utils/awscloudformation/utils/get-appsync-auth-config';
 export { getResolverConfig } from './provider-utils/awscloudformation/utils/get-appsync-resolver-config';
 export { getGitHubOwnerRepoFromPath } from './provider-utils/awscloudformation/utils/github';
-export * from './graphql-transformer';
-export * from './force-updates';
-export { showApiAuthAcm } from './category-utils/show-auth-acm';
-export { isDataStoreEnabled } from './category-utils/is-datastore-enabled';
 
 const category = AmplifyCategories.API;
 

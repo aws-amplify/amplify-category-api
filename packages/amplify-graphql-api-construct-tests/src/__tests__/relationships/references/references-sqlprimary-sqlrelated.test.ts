@@ -1,11 +1,11 @@
 /* eslint-disable import/namespace */
-import * as path from 'path';
+import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import * as fs from 'fs-extra';
 import * as generator from 'generate-password';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
+import * as path from 'path';
 import { cdkDeploy, cdkDestroy, initCDKProject } from '../../../commands';
 import { SqlDatabaseDetails, SqlDatatabaseController } from '../../../sql-datatabase-controller';
-import { TestDefinition, dbDetailsToModelDataSourceStrategy, writeStackConfig, writeTestDefinitions } from '../../../utils';
+import { dbDetailsToModelDataSourceStrategy, TestDefinition, writeStackConfig, writeTestDefinitions } from '../../../utils';
 import { DURATION_1_HOUR, ONE_MINUTE } from '../../../utils/duration-constants';
 import {
   testPrimaryContainsAssociated,

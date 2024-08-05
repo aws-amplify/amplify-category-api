@@ -1,13 +1,13 @@
-import { DirectiveNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode, parse } from 'graphql';
+import { constructDataSourceStrategies, DDB_DEFAULT_DATASOURCE_STRATEGY, MYSQL_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 import {
   SQLLambdaModelDataSourceStrategy,
   TransformerContextProvider,
   TransformerPreProcessContextProvider,
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { DDB_DEFAULT_DATASOURCE_STRATEGY, MYSQL_DB_TYPE, constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
-import { RefersToTransformer } from '../graphql-refers-to-transformer';
+import { DirectiveNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode, parse } from 'graphql';
 import { attachFieldMappingSlot } from '../field-mapping-resolvers';
+import { RefersToTransformer } from '../graphql-refers-to-transformer';
 
 jest.mock('../field-mapping-resolvers');
 

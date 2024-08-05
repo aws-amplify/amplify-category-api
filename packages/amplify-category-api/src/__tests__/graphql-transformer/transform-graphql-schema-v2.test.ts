@@ -1,4 +1,4 @@
-import { $TSContext, pathManager, ApiCategoryFacade } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, ApiCategoryFacade, pathManager } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { constructTransformerChain } from '@aws-amplify/graphql-transformer';
 import { DataSourceType, DynamoDBProvisionStrategy } from 'graphql-transformer-core';

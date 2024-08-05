@@ -1,4 +1,10 @@
-import { AppSyncAuthConfiguration, TransformerPluginProvider, TransformerLogLevel } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  constructDataSourceStrategies,
+  DDB_DEFAULT_DATASOURCE_STRATEGY,
+  GraphQLTransform,
+  ResolverConfig,
+  UserDefinedSlot,
+} from '@aws-amplify/graphql-transformer-core';
 import type {
   ModelDataSourceStrategy,
   RDSLayerMappingProvider,
@@ -7,13 +13,7 @@ import type {
   SynthParameters,
   TransformParameters,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  DDB_DEFAULT_DATASOURCE_STRATEGY,
-  GraphQLTransform,
-  ResolverConfig,
-  UserDefinedSlot,
-  constructDataSourceStrategies,
-} from '@aws-amplify/graphql-transformer-core';
+import { AppSyncAuthConfiguration, TransformerLogLevel, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { OverrideConfig, TransformManager } from './cdk-compat/transform-manager';
 import { DeploymentResources } from './deployment-resources';
 

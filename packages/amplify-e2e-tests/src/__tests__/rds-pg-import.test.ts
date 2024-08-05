@@ -1,3 +1,5 @@
+import { getDefaultStrategyNameForDbType, getResourceNamesForStrategyName, normalizeDbType } from '@aws-amplify/graphql-transformer-core';
+import { ModelDataSourceStrategySqlDbType } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   addApiWithoutSchema,
   amplifyPush,
@@ -7,20 +9,18 @@ import {
   deleteProjectDir,
   getAppSyncApi,
   getProjectMeta,
+  getResource,
   importRDSDatabase,
   initJSProjectWithProfile,
-  getResource,
-  sleep,
   setupRDSInstanceAndData,
+  sleep,
 } from 'amplify-category-api-e2e-core';
+import { apiGqlCompile } from 'amplify-category-api-e2e-core/src/categories/api';
+import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { existsSync, readFileSync } from 'fs-extra';
 import generator from 'generate-password';
-import { ObjectTypeDefinitionNode, parse, ListTypeNode, NamedTypeNode, EnumTypeDefinitionNode } from 'graphql';
+import { EnumTypeDefinitionNode, ListTypeNode, NamedTypeNode, ObjectTypeDefinitionNode, parse } from 'graphql';
 import path from 'path';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { apiGqlCompile } from 'amplify-category-api-e2e-core/src/categories/api';
-import { getDefaultStrategyNameForDbType, normalizeDbType, getResourceNamesForStrategyName } from '@aws-amplify/graphql-transformer-core';
-import { ModelDataSourceStrategySqlDbType } from '@aws-amplify/graphql-transformer-interfaces';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');

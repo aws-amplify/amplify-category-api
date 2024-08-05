@@ -1,5 +1,5 @@
 import { retry } from '../utils';
-import { setupAmplifyAdminUI, getAmplifyBackendJobStatus } from '../utils/sdk-calls';
+import { getAmplifyBackendJobStatus, setupAmplifyAdminUI } from '../utils/sdk-calls';
 
 /**
  * Kick off Amplify backend provisioning and poll until provisioning complete (or failed)

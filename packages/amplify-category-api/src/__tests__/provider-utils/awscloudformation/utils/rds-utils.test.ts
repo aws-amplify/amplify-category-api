@@ -1,9 +1,9 @@
+import { DDB_DEFAULT_DATASOURCE_STRATEGY, MYSQL_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceStrategiesProvider,
   ModelDataSourceStrategy,
   SQLLambdaModelDataSourceStrategy,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { DDB_DEFAULT_DATASOURCE_STRATEGY, MYSQL_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
 import {
   checkForUnsupportedDirectives,
   containsSqlModelOrDirective,

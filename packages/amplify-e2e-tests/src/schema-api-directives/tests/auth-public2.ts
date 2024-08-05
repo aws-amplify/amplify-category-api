@@ -2,7 +2,7 @@ import { addApi, amplifyPush } from 'amplify-category-api-e2e-core';
 
 import { configureAmplify, getConfiguredAppsyncClientIAMAuth } from '../authHelper';
 
-import { updateSchemaInTestProject, testMutations, testQueries } from '../common';
+import { testMutations, testQueries, updateSchemaInTestProject } from '../common';
 
 export async function runTest(projectDir: string, testModule: any) {
   await addApi(projectDir, {

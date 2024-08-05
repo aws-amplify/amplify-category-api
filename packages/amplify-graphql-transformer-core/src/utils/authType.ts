@@ -1,13 +1,13 @@
-import { AuthorizationConfig, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
-import { UserPool } from 'aws-cdk-lib/aws-cognito';
-import { Duration, Expiration } from 'aws-cdk-lib';
 import {
   AppSyncAuthConfiguration,
   AppSyncAuthConfigurationEntry,
   AppSyncAuthMode,
-  SynthParameters,
   StackManagerProvider,
+  SynthParameters,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { Duration, Expiration } from 'aws-cdk-lib';
+import { AuthorizationConfig, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
+import { UserPool } from 'aws-cdk-lib/aws-cognito';
 
 const authTypeMap: Record<AppSyncAuthMode, any> = {
   API_KEY: AuthorizationType.API_KEY,

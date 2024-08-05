@@ -1,6 +1,6 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import { storeConnectionSecrets, getExistingConnectionSecrets } from '../../utils/rds-resources/database-resources';
 import { printer } from '@aws-amplify/amplify-prompts';
+import { getExistingConnectionSecrets, storeConnectionSecrets } from '../../utils/rds-resources/database-resources';
 
 type EnvironmentInfo = {
   isNewEnv: boolean;

@@ -1,8 +1,8 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { isDataStoreEnabled as isDataStoreEnabledAtDirectory } from 'graphql-transformer-core';
 import { mocked } from 'ts-jest';
-import { isDataStoreEnabled } from '../../category-utils/is-datastore-enabled';
 import { contextUtil } from '../../category-utils/context-util';
+import { isDataStoreEnabled } from '../../category-utils/is-datastore-enabled';
 
 jest.mock('graphql-transformer-core');
 jest.mock('../../category-utils/context-util');

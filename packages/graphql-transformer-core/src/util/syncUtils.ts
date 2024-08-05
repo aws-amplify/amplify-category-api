@@ -1,5 +1,5 @@
-import { DynamoDB, IAM, Fn } from 'cloudform-types';
-import { SyncResourceIDs, ResourceConstants } from 'graphql-transformer-common';
+import { DynamoDB, Fn, IAM } from 'cloudform-types';
+import { ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
 import { SyncConfigLAMBDA, SyncConfigOPTIMISTIC, SyncConfigSERVER } from './transformConfig';
 
 // Cloudformation Types for dataStore

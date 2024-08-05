@@ -1,35 +1,35 @@
-import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ResolverResourceIDs } from 'graphql-transformer-common';
+import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
 import {
-  MappingTemplate,
   constructArrayFieldsStatement,
   constructNonScalarFieldsStatement,
   getModelDataSourceNameForTypeName,
   getModelDataSourceStrategy,
   getPrimaryKeyFields,
   isSqlStrategy,
+  MappingTemplate,
 } from '@aws-amplify/graphql-transformer-core';
+import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   compoundExpression,
-  ref,
-  set,
-  methodCall,
+  equals,
+  Expression,
+  forEach,
   ifElse,
+  iff,
+  list,
+  methodCall,
+  not,
+  nul,
+  obj,
   printBlock,
   qref,
-  obj,
-  str,
-  list,
-  Expression,
-  toJson,
-  iff,
-  not,
   raw,
-  nul,
-  equals,
-  forEach,
+  ref,
+  set,
+  str,
+  toJson,
 } from 'graphql-mapping-template';
-import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
+import { ResolverResourceIDs } from 'graphql-transformer-common';
 import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from '../types';
 import { RelationalResolverGenerator } from './generator';
 

@@ -1,9 +1,9 @@
-import * as path from 'path';
+import { $TSContext, CloudformationProviderFacade, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
-import { $TSContext, CloudformationProviderFacade, pathManager, JSONUtilities } from '@aws-amplify/amplify-cli-core';
-import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk, getAdminRoles } from '../../graphql-transformer/utils';
-import { TransformerProjectConfig } from '../../graphql-transformer/cdk-compat/project-config';
+import * as path from 'path';
 import { DeploymentResources } from '../../graphql-transformer/cdk-compat/deployment-resources';
+import { TransformerProjectConfig } from '../../graphql-transformer/cdk-compat/project-config';
+import { getAdminRoles, mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from '../../graphql-transformer/utils';
 
 jest.mock('fs-extra');
 jest.mock('@aws-amplify/amplify-cli-core');

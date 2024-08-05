@@ -1,10 +1,10 @@
 import {
   addFeatureFlag,
-  generateModelsWithUnknownTypeError,
-  updateApiSchema,
-  generateModels,
   createNewProjectDir,
   deleteProjectDir,
+  generateModels,
+  generateModelsWithUnknownTypeError,
+  updateApiSchema,
 } from 'amplify-category-api-e2e-core';
 import { amplifyAppAndroid, amplifyAppAngular, amplifyAppIos, amplifyAppReact } from '../amplify-app-helpers/amplify-app-setup';
 

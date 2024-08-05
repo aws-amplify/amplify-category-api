@@ -1,6 +1,6 @@
-import * as AWSMock from 'aws-sdk-mock';
 import * as AWS from 'aws-sdk';
 import { DynamoDB } from 'aws-sdk';
+import * as AWSMock from 'aws-sdk-mock';
 import { waitTillTableStateIsActive } from '../../../utils/dynamo-db/helpers';
 
 describe('aitTillTableStateIsActive', () => {

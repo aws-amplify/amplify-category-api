@@ -1,6 +1,6 @@
-import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
-import { Lazy } from 'aws-cdk-lib';
 import { S3Asset } from '@aws-amplify/graphql-transformer-interfaces';
+import { Lazy } from 'aws-cdk-lib';
+import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
 import { GraphQLApi } from '../graphql-api';
 import { removeAmplifyInputDefinition } from '../transformation/utils';
 

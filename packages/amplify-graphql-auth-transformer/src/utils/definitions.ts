@@ -1,5 +1,5 @@
-import { GetArgumentsOptions } from '@aws-amplify/graphql-transformer-core';
 import { AuthDirective } from '@aws-amplify/graphql-directives';
+import { GetArgumentsOptions } from '@aws-amplify/graphql-transformer-core';
 
 /**
  * AuthStrategy

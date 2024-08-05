@@ -1,3 +1,4 @@
+import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
   MutationFieldType,
@@ -7,10 +8,9 @@ import {
   TransformerResolverProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode } from 'graphql';
-import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { ResolverResourceIDs, toCamelCase } from 'graphql-transformer-common';
-import { generatePostAuthExpression, generateResolverKey, ModelVTLGenerator } from '../resolvers';
 import { ModelDirectiveConfiguration, SubscriptionLevel } from '../directive';
+import { generatePostAuthExpression, generateResolverKey, ModelVTLGenerator } from '../resolvers';
 import { ModelTransformerOptions } from '../types';
 
 /**

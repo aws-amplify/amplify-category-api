@@ -1,12 +1,12 @@
 #!/usr/bin/env node
+import { App, Duration, Stack } from 'aws-cdk-lib';
 import 'source-map-support/register';
-import { App, Stack, Duration } from 'aws-cdk-lib';
 // @ts-ignore
 import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';
+import { Code, FunctionRuntime, Resolver } from 'aws-cdk-lib/aws-appsync';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
-import { Resolver, Code, FunctionRuntime } from 'aws-cdk-lib/aws-appsync';
-import * as path from 'path';
 import * as fs from 'fs';
+import * as path from 'path';
 
 const packageJson = require('../package.json');
 

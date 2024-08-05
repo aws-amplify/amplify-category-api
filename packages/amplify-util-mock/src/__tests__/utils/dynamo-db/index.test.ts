@@ -1,10 +1,10 @@
-import * as AWSMock from 'aws-sdk-mock';
 import * as AWS from 'aws-sdk';
 import { DynamoDB } from 'aws-sdk';
+import * as AWSMock from 'aws-sdk-mock';
 
 import { CreateTableInput, GlobalSecondaryIndex } from 'aws-sdk/clients/dynamodb';
-import { createTables, describeTables, getUpdateTableInput, updateTables } from '../../../utils/dynamo-db/utils';
 import { createAndUpdateTable, MockDynamoDBConfig } from '../../../utils/dynamo-db';
+import { createTables, describeTables, getUpdateTableInput, updateTables } from '../../../utils/dynamo-db/utils';
 
 jest.mock('../../../utils/dynamo-db/utils');
 

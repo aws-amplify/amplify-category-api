@@ -1,9 +1,9 @@
+import { DURATION_10_MINUTES } from '../../utils/duration-constants';
 import {
   MUTATION_ONE_FIELD_CREATE_STATIC,
   SCHEMA_ONE_FIELD_ALL_INDEXED,
   SCHEMA_ONE_FIELD_NO_INDEX,
 } from '../deploy-velocity/deploy-velocity-constants';
-import { DURATION_10_MINUTES } from '../../utils/duration-constants';
 import {
   recordByIdDataValidator,
   recordProviderWithIdState,

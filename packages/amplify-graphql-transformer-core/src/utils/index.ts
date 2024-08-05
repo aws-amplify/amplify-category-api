@@ -1,3 +1,7 @@
+export { DEFAULT_SCHEMA_DEFINITION } from './defaultSchema';
+export { DirectiveWrapper, generateGetArgumentsInput, GetArgumentsOptions } from './directive-wrapper';
+export * from './graphql-utils';
+export * from './model-datasource-strategy-utils';
 export {
   getConditionInputName,
   getConnectionName,
@@ -6,11 +10,6 @@ export {
   getPrimaryKeyFields,
   getSubscriptionFilterInputName,
 } from './model-util';
-export { DirectiveWrapper, GetArgumentsOptions, generateGetArgumentsInput } from './directive-wrapper';
-export { collectDirectives, collectDirectivesByTypeNames } from './type-map-utils';
-export { stripDirectives } from './strip-directives';
-export { getTable, getKeySchema, getSortKeyFieldNames, getStrategyDbTypeFromTypeNode } from './schema-utils';
-export { DEFAULT_SCHEMA_DEFINITION } from './defaultSchema';
 export {
   constructArrayFieldsStatement,
   constructAuthFilterStatement,
@@ -20,15 +19,16 @@ export {
   getNonScalarFields,
   getParameterStoreSecretPath,
 } from './rds-util';
-export const APICategory = 'api';
 export {
-  setResourceName,
   getDefaultStrategyNameForDbType,
   getResourceName,
   getResourceNamesForStrategy,
   getResourceNamesForStrategyName,
+  setResourceName,
   SQLLambdaResourceNames,
 } from './resource-name';
 export type { SetResourceNameProps } from './resource-name';
-export * from './model-datasource-strategy-utils';
-export * from './graphql-utils';
+export { getKeySchema, getSortKeyFieldNames, getStrategyDbTypeFromTypeNode, getTable } from './schema-utils';
+export { stripDirectives } from './strip-directives';
+export { collectDirectives, collectDirectivesByTypeNames } from './type-map-utils';
+export const APICategory = 'api';

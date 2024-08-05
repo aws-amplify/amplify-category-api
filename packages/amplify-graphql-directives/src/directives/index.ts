@@ -1,10 +1,9 @@
-export type { Directive, DirectiveDefaults } from './directive';
 export * from './appsync';
-export * from './v1';
 export { AuthDirective } from './auth';
 export { BelongsToDirective } from './belongs-to';
 export { DefaultDirective } from './default';
 export { DeprecatedDirective } from './deprecated';
+export type { Directive, DirectiveDefaults } from './directive';
 export { FunctionDirective } from './function';
 export { HasManyDirective, HasManyDirectiveDefaults } from './has-many';
 export { HasOneDirective } from './has-one';
@@ -18,3 +17,4 @@ export { PrimaryKeyDirective } from './primary-key';
 export { RefersToDirective } from './refers-to';
 export { SearchableDirective } from './searchable';
 export { SqlDirective } from './sql';
+export * from './v1';

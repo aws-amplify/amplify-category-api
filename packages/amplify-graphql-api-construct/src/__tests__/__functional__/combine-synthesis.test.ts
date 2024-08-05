@@ -1,6 +1,6 @@
-import { IConstruct } from 'constructs';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY, DDB_DEFAULT_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
 import { mockSqlDataSourceStrategy, SCHEMAS } from '@aws-amplify/graphql-transformer-test-utils';
+import { IConstruct } from 'constructs';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 import { makeApiByCombining } from './test-utils';
 

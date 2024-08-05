@@ -1,21 +1,21 @@
-import * as path from 'path';
+import { DeploymentState, DeploymentStatus, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import {
-  createNewProjectDir,
-  initJSProjectWithProfile,
-  deleteProject,
-  deleteProjectDir,
   addApiWithoutSchema,
   addFeatureFlag,
-  amplifyPush,
-  updateApiSchema,
-  amplifyPushUpdate,
-  getAppId,
   amplifyPull,
+  amplifyPush,
+  amplifyPushUpdate,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  getAppId,
   getProjectMeta,
+  initJSProjectWithProfile,
   sleep,
+  updateApiSchema,
 } from 'amplify-category-api-e2e-core';
 import S3 from 'aws-sdk/clients/s3';
-import { DeploymentState, DeploymentStatus, JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import * as path from 'path';
 
 describe('Schema iterative update - locking', () => {
   let projectRoot: string;

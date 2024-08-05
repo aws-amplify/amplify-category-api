@@ -1,2 +1,2 @@
-export * from './vpc-helper';
 export { getSSLConfig } from './cert';
+export * from './vpc-helper';

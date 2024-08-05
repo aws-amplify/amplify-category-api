@@ -1,5 +1,5 @@
-import { SCHEMA_THREE_FIELDS_ALL_INDEXED, SCHEMA_THREE_FIELDS_NO_INDEX } from '../deploy-velocity/deploy-velocity-constants';
 import { DURATION_30_MINUTES } from '../../utils/duration-constants';
+import { SCHEMA_THREE_FIELDS_ALL_INDEXED, SCHEMA_THREE_FIELDS_NO_INDEX } from '../deploy-velocity/deploy-velocity-constants';
 import { testManagedTableDeployment } from '../deploy-velocity/deploy-velocity-test-core';
 
 testManagedTableDeployment({

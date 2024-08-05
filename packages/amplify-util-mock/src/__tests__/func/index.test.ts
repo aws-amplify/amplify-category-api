@@ -1,7 +1,7 @@
-import { getInvoker, getBuilder } from '@aws-amplify/amplify-category-function';
+import { getBuilder, getInvoker } from '@aws-amplify/amplify-category-function';
 import { stateManager } from '@aws-amplify/amplify-cli-core';
-import _ from 'lodash';
 import * as inquirer from 'inquirer';
+import _ from 'lodash';
 import { start } from '../../func';
 
 jest.mock('../../utils/lambda/load-lambda-config', () => ({

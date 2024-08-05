@@ -1,25 +1,25 @@
-import * as path from 'path';
-import { Duration, Expiration } from 'aws-cdk-lib';
 import {
   $TSContext,
+  ApiCategoryFacade,
   exitOnNextTick,
   FeatureFlags,
+  getGraphQLTransformerAuthDocLink,
   open,
   pathManager,
   ResourceAlreadyExistsError,
   ResourceDoesNotExistError,
   stateManager,
   UnknownResourceTypeError,
-  getGraphQLTransformerAuthDocLink,
-  ApiCategoryFacade,
 } from '@aws-amplify/amplify-cli-core';
-import { UpdateApiRequest } from 'amplify-headless-interface';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
+import { UpdateApiRequest } from 'amplify-headless-interface';
+import { Duration, Expiration } from 'aws-cdk-lib';
 import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import { collectDirectivesByTypeNames, readProjectConfiguration } from 'graphql-transformer-core';
 import inquirer, { CheckboxQuestion, ListChoiceOptions, ListQuestion } from 'inquirer';
 import _ from 'lodash';
+import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import { category } from '../../../category-constants';
 import { rootAssetDir } from '../aws-constants';

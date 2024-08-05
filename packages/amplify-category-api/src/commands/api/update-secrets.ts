@@ -1,15 +1,14 @@
-import * as path from 'path';
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
+import { ImportedDataSourceConfig, SQL_SCHEMA_FILE_NAME } from '@aws-amplify/graphql-transformer-core';
 import fs from 'fs-extra';
-import _ from 'lodash';
-import { SQL_SCHEMA_FILE_NAME, ImportedDataSourceConfig } from '@aws-amplify/graphql-transformer-core';
-import { databaseConfigurationInputWalkthrough } from '../../provider-utils/awscloudformation/service-walkthroughs/appSync-rds-db-config';
-import { getAppSyncAPIName, getAPIResourceDir } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
-import { storeConnectionSecrets, getSecretsKey } from '../../provider-utils/awscloudformation/utils/rds-resources/database-resources';
-import { PREVIEW_BANNER } from '../../category-constants';
 import { parse } from 'graphql';
+import * as path from 'path';
+import { PREVIEW_BANNER } from '../../category-constants';
+import { databaseConfigurationInputWalkthrough } from '../../provider-utils/awscloudformation/service-walkthroughs/appSync-rds-db-config';
+import { getAPIResourceDir, getAppSyncAPIName } from '../../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { getEngineInput } from '../../provider-utils/awscloudformation/utils/rds-input-utils';
+import { getSecretsKey, storeConnectionSecrets } from '../../provider-utils/awscloudformation/utils/rds-resources/database-resources';
 
 const subcommand = 'update-secrets';
 

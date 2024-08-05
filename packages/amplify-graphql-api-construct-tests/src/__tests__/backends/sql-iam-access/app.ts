@@ -1,9 +1,9 @@
 #!/usr/bin/env node
+import { App, CfnOutput, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import 'source-map-support/register';
-import { App, Stack, Duration, CfnOutput, RemovalPolicy } from 'aws-cdk-lib';
 // @ts-ignore
-import { AmplifyGraphqlApi, AmplifyGraphqlDefinition, SqlModelDataSourceDbConnectionConfig } from '@aws-amplify/graphql-api-construct';
 import { AmplifyAuth } from '@aws-amplify/auth-construct-alpha';
+import { AmplifyGraphqlApi, AmplifyGraphqlDefinition, SqlModelDataSourceDbConnectionConfig } from '@aws-amplify/graphql-api-construct';
 import { AccountPrincipal, Effect, PolicyDocument, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
 
 interface DBDetails {

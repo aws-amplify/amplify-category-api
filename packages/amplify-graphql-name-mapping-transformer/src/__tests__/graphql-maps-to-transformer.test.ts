@@ -1,4 +1,4 @@
-import { DirectiveNode, Kind, ObjectTypeDefinitionNode, parse } from 'graphql';
+import { constructDataSourceStrategies, DDB_DEFAULT_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
 import {
   FieldMapEntry,
   ModelFieldMap,
@@ -7,10 +7,10 @@ import {
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { LambdaDataSource } from 'aws-cdk-lib/aws-appsync';
-import { DDB_DEFAULT_DATASOURCE_STRATEGY, constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
-import { MapsToTransformer } from '../graphql-maps-to-transformer';
-import { attachInputMappingSlot, attachResponseMappingSlot, attachFilterAndConditionInputMappingSlot } from '../field-mapping-resolvers';
+import { DirectiveNode, Kind, ObjectTypeDefinitionNode, parse } from 'graphql';
 import { createMappingLambda } from '../field-mapping-lambda';
+import { attachFilterAndConditionInputMappingSlot, attachInputMappingSlot, attachResponseMappingSlot } from '../field-mapping-resolvers';
+import { MapsToTransformer } from '../graphql-maps-to-transformer';
 
 jest.mock('../field-mapping-resolvers');
 jest.mock('../field-mapping-lambda');

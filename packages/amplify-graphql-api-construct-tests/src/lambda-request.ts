@@ -1,4 +1,4 @@
-import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
+import { InvokeCommand, LambdaClient } from '@aws-sdk/client-lambda';
 
 /**
  * Invoke a lambda function given the function name, and input payload.

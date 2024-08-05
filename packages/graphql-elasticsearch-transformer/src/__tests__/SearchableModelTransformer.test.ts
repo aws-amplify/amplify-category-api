@@ -1,5 +1,5 @@
-import { GraphQLTransform, TRANSFORM_CURRENT_VERSION, ConflictHandlerType } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { ConflictHandlerType, GraphQLTransform, TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import { SearchableModelTransformer } from '../SearchableModelTransformer';
 
 const featureFlags = {

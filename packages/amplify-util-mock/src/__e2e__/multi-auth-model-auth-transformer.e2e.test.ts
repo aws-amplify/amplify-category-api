@@ -4,9 +4,9 @@ import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import gql from 'graphql-tag';
 import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
+import 'isomorphic-fetch';
 import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
 import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
-import 'isomorphic-fetch';
 
 jest.setTimeout(2000000);
 

@@ -4,25 +4,29 @@ import {
   getModelDataSourceNameForTypeName,
   getModelDataSourceStrategy,
   isAmplifyDynamoDbModelDataSourceStrategy,
+  isDynamoDbType,
+  isSqlModel,
   MappingTemplate,
   MYSQL_DB_TYPE,
   POSTGRES_DB_TYPE,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
+  ModelDataSourceStrategyDbType,
   TransformerContextProvider,
   TransformerResolverProvider,
-  ModelDataSourceStrategyDbType,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import * as cdk from 'aws-cdk-lib';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
-import * as cdk from 'aws-cdk-lib';
 import { Kind, ObjectTypeDefinitionNode, TypeNode } from 'graphql';
 import {
   and,
   block,
   bool,
   compoundExpression,
+  CompoundExpressionNode,
+  equals,
   Expression,
   forEach,
   ifElse,
@@ -31,21 +35,19 @@ import {
   list,
   methodCall,
   not,
+  notEquals,
   obj,
+  ObjectNode,
   print,
   printBlock,
   qref,
   raw,
   ref,
   RESOLVER_VERSION_ID,
+  ret,
   set,
   str,
-  notEquals,
   toJson,
-  CompoundExpressionNode,
-  ObjectNode,
-  equals,
-  ret,
 } from 'graphql-mapping-template';
 import {
   applyKeyExpressionForCompositeKey,
@@ -57,10 +59,9 @@ import {
   ResourceConstants,
   toCamelCase,
 } from 'graphql-transformer-common';
-import { isDynamoDbType, isSqlModel } from '@aws-amplify/graphql-transformer-core';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../types';
 import { lookupResolverName } from '../utils';
-import { RDSIndexVTLGenerator, DynamoDBIndexVTLGenerator } from './generators';
+import { DynamoDBIndexVTLGenerator, RDSIndexVTLGenerator } from './generators';
 
 const API_KEY = 'API Key Authorization';
 const IAM_AUTH_TYPE = 'IAM Authorization';

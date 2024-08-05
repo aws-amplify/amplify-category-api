@@ -1,4 +1,4 @@
-import { Stack, Duration } from 'aws-cdk-lib';
+import { Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AmplifyData, AmplifyDataDefinition } from '..';
 

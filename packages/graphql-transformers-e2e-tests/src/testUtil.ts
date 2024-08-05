@@ -1,11 +1,11 @@
 import {
-  ObjectTypeDefinitionNode,
-  FieldDefinitionNode,
-  DocumentNode,
-  InputObjectTypeDefinitionNode,
-  Kind,
-  InputValueDefinitionNode,
   DefinitionNode,
+  DocumentNode,
+  FieldDefinitionNode,
+  InputObjectTypeDefinitionNode,
+  InputValueDefinitionNode,
+  Kind,
+  ObjectTypeDefinitionNode,
 } from 'graphql';
 import { isNonNullType } from 'graphql-transformer-common';
 

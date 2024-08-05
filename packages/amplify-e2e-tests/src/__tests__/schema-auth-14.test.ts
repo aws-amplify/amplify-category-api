@@ -1,10 +1,10 @@
 import {
-  initJSProjectWithProfile,
-  initAndroidProjectWithProfile,
-  deleteProject,
-  createNewProjectDir,
-  deleteProjectDir,
   addFeatureFlag,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  initAndroidProjectWithProfile,
+  initJSProjectWithProfile,
 } from 'amplify-category-api-e2e-core';
 import { testSchema } from '../schema-api-directives';
 

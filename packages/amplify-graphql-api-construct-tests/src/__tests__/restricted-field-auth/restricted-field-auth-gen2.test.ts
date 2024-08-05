@@ -1,10 +1,11 @@
-import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as path from 'path';
 
+import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import * as generator from 'generate-password';
-import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
-import { initCDKProject, cdkDeploy, cdkDestroy } from '../../commands';
+import { cdkDeploy, cdkDestroy, initCDKProject } from '../../commands';
+import { SqlDatabaseDetails, SqlDatatabaseController } from '../../sql-datatabase-controller';
 import {
   createCognitoUser,
   dbDetailsToModelDataSourceStrategy,
@@ -13,15 +14,14 @@ import {
   writeStackConfig,
   writeTestDefinitions,
 } from '../../utils';
-import { SqlDatabaseDetails, SqlDatatabaseController } from '../../sql-datatabase-controller';
 import { DURATION_1_HOUR, ONE_MINUTE } from '../../utils/duration-constants';
 import {
   testCreatePrimaryRedacted,
-  testUpdatePrimaryRedacted,
-  testCreateRelatedOneRedacted,
-  testUpdateRelatedOneRedacted,
   testCreateRelatedManyRedacted,
+  testCreateRelatedOneRedacted,
+  testUpdatePrimaryRedacted,
   testUpdateRelatedManyRedacted,
+  testUpdateRelatedOneRedacted,
 } from './gen2-test-implementations';
 
 jest.setTimeout(DURATION_1_HOUR);

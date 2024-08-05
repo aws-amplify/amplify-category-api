@@ -1,15 +1,15 @@
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
+import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthTransformer } from '../../graphql-auth-transformer';
 import {
-  TestTable,
   convertToTestArgumentArray,
   ddbDataSourceStrategies,
   makeTransformationExpectation,
   sqlDataSourceStrategies,
   testRules,
+  TestTable,
 } from './snapshot-utils';
 
 const ddbSchemaTemplate = /* GraphQL */ `

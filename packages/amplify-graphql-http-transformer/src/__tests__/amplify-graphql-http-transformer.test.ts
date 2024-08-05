@@ -1,6 +1,6 @@
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { parse } from 'graphql';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { HttpTransformer } from '..';
 
 test('generates expected VTL', () => {

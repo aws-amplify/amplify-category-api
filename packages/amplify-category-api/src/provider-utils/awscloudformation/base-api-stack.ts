@@ -1,5 +1,4 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
+import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
@@ -9,8 +8,9 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as ssm from 'aws-cdk-lib/aws-secretsmanager';
 import * as cloudmap from 'aws-cdk-lib/aws-servicediscovery';
-import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 import { NETWORK_STACK_LOGICAL_ID } from '../../category-constants';
 import Container from './docker-compose/ecs-objects/container';
 import { GitHubSourceActionInfo, PipelineWithAwaiter } from './pipeline-with-awaiter';

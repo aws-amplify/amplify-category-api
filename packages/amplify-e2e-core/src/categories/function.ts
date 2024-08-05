@@ -1,9 +1,9 @@
-import * as path from 'path';
 import * as glob from 'glob';
 import _ from 'lodash';
-import { nspawn as spawn, ExecutionContext, getCLIPath, getBackendAmplifyMeta } from '..';
-import { singleSelect, multiSelect, moveUp, moveDown } from '../utils/selectors';
+import * as path from 'path';
+import { ExecutionContext, getBackendAmplifyMeta, getCLIPath, nspawn as spawn } from '..';
 import { loadFeatureFlags } from '../utils/feature-flags';
+import { moveDown, moveUp, multiSelect, singleSelect } from '../utils/selectors';
 
 type FunctionActions = 'create' | 'update';
 

@@ -1,7 +1,7 @@
-import * as crypto from 'crypto';
 import * as cdk from 'aws-cdk-lib';
 import { FileAssetPackaging, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import * as crypto from 'crypto';
 import { TransformerStackSythesizer } from './stack-synthesizer';
 
 export interface TemplateProps {

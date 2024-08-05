@@ -1,5 +1,5 @@
-import { Model } from './types';
 import { Engine } from './engine';
+import { Model } from './types';
 
 export class Schema {
   private models: Model[] = [];

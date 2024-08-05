@@ -1,18 +1,17 @@
-import path from 'path';
+import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import {
-  initJSProjectWithProfile,
-  deleteProject,
-  getCustomPoliciesPath,
-  amplifyPushWithoutCodegen,
-  readJsonFile,
   addRestContainerApiForCustomPolicies,
   amplifyConfigureProject,
+  amplifyPushWithoutCodegen,
   createNewProjectDir,
+  deleteProject,
   deleteProjectDir,
+  getCustomPoliciesPath,
+  initJSProjectWithProfile,
+  readJsonFile,
 } from 'amplify-category-api-e2e-core';
-import _ from 'lodash';
-import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import AWS from 'aws-sdk';
+import path from 'path';
 
 const customIAMPolicy: CustomIAMPolicy = {
   Effect: 'Allow',

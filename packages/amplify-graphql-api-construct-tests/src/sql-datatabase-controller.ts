@@ -1,23 +1,23 @@
-import path from 'path';
-import * as fs from 'fs-extra';
-import { SqlModelDataSourceDbConnectionConfig, ModelDataSourceStrategySqlDbType } from '@aws-amplify/graphql-api-construct';
-import {
-  deleteSSMParameters,
-  deleteDbConnectionConfigWithSecretsManager,
-  deleteDBInstance,
-  extractVpcConfigFromDbInstance,
-  RDSConfig,
-  SqlEngine,
-  setupRDSInstanceAndData,
-  storeDbConnectionConfig,
-  storeDbConnectionStringConfig,
-  storeDbConnectionConfigWithSecretsManager,
-} from 'amplify-category-api-e2e-core';
+import { ModelDataSourceStrategySqlDbType, SqlModelDataSourceDbConnectionConfig } from '@aws-amplify/graphql-api-construct';
 import {
   isSqlModelDataSourceSecretsManagerDbConnectionConfig,
   isSqlModelDataSourceSsmDbConnectionConfig,
   isSqlModelDataSourceSsmDbConnectionStringConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  deleteDbConnectionConfigWithSecretsManager,
+  deleteDBInstance,
+  deleteSSMParameters,
+  extractVpcConfigFromDbInstance,
+  RDSConfig,
+  setupRDSInstanceAndData,
+  SqlEngine,
+  storeDbConnectionConfig,
+  storeDbConnectionConfigWithSecretsManager,
+  storeDbConnectionStringConfig,
+} from 'amplify-category-api-e2e-core';
+import * as fs from 'fs-extra';
+import path from 'path';
 
 export interface SqlDatabaseDetails {
   dbConfig: {

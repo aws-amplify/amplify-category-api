@@ -1,8 +1,8 @@
+import { getResourceNamesForStrategyName } from '@aws-amplify/graphql-transformer-core';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import generator from 'generate-password';
-import { getResourceNamesForStrategyName } from '@aws-amplify/graphql-transformer-core';
-import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { cdkDestroy } from '../commands';
+import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
 import { testGraphQLAPI } from './sql-models-common';
 

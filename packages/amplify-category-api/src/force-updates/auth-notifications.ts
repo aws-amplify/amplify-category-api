@@ -1,9 +1,9 @@
-import path from 'path';
 import { $TSContext, exitOnNextTick, FeatureFlags, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import { printer, prompter } from '@aws-amplify/amplify-prompts';
+import fs from 'fs-extra';
 import { DirectiveNode, DocumentNode, FieldDefinitionNode, FieldNode, parse } from 'graphql';
 import { collectDirectivesByType, collectDirectivesByTypeNames, readProjectConfiguration } from 'graphql-transformer-core';
-import fs from 'fs-extra';
+import path from 'path';
 import { getApiResourceDir } from './api-resource-paths';
 import { forceRefreshSchema } from './force-refresh-schema';
 

@@ -5,24 +5,24 @@ import {
   TransformHostProvider,
   VpcConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { Duration, Token } from 'aws-cdk-lib';
 import {
   BaseDataSource,
   CfnDataSource,
+  CfnResolver,
   DataSourceOptions,
   DynamoDbDataSource,
   HttpDataSource,
   HttpDataSourceOptions,
   LambdaDataSource,
   NoneDataSource,
-  CfnResolver,
 } from 'aws-cdk-lib/aws-appsync';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { CfnFunction, Code, Function, IFunction, ILayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { Duration, Token } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import { ResolverResourceIDs, resourceName, toCamelCase } from 'graphql-transformer-common';
 import hash from 'object-hash';
-import { Construct } from 'constructs';
 import { AppSyncFunctionConfiguration } from './appsync-function';
 import { SearchableDataSource } from './cdk-compat/searchable-datasource';
 import { InlineTemplate, S3MappingFunctionCode } from './cdk-compat/template-asset';

@@ -1,12 +1,12 @@
 /* eslint-disable spellcheck/spell-checker, camelcase, jsdoc/require-jsdoc, @typescript-eslint/no-explicit-any */
-import path from 'path';
+import { deleteS3Bucket, sleep } from 'amplify-category-api-e2e-core';
+import * as aws from 'aws-sdk';
 import { CodeBuild } from 'aws-sdk';
 import { config } from 'dotenv';
-import yargs from 'yargs';
-import * as aws from 'aws-sdk';
-import _ from 'lodash';
 import fs from 'fs-extra';
-import { deleteS3Bucket, sleep } from 'amplify-category-api-e2e-core';
+import _ from 'lodash';
+import path from 'path';
+import yargs from 'yargs';
 
 type TestRegion = {
   name: string;

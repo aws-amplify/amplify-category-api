@@ -1,38 +1,38 @@
-import Template from 'cloudform-types/types/template';
-import Resource from 'cloudform-types/types/resource';
-import Parameter from 'cloudform-types/types/parameter';
 import { Condition } from 'cloudform-types/types/dataTypes';
 import Output from 'cloudform-types/types/output';
+import Parameter from 'cloudform-types/types/parameter';
+import Resource from 'cloudform-types/types/resource';
+import Template from 'cloudform-types/types/template';
 import {
-  TypeSystemDefinitionNode,
-  ObjectTypeDefinitionNode,
+  DocumentNode,
+  EnumTypeDefinitionNode,
   FieldDefinitionNode,
   InputObjectTypeDefinitionNode,
-  SchemaDefinitionNode,
-  ObjectTypeExtensionNode,
-  NamedTypeNode,
-  DocumentNode,
-  Kind,
-  parse,
-  EnumTypeDefinitionNode,
-  TypeDefinitionNode,
-  OperationTypeDefinitionNode,
   InterfaceTypeDefinitionNode,
+  Kind,
+  NamedTypeNode,
+  ObjectTypeDefinitionNode,
+  ObjectTypeExtensionNode,
+  OperationTypeDefinitionNode,
+  parse,
+  SchemaDefinitionNode,
+  TypeDefinitionNode,
+  TypeSystemDefinitionNode,
 } from 'graphql';
+import { makeOperationType } from 'graphql-transformer-common';
 import {
-  InterfaceTypeExtensionNode,
-  UnionTypeExtensionNode,
-  UnionTypeDefinitionNode,
   EnumTypeExtensionNode,
   EnumValueDefinitionNode,
   InputObjectTypeExtensionNode,
   InputValueDefinitionNode,
+  InterfaceTypeExtensionNode,
+  UnionTypeDefinitionNode,
+  UnionTypeExtensionNode,
 } from 'graphql/language/ast';
-import { makeOperationType } from 'graphql-transformer-common';
-import blankTemplate from './util/blankTemplate';
 import DefaultSchemaDefinition from './defaultSchema';
-import { ResolverConfig } from './util';
 import { FeatureFlagProvider } from './FeatureFlags';
+import { ResolverConfig } from './util';
+import blankTemplate from './util/blankTemplate';
 
 export interface MappingParameters {
   [key: string]: {

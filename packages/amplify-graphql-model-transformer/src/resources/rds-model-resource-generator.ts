@@ -1,23 +1,23 @@
-import { Fn, Tags } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
-import { Topic, SubscriptionFilter } from 'aws-cdk-lib/aws-sns';
-import { LambdaSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
 import {
-  SQLLambdaResourceNames,
   getImportedRDSTypeFromStrategyDbType,
   getResourceNamesForStrategy,
   isSqlStrategy,
+  SQLLambdaResourceNames,
 } from '@aws-amplify/graphql-transformer-core';
 import {
+  isSqlModelDataSourceSecretsManagerDbConnectionConfig,
+  isSqlModelDataSourceSsmDbConnectionConfig,
+  isSqlModelDataSourceSsmDbConnectionStringConfig,
+  isSslCertSsmPathConfig,
   QueryFieldType,
   SQLLambdaModelDataSourceStrategy,
   TransformerContextProvider,
-  isSqlModelDataSourceSsmDbConnectionConfig,
-  isSqlModelDataSourceSecretsManagerDbConnectionConfig,
-  isSqlModelDataSourceSsmDbConnectionStringConfig,
-  isSslCertSsmPathConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { Fn, Tags } from 'aws-cdk-lib';
 import { LambdaDataSource } from 'aws-cdk-lib/aws-appsync';
+import { SubscriptionFilter, Topic } from 'aws-cdk-lib/aws-sns';
+import { LambdaSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
+import { Construct } from 'constructs';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { ModelVTLGenerator, RDSModelVTLGenerator } from '../resolvers';
 import {
@@ -26,11 +26,11 @@ import {
   createRdsLambdaRole,
   createRdsPatchingLambda,
   createRdsPatchingLambdaRole,
+  createSNSTopicARNCustomResource,
+  CredentialStorageMethod,
+  getSsmEndpoint,
   setRDSLayerMappings,
   setRDSSNSTopicMappings,
-  CredentialStorageMethod,
-  createSNSTopicARNCustomResource,
-  getSsmEndpoint,
 } from '../resolvers/rds';
 import { ModelResourceGenerator } from './model-resource-generator';
 

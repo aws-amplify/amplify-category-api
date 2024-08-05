@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
 import { Stack } from 'aws-cdk-lib';
 import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb';
-import { setResourceName, getResourceName } from '../../utils/resource-name';
+import { Construct } from 'constructs';
+import { getResourceName, setResourceName } from '../../utils/resource-name';
 
 describe('getResourceName', () => {
   let myResource: Construct;

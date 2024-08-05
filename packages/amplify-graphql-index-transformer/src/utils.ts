@@ -1,6 +1,6 @@
 import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ListValueNode, ObjectValueNode, StringValueNode, ValueNode, DirectiveNode } from 'graphql';
+import { DirectiveNode, ListValueNode, ObjectValueNode, StringValueNode, ValueNode } from 'graphql';
 import { plurality, toLower, toUpper } from 'graphql-transformer-common';
 import pluralize from 'pluralize';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from './types';

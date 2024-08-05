@@ -1,23 +1,24 @@
-import {
-  AppSyncAuthConfiguration,
-  GraphQLAPIProvider,
-  TransformerPluginProvider,
-  TransformHostProvider,
-  TransformerLog,
-  NestedStackProvider,
-  SynthParameters,
-} from '@aws-amplify/graphql-transformer-interfaces';
 import type {
   AssetProvider,
-  StackManagerProvider,
-  TransformParameterProvider,
-  TransformParameters,
   DataSourceStrategiesProvider,
   RDSLayerMappingProvider,
   RDSSNSTopicMappingProvider,
+  StackManagerProvider,
+  TransformParameterProvider,
+  TransformParameters,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
+import {
+  AppSyncAuthConfiguration,
+  GraphQLAPIProvider,
+  NestedStackProvider,
+  SynthParameters,
+  TransformerLog,
+  TransformerPluginProvider,
+  TransformHostProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { Aws, CfnOutput, Fn, Stack } from 'aws-cdk-lib';
+import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
+import { Construct } from 'constructs';
 import {
   EnumTypeDefinitionNode,
   EnumValueDefinitionNode,
@@ -33,18 +34,17 @@ import {
   TypeExtensionNode,
   UnionTypeDefinitionNode,
 } from 'graphql';
-import _ from 'lodash';
 import { DocumentNode } from 'graphql/language';
-import { Construct } from 'constructs';
+import _ from 'lodash';
+import { MappingTemplate } from '../cdk-compat';
 import { ResolverConfig } from '../config/transformer-config';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
-import { TransformerContext, NONE_DATA_SOURCE_NAME } from '../transformer-context';
+import { NONE_DATA_SOURCE_NAME, TransformerContext } from '../transformer-context';
 import { TransformerOutput } from '../transformer-context/output';
-import { adoptAuthModes } from '../utils/authType';
-import { MappingTemplate } from '../cdk-compat';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
 import { defaultTransformParameters } from '../transformer-context/transform-parameters';
+import { adoptAuthModes } from '../utils/authType';
 import * as SyncUtils from './sync-utils';
 import { UserDefinedSlot } from './types';
 import {

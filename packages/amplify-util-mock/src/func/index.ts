@@ -1,9 +1,9 @@
-import * as path from 'path';
-import { getInvoker, category, isMockable, getBuilder } from '@aws-amplify/amplify-category-function';
-import * as inquirer from 'inquirer';
+import { category, getBuilder, getInvoker, isMockable } from '@aws-amplify/amplify-category-function';
 import { $TSContext, JSONUtilities, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
-import _ from 'lodash';
 import { BuildType } from 'amplify-function-plugin-interface';
+import * as inquirer from 'inquirer';
+import _ from 'lodash';
+import * as path from 'path';
 import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
 
 const DEFAULT_TIMEOUT_SECONDS = 10;

@@ -1,21 +1,21 @@
 import { createNewProjectDir, deleteProject, deleteProjectDir, isCI } from 'amplify-category-api-e2e-core';
 import {
+  addIntegAccountInConfig,
   amplifyAppAndroid,
-  amplifyAppIos,
   amplifyAppAngular,
+  amplifyAppIos,
   amplifyAppReact,
   amplifyModelgen,
   amplifyPush,
-  addIntegAccountInConfig,
 } from '../amplify-app-helpers/amplify-app-setup';
 import {
-  validateProject,
-  validateProjectConfig,
+  validateAmplifyPush,
   validateApi,
   validateBackendConfig,
-  validateModelgen,
-  validateAmplifyPush,
   validateFeatureFlags,
+  validateModelgen,
+  validateProject,
+  validateProjectConfig,
 } from '../amplify-app-helpers/amplify-app-validation';
 
 describe('amplify-app platform tests', () => {

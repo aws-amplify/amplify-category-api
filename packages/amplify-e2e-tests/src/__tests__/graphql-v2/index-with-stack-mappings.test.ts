@@ -1,19 +1,19 @@
-import * as path from 'path';
 import {
-  initJSProjectWithProfile,
-  deleteProject,
-  amplifyPush,
   addApiWithBlankSchema,
-  updateApiSchema,
-  createNewProjectDir,
-  deleteProjectDir,
+  amplifyPush,
   apiGqlCompile,
-  setStackMapping,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
   getProjectMeta,
+  initJSProjectWithProfile,
+  setStackMapping,
+  updateApiSchema,
 } from 'amplify-category-api-e2e-core';
-import * as fs from 'fs-extra';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import * as fs from 'fs-extra';
 import gql from 'graphql-tag';
+import * as path from 'path';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');

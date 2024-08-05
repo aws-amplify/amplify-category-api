@@ -1,6 +1,6 @@
 import { parse } from 'csv-parse/sync';
-import { singular } from 'pluralize';
 import { toPascalCase } from 'graphql-transformer-common';
+import { singular } from 'pluralize';
 import { Field, FieldType, Index, Model } from '../schema-representation';
 
 export abstract class StringDataSourceAdapter {

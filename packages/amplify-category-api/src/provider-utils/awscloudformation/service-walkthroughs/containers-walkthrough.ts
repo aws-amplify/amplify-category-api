@@ -3,8 +3,8 @@ import { printer } from '@aws-amplify/amplify-prompts';
 import inquirer from 'inquirer';
 import { category } from '../../../category-constants';
 import { DEPLOYMENT_MECHANISM } from '../base-api-stack';
-import { GitHubSourceActionInfo } from '../pipeline-with-awaiter';
 import { getAllDefaults } from '../default-values/containers-defaults';
+import { GitHubSourceActionInfo } from '../pipeline-with-awaiter';
 
 const serviceName = 'ElasticContainer';
 

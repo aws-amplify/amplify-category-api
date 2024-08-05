@@ -1,32 +1,32 @@
+import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { Auth } from 'aws-amplify';
+import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import { CognitoIdentity } from 'aws-sdk';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import { default as S3 } from 'aws-sdk/clients/s3';
-import moment from 'moment';
+import { default as STS } from 'aws-sdk/clients/sts';
+import gql from 'graphql-tag';
 import { ResourceConstants } from 'graphql-transformer-common';
+import moment from 'moment';
 import { CloudFormationClient } from '../CloudFormationClient';
-import { S3Client } from '../S3Client';
-import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import {
+  authenticateUser,
+  configureAmplify,
+  createIdentityPool,
   createUserPool,
   createUserPoolClient,
-  configureAmplify,
-  authenticateUser,
-  signupUser,
-  createIdentityPool,
   setIdentityPoolRoles,
+  signupUser,
 } from '../cognitoUtils';
-import { resolveTestRegion } from '../testSetup';
-import { CognitoIdentity } from 'aws-sdk';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { IAMHelper } from '../IAMHelper';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import gql from 'graphql-tag';
-import { Auth } from 'aws-amplify';
-import { default as STS } from 'aws-sdk/clients/sts';
+import { S3Client } from '../S3Client';
+import { resolveTestRegion } from '../testSetup';
 
 const region = resolveTestRegion();
 

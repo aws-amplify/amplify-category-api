@@ -1,6 +1,6 @@
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
 import { KeyTransformer } from 'graphql-key-transformer';
+import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
 import { GraphQLClient } from './utils/graphql-client';
 import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
 

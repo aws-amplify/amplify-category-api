@@ -1,4 +1,4 @@
-import { createGroup, addUserToGroup, configureAmplify, authenticateUser, signupUser } from './cognitoUtils';
+import { addUserToGroup, authenticateUser, configureAmplify, createGroup, signupUser } from './cognitoUtils';
 
 const USERNAME1 = 'user1@test.com';
 const USERNAME2 = 'user2@test.com';

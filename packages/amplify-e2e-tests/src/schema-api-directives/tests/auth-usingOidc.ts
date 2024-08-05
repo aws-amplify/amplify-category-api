@@ -1,17 +1,17 @@
-import { addAuthWithDefault, amplifyPushWithoutCodegen, addApi, updateAuthAddUserGroups, amplifyPush } from 'amplify-category-api-e2e-core';
+import { addApi, addAuthWithDefault, amplifyPush, amplifyPushWithoutCodegen, updateAuthAddUserGroups } from 'amplify-category-api-e2e-core';
 
 import {
-  getAppClientIDWeb,
-  getUserPoolId,
   configureAmplify,
+  getAppClientIDWeb,
+  getConfiguredAppsyncClientIAMAuth,
+  getConfiguredAppsyncClientOIDCAuth,
+  getUserPoolId,
   getUserPoolIssUrl,
   setupUser,
   signInUser,
-  getConfiguredAppsyncClientIAMAuth,
-  getConfiguredAppsyncClientOIDCAuth,
 } from '../authHelper';
 
-import { updateSchemaInTestProject, testMutation } from '../common';
+import { testMutation, updateSchemaInTestProject } from '../common';
 
 const GROUPNAME = 'Admin';
 const USERNAME = 'user1';

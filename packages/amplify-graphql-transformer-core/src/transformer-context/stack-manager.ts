@@ -1,4 +1,4 @@
-import { StackManagerProvider, NestedStackProvider, TransformParameterProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { NestedStackProvider, StackManagerProvider, TransformParameterProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { CfnParameter, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 

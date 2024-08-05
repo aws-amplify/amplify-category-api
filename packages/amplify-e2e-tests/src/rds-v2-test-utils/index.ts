@@ -1,24 +1,23 @@
-import { join } from 'path';
-import _ from 'lodash';
-import * as fs from 'fs-extra';
-import { parse, ObjectTypeDefinitionNode, Kind, visit, FieldDefinitionNode, StringValueNode, valueFromASTUntyped, TypeNode } from 'graphql';
-import axios from 'axios';
+import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import {
+  addRDSPortInboundRule,
+  createRDSInstance,
+  getAppSyncApi,
   getProjectMeta,
   RDSTestDataProvider,
-  createRDSInstance,
-  addRDSPortInboundRule,
-  getAppSyncApi,
 } from 'amplify-category-api-e2e-core';
+import axios from 'axios';
+import * as fs from 'fs-extra';
+import { FieldDefinitionNode, Kind, ObjectTypeDefinitionNode, parse, StringValueNode, TypeNode, valueFromASTUntyped, visit } from 'graphql';
 import { getBaseType, isArrayOrObject, isListType, toPascalCase } from 'graphql-transformer-common';
+import _ from 'lodash';
+import path, { join } from 'path';
 import { GQLQueryHelper } from '../query-utils/gql-helper';
 import {
   getConfiguredAppsyncClientAPIKeyAuth,
   getConfiguredAppsyncClientCognitoAuth,
   getConfiguredAppsyncClientOIDCAuth,
 } from '../schema-api-directives';
-import path from 'path';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 
 const HAS_MANY_DIRECTIVE = 'hasMany';
 const HAS_ONE_DIRECTIVE = 'hasOne';

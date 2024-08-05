@@ -1,30 +1,30 @@
 /* eslint-disable no-param-reassign */
+import { HasOneDirective } from '@aws-amplify/graphql-directives';
 import {
   DirectiveWrapper,
   generateGetArgumentsInput,
-  getStrategyDbTypeFromTypeNode,
   getStrategyDbTypeFromModel,
+  getStrategyDbTypeFromTypeNode,
   InvalidDirectiveError,
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
 import {
+  ModelDataSourceStrategyDbType,
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
+  TransformerPreProcessContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
-  TransformerPreProcessContextProvider,
-  ModelDataSourceStrategyDbType,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { HasOneDirective } from '@aws-amplify/graphql-directives';
 import {
   ArgumentNode,
   DirectiveNode,
   DocumentNode,
   FieldDefinitionNode,
   InterfaceTypeDefinitionNode,
+  Kind,
   NamedTypeNode,
   ObjectTypeDefinitionNode,
-  Kind,
 } from 'graphql';
 import {
   getBaseType,
@@ -38,6 +38,7 @@ import {
 } from 'graphql-transformer-common';
 import { produce } from 'immer';
 import { WritableDraft } from 'immer/dist/types/types-external';
+import { getHasOneDirectiveTransformer } from './has-one/has-one-directive-transformer-factory';
 import {
   addFieldsToDefinition,
   convertSortKeyFieldsToSortKeyConnectionFields,
@@ -53,8 +54,6 @@ import {
   validateModelDirective,
   validateRelatedModelDirective,
 } from './utils';
-import { getGenerator } from './resolver/generator-factory';
-import { getHasOneDirectiveTransformer } from './has-one/has-one-directive-transformer-factory';
 
 /**
  * Transformer for @hasOne directive

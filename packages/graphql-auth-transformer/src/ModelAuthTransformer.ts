@@ -1,42 +1,42 @@
-import { Transformer, TransformerContext, InvalidDirectiveError, getDirectiveArguments, getFieldArguments } from 'graphql-transformer-core';
 import { AuthDirectiveV1 } from '@aws-amplify/graphql-directives';
+import { StringParameter } from 'cloudform-types';
 import GraphQLAPI from 'cloudform-types/types/appSync/graphQlApi';
 import Resolver from 'cloudform-types/types/appSync/resolver';
-import { StringParameter } from 'cloudform-types';
 import {
-  ObjectTypeDefinitionNode,
-  DirectiveNode,
   ArgumentNode,
-  Kind,
+  DirectiveNode,
   FieldDefinitionNode,
-  InterfaceTypeDefinitionNode,
-  valueFromASTUntyped,
-  NamedTypeNode,
   InputObjectTypeDefinitionNode,
-  TypeDefinitionNode,
+  InterfaceTypeDefinitionNode,
+  Kind,
+  NamedTypeNode,
+  ObjectTypeDefinitionNode,
   parse,
+  TypeDefinitionNode,
+  valueFromASTUntyped,
 } from 'graphql';
+import { comment, compoundExpression, Expression, forEach, iff, list, newline, not, print, raw, ref, set } from 'graphql-mapping-template';
 import {
-  ResourceConstants,
-  ResolverResourceIDs,
-  isListType,
-  getBaseType,
-  makeDirective,
-  makeNamedType,
-  makeInputValueDefinition,
   blankObjectExtension,
-  extensionWithDirectives,
   extendFieldWithDirectives,
-  makeNonNullType,
+  extensionWithDirectives,
+  getBaseType,
+  isListType,
+  makeDirective,
   makeField,
+  makeInputValueDefinition,
+  makeNamedType,
+  makeNonNullType,
   ModelResourceIDs,
+  ResolverResourceIDs,
+  ResourceConstants,
 } from 'graphql-transformer-common';
-import { Expression, print, raw, iff, forEach, set, ref, list, compoundExpression, newline, comment, not } from 'graphql-mapping-template';
-import { AuthRule, ModelQuery, ModelMutation, ModelOperation, AuthProvider } from './AuthRule';
-import { ResourceFactory } from './resources';
+import { getDirectiveArguments, getFieldArguments, InvalidDirectiveError, Transformer, TransformerContext } from 'graphql-transformer-core';
+import { AuthProvider, AuthRule, ModelMutation, ModelOperation, ModelQuery } from './AuthRule';
 import { ModelDirectiveConfiguration, ModelDirectiveOperationType, ModelSubscriptionLevel } from './ModelDirectiveConfiguration';
+import { ResourceFactory } from './resources';
 
-import { OWNER_AUTH_STRATEGY, GROUPS_AUTH_STRATEGY, DEFAULT_OWNER_FIELD, AUTH_NON_MODEL_TYPES } from './constants';
+import { AUTH_NON_MODEL_TYPES, DEFAULT_OWNER_FIELD, GROUPS_AUTH_STRATEGY, OWNER_AUTH_STRATEGY } from './constants';
 
 /**
  * Implements the ModelAuthTransformer

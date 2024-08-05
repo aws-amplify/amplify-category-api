@@ -1,15 +1,15 @@
-import path from 'path';
-import fs from 'fs-extra';
 import {
-  addAuthWithPreTokenGenerationTrigger,
   addApiWithCognitoUserPoolAuthTypeWhenAuthExists,
-  updateAuthAddUserGroups,
+  addAuthWithPreTokenGenerationTrigger,
   amplifyPush,
+  updateAuthAddUserGroups,
 } from 'amplify-category-api-e2e-core';
+import fs from 'fs-extra';
+import path from 'path';
 
-import { getUserPoolId, configureAmplify, setupUser, signInUser, getConfiguredAppsyncClientCognitoAuth } from '../authHelper';
+import { configureAmplify, getConfiguredAppsyncClientCognitoAuth, getUserPoolId, setupUser, signInUser } from '../authHelper';
 
-import { updateSchemaInTestProject, testMutation } from '../common';
+import { testMutation, updateSchemaInTestProject } from '../common';
 
 const GROUPNAME = 'Moderator';
 const USERNAME = 'user1';

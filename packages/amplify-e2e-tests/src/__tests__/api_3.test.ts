@@ -1,5 +1,3 @@
-import { existsSync } from 'fs';
-import path from 'path';
 import {
   addApiWithoutSchema,
   addFeatureFlag,
@@ -20,9 +18,11 @@ import {
   updateHeadlessApi,
 } from 'amplify-category-api-e2e-core';
 import { AddApiRequest, UpdateApiRequest } from 'amplify-headless-interface';
+import { existsSync } from 'fs';
 import { readFileSync } from 'fs-extra';
 import { TRANSFORM_BASE_VERSION, TRANSFORM_CURRENT_VERSION, writeTransformerConfiguration } from 'graphql-transformer-core';
 import _ from 'lodash';
+import path from 'path';
 
 describe('amplify add api (GraphQL)', () => {
   let projRoot: string;

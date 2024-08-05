@@ -1,6 +1,6 @@
-import { IAM, Credentials } from 'aws-sdk';
-import { resolveTestRegion } from './testSetup';
+import { Credentials, IAM } from 'aws-sdk';
 import { default as STS } from 'aws-sdk/clients/sts';
+import { resolveTestRegion } from './testSetup';
 
 const REGION = resolveTestRegion();
 

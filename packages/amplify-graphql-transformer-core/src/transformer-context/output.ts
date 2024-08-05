@@ -1,3 +1,4 @@
+import { TransformerContextOutputProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   DocumentNode,
   EnumTypeDefinitionNode,
@@ -22,14 +23,13 @@ import {
   UnionTypeDefinitionNode,
   UnionTypeExtensionNode,
 } from 'graphql';
-import { TransformerContextOutputProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { stripDirectives } from '../utils/strip-directives';
 import {
-  DEFAULT_SCHEMA_DEFINITION,
-  DEFAULT_QUERY_OPERATION,
   DEFAULT_MUTATION_OPERATION,
+  DEFAULT_QUERY_OPERATION,
+  DEFAULT_SCHEMA_DEFINITION,
   DEFAULT_SUBSCRIPTION_OPERATION,
 } from '../utils/defaultSchema';
+import { stripDirectives } from '../utils/strip-directives';
 
 const AMPLIFY = 'AMPLIFY';
 

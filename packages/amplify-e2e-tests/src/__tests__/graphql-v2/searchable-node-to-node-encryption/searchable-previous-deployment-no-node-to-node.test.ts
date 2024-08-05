@@ -1,22 +1,22 @@
-import * as path from 'path';
 import {
-  initJSProjectWithProfile,
-  deleteProject,
-  amplifyPush,
-  createRandomName,
-  addAuthWithDefault,
-  setTransformConfigValue,
-  removeTransformConfigValue,
-  amplifyPushUpdate,
   addApiWithoutSchema,
-  updateApiSchema,
-  getProjectMeta,
+  addAuthWithDefault,
+  amplifyPush,
+  amplifyPushUpdate,
   createNewProjectDir,
+  createRandomName,
+  deleteProject,
   deleteProjectDir,
+  getProjectMeta,
+  initJSProjectWithProfile,
+  removeTransformConfigValue,
+  setTransformConfigValue,
+  updateApiSchema,
 } from 'amplify-category-api-e2e-core';
-import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import * as fs from 'fs-extra';
+import gql from 'graphql-tag';
+import * as path from 'path';
 
 (global as any).fetch = require('node-fetch');
 

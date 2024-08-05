@@ -1,15 +1,15 @@
 import {
-  initJSProjectWithProfile,
-  deleteProject,
-  addApiWithoutSchema,
   addApiWithOneModel,
+  addApiWithoutSchema,
   addApiWithThreeModels,
-  updateApiSchema,
-  apiGqlCompile,
   amplifyPush,
-  generateModels,
+  apiGqlCompile,
   createNewProjectDir,
+  deleteProject,
   deleteProjectDir,
+  generateModels,
+  initJSProjectWithProfile,
+  updateApiSchema,
 } from 'amplify-category-api-e2e-core';
 
 describe('global sandbox mode', () => {

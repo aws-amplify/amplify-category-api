@@ -1,6 +1,6 @@
-import * as path from 'path';
 import * as fs from 'fs-extra';
 import { TRANSFORM_CONFIG_FILE_NAME } from 'graphql-transformer-core';
+import * as path from 'path';
 import { addFeatureFlag } from './feature-flags';
 
 export function updateSchema(projectDir: string, projectName: string, schemaText: string, schemaFileName: string = 'schema.graphql') {

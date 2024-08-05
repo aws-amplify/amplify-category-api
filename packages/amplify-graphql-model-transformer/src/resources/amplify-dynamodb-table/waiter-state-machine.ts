@@ -1,7 +1,7 @@
 // The contents of this file were adapted from the AWS CDK provider framework.
 // https://github.com/aws/aws-cdk/blob/c52ff08cfd1515d35feb93bcba34a3231a94985c/packages/aws-cdk-lib/custom-resources/lib/provider-framework/waiter-state-machine.ts
 
-import { CfnResource, Duration, aws_iam, aws_lambda, Stack } from 'aws-cdk-lib';
+import { aws_iam, aws_lambda, CfnResource, Duration, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 export interface WaiterStateMachineProps {

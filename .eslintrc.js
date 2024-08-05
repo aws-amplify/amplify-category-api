@@ -81,7 +81,7 @@ module.exports = {
     'import/no-dynamic-require': 'error',
     'import/newline-after-import': 'error',
     'import/no-cycle': 'error',
-    'import/order': 'error',
+    'import/order': 'off',
     'import/first': 'error',
     'import/no-extraneous-dependencies': 'error',
     'import/no-useless-path-segments': 'error',

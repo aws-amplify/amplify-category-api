@@ -1,4 +1,7 @@
-import path from 'path';
+import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
+import { getHostVpc } from '@aws-amplify/graphql-schema-generator';
+import { executeTransform } from '@aws-amplify/graphql-transformer';
 import {
   constructSqlDirectiveDataSourceStrategies,
   DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
@@ -17,8 +20,8 @@ import {
   ModelDataSourceStrategySqlDbType,
   RDSLayerMapping,
   RDSSNSTopicMapping,
-  SQLLambdaModelDataSourceStrategy,
   SqlDirectiveDataSourceStrategy,
+  SQLLambdaModelDataSourceStrategy,
   SqlModelDataSourceDbConnectionConfig,
   TransformerLog,
   TransformerLogLevel,
@@ -28,24 +31,21 @@ import * as fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { sanityCheckProject } from 'graphql-transformer-core';
 import _ from 'lodash';
-import { executeTransform } from '@aws-amplify/graphql-transformer';
-import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, pathManager } from '@aws-amplify/amplify-cli-core';
-import { printer } from '@aws-amplify/amplify-prompts';
-import { getHostVpc } from '@aws-amplify/graphql-schema-generator';
 import fetch from 'node-fetch';
+import path from 'path';
+import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import {
   getConnectionSecrets,
   getExistingConnectionDbConnectionConfig,
   getSecretsKey,
 } from '../provider-utils/awscloudformation/utils/rds-resources/database-resources';
-import { getAppSyncAPIName } from '../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import { checkForUnsupportedDirectives, containsSqlModelOrDirective } from '../provider-utils/awscloudformation/utils/rds-resources/utils';
 import { isAuthModeUpdated } from './auth-mode-compare';
-import { getAdminRoles, getIdentityPoolId, mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
-import { generateTransformerOptions } from './transformer-options-v2';
-import { TransformerProjectOptions } from './transformer-options-types';
 import { DeploymentResources } from './cdk-compat/deployment-resources';
 import { TransformManager } from './cdk-compat/transform-manager';
+import { TransformerProjectOptions } from './transformer-options-types';
+import { generateTransformerOptions } from './transformer-options-v2';
+import { getAdminRoles, getIdentityPoolId, mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
 
 const PARAMETERS_FILENAME = 'parameters.json';
 const SCHEMA_FILENAME = 'schema.graphql';

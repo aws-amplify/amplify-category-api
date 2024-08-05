@@ -1,28 +1,28 @@
-import { TransformerPluginBase, isSqlModel, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
+import { RefersToDirective } from '@aws-amplify/graphql-directives';
+import { InvalidDirectiveError, isSqlModel, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
   TransformerPluginType,
   TransformerPreProcessContextProvider,
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { RefersToDirective } from '@aws-amplify/graphql-directives';
 import {
-  ObjectTypeDefinitionNode,
   DirectiveNode,
   FieldDefinitionNode,
-  ObjectTypeExtensionNode,
   InterfaceTypeDefinitionNode,
   Kind,
+  ObjectTypeDefinitionNode,
+  ObjectTypeExtensionNode,
 } from 'graphql';
-import {
-  shouldBeAppliedToModel,
-  getMappedName,
-  updateTypeMapping,
-  setTypeMappingInSchema,
-  getMappedFieldName,
-  updateFieldMapping,
-} from './graphql-name-mapping';
 import { attachFieldMappingSlot } from './field-mapping-resolvers';
+import {
+  getMappedFieldName,
+  getMappedName,
+  setTypeMappingInSchema,
+  shouldBeAppliedToModel,
+  updateFieldMapping,
+  updateTypeMapping,
+} from './graphql-name-mapping';
 
 export class RefersToTransformer extends TransformerPluginBase {
   constructor() {

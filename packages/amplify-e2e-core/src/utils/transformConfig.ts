@@ -1,6 +1,6 @@
-import * as path from 'path';
 import * as fs from 'fs-extra';
-import { TRANSFORM_CONFIG_FILE_NAME, TransformConfig } from 'graphql-transformer-core';
+import { TransformConfig, TRANSFORM_CONFIG_FILE_NAME } from 'graphql-transformer-core';
+import * as path from 'path';
 
 export function getTransformConfig(projectRoot: string, apiName: string): TransformConfig {
   const metaFilePath = path.join(projectRoot, 'amplify', 'backend', 'api', apiName, TRANSFORM_CONFIG_FILE_NAME);

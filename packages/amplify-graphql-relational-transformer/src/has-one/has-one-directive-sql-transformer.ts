@@ -5,6 +5,7 @@ import {
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
+import { getGenerator } from '../resolver/generator-factory';
 import { setFieldMappingResolverReference } from '../resolvers';
 import { HasOneDirectiveConfiguration } from '../types';
 import {
@@ -14,7 +15,6 @@ import {
   validateReferencesBidirectionality,
   validateReferencesRelationalFieldNullability,
 } from '../utils';
-import { getGenerator } from '../resolver/generator-factory';
 
 /**
  * HasOneDirectiveSQLTransformer executes transformations based on `@hasOne(references: [String!])` configurations

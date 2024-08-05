@@ -1,4 +1,4 @@
-import { CfnElement, Stack, CfnResource, ISynthesisSession } from 'aws-cdk-lib';
+import { CfnElement, CfnResource, ISynthesisSession, Stack } from 'aws-cdk-lib';
 
 export class TransformerRootStack extends Stack {
   private readonly resourceTypeToPreserveLogicalName: string[] = [

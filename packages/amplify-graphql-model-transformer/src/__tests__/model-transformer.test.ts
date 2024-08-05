@@ -1,18 +1,18 @@
+import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import {
   ConflictHandlerType,
-  validateModelSchema,
-  MYSQL_DB_TYPE,
-  POSTGRES_DB_TYPE,
   constructDataSourceStrategies,
   getResourceNamesForStrategy,
+  MYSQL_DB_TYPE,
+  POSTGRES_DB_TYPE,
+  validateModelSchema,
 } from '@aws-amplify/graphql-transformer-core';
+import { ModelDataSourceStrategySqlDbType, SQLLambdaModelDataSourceStrategy, VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { Template } from 'aws-cdk-lib/assertions';
 import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, NamedTypeNode, parse } from 'graphql';
 import { getBaseType } from 'graphql-transformer-common';
-import { Template } from 'aws-cdk-lib/assertions';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { VpcConfig, ModelDataSourceStrategySqlDbType, SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   doNotExpectFields,
   expectFields,

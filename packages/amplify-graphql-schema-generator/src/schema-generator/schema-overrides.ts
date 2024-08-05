@@ -1,6 +1,6 @@
-import { DocumentNode, EnumTypeDefinitionNode, FieldDefinitionNode, ObjectTypeDefinitionNode, StringValueNode, visit } from 'graphql';
-import { isArrayOrObject, getNonModelTypes, isOfType, isNonNullType } from 'graphql-transformer-common';
 import { FieldWrapper, ObjectDefinitionWrapper } from '@aws-amplify/graphql-transformer-core';
+import { DocumentNode, EnumTypeDefinitionNode, FieldDefinitionNode, ObjectTypeDefinitionNode, StringValueNode, visit } from 'graphql';
+import { getNonModelTypes, isArrayOrObject, isNonNullType, isOfType } from 'graphql-transformer-common';
 
 const MODEL_DIRECTIVE_NAME = 'model';
 const REFERS_TO_DIRECTIVE_NAME = 'refersTo';

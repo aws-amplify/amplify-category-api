@@ -1,10 +1,11 @@
+import { SearchableDirective } from '@aws-amplify/graphql-directives';
 import {
   DirectiveWrapper,
   generateGetArgumentsInput,
   InvalidDirectiveError,
+  isSqlModel,
   MappingTemplate,
   TransformerPluginBase,
-  isSqlModel,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
@@ -13,53 +14,52 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { SearchableDirective } from '@aws-amplify/graphql-directives';
+import { ArnFormat, CfnCondition, Fn } from 'aws-cdk-lib';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
-import { ArnFormat, CfnCondition, Fn } from 'aws-cdk-lib';
 import { IConstruct } from 'constructs';
 import { DirectiveNode, InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { Expression, str } from 'graphql-mapping-template';
 import {
-  ResourceConstants,
-  getBaseType,
-  ModelResourceIDs,
-  STANDARD_SCALARS,
   blankObject,
   blankObjectExtension,
   defineUnionType,
   extensionWithFields,
+  getBaseType,
+  graphqlName,
+  makeDirective,
   makeField,
+  makeInputValueDefinition,
   makeListType,
   makeNamedType,
   makeNonNullType,
-  makeInputValueDefinition,
-  graphqlName,
+  ModelResourceIDs,
   plurality,
-  toUpper,
   ResolverResourceIDs,
-  makeDirective,
+  ResourceConstants,
+  STANDARD_SCALARS,
+  toUpper,
 } from 'graphql-transformer-common';
+import { createStackOutputs } from './cdk/create-cfnOutput';
 import { createParametersStack as createParametersInStack } from './cdk/create-cfnParameters';
-import { requestTemplate, responseTemplate, postAuthMappingTemplate } from './generate-resolver-vtl';
+import { setMappings } from './cdk/create-layer-cfnMapping';
+import { createSearchableDataSource } from './cdk/create-searchable-datasource';
+import { createSearchableDomain, createSearchableDomainRole } from './cdk/create-searchable-domain';
+import { createEventSourceMapping, createLambda, createLambdaRole } from './cdk/create-streaming-lambda';
 import {
+  AGGREGATE_TYPES,
+  DATASTORE_SYNC_FIELDS,
+  extendTypeWithDirectives,
+  makeSearchableAggregateTypeEnumObject,
   makeSearchableScalarInputObject,
   makeSearchableSortDirectionEnumObject,
+  makeSearchableXAggregateFieldEnumObject,
+  makeSearchableXAggregationInputObject,
   makeSearchableXFilterInputObject,
   makeSearchableXSortableFieldsEnumObject,
-  makeSearchableXAggregateFieldEnumObject,
   makeSearchableXSortInputObject,
-  makeSearchableXAggregationInputObject,
-  makeSearchableAggregateTypeEnumObject,
-  AGGREGATE_TYPES,
-  extendTypeWithDirectives,
-  DATASTORE_SYNC_FIELDS,
 } from './definitions';
-import { setMappings } from './cdk/create-layer-cfnMapping';
-import { createSearchableDomain, createSearchableDomainRole } from './cdk/create-searchable-domain';
-import { createSearchableDataSource } from './cdk/create-searchable-datasource';
-import { createEventSourceMapping, createLambda, createLambdaRole } from './cdk/create-streaming-lambda';
-import { createStackOutputs } from './cdk/create-cfnOutput';
+import { postAuthMappingTemplate, requestTemplate, responseTemplate } from './generate-resolver-vtl';
 
 const nonKeywordTypes = ['Int', 'Float', 'Boolean', 'AWSTimestamp', 'AWSDate', 'AWSDateTime'];
 const STACK_NAME = 'SearchableStack';

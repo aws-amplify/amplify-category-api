@@ -1,7 +1,7 @@
-import { constructDataSourceStrategies, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { parse } from 'graphql';
-import { TestTransformParameters, mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { constructDataSourceStrategies, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { mockSqlDataSourceStrategy, testTransform, TestTransformParameters } from '@aws-amplify/graphql-transformer-test-utils';
+import { parse } from 'graphql';
 import { SqlTransformer } from '../graphql-sql-transformer';
 
 describe('sql directive tests', () => {

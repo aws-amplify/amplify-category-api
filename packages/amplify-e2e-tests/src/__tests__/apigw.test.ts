@@ -1,4 +1,4 @@
-import * as path from 'path';
+import { JSONUtilities, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 import {
   addAuthWithGroupsAndAdminAPI,
   addRestApi,
@@ -14,10 +14,10 @@ import {
   replaceOverrideFileWithProjectInfo,
   updateRestApi,
 } from 'amplify-category-api-e2e-core';
-import { pathManager, stateManager, JSONUtilities } from '@aws-amplify/amplify-cli-core';
 import * as fs from 'fs-extra';
-import { v4 as uuid } from 'uuid';
 import fetch from 'node-fetch';
+import * as path from 'path';
+import { v4 as uuid } from 'uuid';
 
 const [shortId] = uuid().split('-');
 const projName = `apigwtest${shortId}`;

@@ -1,18 +1,18 @@
-import { Kind, ObjectTypeDefinitionNode, SchemaDefinitionNode, InputObjectTypeDefinitionNode, DocumentNode } from 'graphql';
+import { DocumentNode, InputObjectTypeDefinitionNode, Kind, ObjectTypeDefinitionNode, SchemaDefinitionNode } from 'graphql';
 import { plurality, toUpper } from 'graphql-transformer-common';
-import {
-  getSingletonListTypeNode,
-  getNamedType,
-  getOperationFieldDefinition,
-  getNonNullType,
-  getInputValueDefinition,
-  getTypeDefinition,
-  getFieldDefinition,
-  getDirectiveNode,
-  getOperationTypeDefinition,
-} from './RelationalDBSchemaTransformerUtils';
-import { RelationalDBParsingException } from './RelationalDBParsingException';
 import { IRelationalDBReader } from './IRelationalDBReader';
+import { RelationalDBParsingException } from './RelationalDBParsingException';
+import {
+  getDirectiveNode,
+  getFieldDefinition,
+  getInputValueDefinition,
+  getNamedType,
+  getNonNullType,
+  getOperationFieldDefinition,
+  getOperationTypeDefinition,
+  getSingletonListTypeNode,
+  getTypeDefinition,
+} from './RelationalDBSchemaTransformerUtils';
 
 /**
  * This class is used to transition all of the columns and key metadata from a table for use

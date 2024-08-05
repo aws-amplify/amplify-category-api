@@ -1,8 +1,8 @@
 import { knex } from 'knex';
 import ora from 'ora';
-import { invokeSchemaInspectorLambda } from '../utils/vpc-helper';
 import { Field, Index } from '../schema-representation';
 import { getSSLConfig } from '../utils';
+import { invokeSchemaInspectorLambda } from '../utils/vpc-helper';
 import { DataSourceAdapter, DataSourceConfig } from './datasource-adapter';
 import { MySQLStringDataSourceAdapter } from './mysql-string-datasource-adapter';
 

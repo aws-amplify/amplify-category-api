@@ -1,4 +1,4 @@
-import { ref, obj, str, forEach, qref, set, compoundExpression, ifElse, nul, bool } from '../ast';
+import { bool, compoundExpression, forEach, ifElse, nul, obj, qref, ref, set, str } from '../ast';
 import { DynamoDBMappingTemplate } from '../dynamodb';
 import { print } from '../print';
 

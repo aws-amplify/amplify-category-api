@@ -1,10 +1,10 @@
 import { DescribeSubnetsCommandOutput, EC2Client } from '@aws-sdk/client-ec2';
 import {
-  RDSClient,
   DescribeDBClustersCommandOutput,
   DescribeDBInstancesCommandOutput,
   DescribeDBProxiesCommandOutput,
   DescribeDBSubnetGroupsCommandOutput,
+  RDSClient,
 } from '@aws-sdk/client-rds';
 
 import { SubnetAvailabilityZone } from '@aws-amplify/graphql-transformer-interfaces';

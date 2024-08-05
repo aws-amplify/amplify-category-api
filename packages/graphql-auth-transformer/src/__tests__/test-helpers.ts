@@ -1,4 +1,4 @@
-import { ObjectTypeDefinitionNode, FieldDefinitionNode, DocumentNode, Kind } from 'graphql';
+import { DocumentNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
 
 export const getObjectType = (doc: DocumentNode, type: string): ObjectTypeDefinitionNode | undefined => {
   return doc.definitions.find((def) => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as

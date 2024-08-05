@@ -1,11 +1,11 @@
-import * as path from 'path';
+import { setResourceName } from '@aws-amplify/graphql-transformer-core';
 import { GraphQLAPIProvider, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { EventSourceMapping, IFunction, LayerVersion, Runtime, StartingPosition } from 'aws-cdk-lib/aws-lambda';
-import { CfnParameter, Fn, Duration } from 'aws-cdk-lib';
+import { CfnParameter, Duration, Fn } from 'aws-cdk-lib';
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { EventSourceMapping, IFunction, LayerVersion, Runtime, StartingPosition } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { ResourceConstants, SearchableResourceIDs } from 'graphql-transformer-common';
-import { setResourceName } from '@aws-amplify/graphql-transformer-core';
+import * as path from 'path';
 
 export const createLambda = (
   scope: Construct,

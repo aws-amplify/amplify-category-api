@@ -1,14 +1,14 @@
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { ResourceConstants } from 'graphql-transformer-common';
 import { HttpTransformer } from '@aws-amplify/graphql-http-transformer';
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { Output } from 'aws-sdk/clients/cloudformation';
+import { ResourceConstants } from 'graphql-transformer-common';
 import { default as moment } from 'moment';
-import { CloudFormationClient } from '../CloudFormationClient';
-import { GraphQLClient } from '../GraphQLClient';
-import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
-import { S3Client } from '../S3Client';
 import { deployJsonServer, destroyJsonServer } from '../cdkUtils';
+import { CloudFormationClient } from '../CloudFormationClient';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
+import { GraphQLClient } from '../GraphQLClient';
+import { S3Client } from '../S3Client';
 import { resolveTestRegion } from '../testSetup';
 
 const REGION = resolveTestRegion();

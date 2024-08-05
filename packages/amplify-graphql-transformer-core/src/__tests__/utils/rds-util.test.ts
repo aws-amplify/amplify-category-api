@@ -1,5 +1,4 @@
-import { Kind, parse } from 'graphql';
-import { getNonScalarFields, getParameterStoreSecretPath } from '../../utils/rds-util';
+import { getParameterStoreSecretPath } from '../../utils/rds-util';
 
 describe('rds-util', () => {
   describe('getParameterStoreSecretPath', () => {

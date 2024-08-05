@@ -1,19 +1,19 @@
-import * as path from 'path';
+import { $TSContext, FeatureFlags, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import {
   AccessControlMatrix,
   AuthRule,
-  ModelOperation,
-  MODEL_OPERATIONS,
   DEFAULT_GROUPS_FIELD,
   DEFAULT_GROUP_CLAIM,
   DEFAULT_OWNER_FIELD,
   getAuthDirectiveRules,
+  ModelOperation,
+  MODEL_OPERATIONS,
 } from '@aws-amplify/graphql-auth-transformer';
-import { $TSContext, stateManager, pathManager, FeatureFlags } from '@aws-amplify/amplify-cli-core';
-import { parse, ObjectTypeDefinitionNode, DirectiveNode, FieldDefinitionNode } from 'graphql';
-import { printer } from '@aws-amplify/amplify-prompts';
 import { DirectiveWrapper } from '@aws-amplify/graphql-transformer-core';
+import { DirectiveNode, FieldDefinitionNode, ObjectTypeDefinitionNode, parse } from 'graphql';
 import { readProjectSchema } from 'graphql-transformer-core';
+import * as path from 'path';
 import { getTransformerVersion } from '../graphql-transformer';
 
 export const showApiAuthAcm = async (context: $TSContext, modelName: string): Promise<void> => {

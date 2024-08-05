@@ -1,3 +1,4 @@
+import * as cdk from 'aws-cdk-lib';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
@@ -6,7 +7,6 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as elb2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as route53targets from 'aws-cdk-lib/aws-route53-targets';
-import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { v4 as uuid } from 'uuid';
 import { ContainersStack, ContainersStackProps } from './base-api-stack';

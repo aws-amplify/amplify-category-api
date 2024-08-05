@@ -1,38 +1,38 @@
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import {
   addApiWithAllAuthModes,
   amplifyPush,
+  apiGqlCompile,
   createNewProjectDir,
   deleteDBInstance,
   deleteProject,
   deleteProjectDir,
+  enableUserPoolUnauthenticatedAccess,
   getAppSyncApi,
   getProjectMeta,
   importRDSDatabase,
   initJSProjectWithProfile,
   setupRDSInstanceAndData,
   sleep,
-  enableUserPoolUnauthenticatedAccess,
-  apiGqlCompile,
 } from 'amplify-category-api-e2e-core';
+import { API, Auth } from 'aws-amplify';
 import { existsSync, writeFileSync } from 'fs-extra';
 import generator from 'generate-password';
-import path from 'path';
 import gql from 'graphql-tag';
-import { GQLQueryHelper } from '../query-utils/gql-helper';
-import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import path from 'path';
 import * as Observable from 'zen-observable';
+import { GQLQueryHelper } from '../query-utils/gql-helper';
 import {
   configureAmplify,
+  getConfiguredAppsyncClientAPIKeyAuth,
   getConfiguredAppsyncClientIAMAuth,
+  getConfiguredAppsyncClientLambdaAuth,
   setupUser,
   signInUser,
-  getConfiguredAppsyncClientAPIKeyAuth,
-  getConfiguredAppsyncClientLambdaAuth,
 } from '../schema-api-directives';
-import { Auth, API } from 'aws-amplify';
 import { getUserPoolId } from '../schema-api-directives/authHelper';
 import { reconfigureAmplifyAPI, withTimeOut } from '../utils/api';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { SQL_TESTS_USE_BETA } from './sql-e2e-config';
 
 // to deal with bug in cognito-identity-js

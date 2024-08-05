@@ -1,4 +1,3 @@
-import path from 'path';
 import {
   addApiWithoutSchema,
   amplifyPush,
@@ -14,11 +13,12 @@ import {
   setupRDSInstanceAndData,
   sleep,
 } from 'amplify-category-api-e2e-core';
-import { existsSync, writeFileSync, mkdirSync, readFileSync } from 'fs-extra';
-import generator from 'generate-password';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { gql } from 'graphql-tag';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs-extra';
+import generator from 'generate-password';
 import { ObjectTypeDefinitionNode, parse } from 'graphql';
+import { gql } from 'graphql-tag';
+import path from 'path';
 import { GQLQueryHelper } from '../query-utils/gql-helper';
 import { SQL_TESTS_USE_BETA } from '../rds-v2-tests-common/sql-e2e-config';
 

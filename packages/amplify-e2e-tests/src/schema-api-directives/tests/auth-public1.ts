@@ -1,8 +1,8 @@
 import { addApi, amplifyPush } from 'amplify-category-api-e2e-core';
 
-import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../authHelper';
+import { configureAmplify, getApiKey, getConfiguredAppsyncClientAPIKeyAuth } from '../authHelper';
 
-import { updateSchemaInTestProject, testMutations, testQueries } from '../common';
+import { testMutations, testQueries, updateSchemaInTestProject } from '../common';
 
 export async function runTest(projectDir: string, testModule: any) {
   await addApi(projectDir, { transformerVersion: 1 });

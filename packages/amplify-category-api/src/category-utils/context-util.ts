@@ -1,5 +1,5 @@
-import path from 'path';
 import { $TSContext, AmplifyCategories, pathManager } from '@aws-amplify/amplify-cli-core';
+import path from 'path';
 
 import fs from 'fs-extra';
 import { PROVIDER_NAME } from '../graphql-transformer/constants';

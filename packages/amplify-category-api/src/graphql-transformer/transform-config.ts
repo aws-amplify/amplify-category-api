@@ -1,8 +1,8 @@
-import * as path from 'path';
-import { TransformConfig } from '@aws-amplify/graphql-transformer-core';
 import { AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { TransformConfig } from '@aws-amplify/graphql-transformer-core';
 import fs from 'fs-extra';
 import { TRANSFORM_CONFIG_FILE_NAME } from 'graphql-transformer-core';
+import * as path from 'path';
 
 export interface ProjectOptions {
   projectDirectory?: string;

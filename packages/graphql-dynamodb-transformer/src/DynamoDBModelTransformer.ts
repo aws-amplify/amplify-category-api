@@ -1,36 +1,36 @@
-import { DeletionPolicy, AppSync } from 'cloudform-types';
-import { DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode, FieldDefinitionNode, parse } from 'graphql';
+import { ModelDirectiveV1 } from '@aws-amplify/graphql-directives';
+import { AppSync, DeletionPolicy } from 'cloudform-types';
+import { DirectiveNode, FieldDefinitionNode, InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode, parse } from 'graphql';
 import {
   blankObject,
+  getBaseType,
   makeConnectionField,
   makeField,
   makeInputValueDefinition,
-  wrapNonNull,
   makeNamedType,
   makeNonNullType,
   ModelResourceIDs,
   ResolverResourceIDs,
-  getBaseType,
+  wrapNonNull,
 } from 'graphql-transformer-common';
-import { getDirectiveArguments, Transformer, TransformerContext, SyncConfig, InvalidDirectiveError } from 'graphql-transformer-core';
-import { ModelDirectiveV1 } from '@aws-amplify/graphql-directives';
+import { getDirectiveArguments, InvalidDirectiveError, SyncConfig, Transformer, TransformerContext } from 'graphql-transformer-core';
 import {
+  getFieldsOptionalNonNullableField,
   getNonModelObjectArray,
+  makeAttributeTypeEnum,
   makeCreateInputObject,
   makeDeleteInputObject,
   makeEnumFilterInputObjects,
   makeModelConnectionType,
   makeModelSortDirectionEnumObject,
+  makeModelXConditionInputObject,
   makeModelXFilterInputObject,
   makeNonModelInputObject,
   makeScalarFilterInputs,
   makeSubscriptionField,
   makeUpdateInputObject,
-  makeModelXConditionInputObject,
-  makeAttributeTypeEnum,
-  getFieldsOptionalNonNullableField,
 } from './definitions';
-import { ModelDirectiveArgs, getCreatedAtFieldName, getUpdatedAtFieldName } from './ModelDirectiveArgs';
+import { getCreatedAtFieldName, getUpdatedAtFieldName, ModelDirectiveArgs } from './ModelDirectiveArgs';
 import { ResourceFactory } from './resources';
 
 const METADATA_KEY = 'DynamoDBTransformerMetadata';

@@ -1,35 +1,33 @@
+import { SqlDirective } from '@aws-amplify/graphql-directives';
 import {
   DirectiveWrapper,
   generateGetArgumentsInput,
   getResourceNamesForStrategy,
   InvalidDirectiveError,
-  isSqlStrategy,
   MappingTemplate,
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
-import { SqlDirective } from '@aws-amplify/graphql-directives';
 import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import * as cdk from 'aws-cdk-lib';
+import { DirectiveNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import {
-  obj,
-  str,
-  ref,
-  printBlock,
-  compoundExpression,
-  Expression,
-  set,
-  methodCall,
-  ifElse,
-  toJson,
-  iff,
-  notEquals,
-  not,
-  equals,
-  ret,
   and,
+  compoundExpression,
+  equals,
+  Expression,
+  ifElse,
+  iff,
+  methodCall,
+  not,
+  obj,
+  printBlock,
+  ref,
+  ret,
+  set,
+  str,
+  toJson,
 } from 'graphql-mapping-template';
 import { ResolverResourceIDs, ResourceConstants } from 'graphql-transformer-common';
-import { DirectiveNode, ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
 
 type SqlDirectiveConfiguration = {
   statement: string | undefined;

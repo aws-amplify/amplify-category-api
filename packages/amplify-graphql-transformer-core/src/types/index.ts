@@ -1,11 +1,10 @@
 export {
   ImportAppSyncAPIInputs,
+  ImportedDataSourceConfig,
   ImportedDataSourceType,
   ImportedRDSType,
-  SQL_SCHEMA_FILE_NAME,
   RDSConnectionSecrets,
-  ImportedDataSourceConfig,
   RDSDataSourceConfig,
+  SQL_SCHEMA_FILE_NAME,
 } from './import-appsync-api-types';
-
 export * from './model-datasource-strategies';

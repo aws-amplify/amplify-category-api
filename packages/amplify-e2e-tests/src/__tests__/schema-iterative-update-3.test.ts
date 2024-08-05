@@ -1,15 +1,15 @@
-import * as path from 'path';
 import {
-  createNewProjectDir,
-  initJSProjectWithProfile,
-  deleteProject,
-  deleteProjectDir,
   addApiWithoutSchema,
   addFeatureFlag,
   amplifyPush,
-  updateApiSchema,
   amplifyPushUpdate,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  initJSProjectWithProfile,
+  updateApiSchema,
 } from 'amplify-category-api-e2e-core';
+import * as path from 'path';
 
 describe('Schema iterative update - delete', () => {
   let projectDir: string;

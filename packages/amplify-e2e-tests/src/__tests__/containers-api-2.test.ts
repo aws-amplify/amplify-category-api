@@ -5,12 +5,10 @@ import {
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
-  initJSProjectWithProfile,
   getProjectMeta,
+  initJSProjectWithProfile,
   modifyRestAPI,
 } from 'amplify-category-api-e2e-core';
-import fetch from 'node-fetch';
-import { getAWSExports } from '../aws-exports/awsExports';
 
 async function setupAmplifyProject(cwd: string) {
   await amplifyConfigureProject({

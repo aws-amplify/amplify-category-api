@@ -1,18 +1,18 @@
 import { $TSContext, stateManager } from '@aws-amplify/amplify-cli-core';
-import _ from 'lodash';
+import { printer } from '@aws-amplify/amplify-prompts';
+import { DataSourceAdapter, DataSourceConfig, MySQLDataSourceAdapter } from '@aws-amplify/graphql-schema-generator';
 import {
   getParameterStoreSecretPath,
-  RDSConnectionSecrets,
-  ImportedRDSType,
   ImportedDataSourceConfig,
+  ImportedRDSType,
+  RDSConnectionSecrets,
 } from '@aws-amplify/graphql-transformer-core';
-import { MySQLDataSourceAdapter, DataSourceAdapter, DataSourceConfig } from '@aws-amplify/graphql-schema-generator';
-import { printer } from '@aws-amplify/amplify-prompts';
-import { DeleteFunctionCommand, LambdaClient } from '@aws-sdk/client-lambda';
-import { DeleteRoleCommand, IAMClient } from '@aws-sdk/client-iam';
 import { SqlModelDataSourceSsmDbConnectionConfig } from '@aws-amplify/graphql-transformer-interfaces';
-import { getAppSyncAPIName } from '../amplify-meta-utils';
+import { DeleteRoleCommand, IAMClient } from '@aws-sdk/client-iam';
+import { DeleteFunctionCommand, LambdaClient } from '@aws-sdk/client-lambda';
+import _ from 'lodash';
 import { databaseConfigurationInputWalkthrough } from '../../service-walkthroughs/appSync-rds-db-config';
+import { getAppSyncAPIName } from '../amplify-meta-utils';
 import { SSMClient } from './ssmClient';
 
 const secretNames = ['database', 'host', 'port', 'username', 'password'];

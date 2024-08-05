@@ -1,21 +1,20 @@
+import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import {
   addApiWithoutSchema,
+  apiGenerateSchema,
   createNewProjectDir,
   deleteDBInstance,
   deleteProject,
   deleteProjectDir,
+  getProjectMeta,
   importRDSDatabase,
   initJSProjectWithProfile,
-  apiGenerateSchema,
-  apiGenerateSchemaWithError,
-  getProjectMeta,
   setupRDSInstanceAndData,
 } from 'amplify-category-api-e2e-core';
 import { existsSync, readFileSync, writeFileSync } from 'fs-extra';
 import generator from 'generate-password';
-import { ObjectTypeDefinitionNode, StringValueNode, parse } from 'graphql';
+import { ObjectTypeDefinitionNode, parse, StringValueNode } from 'graphql';
 import path from 'path';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 
 export const testRDSGenerateSchema = (engine: ImportedRDSType, queries: string[]) => {
   describe('RDS Generate Schema tests', () => {

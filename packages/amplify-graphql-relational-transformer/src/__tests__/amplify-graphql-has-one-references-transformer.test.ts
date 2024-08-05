@@ -1,8 +1,8 @@
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { Kind, parse } from 'graphql';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { Kind, parse } from 'graphql';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
 
 test('fails if @hasOne was used on an object that is not a model type', () => {

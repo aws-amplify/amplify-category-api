@@ -1,22 +1,21 @@
-import * as os from 'os';
-import { ImportedRDSType, ImportedDataSourceConfig } from '@aws-amplify/graphql-transformer-core';
-import * as fs from 'fs-extra';
+import { $TSContext, AmplifyError, stateManager } from '@aws-amplify/amplify-cli-core';
+import { prompter } from '@aws-amplify/amplify-prompts';
 import {
-  MySQLDataSourceAdapter,
-  Schema,
-  Engine,
   DataSourceAdapter,
   DataSourceConfig,
+  Engine,
   getHostVpc,
-  provisionSchemaInspectorLambda,
+  MySQLDataSourceAdapter,
   PostgresDataSourceAdapter,
+  provisionSchemaInspectorLambda,
   renderSchema,
+  Schema,
 } from '@aws-amplify/graphql-schema-generator';
-import { readRDSSchema } from './rds-input-utils';
-import { $TSContext, AmplifyError, stateManager, ApiCategoryFacade } from '@aws-amplify/amplify-cli-core';
-import { prompter } from '@aws-amplify/amplify-prompts';
-import { getVpcMetadataLambdaName } from './rds-resources/database-resources';
+import { ImportedDataSourceConfig, ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import * as fs from 'fs-extra';
 import { DocumentNode, parse } from 'graphql';
+import { readRDSSchema } from './rds-input-utils';
+import { getVpcMetadataLambdaName } from './rds-resources/database-resources';
 
 export const writeSchemaFile = (pathToSchemaFile: string, schemaString: string) => {
   fs.ensureFileSync(pathToSchemaFile);

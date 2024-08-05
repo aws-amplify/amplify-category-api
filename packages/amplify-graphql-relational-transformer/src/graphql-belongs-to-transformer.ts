@@ -1,30 +1,30 @@
 /* eslint-disable no-param-reassign */
+import { BelongsToDirective } from '@aws-amplify/graphql-directives';
 import {
   DDB_DB_TYPE,
   DirectiveWrapper,
-  InvalidDirectiveError,
-  TransformerPluginBase,
   generateGetArgumentsInput,
   getStrategyDbTypeFromModel,
   getStrategyDbTypeFromTypeNode,
+  InvalidDirectiveError,
+  TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   ModelDataSourceStrategyDbType,
   TransformerContextProvider,
-  TransformerPreProcessContextProvider,
   TransformerPrepareStepContextProvider,
+  TransformerPreProcessContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { BelongsToDirective } from '@aws-amplify/graphql-directives';
 import {
   DirectiveNode,
   DocumentNode,
   FieldDefinitionNode,
   InterfaceTypeDefinitionNode,
+  Kind,
   NamedTypeNode,
   ObjectTypeDefinitionNode,
-  Kind,
 } from 'graphql';
 import { getBaseType, isListType, isNonNullType, makeField, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
 import produce from 'immer';

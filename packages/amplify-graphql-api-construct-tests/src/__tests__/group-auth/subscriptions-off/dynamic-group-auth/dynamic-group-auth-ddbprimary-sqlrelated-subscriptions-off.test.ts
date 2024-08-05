@@ -1,12 +1,12 @@
-import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as path from 'path';
 
+import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import * as generator from 'generate-password';
-import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
-import { initCDKProject, cdkDestroy } from '../../../../commands';
-import { dbDetailsToModelDataSourceStrategy, TestDefinition, writeStackConfig, writeTestDefinitions } from '../../../../utils';
+import { cdkDestroy, initCDKProject } from '../../../../commands';
 import { SqlDatabaseDetails, SqlDatatabaseController } from '../../../../sql-datatabase-controller';
+import { dbDetailsToModelDataSourceStrategy, TestDefinition, writeStackConfig, writeTestDefinitions } from '../../../../utils';
 import { DURATION_1_HOUR } from '../../../../utils/duration-constants';
 import {
   deployStackAndCreateUsers,

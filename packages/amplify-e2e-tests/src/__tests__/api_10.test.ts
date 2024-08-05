@@ -2,6 +2,7 @@
 import {
   addApi,
   addApiWithoutSchema,
+  addFeatureFlag,
   amplifyPush,
   apiEnableDataStore,
   apiGqlCompile,
@@ -12,9 +13,8 @@ import {
   getProjectMeta,
   getTransformConfig,
   initJSProjectWithProfile,
-  updateApiSchema,
   setCustomRolesConfig,
-  addFeatureFlag,
+  updateApiSchema,
 } from 'amplify-category-api-e2e-core';
 import { existsSync, readFileSync } from 'fs';
 import _ from 'lodash';

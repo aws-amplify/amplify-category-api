@@ -1,7 +1,7 @@
 import { CfnResource, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import { BillingMode, StreamViewType } from 'aws-cdk-lib/aws-dynamodb';
-import { Match, Template } from 'aws-cdk-lib/assertions';
 import { AmplifyDynamoDbTableWrapper, SSEType } from '../amplify-dynamodb-table-wrapper';
 
 describe('AmplifyDynamoDbTable', () => {

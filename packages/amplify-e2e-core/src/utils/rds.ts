@@ -1,24 +1,24 @@
+import { AuthorizeSecurityGroupIngressCommand, EC2Client, RevokeSecurityGroupIngressCommand } from '@aws-sdk/client-ec2';
+import { CreateKeyCommand, KMSClient, ScheduleKeyDeletionCommand } from '@aws-sdk/client-kms';
 import {
-  RDSClient,
   CreateDBInstanceCommand,
   CreateDBInstanceCommandInput,
   DBInstance,
   DeleteDBInstanceCommand,
+  RDSClient,
   waitUntilDBInstanceAvailable,
 } from '@aws-sdk/client-rds';
-import { EC2Client, AuthorizeSecurityGroupIngressCommand, RevokeSecurityGroupIngressCommand } from '@aws-sdk/client-ec2';
+import { CreateSecretCommand, DeleteSecretCommand, GetSecretValueCommand, SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
 import {
-  SSMClient,
   DeleteParametersCommand,
   DeleteParametersCommandInput,
   PutParameterCommand,
   PutParameterCommandInput,
   PutParameterCommandOutput,
+  SSMClient,
 } from '@aws-sdk/client-ssm';
-import { SecretsManagerClient, CreateSecretCommand, DeleteSecretCommand, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
-import { KMSClient, CreateKeyCommand, ScheduleKeyDeletionCommand } from '@aws-sdk/client-kms';
-import { knex } from 'knex';
 import axios from 'axios';
+import { knex } from 'knex';
 import { sleep } from './sleep';
 
 const DEFAULT_DB_INSTANCE_TYPE = 'db.m5.large';

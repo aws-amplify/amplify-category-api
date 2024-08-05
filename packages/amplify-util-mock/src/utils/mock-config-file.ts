@@ -1,5 +1,5 @@
-import * as path from 'path';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import * as path from 'path';
 
 export function getMockConfig(context) {
   const { projectPath } = context.amplify.getEnvInfo();

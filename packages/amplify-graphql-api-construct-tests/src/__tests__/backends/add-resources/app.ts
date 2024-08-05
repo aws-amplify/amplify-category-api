@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
+import 'source-map-support/register';
 // @ts-ignore
 import * as graphql from '@aws-amplify/graphql-api-construct';
 

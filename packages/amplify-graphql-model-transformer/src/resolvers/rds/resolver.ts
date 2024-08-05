@@ -1,25 +1,3 @@
-import path from 'path';
-import { CfnMapping, Duration, Fn } from 'aws-cdk-lib';
-import {
-  Expression,
-  compoundExpression,
-  ifElse,
-  list,
-  methodCall,
-  obj,
-  printBlock,
-  qref,
-  ref,
-  set,
-  str,
-  toJson,
-  not,
-  raw,
-  or,
-  parens,
-  and,
-} from 'graphql-mapping-template';
-import { ResourceConstants } from 'graphql-transformer-common';
 import {
   constructArrayFieldsStatement,
   constructAuthFilterStatement,
@@ -30,22 +8,41 @@ import {
 } from '@aws-amplify/graphql-transformer-core';
 import {
   GraphQLAPIProvider,
+  isSqlModelDataSourceSecretsManagerDbConnectionConfig,
+  isSqlModelDataSourceSsmDbConnectionConfig,
+  isSqlModelDataSourceSsmDbConnectionStringConfig,
+  ProvisionedConcurrencyConfig,
   RDSLayerMapping,
+  RDSSNSTopicMapping,
+  SqlModelDataSourceDbConnectionConfig,
   SubnetAvailabilityZone,
   TransformerContextProvider,
   VpcConfig,
-  ProvisionedConcurrencyConfig,
-  SqlModelDataSourceDbConnectionConfig,
-  isSqlModelDataSourceSsmDbConnectionConfig,
-  isSqlModelDataSourceSecretsManagerDbConnectionConfig,
-  isSqlModelDataSourceSsmDbConnectionStringConfig,
-  RDSSNSTopicMapping,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { IFunction, LayerVersion, Runtime, Alias, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
-import { Construct } from 'constructs';
+import { CfnMapping, Duration, Fn } from 'aws-cdk-lib';
 import { CfnVPCEndpoint } from 'aws-cdk-lib/aws-ec2';
+import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Alias, Function as LambdaFunction, IFunction, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
+import { Construct } from 'constructs';
+import {
+  compoundExpression,
+  Expression,
+  ifElse,
+  list,
+  methodCall,
+  not,
+  obj,
+  printBlock,
+  qref,
+  raw,
+  ref,
+  set,
+  str,
+  toJson,
+} from 'graphql-mapping-template';
+import { ResourceConstants } from 'graphql-transformer-common';
+import path from 'path';
 
 /**
  * Define RDS Lambda operations

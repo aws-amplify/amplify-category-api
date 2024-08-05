@@ -1,17 +1,17 @@
-import path from 'path';
-import { existsSync } from 'fs';
 import {
-  amplifyPush,
-  deleteProject,
-  initJSProjectWithProfile,
   addApiWithoutSchema,
-  updateApiSchema,
+  amplifyPush,
   createNewProjectDir,
+  deleteProject,
   deleteProjectDir,
   getAppSyncApi,
-  getProjectMeta,
   getDDBTable,
+  getProjectMeta,
+  initJSProjectWithProfile,
+  updateApiSchema,
 } from 'amplify-category-api-e2e-core';
+import { existsSync } from 'fs';
+import path from 'path';
 
 describe('amplify add api (GraphQL)', () => {
   let projRoot: string;

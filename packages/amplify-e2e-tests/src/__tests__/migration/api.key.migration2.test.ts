@@ -1,14 +1,13 @@
 import {
-  initJSProjectWithProfile,
-  deleteProject,
+  addApiWithoutSchema,
   amplifyPush,
   amplifyPushUpdate,
-  addFeatureFlag,
-  addApiWithoutSchema,
-  updateApiSchema,
-  getProjectMeta,
   createNewProjectDir,
+  deleteProject,
   deleteProjectDir,
+  getProjectMeta,
+  initJSProjectWithProfile,
+  updateApiSchema,
 } from 'amplify-category-api-e2e-core';
 import { addEnvironment } from '../../environment/env';
 

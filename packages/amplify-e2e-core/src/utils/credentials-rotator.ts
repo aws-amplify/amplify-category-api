@@ -1,9 +1,9 @@
+import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { AssumeRoleCommand, STSClient } from '@aws-sdk/client-sts';
 import { fromContainerMetadata } from '@aws-sdk/credential-providers';
-import { generateRandomShortId, TEST_PROFILE_NAME } from './index';
-import * as ini from 'ini';
 import * as fs from 'fs-extra';
-import { pathManager } from '@aws-amplify/amplify-cli-core';
+import * as ini from 'ini';
+import { generateRandomShortId, TEST_PROFILE_NAME } from './index';
 const refreshCredentials = async (roleArn: string) => {
   const client = new STSClient({
     // Use CodeBuild role to assume test account role. I.e. don't read credentials from process.env

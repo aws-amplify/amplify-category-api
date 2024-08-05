@@ -1,13 +1,5 @@
 import { doAppSyncGraphqlMutation, doAppSyncGraphqlQuery } from '../../../utils';
 import {
-  CreatePrimaryInput,
-  CreateRelatedOneInput,
-  GetPrimaryQuery,
-  GetRelatedManyQuery,
-  GetRelatedOneQuery,
-  UpdatePrimaryInput,
-} from './graphql/API';
-import {
   createPrimary,
   createRelatedMany,
   createRelatedOne,

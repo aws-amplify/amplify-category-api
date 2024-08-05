@@ -1,6 +1,5 @@
-import { prompter, printer, minLength, integer } from '@aws-amplify/amplify-prompts';
-import { ImportedDataSourceType, ImportedDataSourceConfig } from '@aws-amplify/graphql-transformer-core';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { integer, minLength, printer, prompter } from '@aws-amplify/amplify-prompts';
+import { ImportedDataSourceConfig, ImportedDataSourceType, ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { parseDatabaseUrl } from '../utils/database-url';
 
 /**

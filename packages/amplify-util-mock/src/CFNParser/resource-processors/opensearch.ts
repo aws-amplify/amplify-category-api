@@ -1,5 +1,5 @@
-import { CloudFormationParseContext } from '../types';
 import { CloudFormationResource, ProcessedOpenSearchDomain } from '../stack/types';
+import { CloudFormationParseContext } from '../types';
 
 export const openSearchDomainHandler = (
   resourceName: string,

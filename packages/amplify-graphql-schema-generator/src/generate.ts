@@ -1,10 +1,10 @@
-import * as os from 'os';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { DocumentNode } from 'graphql';
-import { Schema, Engine } from './schema-representation';
-import { generateGraphQLSchema } from './schema-generator';
-import { constructRDSGlobalAmplifyInput } from './input';
+import * as os from 'os';
 import { MySQLStringDataSourceAdapter, PostgresStringDataSourceAdapter } from './datasource-adapter';
+import { constructRDSGlobalAmplifyInput } from './input';
+import { generateGraphQLSchema } from './schema-generator';
+import { Engine, Schema } from './schema-representation';
 
 const buildSchemaFromString = (stringSchema: string, engineType: ImportedRDSType): Schema => {
   let schema;

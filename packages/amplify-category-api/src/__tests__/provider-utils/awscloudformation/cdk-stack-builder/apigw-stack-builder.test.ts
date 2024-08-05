@@ -1,8 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AmplifyApigwResourceStack } from '../../../../provider-utils/awscloudformation/cdk-stack-builder/apigw-stack-builder';
-import { CrudOperation, PermissionSetting } from '../../../../provider-utils/awscloudformation/cdk-stack-builder/types';
 import { convertCrudOperationsToCfnPermissions } from '../../../../provider-utils/awscloudformation/cdk-stack-builder/apigw-stack-transform';
+import { CrudOperation, PermissionSetting } from '../../../../provider-utils/awscloudformation/cdk-stack-builder/types';
 
 describe('AmplifyApigwResourceStack', () => {
   test('generateStackResources should synthesize the way we expected', () => {

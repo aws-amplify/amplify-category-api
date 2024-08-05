@@ -1,7 +1,7 @@
-import { DocumentNode, Kind, ObjectTypeDefinitionNode, EnumTypeDefinitionNode } from 'graphql';
+import { DocumentNode, EnumTypeDefinitionNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
 import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
-import { isScalarOrEnum } from '../helpers/is-scalar-or-enum';
 import { getTypeDefinitionsOfKind } from '../helpers/get-type-definitions-of-kind';
+import { isScalarOrEnum } from '../helpers/is-scalar-or-enum';
 
 /**
  * Validates all the @default directive validations

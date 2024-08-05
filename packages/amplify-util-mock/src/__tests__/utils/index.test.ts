@@ -1,7 +1,6 @@
-import { fail } from 'assert';
 import { describe } from 'jest-circus';
-import semver = require('semver/preload');
 import { _isUnsupportedJavaVersion } from '../../utils';
+import semver = require('semver/preload');
 
 type JavaCondition = {
   name: string;

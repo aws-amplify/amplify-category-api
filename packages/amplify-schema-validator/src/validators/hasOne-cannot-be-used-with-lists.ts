@@ -1,6 +1,6 @@
 import { DocumentNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
-import { isListType } from '../helpers/resolve-field-type';
 import { InvalidDirectiveError } from '../exceptions/invalid-directive-error';
+import { isListType } from '../helpers/resolve-field-type';
 
 /**
  * Validates that directive hasOne is not used with a list

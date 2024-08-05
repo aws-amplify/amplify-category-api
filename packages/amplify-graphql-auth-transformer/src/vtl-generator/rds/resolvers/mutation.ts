@@ -1,7 +1,7 @@
-import { compoundExpression, list, methodCall, nul, obj, printBlock, qref, ref, set, str, Expression } from 'graphql-mapping-template';
+import { constructArrayFieldsStatement, constructNonScalarFieldsStatement } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
-import { constructArrayFieldsStatement, constructNonScalarFieldsStatement } from '@aws-amplify/graphql-transformer-core';
+import { compoundExpression, Expression, list, methodCall, nul, obj, printBlock, qref, ref, set, str } from 'graphql-mapping-template';
 import { ConfiguredAuthProviders, RoleDefinition } from '../../../utils';
 import {
   constructAuthorizedInputStatement,

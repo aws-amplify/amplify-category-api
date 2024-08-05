@@ -1,9 +1,9 @@
-import path from 'path';
 import * as fs from 'fs';
 import { parse } from 'graphql';
-import { convertToGraphQLTypeName, printSchema, convertToGraphQLFieldName } from '../schema-generator/generate-schema';
-import { Engine, Field, Model, Schema } from '../schema-representation';
+import path from 'path';
 import { generateGraphQLSchema } from '../schema-generator';
+import { convertToGraphQLFieldName, convertToGraphQLTypeName, printSchema } from '../schema-generator/generate-schema';
+import { Engine, Field, Model, Schema } from '../schema-representation';
 import { getSSLConfig } from '../utils';
 
 describe('Type name conversions', () => {

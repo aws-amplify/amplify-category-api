@@ -1,26 +1,26 @@
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { Auth } from 'aws-amplify';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { CognitoIdentity } from 'aws-sdk';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import { default as S3 } from 'aws-sdk/clients/s3';
-import { ResourceConstants } from 'graphql-transformer-common';
 import gql from 'graphql-tag';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { ResourceConstants } from 'graphql-transformer-common';
 import 'isomorphic-fetch';
 import { default as moment } from 'moment';
 import { CloudFormationClient } from '../CloudFormationClient';
 import {
+  authenticateUser,
   configureAmplify,
   createIdentityPool,
   createUserPool,
   createUserPoolClient,
-  signupUser,
-  authenticateUser,
   setIdentityPoolRoles,
+  signupUser,
 } from '../cognitoUtils';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { IAMHelper } from '../IAMHelper';

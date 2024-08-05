@@ -1,10 +1,10 @@
 import * as cdkDiff from '@aws-cdk/cloudformation-diff';
 import { ResourceImpact } from '@aws-cdk/cloudformation-diff';
+import { migrateSchema } from '../migrate-schema-wrapper';
+import { getNestedStackDiffRules } from '../nested-stack-diff-rules';
 import { getTestCaseRegistry } from '../test-case-registry';
 import { v1transformerProvider } from '../v1-transformer-provider';
 import { v2Transform } from '../v2-transformer-provider';
-import { migrateSchema } from '../migrate-schema-wrapper';
-import { getNestedStackDiffRules } from '../nested-stack-diff-rules';
 
 describe('v1 to v2 migration', () => {
   test.concurrent.each(getTestCaseRegistry())(

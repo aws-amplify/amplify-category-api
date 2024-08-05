@@ -1,8 +1,8 @@
+import * as graphqlTransformer from '@aws-amplify/graphql-transformer';
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { MappingTemplate } from 'aws-cdk-lib/aws-appsync';
-import * as graphqlTransformer from '@aws-amplify/graphql-transformer';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 

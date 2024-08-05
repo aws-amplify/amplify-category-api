@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
-import * as cognito from 'aws-cdk-lib/aws-cognito';
 import { Template } from 'aws-cdk-lib/assertions';
+import * as cognito from 'aws-cdk-lib/aws-cognito';
 import { Construct } from 'constructs';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';

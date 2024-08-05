@@ -1,28 +1,27 @@
+import { ManyToManyDirective } from '@aws-amplify/graphql-directives';
+import { IndexTransformer } from '@aws-amplify/graphql-index-transformer';
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import {
-  DDB_DEFAULT_DATASOURCE_STRATEGY,
   DirectiveWrapper,
-  InvalidDirectiveError,
-  TransformerPluginBase,
   generateGetArgumentsInput,
-  getModelDataSourceNameForTypeName,
   getModelDataSourceStrategy,
+  InvalidDirectiveError,
   isAmplifyDynamoDbModelDataSourceStrategy,
   isDefaultDynamoDbModelDataSourceStrategy,
   isSqlModel,
+  TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
 import {
+  DataSourceStrategiesProvider,
   FieldMapEntry,
   TransformerAuthProvider,
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
+  TransformerPreProcessContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
   TransformerValidationStepContextProvider,
-  TransformerPreProcessContextProvider,
-  DataSourceStrategiesProvider,
-  ModelDataSourceStrategy,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { ManyToManyDirective } from '@aws-amplify/graphql-directives';
 import {
   DirectiveNode,
   DocumentNode,
@@ -45,17 +44,10 @@ import {
   toUpper,
   wrapNonNull,
 } from 'graphql-transformer-common';
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { IndexTransformer } from '@aws-amplify/graphql-index-transformer';
 import produce from 'immer';
 import { WritableDraft } from 'immer/dist/types/types-external';
-import { ManyToManyDirectiveConfiguration, ManyToManyPreProcessContext, ManyToManyRelation } from './types';
-import {
-  getManyToManyConnectionAttributeName,
-  getObjectPrimaryKey,
-  registerManyToManyForeignKeyMappings,
-  validateModelDirective,
-} from './utils';
+import { HasOneTransformer } from './graphql-has-one-transformer';
+import { DDBRelationalResolverGenerator } from './resolver/ddb-generator';
 import { updateTableForConnection } from './resolvers';
 import {
   ensureHasManyConnectionField,
@@ -65,8 +57,13 @@ import {
   getSortKeyFields,
   getSortKeyFieldsNoContext,
 } from './schema';
-import { HasOneTransformer } from './graphql-has-one-transformer';
-import { DDBRelationalResolverGenerator } from './resolver/ddb-generator';
+import { ManyToManyDirectiveConfiguration, ManyToManyPreProcessContext, ManyToManyRelation } from './types';
+import {
+  getManyToManyConnectionAttributeName,
+  getObjectPrimaryKey,
+  registerManyToManyForeignKeyMappings,
+  validateModelDirective,
+} from './utils';
 
 /**
  * ManyToManyTransformer

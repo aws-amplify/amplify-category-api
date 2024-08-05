@@ -1,13 +1,13 @@
-import * as cdk from 'aws-cdk-lib';
+import { setResourceName, SyncUtils } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ModelResourceIDs, ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
-import { ObjectTypeDefinitionNode } from 'graphql';
-import { SyncUtils, setResourceName } from '@aws-amplify/graphql-transformer-core';
-import { AttributeType, CfnTable, ITable, StreamViewType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
+import * as cdk from 'aws-cdk-lib';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
+import { AttributeType, CfnTable, ITable, StreamViewType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnRole } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
+import { ObjectTypeDefinitionNode } from 'graphql';
+import { ModelResourceIDs, ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
 import { DynamoDBModelVTLGenerator, ModelVTLGenerator } from '../resolvers';
 import { ModelResourceGenerator } from './model-resource-generator';
 

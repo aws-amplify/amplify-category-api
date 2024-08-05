@@ -1,16 +1,17 @@
+import { BelongsToDirective, HasManyDirective, HasOneDirective } from '@aws-amplify/graphql-directives';
 import {
   getFieldNameFor,
   getPrimaryKeyFieldNodes,
   getPrimaryKeyFields,
   InvalidDirectiveError,
 } from '@aws-amplify/graphql-transformer-core';
+import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   FieldMapEntry,
   ResolverReferenceEntry,
   TransformerContextProvider,
   TransformerResourceHelperProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   DirectiveNode,
   EnumTypeDefinitionNode,
@@ -31,7 +32,6 @@ import {
   toPascalCase,
   unwrapNonNull,
 } from 'graphql-transformer-common';
-import { BelongsToDirective, HasManyDirective, HasOneDirective } from '@aws-amplify/graphql-directives';
 import {
   BelongsToDirectiveConfiguration,
   HasManyDirectiveConfiguration,

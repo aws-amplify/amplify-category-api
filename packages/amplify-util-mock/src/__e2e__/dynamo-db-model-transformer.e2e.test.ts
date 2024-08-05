@@ -2,7 +2,7 @@ import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
 import { GraphQLClient } from './utils/graphql-client';
-import { deploy, launchDDBLocal, terminateDDB, logDebug } from './utils/index';
+import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
 
 let GRAPHQL_ENDPOINT = undefined;
 let GRAPHQL_CLIENT = undefined;

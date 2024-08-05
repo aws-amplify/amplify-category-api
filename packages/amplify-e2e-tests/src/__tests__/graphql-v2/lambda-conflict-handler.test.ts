@@ -1,18 +1,18 @@
+import { ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
 import {
+  addApiWithBlankSchemaAndConflictDetection,
+  amplifyPush,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
   getAppSyncApi,
   getProjectMeta,
   initJSProjectWithProfile,
-  updateApiSchema,
-  amplifyPush,
-  addApiWithBlankSchemaAndConflictDetection,
-  updateApiConflictHandlerType,
   listAppSyncFunctions,
+  updateApiConflictHandlerType,
   updateApiConflictHandlerTypePerModel,
+  updateApiSchema,
 } from 'amplify-category-api-e2e-core';
-import { ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
 
 const verifyApiExists = async (meta: any, projName: string): Promise<void> => {
   const region = meta.providers.awscloudformation.Region;

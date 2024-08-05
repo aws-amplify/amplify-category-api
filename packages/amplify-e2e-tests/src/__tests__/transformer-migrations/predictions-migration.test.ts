@@ -1,17 +1,15 @@
 import {
-  initJSProjectWithProfile,
-  deleteProject,
-  amplifyPush,
-  amplifyPushUpdate,
-  addFeatureFlag,
-  createRandomName,
-  addS3AndAuthWithAuthOnlyAccess,
-  amplifyPushForce,
   addApiWithoutSchema,
-  updateApiSchema,
-  getProjectMeta,
+  addS3AndAuthWithAuthOnlyAccess,
+  amplifyPush,
+  amplifyPushForce,
   createNewProjectDir,
+  createRandomName,
+  deleteProject,
   deleteProjectDir,
+  getProjectMeta,
+  initJSProjectWithProfile,
+  updateApiSchema,
 } from 'amplify-category-api-e2e-core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';

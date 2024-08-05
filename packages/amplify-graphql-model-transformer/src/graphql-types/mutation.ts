@@ -1,12 +1,12 @@
-import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { DocumentNode, InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
-import { ModelResourceIDs, getBaseType, toPascalCase } from 'graphql-transformer-common';
 import {
   InputFieldWrapper,
   InputObjectDefinitionWrapper,
-  ObjectDefinitionWrapper,
   isDynamoDbModel,
+  ObjectDefinitionWrapper,
 } from '@aws-amplify/graphql-transformer-core';
+import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { DocumentNode, InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
+import { getBaseType, ModelResourceIDs, toPascalCase } from 'graphql-transformer-common';
 import { ModelDirectiveConfiguration } from '../directive';
 import { makeConditionFilterInput } from './common';
 

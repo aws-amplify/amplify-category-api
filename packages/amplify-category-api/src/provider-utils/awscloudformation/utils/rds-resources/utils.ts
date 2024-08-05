@@ -1,11 +1,11 @@
-import { parse, FieldDefinitionNode, ObjectTypeDefinitionNode, visit } from 'graphql';
-import _ from 'lodash';
 import { isSqlStrategy } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceStrategiesProvider,
   ModelDataSourceStrategy,
   SqlDirectiveDataSourceStrategy,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { FieldDefinitionNode, ObjectTypeDefinitionNode, parse, visit } from 'graphql';
+import _ from 'lodash';
 
 export const checkForUnsupportedDirectives = (schema: string, context: DataSourceStrategiesProvider): void => {
   const unsupportedRDSDirectives = ['searchable', 'predictions', 'function', 'manyToMany', 'http', 'mapsTo'];

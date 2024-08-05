@@ -1,4 +1,4 @@
-import { SchemaDefinitionNode, Kind } from 'graphql';
+import { Kind, SchemaDefinitionNode } from 'graphql';
 
 const DEFAULT_SCHEMA_DEFINITION: SchemaDefinitionNode = {
   kind: Kind.SCHEMA_DEFINITION,

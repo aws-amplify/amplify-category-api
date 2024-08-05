@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-import 'source-map-support/register';
-import { App, Stack, Duration } from 'aws-cdk-lib';
+import { App, Duration, Stack } from 'aws-cdk-lib';
+import { CfnIdentityPool, UserPool } from 'aws-cdk-lib/aws-cognito';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { UserPool, CfnIdentityPool } from 'aws-cdk-lib/aws-cognito';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import 'source-map-support/register';
 // @ts-ignore
 import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';
 import * as path from 'path';

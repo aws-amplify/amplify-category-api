@@ -1,9 +1,9 @@
 import { stateManager } from '@aws-amplify/amplify-cli-core';
 import {
   authConfigHasApiKey,
-  getAppSyncAPINames,
-  getAppSyncAPIName,
   ensureNoAppSyncAPIExists,
+  getAppSyncAPIName,
+  getAppSyncAPINames,
 } from '../../../../provider-utils/awscloudformation/utils/amplify-meta-utils';
 
 jest.mock('@aws-amplify/amplify-cli-core');

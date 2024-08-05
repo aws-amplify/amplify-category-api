@@ -1,13 +1,13 @@
+import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import AWS = require('aws-sdk');
 import gql from 'graphql-tag';
-import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
-import { deploy, launchDDBLocal, terminateDDB } from './utils/index';
+import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
 import 'isomorphic-fetch';
+import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
 import { GraphQLClient } from './utils/graphql-client';
+import { deploy, launchDDBLocal, terminateDDB } from './utils/index';
+import AWS = require('aws-sdk');
 
 // to deal with subscriptions in node env
 (global as any).WebSocket = require('ws');

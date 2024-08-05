@@ -1,16 +1,16 @@
 import {
-  doCreateRelatedOne,
-  doCreateRelatedMany,
   doCreatePrimary,
-  doUpdatePrimary,
+  doCreateRelatedMany,
+  doCreateRelatedOne,
   doGetPrimary,
-  doListPrimaries,
-  doUpdateRelatedOne,
-  doGetRelatedOne,
-  doListRelatedOnes,
-  doUpdateRelatedMany,
   doGetRelatedMany,
+  doGetRelatedOne,
+  doListPrimaries,
   doListRelatedManies,
+  doListRelatedOnes,
+  doUpdatePrimary,
+  doUpdateRelatedMany,
+  doUpdateRelatedOne,
 } from '../../graphql-schemas/reference-style-owner-auth/operation-implementations';
 
 // #region Primary as source

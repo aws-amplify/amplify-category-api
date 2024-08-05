@@ -2,13 +2,13 @@ import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import {
   ConflictHandlerType,
+  constructDataSourceStrategies,
   DDB_DEFAULT_DATASOURCE_STRATEGY,
   GraphQLTransform,
-  constructDataSourceStrategies,
   validateModelSchema,
 } from '@aws-amplify/graphql-transformer-core';
-import { DocumentNode, Kind, parse } from 'graphql';
 import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { DocumentNode, Kind, parse } from 'graphql';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
 import { hasGeneratedField } from './test-helpers';
 

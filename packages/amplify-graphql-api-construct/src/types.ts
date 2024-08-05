@@ -1,21 +1,21 @@
-import { Duration, CfnResource, NestedStack } from 'aws-cdk-lib';
+import { CfnResource, Duration, NestedStack } from 'aws-cdk-lib';
 import {
+  BaseDataSource,
+  CfnApiKey,
+  CfnDataSource,
+  CfnFunctionConfiguration,
   CfnGraphQLApi,
   CfnGraphQLSchema,
-  CfnApiKey,
   CfnResolver,
-  CfnFunctionConfiguration,
-  CfnDataSource,
-  IGraphqlApi,
-  MappingTemplate,
-  BaseDataSource,
   Code,
   FunctionRuntime,
+  IGraphqlApi,
+  MappingTemplate,
 } from 'aws-cdk-lib/aws-appsync';
-import { CfnTable, ITable } from 'aws-cdk-lib/aws-dynamodb';
-import { IRole, CfnRole } from 'aws-cdk-lib/aws-iam';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
-import { IFunction, CfnFunction } from 'aws-cdk-lib/aws-lambda';
+import { CfnTable, ITable } from 'aws-cdk-lib/aws-dynamodb';
+import { CfnRole, IRole } from 'aws-cdk-lib/aws-iam';
+import { CfnFunction, IFunction } from 'aws-cdk-lib/aws-lambda';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
 import { AmplifyDynamoDbTableWrapper } from './amplify-dynamodb-table-wrapper';
 import { CustomSqlDataSourceStrategy, ModelDataSourceStrategy } from './model-datasource-strategy-types';

@@ -1,4 +1,4 @@
-import { SQLLambdaModelDataSourceStrategy, ModelDataSourceStrategySqlDbType } from '@aws-amplify/graphql-api-construct';
+import { ModelDataSourceStrategySqlDbType, SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-api-construct';
 import { SqlDatabaseDetails } from '../sql-datatabase-controller';
 
 export const dbDetailsToModelDataSourceStrategy = (

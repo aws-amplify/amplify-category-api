@@ -1,5 +1,5 @@
-import { SyncConfigLAMBDA, ConflictHandlerType } from '../../util/transformConfig';
 import { SyncUtils } from '../../util/syncUtils';
+import { ConflictHandlerType, SyncConfigLAMBDA } from '../../util/transformConfig';
 
 describe('sync resolver config', () => {
   it('creates the correct lambda resolver config', () => {

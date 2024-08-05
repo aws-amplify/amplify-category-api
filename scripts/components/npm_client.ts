@@ -1,7 +1,4 @@
 const execa = require('execa');
-import { writeFile } from 'fs/promises';
-import { EOL } from 'os';
-import * as path from 'path';
 
 /**
  * Type for the response of `npm show <package> --json`

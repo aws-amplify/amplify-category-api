@@ -1,15 +1,15 @@
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import {
-  initJSProjectWithProfile,
-  deleteProject,
-  amplifyPush,
   addApiWithBlankSchemaAndConflictDetection,
-  updateApiSchema,
-  getProjectMeta,
+  amplifyPush,
   createNewProjectDir,
+  deleteProject,
   deleteProjectDir,
+  getProjectMeta,
+  initJSProjectWithProfile,
+  updateApiSchema,
 } from 'amplify-category-api-e2e-core';
 import { API } from 'aws-amplify';
-import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 
 (global as any).fetch = require('node-fetch');
 

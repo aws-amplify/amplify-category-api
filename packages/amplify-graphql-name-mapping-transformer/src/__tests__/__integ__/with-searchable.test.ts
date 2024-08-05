@@ -1,8 +1,8 @@
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 
 const mappedSearchableSchema = /* GraphQL */ `
   type Agenda @model {

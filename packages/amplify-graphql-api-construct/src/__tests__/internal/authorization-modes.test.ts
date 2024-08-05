@@ -1,6 +1,6 @@
+import { Duration } from 'aws-cdk-lib';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { IRole } from 'aws-cdk-lib/aws-iam';
-import { Duration } from 'aws-cdk-lib';
 import { convertAuthorizationModesToTransformerAuthConfig } from '../../internal/authorization-modes';
 
 describe('convertAuthorizationModesToTransformerAuthConfig', () => {

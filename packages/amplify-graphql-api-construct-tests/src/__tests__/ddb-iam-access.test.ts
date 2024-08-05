@@ -1,11 +1,11 @@
-import * as path from 'path';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
-import { AuthConstructStackOutputs } from '../types';
-import { CognitoIdentityPoolCredentialsFactory } from '../cognito-identity-pool-credentials';
+import * as path from 'path';
 import { assumeIamRole } from '../assume-role';
+import { CognitoIdentityPoolCredentialsFactory } from '../cognito-identity-pool-credentials';
+import { cdkDeploy, cdkDestroy, initCDKProject } from '../commands';
 import { CRUDLTester } from '../crudl-tester';
+import { AuthConstructStackOutputs } from '../types';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
 
 jest.setTimeout(DURATION_1_HOUR);

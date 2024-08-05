@@ -1,2 +1,2 @@
-export { constructTransformerChain, constructTransform, executeTransform } from './graphql-transformer';
-export type { TransformerFactoryArgs, TransformConfig, ExecuteTransformConfig } from './graphql-transformer';
+export { constructTransform, constructTransformerChain, executeTransform } from './graphql-transformer';
+export type { ExecuteTransformConfig, TransformConfig, TransformerFactoryArgs } from './graphql-transformer';

@@ -1,4 +1,4 @@
-import { $TSContext, pathManager, stateManager, FeatureFlags, AmplifyError } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, AmplifyError, FeatureFlags, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
 
 /**
  * Shorthand for Feature flag retrieval.
