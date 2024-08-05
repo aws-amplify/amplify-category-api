@@ -12,7 +12,7 @@ import {
   DeleteDBClusterCommand,
   DeleteDBClusterCommandInput,
 } from '@aws-sdk/client-rds';
-import { RDSDataClient, ExecuteStatementCommand, ExecuteStatementCommandInput } from '@aws-sdk/client-rds-data';
+import { RDSDataClient, ExecuteStatementCommand, ExecuteStatementCommandInput, Field } from '@aws-sdk/client-rds-data';
 import generator from 'generate-password';
 import { EC2Client, AuthorizeSecurityGroupIngressCommand, RevokeSecurityGroupIngressCommand } from '@aws-sdk/client-ec2';
 import {
@@ -47,6 +47,23 @@ export type RDSConfig = {
   instanceClass?: string;
   storage?: number;
   publiclyAccessible?: boolean;
+};
+
+export type ClusterInfo = {
+  clusterArn: string;
+  endpoint: string;
+  port: number;
+  dbName: string;
+  secretArn: string;
+  dbInstance: DBInstance;
+};
+
+const getRDSEngineType = (engine: SqlEngine): string => {
+  if (engine == 'postgres') {
+    return 'aurora-postgresql';
+  } else {
+    throw new Error('Unsupported engine type for cluster');
+  }
 };
 
 /**
@@ -139,30 +156,19 @@ export const createRDSInstance = async (
  * @param config Configuration of the database cluster. If password is not passed an RDS managed password will be created.
  * @returns EndPoint address, port and database name of the created RDS cluster.
  */
-export const createRDSCluster = async (
-  config: RDSConfig,
-): Promise<{
-  clusterArn: string;
-  endpoint: string;
-  port: number;
-  dbName: string;
-  password: string;
-  managedSecretArn: string;
-  dbInstance: DBInstance;
-}> => {
+export const createRDSCluster = async (config: RDSConfig): Promise<ClusterInfo> => {
   const rdsClient = new RDSClient({ region: config.region });
   const initialDBName = 'defaultdb';
 
   const params: CreateDBClusterMessage = {
     /** input parameters */
     EnableHttpEndpoint: true,
-    Engine: 'aurora-postgresql',
+    Engine: getRDSEngineType(config.engine),
     DatabaseName: initialDBName,
     DBClusterIdentifier: config.identifier,
     MasterUsername: config.username,
-    MasterUserPassword: config.password,
     // use RDS managed password, then retrieve the password and store in all other credential store options
-    ManageMasterUserPassword: !config.password,
+    ManageMasterUserPassword: true,
     ServerlessV2ScalingConfiguration: {
       MinCapacity: 4,
       MaxCapacity: 10,
@@ -174,7 +180,7 @@ export const createRDSCluster = async (
   const instanceParams: CreateDBInstanceCommandInput = {
     DBInstanceClass: 'db.serverless',
     DBInstanceIdentifier: createInstanceIdentifier(config.identifier),
-    Engine: 'aurora-postgresql',
+    Engine: getRDSEngineType(config.engine),
     DBClusterIdentifier: config.identifier,
     PubliclyAccessible: config.publiclyAccessible ?? true,
   };
@@ -183,6 +189,7 @@ export const createRDSCluster = async (
 
   try {
     const rdsResponse = await rdsClient.send(command);
+
     const availableResponse = await waitUntilDBClusterAvailable(
       {
         maxWaitTime: 3600,
@@ -221,30 +228,12 @@ export const createRDSCluster = async (
       throw new Error('Error in creating a new RDS instance inside the cluster.');
     }
 
-    let password = config.password;
-    let masterUserSecret;
-
-    if (!config.password) {
-      masterUserSecret = rdsResponse.DBCluster?.MasterUserSecret;
-      const secretsManagerClient = new SecretsManagerClient({ region: config.region });
-      const secretManagerCommand = new GetSecretValueCommand({
-        SecretId: masterUserSecret.SecretArn,
-      });
-      const secretsManagerResponse = await secretsManagerClient.send(secretManagerCommand);
-      const { password: managedPassword } = JSON.parse(secretsManagerResponse.SecretString);
-      if (!managedPassword) {
-        throw new Error('Unable to get RDS cluster master user password');
-      }
-      password = managedPassword;
-    }
-
     return {
       clusterArn: dbCluster.DBClusterArn as string,
       endpoint: dbCluster.Endpoint as string,
       port: dbCluster.Port as number,
       dbName: dbCluster.DatabaseName as string,
-      password,
-      managedSecretArn: masterUserSecret?.SecretArn,
+      secretArn: rdsResponse.DBCluster.MasterUserSecret.SecretArn,
       dbInstance: instanceResponse?.DBInstance,
     };
   } catch (error) {
@@ -319,40 +308,25 @@ export const setupRDSInstanceAndData = async (
  * @param queries Initial queries to be executed
  * @returns Endpoint address, port and database name of the created RDS cluster.
  */
-export const setupRDSClusterAndData = async (
-  config: RDSConfig,
-  queries?: string[],
-): Promise<{
-  endpoint: string;
-  port: number;
-  dbName: string;
-  dbInstance: DBInstance;
-  password: string;
-  secretArn: string;
-  managedSecretArn: string;
-}> => {
+
+export const setupRDSClusterAndData = async (config: RDSConfig, queries?: string[]): Promise<ClusterInfo> => {
   console.log(`Creating RDS ${config.engine} DB cluster with identifier ${config.identifier}`);
 
   const dbCluster = await createRDSCluster(config);
 
-  const { secretArn } = await storeDbConnectionConfigWithSecretsManager({
-    region: config.region,
-    username: config.username,
-    password: dbCluster.password,
-    secretName: `${config.identifier}-secret`,
-  });
-
-  if (!secretArn) {
+  if (!dbCluster.secretArn) {
     throw new Error('Failed to store db connection config in secrets manager');
   }
 
   const client = new RDSDataClient({ region: config.region });
 
   // create a new test database with given name
+  const sanitizedDbName = config.dbname.replace(/[^a-zA-Z0-9_]/g, '');
+
   const createDBInput: ExecuteStatementCommandInput = {
     resourceArn: dbCluster.clusterArn,
-    secretArn,
-    sql: `create database ${config.dbname};`,
+    secretArn: dbCluster.secretArn,
+    sql: `create database ${sanitizedDbName}`,
     database: dbCluster.dbName,
   };
 
@@ -369,25 +343,24 @@ export const setupRDSClusterAndData = async (
     try {
       const createTableInput: ExecuteStatementCommandInput = {
         resourceArn: dbCluster.clusterArn,
-        secretArn,
+        secretArn: dbCluster.secretArn,
         sql: query,
-        database: config.dbname,
+        database: sanitizedDbName,
       };
       const createTableResponse = await client.send(new ExecuteStatementCommand(createTableInput));
       console.log('Create table response: ' + JSON.stringify(createTableResponse));
     } catch (err) {
-      console.log(err);
+      throw new Error(`Error in creating tables in test database: ${err.response.json}`);
     }
   });
 
   return {
+    clusterArn: dbCluster.clusterArn,
     endpoint: dbCluster.endpoint,
     port: dbCluster.port,
-    dbName: dbCluster.dbName,
+    dbName: sanitizedDbName,
     dbInstance: dbCluster.dbInstance,
-    password: dbCluster.password,
-    secretArn: secretArn,
-    managedSecretArn: dbCluster?.managedSecretArn,
+    secretArn: dbCluster.secretArn,
   };
 };
 
@@ -423,7 +396,7 @@ export const deleteDBInstance = async (identifier: string, region: string): Prom
     // );
   } catch (error) {
     console.log(error);
-    throw new Error('Error in deleting RDS instance.');
+    throw new Error(`Error in deleting RDS instance: ${error.response.json}`);
   }
 };
 
@@ -450,7 +423,7 @@ export const deleteDBCluster = async (identifier: string, region: string): Promi
     await client.send(command);
   } catch (error) {
     console.log(error);
-    throw new Error(`Error in deleting RDS cluster: ${identifier}`);
+    throw new Error(`Error in deleting RDS cluster ${identifier}: ${error.response.json}`);
   }
 };
 

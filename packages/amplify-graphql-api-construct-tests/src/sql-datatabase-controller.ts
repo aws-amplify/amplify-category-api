@@ -16,6 +16,7 @@ import {
   deleteDBCluster,
   isOptInRegion,
 } from 'amplify-category-api-e2e-core';
+import { SecretsManagerClient, CreateSecretCommand, DeleteSecretCommand, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
 import {
   isSqlModelDataSourceSecretsManagerDbConnectionConfig,
   isSqlModelDataSourceSsmDbConnectionConfig,
@@ -79,10 +80,24 @@ export class SqlDatatabaseController {
     };
     console.log(`Stored db connection config in Secrets manager: ${JSON.stringify(dbConnectionConfigSecretsManager)}`);
 
+    if (this.useDataAPI && !this.options.password) {
+      const secretArn = dbConfig.secretArn;
+      const secretsManagerClient = new SecretsManagerClient({ region: this.options.region });
+      const secretManagerCommand = new GetSecretValueCommand({
+        SecretId: secretArn,
+      });
+      const secretsManagerResponse = await secretsManagerClient.send(secretManagerCommand);
+      const { password: managedPassword } = JSON.parse(secretsManagerResponse.SecretString);
+      if (!managedPassword) {
+        throw new Error('Unable to get RDS cluster master user password');
+      }
+      this.options.password = managedPassword;
+    }
+
     const { secretArn: secretArnWithCustomKey, keyArn } = await storeDbConnectionConfigWithSecretsManager({
       region: this.options.region,
       username: this.options.username,
-      password: dbConfig.password,
+      password: this.options.password,
       secretName: `${this.options.identifier}-secret-custom-key`,
       useCustomEncryptionKey: true,
     });
@@ -107,7 +122,7 @@ export class SqlDatatabaseController {
       port: dbConfig.port,
       databaseName: this.options.dbname,
       username: this.options.username,
-      password: dbConfig.password,
+      password: this.options.password,
     });
     const dbConnectionStringConfigSSM = await storeDbConnectionStringConfig({
       region: this.options.region,
@@ -115,7 +130,7 @@ export class SqlDatatabaseController {
       connectionUri: this.getConnectionUri(
         engine,
         this.options.username,
-        dbConfig.password,
+        this.options.password,
         dbConfig.endpoint,
         dbConfig.port,
         this.options.dbname,
@@ -126,7 +141,7 @@ export class SqlDatatabaseController {
       pathPrefix,
       connectionUri: [
         'mysql://username:password@host:3306/dbname',
-        this.getConnectionUri(engine, this.options.username, dbConfig.password, dbConfig.endpoint, dbConfig.port, this.options.dbname),
+        this.getConnectionUri(engine, this.options.username, this.options.password, dbConfig.endpoint, dbConfig.port, this.options.dbname),
       ],
     });
     const parameters = {
