@@ -1,4 +1,4 @@
-const NodeEnvironment = require('jest-environment-node');
+const NodeEnvironment = require('jest-environment-node').TestEnvironment;
 
 class CLIEnvironment extends NodeEnvironment {
   constructor(config, context) {
