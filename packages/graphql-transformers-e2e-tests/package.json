@@ -63,7 +63,9 @@
   },
   "jest": {
     "transform": {
-      "^.+\\.tsx?$": "ts-jest"
+      "^.+\\.tsx?$": ["ts-jest", {
+        "tsconfig": "<rootDir>/tsconfig.tests.json"
+      }]
     },
     "collectCoverage": true,
     "coverageProvider": "v8",
@@ -101,10 +103,7 @@
       "node"
     ],
     "globals": {
-      "window": {},
-      "ts-jest": {
-        "tsconfig": "<rootDir>/tsconfig.tests.json"
-      }
+      "window": {}
     },
     "coveragePathIgnorePatterns": [
       "/node_modules",

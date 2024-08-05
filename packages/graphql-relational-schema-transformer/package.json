@@ -49,7 +49,9 @@
       "text"
     ],
     "transform": {
-      "^.+\\.tsx?$": "ts-jest"
+      "^.+\\.tsx?$": ["ts-jest", {
+        diagnostics: false
+      }]
     },
     "testURL": "http://localhost",
     "testRegex": "(src/__tests__/.*.test\\.(js|ts))$",
@@ -61,11 +63,6 @@
       "json",
       "node"
     ],
-    "globals": {
-      "ts-jest": {
-        "diagnostics": false
-      }
-    },
     "collectCoverageFrom": [
       "src/**/*.ts"
     ],
