@@ -240,13 +240,11 @@
     "node-fetch": "^2.6.7",
     "cross-fetch": "^2.2.6",
     "trim-newlines": "^3.0.1",
-    "aws-sdk": "^2.1141.0",
     "parse-path": "^5.0.0",
     "parse-url": "^8.1.0",
     "moment-timezone": "^0.5.35",
     "ejs": "^3.1.7",
     "json5": "^2.2.3",
-    "fast-xml-parser": "^4.2.4",
     "semver": "^7.5.2",
     "axios": "^1.6.0",
     "braces": "^3.0.3"
