@@ -1044,14 +1044,15 @@ export const getExpectedTableProperties = (createTableInput: CreateTableCommandI
       BillingMode: createTableInput.BillingMode,
     },
     StreamSpecification: createTableInput.StreamSpecification,
-    ProvisionedThroughput: createTableInput.ProvisionedThroughput,
-    SSEDescription: createTableInput.SSESpecification
-      ? {
-          SSEType: createTableInput.SSESpecification.SSEType || 'KMS',
-          Status: 'ENABLED',
-        }
-      : undefined,
-    DeletionProtectionEnabled: createTableInput.DeletionProtectionEnabled,
+    ProvisionedThroughput: createTableInput.ProvisionedThroughput || { ReadCapacityUnits: 0, WriteCapacityUnits: 0 },
+    SSEDescription:
+      createTableInput.SSESpecification && createTableInput.SSESpecification.Enabled
+        ? {
+            SSEType: createTableInput.SSESpecification.SSEType || 'KMS',
+            Status: 'ENABLED',
+          }
+        : undefined,
+    DeletionProtectionEnabled: createTableInput.DeletionProtectionEnabled || false,
   };
 };
 
@@ -1425,7 +1426,7 @@ const sleep = async (milliseconds: number): Promise<void> => new Promise((resolv
 const importTable = async (tableDef: CustomDDB.Input): Promise<AWSCDKAsyncCustomResource.OnEventResponse> => {
   // TODO: Add import validation
   console.log('Initiating table import process');
-  console.log(`Fetching current state of table ${tableDef.tableName}`)
+  console.log(`Fetching current state of table ${tableDef.tableName}`);
   const describeTableResult = await ddbClient.describeTable({ TableName: tableDef.tableName });
   if (!describeTableResult.Table) {
     throw new Error(`Could not find ${tableDef.tableName} to update`);
