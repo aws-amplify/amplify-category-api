@@ -171,7 +171,7 @@ export class SqlDatatabaseController {
           databaseName: this.options.dbname,
           hostname: dbConfig.endpoint,
           port: dbConfig.port,
-          secretArn: dbConfig.managedSecretArn,
+          secretArn: dbConfig.secretArn,
         },
         connectionUri: dbConnectionStringConfigSSM,
         connectionUriMultiple: dbConnectionStringConfigMultiple,
