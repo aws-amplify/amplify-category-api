@@ -55,9 +55,12 @@
     "testRunner": "amplify-category-api-e2e-core/runner",
     "testEnvironment": "amplify-category-api-e2e-core/environment",
     "transform": {
-      "^.+\\.tsx?$": ["ts-jest", {
-        "diagnostics": false
-      }]
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "diagnostics": false
+        }
+      ]
     },
     "testURL": "http://localhost",
     "testRegex": "(src/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",

@@ -63,9 +63,12 @@
   },
   "jest": {
     "transform": {
-      "^.+\\.tsx?$": ["ts-jest", {
-        "tsconfig": "<rootDir>/tsconfig.tests.json"
-      }]
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "tsconfig": "<rootDir>/tsconfig.tests.json"
+        }
+      ]
     },
     "collectCoverage": true,
     "coverageProvider": "v8",

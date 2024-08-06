@@ -49,9 +49,12 @@
       "text"
     ],
     "transform": {
-      "^.+\\.tsx?$": ["ts-jest", {
-        "diagnostics": false
-      }]
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "diagnostics": false
+        }
+      ]
     },
     "testURL": "http://localhost",
     "testRegex": "(src/__tests__/.*.test\\.(js|ts))$",
