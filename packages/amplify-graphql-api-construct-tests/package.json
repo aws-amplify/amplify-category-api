@@ -100,10 +100,7 @@
       "node"
     ],
     "globals": {
-      "window": {},
-      "ts-jest": {
-        "diagnostics": false
-      }
+      "window": {}
     },
     "coveragePathIgnorePatterns": [
       "/__tests__/",
