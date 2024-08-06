@@ -1,0 +1,16 @@
+{
+  "us-east-1": [
+    {
+      "dbConfig": {
+        "identifier": "IDENTIFIER_VALUE"
+      }
+    }
+  ],
+  "us-west-2": [
+    {
+      "dbConfig": {
+        "identifier": "IDENTIFIER_VALUE"
+      }
+    }
+  ]
+}

@@ -16,6 +16,7 @@ import {
   deleteDBCluster,
   isOptInRegion,
   isDataAPISupported,
+  isCI,
 } from 'amplify-category-api-e2e-core';
 import { SecretsManagerClient, CreateSecretCommand, DeleteSecretCommand, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
 import {
@@ -64,7 +65,8 @@ export class SqlDatatabaseController {
   setupDatabase = async (): Promise<SqlDatabaseDetails> => {
     let dbConfig;
     if (this.useDataAPI) {
-      dbConfig = await setupRDSClusterAndData(this.options, this.setupQueries);
+      const enableLocalTesting = isCI();
+      dbConfig = await setupRDSClusterAndData(enableLocalTesting, this.options, this.setupQueries);
     } else {
       dbConfig = await setupRDSInstanceAndData(this.options, this.setupQueries);
     }

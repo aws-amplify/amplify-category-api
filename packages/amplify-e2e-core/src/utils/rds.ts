@@ -26,6 +26,8 @@ import { SecretsManagerClient, CreateSecretCommand, DeleteSecretCommand, GetSecr
 import { KMSClient, CreateKeyCommand, ScheduleKeyDeletionCommand } from '@aws-sdk/client-kms';
 import { knex } from 'knex';
 import axios from 'axios';
+import fs from 'fs-extra';
+import path from 'path';
 import { sleep } from './sleep';
 
 const DEFAULT_DB_INSTANCE_TYPE = 'db.m5.large';
@@ -308,10 +310,19 @@ export const setupRDSInstanceAndData = async (
  * @returns Endpoint address, port and database name of the created RDS cluster.
  */
 
-export const setupRDSClusterAndData = async (config: RDSConfig, queries?: string[]): Promise<ClusterInfo> => {
+export const setupRDSClusterAndData = async (localTesting: boolean, config: RDSConfig, queries?: string[]): Promise<ClusterInfo> => {
   console.log(`Creating RDS ${config.engine} DB cluster with identifier ${config.identifier}`);
 
-  const dbCluster = await createRDSCluster(config);
+  let dbCluster;
+  localTesting = false;
+  if (!localTesting) {
+    dbCluster = await createRDSCluster(config);
+  } /*else {
+    const repoRoot = path.join(__dirname, '..', '..', '..', '..');
+    const localClusterPath = path.join(repoRoot, 'scripts', 'e2e-test-local-cluster-config.json');
+    const localCluster: ClusterInfo = JSON.parse(fs.readFileSync(localClusterPath, 'utf-8'));
+    dbCluster = 
+  }*/
 
   if (!dbCluster.secretArn) {
     throw new Error('Failed to store db connection config in secrets manager');
