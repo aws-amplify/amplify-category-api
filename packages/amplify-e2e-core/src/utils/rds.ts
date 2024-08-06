@@ -79,7 +79,7 @@ export const createRDSInstance = async (
   dbName: string;
   dbInstance: DBInstance;
   password: string;
-  managedSecretArn: string;
+  secretArn: string;
 }> => {
   const rdsClient = new RDSClient({ region: config.region });
   const params: CreateDBInstanceCommandInput = {
@@ -96,10 +96,10 @@ export const createRDSInstance = async (
     // use RDS managed password, then retrieve the password and store in all other credential store options
     ManageMasterUserPassword: !config.password,
   };
-  const command = new CreateDBInstanceCommand(params);
+  const createInstanceCommand = new CreateDBInstanceCommand(params);
 
   try {
-    const rdsResponse = await rdsClient.send(command);
+    const createInstanceResponse = await rdsClient.send(createInstanceCommand);
 
     const availableResponse = await waitUntilDBInstanceAvailable(
       {
@@ -124,7 +124,7 @@ export const createRDSInstance = async (
     let password = config.password;
     let masterUserSecret;
     if (!config.password) {
-      masterUserSecret = rdsResponse.DBInstance?.MasterUserSecret;
+      masterUserSecret = createInstanceResponse.DBInstance?.MasterUserSecret;
       const secretsManagerClient = new SecretsManagerClient({ region: config.region });
       const secretManagerCommand = new GetSecretValueCommand({
         SecretId: masterUserSecret.SecretArn,
@@ -143,7 +143,7 @@ export const createRDSInstance = async (
       dbName: dbInstance.DBName as string,
       dbInstance,
       password,
-      managedSecretArn: masterUserSecret?.SecretArn,
+      secretArn: masterUserSecret?.SecretArn,
     };
   } catch (error) {
     console.error(error);
@@ -175,7 +175,7 @@ export const createRDSCluster = async (config: RDSConfig): Promise<ClusterInfo> 
     },
   };
 
-  const command = new CreateDBClusterCommand(params);
+  const createClusterCommand = new CreateDBClusterCommand(params);
 
   const instanceParams: CreateDBInstanceCommandInput = {
     DBInstanceClass: 'db.serverless',
@@ -188,7 +188,7 @@ export const createRDSCluster = async (config: RDSConfig): Promise<ClusterInfo> 
   const instanceCommand = new CreateDBInstanceCommand(instanceParams);
 
   try {
-    const rdsResponse = await rdsClient.send(command);
+    const createClusterResponse = await rdsClient.send(createClusterCommand);
 
     const availableResponse = await waitUntilDBClusterAvailable(
       {
@@ -233,7 +233,7 @@ export const createRDSCluster = async (config: RDSConfig): Promise<ClusterInfo> 
       endpoint: dbCluster.Endpoint as string,
       port: dbCluster.Port as number,
       dbName: dbCluster.DatabaseName as string,
-      secretArn: rdsResponse.DBCluster.MasterUserSecret.SecretArn,
+      secretArn: createClusterResponse.DBCluster.MasterUserSecret.SecretArn,
       dbInstance: instanceResponse?.DBInstance,
     };
   } catch (error) {
@@ -252,7 +252,7 @@ export const createRDSCluster = async (config: RDSConfig): Promise<ClusterInfo> 
 export const setupRDSInstanceAndData = async (
   config: RDSConfig,
   queries?: string[],
-): Promise<{ endpoint: string; port: number; dbName: string; dbInstance: DBInstance; password: string; managedSecretArn: string }> => {
+): Promise<{ endpoint: string; port: number; dbName: string; dbInstance: DBInstance; password: string; secretArn: string }> => {
   console.log(`Creating RDS ${config.engine} instance with identifier ${config.identifier}`);
   const dbConfig = await createRDSInstance(config);
 
@@ -330,9 +330,9 @@ export const setupRDSClusterAndData = async (config: RDSConfig, queries?: string
     database: dbCluster.dbName,
   };
 
-  const command = new ExecuteStatementCommand(createDBInput);
+  const createDBCommand = new ExecuteStatementCommand(createDBInput);
   try {
-    const createDBResponse = await client.send(command);
+    const createDBResponse = await client.send(createDBCommand);
     console.log('Create database response: ' + JSON.stringify(createDBResponse));
   } catch (err) {
     console.log(err);
@@ -341,14 +341,14 @@ export const setupRDSClusterAndData = async (config: RDSConfig, queries?: string
   // create the test tables in the test database
   queries?.map(async (query) => {
     try {
-      const createTableInput: ExecuteStatementCommandInput = {
+      const executeStatementInput: ExecuteStatementCommandInput = {
         resourceArn: dbCluster.clusterArn,
         secretArn: dbCluster.secretArn,
         sql: query,
         database: sanitizedDbName,
       };
-      const createTableResponse = await client.send(new ExecuteStatementCommand(createTableInput));
-      console.log('Create table response: ' + JSON.stringify(createTableResponse));
+      const executeStatementResponse = await client.send(new ExecuteStatementCommand(executeStatementInput));
+      console.log('Create table response: ' + JSON.stringify(executeStatementResponse));
     } catch (err) {
       throw new Error(`Error in creating tables in test database: ${err.response.json}`);
     }
