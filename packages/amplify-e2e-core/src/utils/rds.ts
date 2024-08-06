@@ -21,6 +21,8 @@ import {
   PutParameterCommand,
   PutParameterCommandInput,
   PutParameterCommandOutput,
+  GetParameterCommand,
+  GetParametersByPathCommand,
 } from '@aws-sdk/client-ssm';
 import { SecretsManagerClient, CreateSecretCommand, DeleteSecretCommand, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
 import { KMSClient, CreateKeyCommand, ScheduleKeyDeletionCommand } from '@aws-sdk/client-kms';
@@ -314,15 +316,31 @@ export const setupRDSClusterAndData = async (localTesting: boolean, config: RDSC
   console.log(`Creating RDS ${config.engine} DB cluster with identifier ${config.identifier}`);
 
   let dbCluster;
-  localTesting = false;
+  localTesting = true;
   if (!localTesting) {
     dbCluster = await createRDSCluster(config);
-  } /*else {
-    const repoRoot = path.join(__dirname, '..', '..', '..', '..');
-    const localClusterPath = path.join(repoRoot, 'scripts', 'e2e-test-local-cluster-config.json');
-    const localCluster: ClusterInfo = JSON.parse(fs.readFileSync(localClusterPath, 'utf-8'));
-    dbCluster = 
-  }*/
+  } else {
+    try {
+      const repoRoot = path.join(__dirname, '..', '..', '..', '..');
+      const localClusterPath = path.join(repoRoot, 'scripts', 'e2e-test-local-cluster-config.json');
+      const configInfo = JSON.parse(fs.readFileSync(localClusterPath, 'utf-8'));
+      const connectionUri = configInfo.connectionConfigs.connectionUri;
+
+      const ssmClient = new SSMClient({ region: config.region });
+      const getParameterCommand = new GetParametersByPathCommand({ Path: connectionUri });
+      const getParameterResponse = await ssmClient.send(getParameterCommand);
+
+      if (getParameterResponse.Parameters) {
+        getParameterResponse.Parameters.forEach((parameter) => {
+          console.log(parameter);
+        });
+      } else {
+        console.log('NO PARAMETERS FOUND');
+      }
+    } catch (error) {
+      console.log('Error: ', error);
+    }
+  }
 
   if (!dbCluster.secretArn) {
     throw new Error('Failed to store db connection config in secrets manager');
