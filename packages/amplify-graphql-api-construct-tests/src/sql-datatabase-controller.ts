@@ -80,7 +80,7 @@ export class SqlDatatabaseController {
     };
     console.log(`Stored db connection config in Secrets manager: ${JSON.stringify(dbConnectionConfigSecretsManager)}`);
 
-    if (this.useDataAPI && !this.options.password) {
+    if (this.useDataAPI || !this.options.password) {
       const secretArn = dbConfig.secretArn;
       const secretsManagerClient = new SecretsManagerClient({ region: this.options.region });
       const secretManagerCommand = new GetSecretValueCommand({
