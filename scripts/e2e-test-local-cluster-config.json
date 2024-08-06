@@ -1,8 +1,8 @@
 {
-  "clusterArn": "arn:aws:rds:us-west-2:637423428135:cluster:dydylglqks",
-  "endpoint": "dydylglqks.cluster-ct8aeycis380.us-west-2.rds.amazonaws.com",
-  "port": 5432,
-  "dbName": "default_db",
-  "secretArn": "",
-  "dbInstance": null
+  "dbConfig": {
+    "identifier": ""
+  },
+  "connectionConfigs": {
+    "connectionUri": "/BfgiBDcCQYM/test"
+  }
 }
