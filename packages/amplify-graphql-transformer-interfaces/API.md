@@ -389,6 +389,8 @@ export interface SandboxDeploymentIdentifier {
     // (undocumented)
     deploymentType: 'sandbox';
     // (undocumented)
+    name: string;
+    // (undocumented)
     namespace: string;
 }
 

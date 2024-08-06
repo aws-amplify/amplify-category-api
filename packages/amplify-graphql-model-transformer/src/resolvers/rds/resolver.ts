@@ -210,7 +210,7 @@ export const createLayerVersionCustomResource = (
   const resourceName = resourceNames.sqlLayerVersionResolverCustomResource;
 
   // If deployment type is sandbox, use only ${resourceName} as a fixed id.
-  // Otherwise, make the physical ID change each time we do a deployment, so we always check for the latest version. This means we will 
+  // Otherwise, make the physical ID change each time we do a deployment, so we always check for the latest version. This means we will
   // never have a strictly no-op deployment, but the SQL Lambda configuration won't change unless the actual layer value changes.
   let physicalIdValue: string;
   if (isSandboxDeployment(context)) {
@@ -258,7 +258,7 @@ export const createSNSTopicARNCustomResource = (
   const resourceName = resourceNames.sqlSNSTopicARNResolverCustomResource;
 
   // If deployment type is sandbox, use only ${resourceName} as a fixed id.
-  // Otherwise, make the physical ID change each time we do a deployment, so we always check for the latest version. This means we will 
+  // Otherwise, make the physical ID change each time we do a deployment, so we always check for the latest version. This means we will
   // never have a strictly no-op deployment, but the SQL Lambda configuration won't change unless the actual layer value changes.
   let physicalIdValue: string;
   if (isSandboxDeployment(context)) {

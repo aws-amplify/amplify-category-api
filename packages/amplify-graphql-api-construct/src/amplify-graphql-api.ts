@@ -3,12 +3,7 @@ import { Construct } from 'constructs';
 import { ExecuteTransformConfig, executeTransform } from '@aws-amplify/graphql-transformer';
 import { NestedStack, Stack } from 'aws-cdk-lib';
 import { AttributionMetadataStorage, StackMetadataBackendOutputStorageStrategy } from '@aws-amplify/backend-output-storage';
-import {
-  TransformParameters,
-  DeploymentIdentifier,
-  SandboxDeploymentIdentifier,
-  BranchDeploymentIdentifier,
-} from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformParameters, DeploymentIdentifier } from '@aws-amplify/graphql-transformer-interfaces';
 import { graphqlOutputKey } from '@aws-amplify/backend-output-schemas';
 import type { GraphqlOutput, AwsAppsyncAuthenticationType } from '@aws-amplify/backend-output-schemas';
 import { CDKContextKey } from '@aws-amplify/platform-core';
@@ -302,52 +297,35 @@ export class AmplifyGraphqlApi extends Construct {
     const deploymentType = this.node.tryGetContext(CDKContextKey.DEPLOYMENT_TYPE);
     const expectedDeploymentTypes = [this.SANDBOX_DEPLOYMENT_TYPE, this.BRANCH_DEPLOYMENT_TYPE];
 
-    // Throw an error if the deployment type is neither sandbox nor branch.
+    // Log a warning if the deployment type is neither sandbox nor branch.
     if (!expectedDeploymentTypes.includes(deploymentType)) {
-      throw new Error(
-        `${CDKContextKey.DEPLOYMENT_TYPE} must be one of (${expectedDeploymentTypes.join(', ')}). ` +
-        'Please set the deployment type by running:\n' +
-        'cdk --context amplify-backend-type=sandbox\n' +
-        'or\n' +
-        'cdk --context amplify-backend-type=branch'
+      console.warn(
+        `${CDKContextKey.DEPLOYMENT_TYPE} is recommended to be one of (${expectedDeploymentTypes.join(', ')}).\n` +
+          'Consider setting the deployment type by running:\n' +
+          'cdk --context amplify-backend-type=sandbox\n' +
+          'or\n' +
+          'cdk --context amplify-backend-type=branch\n',
       );
     }
 
-    if (deploymentType === this.SANDBOX_DEPLOYMENT_TYPE) {
-      const namespace = this.node.tryGetContext(CDKContextKey.BACKEND_NAMESPACE);
-
-      // Check that namespace is set.
-      if (!namespace) {
-        throw new Error(
-          `${CDKContextKey.BACKEND_NAMESPACE} must be set. ` +
+    // Check namespace and name. Throw an error, if ONLY one of them is set, .
+    const namespace = this.node.tryGetContext(CDKContextKey.BACKEND_NAMESPACE);
+    const name = this.node.tryGetContext(CDKContextKey.BACKEND_NAME);
+    if ((namespace && !name) || (!namespace && name)) {
+      throw new Error(
+        `Both ${CDKContextKey.BACKEND_NAMESPACE} and ${CDKContextKey.BACKEND_NAME} must be set together.\n` +
           'Please set the namespace by running:\n' +
-          'cdk --context amplify-backend-namespace=<namespace>'
-        );
-      }
-
-      return {
-        deploymentType: deploymentType,
-        namespace: namespace,
-      } as SandboxDeploymentIdentifier;
-    } else {
-      const namespace = this.node.tryGetContext(CDKContextKey.BACKEND_NAMESPACE);
-      const name = this.node.tryGetContext(CDKContextKey.BACKEND_NAME);
-
-      // Check that both namespace and name are set.
-      if (!namespace || !name) {
-        throw new Error(
-          `${CDKContextKey.BACKEND_NAMESPACE} and ${CDKContextKey.BACKEND_NAME} must be set. ` +
-          'Please set the namespace and name by running:\n' +
-          'cdk --context amplify-backend-namespace=<namespace> --context amplify-backend-name=<name>'
-        );
-      }
-
-      return {
-        deploymentType: deploymentType,
-        namespace: namespace,
-        name: name,
-      } as BranchDeploymentIdentifier;
+          'cdk --context amplify-backend-namespace=<namespace>\n' +
+          'or the name by running:\n' +
+          'cdk --context amplify-backend-name=<name>\n',
+      );
     }
+
+    return {
+      deploymentType: deploymentType,
+      namespace: namespace,
+      name: name,
+    };
   }
 
   /**

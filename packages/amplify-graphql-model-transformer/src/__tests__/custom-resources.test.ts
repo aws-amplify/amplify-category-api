@@ -1,7 +1,7 @@
-import { createLayerVersionCustomResource, createSNSTopicARNCustomResource } from '@aws-amplify/graphql-model-transformer';
 import { App, Stack } from 'aws-cdk-lib';
 import { SQLLambdaResourceNames } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { createLayerVersionCustomResource, createSNSTopicARNCustomResource } from '../resolvers/rds/resolver';
 
 describe('CustomResources', () => {
   const resourceNames = {
@@ -15,6 +15,7 @@ describe('CustomResources', () => {
       deploymentIdentifier: {
         deploymentType: 'sandbox',
         namespace: 'testNamespace',
+        name: 'testSandboxName',
       },
     },
   } as TransformerContextProvider;
@@ -92,7 +93,7 @@ describe('CustomResources', () => {
   // --------------------------------------------------
   // Tests for branch deployment
   // --------------------------------------------------
-  it ('should create a layer version custom resource with a unique physical ID for branch deployment', () => {
+  it('should create a layer version custom resource with a unique physical ID for branch deployment', () => {
     createLayerVersionCustomResource(stack, resourceNames, branchContext);
 
     // Synthesize stack to get CFN template
@@ -108,12 +109,12 @@ describe('CustomResources', () => {
     // Parse 'Create' and 'Update' properties to extract physicalResourceId
     const createProperties = JSON.parse(customResource.Properties.Create['Fn::Join'][1].join(''));
     const updateProperties = JSON.parse(customResource.Properties.Update['Fn::Join'][1].join(''));
- 
+
     expect(createProperties.physicalResourceId.id).toMatch(layerVersionCustomResourceIdRegex);
     expect(updateProperties.physicalResourceId.id).toMatch(layerVersionCustomResourceIdRegex);
-  })
+  });
 
-  it ('should create a SNS topic ARN custom resource with a unique physical ID for branch deployment', () => {
+  it('should create a SNS topic ARN custom resource with a unique physical ID for branch deployment', () => {
     createSNSTopicARNCustomResource(stack, resourceNames, branchContext);
 
     // Synthesize stack to get CFN template
@@ -132,5 +133,5 @@ describe('CustomResources', () => {
 
     expect(createProperties.physicalResourceId.id).toMatch(snsTopicARNCustomResourceIdRegex);
     expect(updateProperties.physicalResourceId.id).toMatch(snsTopicARNCustomResourceIdRegex);
-  })
+  });
 });

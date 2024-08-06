@@ -13,6 +13,7 @@ export type SynthParameters = {
 export interface SandboxDeploymentIdentifier {
   deploymentType: 'sandbox';
   namespace: string;
+  name: string;
 }
 
 export interface BranchDeploymentIdentifier {
