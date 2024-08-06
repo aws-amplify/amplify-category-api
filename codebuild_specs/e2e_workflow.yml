@@ -1810,111 +1810,110 @@ batch:
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        PerFieldAuthTests_NoneEnvFunctionTransformer_MutationCondition_DefaultValueTransformer
+        PerFieldAuthTests_MutationCondition_DefaultValueTransformer_PerFieldAuthV2TransformerWithFF
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/PerFieldAuthTests.e2e.test.ts|src/__tests__/NoneEnvFunctionTransformer.e2e.test.ts|src/__tests__/MutationCondition.e2e.test.ts|src/__tests__/DefaultValueTransformer.e2e.test.ts
-          CLI_REGION: ap-south-1
+            src/__tests__/PerFieldAuthTests.e2e.test.ts|src/__tests__/MutationCondition.e2e.test.ts|src/__tests__/DefaultValueTransformer.e2e.test.ts|src/__tests__/PerFieldAuthV2TransformerWithFF.e2e.test.ts
+          CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        PerFieldAuthV2TransformerWithFF_PerFieldAuthV2Transformer_BelongsToTransformerV2_RelationalWithAuthV2WithFF
+        PerFieldAuthV2Transformer_BelongsToTransformerV2_RelationalWithAuthV2WithFF_IndexWithAuthV2
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/PerFieldAuthV2TransformerWithFF.e2e.test.ts|src/__tests__/PerFieldAuthV2Transformer.e2e.test.ts|src/__tests__/BelongsToTransformerV2.e2e.test.ts|src/__tests__/RelationalWithAuthV2WithFF.e2e.test.ts
+            src/__tests__/PerFieldAuthV2Transformer.e2e.test.ts|src/__tests__/BelongsToTransformerV2.e2e.test.ts|src/__tests__/RelationalWithAuthV2WithFF.e2e.test.ts|src/__tests__/IndexWithAuthV2.e2e.test.ts
           CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        IndexWithAuthV2_IndexWithAuthV2WithFF_SubscriptionsWithAuthV2WithFF_MultiAuthV2Transformer
+        IndexWithAuthV2WithFF_SubscriptionsWithAuthV2WithFF_MultiAuthV2Transformer_ModelTransformer
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/IndexWithAuthV2.e2e.test.ts|src/__tests__/IndexWithAuthV2WithFF.e2e.test.ts|src/__tests__/SubscriptionsWithAuthV2WithFF.e2e.test.ts|src/__tests__/MultiAuthV2Transformer.e2e.test.ts
+            src/__tests__/IndexWithAuthV2WithFF.e2e.test.ts|src/__tests__/SubscriptionsWithAuthV2WithFF.e2e.test.ts|src/__tests__/MultiAuthV2Transformer.e2e.test.ts|src/__tests__/ModelTransformer.e2e.test.ts
           CLI_REGION: ca-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        ModelTransformer_SubscriptionsWithAuthV2_RelationalWithAuthV2_MapsToTransformer
+        SubscriptionsWithAuthV2_RelationalWithAuthV2_MapsToTransformer_MultiAuthV2TransformerWithFF
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/ModelTransformer.e2e.test.ts|src/__tests__/SubscriptionsWithAuthV2.e2e.test.ts|src/__tests__/RelationalWithAuthV2.e2e.test.ts|src/__tests__/MapsToTransformer.e2e.test.ts
+            src/__tests__/SubscriptionsWithAuthV2.e2e.test.ts|src/__tests__/RelationalWithAuthV2.e2e.test.ts|src/__tests__/MapsToTransformer.e2e.test.ts|src/__tests__/MultiAuthV2TransformerWithFF.e2e.test.ts
           CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        MultiAuthV2TransformerWithFF_AuthV2Transformer_AuthV2ExhaustiveT1B_AuthV2ExhaustiveT1A
+        AuthV2Transformer_AuthV2ExhaustiveT1B_AuthV2ExhaustiveT1A_AuthV2TransformerWithFF
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/MultiAuthV2TransformerWithFF.e2e.test.ts|src/__tests__/AuthV2Transformer.e2e.test.ts|src/__tests__/AuthV2ExhaustiveT1B.test.ts|src/__tests__/AuthV2ExhaustiveT1A.test.ts
+            src/__tests__/AuthV2Transformer.e2e.test.ts|src/__tests__/AuthV2ExhaustiveT1B.test.ts|src/__tests__/AuthV2ExhaustiveT1A.test.ts|src/__tests__/AuthV2TransformerWithFF.e2e.test.ts
           CLI_REGION: eu-north-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        AuthV2TransformerWithFF_SubscriptionsRuntimeFiltering_AuthV2ExhaustiveT2A_AuthV2ExhaustiveT1C
+        SubscriptionsRuntimeFiltering_AuthV2ExhaustiveT2A_AuthV2ExhaustiveT1C_AuthV2ExhaustiveT1D
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/AuthV2TransformerWithFF.e2e.test.ts|src/__tests__/SubscriptionsRuntimeFiltering.e2e.test.ts|src/__tests__/AuthV2ExhaustiveT2A.test.ts|src/__tests__/AuthV2ExhaustiveT1C.test.ts
+            src/__tests__/SubscriptionsRuntimeFiltering.e2e.test.ts|src/__tests__/AuthV2ExhaustiveT2A.test.ts|src/__tests__/AuthV2ExhaustiveT1C.test.ts|src/__tests__/AuthV2ExhaustiveT1D.test.ts
           CLI_REGION: eu-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        AuthV2ExhaustiveT1D_AuthV2ExhaustiveT2B_AuthV2ExhaustiveT2D_AuthV2ExhaustiveT2C
+        AuthV2ExhaustiveT2B_AuthV2ExhaustiveT2D_AuthV2ExhaustiveT2C_RelationalWithAuthV2Redacted
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/AuthV2ExhaustiveT1D.test.ts|src/__tests__/AuthV2ExhaustiveT2B.test.ts|src/__tests__/AuthV2ExhaustiveT2D.test.ts|src/__tests__/AuthV2ExhaustiveT2C.test.ts
+            src/__tests__/AuthV2ExhaustiveT2B.test.ts|src/__tests__/AuthV2ExhaustiveT2D.test.ts|src/__tests__/AuthV2ExhaustiveT2C.test.ts|src/__tests__/RelationalWithAuthV2Redacted.e2e.test.ts
           CLI_REGION: eu-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        RelationalWithAuthV2Redacted_RelationalWithAuthV2NonRedacted_AuthV2TransformerIAM_AuthV2ExhaustiveT3D
+        RelationalWithAuthV2NonRedacted_AuthV2TransformerIAM_AuthV2ExhaustiveT3D_AuthV2ExhaustiveT3C
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/RelationalWithAuthV2Redacted.e2e.test.ts|src/__tests__/RelationalWithAuthV2NonRedacted.e2e.test.ts|src/__tests__/AuthV2TransformerIAM.test.ts|src/__tests__/AuthV2ExhaustiveT3D.test.ts
+            src/__tests__/RelationalWithAuthV2NonRedacted.e2e.test.ts|src/__tests__/AuthV2TransformerIAM.test.ts|src/__tests__/AuthV2ExhaustiveT3D.test.ts|src/__tests__/AuthV2ExhaustiveT3C.test.ts
           CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        AuthV2ExhaustiveT3C_AuthV2ExhaustiveT3B_AuthV2ExhaustiveT3A_SearchableModelTransformerV2
+        AuthV2ExhaustiveT3B_AuthV2ExhaustiveT3A_SearchableModelTransformerV2_SearchableWithAuthV2WithFF
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/AuthV2ExhaustiveT3C.test.ts|src/__tests__/AuthV2ExhaustiveT3B.test.ts|src/__tests__/AuthV2ExhaustiveT3A.test.ts|src/__tests__/SearchableModelTransformerV2.e2e.test.ts
+            src/__tests__/AuthV2ExhaustiveT3B.test.ts|src/__tests__/AuthV2ExhaustiveT3A.test.ts|src/__tests__/SearchableModelTransformerV2.e2e.test.ts|src/__tests__/SearchableWithAuthV2WithFF.e2e.test.ts
           CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
-    - identifier: SearchableWithAuthV2WithFF_SearchableWithAuthV2
+    - identifier: SearchableWithAuthV2
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          TEST_SUITE: >-
-            src/__tests__/SearchableWithAuthV2WithFF.e2e.test.ts|src/__tests__/SearchableWithAuthV2.e2e.test.ts
+          TEST_SUITE: src/__tests__/SearchableWithAuthV2.e2e.test.ts
           CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
@@ -1934,7 +1933,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/HttpTransformerV2.e2e.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: cleanup_e2e_resources
