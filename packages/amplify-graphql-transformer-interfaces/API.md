@@ -190,7 +190,7 @@ export interface DefaultDynamoDbModelDataSourceStrategy extends ModelDataSourceS
 }
 
 // @public (undocumented)
-export type DeploymentIdentifier = SandboxDeploymentIdentifier | BranchDeploymentIdentifier;
+export type DeploymentIdentifier = SandboxDeploymentIdentifier | BranchDeploymentIdentifier | undefined;
 
 // @public (undocumented)
 export interface DynamoDbDataSourceOptions extends DataSourceOptions {

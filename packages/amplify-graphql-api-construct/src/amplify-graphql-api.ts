@@ -3,7 +3,12 @@ import { Construct } from 'constructs';
 import { ExecuteTransformConfig, executeTransform } from '@aws-amplify/graphql-transformer';
 import { NestedStack, Stack } from 'aws-cdk-lib';
 import { AttributionMetadataStorage, StackMetadataBackendOutputStorageStrategy } from '@aws-amplify/backend-output-storage';
-import { TransformParameters, DeploymentIdentifier, SandboxDeploymentIdentifier, BranchDeploymentIdentifier } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  TransformParameters,
+  DeploymentIdentifier,
+  SandboxDeploymentIdentifier,
+  BranchDeploymentIdentifier,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { graphqlOutputKey } from '@aws-amplify/backend-output-schemas';
 import type { GraphqlOutput, AwsAppsyncAuthenticationType } from '@aws-amplify/backend-output-schemas';
 import { CDKContextKey } from '@aws-amplify/platform-core';
@@ -300,12 +305,16 @@ export class AmplifyGraphqlApi extends Construct {
     }
 
     const sandboxDeploymentIdentifier = this.makeSandboxDeploymentIdentifier(deploymentType);
-    if (sandboxDeploymentIdentifier) { return sandboxDeploymentIdentifier }
+    if (sandboxDeploymentIdentifier) {
+      return sandboxDeploymentIdentifier;
+    }
 
     const branchDeploymentIdentifier = this.makeBranchDeploymentIdentifier(deploymentType);
-    if (branchDeploymentIdentifier) { return branchDeploymentIdentifier }
+    if (branchDeploymentIdentifier) {
+      return branchDeploymentIdentifier;
+    }
 
-    console.warn('Encountering an unrecognized deployment type. Default to a branch deployment type.\n');
+    console.warn(`Encountering an unknown deployment type: ${deploymentType}.\n`);
     return undefined;
   }
 
