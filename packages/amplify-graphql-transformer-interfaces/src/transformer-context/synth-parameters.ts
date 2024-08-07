@@ -22,4 +22,4 @@ export interface BranchDeploymentIdentifier {
   name: string;
 }
 
-export type DeploymentIdentifier = SandboxDeploymentIdentifier | BranchDeploymentIdentifier;
+export type DeploymentIdentifier = SandboxDeploymentIdentifier | BranchDeploymentIdentifier | undefined;
