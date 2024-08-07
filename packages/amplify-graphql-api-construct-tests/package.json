@@ -21,7 +21,7 @@
     "build-tests": "tsc --build tsconfig.tests.json"
   },
   "dependencies": {
-    "@aws-amplify/auth-construct-alpha": "^0.5.6",
+    "@aws-amplify/auth-construct": "^1.0.0",
     "@aws-amplify/core": "^2.1.0",
     "@aws-amplify/graphql-api-construct": "1.11.4",
     "@aws-cdk/aws-cognito-identitypool-alpha": "2.129.0-alpha.0",

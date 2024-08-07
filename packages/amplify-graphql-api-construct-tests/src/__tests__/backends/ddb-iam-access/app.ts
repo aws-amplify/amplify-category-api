@@ -3,7 +3,7 @@ import 'source-map-support/register';
 import { App, Stack, Duration, CfnOutput, RemovalPolicy } from 'aws-cdk-lib';
 // @ts-ignore
 import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';
-import { AmplifyAuth } from '@aws-amplify/auth-construct-alpha';
+import { AmplifyAuth } from '@aws-amplify/auth-construct';
 import { AccountPrincipal, Effect, PolicyDocument, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
