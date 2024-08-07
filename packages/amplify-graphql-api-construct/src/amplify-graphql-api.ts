@@ -314,7 +314,7 @@ export class AmplifyGraphqlApi extends Construct {
       return branchDeploymentIdentifier;
     }
 
-    console.warn(`Encountered an unknown deployment type: ${deploymentType}.\n`);
+    console.warn(`Encountered an unknown deployment type: ${deploymentType}.`);
     return undefined;
   }
 
