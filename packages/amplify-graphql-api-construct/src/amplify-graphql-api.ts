@@ -314,7 +314,7 @@ export class AmplifyGraphqlApi extends Construct {
       return branchDeploymentIdentifier;
     }
 
-    console.warn(`Encountering an unknown deployment type: ${deploymentType}.\n`);
+    console.warn(`Encountered an unknown deployment type: ${deploymentType}.\n`);
     return undefined;
   }
 
@@ -360,14 +360,13 @@ export class AmplifyGraphqlApi extends Construct {
     const namespace = this.node.tryGetContext(CDKContextKey.BACKEND_NAMESPACE);
     const name = this.node.tryGetContext(CDKContextKey.BACKEND_NAME);
     if (!namespace || !name) {
-      console.warn(
+      throw new Error(
         `Branch deployment type specified, but missing ${CDKContextKey.BACKEND_NAMESPACE} and/or ${CDKContextKey.BACKEND_NAME}.\n` +
           'Please set the namespace by running:\n' +
           'cdk --context amplify-backend-namespace=<namespace>\n' +
           'and set the name by running:\n' +
           'cdk --context amplify-backend-name=<name>\n',
       );
-      return undefined;
     }
 
     return {
