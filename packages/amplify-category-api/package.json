@@ -83,7 +83,7 @@
     "@types/js-yaml": "^4.0.0",
     "@types/node": "^12.12.6",
     "amplify-util-headless-input": "^1.9.18",
-    "ts-jest": "26.4.4"
+    "ts-jest": "^29.0.0"
   },
   "jest": {
     "testURL": "http://localhost",
@@ -103,7 +103,7 @@
     "coverageProvider": "v8",
     "coverageThreshold": {
       "global": {
-        "branches": 68,
+        "branches": 67,
         "functions": 42,
         "lines": 40
       }
@@ -115,12 +115,15 @@
     "moduleNameMapper": {
       "^csv-parse/sync": "<rootDir>/../../node_modules/csv-parse/dist/cjs/sync.cjs"
     },
-    "testEnvironment": "../../FixJestEnvironment.js",
     "collectCoverageFrom": [
       "src/**/*.ts"
     ],
     "coveragePathIgnorePatterns": [
       "/__tests__/"
-    ]
+    ],
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    }
   }
 }

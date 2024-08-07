@@ -106,14 +106,14 @@
         "tsconfig": "<rootDir>/tsconfig.tests.json"
       }
     },
-    "moduleNameMapper": {
-      "axios": "axios/dist/node/axios.cjs"
-    },
-    "testEnvironment": "../../FixJestEnvironment.js",
     "coveragePathIgnorePatterns": [
       "/node_modules",
       "/__tests__/"
-    ]
+    ],
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    }
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",

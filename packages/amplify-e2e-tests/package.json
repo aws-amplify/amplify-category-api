@@ -112,13 +112,16 @@
       }
     },
     "moduleNameMapper": {
-      "axios": "axios/dist/node/axios.cjs",
       "^csv-parse/sync": "<rootDir>/../../node_modules/csv-parse/dist/cjs/sync.cjs"
     },
     "coveragePathIgnorePatterns": [
       "/node_modules/",
       "/__tests__/"
-    ]
+    ],
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    }
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",

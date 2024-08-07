@@ -95,18 +95,16 @@
       "node"
     ],
     "globals": {
-      "window": {},
-      "ts-jest": {
-        "diagnostics": false
-      }
-    },
-    "moduleNameMapper": {
-      "axios": "axios/dist/node/axios.cjs"
+      "window": {}
     },
     "coveragePathIgnorePatterns": [
       "/__tests__/",
       "/node_modules/"
-    ]
+    ],
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    }
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",
