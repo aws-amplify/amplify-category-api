@@ -27,7 +27,7 @@ test('validatePathName_hasTrailingSlash', () => {
 test('validatePathName_invalidCharacters', () => {
   // setup
   const errorMessage =
-    'Each path part must use characters a-z A-Z 0-9 - and must not be empty.\nOptionally, a path part can be surrounded by { } to denote a path parameter.';
+    'Each path part must use characters a-z A-Z 0-9 - _ : , . and must not be empty.\nOptionally, a path part with characters a-z A-Z 0-9 - _ can be surrounded by { } to denote a path parameter.';
 
   // test
   expect(validatePathName('/invalid+/{char}')).toStrictEqual(errorMessage);

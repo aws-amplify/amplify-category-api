@@ -20,8 +20,8 @@ export const validatePathName = (name: string) => {
 
   // Matches parameterized paths such as /book/{isbn}/page/{pageNum}
   // This regex also catches the above conditions, but those are left in to provide clearer error messages.
-  if (!/^(?:\/(?:[a-zA-Z0-9\-]+|{[a-zA-Z0-9\-]+}))+$/.test(name)) {
-    return 'Each path part must use characters a-z A-Z 0-9 - and must not be empty.\nOptionally, a path part can be surrounded by { } to denote a path parameter.';
+  if (!/^(?:\/(?:[a-zA-Z0-9\-_:,.]+|{[a-zA-Z0-9\-_]+}))+$/.test(name)) {
+    return 'Each path part must use characters a-z A-Z 0-9 - _ : , . and must not be empty.\nOptionally, a path part with characters a-z A-Z 0-9 - _ can be surrounded by { } to denote a path parameter.';
   }
 
   return true;
