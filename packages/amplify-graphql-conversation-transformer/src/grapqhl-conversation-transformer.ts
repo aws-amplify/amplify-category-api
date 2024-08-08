@@ -22,13 +22,12 @@ import {
 import {
   DirectiveNode,
   DocumentNode,
-  EnumTypeDefinitionNode,
   FieldDefinitionNode,
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
   InterfaceTypeDefinitionNode,
   NamedTypeNode,
-  ObjectTypeDefinitionNode,
+  ObjectTypeDefinitionNode
 } from 'graphql';
 import {
   FunctionResourceIDs,
@@ -60,7 +59,7 @@ import { getBedrockModelId } from './utils/bedrock-model-id';
 import { conversationMessageSubscriptionMappingTamplate } from './resolvers/assistant-messages-subscription-resolver';
 import { createConversationModel, ConversationModel } from './graphql-types/session-model';
 import { createMessageModel, MessageModel } from './graphql-types/message-model';
-import { ConversationHandler } from '@aws-amplify/backend-ai/lib/conversation/conversation_handler_construct';
+import { ConversationHandler } from '@aws-amplify/backend-ai'; // /lib/conversation/conversation_handler_construct';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { type ToolDefinition, type Tools, processTools } from './utils/tools';
 
