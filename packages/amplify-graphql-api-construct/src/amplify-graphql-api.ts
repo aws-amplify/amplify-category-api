@@ -330,7 +330,7 @@ export class AmplifyGraphqlApi extends Construct {
 
     const namespace = this.node.tryGetContext(CDKContextKey.BACKEND_NAMESPACE);
     const name = this.node.tryGetContext(CDKContextKey.BACKEND_NAME);
-    if (!namespace || !name) {
+    if ((namespace && !name) || (!namespace && name)) {
       throw new Error(
         `Sandbox deployment type specified, but missing ${CDKContextKey.BACKEND_NAMESPACE} and/or ${CDKContextKey.BACKEND_NAME}.\n` +
           'Please set the namespace by running:\n' +
@@ -359,7 +359,7 @@ export class AmplifyGraphqlApi extends Construct {
 
     const namespace = this.node.tryGetContext(CDKContextKey.BACKEND_NAMESPACE);
     const name = this.node.tryGetContext(CDKContextKey.BACKEND_NAME);
-    if (!namespace || !name) {
+    if ((namespace && !name) || (!namespace && name)) {
       throw new Error(
         `Branch deployment type specified, but missing ${CDKContextKey.BACKEND_NAMESPACE} and/or ${CDKContextKey.BACKEND_NAME}.\n` +
           'Please set the namespace by running:\n' +
