@@ -8,9 +8,10 @@ import { parse, print } from 'graphql';
 import { ConversationTransformer } from '..';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { FunctionTransformer } from '../../../amplify-graphql-function-transformer/src';
-import { QueryDefinition } from 'aws-cdk-lib/aws-logs';
-import { Subscription } from 'aws-cdk-lib/aws-sns';
-import { GraphqlApi } from 'aws-cdk-lib/aws-appsync';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+
+const conversationSchemaTypes = fs.readFileSync(path.join(__dirname,  '../graphql-types/conversation-schema-types.graphql'), 'utf8');
 
 test('conversation route valid schema', () => {
   const authConfig: AppSyncAuthConfiguration = {
@@ -43,22 +44,8 @@ test('conversation route valid schema', () => {
       plus(a: Int, b: Int): Int
     }
 
-    enum ConversationParticipantRole {
-      user
-      assistant
-    }
-
-    interface ConversationMessage {
-      id: ID!
-      conversationId: ID!
-      role: ConversationParticipantRole
-      content: String
-      context: AWSJSON
-      uiComponents: [AWSJSON]
-    }
-
     type Mutation {
-        pirateChat(id: ID, conversationId: ID!, content: String): ConversationMessage
+        pirateChat(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
         @conversation(
           aiModel: "Claude3Haiku",
           functionName: "conversation-handler",
@@ -66,6 +53,8 @@ test('conversation route valid schema', () => {
           tools: [{ name: "getTemperature", description: "does a thing" }, { name: "plus", description: "does a different thing" }]
         )
     }
+
+    ${conversationSchemaTypes}
   `;
 
   const modelTransformer = new ModelTransformer();
@@ -87,7 +76,7 @@ test('conversation route valid schema', () => {
     authTransformer,
   ];
 
-  const processed = new GraphQLTransform({ transformers }).preProcessSchema(parse(inputSchema));
+  // const processed = new GraphQLTransform({ transformers }).preProcessSchema(parse(inputSchema));
   // console.log(print(processed))
 
   const out = testTransform({
@@ -128,28 +117,16 @@ test('conversation route without tools', () => {
       bar: Int
     }
 
-    enum ConversationParticipantRole {
-      user
-      assistant
-    }
-
-    interface ConversationMessage {
-      id: ID!
-      conversationId: ID!
-      role: ConversationParticipantRole
-      content: String
-      context: AWSJSON
-      uiComponents: [AWSJSON]
-    }
-
     type Mutation {
-        pirateChat(id: ID, conversationId: ID!, content: String): ConversationMessage
+        pirateChat(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
         @conversation(
           aiModel: "Claude3Haiku",
           functionName: "conversation-handler",
           systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability."
         )
     }
+
+    ${conversationSchemaTypes}
   `;
 
   const modelTransformer = new ModelTransformer();
@@ -187,8 +164,6 @@ test('conversation route without tools', () => {
   const schema = parse(out.schema);
   validateModelSchema(schema);
   expect(out.schema).toMatchSnapshot();
-  // expect(out.resolvers).toBeDefined();
-  // expect(out.resolvers).toMatchSnapshot();
 });
 
 

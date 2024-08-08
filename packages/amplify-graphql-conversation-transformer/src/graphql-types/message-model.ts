@@ -120,8 +120,8 @@ const makeConversationMessageModel = (
   const conversationId = makeField(referenceFieldName, [], wrapNonNull(makeNamedType('ID')));
   const role = makeField('role', [], makeNamedType('ConversationParticipantRole'));
   const content = makeField('content', [], makeListType(makeNamedType('ContentBlock')));
-  const context = makeField('context', [], makeNamedType('AWSJSON'));
-  const uiComponents = makeField('uiComponents', [], makeListType(makeNamedType('AWSJSON')));
+  const context = makeField('aiContext', [], makeNamedType('AWSJSON'));
+  const uiComponents = makeField('toolConfiguration', [], makeNamedType('ToolConfiguration'));
   const assistantContent = makeField('assistantContent', [], makeListType(makeNamedType('ContentBlock')));
 
   const object = {

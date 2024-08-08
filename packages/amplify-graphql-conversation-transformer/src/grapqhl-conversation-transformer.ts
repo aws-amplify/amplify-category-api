@@ -58,7 +58,7 @@ import { getBedrockModelId } from './utils/bedrock-model-id';
 import { conversationMessageSubscriptionMappingTamplate } from './resolvers/assistant-messages-subscription-resolver';
 import { createConversationModel, ConversationModel } from './graphql-types/session-model';
 import { createMessageModel, MessageModel } from './graphql-types/message-model';
-import { ConversationHandler } from '@aws-amplify/backend-ai';
+import { ConversationHandler } from '@aws-amplify/backend-ai/lib/conversation/conversation_handler_construct';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { type ToolDefinition, type Tools, processTools } from './utils/tools';
 
@@ -77,8 +77,6 @@ export type ConversationDirectiveConfiguration = {
   conversationModel: ConversationModel;
   messageModel: MessageModel;
 };
-
-
 
 export class ConversationTransformer extends TransformerPluginBase {
   private directives: ConversationDirectiveConfiguration[] = [];
@@ -155,7 +153,7 @@ export class ConversationTransformer extends TransformerPluginBase {
 
     const named: NamedTypeNode = {
       kind: 'NamedType',
-      name: { value: 'Conversationmessage', kind: 'Name' },
+      name: { value: 'ConversationMessage', kind: 'Name' },
     };
 
     const conversationDirectiveFields = mutationObjectContainingConversationDirectives[0].fields;
@@ -217,6 +215,7 @@ export class ConversationTransformer extends TransformerPluginBase {
         );
       } else {
         const defaultConversationHandler = new ConversationHandler(functionStack, `${capitalizedFieldName}DefaultConversationHandler`, {
+          // TODO: Pull from directive config
           allowedModels: [
             {
               modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
@@ -353,8 +352,6 @@ export class ConversationTransformer extends TransformerPluginBase {
   };
 
   prepare = (ctx: TransformerPrepareStepContextProvider): void => {
-    // ctx.output.addEnum(makeConversationEventSenderType());
-
     for (const directive of this.directives) {
       // TODO: Add @aws_cognito_user_pools directive to
       // send messages mutation.
@@ -423,41 +420,7 @@ const validate = (config: ConversationDirectiveConfiguration, ctx: TransformerCo
   // TODO: validation logic
 };
 
-const makeConversationEventSenderType = (): EnumTypeDefinitionNode => {
-  /*
-    enum ConversationMessageSender {
-      user
-      assistant
-    }
-  */
-  const conversationMessageSender: EnumTypeDefinitionNode = {
-    kind: 'EnumTypeDefinition',
-    name: {
-      kind: 'Name',
-      value: 'ConversationMessageSender',
-    },
-    values: [
-      {
-        kind: 'EnumValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'user',
-        },
-      },
-      {
-        kind: 'EnumValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'assistant',
-        },
-      },
-    ],
-  };
-  return conversationMessageSender;
-};
-
 // #region AssistantResponse Mutation
-
 const makeAssistantResponseMutationInput = (messageModelName: string): InputObjectTypeDefinitionNode => {
   const inputName = `Create${messageModelName}AssistantInput`;
   return {
@@ -545,10 +508,6 @@ const lambdaArnKey = (name: string, region?: string, accountId?: string): string
 };
 
 // #endregion Resolvers
-
-// TODO: Find best place to set IAM Policy for defined lambda function.
-// It can't be here (?) because the function is deployed in another stack
-// so we can only get an immutable IFunction reference.
 
 const capitalizeFirstLetter = (value: string): string => {
   return value.charAt(0).toUpperCase() + value.slice(1);

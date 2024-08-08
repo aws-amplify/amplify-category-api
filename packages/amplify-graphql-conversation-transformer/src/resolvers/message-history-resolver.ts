@@ -2,10 +2,8 @@ import { MappingTemplate } from "@aws-amplify/graphql-transformer-core";
 import { MappingTemplateProvider } from "@aws-amplify/graphql-transformer-interfaces";
 import { dedent } from 'ts-dedent';
 
-
 export const readHistoryMappingTemplate = (fieldName: string): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
     // TODO: filter to only retrieve messages that have an assistant response.
-    // #set( $ctx.args.filter = { "and": [ { "or": $authRuntimeFilter }, $ctx.args.filter ]} )
     const req = MappingTemplate.inlineTemplateFromString(dedent`
       export function request(ctx) {
         const { conversationId } = ctx.args;
