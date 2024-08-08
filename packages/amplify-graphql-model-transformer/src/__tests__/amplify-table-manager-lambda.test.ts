@@ -1147,7 +1147,7 @@ describe('Custom Resource Lambda Tests', () => {
     });
   });
 
-  test('getExpectedTableProperties', () => {
+  test('getExpectedTableProperties', async () => {
     const mockEvent = {
       ServiceToken: 'mockServiceToken',
       ResponseURL: 'mockResponseURL',
@@ -1215,7 +1215,10 @@ describe('Custom Resource Lambda Tests', () => {
       },
     };
 
-    const tableDef = extractTableInputFromEvent(mockEvent);
+    const mockContext = {
+      invokedFunctionArn: 'mockInvokedFunctionArn',
+    };
+    const tableDef = await extractTableInputFromEvent(mockEvent, mockContext);
     const createTableInput = toCreateTableInput(tableDef);
     const expectedTableProperties = getExpectedTableProperties(createTableInput);
     expect(expectedTableProperties).toMatchSnapshot();
