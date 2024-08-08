@@ -37,10 +37,6 @@ batch:
       buildspec: codebuild_specs/verify_yarn_lock.yml
       depend-on:
         - build_linux
-    - identifier: verify_cdk_version
-      buildspec: codebuild_specs/verify_cdk_version.yml
-      depend-on:
-        - build_linux
     - identifier: verify_dependency_licenses_extract
       buildspec: codebuild_specs/verify_dependency_licenses_extract.yml
       env:

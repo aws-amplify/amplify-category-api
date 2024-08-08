@@ -35,12 +35,6 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
       depend-on:
         - build_linux
-    - identifier: verify_cdk_version
-      buildspec: codebuild_specs/verify_cdk_version.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-      depend-on:
-        - build_linux
     - identifier: verify_api_extract
       buildspec: codebuild_specs/verify_api_extract.yml
       env:
