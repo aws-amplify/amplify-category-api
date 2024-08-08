@@ -79,13 +79,8 @@ const FORCE_REGION_MAP = {
 
 // some tests require additional time, the parent account can handle longer tests (up to 90 minutes)
 const USE_PARENT_ACCOUNT = [
-  'src/__tests__/transformer-migrations/searchable-migration',
   'src/__tests__/graphql-v2/searchable-datastore',
   'src/__tests__/schema-searchable',
-  'src/__tests__/migration/api.key.migration2.test.ts',
-  'src/__tests__/migration/api.key.migration3.test.ts',
-  'src/__tests__/migration/api.key.migration4.test.ts',
-  'src/__tests__/migration/api.key.migration5.test.ts',
   'src/__tests__/FunctionTransformerTestsV2.e2e.test.ts',
 ];
 const TEST_TIMINGS_PATH = join(REPO_ROOT, 'scripts', 'test-timings.data.json');
@@ -100,11 +95,6 @@ const RUN_SOLO: (string | RegExp)[] = [
   'src/__tests__/containers-api-1.test.ts',
   'src/__tests__/containers-api-2.test.ts',
   'src/__tests__/graphql-v2/searchable-datastore.test.ts',
-  'src/__tests__/migration/api.key.migration1.test.ts',
-  'src/__tests__/migration/api.key.migration2.test.ts',
-  'src/__tests__/migration/api.key.migration3.test.ts',
-  'src/__tests__/migration/api.key.migration4.test.ts',
-  'src/__tests__/migration/api.key.migration5.test.ts',
   'src/__tests__/schema-searchable.test.ts',
   'src/__tests__/schema-auth-1.test.ts',
   'src/__tests__/schema-auth-2.test.ts',
@@ -128,9 +118,6 @@ const RUN_SOLO: (string | RegExp)[] = [
   'src/__tests__/schema-model.test.ts',
   'src/__tests__/schema-key.test.ts',
   'src/__tests__/schema-connection.test.ts',
-  'src/__tests__/transformer-migrations/function-migration.test.ts',
-  'src/__tests__/transformer-migrations/searchable-migration.test.ts',
-  'src/__tests__/transformer-migrations/model-migration.test.ts',
   'src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-no-node-to-node.test.ts',
   'src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-had-node-to-node.test.ts',
   /src\/__tests__\/api_1.*\.test\.ts/,

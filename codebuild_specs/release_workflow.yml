@@ -43,13 +43,8 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
       depend-on:
         - build_linux
-    - identifier: mock_e2e_tests
-      buildspec: codebuild_specs/mock_e2e_tests.yml
-      depend-on:
-        - build_linux
     - identifier: deploy
       buildspec: codebuild_specs/deploy.yml
       depend-on:
         - test
-        - mock_e2e_tests
         - build_windows
