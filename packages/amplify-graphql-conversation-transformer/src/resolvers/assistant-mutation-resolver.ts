@@ -1,9 +1,9 @@
-import { MappingTemplate } from "@aws-amplify/graphql-transformer-core";
-import { MappingTemplateProvider } from "@aws-amplify/graphql-transformer-interfaces";
+import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
+import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { dedent } from 'ts-dedent';
 
 export const assistantMutationResolver = (): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
-    const req = MappingTemplate.inlineTemplateFromString(dedent`
+  const req = MappingTemplate.inlineTemplateFromString(dedent`
         import { util } from '@aws-appsync/utils';
         import * as ddb from '@aws-appsync/utils/dynamodb';
 
@@ -40,7 +40,7 @@ export const assistantMutationResolver = (): { req: MappingTemplateProvider; res
         }
     `);
 
-    const res = MappingTemplate.inlineTemplateFromString(dedent`
+  const res = MappingTemplate.inlineTemplateFromString(dedent`
         /**
          * Returns the resolver result
          * @param {import('@aws-appsync/utils').Context} ctx the context
@@ -67,5 +67,5 @@ export const assistantMutationResolver = (): { req: MappingTemplateProvider; res
         }
       `);
 
-    return { req, res };
-  };
+  return { req, res };
+};

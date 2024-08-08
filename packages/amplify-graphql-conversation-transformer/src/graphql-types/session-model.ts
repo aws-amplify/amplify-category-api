@@ -1,14 +1,14 @@
 import { HasManyDirective } from '@aws-amplify/graphql-directives';
 import { DirectiveNode, Kind, ObjectValueNode, FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import {
-    makeDirective,
-    makeArgument,
-    makeValueNode,
-    makeField,
-    makeListType,
-    makeNamedType,
-    wrapNonNull,
-    blankObject,
+  makeDirective,
+  makeArgument,
+  makeValueNode,
+  makeField,
+  makeListType,
+  makeNamedType,
+  wrapNonNull,
+  blankObject,
 } from 'graphql-transformer-common';
 
 export type ConversationModel = {
@@ -28,7 +28,10 @@ export const createConversationModel = (
   const conversationModelDirective = createSessionModelDirective();
   const conversationHasManyMessagesDirective = createSessionModelMessagesFieldHasManyDirective(referenceFieldName);
   const conversationMessagesField = createSessionModelMessagesField(conversationHasManyMessagesDirective, messageModelName);
-  const conversationModel = makeConversationSessionModel(conversationModelName, conversationMessagesField, [conversationAuthDirective, conversationModelDirective]);
+  const conversationModel = makeConversationSessionModel(conversationModelName, conversationMessagesField, [
+    conversationAuthDirective,
+    conversationModelDirective,
+  ]);
 
   return {
     conversationAuthDirective,

@@ -26,11 +26,13 @@ import {
   FieldDefinitionNode,
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
-  InterfaceTypeDefinitionNode, NamedTypeNode,
-  ObjectTypeDefinitionNode
+  InterfaceTypeDefinitionNode,
+  NamedTypeNode,
+  ObjectTypeDefinitionNode,
 } from 'graphql';
 import {
-  FunctionResourceIDs, makeArgument,
+  FunctionResourceIDs,
+  makeArgument,
   makeDirective,
   makeField,
   makeInputValueDefinition,
@@ -39,7 +41,7 @@ import {
   makeNonNullType,
   makeValueNode,
   ResolverResourceIDs,
-  ResourceConstants
+  ResourceConstants,
 } from 'graphql-transformer-common';
 import produce from 'immer';
 import { WritableDraft } from 'immer/dist/internal';
@@ -61,7 +63,6 @@ import { createMessageModel, MessageModel } from './graphql-types/message-model'
 import { ConversationHandler } from '@aws-amplify/backend-ai/lib/conversation/conversation_handler_construct';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { type ToolDefinition, type Tools, processTools } from './utils/tools';
-
 
 export type ConversationDirectiveConfiguration = {
   parent: ObjectTypeDefinitionNode;

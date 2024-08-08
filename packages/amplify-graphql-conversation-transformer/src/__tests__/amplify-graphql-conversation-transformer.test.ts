@@ -11,7 +11,7 @@ import { FunctionTransformer } from '../../../amplify-graphql-function-transform
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-const conversationSchemaTypes = fs.readFileSync(path.join(__dirname,  '../graphql-types/conversation-schema-types.graphql'), 'utf8');
+const conversationSchemaTypes = fs.readFileSync(path.join(__dirname, '../graphql-types/conversation-schema-types.graphql'), 'utf8');
 
 test('conversation route valid schema', () => {
   const authConfig: AppSyncAuthConfiguration = {
@@ -165,10 +165,6 @@ test('conversation route without tools', () => {
   validateModelSchema(schema);
   expect(out.schema).toMatchSnapshot();
 });
-
-
-
-
 
 /*
     id: ID, name: String, metadata: AWSJSON): ConversationSession<name>
