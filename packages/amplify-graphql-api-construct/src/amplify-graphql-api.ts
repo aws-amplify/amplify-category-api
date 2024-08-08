@@ -3,9 +3,15 @@ import { Construct } from 'constructs';
 import { ExecuteTransformConfig, executeTransform } from '@aws-amplify/graphql-transformer';
 import { NestedStack, Stack } from 'aws-cdk-lib';
 import { AttributionMetadataStorage, StackMetadataBackendOutputStorageStrategy } from '@aws-amplify/backend-output-storage';
-import { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  TransformParameters,
+  DeploymentIdentifier,
+  SandboxDeploymentIdentifier,
+  BranchDeploymentIdentifier,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { graphqlOutputKey } from '@aws-amplify/backend-output-schemas';
 import type { GraphqlOutput, AwsAppsyncAuthenticationType } from '@aws-amplify/backend-output-schemas';
+import { CDKContextKey } from '@aws-amplify/platform-core';
 import {
   AppsyncFunction,
   DataSourceOptions,
@@ -130,6 +136,16 @@ export class AmplifyGraphqlApi extends Construct {
   private readonly stackType = 'api-AppSync';
 
   /**
+   * Constant representing sandbox deployment type.
+   */
+  private readonly SANDBOX_DEPLOYMENT_TYPE = 'sandbox';
+
+  /**
+   * Constant representing branch deployment type.
+   */
+  private readonly BRANCH_DEPLOYMENT_TYPE = 'branch';
+
+  /**
    * New AmplifyGraphqlApi construct, this will create an appsync api with authorization, a schema, and all necessary resolvers, functions,
    * and datasources.
    * @param scope the scope to create this construct within.
@@ -185,6 +201,8 @@ export class AmplifyGraphqlApi extends Construct {
 
     const assetProvider = new AssetProvider(this);
 
+    const deploymentIdentifier = this.getDeploymentIdentifier();
+
     const mergedTranslationBehavior = {
       ...defaultTranslationBehavior,
       ...(translationBehavior ?? {}),
@@ -203,6 +221,7 @@ export class AmplifyGraphqlApi extends Construct {
         amplifyEnvironmentName: amplifyEnvironmentName,
         apiName: props.apiName ?? id,
         ...authSynthParameters,
+        deploymentIdentifier,
       },
       schema: definition.schema,
       userDefinedSlots: parseUserDefinedSlots(separatedFunctionSlots),
@@ -273,6 +292,88 @@ export class AmplifyGraphqlApi extends Construct {
     }
 
     outputStorageStrategy.addBackendOutputEntry(graphqlOutputKey, output);
+  }
+
+  /**
+   * Create a deployment identifier.
+   * @returns the deployment identifier or undefined.
+   */
+  private getDeploymentIdentifier(): DeploymentIdentifier | undefined {
+    const deploymentType = this.node.tryGetContext(CDKContextKey.DEPLOYMENT_TYPE);
+    if (!deploymentType) {
+      return undefined;
+    }
+
+    const sandboxDeploymentIdentifier = this.makeSandboxDeploymentIdentifier(deploymentType);
+    if (sandboxDeploymentIdentifier) {
+      return sandboxDeploymentIdentifier;
+    }
+
+    const branchDeploymentIdentifier = this.makeBranchDeploymentIdentifier(deploymentType);
+    if (branchDeploymentIdentifier) {
+      return branchDeploymentIdentifier;
+    }
+
+    console.warn(`Encountered an unknown deployment type: ${deploymentType}.`);
+    return undefined;
+  }
+
+  /**
+   * Create a sandbox deployment identifier from the context.
+   * @param deploymentType the deployment type.
+   * @returns the sandbox deployment identifier.
+   */
+  private makeSandboxDeploymentIdentifier(deploymentType: string): SandboxDeploymentIdentifier | undefined {
+    if (deploymentType !== this.SANDBOX_DEPLOYMENT_TYPE) {
+      return undefined;
+    }
+
+    const namespace = this.node.tryGetContext(CDKContextKey.BACKEND_NAMESPACE);
+    const name = this.node.tryGetContext(CDKContextKey.BACKEND_NAME);
+    if ((namespace && !name) || (!namespace && name)) {
+      throw new Error(
+        `Sandbox deployment type specified, but missing ${CDKContextKey.BACKEND_NAMESPACE} and/or ${CDKContextKey.BACKEND_NAME}.\n` +
+          'Please set the namespace by running:\n' +
+          'cdk --context amplify-backend-namespace=<namespace>\n' +
+          'and set the name by running:\n' +
+          'cdk --context amplify-backend-name=<name>\n',
+      );
+    }
+
+    return {
+      deploymentType: this.SANDBOX_DEPLOYMENT_TYPE,
+      namespace,
+      name,
+    };
+  }
+
+  /**
+   * Create a branch deployment identifier from the context.
+   * @param deploymentType the deployment type.
+   * @returns the branch deployment identifier.
+   */
+  private makeBranchDeploymentIdentifier(deploymentType: string): BranchDeploymentIdentifier | undefined {
+    if (deploymentType !== this.BRANCH_DEPLOYMENT_TYPE) {
+      return undefined;
+    }
+
+    const namespace = this.node.tryGetContext(CDKContextKey.BACKEND_NAMESPACE);
+    const name = this.node.tryGetContext(CDKContextKey.BACKEND_NAME);
+    if ((namespace && !name) || (!namespace && name)) {
+      throw new Error(
+        `Branch deployment type specified, but missing ${CDKContextKey.BACKEND_NAMESPACE} and/or ${CDKContextKey.BACKEND_NAME}.\n` +
+          'Please set the namespace by running:\n' +
+          'cdk --context amplify-backend-namespace=<namespace>\n' +
+          'and set the name by running:\n' +
+          'cdk --context amplify-backend-name=<name>\n',
+      );
+    }
+
+    return {
+      deploymentType: this.BRANCH_DEPLOYMENT_TYPE,
+      namespace,
+      name,
+    };
   }
 
   /**

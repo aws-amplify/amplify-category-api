@@ -7,4 +7,19 @@ export type SynthParameters = {
   identityPoolId?: string;
   adminRoles?: string[];
   enableIamAccess?: boolean;
+  deploymentIdentifier?: DeploymentIdentifier;
 };
+
+export interface SandboxDeploymentIdentifier {
+  deploymentType: 'sandbox';
+  namespace: string;
+  name: string;
+}
+
+export interface BranchDeploymentIdentifier {
+  deploymentType: 'branch';
+  namespace: string;
+  name: string;
+}
+
+export type DeploymentIdentifier = SandboxDeploymentIdentifier | BranchDeploymentIdentifier | undefined;

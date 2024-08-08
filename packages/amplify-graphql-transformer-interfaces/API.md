@@ -146,6 +146,16 @@ export interface AssetProvider {
     provide: (scope: Construct, name: string, props: AssetProps) => S3Asset;
 }
 
+// @public (undocumented)
+export interface BranchDeploymentIdentifier {
+    // (undocumented)
+    deploymentType: 'branch';
+    // (undocumented)
+    name: string;
+    // (undocumented)
+    namespace: string;
+}
+
 // Warning: (ae-forgotten-export) The symbol "NoneDataSourceProvider" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -178,6 +188,9 @@ export interface DefaultDynamoDbModelDataSourceStrategy extends ModelDataSourceS
     // (undocumented)
     readonly provisionStrategy: 'DEFAULT';
 }
+
+// @public (undocumented)
+export type DeploymentIdentifier = SandboxDeploymentIdentifier | BranchDeploymentIdentifier | undefined;
 
 // @public (undocumented)
 export interface DynamoDbDataSourceOptions extends DataSourceOptions {
@@ -372,6 +385,16 @@ export interface S3MappingTemplateProvider {
 }
 
 // @public (undocumented)
+export interface SandboxDeploymentIdentifier {
+    // (undocumented)
+    deploymentType: 'sandbox';
+    // (undocumented)
+    name: string;
+    // (undocumented)
+    namespace: string;
+}
+
+// @public (undocumented)
 export interface SearchableDataSourceOptions extends DataSourceOptions {
     // (undocumented)
     readonly serviceRole: IRole;
@@ -502,6 +525,7 @@ export type SynthParameters = {
     identityPoolId?: string;
     adminRoles?: string[];
     enableIamAccess?: boolean;
+    deploymentIdentifier?: DeploymentIdentifier;
 };
 
 // @public (undocumented)
