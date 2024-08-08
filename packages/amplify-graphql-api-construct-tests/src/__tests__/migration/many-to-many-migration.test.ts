@@ -61,7 +61,7 @@ describe('Many-to-many Migration', () => {
             id: ID!
             title: String!
             content: String
-            tags: [PostTags] @hasMany(references: ["postId"], indexName: "byPost")
+            tags: [PostTags] @hasMany(references: ["postId"])
           }
         `,
         strategy: {
@@ -75,7 +75,7 @@ describe('Many-to-many Migration', () => {
           type Tag @model @auth(rules: [{ allow: public }]) {
             id: ID!
             label: String!
-            posts: [PostTags] @hasMany(references: ["tagId"], indexName: "byTag")
+            posts: [PostTags] @hasMany(references: ["tagId"])
           }
         `,
         strategy: {
@@ -87,10 +87,10 @@ describe('Many-to-many Migration', () => {
       postTags: {
         schema: /* GraphQL */ `
           type PostTags @model @auth(rules: [{ allow: public }]) {
-            postId: ID @index(name: "byPost")
-            tagId: ID @index(name: "byTag")
-            post: Post @belongsTo(references: ["postId"])
-            tag: Tag @belongsTo(references: ["tagId"])
+            postId: ID
+            tagId: ID
+            post: Post @belongsTo(references: ["postId"], overrideIndexName: "byPost")
+            tag: Tag @belongsTo(references: ["tagId"], overrideIndexName: "byTag")
           }
         `,
         strategy: {
