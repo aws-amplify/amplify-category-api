@@ -1,5 +1,5 @@
-import { MappingTemplate } from "@aws-amplify/graphql-transformer-core";
-import { MappingTemplateProvider } from "@aws-amplify/graphql-transformer-interfaces";
+import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
+import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { dedent } from 'ts-dedent';
 
 export const writeMessageToTableMappingTemplate = (fieldName: string): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {

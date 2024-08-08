@@ -1,9 +1,9 @@
-import { MappingTemplate } from "@aws-amplify/graphql-transformer-core";
-import { MappingTemplateProvider } from "@aws-amplify/graphql-transformer-interfaces";
+import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
+import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { dedent } from 'ts-dedent';
 
 export const conversationMessageSubscriptionMappingTamplate = (): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
-    const req = MappingTemplate.inlineTemplateFromString(dedent`
+  const req = MappingTemplate.inlineTemplateFromString(dedent`
       export function request(ctx) {
         ctx.stash.hasAuth = true;
         const isAuthorized = false;
@@ -41,7 +41,7 @@ export const conversationMessageSubscriptionMappingTamplate = (): { req: Mapping
       }
     `);
 
-    const res = MappingTemplate.inlineTemplateFromString(dedent`
+  const res = MappingTemplate.inlineTemplateFromString(dedent`
       import { util, extensions } from '@aws-appsync/utils';
 
       export function response(ctx) {
@@ -51,5 +51,5 @@ export const conversationMessageSubscriptionMappingTamplate = (): { req: Mapping
       }
     `);
 
-    return { req, res };
-  };
+  return { req, res };
+};

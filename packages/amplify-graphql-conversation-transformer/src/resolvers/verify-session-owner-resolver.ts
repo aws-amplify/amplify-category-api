@@ -1,9 +1,9 @@
-import { MappingTemplate } from "@aws-amplify/graphql-transformer-core";
-import { MappingTemplateProvider } from "@aws-amplify/graphql-transformer-interfaces";
+import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
+import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { dedent } from 'ts-dedent';
 
 export const verifySessionOwnerMappingTemplate = (): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
-    const req = MappingTemplate.inlineTemplateFromString(dedent`
+  const req = MappingTemplate.inlineTemplateFromString(dedent`
       export function request(ctx) {
         const { authFilter } = ctx.stash;
 
@@ -24,7 +24,7 @@ export const verifySessionOwnerMappingTemplate = (): { req: MappingTemplateProvi
       }
       `);
 
-    const res = MappingTemplate.inlineTemplateFromString(dedent`
+  const res = MappingTemplate.inlineTemplateFromString(dedent`
       export function response(ctx) {
         if (ctx.error) {
           util.error(ctx.error.message, ctx.error.type);
@@ -37,5 +37,5 @@ export const verifySessionOwnerMappingTemplate = (): { req: MappingTemplateProvi
         return null;
       }`);
 
-    return { req, res };
-  };
+  return { req, res };
+};

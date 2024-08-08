@@ -1,10 +1,10 @@
-import { MappingTemplate } from "@aws-amplify/graphql-transformer-core";
-import { MappingTemplateProvider } from "@aws-amplify/graphql-transformer-interfaces";
+import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
+import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { dedent } from 'ts-dedent';
 
 export const readHistoryMappingTemplate = (fieldName: string): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
-    // TODO: filter to only retrieve messages that have an assistant response.
-    const req = MappingTemplate.inlineTemplateFromString(dedent`
+  // TODO: filter to only retrieve messages that have an assistant response.
+  const req = MappingTemplate.inlineTemplateFromString(dedent`
       export function request(ctx) {
         const { conversationId } = ctx.args;
         const { authFilter } = ctx.stash;
@@ -30,7 +30,7 @@ export const readHistoryMappingTemplate = (fieldName: string): { req: MappingTem
       }
       `);
 
-    const res = MappingTemplate.inlineTemplateFromString(dedent`
+  const res = MappingTemplate.inlineTemplateFromString(dedent`
       export function response(ctx) {
         if (ctx.error) {
           util.error(ctx.error.message, ctx.error.type);
@@ -48,5 +48,5 @@ export const readHistoryMappingTemplate = (fieldName: string): { req: MappingTem
         return { items };
       }`);
 
-    return { req, res };
-  };
+  return { req, res };
+};

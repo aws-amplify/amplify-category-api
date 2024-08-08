@@ -29,12 +29,13 @@ export const createMessageModel = (
   const messageModelDirective = createMessageModelDirective();
   const messageBelongsToConversationDirective = createMessageSessionFieldBelongsToDirective(referenceFieldName);
   const messageConversationField = createMessageSessionField(messageBelongsToConversationDirective, conversationModelName);
-  const messageModel = makeConversationMessageModel(messageModelName, messageConversationField, referenceFieldName, [
-    messageModelDirective,
-    messageAuthDirective,
-  ],
-  conversationMessageInterface
-);
+  const messageModel = makeConversationMessageModel(
+    messageModelName,
+    messageConversationField,
+    referenceFieldName,
+    [messageModelDirective, messageAuthDirective],
+    conversationMessageInterface,
+  );
 
   return {
     messageAuthDirective,

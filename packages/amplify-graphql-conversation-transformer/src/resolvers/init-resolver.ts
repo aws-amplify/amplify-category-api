@@ -1,9 +1,9 @@
-import { MappingTemplate } from "@aws-amplify/graphql-transformer-core";
-import { MappingTemplateProvider } from "@aws-amplify/graphql-transformer-interfaces";
+import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
+import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { dedent } from 'ts-dedent';
 
 export const initMappingTemplate = (): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
-    const req = MappingTemplate.inlineTemplateFromString(dedent`
+  const req = MappingTemplate.inlineTemplateFromString(dedent`
       export function request(ctx) {
         ctx.stash.defaultValues = ctx.stash.defaultValues ?? {};
         ctx.stash.defaultValues.id = util.autoId();
@@ -16,10 +16,10 @@ export const initMappingTemplate = (): { req: MappingTemplateProvider; res: Mapp
         };
       }`);
 
-    const res = MappingTemplate.inlineTemplateFromString(dedent`
+  const res = MappingTemplate.inlineTemplateFromString(dedent`
       export function response(ctx) {
         return {};
       }`);
 
-    return { req, res };
-  };
+  return { req, res };
+};

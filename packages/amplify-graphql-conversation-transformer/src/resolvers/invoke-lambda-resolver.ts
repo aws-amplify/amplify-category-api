@@ -1,20 +1,20 @@
-import { TransformerContextProvider, MappingTemplateProvider } from "@aws-amplify/graphql-transformer-interfaces";
-import { MappingTemplate } from "@aws-amplify/graphql-transformer-core";
-import { ObjectTypeDefinitionNode } from "graphql";
-import { ConversationDirectiveConfiguration } from "../grapqhl-conversation-transformer";
-import { getBedrockModelId } from "../utils/bedrock-model-id";
+import { TransformerContextProvider, MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
+import { ObjectTypeDefinitionNode } from 'graphql';
+import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-transformer';
+import { getBedrockModelId } from '../utils/bedrock-model-id';
 import { dedent } from 'ts-dedent';
 
 export const invokeLambdaMappingTemplate = (
-    config: ConversationDirectiveConfiguration,
-    ctx: TransformerContextProvider,
-  ): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
-    const { responseMutationInputTypeName, responseMutationName, aiModel } = config;
-    const modelId = getBedrockModelId(aiModel);
-    const toolDefinitions = JSON.stringify(config.toolSpec);
+  config: ConversationDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
+  const { responseMutationInputTypeName, responseMutationName, aiModel } = config;
+  const modelId = getBedrockModelId(aiModel);
+  const toolDefinitions = JSON.stringify(config.toolSpec);
 
-    const systemPrompt = config.systemPrompt;
-    const req = MappingTemplate.inlineTemplateFromString(dedent`
+  const systemPrompt = config.systemPrompt;
+  const req = MappingTemplate.inlineTemplateFromString(dedent`
       export function request(ctx) {
         const { args, identity, source, request, prev } = ctx;
         const { typeName, fieldName } = ctx.stash;
@@ -48,7 +48,7 @@ export const invokeLambdaMappingTemplate = (
         };
       }`);
 
-    const res = MappingTemplate.inlineTemplateFromString(dedent`
+  const res = MappingTemplate.inlineTemplateFromString(dedent`
       export function response(ctx) {
         let success = true;
         if (ctx.error) {
@@ -67,5 +67,5 @@ export const invokeLambdaMappingTemplate = (
         return response;
       }`);
 
-    return { req, res };
-  };
+  return { req, res };
+};
