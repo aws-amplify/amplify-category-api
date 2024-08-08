@@ -25,22 +25,8 @@ type Query {
   listConversationMessagePirateChats(filter: ModelConversationMessagePirateChatFilterInput, limit: Int, nextToken: String): ModelConversationMessagePirateChatConnection
 }
 
-enum ConversationMessageSender {
-  user
-  assistant
-}
-
-interface ConversationMessage {
-  id: ID!
-  sessionId: ID!
-  sender: ConversationMessageSender
-  content: String
-  context: AWSJSON
-  uiComponents: [AWSJSON]
-}
-
 type Mutation {
-  pirateChat(id: ID, sessionId: ID!, content: String): ConversationMessage
+  pirateChat(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
   createAssistantResponsePirateChat(input: CreateConversationMessagePirateChatAssistantInput!): ConversationMessagePirateChat @aws_cognito_user_pools
   createFoo(input: CreateFooInput!, condition: ModelFooConditionInput): Foo
   deleteFoo(input: DeleteFooInput!, condition: ModelFooConditionInput): Foo
@@ -50,14 +36,169 @@ type Mutation {
   deleteConversationMessagePirateChat(input: DeleteConversationMessagePirateChatInput!, condition: ModelConversationMessagePirateChatConditionInput): ConversationMessagePirateChat
 }
 
+enum ConversationParticipantRole {
+  user
+  assistant
+}
+
+interface ConversationMessage {
+  id: ID!
+  conversationId: ID!
+  role: ConversationParticipantRole
+  content: [ContentBlock]
+  context: AWSJSON
+  toolConfiguration: ToolConfiguration
+}
+
+input DocumentBlockSourceInput {
+  bytes: String
+}
+
+input DocumentBlockInput {
+  format: String!
+  name: String!
+  source: DocumentBlockSourceInput!
+}
+
+input ImageBlockSourceInput {
+  bytes: String
+}
+
+input ImageBlockInput {
+  format: String!
+  source: ImageBlockSourceInput!
+}
+
+input ToolResultContentBlockInput {
+  document: DocumentBlockInput
+  image: ImageBlockInput
+  json: AWSJSON
+  text: String
+}
+
+input ToolResultBlockInput {
+  content: [ToolResultContentBlockInput!]!
+  toolUseId: String!
+  status: String
+}
+
+type DocumentBlockSource {
+  bytes: String
+}
+
+type DocumentBlock {
+  format: String!
+  name: String!
+  source: DocumentBlockSource!
+}
+
+type ImageBlock {
+  format: String!
+  source: ImageBlockSource!
+}
+
+type ImageBlockSource {
+  bytes: String
+}
+
+type ToolUseBlock {
+  toolUseId: String!
+  name: String!
+  input: AWSJSON!
+}
+
+type ToolResultContentBlock {
+  document: DocumentBlock
+  image: ImageBlock
+  json: AWSJSON
+  text: String
+}
+
+type ToolResultBlock {
+  content: [ToolResultContentBlock!]!
+  toolUseId: String!
+  status: String
+}
+
+type ContentBlockText {
+  text: String
+}
+
+type ContentBlockImage {
+  image: ImageBlock
+}
+
+type ContentBlockDocument {
+  document: DocumentBlock
+}
+
+type ContentBlockToolUse {
+  toolUse: ToolUseBlock
+}
+
+type ContentBlockToolResult {
+  toolResult: ToolResultBlock
+}
+
+input ContentBlockInput {
+  text: String
+  document: DocumentBlockInput
+  image: ImageBlockInput
+  toolResult: ToolResultBlockInput
+}
+
+type ContentBlock {
+  text: String
+  document: DocumentBlock
+  image: ImageBlock
+  toolResult: ToolResultBlock
+  toolUse: ToolUseBlock
+}
+
+input ToolConfigurationInput {
+  tools: [ToolInput]
+}
+
+input ToolInput {
+  toolSpec: ToolSpecificationInput
+}
+
+input ToolSpecificationInput {
+  name: String!
+  description: String
+  inputSchema: ToolInputSchemaInput!
+}
+
+input ToolInputSchemaInput {
+  json: AWSJSON
+}
+
+type ToolConfiguration {
+  tools: [Tool]
+}
+
+type Tool {
+  toolSpec: ToolSpecification
+}
+
+type ToolSpecification {
+  name: String!
+  description: String
+  inputSchema: ToolInputSchema!
+}
+
+type ToolInputSchema {
+  json: AWSJSON
+}
+
 input CreateConversationMessagePirateChatAssistantInput {
   conversationId: ID
-  content: String
+  content: [ContentBlockInput]
   associatedUserMessageId: ID
 }
 
 type Subscription {
-  onCreateAssistantResponsePirateChat(sessionId: ID): ConversationMessagePirateChat @aws_subscribe(mutations: [\\"createAssistantResponsePirateChat\\"]) @aws_cognito_user_pools
+  onCreateAssistantResponsePirateChat(conversationId: ID): ConversationMessagePirateChat @aws_subscribe(mutations: [\\"createAssistantResponsePirateChat\\"]) @aws_cognito_user_pools
   onCreateConversationMessagePirateChat(filter: ModelSubscriptionConversationMessagePirateChatFilterInput, owner: String): ConversationMessagePirateChat @aws_subscribe(mutations: [\\"createConversationMessagePirateChat\\"])
 }
 
@@ -73,13 +214,13 @@ type ConversationPirateChat {
 
 type ConversationMessagePirateChat implements ConversationMessage {
   id: ID!
-  sessionId: ID!
-  session: ConversationPirateChat
-  sender: ConversationMessageSender
-  content: String
-  context: AWSJSON
-  uiComponents: [AWSJSON]
-  assistantContent: String
+  conversationId: ID!
+  conversation: ConversationPirateChat
+  role: ConversationParticipantRole
+  content: [ContentBlock]
+  aiContext: AWSJSON
+  toolConfiguration: ToolConfiguration
+  assistantContent: [ContentBlock]
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
   owner: String
@@ -313,19 +454,16 @@ type ModelConversationMessagePirateChatConnection {
   nextToken: String
 }
 
-input ModelConversationMessageSenderInput {
-  eq: ConversationMessageSender
-  ne: ConversationMessageSender
+input ModelConversationParticipantRoleInput {
+  eq: ConversationParticipantRole
+  ne: ConversationParticipantRole
 }
 
 input ModelConversationMessagePirateChatFilterInput {
   id: ModelIDInput
-  sessionId: ModelIDInput
-  sender: ModelConversationMessageSenderInput
-  content: ModelStringInput
-  context: ModelStringInput
-  uiComponents: ModelStringInput
-  assistantContent: ModelStringInput
+  conversationId: ModelIDInput
+  role: ModelConversationParticipantRoleInput
+  aiContext: ModelStringInput
   createdAt: ModelStringInput
   updatedAt: ModelStringInput
   and: [ModelConversationMessagePirateChatFilterInput]
@@ -335,12 +473,9 @@ input ModelConversationMessagePirateChatFilterInput {
 }
 
 input ModelConversationMessagePirateChatConditionInput {
-  sessionId: ModelIDInput
-  sender: ModelConversationMessageSenderInput
-  content: ModelStringInput
-  context: ModelStringInput
-  uiComponents: ModelStringInput
-  assistantContent: ModelStringInput
+  conversationId: ModelIDInput
+  role: ModelConversationParticipantRoleInput
+  aiContext: ModelStringInput
   and: [ModelConversationMessagePirateChatConditionInput]
   or: [ModelConversationMessagePirateChatConditionInput]
   not: ModelConversationMessagePirateChatConditionInput
@@ -351,12 +486,12 @@ input ModelConversationMessagePirateChatConditionInput {
 
 input CreateConversationMessagePirateChatInput {
   id: ID
-  sessionId: ID!
-  sender: ConversationMessageSender
-  content: String
-  context: AWSJSON
-  uiComponents: [AWSJSON]
-  assistantContent: String
+  conversationId: ID!
+  role: ConversationParticipantRole
+  content: [ContentBlockInput]
+  aiContext: AWSJSON
+  toolConfiguration: ToolConfigurationInput
+  assistantContent: [ContentBlockInput]
 }
 
 input DeleteConversationMessagePirateChatInput {
@@ -365,12 +500,9 @@ input DeleteConversationMessagePirateChatInput {
 
 input ModelSubscriptionConversationMessagePirateChatFilterInput {
   id: ModelSubscriptionIDInput
-  sessionId: ModelSubscriptionIDInput
-  sender: ModelSubscriptionStringInput
-  content: ModelSubscriptionStringInput
-  context: ModelSubscriptionStringInput
-  uiComponents: ModelSubscriptionStringInput
-  assistantContent: ModelSubscriptionStringInput
+  conversationId: ModelSubscriptionIDInput
+  role: ModelSubscriptionStringInput
+  aiContext: ModelSubscriptionStringInput
   createdAt: ModelSubscriptionStringInput
   updatedAt: ModelSubscriptionStringInput
   and: [ModelSubscriptionConversationMessagePirateChatFilterInput]
@@ -382,28 +514,7 @@ input ModelSubscriptionConversationMessagePirateChatFilterInput {
 
 exports[`conversation route valid schema 2`] = `
 Object {
-  "ConversationMessagePirateChat.owner.req.vtl": "$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})",
-  "ConversationMessagePirateChat.owner.res.vtl": "## [Start] Parse owner field auth for Get. **
-#if( $util.isList($ctx.source.owner) )
-  #set( $ownerEntitiesList = [] )
-  #set( $owner = $ctx.source.owner )
-  #foreach( $entities in $owner )
-    #set( $ownerEntities = $entities.split(\\"::\\") )
-    #set( $ownerEntitiesLastIdx = $ownerEntities.size() - 1 )
-    #set( $ownerEntitiesLast = $ownerEntities[$ownerEntitiesLastIdx] )
-    $util.qr($ownerEntitiesList.add($ownerEntitiesLast))
-  #end
-  $util.qr($ctx.source.owner.put($ownerEntitiesList))
-  $util.toJson($ownerEntitiesList)
-#else
-  #set( $ownerEntities = $ctx.source.owner.split(\\"::\\") )
-  #set( $ownerEntitiesLastIdx = $ownerEntities.size() - 1 )
-  #set( $ownerEntitiesLast = $ownerEntities[$ownerEntitiesLastIdx] )
-  $util.qr($ctx.source.put(\\"owner\\", $ownerEntitiesLast))
-  $util.toJson($ctx.source.owner)
-#end
-## [End] Parse owner field auth for Get. **",
-  "ConversationMessagePirateChat.session.auth.1.req.vtl": "## [Start] Check if subscriptions is protected. **
+  "ConversationMessagePirateChat.conversation.auth.1.req.vtl": "## [Start] Check if subscriptions is protected. **
 #if( $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) == \\"Mutation\\" )
   $util.qr($ctx.stash.put(\\"deniedField\\", true))
 #end
@@ -440,10 +551,10 @@ $util.unauthorized()
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **",
-  "ConversationMessagePirateChat.session.req.vtl": "#if( $ctx.stash.deniedField )
+  "ConversationMessagePirateChat.conversation.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"sessionId\\"), $ctx.source.sessionId) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"conversationId\\"), $ctx.source.conversationId) )
 #if( $util.isNull($partitionKeyValue) )
   #return
 #else
@@ -465,7 +576,7 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
   #end
   $util.toJson($GetRequest)
 #end",
-  "ConversationMessagePirateChat.session.res.vtl": "#if( $ctx.error )
+  "ConversationMessagePirateChat.conversation.res.vtl": "#if( $ctx.error )
 $util.error($ctx.error.message, $ctx.error.type)
 #else
   #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
@@ -482,6 +593,27 @@ $util.unauthorized()
     $util.toJson(null)
   #end
 #end",
+  "ConversationMessagePirateChat.owner.req.vtl": "$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})",
+  "ConversationMessagePirateChat.owner.res.vtl": "## [Start] Parse owner field auth for Get. **
+#if( $util.isList($ctx.source.owner) )
+  #set( $ownerEntitiesList = [] )
+  #set( $owner = $ctx.source.owner )
+  #foreach( $entities in $owner )
+    #set( $ownerEntities = $entities.split(\\"::\\") )
+    #set( $ownerEntitiesLastIdx = $ownerEntities.size() - 1 )
+    #set( $ownerEntitiesLast = $ownerEntities[$ownerEntitiesLastIdx] )
+    $util.qr($ownerEntitiesList.add($ownerEntitiesLast))
+  #end
+  $util.qr($ctx.source.owner.put($ownerEntitiesList))
+  $util.toJson($ownerEntitiesList)
+#else
+  #set( $ownerEntities = $ctx.source.owner.split(\\"::\\") )
+  #set( $ownerEntitiesLastIdx = $ownerEntities.size() - 1 )
+  #set( $ownerEntitiesLast = $ownerEntities[$ownerEntitiesLastIdx] )
+  $util.qr($ctx.source.put(\\"owner\\", $ownerEntitiesLast))
+  $util.toJson($ctx.source.owner)
+#end
+## [End] Parse owner field auth for Get. **",
   "ConversationPirateChat.messages.auth.1.req.vtl": "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
@@ -531,7 +663,7 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
   #set( $query = {
   \\"expression\\": \\"#partitionKey = :partitionKey\\",
   \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"sessionId\\"
+      \\"#partitionKey\\": \\"conversationId\\"
   },
   \\"expressionValues\\": {
       \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue)
@@ -659,7 +791,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
       #set( $ownerClaimsList0 = [] )
       $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
       $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
-      #set( $ownerAllowedFields0 = [\\"id\\",\\"sessionId\\",\\"session\\",\\"sender\\",\\"content\\",\\"context\\",\\"uiComponents\\",\\"assistantContent\\"] )
+      #set( $ownerAllowedFields0 = [\\"id\\",\\"conversationId\\",\\"conversation\\",\\"role\\",\\"content\\",\\"aiContext\\",\\"toolConfiguration\\",\\"assistantContent\\"] )
       #set( $isAuthorizedOnAllFields0 = true )
       #if( $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
         #if( $isAuthorizedOnAllFields0 )
@@ -2023,22 +2155,8 @@ exports[`conversation route without tools 1`] = `
   owner: String
 }
 
-enum ConversationMessageSender {
-  user
-  assistant
-}
-
-interface ConversationMessage {
-  id: ID!
-  sessionId: ID!
-  sender: ConversationMessageSender
-  content: String
-  context: AWSJSON
-  uiComponents: [AWSJSON]
-}
-
 type Mutation {
-  pirateChat(id: ID, sessionId: ID!, content: String): ConversationMessage
+  pirateChat(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
   createAssistantResponsePirateChat(input: CreateConversationMessagePirateChatAssistantInput!): ConversationMessagePirateChat @aws_cognito_user_pools
   createFoo(input: CreateFooInput!, condition: ModelFooConditionInput): Foo
   deleteFoo(input: DeleteFooInput!, condition: ModelFooConditionInput): Foo
@@ -2048,14 +2166,169 @@ type Mutation {
   deleteConversationMessagePirateChat(input: DeleteConversationMessagePirateChatInput!, condition: ModelConversationMessagePirateChatConditionInput): ConversationMessagePirateChat
 }
 
+enum ConversationParticipantRole {
+  user
+  assistant
+}
+
+interface ConversationMessage {
+  id: ID!
+  conversationId: ID!
+  role: ConversationParticipantRole
+  content: [ContentBlock]
+  context: AWSJSON
+  toolConfiguration: ToolConfiguration
+}
+
+input DocumentBlockSourceInput {
+  bytes: String
+}
+
+input DocumentBlockInput {
+  format: String!
+  name: String!
+  source: DocumentBlockSourceInput!
+}
+
+input ImageBlockSourceInput {
+  bytes: String
+}
+
+input ImageBlockInput {
+  format: String!
+  source: ImageBlockSourceInput!
+}
+
+input ToolResultContentBlockInput {
+  document: DocumentBlockInput
+  image: ImageBlockInput
+  json: AWSJSON
+  text: String
+}
+
+input ToolResultBlockInput {
+  content: [ToolResultContentBlockInput!]!
+  toolUseId: String!
+  status: String
+}
+
+type DocumentBlockSource {
+  bytes: String
+}
+
+type DocumentBlock {
+  format: String!
+  name: String!
+  source: DocumentBlockSource!
+}
+
+type ImageBlock {
+  format: String!
+  source: ImageBlockSource!
+}
+
+type ImageBlockSource {
+  bytes: String
+}
+
+type ToolUseBlock {
+  toolUseId: String!
+  name: String!
+  input: AWSJSON!
+}
+
+type ToolResultContentBlock {
+  document: DocumentBlock
+  image: ImageBlock
+  json: AWSJSON
+  text: String
+}
+
+type ToolResultBlock {
+  content: [ToolResultContentBlock!]!
+  toolUseId: String!
+  status: String
+}
+
+type ContentBlockText {
+  text: String
+}
+
+type ContentBlockImage {
+  image: ImageBlock
+}
+
+type ContentBlockDocument {
+  document: DocumentBlock
+}
+
+type ContentBlockToolUse {
+  toolUse: ToolUseBlock
+}
+
+type ContentBlockToolResult {
+  toolResult: ToolResultBlock
+}
+
+input ContentBlockInput {
+  text: String
+  document: DocumentBlockInput
+  image: ImageBlockInput
+  toolResult: ToolResultBlockInput
+}
+
+type ContentBlock {
+  text: String
+  document: DocumentBlock
+  image: ImageBlock
+  toolResult: ToolResultBlock
+  toolUse: ToolUseBlock
+}
+
+input ToolConfigurationInput {
+  tools: [ToolInput]
+}
+
+input ToolInput {
+  toolSpec: ToolSpecificationInput
+}
+
+input ToolSpecificationInput {
+  name: String!
+  description: String
+  inputSchema: ToolInputSchemaInput!
+}
+
+input ToolInputSchemaInput {
+  json: AWSJSON
+}
+
+type ToolConfiguration {
+  tools: [Tool]
+}
+
+type Tool {
+  toolSpec: ToolSpecification
+}
+
+type ToolSpecification {
+  name: String!
+  description: String
+  inputSchema: ToolInputSchema!
+}
+
+type ToolInputSchema {
+  json: AWSJSON
+}
+
 input CreateConversationMessagePirateChatAssistantInput {
   conversationId: ID
-  content: String
+  content: [ContentBlockInput]
   associatedUserMessageId: ID
 }
 
 type Subscription {
-  onCreateAssistantResponsePirateChat(sessionId: ID): ConversationMessagePirateChat @aws_subscribe(mutations: [\\"createAssistantResponsePirateChat\\"]) @aws_cognito_user_pools
+  onCreateAssistantResponsePirateChat(conversationId: ID): ConversationMessagePirateChat @aws_subscribe(mutations: [\\"createAssistantResponsePirateChat\\"]) @aws_cognito_user_pools
   onCreateConversationMessagePirateChat(filter: ModelSubscriptionConversationMessagePirateChatFilterInput, owner: String): ConversationMessagePirateChat @aws_subscribe(mutations: [\\"createConversationMessagePirateChat\\"])
 }
 
@@ -2071,13 +2344,13 @@ type ConversationPirateChat {
 
 type ConversationMessagePirateChat implements ConversationMessage {
   id: ID!
-  sessionId: ID!
-  session: ConversationPirateChat
-  sender: ConversationMessageSender
-  content: String
-  context: AWSJSON
-  uiComponents: [AWSJSON]
-  assistantContent: String
+  conversationId: ID!
+  conversation: ConversationPirateChat
+  role: ConversationParticipantRole
+  content: [ContentBlock]
+  aiContext: AWSJSON
+  toolConfiguration: ToolConfiguration
+  assistantContent: [ContentBlock]
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
   owner: String
@@ -2320,19 +2593,16 @@ type ModelConversationMessagePirateChatConnection {
   nextToken: String
 }
 
-input ModelConversationMessageSenderInput {
-  eq: ConversationMessageSender
-  ne: ConversationMessageSender
+input ModelConversationParticipantRoleInput {
+  eq: ConversationParticipantRole
+  ne: ConversationParticipantRole
 }
 
 input ModelConversationMessagePirateChatFilterInput {
   id: ModelIDInput
-  sessionId: ModelIDInput
-  sender: ModelConversationMessageSenderInput
-  content: ModelStringInput
-  context: ModelStringInput
-  uiComponents: ModelStringInput
-  assistantContent: ModelStringInput
+  conversationId: ModelIDInput
+  role: ModelConversationParticipantRoleInput
+  aiContext: ModelStringInput
   createdAt: ModelStringInput
   updatedAt: ModelStringInput
   and: [ModelConversationMessagePirateChatFilterInput]
@@ -2342,12 +2612,9 @@ input ModelConversationMessagePirateChatFilterInput {
 }
 
 input ModelConversationMessagePirateChatConditionInput {
-  sessionId: ModelIDInput
-  sender: ModelConversationMessageSenderInput
-  content: ModelStringInput
-  context: ModelStringInput
-  uiComponents: ModelStringInput
-  assistantContent: ModelStringInput
+  conversationId: ModelIDInput
+  role: ModelConversationParticipantRoleInput
+  aiContext: ModelStringInput
   and: [ModelConversationMessagePirateChatConditionInput]
   or: [ModelConversationMessagePirateChatConditionInput]
   not: ModelConversationMessagePirateChatConditionInput
@@ -2358,12 +2625,12 @@ input ModelConversationMessagePirateChatConditionInput {
 
 input CreateConversationMessagePirateChatInput {
   id: ID
-  sessionId: ID!
-  sender: ConversationMessageSender
-  content: String
-  context: AWSJSON
-  uiComponents: [AWSJSON]
-  assistantContent: String
+  conversationId: ID!
+  role: ConversationParticipantRole
+  content: [ContentBlockInput]
+  aiContext: AWSJSON
+  toolConfiguration: ToolConfigurationInput
+  assistantContent: [ContentBlockInput]
 }
 
 input DeleteConversationMessagePirateChatInput {
@@ -2372,12 +2639,9 @@ input DeleteConversationMessagePirateChatInput {
 
 input ModelSubscriptionConversationMessagePirateChatFilterInput {
   id: ModelSubscriptionIDInput
-  sessionId: ModelSubscriptionIDInput
-  sender: ModelSubscriptionStringInput
-  content: ModelSubscriptionStringInput
-  context: ModelSubscriptionStringInput
-  uiComponents: ModelSubscriptionStringInput
-  assistantContent: ModelSubscriptionStringInput
+  conversationId: ModelSubscriptionIDInput
+  role: ModelSubscriptionStringInput
+  aiContext: ModelSubscriptionStringInput
   createdAt: ModelSubscriptionStringInput
   updatedAt: ModelSubscriptionStringInput
   and: [ModelSubscriptionConversationMessagePirateChatFilterInput]

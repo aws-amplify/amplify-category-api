@@ -11,52 +11,6 @@ export const invokeLambdaMappingTemplate = (
   ): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
     const { responseMutationInputTypeName, responseMutationName, aiModel } = config;
     const modelId = getBedrockModelId(aiModel);
-    // TODO: figure out how to / if it's possible to get the GraphQL API endpoint
-    // to include in the resolver here. It should be doable considered the apiId is accessible
-    // on ctx.api. But this doesn't work.
-    // const graphQlUrl = (ctx.api as any).graphQlUrl;
-
-    /*
-        "tools": [
-          {
-              "toolSpec": {
-                  "name": "top_song",
-                  "description": "Get the most popular song played on a radio station.",
-                  "inputSchema": {
-                      "json": {
-                          "type": "object",
-                          "properties": {
-                              "sign": {
-                                  "type": "string",
-                                  "description": "The call sign for the radio station for which you want the most popular song. Example calls signs are WZPZ and WKRP."
-                              }
-                          },
-                          "required": [
-                              "sign"
-                          ]
-                      }
-                  }
-              }
-          }
-      ]
-    */
-
-    //   const tool = queryTools[0];
-
-    // const foo = {
-    //   toolSpec: {
-    //     name: tool?.name.value,
-    //     description: '', // config.tools[].description
-    //     inputSchema: {
-    //       json: {
-    //         type: 'object',
-    //         properties: {
-    //           tool.na
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
     const toolDefinitions = JSON.stringify(config.toolSpec);
 
     const systemPrompt = config.systemPrompt;
@@ -74,6 +28,7 @@ export const invokeLambdaMappingTemplate = (
           currentMessageId: ctx.stash.defaultValues.id,
           systemPrompt: '${systemPrompt}',
           toolDefinitions: JSON.parse(toolDefinitions),
+          clientToolConfiguration: args.toolConfiguration,
         };
 
         const payload = {

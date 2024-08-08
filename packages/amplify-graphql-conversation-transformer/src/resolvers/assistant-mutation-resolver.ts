@@ -18,17 +18,25 @@ export const assistantMutationResolver = (): { req: MappingTemplateProvider; res
             const { conversationId, content, associatedUserMessageId } = ctx.args.input;
             const updatedAt = util.time.nowISO8601();
 
-            return ddb.update({
-                key: { id: associatedUserMessageId },
-                condition: {
+            const expression = \`SET #assistantContent = :assistantContent, #updatedAt = :updatedAt\`;
+            const expressionNames = { '#assistantContent': 'assistantContent', '#updatedAt': 'updatedAt' };
+            const expressionValues = { ':assistantContent': content, ':updatedAt': updatedAt };
+            const condition = JSON.parse(
+                util.transform.toDynamoDBConditionExpression({
                     owner: { eq: owner },
                     conversationId: { eq: conversationId }
-                },
+                })
+            );
+            return {
+                operation: 'UpdateItem',
+                key: util.dynamodb.toMapValues({ id: associatedUserMessageId }),
+                condition,
                 update: {
-                    assistantContent: content,
-                    updatedAt
+                    expression,
+                    expressionNames,
+                    expressionValues: util.dynamodb.toMapValues(expressionValues),
                 }
-            });
+            };
         }
     `);
 
