@@ -350,7 +350,7 @@ export const setupRDSClusterAndData = async (config: RDSConfig, queries?: string
       const executeStatementResponse = await client.send(new ExecuteStatementCommand(executeStatementInput));
       console.log('Create table response: ' + JSON.stringify(executeStatementResponse));
     } catch (err) {
-      throw new Error(`Error in creating tables in test database: ${err.response.json}`);
+      throw new Error(`Error in creating tables in test database: ${JSON.stringify(err, null, 4)}`);
     }
   });
 
