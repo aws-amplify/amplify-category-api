@@ -1209,7 +1209,7 @@ export const validateImportedTableProperties = (
     ? {
         ...importedTable.BillingModeSummary,
       }
-    : importedTable.BillingModeSummary;
+    : undefined;
   if (billingMode) {
     delete billingMode.LastUpdateToPayPerRequestDateTime;
   }
@@ -1222,7 +1222,7 @@ export const validateImportedTableProperties = (
     ? {
         ...importedTable.ProvisionedThroughput,
       }
-    : importedTable.ProvisionedThroughput;
+    : undefined;
   if (provisionedThroughput) {
     delete provisionedThroughput.LastDecreaseDateTime;
     delete provisionedThroughput.LastIncreaseDateTime;
@@ -1242,7 +1242,7 @@ export const validateImportedTableProperties = (
     ? {
         ...importedTable.SSEDescription,
       }
-    : importedTable.SSEDescription;
+    : undefined;
   if (sseDescription) {
     delete sseDescription.Status;
   }
@@ -1537,7 +1537,6 @@ const sleep = async (milliseconds: number): Promise<void> => new Promise((resolv
  * @param tableDef Tabel definition of imported table.
  */
 const importTable = async (tableDef: CustomDDB.Input): Promise<AWSCDKAsyncCustomResource.OnEventResponse> => {
-  // TODO: Add import validation
   console.log('Initiating table import process');
   console.log(`Fetching current state of table ${tableDef.tableName}`);
   const describeTableResult = await ddbClient.describeTable({ TableName: tableDef.tableName });
