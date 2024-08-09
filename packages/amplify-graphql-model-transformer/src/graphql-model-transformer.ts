@@ -34,6 +34,7 @@ import {
   TransformerTransformSchemaStepContextProvider,
   TransformerValidationStepContextProvider,
   DataSourceStrategiesProvider,
+  DataSourceProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelDirective } from '@aws-amplify/graphql-directives';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
@@ -80,6 +81,7 @@ import { DynamoModelResourceGenerator } from './resources/dynamo-model-resource-
 import { RdsModelResourceGenerator } from './resources/rds-model-resource-generator';
 import { ModelTransformerOptions } from './types';
 import { AmplifyDynamoModelResourceGenerator } from './resources/amplify-dynamodb-table/amplify-dynamo-model-resource-generator';
+import { isImportedAmplifyDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-core';
 
 /**
  * Nullable
@@ -114,7 +116,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     this.options = this.getOptions(options);
     this.resourceGeneratorMap.set(DDB_DB_TYPE, new DynamoModelResourceGenerator());
     this.resourceGeneratorMap.set(SQL_LAMBDA_GENERATOR, new RdsModelResourceGenerator());
-    this.resourceGeneratorMap.set(ITERATIVE_TABLE_GENERATOR, new AmplifyDynamoModelResourceGenerator());
+    const amplifyTableDynamoModelResourceGenerator = new AmplifyDynamoModelResourceGenerator();
+    this.resourceGeneratorMap.set(ITERATIVE_TABLE_GENERATOR, amplifyTableDynamoModelResourceGenerator);
   }
 
   before = (ctx: TransformerBeforeStepContextProvider): void => {
@@ -133,7 +136,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       this.resourceGeneratorMap.get(SQL_LAMBDA_GENERATOR)?.enableGenerator();
       this.resourceGeneratorMap.get(SQL_LAMBDA_GENERATOR)?.enableUnprovisioned();
     }
-    if (strategies.some(isAmplifyDynamoDbModelDataSourceStrategy)) {
+    if (strategies.some(isAmplifyDynamoDbModelDataSourceStrategy) || strategies.some(isImportedAmplifyDynamoDbModelDataSourceStrategy)) {
       this.resourceGeneratorMap.get(ITERATIVE_TABLE_GENERATOR)?.enableGenerator();
       this.resourceGeneratorMap.get(ITERATIVE_TABLE_GENERATOR)?.enableProvisioned();
     }
@@ -323,9 +326,31 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   };
 
   generateResolvers = (context: TransformerContextProvider): void => {
+    const dataSourceMapping: Record<string, string> = {};
     this.resourceGeneratorMap.forEach((generator) => {
       generator.generateResources(context);
+      const ddbDatasources = Object.entries(generator.getDatasourceMap()).filter(
+        ([, datasource]) => datasource.ds.type === 'AMAZON_DYNAMODB',
+      );
+      ddbDatasources.forEach(([modelName, datasource]) => {
+        if (datasource.ds.dynamoDbConfig && !cdk.isResolvableObject(datasource.ds.dynamoDbConfig)) {
+          dataSourceMapping[modelName] = datasource.ds.dynamoDbConfig.tableName;
+        }
+        // TODO: probably need a link to docs for this
+        console.warn(
+          `Could not resolve table name for ${modelName}. DataSourceMappingOutput is incomplete. Please manually add ${modelName} to the mapping for your migration.`,
+        );
+      });
     });
+    if (context.transformParameters.enableGen2Migration && context.transformParameters.enableTransformerCfnOutputs) {
+      const { scope } = context.stackManager;
+      // TODO: decide final naming before merge to main
+      new cdk.CfnOutput(cdk.Stack.of(scope), 'DataSourceMappingOutput', {
+        value: cdk.Stack.of(scope).toJsonString(dataSourceMapping),
+        description: 'Mapping of model name to data source table name.',
+        exportName: cdk.Fn.join(':', [cdk.Aws.STACK_NAME, 'DataSourceMappingOutput']),
+      });
+    }
   };
 
   generateGetResolver = (
@@ -871,6 +896,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       generator = this.resourceGeneratorMap.get(ITERATIVE_TABLE_GENERATOR);
     } else if (isSqlStrategy(strategy)) {
       generator = this.resourceGeneratorMap.get(SQL_LAMBDA_GENERATOR);
+    } else if (isImportedAmplifyDynamoDbModelDataSourceStrategy(strategy)) {
+      generator = this.resourceGeneratorMap.get(ITERATIVE_TABLE_GENERATOR);
     }
 
     if (!generator) {

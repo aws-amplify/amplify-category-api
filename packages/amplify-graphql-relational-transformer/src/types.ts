@@ -66,6 +66,7 @@ export type BelongsToDirectiveConfiguration = {
   relationType: 'hasOne' | 'hasMany';
   relatedTypeIndex: FieldDefinitionNode[];
   connectionFields: string[];
+  overrideIndexName: string;
 };
 
 export type ManyToManyDirectiveConfiguration = {

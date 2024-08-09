@@ -2,6 +2,7 @@ import {
   AmplifyDynamoDbModelDataSourceStrategy,
   DataSourceStrategiesProvider,
   DefaultDynamoDbModelDataSourceStrategy,
+  ImportedAmplifyDynamoDbModelDataSourceStrategy,
   ModelDataSourceStrategy,
   ModelDataSourceStrategyDbType,
   ModelDataSourceStrategySqlDbType,
@@ -58,6 +59,21 @@ export const getModelDataSourceStrategy = (ctx: DataSourceStrategiesProvider, ty
     throw new Error(`Cannot find datasource type for model ${typename}`);
   }
   return strategy;
+};
+
+/**
+ * Type predicate that returns true if `obj` is a AmplifyDynamoDbModelDataSourceStrategy
+ */
+export const isImportedAmplifyDynamoDbModelDataSourceStrategy = (
+  strategy: ModelDataSourceStrategy,
+): strategy is ImportedAmplifyDynamoDbModelDataSourceStrategy => {
+  return (
+    isDynamoDbType(strategy.dbType) &&
+    typeof (strategy as any)['provisionStrategy'] === 'string' &&
+    (strategy as any)['provisionStrategy'] === 'IMPORTED_AMPLIFY_TABLE' &&
+    typeof (strategy as any)['tableName'] === 'string' &&
+    (strategy as any)['tableName'] !== ''
+  );
 };
 
 /**

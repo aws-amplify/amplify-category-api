@@ -1,0 +1,11 @@
+{
+  "name": "amplify-table-manager-lambda",
+  "version": "1.0.0",
+  "description": "Amplify Table Manager Lambda",
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "private": true,
+  "dependencies": {
+    "lodash.isequal": "^4.5.0"
+  }
+}

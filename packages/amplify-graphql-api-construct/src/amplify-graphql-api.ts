@@ -192,6 +192,10 @@ export class AmplifyGraphqlApi extends Construct {
     const transformParameters: TransformParameters = {
       ...mergedTranslationBehavior,
       allowGen1Patterns: mergedTranslationBehavior._allowGen1Patterns,
+      // TODO: decide naming before merge to main
+      // migrating from construct -> Gen2 is not supported
+      // this param is purposely omitted from translationBehavior so the param is not available through the construct
+      enableGen2Migration: false,
     };
     const executeTransformConfig: ExecuteTransformConfig = {
       scope: this,
