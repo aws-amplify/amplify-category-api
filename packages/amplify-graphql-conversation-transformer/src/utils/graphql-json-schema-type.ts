@@ -1,9 +1,9 @@
-import { TransformerContextProvider } from "@aws-amplify/graphql-transformer-interfaces";
-import { InputValueDefinitionNode, Kind, NamedTypeNode, TypeNode } from "graphql";
+import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { InputValueDefinitionNode, Kind, NamedTypeNode, TypeNode } from 'graphql';
 
 export function convertInputValueToJSONSchema(node: InputValueDefinitionNode, ctx: TransformerContextProvider): JSONSchema {
   const schema: JSONSchema = {
-    type: ''
+    type: '',
   };
   const required: string[] = [];
 
@@ -38,7 +38,7 @@ function processType(typeNode: TypeNode, name: string, required: string[], ctx: 
     case Kind.LIST_TYPE:
       return {
         type: 'array',
-        items: processType(typeNode.type, name, [], ctx)
+        items: processType(typeNode.type, name, [], ctx),
       };
   }
 }
@@ -65,18 +65,12 @@ function processNamedType(namedType: NamedTypeNode, ctx: TransformerContextProvi
       return {
         type: 'object',
         properties: {},
-        required: []
+        required: [],
       };
   }
 }
 
-export type JSONLike =
-| string
-| number
-| boolean
-| null
-| { [key: string]: JSONLike }
-| JSONLike[];
+export type JSONLike = string | number | boolean | null | { [key: string]: JSONLike } | JSONLike[];
 
 export type JSONSchema = {
   type: string;
@@ -94,4 +88,3 @@ export type JSONSchema = {
   default?: JSONLike;
   additionalProperties?: boolean | JSONSchema;
 };
-

@@ -152,7 +152,7 @@ test('conversation route with model query tool', () => {
       },
     });
   }) // TODO: remove this once we support complex input types
-  .toThrowError(/Complex input types not yet supported/);
+    .toThrowError(/Complex input types not yet supported/);
 });
 
 test('conversation route without tools', () => {

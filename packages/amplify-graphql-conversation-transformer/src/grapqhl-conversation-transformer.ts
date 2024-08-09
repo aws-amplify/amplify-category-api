@@ -27,7 +27,7 @@ import {
   InputValueDefinitionNode,
   InterfaceTypeDefinitionNode,
   NamedTypeNode,
-  ObjectTypeDefinitionNode
+  ObjectTypeDefinitionNode,
 } from 'graphql';
 import {
   FunctionResourceIDs,
