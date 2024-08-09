@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.7.0-gen2-migration-0809.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.6.4...@aws-amplify/graphql-transformer@1.7.0-gen2-migration-0809.0) (2024-08-09)
+
+### Features
+
+- get datasource map for migration ([#2668](https://github.com/aws-amplify/amplify-category-api/issues/2668)) ([02c7da0](https://github.com/aws-amplify/amplify-category-api/commit/02c7da0da0d5837ca05a8e4ff1b1536cc20ae15b))
+
 ## [1.6.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.6.3...@aws-amplify/graphql-transformer@1.6.4) (2024-07-25)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer

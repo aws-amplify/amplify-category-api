@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.6.5-gen2-migration-0809.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.6.4...@aws-amplify/graphql-auth-transformer@3.6.5-gen2-migration-0809.0) (2024-08-09)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
 ## [3.6.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.6.3...@aws-amplify/graphql-auth-transformer@3.6.4) (2024-07-25)
 
 **Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
