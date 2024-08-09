@@ -71,12 +71,13 @@ export class HasManyDirectiveDDBReferencesTransformer implements DataSourceBased
     validateReferencesRelationalFieldNullability(config);
     const objectName = config.object.name.value;
     const fieldName = config.field.name.value;
-    config.indexName = `gsi-${objectName}.${fieldName}`;
     config.referenceNodes = getReferencesNodes(config, context);
     validateReferencesBidirectionality(config);
     const overrideIndexName = getOverrideIndexName(config);
     if (overrideIndexName) {
       config.indexName = overrideIndexName;
+    } else {
+      config.indexName = `gsi-${objectName}.${fieldName}`;
     }
   };
 }
