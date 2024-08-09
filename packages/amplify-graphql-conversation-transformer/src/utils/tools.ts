@@ -2,7 +2,7 @@ import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode, Kind } from 'graphql';
 import { getBaseType, isScalar } from 'graphql-transformer-common';
-import { convertGraphQlTypeToJsonSchemaType } from './graphql-json-schema-type';
+import { convertInputValueToJSONSchema, JSONSchema } from './graphql-json-schema-type';
 
 export type ToolDefinition = {
   name: string;
@@ -27,17 +27,8 @@ type ToolSpec = {
   description: string;
   gqlRequestInputMetadata?: GraphQlRequestInputMetadata;
   inputSchema: {
-    json: {
-      type: string;
-      properties: Record<string, Property>;
-      required: string[];
-    };
+    json: JSONSchema;
   };
-};
-
-type Property = {
-  type: string;
-  description: string;
 };
 
 const getObjectTypeFromName = (name: string, ctx: TransformerContextProvider): ObjectTypeDefinitionNode => {
@@ -69,17 +60,14 @@ export const processTools = (toolDefinitions: ToolDefinition[], ctx: Transformer
       throw new InvalidDirectiveError(`Tool ${name} defined in @conversation directive but no matching Query field definition`);
     }
 
-    let toolProperties: Record<string, Property> = {};
+    let toolProperties: Record<string, JSONSchema> = {};
     let required: string[] = [];
     const fieldArguments = matchingQueryField.arguments;
     if (fieldArguments && fieldArguments.length > 0) {
       for (const fieldArgument of fieldArguments) {
-        const type = convertGraphQlTypeToJsonSchemaType(getBaseType(fieldArgument.type));
-        // TODO: How do we allow this to be defined in the directive?
-        const description = type;
-        toolProperties = { ...toolProperties, [fieldArgument.name.value]: { type, description } };
-
-        // TODO: Handle list types
+        const fieldArgumentSchema = convertInputValueToJSONSchema(fieldArgument, ctx);
+        // TODO: How do we allow description to be defined in the directive?
+        toolProperties = { ...toolProperties, [fieldArgument.name.value]: fieldArgumentSchema };
         if (fieldArgument.type.kind === 'NonNullType') {
           required.push(fieldArgument.name.value);
         }
