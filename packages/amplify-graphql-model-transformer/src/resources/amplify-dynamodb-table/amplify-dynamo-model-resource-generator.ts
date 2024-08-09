@@ -70,6 +70,9 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
             'dynamodb:DescribeTimeToLive',
             'dynamodb:UpdateContinuousBackups',
             'dynamodb:UpdateTimeToLive',
+            'dynamodb:TagResource',
+            'dynamodb:UntagResource',
+            'dynamodb:ListTagsOfResource',
           ],
           resources: [
             // eslint-disable-next-line no-template-curly-in-string
@@ -82,6 +85,13 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
                 tableName,
               }),
             ),
+          ],
+        }),
+        new aws_iam.PolicyStatement({
+          actions: ['lambda:ListTags'],
+          resources: [
+            // eslint-disable-next-line no-template-curly-in-string
+            cdk.Fn.sub('arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:*TableManager*', {}),
           ],
         }),
       ],

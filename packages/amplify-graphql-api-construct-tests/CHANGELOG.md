@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.4](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.7.3...amplify-graphql-api-construct-tests@1.7.4) (2024-08-01)
+
+**Note:** Version bump only for package amplify-graphql-api-construct-tests
+
+## [1.7.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.7.2...amplify-graphql-api-construct-tests@1.7.3) (2024-07-25)
+
+### Bug Fixes
+
+- add tags to dynamodb tables ([#2694](https://github.com/aws-amplify/amplify-category-api/issues/2694)) ([e8070b9](https://github.com/aws-amplify/amplify-category-api/commit/e8070b94077a706ba95ed94cdd52f27f15490ea2))
+
 ## [1.7.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.7.1...amplify-graphql-api-construct-tests@1.7.2) (2024-07-15)
 
 **Note:** Version bump only for package amplify-graphql-api-construct-tests

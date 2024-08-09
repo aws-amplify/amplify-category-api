@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
-import { App, Stack, Duration } from 'aws-cdk-lib';
+import { App, Stack, Duration, Tags } from 'aws-cdk-lib';
 // @ts-ignore
 import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';
 
@@ -30,3 +30,7 @@ new AmplifyGraphqlApi(stack, 'GraphqlApi', {
     apiKeyConfig: { expires: Duration.days(7) },
   },
 });
+
+Tags.of(stack).add('created-by', 'amplify-original');
+Tags.of(stack).add('amplify:deployment-type', 'sandbox-original');
+Tags.of(stack).add('amplify:friendly-name', 'amplifyData-original');
