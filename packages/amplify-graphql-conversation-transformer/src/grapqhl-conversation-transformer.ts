@@ -128,10 +128,6 @@ export class ConversationTransformer extends TransformerPluginBase {
     config.messageModel = createMessageModel(messageModelName, conversationModelName, referenceFieldName, definition.type);
     config.conversationModel = createConversationModel(conversationModelName, messageModelName, referenceFieldName);
 
-    const tools = processTools(config.tools, context as TransformerContextProvider);
-    if (tools) {
-      config.toolSpec = tools;
-    }
     validate(config, context as TransformerContextProvider);
     this.directives.push(config);
   };
@@ -180,6 +176,10 @@ export class ConversationTransformer extends TransformerPluginBase {
 
   generateResolvers = (ctx: TransformerContextProvider): void => {
     for (const directive of this.directives) {
+      const tools = processTools(directive.tools, ctx);
+      if (tools) {
+        directive.toolSpec = tools;
+      }
       const { parent, field } = directive;
       const parentName = parent.name.value;
       const capitalizedFieldName = capitalizeFirstLetter(field.name.value);
