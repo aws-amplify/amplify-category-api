@@ -96,6 +96,65 @@ test('conversation route valid schema', () => {
   expect(out.resolvers).toMatchSnapshot();
 });
 
+test('conversation route with model query tool', () => {
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    },
+    additionalAuthenticationProviders: [],
+  };
+
+  const inputSchema = `
+    type Todo @model @auth(rules: [{ allow: owner }]) {
+      content: String
+      isDone: Boolean
+    }
+
+    type Mutation {
+        pirateChat(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
+        @conversation(
+          aiModel: "Claude3Haiku",
+          functionName: "conversation-handler",
+          systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
+          tools: [{ name: "listTodos", description: "lists todos" }]
+        )
+    }
+
+    ${conversationSchemaTypes}
+  `;
+
+  const modelTransformer = new ModelTransformer();
+  const authTransformer = new AuthTransformer();
+  const indexTransformer = new IndexTransformer();
+  const hasOneTransformer = new HasOneTransformer();
+  const belongsToTransformer = new BelongsToTransformer();
+  const hasManyTransformer = new HasManyTransformer();
+
+  const transformers = [
+    modelTransformer,
+    new FunctionTransformer(),
+    new PrimaryKeyTransformer(),
+    indexTransformer,
+    hasManyTransformer,
+    hasOneTransformer,
+    belongsToTransformer,
+    new ConversationTransformer(modelTransformer, hasManyTransformer, belongsToTransformer, authTransformer),
+    authTransformer,
+  ];
+
+  expect(() => {
+    testTransform({
+      schema: inputSchema,
+      authConfig,
+      transformers,
+      dataSourceStrategies: {
+        Todo: DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
+      },
+    });
+  }) // TODO: remove this once we support complex input types
+  .toThrowError(/Complex input types not yet supported/);
+});
+
 test('conversation route without tools', () => {
   const authConfig: AppSyncAuthConfiguration = {
     defaultAuthentication: {

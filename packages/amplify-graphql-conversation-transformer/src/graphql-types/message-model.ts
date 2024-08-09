@@ -94,29 +94,6 @@ const makeConversationMessageModel = (
   typeDirectives: DirectiveNode[],
   conversationMessageInterface: NamedTypeNode,
 ): ObjectTypeDefinitionNode => {
-  /*
-    type ConversationEvent<route-name>
-    @model(
-        subscriptions: {
-            onUpdate: null,
-            onDelete: null
-        },
-        mutations: {
-            update: null
-        }
-    )
-    @auth(rules: [{allow: owner, ownerField: "owner"}])
-    {
-      conversationSessionId: ID!
-      session: ConversationSession<route-name> @belongsTo(references: ["conversationSessionId"])
-      role: ConversationEventSenderType! // "user" | "assistant"
-      message: String!
-      context: AWSJSON
-      uiComponents: [AWSJSON]
-    }
-    */
-
-  // fields
   const id = makeField('id', [], wrapNonNull(makeNamedType('ID')));
   const conversationId = makeField(referenceFieldName, [], wrapNonNull(makeNamedType('ID')));
   const role = makeField('role', [], makeNamedType('ConversationParticipantRole'));
