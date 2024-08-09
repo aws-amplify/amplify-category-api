@@ -2,7 +2,7 @@ import * as path from 'path';
 import { createNewProjectDir, deleteProjectDir, deleteProject } from 'amplify-category-api-e2e-core';
 import { initCDKProject, cdkDeploy, cdkDestroy, createGen1ProjectForMigration, deleteDDBTables } from '../../commands';
 import { graphql } from '../../graphql-request';
-import { TestDefinition, writeStackConfig, writeTestDefinitions } from '../../utils';
+import { TestDefinition, writeStackConfig, writeTestDefinitions, writeOverrides } from '../../utils';
 import { DURATION_20_MINUTES } from '../../utils/duration-constants';
 
 jest.setTimeout(DURATION_20_MINUTES);
@@ -100,6 +100,16 @@ describe('References Migration', () => {
     };
     writeStackConfig(gen2ProjRoot, { prefix: gen2ProjFolderName });
     writeTestDefinitions(testDefinitions, gen2ProjRoot);
+    // use DynamoDB managed encryption
+    const overrides = `
+      import { AmplifyGraphqlApi } from '@aws-amplify/graphql-api-construct';
+
+      export const applyOverrides = (api: AmplifyGraphqlApi): void => {
+        const todoTable = api.resources.cfnResources.additionalCfnResources['Todo'];
+        todoTable.addOverride('Properties.sseSpecification', { sseEnabled: false });
+      };
+    `;
+    writeOverrides(overrides, gen2ProjRoot);
     const outputs = await cdkDeploy(gen2ProjRoot, '--all');
     const { awsAppsyncApiEndpoint: gen2APIEndpoint, awsAppsyncApiKey: gen2APIKey } = outputs[name];
 
