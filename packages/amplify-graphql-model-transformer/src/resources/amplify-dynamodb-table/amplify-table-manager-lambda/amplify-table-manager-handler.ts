@@ -1096,7 +1096,7 @@ export const validateImportedTableProperties = (
     ? {
         ...importedTable.BillingModeSummary,
       }
-    : importedTable.BillingModeSummary;
+    : undefined;
   if (billingMode) {
     delete billingMode.LastUpdateToPayPerRequestDateTime;
   }
@@ -1109,7 +1109,7 @@ export const validateImportedTableProperties = (
     ? {
         ...importedTable.ProvisionedThroughput,
       }
-    : importedTable.ProvisionedThroughput;
+    : undefined;
   if (provisionedThroughput) {
     delete provisionedThroughput.LastDecreaseDateTime;
     delete provisionedThroughput.LastIncreaseDateTime;
@@ -1129,7 +1129,7 @@ export const validateImportedTableProperties = (
     ? {
         ...importedTable.SSEDescription,
       }
-    : importedTable.SSEDescription;
+    : undefined;
   if (sseDescription) {
     delete sseDescription.Status;
   }
