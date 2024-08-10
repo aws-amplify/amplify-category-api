@@ -6,7 +6,6 @@ import {
   DBInstance,
   DeleteDBInstanceCommand,
   waitUntilDBInstanceAvailable,
-  CreateDBClusterCommandInput,
   CreateDBClusterMessage,
   waitUntilDBClusterAvailable,
   DeleteDBClusterCommand,
@@ -28,7 +27,6 @@ import { KMSClient, CreateKeyCommand, ScheduleKeyDeletionCommand } from '@aws-sd
 import { knex } from 'knex';
 import axios from 'axios';
 import { sleep } from './sleep';
-import { generate as generateWord } from 'random-words';
 
 const DEFAULT_DB_INSTANCE_TYPE = 'db.m5.large';
 const DEFAULT_DB_STORAGE = 8;
@@ -432,7 +430,11 @@ const createInstanceIdentifier = (prefix: string): string => {
   return `${prefix}instance`;
 };
 
-export const generateDBName = (): string => (generateWord() as string).toLowerCase();
+export const generateDBName = (): string =>
+  generator
+    .generate({ length: 8 })
+    .toLowerCase()
+    .replace(/[^a-zA-Z0-9_]/g, '');
 
 /**
  * Adds the given inbound rule to the security group.
