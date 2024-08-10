@@ -338,7 +338,7 @@ export const setupRDSClusterAndData = async (config: RDSConfig, queries?: string
   }
 
   // create the test tables in the test database
-  queries?.map(async (query) => {
+  for (const query of queries ?? []) {
     try {
       const executeStatementInput: ExecuteStatementCommandInput = {
         resourceArn: dbCluster.clusterArn,
@@ -351,7 +351,7 @@ export const setupRDSClusterAndData = async (config: RDSConfig, queries?: string
     } catch (err) {
       throw new Error(`Error in creating tables in test database: ${JSON.stringify(err, null, 4)}`);
     }
-  });
+  }
 
   return {
     clusterArn: dbCluster.clusterArn,
