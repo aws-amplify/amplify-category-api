@@ -7,6 +7,7 @@
     "url": "https://github.com/aws-amplify/amplify-category-api.git",
     "directory": "packages/amplify-e2e-core"
   },
+  "type": "module",
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "main": "lib/index.js",
