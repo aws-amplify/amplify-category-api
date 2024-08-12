@@ -53,6 +53,11 @@ type IamRoleInfo = {
   cbInfo?: CodeBuild.Build;
 };
 
+type RdsInstanceInfo = {
+  name: string;
+  region: string;
+};
+
 type ReportEntry = {
   jobId?: string;
   buildBatchArn?: string;
@@ -63,6 +68,7 @@ type ReportEntry = {
   stacks: Record<string, StackInfo>;
   buckets: Record<string, S3BucketInfo>;
   roles: Record<string, IamRoleInfo>;
+  instances: Record<string, RdsInstanceInfo>;
 };
 
 type JobFilterPredicate = (job: ReportEntry) => boolean;
@@ -85,6 +91,7 @@ type AWSAccountInfo = {
 const BUCKET_TEST_REGEX = /test/;
 const IAM_TEST_REGEX =
   /!RotateE2eAwsToken-e2eTestContextRole|-integtest$|^amplify-|^eu-|^us-|^ap-|^auth-exhaustive-tests|rds-schema-inspector-integtest|^amplify_e2e_tests_lambda|^JsonMockStack-jsonMockApi|^SubscriptionAuth|^cdkamplifytable[0-9]*-|^MutationConditionTest-|^SearchableAuth|^SubscriptionRTFTests-|^NonModelAuthV2FunctionTransformerTests-|^MultiAuthV2Transformer|^FunctionTransformerTests/;
+const RDS_TEST_REGEX = /integtest/;
 const STALE_DURATION_MS = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
 
 const isCI = (): boolean => !!(process.env.CI && process.env.CODEBUILD);
@@ -108,6 +115,13 @@ const testBucketStalenessFilter = (resource: aws.S3.Bucket): boolean => {
 const testRoleStalenessFilter = (resource: aws.IAM.Role): boolean => {
   const isTestResource = resource.RoleName.match(IAM_TEST_REGEX);
   const isStaleResource = Date.now() - resource.CreateDate.getMilliseconds() > STALE_DURATION_MS;
+  return isTestResource && isStaleResource;
+};
+
+const testInstanceStalenessFilter = (resource: aws.RDS.DBInstance): boolean => {
+  const isTestResource = resource.DBInstanceIdentifier.match(RDS_TEST_REGEX);
+  const isStaleResource =
+    resource.DBInstanceStatus == 'available' && Date.now() - resource.InstanceCreateTime.getMilliseconds() > STALE_DURATION_MS;
   return isTestResource && isStaleResource;
 };
 
@@ -139,6 +153,27 @@ const getOrphanTestIamRoles = async (account: AWSAccountInfo): Promise<IamRoleIn
   const listRoleResponse = await iamClient.listRoles({ MaxItems: 1000 }).promise();
   const staleRoles = listRoleResponse.Roles.filter(testRoleStalenessFilter);
   return staleRoles.map((it) => ({ name: it.RoleName }));
+};
+
+/**
+ * Get all RDS instances in the account, and filter down to the ones we consider stale.
+ */
+const getOrphanRdsInstances = async (account: AWSAccountInfo, region: string): Promise<RdsInstanceInfo[]> => {
+  try {
+    const rdsClient = new aws.RDS(getAWSConfig(account, region));
+    const listRdsInstanceResponse = await rdsClient.describeDBInstances().promise();
+    const staleInstances = listRdsInstanceResponse.DBInstances.filter(testInstanceStalenessFilter);
+    return staleInstances.map((i) => ({ name: i.DBInstanceIdentifier, region }));
+  } catch (e) {
+    if (e?.code === 'InvalidClientTokenId') {
+      // Do not fail the cleanup and continue
+      // This is due to either child account or parent account not available in that region
+      console.log(`Listing RDS instances for account ${account.accountId}-${region} failed with error with code ${e?.code}. Skipping.`);
+      return [];
+    } else {
+      throw e;
+    }
+  }
 };
 
 /**
@@ -386,6 +421,7 @@ const mergeResourcesByCCIJob = async (
   s3Buckets: S3BucketInfo[],
   orphanS3Buckets: S3BucketInfo[],
   orphanIamRoles: IamRoleInfo[],
+  orphanRdsInstances: RdsInstanceInfo[],
 ): Promise<Record<string, ReportEntry>> => {
   const result: Record<string, ReportEntry> = {};
 
@@ -460,6 +496,16 @@ const mergeResourcesByCCIJob = async (
     ...val,
     jobId: key,
     roles: src,
+  }));
+
+  const orphanRdsInstancesGroup = {
+    [ORPHAN]: orphanRdsInstances,
+  };
+
+  _.mergeWith(result, orphanRdsInstancesGroup, (val, src, key) => ({
+    ...val,
+    jobId: key,
+    instances: src,
   }));
 
   return result;
@@ -575,6 +621,24 @@ const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucke
   }
 };
 
+const deleteRdsInstances = async (account: AWSAccountInfo, accountIndex: number, instances: RdsInstanceInfo[]): Promise<void> => {
+  await Promise.all(instances.map((instance) => deleteRdsInstance(account, accountIndex, instance)));
+};
+
+const deleteRdsInstance = async (account: AWSAccountInfo, accountIndex: number, instance: RdsInstanceInfo): Promise<void> => {
+  const { name, region } = instance;
+  console.log(`${generateAccountInfo(account, accountIndex)} Deleting RDS instance ${name}`);
+  try {
+    const rdsClient = new aws.RDS(getAWSConfig(account, region));
+    await rdsClient.deleteDBInstance({ DBInstanceIdentifier: name, SkipFinalSnapshot: true }).promise();
+  } catch (e) {
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleting instance ${name} failed with error ${e.message}`);
+    if (e.code === 'ExpiredTokenException') {
+      handleExpiredTokenException();
+    }
+  }
+};
+
 const deleteCfnStacks = async (account: AWSAccountInfo, accountIndex: number, stacks: StackInfo[]): Promise<void> => {
   await Promise.all(stacks.map((stack) => deleteCfnStack(account, accountIndex, stack)));
 };
@@ -626,6 +690,10 @@ const deleteResources = async (
 
     if (resources.roles) {
       await deleteIamRoles(account, accountIndex, Object.values(resources.roles));
+    }
+
+    if (resources.instances) {
+      await deleteRdsInstances(account, accountIndex, Object.values(resources.instances));
     }
   }
 };
@@ -730,14 +798,16 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const bucketPromise = getS3Buckets(account);
   const orphanBucketPromise = getOrphanS3TestBuckets(account);
   const orphanIamRolesPromise = getOrphanTestIamRoles(account);
+  const orphanRdsInstancesPromise = testRegions.map((region) => getOrphanRdsInstances(account, region));
 
   const apps = (await Promise.all(appPromises)).flat();
   const stacks = (await Promise.all(stackPromises)).flat();
   const buckets = await bucketPromise;
   const orphanBuckets = await orphanBucketPromise;
   const orphanIamRoles = await orphanIamRolesPromise;
+  const orphanRdsInstances = (await Promise.all(orphanRdsInstancesPromise)).flat();
 
-  const allResources = await mergeResourcesByCCIJob(apps, stacks, buckets, orphanBuckets, orphanIamRoles);
+  const allResources = await mergeResourcesByCCIJob(apps, stacks, buckets, orphanBuckets, orphanIamRoles, orphanRdsInstances);
   const staleResources = _.pickBy(allResources, filterPredicate);
 
   generateReport(staleResources, accountIndex);
