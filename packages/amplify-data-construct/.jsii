@@ -46,7 +46,7 @@
     "zod": "^3.22.3"
   },
   "dependencies": {
-    "@aws-amplify/graphql-api-construct": "1.11.3",
+    "@aws-amplify/graphql-api-construct": "1.11.4",
     "aws-cdk-lib": "^2.129.0",
     "constructs": "^10.3.0"
   },
@@ -3731,6 +3731,6 @@
     }
   },
   "types": {},
-  "version": "1.9.3",
-  "fingerprint": "9Yx8OV+RQuSVsKO4t/1bZa5vVUCUB4rQphGZhEXHArk="
+  "version": "1.9.4",
+  "fingerprint": "yar8i9UOGPXL5F0IgqsPFOL68J/RpxMvEnFpAli1gME="
 }
