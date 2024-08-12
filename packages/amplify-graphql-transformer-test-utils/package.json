@@ -43,7 +43,9 @@
     "constructs": "^10.3.0"
   },
   "jest": {
-    "testURL": "http://localhost",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
