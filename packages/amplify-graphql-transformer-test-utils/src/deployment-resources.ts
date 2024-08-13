@@ -1,4 +1,4 @@
-import { Stack } from "aws-cdk-lib";
+import { Stack } from 'aws-cdk-lib';
 
 export interface Template {
   AWSTemplateFormatVersion?: string;
