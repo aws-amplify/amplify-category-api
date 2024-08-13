@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Annotations } from 'aws-cdk-lib/assertions';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
@@ -9,7 +9,7 @@ import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
  * @param schema schema to test
  * @param allowGen1Patterns if gen 1 patterns are allowed.
  */
-const verifySchema = (schema: string, allowGen1Patterns: boolean): void => {
+const verifySchema = (schema: string, allowGen1Patterns: boolean): cdk.Stack => {
   const stack = new cdk.Stack();
   new AmplifyGraphqlApi(stack, 'TestApi', {
     definition: AmplifyGraphqlDefinition.fromString(schema),
@@ -20,7 +20,8 @@ const verifySchema = (schema: string, allowGen1Patterns: boolean): void => {
       _allowGen1Patterns: allowGen1Patterns,
     },
   });
-  Template.fromStack(stack);
+
+  return stack;
 };
 
 describe('_allowGen1Patterns', () => {
@@ -250,9 +251,8 @@ describe('_allowGen1Patterns', () => {
     });
 
     test('does not allow fields on @belongsTo', () => {
-      expect(() =>
-        verifySchema(
-          `
+      const stack = verifySchema(
+        `
             type Post @model {
               authorID: ID
               author: Author @belongsTo(fields: ["authorID"])
@@ -262,15 +262,17 @@ describe('_allowGen1Patterns', () => {
               posts: [Post] @hasMany
             }
           `,
-          false,
-        ),
-      ).toThrow('fields argument on @belongsTo is disallowed. Modify Post.author to use references instead.');
+        false,
+      );
+      Annotations.fromStack(stack).hasWarning(
+        '/Default/TestApi/GraphQLAPI',
+        'fields argument on @belongsTo is deprecated. Modify Post.author to use references instead. This functionality will be removed in the next major release.',
+      );
     });
 
     test('does not allow fields on @hasMany', () => {
-      expect(() =>
-        verifySchema(
-          `
+      const stack = verifySchema(
+        `
             type Post @model {
               author: Author @belongsTo
             }
@@ -280,15 +282,17 @@ describe('_allowGen1Patterns', () => {
               posts: [Post] @hasMany(fields: ["postID"])
             }
           `,
-          false,
-        ),
-      ).toThrow('fields argument on @hasMany is disallowed. Modify Author.posts to use references instead.');
+        false,
+      );
+      Annotations.fromStack(stack).hasWarning(
+        '/Default/TestApi/GraphQLAPI',
+        'fields argument on @hasMany is deprecated. Modify Author.posts to use references instead. This functionality will be removed in the next major release.',
+      );
     });
 
     test('does not allow fields on @hasOne', () => {
-      expect(() =>
-        verifySchema(
-          `
+      const stack = verifySchema(
+        `
             type Profile @model {
               author: Author @belongsTo
             }
@@ -298,15 +302,17 @@ describe('_allowGen1Patterns', () => {
               profile: Profile @hasOne(fields: ["profileID"])
             }
           `,
-          false,
-        ),
-      ).toThrow('fields argument on @hasOne is disallowed. Modify Author.profile to use references instead.');
+        false,
+      );
+      Annotations.fromStack(stack).hasWarning(
+        '/Default/TestApi/GraphQLAPI',
+        'fields argument on @hasOne is deprecated. Modify Author.profile to use references instead. This functionality will be removed in the next major release.',
+      );
     });
 
     test('does not allow required @belongsTo fields', () => {
-      expect(() =>
-        verifySchema(
-          `
+      const stack = verifySchema(
+        `
             type Post @model {
               author: Author! @belongsTo
             }
@@ -315,15 +321,17 @@ describe('_allowGen1Patterns', () => {
               posts: [Post] @hasMany
             }
           `,
-          false,
-        ),
-      ).toThrow('@belongsTo cannot be used on required fields. Modify Post.author to be optional.');
+        false,
+      );
+      Annotations.fromStack(stack).hasWarning(
+        '/Default/TestApi/GraphQLAPI',
+        'fields argument on @belongsTo is deprecated. Modify Post.author to use references instead. This functionality will be removed in the next major release.',
+      );
     });
 
     test('does not allow required @hasMany fields', () => {
-      expect(() =>
-        verifySchema(
-          `
+      const stack = verifySchema(
+        `
             type Post @model {
               author: Author @belongsTo
             }
@@ -332,15 +340,17 @@ describe('_allowGen1Patterns', () => {
               posts: [Post]! @hasMany
             }
           `,
-          false,
-        ),
-      ).toThrow('@hasMany cannot be used on required fields. Modify Author.posts to be optional.');
+        false,
+      );
+      Annotations.fromStack(stack).hasWarning(
+        '/Default/TestApi/GraphQLAPI',
+        '@hasMany on required fields is deprecated. Modify Author.posts to be optional. This functionality will be removed in the next major release.',
+      );
     });
 
     test('does not allow required @hasOne fields', () => {
-      expect(() =>
-        verifySchema(
-          `
+      const stack = verifySchema(
+        `
             type Profile @model {
               author: Author @belongsTo
             }
@@ -349,9 +359,12 @@ describe('_allowGen1Patterns', () => {
               profile: Profile! @hasOne
             }
           `,
-          false,
-        ),
-      ).toThrow('@hasOne cannot be used on required fields. Modify Author.profile to be optional.');
+        false,
+      );
+      Annotations.fromStack(stack).hasWarning(
+        '/Default/TestApi/GraphQLAPI',
+        '@hasOne on required fields is deprecated. Modify Author.profile to be optional. This functionality will be removed in the next major release.',
+      );
     });
   });
 });

@@ -498,7 +498,7 @@ export interface TranslationBehavior {
   readonly replaceTableUponGsiUpdate: boolean;
 
   /**
-   * When disabled usage of Gen 1 patterns will result in an error thrown.
+   * When disabled usage of Gen 1 patterns will result in a deprecation warning.
    *
    * Gen 1 Patterns that will be disabled when set to false:
    * - Use of @manyToMany
@@ -623,7 +623,7 @@ export interface PartialTranslationBehavior {
   readonly replaceTableUponGsiUpdate?: boolean;
 
   /**
-   * When disabled usage of Gen 1 patterns will result in an error thrown.
+   * When disabled usage of Gen 1 patterns will result in a deprecation warning.
    *
    * Gen 1 Patterns that will be disabled when set to false:
    * - Use of @manyToMany
