@@ -42,7 +42,8 @@ describe('_allowGen1Patterns', () => {
         apiKeyConfig: { expires: cdk.Duration.days(7) },
       },
     });
-    Annotations.fromStack(stack).hasWarning('/Default/TestApi/GraphQLAPI',
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/TestApi/GraphQLAPI',
       '@manyToMany is deprecated. This functionality will be removed in the next major release.',
     );
   });
