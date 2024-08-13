@@ -25,7 +25,7 @@ const verifySchema = (schema: string, allowGen1Patterns: boolean): cdk.Stack => 
 };
 
 describe('_allowGen1Patterns', () => {
-  test('defaults to allow', () => {
+  test('defaults to disallow', () => {
     const schema = /* GraphQL */ `
       type Post @model {
         tags: [Tag] @manyToMany(relationName: "PostTags")
@@ -42,7 +42,9 @@ describe('_allowGen1Patterns', () => {
         apiKeyConfig: { expires: cdk.Duration.days(7) },
       },
     });
-    Annotations.fromStack(stack).hasNoWarning('/Default/TestApi/GraphQLAPI', Match.anyValue());
+    Annotations.fromStack(stack).hasWarning('/Default/TestApi/GraphQLAPI',
+      '@manyToMany is deprecated. This functionality will be removed in the next major release.',
+    );
   });
 
   describe('_allowGen1Patterns: true', () => {

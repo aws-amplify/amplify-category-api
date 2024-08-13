@@ -507,7 +507,7 @@ export interface TranslationBehavior {
    * - Use of fields argument on @hasOne, @hasMany, and @belongsTo.
    * - Use of @hasOne, @hasMany, and @belongsTo on required fields.
    *
-   * @default true
+   * @default false
    * @internal
    * Warning: Although this has `public` access, it is intended for internal use and should not be used directly.
    * The behavior of this may change without warning.
@@ -632,7 +632,7 @@ export interface PartialTranslationBehavior {
    * - Use of fields argument on @hasOne, @hasMany, and @belongsTo.
    * - Use of @hasOne, @hasMany, and @belongsTo on required fields.
    *
-   * @default true
+   * @default false
    * @internal
    * Warning: Although this has `public` access, it is intended for internal use and should not be used directly.
    * The behavior of this may change without warning.
