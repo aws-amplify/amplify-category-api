@@ -37,14 +37,6 @@ describe('constructTransformerChain', () => {
   it('succeeds on admin roles', () => {
     expect(constructTransformerChain().length).toEqual(numOfTransformers);
   });
-
-  it('allows gen 1 patterns by default', () => {
-    expect(constructTransformerChain().length).toEqual(numOfTransformers);
-  });
-
-  it('removes transformers not supported in gen 2', () => {
-    expect(constructTransformerChain({ allowGen1Patterns: false }).length).toEqual(numOfTransformers - 3);
-  });
 });
 
 const defaultTransformConfig: TransformConfig = {

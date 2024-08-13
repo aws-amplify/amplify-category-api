@@ -151,7 +151,7 @@ export class BelongsToTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
-      // This can't occur in validate because the api has not been initialized yet
+      // This validation can't occur in validate because the api has not been initialized until generateResolvers
       if (!ctx.transformParameters.allowGen1Patterns) {
         const { field, object } = config;
         const modelName = object.name.value;

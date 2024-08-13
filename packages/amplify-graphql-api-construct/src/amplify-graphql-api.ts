@@ -213,7 +213,6 @@ export class AmplifyGraphqlApi extends Construct {
           ...definition.referencedLambdaFunctions,
           ...functionNameMap,
         },
-        allowGen1Patterns: transformParameters.allowGen1Patterns,
       },
       authConfig,
       stackMapping: stackMappings ?? {},
