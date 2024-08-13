@@ -1,8 +1,19 @@
 {
-  "dbConfig": {
-    "identifier": ""
-  },
-  "connectionConfigs": {
-    "connectionUri": "/BfgiBDcCQYM/test"
-  }
+  "us-east-1": [
+    {
+      "dbConfig": {
+        "identifier": "testIdentifier"
+      },
+      "connectionConfigs": {
+        "connectionUri": ""
+      }
+    }
+  ],
+  "us-west-2": [
+    {
+      "dbConfig": {
+        "identifier": "YMmwoSDbAQ"
+      }
+    }
+  ]
 }

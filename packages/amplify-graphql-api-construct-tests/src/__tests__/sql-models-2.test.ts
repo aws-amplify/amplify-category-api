@@ -17,7 +17,7 @@ describe('CDK GraphQL Transformer deployments with SQL datasources', () => {
   const region = process.env.CLI_REGION ?? 'us-west-2';
 
   const dbname = 'default_db';
-  const engine = 'postgres';
+  const engine = 'mysql';
 
   const databaseController: SqlDatatabaseController = new SqlDatatabaseController(
     ['CREATE TABLE todos (id VARCHAR(40) PRIMARY KEY, description VARCHAR(256))'],

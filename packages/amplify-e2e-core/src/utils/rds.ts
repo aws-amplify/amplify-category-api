@@ -5,11 +5,16 @@ import {
   CreateDBInstanceCommandInput,
   DBInstance,
   DeleteDBInstanceCommand,
+  DescribeDBClustersCommand,
   waitUntilDBInstanceAvailable,
   CreateDBClusterMessage,
   waitUntilDBClusterAvailable,
   DeleteDBClusterCommand,
   DeleteDBClusterCommandInput,
+  $Command,
+  DescribeDBInstancesCommand,
+  DescribeDBClustersCommandOutput,
+  DescribeDBInstancesCommandOutput,
 } from '@aws-sdk/client-rds';
 import { RDSDataClient, ExecuteStatementCommand, ExecuteStatementCommandInput, Field } from '@aws-sdk/client-rds-data';
 import generator from 'generate-password';
@@ -23,6 +28,7 @@ import {
   PutParameterCommandOutput,
   GetParameterCommand,
   GetParametersByPathCommand,
+  GetParameterResult,
 } from '@aws-sdk/client-ssm';
 import { SecretsManagerClient, CreateSecretCommand, DeleteSecretCommand, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
 import { KMSClient, CreateKeyCommand, ScheduleKeyDeletionCommand } from '@aws-sdk/client-kms';
@@ -43,7 +49,7 @@ export type SqlEngine = 'mysql' | 'postgres';
 export type RDSConfig = {
   identifier: string;
   engine: SqlEngine;
-  dbname: string;
+  dbname?: string;
   username: string;
   password?: string;
   region: string;
@@ -246,6 +252,57 @@ export const createRDSCluster = async (config: RDSConfig): Promise<ClusterInfo> 
 };
 
 /**
+ * Accesses the local RDS Aurora serverless V2 cluster with one DB instance using the given input configuration.
+ * @param config Configuration of the database cluster.
+ * @returns EndPoint address, port and database name of the accessed RDS cluster.
+ */
+export const useLocalCluster = async (config: RDSConfig): Promise<ClusterInfo> => {
+  try {
+    // Send requests to get the cluster and instance config info
+    const databaseName = 'defaultdb';
+    const identifier = config.identifier;
+    const instanceIdentifier = createInstanceIdentifier(config.identifier);
+    const client = new RDSClient({ region: config.region });
+    const describeClusterCommand = new DescribeDBClustersCommand({ Filters: [{ Name: 'db-cluster-id', Values: [identifier] }] });
+    const describeInstanceCommand = new DescribeDBInstancesCommand({ DBInstanceIdentifier: instanceIdentifier });
+
+    let describeClusterResponse: DescribeDBClustersCommandOutput;
+    let describeInstanceResponse: DescribeDBInstancesCommandOutput;
+    try {
+      describeClusterResponse = await client.send(describeClusterCommand);
+      if (describeClusterResponse == null) {
+        throw Error('Specified cluster is null.');
+      }
+    } catch (error) {
+      throw Error(`Error in getting ${identifier} cluster info: ${error}`);
+    }
+    try {
+      describeInstanceResponse = await client.send(describeInstanceCommand);
+      if (describeInstanceResponse == null) {
+        throw Error('Specified instance is null.');
+      }
+    } catch (error) {
+      throw Error(`Error in getting ${instanceIdentifier} cluster info: ${error}`);
+    }
+
+    // Extract the cluster and instance from the responses
+    const dbClusterObj = describeClusterResponse.DBClusters[0];
+    const dbInstance = describeInstanceResponse.DBInstances[0];
+
+    return {
+      clusterArn: dbClusterObj.DBClusterArn,
+      endpoint: dbClusterObj.Endpoint,
+      port: dbClusterObj.Port,
+      dbName: databaseName,
+      dbInstance: dbInstance,
+      secretArn: dbClusterObj.MasterUserSecret.SecretArn,
+    };
+  } catch (error) {
+    console.log('Error: ', error);
+  }
+};
+
+/**
  * Creates a new RDS instance using the given input configuration, runs the given queries and returns the details of the created RDS
  * instance.
  * @param config Configuration of the database instance
@@ -315,31 +372,12 @@ export const setupRDSInstanceAndData = async (
 export const setupRDSClusterAndData = async (localTesting: boolean, config: RDSConfig, queries?: string[]): Promise<ClusterInfo> => {
   console.log(`Creating RDS ${config.engine} DB cluster with identifier ${config.identifier}`);
 
-  let dbCluster;
-  localTesting = true;
+  let dbCluster: ClusterInfo;
+
   if (!localTesting) {
     dbCluster = await createRDSCluster(config);
   } else {
-    try {
-      const repoRoot = path.join(__dirname, '..', '..', '..', '..');
-      const localClusterPath = path.join(repoRoot, 'scripts', 'e2e-test-local-cluster-config.json');
-      const configInfo = JSON.parse(fs.readFileSync(localClusterPath, 'utf-8'));
-      const connectionUri = configInfo.connectionConfigs.connectionUri;
-
-      const ssmClient = new SSMClient({ region: config.region });
-      const getParameterCommand = new GetParametersByPathCommand({ Path: connectionUri });
-      const getParameterResponse = await ssmClient.send(getParameterCommand);
-
-      if (getParameterResponse.Parameters) {
-        getParameterResponse.Parameters.forEach((parameter) => {
-          console.log(parameter);
-        });
-      } else {
-        console.log('NO PARAMETERS FOUND');
-      }
-    } catch (error) {
-      console.log('Error: ', error);
-    }
+    dbCluster = await useLocalCluster(config);
   }
 
   if (!dbCluster.secretArn) {
@@ -348,13 +386,10 @@ export const setupRDSClusterAndData = async (localTesting: boolean, config: RDSC
 
   const client = new RDSDataClient({ region: config.region });
 
-  // create a new test database with given name
-  const sanitizedDbName = config.dbname.replace(/[^a-zA-Z0-9_]/g, '');
-
   const createDBInput: ExecuteStatementCommandInput = {
     resourceArn: dbCluster.clusterArn,
     secretArn: dbCluster.secretArn,
-    sql: `create database ${sanitizedDbName}`,
+    sql: `create database ${config.dbname}`,
     database: dbCluster.dbName,
   };
 
@@ -373,10 +408,10 @@ export const setupRDSClusterAndData = async (localTesting: boolean, config: RDSC
         resourceArn: dbCluster.clusterArn,
         secretArn: dbCluster.secretArn,
         sql: query,
-        database: sanitizedDbName,
+        database: config.dbname,
       };
       const executeStatementResponse = await client.send(new ExecuteStatementCommand(executeStatementInput));
-      console.log('Create table response: ' + JSON.stringify(executeStatementResponse));
+      console.log('Run query response: ' + JSON.stringify(executeStatementResponse));
     } catch (err) {
       throw new Error(`Error in creating tables in test database: ${JSON.stringify(err, null, 4)}`);
     }
@@ -386,7 +421,7 @@ export const setupRDSClusterAndData = async (localTesting: boolean, config: RDSC
     clusterArn: dbCluster.clusterArn,
     endpoint: dbCluster.endpoint,
     port: dbCluster.port,
-    dbName: sanitizedDbName,
+    dbName: config.dbname,
     dbInstance: dbCluster.dbInstance,
     secretArn: dbCluster.secretArn,
   };
@@ -424,7 +459,7 @@ export const deleteDBInstance = async (identifier: string, region: string): Prom
     // );
   } catch (error) {
     console.log(error);
-    throw new Error(`Error in deleting RDS instance: ${error.response.json}`);
+    throw new Error(`Error in deleting RDS instance: ${error.json}`);
   }
 };
 
@@ -451,7 +486,7 @@ export const deleteDBCluster = async (identifier: string, region: string): Promi
     await client.send(command);
   } catch (error) {
     console.log(error);
-    throw new Error(`Error in deleting RDS cluster ${identifier}: ${error.response.json}`);
+    throw new Error(`Error in deleting RDS cluster ${identifier}: ${error.json}`);
   }
 };
 
