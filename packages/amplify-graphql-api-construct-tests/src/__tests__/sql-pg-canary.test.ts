@@ -31,7 +31,9 @@ describe('Canary using Postgres lambda model datasource strategy', () => {
   const resourceNames = getResourceNamesForStrategyName(strategyName);
 
   beforeAll(async () => {
+    console.time('sql-pg-canary test setup');
     await databaseController.setupDatabase();
+    console.timeEnd('sql-pg-canary test setup');
   });
 
   afterAll(async () => {

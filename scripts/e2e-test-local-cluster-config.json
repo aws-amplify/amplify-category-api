@@ -2,10 +2,7 @@
   "us-east-1": [
     {
       "dbConfig": {
-        "identifier": "testIdentifier"
-      },
-      "connectionConfigs": {
-        "connectionUri": ""
+        "identifier": ""
       }
     }
   ],

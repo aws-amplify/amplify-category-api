@@ -2,7 +2,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as generator from 'generate-password';
-import { createNewProjectDir, deleteProjectDir, generateDBName } from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
 import { cdkDeploy, cdkDestroy, initCDKProject } from '../../../commands';
 import { SqlDatabaseDetails, SqlDatatabaseController } from '../../../sql-datatabase-controller';
@@ -23,7 +23,6 @@ describe('PostgreSQL tables with UUID primary keys', () => {
   const region = process.env.CLI_REGION ?? 'us-west-2';
   const baseProjFolderName = path.basename(__filename, '.test.ts');
 
-  const dbname = generateDBName();
   const [dbUsername, dbIdentifier] = generator.generateMultiple(2);
   let dbDetails: SqlDatabaseDetails;
 
@@ -46,7 +45,6 @@ describe('PostgreSQL tables with UUID primary keys', () => {
     {
       identifier: dbIdentifier,
       engine: 'postgres',
-      dbname,
       username: dbUsername,
       region,
     },

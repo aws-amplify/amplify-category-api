@@ -20,6 +20,7 @@ import {
   isCI,
   generateDBName,
   isDataAPISupportedRegion,
+  dropDatabase,
 } from 'amplify-category-api-e2e-core';
 import { SecretsManagerClient, CreateSecretCommand, DeleteSecretCommand, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
 import {
@@ -72,7 +73,7 @@ export class SqlDatatabaseController {
     } else {
       this.useDataAPI = false;
     }
-    this.enableLocalTesting = /*isCI()*/ true;
+    this.enableLocalTesting = isCI();
 
     // If database name not manually set, provide and sanitize the config dbname
     if (!options.dbname || options.dbname.length == 0 || this.enableLocalTesting) {
@@ -89,6 +90,11 @@ export class SqlDatatabaseController {
 
     // Get the config identifier and connection URI
     const identifier = cluster.dbConfig.identifier;
+
+    if (identifier === '' || identifier === null) {
+      return null;
+    }
+
     const connectionUri = `/${identifier}/test`;
 
     const ssmClient = new SSMClient({ region: this.options.region });
@@ -102,12 +108,8 @@ export class SqlDatatabaseController {
     });
     const putParameterResponse = await ssmClient.send(setParameterCommand);
 
-    //const dbname = getParameterResponse.Parameters.find(obj => obj.Name === `${connectionUri}/databaseName`).Value;
     const username = getParameterResponse.Parameters.find((obj) => obj.Name === `${connectionUri}/username`).Value;
     const password = getParameterResponse.Parameters.find((obj) => obj.Name === `${connectionUri}/password`).Value;
-
-    const setParameterCommand2 = new PutParameterCommand({ Name: `${connectionUri}/password`, Value: password, Overwrite: true });
-    const putParameterResponse2 = await ssmClient.send(setParameterCommand);
 
     const config: RDSConfig = {
       identifier,
@@ -126,7 +128,13 @@ export class SqlDatatabaseController {
 
     if (this.useDataAPI) {
       if (this.enableLocalTesting) {
-        this.options = await this.setNewConfig();
+        const newConfig = await this.setNewConfig();
+        if (newConfig === null) {
+          // If local cluster identifier is empty or non-existent, disable local testing and create a new cluster
+          this.enableLocalTesting = false;
+        } else {
+          this.options = newConfig;
+        }
       }
       dbConfig = await setupRDSClusterAndData(this.enableLocalTesting, this.options, this.setupQueries);
     } else {
@@ -314,21 +322,7 @@ export class SqlDatatabaseController {
       console.log(`Stored db connection config in Secrets manager: ${JSON.stringify(dbConnectionConfigSecretsManagerCustomKey)}`);
 
       const identifier = this.options.identifier;
-      /*const pathPrefix = `/${identifier}/test`;
-      const engine = this.options.engine;
-      const dbConnectionConfigSSM = {
-        hostnameSsmPath: `${pathPrefix}/hostname`,
-        portSsmPath: `${pathPrefix}/port`,
-        usernameSsmPath: `${pathPrefix}/username`,
-        passwordSsmPath: `${pathPrefix}/password`,
-        databaseNameSsmPath: `${pathPrefix}/databaseName`,
-      };*/
 
-      /*const dbConnectionStringConfigSSM = {connectionUriSsmPath: `${pathPrefix}/connectionUri`};
-      const dbConnectionStringConfigMultiple = {connectionUriSsmPath: [
-        `${pathPrefix}/connectionUri/doesnotexist`,
-        `${pathPrefix}/connectionUri`,
-      ]};*/
       const parameters = {
         ...dbConnectionConfigSSM,
         ...dbConnectionStringConfigSSM,
@@ -369,6 +363,9 @@ export class SqlDatatabaseController {
   cleanupDatabase = async (): Promise<void> => {
     if (!this.databaseDetails || this.enableLocalTesting) {
       // Database has not been set up or using a local test cluster.
+      if (this.enableLocalTesting) {
+        dropDatabase(this.options);
+      }
       return;
     }
 

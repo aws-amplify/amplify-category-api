@@ -1,4 +1,4 @@
-import { createNewProjectDir, deleteProjectDir, generateDBName } from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import generator from 'generate-password';
 import { getResourceNamesForStrategyName } from '@aws-amplify/graphql-transformer-core';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
@@ -15,7 +15,6 @@ describe('CDK GraphQL Transformer deployments with Postgres SQL datasources', ()
   // sufficient password length that meets the requirements for RDS cluster/instance
   const [username, password, identifier] = generator.generateMultiple(3, { length: 11 });
   const region = process.env.CLI_REGION ?? 'us-west-2';
-  const dbname = generateDBName();
   const engine = 'postgres';
 
   const databaseController: SqlDatatabaseController = new SqlDatatabaseController(
@@ -23,7 +22,6 @@ describe('CDK GraphQL Transformer deployments with Postgres SQL datasources', ()
     {
       identifier,
       engine,
-      dbname,
       username,
       password,
       region,
