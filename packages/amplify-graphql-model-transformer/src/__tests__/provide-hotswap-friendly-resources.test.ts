@@ -8,11 +8,18 @@ describe('CustomResources', () => {
     sqlLayerVersionResolverCustomResource: 'TestLayerVersionCustomResource',
     sqlSNSTopicARNResolverCustomResource: 'TestSNSTopicARNCustomResource',
   } as SQLLambdaResourceNames;
-  const context = {
+  const contextToProvideHotswapFriendlyResources = {
     synthParameters: {
       amplifyEnvironmentName: 'testAmplifyEnvironmentName',
       apiName: 'testAPIName',
       provisionHotswapFriendlyResources: true,
+    },
+  } as TransformerContextProvider;
+  const contextToNotProvideHotswapFriendlyResources = {
+    synthParameters: {
+      amplifyEnvironmentName: 'testAmplifyEnvironmentName',
+      apiName: 'testAPIName',
+      provisionHotswapFriendlyResources: false,
     },
   } as TransformerContextProvider;
   const layerVersionCustomResourceType = 'Custom::SQLLayerVersionCustomResource';
@@ -25,8 +32,8 @@ describe('CustomResources', () => {
     stack = new Stack(app, 'TestStack');
   });
 
-  it('should create a layer version custom resource with correct physical ID format for sandbox deployment', () => {
-    createLayerVersionCustomResource(stack, resourceNames, context);
+  it('should create a layer version custom resource with a fixed physical ID if provisionHotswapFriendlyResources is true', () => {
+    createLayerVersionCustomResource(stack, resourceNames, contextToProvideHotswapFriendlyResources);
 
     // Synthesize stack to get CFN template
     const synthesizedTemplate = app.synth().getStackByName(stack.stackName).template;
@@ -47,8 +54,8 @@ describe('CustomResources', () => {
     expect(updateProperties.physicalResourceId.id).toEqual(expectedPhysicalId);
   });
 
-  it('should create a SNS topic ARN custom resource with correct physical ID format for sandbox deployment', () => {
-    createSNSTopicARNCustomResource(stack, resourceNames, context);
+  it('should create a SNS topic ARN custom resource with a fixed physical ID if provisionHotswapFriendlyResources is true', () => {
+    createSNSTopicARNCustomResource(stack, resourceNames, contextToProvideHotswapFriendlyResources);
 
     // Synthesize stack to get CFN template
     const synthesizedTemplate = app.synth().getStackByName(stack.stackName).template;
@@ -67,5 +74,49 @@ describe('CustomResources', () => {
     const expectedPhysicalId = 'TestSNSTopicARNCustomResource';
     expect(createProperties.physicalResourceId.id).toEqual(expectedPhysicalId);
     expect(updateProperties.physicalResourceId.id).toEqual(expectedPhysicalId);
+  });
+
+  it('should create a layer version custom resource with a unique physical ID if provisionHotswapFriendlyResources is false', () => {
+    createLayerVersionCustomResource(stack, resourceNames, contextToNotProvideHotswapFriendlyResources);
+
+    // Synthesize stack to get CFN template
+    const synthesizedTemplate = app.synth().getStackByName(stack.stackName).template;
+    const resources = synthesizedTemplate.Resources;
+
+    // Find custom resource
+    const customResource = Object.values(resources).find((resource: any) => resource.Type === layerVersionCustomResourceType) as any;
+
+    // Expect custom resource to be defined
+    expect(customResource).toBeDefined();
+
+    // Parse 'Create' and 'Update' properties to extract physicalResourceId
+    const createProperties = JSON.parse(customResource.Properties.Create['Fn::Join'][1].join(''));
+    const updateProperties = JSON.parse(customResource.Properties.Update['Fn::Join'][1].join(''));
+
+    const expectedPhysicalId = /^TestLayerVersionCustomResource-\d{13,}$/;
+    expect(createProperties.physicalResourceId.id).toMatch(expectedPhysicalId);
+    expect(updateProperties.physicalResourceId.id).toMatch(expectedPhysicalId);
+  });
+
+  it('should create a SNS topic ARN custom resource with a unique physical ID if provisionHotswapFriendlyResources is false', () => {
+    createSNSTopicARNCustomResource(stack, resourceNames, contextToNotProvideHotswapFriendlyResources);
+
+    // Synthesize stack to get CFN template
+    const synthesizedTemplate = app.synth().getStackByName(stack.stackName).template;
+    const resources = synthesizedTemplate.Resources;
+
+    // Find custom resource
+    const customResource = Object.values(resources).find((resource: any) => resource.Type === snsTopicARNCustomResourceType) as any;
+
+    // Expect custom resource to be defined
+    expect(customResource).toBeDefined();
+
+    // Parse 'Create' and 'Update' properties to extract physicalResourceId
+    const createProperties = JSON.parse(customResource.Properties.Create['Fn::Join'][1].join(''));
+    const updateProperties = JSON.parse(customResource.Properties.Update['Fn::Join'][1].join(''));
+
+    const expectedPhysicalId = /^TestSNSTopicARNCustomResource-\d{13,}$/;
+    expect(createProperties.physicalResourceId.id).toMatch(expectedPhysicalId);
+    expect(updateProperties.physicalResourceId.id).toMatch(expectedPhysicalId);
   });
 });
