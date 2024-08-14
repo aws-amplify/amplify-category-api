@@ -277,6 +277,26 @@ Object {
 }
 `;
 
+exports[`Directive Definitions GenerationDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @generation(
+    aiModel: String!
+    systemPrompt: String!
+    inferenceConfiguration: InferenceConfiguration
+  ) on FIELD_DEFINITION
+
+  input InferenceConfiguration {
+    maxTokens: Int
+    temperature: Float
+    topP: Float
+  }
+",
+  "name": "generation",
+}
+`;
+
 exports[`Directive Definitions HasManyDirective 1`] = `
 Object {
   "defaults": Object {
@@ -602,6 +622,7 @@ Array [
   "deprecated",
   "conversation",
   "function",
+  "generation",
   "hasMany",
   "hasOne",
   "http",
@@ -632,6 +653,7 @@ Array [
   "deprecated",
   "conversation",
   "function",
+  "generation",
   "hasMany",
   "hasOne",
   "http",

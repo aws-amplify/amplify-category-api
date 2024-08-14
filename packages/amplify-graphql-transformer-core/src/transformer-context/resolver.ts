@@ -23,6 +23,7 @@ type Slot = {
   requestMappingTemplate?: MappingTemplateProvider;
   responseMappingTemplate?: MappingTemplateProvider;
   dataSource?: DataSourceProvider;
+  runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty;
 };
 
 // Name of the None Data source used for pipeline resolver
@@ -142,7 +143,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     private requestSlots: string[],
     private responseSlots: string[],
     private datasource?: DataSourceProvider,
-    readonly runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
+    private runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
   ) {
     if (!typeName) {
       throw new InvalidDirectiveError('typeName is required');
@@ -180,6 +181,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     requestMappingTemplate?: MappingTemplateProvider,
     responseMappingTemplate?: MappingTemplateProvider,
     dataSource?: DataSourceProvider,
+    runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
   ): void => {
     if (!this.slotNames.has(slotName)) {
       throw new Error(`Resolver is missing slot ${slotName}`);
@@ -198,6 +200,7 @@ export class TransformerResolver implements TransformerResolverProvider {
         requestMappingTemplate,
         responseMappingTemplate,
         dataSource,
+        runtime,
       });
     }
     this.slotMap.set(slotName, slotEntry);
@@ -276,6 +279,8 @@ export class TransformerResolver implements TransformerResolverProvider {
       this.runtime,
     );
 
+    const stashStatement = this.stashStatementGenerator(this.runtime);
+
     let dataSourceType = 'NONE';
     let dataSource = '';
     if (this.datasource) {
@@ -284,7 +289,7 @@ export class TransformerResolver implements TransformerResolverProvider {
         case 'AMAZON_DYNAMODB':
           if (this.datasource.ds.dynamoDbConfig && !isResolvableObject(this.datasource.ds.dynamoDbConfig)) {
             const tableName = this.datasource.ds.dynamoDbConfig?.tableName;
-            dataSource = `$util.qr($ctx.stash.put("tableName", "${tableName}"))`;
+            dataSource = stashStatement('tableName', `"${tableName}"`);
             if (
               this.datasource.ds.dynamoDbConfig?.deltaSyncConfig &&
               !isResolvableObject(this.datasource.ds.dynamoDbConfig?.deltaSyncConfig)
@@ -304,7 +309,7 @@ export class TransformerResolver implements TransformerResolverProvider {
                   return SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL.toString();
                 },
               });
-              dataSource += `\n$util.qr($ctx.stash.put("deltaSyncTableTtl", ${deltaSyncTableTtl}))`;
+              dataSource += '\n' + stashStatement('deltaSyncTableTtl', `"${deltaSyncTableTtl}"`);
             }
           }
 
@@ -336,19 +341,19 @@ export class TransformerResolver implements TransformerResolverProvider {
         case 'AMAZON_ELASTICSEARCH':
           if (this.datasource.ds.elasticsearchConfig && !isResolvableObject(this.datasource.ds.elasticsearchConfig)) {
             const endpoint = this.datasource.ds.elasticsearchConfig?.endpoint;
-            dataSource = `$util.qr($ctx.stash.put("endpoint", "${endpoint}"))`;
+            dataSource = stashStatement('endpoint', `"${endpoint}"`);
           }
           break;
         case 'AWS_LAMBDA':
           if (this.datasource.ds.lambdaConfig && !isResolvableObject(this.datasource.ds.lambdaConfig)) {
             const lambdaFunctionArn = this.datasource.ds.lambdaConfig?.lambdaFunctionArn;
-            dataSource = `$util.qr($ctx.stash.put("lambdaFunctionArn", "${lambdaFunctionArn}"))`;
+            dataSource = stashStatement('lambdaFunctionArn', `"${lambdaFunctionArn}"`);
           }
           break;
         case 'HTTP':
           if (this.datasource.ds.httpConfig && !isResolvableObject(this.datasource.ds.httpConfig)) {
             const endpoint = this.datasource.ds.httpConfig?.endpoint;
-            dataSource = `$util.qr($ctx.stash.put("endpoint", "${endpoint}"))`;
+            dataSource = stashStatement('endpoint', `"${endpoint}"`);
           }
           break;
         case 'RELATIONAL_DATABASE':
@@ -358,7 +363,7 @@ export class TransformerResolver implements TransformerResolverProvider {
             !isResolvableObject(this.datasource.ds.relationalDatabaseConfig?.rdsHttpEndpointConfig)
           ) {
             const databaseName = this.datasource.ds.relationalDatabaseConfig?.rdsHttpEndpointConfig!.databaseName;
-            dataSource = `$util.qr($ctx.stash.metadata.put("databaseName", "${databaseName}"))`;
+            dataSource = stashStatement('databaseName', `"${databaseName}"`);
           }
           break;
         default:
@@ -366,61 +371,64 @@ export class TransformerResolver implements TransformerResolverProvider {
       }
     }
     let initResolver = dedent`
-      $util.qr($ctx.stash.put("typeName", "${this.typeName}"))
-      $util.qr($ctx.stash.put("fieldName", "${this.fieldName}"))
-      $util.qr($ctx.stash.put("conditions", []))
-      $util.qr($ctx.stash.put("metadata", {}))
-      $util.qr($ctx.stash.metadata.put("dataSourceType", "${dataSourceType}"))
-      $util.qr($ctx.stash.metadata.put("apiId", "${api.apiId}"))
-      $util.qr($ctx.stash.put("connectionAttributes", {}))
+      ${stashStatement('typeName', `"${this.typeName}"`)}
+      ${stashStatement('fieldName', `"${this.fieldName}"`)}
+      ${stashStatement('conditions', '[]')}
+      ${stashStatement('metadata', '{}')}
+      ${stashStatement('dataSourceType', `"${dataSourceType}"`, 'metadata')}
+      ${stashStatement('apiId', `"${api.apiId}"`, 'metadata')}
+      ${stashStatement('connectionAttributes', '{}')}
       ${dataSource}
     `;
     const account = Stack.of(context.stackManager.scope).account;
     const authRole = context.synthParameters.authenticatedUserRoleName;
     if (authRole) {
+      const authRoleStatement = stashStatement('authRole', `"arn:aws:sts::${account}:assumed-role/${authRole}/CognitoIdentityCredentials"`);
+
       initResolver += dedent`\n
-      $util.qr($ctx.stash.put("authRole", "arn:aws:sts::${account}:assumed-role/${authRole}/CognitoIdentityCredentials"))
+        ${authRoleStatement}
       `;
     }
     const unauthRole = context.synthParameters.unauthenticatedUserRoleName;
     if (unauthRole) {
+      const unauthRoleStatement = stashStatement(
+        'unauthRole',
+        `"arn:aws:sts::${account}:assumed-role/${unauthRole}/CognitoIdentityCredentials"`,
+      );
       initResolver += dedent`\n
-      $util.qr($ctx.stash.put("unauthRole", "arn:aws:sts::${account}:assumed-role/${unauthRole}/CognitoIdentityCredentials"))
+        ${unauthRoleStatement}
       `;
     }
     const identityPoolId = context.synthParameters.identityPoolId;
     if (identityPoolId) {
+      const identityPoolStatement = stashStatement('identityPoolId', `"${identityPoolId}"`);
       initResolver += dedent`\n
-        $util.qr($ctx.stash.put("identityPoolId", "${identityPoolId}"))
+        ${identityPoolStatement}
       `;
     }
     const adminRoles = context.synthParameters.adminRoles ?? [];
+    const adminRolesStatement = stashStatement('adminRoles', `${JSON.stringify(adminRoles)}`);
     initResolver += dedent`\n
-      $util.qr($ctx.stash.put("adminRoles", ${JSON.stringify(adminRoles)}))
+      ${adminRolesStatement}
     `;
-    initResolver += '\n$util.toJson({})';
 
-    initResolver = this.runtime
-      ? dedent`
-      export const request = (ctx) => {
-        ctx.stash.typeName = '${this.typeName}';
-        ctx.stash.fieldName = '${this.fieldName}';
-        ctx.stash.metadata = { dataSourceType: '${dataSourceType}' };
-        ctx.stash.metadata.apiId = '${api.apiId}';
-        return {};
-      };
-    `
-      : initResolver;
-
-    // ctx.stash.metadata.dataSourceType = '${dataSourceType}';
-    // ctx.stash.metadata.apiId = '${api.apiId}';
+    if (this.runtime?.name === 'APPSYNC_JS') {
+      initResolver = dedent`
+        export const request = (ctx) => {
+          ${initResolver}
+          return {};
+        }
+      `;
+    } else {
+      initResolver += '\n$util.toJson({})';
+    }
 
     const initResponseResolver = this.runtime
       ? dedent`
-    export const response = (ctx) => {
-      return ctx.prev.result;
-    };
-    `
+        export const response = (ctx) => {
+          return ctx.prev.result;
+        };
+      `
       : '$util.toJson($ctx.prev.result)';
 
     api.host.addResolver(
@@ -457,7 +465,7 @@ export class TransformerResolver implements TransformerResolverProvider {
             responseMappingTemplate || MappingTemplate.inlineTemplateFromString('$util.toJson({})'),
             dataSource?.name || NONE_DATA_SOURCE_NAME,
             scope,
-            this.runtime,
+            slotItem.runtime,
           );
           appSyncFunctions.push(fn);
         }
@@ -493,5 +501,19 @@ export class TransformerResolver implements TransformerResolverProvider {
         description: 'None Data Source for Pipeline functions',
       });
     }
+  }
+
+  private stashStatementGenerator(
+    runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
+  ): (name: string, value?: string, object?: string) => string {
+    const jsStashStatement = (name: string, value?: string, object?: string): string => {
+      const objectPrefix = object ? `.${object}` : '';
+      return `ctx.stash${objectPrefix}.${name} = ${value};`;
+    };
+    const vtlStashStatement = (name: string, value?: string, object?: string): string => {
+      const objectPrefix = object ? `.${object}` : '';
+      return `$util.qr($ctx.stash${objectPrefix}.put("${name}", ${value}`;
+    };
+    return runtime?.name === 'APPSYNC_JS' ? jsStashStatement : vtlStashStatement;
   }
 }

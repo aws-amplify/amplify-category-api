@@ -1,0 +1,22 @@
+type Todo @model(queries: { list: null }, mutations: null, subscriptions: null) {
+  content: String
+  isDone: Boolean
+}
+
+type Recipe {
+  name: String
+  ingredients: [String]
+  instructions: String
+}
+
+type Query {
+  makeTodo(description: String!): Todo
+    @generation(aiModel: "Claude3Haiku", systemPrompt: "Make a list of todo items based on the description.")
+
+  summarize(input: String): String @generation(aiModel: "Claude3Haiku", systemPrompt: "summarize the input.")
+
+  generateRecipe(description: String): Recipe
+    @generation(aiModel: "Claude3Haiku", systemPrompt: "You are a 3 start michelin chef that generates recipes.")
+
+  solveEquation(equation: String): Int @generation(aiModel: "Claude3Haiku", systemPrompt: "Solve the equation and return the result.")
+}

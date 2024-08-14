@@ -37,6 +37,13 @@ export interface FunctionConfigurationProps extends BaseFunctionConfigurationPro
    */
   readonly dataSource: BaseDataSource | string;
 
+  /**
+   * Describes a runtime used by an AWS AppSync resolver or AWS AppSync function.
+   *
+   * Specifies the name and version of the runtime to use. Note that if a runtime is specified, code must also be specified.
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appsync-functionconfiguration.html#cfn-appsync-functionconfiguration-runtime
+   */
   readonly runtime: CfnFunctionConfiguration.AppSyncRuntimeProperty | undefined;
 }
 
@@ -55,29 +62,30 @@ export class AppSyncFunctionConfiguration extends Construct {
 
     const requestTemplate = props.requestMappingTemplate.bind(this, props.api.assetProvider);
     const responseTemplate = props.responseMappingTemplate.bind(this, props.api.assetProvider);
-    this.function = props.runtime
-      ? new CfnFunctionConfiguration(this, `${id}.AppSyncFunction`, {
-          name: id,
-          apiId: props.api.apiId,
-          functionVersion: '2018-05-29',
-          description: props.description,
-          dataSourceName: props.dataSource instanceof BaseDataSource ? props.dataSource.ds.attrName : props.dataSource,
-          code: requestTemplate + '\n\n' + responseTemplate,
-          runtime: props.runtime,
-        })
-      : new CfnFunctionConfiguration(this, `${id}.AppSyncFunction`, {
-          name: id,
-          apiId: props.api.apiId,
-          functionVersion: '2018-05-29',
-          description: props.description,
-          dataSourceName: props.dataSource instanceof BaseDataSource ? props.dataSource.ds.attrName : props.dataSource,
-          ...(props.requestMappingTemplate instanceof InlineTemplate
-            ? { requestMappingTemplate: requestTemplate }
-            : { requestMappingTemplateS3Location: requestTemplate }),
-          ...(props.responseMappingTemplate instanceof InlineTemplate
-            ? { responseMappingTemplate: responseTemplate }
-            : { responseMappingTemplateS3Location: responseTemplate }),
-        });
+    this.function =
+      props.runtime?.name === 'APPSYNC_JS'
+        ? new CfnFunctionConfiguration(this, `${id}.AppSyncFunction`, {
+            name: id,
+            apiId: props.api.apiId,
+            functionVersion: '2018-05-29',
+            description: props.description,
+            dataSourceName: props.dataSource instanceof BaseDataSource ? props.dataSource.ds.attrName : props.dataSource,
+            code: requestTemplate + '\n\n' + responseTemplate,
+            runtime: props.runtime,
+          })
+        : new CfnFunctionConfiguration(this, `${id}.AppSyncFunction`, {
+            name: id,
+            apiId: props.api.apiId,
+            functionVersion: '2018-05-29',
+            description: props.description,
+            dataSourceName: props.dataSource instanceof BaseDataSource ? props.dataSource.ds.attrName : props.dataSource,
+            ...(props.requestMappingTemplate instanceof InlineTemplate
+              ? { requestMappingTemplate: requestTemplate }
+              : { requestMappingTemplateS3Location: requestTemplate }),
+            ...(props.responseMappingTemplate instanceof InlineTemplate
+              ? { responseMappingTemplate: responseTemplate }
+              : { responseMappingTemplateS3Location: responseTemplate }),
+          });
     setResourceName(this.function, { name: id });
     props.api.addSchemaDependency(this.function);
     if (props.dataSource instanceof BackedDataSource) {

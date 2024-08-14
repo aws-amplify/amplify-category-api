@@ -70,6 +70,9 @@ export const FunctionDirective: Directive;
 export const FunctionDirectiveV1: Directive;
 
 // @public (undocumented)
+export const GenerationDirective: Directive;
+
+// @public (undocumented)
 export const HasManyDirective: Directive<HasManyDirectiveDefaults>;
 
 // @public (undocumented)

@@ -8,6 +8,7 @@ import {
   NoneDataSource,
   CfnResolver,
   CfnFunctionConfiguration,
+  HttpDataSourceOptions,
 } from 'aws-cdk-lib/aws-appsync';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IFunction, ILayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
@@ -31,7 +32,7 @@ export interface DynamoDbDataSourceOptions extends DataSourceOptions {
 export interface TransformHostProvider {
   setAPI(api: GraphqlApiBase): void;
 
-  addHttpDataSource(name: string, endpoint: string, options?: DataSourceOptions, scope?: Construct): HttpDataSource;
+  addHttpDataSource(name: string, endpoint: string, options?: HttpDataSourceOptions, scope?: Construct): HttpDataSource;
   addDynamoDbDataSource(name: string, table: ITable, options?: DynamoDbDataSourceOptions, scope?: Construct): DynamoDbDataSource;
   addNoneDataSource(name: string, options?: DataSourceOptions, scope?: Construct): NoneDataSource;
   addLambdaDataSource(name: string, lambdaFunction: IFunction, options?: DataSourceOptions, scope?: Construct): LambdaDataSource;

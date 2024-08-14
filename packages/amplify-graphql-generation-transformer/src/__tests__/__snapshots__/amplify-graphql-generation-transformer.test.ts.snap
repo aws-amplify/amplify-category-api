@@ -1,0 +1,541 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`generation route custom query 1`] = `
+Object {
+  "Fn::Join": Array [
+    "",
+    Array [
+      "export const request = (ctx) => {
+  ctx.stash.typeName = \\"Query\\";
+  ctx.stash.fieldName = \\"generateRecipe\\";
+  ctx.stash.conditions = [];
+  ctx.stash.metadata = {};
+  ctx.stash.metadata.dataSourceType = \\"HTTP\\";
+  ctx.stash.metadata.apiId = \\"",
+      Object {
+        "Fn::GetAtt": Array [
+          "GraphQLAPI",
+          "ApiId",
+        ],
+      },
+      "\\";
+  ctx.stash.connectionAttributes = {};
+  ctx.stash.endpoint = \\"https://bedrock-runtime.",
+      Object {
+        "Ref": "AWS::Region",
+      },
+      ".amazonaws.com\\";
+  ctx.stash.authRole = \\"arn:aws:sts::",
+      Object {
+        "Ref": "AWS::AccountId",
+      },
+      ":assumed-role/",
+      Object {
+        "Ref": "authRoleName",
+      },
+      "/CognitoIdentityCredentials\\";
+  ctx.stash.unauthRole = \\"arn:aws:sts::",
+      Object {
+        "Ref": "AWS::AccountId",
+      },
+      ":assumed-role/",
+      Object {
+        "Ref": "unauthRoleName",
+      },
+      "/CognitoIdentityCredentials\\";
+  ctx.stash.adminRoles = [];
+  return {};
+}
+
+export const response = (ctx) => {
+  return ctx.prev.result;
+};",
+    ],
+  ],
+}
+`;
+
+exports[`generation route custom query 2`] = `
+"export function request(ctx) {
+    const tools = \`{\\"tools\\":[{\\"toolSpec\\":{\\"name\\":\\"responseType\\",\\"description\\":\\"Generate a response type for the given field\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"value\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"name\\":{\\"type\\":\\"string\\"},\\"ingredients\\":{\\"type\\":\\"array\\",\\"items\\":{\\"type\\":\\"string\\"}},\\"instructions\\":{\\"type\\":\\"string\\"}},\\"required\\":[]}},\\"required\\":[\\"value\\"]}}}}],\\"toolChoice\\":{\\"tool\\":{\\"name\\":\\"responseType\\"}}}\`;
+    const prompt = \`You are a helpful assistant that generates recipes.\`;
+    const args = JSON.stringify(ctx.args);
+    const toolConfig = JSON.parse(tools);
+
+    return {
+      resourcePath: '/model/anthropic.claude-3-haiku-20240307-v1:0/converse',
+      method: 'POST',
+      params: {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: {
+          messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                text: args
+              }
+            ],
+          }
+        ],
+        system: [{ text: prompt }],
+        toolConfig,
+      }
+    }
+  }
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  }
+  const body = JSON.parse(ctx.result.body);
+  const { content } = body.output.message;
+
+  if (content.length < 1) {
+    util.error('No content block in assistant response.', 'error');
+  }
+
+  const toolUse = content[0].toolUse;
+  if (!toolUse) {
+    util.error('Missing tool use block in assistant response.', 'error');
+  }
+
+  const response = toolUse.input.value;
+  return response;
+}"
+`;
+
+exports[`generation route model list response type 1`] = `
+Object {
+  "Fn::Join": Array [
+    "",
+    Array [
+      "export const request = (ctx) => {
+  ctx.stash.typeName = \\"Query\\";
+  ctx.stash.fieldName = \\"makeTodos\\";
+  ctx.stash.conditions = [];
+  ctx.stash.metadata = {};
+  ctx.stash.metadata.dataSourceType = \\"HTTP\\";
+  ctx.stash.metadata.apiId = \\"",
+      Object {
+        "Fn::GetAtt": Array [
+          "GraphQLAPI",
+          "ApiId",
+        ],
+      },
+      "\\";
+  ctx.stash.connectionAttributes = {};
+  ctx.stash.endpoint = \\"https://bedrock-runtime.",
+      Object {
+        "Ref": "AWS::Region",
+      },
+      ".amazonaws.com\\";
+  ctx.stash.authRole = \\"arn:aws:sts::",
+      Object {
+        "Ref": "AWS::AccountId",
+      },
+      ":assumed-role/",
+      Object {
+        "Ref": "authRoleName",
+      },
+      "/CognitoIdentityCredentials\\";
+  ctx.stash.unauthRole = \\"arn:aws:sts::",
+      Object {
+        "Ref": "AWS::AccountId",
+      },
+      ":assumed-role/",
+      Object {
+        "Ref": "unauthRoleName",
+      },
+      "/CognitoIdentityCredentials\\";
+  ctx.stash.adminRoles = [];
+  return {};
+}
+
+export const response = (ctx) => {
+  return ctx.prev.result;
+};",
+    ],
+  ],
+}
+`;
+
+exports[`generation route model list response type 2`] = `
+"export function request(ctx) {
+    const tools = \`{\\"tools\\":[{\\"toolSpec\\":{\\"name\\":\\"responseType\\",\\"description\\":\\"Generate a response type for the given field\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"value\\":{\\"type\\":\\"array\\",\\"items\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"content\\":{\\"type\\":\\"string\\"},\\"isDone\\":{\\"type\\":\\"boolean\\"}},\\"required\\":[]}}},\\"required\\":[\\"value\\"]}}}}],\\"toolChoice\\":{\\"tool\\":{\\"name\\":\\"responseType\\"}}}\`;
+    const prompt = \`Make a list of todo items based on the description.\`;
+    const args = JSON.stringify(ctx.args);
+    const toolConfig = JSON.parse(tools);
+
+    return {
+      resourcePath: '/model/anthropic.claude-3-haiku-20240307-v1:0/converse',
+      method: 'POST',
+      params: {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: {
+          messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                text: args
+              }
+            ],
+          }
+        ],
+        system: [{ text: prompt }],
+        toolConfig,
+      }
+    }
+  }
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  }
+  const body = JSON.parse(ctx.result.body);
+  const { content } = body.output.message;
+
+  if (content.length < 1) {
+    util.error('No content block in assistant response.', 'error');
+  }
+
+  const toolUse = content[0].toolUse;
+  if (!toolUse) {
+    util.error('Missing tool use block in assistant response.', 'error');
+  }
+
+  const response = toolUse.input.value;
+  return response;
+}"
+`;
+
+exports[`generation route model type 1`] = `
+Object {
+  "Fn::Join": Array [
+    "",
+    Array [
+      "export const request = (ctx) => {
+  ctx.stash.typeName = \\"Query\\";
+  ctx.stash.fieldName = \\"makeTodo\\";
+  ctx.stash.conditions = [];
+  ctx.stash.metadata = {};
+  ctx.stash.metadata.dataSourceType = \\"HTTP\\";
+  ctx.stash.metadata.apiId = \\"",
+      Object {
+        "Fn::GetAtt": Array [
+          "GraphQLAPI",
+          "ApiId",
+        ],
+      },
+      "\\";
+  ctx.stash.connectionAttributes = {};
+  ctx.stash.endpoint = \\"https://bedrock-runtime.",
+      Object {
+        "Ref": "AWS::Region",
+      },
+      ".amazonaws.com\\";
+  ctx.stash.authRole = \\"arn:aws:sts::",
+      Object {
+        "Ref": "AWS::AccountId",
+      },
+      ":assumed-role/",
+      Object {
+        "Ref": "authRoleName",
+      },
+      "/CognitoIdentityCredentials\\";
+  ctx.stash.unauthRole = \\"arn:aws:sts::",
+      Object {
+        "Ref": "AWS::AccountId",
+      },
+      ":assumed-role/",
+      Object {
+        "Ref": "unauthRoleName",
+      },
+      "/CognitoIdentityCredentials\\";
+  ctx.stash.adminRoles = [];
+  return {};
+}
+
+export const response = (ctx) => {
+  return ctx.prev.result;
+};",
+    ],
+  ],
+}
+`;
+
+exports[`generation route model type 2`] = `
+"export function request(ctx) {
+    const tools = \`{\\"tools\\":[{\\"toolSpec\\":{\\"name\\":\\"responseType\\",\\"description\\":\\"Generate a response type for the given field\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"value\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"content\\":{\\"type\\":\\"string\\"},\\"isDone\\":{\\"type\\":\\"boolean\\"}},\\"required\\":[]}},\\"required\\":[\\"value\\"]}}}}],\\"toolChoice\\":{\\"tool\\":{\\"name\\":\\"responseType\\"}}}\`;
+    const prompt = \`Make a string based on the description.\`;
+    const args = JSON.stringify(ctx.args);
+    const toolConfig = JSON.parse(tools);
+
+    return {
+      resourcePath: '/model/anthropic.claude-3-haiku-20240307-v1:0/converse',
+      method: 'POST',
+      params: {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: {
+          messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                text: args
+              }
+            ],
+          }
+        ],
+        system: [{ text: prompt }],
+        toolConfig,
+      }
+    }
+  }
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  }
+  const body = JSON.parse(ctx.result.body);
+  const { content } = body.output.message;
+
+  if (content.length < 1) {
+    util.error('No content block in assistant response.', 'error');
+  }
+
+  const toolUse = content[0].toolUse;
+  if (!toolUse) {
+    util.error('Missing tool use block in assistant response.', 'error');
+  }
+
+  const response = toolUse.input.value;
+  return response;
+}"
+`;
+
+exports[`generation route required model type required field 1`] = `
+Object {
+  "Fn::Join": Array [
+    "",
+    Array [
+      "export const request = (ctx) => {
+  ctx.stash.typeName = \\"Query\\";
+  ctx.stash.fieldName = \\"makeTodo\\";
+  ctx.stash.conditions = [];
+  ctx.stash.metadata = {};
+  ctx.stash.metadata.dataSourceType = \\"HTTP\\";
+  ctx.stash.metadata.apiId = \\"",
+      Object {
+        "Fn::GetAtt": Array [
+          "GraphQLAPI",
+          "ApiId",
+        ],
+      },
+      "\\";
+  ctx.stash.connectionAttributes = {};
+  ctx.stash.endpoint = \\"https://bedrock-runtime.",
+      Object {
+        "Ref": "AWS::Region",
+      },
+      ".amazonaws.com\\";
+  ctx.stash.authRole = \\"arn:aws:sts::",
+      Object {
+        "Ref": "AWS::AccountId",
+      },
+      ":assumed-role/",
+      Object {
+        "Ref": "authRoleName",
+      },
+      "/CognitoIdentityCredentials\\";
+  ctx.stash.unauthRole = \\"arn:aws:sts::",
+      Object {
+        "Ref": "AWS::AccountId",
+      },
+      ":assumed-role/",
+      Object {
+        "Ref": "unauthRoleName",
+      },
+      "/CognitoIdentityCredentials\\";
+  ctx.stash.adminRoles = [];
+  return {};
+}
+
+export const response = (ctx) => {
+  return ctx.prev.result;
+};",
+    ],
+  ],
+}
+`;
+
+exports[`generation route required model type required field 2`] = `
+"export function request(ctx) {
+    const tools = \`{\\"tools\\":[{\\"toolSpec\\":{\\"name\\":\\"responseType\\",\\"description\\":\\"Generate a response type for the given field\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"value\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"content\\":{\\"type\\":\\"string\\"},\\"isDone\\":{\\"type\\":\\"boolean\\"}},\\"required\\":[]}},\\"required\\":[\\"value\\"]}}}}],\\"toolChoice\\":{\\"tool\\":{\\"name\\":\\"responseType\\"}}}\`;
+    const prompt = \`Make a string based on the description.\`;
+    const args = JSON.stringify(ctx.args);
+    const toolConfig = JSON.parse(tools);
+
+    return {
+      resourcePath: '/model/anthropic.claude-3-haiku-20240307-v1:0/converse',
+      method: 'POST',
+      params: {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: {
+          messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                text: args
+              }
+            ],
+          }
+        ],
+        system: [{ text: prompt }],
+        toolConfig,
+      }
+    }
+  }
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  }
+  const body = JSON.parse(ctx.result.body);
+  const { content } = body.output.message;
+
+  if (content.length < 1) {
+    util.error('No content block in assistant response.', 'error');
+  }
+
+  const toolUse = content[0].toolUse;
+  if (!toolUse) {
+    util.error('Missing tool use block in assistant response.', 'error');
+  }
+
+  const response = toolUse.input.value;
+  return response;
+}"
+`;
+
+exports[`generation route scalar type 1`] = `
+Object {
+  "Fn::Join": Array [
+    "",
+    Array [
+      "export const request = (ctx) => {
+  ctx.stash.typeName = \\"Query\\";
+  ctx.stash.fieldName = \\"makeTodo\\";
+  ctx.stash.conditions = [];
+  ctx.stash.metadata = {};
+  ctx.stash.metadata.dataSourceType = \\"HTTP\\";
+  ctx.stash.metadata.apiId = \\"",
+      Object {
+        "Fn::GetAtt": Array [
+          "GraphQLAPI",
+          "ApiId",
+        ],
+      },
+      "\\";
+  ctx.stash.connectionAttributes = {};
+  ctx.stash.endpoint = \\"https://bedrock-runtime.",
+      Object {
+        "Ref": "AWS::Region",
+      },
+      ".amazonaws.com\\";
+  ctx.stash.authRole = \\"arn:aws:sts::",
+      Object {
+        "Ref": "AWS::AccountId",
+      },
+      ":assumed-role/",
+      Object {
+        "Ref": "authRoleName",
+      },
+      "/CognitoIdentityCredentials\\";
+  ctx.stash.unauthRole = \\"arn:aws:sts::",
+      Object {
+        "Ref": "AWS::AccountId",
+      },
+      ":assumed-role/",
+      Object {
+        "Ref": "unauthRoleName",
+      },
+      "/CognitoIdentityCredentials\\";
+  ctx.stash.adminRoles = [];
+  return {};
+}
+
+export const response = (ctx) => {
+  return ctx.prev.result;
+};",
+    ],
+  ],
+}
+`;
+
+exports[`generation route scalar type 2`] = `
+"export function request(ctx) {
+    const tools = \`{\\"tools\\":[{\\"toolSpec\\":{\\"name\\":\\"responseType\\",\\"description\\":\\"Generate a response type for the given field\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"value\\":{\\"type\\":\\"string\\"}},\\"required\\":[\\"value\\"]}}}}],\\"toolChoice\\":{\\"tool\\":{\\"name\\":\\"responseType\\"}}}\`;
+    const prompt = \`Make a string based on the description.\`;
+    const args = JSON.stringify(ctx.args);
+    const toolConfig = JSON.parse(tools);
+
+    return {
+      resourcePath: '/model/anthropic.claude-3-haiku-20240307-v1:0/converse',
+      method: 'POST',
+      params: {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: {
+          messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                text: args
+              }
+            ],
+          }
+        ],
+        system: [{ text: prompt }],
+        toolConfig,
+      }
+    }
+  }
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  }
+  const body = JSON.parse(ctx.result.body);
+  const { content } = body.output.message;
+
+  if (content.length < 1) {
+    util.error('No content block in assistant response.', 'error');
+  }
+
+  const toolUse = content[0].toolUse;
+  if (!toolUse) {
+    util.error('Missing tool use block in assistant response.', 'error');
+  }
+
+  const response = toolUse.input.value;
+  return response;
+}"
+`;
