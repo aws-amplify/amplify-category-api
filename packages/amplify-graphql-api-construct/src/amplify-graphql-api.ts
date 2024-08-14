@@ -203,6 +203,7 @@ export class AmplifyGraphqlApi extends Construct {
         amplifyEnvironmentName: amplifyEnvironmentName,
         apiName: props.apiName ?? id,
         ...authSynthParameters,
+        provisionHotswapFriendlyResources: translationBehavior?._provisionHotswapFriendlyResources,
       },
       schema: definition.schema,
       userDefinedSlots: parseUserDefinedSlots(separatedFunctionSlots),
