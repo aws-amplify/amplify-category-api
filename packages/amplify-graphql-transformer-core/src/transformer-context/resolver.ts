@@ -23,6 +23,7 @@ type Slot = {
   requestMappingTemplate?: MappingTemplateProvider;
   responseMappingTemplate?: MappingTemplateProvider;
   dataSource?: DataSourceProvider;
+  runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty;
 };
 
 // Name of the None Data source used for pipeline resolver
@@ -180,6 +181,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     requestMappingTemplate?: MappingTemplateProvider,
     responseMappingTemplate?: MappingTemplateProvider,
     dataSource?: DataSourceProvider,
+    runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
   ): void => {
     if (!this.slotNames.has(slotName)) {
       throw new Error(`Resolver is missing slot ${slotName}`);
@@ -198,6 +200,7 @@ export class TransformerResolver implements TransformerResolverProvider {
         requestMappingTemplate,
         responseMappingTemplate,
         dataSource,
+        runtime,
       });
     }
     this.slotMap.set(slotName, slotEntry);
@@ -462,7 +465,7 @@ export class TransformerResolver implements TransformerResolverProvider {
             responseMappingTemplate || MappingTemplate.inlineTemplateFromString('$util.toJson({})'),
             dataSource?.name || NONE_DATA_SOURCE_NAME,
             scope,
-            this.runtime,
+            slotItem.runtime,
           );
           appSyncFunctions.push(fn);
         }

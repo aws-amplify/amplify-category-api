@@ -25,10 +25,12 @@ test('generation route model list response type', () => {
           aiModel: "Claude3Haiku",
           systemPrompt: "Make a list of todo items based on the description.",
         )
+        @auth(rules: [{ allow:  public, provider: iam}])
     }
   `;
   const out = transform(inputSchema);
   expect(out).toBeDefined();
+  console.log('out', JSON.stringify(out, null, 2));
 
   const resolverCode = getResolverResource(queryName, out.rootStack.Resources)['Properties']['Code'];
   expect(resolverCode).toBeDefined();
@@ -177,7 +179,7 @@ const getResolverFnResource = (queryName: string, resources?: Record<string, any
 
 const defaultAuthConfig: AppSyncAuthConfiguration = {
   defaultAuthentication: {
-    authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    authenticationType: 'AWS_IAM',
   },
   additionalAuthenticationProviders: [],
 };

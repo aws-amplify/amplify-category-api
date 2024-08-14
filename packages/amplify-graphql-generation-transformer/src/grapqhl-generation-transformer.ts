@@ -104,8 +104,8 @@ export class GenerationTransformer extends TransformerPluginBase {
         resolverResourceId,
         invokeBedrockFunction.req,
         invokeBedrockFunction.res,
-        [],
-        [],
+        ['init', 'preAuth', 'auth', 'postAuth', 'preDataLoad'],
+        ['postDataLoad', 'finish'],
         dataSource as any,
         { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' },
       );
