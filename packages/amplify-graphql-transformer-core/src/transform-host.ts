@@ -15,6 +15,7 @@ import {
   LambdaDataSource,
   NoneDataSource,
   CfnResolver,
+  CfnFunctionConfiguration,
 } from 'aws-cdk-lib/aws-appsync';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IRole } from 'aws-cdk-lib/aws-iam';
@@ -138,6 +139,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     responseMappingTemplate: MappingTemplateProvider,
     dataSourceName: string,
     scope?: Construct,
+    runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
   ): AppSyncFunctionConfiguration => {
     if (dataSourceName && !Token.isUnresolved(dataSourceName) && !this.dataSources.has(dataSourceName)) {
       throw new Error(`DataSource ${dataSourceName} is missing in the API`);
@@ -168,6 +170,7 @@ export class DefaultTransformHost implements TransformHostProvider {
       dataSource: dataSource || dataSourceName,
       requestMappingTemplate,
       responseMappingTemplate,
+      runtime,
     });
     this.appsyncFunctions.set(slotHash, fn);
     return fn;
@@ -182,6 +185,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     dataSourceName?: string,
     pipelineConfig?: string[],
     scope?: Construct,
+    runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
   ): CfnResolver => {
     if (dataSourceName && !Token.isUnresolved(dataSourceName) && !this.dataSources.has(dataSourceName)) {
       throw new Error(`DataSource ${dataSourceName} is missing in the API`);
@@ -213,21 +217,32 @@ export class DefaultTransformHost implements TransformHostProvider {
       return resolver;
     }
     if (pipelineConfig) {
+      const runtimeSpecificArgs =
+        runtime?.name === 'APPSYNC_JS'
+          ? {
+              code: requestTemplateLocation + '\n\n' + responseTemplateLocation,
+              runtime,
+            }
+          : {
+              ...(requestMappingTemplate instanceof InlineTemplate
+                ? { requestMappingTemplate: requestTemplateLocation }
+                : { requestMappingTemplateS3Location: requestTemplateLocation }),
+              ...(responseMappingTemplate instanceof InlineTemplate
+                ? { responseMappingTemplate: responseTemplateLocation }
+                : { responseMappingTemplateS3Location: responseTemplateLocation }),
+            };
+
       const resolver = new CfnResolver(scope || this.api, resolverName, {
         apiId: this.api.apiId,
         fieldName,
         typeName,
         kind: 'PIPELINE',
-        ...(requestMappingTemplate instanceof InlineTemplate
-          ? { requestMappingTemplate: requestTemplateLocation }
-          : { requestMappingTemplateS3Location: requestTemplateLocation }),
-        ...(responseMappingTemplate instanceof InlineTemplate
-          ? { responseMappingTemplate: responseTemplateLocation }
-          : { responseMappingTemplateS3Location: responseTemplateLocation }),
         pipelineConfig: {
           functions: pipelineConfig,
         },
+        ...runtimeSpecificArgs,
       });
+
       resolver.overrideLogicalId(resourceId);
       setResourceName(resolver, { name: `${typeName}.${fieldName}` });
       this.api.addSchemaDependency(resolver);
