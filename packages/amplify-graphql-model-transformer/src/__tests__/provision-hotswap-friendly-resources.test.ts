@@ -3,7 +3,7 @@ import { SQLLambdaResourceNames } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { createLayerVersionCustomResource, createSNSTopicARNCustomResource } from '../resolvers/rds';
 
-describe('CustomResources', () => {
+describe('provisionHotswapFriendlyResources', () => {
   const resourceNames = {
     sqlLayerVersionResolverCustomResource: 'TestLayerVersionCustomResource',
     sqlSNSTopicARNResolverCustomResource: 'TestSNSTopicARNCustomResource',
@@ -49,7 +49,7 @@ describe('CustomResources', () => {
     const createProperties = JSON.parse(customResource.Properties.Create['Fn::Join'][1].join(''));
     const updateProperties = JSON.parse(customResource.Properties.Update['Fn::Join'][1].join(''));
 
-    const expectedPhysicalId = 'TestLayerVersionCustomResource';
+    const expectedPhysicalId = resourceNames.sqlLayerVersionResolverCustomResource;
     expect(createProperties.physicalResourceId.id).toEqual(expectedPhysicalId);
     expect(updateProperties.physicalResourceId.id).toEqual(expectedPhysicalId);
   });
@@ -71,7 +71,7 @@ describe('CustomResources', () => {
     const createProperties = JSON.parse(customResource.Properties.Create['Fn::Join'][1].join(''));
     const updateProperties = JSON.parse(customResource.Properties.Update['Fn::Join'][1].join(''));
 
-    const expectedPhysicalId = 'TestSNSTopicARNCustomResource';
+    const expectedPhysicalId = resourceNames.sqlSNSTopicARNResolverCustomResource;
     expect(createProperties.physicalResourceId.id).toEqual(expectedPhysicalId);
     expect(updateProperties.physicalResourceId.id).toEqual(expectedPhysicalId);
   });
@@ -93,7 +93,7 @@ describe('CustomResources', () => {
     const createProperties = JSON.parse(customResource.Properties.Create['Fn::Join'][1].join(''));
     const updateProperties = JSON.parse(customResource.Properties.Update['Fn::Join'][1].join(''));
 
-    const expectedPhysicalId = /^TestLayerVersionCustomResource-\d{13,}$/;
+    const expectedPhysicalId = new RegExp(`^${resourceNames.sqlLayerVersionResolverCustomResource}-\\d{13,}$`);
     expect(createProperties.physicalResourceId.id).toMatch(expectedPhysicalId);
     expect(updateProperties.physicalResourceId.id).toMatch(expectedPhysicalId);
   });
@@ -115,7 +115,7 @@ describe('CustomResources', () => {
     const createProperties = JSON.parse(customResource.Properties.Create['Fn::Join'][1].join(''));
     const updateProperties = JSON.parse(customResource.Properties.Update['Fn::Join'][1].join(''));
 
-    const expectedPhysicalId = /^TestSNSTopicARNCustomResource-\d{13,}$/;
+    const expectedPhysicalId = new RegExp(`^${resourceNames.sqlSNSTopicARNResolverCustomResource}-\\d{13,}$`);
     expect(createProperties.physicalResourceId.id).toMatch(expectedPhysicalId);
     expect(updateProperties.physicalResourceId.id).toMatch(expectedPhysicalId);
   });

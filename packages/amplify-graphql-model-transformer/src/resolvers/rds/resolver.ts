@@ -213,7 +213,7 @@ export const createLayerVersionCustomResource = (
   // Otherwise, make the physical ID change each time we do a deployment, so we always check for the latest version. This means we will
   // never have a strictly no-op deployment, but the SQL Lambda configuration won't change unless the actual layer value changes
   let physicalResourceId;
-  if (provideHotswapFriendlyResources(context)) {
+  if (shouldProvisionHotswapFriendlyResources(context)) {
     physicalResourceId = PhysicalResourceId.of(resourceName);
   } else {
     physicalResourceId = PhysicalResourceId.of(`${resourceName}-${Date.now().toString()}`);
@@ -229,7 +229,7 @@ export const createLayerVersionCustomResource = (
         Bucket: SQLLayerManifestBucket,
         Key: key,
       },
-      physicalResourceId: physicalResourceId,
+      physicalResourceId,
     },
     policy: AwsCustomResourcePolicy.fromSdkCalls({
       resources: [manifestArn],
@@ -261,7 +261,7 @@ export const createSNSTopicARNCustomResource = (
   // Otherwise, make the physical ID change each time we do a deployment, so we always check for the latest version. This means we will
   // never have a strictly no-op deployment, but the SQL Lambda configuration won't change unless the actual layer value changes
   let physicalResourceId;
-  if (provideHotswapFriendlyResources(context)) {
+  if (shouldProvisionHotswapFriendlyResources(context)) {
     physicalResourceId = PhysicalResourceId.of(resourceName);
   } else {
     physicalResourceId = PhysicalResourceId.of(`${resourceName}-${Date.now().toString()}`);
@@ -277,7 +277,7 @@ export const createSNSTopicARNCustomResource = (
         Bucket: SQLLayerManifestBucket,
         Key: key,
       },
-      physicalResourceId: physicalResourceId,
+      physicalResourceId,
     },
     policy: AwsCustomResourcePolicy.fromSdkCalls({
       resources: [manifestArn],
@@ -288,7 +288,7 @@ export const createSNSTopicARNCustomResource = (
   return customResource;
 };
 
-const provideHotswapFriendlyResources = (context: TransformerContextProvider): boolean => {
+const shouldProvisionHotswapFriendlyResources = (context: TransformerContextProvider): boolean => {
   return context?.synthParameters?.provisionHotswapFriendlyResources === true;
 };
 
