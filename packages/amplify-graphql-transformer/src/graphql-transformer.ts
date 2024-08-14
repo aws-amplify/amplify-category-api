@@ -33,6 +33,7 @@ import type {
 import { GraphQLTransform, ResolverConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 import { Construct } from 'constructs';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { GenerationTransformer } from '@aws-amplify/graphql-generation-transformer';
 
 /**
  * Arguments passed into a TransformerFactory
@@ -77,6 +78,7 @@ export const constructTransformerChain = (options?: TransformerFactoryArgs): Tra
     hasOneTransformer,
     ...(allowGen1Patterns ? [new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer)] : []),
     new BelongsToTransformer(),
+    new GenerationTransformer(),
     new DefaultValueTransformer(),
     authTransformer,
     new MapsToTransformer(),
