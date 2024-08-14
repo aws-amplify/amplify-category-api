@@ -110,8 +110,7 @@
     "snapshotFormat": {
       "escapeString": true,
       "printBasicPrototype": true
-    },
-    "testTimeout": 10000
+    }
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",
