@@ -73,7 +73,7 @@ export class SqlDatatabaseController {
     } else {
       this.useDataAPI = false;
     }
-    this.enableLocalTesting = isCI();
+    this.enableLocalTesting = !isCI();
 
     // If database name not manually set, provide and sanitize the config dbname
     if (!options.dbname || options.dbname.length == 0 || this.enableLocalTesting) {
