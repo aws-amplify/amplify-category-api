@@ -54,7 +54,7 @@ type IamRoleInfo = {
 };
 
 type RdsInstanceInfo = {
-  name: string;
+  identifier: string;
   region: string;
 };
 
@@ -163,7 +163,7 @@ const getOrphanRdsInstances = async (account: AWSAccountInfo, region: string): P
     const rdsClient = new aws.RDS(getAWSConfig(account, region));
     const listRdsInstanceResponse = await rdsClient.describeDBInstances().promise();
     const staleInstances = listRdsInstanceResponse.DBInstances.filter(testInstanceStalenessFilter);
-    return staleInstances.map((i) => ({ name: i.DBInstanceIdentifier, region }));
+    return staleInstances.map((i) => ({ identifier: i.DBInstanceIdentifier, region }));
   } catch (e) {
     if (e?.code === 'InvalidClientTokenId') {
       // Do not fail the cleanup and continue
@@ -626,11 +626,11 @@ const deleteRdsInstances = async (account: AWSAccountInfo, accountIndex: number,
 };
 
 const deleteRdsInstance = async (account: AWSAccountInfo, accountIndex: number, instance: RdsInstanceInfo): Promise<void> => {
-  const { name, region } = instance;
+  const { identifier, region } = instance;
   console.log(`${generateAccountInfo(account, accountIndex)} Deleting RDS instance ${name}`);
   try {
     const rdsClient = new aws.RDS(getAWSConfig(account, region));
-    await rdsClient.deleteDBInstance({ DBInstanceIdentifier: name, SkipFinalSnapshot: true }).promise();
+    await rdsClient.deleteDBInstance({ DBInstanceIdentifier: identifier, SkipFinalSnapshot: true }).promise();
   } catch (e) {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting instance ${name} failed with error ${e.message}`);
     if (e.code === 'ExpiredTokenException') {
