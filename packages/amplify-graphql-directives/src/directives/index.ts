@@ -18,3 +18,4 @@ export { PrimaryKeyDirective } from './primary-key';
 export { RefersToDirective } from './refers-to';
 export { SearchableDirective } from './searchable';
 export { SqlDirective } from './sql';
+export { GenerationDirective } from './generation';
