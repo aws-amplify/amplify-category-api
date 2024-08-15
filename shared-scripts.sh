@@ -134,6 +134,37 @@ function _lint {
 function _verifyAmplifyBackendCompatability {
   echo "Verify Amplify Backend Compatability"
   loadCacheFromBuildJob
+
+  if [ -z "$BRANCH_NAME" ]; then
+    if [ -z "$CODEBUILD_WEBHOOK_TRIGGER" ]; then
+      export BRANCH_NAME="$(git symbolic-ref HEAD --short 2>/dev/null)"
+      if [ "$BRANCH_NAME" = "" ] ; then
+        BRANCH_NAME="$(git rev-parse HEAD | xargs git name-rev | cut -d' ' -f2 | sed 's/remotes\/origin\///g')";
+      fi
+    elif [[ "$CODEBUILD_WEBHOOK_TRIGGER" == "pr/"* ]]; then
+      export BRANCH_NAME=${CODEBUILD_WEBHOOK_BASE_REF##*/}
+    fi
+  fi
+  echo $BRANCH_NAME
+
+  # Increase buffer size to avoid error when git operations return large response on CI
+  if [ "$CI" = "true" ]; then
+    git config http.version HTTP/1.1
+    git config http.postBuffer 157286400
+  fi
+
+  git checkout $BRANCH_NAME
+
+  # Fetching git tags from upstream
+  # For forked repo only
+  # Can be removed when using team account
+  echo "fetching tags"
+  git fetch --tags https://github.com/aws-amplify/amplify-category-api
+  # Create the folder to avoid failure when no packages are published due to no change detected
+  rm -rf ../verdaccio-cache && mkdir ../verdaccio-cache
+
+  git config user.email not@used.com
+  git config user.name "Doesnt Matter"
   yarn verdaccio-clean
   source ./shared-scripts.sh && _publishLocalWorkspace
   setNpmRegistryUrlToLocal
