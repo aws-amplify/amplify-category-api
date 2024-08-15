@@ -1,6 +1,10 @@
 version: 0.2
 env:
   shell: bash
+  variables:
+    CI: true
+    CODEBUILD: true
+    NODE_OPTIONS: --max-old-space-size=8096
 phases:
   build:
     commands:
