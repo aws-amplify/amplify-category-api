@@ -59,7 +59,8 @@ import { getBedrockModelId } from './utils/bedrock-model-id';
 import { conversationMessageSubscriptionMappingTamplate } from './resolvers/assistant-messages-subscription-resolver';
 import { createConversationModel, ConversationModel } from './graphql-types/session-model';
 import { createMessageModel, MessageModel } from './graphql-types/message-model';
-import { ConversationHandler } from '@aws-amplify/backend-ai'; // /lib/conversation/conversation_handler_construct';
+// import { ConversationHandlerFunction } from '@aws-amplify/ai-constructs/lib/conversation/conversation_handler_construct';
+import { conversation } from '@aws-amplify/ai-constructs';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { type ToolDefinition, type Tools, processTools } from './utils/tools';
 
@@ -193,12 +194,12 @@ export class ConversationTransformer extends TransformerPluginBase {
       const functionStack = ctx.stackManager.createStack(`${capitalizedFieldName}ConversationDirectiveLambdaStack`);
       let functionDataSourceId: string;
       let referencedFunction: IFunction;
+      const bedrockRegion = 'us-west-2';
       if (directive.functionName) {
         functionDataSourceId = FunctionResourceIDs.FunctionDataSourceID(directive.functionName!);
         referencedFunction = lambda.Function.fromFunctionAttributes(functionStack, `${functionDataSourceId}Function`, {
           functionArn: lambdaArnResource(directive.functionName!),
         });
-
         // -------------------------------------------------------------------------------------------------------------------------------
         // TODO: This should probs be deleted. Adding the policy to the IFunction we have here doesn't work
         const invokeModelPolicyStatement = new cdk.aws_iam.PolicyStatement({
@@ -214,15 +215,18 @@ export class ConversationTransformer extends TransformerPluginBase {
           }),
         );
       } else {
-        const defaultConversationHandler = new ConversationHandler(functionStack, `${capitalizedFieldName}DefaultConversationHandler`, {
-          // TODO: Pull from directive config
-          allowedModels: [
-            {
-              modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
-              region: 'us-west-2',
-            },
-          ],
-        });
+        const defaultConversationHandler = new conversation.ConversationHandlerFunction(
+          functionStack,
+          `${capitalizedFieldName}DefaultConversationHandler`,
+          {
+            models: [
+              {
+                modelId: bedrockModelId,
+                region: bedrockRegion,
+              },
+            ],
+          },
+        );
         functionDataSourceId = FunctionResourceIDs.FunctionDataSourceID(`${capitalizedFieldName}DefaultConversationHandler`);
         referencedFunction = defaultConversationHandler.resources.lambda;
       }
@@ -272,7 +276,7 @@ export class ConversationTransformer extends TransformerPluginBase {
         `${capitalizedFieldName}ConversationDirectiveLambdaStack`,
       );
       const functionDataSource = ctx.api.host.addLambdaDataSource(functionDataSourceId, referencedFunction, {}, functionDataSourceScope);
-      const invokeLambdaFunction = invokeLambdaMappingTemplate(directive, ctx);
+      const invokeLambdaFunction = invokeLambdaMappingTemplate(directive, ctx, bedrockRegion);
 
       const messageModelName = directive.messageModel.messageModel.name.value;
       const conversationModelName = directive.conversationModel.conversationModel.name.value;
@@ -294,6 +298,7 @@ export class ConversationTransformer extends TransformerPluginBase {
         messageModelName,
       );
 
+      const runtime = { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' };
       // pipeline resolver
       const conversationPipelineResolver = new TransformerResolver(
         parentName,
@@ -304,16 +309,16 @@ export class ConversationTransformer extends TransformerPluginBase {
         ['init', 'auth', 'verifySessionOwner', 'writeMessageToTable', 'retrieveMessageHistory'],
         ['handleLambdaResponse', 'finish'],
         functionDataSource,
-        { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' },
+        runtime,
       );
 
       // init
       const initFunction = initMappingTemplate();
-      conversationPipelineResolver.addToSlot('init', initFunction.req, initFunction.res);
+      conversationPipelineResolver.addToSlot('init', initFunction.req, initFunction.res, undefined, runtime);
 
       // auth
       const authFunction = authMappingTemplate();
-      conversationPipelineResolver.addToSlot('auth', authFunction.req, authFunction.res);
+      conversationPipelineResolver.addToSlot('auth', authFunction.req, authFunction.res, undefined, runtime);
 
       const sessionModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, conversationModelName);
       const conversationSessionDDBDataSource = ctx.api.host.getDataSource(sessionModelDDBDataSourceName);
@@ -325,6 +330,7 @@ export class ConversationTransformer extends TransformerPluginBase {
         verifySessionOwnerFunction.req,
         verifySessionOwnerFunction.res,
         conversationSessionDDBDataSource as any,
+        runtime,
       );
 
       // writeMessageToTable
@@ -336,6 +342,7 @@ export class ConversationTransformer extends TransformerPluginBase {
         writeMessageToTableFunction.req,
         writeMessageToTableFunction.res,
         messageDDBDataSource as any,
+        runtime,
       );
 
       // retrieveMessageHistory
@@ -345,6 +352,7 @@ export class ConversationTransformer extends TransformerPluginBase {
         retrieveMessageHistoryFunction.req,
         retrieveMessageHistoryFunction.res,
         messageDDBDataSource as any,
+        runtime,
       );
 
       ctx.resolvers.addResolver(parentName, fieldName, conversationPipelineResolver);

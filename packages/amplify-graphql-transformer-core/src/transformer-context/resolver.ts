@@ -512,7 +512,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     };
     const vtlStashStatement = (name: string, value?: string, object?: string): string => {
       const objectPrefix = object ? `.${object}` : '';
-      return `$util.qr($ctx.stash${objectPrefix}.put("${name}", ${value}`;
+      return `$util.qr($ctx.stash${objectPrefix}.put("${name}", ${value}))`;
     };
     return runtime?.name === 'APPSYNC_JS' ? jsStashStatement : vtlStashStatement;
   }

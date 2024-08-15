@@ -24,15 +24,9 @@ export type ToolConfig = {
   };
 };
 
-type GraphQlRequestInputMetadata = {
-  selectionSet: string[];
-  propertyTypes: Record<string, string>;
-};
-
 type ToolSpec = {
   name: string;
   description: string;
-  gqlRequestInputMetadata?: GraphQlRequestInputMetadata;
   inputSchema: {
     json: JSONSchema;
   };

@@ -52,6 +52,13 @@
   dependencies:
     node-fetch "^2.6.1"
 
+"@aws-amplify/ai-constructs@0.0.0-test-20240815164159":
+  version "0.0.0-test-20240815164159"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/ai-constructs/-/ai-constructs-0.0.0-test-20240815164159.tgz#bf21856307c17be390eb166c0fe7a89a5fe9e685"
+  integrity sha512-E6NFw0rsa2EcRn9JuRIZ9ta8zeapwgDiIuJK7p9iekvHysodWiJA80R2HYimvQdHj3xqWZKStbWGd6UzXNBT3A==
+  dependencies:
+    "@aws-amplify/plugin-types" "0.0.0-test-20240815164159"
+
 "@aws-amplify/amplify-app@^5.0.35":
   version "5.0.35"
   resolved "https://registry.npmjs.org/@aws-amplify/amplify-app/-/amplify-app-5.0.35.tgz#c3c6f33b1e2ac594f1b49635e7a6aef9425d4980"
@@ -395,11 +402,6 @@
     amazon-cognito-identity-js "5.2.14"
     crypto-js "^4.1.1"
 
-"@aws-amplify/backend-ai@file:../amplify-backend/packages/backend-ai":
-  version "0.1.0"
-  dependencies:
-    "@aws-amplify/plugin-types" "^1.0.1"
-
 "@aws-amplify/backend-output-schemas@^0.4.0":
   version "0.4.0"
   resolved "https://registry.npmjs.org/@aws-amplify/backend-output-schemas/-/backend-output-schemas-0.4.0.tgz#835af830e1642d07c8f19bb3d96a76571606bf9a"
@@ -592,6 +594,11 @@
     uuid "^9.0.1"
     zod "^3.22.2"
 
+"@aws-amplify/plugin-types@0.0.0-test-20240815164159":
+  version "0.0.0-test-20240815164159"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/plugin-types/-/plugin-types-0.0.0-test-20240815164159.tgz#8cb957ba152f34e7edcc4faaeb3d3461184e9c1c"
+  integrity sha512-6a/TVkuJb8FXJNZj0UcXQCRpff7ihTYdirmXWGgwgKOeGBroCBddEPFDXNA5SVnMAlit7qvnCnz98TgoAnK38w==
+
 "@aws-amplify/plugin-types@^0.4.0", "@aws-amplify/plugin-types@^0.4.1":
   version "0.4.1"
   resolved "https://registry.npmjs.org/@aws-amplify/plugin-types/-/plugin-types-0.4.1.tgz#bd2f7f8c42ec0f5b5bd1c7f67fe8b591463874bd"
@@ -601,11 +608,6 @@
   version "0.8.0"
   resolved "https://registry.npmjs.org/@aws-amplify/plugin-types/-/plugin-types-0.8.0.tgz#7ab3ca9af4dd51cd489c9a172bc7325db3bf4478"
   integrity sha512-38w0dV2dS40uZB4gYa7sc+YnoLtRKdfhHDKpCqSx5ml/rq1PvzEcExiSfrPddC7/ZBLr0IUZH74evVCHzOcPDg==
-
-"@aws-amplify/plugin-types@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.npmjs.org/@aws-amplify/plugin-types/-/plugin-types-1.0.1.tgz#66a9d69ca04951b673c0d755f8e2ba40d312ff38"
-  integrity sha512-2F8j9POq2/NQcEpFZAfee0Kwnuzta8p1w5UonK22uXX7lJnOnWrdHfV431izD7ffv1W9X1xTiO/1cLUO7U8BKQ==
 
 "@aws-amplify/predictions@4.0.64":
   version "4.0.64"

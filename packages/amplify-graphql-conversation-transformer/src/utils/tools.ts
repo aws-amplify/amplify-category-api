@@ -13,22 +13,19 @@ export type Tools = {
   tools: Tool[];
 };
 
-type Tool = {
-  toolSpec: ToolSpec;
-};
-
-type GraphQlRequestInputMetadata = {
+type GraphQLRequestInputDescriptor = {
   selectionSet: string[];
   propertyTypes: Record<string, string>;
+  queryName: string;
 };
 
-type ToolSpec = {
+type Tool = {
   name: string;
   description: string;
-  gqlRequestInputMetadata?: GraphQlRequestInputMetadata;
   inputSchema: {
     json: JSONSchema;
   };
+  graphqlRequestInputDescriptor?: GraphQLRequestInputDescriptor;
 };
 
 const getObjectTypeFromName = (name: string, ctx: TransformerContextProvider): ObjectTypeDefinitionNode => {
@@ -53,8 +50,8 @@ export const processTools = (toolDefinitions: ToolDefinition[], ctx: Transformer
 
   let tools: Tool[] = [];
   for (const toolDefinition of toolDefinitions) {
-    const { name, description } = toolDefinition;
-    const matchingQueryField = fields.find((field) => field.name.value === name);
+    const { name: toolName, description } = toolDefinition;
+    const matchingQueryField = fields.find((field) => field.name.value === toolName);
     if (!matchingQueryField) {
       // TODO: better error message.
       throw new InvalidDirectiveError(`Tool ${name} defined in @conversation directive but no matching Query field definition`);
@@ -74,12 +71,13 @@ export const processTools = (toolDefinitions: ToolDefinition[], ctx: Transformer
       }
     }
 
-    const empty: GraphQlRequestInputMetadata = {
+    const empty: GraphQLRequestInputDescriptor = {
       selectionSet: [],
       propertyTypes: {},
+      queryName: '',
     };
 
-    const gqlRequestInputMetadata: GraphQlRequestInputMetadata | undefined = fieldArguments?.reduce((acc, fieldArgument) => {
+    const graphqlRequestInputDescriptor: GraphQLRequestInputDescriptor | undefined = fieldArguments?.reduce((acc, fieldArgument) => {
       const { selectionSet, propertyTypes } = acc;
       const name = fieldArgument.name.value;
       const returnType = matchingQueryField.type;
@@ -107,22 +105,20 @@ export const processTools = (toolDefinitions: ToolDefinition[], ctx: Transformer
         }
       }
       propertyTypes[name] = getBaseType(fieldArgument.type);
-      return { selectionSet, propertyTypes };
+      return { selectionSet, propertyTypes, queryName: toolName };
     }, empty);
 
     const tool: Tool = {
-      toolSpec: {
-        name,
-        description,
-        inputSchema: {
-          json: {
-            type: 'object',
-            properties: toolProperties,
-            required,
-          },
+      name: toolName,
+      description,
+      inputSchema: {
+        json: {
+          type: 'object',
+          properties: toolProperties,
+          required,
         },
-        gqlRequestInputMetadata,
       },
+      graphqlRequestInputDescriptor,
     };
     tools.push(tool);
   }

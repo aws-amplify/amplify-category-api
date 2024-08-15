@@ -13,6 +13,7 @@
     "@aws-amplify/graphql-default-value-transformer": "2.3.13",
     "@aws-amplify/graphql-directives": "1.1.0",
     "@aws-amplify/graphql-function-transformer": "2.1.26",
+    "@aws-amplify/graphql-generation-transformer": "^0.1.0",
     "@aws-amplify/graphql-http-transformer": "2.1.26",
     "@aws-amplify/graphql-index-transformer": "2.4.9",
     "@aws-amplify/graphql-maps-to-transformer": "3.4.23",
@@ -3733,5 +3734,5 @@
   },
   "types": {},
   "version": "1.9.5",
-  "fingerprint": "3rLvt6FwnCFYd4zsE5ijxkvbyfSTwtcDLeuO+v/itaE="
+  "fingerprint": "I4QHXcihvBbrcohC/aBqxMrCvjEyIbaA/tpJqIGIk6I="
 }
