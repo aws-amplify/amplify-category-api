@@ -627,12 +627,12 @@ const deleteRdsInstances = async (account: AWSAccountInfo, accountIndex: number,
 
 const deleteRdsInstance = async (account: AWSAccountInfo, accountIndex: number, instance: RdsInstanceInfo): Promise<void> => {
   const { identifier, region } = instance;
-  console.log(`${generateAccountInfo(account, accountIndex)} Deleting RDS instance ${name}`);
+  console.log(`${generateAccountInfo(account, accountIndex)} Deleting RDS instance ${identifier}`);
   try {
     const rdsClient = new aws.RDS(getAWSConfig(account, region));
     await rdsClient.deleteDBInstance({ DBInstanceIdentifier: identifier, SkipFinalSnapshot: true }).promise();
   } catch (e) {
-    console.log(`${generateAccountInfo(account, accountIndex)} Deleting instance ${name} failed with error ${e.message}`);
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleting instance ${identifier} failed with error ${e.message}`);
     if (e.code === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
