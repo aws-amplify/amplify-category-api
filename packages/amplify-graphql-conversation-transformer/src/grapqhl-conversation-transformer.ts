@@ -60,6 +60,7 @@ import { conversationMessageSubscriptionMappingTamplate } from './resolvers/assi
 import { createConversationModel, ConversationModel } from './graphql-types/session-model';
 import { createMessageModel, MessageModel } from './graphql-types/message-model';
 // import { ConversationHandlerFunction } from '@aws-amplify/ai-constructs/lib/conversation/conversation_handler_construct';
+// import { ConversationHandlerFunction } from '@aws-amplify/ai-constructs/conversation';
 import { conversation } from '@aws-amplify/ai-constructs';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { type ToolDefinition, type Tools, processTools } from './utils/tools';

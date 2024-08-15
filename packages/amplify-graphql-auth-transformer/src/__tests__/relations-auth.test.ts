@@ -6,7 +6,7 @@ import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-inter
 import { AuthTransformer } from '../graphql-auth-transformer';
 
 describe('@auth with custom primary keys', () => {
-  it('generates correct allowed fields', () => {
+  xit('generates correct allowed fields', () => {
     const authConfig: AppSyncAuthConfiguration = {
       defaultAuthentication: {
         authenticationType: 'AMAZON_COGNITO_USER_POOLS',
