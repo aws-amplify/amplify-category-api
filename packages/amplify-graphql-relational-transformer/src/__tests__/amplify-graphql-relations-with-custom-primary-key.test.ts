@@ -647,10 +647,10 @@ describe('custom primary key and relational directives', () => {
       '#set( $ownerAllowedFields0 = ["commentReference","title","post","postCommentsPostReference","postCommentsTitle"] )',
     );
     expect(out.resolvers['Mutation.createCar.auth.1.req.vtl']).toContain(
-      '#set( $ownerAllowedFields0 = ["vinNumber","serialNumber","engine","carEngineVinNumber","carEngineSerialNumber"] )',
+      '#set( $ownerAllowedFields0 = ["vinNumber","serialNumber","engine"] )',
     );
     expect(out.resolvers['Mutation.createEngine.auth.1.req.vtl']).toContain(
-      '#set( $ownerAllowedFields0 = ["vinNumber","manufacturerReference","car","engineCarVinNumber","engineCarManufacturerReference"] )',
+      '#set( $ownerAllowedFields0 = ["vinNumber","manufacturerReference","car"] )',
     );
   });
 
