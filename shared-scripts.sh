@@ -131,6 +131,26 @@ function _lint {
   loadCacheFromBuildJob
   chmod +x codebuild_specs/scripts/lint_pr.sh && ./codebuild_specs/scripts/lint_pr.sh
 }
+function _verifyAmplifyBackendCompatability {
+  echo "Verify Amplify Backend Compatability"
+  loadCacheFromBuildJob
+  yarn verdaccio-clean
+  source ./shared-scripts.sh && _publishLocalWorkspace
+  setNpmRegistryUrlToLocal
+  npm config get registry
+
+  cd ..
+  git clone https://github.com/aws-amplify/amplify-backend.git
+  cd amplify-backend
+  npm update
+  git diff package-lock.json | grep -e 'graphql-api-construct' -e 'data-construct'
+  npm run build && npm run test
+
+  cd $CODEBUILD_SRC_DIR
+  unsetNpmRegistryUrl
+  npm config get registry
+  yarn verdaccio-stop
+}
 function _publishToLocalRegistry {
     echo "Publish To Local Registry"
     loadCacheFromBuildJob

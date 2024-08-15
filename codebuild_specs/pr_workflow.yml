@@ -51,3 +51,7 @@ batch:
       buildspec: codebuild_specs/mock_e2e_tests.yml
       depend-on:
         - build_linux
+    - identifier: verify_amplify_backend_compatability
+      buildspec: codebuild_specs/verify_amplify_backend_compatability.yml
+      depend-on:
+        - build_linux
