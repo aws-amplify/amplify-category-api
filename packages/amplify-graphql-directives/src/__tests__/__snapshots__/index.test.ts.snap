@@ -231,7 +231,14 @@ Object {
   directive @conversation(
     aiModel: String
     functionName: String
+    systemPrompt: String
+    tools: [ToolMap]
   ) on FIELD_DEFINITION
+
+  input ToolMap {
+    name: String
+    description: String
+  }
 ",
   "name": "conversation",
 }
