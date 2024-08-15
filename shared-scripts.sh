@@ -136,10 +136,10 @@ function _verifyAmplifyBackendCompatability {
   loadCacheFromBuildJob
 
   # Increase buffer size to avoid error when git operations return large response on CI
-  if [ "$CI" = "true" ]; then
-    git config http.version HTTP/1.1
-    git config http.postBuffer 157286400
-  fi
+
+  git config http.version HTTP/1.1
+  git config http.postBuffer 157286400
+
 
   git checkout -b _vab
   git symbolic-ref HEAD --short
