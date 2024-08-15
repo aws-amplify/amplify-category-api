@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.9.0-raven.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.8.6...amplify-category-api-e2e-core@4.9.0-raven.0) (2024-08-15)
+
+### Bug Fixes
+
+- **amplify-category-api:** data api call print the full error object ([#2759](https://github.com/aws-amplify/amplify-category-api/issues/2759)) ([f19283b](https://github.com/aws-amplify/amplify-category-api/commit/f19283b932f4d8eff78e73c5a9c19d7a65d93f55))
+- refactor data api execute queries ([#2760](https://github.com/aws-amplify/amplify-category-api/issues/2760)) ([b1b8de8](https://github.com/aws-amplify/amplify-category-api/commit/b1b8de8c459a8cef5bd6792f4e075fe83e070df5))
+
+### Features
+
+- add ([7a42189](https://github.com/aws-amplify/amplify-category-api/commit/7a42189e0c26276350e7f05954953a167f39d5cd))
+
 ## [4.8.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.8.5...amplify-category-api-e2e-core@4.8.6) (2024-08-12)
 
 **Note:** Version bump only for package amplify-category-api-e2e-core
