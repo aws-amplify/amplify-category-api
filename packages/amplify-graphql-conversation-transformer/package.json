@@ -20,7 +20,7 @@
     "watch": "tsc -w",
     "clean": "rimraf ./lib",
     "test": "jest",
-    "extract-api": "ts node ../../scripts/extract-api.ts"
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
     "@aws-amplify/ai-constructs": "0.0.0-test-20240815164159",

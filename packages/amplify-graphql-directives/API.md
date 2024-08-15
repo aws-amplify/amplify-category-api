@@ -41,6 +41,9 @@ export const BelongsToDirective: Directive;
 export const ConnectionDirectiveV1: Directive;
 
 // @public (undocumented)
+export const ConversationDirective: Directive;
+
+// @public (undocumented)
 export const DefaultDirective: Directive;
 
 // @public (undocumented)
