@@ -6,7 +6,7 @@ env:
 phases:
   install:
     runtime-versions:
-      nodejs: 18.x
+      nodejs: 18.16.0
   build:
     commands:
       - source ./shared-scripts.sh && _verifyAmplifyBackendCompatability
