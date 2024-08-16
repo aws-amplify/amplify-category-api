@@ -16,18 +16,6 @@ const conversationSchemaTypes = fs.readFileSync(path.join(__dirname, '../graphql
 test('conversation route valid schema', () => {
   const routeName = 'pirateChat';
   const inputSchema = `
-    type Foo
-      @model(
-        mutations: { update: null },
-        subscriptions: { level: off }
-      )
-      @auth(
-        rules: [{ allow: owner }]
-      )
-    {
-      bar: Int
-    }
-
     type Temperature {
       value: Int
       unit: String
@@ -51,7 +39,7 @@ test('conversation route valid schema', () => {
     ${conversationSchemaTypes}
   `;
 
-  const out = transform(inputSchema, { Foo: DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY });
+  const out = transform(inputSchema);
   expect(out).toBeDefined();
 
   const resolverCode = getResolverResource(routeName, out.rootStack.Resources)['Properties']['Code'];
@@ -103,18 +91,6 @@ test('conversation route without tools', () => {
   const routeName = 'pirateChat';
 
   const inputSchema = `
-    type Foo
-      @model(
-        mutations: { update: null },
-        subscriptions: { level: off }
-      )
-      @auth(
-        rules: [{ allow: owner }]
-      )
-    {
-      bar: Int
-    }
-
     type Mutation {
         ${routeName}(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
         @conversation(
@@ -127,7 +103,7 @@ test('conversation route without tools', () => {
     ${conversationSchemaTypes}
   `;
 
-  const out = transform(inputSchema, { Foo: DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY });
+  const out = transform(inputSchema);
   expect(out).toBeDefined();
 
   const resolverCode = getResolverResource(routeName, out.rootStack.Resources)['Properties']['Code'];

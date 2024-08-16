@@ -17,7 +17,7 @@ import {
   TransformerContextProvider,
   TransformerPreProcessContextProvider,
   TransformerPrepareStepContextProvider,
-  TransformerSchemaVisitStepContextProvider,
+  TransformerSchemaVisitStepContextProvider
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   DirectiveNode,
@@ -409,6 +409,11 @@ export class ConversationTransformer extends TransformerPluginBase {
 
       this.modelTransformer.object(conversationModel, conversationModelDirective, ctx);
       this.modelTransformer.object(messageModel, messageModelDirective, ctx);
+
+      // we're doing this to add the the iterative_table_generator in the model transformer.
+      // without this, a schema without a amplify managed table datasource strategy will result
+      // in an error: DataSource for type ConversationMessage<Route-Name> does not exist
+      this.modelTransformer.before(ctx);
 
       this.belongsToTransformer.field(messageModel, messageConversationField, messageBelongsToConversationDirective, ctx);
       this.hasManyTransformer.field(conversationModel, conversationMessagesField, conversationHasManyMessagesDirective, ctx);
