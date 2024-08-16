@@ -19,6 +19,12 @@ import * as cdk from 'aws-cdk-lib';
 import { invokeBedrockResolver } from './resolvers/invoke-bedrock';
 import * as iam from 'aws-cdk-lib/aws-iam';
 
+export type InferenceConfiguration = {
+  maxTokens?: number;
+  temperature?: number;
+  topP?: number;
+};
+
 export type GenerationDirectiveConfiguration = {
   parent: ObjectTypeDefinitionNode;
   directive: DirectiveNode;
@@ -27,6 +33,7 @@ export type GenerationDirectiveConfiguration = {
   field: FieldDefinitionNode;
   systemPrompt: string;
   toolConfig: ToolConfig;
+  inferenceConfiguration: InferenceConfiguration;
 };
 
 export class GenerationTransformer extends TransformerPluginBase {
@@ -52,6 +59,7 @@ export class GenerationTransformer extends TransformerPluginBase {
         parent,
         directive,
         field: definition,
+        inferenceConfiguration: {},
       } as GenerationDirectiveConfiguration,
       generateGetArgumentsInput(context.transformParameters),
     );
@@ -120,8 +128,30 @@ export class GenerationTransformer extends TransformerPluginBase {
 }
 
 const validate = (config: GenerationDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-  // TODO: validation logic
+  validateInferenceConfig(config);
 };
+
+/**
+ * Validates the inference configuration for the `@generation` directive according to the Bedrock API docs.
+ * {@link https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_InferenceConfiguration.html}
+ * @param config The generation directive configuration to validate.
+ */
+const validateInferenceConfig = (config: GenerationDirectiveConfiguration): void => {
+  const { maxTokens, temperature, topP } = config.inferenceConfiguration;
+
+  // dealing with possible 0 values, so we check for undefined.
+  if (maxTokens !== undefined && maxTokens < 1) {
+    throw new InvalidDirectiveError(`@generation directive maxTokens valid range: Minimum value of 1. Provided: ${maxTokens}`);
+  }
+
+  if (temperature !== undefined && (temperature < 0 || temperature > 1)) {
+    throw new InvalidDirectiveError(`@generation directive temperature valid range: Minimum value of 0. Maximum value of 1. Provided: ${temperature}`);
+  }
+
+  if (topP !== undefined && (topP < 0 || topP > 1)) {
+    throw new InvalidDirectiveError(`@generation directive topP valid range: Minimum value of 0. Maximum value of 1. Provided: ${topP}`);
+  }
+}
 
 const createBedrockDataSource = (
   ctx: TransformerContextProvider,

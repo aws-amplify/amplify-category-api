@@ -57,10 +57,9 @@ export const response = (ctx) => {
 
 exports[`generation route custom query 2`] = `
 "export function request(ctx) {
-    const tools = \`{\\"tools\\":[{\\"toolSpec\\":{\\"name\\":\\"responseType\\",\\"description\\":\\"Generate a response type for the given field\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"value\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"name\\":{\\"type\\":\\"string\\"},\\"ingredients\\":{\\"type\\":\\"array\\",\\"items\\":{\\"type\\":\\"string\\"}},\\"instructions\\":{\\"type\\":\\"string\\"}},\\"required\\":[]}},\\"required\\":[\\"value\\"]}}}}],\\"toolChoice\\":{\\"tool\\":{\\"name\\":\\"responseType\\"}}}\`;
+    const toolConfig = {\\"tools\\":[{\\"toolSpec\\":{\\"name\\":\\"responseType\\",\\"description\\":\\"Generate a response type for the given field\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"value\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"name\\":{\\"type\\":\\"string\\"},\\"ingredients\\":{\\"type\\":\\"array\\",\\"items\\":{\\"type\\":\\"string\\"}},\\"instructions\\":{\\"type\\":\\"string\\"}},\\"required\\":[]}},\\"required\\":[\\"value\\"]}}}}],\\"toolChoice\\":{\\"tool\\":{\\"name\\":\\"responseType\\"}}};
     const prompt = \`You are a helpful assistant that generates recipes.\`;
     const args = JSON.stringify(ctx.args);
-    const toolConfig = JSON.parse(tools);
 
     return {
       resourcePath: '/model/anthropic.claude-3-haiku-20240307-v1:0/converse',
@@ -82,6 +81,7 @@ exports[`generation route custom query 2`] = `
         ],
         system: [{ text: prompt }],
         toolConfig,
+        // default inference config
       }
     }
   }
@@ -165,10 +165,9 @@ export const response = (ctx) => {
 
 exports[`generation route model list response type 2`] = `
 "export function request(ctx) {
-    const tools = \`{\\"tools\\":[{\\"toolSpec\\":{\\"name\\":\\"responseType\\",\\"description\\":\\"Generate a response type for the given field\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"value\\":{\\"type\\":\\"array\\",\\"items\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"content\\":{\\"type\\":\\"string\\"},\\"isDone\\":{\\"type\\":\\"boolean\\"}},\\"required\\":[]}}},\\"required\\":[\\"value\\"]}}}}],\\"toolChoice\\":{\\"tool\\":{\\"name\\":\\"responseType\\"}}}\`;
+    const toolConfig = {\\"tools\\":[{\\"toolSpec\\":{\\"name\\":\\"responseType\\",\\"description\\":\\"Generate a response type for the given field\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"value\\":{\\"type\\":\\"array\\",\\"items\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"content\\":{\\"type\\":\\"string\\"},\\"isDone\\":{\\"type\\":\\"boolean\\"}},\\"required\\":[]}}},\\"required\\":[\\"value\\"]}}}}],\\"toolChoice\\":{\\"tool\\":{\\"name\\":\\"responseType\\"}}};
     const prompt = \`Make a list of todo items based on the description.\`;
     const args = JSON.stringify(ctx.args);
-    const toolConfig = JSON.parse(tools);
 
     return {
       resourcePath: '/model/anthropic.claude-3-haiku-20240307-v1:0/converse',
@@ -190,6 +189,7 @@ exports[`generation route model list response type 2`] = `
         ],
         system: [{ text: prompt }],
         toolConfig,
+        inferenceConfig: {\\"maxTokens\\":100,\\"temperature\\":0.5,\\"topP\\":1},
       }
     }
   }
@@ -273,10 +273,9 @@ export const response = (ctx) => {
 
 exports[`generation route model type 2`] = `
 "export function request(ctx) {
-    const tools = \`{\\"tools\\":[{\\"toolSpec\\":{\\"name\\":\\"responseType\\",\\"description\\":\\"Generate a response type for the given field\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"value\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"content\\":{\\"type\\":\\"string\\"},\\"isDone\\":{\\"type\\":\\"boolean\\"}},\\"required\\":[]}},\\"required\\":[\\"value\\"]}}}}],\\"toolChoice\\":{\\"tool\\":{\\"name\\":\\"responseType\\"}}}\`;
+    const toolConfig = {\\"tools\\":[{\\"toolSpec\\":{\\"name\\":\\"responseType\\",\\"description\\":\\"Generate a response type for the given field\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"value\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"content\\":{\\"type\\":\\"string\\"},\\"isDone\\":{\\"type\\":\\"boolean\\"}},\\"required\\":[]}},\\"required\\":[\\"value\\"]}}}}],\\"toolChoice\\":{\\"tool\\":{\\"name\\":\\"responseType\\"}}};
     const prompt = \`Make a string based on the description.\`;
     const args = JSON.stringify(ctx.args);
-    const toolConfig = JSON.parse(tools);
 
     return {
       resourcePath: '/model/anthropic.claude-3-haiku-20240307-v1:0/converse',
@@ -298,6 +297,7 @@ exports[`generation route model type 2`] = `
         ],
         system: [{ text: prompt }],
         toolConfig,
+        // default inference config
       }
     }
   }
@@ -381,10 +381,9 @@ export const response = (ctx) => {
 
 exports[`generation route required model type required field 2`] = `
 "export function request(ctx) {
-    const tools = \`{\\"tools\\":[{\\"toolSpec\\":{\\"name\\":\\"responseType\\",\\"description\\":\\"Generate a response type for the given field\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"value\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"content\\":{\\"type\\":\\"string\\"},\\"isDone\\":{\\"type\\":\\"boolean\\"}},\\"required\\":[]}},\\"required\\":[\\"value\\"]}}}}],\\"toolChoice\\":{\\"tool\\":{\\"name\\":\\"responseType\\"}}}\`;
+    const toolConfig = {\\"tools\\":[{\\"toolSpec\\":{\\"name\\":\\"responseType\\",\\"description\\":\\"Generate a response type for the given field\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"value\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"content\\":{\\"type\\":\\"string\\"},\\"isDone\\":{\\"type\\":\\"boolean\\"}},\\"required\\":[]}},\\"required\\":[\\"value\\"]}}}}],\\"toolChoice\\":{\\"tool\\":{\\"name\\":\\"responseType\\"}}};
     const prompt = \`Make a string based on the description.\`;
     const args = JSON.stringify(ctx.args);
-    const toolConfig = JSON.parse(tools);
 
     return {
       resourcePath: '/model/anthropic.claude-3-haiku-20240307-v1:0/converse',
@@ -406,6 +405,7 @@ exports[`generation route required model type required field 2`] = `
         ],
         system: [{ text: prompt }],
         toolConfig,
+        // default inference config
       }
     }
   }
@@ -489,10 +489,9 @@ export const response = (ctx) => {
 
 exports[`generation route scalar type 2`] = `
 "export function request(ctx) {
-    const tools = \`{\\"tools\\":[{\\"toolSpec\\":{\\"name\\":\\"responseType\\",\\"description\\":\\"Generate a response type for the given field\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"value\\":{\\"type\\":\\"string\\"}},\\"required\\":[\\"value\\"]}}}}],\\"toolChoice\\":{\\"tool\\":{\\"name\\":\\"responseType\\"}}}\`;
+    const toolConfig = {\\"tools\\":[{\\"toolSpec\\":{\\"name\\":\\"responseType\\",\\"description\\":\\"Generate a response type for the given field\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"value\\":{\\"type\\":\\"string\\"}},\\"required\\":[\\"value\\"]}}}}],\\"toolChoice\\":{\\"tool\\":{\\"name\\":\\"responseType\\"}}};
     const prompt = \`Make a string based on the description.\`;
     const args = JSON.stringify(ctx.args);
-    const toolConfig = JSON.parse(tools);
 
     return {
       resourcePath: '/model/anthropic.claude-3-haiku-20240307-v1:0/converse',
@@ -514,6 +513,7 @@ exports[`generation route scalar type 2`] = `
         ],
         system: [{ text: prompt }],
         toolConfig,
+        // default inference config
       }
     }
   }
@@ -538,4 +538,161 @@ export function response(ctx) {
   const response = toolUse.input.value;
   return response;
 }"
+`;
+
+exports[`generation route scalar type 3`] = `
+"type Query {
+  makeTodo(description: String!): String
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+"
 `;

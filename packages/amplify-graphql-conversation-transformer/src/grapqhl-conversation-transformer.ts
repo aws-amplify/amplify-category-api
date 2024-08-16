@@ -221,6 +221,8 @@ export class ConversationTransformer extends TransformerPluginBase {
             models: [
               {
                 modelId: bedrockModelId,
+                // TODO: we can remove this, but I'm not sure if we need to pass it in the lambda payload.
+                // double check with backend team.
                 region: bedrockRegion,
               },
             ],

@@ -4,7 +4,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { parse, print } from 'graphql';
+import { OperationDefinitionNode, parse, print } from 'graphql';
 import { GenerationTransformer } from '..';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 
@@ -24,6 +24,11 @@ test('generation route model list response type', () => {
         @generation(
           aiModel: "Claude3Haiku",
           systemPrompt: "Make a list of todo items based on the description.",
+          inferenceConfiguration: {
+            maxTokens: 100,
+            temperature: 0.5,
+            topP: 1.0
+          }
         )
         @auth(rules: [{ allow:  public, provider: iam}])
     }
@@ -64,6 +69,9 @@ test('generation route scalar type', () => {
   const resolverFnCode = getResolverFnResource(queryName, out.rootStack.Resources)['Properties']['Code'];
   expect(resolverFnCode).toBeDefined();
   expect(resolverFnCode).toMatchSnapshot();
+
+  expect(out.schema).toBeDefined();
+  expect(out.schema).toMatchSnapshot();
 
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -153,6 +161,43 @@ test('generation route required model type required field', () => {
 
   const schema = parse(out.schema);
   validateModelSchema(schema);
+});
+
+describe('generation route invalid inference configuration', () => {
+  const maxTokens = 'inferenceConfiguration: { maxTokens: 0 }';
+  const temperature = 'inferenceConfiguration: { temperature: 1.1 }';
+  const topP = 'inferenceConfiguration: { topP: -2 }';
+
+  const generationRoute = (invalidInferenceConfig: string): string => {
+    return `
+      type Query {
+          generate(description: String!): String
+          @generation(
+            aiModel: "Claude3Haiku",
+            systemPrompt: "Make a string based on the description.",
+            ${invalidInferenceConfig}
+          )
+      }
+    `;
+  };
+
+  test('maxTokens invalid', () => {
+    expect(() => transform(generationRoute(maxTokens))).toThrow(
+      '@generation directive maxTokens valid range: Minimum value of 1. Provided: 0',
+    );
+  });
+
+  test('temperature invalid', () => {
+    expect(() => transform(generationRoute(temperature))).toThrow(
+      '@generation directive temperature valid range: Minimum value of 0. Maximum value of 1. Provided: 1.1',
+    );
+  });
+
+  test('topP invalid', () => {
+    expect(() => transform(generationRoute(topP))).toThrow(
+      '@generation directive topP valid range: Minimum value of 0. Maximum value of 1. Provided: -2',
+    );
+  });
 });
 
 const getResolverResource = (queryName: string, resources?: Record<string, any>): Record<string, any> => {

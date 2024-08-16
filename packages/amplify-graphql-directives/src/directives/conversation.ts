@@ -21,11 +21,18 @@ const definition = /* GraphQL */ `
     functionName: String
     systemPrompt: String
     tools: [ToolMap]
+    inferenceConfiguration: InferenceConfiguration
   ) on FIELD_DEFINITION
 
   input ToolMap {
     name: String
     description: String
+  }
+
+  input InferenceConfiguration {
+    maxTokens: Int
+    temperature: Float
+    topP: Float
   }
 `;
 const defaults = {};

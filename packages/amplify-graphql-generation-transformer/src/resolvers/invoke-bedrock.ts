@@ -10,11 +10,12 @@ export const invokeBedrockResolver = (
   const modelId = getBedrockModelId(config.aiModel);
   const toolConfig = JSON.stringify(config.toolConfig);
   // TODO: can we fake a toolResult instead of using 'text' content block?
+  // TODO: add stopReason: max_tokens error handling
+  const inferenceConfig = getInferenceConfig(config);
   const reqString = `export function request(ctx) {
-    const tools = \`${toolConfig}\`;
+    const toolConfig = ${toolConfig};
     const prompt = \`${config.systemPrompt}\`;
     const args = JSON.stringify(ctx.args);
-    const toolConfig = JSON.parse(tools);
 
     return {
       resourcePath: '/model/${modelId}/converse',
@@ -36,6 +37,7 @@ export const invokeBedrockResolver = (
         ],
         system: [{ text: prompt }],
         toolConfig,
+        ${inferenceConfig}
       }
     }
   }
@@ -67,4 +69,11 @@ export const invokeBedrockResolver = (
 
   const res = MappingTemplate.inlineTemplateFromString(dedent(resString));
   return { req, res };
+};
+
+
+const getInferenceConfig = (config: GenerationDirectiveConfiguration): string => {
+  return (config.inferenceConfiguration && Object.keys(config.inferenceConfiguration).length > 0)
+  ? `inferenceConfig: ${JSON.stringify(config.inferenceConfiguration)},`
+  : '// default inference config';
 };
