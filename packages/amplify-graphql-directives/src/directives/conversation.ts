@@ -21,7 +21,7 @@ const definition = /* GraphQL */ `
     functionName: String
     systemPrompt: String
     tools: [ToolMap]
-    inferenceConfiguration: InferenceConfiguration
+    inferenceConfiguration: ConversationInferenceConfiguration
   ) on FIELD_DEFINITION
 
   input ToolMap {
@@ -29,7 +29,7 @@ const definition = /* GraphQL */ `
     description: String
   }
 
-  input InferenceConfiguration {
+  input ConversationInferenceConfiguration {
     maxTokens: Int
     temperature: Float
     topP: Float

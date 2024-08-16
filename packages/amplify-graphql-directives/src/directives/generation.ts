@@ -5,10 +5,10 @@ const definition = /* GraphQL */ `
   directive @${name}(
     aiModel: String!
     systemPrompt: String!
-    inferenceConfiguration: InferenceConfiguration
+    inferenceConfiguration: GenerationInferenceConfiguration
   ) on FIELD_DEFINITION
 
-  input InferenceConfiguration {
+  input GenerationInferenceConfiguration {
     maxTokens: Int
     temperature: Float
     topP: Float

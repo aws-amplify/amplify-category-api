@@ -64,10 +64,6 @@ export class GenerationTransformer extends TransformerPluginBase {
       generateGetArgumentsInput(context.transformParameters),
     );
 
-    const toolConfig = createResponseTypeTool(definition, context as TransformerContextProvider);
-    if (toolConfig) {
-      config.toolConfig = toolConfig;
-    }
 
     validate(config, context as TransformerContextProvider);
     this.directives.push(config);
@@ -86,6 +82,11 @@ export class GenerationTransformer extends TransformerPluginBase {
     const createdResources = new Map<string, any>();
 
     for (const directive of this.directives) {
+      const toolConfig = createResponseTypeTool(directive.field, ctx);
+      if (toolConfig) {
+        directive.toolConfig = toolConfig;
+      }
+
       const {
         parent: {
           name: { value: parentName },

@@ -165,7 +165,7 @@ export const response = (ctx) => {
 
 exports[`generation route model list response type 2`] = `
 "export function request(ctx) {
-    const toolConfig = {\\"tools\\":[{\\"toolSpec\\":{\\"name\\":\\"responseType\\",\\"description\\":\\"Generate a response type for the given field\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"value\\":{\\"type\\":\\"array\\",\\"items\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"content\\":{\\"type\\":\\"string\\"},\\"isDone\\":{\\"type\\":\\"boolean\\"}},\\"required\\":[]}}},\\"required\\":[\\"value\\"]}}}}],\\"toolChoice\\":{\\"tool\\":{\\"name\\":\\"responseType\\"}}};
+    const toolConfig = {\\"tools\\":[{\\"toolSpec\\":{\\"name\\":\\"responseType\\",\\"description\\":\\"Generate a response type for the given field\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"value\\":{\\"type\\":\\"array\\",\\"items\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"content\\":{\\"type\\":\\"string\\"},\\"isDone\\":{\\"type\\":\\"boolean\\"},\\"id\\":{\\"type\\":\\"string\\"},\\"createdAt\\":{\\"type\\":\\"object\\",\\"properties\\":{},\\"required\\":[]},\\"updatedAt\\":{\\"type\\":\\"object\\",\\"properties\\":{},\\"required\\":[]}},\\"required\\":[\\"updatedAt\\"]}}},\\"required\\":[\\"value\\"]}}}}],\\"toolChoice\\":{\\"tool\\":{\\"name\\":\\"responseType\\"}}};
     const prompt = \`Make a list of todo items based on the description.\`;
     const args = JSON.stringify(ctx.args);
 
@@ -273,7 +273,7 @@ export const response = (ctx) => {
 
 exports[`generation route model type 2`] = `
 "export function request(ctx) {
-    const toolConfig = {\\"tools\\":[{\\"toolSpec\\":{\\"name\\":\\"responseType\\",\\"description\\":\\"Generate a response type for the given field\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"value\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"content\\":{\\"type\\":\\"string\\"},\\"isDone\\":{\\"type\\":\\"boolean\\"}},\\"required\\":[]}},\\"required\\":[\\"value\\"]}}}}],\\"toolChoice\\":{\\"tool\\":{\\"name\\":\\"responseType\\"}}};
+    const toolConfig = {\\"tools\\":[{\\"toolSpec\\":{\\"name\\":\\"responseType\\",\\"description\\":\\"Generate a response type for the given field\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"value\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"content\\":{\\"type\\":\\"string\\"},\\"isDone\\":{\\"type\\":\\"boolean\\"},\\"id\\":{\\"type\\":\\"string\\"},\\"createdAt\\":{\\"type\\":\\"object\\",\\"properties\\":{},\\"required\\":[]},\\"updatedAt\\":{\\"type\\":\\"object\\",\\"properties\\":{},\\"required\\":[]}},\\"required\\":[\\"updatedAt\\"]}},\\"required\\":[\\"value\\"]}}}}],\\"toolChoice\\":{\\"tool\\":{\\"name\\":\\"responseType\\"}}};
     const prompt = \`Make a string based on the description.\`;
     const args = JSON.stringify(ctx.args);
 
@@ -381,7 +381,7 @@ export const response = (ctx) => {
 
 exports[`generation route required model type required field 2`] = `
 "export function request(ctx) {
-    const toolConfig = {\\"tools\\":[{\\"toolSpec\\":{\\"name\\":\\"responseType\\",\\"description\\":\\"Generate a response type for the given field\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"value\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"content\\":{\\"type\\":\\"string\\"},\\"isDone\\":{\\"type\\":\\"boolean\\"}},\\"required\\":[]}},\\"required\\":[\\"value\\"]}}}}],\\"toolChoice\\":{\\"tool\\":{\\"name\\":\\"responseType\\"}}};
+    const toolConfig = {\\"tools\\":[{\\"toolSpec\\":{\\"name\\":\\"responseType\\",\\"description\\":\\"Generate a response type for the given field\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"value\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"content\\":{\\"type\\":\\"string\\"},\\"isDone\\":{\\"type\\":\\"boolean\\"},\\"id\\":{\\"type\\":\\"string\\"},\\"createdAt\\":{\\"type\\":\\"object\\",\\"properties\\":{},\\"required\\":[]},\\"updatedAt\\":{\\"type\\":\\"object\\",\\"properties\\":{},\\"required\\":[]}},\\"required\\":[\\"updatedAt\\"]}},\\"required\\":[\\"value\\"]}}}}],\\"toolChoice\\":{\\"tool\\":{\\"name\\":\\"responseType\\"}}};
     const prompt = \`Make a string based on the description.\`;
     const args = JSON.stringify(ctx.args);
 

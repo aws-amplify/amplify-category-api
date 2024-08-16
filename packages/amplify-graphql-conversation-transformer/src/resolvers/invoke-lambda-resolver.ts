@@ -14,7 +14,6 @@ export const invokeLambdaMappingTemplate = (
   const modelId = getBedrockModelId(aiModel);
   const toolDefinitions = JSON.stringify(config.toolSpec);
   const systemPrompt = config.systemPrompt;
-//         const graphqlApiEndpoint = ctx.env.GRAPHQL_API_ENDPOINT;
 
   const graphqlEndpoint = ctx.api.graphqlUrl;
   const req = MappingTemplate.inlineTemplateFromString(dedent`

@@ -233,11 +233,18 @@ Object {
     functionName: String
     systemPrompt: String
     tools: [ToolMap]
+    inferenceConfiguration: ConversationInferenceConfiguration
   ) on FIELD_DEFINITION
 
   input ToolMap {
     name: String
     description: String
+  }
+
+  input ConversationInferenceConfiguration {
+    maxTokens: Int
+    temperature: Float
+    topP: Float
   }
 ",
   "name": "conversation",
@@ -291,10 +298,10 @@ Object {
   directive @generation(
     aiModel: String!
     systemPrompt: String!
-    inferenceConfiguration: InferenceConfiguration
+    inferenceConfiguration: GenerationInferenceConfiguration
   ) on FIELD_DEFINITION
 
-  input InferenceConfiguration {
+  input GenerationInferenceConfiguration {
     maxTokens: Int
     temperature: Float
     topP: Float
