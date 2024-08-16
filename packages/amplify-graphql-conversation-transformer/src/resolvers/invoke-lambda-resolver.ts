@@ -14,13 +14,16 @@ export const invokeLambdaMappingTemplate = (
   const modelId = getBedrockModelId(aiModel);
   const toolDefinitions = JSON.stringify(config.toolSpec);
   const systemPrompt = config.systemPrompt;
+//         const graphqlApiEndpoint = ctx.env.GRAPHQL_API_ENDPOINT;
 
+  const graphqlEndpoint = ctx.api.graphqlUrl;
   const req = MappingTemplate.inlineTemplateFromString(dedent`
       export function request(ctx) {
         const { args, identity, source, request, prev } = ctx;
         const { typeName, fieldName } = ctx.stash;
         const toolDefinitions = \`${toolDefinitions}\`;
         const selectionSet = \`${selectionSet}\`;
+        const graphqlApiEndpoint = \`${graphqlEndpoint}\`;
 
         const messages = prev.result.items;
         const responseMutation = {
@@ -29,7 +32,6 @@ export const invokeLambdaMappingTemplate = (
           selectionSet,
         };
         const currentMessageId = ctx.stash.defaultValues.id;
-        const graphqlApiEndpoint = ctx.env.GRAPHQL_API_ENDPOINT;
         const modelConfiguration = {
             modelId: '${modelId}',
             systemPrompt: '${systemPrompt}',

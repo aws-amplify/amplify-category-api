@@ -23,7 +23,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/ai-constructs": "0.0.0-test-20240815164159",
+    "@aws-amplify/ai-constructs": "0.0.0-test-20240815221003",
     "@aws-amplify/graphql-directives": "1.1.1-raven.0",
     "@aws-amplify/graphql-index-transformer": "2.4.10-raven.0",
     "@aws-amplify/graphql-model-transformer": "2.11.5-raven.0",
@@ -36,11 +36,13 @@
     "immer": "^9.0.12"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-test-utils": "0.5.7-raven.0"
+    "@aws-amplify/graphql-transformer-test-utils": "0.5.7-raven.0",
+    "@aws-sdk/client-bedrock-runtime": "^3.1.0"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.80.0",
-    "constructs": "^10.0.5"
+    "constructs": "^10.0.5",
+    "@aws-sdk/client-bedrock-runtime": "^3.1.0"
   },
   "jest": {
     "transform": {

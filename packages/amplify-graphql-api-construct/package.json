@@ -55,6 +55,7 @@
     "@aws-amplify/graphql-transformer-interfaces",
     "@aws-amplify/platform-core",
     "@aws-amplify/plugin-types",
+    "@aws-amplify/ai-constructs",
     "charenc",
     "crypt",
     "fs-extra",
@@ -115,7 +116,8 @@
     "pluralize": "^8.0.0",
     "ts-dedent": "^2.0.0",
     "universalify": "^2.0.0",
-    "zod": "^3.22.3"
+    "zod": "^3.22.3",
+    "@aws-amplify/ai-constructs": "0.0.0-test-20240815221003"
   },
   "devDependencies": {
     "@aws-amplify/graphql-transformer-test-utils": "0.5.7-raven.0",
