@@ -52,14 +52,14 @@ Object {
   const { typeName, fieldName } = ctx.stash;
   const toolDefinitions = \`{\\"tools\\":[{\\"name\\":\\"getTemperature\\",\\"description\\":\\"does a thing\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"city\\":{\\"type\\":\\"string\\",\\"required\\":[\\"city\\"]}},\\"required\\":[\\"city\\"]}},\\"graphqlRequestInputDescriptor\\":{\\"selectionSet\\":[\\"value\\",\\"unit\\"],\\"propertyTypes\\":{\\"city\\":\\"String\\"},\\"queryName\\":\\"getTemperature\\"}},{\\"name\\":\\"plus\\",\\"description\\":\\"does a different thing\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"a\\":{\\"type\\":\\"number\\"},\\"b\\":{\\"type\\":\\"number\\"}},\\"required\\":[]}},\\"graphqlRequestInputDescriptor\\":{\\"selectionSet\\":[],\\"propertyTypes\\":{\\"a\\":\\"Int\\",\\"b\\":\\"Int\\"},\\"queryName\\":\\"plus\\"}}]}\`;
   const selectionSet = \`id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt\`;
-  const graphqlApiEndpoint = \`",
+  const graphqlApiEndpoint = '",
       Object {
         "Fn::GetAtt": Array [
           "GraphQLAPI",
           "GraphQLUrl",
         ],
       },
-      "\`;
+      "';
 
   const messages = prev.result.items;
   const responseMutation = {
@@ -76,7 +76,7 @@ Object {
 
   const clientTools = args.toolConfiguration?.tools?.map((tool) => { return { ...tool.toolSpec }});
   const dataTools = JSON.parse(toolDefinitions)?.tools
-  const toolsConfiguration = {
+   const toolsConfiguration = {
     dataTools,
     clientTools,
   };
@@ -180,16 +180,16 @@ Object {
       "export function request(ctx) {
   const { args, identity, source, request, prev } = ctx;
   const { typeName, fieldName } = ctx.stash;
-  const toolDefinitions = \`undefined\`;
+  
   const selectionSet = \`id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt\`;
-  const graphqlApiEndpoint = \`",
+  const graphqlApiEndpoint = '",
       Object {
         "Fn::GetAtt": Array [
           "GraphQLAPI",
           "GraphQLUrl",
         ],
       },
-      "\`;
+      "';
 
   const messages = prev.result.items;
   const responseMutation = {
@@ -205,10 +205,8 @@ Object {
   };
 
   const clientTools = args.toolConfiguration?.tools?.map((tool) => { return { ...tool.toolSpec }});
-  const dataTools = JSON.parse(toolDefinitions)?.tools
   const toolsConfiguration = {
-    dataTools,
-    clientTools,
+    clientTools
   };
 
   const requestArgs = {

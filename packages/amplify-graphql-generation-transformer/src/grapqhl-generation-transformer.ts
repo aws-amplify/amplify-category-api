@@ -70,6 +70,10 @@ export class GenerationTransformer extends TransformerPluginBase {
   };
 
   generateResolvers = (ctx: TransformerContextProvider): void => {
+    // If there are no directives, bail out to prevent creating an empty stack
+    if (this.directives.length === 0) {
+      return;
+    }
     const stackName = 'GenerationBedrockDataSourceStack';
     const stack: cdk.Stack = ctx.stackManager.createStack(stackName);
     // TODO: is this the current / right format version?

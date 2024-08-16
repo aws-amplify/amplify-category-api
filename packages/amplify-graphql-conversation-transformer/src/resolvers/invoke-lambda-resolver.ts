@@ -13,16 +13,35 @@ export const invokeLambdaMappingTemplate = (
   const { responseMutationInputTypeName, responseMutationName, aiModel } = config;
   const modelId = getBedrockModelId(aiModel);
   const toolDefinitions = JSON.stringify(config.toolSpec);
+  const toolDefinitionsLine = toolDefinitions ? `const toolDefinitions = \`${toolDefinitions}\`;` : '';
   const systemPrompt = config.systemPrompt;
+
+  const toolsConfigurationLine = toolDefinitions
+    ? dedent`const dataTools = JSON.parse(toolDefinitions)?.tools
+     const toolsConfiguration = {
+      dataTools,
+      clientTools,
+    };`
+    : dedent`const toolsConfiguration = {
+      clientTools
+    };`;
+
+    /*
+        const dataTools = JSON.parse(toolDefinitions)?.tools
+        const toolsConfiguration = {
+          dataTools,
+          clientTools,
+        };
+    */
 
   const graphqlEndpoint = ctx.api.graphqlUrl;
   const req = MappingTemplate.inlineTemplateFromString(dedent`
       export function request(ctx) {
         const { args, identity, source, request, prev } = ctx;
         const { typeName, fieldName } = ctx.stash;
-        const toolDefinitions = \`${toolDefinitions}\`;
+        ${toolDefinitionsLine}
         const selectionSet = \`${selectionSet}\`;
-        const graphqlApiEndpoint = \`${graphqlEndpoint}\`;
+        const graphqlApiEndpoint = '${graphqlEndpoint}';
 
         const messages = prev.result.items;
         const responseMutation = {
@@ -38,11 +57,7 @@ export const invokeLambdaMappingTemplate = (
         };
 
         const clientTools = args.toolConfiguration?.tools?.map((tool) => { return { ...tool.toolSpec }});
-        const dataTools = JSON.parse(toolDefinitions)?.tools
-        const toolsConfiguration = {
-          dataTools,
-          clientTools,
-        };
+        ${toolsConfigurationLine}
 
         const requestArgs = {
           ...args,
