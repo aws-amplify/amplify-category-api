@@ -125,6 +125,7 @@ export class SqlDatatabaseController {
       username: this.options.username,
       password: this.options.password,
     });
+    console.log(`Stored db connection config in SSM: ${JSON.stringify(dbConnectionConfigSSM)}`);
     const dbConnectionStringConfigSSM = await storeDbConnectionStringConfig({
       region: this.options.region,
       pathPrefix,
@@ -137,6 +138,7 @@ export class SqlDatatabaseController {
         this.options.dbname,
       ),
     });
+    console.log(`Stored db connection string config in SSM: ${JSON.stringify(dbConnectionStringConfigSSM)}`);
     const dbConnectionStringConfigMultiple = await storeDbConnectionStringConfig({
       region: this.options.region,
       pathPrefix,
@@ -189,13 +191,14 @@ export class SqlDatatabaseController {
     }
 
     if (this.useDataAPI) {
-      await deleteDBCluster(this.options.identifier, this.options.region);
+      // await deleteDBCluster(this.options.identifier, this.options.region);
     } else {
       await deleteDBInstance(this.options.identifier, this.options.region);
     }
 
     const { connectionConfigs } = this.databaseDetails;
-
+    console.log(`Deleting db connection configs: ${JSON.stringify(connectionConfigs)}`);
+    /*
     await Promise.all(
       Object.values(connectionConfigs).map((dbConnectionConfig) => {
         if (isSqlModelDataSourceSecretsManagerDbConnectionConfig(dbConnectionConfig)) {
@@ -224,6 +227,7 @@ export class SqlDatatabaseController {
         }
       }),
     );
+    */
   };
 
   /**
@@ -260,6 +264,6 @@ export class SqlDatatabaseController {
    */
   getConnectionUri = (engine: SqlEngine, username: string, password: string, hostname: string, port: number, dbName: string): string => {
     const protocol = engine === 'postgres' ? 'postgresql' : 'mysql';
-    return `${protocol}://${username}:${password}@${hostname}:${port}/${dbName}`;
+    return `${protocol}://${username}:${encodeURIComponent(password)}@${hostname}:${port}/${dbName}`;
   };
 }

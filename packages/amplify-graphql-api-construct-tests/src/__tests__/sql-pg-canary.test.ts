@@ -46,7 +46,7 @@ describe('Canary using Postgres lambda model datasource strategy', () => {
 
   afterEach(async () => {
     try {
-      await cdkDestroy(projRoot, '--all');
+      // await cdkDestroy(projRoot, '--all');
     } catch (err) {
       console.log(`Error invoking 'cdk destroy': ${err}`);
     }
