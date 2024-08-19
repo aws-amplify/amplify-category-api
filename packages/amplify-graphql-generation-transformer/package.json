@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-generation-transformer",
-  "version": "0.1.1-raven.5",
+  "version": "0.1.1-raven.6",
   "description": "Amplify GraphQL @generation transformer",
   "repository": {
     "type": "git",

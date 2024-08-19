@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.1-raven.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-generation-transformer@0.1.1-raven.5...@aws-amplify/graphql-generation-transformer@0.1.1-raven.6) (2024-08-19)
+
+### Bug Fixes
+
+- **generation:** prevent fields with problematic scalar types in generation responses ([bbc4ddf](https://github.com/aws-amplify/amplify-category-api/commit/bbc4ddf1eed3d041a33a6e1959cb889177abf7bd))
+
 ## [0.1.1-raven.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-generation-transformer@0.1.1-raven.4...@aws-amplify/graphql-generation-transformer@0.1.1-raven.5) (2024-08-19)
 
 ### Bug Fixes
