@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-api-construct",
-  "version": "1.11.6-raven.5",
+  "version": "1.11.6-raven.6",
   "description": "AppSync GraphQL Api Construct using Amplify GraphQL Transformer.",
   "repository": {
     "type": "git",
@@ -85,7 +85,7 @@
     "@aws-amplify/graphql-default-value-transformer": "2.3.14-raven.3",
     "@aws-amplify/graphql-directives": "1.1.1-raven.2",
     "@aws-amplify/graphql-function-transformer": "2.1.27-raven.3",
-    "@aws-amplify/graphql-generation-transformer": "0.1.1-raven.4",
+    "@aws-amplify/graphql-generation-transformer": "0.1.1-raven.5",
     "@aws-amplify/graphql-http-transformer": "2.1.27-raven.3",
     "@aws-amplify/graphql-index-transformer": "2.4.10-raven.3",
     "@aws-amplify/graphql-maps-to-transformer": "3.4.24-raven.3",
@@ -94,7 +94,7 @@
     "@aws-amplify/graphql-relational-transformer": "2.5.12-raven.3",
     "@aws-amplify/graphql-searchable-transformer": "2.7.10-raven.3",
     "@aws-amplify/graphql-sql-transformer": "0.3.10-raven.3",
-    "@aws-amplify/graphql-transformer": "1.6.6-raven.5",
+    "@aws-amplify/graphql-transformer": "1.6.6-raven.6",
     "@aws-amplify/graphql-transformer-core": "2.9.4-raven.3",
     "@aws-amplify/graphql-transformer-interfaces": "3.10.2-raven.1",
     "@aws-amplify/platform-core": "^0.2.0",
