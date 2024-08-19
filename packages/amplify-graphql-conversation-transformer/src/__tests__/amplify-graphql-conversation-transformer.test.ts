@@ -118,6 +118,43 @@ test('conversation route without tools', () => {
   validateModelSchema(schema);
 });
 
+test('conversation route with inference configuration', () => {
+  const routeName = 'pirateChat';
+
+  const inputSchema = `
+    type Mutation {
+        ${routeName}(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
+        @conversation(
+          aiModel: "Claude3Haiku",
+          systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
+          functionName: "conversation-handler",
+          inferenceConfiguration: {
+            temperature: 0.5,
+            topP: 0.9,
+            maxTokens: 100,
+          }
+        )
+    }
+
+    ${conversationSchemaTypes}
+  `;
+
+  const out = transform(inputSchema);
+  expect(out).toBeDefined();
+
+  const resolverCode = getResolverResource(routeName, out.rootStack.Resources)['Properties']['Code'];
+  expect(resolverCode).toBeDefined();
+  expect(resolverCode).toMatchSnapshot();
+
+  const resolverFnCode = getResolverFnResource(routeName, out.rootStack.Resources)['Properties']['Code'];
+  expect(resolverFnCode).toBeDefined();
+  expect(resolverFnCode).toMatchSnapshot();
+
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+});
+
+
 const getResolverResource = (mutationName: string, resources?: Record<string, any>): Record<string, any> => {
   const resolverName = `Mutation${mutationName}Resolver`;
   return resources?.[resolverName];

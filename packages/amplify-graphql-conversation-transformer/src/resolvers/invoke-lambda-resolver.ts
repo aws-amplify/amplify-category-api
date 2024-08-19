@@ -1,19 +1,34 @@
 import { TransformerContextProvider, MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
-import { ObjectTypeDefinitionNode } from 'graphql';
 import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-transformer';
 import { getBedrockModelId } from '../utils/bedrock-model-id';
 import { dedent } from 'ts-dedent';
+
+const generateModelConfigurationLine = (config: ConversationDirectiveConfiguration) => {
+  const { aiModel, systemPrompt } = config;
+  // TODO: remove this once model ids are provided from schema builder.
+  const modelId = getBedrockModelId(aiModel);
+
+  return dedent`const modelConfiguration = {
+    modelId: '${modelId}',
+    systemPrompt: '${systemPrompt}',
+    ${generateModelInferenceConfigurationLine(config)}
+  };`;
+};
+
+const generateModelInferenceConfigurationLine = (config: ConversationDirectiveConfiguration) => {
+  return config.inferenceConfiguration
+  ? dedent`inferenceConfiguration: ${JSON.stringify(config.inferenceConfiguration)},`
+  : '';
+};
 
 export const invokeLambdaMappingTemplate = (
   config: ConversationDirectiveConfiguration,
   ctx: TransformerContextProvider,
 ): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
-  const { responseMutationInputTypeName, responseMutationName, aiModel } = config;
-  const modelId = getBedrockModelId(aiModel);
+  const { responseMutationInputTypeName, responseMutationName } = config;
   const toolDefinitions = JSON.stringify(config.toolSpec);
   const toolDefinitionsLine = toolDefinitions ? `const toolDefinitions = \`${toolDefinitions}\`;` : '';
-  const systemPrompt = config.systemPrompt;
 
   const toolsConfigurationLine = toolDefinitions
     ? dedent`const dataTools = JSON.parse(toolDefinitions)?.tools
@@ -33,6 +48,8 @@ export const invokeLambdaMappingTemplate = (
         };
     */
 
+  const modelConfigurationLine = generateModelConfigurationLine(config);
+
   const graphqlEndpoint = ctx.api.graphqlUrl;
   const req = MappingTemplate.inlineTemplateFromString(dedent`
       export function request(ctx) {
@@ -49,10 +66,7 @@ export const invokeLambdaMappingTemplate = (
           selectionSet,
         };
         const currentMessageId = ctx.stash.defaultValues.id;
-        const modelConfiguration = {
-            modelId: '${modelId}',
-            systemPrompt: '${systemPrompt}',
-        };
+        ${modelConfigurationLine}
 
         const clientTools = args.toolConfiguration?.tools?.map((tool) => { return { ...tool.toolSpec }});
         ${toolsConfigurationLine}

@@ -76,6 +76,13 @@ export type ConversationDirectiveConfiguration = {
   toolSpec: Tools;
   conversationModel: ConversationModel;
   messageModel: MessageModel;
+  inferenceConfiguration: ConversationInferenceConfiguration | undefined;
+};
+
+export type ConversationInferenceConfiguration = {
+  maxTokens?: number;
+  temperature?: number;
+  topP?: number;
 };
 
 export class ConversationTransformer extends TransformerPluginBase {
