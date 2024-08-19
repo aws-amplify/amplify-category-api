@@ -8,7 +8,6 @@ import { dedent } from 'ts-dedent';
 export const invokeLambdaMappingTemplate = (
   config: ConversationDirectiveConfiguration,
   ctx: TransformerContextProvider,
-  bedrockRegion: string,
 ): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
   const { responseMutationInputTypeName, responseMutationName, aiModel } = config;
   const modelId = getBedrockModelId(aiModel);
@@ -53,7 +52,6 @@ export const invokeLambdaMappingTemplate = (
         const modelConfiguration = {
             modelId: '${modelId}',
             systemPrompt: '${systemPrompt}',
-            region: '${bedrockRegion}',
         };
 
         const clientTools = args.toolConfiguration?.tools?.map((tool) => { return { ...tool.toolSpec }});

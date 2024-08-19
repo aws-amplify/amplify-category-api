@@ -193,9 +193,8 @@ export class ConversationTransformer extends TransformerPluginBase {
       const functionStack = ctx.stackManager.createStack(`${capitalizedFieldName}ConversationDirectiveLambdaStack`);
       let functionDataSourceId: string;
       let referencedFunction: IFunction;
-      const bedrockRegion = 'us-west-2';
       if (directive.functionName) {
-        functionDataSourceId = FunctionResourceIDs.FunctionDataSourceID(directive.functionName!);
+        functionDataSourceId = FunctionResourceIDs.FunctionDataSourceID(directive.functionName);
         referencedFunction = lambda.Function.fromFunctionAttributes(functionStack, `${functionDataSourceId}Function`, {
           functionArn: lambdaArnResource(directive.functionName!),
         });
@@ -221,9 +220,6 @@ export class ConversationTransformer extends TransformerPluginBase {
             models: [
               {
                 modelId: bedrockModelId,
-                // TODO: we can remove this, but I'm not sure if we need to pass it in the lambda payload.
-                // double check with backend team.
-                region: bedrockRegion,
               },
             ],
           },
@@ -277,7 +273,7 @@ export class ConversationTransformer extends TransformerPluginBase {
         `${capitalizedFieldName}ConversationDirectiveLambdaStack`,
       );
       const functionDataSource = ctx.api.host.addLambdaDataSource(functionDataSourceId, referencedFunction, {}, functionDataSourceScope);
-      const invokeLambdaFunction = invokeLambdaMappingTemplate(directive, ctx, bedrockRegion);
+      const invokeLambdaFunction = invokeLambdaMappingTemplate(directive, ctx);
 
       const messageModelName = directive.messageModel.messageModel.name.value;
       const conversationModelName = directive.conversationModel.conversationModel.name.value;
