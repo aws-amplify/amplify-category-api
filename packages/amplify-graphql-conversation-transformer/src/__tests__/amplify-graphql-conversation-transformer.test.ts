@@ -154,7 +154,6 @@ test('conversation route with inference configuration', () => {
   validateModelSchema(schema);
 });
 
-
 const getResolverResource = (mutationName: string, resources?: Record<string, any>): Record<string, any> => {
   const resolverName = `Mutation${mutationName}Resolver`;
   return resources?.[resolverName];

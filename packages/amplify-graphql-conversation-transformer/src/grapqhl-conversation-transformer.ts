@@ -17,7 +17,7 @@ import {
   TransformerContextProvider,
   TransformerPreProcessContextProvider,
   TransformerPrepareStepContextProvider,
-  TransformerSchemaVisitStepContextProvider
+  TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   DirectiveNode,

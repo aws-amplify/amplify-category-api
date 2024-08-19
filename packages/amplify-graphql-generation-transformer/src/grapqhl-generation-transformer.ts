@@ -64,7 +64,6 @@ export class GenerationTransformer extends TransformerPluginBase {
       generateGetArgumentsInput(context.transformParameters),
     );
 
-
     validate(config, context as TransformerContextProvider);
     this.directives.push(config);
   };
@@ -150,13 +149,15 @@ const validateInferenceConfig = (config: GenerationDirectiveConfiguration): void
   }
 
   if (temperature !== undefined && (temperature < 0 || temperature > 1)) {
-    throw new InvalidDirectiveError(`@generation directive temperature valid range: Minimum value of 0. Maximum value of 1. Provided: ${temperature}`);
+    throw new InvalidDirectiveError(
+      `@generation directive temperature valid range: Minimum value of 0. Maximum value of 1. Provided: ${temperature}`,
+    );
   }
 
   if (topP !== undefined && (topP < 0 || topP > 1)) {
     throw new InvalidDirectiveError(`@generation directive topP valid range: Minimum value of 0. Maximum value of 1. Provided: ${topP}`);
   }
-}
+};
 
 const createBedrockDataSource = (
   ctx: TransformerContextProvider,

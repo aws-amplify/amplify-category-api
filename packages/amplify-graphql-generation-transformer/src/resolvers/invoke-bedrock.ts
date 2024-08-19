@@ -71,9 +71,8 @@ export const invokeBedrockResolver = (
   return { req, res };
 };
 
-
 const getInferenceConfig = (config: GenerationDirectiveConfiguration): string => {
-  return (config.inferenceConfiguration && Object.keys(config.inferenceConfiguration).length > 0)
-  ? `inferenceConfig: ${JSON.stringify(config.inferenceConfiguration)},`
-  : '// default inference config';
+  return config.inferenceConfiguration && Object.keys(config.inferenceConfiguration).length > 0
+    ? `inferenceConfig: ${JSON.stringify(config.inferenceConfiguration)},`
+    : '// default inference config';
 };

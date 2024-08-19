@@ -17,9 +17,7 @@ const generateModelConfigurationLine = (config: ConversationDirectiveConfigurati
 };
 
 const generateModelInferenceConfigurationLine = (config: ConversationDirectiveConfiguration) => {
-  return config.inferenceConfiguration
-  ? dedent`inferenceConfiguration: ${JSON.stringify(config.inferenceConfiguration)},`
-  : '';
+  return config.inferenceConfiguration ? dedent`inferenceConfiguration: ${JSON.stringify(config.inferenceConfiguration)},` : '';
 };
 
 export const invokeLambdaMappingTemplate = (
@@ -40,7 +38,7 @@ export const invokeLambdaMappingTemplate = (
       clientTools
     };`;
 
-    /*
+  /*
         const dataTools = JSON.parse(toolDefinitions)?.tools
         const toolsConfiguration = {
           dataTools,
