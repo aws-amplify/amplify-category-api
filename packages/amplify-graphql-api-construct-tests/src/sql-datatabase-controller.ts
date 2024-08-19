@@ -15,6 +15,7 @@ import {
   storeDbConnectionConfigWithSecretsManager,
   deleteDBCluster,
   isOptInRegion,
+  isDataAPISupported,
 } from 'amplify-category-api-e2e-core';
 import { SecretsManagerClient, CreateSecretCommand, DeleteSecretCommand, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
 import {
@@ -53,7 +54,7 @@ export class SqlDatatabaseController {
 
   constructor(private readonly setupQueries: Array<string>, private readonly options: RDSConfig) {
     // Data API is not supported in opted-in regions
-    if (options.engine === 'postgres' && !isOptInRegion(options.region)) {
+    if (options.engine === 'postgres' && isDataAPISupported(options.region)) {
       this.useDataAPI = true;
     } else {
       this.useDataAPI = false;
@@ -259,6 +260,6 @@ export class SqlDatatabaseController {
    */
   getConnectionUri = (engine: SqlEngine, username: string, password: string, hostname: string, port: number, dbName: string): string => {
     const protocol = engine === 'postgres' ? 'postgresql' : 'mysql';
-    return `${protocol}://${username}:${password}@${hostname}:${port}/${dbName}`;
+    return `${protocol}://${encodeURIComponent(username)}:${encodeURIComponent(password)}@${hostname}:${port}/${dbName}`;
   };
 }

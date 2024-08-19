@@ -1,6 +1,5 @@
 **/.DS_Store
 build
-!packages/amplify-category-api/src/__tests__/graphql-transformer/override/*/build/
 node_modules
 out
 pkg/node_modules
@@ -28,7 +27,6 @@ packages/amplify-e2e-core/lib
 packagea/amplify-graphiql-explorer/build
 packages/amplify-graphql*/lib
 packages/amplify-e2e-tests/lib
-packages/amplify-category-api/lib
 packages/amplify-e2e-tests/amplify-e2e-reports
 packages/graphql-transformers-e2e-tests/amplify-e2e-reports
 packages/amplify-schema-validator/dist/
@@ -41,7 +39,6 @@ console-integ*/
 packages/**/reports/junit/*
 test.out.log
 *.tsbuildinfo
-packages/amplify-graphiql-explorer/.eslintcache
 !packages/amplify-graphql-model-transformer/src/__tests__/overrides/build/override.js
 codebuild_specs/debug_workflow.yml
 .npmrc

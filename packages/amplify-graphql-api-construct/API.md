@@ -319,6 +319,8 @@ export interface PartialTranslationBehavior {
     readonly enableSearchNodeToNodeEncryption?: boolean;
     readonly enableTransformerCfnOutputs?: boolean;
     readonly populateOwnerFieldForStaticGroupAuth?: boolean;
+    // @internal
+    readonly _provisionHotswapFriendlyResources?: boolean;
     readonly replaceTableUponGsiUpdate?: boolean;
     readonly respectPrimaryKeyAttributesOnConnectionField?: boolean;
     readonly sandboxModeEnabled?: boolean;

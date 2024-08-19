@@ -604,6 +604,16 @@ export interface PartialTranslationBehavior {
    * @experimental
    */
   readonly replaceTableUponGsiUpdate?: boolean;
+
+  /**
+   * When enabled, sandbox deployment will be faster by skipping the creation of the Hotswap friendly resources.
+   *
+   * @default false
+   * @internal
+   * WARNING: Although this has `public` access, it is intended for internal use and should not be used directly.
+   * The behavior of this may change without warning.
+   */
+  readonly _provisionHotswapFriendlyResources?: boolean;
 }
 
 /**

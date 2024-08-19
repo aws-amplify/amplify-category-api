@@ -14,7 +14,8 @@
   "keywords": [
     "graphql",
     "appsync",
-    "aws"
+    "aws",
+    "amplify"
   ],
   "scripts": {
     "test": "jest",
