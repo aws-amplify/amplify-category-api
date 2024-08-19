@@ -260,6 +260,6 @@ export class SqlDatatabaseController {
    */
   getConnectionUri = (engine: SqlEngine, username: string, password: string, hostname: string, port: number, dbName: string): string => {
     const protocol = engine === 'postgres' ? 'postgresql' : 'mysql';
-    return `${protocol}://${username}:${password}@${hostname}:${port}/${dbName}`;
+    return `${protocol}://${username}:${encodeURIComponent(password)}@${hostname}:${port}/${dbName}`;
   };
 }
