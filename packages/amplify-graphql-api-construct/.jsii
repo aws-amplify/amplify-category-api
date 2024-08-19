@@ -46,7 +46,7 @@
     "zod": "^3.22.3"
   },
   "dependencies": {
-    "aws-cdk-lib": "^2.129.0",
+    "aws-cdk-lib": "^2.152.0",
     "constructs": "^10.3.0"
   },
   "dependencyClosure": {
@@ -260,8 +260,32 @@
             }
           }
         },
-        "aws-cdk-lib.aws_apigatewayv2_authorizers": {},
-        "aws-cdk-lib.aws_apigatewayv2_integrations": {},
+        "aws-cdk-lib.aws_apigatewayv2_authorizers": {
+          "targets": {
+            "dotnet": {
+              "namespace": "Amazon.CDK.AwsApigatewayv2Authorizers"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.aws_apigatewayv2_authorizers"
+            },
+            "python": {
+              "module": "aws_cdk.aws_apigatewayv2_authorizers"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_apigatewayv2_integrations": {
+          "targets": {
+            "dotnet": {
+              "namespace": "Amazon.CDK.AwsApigatewayv2Integrations"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.aws_apigatewayv2_integrations"
+            },
+            "python": {
+              "module": "aws_cdk.aws_apigatewayv2_integrations"
+            }
+          }
+        },
         "aws-cdk-lib.aws_appconfig": {
           "targets": {
             "dotnet": {
@@ -327,6 +351,19 @@
             }
           }
         },
+        "aws-cdk-lib.aws_applicationsignals": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.ApplicationSignals"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.applicationsignals"
+            },
+            "python": {
+              "module": "aws_cdk.aws_applicationsignals"
+            }
+          }
+        },
         "aws-cdk-lib.aws_appmesh": {
           "targets": {
             "dotnet": {
@@ -376,6 +413,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_appsync"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_apptest": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.AppTest"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.apptest"
+            },
+            "python": {
+              "module": "aws_cdk.aws_apptest"
             }
           }
         },
@@ -535,10 +585,23 @@
             }
           }
         },
+        "aws-cdk-lib.aws_bcmdataexports": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.BCMDataExports"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.bcmdataexports"
+            },
+            "python": {
+              "module": "aws_cdk.aws_bcmdataexports"
+            }
+          }
+        },
         "aws-cdk-lib.aws_bedrock": {
           "targets": {
             "dotnet": {
-              "namespace": "Amazon.CDK.AWS.Bedrock"
+              "package": "Amazon.CDK.AWS.Bedrock"
             },
             "java": {
               "package": "software.amazon.awscdk.services.bedrock"
@@ -636,6 +699,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_cleanrooms"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_cleanroomsml": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.CleanRoomsML"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.cleanroomsml"
+            },
+            "python": {
+              "module": "aws_cdk.aws_cleanroomsml"
             }
           }
         },
@@ -767,6 +843,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_codecommit"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_codeconnections": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.CodeConnections"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.codeconnections"
+            },
+            "python": {
+              "module": "aws_cdk.aws_codeconnections"
             }
           }
         },
@@ -1040,6 +1129,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_dax"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_deadline": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.Deadline"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.deadline"
+            },
+            "python": {
+              "module": "aws_cdk.aws_deadline"
             }
           }
         },
@@ -2564,6 +2666,19 @@
             }
           }
         },
+        "aws-cdk-lib.aws_paymentcryptography": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.PaymentCryptography"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.paymentcryptography"
+            },
+            "python": {
+              "module": "aws_cdk.aws_paymentcryptography"
+            }
+          }
+        },
         "aws-cdk-lib.aws_pcaconnectorad": {
           "targets": {
             "dotnet": {
@@ -2639,6 +2754,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_proton"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_qbusiness": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.QBusiness"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.qbusiness"
+            },
+            "python": {
+              "module": "aws_cdk.aws_qbusiness"
             }
           }
         },
@@ -2847,6 +2975,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_route53_targets"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_route53profiles": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.Route53Profiles"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.route53profiles"
+            },
+            "python": {
+              "module": "aws_cdk.aws_route53profiles"
             }
           }
         },
@@ -3068,6 +3209,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_securityhub"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_securitylake": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.SecurityLake"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.securitylake"
+            },
+            "python": {
+              "module": "aws_cdk.aws_securitylake"
             }
           }
         },
@@ -8649,5 +8803,5 @@
     }
   },
   "version": "1.11.5",
-  "fingerprint": "UbD30aPByX855aFWOnKPhuMTI9TgWerKrHxE6yVYnD8="
+  "fingerprint": "SYUZa1VHAow4bIYQt04LDGkF9UPb4NQjmvpzDQH3u6c="
 }

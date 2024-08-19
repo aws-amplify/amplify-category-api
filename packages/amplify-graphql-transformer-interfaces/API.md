@@ -24,6 +24,7 @@ import { FieldNode } from 'graphql';
 import { Grant } from 'aws-cdk-lib/aws-iam';
 import { GraphqlApiBase } from 'aws-cdk-lib/aws-appsync';
 import { HttpDataSource } from 'aws-cdk-lib/aws-appsync';
+import { IamResource } from 'aws-cdk-lib/aws-appsync';
 import { IAsset } from 'aws-cdk-lib';
 import { IConstruct } from 'constructs';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
@@ -55,12 +56,6 @@ export interface AmplifyDynamoDbModelDataSourceStrategy extends ModelDataSourceS
     readonly dbType: 'DYNAMODB';
     // (undocumented)
     readonly provisionStrategy: 'AMPLIFY_TABLE';
-}
-
-// @public (undocumented)
-export interface APIIAMResourceProvider {
-    // (undocumented)
-    resourceArns: (api: GraphQLAPIProvider) => string[];
 }
 
 // @public (undocumented)
@@ -202,7 +197,7 @@ export interface GraphQLAPIProvider extends IConstruct {
     // (undocumented)
     readonly assetProvider: AssetProvider;
     // (undocumented)
-    grant: (grantee: IGrantable, resources: APIIAMResourceProvider, ...actions: string[]) => Grant;
+    grant: (grantee: IGrantable, resources: IamResource, ...actions: string[]) => Grant;
     // (undocumented)
     grantMutation: (grantee: IGrantable, ...fields: string[]) => Grant;
     // (undocumented)
@@ -944,7 +939,7 @@ export interface VpcConfig {
 
 // Warnings were encountered during analysis:
 //
-// src/graphql-api-provider.ts:36:3 - (ae-forgotten-export) The symbol "OpenIDConnectConfig" needs to be exported by the entry point index.d.ts
+// src/graphql-api-provider.ts:37:3 - (ae-forgotten-export) The symbol "OpenIDConnectConfig" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
