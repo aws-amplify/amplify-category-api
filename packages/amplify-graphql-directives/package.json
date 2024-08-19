@@ -14,7 +14,8 @@
   "keywords": [
     "graphql",
     "aws",
-    "amplify"
+    "amplify",
+    "directives"
   ],
   "publishConfig": {
     "access": "public"

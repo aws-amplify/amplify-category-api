@@ -15,7 +15,8 @@
     "graphql",
     "appsync",
     "cloudformation",
-    "aws"
+    "aws",
+    "amplify"
   ],
   "scripts": {
     "test": "jest",

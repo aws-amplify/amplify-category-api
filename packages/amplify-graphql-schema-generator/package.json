@@ -16,7 +16,8 @@
     "schema",
     "aws",
     "amplify",
-    "generator"
+    "generator",
+    "transformer"
   ],
   "publishConfig": {
     "access": "public"

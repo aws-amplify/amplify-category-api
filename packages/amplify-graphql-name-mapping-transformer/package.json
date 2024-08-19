@@ -17,7 +17,8 @@
     "cloudformation",
     "aws",
     "mapsto",
-    "transformer"
+    "transformer",
+    "refersTo"
   ],
   "publishConfig": {
     "access": "public"
