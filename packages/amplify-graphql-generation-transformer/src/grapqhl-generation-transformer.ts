@@ -33,7 +33,7 @@ export type GenerationDirectiveConfiguration = {
   field: FieldDefinitionNode;
   systemPrompt: string;
   toolConfig: ToolConfig;
-  inferenceConfiguration: InferenceConfiguration;
+  inferenceConfiguration: InferenceConfiguration | undefined;
 };
 
 export class GenerationTransformer extends TransformerPluginBase {
@@ -141,6 +141,10 @@ const validate = (config: GenerationDirectiveConfiguration, ctx: TransformerCont
  * @param config The generation directive configuration to validate.
  */
 const validateInferenceConfig = (config: GenerationDirectiveConfiguration): void => {
+  if (!config.inferenceConfiguration) {
+    return
+  };
+
   const { maxTokens, temperature, topP } = config.inferenceConfiguration;
 
   // dealing with possible 0 values, so we check for undefined.
