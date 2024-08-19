@@ -142,8 +142,8 @@ const validate = (config: GenerationDirectiveConfiguration, ctx: TransformerCont
  */
 const validateInferenceConfig = (config: GenerationDirectiveConfiguration): void => {
   if (!config.inferenceConfiguration) {
-    return
-  };
+    return;
+  }
 
   const { maxTokens, temperature, topP } = config.inferenceConfiguration;
 

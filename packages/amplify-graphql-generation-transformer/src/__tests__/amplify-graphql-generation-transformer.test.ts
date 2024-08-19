@@ -1,10 +1,10 @@
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY, GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { OperationDefinitionNode, parse, print } from 'graphql';
+import { parse } from 'graphql';
 import { GenerationTransformer } from '..';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 
@@ -33,19 +33,8 @@ test('generation route model list response type', () => {
         @auth(rules: [{ allow:  public, provider: iam}])
     }
   `;
-  const out = transform(inputSchema);
-  expect(out).toBeDefined();
 
-  const resolverCode = getResolverResource(queryName, out.rootStack.Resources)['Properties']['Code'];
-  expect(resolverCode).toBeDefined();
-  expect(resolverCode).toMatchSnapshot();
-
-  const resolverFnCode = getResolverFnResource(queryName, out.rootStack.Resources)['Properties']['Code'];
-  expect(resolverFnCode).toBeDefined();
-  expect(resolverFnCode).toMatchSnapshot();
-
-  const schema = parse(out.schema);
-  validateModelSchema(schema);
+  expect(() => transform(inputSchema)).toThrow(/Disallowed required field type/);
 });
 
 test('generation route scalar type', () => {
@@ -109,10 +98,13 @@ test('generation route custom query', () => {
   validateModelSchema(schema);
 });
 
-test('generation route model type', () => {
+test('generation route model type with null timestamps', () => {
   const queryName = 'makeTodo';
   const inputSchema = `
-    ${todoModel}
+    type Todo @model(timestamps: {createdAt: null, updatedAt: null}) {
+      content: String
+      isDone: Boolean
+    }
 
     type Query {
         ${queryName}(description: String!): Todo
@@ -149,18 +141,8 @@ test('generation route required model type required field', () => {
         )
     }
   `;
-  const out = transform(inputSchema);
 
-  const resolverCode = getResolverResource(queryName, out.rootStack.Resources)['Properties']['Code'];
-  expect(resolverCode).toBeDefined();
-  expect(resolverCode).toMatchSnapshot();
-
-  const resolverFnCode = getResolverFnResource(queryName, out.rootStack.Resources)['Properties']['Code'];
-  expect(resolverFnCode).toBeDefined();
-  expect(resolverFnCode).toMatchSnapshot();
-
-  const schema = parse(out.schema);
-  validateModelSchema(schema);
+  expect(() => transform(inputSchema)).toThrow(/Disallowed required field type/);
 });
 
 describe('generation route invalid inference configuration', () => {

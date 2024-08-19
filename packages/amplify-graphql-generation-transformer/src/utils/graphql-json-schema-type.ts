@@ -1,6 +1,7 @@
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Kind, NamedTypeNode, TypeNode, TypeSystemDefinitionNode } from 'graphql';
 import { getBaseType, isScalar } from 'graphql-transformer-common';
+import { GraphQLScalarJSONSchemaDefinition, isDisallowedScalarType, supportedScalarTypes } from './graphql-scalar-json-schema-definitions';
 
 export function generateJSONSchemaFromTypeNode(
   typeNode: TypeNode,
@@ -49,6 +50,11 @@ export function generateJSONSchemaFromTypeNode(
       schema.properties = generateJSONSchemaForDef(typeDef, schema);
       return schema;
     case Kind.NON_NULL_TYPE:
+      if (isDisallowedScalarType(getBaseType(typeNode))) {
+        throw new Error(`
+          Disallowed required field type ${getBaseType(typeNode)} without a default value.
+          Use one of the supported scalar types for generation routes: [${supportedScalarTypes.join(', ')}]`);
+      }
       return generateJSONSchemaFromTypeNode(typeNode.type, ctx, schema);
     case Kind.LIST_TYPE:
       return {
@@ -59,79 +65,35 @@ export function generateJSONSchemaFromTypeNode(
 }
 
 function processNamedType(namedType: NamedTypeNode, ctx: TransformerContextProvider): JSONSchema {
-  // TODO: For AWSDate / AWSTime / AWSTimestamp, return a description detailing valid formats.
   switch (namedType.name.value) {
     case 'Int':
-      return {
-        type: 'number',
-        description: 'A signed 32-bit integer value.',
-      };
+      return GraphQLScalarJSONSchemaDefinition.Int;
     case 'Float':
-      return {
-        type: 'number',
-        description: 'An IEEE 754 floating point value.',
-      };
+      return GraphQLScalarJSONSchemaDefinition.Float;
     case 'String':
-      return {
-        type: 'string',
-        description: 'A UTF-8 character sequence.',
-      };
+      return GraphQLScalarJSONSchemaDefinition.String;
     case 'ID':
-      return {
-        type: 'string',
-        description: "A unique identifier for an object. This scalar is serialized like a String but isn't meant to be human-readable.",
-      };
+      return GraphQLScalarJSONSchemaDefinition.ID;
     case 'Boolean':
-      return { type: 'boolean' };
+      return GraphQLScalarJSONSchemaDefinition.Boolean;
     case 'AWSJSON':
-      return {
-        type: 'string',
-        description:
-          'A JSON string. Any valid JSON construct is automatically parsed and loaded in the resolver code as maps, lists, or scalar values rather than as the literal input strings. Unquoted strings or otherwise invalid JSON result in a GraphQL validation error.',
-      };
+      return GraphQLScalarJSONSchemaDefinition.AWSJSON;
     case 'AWSEmail':
-      return {
-        type: 'string',
-        description: 'An email address in the format local-part@domain-part as defined by RFC 822.',
-      };
+      return GraphQLScalarJSONSchemaDefinition.AWSEmail;
     case 'AWSDate':
-      return {
-        type: 'string',
-        description: 'An extended ISO 8601 date string in the format YYYY-MM-DD.',
-      };
+      return GraphQLScalarJSONSchemaDefinition.AWSDate;
     case 'AWSTime':
-      return {
-        type: 'string',
-        description: 'An extended ISO 8601 time string in the format hh:mm:ss.sss.',
-      };
+      return GraphQLScalarJSONSchemaDefinition.AWSTime;
     case 'AWSDateTime':
-      return {
-        type: 'string',
-        description: 'An extended ISO 8601 date and time string in the format YYYY-MM-DDThh:mm:ss.sssZ.',
-      };
+      return GraphQLScalarJSONSchemaDefinition.AWSDateTime;
     case 'AWSTimestamp':
-      return {
-        type: 'string',
-        description: 'An integer value representing the number of seconds before or after 1970-01-01-T00:00Z.',
-      };
+      return GraphQLScalarJSONSchemaDefinition.AWSTimestamp;
     case 'AWSPhone':
-      return {
-        type: 'string',
-        description:
-          'A phone number. This value is stored as a string. Phone numbers can contain either spaces or hyphens to separate digit groups. Phone numbers without a country code are assumed to be US/North American numbers adhering to the North American Numbering Plan (NANP).',
-      };
+      return GraphQLScalarJSONSchemaDefinition.AWSPhone;
     case 'AWSURL':
-      return {
-        type: 'string',
-        description:
-          "A URL as defined by RFC 1738. For example, https://www.amazon.com/dp/B000NZW3KC/ or mailto:example@example.com. URLs must contain a schema (http, mailto) and can't contain two forward slashes (//) in the path part.",
-      };
+      return GraphQLScalarJSONSchemaDefinition.AWSURL;
     case 'AWSIPAddress':
-      return {
-        type: 'string',
-        description:
-          'A valid IPv4 or IPv6 address. IPv4 addresses are expected in quad-dotted notation (123.12.34.56). IPv6 addresses are expected in non-bracketed, colon-separated format (1a2b:3c4b::1234:4567). You can include an optional CIDR suffix (123.45.67.89/16) to indicate subnet mask.',
-      };
+      return GraphQLScalarJSONSchemaDefinition.AWSIPAddress;
     default:
       // For custom object types
       return {
