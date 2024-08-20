@@ -245,9 +245,11 @@ export const createRDSCluster = async (config: RDSConfig): Promise<ClusterInfo> 
 };
 
 /**
- * Accesses the local RDS Aurora serverless V2 cluster with one DB instance using the given input configuration.
+ * Setup the test database and data in the pre-existing RDS Aurora serverless V2 cluster with one writer DB instance. Get the necessary configuration settings of the cluster and instance.
+ * @param identifier Cluster idenfitier.
  * @param config Configuration of the database cluster.
- * @returns EndPoint address, port and database name of the accessed RDS cluster.
+ * @param queries Initial queries to be executed.
+ * @returns Cluster configuration information.
  */
 export const setupDataInExistingCluster = async (identifier: string, config: RDSConfig, queries: string[]): Promise<ClusterInfo> => {
   try {
@@ -387,8 +389,8 @@ export const setupRDSInstanceAndData = async (
  */
 
 export const setupRDSClusterAndData = async (config: RDSConfig, queries?: string[]): Promise<ClusterInfo> => {
-  const dbCluster = await createRDSCluster(config);
   console.log(`Creating RDS ${config.engine} DB cluster with identifier ${config.identifier}`);
+  const dbCluster = await createRDSCluster(config);
 
   if (!dbCluster.secretArn) {
     throw new Error('Failed to store db connection config in secrets manager');
@@ -399,6 +401,7 @@ export const setupRDSClusterAndData = async (config: RDSConfig, queries?: string
   const createDBInput: ExecuteStatementCommandInput = {
     resourceArn: dbCluster.clusterArn,
     secretArn: dbCluster.secretArn,
+    // database name is sanitized from when we generate it
     sql: `create database ${config.dbname}`,
     database: dbCluster.dbName,
   };
@@ -469,7 +472,7 @@ export const deleteDBInstance = async (identifier: string, region: string): Prom
     // );
   } catch (error) {
     console.log(error);
-    throw new Error(`Error in deleting RDS instance: ${error.json}`);
+    throw new Error(`Error in deleting RDS instance: ${JSON.stringify(error)}`);
   }
 };
 
@@ -496,7 +499,7 @@ export const deleteDBCluster = async (identifier: string, region: string): Promi
     await client.send(command);
   } catch (error) {
     console.log(error);
-    throw new Error(`Error in deleting RDS cluster ${identifier}: ${error.json}`);
+    throw new Error(`Error in deleting RDS cluster ${identifier}: ${JSON.stringify(error)}`);
   }
 };
 
