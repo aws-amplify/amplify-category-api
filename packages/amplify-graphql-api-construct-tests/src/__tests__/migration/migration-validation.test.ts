@@ -60,23 +60,20 @@ describe('Migration table import validation', () => {
     deleteProjectDir(gen1ProjRoot);
   });
 
-  /*
-  AttributeDefintions - done
-  KeySchema
-  GlobalSecondaryIndexes - done
-  BillingModeSummary - done 
-  ProvisionedThroughput
-  StreamSpecification
-  SSEDescription
-  DeletionProtectionEnabled
-  */
-
   // Test cases for test.each need to be defined before beforeAll.
   // The tests cases need data defined in beforeAll.
   // Define the test name first then get the definition later (after beforeAll).
   // For each test case, there should be a matching key in the test definitions.
   // The test definitions include a schema, overrides, and the expected error messages.
-  const testCases = ['extraGSIOnGen2', 'billingMode'];
+  const testCases = [
+    'extraGSIOnGen2',
+    'billingMode',
+    'keySchema',
+    'provisionedThroughput',
+    'streamSpecification',
+    'sseDescription',
+    'deletionProtectionEnabled',
+  ];
   type TestCase = [
     // CloudFormfation test definition
     TestDefinition,
@@ -134,6 +131,134 @@ describe('Migration table import validation', () => {
         [
           'BillingModeSummary does not match the expected value.\nActual: {"BillingMode":"PAY_PER_REQUEST"}\nExpected: {"BillingMode":"PROVISIONED"}',
         ],
+      ],
+      keySchema: [
+        {
+          schema: /* GraphQL */ `
+            type Todo @model @auth(rules: [{ allow: public }]) {
+              id: ID!
+              content: String
+            }
+          `,
+          strategy: {
+            dbType: 'DYNAMODB' as const,
+            provisionStrategy: 'IMPORTED_AMPLIFY_TABLE' as const,
+            tableName: dataSourceMapping.Todo,
+          },
+        },
+        `
+          import { AmplifyGraphqlApi } from '@aws-amplify/graphql-api-construct';
+          import { BillingMode } from 'aws-cdk-lib/aws-dynamodb';
+
+          export const applyOverrides = (api: AmplifyGraphqlApi): void => {
+            const todoTable = api.resources.cfnResources.additionalCfnResources['Todo'];
+            todoTable.addOverride('Properties.keySchema', [{ attributeName: 'fakekey', keyType: 'HASH' }]);
+          };
+        `,
+        [
+          'KeySchema does not match the expected value.\nActual: [{"AttributeName":"id","KeyType":"HASH"}]\nExpected: [{"AttributeName":"fakekey","KeyType":"HASH"}]',
+        ],
+      ],
+      provisionedThroughput: [
+        {
+          schema: /* GraphQL */ `
+            type Todo @model @auth(rules: [{ allow: public }]) {
+              id: ID!
+              content: String
+            }
+          `,
+          strategy: {
+            dbType: 'DYNAMODB' as const,
+            provisionStrategy: 'IMPORTED_AMPLIFY_TABLE' as const,
+            tableName: dataSourceMapping.Todo,
+          },
+        },
+        `
+          import { AmplifyGraphqlApi } from '@aws-amplify/graphql-api-construct';
+          import { BillingMode } from 'aws-cdk-lib/aws-dynamodb';
+
+          export const applyOverrides = (api: AmplifyGraphqlApi): void => {
+            const todoTable = api.resources.cfnResources.additionalCfnResources['Todo'];
+            todoTable.addOverride('Properties.provisionedThroughput', {
+              ReadCapacityUnits: 5,
+              WriteCapacityUnits: 5,
+            });
+          };
+        `,
+        [
+          'ProvisionedThroughput does not match the expected value.\nActual: {"ReadCapacityUnits":0,"WriteCapacityUnits":0}\nExpected: {"WriteCapacityUnits":5,"ReadCapacityUnits":5}',
+        ],
+      ],
+      streamSpecification: [
+        {
+          schema: /* GraphQL */ `
+            type Todo @model @auth(rules: [{ allow: public }]) {
+              id: ID!
+              content: String
+            }
+          `,
+          strategy: {
+            dbType: 'DYNAMODB' as const,
+            provisionStrategy: 'IMPORTED_AMPLIFY_TABLE' as const,
+            tableName: dataSourceMapping.Todo,
+          },
+        },
+        `
+          import { AmplifyGraphqlApi } from '@aws-amplify/graphql-api-construct';
+          import { BillingMode } from 'aws-cdk-lib/aws-dynamodb';
+
+          export const applyOverrides = (api: AmplifyGraphqlApi): void => {
+            const todoTable = api.resources.cfnResources.additionalCfnResources['Todo'];
+            todoTable.addOverride('Properties.streamSpecification', {
+              streamViewType: "KEYS_ONLY"
+            });
+          };
+        `,
+        [
+          'StreamSpecification does not match the expected value.\nActual: {"StreamEnabled":true,"StreamViewType":"NEW_AND_OLD_IMAGES"}\nExpected: {"StreamEnabled":true,"StreamViewType":"KEYS_ONLY"}',
+        ],
+      ],
+      sseDescription: [
+        {
+          schema: /* GraphQL */ `
+            type Todo @model @auth(rules: [{ allow: public }]) {
+              id: ID!
+              content: String
+            }
+          `,
+          strategy: {
+            dbType: 'DYNAMODB' as const,
+            provisionStrategy: 'IMPORTED_AMPLIFY_TABLE' as const,
+            tableName: dataSourceMapping.Todo,
+          },
+        },
+        '',
+        ['SSEDescription does not match the expected value.\nActual: undefined\nExpected: {"SSEType":"KMS","Status":"ENABLED"}'],
+      ],
+      deletionProtectionEnabled: [
+        {
+          schema: /* GraphQL */ `
+            type Todo @model @auth(rules: [{ allow: public }]) {
+              id: ID!
+              content: String
+            }
+          `,
+          strategy: {
+            dbType: 'DYNAMODB' as const,
+            provisionStrategy: 'IMPORTED_AMPLIFY_TABLE' as const,
+            tableName: dataSourceMapping.Todo,
+          },
+        },
+        `
+          import { AmplifyGraphqlApi } from '@aws-amplify/graphql-api-construct';
+          import { BillingMode } from 'aws-cdk-lib/aws-dynamodb';
+
+          export const applyOverrides = (api: AmplifyGraphqlApi): void => {
+            const todoTable = api.resources.cfnResources.additionalCfnResources['Todo'];
+            todoTable.addOverride('Properties.deletionProtectionEnabled', true);
+          };
+        `,
+        ['DeletionProtectionEnabled does not match the expected value.\nActual: false\nExpected: true'],
       ],
     };
 
