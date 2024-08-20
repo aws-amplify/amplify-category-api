@@ -31,6 +31,7 @@
     "@aws-sdk/client-rds": "3.624.0",
     "@aws-sdk/client-ssm": "3.624.0",
     "@aws-sdk/client-sts": "3.624.0",
+    "@aws-sdk/client-cloudformation": "3.624.0",
     "@faker-js/faker": "^8.2.0",
     "amplify-category-api-e2e-core": "4.8.5",
     "aws-amplify": "^4.2.8",
