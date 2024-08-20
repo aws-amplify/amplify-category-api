@@ -79,6 +79,7 @@ export class SqlDatatabaseController {
         const identifier = getClusterIdentifier(this.options.region, this.options.engine);
         dbConfig = await setupDataInExistingCluster(identifier, this.options, this.setupQueries);
         this.options.username = dbConfig.username;
+        this.options.dbname = dbConfig.dbName;
       } else {
         dbConfig = await setupRDSClusterAndData(this.options, this.setupQueries);
       }

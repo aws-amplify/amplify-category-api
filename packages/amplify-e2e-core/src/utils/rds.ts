@@ -276,10 +276,12 @@ export const setupDataInExistingCluster = async (identifier: string, config: RDS
     const secretArn = dbClusterObj.MasterUserSecret.SecretArn;
     const defaultDbName = dbClusterObj.DatabaseName;
     const dataClient = new RDSDataClient({ region: config.region });
+    const sanitizedDbName = config.dbname?.replace(/[^a-zA-Z0-9_]/g, '');
+
     const createDBInput: ExecuteStatementCommandInput = {
       resourceArn: clusterArn,
       secretArn,
-      sql: `create database ${config.dbname}`,
+      sql: `create database ${sanitizedDbName}`,
       database: defaultDbName,
     };
 
@@ -298,7 +300,7 @@ export const setupDataInExistingCluster = async (identifier: string, config: RDS
           resourceArn: clusterArn,
           secretArn: secretArn,
           sql: query,
-          database: config.dbname,
+          database: sanitizedDbName,
         };
         const executeStatementResponse = await dataClient.send(new ExecuteStatementCommand(executeStatementInput));
         console.log('Run query response: ' + JSON.stringify(executeStatementResponse));
@@ -311,7 +313,7 @@ export const setupDataInExistingCluster = async (identifier: string, config: RDS
       clusterArn,
       endpoint: dbClusterObj.Endpoint,
       port: dbClusterObj.Port,
-      dbName: config.dbname,
+      dbName: sanitizedDbName,
       dbInstance: describeInstanceResponse.DBInstances[0],
       secretArn,
       username: dbClusterObj.MasterUsername,
@@ -398,11 +400,12 @@ export const setupRDSClusterAndData = async (config: RDSConfig, queries?: string
 
   const client = new RDSDataClient({ region: config.region });
 
+  const sanitizedDbName = config.dbname?.replace(/[^a-zA-Z0-9_]/g, '');
+
   const createDBInput: ExecuteStatementCommandInput = {
     resourceArn: dbCluster.clusterArn,
     secretArn: dbCluster.secretArn,
-    // database name is sanitized from when we generate it
-    sql: `create database ${config.dbname}`,
+    sql: `create database ${sanitizedDbName}`,
     database: dbCluster.dbName,
   };
 
@@ -421,7 +424,7 @@ export const setupRDSClusterAndData = async (config: RDSConfig, queries?: string
         resourceArn: dbCluster.clusterArn,
         secretArn: dbCluster.secretArn,
         sql: query,
-        database: config.dbname,
+        database: sanitizedDbName,
       };
       const executeStatementResponse = await client.send(new ExecuteStatementCommand(executeStatementInput));
       console.log('Run query response: ' + JSON.stringify(executeStatementResponse));
@@ -434,7 +437,7 @@ export const setupRDSClusterAndData = async (config: RDSConfig, queries?: string
     clusterArn: dbCluster.clusterArn,
     endpoint: dbCluster.endpoint,
     port: dbCluster.port,
-    dbName: config.dbname,
+    dbName: sanitizedDbName,
     dbInstance: dbCluster.dbInstance,
     secretArn: dbCluster.secretArn,
   };
