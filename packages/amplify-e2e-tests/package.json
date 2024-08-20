@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-e2e-tests",
-  "version": "3.22.9",
+  "version": "3.22.10-sandbox-hotswap.0",
   "description": "E2e test suite",
   "repository": {
     "type": "git",
@@ -25,9 +25,9 @@
   },
   "dependencies": {
     "@aws-amplify/amplify-app": "^5.0.35",
-    "@aws-amplify/graphql-schema-generator": "0.9.4",
-    "@aws-amplify/graphql-transformer-core": "2.9.3",
-    "amplify-category-api-e2e-core": "4.8.6",
+    "@aws-amplify/graphql-schema-generator": "0.9.5-sandbox-hotswap.0",
+    "@aws-amplify/graphql-transformer-core": "2.9.4-sandbox-hotswap.0",
+    "amplify-category-api-e2e-core": "4.8.7-sandbox-hotswap.0",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-sdk": "^2.1113.0",
@@ -52,7 +52,7 @@
     "@aws-amplify/amplify-cli-core": "^4.3.9"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-interfaces": "3.10.1",
+    "@aws-amplify/graphql-transformer-interfaces": "3.10.2-sandbox-hotswap.0",
     "@types/lodash": "^4.14.149",
     "@types/ws": "^7.4.4",
     "ts-node": "^8.10.2"

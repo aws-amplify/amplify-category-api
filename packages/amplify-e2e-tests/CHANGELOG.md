@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.22.10-sandbox-hotswap.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.9...amplify-category-api-e2e-tests@3.22.10-sandbox-hotswap.0) (2024-08-20)
+
+### Bug Fixes
+
+- refactor data api execute queries ([#2760](https://github.com/aws-amplify/amplify-category-api/issues/2760)) ([b1b8de8](https://github.com/aws-amplify/amplify-category-api/commit/b1b8de8c459a8cef5bd6792f4e075fe83e070df5))
+
 ## [3.22.9](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.8...amplify-category-api-e2e-tests@3.22.9) (2024-08-12)
 
 **Note:** Version bump only for package amplify-category-api-e2e-tests

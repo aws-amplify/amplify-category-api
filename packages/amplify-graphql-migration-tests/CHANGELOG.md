@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.39-sandbox-hotswap.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-migration-tests@2.4.38...amplify-category-api-graphql-migration-tests@2.4.39-sandbox-hotswap.0) (2024-08-20)
+
+**Note:** Version bump only for package amplify-category-api-graphql-migration-tests
+
 ## [2.4.38](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-migration-tests@2.4.37...amplify-category-api-graphql-migration-tests@2.4.38) (2024-08-12)
 
 **Note:** Version bump only for package amplify-category-api-graphql-migration-tests
