@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.6-sandbox-hotswap.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.9.6-sandbox-hotswap.0...@aws-amplify/data-construct@1.9.6-sandbox-hotswap.1) (2024-08-20)
+
+### Bug Fixes
+
+- yarn.lock verify fail ([e69c856](https://github.com/aws-amplify/amplify-category-api/commit/e69c8568de010fd7c2f612798611951cde88db3c))
+
 ## [1.9.6-sandbox-hotswap.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.9.5...@aws-amplify/data-construct@1.9.6-sandbox-hotswap.0) (2024-08-20)
 
 **Note:** Version bump only for package @aws-amplify/data-construct

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-api-construct",
-  "version": "1.11.6-sandbox-hotswap.0",
+  "version": "1.11.6-sandbox-hotswap.1",
   "description": "AppSync GraphQL Api Construct using Amplify GraphQL Transformer.",
   "repository": {
     "type": "git",
