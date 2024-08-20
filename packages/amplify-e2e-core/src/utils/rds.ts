@@ -4,17 +4,14 @@ import {
   CreateDBInstanceCommand,
   CreateDBInstanceCommandInput,
   DBInstance,
-  DeleteDBInstanceCommand,
-  DescribeDBClustersCommand,
-  waitUntilDBInstanceAvailable,
   CreateDBClusterMessage,
-  waitUntilDBClusterAvailable,
   DeleteDBClusterCommand,
   DeleteDBClusterCommandInput,
-  $Command,
+  DeleteDBInstanceCommand,
+  DescribeDBClustersCommand,
   DescribeDBInstancesCommand,
-  DescribeDBClustersCommandOutput,
-  DescribeDBInstancesCommandOutput,
+  waitUntilDBClusterAvailable,
+  waitUntilDBInstanceAvailable,
 } from '@aws-sdk/client-rds';
 import { RDSDataClient, ExecuteStatementCommand, ExecuteStatementCommandInput, Field } from '@aws-sdk/client-rds-data';
 import generator from 'generate-password';
@@ -26,16 +23,11 @@ import {
   PutParameterCommand,
   PutParameterCommandInput,
   PutParameterCommandOutput,
-  GetParameterCommand,
-  GetParametersByPathCommand,
-  GetParameterResult,
 } from '@aws-sdk/client-ssm';
 import { SecretsManagerClient, CreateSecretCommand, DeleteSecretCommand, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
 import { KMSClient, CreateKeyCommand, ScheduleKeyDeletionCommand } from '@aws-sdk/client-kms';
 import { knex } from 'knex';
 import axios from 'axios';
-import fs from 'fs-extra';
-import path from 'path';
 import { sleep } from './sleep';
 
 const DEFAULT_DB_INSTANCE_TYPE = 'db.m5.large';
@@ -44,8 +36,6 @@ const DEFAULT_SECURITY_GROUP = 'default';
 
 const IPIFY_URL = 'https://api.ipify.org/';
 const AWSCHECKIP_URL = 'https://checkip.amazonaws.com/';
-
-let clusterInfo: ClusterInfo;
 
 export type SqlEngine = 'mysql' | 'postgres';
 export type RDSConfig = {
@@ -67,6 +57,7 @@ export type ClusterInfo = {
   dbName: string;
   secretArn: string;
   dbInstance: DBInstance;
+  username?: string;
 };
 
 const getRDSEngineType = (engine: SqlEngine): string => {
@@ -258,49 +249,73 @@ export const createRDSCluster = async (config: RDSConfig): Promise<ClusterInfo> 
  * @param config Configuration of the database cluster.
  * @returns EndPoint address, port and database name of the accessed RDS cluster.
  */
-export const useRDSCluster = async (config: RDSConfig): Promise<ClusterInfo> => {
+export const setupDataInExistingCluster = async (identifier: string, config: RDSConfig, queries: string[]): Promise<ClusterInfo> => {
   try {
-    // Send requests to get the cluster and instance config info
-    const databaseName = 'defaultdb';
-    const identifier = config.identifier;
-    const instanceIdentifier = createInstanceIdentifier(config.identifier);
     const client = new RDSClient({ region: config.region });
-    const describeClusterCommand = new DescribeDBClustersCommand({ Filters: [{ Name: 'db-cluster-id', Values: [identifier] }] });
-    const describeInstanceCommand = new DescribeDBInstancesCommand({ DBInstanceIdentifier: instanceIdentifier });
-
-    let describeClusterResponse: DescribeDBClustersCommandOutput;
-    let describeInstanceResponse: DescribeDBInstancesCommandOutput;
-    try {
-      describeClusterResponse = await client.send(describeClusterCommand);
-      if (describeClusterResponse == null) {
-        throw Error('Specified cluster is null.');
-      }
-    } catch (error) {
-      throw Error(`Error in getting ${identifier} cluster info: ${error}`);
+    const describeClusterResponse = await client.send(
+      new DescribeDBClustersCommand({ Filters: [{ Name: 'db-cluster-id', Values: [identifier] }] }),
+    );
+    if (!describeClusterResponse || !describeClusterResponse?.DBClusters[0]) {
+      throw Error('Specified cluster info cannot be fetched');
     }
-    try {
-      describeInstanceResponse = await client.send(describeInstanceCommand);
-      if (describeInstanceResponse == null) {
-        throw Error('Specified instance is null.');
-      }
-    } catch (error) {
-      throw Error(`Error in getting ${instanceIdentifier} cluster info: ${error}`);
-    }
-
-    // Extract the cluster and instance from the responses
     const dbClusterObj = describeClusterResponse.DBClusters[0];
-    const dbInstance = describeInstanceResponse.DBInstances[0];
+    const instances = dbClusterObj?.DBClusterMembers;
+    if (!instances || instances?.length === 0) {
+      throw new Error('No instances are present in the specified cluster');
+    }
+    const instanceId = instances[0]?.DBInstanceIdentifier;
+    const describeInstanceCommand = new DescribeDBInstancesCommand({ DBInstanceIdentifier: instanceId });
+    const describeInstanceResponse = await client.send(describeInstanceCommand);
+    if (!describeInstanceResponse || describeInstanceResponse?.DBInstances?.length === 0) {
+      throw Error('Specified cluster instance info cannot be fetched');
+    }
+
+    const clusterArn = dbClusterObj.DBClusterArn;
+    const secretArn = dbClusterObj.MasterUserSecret.SecretArn;
+    const defaultDbName = dbClusterObj.DatabaseName;
+    const dataClient = new RDSDataClient({ region: config.region });
+    const createDBInput: ExecuteStatementCommandInput = {
+      resourceArn: clusterArn,
+      secretArn,
+      sql: `create database ${config.dbname}`,
+      database: defaultDbName,
+    };
+
+    const createDBCommand = new ExecuteStatementCommand(createDBInput);
+    try {
+      const createDBResponse = await dataClient.send(createDBCommand);
+      console.log('Create database response: ' + JSON.stringify(createDBResponse));
+    } catch (err) {
+      console.log(err);
+    }
+
+    // create the test tables in the test database
+    for (const query of queries ?? []) {
+      try {
+        const executeStatementInput: ExecuteStatementCommandInput = {
+          resourceArn: clusterArn,
+          secretArn: secretArn,
+          sql: query,
+          database: config.dbname,
+        };
+        const executeStatementResponse = await dataClient.send(new ExecuteStatementCommand(executeStatementInput));
+        console.log('Run query response: ' + JSON.stringify(executeStatementResponse));
+      } catch (err) {
+        throw new Error(`Error in creating tables in test database: ${JSON.stringify(err, null, 4)}`);
+      }
+    }
 
     return {
-      clusterArn: dbClusterObj.DBClusterArn,
+      clusterArn,
       endpoint: dbClusterObj.Endpoint,
       port: dbClusterObj.Port,
-      dbName: databaseName,
-      dbInstance: dbInstance,
-      secretArn: dbClusterObj.MasterUserSecret.SecretArn,
+      dbName: config.dbname,
+      dbInstance: describeInstanceResponse.DBInstances[0],
+      secretArn,
+      username: dbClusterObj.MasterUsername,
     };
   } catch (error) {
-    console.log('Error: ', error);
+    console.log('Error while setting up the test data in existing cluster: ', JSON.stringify(error));
   }
 };
 
@@ -371,22 +386,13 @@ export const setupRDSInstanceAndData = async (
  * @returns Endpoint address, port and database name of the created RDS cluster.
  */
 
-export const setupRDSClusterAndData = async (useLocalCluster: boolean, config: RDSConfig, queries?: string[]): Promise<ClusterInfo> => {
-  let dbCluster: ClusterInfo;
-
-  if (!useLocalCluster) {
-    dbCluster = await createRDSCluster(config);
-    console.log(`Creating RDS ${config.engine} DB cluster with identifier ${config.identifier}`);
-  } else {
-    dbCluster = await useRDSCluster(config);
-    console.log(`Using RDS ${config.engine} DB cluster with identifier ${config.identifier}`);
-  }
+export const setupRDSClusterAndData = async (config: RDSConfig, queries?: string[]): Promise<ClusterInfo> => {
+  const dbCluster = await createRDSCluster(config);
+  console.log(`Creating RDS ${config.engine} DB cluster with identifier ${config.identifier}`);
 
   if (!dbCluster.secretArn) {
     throw new Error('Failed to store db connection config in secrets manager');
   }
-
-  clusterInfo = dbCluster;
 
   const client = new RDSDataClient({ region: config.region });
 
@@ -421,19 +427,6 @@ export const setupRDSClusterAndData = async (useLocalCluster: boolean, config: R
     }
   }
 
-  /*try {
-    const executeStatementInput: ExecuteStatementCommandInput = {
-      resourceArn: dbCluster.clusterArn,
-      secretArn: dbCluster.secretArn,
-      sql: `drop database ${config.dbname} with (FORCE)`,
-      database: dbCluster.dbName,
-    };
-    const executeStatementResponse = await client.send(new ExecuteStatementCommand(executeStatementInput));
-    console.log('Run query response: ' + JSON.stringify(executeStatementResponse));
-  } catch (err) {
-    throw new Error(`Error in running queries in test database: ${err}`);
-  }*/
-
   return {
     clusterArn: dbCluster.clusterArn,
     endpoint: dbCluster.endpoint,
@@ -442,23 +435,6 @@ export const setupRDSClusterAndData = async (useLocalCluster: boolean, config: R
     dbInstance: dbCluster.dbInstance,
     secretArn: dbCluster.secretArn,
   };
-};
-
-export const dropDatabase = async (config: RDSConfig): Promise<void> => {
-  const client = new RDSDataClient({ region: config.region });
-  // Drop the test database
-  try {
-    const executeStatementInput: ExecuteStatementCommandInput = {
-      resourceArn: clusterInfo.clusterArn,
-      secretArn: clusterInfo.secretArn,
-      sql: `drop database ${config.dbname} with (FORCE)`,
-      database: clusterInfo.dbName,
-    };
-    const executeStatementResponse = await client.send(new ExecuteStatementCommand(executeStatementInput));
-    console.log('Run query response: ' + JSON.stringify(executeStatementResponse));
-  } catch (err) {
-    throw new Error(`Error in running queries in test database: ${err}`);
-  }
 };
 
 /**

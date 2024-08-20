@@ -2,14 +2,16 @@
   "us-east-1": [
     {
       "dbConfig": {
-        "identifier": "IDENTIFIER_VALUE"
+        "identifier": "IDENTIFIER_VALUE",
+        "engine": "ENGINE_TYPE"
       }
     }
   ],
   "us-west-2": [
     {
       "dbConfig": {
-        "identifier": "IDENTIFIER_VALUE"
+        "identifier": "IDENTIFIER_VALUE",
+        "engine": "ENGINE_TYPE"
       }
     }
   ]

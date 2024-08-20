@@ -2,14 +2,16 @@
   "us-east-1": [
     {
       "dbConfig": {
-        "identifier": ""
+        "identifier": "",
+        "engine": "postgres"
       }
     }
   ],
   "us-west-2": [
     {
       "dbConfig": {
-        "identifier": "YMmwoSDbAQ"
+        "identifier": "usEhhWfnYh",
+        "engine": "postgres"
       }
     }
   ]

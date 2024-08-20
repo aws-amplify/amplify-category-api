@@ -1,10 +1,10 @@
 import path from 'path';
 import * as fs from 'fs-extra';
-import generator from 'generate-password';
 import { SqlModelDataSourceDbConnectionConfig, ModelDataSourceStrategySqlDbType } from '@aws-amplify/graphql-api-construct';
 import {
   deleteSSMParameters,
   deleteDbConnectionConfigWithSecretsManager,
+  deleteDBCluster,
   deleteDBInstance,
   extractVpcConfigFromDbInstance,
   RDSConfig,
@@ -14,28 +14,18 @@ import {
   storeDbConnectionConfig,
   storeDbConnectionStringConfig,
   storeDbConnectionConfigWithSecretsManager,
-  deleteDBCluster,
-  isOptInRegion,
   isDataAPISupported,
   isCI,
   generateDBName,
-  isDataAPISupportedRegion,
-  dropDatabase,
+  setupDataInExistingCluster,
 } from 'amplify-category-api-e2e-core';
-import { SecretsManagerClient, CreateSecretCommand, DeleteSecretCommand, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
+import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
 import {
   isSqlModelDataSourceSecretsManagerDbConnectionConfig,
   isSqlModelDataSourceSsmDbConnectionConfig,
   isSqlModelDataSourceSsmDbConnectionStringConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  GetParameterCommand,
-  GetParameterResult,
-  GetParametersByPathCommand,
-  GetParametersByPathResult,
-  PutParameterCommand,
-  SSMClient,
-} from '@aws-sdk/client-ssm';
+import { getClusterIdentifier } from './utils/sql-local-testing';
 
 export interface SqlDatabaseDetails {
   dbConfig: {
@@ -70,10 +60,10 @@ export class SqlDatatabaseController {
     // Data API is not supported in opted-in regions
     if (options.engine === 'postgres' && isDataAPISupported(options.region)) {
       this.useDataAPI = true;
+      this.enableLocalTesting = !isCI() && getClusterIdentifier(options.region, options.engine) !== undefined;
     } else {
       this.useDataAPI = false;
     }
-    this.enableLocalTesting = !isCI();
 
     // If database name not manually set, provide and sanitize the config dbname
     if (!options.dbname || options.dbname.length == 0 || this.enableLocalTesting) {
@@ -81,62 +71,17 @@ export class SqlDatatabaseController {
     }
   }
 
-  setNewConfig = async (): Promise<RDSConfig> => {
-    // Access the specific config from the local cluster configs JSON file
-    const repoRoot = path.join(__dirname, '..', '..', '..');
-    const localClusterPath = path.join(repoRoot, 'scripts', 'e2e-test-local-cluster-config.json');
-    const localClustersObject = JSON.parse(fs.readFileSync(localClusterPath, 'utf-8'));
-    const cluster = localClustersObject[this.options.region][0];
-
-    // Get the config identifier and connection URI
-    const identifier = cluster.dbConfig.identifier;
-
-    if (identifier === '' || identifier === null) {
-      return null;
-    }
-
-    const connectionUri = `/${identifier}/test`;
-
-    const ssmClient = new SSMClient({ region: this.options.region });
-    const getParameterCommand = new GetParametersByPathCommand({ Path: connectionUri, WithDecryption: true });
-    const getParameterResponse: GetParametersByPathResult = await ssmClient.send(getParameterCommand);
-
-    const setParameterCommand = new PutParameterCommand({
-      Name: `${connectionUri}/databaseName`,
-      Value: this.options.dbname,
-      Overwrite: true,
-    });
-    const putParameterResponse = await ssmClient.send(setParameterCommand);
-
-    const username = getParameterResponse.Parameters.find((obj) => obj.Name === `${connectionUri}/username`).Value;
-    const password = getParameterResponse.Parameters.find((obj) => obj.Name === `${connectionUri}/password`).Value;
-
-    const config: RDSConfig = {
-      identifier,
-      engine: this.options.engine,
-      dbname: this.options.dbname,
-      username,
-      password,
-      region: this.options.region,
-    };
-
-    return config;
-  };
-
   setupDatabase = async (): Promise<SqlDatabaseDetails> => {
     let dbConfig;
 
     if (this.useDataAPI) {
       if (this.enableLocalTesting) {
-        const newConfig = await this.setNewConfig();
-        if (newConfig === null) {
-          // If local cluster identifier is empty or non-existent, disable local testing and create a new cluster
-          this.enableLocalTesting = false;
-        } else {
-          this.options = newConfig;
-        }
+        const identifier = getClusterIdentifier(this.options.region, this.options.engine);
+        dbConfig = await setupDataInExistingCluster(identifier, this.options, this.setupQueries);
+        this.options.username = dbConfig.username;
+      } else {
+        dbConfig = await setupRDSClusterAndData(this.options, this.setupQueries);
       }
-      dbConfig = await setupRDSClusterAndData(this.enableLocalTesting, this.options, this.setupQueries);
     } else {
       dbConfig = await setupRDSInstanceAndData(this.options, this.setupQueries);
     }
@@ -153,226 +98,117 @@ export class SqlDatatabaseController {
     };
     console.log(`Stored db connection config in Secrets manager: ${JSON.stringify(dbConnectionConfigSecretsManager)}`);
 
-    if (!this.enableLocalTesting) {
-      if (this.useDataAPI || !this.options.password) {
-        const secretArn = dbConfig.secretArn;
-        const secretsManagerClient = new SecretsManagerClient({ region: this.options.region });
-        const secretManagerCommand = new GetSecretValueCommand({
-          SecretId: secretArn,
-        });
-        const secretsManagerResponse = await secretsManagerClient.send(secretManagerCommand);
-        const { password: managedPassword } = JSON.parse(secretsManagerResponse.SecretString);
-        if (!managedPassword) {
-          throw new Error('Unable to get RDS cluster master user password');
-        }
-        this.options.password = managedPassword;
-      }
-      const { secretArn: secretArnWithCustomKey, keyArn: keyArn } = await storeDbConnectionConfigWithSecretsManager({
-        region: this.options.region,
-        username: this.options.username,
-        password: this.options.password,
-        secretName: `${this.options.identifier}-secret-custom-key`,
-        useCustomEncryptionKey: true,
-      });
-
-      if (!secretArnWithCustomKey) {
-        throw new Error('Failed to store db connection config for secrets manager');
-      }
-      const dbConnectionConfigSecretsManagerCustomKey = {
-        databaseName: this.options.dbname,
-        hostname: dbConfig.endpoint,
-        port: dbConfig.port,
-        secretArn: secretArnWithCustomKey,
-        keyArn,
-      };
-      console.log(`Stored db connection config in Secrets manager: ${JSON.stringify(dbConnectionConfigSecretsManagerCustomKey)}`);
-
-      const pathPrefix = `/${this.options.identifier}/test`;
-      const engine = this.options.engine;
-      const dbConnectionConfigSSM = await storeDbConnectionConfig({
-        region: this.options.region,
-        pathPrefix,
-        hostname: dbConfig.endpoint,
-        port: dbConfig.port,
-        databaseName: this.options.dbname,
-        username: this.options.username,
-        password: this.options.password,
-      });
-      const dbConnectionStringConfigSSM = await storeDbConnectionStringConfig({
-        region: this.options.region,
-        pathPrefix,
-        connectionUri: this.getConnectionUri(
-          engine,
-          this.options.username,
-          this.options.password,
-          dbConfig.endpoint,
-          dbConfig.port,
-          this.options.dbname,
-        ),
-      });
-      const dbConnectionStringConfigMultiple = await storeDbConnectionStringConfig({
-        region: this.options.region,
-        pathPrefix,
-        connectionUri: [
-          'mysql://username:password@host:3306/dbname',
-          this.getConnectionUri(
-            engine,
-            this.options.username,
-            this.options.password,
-            dbConfig.endpoint,
-            dbConfig.port,
-            this.options.dbname,
-          ),
-        ],
-      });
-      const parameters = {
-        ...dbConnectionConfigSSM,
-        ...dbConnectionStringConfigSSM,
-        ...dbConnectionStringConfigMultiple,
-      };
-      if (!dbConnectionConfigSSM) {
-        throw new Error('Failed to store db connection config for SSM');
-      }
-      console.log(`Stored db connection config in SSM: ${JSON.stringify(Object.keys(parameters))}`);
-
-      this.databaseDetails = {
-        dbConfig: {
-          endpoint: dbConfig.endpoint,
-          port: dbConfig.port,
-          dbName: this.options.dbname,
-          strategyName: `${engine}DBStrategy`,
-          dbType: engine === 'postgres' ? 'POSTGRES' : 'MYSQL',
-          vpcConfig: extractVpcConfigFromDbInstance(dbConfig.dbInstance),
-        },
-        connectionConfigs: {
-          ssm: dbConnectionConfigSSM,
-          secretsManager: dbConnectionConfigSecretsManager,
-          secretsManagerCustomKey: dbConnectionConfigSecretsManagerCustomKey,
-          secretsManagerManagedSecret: {
-            databaseName: this.options.dbname,
-            hostname: dbConfig.endpoint,
-            port: dbConfig.port,
-            secretArn: dbConfig.secretArn,
-          },
-          connectionUri: dbConnectionStringConfigSSM,
-          connectionUriMultiple: dbConnectionStringConfigMultiple,
-        },
-      };
-      return this.databaseDetails;
-    } else {
-      // this.enableLocalTesting
+    if (this.useDataAPI || !this.options.password || this.enableLocalTesting) {
       const secretArn = dbConfig.secretArn;
       const secretsManagerClient = new SecretsManagerClient({ region: this.options.region });
       const secretManagerCommand = new GetSecretValueCommand({
         SecretId: secretArn,
       });
       const secretsManagerResponse = await secretsManagerClient.send(secretManagerCommand);
-      const secretArnWithCustomKey = secretsManagerResponse.ARN; // arn:aws:secretsmanager:us-west-2:637423428135:secret:yjLvhaVbVT-secret-custom-key-BTqGiz
-      const keyArn = 'arn:aws:kms:us-west-2:637423428135:key/a84fe5fe-ee01-44bf-b94e-57604a109c77'; // ELVIN - GET THE MASTER CREDENTIALS KMS KEY SOMEHOW (like "arn:aws:kms:us-west-2:637423428135:key/62ec591f-7188-49db-8819-87c15727908f")
-
-      const pathPrefix = `/${this.options.identifier}/test`;
-      const engine = this.options.engine;
-      const dbConnectionConfigSSM = await storeDbConnectionConfig({
-        region: this.options.region,
-        pathPrefix,
-        hostname: dbConfig.endpoint,
-        port: dbConfig.port,
-        databaseName: this.options.dbname,
-        username: this.options.username,
-        password: this.options.password,
-      });
-      const dbConnectionStringConfigSSM = await storeDbConnectionStringConfig({
-        region: this.options.region,
-        pathPrefix,
-        connectionUri: this.getConnectionUri(
-          engine,
-          this.options.username,
-          this.options.password,
-          dbConfig.endpoint,
-          dbConfig.port,
-          this.options.dbname,
-        ),
-      });
-      const dbConnectionStringConfigMultiple = await storeDbConnectionStringConfig({
-        region: this.options.region,
-        pathPrefix,
-        connectionUri: [
-          'mysql://username:password@host:3306/dbname',
-          this.getConnectionUri(
-            engine,
-            this.options.username,
-            this.options.password,
-            dbConfig.endpoint,
-            dbConfig.port,
-            this.options.dbname,
-          ),
-        ],
-      });
-
-      if (!secretArnWithCustomKey) {
-        throw new Error('Failed to store db connection config for secrets manager');
+      const { password: managedPassword } = JSON.parse(secretsManagerResponse.SecretString);
+      if (!managedPassword) {
+        throw new Error('Unable to get RDS cluster master user password');
       }
-      const dbConnectionConfigSecretsManagerCustomKey = {
-        databaseName: this.options.dbname,
-        hostname: dbConfig.endpoint,
-        port: dbConfig.port,
-        secretArn: secretArnWithCustomKey,
-        keyArn,
-      };
-      console.log(`Stored db connection config in Secrets manager: ${JSON.stringify(dbConnectionConfigSecretsManagerCustomKey)}`);
-
-      const identifier = this.options.identifier;
-
-      const parameters = {
-        ...dbConnectionConfigSSM,
-        ...dbConnectionStringConfigSSM,
-        ...dbConnectionStringConfigMultiple,
-      };
-      if (!dbConnectionConfigSSM) {
-        throw new Error('Failed to store db connection config for SSM');
-      }
-      console.log(`Stored db connection config in SSM: ${JSON.stringify(Object.keys(parameters))}`);
-
-      this.databaseDetails = {
-        dbConfig: {
-          endpoint: dbConfig.endpoint,
-          port: dbConfig.port,
-          dbName: this.options.dbname,
-          strategyName: `${engine}DBStrategy`,
-          dbType: engine === 'postgres' ? 'POSTGRES' : 'MYSQL',
-          vpcConfig: extractVpcConfigFromDbInstance(dbConfig.dbInstance),
-        },
-        connectionConfigs: {
-          ssm: dbConnectionConfigSSM,
-          secretsManager: dbConnectionConfigSecretsManager,
-          secretsManagerCustomKey: dbConnectionConfigSecretsManagerCustomKey,
-          secretsManagerManagedSecret: {
-            databaseName: this.options.dbname,
-            hostname: dbConfig.endpoint,
-            port: dbConfig.port,
-            secretArn: dbConfig.secretArn,
-          },
-          connectionUri: dbConnectionStringConfigSSM,
-          connectionUriMultiple: dbConnectionStringConfigMultiple,
-        },
-      };
-      return this.databaseDetails;
+      this.options.password = managedPassword;
     }
+    const { secretArn: secretArnWithCustomKey, keyArn: keyArn } = await storeDbConnectionConfigWithSecretsManager({
+      region: this.options.region,
+      username: this.options.username,
+      password: this.options.password,
+      secretName: `${this.options.identifier}-${this.options.dbname}-secret-custom-key`,
+      useCustomEncryptionKey: true,
+    });
+
+    if (!secretArnWithCustomKey) {
+      throw new Error('Failed to store db connection config for secrets manager');
+    }
+    const dbConnectionConfigSecretsManagerCustomKey = {
+      databaseName: this.options.dbname,
+      hostname: dbConfig.endpoint,
+      port: dbConfig.port,
+      secretArn: secretArnWithCustomKey,
+      keyArn,
+    };
+    console.log(`Stored db connection config in Secrets manager: ${JSON.stringify(dbConnectionConfigSecretsManagerCustomKey)}`);
+
+    const pathPrefix = `/${this.options.identifier}/${this.options.dbname}/test`;
+    const engine = this.options.engine;
+    const dbConnectionConfigSSM = await storeDbConnectionConfig({
+      region: this.options.region,
+      pathPrefix,
+      hostname: dbConfig.endpoint,
+      port: dbConfig.port,
+      databaseName: this.options.dbname,
+      username: this.options.username,
+      password: this.options.password,
+    });
+    const dbConnectionStringConfigSSM = await storeDbConnectionStringConfig({
+      region: this.options.region,
+      pathPrefix,
+      connectionUri: this.getConnectionUri(
+        engine,
+        this.options.username,
+        this.options.password,
+        dbConfig.endpoint,
+        dbConfig.port,
+        this.options.dbname,
+      ),
+    });
+    const dbConnectionStringConfigMultiple = await storeDbConnectionStringConfig({
+      region: this.options.region,
+      pathPrefix,
+      connectionUri: [
+        'mysql://username:password@host:3306/dbname',
+        this.getConnectionUri(engine, this.options.username, this.options.password, dbConfig.endpoint, dbConfig.port, this.options.dbname),
+      ],
+    });
+    const parameters = {
+      ...dbConnectionConfigSSM,
+      ...dbConnectionStringConfigSSM,
+      ...dbConnectionStringConfigMultiple,
+    };
+    if (!dbConnectionConfigSSM) {
+      throw new Error('Failed to store db connection config for SSM');
+    }
+    console.log(`Stored db connection config in SSM: ${JSON.stringify(Object.keys(parameters))}`);
+
+    this.databaseDetails = {
+      dbConfig: {
+        endpoint: dbConfig.endpoint,
+        port: dbConfig.port,
+        dbName: this.options.dbname,
+        strategyName: `${engine}DBStrategy`,
+        dbType: engine === 'postgres' ? 'POSTGRES' : 'MYSQL',
+        vpcConfig: extractVpcConfigFromDbInstance(dbConfig.dbInstance),
+      },
+      connectionConfigs: {
+        ssm: dbConnectionConfigSSM,
+        secretsManager: dbConnectionConfigSecretsManager,
+        secretsManagerCustomKey: dbConnectionConfigSecretsManagerCustomKey,
+        secretsManagerManagedSecret: {
+          databaseName: this.options.dbname,
+          hostname: dbConfig.endpoint,
+          port: dbConfig.port,
+          secretArn: dbConfig.secretArn,
+        },
+        connectionUri: dbConnectionStringConfigSSM,
+        connectionUriMultiple: dbConnectionStringConfigMultiple,
+      },
+    };
+    return this.databaseDetails;
   };
 
   cleanupDatabase = async (): Promise<void> => {
-    if (!this.databaseDetails || this.enableLocalTesting) {
-      // Database has not been set up or using a local test cluster.
-      if (this.enableLocalTesting) {
-        dropDatabase(this.options);
-      }
+    if (!this.databaseDetails) {
       return;
     }
 
-    if (this.useDataAPI) {
-      await deleteDBCluster(this.options.identifier, this.options.region);
-    } else {
-      await deleteDBInstance(this.options.identifier, this.options.region);
+    if (!this.enableLocalTesting) {
+      if (this.useDataAPI) {
+        await deleteDBCluster(this.options.identifier, this.options.region);
+      } else {
+        await deleteDBInstance(this.options.identifier, this.options.region);
+      }
     }
 
     const { connectionConfigs } = this.databaseDetails;
