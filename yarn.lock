@@ -510,6 +510,30 @@
     graphql "^15.5.0"
     prettier "^1.19.1"
 
+"@aws-amplify/graphql-transformer-core@^2.9.0":
+  version "2.9.3"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-transformer-core/-/graphql-transformer-core-2.9.3.tgz#9ab6bf8b58cf3481ec9680724bfe752b195dd9b8"
+  integrity sha512-gz9PbNTqsyQQn6W5d4HPN/pafvFH7spwd6R/hImisEBFD+80liJc/21nBC8UgUMPu2eXVZrsiWBfWnO8Rbqomg==
+  dependencies:
+    "@aws-amplify/graphql-directives" "1.1.0"
+    "@aws-amplify/graphql-transformer-interfaces" "3.10.1"
+    fs-extra "^8.1.0"
+    graphql "^15.5.0"
+    graphql-mapping-template "4.20.16"
+    graphql-transformer-common "4.31.1"
+    hjson "^3.2.2"
+    lodash "^4.17.21"
+    md5 "^2.3.0"
+    object-hash "^3.0.0"
+    ts-dedent "^2.0.0"
+
+"@aws-amplify/graphql-transformer-interfaces@3.10.1", "@aws-amplify/graphql-transformer-interfaces@^3.9.0":
+  version "3.10.1"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-transformer-interfaces/-/graphql-transformer-interfaces-3.10.1.tgz#18283fe97be3abf58f8564f877b7871fc11f4b9b"
+  integrity sha512-daf+cpOSw3lKiS+Tpc5Oo5H+FCkHi/8z+0mAR/greQGPJWzcHv9j2u1Jiy36UvI01ypOhHme58pAs/fKWLWDBQ==
+  dependencies:
+    graphql "^15.5.0"
+
 "@aws-amplify/graphql-types-generator@3.6.0":
   version "3.6.0"
   resolved "https://registry.npmjs.org/@aws-amplify/graphql-types-generator/-/graphql-types-generator-3.6.0.tgz#a104eee0492744e96dff662d1e0cd694f4ccc8d6"
