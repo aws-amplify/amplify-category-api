@@ -77,7 +77,16 @@ describe('Migration table import validation', () => {
   // For each test case, there should be a matching key in the test definitions.
   // The test definitions include a schema, overrides, and the expected error messages.
   const testCases = ['extraGSIOnGen2', 'billingMode'];
-  const getTestDefinition = (testCaseName: string): [TestDefinition, string, string[]] => {
+  type TestCase = [
+    // CloudFormfation test definition
+    TestDefinition,
+    // Overrides to apply to the stack. If empty, no overrides are applied.
+    // The overrides should export a function called applyOverrides that takes an AmplifyGraphqlApi object.
+    string,
+    // Expected CloudFormation error messages
+    string[],
+  ];
+  const getTestDefinition = (testCaseName: string): TestCase => {
     const testDefinitions: Record<string, [TestDefinition, string, string[]]> = {
       extraGSIOnGen2: [
         {
