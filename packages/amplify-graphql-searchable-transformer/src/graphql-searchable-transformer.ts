@@ -16,7 +16,7 @@ import {
 import { SearchableDirective } from '@aws-amplify/graphql-directives';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
-import { ArnFormat, CfnCondition, Fn } from 'aws-cdk-lib';
+import { ArnFormat, CfnCondition, Fn, Annotations } from 'aws-cdk-lib';
 import { IConstruct } from 'constructs';
 import { DirectiveNode, InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { Expression, str } from 'graphql-mapping-template';
@@ -281,6 +281,13 @@ export class SearchableModelTransformer extends TransformerPluginBase {
   }
 
   generateResolvers = (context: TransformerContextProvider): void => {
+    // This validation can't occur in validate because the api has not been initialized until generateResolvers
+    if (!context.transformParameters.allowGen1Patterns) {
+      Annotations.of(context.api).addWarning(
+        `@${SearchableDirective.name} is deprecated. This functionality will be removed in the next major release.`,
+      );
+    }
+
     if (!this.isSearchableConfigured()) {
       return;
     }

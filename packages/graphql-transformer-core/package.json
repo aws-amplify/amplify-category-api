@@ -14,7 +14,8 @@
   "keywords": [
     "graphql",
     "cloudformation",
-    "aws"
+    "aws",
+    "amplify"
   ],
   "scripts": {
     "test": "jest",

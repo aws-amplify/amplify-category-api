@@ -3,7 +3,6 @@ import { Construct } from 'constructs';
 import { ExecuteTransformConfig, executeTransform } from '@aws-amplify/graphql-transformer';
 import { NestedStack, Stack } from 'aws-cdk-lib';
 import { AttributionMetadataStorage, StackMetadataBackendOutputStorageStrategy } from '@aws-amplify/backend-output-storage';
-import { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { graphqlOutputKey } from '@aws-amplify/backend-output-schemas';
 import type { GraphqlOutput, AwsAppsyncAuthenticationType } from '@aws-amplify/backend-output-schemas';
 import {
@@ -185,13 +184,10 @@ export class AmplifyGraphqlApi extends Construct {
 
     const assetProvider = new AssetProvider(this);
 
-    const mergedTranslationBehavior = {
+    const transformParameters = {
       ...defaultTranslationBehavior,
       ...(translationBehavior ?? {}),
-    };
-    const transformParameters: TransformParameters = {
-      ...mergedTranslationBehavior,
-      allowGen1Patterns: mergedTranslationBehavior._allowGen1Patterns,
+      allowGen1Patterns: false,
     };
     const executeTransformConfig: ExecuteTransformConfig = {
       scope: this,
@@ -203,6 +199,7 @@ export class AmplifyGraphqlApi extends Construct {
         amplifyEnvironmentName: amplifyEnvironmentName,
         apiName: props.apiName ?? id,
         ...authSynthParameters,
+        provisionHotswapFriendlyResources: translationBehavior?._provisionHotswapFriendlyResources,
       },
       schema: definition.schema,
       userDefinedSlots: parseUserDefinedSlots(separatedFunctionSlots),
@@ -213,7 +210,6 @@ export class AmplifyGraphqlApi extends Construct {
           ...definition.referencedLambdaFunctions,
           ...functionNameMap,
         },
-        allowGen1Patterns: transformParameters.allowGen1Patterns,
       },
       authConfig,
       stackMapping: stackMappings ?? {},

@@ -7,4 +7,5 @@ export type SynthParameters = {
   identityPoolId?: string;
   adminRoles?: string[];
   enableIamAccess?: boolean;
+  provisionHotswapFriendlyResources?: boolean;
 };

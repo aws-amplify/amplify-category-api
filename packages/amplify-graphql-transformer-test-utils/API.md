@@ -104,6 +104,8 @@ export const mockSqlDataSourceStrategy: (options?: MakeSqlDataSourceStrategyOpti
 // @public (undocumented)
 export interface NestedStacks {
     // (undocumented)
+    rawRootStack: Stack;
+    // (undocumented)
     rootStack: Template;
     // (undocumented)
     stackMapping: Record<string, string>;

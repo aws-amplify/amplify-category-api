@@ -16,6 +16,7 @@ import {
   ModelDataSourceStrategyDbType,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { HasOneDirective } from '@aws-amplify/graphql-directives';
+import { Annotations } from 'aws-cdk-lib';
 import {
   ArgumentNode,
   DirectiveNode,
@@ -178,6 +179,22 @@ export class HasOneTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
+      // This validation can't occur in validate because the api has not been initialized until generateResolvers
+      if (!ctx.transformParameters.allowGen1Patterns) {
+        const { field, object } = config;
+        const modelName = object.name.value;
+        const fieldName = field.name.value;
+        if (field.type.kind === Kind.NON_NULL_TYPE) {
+          Annotations.of(ctx.api).addWarning(
+            `@${HasOneDirective.name} on required fields is deprecated. Modify ${modelName}.${fieldName} to be optional. This functionality will be removed in the next major release.`,
+          );
+        }
+        if (config.fields) {
+          Annotations.of(ctx.api).addWarning(
+            `fields argument on @${HasOneDirective.name} is deprecated. Modify ${modelName}.${fieldName} to use references instead. This functionality will be removed in the next major release.`,
+          );
+        }
+      }
       const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
       const dataSourceBasedTransformer = getHasOneDirectiveTransformer(dbType, config);
       dataSourceBasedTransformer.generateResolvers(ctx, config);
@@ -186,22 +203,7 @@ export class HasOneTransformer extends TransformerPluginBase {
 }
 
 const validate = (config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-  const { field, object } = config;
-  if (!ctx.transformParameters.allowGen1Patterns) {
-    const modelName = object.name.value;
-    const fieldName = field.name.value;
-    if (field.type.kind === Kind.NON_NULL_TYPE) {
-      throw new InvalidDirectiveError(
-        `@${HasOneDirective.name} cannot be used on required fields. Modify ${modelName}.${fieldName} to be optional.`,
-      );
-    }
-    if (config.fields) {
-      throw new InvalidDirectiveError(
-        `fields argument on @${HasOneDirective.name} is disallowed. Modify ${modelName}.${fieldName} to use references instead.`,
-      );
-    }
-  }
-
+  const { field } = config;
   let dbType: ModelDataSourceStrategyDbType;
   try {
     // getStrategyDbTypeFromTypeNode throws if a datasource is not found for the model. We want to catch that condition

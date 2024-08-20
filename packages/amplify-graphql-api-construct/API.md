@@ -314,13 +314,13 @@ export interface OptimisticConflictResolutionStrategy extends ConflictResolution
 // @public
 export interface PartialTranslationBehavior {
     readonly allowDestructiveGraphqlSchemaUpdates?: boolean;
-    // @internal
-    readonly _allowGen1Patterns?: boolean;
     readonly disableResolverDeduping?: boolean;
     readonly enableAutoIndexQueryNames?: boolean;
     readonly enableSearchNodeToNodeEncryption?: boolean;
     readonly enableTransformerCfnOutputs?: boolean;
     readonly populateOwnerFieldForStaticGroupAuth?: boolean;
+    // @internal
+    readonly _provisionHotswapFriendlyResources?: boolean;
     readonly replaceTableUponGsiUpdate?: boolean;
     readonly respectPrimaryKeyAttributesOnConnectionField?: boolean;
     readonly sandboxModeEnabled?: boolean;
@@ -440,8 +440,6 @@ export interface TimeToLiveSpecification {
 // @public
 export interface TranslationBehavior {
     readonly allowDestructiveGraphqlSchemaUpdates: boolean;
-    // @internal
-    readonly _allowGen1Patterns: boolean;
     readonly disableResolverDeduping: boolean;
     readonly enableAutoIndexQueryNames: boolean;
     // (undocumented)
