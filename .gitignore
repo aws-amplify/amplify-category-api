@@ -44,3 +44,4 @@ codebuild_specs/debug_workflow.yml
 .npmrc
 verdaccio-logs.txt
 scripts/components/private_packages.ts
+scripts/e2e-test-local-cluster-config.json
