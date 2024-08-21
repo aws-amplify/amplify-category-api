@@ -1,6 +1,0 @@
-*.d.ts
-*.ts.map
-*.js
-*.js.map
-lib/*
-vpc-db-lambda/lib/*
