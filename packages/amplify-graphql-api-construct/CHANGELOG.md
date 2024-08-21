@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.11.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.11.5...@aws-amplify/graphql-api-construct@1.11.6) (2024-08-20)
+
+### Bug Fixes
+
+- change gen 1 patterns to warning message instead of error ([#2768](https://github.com/aws-amplify/amplify-category-api/issues/2768)) ([97b1f36](https://github.com/aws-amplify/amplify-category-api/commit/97b1f36e405808df2ed694c3b94a3da7b3d9759f))
+
 ## [1.11.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.11.4...@aws-amplify/graphql-api-construct@1.11.5) (2024-08-12)
 
 **Note:** Version bump only for package @aws-amplify/graphql-api-construct

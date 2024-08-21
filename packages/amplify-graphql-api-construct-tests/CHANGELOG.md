@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.8.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.7.5...amplify-graphql-api-construct-tests@1.8.0) (2024-08-20)
+
+### Bug Fixes
+
+- encode password to handle special chars ([baa9bf3](https://github.com/aws-amplify/amplify-category-api/commit/baa9bf313edc1e4f241837f62c934fea91001b99))
+- encode the username as well since mysql supports spaces ([e96acfa](https://github.com/aws-amplify/amplify-category-api/commit/e96acfadcdc5bd7bfade1a01e21502d554bbc86c))
+
+### Features
+
+- add ([7a42189](https://github.com/aws-amplify/amplify-category-api/commit/7a42189e0c26276350e7f05954953a167f39d5cd))
+
 ## [1.7.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.7.4...amplify-graphql-api-construct-tests@1.7.5) (2024-08-12)
 
 **Note:** Version bump only for package amplify-graphql-api-construct-tests
