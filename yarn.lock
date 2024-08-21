@@ -325,6 +325,13 @@
     "@turf/boolean-clockwise" "6.5.0"
     camelcase-keys "6.2.2"
 
+"@aws-amplify/graphql-transformer-interfaces@^3.9.0":
+  version "3.10.1"
+  resolved "http://localhost:4873/@aws-amplify%2fgraphql-transformer-interfaces/-/graphql-transformer-interfaces-3.10.1.tgz#18283fe97be3abf58f8564f877b7871fc11f4b9b"
+  integrity sha512-daf+cpOSw3lKiS+Tpc5Oo5H+FCkHi/8z+0mAR/greQGPJWzcHv9j2u1Jiy36UvI01ypOhHme58pAs/fKWLWDBQ==
+  dependencies:
+    graphql "^15.5.0"
+
 "@aws-amplify/interactions@4.1.12":
   version "4.1.12"
   resolved "https://registry.yarnpkg.com/@aws-amplify/interactions/-/interactions-4.1.12.tgz#b4e953c335b2638890459f66a58b8484f914186f"
@@ -8963,7 +8970,7 @@ astral-regex@^2.0.0:
   resolved "https://registry.yarnpkg.com/astral-regex/-/astral-regex-2.0.0.tgz#483143c567aeed4785759c0865786dc77d7d2e31"
   integrity sha512-Z7tMw1ytTXt5jqMcOP+OQteU1VuNK9Y02uuJtKQ1Sv69jXQKKg5cibLwGJow8yzZP+eAc18EmLGPal0bp36rvQ==
 
-async@^2.6.4:
+async@^2.6.4, async@^3.2.3:
   version "2.6.4"
   resolved "https://registry.yarnpkg.com/async/-/async-2.6.4.tgz#706b7ff6084664cd7eae713f6f965433b5504221"
   integrity sha512-mzo5dfJYwAn29PeiJ0zvwTo04zj8HDJj0Mn8TD7sno7q12prdbnasKJHhkm2c1LgrhlJ0teaea8860oxi51mGA==
@@ -12167,16 +12174,6 @@ graphql-tag@^2.10.1:
   integrity sha512-FdSNcu2QQcWnM2VNvSCCDCVS5PpPqpzgFT8+GXzqJuoDd0CBncxCY278u4mhRO7tMgo2JjgJA5aZ+nWSQ/Z+xg==
   dependencies:
     tslib "^2.1.0"
-
-graphql-versioned-transformer@5.2.80:
-  version "5.2.80"
-  resolved "https://registry.npmjs.org/graphql-versioned-transformer/-/graphql-versioned-transformer-5.2.80.tgz#cec826cf091b64d1f44ab12e42d4c35f2cc5612d"
-  integrity sha512-8fmuuTRZ9v4syn1cjUQOnRaZidpch7Ximq9bbpj4wsdcZbgSquRnodtyGVlIuHp8irMbAxX5TnDlvpSf2k71qw==
-  dependencies:
-    graphql "^15.5.0"
-    graphql-mapping-template "4.20.16"
-    graphql-transformer-common "4.31.1"
-    graphql-transformer-core "8.2.13"
 
 graphql@15.8.0, graphql@^15.5.0:
   version "15.8.0"

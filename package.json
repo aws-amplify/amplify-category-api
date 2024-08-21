@@ -252,6 +252,7 @@
     "jest-environment-node": "26.6.2",
     "ts-jest": "^26.5.5",
     "axios": "^1.7.4",
-    "braces": "^3.0.3"
+    "braces": "^3.0.3",
+    "async": "^3.2.6"
   }
 }
