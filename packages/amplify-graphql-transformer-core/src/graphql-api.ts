@@ -132,8 +132,14 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
    */
   public readonly assetProvider: AssetProvider;
 
+  /**
+   * The GraphQL API endpoint ARN
+   */
   public readonly graphQLEndpointArn: string;
 
+  /**
+   * The scope of the GraphQL API. public (GLOBAL) or private (PRIVATE)
+   */
   public readonly visibility: Visibility;
 
   private schemaResource: CfnGraphQLSchema;
