@@ -1,8 +1,8 @@
-import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
+import { InvalidDirectiveError, isModelType } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ObjectTypeDefinitionNode, Kind } from 'graphql';
+import { ObjectTypeDefinitionNode, Kind, TypeNode } from 'graphql';
 import { getBaseType, isScalar } from 'graphql-transformer-common';
-import { convertInputValueToJSONSchema, JSONSchema } from './graphql-json-schema-type';
+import { generateJSONSchemaFromTypeNode, JSONSchema } from './graphql-json-schema-type';
 
 export type ToolDefinition = {
   name: string;
@@ -14,7 +14,7 @@ export type Tools = {
 };
 
 type GraphQLRequestInputDescriptor = {
-  selectionSet: string[];
+  selectionSet: string;
   propertyTypes: Record<string, string>;
   queryName: string;
 };
@@ -28,10 +28,36 @@ type Tool = {
   graphqlRequestInputDescriptor?: GraphQLRequestInputDescriptor;
 };
 
+const generateSelectionSet = (returnType: TypeNode, ctx: TransformerContextProvider, fieldName: string = '', selectionSet: string = ''): string => {
+    if (returnType.kind === 'NamedType' || returnType.kind === 'NonNullType') {
+      if (isScalar(returnType)) {
+        return selectionSet + ` ${fieldName}`;
+      }
+
+      const type = returnType.kind === 'NamedType'
+        ? getObjectTypeFromName(returnType.name.value, ctx)
+        : getObjectTypeFromName(getBaseType(returnType), ctx);
+
+      const { fields } = type;
+      if (!fields || fields.length === 0) {
+        return selectionSet;
+      }
+
+      for (const field of fields) {
+        if (isScalar(field.type)) {
+          selectionSet += ` ${field.name.value}`;
+        } else {
+          return generateSelectionSet(field.type, ctx, field.name.value, selectionSet + ` ${field.name.value} {`) + ' }';
+        }
+      }
+      return selectionSet;
+    }
+
+    throw Error('unexpected type while generating selection set.');
+  };
+
 const getObjectTypeFromName = (name: string, ctx: TransformerContextProvider): ObjectTypeDefinitionNode => {
-  const node = ctx.inputDocument.definitions.find((d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === name) as
-    | ObjectTypeDefinitionNode
-    | undefined;
+  const node = ctx.output.getObject(name);
   if (!node) {
     throw Error(`Could not find type definition for ${name}`);
   }
@@ -60,9 +86,10 @@ export const processTools = (toolDefinitions: ToolDefinition[], ctx: Transformer
     let toolProperties: Record<string, JSONSchema> = {};
     let required: string[] = [];
     const fieldArguments = matchingQueryField.arguments;
-    if (fieldArguments && fieldArguments.length > 0) {
+    if (getBaseType(matchingQueryField.type).startsWith('Model') && toolName.startsWith('list')) {
+    } else if (fieldArguments && fieldArguments.length > 0) {
       for (const fieldArgument of fieldArguments) {
-        const fieldArgumentSchema = convertInputValueToJSONSchema(fieldArgument, ctx);
+        const fieldArgumentSchema = generateJSONSchemaFromTypeNode(fieldArgument.type, ctx);
         // TODO: How do we allow description to be defined in the directive?
         toolProperties = { ...toolProperties, [fieldArgument.name.value]: fieldArgumentSchema };
         if (fieldArgument.type.kind === 'NonNullType') {
@@ -71,8 +98,16 @@ export const processTools = (toolDefinitions: ToolDefinition[], ctx: Transformer
       }
     }
 
+    const returnType = matchingQueryField.type;
+    let selectionSet: string;
+    if (isScalar(returnType)) {
+      selectionSet = '';
+    } else {
+      selectionSet = generateSelectionSet(returnType, ctx).trim();
+    }
+
     const empty: GraphQLRequestInputDescriptor = {
-      selectionSet: [],
+      selectionSet,
       propertyTypes: {},
       queryName: '',
     };
@@ -80,31 +115,10 @@ export const processTools = (toolDefinitions: ToolDefinition[], ctx: Transformer
     const graphqlRequestInputDescriptor: GraphQLRequestInputDescriptor | undefined = fieldArguments?.reduce((acc, fieldArgument) => {
       const { selectionSet, propertyTypes } = acc;
       const name = fieldArgument.name.value;
-      const returnType = matchingQueryField.type;
-      if (returnType.kind === 'ListType') {
-        // TODO: handle list types
-        throw Error('not supporting list type responses');
-      } else if (returnType.kind === 'NamedType') {
-        if (!isScalar(returnType)) {
-          const type = getObjectTypeFromName(returnType.name.value, ctx);
-          const fields = type.fields?.map((field) => field.name.value);
-          if (fields) {
-            selectionSet.push(...fields);
-          } else {
-            // TODO: handle
-          }
-        }
-      } else if (returnType.kind === 'NonNullType') {
-        const baseType = getBaseType(returnType);
-        const type = getObjectTypeFromName(baseType, ctx);
-        const fields = type.fields?.map((field) => field.name.value);
-        if (fields) {
-          selectionSet.push(...fields);
-        } else {
-          // TODO: handle
-        }
+      if (getBaseType(matchingQueryField.type).startsWith('Model') && toolName.startsWith('list')) {
+      } else {
+        propertyTypes[name] = getBaseType(fieldArgument.type);
       }
-      propertyTypes[name] = getBaseType(fieldArgument.type);
       return { selectionSet, propertyTypes, queryName: toolName };
     }, empty);
 

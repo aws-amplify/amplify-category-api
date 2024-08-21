@@ -55,13 +55,7 @@ test('conversation route valid schema', () => {
 });
 
 test('conversation route with model query tool', () => {
-  const authConfig: AppSyncAuthConfiguration = {
-    defaultAuthentication: {
-      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-    },
-    additionalAuthenticationProviders: [],
-  };
-
+  const routeName = 'pirateChat';
   const inputSchema = `
     type Todo @model @auth(rules: [{ allow: owner }]) {
       content: String
@@ -69,7 +63,7 @@ test('conversation route with model query tool', () => {
     }
 
     type Mutation {
-        pirateChat(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
+        ${routeName}(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
         @conversation(
           aiModel: "Claude3Haiku",
           functionName: "conversation-handler",
@@ -81,10 +75,26 @@ test('conversation route with model query tool', () => {
     ${conversationSchemaTypes}
   `;
 
-  expect(() => {
-    transform(inputSchema, { Todo: DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY });
-  }) // TODO: remove this once we support complex input types
-    .toThrowError(/Complex input types not yet supported/);
+
+  const out = transform(inputSchema);
+  expect(out).toBeDefined();
+
+  const resolverCode = getResolverResource(routeName, out.rootStack.Resources)['Properties']['Code'];
+  expect(resolverCode).toBeDefined();
+  expect(resolverCode).toMatchSnapshot();
+
+  const resolverFnCode = getResolverFnResource(routeName, out.rootStack.Resources)['Properties']['Code'];
+  expect(resolverFnCode).toBeDefined();
+  expect(resolverFnCode).toMatchSnapshot();
+
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+
+  // expect(() => {
+  //   transform(inputSchema, { Todo: DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY });
+  // })
+  // TODO: remove this once we support complex input types
+    // .toThrowError(/Complex input types not yet supported/);
 });
 
 test('conversation route without tools', () => {
