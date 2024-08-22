@@ -1,6 +1,6 @@
 import { InvalidDirectiveError, isModelType } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ObjectTypeDefinitionNode, Kind, TypeNode } from 'graphql';
+import { ObjectTypeDefinitionNode, Kind, TypeNode, FieldDefinitionNode } from 'graphql';
 import { getBaseType, isScalar } from 'graphql-transformer-common';
 import { generateJSONSchemaFromTypeNode, JSONSchema } from './graphql-json-schema-type';
 
@@ -27,34 +27,44 @@ type Tool = {
   };
   graphqlRequestInputDescriptor?: GraphQLRequestInputDescriptor;
 };
+const generateSelectionSet = (
+  currentType: TypeNode,
+  ctx: TransformerContextProvider,
+  seenTypes: Set<string> = new Set(),
+  fieldName: string = '',
+): string => {
+  if (isScalar(currentType)) {
+    return fieldName;
+  }
 
-const generateSelectionSet = (returnType: TypeNode, ctx: TransformerContextProvider, fieldName: string = '', selectionSet: string = ''): string => {
-    if (returnType.kind === 'NamedType' || returnType.kind === 'NonNullType') {
-      if (isScalar(returnType)) {
-        return selectionSet + ` ${fieldName}`;
+  const typeName = getBaseType(currentType);
+  if (seenTypes.has(typeName)) {
+    return '';
+  }
+
+  const type = getObjectTypeFromName(typeName, ctx);
+  seenTypes.add(type.name.value);
+
+  const { fields } = type;
+  if (!fields || fields.length === 0) {
+    return '';
+  }
+
+  let selectionSet = '';
+
+  for (const field of fields) {
+    if (isScalar(field.type)) {
+      selectionSet += ` ${field.name.value}`;
+    } else {
+      const nestedSelection = generateSelectionSet(field.type, ctx, new Set(seenTypes), field.name.value);
+      if (nestedSelection) {
+        selectionSet += ` ${field.name.value} { ${nestedSelection} }`;
       }
-
-      const type = returnType.kind === 'NamedType'
-        ? getObjectTypeFromName(returnType.name.value, ctx)
-        : getObjectTypeFromName(getBaseType(returnType), ctx);
-
-      const { fields } = type;
-      if (!fields || fields.length === 0) {
-        return selectionSet;
-      }
-
-      for (const field of fields) {
-        if (isScalar(field.type)) {
-          selectionSet += ` ${field.name.value}`;
-        } else {
-          return generateSelectionSet(field.type, ctx, field.name.value, selectionSet + ` ${field.name.value} {`) + ' }';
-        }
-      }
-      return selectionSet;
     }
+  }
 
-    throw Error('unexpected type while generating selection set.');
-  };
+  return selectionSet.trim();
+};
 
 const getObjectTypeFromName = (name: string, ctx: TransformerContextProvider): ObjectTypeDefinitionNode => {
   const node = ctx.output.getObject(name);

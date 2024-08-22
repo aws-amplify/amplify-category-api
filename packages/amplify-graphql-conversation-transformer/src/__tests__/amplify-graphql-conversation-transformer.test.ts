@@ -1,7 +1,7 @@
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration, ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { parse } from 'graphql';
@@ -75,6 +75,60 @@ test('conversation route with model query tool', () => {
     ${conversationSchemaTypes}
   `;
 
+  const out = transform(inputSchema);
+  expect(out).toBeDefined();
+
+  const resolverCode = getResolverResource(routeName, out.rootStack.Resources)['Properties']['Code'];
+  expect(resolverCode).toBeDefined();
+  expect(resolverCode).toMatchSnapshot();
+
+  const resolverFnCode = getResolverFnResource(routeName, out.rootStack.Resources)['Properties']['Code'];
+  expect(resolverFnCode).toBeDefined();
+  expect(resolverFnCode).toMatchSnapshot();
+
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+});
+
+test('conversation route with relational model query tool', () => {
+  const routeName = 'pirateChat';
+  const inputSchema = `
+
+    type Product {
+      name: String!
+      price: Float!
+    }
+    type Customer @model @auth(rules: [{ allow: owner }]) {
+      name: String
+      email: String
+      activeCart: Cart @hasOne(references: "customerId")
+      orderHistory: [Order] @hasMany(references: "customerId")
+    }
+
+    type Cart @model @auth(rules: [{ allow: owner }]) {
+      products: [Product]
+      customerId: ID
+      customer: Customer @belongsTo(references: "customerId")
+    }
+
+    type Order @model @auth(rules: [{ allow: owner }]) {
+      products: [Product]
+      customerId: ID
+      customer: Customer @belongsTo(references: "customerId")
+    }
+
+    type Mutation {
+        ${routeName}(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
+        @conversation(
+          aiModel: "Claude3Haiku",
+          functionName: "conversation-handler",
+          systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
+          tools: [{ name: "listCustomers", description: "Provides data about the customer sending a message" }]
+        )
+    }
+
+    ${conversationSchemaTypes}
+  `;
 
   const out = transform(inputSchema);
   expect(out).toBeDefined();
@@ -89,12 +143,6 @@ test('conversation route with model query tool', () => {
 
   const schema = parse(out.schema);
   validateModelSchema(schema);
-
-  // expect(() => {
-  //   transform(inputSchema, { Todo: DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY });
-  // })
-  // TODO: remove this once we support complex input types
-    // .toThrowError(/Complex input types not yet supported/);
 });
 
 test('conversation route without tools', () => {

@@ -308,7 +308,137 @@ Object {
       "export function request(ctx) {
   const { args, identity, source, request, prev } = ctx;
   const { typeName, fieldName } = ctx.stash;
-  const toolDefinitions = \`{\\"tools\\":[{\\"name\\":\\"listTodos\\",\\"description\\":\\"lists todos\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{},\\"required\\":[]}},\\"graphqlRequestInputDescriptor\\":{\\"selectionSet\\":\\"items { content isDone id createdAt updatedAt owner }\\",\\"propertyTypes\\":{},\\"queryName\\":\\"listTodos\\"}}]}\`;
+  const toolDefinitions = \`{\\"tools\\":[{\\"name\\":\\"listTodos\\",\\"description\\":\\"lists todos\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{},\\"required\\":[]}},\\"graphqlRequestInputDescriptor\\":{\\"selectionSet\\":\\"items { content isDone id createdAt updatedAt owner } nextToken\\",\\"propertyTypes\\":{},\\"queryName\\":\\"listTodos\\"}}]}\`;
+  const selectionSet = \`id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt\`;
+  const graphqlApiEndpoint = '",
+      Object {
+        "Fn::GetAtt": Array [
+          "GraphQLAPI",
+          "GraphQLUrl",
+        ],
+      },
+      "';
+
+  const messages = prev.result.items;
+  const responseMutation = {
+    name: 'createAssistantResponsePirateChat',
+    inputTypeName: 'CreateConversationMessagePirateChatAssistantInput',
+    selectionSet,
+  };
+  const currentMessageId = ctx.stash.defaultValues.id;
+  const modelConfiguration = {
+    modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
+    systemPrompt: 'You are a helpful chatbot. Answer questions to the best of your ability.',
+    
+  };
+
+  const clientTools = args.toolConfiguration?.tools?.map((tool) => { return { ...tool.toolSpec }});
+  const dataTools = JSON.parse(toolDefinitions)?.tools
+   const toolsConfiguration = {
+    dataTools,
+    clientTools,
+  };
+
+  const requestArgs = {
+    ...args,
+    currentMessageId,
+    responseMutation,
+    graphqlApiEndpoint,
+    modelConfiguration,
+    toolsConfiguration,
+    messages,
+  };
+
+  const payload = {
+    typeName,
+    fieldName,
+    ...requestArgs,
+    identity,
+    source,
+    request,
+    prev
+  };
+
+  return {
+    operation: 'Invoke',
+    payload,
+    invocationType: 'Event'
+  };
+}
+
+export function response(ctx) {
+  let success = true;
+  if (ctx.error) {
+    util.appendError(ctx.error.message, ctx.error.type);
+    success = false;
+  }
+  const response = {
+      __typename: 'ConversationMessagePirateChat',
+      id: ctx.stash.defaultValues.id,
+      conversationId: ctx.args.conversationId,
+      role: 'user',
+      content: ctx.args.content,
+      createdAt: ctx.stash.defaultValues.createdAt,
+      updatedAt: ctx.stash.defaultValues.updatedAt,
+  };
+  return response;
+}",
+    ],
+  ],
+}
+`;
+
+exports[`conversation route with relational model query tool 1`] = `
+Object {
+  "Fn::Join": Array [
+    "",
+    Array [
+      "export const request = (ctx) => {
+  ctx.stash.typeName = \\"Mutation\\";
+  ctx.stash.fieldName = \\"pirateChat\\";
+  ctx.stash.conditions = [];
+  ctx.stash.metadata = {};
+  ctx.stash.metadata.dataSourceType = \\"AWS_LAMBDA\\";
+  ctx.stash.metadata.apiId = \\"",
+      Object {
+        "Fn::GetAtt": Array [
+          "GraphQLAPI",
+          "ApiId",
+        ],
+      },
+      "\\";
+  ctx.stash.connectionAttributes = {};
+  ctx.stash.lambdaFunctionArn = \\"",
+      Object {
+        "Fn::Sub": Array [
+          "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:\${name}",
+          Object {
+            "name": "conversation-handler",
+          },
+        ],
+      },
+      "\\";
+  ctx.stash.adminRoles = [];
+  return {};
+}
+
+export const response = (ctx) => {
+  return ctx.prev.result;
+};",
+    ],
+  ],
+}
+`;
+
+exports[`conversation route with relational model query tool 2`] = `
+Object {
+  "Fn::Join": Array [
+    "",
+    Array [
+      "export function request(ctx) {
+  const { args, identity, source, request, prev } = ctx;
+  const { typeName, fieldName } = ctx.stash;
+  const toolDefinitions = \`{\\"tools\\":[{\\"name\\":\\"listCustomers\\",\\"description\\":\\"Provides data about the customer sending a message\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{},\\"required\\":[]}},\\"graphqlRequestInputDescriptor\\":{\\"selectionSet\\":\\"items { name email activeCart { products { name price } customerId id createdAt updatedAt owner } orderHistory { items { products { name price } customerId id createdAt updatedAt owner } nextToken } id createdAt updatedAt owner } nextToken\\",\\"propertyTypes\\":{},\\"queryName\\":\\"listCustomers\\"}}]}\`;
   const selectionSet = \`id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt\`;
   const graphqlApiEndpoint = '",
       Object {
