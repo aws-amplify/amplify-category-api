@@ -13,7 +13,7 @@ describe('Canary using Postgres lambda model datasource strategy', () => {
   const projFolderName = 'pgcanary';
   // sufficient password length that meets the requirements for RDS cluster/instance
   const [username, password, identifier] = generator.generateMultiple(3, { length: 11 });
-  const region = 'us-east-1';
+  const region = process.env.CLI_REGION ?? 'us-west-2';
   const engine = 'postgres';
 
   const databaseController: SqlDatatabaseController = new SqlDatatabaseController(

@@ -206,7 +206,7 @@ export class SqlDatatabaseController {
   };
 
   cleanupDatabase = async (): Promise<void> => {
-    if (!this.databaseDetails) {
+    if (this.usePreProvisionedCluster || !this.databaseDetails) {
       return;
     }
 
