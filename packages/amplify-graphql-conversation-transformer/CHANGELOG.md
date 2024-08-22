@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.1-raven.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@0.1.1-raven.6...@aws-amplify/graphql-conversation-transformer@0.1.1-raven.7) (2024-08-22)
+
+### Bug Fixes
+
+- **conversation:** inputschema model support for appsync tools ([1ece565](https://github.com/aws-amplify/amplify-category-api/commit/1ece565ffd25a38cbbb1e0d42982ddcdb88fec77))
+
 ## [0.1.1-raven.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@0.1.1-raven.5...@aws-amplify/graphql-conversation-transformer@0.1.1-raven.6) (2024-08-21)
 
 **Note:** Version bump only for package @aws-amplify/graphql-conversation-transformer
