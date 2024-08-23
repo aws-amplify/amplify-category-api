@@ -51,7 +51,7 @@
     "ts-jest": "26.4.4"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.129.0",
+    "aws-cdk-lib": "^2.152.0",
     "constructs": "^10.3.0"
   },
   "jest": {
