@@ -77,7 +77,7 @@
     "zod"
   ],
   "dependencies": {
-    "@aws-amplify/ai-constructs": "0.0.0-test-20240816172322",
+    "@aws-amplify/ai-constructs": "0.0.0-test-20240823000521",
     "@aws-amplify/backend-output-schemas": "^0.4.0",
     "@aws-amplify/backend-output-storage": "^0.2.2",
     "@aws-amplify/graphql-auth-transformer": "3.6.6-raven.3",
