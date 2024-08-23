@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "@aws-amplify/graphql-transformer-test-utils": "0.6.1",
-    "@types/node": "^12.12.6"
+    "@types/node": "^18.0.0"
   },
   "jest": {
     "transform": {

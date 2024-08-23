@@ -47,7 +47,7 @@
     "@aws-amplify/graphql-searchable-transformer": "3.0.1",
     "@aws-amplify/graphql-sql-transformer": "0.4.1",
     "@aws-amplify/graphql-transformer-test-utils": "0.6.1",
-    "@types/node": "^12.12.6"
+    "@types/node": "^18.0.0"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.152.0",
