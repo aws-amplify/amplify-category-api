@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-transformer",
-  "version": "1.6.6-raven.9",
+  "version": "1.6.6-raven.10",
   "description": "Amplify GraphQL Transformer Root Package",
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@aws-amplify/graphql-auth-transformer": "3.6.6-raven.3",
-    "@aws-amplify/graphql-conversation-transformer": "0.1.1-raven.7",
+    "@aws-amplify/graphql-conversation-transformer": "0.1.1-raven.8",
     "@aws-amplify/graphql-default-value-transformer": "2.3.14-raven.3",
     "@aws-amplify/graphql-function-transformer": "2.1.27-raven.3",
     "@aws-amplify/graphql-generation-transformer": "0.1.1-raven.6",
