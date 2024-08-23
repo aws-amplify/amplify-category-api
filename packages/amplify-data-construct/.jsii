@@ -9,7 +9,7 @@
     "@aws-amplify/backend-output-schemas": "^0.4.0",
     "@aws-amplify/backend-output-storage": "^0.2.2",
     "@aws-amplify/graphql-auth-transformer": "3.6.6-raven.3",
-    "@aws-amplify/graphql-conversation-transformer": "0.1.1-raven.6",
+    "@aws-amplify/graphql-conversation-transformer": "0.1.1-raven.7",
     "@aws-amplify/graphql-default-value-transformer": "2.3.14-raven.3",
     "@aws-amplify/graphql-directives": "1.1.1-raven.2",
     "@aws-amplify/graphql-function-transformer": "2.1.27-raven.3",
@@ -22,7 +22,7 @@
     "@aws-amplify/graphql-relational-transformer": "2.5.12-raven.3",
     "@aws-amplify/graphql-searchable-transformer": "2.7.10-raven.3",
     "@aws-amplify/graphql-sql-transformer": "0.3.10-raven.3",
-    "@aws-amplify/graphql-transformer": "1.6.6-raven.8",
+    "@aws-amplify/graphql-transformer": "1.6.6-raven.9",
     "@aws-amplify/graphql-transformer-core": "2.9.4-raven.3",
     "@aws-amplify/graphql-transformer-interfaces": "3.10.2-raven.1",
     "@aws-amplify/platform-core": "^0.2.0",
@@ -48,7 +48,7 @@
     "zod": "^3.22.3"
   },
   "dependencies": {
-    "@aws-amplify/graphql-api-construct": "1.11.6-raven.8",
+    "@aws-amplify/graphql-api-construct": "1.11.6-raven.9",
     "aws-cdk-lib": "^2.129.0",
     "constructs": "^10.3.0"
   },
@@ -3733,6 +3733,6 @@
     }
   },
   "types": {},
-  "version": "1.9.6-raven.8",
-  "fingerprint": "Ahcp4jSTwxzCqMak1RrmMUvCjph3Sm2Vhr7zizaCTQQ="
+  "version": "1.9.6-raven.9",
+  "fingerprint": "rmTOS8vShjzcr+ISBOTxFldBSr0cJiU/GYIUpUUUBWA="
 }

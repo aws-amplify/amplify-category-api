@@ -52,12 +52,12 @@
   dependencies:
     node-fetch "^2.6.1"
 
-"@aws-amplify/ai-constructs@0.0.0-test-20240816172322":
-  version "0.0.0-test-20240816172322"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/ai-constructs/-/ai-constructs-0.0.0-test-20240816172322.tgz#ed87ad9140f96a0845d5d65f3701441054d7bde6"
-  integrity sha512-Fabl7Doir6dNkFDQkSLbdfWXa/0Pn11JBhVt9lnAQflM689vDOmT9m9L3oD6p+r8E5Pffs5+NQEIpAdnh9uymw==
+"@aws-amplify/ai-constructs@0.0.0-test-20240823000521":
+  version "0.0.0-test-20240823000521"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/ai-constructs/-/ai-constructs-0.0.0-test-20240823000521.tgz#a19fbd3ff85f9d3e0a86718ff369758ef0377534"
+  integrity sha512-EATeGqo7AJlXLB5oX7I08frrSGaa9pyFIzuvhe+nCxSJJRks/BFMayxPdCBR6hSyPDqs5WUdByna5gISowgrVA==
   dependencies:
-    "@aws-amplify/plugin-types" "0.0.0-test-20240816172322"
+    "@aws-amplify/plugin-types" "0.0.0-test-20240823000521"
 
 "@aws-amplify/amplify-app@^5.0.35":
   version "5.0.35"
@@ -598,10 +598,10 @@
     uuid "^9.0.1"
     zod "^3.22.2"
 
-"@aws-amplify/plugin-types@0.0.0-test-20240816172322":
-  version "0.0.0-test-20240816172322"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/plugin-types/-/plugin-types-0.0.0-test-20240816172322.tgz#fad48172c80a6abfe6e77984f457ad6e70180776"
-  integrity sha512-ZqCxOU1B9kiQ4sDIDciV+tqJvtX5c+MJuXr6szyOwoSGSOsp27INVBph/+t2cQJd7fyTTMq48whqpVsy753zGg==
+"@aws-amplify/plugin-types@0.0.0-test-20240823000521":
+  version "0.0.0-test-20240823000521"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/plugin-types/-/plugin-types-0.0.0-test-20240823000521.tgz#0bcaac6fb2f8503323be6809025ce8e6c03a2003"
+  integrity sha512-8ri9Pcs7Th5hOaFqGjxOjRxovHpvNuBP2Cy/U0HeAykOIVBifr1l9CZZ09Q1FWL0DalNtzRD73iHBpwVIdJWaQ==
 
 "@aws-amplify/plugin-types@^0.4.0", "@aws-amplify/plugin-types@^0.4.1":
   version "0.4.1"
