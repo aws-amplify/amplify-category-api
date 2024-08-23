@@ -1,7 +1,7 @@
-import { InvalidDirectiveError, isModelType } from '@aws-amplify/graphql-transformer-core';
+import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ObjectTypeDefinitionNode, Kind, TypeNode, FieldDefinitionNode } from 'graphql';
-import { getBaseType, isScalar } from 'graphql-transformer-common';
+import { ObjectTypeDefinitionNode, TypeNode } from 'graphql';
+import { getBaseType, isNonNullType, isScalar } from 'graphql-transformer-common';
 import { generateJSONSchemaFromTypeNode, JSONSchema } from './graphql-json-schema-type';
 
 export type ToolDefinition = {
@@ -27,6 +27,7 @@ type Tool = {
   };
   graphqlRequestInputDescriptor?: GraphQLRequestInputDescriptor;
 };
+
 const generateSelectionSet = (
   currentType: TypeNode,
   ctx: TransformerContextProvider,
@@ -87,17 +88,15 @@ export const processTools = (toolDefinitions: ToolDefinition[], ctx: Transformer
   let tools: Tool[] = [];
   for (const toolDefinition of toolDefinitions) {
     const { name: toolName, description } = toolDefinition;
-    const matchingQueryField = fields.find((field) => field.name.value === toolName);
-    if (!matchingQueryField) {
+    const { type: returnType, arguments: fieldArguments } = fields.find((field) => field.name.value === toolName) ?? {};
+    if (!returnType) {
       // TODO: better error message.
-      throw new InvalidDirectiveError(`Tool ${name} defined in @conversation directive but no matching Query field definition`);
+      throw new InvalidDirectiveError(`Tool ${toolName} defined in @conversation directive but no matching Query field definition`);
     }
 
     let toolProperties: Record<string, JSONSchema> = {};
     let required: string[] = [];
-    const fieldArguments = matchingQueryField.arguments;
-    if (getBaseType(matchingQueryField.type).startsWith('Model') && toolName.startsWith('list')) {
-    } else if (fieldArguments && fieldArguments.length > 0) {
+    if (!isModelListOperation(toolName, returnType) && fieldArguments && fieldArguments.length > 0) {
       for (const fieldArgument of fieldArguments) {
         const fieldArgumentSchema = generateJSONSchemaFromTypeNode(fieldArgument.type, ctx);
         // TODO: How do we allow description to be defined in the directive?
@@ -108,29 +107,23 @@ export const processTools = (toolDefinitions: ToolDefinition[], ctx: Transformer
       }
     }
 
-    const returnType = matchingQueryField.type;
-    let selectionSet: string;
-    if (isScalar(returnType)) {
-      selectionSet = '';
-    } else {
-      selectionSet = generateSelectionSet(returnType, ctx).trim();
-    }
+    const selectionSet = generateSelectionSet(returnType, ctx).trim();
+    // TODO: We're omitting model list operations for now because the arguments are optional
+    // and we not strictly required for owner auth (which is the only case we support).
+    // Test alternatives to this special handling, like system prompts.
+    const propertyTypes = isModelListOperation(toolName, returnType)
+      ? {}
+      : fieldArguments?.reduce((acc, fieldArgument) => {
+          const name = fieldArgument.name.value;
+          const suffix = isNonNullType(fieldArgument.type) ? '!' : '';
+          return { ...acc, [name]: getBaseType(fieldArgument.type) + suffix };
+        }, {}) ?? {};
 
-    const empty: GraphQLRequestInputDescriptor = {
+    const graphqlRequestInputDescriptor = {
       selectionSet,
-      propertyTypes: {},
-      queryName: '',
+      propertyTypes,
+      queryName: toolName,
     };
-
-    const graphqlRequestInputDescriptor: GraphQLRequestInputDescriptor | undefined = fieldArguments?.reduce((acc, fieldArgument) => {
-      const { selectionSet, propertyTypes } = acc;
-      const name = fieldArgument.name.value;
-      if (getBaseType(matchingQueryField.type).startsWith('Model') && toolName.startsWith('list')) {
-      } else {
-        propertyTypes[name] = getBaseType(fieldArgument.type);
-      }
-      return { selectionSet, propertyTypes, queryName: toolName };
-    }, empty);
 
     const tool: Tool = {
       name: toolName,
@@ -148,4 +141,8 @@ export const processTools = (toolDefinitions: ToolDefinition[], ctx: Transformer
   }
 
   return { tools };
+};
+
+const isModelListOperation = (toolName: string, responseType: TypeNode): boolean => {
+  return getBaseType(responseType).startsWith('Model') && toolName.startsWith('list');
 };
