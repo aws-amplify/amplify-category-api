@@ -194,6 +194,7 @@ export class ConversationTransformer extends TransformerPluginBase {
       const resolverResourceId = ResolverResourceIDs.ResolverResourceID(parentName, fieldName);
 
       const bedrockModelId = getBedrockModelId(directive.aiModel);
+      const runtime = { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' };
 
       // TODO: Support single function for multiple routes.
       // TODO: Do we really need to create a nested stack here?
@@ -249,7 +250,7 @@ export class ConversationTransformer extends TransformerPluginBase {
         [],
         [],
         conversationMessageDataSource as any,
-        { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' },
+        runtime,
       );
 
       ctx.resolvers.addResolver('Mutation', directive.responseMutationName, assistantResponseResolver);
@@ -270,7 +271,7 @@ export class ConversationTransformer extends TransformerPluginBase {
         [],
         [],
         undefined,
-        { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' },
+        runtime,
       );
       ctx.resolvers.addResolver('Subscription', onAssistantResponseSubscriptionFieldName, onAssistantResponseSubscriptionResolver);
       // ------ assitant response subscription resolver -----

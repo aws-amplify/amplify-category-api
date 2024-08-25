@@ -423,7 +423,7 @@ export class TransformerResolver implements TransformerResolverProvider {
       initResolver += '\n$util.toJson({})';
     }
 
-    const initResponseResolver = this.runtime
+    const initResponseResolver = this.runtime?.name === 'APPSYNC_JS'
       ? dedent`
         export const response = (ctx) => {
           return ctx.prev.result;

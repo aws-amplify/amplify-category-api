@@ -47,7 +47,9 @@ Object {
   "Fn::Join": Array [
     "",
     Array [
-      "export function request(ctx) {
+      "import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
   const { args, identity, source, request, prev } = ctx;
   const { typeName, fieldName } = ctx.stash;
   const toolDefinitions = \`{\\"tools\\":[{\\"name\\":\\"getTemperature\\",\\"description\\":\\"does a thing\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"city\\":{\\"type\\":\\"string\\",\\"description\\":\\"A UTF-8 character sequence.\\"}},\\"required\\":[\\"city\\"]}},\\"graphqlRequestInputDescriptor\\":{\\"selectionSet\\":\\"value unit\\",\\"propertyTypes\\":{\\"city\\":\\"String!\\"},\\"queryName\\":\\"getTemperature\\"}},{\\"name\\":\\"plus\\",\\"description\\":\\"does a different thing\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"a\\":{\\"type\\":\\"number\\",\\"description\\":\\"A signed 32-bit integer value.\\"},\\"b\\":{\\"type\\":\\"number\\",\\"description\\":\\"A signed 32-bit integer value.\\"}},\\"required\\":[]}},\\"graphqlRequestInputDescriptor\\":{\\"selectionSet\\":\\"\\",\\"propertyTypes\\":{\\"a\\":\\"Int\\",\\"b\\":\\"Int\\"},\\"queryName\\":\\"plus\\"}}]}\`;
@@ -177,7 +179,9 @@ Object {
   "Fn::Join": Array [
     "",
     Array [
-      "export function request(ctx) {
+      "import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
   const { args, identity, source, request, prev } = ctx;
   const { typeName, fieldName } = ctx.stash;
   
@@ -305,7 +309,9 @@ Object {
   "Fn::Join": Array [
     "",
     Array [
-      "export function request(ctx) {
+      "import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
   const { args, identity, source, request, prev } = ctx;
   const { typeName, fieldName } = ctx.stash;
   const toolDefinitions = \`{\\"tools\\":[{\\"name\\":\\"listTodos\\",\\"description\\":\\"lists todos\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{},\\"required\\":[]}},\\"graphqlRequestInputDescriptor\\":{\\"selectionSet\\":\\"items { content isDone id createdAt updatedAt owner } nextToken\\",\\"propertyTypes\\":{},\\"queryName\\":\\"listTodos\\"}}]}\`;
@@ -435,7 +441,9 @@ Object {
   "Fn::Join": Array [
     "",
     Array [
-      "export function request(ctx) {
+      "import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
   const { args, identity, source, request, prev } = ctx;
   const { typeName, fieldName } = ctx.stash;
   const toolDefinitions = \`{\\"tools\\":[{\\"name\\":\\"listCustomers\\",\\"description\\":\\"Provides data about the customer sending a message\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{},\\"required\\":[]}},\\"graphqlRequestInputDescriptor\\":{\\"selectionSet\\":\\"items { name email activeCart { products { name price } customerId id createdAt updatedAt owner } orderHistory { items { products { name price } customerId id createdAt updatedAt owner } nextToken } id createdAt updatedAt owner } nextToken\\",\\"propertyTypes\\":{},\\"queryName\\":\\"listCustomers\\"}}]}\`;
@@ -565,7 +573,9 @@ Object {
   "Fn::Join": Array [
     "",
     Array [
-      "export function request(ctx) {
+      "import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
   const { args, identity, source, request, prev } = ctx;
   const { typeName, fieldName } = ctx.stash;
   

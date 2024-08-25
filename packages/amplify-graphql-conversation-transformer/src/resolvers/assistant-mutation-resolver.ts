@@ -5,7 +5,6 @@ import { dedent } from 'ts-dedent';
 export const assistantMutationResolver = (): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
   const req = MappingTemplate.inlineTemplateFromString(dedent`
         import { util } from '@aws-appsync/utils';
-        import * as ddb from '@aws-appsync/utils/dynamodb';
 
         /**
          * Sends a request to the attached data source
@@ -18,7 +17,7 @@ export const assistantMutationResolver = (): { req: MappingTemplateProvider; res
             const { conversationId, content, associatedUserMessageId } = ctx.args.input;
             const updatedAt = util.time.nowISO8601();
 
-            const expression = \`SET #assistantContent = :assistantContent, #updatedAt = :updatedAt\`;
+            const expression = 'SET #assistantContent = :assistantContent, #updatedAt = :updatedAt';
             const expressionNames = { '#assistantContent': 'assistantContent', '#updatedAt': 'updatedAt' };
             const expressionValues = { ':assistantContent': content, ':updatedAt': updatedAt };
             const condition = JSON.parse(

@@ -50,6 +50,8 @@ export const invokeLambdaMappingTemplate = (
 
   const graphqlEndpoint = ctx.api.graphqlUrl;
   const req = MappingTemplate.inlineTemplateFromString(dedent`
+      import { util } from '@aws-appsync/utils';
+
       export function request(ctx) {
         const { args, identity, source, request, prev } = ctx;
         const { typeName, fieldName } = ctx.stash;
