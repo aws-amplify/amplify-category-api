@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.6-raven.11](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.9.6-raven.10...@aws-amplify/data-construct@1.9.6-raven.11) (2024-08-26)
+
+**Note:** Version bump only for package @aws-amplify/data-construct
+
 ## [1.9.6-raven.10](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.9.6-raven.9...@aws-amplify/data-construct@1.9.6-raven.10) (2024-08-23)
 
 **Note:** Version bump only for package @aws-amplify/data-construct

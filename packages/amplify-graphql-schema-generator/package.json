@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-schema-generator",
-  "version": "0.9.5-raven.3",
+  "version": "0.9.5-raven.4",
   "description": "Amplify GraphQL schema generator",
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "2.9.4-raven.3",
+    "@aws-amplify/graphql-transformer-core": "2.9.4-raven.4",
     "@aws-amplify/graphql-transformer-interfaces": "3.10.2-raven.1",
     "@aws-sdk/client-ec2": "3.624.0",
     "@aws-sdk/client-iam": "3.624.0",

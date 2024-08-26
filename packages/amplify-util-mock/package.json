@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-util-mock",
-  "version": "6.5.6-raven.3",
+  "version": "6.5.6-raven.4",
   "description": "Amplify CLI plugin providing local testing",
   "repository": {
     "type": "git",
@@ -53,16 +53,16 @@
     "@aws-amplify/amplify-environment-parameters": "^1.9.14"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-auth-transformer": "3.6.6-raven.3",
-    "@aws-amplify/graphql-function-transformer": "2.1.27-raven.3",
-    "@aws-amplify/graphql-index-transformer": "2.4.10-raven.3",
-    "@aws-amplify/graphql-maps-to-transformer": "3.4.24-raven.3",
-    "@aws-amplify/graphql-model-transformer": "2.11.5-raven.3",
-    "@aws-amplify/graphql-relational-transformer": "2.5.12-raven.3",
-    "@aws-amplify/graphql-searchable-transformer": "2.7.10-raven.3",
-    "@aws-amplify/graphql-transformer-core": "2.9.4-raven.3",
+    "@aws-amplify/graphql-auth-transformer": "3.6.6-raven.4",
+    "@aws-amplify/graphql-function-transformer": "2.1.27-raven.4",
+    "@aws-amplify/graphql-index-transformer": "2.4.10-raven.4",
+    "@aws-amplify/graphql-maps-to-transformer": "3.4.24-raven.4",
+    "@aws-amplify/graphql-model-transformer": "2.11.5-raven.4",
+    "@aws-amplify/graphql-relational-transformer": "2.5.12-raven.4",
+    "@aws-amplify/graphql-searchable-transformer": "2.7.10-raven.4",
+    "@aws-amplify/graphql-transformer-core": "2.9.4-raven.4",
     "@aws-amplify/graphql-transformer-interfaces": "3.10.2-raven.1",
-    "@aws-amplify/graphql-transformer-test-utils": "0.5.7-raven.3",
+    "@aws-amplify/graphql-transformer-test-utils": "0.5.7-raven.4",
     "@types/detect-port": "^1.3.0",
     "@types/lodash": "^4.14.149",
     "@types/node": "^12.12.6",

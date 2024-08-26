@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-conversation-transformer",
-  "version": "0.1.1-raven.8",
+  "version": "0.1.1-raven.9",
   "description": "Amplify GraphQL @conversation transformer",
   "repository": {
     "type": "git",
@@ -25,10 +25,10 @@
   "dependencies": {
     "@aws-amplify/ai-constructs": "0.0.0-test-20240823000521",
     "@aws-amplify/graphql-directives": "1.1.1-raven.2",
-    "@aws-amplify/graphql-index-transformer": "2.4.10-raven.3",
-    "@aws-amplify/graphql-model-transformer": "2.11.5-raven.3",
-    "@aws-amplify/graphql-relational-transformer": "2.5.12-raven.3",
-    "@aws-amplify/graphql-transformer-core": "2.9.4-raven.3",
+    "@aws-amplify/graphql-index-transformer": "2.4.10-raven.4",
+    "@aws-amplify/graphql-model-transformer": "2.11.5-raven.4",
+    "@aws-amplify/graphql-relational-transformer": "2.5.12-raven.4",
+    "@aws-amplify/graphql-transformer-core": "2.9.4-raven.4",
     "@aws-amplify/graphql-transformer-interfaces": "3.10.2-raven.1",
     "graphql": "^15.5.0",
     "graphql-mapping-template": "4.20.16",
@@ -36,7 +36,7 @@
     "immer": "^9.0.12"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-test-utils": "0.5.7-raven.3",
+    "@aws-amplify/graphql-transformer-test-utils": "0.5.7-raven.4",
     "@aws-sdk/client-bedrock-runtime": "^3.1.0"
   },
   "peerDependencies": {

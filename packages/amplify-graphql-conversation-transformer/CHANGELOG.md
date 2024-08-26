@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.1-raven.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@0.1.1-raven.8...@aws-amplify/graphql-conversation-transformer@0.1.1-raven.9) (2024-08-26)
+
+### Bug Fixes
+
+- remove double decl ([0df43bf](https://github.com/aws-amplify/amplify-category-api/commit/0df43bf78d0fb06ea80e7026982aadc95d92ac2a))
+
 ## [0.1.1-raven.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@0.1.1-raven.7...@aws-amplify/graphql-conversation-transformer@0.1.1-raven.8) (2024-08-23)
 
 **Note:** Version bump only for package @aws-amplify/graphql-conversation-transformer
