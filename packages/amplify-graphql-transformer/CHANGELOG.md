@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.6-raven.13](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.6.6-raven.12...@aws-amplify/graphql-transformer@1.6.6-raven.13) (2024-08-26)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer
+
 ## [1.6.6-raven.12](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.6.6-raven.11...@aws-amplify/graphql-transformer@1.6.6-raven.12) (2024-08-26)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer

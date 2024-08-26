@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.1-raven.11](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@0.1.1-raven.10...@aws-amplify/graphql-conversation-transformer@0.1.1-raven.11) (2024-08-26)
+
+### Bug Fixes
+
+- **conversation:** remove superfluous json parse in resolver ([ba6a7df](https://github.com/aws-amplify/amplify-category-api/commit/ba6a7df0ba544902eb7e5b5ef119ee8bb67be619))
+
 ## [0.1.1-raven.10](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@0.1.1-raven.9...@aws-amplify/graphql-conversation-transformer@0.1.1-raven.10) (2024-08-26)
 
 ### Bug Fixes

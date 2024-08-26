@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.6-raven.13](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.9.6-raven.12...@aws-amplify/data-construct@1.9.6-raven.13) (2024-08-26)
+
+### Bug Fixes
+
+- **conversation:** remove superfluous json parse in resolver ([ba6a7df](https://github.com/aws-amplify/amplify-category-api/commit/ba6a7df0ba544902eb7e5b5ef119ee8bb67be619))
+
 ## [1.9.6-raven.12](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.9.6-raven.11...@aws-amplify/data-construct@1.9.6-raven.12) (2024-08-26)
 
 **Note:** Version bump only for package @aws-amplify/data-construct
