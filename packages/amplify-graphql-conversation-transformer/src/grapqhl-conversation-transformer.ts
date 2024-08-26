@@ -303,7 +303,6 @@ export class ConversationTransformer extends TransformerPluginBase {
         messageModelName,
       );
 
-      const runtime = { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' };
       // pipeline resolver
       const conversationPipelineResolver = new TransformerResolver(
         parentName,
