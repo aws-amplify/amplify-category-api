@@ -29,7 +29,7 @@ export const invokeLambdaMappingTemplate = (
   const toolDefinitionsLine = toolDefinitions ? `const toolDefinitions = ${toolDefinitions};` : '';
 
   const toolsConfigurationLine = toolDefinitions
-    ? dedent`const dataTools = JSON.parse(toolDefinitions)?.tools
+    ? dedent`const dataTools = toolDefinitions.tools
      const toolsConfiguration = {
       dataTools,
       clientTools,

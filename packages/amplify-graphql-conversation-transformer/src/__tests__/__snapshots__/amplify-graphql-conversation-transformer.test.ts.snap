@@ -77,7 +77,7 @@ export function request(ctx) {
   };
 
   const clientTools = args.toolConfiguration?.tools?.map((tool) => { return { ...tool.toolSpec }});
-  const dataTools = JSON.parse(toolDefinitions)?.tools
+  const dataTools = toolDefinitions.tools
    const toolsConfiguration = {
     dataTools,
     clientTools,
@@ -339,7 +339,7 @@ export function request(ctx) {
   };
 
   const clientTools = args.toolConfiguration?.tools?.map((tool) => { return { ...tool.toolSpec }});
-  const dataTools = JSON.parse(toolDefinitions)?.tools
+  const dataTools = toolDefinitions.tools
    const toolsConfiguration = {
     dataTools,
     clientTools,
@@ -471,7 +471,7 @@ export function request(ctx) {
   };
 
   const clientTools = args.toolConfiguration?.tools?.map((tool) => { return { ...tool.toolSpec }});
-  const dataTools = JSON.parse(toolDefinitions)?.tools
+  const dataTools = toolDefinitions.tools
    const toolsConfiguration = {
     dataTools,
     clientTools,
