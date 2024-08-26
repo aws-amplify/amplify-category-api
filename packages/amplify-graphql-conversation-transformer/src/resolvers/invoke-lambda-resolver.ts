@@ -26,7 +26,7 @@ export const invokeLambdaMappingTemplate = (
 ): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
   const { responseMutationInputTypeName, responseMutationName } = config;
   const toolDefinitions = JSON.stringify(config.toolSpec);
-  const toolDefinitionsLine = toolDefinitions ? `const toolDefinitions = \`${toolDefinitions}\`;` : '';
+  const toolDefinitionsLine = toolDefinitions ? `const toolDefinitions = ${toolDefinitions};` : '';
 
   const toolsConfigurationLine = toolDefinitions
     ? dedent`const dataTools = JSON.parse(toolDefinitions)?.tools
@@ -56,7 +56,7 @@ export const invokeLambdaMappingTemplate = (
         const { args, identity, source, request, prev } = ctx;
         const { typeName, fieldName } = ctx.stash;
         ${toolDefinitionsLine}
-        const selectionSet = \`${selectionSet}\`;
+        const selectionSet = '${selectionSet}';
         const graphqlApiEndpoint = '${graphqlEndpoint}';
 
         const messages = prev.result.items;
