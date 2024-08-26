@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.1-raven.10](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@0.1.1-raven.9...@aws-amplify/graphql-conversation-transformer@0.1.1-raven.10) (2024-08-26)
+
+### Bug Fixes
+
+- **conversation:** unterminated string literals ([bd529cb](https://github.com/aws-amplify/amplify-category-api/commit/bd529cb6b3826bcab16bd3714090d920afe121d7))
+
 ## [0.1.1-raven.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@0.1.1-raven.8...@aws-amplify/graphql-conversation-transformer@0.1.1-raven.9) (2024-08-26)
 
 ### Bug Fixes
