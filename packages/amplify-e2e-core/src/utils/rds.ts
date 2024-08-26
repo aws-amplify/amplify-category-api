@@ -278,14 +278,15 @@ export const setupDataInExistingCluster = async (
     }
 
     const clusterArn = dbClusterObj.DBClusterArn;
-    const masterSecretArn = dbClusterObj?.MasterUserSecret?.SecretArn || secretArn;
+    // use the provided database user secret or fallback to using master user secret
+    const dbUserSecretArn = secretArn || dbClusterObj?.MasterUserSecret?.SecretArn;
     const defaultDbName = dbClusterObj.DatabaseName;
     const dataClient = new RDSDataClient({ region: config.region });
     const sanitizedDbName = config.dbname?.replace(/[^a-zA-Z0-9_]/g, '');
 
     const createDBInput: ExecuteStatementCommandInput = {
       resourceArn: clusterArn,
-      secretArn: masterSecretArn,
+      secretArn: dbUserSecretArn,
       sql: `create database ${sanitizedDbName}`,
       database: defaultDbName,
     };
@@ -303,7 +304,7 @@ export const setupDataInExistingCluster = async (
       try {
         const executeStatementInput: ExecuteStatementCommandInput = {
           resourceArn: clusterArn,
-          secretArn: masterSecretArn,
+          secretArn: dbUserSecretArn,
           sql: query,
           database: sanitizedDbName,
         };
@@ -320,7 +321,7 @@ export const setupDataInExistingCluster = async (
       port: dbClusterObj.Port,
       dbName: sanitizedDbName,
       dbInstance: describeInstanceResponse.DBInstances[0],
-      secretArn: masterSecretArn,
+      secretArn: dbUserSecretArn,
       username: dbClusterObj.MasterUsername,
     };
   } catch (error) {

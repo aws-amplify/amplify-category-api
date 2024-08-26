@@ -16,14 +16,17 @@ export const getPreProvisionedClusterInfo = async (region: string, engine: SqlEn
     const callerIdentity = await stsClient.send(new GetCallerIdentityCommand({}));
     const accountId = callerIdentity?.Account;
     if (!accountId) {
-      throw new Error('cannot get the current account Id');
+      throw new Error('Cannot get the current account Id');
     }
-    // const clusterManifestPrefix = process.env.RDS_CLUSTER_MANIFEST_BUCKET_PREFIX;
-    const clusterManifestPrefix = 'rdsmanifestbucket';
+    const clusterManifestPrefix = process.env.RDS_CLUSTER_MANIFEST_BUCKET_PREFIX;
+    if (!clusterManifestPrefix) {
+      throw new Error('Cannot get the cluster manifest prefix');
+    }
     const command = new GetObjectCommand({
       Bucket: `${clusterManifestPrefix}${accountId}`,
       Key: `${engine}/${region}`,
     });
+
     const response = await s3Client.send(command);
     const clusterInfo: PreProvisionedClusterInfo = JSON.parse(await response.Body.transformToString());
     console.log(JSON.stringify(clusterInfo));
