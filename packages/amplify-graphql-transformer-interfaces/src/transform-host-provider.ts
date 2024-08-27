@@ -7,6 +7,7 @@ import {
   LambdaDataSource,
   NoneDataSource,
   CfnResolver,
+  CfnFunctionConfiguration,
 } from 'aws-cdk-lib/aws-appsync';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IFunction, ILayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
@@ -48,6 +49,7 @@ export interface TransformHostProvider {
     responseMappingTemplate: MappingTemplateProvider,
     dataSourceName: string,
     scope?: Construct,
+    runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
   ) => AppSyncFunctionConfigurationProvider;
 
   addResolver: (
@@ -59,6 +61,7 @@ export interface TransformHostProvider {
     dataSourceName?: string,
     pipelineConfig?: string[],
     scope?: Construct,
+    runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
   ) => CfnResolver;
 
   addLambdaFunction: (
