@@ -1,5 +1,7 @@
 import { JSONSchema } from './graphql-json-schema-type';
 
+// TODO: Add regex pattern for applicable scalar types
+
 const Boolean: JSONSchema = {
   type: 'boolean',
   description: 'A boolean value.',
