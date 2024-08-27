@@ -31,6 +31,7 @@
     "package": "lerna run package",
     "postpublish:release": "git fetch . release:main && git push origin main",
     "postpublish:api-plugin-stable": "yarn update-latest-tag",
+    "postpublish:tag": "npm info @aws-amplify/amplify-category-api@stable-tag-2 version && echo Got published tag version",
     "update-latest-tag": "npm dist-tag add @aws-amplify/amplify-category-api@$(npm info @aws-amplify/amplify-category-api@api-plugin-stable version) latest",
     "prettier-check": "yarn prettier --check .",
     "prettier-write": "yarn prettier --write .",
