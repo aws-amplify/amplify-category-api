@@ -183,7 +183,7 @@ const DEBUG_FLAG = '--debug';
 
 const EXCLUDE_TEST_IDS: string[] = [];
 
-const MAX_WORKERS = 4;
+const MAX_WORKERS = 5;
 
 // eslint-disable-next-line import/namespace
 const loadConfigBase = (): ConfigBase => yaml.load(fs.readFileSync(CODEBUILD_CONFIG_BASE_PATH, 'utf8')) as ConfigBase;

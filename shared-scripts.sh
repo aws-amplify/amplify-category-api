@@ -421,9 +421,9 @@ function runE2eTest {
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then
         # read the content of failed tests
         failedTests=$(<$FAILED_TEST_REGEX_FILE)
-        yarn run e2e --maxWorkers=4 $TEST_SUITE -t "$failedTests"
+        yarn run e2e --maxWorkers=5 $TEST_SUITE -t "$failedTests"
     else
-        yarn run e2e --maxWorkers=4 $TEST_SUITE
+        yarn run e2e --maxWorkers=5 $TEST_SUITE
     fi
 }
 
@@ -437,9 +437,9 @@ function runCDKTest {
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then
         # read the content of failed tests
         failedTests=$(<$FAILED_TEST_REGEX_FILE)
-        yarn run e2e --maxWorkers=4 $TEST_SUITE -t "$failedTests"
+        yarn run e2e --maxWorkers=5 $TEST_SUITE -t "$failedTests"
     else
-        yarn run e2e --maxWorkers=4 $TEST_SUITE
+        yarn run e2e --maxWorkers=5 $TEST_SUITE
     fi
 }
 
