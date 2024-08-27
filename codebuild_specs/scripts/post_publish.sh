@@ -1,8 +1,9 @@
 #!/bin/bash -e
 
+REGISTRY="https://registry.npmjs.org/"
 PACKAGE_NAME="@aws-amplify/amplify-category-api"
-TARGET_TAG="stable-tag-3"
-NEW_TAG="stable-tag-2"
+TARGET_TAG="stable-tag-4"
+NEW_TAG="stable-tag-3"
 RETRIES=10
 DELAY=5
 
@@ -16,11 +17,15 @@ update_dist_tag() {
     echo "404 error encountered. The version might not be available yet."
     return 1
   fi
-
+  
+  echo "Found version $version tagged with $TARGET_TAG."
   # Attempt to add the dist-tag
   npm dist-tag add $PACKAGE_NAME@$version $NEW_TAG
   return $? # Return success or failure based on the npm command
 }
+
+npm set registry "$REGISTRY"
+yarn config set registry "$REGISTRY"
 
 # Retry loop
 for (( i=1; i<=$RETRIES; i++ ))
