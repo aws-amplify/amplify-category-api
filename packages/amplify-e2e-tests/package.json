@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-e2e-tests",
-  "version": "3.22.9",
+  "version": "3.22.10-stable-tag-4.0",
   "description": "E2e test suite",
   "repository": {
     "type": "git",
