@@ -11,6 +11,7 @@ import {
   BaseDataSource,
   Code,
   FunctionRuntime,
+  LogConfig,
 } from 'aws-cdk-lib/aws-appsync';
 import { CfnTable, ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IRole, CfnRole } from 'aws-cdk-lib/aws-iam';
@@ -762,6 +763,12 @@ export interface AmplifyGraphqlApiProps {
    * For more information, refer to https://docs.amplify.aws/lib/datastore/getting-started/q/platform/js/
    */
   readonly dataStoreConfiguration?: DataStoreConfiguration;
+
+  /**
+   * Specifies the logging configuration when writing GraphQL operations and tracing to Amazon CloudWatch for an AWS AppSync
+   * GraphQL API, refer to https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_appsync.CfnGraphQLApi.LogConfigProperty.html
+   */
+  readonly logConfig?: LogConfig;
 }
 
 /**

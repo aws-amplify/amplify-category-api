@@ -16,7 +16,7 @@ import type {
   RDSLayerMappingProvider,
   RDSSNSTopicMappingProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
+import { AuthorizationMode, AuthorizationType, LogConfig } from 'aws-cdk-lib/aws-appsync';
 import { Aws, CfnOutput, Fn, Stack } from 'aws-cdk-lib';
 import {
   EnumTypeDefinitionNode,
@@ -95,6 +95,7 @@ export interface TransformOption extends DataSourceStrategiesProvider, RDSLayerM
   assetProvider: AssetProvider;
   synthParameters: SynthParameters;
   schema: string;
+  logConfig?: LogConfig;
 }
 
 export type StackMapping = { [resourceId: string]: string };
@@ -195,6 +196,7 @@ export class GraphQLTransform {
     scope,
     sqlDirectiveDataSourceStrategies,
     synthParameters,
+    logConfig,
   }: TransformOption): void {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
@@ -213,6 +215,7 @@ export class GraphQLTransform {
       stackMapping: this.stackMappingOverrides,
       synthParameters,
       transformParameters: this.transformParameters,
+      logConfig,
     });
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),
@@ -306,6 +309,7 @@ export class GraphQLTransform {
       context.synthParameters,
       output,
       context.transformParameters,
+      context.logConfig,
     );
 
     // generate resolvers
@@ -345,6 +349,7 @@ export class GraphQLTransform {
     synthParameters: SynthParameters,
     output: TransformerOutput,
     transformParameters: TransformParameters,
+    logConfig?: LogConfig,
   ): GraphQLApi {
     // Todo: Move this to its own transformer plugin to support modifying the API
     // Like setting the auth mode and enabling logging and such
@@ -365,6 +370,7 @@ export class GraphQLTransform {
       environmentName: env,
       disableResolverDeduping: this.transformParameters.disableResolverDeduping,
       assetProvider,
+      logConfig,
     });
     const authModes = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].map(
       (mode) => mode?.authorizationType,

@@ -40,6 +40,7 @@ import { IServerlessCluster } from 'aws-cdk-lib/aws-rds';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { LambdaDataSource } from 'aws-cdk-lib/aws-appsync';
+import { LogConfig } from 'aws-cdk-lib/aws-appsync';
 import { MappingTemplate } from 'aws-cdk-lib/aws-appsync';
 import { NestedStack } from 'aws-cdk-lib';
 import { NoneDataSource } from 'aws-cdk-lib/aws-appsync';
@@ -130,6 +131,7 @@ export interface AmplifyGraphqlApiProps {
     readonly definition: IAmplifyGraphqlDefinition;
     readonly functionNameMap?: Record<string, IFunction>;
     readonly functionSlots?: FunctionSlot[];
+    readonly logConfig?: LogConfig;
     readonly outputStorageStrategy?: IBackendOutputStorageStrategy;
     readonly predictionsBucket?: IBucket;
     readonly stackMappings?: Record<string, string>;

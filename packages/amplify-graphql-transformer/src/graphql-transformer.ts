@@ -33,6 +33,7 @@ import type {
 import { GraphQLTransform, ResolverConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 import { Construct } from 'constructs';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { LogConfig } from 'aws-cdk-lib/aws-appsync';
 
 /**
  * Arguments passed into a TransformerFactory
@@ -115,6 +116,7 @@ export type ExecuteTransformConfig = TransformConfig &
     parameterProvider?: TransformParameterProvider;
     assetProvider: AssetProvider;
     synthParameters: SynthParameters;
+    logConfig?: LogConfig;
   };
 
 /**
@@ -158,6 +160,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
     scope,
     sqlDirectiveDataSourceStrategies,
     synthParameters,
+    logConfig,
   } = config;
 
   const printLog = printTransformerLog ?? defaultPrintTransformerLog;
@@ -174,6 +177,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
       scope,
       sqlDirectiveDataSourceStrategies,
       synthParameters,
+      logConfig,
     });
   } finally {
     transform.getLogs().forEach(printLog);

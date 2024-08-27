@@ -302,7 +302,7 @@ export class GraphQLTransform {
     // Warning: (ae-forgotten-export) The symbol "GraphQLApi" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    protected generateGraphQlApi(stackManager: StackManagerProvider, assetProvider: AssetProvider, synthParameters: SynthParameters, output: TransformerOutput, transformParameters: TransformParameters): GraphQLApi;
+    protected generateGraphQlApi(stackManager: StackManagerProvider, assetProvider: AssetProvider, synthParameters: SynthParameters, output: TransformerOutput, transformParameters: TransformParameters, logConfig?: LogConfig): GraphQLApi;
     // (undocumented)
     getLogs(): TransformerLog[];
     // (undocumented)
@@ -310,7 +310,7 @@ export class GraphQLTransform {
     // Warning: (ae-forgotten-export) The symbol "TransformOption" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    transform({ assetProvider, dataSourceStrategies, nestedStackProvider, parameterProvider, rdsLayerMapping, rdsSnsTopicMapping, schema, scope, sqlDirectiveDataSourceStrategies, synthParameters, }: TransformOption): void;
+    transform({ assetProvider, dataSourceStrategies, nestedStackProvider, parameterProvider, rdsLayerMapping, rdsSnsTopicMapping, schema, scope, sqlDirectiveDataSourceStrategies, synthParameters, logConfig, }: TransformOption): void;
 }
 
 // @public (undocumented)

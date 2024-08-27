@@ -289,20 +289,22 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   }
 
   private setupLogConfig(config?: LogConfig) {
-    if (!config) {
-      return undefined;
-    }
+    if (!config) return undefined;
+
+    return {
+      cloudWatchLogsRoleArn: config.role?.roleArn ?? this.createApiLogsRole().roleArn,
+      excludeVerboseContent: config.excludeVerboseContent,
+      fieldLogLevel: config.fieldLogLevel,
+    };
+  }
+
+  private createApiLogsRole(): Role {
     const role = new Role(this, 'ApiLogsRole', {
       assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
       managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs')],
     });
     setResourceName(role, { name: 'ApiLogsRole', setOnDefaultChild: true });
-
-    return {
-      cloudWatchLogsRoleArn: role.roleArn,
-      excludeVerboseContent: config.excludeVerboseContent,
-      fieldLogLevel: config.fieldLogLevel,
-    };
+    return role;
   }
 
   private setupOpenIdConnectConfig(config?: OpenIdConnectConfig) {

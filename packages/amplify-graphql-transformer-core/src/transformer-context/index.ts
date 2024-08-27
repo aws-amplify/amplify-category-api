@@ -22,6 +22,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode } from 'graphql';
 import { Construct } from 'constructs';
+import { LogConfig } from 'aws-cdk-lib/aws-appsync';
 import { ResolverConfig } from '../config/transformer-config';
 import { TransformerDataSourceManager } from './datasource';
 import { TransformerOutput } from './output';
@@ -65,6 +66,7 @@ export interface TransformerContextConstructorOptions
   stackMapping: Record<string, string>;
   synthParameters: SynthParameters;
   transformParameters: TransformParameters;
+  logConfig?: LogConfig;
 }
 
 export class TransformerContext implements TransformerContextProvider {
@@ -104,6 +106,8 @@ export class TransformerContext implements TransformerContextProvider {
 
   public readonly inputDocument: DocumentNode;
 
+  public readonly logConfig?: LogConfig;
+
   constructor(options: TransformerContextConstructorOptions) {
     const {
       assetProvider,
@@ -120,6 +124,7 @@ export class TransformerContext implements TransformerContextProvider {
       stackMapping,
       synthParameters,
       transformParameters,
+      logConfig,
     } = options;
     this.authConfig = authConfig;
     this.sqlDirectiveDataSourceStrategies = sqlDirectiveDataSourceStrategies ?? [];
@@ -138,6 +143,7 @@ export class TransformerContext implements TransformerContextProvider {
     this.assetProvider = assetProvider;
     this.synthParameters = synthParameters;
     this.transformParameters = transformParameters;
+    this.logConfig = logConfig;
   }
 
   /**
