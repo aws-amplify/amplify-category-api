@@ -25,7 +25,7 @@ import { FieldNode } from 'graphql';
 import { Grant } from 'aws-cdk-lib/aws-iam';
 import { GraphqlApiBase } from 'aws-cdk-lib/aws-appsync';
 import { HttpDataSource } from 'aws-cdk-lib/aws-appsync';
-import { IamResource } from 'aws-cdk-lib/aws-appsync';
+import { HttpDataSourceOptions } from 'aws-cdk-lib/aws-appsync';
 import { IAsset } from 'aws-cdk-lib';
 import { IConstruct } from 'constructs';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
@@ -874,7 +874,7 @@ export interface TransformHostProvider {
     // (undocumented)
     addDynamoDbDataSource(name: string, table: ITable, options?: DynamoDbDataSourceOptions, scope?: Construct): DynamoDbDataSource;
     // (undocumented)
-    addHttpDataSource(name: string, endpoint: string, options?: DataSourceOptions, scope?: Construct): HttpDataSource;
+    addHttpDataSource(name: string, endpoint: string, options?: HttpDataSourceOptions, scope?: Construct): HttpDataSource;
     // (undocumented)
     addLambdaDataSource(name: string, lambdaFunction: IFunction, options?: DataSourceOptions, scope?: Construct): LambdaDataSource;
     // (undocumented)
