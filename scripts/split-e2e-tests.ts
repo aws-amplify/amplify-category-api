@@ -304,7 +304,9 @@ const splitTests = (
         tmp.env.variables.USE_PARENT_ACCOUNT = 1;
       }
       if (j.runSolo) {
-        tmp.env['compute-type'] = 'BUILD_GENERAL1_SMALL';
+        tmp.env['compute-type'] = 'BUILD_GENERAL1_MEDIUM';
+        // BUILD_GENERAL1_MEDIUM has 7GB of memory. 6144MB = 6GB. Leave 1GB for the OS and other processes.
+        tmp.env['NODE_OPTIONS'] = '--max-old-space-size=6144';
       }
       result.push(tmp);
     }
@@ -380,7 +382,9 @@ const main = (): void => {
         identifier: 'run_e2e_tests',
         buildspec: 'codebuild_specs/run_e2e_tests.yml',
         env: {
-          'compute-type': 'BUILD_GENERAL1_MEDIUM',
+          'compute-type': 'BUILD_GENERAL1_LARGE',
+          // BUILD_GENERAL1_LARGE has 15GB of memory. 14336MB = 14GB. Leave 1GB for the OS and other processes.
+          NODE_OPTIONS: '--max-old-space-size=14336',
         },
         'depend-on': ['publish_to_local_registry'],
       },
@@ -392,7 +396,9 @@ const main = (): void => {
         identifier: 'run_cdk_tests',
         buildspec: 'codebuild_specs/run_cdk_tests.yml',
         env: {
-          'compute-type': 'BUILD_GENERAL1_MEDIUM',
+          'compute-type': 'BUILD_GENERAL1_LARGE',
+          // BUILD_GENERAL1_LARGE has 15GB of memory. 14336MB = 14GB. Leave 1GB for the OS and other processes.
+          NODE_OPTIONS: '--max-old-space-size=14336',
         },
         'depend-on': ['publish_to_local_registry'],
       },
@@ -404,7 +410,9 @@ const main = (): void => {
         identifier: 'gql_e2e_tests',
         buildspec: 'codebuild_specs/graphql_e2e_tests.yml',
         env: {
-          'compute-type': 'BUILD_GENERAL1_MEDIUM',
+          'compute-type': 'BUILD_GENERAL1_LARGE',
+          // BUILD_GENERAL1_LARGE has 15GB of memory. 14336MB = 14GB. Leave 1GB for the OS and other processes.
+          NODE_OPTIONS: '--max-old-space-size=14336',
         },
         'depend-on': ['publish_to_local_registry'],
       },
