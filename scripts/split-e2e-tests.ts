@@ -183,7 +183,7 @@ const DEBUG_FLAG = '--debug';
 
 const EXCLUDE_TEST_IDS: string[] = [];
 
-const MAX_WORKERS = 5;
+const MAX_WORKERS = 3;
 
 // eslint-disable-next-line import/namespace
 const loadConfigBase = (): ConfigBase => yaml.load(fs.readFileSync(CODEBUILD_CONFIG_BASE_PATH, 'utf8')) as ConfigBase;
@@ -305,8 +305,8 @@ const splitTests = (
       }
       if (j.runSolo) {
         tmp.env['compute-type'] = 'BUILD_GENERAL1_MEDIUM';
-        // BUILD_GENERAL1_MEDIUM has 7GB of memory. 6144MB = 6GB. Leave 1GB for the OS and other processes.
-        tmp.env.variables.NODE_OPTIONS = '--max-old-space-size=6144';
+        // BUILD_GENERAL1_SMALL has 7GB of memory. 6656 = 6.5GB. Leave 0.5GB for the OS and other processes.
+        tmp.env.variables.NODE_OPTIONS = '--max-old-space-size=6656';
       }
       result.push(tmp);
     }
@@ -384,8 +384,8 @@ const main = (): void => {
         env: {
           'compute-type': 'BUILD_GENERAL1_LARGE',
           variables: {
-            // BUILD_GENERAL1_LARGE has 15GB of memory. 14336MB = 14GB. Leave 1GB for the OS and other processes.
-            NODE_OPTIONS: '--max-old-space-size=14336',
+            // BUILD_GENERAL1_LARGE has 15GB of memory. 14848MB = 14.5GB. Leave 0.5GB for the OS and other processes.
+            NODE_OPTIONS: '--max-old-space-size=14848',
           },
         },
         'depend-on': ['publish_to_local_registry'],
@@ -400,8 +400,8 @@ const main = (): void => {
         env: {
           'compute-type': 'BUILD_GENERAL1_LARGE',
           variables: {
-            // BUILD_GENERAL1_LARGE has 15GB of memory. 14336MB = 14GB. Leave 1GB for the OS and other processes.
-            NODE_OPTIONS: '--max-old-space-size=14336',
+            // BUILD_GENERAL1_LARGE has 15GB of memory. 14848MB = 14.5GB. Leave 0.5GB for the OS and other processes.
+            NODE_OPTIONS: '--max-old-space-size=14848',
           },
         },
         'depend-on': ['publish_to_local_registry'],
@@ -416,8 +416,8 @@ const main = (): void => {
         env: {
           'compute-type': 'BUILD_GENERAL1_LARGE',
           variables: {
-            // BUILD_GENERAL1_LARGE has 15GB of memory. 14336MB = 14GB. Leave 1GB for the OS and other processes.
-            NODE_OPTIONS: '--max-old-space-size=14336',
+            // BUILD_GENERAL1_LARGE has 15GB of memory. 14848MB = 14.5GB. Leave 0.5GB for the OS and other processes.
+            NODE_OPTIONS: '--max-old-space-size=14848',
           },
         },
         'depend-on': ['publish_to_local_registry'],
