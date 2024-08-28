@@ -30,8 +30,6 @@ const v1TransformerSupportedRegions = JSON.parse(fs.readFileSync(v1TransformerSu
   (region: TestRegion) => region.name,
 );
 
-type ForceTests = 'interactions' | 'containers';
-
 type TestTiming = {
   test: string;
   medianRuntime: number;
@@ -75,6 +73,7 @@ type CandidateJob = {
 const FORCE_REGION_MAP = {
   interactions: 'us-west-2',
   containers: 'us-east-1',
+  custom_policies_container: 'us-east-1',
   'sql-pg-canary': 'us-east-1',
 };
 
@@ -316,10 +315,10 @@ const setJobRegion = (test: string, job: CandidateJob, jobIdx: number, useBetaLa
   const FORCE_REGION = Object.keys(FORCE_REGION_MAP).find((key) => {
     const testName = getTestNameFromPath(test);
     return testName.startsWith(key);
-  });
+  }) as keyof typeof FORCE_REGION_MAP;
 
   if (FORCE_REGION) {
-    job.region = FORCE_REGION_MAP[FORCE_REGION as ForceTests];
+    job.region = FORCE_REGION_MAP[FORCE_REGION];
     return;
   }
 
