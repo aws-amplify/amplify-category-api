@@ -5,7 +5,6 @@
 ```ts
 
 import { AmplifyDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
-import { APIIAMResourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ApiKeyConfig } from 'aws-cdk-lib/aws-appsync';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AppSyncDataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
@@ -37,6 +36,7 @@ import { GraphqlApiBase } from 'aws-cdk-lib/aws-appsync';
 import { GraphQLAPIProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLError } from 'graphql';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { IamResource } from 'aws-cdk-lib/aws-appsync';
 import { IGrantable } from 'aws-cdk-lib/aws-iam';
 import { InlineMappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { InputObjectTypeDefinitionNode } from 'graphql';
@@ -96,6 +96,7 @@ import { TypeNode } from 'graphql';
 import { TypeSystemDefinitionNode } from 'graphql';
 import { UnionTypeDefinitionNode } from 'graphql';
 import { UnionTypeExtensionNode } from 'graphql';
+import { Visibility } from 'aws-cdk-lib/aws-appsync';
 
 // @public (undocumented)
 export const APICategory = "api";
