@@ -25,7 +25,8 @@ import {
   isSqlModelDataSourceSsmDbConnectionConfig,
   isSqlModelDataSourceSsmDbConnectionStringConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { getClusterIdentifier } from './utils/sql-local-testing';
+import { getClusterIdFromLocalConfig } from './utils/sql-local-testing';
+import { getPreProvisionedClusterInfo } from './utils/sql-pre-provisioned-cluster';
 
 export interface SqlDatabaseDetails {
   dbConfig: {
@@ -55,12 +56,13 @@ export class SqlDatatabaseController {
   private databaseDetails: SqlDatabaseDetails | undefined;
   private useDataAPI: boolean;
   private enableLocalTesting: boolean;
+  private usePreProvisionedCluster: boolean;
 
   constructor(private readonly setupQueries: Array<string>, private options: RDSConfig) {
     // Data API is not supported in opted-in regions
     if (options.engine === 'postgres' && isDataAPISupported(options.region)) {
       this.useDataAPI = true;
-      this.enableLocalTesting = !isCI() && getClusterIdentifier(options.region, options.engine) !== undefined;
+      this.enableLocalTesting = !isCI() && getClusterIdFromLocalConfig(options.region, options.engine) !== undefined;
     } else {
       this.useDataAPI = false;
     }
@@ -75,9 +77,13 @@ export class SqlDatatabaseController {
     let dbConfig;
 
     if (this.useDataAPI) {
-      if (this.enableLocalTesting) {
-        const identifier = getClusterIdentifier(this.options.region, this.options.engine);
-        dbConfig = await setupDataInExistingCluster(identifier, this.options, this.setupQueries);
+      const preProvisionedClusterInfo = await getPreProvisionedClusterInfo(this.options.region, this.options.engine);
+      this.usePreProvisionedCluster = preProvisionedClusterInfo !== undefined;
+      if (this.enableLocalTesting || this.usePreProvisionedCluster) {
+        const identifier = this.usePreProvisionedCluster
+          ? preProvisionedClusterInfo.clusterIdentifier
+          : getClusterIdFromLocalConfig(this.options.region, this.options.engine);
+        dbConfig = await setupDataInExistingCluster(identifier, this.options, this.setupQueries, preProvisionedClusterInfo.secretArn);
         this.options.username = dbConfig.username;
         this.options.dbname = dbConfig.dbName;
       } else {
@@ -200,7 +206,7 @@ export class SqlDatatabaseController {
   };
 
   cleanupDatabase = async (): Promise<void> => {
-    if (!this.databaseDetails) {
+    if (this.usePreProvisionedCluster || !this.databaseDetails) {
       return;
     }
 

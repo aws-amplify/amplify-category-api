@@ -251,7 +251,12 @@ export const createRDSCluster = async (config: RDSConfig): Promise<ClusterInfo> 
  * @param queries Initial queries to be executed.
  * @returns Cluster configuration information.
  */
-export const setupDataInExistingCluster = async (identifier: string, config: RDSConfig, queries: string[]): Promise<ClusterInfo> => {
+export const setupDataInExistingCluster = async (
+  identifier: string,
+  config: RDSConfig,
+  queries: string[],
+  secretArn?: string,
+): Promise<ClusterInfo> => {
   try {
     const client = new RDSClient({ region: config.region });
     const describeClusterResponse = await client.send(
@@ -273,14 +278,15 @@ export const setupDataInExistingCluster = async (identifier: string, config: RDS
     }
 
     const clusterArn = dbClusterObj.DBClusterArn;
-    const secretArn = dbClusterObj.MasterUserSecret.SecretArn;
+    // use the provided database user secret or fallback to using master user secret
+    const dbUserSecretArn = secretArn || dbClusterObj?.MasterUserSecret?.SecretArn;
     const defaultDbName = dbClusterObj.DatabaseName;
     const dataClient = new RDSDataClient({ region: config.region });
     const sanitizedDbName = config.dbname?.replace(/[^a-zA-Z0-9_]/g, '');
 
     const createDBInput: ExecuteStatementCommandInput = {
       resourceArn: clusterArn,
-      secretArn,
+      secretArn: dbUserSecretArn,
       sql: `create database ${sanitizedDbName}`,
       database: defaultDbName,
     };
@@ -298,7 +304,7 @@ export const setupDataInExistingCluster = async (identifier: string, config: RDS
       try {
         const executeStatementInput: ExecuteStatementCommandInput = {
           resourceArn: clusterArn,
-          secretArn: secretArn,
+          secretArn: dbUserSecretArn,
           sql: query,
           database: sanitizedDbName,
         };
@@ -315,7 +321,7 @@ export const setupDataInExistingCluster = async (identifier: string, config: RDS
       port: dbClusterObj.Port,
       dbName: sanitizedDbName,
       dbInstance: describeInstanceResponse.DBInstances[0],
-      secretArn,
+      secretArn: dbUserSecretArn,
       username: dbClusterObj.MasterUsername,
     };
   } catch (error) {
