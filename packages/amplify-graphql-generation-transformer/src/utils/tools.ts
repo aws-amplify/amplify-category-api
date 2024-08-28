@@ -27,6 +27,21 @@ type ToolSpec = {
   };
 };
 
+/**
+ * Creates a tool configuration for generating a response type based on a GraphQL field definition.
+ *
+ * This function generates a JSON schema from the field's type and wraps it in a tool specification.
+ * The tool can be used by AI models to generate responses that conform to the field's type structure.
+ *
+ * @param {FieldDefinitionNode} field - The GraphQL field definition node for which to create the response type tool.
+ * @param {TransformerContextProvider} ctx - The transformer context provider, which supplies necessary context for schema generation.
+ * @returns {ToolConfig} A tool configuration object containing:
+ *   - tools: An array with a single tool specification for the response type.
+ *   - toolChoice: An object specifying the name of the tool to be used.
+ *
+ * The returned tool configuration can be used with AI models that support tool-based interactions,
+ * ensuring that generated responses match the expected structure of the GraphQL field.
+ */
 export const createResponseTypeTool = (field: FieldDefinitionNode, ctx: TransformerContextProvider): ToolConfig => {
   const { type } = field;
   const schema = generateJSONSchemaFromTypeNode(type, ctx);

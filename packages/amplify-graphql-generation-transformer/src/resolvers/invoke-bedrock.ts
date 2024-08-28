@@ -1,10 +1,10 @@
 import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { dedent } from 'ts-dedent';
-import { GenerationDirectiveConfiguration, InferenceConfiguration } from '../grapqhl-generation-transformer';
+import { GenerationConfigurationWithToolConfig, InferenceConfiguration } from '../grapqhl-generation-transformer';
 
 export const invokeBedrockResolver = (
-  config: GenerationDirectiveConfiguration,
+  config: GenerationConfigurationWithToolConfig,
 ): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
   const { aiModel, toolConfig, inferenceConfiguration } = config;
   const stringifiedToolConfig = JSON.stringify(toolConfig);
