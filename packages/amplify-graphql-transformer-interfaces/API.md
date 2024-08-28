@@ -26,6 +26,7 @@ import { Grant } from 'aws-cdk-lib/aws-iam';
 import { GraphqlApiBase } from 'aws-cdk-lib/aws-appsync';
 import { HttpDataSource } from 'aws-cdk-lib/aws-appsync';
 import { HttpDataSourceOptions } from 'aws-cdk-lib/aws-appsync';
+import { IamResource } from 'aws-cdk-lib/aws-appsync';
 import { IAsset } from 'aws-cdk-lib';
 import { IConstruct } from 'constructs';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
