@@ -18,6 +18,7 @@ import { MappingTemplate, S3MappingTemplate } from '../cdk-compat';
 import { InvalidDirectiveError } from '../errors';
 // eslint-disable-next-line import/no-cycle
 import * as SyncUtils from '../transformation/sync-utils';
+import { isJsResolverFnRuntime } from '../utils/function-runtime';
 
 type Slot = {
   requestMappingTemplate?: MappingTemplateProvider;
@@ -279,7 +280,7 @@ export class TransformerResolver implements TransformerResolverProvider {
       this.runtime,
     );
 
-    const stashStatement = this.stashStatementGenerator(this.runtime);
+    const { stashString, stashExpression } = this.generateStashStatementGenerator(this.runtime);
 
     let dataSourceType = 'NONE';
     let dataSource = '';
@@ -289,7 +290,7 @@ export class TransformerResolver implements TransformerResolverProvider {
         case 'AMAZON_DYNAMODB':
           if (this.datasource.ds.dynamoDbConfig && !isResolvableObject(this.datasource.ds.dynamoDbConfig)) {
             const tableName = this.datasource.ds.dynamoDbConfig?.tableName;
-            dataSource = stashStatement('tableName', `"${tableName}"`);
+            dataSource = stashString({ name: 'tableName', value: tableName });
             if (
               this.datasource.ds.dynamoDbConfig?.deltaSyncConfig &&
               !isResolvableObject(this.datasource.ds.dynamoDbConfig?.deltaSyncConfig)
@@ -309,7 +310,7 @@ export class TransformerResolver implements TransformerResolverProvider {
                   return SyncUtils.syncDataSourceConfig().DeltaSyncTableTTL.toString();
                 },
               });
-              dataSource += '\n' + stashStatement('deltaSyncTableTtl', `"${deltaSyncTableTtl}"`);
+              dataSource += '\n' + stashString({ name: 'deltaSyncTableTtl', value: deltaSyncTableTtl });
             }
           }
 
@@ -341,19 +342,19 @@ export class TransformerResolver implements TransformerResolverProvider {
         case 'AMAZON_ELASTICSEARCH':
           if (this.datasource.ds.elasticsearchConfig && !isResolvableObject(this.datasource.ds.elasticsearchConfig)) {
             const endpoint = this.datasource.ds.elasticsearchConfig?.endpoint;
-            dataSource = stashStatement('endpoint', `"${endpoint}"`);
+            dataSource = stashString({ name: 'endpoint', value: endpoint });
           }
           break;
         case 'AWS_LAMBDA':
           if (this.datasource.ds.lambdaConfig && !isResolvableObject(this.datasource.ds.lambdaConfig)) {
             const lambdaFunctionArn = this.datasource.ds.lambdaConfig?.lambdaFunctionArn;
-            dataSource = stashStatement('lambdaFunctionArn', `"${lambdaFunctionArn}"`);
+            dataSource = stashString({ name: 'lambdaFunctionArn', value: lambdaFunctionArn });
           }
           break;
         case 'HTTP':
           if (this.datasource.ds.httpConfig && !isResolvableObject(this.datasource.ds.httpConfig)) {
             const endpoint = this.datasource.ds.httpConfig?.endpoint;
-            dataSource = stashStatement('endpoint', `"${endpoint}"`);
+            dataSource = stashString({ name: 'endpoint', value: endpoint });
           }
           break;
         case 'RELATIONAL_DATABASE':
@@ -363,7 +364,7 @@ export class TransformerResolver implements TransformerResolverProvider {
             !isResolvableObject(this.datasource.ds.relationalDatabaseConfig?.rdsHttpEndpointConfig)
           ) {
             const databaseName = this.datasource.ds.relationalDatabaseConfig?.rdsHttpEndpointConfig!.databaseName;
-            dataSource = stashStatement('databaseName', `"${databaseName}"`);
+            dataSource = stashString({ name: 'databaseName', value: databaseName });
           }
           break;
         default:
@@ -371,19 +372,20 @@ export class TransformerResolver implements TransformerResolverProvider {
       }
     }
     let initResolver = dedent`
-      ${stashStatement('typeName', `"${this.typeName}"`)}
-      ${stashStatement('fieldName', `"${this.fieldName}"`)}
-      ${stashStatement('conditions', '[]')}
-      ${stashStatement('metadata', '{}')}
-      ${stashStatement('dataSourceType', `"${dataSourceType}"`, 'metadata')}
-      ${stashStatement('apiId', `"${api.apiId}"`, 'metadata')}
-      ${stashStatement('connectionAttributes', '{}')}
+      ${stashString({ name: 'typeName', value: this.typeName })}
+      ${stashString({ name: 'fieldName', value: this.fieldName })}
+      ${stashExpression({ name: 'conditions', value: '[]' })}
+      ${stashExpression({ name: 'metadata', value: '{}' })}
+      ${stashString({ name: 'dataSourceType', value: dataSourceType, object: 'metadata' })}
+      ${stashString({ name: 'apiId', value: api.apiId, object: 'metadata' })}
+      ${stashExpression({ name: 'connectionAttributes', value: '{}' })}
       ${dataSource}
     `;
     const account = Stack.of(context.stackManager.scope).account;
     const authRole = context.synthParameters.authenticatedUserRoleName;
     if (authRole) {
-      const authRoleStatement = stashStatement('authRole', `"arn:aws:sts::${account}:assumed-role/${authRole}/CognitoIdentityCredentials"`);
+      const authRoleArn = `arn:aws:sts::${account}:assumed-role/${authRole}/CognitoIdentityCredentials`;
+      const authRoleStatement = stashString({ name: 'authRole', value: authRoleArn });
 
       initResolver += dedent`\n
         ${authRoleStatement}
@@ -391,28 +393,26 @@ export class TransformerResolver implements TransformerResolverProvider {
     }
     const unauthRole = context.synthParameters.unauthenticatedUserRoleName;
     if (unauthRole) {
-      const unauthRoleStatement = stashStatement(
-        'unauthRole',
-        `"arn:aws:sts::${account}:assumed-role/${unauthRole}/CognitoIdentityCredentials"`,
-      );
+      const unauthRoleArn = `arn:aws:sts::${account}:assumed-role/${unauthRole}/CognitoIdentityCredentials`;
+      const unauthRoleStatement = stashString({ name: 'unauthRole', value: unauthRoleArn });
       initResolver += dedent`\n
         ${unauthRoleStatement}
       `;
     }
     const identityPoolId = context.synthParameters.identityPoolId;
     if (identityPoolId) {
-      const identityPoolStatement = stashStatement('identityPoolId', `"${identityPoolId}"`);
+      const identityPoolStatement = stashString({ name: 'identityPoolId', value: identityPoolId });
       initResolver += dedent`\n
         ${identityPoolStatement}
       `;
     }
     const adminRoles = context.synthParameters.adminRoles ?? [];
-    const adminRolesStatement = stashStatement('adminRoles', `${JSON.stringify(adminRoles)}`);
+    const adminRolesStatement = stashExpression({ name: 'adminRoles', value: JSON.stringify(adminRoles) });
     initResolver += dedent`\n
       ${adminRolesStatement}
     `;
 
-    if (this.runtime?.name === 'APPSYNC_JS') {
+    if (isJsResolverFnRuntime(this.runtime)) {
       initResolver = dedent`
         export const request = (ctx) => {
           ${initResolver}
@@ -423,14 +423,13 @@ export class TransformerResolver implements TransformerResolverProvider {
       initResolver += '\n$util.toJson({})';
     }
 
-    const initResponseResolver =
-      this.runtime?.name === 'APPSYNC_JS'
-        ? dedent`
+    const initResponseResolver = isJsResolverFnRuntime(this.runtime)
+      ? dedent`
         export const response = (ctx) => {
           return ctx.prev.result;
         };
       `
-        : '$util.toJson($ctx.prev.result)';
+      : '$util.toJson($ctx.prev.result)';
 
     api.host.addResolver(
       this.typeName,
@@ -504,17 +503,72 @@ export class TransformerResolver implements TransformerResolverProvider {
     }
   }
 
-  private stashStatementGenerator(
-    runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
-  ): (name: string, value?: string, object?: string) => string {
-    const jsStashStatement = (name: string, value?: string, object?: string): string => {
+  /**
+   * Generates a function to create stash statements based on the runtime.
+   *
+   * @param {CfnFunctionConfiguration.AppSyncRuntimeProperty} runtime - The AppSync runtime configuration.
+   * @returns {StashStatementGenerator} An object with methods to generate stash statements.
+   */
+  private generateStashStatementGenerator(runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty): StashStatementGenerator {
+    const jsStash = (props: StashStatementGeneratorProps): string => {
+      const { name, value, object } = props;
       const objectPrefix = object ? `.${object}` : '';
       return `ctx.stash${objectPrefix}.${name} = ${value};`;
     };
-    const vtlStashStatement = (name: string, value?: string, object?: string): string => {
+
+    const generateJsStashStatement: StashStatementGenerator = {
+      stashExpression: (props: StashStatementGeneratorProps): string => jsStash(props),
+      stashString: (props: StashStatementGeneratorProps) => jsStash({ ...props, value: `"${props.value}"` }),
+    };
+
+    const vtlStash = (props: StashStatementGeneratorProps): string => {
+      const { name, value, object } = props;
       const objectPrefix = object ? `.${object}` : '';
       return `$util.qr($ctx.stash${objectPrefix}.put("${name}", ${value}))`;
     };
-    return runtime?.name === 'APPSYNC_JS' ? jsStashStatement : vtlStashStatement;
+
+    const generateVtlStashStatement: StashStatementGenerator = {
+      stashExpression: (props: StashStatementGeneratorProps): string => vtlStash(props),
+      stashString: (props: StashStatementGeneratorProps) => vtlStash({ ...props, value: `"${props.value}"` }),
+    };
+
+    return isJsResolverFnRuntime(runtime) ? generateJsStashStatement : generateVtlStashStatement;
   }
 }
+
+/**
+ * Properties for generating stash statements.
+ */
+type StashStatementGeneratorProps = {
+  /** The name of the stash variable */
+  name: string;
+  /** The value to be stashed */
+  value?: string;
+  /** Optional object name for nested stash */
+  object?: string;
+};
+
+type StashStatementGeneratorFunction = (props: StashStatementGeneratorProps) => string;
+
+/**
+ *  Stash statement generator methods.
+ */
+type StashStatementGenerator = {
+  /**
+   * Generates a stash statement for string values.
+   * This method ensures that the value is properly quoted as a string.
+   *
+   * @param {StashStatementGeneratorProps} props - The properties for generating stash statements.
+   * @returns {string} The generated stash statement for string values.
+   */
+  stashString: StashStatementGeneratorFunction;
+
+  /**
+   * Generates a stash statement for expression values.
+   * This method allows for stashing of non-string values or complex expressions.
+   *
+   * @param {StashStatementGeneratorProps} props - The properties for generating stash statements.
+   * @returns {string} The generated stash statement for expression values.
+   */
+  stashExpression: StashStatementGeneratorFunction;
+};
