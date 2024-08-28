@@ -3,14 +3,34 @@ import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interf
 import { dedent } from 'ts-dedent';
 import { GenerationConfigurationWithToolConfig, InferenceConfiguration } from '../grapqhl-generation-transformer';
 
-export const invokeBedrockResolver = (
+/**
+ * Creates the resolver functions for invoking Amazon Bedrock.
+ *
+ * @param {GenerationConfigurationWithToolConfig} config - The configuration object containing AI model details, tool config, and inference settings.
+ * @returns {Object} An object containing request and response resolver functions.
+ */
+
+export const createInvokeBedrockResolverFunction = (
   config: GenerationConfigurationWithToolConfig,
 ): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
+  const req = createInvokeBedrockRequestFunction(config);
+  const res = createInvokeBedrockResponseFunction();
+  return { req, res };
+};
+
+/**
+ * Creates the request function for the Bedrock resolver.
+ *
+ * @param {GenerationConfigurationWithToolConfig} config - The configuration object for the resolver.
+ * @returns {MappingTemplateProvider} A MappingTemplateProvider for the request function.
+ */
+const createInvokeBedrockRequestFunction = (config: GenerationConfigurationWithToolConfig): MappingTemplateProvider => {
   const { aiModel, toolConfig, inferenceConfiguration } = config;
   const stringifiedToolConfig = JSON.stringify(toolConfig);
   // TODO: add stopReason: max_tokens error handling
   const inferenceConfig = getInferenceConfigResolverDefinition(inferenceConfiguration);
-  const reqString = `export function request(ctx) {
+  const requestFunctionString = `
+  export function request(ctx) {
     const toolConfig = ${stringifiedToolConfig};
     const prompt = \`${config.systemPrompt}\`;
     const args = JSON.stringify(ctx.args);
@@ -19,32 +39,33 @@ export const invokeBedrockResolver = (
       resourcePath: '/model/${aiModel}/converse',
       method: 'POST',
       params: {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: {
-          messages: [
-          {
+          messages: [{
             role: 'user',
-            content: [
-              {
-                text: args
-              }
-            ],
-          }
-        ],
-        system: [{ text: prompt }],
-        toolConfig,
-        ${inferenceConfig}
+            content: [{ text: args }],
+          }],
+          system: [{ text: prompt }],
+          toolConfig,
+          ${inferenceConfig}
+        }
       }
     }
   }
-}
 `;
 
-  const req = MappingTemplate.inlineTemplateFromString(dedent(reqString));
+  return MappingTemplate.inlineTemplateFromString(dedent(requestFunctionString));
+};
 
-  const resString = `export function response(ctx) {
+/**
+ * Creates the response function for the Bedrock resolver.
+ *
+ * @returns {MappingTemplateProvider} A MappingTemplateProvider for the response function.
+ */
+const createInvokeBedrockResponseFunction = (): MappingTemplateProvider => {
+  // TODO: add stopReason: max_tokens error handling
+  const responseFunctionString = `
+  export function response(ctx) {
     if (ctx.error) {
       util.error(ctx.error.message, ctx.error.type);
     }
@@ -63,12 +84,17 @@ export const invokeBedrockResolver = (
     const response = toolUse.input.value;
     return response;
   }
-  `;
+`;
 
-  const res = MappingTemplate.inlineTemplateFromString(dedent(resString));
-  return { req, res };
+  return MappingTemplate.inlineTemplateFromString(dedent(responseFunctionString));
 };
 
+/**
+ * Generates the inference configuration string for the resolver definition.
+ *
+ * @param {InferenceConfiguration | undefined} inferenceConfiguration - The inference configuration object.
+ * @returns {string} A string representation of the inference configuration for use in the resolver definition.
+ */
 const getInferenceConfigResolverDefinition = (inferenceConfiguration?: InferenceConfiguration): string => {
   return inferenceConfiguration && Object.keys(inferenceConfiguration).length > 0
     ? `inferenceConfig: ${JSON.stringify(inferenceConfiguration)},`

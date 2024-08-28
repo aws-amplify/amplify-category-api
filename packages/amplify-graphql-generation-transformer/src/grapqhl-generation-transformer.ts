@@ -15,7 +15,7 @@ import { DirectiveNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, Object
 import { HttpResourceIDs, ResolverResourceIDs } from 'graphql-transformer-common';
 import { ToolConfig, createResponseTypeTool } from './utils/tools';
 import * as cdk from 'aws-cdk-lib';
-import { invokeBedrockResolver } from './resolvers/invoke-bedrock';
+import { createInvokeBedrockResolverFunction } from './resolvers/invoke-bedrock';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { validate } from './validation';
@@ -90,7 +90,7 @@ export class GenerationTransformer extends TransformerPluginBase {
       const resolverResourceId = ResolverResourceIDs.ResolverResourceID(parentName, fieldName);
       const httpDataSourceId = HttpResourceIDs.HttpDataSourceID(`GenerationBedrockDataSource-${fieldName}`);
       const dataSource = this.createBedrockDataSource(ctx, directive, stack.region, stackName, httpDataSourceId);
-      const invokeBedrockFunction = invokeBedrockResolver(directiveWithToolConfig);
+      const invokeBedrockFunction = createInvokeBedrockResolverFunction(directiveWithToolConfig);
 
       this.createPipelineResolver(ctx, parentName, fieldName, resolverResourceId, invokeBedrockFunction, dataSource);
     });
