@@ -10,7 +10,6 @@ import { InterfaceTypeDefinitionNode } from 'graphql';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
-import { TransformerPrepareStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
@@ -20,8 +19,6 @@ export class GenerationTransformer extends TransformerPluginBase {
     field: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, definition: FieldDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
     // (undocumented)
     generateResolvers: (ctx: TransformerContextProvider) => void;
-    // (undocumented)
-    prepare: (ctx: TransformerPrepareStepContextProvider) => void;
 }
 
 // (No @packageDocumentation comment for this package)
