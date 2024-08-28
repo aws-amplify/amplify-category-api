@@ -51,24 +51,6 @@ describe('generation', () => {
       deleteProjectDir(projRoot);
     });
 
-    describe('Generation model', () => {
-      // TODO: This currently doesn't work because of implicitly generated required values like id, createdAt, updatedAt.
-      // This should be fine if we generate the tool definitions in `generateResolvers` instead of `fields` in the generation-transformer.
-      xtest('should generate a model', async () => {
-        const args = {
-          apiEndpoint,
-          auth: { apiKey },
-        };
-        const variables = {
-          description:
-            'I have to pick up the kids from school. One goes to soccer practice at 3:30pm and the other to swim practice at 4:30pm.',
-        };
-        const makeTodoResult = await doAppSyncGraphqlQuery({ ...args, query: makeTodo, variables });
-        const todo = makeTodoResult.body.data.makeTodo;
-        expect(todo.content).toBeDefined();
-      });
-    });
-
     describe('Generation type', () => {
       test('should generate a type', async () => {
         const args = {
@@ -140,6 +122,24 @@ describe('generation', () => {
       const solveEquationResult = await doAppSyncGraphqlQuery({ ...args, query: solveEquation, variables });
       const solution = solveEquationResult.body.data.solveEquation;
       expect(solution).toBeDefined();
+    });
+
+    describe('Generation model', () => {
+      // TODO: This currently doesn't work because LLMs are great at following regex pattern requirements, they'll sometimes return "<UNNKNOWN>"
+      // which fails GraphQL type validation for implicitly generated required model values like id, createdAt, updatedAt.
+      xtest('should generate a model', async () => {
+        const args = {
+          apiEndpoint,
+          auth: { apiKey },
+        };
+        const variables = {
+          description:
+            'I have to pick up the kids from school. One goes to soccer practice at 3:30pm and the other to swim practice at 4:30pm.',
+        };
+        const makeTodoResult = await doAppSyncGraphqlQuery({ ...args, query: makeTodo, variables });
+        const todo = makeTodoResult.body.data.makeTodo;
+        expect(todo.content).toBeDefined();
+      });
     });
   });
 });
