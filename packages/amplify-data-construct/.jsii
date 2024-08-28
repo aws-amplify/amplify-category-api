@@ -8,21 +8,21 @@
   "bundled": {
     "@aws-amplify/backend-output-schemas": "^0.4.0",
     "@aws-amplify/backend-output-storage": "^0.2.2",
-    "@aws-amplify/graphql-auth-transformer": "4.0.0",
-    "@aws-amplify/graphql-default-value-transformer": "3.0.0",
+    "@aws-amplify/graphql-auth-transformer": "4.0.1",
+    "@aws-amplify/graphql-default-value-transformer": "3.0.1",
     "@aws-amplify/graphql-directives": "2.0.0",
-    "@aws-amplify/graphql-function-transformer": "3.0.0",
-    "@aws-amplify/graphql-http-transformer": "3.0.0",
-    "@aws-amplify/graphql-index-transformer": "3.0.0",
-    "@aws-amplify/graphql-maps-to-transformer": "4.0.0",
-    "@aws-amplify/graphql-model-transformer": "3.0.0",
-    "@aws-amplify/graphql-predictions-transformer": "3.0.0",
-    "@aws-amplify/graphql-relational-transformer": "3.0.0",
-    "@aws-amplify/graphql-searchable-transformer": "3.0.0",
-    "@aws-amplify/graphql-sql-transformer": "0.4.0",
-    "@aws-amplify/graphql-transformer": "2.0.0",
-    "@aws-amplify/graphql-transformer-core": "3.0.0",
-    "@aws-amplify/graphql-transformer-interfaces": "4.0.0",
+    "@aws-amplify/graphql-function-transformer": "3.0.1",
+    "@aws-amplify/graphql-http-transformer": "3.0.1",
+    "@aws-amplify/graphql-index-transformer": "3.0.1",
+    "@aws-amplify/graphql-maps-to-transformer": "4.0.1",
+    "@aws-amplify/graphql-model-transformer": "3.0.1",
+    "@aws-amplify/graphql-predictions-transformer": "3.0.1",
+    "@aws-amplify/graphql-relational-transformer": "3.0.1",
+    "@aws-amplify/graphql-searchable-transformer": "3.0.1",
+    "@aws-amplify/graphql-sql-transformer": "0.4.1",
+    "@aws-amplify/graphql-transformer": "2.0.1",
+    "@aws-amplify/graphql-transformer-core": "3.0.1",
+    "@aws-amplify/graphql-transformer-interfaces": "4.0.1",
     "@aws-amplify/platform-core": "^0.2.0",
     "@aws-amplify/plugin-types": "^0.4.1",
     "charenc": "^0.0.2",
@@ -46,7 +46,7 @@
     "zod": "^3.22.3"
   },
   "dependencies": {
-    "@aws-amplify/graphql-api-construct": "1.11.6",
+    "@aws-amplify/graphql-api-construct": "1.11.7",
     "aws-cdk-lib": "^2.152.0",
     "constructs": "^10.3.0"
   },
@@ -3885,6 +3885,6 @@
     }
   },
   "types": {},
-  "version": "1.9.6",
-  "fingerprint": "SdJZCjnS8qNDxzovyPRKBjmX8BKQnFxJLzNMF5SN3Zs="
+  "version": "1.9.7",
+  "fingerprint": "94PYaS4VX4Z6wAELr3r0UQeHMovBn/i4rgkPF1t8XtE="
 }

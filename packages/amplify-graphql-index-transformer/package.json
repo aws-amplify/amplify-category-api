@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-index-transformer",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Amplify GraphQL index and key transformers",
   "repository": {
     "type": "git",
@@ -30,15 +30,15 @@
   },
   "dependencies": {
     "@aws-amplify/graphql-directives": "2.0.0",
-    "@aws-amplify/graphql-model-transformer": "3.0.0",
-    "@aws-amplify/graphql-transformer-core": "3.0.0",
-    "@aws-amplify/graphql-transformer-interfaces": "4.0.0",
+    "@aws-amplify/graphql-model-transformer": "3.0.1",
+    "@aws-amplify/graphql-transformer-core": "3.0.1",
+    "@aws-amplify/graphql-transformer-interfaces": "4.0.1",
     "graphql": "^15.5.0",
     "graphql-mapping-template": "5.0.0",
     "graphql-transformer-common": "5.0.0"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-test-utils": "0.6.0"
+    "@aws-amplify/graphql-transformer-test-utils": "0.6.1"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.152.0",
