@@ -13,11 +13,7 @@ npm install @aws-amplify/graphql-generation-transformer
 The `@generation` directive is defined as follows:
 
 ```graphql
-directive @generation(
-    aiModel: String!,
-    systemPrompt: String!,
-    inferenceConfiguration: GenerationInferenceConfiguration
-) on FIELD_DEFINITION
+directive @generation(aiModel: String!, systemPrompt: String!, inferenceConfiguration: GenerationInferenceConfiguration) on FIELD_DEFINITION
 ```
 
 ## Features
@@ -34,16 +30,19 @@ directive @generation(
 ### Basic Usage
 
 #### Scalar Type Generation
+
 ```graphql
 type Query {
-  generateStory(topic: String!): String @generation(
-    aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
-    systemPrompt: "You are a creative storyteller. Generate a short story based on the given topic."
-  )
+  generateStory(topic: String!): String
+    @generation(
+      aiModel: "anthropic.claude-3-haiku-20240307-v1:0"
+      systemPrompt: "You are a creative storyteller. Generate a short story based on the given topic."
+    )
 }
 ```
 
 #### Complex Type Generation
+
 ```graphql
 type Recipe {
   name: String!
@@ -57,10 +56,10 @@ type Recipe {
 
 type Query {
   generateRecipe(cuisine: String!, dietaryRestrictions: [String]): Recipe
-  @generation(
-    aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
-    systemPrompt: "You are a professional chef specializing in creating recipes. Generate a detailed recipe based on the given cuisine and dietary restrictions."
-  )
+    @generation(
+      aiModel: "anthropic.claude-3-haiku-20240307-v1:0"
+      systemPrompt: "You are a professional chef specializing in creating recipes. Generate a detailed recipe based on the given cuisine and dietary restrictions."
+    )
 }
 ```
 
@@ -68,15 +67,12 @@ type Query {
 
 ```graphql
 type Query {
-  generateCode(description: String!): String @generation(
-    aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
-    systemPrompt: "You are an expert programmer. Generate code based on the given description.",
-    inferenceConfiguration: {
-      maxTokens: 500,
-      temperature: 0.7,
-      topP: 0.9
-    }
-  )
+  generateCode(description: String!): String
+    @generation(
+      aiModel: "anthropic.claude-3-haiku-20240307-v1:0"
+      systemPrompt: "You are an expert programmer. Generate code based on the given description."
+      inferenceConfiguration: { maxTokens: 500, temperature: 0.7, topP: 0.9 }
+    )
 }
 ```
 
