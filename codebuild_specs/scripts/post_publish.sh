@@ -24,7 +24,7 @@ update_dist_tag() {
   if npm view $PACKAGE_NAME@$PACKAGE_VERSION > /dev/null 2>&1; then
     echo "Version $PACKAGE_VERSION of package $PACKAGE_NAME is available."
     # Add the dist-tag
-    # npm dist-tag add $PACKAGE_NAME@$PACKAGE_VERSION $NEW_TAG --registry $REGISTRY
+    npm dist-tag add $PACKAGE_NAME@$PACKAGE_VERSION $NEW_TAG --registry $REGISTRY
     return $?
   else
     echo "Version $PACKAGE_VERSION of package $PACKAGE_NAME is not available yet."
@@ -37,7 +37,7 @@ for (( i=1; i<=$RETRIES; i++ ))
 do
   echo "Attempt $i to update dist-tag..."
   if update_dist_tag; then
-    echo "Successfully updated the $NEW_TAG tag to version $version."
+    echo "Successfully updated the $NEW_TAG tag to version $PACKAGE_VERSION."
     exit 0
   else
     echo "Failed to update dist-tag. Retrying in $DELAY seconds..."
