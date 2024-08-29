@@ -1,10 +1,11 @@
 #!/bin/bash -e
 
+REGISTRY="https://registry.npmjs.org"
 PACKAGE_NAME="@aws-amplify/amplify-category-api"
-TARGET_TAG="stable-tag-7"
+TARGET_TAG="stable-tag-8"
 NEW_TAG="test-tag-1"
 RETRIES=10
-DELAY=180 # 3 minutes delay between retries
+DELAY=60 # 3 minutes delay between retries
 
 # Function to attempt to set the "NEW_TAG" tag to the version tagged with "TARGET_TAG"
 update_dist_tag() {
