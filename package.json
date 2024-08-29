@@ -225,6 +225,7 @@
       "@aws-amplify/graphql-api-construct/strnum",
       "@aws-amplify/graphql-api-construct/@aws-sdk/client-sso",
       "@aws-amplify/graphql-api-construct/@aws-sdk/token-providers",
+      "@aws-amplify/graphql-api-construct/semver",
       "@aws-amplify/data-construct/@aws-amplify/graphql-transformer",
       "@aws-amplify/data-construct/@aws-amplify/graphql-transformer-core",
       "@aws-amplify/data-construct/@aws-amplify/graphql-transformer-interfaces",
@@ -347,7 +348,8 @@
       "@aws-amplify/data-construct/@smithy/util-uri-escape",
       "@aws-amplify/data-construct/strnum",
       "@aws-amplify/data-construct/@aws-sdk/client-sso",
-      "@aws-amplify/data-construct/@aws-sdk/token-providers"
+      "@aws-amplify/data-construct/@aws-sdk/token-providers",
+      "@aws-amplify/data-construct/semver"
     ]
   },
   "devDependencies": {

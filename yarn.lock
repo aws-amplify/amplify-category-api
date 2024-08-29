@@ -372,7 +372,20 @@
     fflate "0.7.3"
     pako "2.0.4"
 
-"@aws-amplify/platform-core@^1.0.0", "@aws-amplify/platform-core@^1.0.6":
+"@aws-amplify/platform-core@^1.0.0":
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/platform-core/-/platform-core-1.1.0.tgz#85002b14e37caeb8f90916554e57f7809582e94a"
+  integrity sha512-9iOM+dpht1f52WUHPyaXyeF8Z27TNgqBS86JmIhcsqWltUsCqoQDKPVjaTj8No05oMzm+icWc96dPG/EZIE3jw==
+  dependencies:
+    "@aws-amplify/plugin-types" "^1.2.1"
+    "@aws-sdk/client-sts" "^3.624.0"
+    is-ci "^3.0.1"
+    lodash.mergewith "^4.6.2"
+    semver "^7.6.3"
+    uuid "^9.0.1"
+    zod "^3.22.2"
+
+"@aws-amplify/platform-core@^1.0.6":
   version "1.0.7"
   resolved "https://registry.npmjs.org/@aws-amplify/platform-core/-/platform-core-1.0.7.tgz#2a58a24709755fbfc76b3ee04525ac5cb7b3b1ee"
   integrity sha512-pbZvIKyMsR2yos2qOcB9QzVyRR7+fyr3sL7ms1NYMAWxCu+tPbYTGHho/plp7OeWXgNwqqmLkTRg0qk17qnNGg==
@@ -10903,7 +10916,7 @@ graceful-fs@4.2.10:
   resolved "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.10.tgz#147d3a006da4ca3ce14728c7aefc287c367d7a6c"
   integrity sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA==
 
-graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.10, graceful-fs@^4.2.11, graceful-fs@^4.2.6, graceful-fs@^4.2.9:
+graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.10, graceful-fs@^4.2.6, graceful-fs@^4.2.9:
   version "4.2.11"
   resolved "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.11.tgz#4183e4e8bf08bb6e05bbb2f7d2e0c8f712ca40e3"
   integrity sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==
@@ -11555,11 +11568,6 @@ is-boolean-object@^1.1.0:
   dependencies:
     call-bind "^1.0.2"
     has-tostringtag "^1.0.0"
-
-is-buffer@^2.0.5:
-  version "2.0.5"
-  resolved "https://registry.npmjs.org/is-buffer/-/is-buffer-2.0.5.tgz#ebc252e400d22ff8d77fa09888821a24a658c191"
-  integrity sha512-i2R6zNFDwgEHJyQUtJEk0XFi1i0dPFn/oqjK3/vPCcDeJvW5NQ83V8QbicfF1SupOaB0h8ntgBC2YiE7dfyctQ==
 
 is-buffer@~1.1.6:
   version "1.1.6"
@@ -12552,7 +12560,7 @@ jsonfile@^4.0.0:
   optionalDependencies:
     graceful-fs "^4.1.6"
 
-jsonfile@^6.0.1, jsonfile@^6.1.0:
+jsonfile@^6.0.1:
   version "6.1.0"
   resolved "https://registry.npmjs.org/jsonfile/-/jsonfile-6.1.0.tgz#bc55b2634793c679ec6403094eb13698a6ec0aae"
   integrity sha512-5dgndWOriYSm5cnYaJNhalLNDKOqFwyDB/rr1E9ZsGciGvKPs8R2xYGCacuf3z6K1YKDz182fd+fY3cn3pMqXQ==
@@ -17279,7 +17287,7 @@ zip-stream@^4.1.0:
     compress-commons "^4.1.2"
     readable-stream "^3.6.0"
 
-zod@^3.22.2, zod@^3.22.3:
+zod@^3.22.2:
   version "3.23.8"
   resolved "https://registry.npmjs.org/zod/-/zod-3.23.8.tgz#e37b957b5d52079769fb8097099b592f0ef4067d"
   integrity sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==
