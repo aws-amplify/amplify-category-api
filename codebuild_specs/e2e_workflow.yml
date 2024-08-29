@@ -104,7 +104,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/graphql-v2/lambda-conflict-handler.test.ts|src/__tests__/graphql-v2/index-with-stack-mappings.test.ts|src/__tests__/schema-iterative-update-2.test.ts|src/__tests__/custom_policies_container.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: api_4_containers_api_secrets_api_5_schema_function_1
