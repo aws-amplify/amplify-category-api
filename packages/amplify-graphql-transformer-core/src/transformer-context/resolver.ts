@@ -280,7 +280,7 @@ export class TransformerResolver implements TransformerResolverProvider {
       this.runtime,
     );
 
-    const { stashString, stashExpression } = this.generateStashStatementGenerator(this.runtime);
+    const { stashString, stashExpression } = this.createStashStatementGenerator(this.runtime);
 
     let dataSourceType = 'NONE';
     let dataSource = '';
@@ -509,7 +509,7 @@ export class TransformerResolver implements TransformerResolverProvider {
    * @param {CfnFunctionConfiguration.AppSyncRuntimeProperty} runtime - The AppSync runtime configuration.
    * @returns {StashStatementGenerator} An object with methods to generate stash statements.
    */
-  private generateStashStatementGenerator(runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty): StashStatementGenerator {
+  private createStashStatementGenerator(runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty): StashStatementGenerator {
     const jsStash = (props: StashStatementGeneratorProps): string => {
       const { name, value, object } = props;
       const objectPrefix = object ? `.${object}` : '';
