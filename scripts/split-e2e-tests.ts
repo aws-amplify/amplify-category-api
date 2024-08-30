@@ -83,6 +83,7 @@ const USE_PARENT_ACCOUNT = [
   'src/__tests__/graphql-v2/searchable-datastore',
   'src/__tests__/schema-searchable',
   'src/__tests__/FunctionTransformerTestsV2.e2e.test.ts',
+  'src/__tests__/generations/generation.test.ts',
 ];
 const TEST_TIMINGS_PATH = join(REPO_ROOT, 'scripts', 'test-timings.data.json');
 const CODEBUILD_CONFIG_BASE_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_base.yml');
