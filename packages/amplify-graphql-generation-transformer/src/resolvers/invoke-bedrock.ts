@@ -27,12 +27,13 @@ export const createInvokeBedrockResolverFunction = (
 const createInvokeBedrockRequestFunction = (config: GenerationConfigurationWithToolConfig): MappingTemplateProvider => {
   const { aiModel, toolConfig, inferenceConfiguration } = config;
   const stringifiedToolConfig = JSON.stringify(toolConfig);
+  const stringifiedSystemPrompt = JSON.stringify(config.systemPrompt);
   // TODO: add stopReason: max_tokens error handling
   const inferenceConfig = getInferenceConfigResolverDefinition(inferenceConfiguration);
   const requestFunctionString = `
   export function request(ctx) {
     const toolConfig = ${stringifiedToolConfig};
-    const prompt = \`${config.systemPrompt}\`;
+    const prompt = ${stringifiedSystemPrompt};
     const args = JSON.stringify(ctx.args);
 
     return {
