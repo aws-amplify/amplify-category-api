@@ -19,6 +19,7 @@ import { createInvokeBedrockResolverFunction } from './resolvers/invoke-bedrock'
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { validate } from './validation';
+import { toUpper } from 'graphql-transformer-common';
 
 export type GenerationDirectiveConfiguration = {
   parent: ObjectTypeDefinitionNode;
@@ -80,7 +81,7 @@ export class GenerationTransformer extends TransformerPluginBase {
         toolConfig: createResponseTypeTool(field, ctx),
       };
 
-      const stackName = `Generation${this.capitalizeFirstLetter(fieldName)}BedrockDataSourceStack`;
+      const stackName = `Generation${toUpper(fieldName)}BedrockDataSourceStack`;
       const stack = this.createStack(ctx, stackName);
 
       const resolverResourceId = ResolverResourceIDs.ResolverResourceID(parentName, fieldName);
@@ -91,10 +92,6 @@ export class GenerationTransformer extends TransformerPluginBase {
       this.createPipelineResolver(ctx, parentName, fieldName, resolverResourceId, invokeBedrockFunction, dataSource);
     });
   };
-
-  private capitalizeFirstLetter(str: string): string {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
 
   /**
    * Creates a new CDK stack for the Generation transformer.
