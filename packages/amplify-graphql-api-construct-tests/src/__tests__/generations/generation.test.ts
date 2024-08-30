@@ -125,7 +125,7 @@ describe('generation', () => {
     });
 
     describe('Generation model', () => {
-      // TODO: This currently doesn't work because LLMs are great at following regex pattern requirements, they'll sometimes return "<UNNKNOWN>"
+      // TODO: This currently doesn't work because LLMs are not great at following regex pattern requirements, they'll sometimes return "<UNKNOWN>"
       // which fails GraphQL type validation for implicitly generated required model values like id, createdAt, updatedAt.
       xtest('should generate a model', async () => {
         const args = {
