@@ -1,5 +1,18 @@
 import { JSONSchema } from './graphql-json-schema-type';
 
+/**
+ * JSON Schema definitions for GraphQL scalar types and AWS AppSync custom scalar types.
+ * These definitions are used to create valid JSON schema for tool definitions in the
+ * context of AI model interactions for generation routes, ensuring that generated responses
+ * conform to the expected GraphQL types.
+ *
+ * Each constant represents a JSON Schema object that describes the structure and
+ * constraints of a specific GraphQL scalar type. These scalar types are utilized when
+ * generating tool configurations for AI models, allowing for accurate type validation
+ * and response generation.
+ */
+
+
 /** JSON Schema definition for GraphQL Boolean type */
 const Boolean: JSONSchema = {
   type: 'boolean',
