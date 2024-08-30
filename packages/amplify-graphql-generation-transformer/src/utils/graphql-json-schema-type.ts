@@ -146,7 +146,7 @@ const handleObjectTypeDefinition = (
   ctx: TransformerContextProvider,
   schema: JSONSchema,
 ): Record<string, JSONSchema> => {
-  const properties = def.fields?.reduce((acc: Record<string, JSONSchema>, field) => {
+  const properties = (def.fields ?? []).reduce((acc: Record<string, JSONSchema>, field) => {
     acc[field.name.value] = generateJSONSchemaFromTypeNode(field.type, ctx, { type: '' });
 
     // Add required fields to the schema
@@ -156,10 +156,6 @@ const handleObjectTypeDefinition = (
 
     return acc;
   }, {});
-
-  if (!properties) {
-    throw new Error(`Object type ${def.name.value} has no fields`);
-  }
 
   return properties;
 };

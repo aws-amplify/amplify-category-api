@@ -29,6 +29,8 @@ test('generation route model list response type', () => {
     }
   `;
 
+  // Models are not currently supported for generation routes.
+  // This test can fail on `createdAt` or `updatedAt` fields. Hence the generalized error message assertion.
   expect(() => transform(inputSchema)).toThrow(/Disallowed required field type/);
 });
 
@@ -66,6 +68,13 @@ test('generation route custom query', () => {
       name: String
       ingredients: [String]
       instructions: String
+      meal: Meal
+    }
+
+    enum Meal {
+      BREAKFAST
+      LUNCH
+      DINNER
     }
 
     type Query {
@@ -137,7 +146,92 @@ test('generation route required model type required field', () => {
     }
   `;
 
+  // Models are not currently supported for generation routes.
+  // This test can fail on `createdAt` or `updatedAt` fields. Hence the generalized error message assertion.
   expect(() => transform(inputSchema)).toThrow(/Disallowed required field type/);
+});
+
+test('generation route invalid field type in response type', () => {
+  const inputSchema = `
+    union Foo = Bar | Baz
+    type Bar {
+      value: String
+    }
+
+    type Baz {
+      value: Int
+    }
+
+    type Query {
+        makeFoo(description: String!): Foo
+        @generation(
+          aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
+          systemPrompt: "",
+        )
+    }
+  `;
+
+  expect(() => transform(inputSchema)).toThrow('Unsupported type definition: UnionTypeDefinition');
+});
+
+test('generation route invalid parent type', () => {
+  const inputSchema = `
+    type Thing {
+      int: Int
+    }
+
+    type Mutation {
+      makeThing(description: String!): Thing
+      @generation(
+        aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
+        systemPrompt: "",
+      )
+    }
+  `;
+
+  expect(() => transform(inputSchema)).toThrow('@generation directive must be used on Query field.');
+});
+
+test('generation route all scalar types', () => {
+  const queryName = 'makeBox';
+  const inputSchema = `
+    type Box {
+      int: Int
+      float: Float
+      string: String
+      id: ID
+      boolean: Boolean
+      awsjson: AWSJSON
+      awsemail: AWSEmail
+      awsdate: AWSDate
+      awstime: AWSTime
+      awsdatetime: AWSDateTime
+      awstimestamp: AWSTimestamp
+      awsphone: AWSPhone
+      awsurl: AWSURL
+      awsipaddress: AWSIPAddress
+    }
+
+    type Query {
+        makeBox(description: String!): Box
+        @generation(
+          aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
+          systemPrompt: "",
+        )
+    }
+  `;
+
+  const out = transform(inputSchema);
+  const resolverCode = getResolverResource(queryName, out.rootStack.Resources)['Properties']['Code'];
+  expect(resolverCode).toBeDefined();
+  expect(resolverCode).toMatchSnapshot();
+
+  const resolverFnCode = getResolverFnResource(queryName, out.rootStack.Resources)['Properties']['Code'];
+  expect(resolverFnCode).toBeDefined();
+  expect(resolverFnCode).toMatchSnapshot();
+
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
 });
 
 describe('generation route invalid inference configuration', () => {

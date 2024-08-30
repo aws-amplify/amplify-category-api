@@ -26,7 +26,7 @@ export type GenerationDirectiveConfiguration = {
   aiModel: string;
   field: FieldDefinitionNode;
   systemPrompt: string;
-  inferenceConfiguration: InferenceConfiguration | undefined;
+  inferenceConfiguration: InferenceConfiguration;
 };
 
 export type InferenceConfiguration = {
