@@ -52,10 +52,6 @@ export class GenerationTransformer extends TransformerPluginBase {
     directive: DirectiveNode,
     context: TransformerSchemaVisitStepContextProvider,
   ): void => {
-    if (parent.name.value !== 'Query') {
-      throw new InvalidDirectiveError('@generation directive must be used on Query field.');
-    }
-
     const directiveWrapped = new DirectiveWrapper(directive);
     const config = directiveWrapped.getArguments(
       {

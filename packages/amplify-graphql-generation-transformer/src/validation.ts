@@ -1,6 +1,7 @@
 import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { GenerationDirectiveConfiguration } from './grapqhl-generation-transformer';
+import { isQueryType } from '@aws-amplify/graphql-transformer-core/src/utils';
 
 /**
  * Validates the configuration for the `@generation` directive.
@@ -14,7 +15,24 @@ import { GenerationDirectiveConfiguration } from './grapqhl-generation-transform
  */
 
 export const validate = (config: GenerationDirectiveConfiguration, ctx: TransformerContextProvider): void => {
+  validateFieldType(config);
   validateInferenceConfig(config);
+};
+
+/**
+ * Validates the field type for the `@generation` directive.
+ *
+ * This function checks if the parent of the field with the `@generation` directive
+ * is of type 'Query'. If not, it throws an InvalidDirectiveError.
+ *
+ * @param {GenerationDirectiveConfiguration} config - The configuration object for the `@generation` directive.
+ * @throws {InvalidDirectiveError} If the parent is not of type 'Query'.
+ */
+const validateFieldType = (config: GenerationDirectiveConfiguration): void => {
+  const { parent } = config;
+  if (!isQueryType(parent.name.value)) {
+    throw new InvalidDirectiveError('@generation directive must be used on Query field.');
+  }
 };
 
 /**
