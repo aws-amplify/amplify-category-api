@@ -42,10 +42,7 @@ export const createAssistantResponsePirateChat = /* GraphQL */ `mutation CreateA
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.CreateAssistantResponsePirateChatMutationVariables,
-  APITypes.CreateAssistantResponsePirateChatMutation
->;
+` as GeneratedMutation<APITypes.CreateAssistantResponsePirateChatMutationVariables, APITypes.CreateAssistantResponsePirateChatMutation>;
 export const createConversationMessagePirateChat = /* GraphQL */ `mutation CreateConversationMessagePirateChat(
   $condition: ModelConversationMessagePirateChatConditionInput
   $input: CreateConversationMessagePirateChatInput!
@@ -81,10 +78,7 @@ export const createConversationMessagePirateChat = /* GraphQL */ `mutation Creat
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.CreateConversationMessagePirateChatMutationVariables,
-  APITypes.CreateConversationMessagePirateChatMutation
->;
+` as GeneratedMutation<APITypes.CreateConversationMessagePirateChatMutationVariables, APITypes.CreateConversationMessagePirateChatMutation>;
 export const createConversationPirateChat = /* GraphQL */ `mutation CreateConversationPirateChat(
   $condition: ModelConversationPirateChatConditionInput
   $input: CreateConversationPirateChatInput!
@@ -103,10 +97,7 @@ export const createConversationPirateChat = /* GraphQL */ `mutation CreateConver
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.CreateConversationPirateChatMutationVariables,
-  APITypes.CreateConversationPirateChatMutation
->;
+` as GeneratedMutation<APITypes.CreateConversationPirateChatMutationVariables, APITypes.CreateConversationPirateChatMutation>;
 export const deleteConversationMessagePirateChat = /* GraphQL */ `mutation DeleteConversationMessagePirateChat(
   $condition: ModelConversationMessagePirateChatConditionInput
   $input: DeleteConversationMessagePirateChatInput!
@@ -142,10 +133,7 @@ export const deleteConversationMessagePirateChat = /* GraphQL */ `mutation Delet
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.DeleteConversationMessagePirateChatMutationVariables,
-  APITypes.DeleteConversationMessagePirateChatMutation
->;
+` as GeneratedMutation<APITypes.DeleteConversationMessagePirateChatMutationVariables, APITypes.DeleteConversationMessagePirateChatMutation>;
 export const deleteConversationPirateChat = /* GraphQL */ `mutation DeleteConversationPirateChat(
   $condition: ModelConversationPirateChatConditionInput
   $input: DeleteConversationPirateChatInput!
@@ -164,10 +152,7 @@ export const deleteConversationPirateChat = /* GraphQL */ `mutation DeleteConver
     __typename
   }
 }
-` as GeneratedMutation<
-  APITypes.DeleteConversationPirateChatMutationVariables,
-  APITypes.DeleteConversationPirateChatMutation
->;
+` as GeneratedMutation<APITypes.DeleteConversationPirateChatMutationVariables, APITypes.DeleteConversationPirateChatMutation>;
 export const pirateChat = /* GraphQL */ `mutation PirateChat(
   $aiContext: AWSJSON
   $content: [ContentBlockInput]
@@ -212,7 +197,4 @@ export const pirateChat = /* GraphQL */ `mutation PirateChat(
     }
   }
 }
-` as GeneratedMutation<
-  APITypes.PirateChatMutationVariables,
-  APITypes.PirateChatMutation
->;
+` as GeneratedMutation<APITypes.PirateChatMutationVariables, APITypes.PirateChatMutation>;

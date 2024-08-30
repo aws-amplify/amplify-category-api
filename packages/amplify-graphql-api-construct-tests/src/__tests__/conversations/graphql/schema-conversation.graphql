@@ -1,5 +1,15 @@
 type Mutation {
-  pirateChat(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage @conversation(aiModel: "Claude3Haiku", systemPrompt: "You are a helpful chatbot that responds in the voice and tone of a pirate. Respond in 20 words or less.") @aws_cognito_user_pools
+  pirateChat(
+    conversationId: ID!
+    content: [ContentBlockInput]
+    aiContext: AWSJSON
+    toolConfiguration: ToolConfigurationInput
+  ): ConversationMessage
+    @conversation(
+      aiModel: "Claude3Haiku"
+      systemPrompt: "You are a helpful chatbot that responds in the voice and tone of a pirate. Respond in 20 words or less."
+    )
+    @aws_cognito_user_pools
 }
 
 enum ConversationParticipantRole {
@@ -60,7 +70,6 @@ input ToolResultBlockInput {
 type DocumentBlockSource {
   bytes: String
 }
-
 
 type DocumentBlock {
   format: String!

@@ -1,8 +1,12 @@
-import { AppSyncGraphqlResponse, doAppSyncGraphqlMutation, doAppSyncGraphqlOperation, doAppSyncGraphqlQuery } from "../../utils";
-import { CreateConversationPirateChatMutation, GetConversationPirateChatQuery, ListConversationMessagePirateChatsQuery, PirateChatMutation } from "./API";
-import { createConversationPirateChat, pirateChat } from "./graphql/mutations";
-import { getConversationPirateChat, listConversationMessagePirateChats } from "./graphql/queries";
-
+import { AppSyncGraphqlResponse, doAppSyncGraphqlMutation, doAppSyncGraphqlOperation, doAppSyncGraphqlQuery } from '../../utils';
+import {
+  CreateConversationPirateChatMutation,
+  GetConversationPirateChatQuery,
+  ListConversationMessagePirateChatsQuery,
+  PirateChatMutation,
+} from './API';
+import { createConversationPirateChat, pirateChat } from './graphql/mutations';
+import { getConversationPirateChat, listConversationMessagePirateChats } from './graphql/queries';
 
 export const doCreateConversationPirateChat = async (
   apiEndpoint: string,
@@ -63,4 +67,3 @@ export const doListConversationMessagesPirateChat = async (
     },
   });
 };
-

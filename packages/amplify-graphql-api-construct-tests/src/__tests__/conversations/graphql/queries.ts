@@ -40,10 +40,7 @@ export const getConversationMessagePirateChat = /* GraphQL */ `query GetConversa
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.GetConversationMessagePirateChatQueryVariables,
-  APITypes.GetConversationMessagePirateChatQuery
->;
+` as GeneratedQuery<APITypes.GetConversationMessagePirateChatQueryVariables, APITypes.GetConversationMessagePirateChatQuery>;
 export const getConversationPirateChat = /* GraphQL */ `query GetConversationPirateChat($id: ID!) {
   getConversationPirateChat(id: $id) {
     createdAt
@@ -59,10 +56,7 @@ export const getConversationPirateChat = /* GraphQL */ `query GetConversationPir
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.GetConversationPirateChatQueryVariables,
-  APITypes.GetConversationPirateChatQuery
->;
+` as GeneratedQuery<APITypes.GetConversationPirateChatQueryVariables, APITypes.GetConversationPirateChatQuery>;
 export const listConversationMessagePirateChats = /* GraphQL */ `query ListConversationMessagePirateChats(
   $filter: ModelConversationMessagePirateChatFilterInput
   $limit: Int
@@ -87,10 +81,7 @@ export const listConversationMessagePirateChats = /* GraphQL */ `query ListConve
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.ListConversationMessagePirateChatsQueryVariables,
-  APITypes.ListConversationMessagePirateChatsQuery
->;
+` as GeneratedQuery<APITypes.ListConversationMessagePirateChatsQueryVariables, APITypes.ListConversationMessagePirateChatsQuery>;
 export const listConversationPirateChats = /* GraphQL */ `query ListConversationPirateChats(
   $filter: ModelConversationPirateChatFilterInput
   $limit: Int
@@ -114,7 +105,4 @@ export const listConversationPirateChats = /* GraphQL */ `query ListConversation
     __typename
   }
 }
-` as GeneratedQuery<
-  APITypes.ListConversationPirateChatsQueryVariables,
-  APITypes.ListConversationPirateChatsQuery
->;
+` as GeneratedQuery<APITypes.ListConversationPirateChatsQueryVariables, APITypes.ListConversationPirateChatsQuery>;
