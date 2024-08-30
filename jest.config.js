@@ -19,8 +19,6 @@ module.exports = {
   coverageDirectory: 'coverage',
   projects: [
     // '<rootDir>/packages/amplify-category-api',
-    // '<rootDir>/packages/amplify-data-construct',
-    '<rootDir>/packages/amplify-graphql-api-construct',
     '<rootDir>/packages/amplify-graphql-auth-transformer',
     '<rootDir>/packages/amplify-graphql-default-value-transformer',
     '<rootDir>/packages/amplify-graphql-function-transformer',
@@ -31,9 +29,7 @@ module.exports = {
     '<rootDir>/packages/amplify-graphql-name-mapping-transformer',
     '<rootDir>/packages/amplify-graphql-predictions-transformer',
     '<rootDir>/packages/amplify-graphql-relational-transformer',
-    // '<rootDir>/packages/amplify-graphql-schema-generator',
     '<rootDir>/packages/amplify-graphql-searchable-transformer',
-    '<rootDir>/packages/amplify-graphql-sql-transformer',
     // '<rootDir>/packages/amplify-graphql-transformer',
     '<rootDir>/packages/amplify-graphql-transformer-core',
     // '<rootDir>/packages/amplify-graphql-transformer-migrator',

@@ -148,8 +148,6 @@ const RUN_SOLO: (string | RegExp)[] = [
 const RUN_IN_ALL_REGIONS = [
   // DDB tests
   'src/__tests__/api_canary.test.ts',
-  // CDK tests
-  'src/__tests__/base-cdk.test.ts',
 ];
 
 const RUN_IN_NON_OPT_IN_REGIONS: (string | RegExp)[] = [

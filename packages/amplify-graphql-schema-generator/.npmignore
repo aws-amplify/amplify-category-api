@@ -1,6 +1,0 @@
-**/__mocks__/**
-**/__tests__/**
-src
-vpc-db-lambda
-tsconfig.json
-tsconfig.tsbuildinfo

@@ -15,5 +15,4 @@ packages/amplify-e2e-tests/amplify-e2e-reports
 packages/amplify-graphql-model-transformer/publish-notification-lambda/lib/
 packages/amplify-graphql-model-transformer/rds-lambda/
 packages/amplify-graphql-model-transformer/rds-patching-lambda/lib/
-packages/amplify-graphql-schema-generator/vpc-db-lambda/lib/
 scripts/components/private_packages.ts
