@@ -16,7 +16,12 @@ import { TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-
 export class GenerationTransformer extends TransformerPluginBase {
     constructor();
     // (undocumented)
-    field: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, definition: FieldDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
+    field: (
+    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+    definition: FieldDefinitionNode,
+    directive: DirectiveNode,
+    context: TransformerSchemaVisitStepContextProvider,
+    ) => void;
     // (undocumented)
     generateResolvers: (ctx: TransformerContextProvider) => void;
 }
