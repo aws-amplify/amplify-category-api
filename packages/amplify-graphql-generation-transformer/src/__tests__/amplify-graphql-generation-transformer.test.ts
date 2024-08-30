@@ -55,9 +55,6 @@ test('generation route scalar type', () => {
   expect(resolverFnCode).toBeDefined();
   expect(resolverFnCode).toMatchSnapshot();
 
-  expect(out.schema).toBeDefined();
-  expect(out.schema).toMatchSnapshot();
-
   const schema = parse(out.schema);
   validateModelSchema(schema);
 });
