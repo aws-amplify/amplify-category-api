@@ -236,8 +236,14 @@ test('generation route all scalar types', () => {
 
 describe('generation route invalid inference configuration', () => {
   const maxTokens = 'inferenceConfiguration: { maxTokens: 0 }';
-  const temperature = 'inferenceConfiguration: { temperature: 1.1 }';
-  const topP = 'inferenceConfiguration: { topP: -2 }';
+  const temperature = {
+    over: 'inferenceConfiguration: { temperature: 1.1 }',
+    under: 'inferenceConfiguration: { temperature: -0.1 }',
+  };
+  const topP = {
+    over: 'inferenceConfiguration: { topP: 1.1 }',
+    under: 'inferenceConfiguration: { topP: -0.1 }',
+  };
 
   const generationRoute = (invalidInferenceConfig: string): string => {
     return `
@@ -258,15 +264,27 @@ describe('generation route invalid inference configuration', () => {
     );
   });
 
-  test('temperature invalid', () => {
-    expect(() => transform(generationRoute(temperature))).toThrow(
+  test('temperature over', () => {
+    expect(() => transform(generationRoute(temperature.over))).toThrow(
       '@generation directive temperature valid range: Minimum value of 0. Maximum value of 1. Provided: 1.1',
     );
   });
 
-  test('topP invalid', () => {
-    expect(() => transform(generationRoute(topP))).toThrow(
-      '@generation directive topP valid range: Minimum value of 0. Maximum value of 1. Provided: -2',
+  test('topP over', () => {
+    expect(() => transform(generationRoute(topP.over))).toThrow(
+      '@generation directive topP valid range: Minimum value of 0. Maximum value of 1. Provided: 1.1',
+    );
+  });
+
+  test('temperature under', () => {
+    expect(() => transform(generationRoute(temperature.under))).toThrow(
+      '@generation directive temperature valid range: Minimum value of 0. Maximum value of 1. Provided: -0.1',
+    );
+  });
+
+  test('topP under', () => {
+    expect(() => transform(generationRoute(topP.under))).toThrow(
+      '@generation directive topP valid range: Minimum value of 0. Maximum value of 1. Provided: -0.1',
     );
   });
 });
