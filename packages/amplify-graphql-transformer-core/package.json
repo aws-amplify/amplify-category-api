@@ -49,7 +49,7 @@
     "@types/fs-extra": "^8.0.1",
     "@types/hjson": "^2.4.3",
     "@types/md5": "^2.3.1",
-    "@types/node": "^12.12.6",
+    "@types/node": "^18.0.0",
     "@types/object-hash": "^2.2.1",
     "@types/uuid": "^9.0.1"
   },
@@ -57,7 +57,9 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
-    "testURL": "http://localhost",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "testRegex": "(src/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "moduleFileExtensions": [
       "ts",
@@ -80,12 +82,15 @@
       "clover",
       "text"
     ],
-    "testEnvironment": "../../FixJestEnvironment.js",
     "collectCoverageFrom": [
       "src/**/*.ts"
     ],
     "coveragePathIgnorePatterns": [
       "/__tests__/"
-    ]
+    ],
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    }
   }
 }

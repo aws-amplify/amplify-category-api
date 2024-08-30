@@ -45,17 +45,19 @@
   },
   "devDependencies": {
     "@aws-amplify/graphql-transformer-test-utils": "0.6.1",
-    "@types/node": "^12.12.6",
+    "@types/node": "^18.0.0",
     "fs-extra": "^8.1.0",
     "rimraf": "^3.0.0",
-    "ts-jest": "26.4.4"
+    "ts-jest": "^29.0.0"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.152.0",
     "constructs": "^10.3.0"
   },
   "jest": {
-    "testURL": "http://localhost",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
@@ -81,12 +83,15 @@
       "clover",
       "text"
     ],
-    "testEnvironment": "../../FixJestEnvironment.js",
     "collectCoverageFrom": [
       "src/**/*.ts"
     ],
     "coveragePathIgnorePatterns": [
       "/__tests__/"
-    ]
+    ],
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    }
   }
 }
