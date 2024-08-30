@@ -97,7 +97,20 @@ const AWSIPAddress: JSONSchema = {
     '^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:/d{1,2})?$|^(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(?::[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(?::[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(?::[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:(?:(?::[0-9a-fA-F]{1,4}){1,6})|:(?:(?::[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(?::[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])|(?:[0-9a-fA-F]{1,4}:){1,4}:(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(?:/d{1,3})?$',
 };
 
-/** List of scalar types that are not allowed in certain contexts */
+/**
+ * List of scalar types that are not allowed for required fields.
+ *
+ * @remarks
+ * LLMs are not great at following regex pattern requirements, they'll sometimes return "\<UNKNOWN\>" for required fields.
+ * This leads to AppSync type validation failures. This is particularly problematic for required `@model` fields like `createdAt` and `updatedAt`.
+ *
+ * @todo
+ * Explore ways to lift this constraint. Current thoughts:
+ *  - Improve prompt engineering for better handling of these types
+ *  - Refine regex patterns in JSON Schema tool definitions
+ *  - Implement special case handling for models (e.g., omitting createdAt, updatedAt, and id in tool definition,
+ *   and populating them in the resolver)
+ */
 const disallowedScalarTypes = ['AWSEmail', 'AWSDate', 'AWSTime', 'AWSDateTime', 'AWSTimestamp', 'AWSPhone', 'AWSURL', 'AWSIPAddress'];
 
 /** List of supported scalar types */
