@@ -1,7 +1,6 @@
 import { GenerationDirective } from '@aws-amplify/graphql-directives';
 import {
   DirectiveWrapper,
-  InvalidDirectiveError,
   TransformerPluginBase,
   generateGetArgumentsInput,
   TransformerResolver,
@@ -81,11 +80,11 @@ export class GenerationTransformer extends TransformerPluginBase {
         toolConfig: createResponseTypeTool(field, ctx),
       };
 
-      const stackName = `Generation${toUpper(fieldName)}BedrockDataSourceStack`;
+      const stackName = this.bedrockDataSourceName(fieldName) + 'Stack';
       const stack = this.createStack(ctx, stackName);
 
       const resolverResourceId = ResolverResourceIDs.ResolverResourceID(parentName, fieldName);
-      const httpDataSourceId = HttpResourceIDs.HttpDataSourceID(`GenerationBedrockDataSource-${fieldName}`);
+      const httpDataSourceId = HttpResourceIDs.HttpDataSourceID(this.bedrockDataSourceName(fieldName));
       const dataSource = this.createBedrockDataSource(ctx, directive, stack.region, stackName, httpDataSourceId);
       const invokeBedrockFunction = createInvokeBedrockResolverFunction(directiveWithToolConfig);
 
@@ -175,8 +174,10 @@ export class GenerationTransformer extends TransformerPluginBase {
       dataSourceScope,
     );
 
-    const roleName = ctx.resourceHelper.generateIAMRoleName(`GenerationBedrockDataSourceRole${fieldName}`);
-    const role = this.createBedrockDataSourceRole(dataSourceScope, fieldName, roleName, region, aiModel);
+    // This follows the existing pattern of generating logical IDs and names for IAM roles.
+    const roleLogicalId = this.bedrockDataSourceName(fieldName) + 'IAMRole';
+    const roleName = ctx.resourceHelper.generateIAMRoleName(roleLogicalId);
+    const role = this.createBedrockDataSourceRole(dataSourceScope, roleLogicalId, roleName, region, aiModel);
     dataSource.ds.serviceRoleArn = role.roleArn;
     return dataSource;
   }
@@ -192,12 +193,12 @@ export class GenerationTransformer extends TransformerPluginBase {
    */
   private createBedrockDataSourceRole(
     dataSourceScope: Construct,
-    fieldName: string,
+    roleLogicalId: string,
     roleName: string,
     region: string,
     bedrockModelId: string,
   ): cdk.aws_iam.Role {
-    return new iam.Role(dataSourceScope, `GenerationBedrockDataSourceRole${fieldName}`, {
+    return new iam.Role(dataSourceScope, roleLogicalId, {
       roleName,
       assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
       inlinePolicies: {
@@ -212,5 +213,9 @@ export class GenerationTransformer extends TransformerPluginBase {
         }),
       },
     });
+  }
+
+  private bedrockDataSourceName(fieldName: string): string {
+    return `GenerationBedrockDataSource${toUpper(fieldName)}`;
   }
 }
