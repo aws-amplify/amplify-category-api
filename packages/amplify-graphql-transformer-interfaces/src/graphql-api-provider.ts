@@ -128,7 +128,6 @@ export type MappingTemplateProvider = InlineMappingTemplateProvider | S3MappingT
 
 export interface GraphQLAPIProvider extends IConstruct {
   readonly apiId: string;
-  readonly graphqlUrl: string;
   readonly host: TransformHostProvider;
   readonly name: string;
   readonly assetProvider: AssetProvider;
