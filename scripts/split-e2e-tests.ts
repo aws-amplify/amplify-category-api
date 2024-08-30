@@ -304,7 +304,7 @@ const splitTests = (
       }
       if (j.runSolo) {
         tmp.env['compute-type'] = 'BUILD_GENERAL1_MEDIUM';
-        // BUILD_GENERAL1_SMALL has 7GB of memory. 6656 = 6.5GB. Leave 0.5GB for the OS and other processes.
+        // BUILD_GENERAL1_MEDIUM has 7GB of memory. 6656 = 6.5GB. Leave 0.5GB for the OS and other processes.
         tmp.env.variables.NODE_OPTIONS = '--max-old-space-size=6656';
       }
       result.push(tmp);
