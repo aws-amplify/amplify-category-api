@@ -75,6 +75,7 @@ type CandidateJob = {
 const FORCE_REGION_MAP = {
   interactions: 'us-west-2',
   containers: 'us-east-1',
+  generation: 'us-west-2',
 };
 
 // some tests require additional time, the parent account can handle longer tests (up to 90 minutes)
@@ -145,6 +146,8 @@ const RUN_SOLO: (string | RegExp)[] = [
   /src\/__tests__\/owner-auth\/.*\.test\.ts/,
   /src\/__tests__\/relationships\/.*\.test\.ts/,
   /src\/__tests__\/restricted-field-auth\/.*\.test\.ts/,
+  // Generation tests
+  'src/__tests__/generations/generation.test.ts',
 ];
 
 const RUN_IN_ALL_REGIONS = [
