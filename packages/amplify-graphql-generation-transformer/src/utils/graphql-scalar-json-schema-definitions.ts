@@ -12,7 +12,6 @@ import { JSONSchema } from './graphql-json-schema-type';
  * and response generation.
  */
 
-
 /** JSON Schema definition for GraphQL Boolean type */
 const Boolean: JSONSchema = {
   type: 'boolean',
