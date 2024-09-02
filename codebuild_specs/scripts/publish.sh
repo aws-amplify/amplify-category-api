@@ -31,7 +31,7 @@ else
   git config --global user.name $GITHUB_USER
 fi
 
-RESERVED_TAGS=(alpha beta dev latest main)
+RESERVED_TAGS=(alpha beta dev latest main api-plugin-stable)
 
 if [[ "$BRANCH_NAME" =~ ^tagged-release ]]; then
   if [[ "$BRANCH_NAME" =~ ^tagged-release-without-e2e-tests\/.* ]]; then
