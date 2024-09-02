@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.20.17-api-stable-tag-2.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-mapping-template@4.20.16...graphql-mapping-template@4.20.17-api-stable-tag-2.0) (2024-09-02)
+
+**Note:** Version bump only for package graphql-mapping-template
+
 ## [4.20.16](https://github.com/aws-amplify/amplify-category-api/compare/graphql-mapping-template@4.20.15...graphql-mapping-template@4.20.16) (2024-04-26)
 
 ### Bug Fixes

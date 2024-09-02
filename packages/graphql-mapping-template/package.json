@@ -1,6 +1,6 @@
 {
   "name": "graphql-mapping-template",
-  "version": "4.20.16",
+  "version": "4.20.17-api-stable-tag-2.0",
   "description": "An AST wrapper around AWS AppSync resolvers ",
   "repository": {
     "type": "git",
