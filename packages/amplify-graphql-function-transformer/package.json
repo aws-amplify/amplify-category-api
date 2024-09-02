@@ -1,7 +1,7 @@
 {
   "name": "@aws-amplify/graphql-function-transformer",
   "version": "2.1.26",
-  "description": "Amplify GraphQL @function transformer",
+  "description": "Amplify GraphQL @function transformer ",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-category-api.git",

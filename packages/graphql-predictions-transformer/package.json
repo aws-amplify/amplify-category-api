@@ -1,7 +1,7 @@
 {
   "name": "graphql-predictions-transformer",
   "version": "3.2.80",
-  "description": "Implements the @predictions directive.",
+  "description": "Implements the @predictions directive ",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-category-api.git",

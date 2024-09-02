@@ -1,7 +1,7 @@
 {
   "name": "graphql-auth-transformer",
   "version": "7.2.82",
-  "description": "Implements the @auth directive for the appsync model transform.",
+  "description": "Implements the @auth directive for the appsync model transform ",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-category-api.git",

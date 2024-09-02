@@ -1,7 +1,7 @@
 {
   "name": "@aws-amplify/graphql-index-transformer",
   "version": "2.4.9",
-  "description": "Amplify GraphQL index and key transformers",
+  "description": "Amplify GraphQL index and key transformers ",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-category-api.git",

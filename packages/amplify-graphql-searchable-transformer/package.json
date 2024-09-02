@@ -1,7 +1,7 @@
 {
   "name": "@aws-amplify/graphql-searchable-transformer",
   "version": "2.7.9",
-  "description": "Amplfy GraphQL @searchable transformer",
+  "description": "Amplfy GraphQL @searchable transformer ",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-category-api.git",

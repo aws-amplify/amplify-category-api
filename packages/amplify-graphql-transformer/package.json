@@ -1,7 +1,7 @@
 {
   "name": "@aws-amplify/graphql-transformer",
   "version": "1.6.5",
-  "description": "Amplify GraphQL Transformer Root Package",
+  "description": "Amplify GraphQL Transformer Root Package ",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-category-api.git",

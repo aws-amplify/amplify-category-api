@@ -1,7 +1,7 @@
 {
   "name": "@aws-amplify/graphql-maps-to-transformer",
   "version": "3.4.23",
-  "description": "Amplify GraphQL @mapsTo transformer",
+  "description": "Amplify GraphQL @mapsTo transformer ",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-category-api.git",

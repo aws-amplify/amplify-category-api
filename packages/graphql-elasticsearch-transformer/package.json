@@ -1,7 +1,7 @@
 {
   "name": "graphql-elasticsearch-transformer",
   "version": "5.2.81",
-  "description": "An AppSync model transform that creates an ElasticSearch index with the queries to match.",
+  "description": "An AppSync model transform that creates an ElasticSearch index with the queries to match ",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-category-api.git",

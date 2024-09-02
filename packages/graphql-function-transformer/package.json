@@ -1,7 +1,7 @@
 {
   "name": "graphql-function-transformer",
   "version": "3.3.71",
-  "description": "Implements the @function directive.",
+  "description": "Implements the @function directive ",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-category-api.git",

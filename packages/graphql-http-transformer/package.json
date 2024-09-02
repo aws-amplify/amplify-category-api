@@ -1,7 +1,7 @@
 {
   "name": "graphql-http-transformer",
   "version": "5.2.80",
-  "description": "An AppSync model transform for HTTP resolvers.",
+  "description": "An AppSync model transform for HTTP resolvers ",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-category-api.git",

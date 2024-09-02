@@ -1,7 +1,7 @@
 {
   "name": "graphql-connection-transformer",
   "version": "5.2.80",
-  "description": "An AppSync model transform for connecting objects.",
+  "description": "An AppSync model transform for connecting objects ",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-category-api.git",

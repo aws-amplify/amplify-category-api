@@ -1,7 +1,7 @@
 {
   "name": "graphql-mapping-template",
   "version": "4.20.16",
-  "description": "An AST wrapper around AWS AppSync resolvers",
+  "description": "An AST wrapper around AWS AppSync resolvers ",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-category-api.git",

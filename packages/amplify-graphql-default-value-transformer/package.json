@@ -1,7 +1,7 @@
 {
   "name": "@aws-amplify/graphql-default-value-transformer",
   "version": "2.3.13",
-  "description": "Amplify GraphQL default value transformer",
+  "description": "Amplify GraphQL default value transformer ",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-category-api.git",

@@ -1,7 +1,7 @@
 {
   "name": "@aws-amplify/graphql-transformer-migrator",
   "version": "2.2.27",
-  "description": "A tool for converting schemas from Amplify's V1 transformer to the V2 transformer schema",
+  "description": "A tool for converting schemas from Amplify's V1 transformer to the V2 transformer schema ",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-category-api.git",

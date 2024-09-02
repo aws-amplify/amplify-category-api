@@ -1,7 +1,7 @@
 {
   "name": "graphql-versioned-transformer",
   "version": "5.2.80",
-  "description": "A GraphQL transform that enabled object versioning and conflict resolution for a @model type.",
+  "description": "A GraphQL transform that enabled object versioning and conflict resolution for a @model type ",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-category-api.git",

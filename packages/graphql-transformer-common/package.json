@@ -1,7 +1,7 @@
 {
   "name": "graphql-transformer-common",
   "version": "4.31.1",
-  "description": "Common code and constants for AppSync Transformers",
+  "description": "Common code and constants for AppSync Transformers ",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-category-api.git",

@@ -1,7 +1,7 @@
 {
   "name": "graphql-relational-schema-transformer",
   "version": "2.21.34",
-  "description": "An AppSync model transform that takes a relational database and turns that into a GraphQL API.",
+  "description": "An AppSync model transform that takes a relational database and turns that into a GraphQL API ",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-category-api.git",
