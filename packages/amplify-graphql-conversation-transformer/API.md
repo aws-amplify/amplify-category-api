@@ -19,19 +19,9 @@ import { TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-
 
 // @public (undocumented)
 export class ConversationTransformer extends TransformerPluginBase {
-    constructor(
-    modelTransformer: ModelTransformer,
-    hasManyTransformer: HasManyTransformer,
-    belongsToTransformer: BelongsToTransformer,
-    authProvider: TransformerAuthProvider,
-    );
+    constructor(modelTransformer: ModelTransformer, hasManyTransformer: HasManyTransformer, belongsToTransformer: BelongsToTransformer, authProvider: TransformerAuthProvider);
     // (undocumented)
-    field: (
-    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
-    definition: FieldDefinitionNode,
-    directive: DirectiveNode,
-    context: TransformerSchemaVisitStepContextProvider,
-    ) => void;
+    field: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, definition: FieldDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
     // (undocumented)
     generateResolvers: (ctx: TransformerContextProvider) => void;
     // (undocumented)
