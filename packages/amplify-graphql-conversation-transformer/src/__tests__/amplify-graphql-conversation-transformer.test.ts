@@ -263,7 +263,6 @@ describe('ConversationTransformer', () => {
 
         ${conversationSchemaTypes}
         `;
-
       };
 
       it('maxTokens invalid', () => {

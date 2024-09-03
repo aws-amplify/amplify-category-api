@@ -147,7 +147,9 @@ export class ConversationFieldHandler {
     }
 
     if (topP !== undefined && (topP < 0 || topP > 1)) {
-      throw new InvalidDirectiveError(`@conversation directive topP valid range: Minimum value of 0. Maximum value of 1. Provided: ${topP}`);
+      throw new InvalidDirectiveError(
+        `@conversation directive topP valid range: Minimum value of 0. Maximum value of 1. Provided: ${topP}`,
+      );
     }
   }
 }
