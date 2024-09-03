@@ -13,87 +13,124 @@ import { GenerationTransformer } from '@aws-amplify/graphql-generation-transform
 
 const conversationSchemaTypes = fs.readFileSync(path.join(__dirname, '../graphql-types/conversation-schema-types.graphql'), 'utf8');
 
-test('conversation route valid schema', () => {
-  const routeName = 'pirateChat';
-  const inputSchema = `
-    type Temperature {
-      value: Int
-      unit: String
-    }
+describe('ConversationTransformer', () => {
+  describe('valid schemas', () => {
+    it('should transform a conversation route with query tools', () => {
+      const routeName = 'pirateChat';
+      const inputSchema = `
+        type Temperature {
+          value: Int
+          unit: String
+        }
 
-    type Query {
-      getTemperature(city: String!): Temperature
-      plus(a: Int, b: Int): Int
-    }
+        type Query {
+          getTemperature(city: String!): Temperature
+          plus(a: Int, b: Int): Int
+        }
 
+        type Mutation {
+          ${routeName}(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
+          @conversation(
+            aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
+            functionName: "conversation-handler",
+            systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
+            tools: [{ name: "getTemperature", description: "does a thing" }, { name: "plus", description: "does a different thing" }]
+          )
+        }
+
+        ${conversationSchemaTypes}
+      `;
+
+      const out = transform(inputSchema);
+      expect(out).toBeDefined();
+
+      const resolverCode = getResolverResource(routeName, out.rootStack.Resources)['Properties']['Code'];
+      expect(resolverCode).toBeDefined();
+      expect(resolverCode).toMatchSnapshot();
+
+      const resolverFnCode = getResolverFnResource(routeName, out.rootStack.Resources)['Properties']['Code'];
+      expect(resolverFnCode).toBeDefined();
+      expect(resolverFnCode).toMatchSnapshot();
+
+      const schema = parse(out.schema);
+      validateModelSchema(schema);
+    });
+
+    it('conversation route with model query tool', () => {
+      const routeName = 'pirateChat';
+      const inputSchema = `
+        type Todo @model @auth(rules: [{ allow: owner }]) {
+          content: String
+          isDone: Boolean
+        }
+
+        type Mutation {
+            ${routeName}(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
+            @conversation(
+              aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
+              functionName: "conversation-handler",
+              systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
+              tools: [{ name: "listTodos", description: "lists todos" }]
+            )
+        }
+
+        ${conversationSchemaTypes}
+      `;
+
+      const out = transform(inputSchema);
+      expect(out).toBeDefined();
+
+      const resolverCode = getResolverResource(routeName, out.rootStack.Resources)['Properties']['Code'];
+      expect(resolverCode).toBeDefined();
+      expect(resolverCode).toMatchSnapshot();
+
+      const resolverFnCode = getResolverFnResource(routeName, out.rootStack.Resources)['Properties']['Code'];
+      expect(resolverFnCode).toBeDefined();
+      expect(resolverFnCode).toMatchSnapshot();
+
+      const schema = parse(out.schema);
+      validateModelSchema(schema);
+    });
+
+    it('should transform a conversation route with inference configuration', () => {
+      const routeName = 'pirateChat';
+
+      const inputSchema = `
     type Mutation {
         ${routeName}(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
         @conversation(
           aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
-          functionName: "conversation-handler",
           systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
-          tools: [{ name: "getTemperature", description: "does a thing" }, { name: "plus", description: "does a different thing" }]
+          functionName: "conversation-handler",
+          inferenceConfiguration: {
+            temperature: 0.5,
+            topP: 0.9,
+            maxTokens: 100,
+          }
         )
     }
 
     ${conversationSchemaTypes}
   `;
 
-  const out = transform(inputSchema);
-  expect(out).toBeDefined();
+      const out = transform(inputSchema);
+      expect(out).toBeDefined();
 
-  const resolverCode = getResolverResource(routeName, out.rootStack.Resources)['Properties']['Code'];
-  expect(resolverCode).toBeDefined();
-  expect(resolverCode).toMatchSnapshot();
+      const resolverCode = getResolverResource(routeName, out.rootStack.Resources)['Properties']['Code'];
+      expect(resolverCode).toBeDefined();
+      expect(resolverCode).toMatchSnapshot();
 
-  const resolverFnCode = getResolverFnResource(routeName, out.rootStack.Resources)['Properties']['Code'];
-  expect(resolverFnCode).toBeDefined();
-  expect(resolverFnCode).toMatchSnapshot();
+      const resolverFnCode = getResolverFnResource(routeName, out.rootStack.Resources)['Properties']['Code'];
+      expect(resolverFnCode).toBeDefined();
+      expect(resolverFnCode).toMatchSnapshot();
 
-  const schema = parse(out.schema);
-  validateModelSchema(schema);
-});
+      const schema = parse(out.schema);
+      validateModelSchema(schema);
+    });
 
-test('conversation route with model query tool', () => {
-  const routeName = 'pirateChat';
-  const inputSchema = `
-    type Todo @model @auth(rules: [{ allow: owner }]) {
-      content: String
-      isDone: Boolean
-    }
-
-    type Mutation {
-        ${routeName}(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
-        @conversation(
-          aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
-          functionName: "conversation-handler",
-          systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
-          tools: [{ name: "listTodos", description: "lists todos" }]
-        )
-    }
-
-    ${conversationSchemaTypes}
-  `;
-
-  const out = transform(inputSchema);
-  expect(out).toBeDefined();
-
-  const resolverCode = getResolverResource(routeName, out.rootStack.Resources)['Properties']['Code'];
-  expect(resolverCode).toBeDefined();
-  expect(resolverCode).toMatchSnapshot();
-
-  const resolverFnCode = getResolverFnResource(routeName, out.rootStack.Resources)['Properties']['Code'];
-  expect(resolverFnCode).toBeDefined();
-  expect(resolverFnCode).toMatchSnapshot();
-
-  const schema = parse(out.schema);
-  validateModelSchema(schema);
-});
-
-test('conversation route with relational model query tool', () => {
-  const routeName = 'pirateChat';
-  const inputSchema = `
-
+    it('should transform a conversation route with a model query tool including relationships', () => {
+      const routeName = 'pirateChat';
+      const inputSchema = `
     type Product {
       name: String!
       price: Float!
@@ -130,87 +167,193 @@ test('conversation route with relational model query tool', () => {
     ${conversationSchemaTypes}
   `;
 
-  const out = transform(inputSchema);
-  expect(out).toBeDefined();
+      const out = transform(inputSchema);
+      expect(out).toBeDefined();
 
-  const resolverCode = getResolverResource(routeName, out.rootStack.Resources)['Properties']['Code'];
-  expect(resolverCode).toBeDefined();
-  expect(resolverCode).toMatchSnapshot();
+      const resolverCode = getResolverResource(routeName, out.rootStack.Resources)['Properties']['Code'];
+      expect(resolverCode).toBeDefined();
+      expect(resolverCode).toMatchSnapshot();
 
-  const resolverFnCode = getResolverFnResource(routeName, out.rootStack.Resources)['Properties']['Code'];
-  expect(resolverFnCode).toBeDefined();
-  expect(resolverFnCode).toMatchSnapshot();
+      const resolverFnCode = getResolverFnResource(routeName, out.rootStack.Resources)['Properties']['Code'];
+      expect(resolverFnCode).toBeDefined();
+      expect(resolverFnCode).toMatchSnapshot();
 
-  const schema = parse(out.schema);
-  validateModelSchema(schema);
+      const schema = parse(out.schema);
+      validateModelSchema(schema);
+    });
+  });
+
+  describe('invalid schemas', () => {
+    it('should throw an error if the return type is not ConversationMessage', () => {
+      const routeName = 'invalidChat';
+      const inputSchema = `
+        type Mutation {
+          ${routeName}(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): String
+          @conversation(
+            aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
+            functionName: "conversation-handler",
+            systemPrompt: "You are a helpful chatbot."
+          )
+        }
+
+        ${conversationSchemaTypes}
+      `;
+
+      expect(() => transform(inputSchema)).toThrow('@conversation return type must be ConversationMessage');
+    });
+    it('should throw an error when aiModel is missing', () => {
+      const routeName = 'invalidChat';
+      const inputSchema = `
+        type Mutation {
+          ${routeName}(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
+          @conversation(
+            functionName: "conversation-handler",
+            systemPrompt: "You are a helpful chatbot."
+          )
+        }
+
+        ${conversationSchemaTypes}
+      `;
+
+      expect(() => transform(inputSchema)).toThrow(
+        'Directive "@conversation" argument "aiModel" of type "String!" is required, but it was not provided.',
+      );
+    });
+
+    it('should throw an error when systemPrompt is missing', () => {
+      const routeName = 'invalidChat';
+      const inputSchema = `
+        type Mutation {
+          ${routeName}(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
+          @conversation(
+            aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
+          )
+        }
+
+        ${conversationSchemaTypes}
+      `;
+
+      expect(() => transform(inputSchema)).toThrow(
+        'Directive "@conversation" argument "systemPrompt" of type "String!" is required, but it was not provided.',
+      );
+    });
+  });
+
+  describe('parameterized tests', () => {
+    const testCases = [
+      { name: 'with tools', tools: '[{ name: "getTemperature", description: "does a thing" }]' },
+      { name: 'without tools', tools: undefined },
+      { name: 'with inference configuration', inferenceConfiguration: '{ temperature: 0.5, topP: 0.9, maxTokens: 100 }' },
+    ];
+
+    it.each(testCases)('should transform a conversation route $name', ({ name, tools, inferenceConfiguration }) => {
+      const routeName = 'parameterizedChat';
+      const inputSchema = `
+        type Temperature {
+          value: Int
+          unit: String
+        }
+
+        type Query {
+          getTemperature(city: String!): Temperature
+        }
+        type Mutation {
+          ${routeName}(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
+          @conversation(
+            aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
+            functionName: "conversation-handler",
+            systemPrompt: "You are a helpful chatbot."
+            ${tools ? `, tools: ${tools}` : ''}
+            ${inferenceConfiguration ? `, inferenceConfiguration: ${inferenceConfiguration}` : ''}
+          )
+        }
+
+        ${conversationSchemaTypes}
+      `;
+
+      const out = transform(inputSchema);
+      expect(out).toBeDefined();
+
+      const resolverCode = getResolverResource(routeName, out.rootStack.Resources)['Properties']['Code'];
+      expect(resolverCode).toBeDefined();
+      expect(resolverCode).toMatchSnapshot();
+
+      const resolverFnCode = getResolverFnResource(routeName, out.rootStack.Resources)['Properties']['Code'];
+      expect(resolverFnCode).toBeDefined();
+      expect(resolverFnCode).toMatchSnapshot();
+
+      const schema = parse(out.schema);
+      validateModelSchema(schema);
+    });
+  });
 });
 
-test('conversation route without tools', () => {
-  const routeName = 'pirateChat';
+// test('conversation route without tools', () => {
+//   const routeName = 'pirateChat';
 
-  const inputSchema = `
-    type Mutation {
-        ${routeName}(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
-        @conversation(
-          aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
-          functionName: "conversation-handler",
-          systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability."
-        )
-    }
+//   const inputSchema = `
+//     type Mutation {
+//         ${routeName}(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
+//         @conversation(
+//           aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
+//           functionName: "conversation-handler",
+//           systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability."
+//         )
+//     }
 
-    ${conversationSchemaTypes}
-  `;
+//     ${conversationSchemaTypes}
+//   `;
 
-  const out = transform(inputSchema);
-  expect(out).toBeDefined();
+//   const out = transform(inputSchema);
+//   expect(out).toBeDefined();
 
-  const resolverCode = getResolverResource(routeName, out.rootStack.Resources)['Properties']['Code'];
-  expect(resolverCode).toBeDefined();
-  expect(resolverCode).toMatchSnapshot();
+//   const resolverCode = getResolverResource(routeName, out.rootStack.Resources)['Properties']['Code'];
+//   expect(resolverCode).toBeDefined();
+//   expect(resolverCode).toMatchSnapshot();
 
-  const resolverFnCode = getResolverFnResource(routeName, out.rootStack.Resources)['Properties']['Code'];
-  expect(resolverFnCode).toBeDefined();
-  expect(resolverFnCode).toMatchSnapshot();
+//   const resolverFnCode = getResolverFnResource(routeName, out.rootStack.Resources)['Properties']['Code'];
+//   expect(resolverFnCode).toBeDefined();
+//   expect(resolverFnCode).toMatchSnapshot();
 
-  const schema = parse(out.schema);
-  validateModelSchema(schema);
-});
+//   const schema = parse(out.schema);
+//   validateModelSchema(schema);
+// });
 
-test('conversation route with inference configuration', () => {
-  const routeName = 'pirateChat';
+// test('conversation route with inference configuration', () => {
+//   const routeName = 'pirateChat';
 
-  const inputSchema = `
-    type Mutation {
-        ${routeName}(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
-        @conversation(
-          aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
-          systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
-          functionName: "conversation-handler",
-          inferenceConfiguration: {
-            temperature: 0.5,
-            topP: 0.9,
-            maxTokens: 100,
-          }
-        )
-    }
+//   const inputSchema = `
+//     type Mutation {
+//         ${routeName}(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
+//         @conversation(
+//           aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
+//           systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
+//           functionName: "conversation-handler",
+//           inferenceConfiguration: {
+//             temperature: 0.5,
+//             topP: 0.9,
+//             maxTokens: 100,
+//           }
+//         )
+//     }
 
-    ${conversationSchemaTypes}
-  `;
+//     ${conversationSchemaTypes}
+//   `;
 
-  const out = transform(inputSchema);
-  expect(out).toBeDefined();
+//   const out = transform(inputSchema);
+//   expect(out).toBeDefined();
 
-  const resolverCode = getResolverResource(routeName, out.rootStack.Resources)['Properties']['Code'];
-  expect(resolverCode).toBeDefined();
-  expect(resolverCode).toMatchSnapshot();
+//   const resolverCode = getResolverResource(routeName, out.rootStack.Resources)['Properties']['Code'];
+//   expect(resolverCode).toBeDefined();
+//   expect(resolverCode).toMatchSnapshot();
 
-  const resolverFnCode = getResolverFnResource(routeName, out.rootStack.Resources)['Properties']['Code'];
-  expect(resolverFnCode).toBeDefined();
-  expect(resolverFnCode).toMatchSnapshot();
+//   const resolverFnCode = getResolverFnResource(routeName, out.rootStack.Resources)['Properties']['Code'];
+//   expect(resolverFnCode).toBeDefined();
+//   expect(resolverFnCode).toMatchSnapshot();
 
-  const schema = parse(out.schema);
-  validateModelSchema(schema);
-});
+//   const schema = parse(out.schema);
+//   validateModelSchema(schema);
+// });
 
 const getResolverResource = (mutationName: string, resources?: Record<string, any>): Record<string, any> => {
   const resolverName = `Mutation${mutationName}Resolver`;
@@ -264,9 +407,6 @@ function transform(
     authTransformer,
   ];
 
-  // const processed = new GraphQLTransform({ transformers }).preProcessSchema(parse(inputSchema));
-  // console.log(print(processed))
-
   const out = testTransform({
     schema: inputSchema,
     authConfig,
@@ -277,21 +417,83 @@ function transform(
   return out;
 }
 
-/*
-    id: ID, name: String, metadata: AWSJSON): ConversationSession<name>
+/**
+ * test('conversation route valid schema', () => {
+  const routeName = 'pirateChat';
+  const inputSchema = `
+    type Temperature {
+      value: Int
+      unit: String
+    }
 
-  client.conversations.startSession({ sessionId })
-    --> query - getConversationSession<name>(id: ID!): ConversationSession<name>
+    type Query {
+      getTemperature(city: String!): Temperature
+      plus(a: Int, b: Int): Int
+    }
 
-    client.conversations.listSessions
-    --> query - listConversationSession<pluralized-name>(filter: ModelConversationSessionpirateChatFilterInput, limit: Int, nextToken: String):
+    type Mutation {
+        ${routeName}(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
+        @conversation(
+          aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
+          functionName: "conversation-handler",
+          systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
+          tools: [{ name: "getTemperature", description: "does a thing" }, { name: "plus", description: "does a different thing" }]
+        )
+    }
 
-  session.onMessage
-    --> subscription - onCreateConversationMessage<name>
+    ${conversationSchemaTypes}
+  `;
 
-    session.sendMessage
-    --> mutation - createConversationMessage<name>
+  const out = transform(inputSchema);
+  expect(out).toBeDefined();
 
-    session.listMessages
-    --> query - listConversationMessagepirateChats
-*/
+  const resolverCode = getResolverResource(routeName, out.rootStack.Resources)['Properties']['Code'];
+  expect(resolverCode).toBeDefined();
+  expect(resolverCode).toMatchSnapshot();
+
+  const resolverFnCode = getResolverFnResource(routeName, out.rootStack.Resources)['Properties']['Code'];
+  expect(resolverFnCode).toBeDefined();
+  expect(resolverFnCode).toMatchSnapshot();
+
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+});
+
+
+
+test('conversation route with model query tool', () => {
+  const routeName = 'pirateChat';
+  const inputSchema = `
+    type Todo @model @auth(rules: [{ allow: owner }]) {
+      content: String
+      isDone: Boolean
+    }
+
+    type Mutation {
+        ${routeName}(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
+        @conversation(
+          aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
+          functionName: "conversation-handler",
+          systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
+          tools: [{ name: "listTodos", description: "lists todos" }]
+        )
+    }
+
+    ${conversationSchemaTypes}
+  `;
+
+  const out = transform(inputSchema);
+  expect(out).toBeDefined();
+
+  const resolverCode = getResolverResource(routeName, out.rootStack.Resources)['Properties']['Code'];
+  expect(resolverCode).toBeDefined();
+  expect(resolverCode).toMatchSnapshot();
+
+  const resolverFnCode = getResolverFnResource(routeName, out.rootStack.Resources)['Properties']['Code'];
+  expect(resolverFnCode).toBeDefined();
+  expect(resolverFnCode).toMatchSnapshot();
+
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+});
+ */

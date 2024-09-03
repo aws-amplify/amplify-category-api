@@ -3,7 +3,7 @@ import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-tran
 import { processTools } from '../utils/tools';
 import { JSResolverFunctionProvider } from '../resolvers/js-resolver-function-provider';
 import { TransformerResolver } from '@aws-amplify/graphql-transformer-core';
-import { ResolverResourceIDs, FunctionResourceIDs, ResourceConstants } from 'graphql-transformer-common';
+import { ResolverResourceIDs, FunctionResourceIDs, ResourceConstants, toUpper } from 'graphql-transformer-common';
 import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { conversation } from '@aws-amplify/ai-constructs/lib';
@@ -42,7 +42,7 @@ export class ConversationResolverGenerator {
   private generateResolversForDirective(directive: ConversationDirectiveConfiguration, ctx: TransformerContextProvider): void {
     const { parent, field } = directive;
     const parentName = parent.name.value;
-    const capitalizedFieldName = this.toUpper(field.name.value);
+    const capitalizedFieldName = toUpper(field.name.value);
     const fieldName = field.name.value;
 
     const functionStack = this.createFunctionStack(ctx, capitalizedFieldName);
@@ -57,11 +57,6 @@ export class ConversationResolverGenerator {
     this.setupMessageTableIndex(ctx, directive);
 
     this.createConversationPipelineResolver(ctx, parentName, fieldName, capitalizedFieldName, functionDataSource, invokeLambdaFunction);
-  }
-
-
-  private toUpper(str: string): string {
-    return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
   /**
