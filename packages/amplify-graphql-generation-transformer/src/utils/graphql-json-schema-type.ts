@@ -10,26 +10,12 @@ import {
   TypeSystemDefinitionNode,
 } from 'graphql';
 import { getBaseType, isScalar } from 'graphql-transformer-common';
-import { GraphQLScalarJSONSchemaDefinition, isDisallowedScalarType, supportedScalarTypes } from './graphql-scalar-json-schema-definitions';
-
-export type JSONLike = string | number | boolean | null | { [key: string]: JSONLike } | JSONLike[];
-
-export type JSONSchema = {
-  type: string;
-  properties?: Record<string, JSONSchema>;
-  required?: string[];
-  items?: JSONSchema;
-  enum?: (string | number | boolean | null)[];
-  minimum?: number;
-  maximum?: number;
-  minLength?: number;
-  maxLength?: number;
-  pattern?: string;
-  format?: string;
-  description?: string;
-  default?: JSONLike;
-  additionalProperties?: boolean | JSONSchema;
-};
+import {
+  type JSONSchema,
+  isDisallowedScalarType,
+  supportedScalarTypes,
+  convertNamedTypeToJSONSchema,
+} from '@aws-amplify/graphql-transformer-core';
 
 /**
  * Generates a JSON Schema from a GraphQL TypeNode.
@@ -61,7 +47,7 @@ export const generateJSONSchemaFromTypeNode = (
  * @returns {JSONSchema} The updated JSON Schema.
  */
 const handleNamedType = (typeNode: NamedTypeNode, ctx: TransformerContextProvider, schema: JSONSchema): JSONSchema => {
-  const namedTypeSchema = processNamedType(typeNode);
+  const namedTypeSchema = convertNamedTypeToJSONSchema(typeNode);
   Object.assign(schema, namedTypeSchema);
 
   if (isScalar(typeNode)) {
@@ -173,47 +159,3 @@ const handleEnumTypeDefinition = (def: EnumTypeDefinitionNode): Record<string, J
     },
   };
 };
-
-/**
- * Processes a NamedTypeNode and returns the corresponding JSON Schema.
- * @param {NamedTypeNode} namedType - The NamedTypeNode to process.
- * @returns {JSONSchema} The JSON Schema representation of the named type.
- */
-function processNamedType(namedType: NamedTypeNode): JSONSchema {
-  switch (namedType.name.value) {
-    case 'Int':
-      return GraphQLScalarJSONSchemaDefinition.Int;
-    case 'Float':
-      return GraphQLScalarJSONSchemaDefinition.Float;
-    case 'String':
-      return GraphQLScalarJSONSchemaDefinition.String;
-    case 'ID':
-      return GraphQLScalarJSONSchemaDefinition.ID;
-    case 'Boolean':
-      return GraphQLScalarJSONSchemaDefinition.Boolean;
-    case 'AWSJSON':
-      return GraphQLScalarJSONSchemaDefinition.AWSJSON;
-    case 'AWSEmail':
-      return GraphQLScalarJSONSchemaDefinition.AWSEmail;
-    case 'AWSDate':
-      return GraphQLScalarJSONSchemaDefinition.AWSDate;
-    case 'AWSTime':
-      return GraphQLScalarJSONSchemaDefinition.AWSTime;
-    case 'AWSDateTime':
-      return GraphQLScalarJSONSchemaDefinition.AWSDateTime;
-    case 'AWSTimestamp':
-      return GraphQLScalarJSONSchemaDefinition.AWSTimestamp;
-    case 'AWSPhone':
-      return GraphQLScalarJSONSchemaDefinition.AWSPhone;
-    case 'AWSURL':
-      return GraphQLScalarJSONSchemaDefinition.AWSURL;
-    case 'AWSIPAddress':
-      return GraphQLScalarJSONSchemaDefinition.AWSIPAddress;
-    default:
-      return {
-        type: 'object',
-        properties: {},
-        required: [],
-      };
-  }
-}
