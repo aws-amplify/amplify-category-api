@@ -4,7 +4,7 @@
   "description": "Amplify GraphQL @conversation transformer",
   "repository": {
     "type": "git",
-    "url": "",
+    "url": "https://github.com/aws-amplify/amplify-category-api.git",
     "directory": "packages/amplify-graphql-conversation-transformer"
   },
   "author": "Amazon Web Services",
@@ -37,11 +37,9 @@
   },
   "devDependencies": {
     "@aws-amplify/graphql-transformer-test-utils": "0.6.0",
-    "@aws-sdk/client-bedrock-runtime": "^3.1.0",
     "@aws-amplify/ai-constructs": "test"
   },
   "peerDependencies": {
-    "@aws-sdk/client-bedrock-runtime": "^3.1.0",
     "aws-cdk-lib": "^2.80.0",
     "constructs": "^10.0.5"
   },
