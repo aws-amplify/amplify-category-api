@@ -1,5 +1,13 @@
 import { BelongsToDirective } from '@aws-amplify/graphql-directives';
-import { DirectiveNode, Kind, FieldDefinitionNode, ObjectTypeDefinitionNode, NamedTypeNode } from 'graphql';
+import {
+  DirectiveNode,
+  Kind,
+  FieldDefinitionNode,
+  ObjectTypeDefinitionNode,
+  NamedTypeNode,
+  InputValueDefinitionNode,
+  InputObjectTypeDefinitionNode,
+} from 'graphql';
 import {
   makeDirective,
   makeArgument,
@@ -9,6 +17,8 @@ import {
   wrapNonNull,
   makeListType,
   blankObject,
+  makeInputValueDefinition,
+  makeNonNullType,
 } from 'graphql-transformer-common';
 
 /**
@@ -25,6 +35,9 @@ export type MessageModel = {
   messageBelongsToConversationDirective: DirectiveNode;
   messageConversationField: FieldDefinitionNode;
   messageModel: ObjectTypeDefinitionNode;
+  messageSubscription: FieldDefinitionNode;
+  assistantMutationInput: InputObjectTypeDefinitionNode;
+  assistantMutationField: FieldDefinitionNode;
 };
 
 /**
@@ -55,11 +68,17 @@ export type MessageModel = {
  * // }
  */
 export const createMessageModel = (
-  messageModelName: string,
   conversationModelName: string,
+  messageModelName: string,
   referenceFieldName: string,
+  capitalizedFieldName: string,
   conversationMessageInterface: NamedTypeNode,
 ): MessageModel => {
+  // const conversationModelName = `Conversation${fieldName}`;
+  // const messageModelName = `ConversationMessage${fieldName}`;
+  const messageSubscriptionFieldName = `onCreateAssistantResponse${messageModelName}`;
+  const assistantMutationFieldName = `createAssistantResponse${capitalizedFieldName}`;
+
   const messageAuthDirective = constructMessageAuthDirective();
   const messageModelDirective = constructMessageModelDirective();
   const messageBelongsToConversationDirective = constructMessageSessionFieldBelongsToDirective(referenceFieldName);
@@ -72,12 +91,28 @@ export const createMessageModel = (
     conversationMessageInterface,
   );
 
+  const messageSubscription = constructMessageSubscription(
+    messageSubscriptionFieldName,
+    conversationMessageInterface.name.value,
+    referenceFieldName,
+  );
+
+  const assistantMutationInput = constructAssistantResponseMutationInput(messageModelName);
+  const assistantMutationField = constructAssistantMutationField(
+    assistantMutationFieldName,
+    messageModelName,
+    assistantMutationInput.name.value,
+  );
+
   return {
     messageAuthDirective,
     messageModelDirective,
     messageBelongsToConversationDirective,
     messageConversationField,
     messageModel,
+    messageSubscription,
+    assistantMutationInput,
+    assistantMutationField,
   };
 };
 
@@ -208,4 +243,41 @@ const constructConversationMessageModel = (
   };
 
   return object;
+};
+
+const constructMessageSubscription = (
+  subscriptionName: string,
+  conversationMessageTypeName: string,
+  onMutationName: string,
+): FieldDefinitionNode => {
+  const awsSubscribeDirective = makeDirective('aws_subscribe', [makeArgument('mutations', makeValueNode([onMutationName]))]);
+  const cognitoAuthDirective = makeDirective('aws_cognito_user_pools', []);
+
+  const args: InputValueDefinitionNode[] = [makeInputValueDefinition('conversationId', makeNamedType('ID'))];
+  const subscriptionField = makeField(subscriptionName, args, makeNamedType(conversationMessageTypeName), [
+    awsSubscribeDirective,
+    cognitoAuthDirective,
+  ]);
+
+  return subscriptionField;
+};
+
+const constructAssistantMutationField = (fieldName: string, messageModelName: string, inputTypeName: string): FieldDefinitionNode => {
+  const args = [makeInputValueDefinition('input', makeNonNullType(makeNamedType(inputTypeName)))];
+  const cognitoAuthDirective = makeDirective('aws_cognito_user_pools', []);
+  const createAssistantResponseMutation = makeField(fieldName, args, makeNamedType(messageModelName), [cognitoAuthDirective]);
+  return createAssistantResponseMutation;
+};
+
+const constructAssistantResponseMutationInput = (messageModelName: string): InputObjectTypeDefinitionNode => {
+  const inputName = `Create${messageModelName}AssistantInput`;
+  return {
+    kind: 'InputObjectTypeDefinition',
+    name: { kind: 'Name', value: inputName },
+    fields: [
+      makeInputValueDefinition('conversationId', makeNamedType('ID')),
+      makeInputValueDefinition('content', makeListType(makeNamedType('ContentBlockInput'))),
+      makeInputValueDefinition('associatedUserMessageId', makeNamedType('ID')),
+    ],
+  };
 };

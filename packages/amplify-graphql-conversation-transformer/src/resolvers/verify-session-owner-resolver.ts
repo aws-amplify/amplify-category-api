@@ -3,12 +3,22 @@ import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interf
 import { dedent } from 'ts-dedent';
 import { JSResolverFunctionProvider } from './js-resolver-function-provider';
 
+/**
+ * Creates a mapping template for verifying the session owner in a conversation.
+ *
+ * @returns {JSResolverFunctionProvider} An object containing request and response MappingTemplateProviders.
+ */
 export const verifySessionOwnerMappingTemplate = (): JSResolverFunctionProvider => {
   const req = createVerifySessionOwnerRequestFunction();
   const res = createVerifySessionOwnerResponseFunction();
   return { req, res };
 };
 
+/**
+ * Creates the request function for verifying the session owner in a conversation.
+ *
+ * @returns {MappingTemplateProvider} A MappingTemplateProvider for the request function.
+ */
 const createVerifySessionOwnerRequestFunction = (): MappingTemplateProvider => {
   const requestFunctionString = `
       export function request(ctx) {
@@ -34,6 +44,11 @@ const createVerifySessionOwnerRequestFunction = (): MappingTemplateProvider => {
   return MappingTemplate.inlineTemplateFromString(dedent(requestFunctionString));
 };
 
+/**
+ * Creates the response function for verifying the session owner in a conversation.
+ *
+ * @returns {MappingTemplateProvider} A MappingTemplateProvider for the response function.
+ */
 const createVerifySessionOwnerResponseFunction = (): MappingTemplateProvider => {
   const responseFunctionString = `
       export function response(ctx) {

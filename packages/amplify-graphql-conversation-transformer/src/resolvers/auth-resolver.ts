@@ -3,12 +3,24 @@ import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interf
 import { dedent } from 'ts-dedent';
 import { JSResolverFunctionProvider } from './js-resolver-function-provider';
 
+/**
+ * Creates and returns the mapping template for the auth resolver.
+ * This includes both request and response functions.
+ *
+ * @returns {JSResolverFunctionProvider} An object containing request and response MappingTemplateProviders.
+ */
 export const authMappingTemplate = (): JSResolverFunctionProvider => {
   const req = createAuthRequestFunction();
   const res = createAuthResponseFunction();
   return { req, res };
 };
 
+/**
+ * Creates the request function for the auth resolver.
+ * This function handles authorization logic for owner based auth.
+ *
+ * @returns {MappingTemplateProvider} A MappingTemplateProvider for the request function.
+ */
 const createAuthRequestFunction = (): MappingTemplateProvider => {
   const requestFunctionString = `
       export function request(ctx) {
@@ -48,6 +60,13 @@ const createAuthRequestFunction = (): MappingTemplateProvider => {
 
   return MappingTemplate.inlineTemplateFromString(dedent(requestFunctionString));
 };
+
+/**
+ * Creates the response function for the auth resolver.
+ * This function currently returns an empty object.
+ *
+ * @returns {MappingTemplateProvider} A MappingTemplateProvider for the response function.
+ */
 
 const createAuthResponseFunction = (): MappingTemplateProvider => {
   const responseFunctionString = `

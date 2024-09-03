@@ -4,6 +4,13 @@ import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-tran
 import { dedent } from 'ts-dedent';
 import { JSResolverFunctionProvider } from './js-resolver-function-provider';
 
+/**
+ * Creates a mapping template for invoking a Lambda function in the context of a GraphQL conversation.
+ *
+ * @param {ConversationDirectiveConfiguration} config - The configuration for the conversation directive.
+ * @param {TransformerContextProvider} ctx - The transformer context provider.
+ * @returns {JSResolverFunctionProvider} An object containing request and response mapping functions.
+ */
 export const invokeLambdaMappingTemplate = (
   config: ConversationDirectiveConfiguration,
   ctx: TransformerContextProvider,
@@ -13,6 +20,14 @@ export const invokeLambdaMappingTemplate = (
   return { req, res };
 };
 
+/**
+ * Creates a request function for invoking a Lambda function in the context of a GraphQL conversation.
+ * This function prepares the necessary data and configuration for the Lambda invocation.
+ *
+ * @param {ConversationDirectiveConfiguration} config - The configuration for the conversation directive.
+ * @param {TransformerContextProvider} ctx - The transformer context provider.
+ * @returns {MappingTemplateProvider} A function that generates the request mapping template.
+ */
 const createInvokeLambdaRequestFunction = (
   config: ConversationDirectiveConfiguration,
   ctx: TransformerContextProvider,
@@ -22,6 +37,7 @@ const createInvokeLambdaRequestFunction = (
   const toolDefinitionsLine = toolDefinitions ? `const toolDefinitions = ${toolDefinitions};` : '';
   const modelConfigurationLine = generateModelConfigurationLine(config);
   const graphqlEndpoint = ctx.api.graphqlUrl;
+
   const toolsConfigurationLine = toolDefinitions
     ? dedent`const dataTools = toolDefinitions.tools
      const toolsConfiguration = {
@@ -31,6 +47,7 @@ const createInvokeLambdaRequestFunction = (
     : dedent`const toolsConfiguration = {
       clientTools
     };`;
+
   const requestFunctionString = `
   import { util } from '@aws-appsync/utils';
 
@@ -106,6 +123,12 @@ const createInvokeLambdaResponseFunction = (config: ConversationDirectiveConfigu
   return MappingTemplate.inlineTemplateFromString(dedent(responseFunctionString));
 };
 
+/**
+ * Generates a line of code for the model configuration in the context of a GraphQL conversation.
+ *
+ * @param {ConversationDirectiveConfiguration} config - The configuration for the conversation directive.
+ * @returns {string} A string containing the model configuration line.
+ */
 const generateModelConfigurationLine = (config: ConversationDirectiveConfiguration) => {
   const { aiModel, systemPrompt } = config;
 
@@ -116,8 +139,19 @@ const generateModelConfigurationLine = (config: ConversationDirectiveConfigurati
   };`;
 };
 
+/**
+ * Generates a line of code for the model inference configuration in the context of a GraphQL conversation.
+ *
+ * @param {ConversationDirectiveConfiguration} config - The configuration for the conversation directive.
+ * @returns {string} A string containing the model inference configuration line.
+ */
 const generateModelInferenceConfigurationLine = (config: ConversationDirectiveConfiguration) => {
   return config.inferenceConfiguration ? dedent`inferenceConfiguration: ${JSON.stringify(config.inferenceConfiguration)},` : '';
 };
 
+/**
+ * The selection set for the conversation message.
+ *
+ * @type {string}
+ */
 const selectionSet = `id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt`;

@@ -3,12 +3,24 @@ import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interf
 import { dedent } from 'ts-dedent';
 import { JSResolverFunctionProvider } from './js-resolver-function-provider';
 
+/**
+ * Creates a mapping template for writing a message to a table in a conversation.
+ *
+ * @param {string} fieldName - The name of the field to write to the table.
+ * @returns {JSResolverFunctionProvider} An object containing request and response MappingTemplateProviders.
+ */
 export const writeMessageToTableMappingTemplate = (fieldName: string): JSResolverFunctionProvider => {
   const req = createWriteMessageToTableRequestFunction(fieldName);
   const res = createWriteMessageToTableResponseFunction();
   return { req, res };
 };
 
+/**
+ * Creates the request function for writing a message to a table in a conversation.
+ *
+ * @param {string} fieldName - The name of the field to write to the table.
+ * @returns {MappingTemplateProvider} A MappingTemplateProvider for the request function.
+ */
 const createWriteMessageToTableRequestFunction = (fieldName: string): MappingTemplateProvider => {
   const requestFunctionString = `
     import { util } from '@aws-appsync/utils'
@@ -32,6 +44,11 @@ const createWriteMessageToTableRequestFunction = (fieldName: string): MappingTem
   return MappingTemplate.inlineTemplateFromString(dedent(requestFunctionString));
 };
 
+/**
+ * Creates the response function for writing a message to a table in a conversation.
+ *
+ * @returns {MappingTemplateProvider} A MappingTemplateProvider for the response function.
+ */
 const createWriteMessageToTableResponseFunction = (): MappingTemplateProvider => {
   const responseFunctionString = `
     export function response(ctx) {

@@ -3,6 +3,12 @@ import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interf
 import { dedent } from 'ts-dedent';
 import { JSResolverFunctionProvider } from './js-resolver-function-provider';
 
+/**
+ * Creates and returns the mapping template for the conversation message subscription resolver.
+ * This includes both request and response functions.
+ *
+ * @returns {JSResolverFunctionProvider} An object containing request and response MappingTemplateProviders.
+ */
 export const conversationMessageSubscriptionMappingTamplate = (): JSResolverFunctionProvider => {
   const req = createAssistantMessagesSubscriptionRequestFunction();
   const res = createAssistantMessagesSubscriptionResponseFunction();
@@ -10,6 +16,12 @@ export const conversationMessageSubscriptionMappingTamplate = (): JSResolverFunc
   return { req, res };
 };
 
+/**
+ * Creates the request function for the conversation message subscription resolver.
+ * This function handles the authorization and filtering of the conversation messages for owner auth.
+ *
+ * @returns {MappingTemplateProvider} A MappingTemplateProvider for the request function.
+ */
 const createAssistantMessagesSubscriptionRequestFunction = (): MappingTemplateProvider => {
   const requestFunctionString = `
       export function request(ctx) {
@@ -51,6 +63,12 @@ const createAssistantMessagesSubscriptionRequestFunction = (): MappingTemplatePr
   return MappingTemplate.inlineTemplateFromString(dedent(requestFunctionString));
 };
 
+/**
+ * Creates the response function for the conversation message subscription resolver.
+ * This function handles the subscription filter and sets the subscription filter for the conversation messages.
+ *
+ * @returns {MappingTemplateProvider} A MappingTemplateProvider for the response function.
+ */
 const createAssistantMessagesSubscriptionResponseFunction = (): MappingTemplateProvider => {
   const responseFunctionString = `
       import { util, extensions } from '@aws-appsync/utils';

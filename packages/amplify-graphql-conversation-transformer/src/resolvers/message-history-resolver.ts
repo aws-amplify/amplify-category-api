@@ -3,6 +3,11 @@ import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interf
 import { dedent } from 'ts-dedent';
 import { JSResolverFunctionProvider } from './js-resolver-function-provider';
 
+/**
+ * Creates a mapping template for reading message history in a conversation.
+ *
+ * @returns {JSResolverFunctionProvider} An object containing request and response mapping functions.
+ */
 export const readHistoryMappingTemplate = (): JSResolverFunctionProvider => {
   // TODO: filter to only retrieve messages that have an assistant response.
   const req = createMessageHistoryRequestFunction();
@@ -11,6 +16,11 @@ export const readHistoryMappingTemplate = (): JSResolverFunctionProvider => {
   return { req, res };
 };
 
+/**
+ * Creates a request mapping template for reading message history in a conversation.
+ *
+ * @returns {MappingTemplateProvider} A mapping template provider for the request function.
+ */
 const createMessageHistoryRequestFunction = (): MappingTemplateProvider => {
   const requestFunctionString = `
       export function request(ctx) {
@@ -40,6 +50,11 @@ const createMessageHistoryRequestFunction = (): MappingTemplateProvider => {
   return MappingTemplate.inlineTemplateFromString(dedent(requestFunctionString));
 };
 
+/**
+ * Creates a response mapping template for reading message history in a conversation.
+ *
+ * @returns {MappingTemplateProvider} A mapping template provider for the response function.
+ */
 const createMessageHistoryResponseFunction = (): MappingTemplateProvider => {
   const responseFunctionString = `
       export function response(ctx) {

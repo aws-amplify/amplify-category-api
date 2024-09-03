@@ -3,12 +3,25 @@ import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interf
 import { dedent } from 'ts-dedent';
 import { JSResolverFunctionProvider } from './js-resolver-function-provider';
 
+/**
+ * Creates and returns the mapping template for the assistant mutation resolver.
+ * This includes both request and response functions.
+ *
+ * @returns {JSResolverFunctionProvider} An object containing request and response MappingTemplateProviders.
+ */
+
 export const assistantMutationResolver = (): JSResolverFunctionProvider => {
   const req = createAssistantMutationRequestFunction();
   const res = createAssistantMutationResponseFunction();
   return { req, res };
 };
 
+/**
+ * Creates the request function for the assistant mutation resolver.
+ * This function handles the update of the assistant's response in the conversation.
+ *
+ * @returns {MappingTemplateProvider} A MappingTemplateProvider for the request function.
+ */
 const createAssistantMutationRequestFunction = (): MappingTemplateProvider => {
   const requestFunctionString = `
     import { util } from '@aws-appsync/utils';
@@ -48,6 +61,12 @@ const createAssistantMutationRequestFunction = (): MappingTemplateProvider => {
   return MappingTemplate.inlineTemplateFromString(dedent(requestFunctionString));
 };
 
+/**
+ * Creates the response function for the assistant mutation resolver.
+ * This function handles the processing of the response after the mutation.
+ *
+ * @returns {MappingTemplateProvider} A MappingTemplateProvider for the response function.
+ */
 const createAssistantMutationResponseFunction = (): MappingTemplateProvider => {
   const responseFunctionString = `
     /**

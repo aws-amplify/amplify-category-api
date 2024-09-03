@@ -23,7 +23,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/ai-constructs": "0.0.0-test-20240823000521",
+    "@aws-amplify/ai-constructs": "test",
     "@aws-amplify/graphql-directives": "2.0.0",
     "@aws-amplify/graphql-index-transformer": "3.0.0",
     "@aws-amplify/graphql-model-transformer": "3.0.0",
@@ -37,7 +37,8 @@
   },
   "devDependencies": {
     "@aws-amplify/graphql-transformer-test-utils": "0.6.0",
-    "@aws-sdk/client-bedrock-runtime": "^3.1.0"
+    "@aws-sdk/client-bedrock-runtime": "^3.1.0",
+    "@aws-amplify/ai-constructs": "test"
   },
   "peerDependencies": {
     "@aws-sdk/client-bedrock-runtime": "^3.1.0",
@@ -61,9 +62,9 @@
     "coverageProvider": "v8",
     "coverageThreshold": {
       "global": {
-        "branches": 10,
-        "functions": 10,
-        "lines": 10
+        "branches": 85,
+        "functions": 90,
+        "lines": 90
       }
     },
     "coverageReporters": [
