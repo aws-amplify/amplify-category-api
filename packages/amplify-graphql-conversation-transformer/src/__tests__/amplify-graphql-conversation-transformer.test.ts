@@ -237,6 +237,65 @@ describe('ConversationTransformer', () => {
         'Directive "@conversation" argument "systemPrompt" of type "String!" is required, but it was not provided.',
       );
     });
+
+    describe('invalid inference configuration', () => {
+      const maxTokens = 'inferenceConfiguration: { maxTokens: 0 }';
+      const temperature = {
+        over: 'inferenceConfiguration: { temperature: 1.1 }',
+        under: 'inferenceConfiguration: { temperature: -0.1 }',
+      };
+      const topP = {
+        over: 'inferenceConfiguration: { topP: 1.1 }',
+        under: 'inferenceConfiguration: { topP: -0.1 }',
+      };
+
+      const conversationRoute = (invalidInferenceConfig: string): string => {
+        return `
+        type Mutation {
+          testChat(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
+          @conversation(
+            aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
+            functionName: "conversation-handler",
+            systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
+            ${invalidInferenceConfig}
+          )
+        }
+
+        ${conversationSchemaTypes}
+        `;
+
+      };
+
+      it('maxTokens invalid', () => {
+        expect(() => transform(conversationRoute(maxTokens))).toThrow(
+          '@conversation directive maxTokens valid range: Minimum value of 1. Provided: 0',
+        );
+      });
+
+      it('temperature over', () => {
+        expect(() => transform(conversationRoute(temperature.over))).toThrow(
+          '@conversation directive temperature valid range: Minimum value of 0. Maximum value of 1. Provided: 1.1',
+        );
+      });
+
+      it('topP over', () => {
+        expect(() => transform(conversationRoute(topP.over))).toThrow(
+          '@conversation directive topP valid range: Minimum value of 0. Maximum value of 1. Provided: 1.1',
+        );
+      });
+
+      it('temperature under', () => {
+        expect(() => transform(conversationRoute(temperature.under))).toThrow(
+          '@conversation directive temperature valid range: Minimum value of 0. Maximum value of 1. Provided: -0.1',
+        );
+      });
+
+      it('topP under', () => {
+        expect(() => transform(conversationRoute(topP.under))).toThrow(
+          '@conversation directive topP valid range: Minimum value of 0. Maximum value of 1. Provided: -0.1',
+        );
+      });
+    });
   });
 
   describe('parameterized tests', () => {

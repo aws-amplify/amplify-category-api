@@ -32,7 +32,7 @@ export type ConversationDirectiveConfiguration = {
   toolSpec: Tools;
   conversationModel: ConversationModel;
   messageModel: MessageModel;
-  inferenceConfiguration: ConversationInferenceConfiguration | undefined;
+  inferenceConfiguration: ConversationInferenceConfiguration;
 };
 
 /**
@@ -49,7 +49,6 @@ export type ConversationInferenceConfiguration = {
  */
 export class ConversationTransformer extends TransformerPluginBase {
   private directives: ConversationDirectiveConfiguration[] = [];
-  // private schemaMutator: ConversationSchemaMutator;
   private fieldHandler: ConversationFieldHandler;
   private prepareHandler: ConversationPrepareHandler;
   private resolverGenerator: ConversationResolverGenerator;
@@ -64,7 +63,6 @@ export class ConversationTransformer extends TransformerPluginBase {
     this.fieldHandler = new ConversationFieldHandler();
     this.prepareHandler = new ConversationPrepareHandler(modelTransformer, hasManyTransformer, belongsToTransformer, authProvider);
     this.resolverGenerator = new ConversationResolverGenerator();
-    // this.schemaMutator = new ConversationSchemaMutator();
   }
 
   /**
@@ -83,15 +81,6 @@ export class ConversationTransformer extends TransformerPluginBase {
     const directiveConfg = this.fieldHandler.getDirectiveConfig(parent, definition, directive, context);
     this.directives.push(directiveConfg);
   };
-
-  /**
-   * Mutates the schema to include conversation and message models
-   * @param ctx - The transformer pre-process context
-   * @returns The mutated document node
-   */
-  // mutateSchema = (ctx: TransformerPreProcessContextProvider): DocumentNode => {
-  //   // return this.schemaMutator.mutateSchema(ctx);
-  // };
 
   /**
    * Generates resolvers for the conversation directive

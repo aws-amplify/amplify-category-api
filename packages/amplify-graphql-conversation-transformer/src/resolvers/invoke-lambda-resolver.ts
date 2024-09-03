@@ -146,7 +146,10 @@ const generateModelConfigurationLine = (config: ConversationDirectiveConfigurati
  * @returns {string} A string containing the model inference configuration line.
  */
 const generateModelInferenceConfigurationLine = (config: ConversationDirectiveConfiguration) => {
-  return config.inferenceConfiguration ? dedent`inferenceConfiguration: ${JSON.stringify(config.inferenceConfiguration)},` : '';
+  const { inferenceConfiguration } = config;
+  return inferenceConfiguration && Object.keys(inferenceConfiguration).length > 0
+    ? dedent`inferenceConfiguration: ${JSON.stringify(config.inferenceConfiguration)},`
+    : '';
 };
 
 /**

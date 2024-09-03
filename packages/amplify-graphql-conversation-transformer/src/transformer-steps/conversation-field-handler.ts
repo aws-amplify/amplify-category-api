@@ -63,6 +63,7 @@ export class ConversationFieldHandler {
         parent,
         directive,
         field: definition,
+        inferenceConfiguration: {},
       } as ConversationDirectiveConfiguration,
       generateGetArgumentsInput(context.transformParameters),
     );
@@ -104,16 +105,49 @@ export class ConversationFieldHandler {
   }
 
   /**
-   * @method validate
-   * @private
-   * @description Validates the conversation directive configuration.
+   * Validates the conversation directive configuration.
    * @param {ConversationDirectiveConfiguration} config - The conversation directive configuration to validate.
    * @throws {InvalidDirectiveError} If the configuration is invalid.
    */
   private validate(config: ConversationDirectiveConfiguration): void {
+    this.validateReturnType(config);
+    this.validateInferenceConfig(config);
+  }
+
+  /**
+   * Validates the return type of the mutation on which the the conversation directive is defined.
+   * @param {ConversationDirectiveConfiguration} config - The conversation directive configuration to validate.
+   * @throws {InvalidDirectiveError} If the return type of the mutation is not ConversationMessage.
+   */
+  private validateReturnType(config: ConversationDirectiveConfiguration): void {
+    // TODO: validate that the other supporting types are present.
     const { field } = config;
     if (field.type.kind !== 'NamedType' || field.type.name.value !== 'ConversationMessage') {
       throw new InvalidDirectiveError('@conversation return type must be ConversationMessage');
+    }
+  }
+
+  /**
+   * Validates the inference configuration for the `@conversation` directive according to the Bedrock API docs.
+   * {@link https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_InferenceConfiguration.html}
+   * @param config The conversation directive configuration to validate.
+   */
+  private validateInferenceConfig(config: ConversationDirectiveConfiguration): void {
+    const { maxTokens, temperature, topP } = config.inferenceConfiguration;
+
+    // dealing with possible 0 values, so we check for undefined.
+    if (maxTokens !== undefined && maxTokens < 1) {
+      throw new InvalidDirectiveError(`@conversation directive maxTokens valid range: Minimum value of 1. Provided: ${maxTokens}`);
+    }
+
+    if (temperature !== undefined && (temperature < 0 || temperature > 1)) {
+      throw new InvalidDirectiveError(
+        `@conversation directive temperature valid range: Minimum value of 0. Maximum value of 1. Provided: ${temperature}`,
+      );
+    }
+
+    if (topP !== undefined && (topP < 0 || topP > 1)) {
+      throw new InvalidDirectiveError(`@conversation directive topP valid range: Minimum value of 0. Maximum value of 1. Provided: ${topP}`);
     }
   }
 }
