@@ -1,6 +1,7 @@
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FieldDefinitionNode } from 'graphql';
-import { JSONSchema, generateJSONSchemaFromTypeNode } from './graphql-json-schema-type';
+import { generateJSONSchemaFromTypeNode } from './graphql-json-schema-type';
+import { JSONSchema } from '@aws-amplify/graphql-transformer-core';
 
 export type Tool = {
   toolSpec: ToolSpec;
