@@ -46,7 +46,7 @@
     "zod": "^3.22.3"
   },
   "dependencies": {
-    "@aws-amplify/graphql-api-construct": "1.11.8",
+    "@aws-amplify/graphql-api-construct": "1.11.9",
     "aws-cdk-lib": "^2.152.0",
     "constructs": "^10.3.0"
   },
@@ -3845,7 +3845,7 @@
       }
     }
   },
-  "description": "AppSync GraphQL Api Construct using Amplify GraphQL Transformer - Aliased to use `Data` name scheme.",
+  "description": "AppSync GraphQL Api Construct using Amplify GraphQL Transformer - Aliased to use `Data` name scheme. ",
   "docs": {
     "stability": "stable"
   },
@@ -3885,6 +3885,6 @@
     }
   },
   "types": {},
-  "version": "1.9.8",
-  "fingerprint": "aWMQjb38rlb8ed2p9QSfe3Xthd7prX9ucaYRo3Jlr/s="
+  "version": "1.9.9",
+  "fingerprint": "R8mm8NF5pXMNfI8P09ffuAgX3ZXtUYl9rWbr4f3jzHo="
 }

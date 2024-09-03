@@ -3837,7 +3837,7 @@
       }
     }
   },
-  "description": "AppSync GraphQL Api Construct using Amplify GraphQL Transformer.",
+  "description": "AppSync GraphQL Api Construct using Amplify GraphQL Transformer ",
   "docs": {
     "stability": "stable"
   },
@@ -8802,6 +8802,6 @@
       "symbolId": "src/model-datasource-strategy-types:VpcConfig"
     }
   },
-  "version": "1.11.8",
-  "fingerprint": "/tQpF6ANtpXc75Vtopf+1WOy1LcKAZr3YdLEt7BU2b8="
+  "version": "1.11.9",
+  "fingerprint": "CKOAgRpDy2yvl4xRf6fzVIDz7KqUf93NdR0tf4vVpP0="
 }
