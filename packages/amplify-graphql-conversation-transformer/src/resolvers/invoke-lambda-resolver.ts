@@ -154,7 +154,5 @@ const generateModelInferenceConfigurationLine = (config: ConversationDirectiveCo
 
 /**
  * The selection set for the conversation message.
- *
- * @type {string}
  */
 const selectionSet = `id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt`;
