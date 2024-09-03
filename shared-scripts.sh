@@ -132,6 +132,54 @@ function _lint {
   loadCacheFromBuildJob
   chmod +x codebuild_specs/scripts/lint_pr.sh && ./codebuild_specs/scripts/lint_pr.sh
 }
+function _verifyAmplifyBackendCompatability {
+  echo "Verify Amplify Backend Compatability"
+
+  # Install NVM and set Node.js version
+  echo "Installing NVM and setting Node.js version"
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  nvm install 18.16.0
+  nvm use 18.16.0
+
+  loadCacheFromBuildJob
+
+  # Increase buffer size to avoid error when git operations return large response on CI
+  git config http.version HTTP/1.1
+  git config http.postBuffer 157286400
+
+  git checkout -b _vab
+  git symbolic-ref HEAD --short
+  git rev-parse HEAD
+
+  # Fetching git tags from upstream
+  # For forked repo only
+  # Can be removed when using team account
+  echo "fetching tags"
+  git fetch --tags https://github.com/aws-amplify/amplify-category-api
+  # Create the folder to avoid failure when no packages are published due to no change detected
+  rm -rf ../verdaccio-cache && mkdir ../verdaccio-cache
+
+  git config user.email not@used.com
+  git config user.name "Doesnt Matter"
+
+  source ./shared-scripts.sh && _publishLocalWorkspace
+  setNpmRegistryUrlToLocal
+  npm config get registry
+
+  cd ..
+  git clone https://github.com/aws-amplify/amplify-backend.git
+  cd amplify-backend
+  npm update
+  git diff package-lock.json | grep -e 'graphql-api-construct' -e 'data-construct'
+  npm run build && npm run test
+
+  cd $CODEBUILD_SRC_DIR
+  unsetNpmRegistryUrl
+  npm config get registry
+  yarn verdaccio-stop
+}
 function _publishToLocalRegistry {
     echo "Publish To Local Registry"
     loadCacheFromBuildJob
