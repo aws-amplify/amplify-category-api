@@ -3,7 +3,7 @@ import { JSONSchema } from './json-schema';
 /**
  * JSON Schema definitions for GraphQL scalar types and AWS AppSync custom scalar types.
  * These definitions are used to create valid JSON schema for tool definitions in the
- * context of AI model interactions for generation and converssation routes, ensuring that generated responses
+ * context of AI model interactions for generation and conversation routes, ensuring that generated responses
  * conform to the expected GraphQL types or inputs.
  *
  * Each constant represents a JSON Schema object that describes the structure and
