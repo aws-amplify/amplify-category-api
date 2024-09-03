@@ -4,9 +4,6 @@ env:
   variables:
     NODE_OPTIONS: --max-old-space-size=8096
 phases:
-  install:
-    runtime-versions:
-      nodejs: 18.16.0
   build:
     commands:
       - source ./shared-scripts.sh && _verifyAmplifyBackendCompatability
