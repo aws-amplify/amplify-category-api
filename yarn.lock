@@ -15,12 +15,12 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@aws-amplify/ai-constructs@test":
-  version "0.0.0-test-20240828172042"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/ai-constructs/-/ai-constructs-0.0.0-test-20240828172042.tgz#2d0f5223eda9311a08f63f80a3d97104fd9f7ddc"
-  integrity sha512-52xy5Bxs7Xc3gpnpwsNi6y0l9o5Ap5kwG8grua6ULxzuhCzoi3tpF0gnp6DSg9xorhp0d4+4Nj2lhC230KNCvw==
+"@aws-amplify/ai-constructs@0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/ai-constructs/-/ai-constructs-0.1.0.tgz#e5ea7c252f66a0707f3e7c42a1b5a0dd6435118e"
+  integrity sha512-tTPZxtQp+w4gzx51QetuBH7RNrVr9v8dGn+w8qELiCo/jwNLTwQ0rRyrqgfT0KoMyYc4+eapR79K6pL8AAwKTg==
   dependencies:
-    "@aws-amplify/plugin-types" "0.0.0-test-20240828172042"
+    "@aws-amplify/plugin-types" "^1.0.1"
 
 "@aws-amplify/amplify-app@^5.0.35":
   version "5.0.35"
@@ -370,11 +370,6 @@
     uuid "^9.0.1"
     zod "^3.22.2"
 
-"@aws-amplify/plugin-types@0.0.0-test-20240828172042":
-  version "0.0.0-test-20240828172042"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/plugin-types/-/plugin-types-0.0.0-test-20240828172042.tgz#2f2d83d819ce67be2b49da92228c123ab6590c96"
-  integrity sha512-QK5gt7rJ7+kZwnvCX9djvLAvn5wUgoyvFY59HpaidraDgmRtAv2OBjO1dUlKj8v9W4Zkfmd+qywqg7Yg/c7xXQ==
-
 "@aws-amplify/plugin-types@^0.4.0", "@aws-amplify/plugin-types@^0.4.1":
   version "0.4.1"
   resolved "https://registry.npmjs.org/@aws-amplify/plugin-types/-/plugin-types-0.4.1.tgz#bd2f7f8c42ec0f5b5bd1c7f67fe8b591463874bd"
@@ -384,6 +379,11 @@
   version "0.8.0"
   resolved "https://registry.npmjs.org/@aws-amplify/plugin-types/-/plugin-types-0.8.0.tgz#7ab3ca9af4dd51cd489c9a172bc7325db3bf4478"
   integrity sha512-38w0dV2dS40uZB4gYa7sc+YnoLtRKdfhHDKpCqSx5ml/rq1PvzEcExiSfrPddC7/ZBLr0IUZH74evVCHzOcPDg==
+
+"@aws-amplify/plugin-types@^1.0.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/plugin-types/-/plugin-types-1.2.1.tgz#049fcf424c2c7e65fd5490c4ce7dc740748a2509"
+  integrity sha512-rqsc9F05hO58oVCcdvbkE3zUaS4iKdhm4C3eReWd6NNLfBmfQuoy46CeyHw2GrbKtdxmCckAOU0k6L71sa8nNA==
 
 "@aws-amplify/predictions@4.0.64":
   version "4.0.64"
