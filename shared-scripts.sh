@@ -143,6 +143,10 @@ function _verifyAmplifyBackendCompatability {
   nvm install 18.16.0
   nvm use 18.16.0
 
+  # Echo to verify the Node.js version
+  echo "Node.js version in use:"
+  node -v
+
   loadCacheFromBuildJob
 
   # Increase buffer size to avoid error when git operations return large response on CI
