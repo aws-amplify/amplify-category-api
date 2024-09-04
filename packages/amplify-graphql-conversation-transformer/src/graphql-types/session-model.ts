@@ -171,6 +171,8 @@ const createSessionModelMessagesField = (hasManyDirective: DirectiveNode, typeNa
  * // This will generate a GraphQL type definition like:
  * // type Conversation @model @auth(rules: [{ allow: owner, ownerField: "owner" }]) {
  * //   id: ID!
+ * //   name: String
+ * //   metadata: AWSJSON
  * //   messages: [Message] @hasMany(references: ["id"])
  * //   owner: String
  * // }
