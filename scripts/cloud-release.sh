@@ -7,7 +7,12 @@ export DEPRECATE_PROJECT_NAME=amplify-category-api-deprecate-workflow
 
 function triggerRelease {
   branch_name=$(git branch --show-current)
-  triggerProjectBatch $RELEASE_ACCOUNT_PROD $RELEASE_ROLE_NAME "${RELEASE_PROFILE_NAME}Prod" $RELEASE_PROJECT_NAME $branch_name
+  if isReleaseBranch "$branch_name"; then
+    echo "Running release workflow from branch ${branch_name}"
+    triggerProjectBatch $RELEASE_ACCOUNT_PROD $RELEASE_ROLE_NAME "${RELEASE_PROFILE_NAME}Prod" $RELEASE_PROJECT_NAME $branch_name
+  else
+    echo "The release workflow can only be triggered from a release branch."
+  fi
 }
 
 function triggerTagRelease {
@@ -28,8 +33,23 @@ function deprecateRelease {
   SEARCH_FOR_RELEASE_STARTING_FROM=$2
   USE_NPM_REGISTRY=$3
   branch_name=$(git branch --show-current)
-  triggerProjectBatchWithEnvOverrides $RELEASE_ACCOUNT_PROD $RELEASE_ROLE_NAME "${RELEASE_PROFILE_NAME}Prod" $DEPRECATE_PROJECT_NAME $branch_name \
+  if isReleaseBranch "$branch_name"; then
+    echo "Running deprecate release workflow from branch ${branch_name}"
+    triggerProjectBatchWithEnvOverrides $RELEASE_ACCOUNT_PROD $RELEASE_ROLE_NAME "${RELEASE_PROFILE_NAME}Prod" $DEPRECATE_PROJECT_NAME $branch_name \
     name=DEPRECATION_MESSAGE,value=\""$DEPRECATION_MESSAGE"\",type=PLAINTEXT \
     name=SEARCH_FOR_RELEASE_STARTING_FROM,value=$SEARCH_FOR_RELEASE_STARTING_FROM,type=PLAINTEXT \
     name=USE_NPM_REGISTRY,value=$USE_NPM_REGISTRY,type=PLAINTEXT
+  else
+    echo "The deprecate release workflow can only be triggered from a release branch."
+  fi
+}
+
+# Releases branches are prefixed with "release"
+function isReleaseBranch {
+  branch_name=$1
+  if [[ $branch_name == release* ]]; then
+    return 0
+  else
+    return 1
+  fi
 }
