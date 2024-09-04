@@ -6,6 +6,7 @@
     ]
   },
   "bundled": {
+    "@aws-amplify/ai-constructs": "test",
     "@aws-amplify/backend-output-schemas": "^0.4.0",
     "@aws-amplify/backend-output-storage": "^0.2.2",
     "@aws-amplify/graphql-auth-transformer": "4.0.0",
@@ -26,6 +27,7 @@
     "@aws-amplify/graphql-transformer-interfaces": "4.0.0",
     "@aws-amplify/platform-core": "^0.2.0",
     "@aws-amplify/plugin-types": "^0.4.1",
+    "@aws-sdk/client-bedrock-runtime": "^3.622.0",
     "charenc": "^0.0.2",
     "crypt": "^0.0.2",
     "fs-extra": "^8.1.0",
@@ -8804,5 +8806,5 @@
     }
   },
   "version": "1.11.6",
-  "fingerprint": "y1xQmViCyD5+ag1HJuKzy9fnaVPN3Wtfz+iDk01/mwQ="
+  "fingerprint": "+yZYY67XZyNdzIitolaYB1nmRMSxtA4QtliGKzPn79M="
 }

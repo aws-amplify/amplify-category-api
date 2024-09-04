@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@aws-amplify/ai-constructs": "test",
+    "@aws-sdk/client-bedrock-runtime": "^3.622.0",
     "@aws-amplify/graphql-directives": "2.0.0",
     "@aws-amplify/graphql-index-transformer": "3.0.0",
     "@aws-amplify/graphql-model-transformer": "3.0.0",
@@ -31,8 +32,8 @@
     "@aws-amplify/graphql-transformer-core": "3.0.0",
     "@aws-amplify/graphql-transformer-interfaces": "4.0.0",
     "graphql": "^15.5.0",
-    "graphql-mapping-template": "4.20.16",
-    "graphql-transformer-common": "4.31.1",
+    "graphql-mapping-template": "5.0.0",
+    "graphql-transformer-common": "5.0.0",
     "immer": "^9.0.12"
   },
   "devDependencies": {
@@ -40,8 +41,8 @@
     "@aws-amplify/ai-constructs": "test"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.80.0",
-    "constructs": "^10.0.5"
+    "aws-cdk-lib": "^2.152.0",
+    "constructs": "^10.3.0"
   },
   "jest": {
     "transform": {

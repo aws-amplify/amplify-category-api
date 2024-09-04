@@ -5,9 +5,8 @@ import { JSResolverFunctionProvider } from '../resolvers/js-resolver-function-pr
 import { TransformerResolver } from '@aws-amplify/graphql-transformer-core';
 import { ResolverResourceIDs, FunctionResourceIDs, ResourceConstants, toUpper } from 'graphql-transformer-common';
 import * as cdk from 'aws-cdk-lib';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { conversation } from '@aws-amplify/ai-constructs/lib';
-import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { IFunction, Function } from 'aws-cdk-lib/aws-lambda';
 import { getModelDataSourceNameForTypeName, getTable } from '@aws-amplify/graphql-transformer-core';
 import { initMappingTemplate } from '../resolvers/init-resolver';
 import { authMappingTemplate } from '../resolvers/auth-resolver';
@@ -99,7 +98,7 @@ export class ConversationResolverGenerator {
     functionStack: cdk.Stack,
   ): { functionDataSourceId: string; referencedFunction: IFunction } {
     const functionDataSourceId = FunctionResourceIDs.FunctionDataSourceID(functionName);
-    const referencedFunction = lambda.Function.fromFunctionAttributes(functionStack, `${functionDataSourceId}Function`, {
+    const referencedFunction = Function.fromFunctionAttributes(functionStack, `${functionDataSourceId}Function`, {
       functionArn: this.lambdaArnResource(functionName),
     });
 
