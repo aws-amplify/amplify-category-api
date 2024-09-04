@@ -488,6 +488,9 @@ export const isQueryNode: (obj: DefinitionNode) => obj is ObjectTypeDefinitionNo
 });
 
 // @public (undocumented)
+export const isQueryType: (typeName: string) => typeName is "Query";
+
+// @public (undocumented)
 export const isSqlDbType: (dbType: ModelDataSourceStrategyDbType) => dbType is ModelDataSourceStrategySqlDbType;
 
 // @public (undocumented)
