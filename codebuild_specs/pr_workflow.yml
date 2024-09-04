@@ -49,7 +49,5 @@ batch:
         - build_linux
     - identifier: verify_amplify_backend_compatability
       buildspec: codebuild_specs/verify_amplify_backend_compatability.yml
-      env:
-        image: aws/codebuild/amazonlinux2-x86_64-standard:5.0
       depend-on:
         - build_linux
