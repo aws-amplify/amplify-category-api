@@ -50,7 +50,7 @@
     "@aws-sdk/client-lambda": "^3.624.0",
     "@aws-sdk/client-sfn": "^3.624.0",
     "@types/aws-lambda": "8.10.119",
-    "@types/node": "^12.12.6"
+    "@types/node": "^18.0.0"
   },
   "jest": {
     "transform": {
@@ -81,13 +81,16 @@
     "modulePathIgnorePatterns": [
       "overrides"
     ],
-    "testEnvironment": "../../FixJestEnvironment.js",
     "collectCoverageFrom": [
       "src/**/*.ts"
     ],
     "coveragePathIgnorePatterns": [
       "/__tests__/",
       ".d.ts"
-    ]
+    ],
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    }
   }
 }

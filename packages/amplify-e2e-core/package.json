@@ -38,7 +38,7 @@
     "glob": "^10.3.0",
     "graphql-transformer-core": "9.0.0",
     "ini": "^3.0.1",
-    "jest-environment-node": "^26.6.2",
+    "jest-environment-node": "^29.0.0",
     "knex": "~2.4.0",
     "lodash": "^4.17.21",
     "mysql2": "~3.9.7",
