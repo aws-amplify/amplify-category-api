@@ -43,7 +43,7 @@ export type ConversationModel = {
  * // This will generate a GraphQL type:
  * // type Conversation @model @auth(rules: [{ allow: owner, ownerField: "owner" }]) {
  * //   id: ID!
- * //   messages: [Message] @hasMany(fields: ["id"])
+ * //   messages: [Message] @hasMany(references: ["id"])
  * //   owner: String
  * // }
  */
@@ -150,7 +150,7 @@ const createSessionModelMessagesFieldHasManyDirective = (fieldName: string): Dir
  * @example
  * const messagesField = createSessionModelMessagesField(hasManyDirective, 'Message');
  * // This will generate a field definition like:
- * // messages: [Message] @hasMany(fields: ["id"])
+ * // messages: [Message] @hasMany(references: ["id"])
  */
 const createSessionModelMessagesField = (hasManyDirective: DirectiveNode, typeName: string): FieldDefinitionNode => {
   return makeField('messages', [], makeListType(makeNamedType(typeName)), [hasManyDirective]);
@@ -171,7 +171,7 @@ const createSessionModelMessagesField = (hasManyDirective: DirectiveNode, typeNa
  * // This will generate a GraphQL type definition like:
  * // type Conversation @model @auth(rules: [{ allow: owner, ownerField: "owner" }]) {
  * //   id: ID!
- * //   messages: [Message] @hasMany(fields: ["id"])
+ * //   messages: [Message] @hasMany(references: ["id"])
  * //   owner: String
  * // }
  */
