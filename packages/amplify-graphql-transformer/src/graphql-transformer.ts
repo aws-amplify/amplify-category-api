@@ -34,6 +34,7 @@ import { GraphQLTransform, ResolverConfig, UserDefinedSlot } from '@aws-amplify/
 import { Construct } from 'constructs';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { GenerationTransformer } from '@aws-amplify/graphql-generation-transformer';
+import { ConversationTransformer } from '@aws-amplify/graphql-conversation-transformer';
 
 /**
  * Arguments passed into a TransformerFactory
@@ -62,6 +63,8 @@ export const constructTransformerChain = (options?: TransformerFactoryArgs): Tra
   const authTransformer = new AuthTransformer();
   const indexTransformer = new IndexTransformer();
   const hasOneTransformer = new HasOneTransformer();
+  const hasManyTransformer = new HasManyTransformer();
+  const belongsToTransformer = new BelongsToTransformer();
 
   // The default list of transformers should match DefaultDirectives in packages/amplify-graphql-directives/src/index.ts
   return [
@@ -71,10 +74,11 @@ export const constructTransformerChain = (options?: TransformerFactoryArgs): Tra
     new PredictionsTransformer(options?.storageConfig),
     new PrimaryKeyTransformer(),
     indexTransformer,
-    new HasManyTransformer(),
+    hasManyTransformer,
     hasOneTransformer,
     new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
-    new BelongsToTransformer(),
+    belongsToTransformer,
+    new ConversationTransformer(modelTransformer, hasManyTransformer, belongsToTransformer, authTransformer),
     new GenerationTransformer(),
     new DefaultValueTransformer(),
     authTransformer,
