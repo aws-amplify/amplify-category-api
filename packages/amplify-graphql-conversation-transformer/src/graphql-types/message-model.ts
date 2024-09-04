@@ -74,8 +74,6 @@ export const createMessageModel = (
   capitalizedFieldName: string,
   conversationMessageInterface: NamedTypeNode,
 ): MessageModel => {
-  // const conversationModelName = `Conversation${fieldName}`;
-  // const messageModelName = `ConversationMessage${fieldName}`;
   const messageSubscriptionFieldName = `onCreateAssistantResponse${messageModelName}`;
   const assistantMutationFieldName = `createAssistantResponse${capitalizedFieldName}`;
 
