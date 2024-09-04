@@ -73,6 +73,13 @@ export {
   SQLLambdaResourceNames,
 } from './utils';
 export type { SetResourceNameProps } from './utils';
+export {
+  type JSONSchema,
+  isDisallowedScalarType,
+  supportedScalarTypes,
+  GraphQLScalarJSONSchemaDefinition,
+  convertNamedTypeToJSONSchema,
+} from './utils/ai';
 export * from './utils/operation-names';
 export * from './errors';
 export {
