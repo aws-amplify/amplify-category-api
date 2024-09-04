@@ -65,6 +65,7 @@ export {
   isMutationNode,
   isObjectTypeDefinitionNode,
   isQueryNode,
+  isQueryType,
   isSqlDbType,
   isSqlModel,
   isSqlStrategy,
