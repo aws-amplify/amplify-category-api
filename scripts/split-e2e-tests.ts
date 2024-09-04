@@ -76,6 +76,7 @@ const FORCE_REGION_MAP = {
   interactions: 'us-west-2',
   containers: 'us-east-1',
   generation: 'us-west-2',
+  conversation: 'us-west-2',
 };
 
 // some tests require additional time, the parent account can handle longer tests (up to 90 minutes)
@@ -84,6 +85,7 @@ const USE_PARENT_ACCOUNT = [
   'src/__tests__/schema-searchable',
   'src/__tests__/FunctionTransformerTestsV2.e2e.test.ts',
   'src/__tests__/generations/generation.test.ts',
+  'src/__tests__/conversations/conversation.test.ts',
 ];
 const TEST_TIMINGS_PATH = join(REPO_ROOT, 'scripts', 'test-timings.data.json');
 const CODEBUILD_CONFIG_BASE_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_base.yml');
@@ -149,6 +151,8 @@ const RUN_SOLO: (string | RegExp)[] = [
   /src\/__tests__\/restricted-field-auth\/.*\.test\.ts/,
   // Generation tests
   'src/__tests__/generations/generation.test.ts',
+  // Conversation tests
+  'src/__tests__/conversations/conversation.test.ts',
 ];
 
 const RUN_IN_ALL_REGIONS = [
