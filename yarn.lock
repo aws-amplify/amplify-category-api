@@ -15,7 +15,7 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@aws-amplify/ai-constructs@0.1.0":
+"@aws-amplify/ai-constructs@^0.1.0":
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/@aws-amplify/ai-constructs/-/ai-constructs-0.1.0.tgz#e5ea7c252f66a0707f3e7c42a1b5a0dd6435118e"
   integrity sha512-tTPZxtQp+w4gzx51QetuBH7RNrVr9v8dGn+w8qELiCo/jwNLTwQ0rRyrqgfT0KoMyYc4+eapR79K6pL8AAwKTg==
