@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.8.2...amplify-graphql-api-construct-tests@1.8.3) (2024-09-04)
+
+**Note:** Version bump only for package amplify-graphql-api-construct-tests
+
+
+
+
+
 ## [1.8.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.8.1...amplify-graphql-api-construct-tests@1.8.2) (2024-09-03)
 
 **Note:** Version bump only for package amplify-graphql-api-construct-tests

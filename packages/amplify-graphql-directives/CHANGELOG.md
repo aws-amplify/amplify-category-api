@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-directives@2.0.0...@aws-amplify/graphql-directives@2.0.1) (2024-09-04)
+
+**Note:** Version bump only for package @aws-amplify/graphql-directives
+
+
+
+
+
 # [2.0.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-directives@1.1.0...@aws-amplify/graphql-directives@2.0.0) (2024-08-20)
 
 - feat!: bump version for v2 transformer packages ([7dac35c](https://github.com/aws-amplify/amplify-category-api/commit/7dac35cceb971b256b5688b0745ef82afc78b641))
