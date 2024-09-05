@@ -6,9 +6,11 @@
     ]
   },
   "bundled": {
+    "@aws-amplify/ai-constructs": "^0.1.1",
     "@aws-amplify/backend-output-schemas": "^0.4.0",
     "@aws-amplify/backend-output-storage": "^0.2.2",
     "@aws-amplify/graphql-auth-transformer": "4.0.0",
+    "@aws-amplify/graphql-conversation-transformer": "0.1.0",
     "@aws-amplify/graphql-default-value-transformer": "3.0.0",
     "@aws-amplify/graphql-directives": "2.0.0",
     "@aws-amplify/graphql-function-transformer": "3.0.0",
@@ -8804,5 +8806,5 @@
     }
   },
   "version": "1.11.6",
-  "fingerprint": "y1xQmViCyD5+ag1HJuKzy9fnaVPN3Wtfz+iDk01/mwQ="
+  "fingerprint": "dh+Dq+KBcsQouhzOW2DJwQhwoE2vKQok+wOKb/fcaD0="
 }

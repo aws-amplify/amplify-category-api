@@ -1802,6 +1802,16 @@ batch:
           CLI_REGION: eu-south-1
       depend-on:
         - publish_to_local_registry
+    - identifier: conversation
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/conversations/conversation.test.ts
+          CLI_REGION: us-west-2
+          USE_PARENT_ACCOUNT: 1
+      depend-on:
+        - publish_to_local_registry
     - identifier: >-
         NonModelAuthV2Function_TransformerOptionsV2_PredictionsTransformerV2Tests_DefaultValueTransformer
       buildspec: codebuild_specs/graphql_e2e_tests.yml

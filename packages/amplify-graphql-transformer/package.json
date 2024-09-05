@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@aws-amplify/graphql-auth-transformer": "4.0.0",
+    "@aws-amplify/graphql-conversation-transformer": "0.1.0",
     "@aws-amplify/graphql-default-value-transformer": "3.0.0",
     "@aws-amplify/graphql-function-transformer": "3.0.0",
     "@aws-amplify/graphql-generation-transformer": "0.1.0",

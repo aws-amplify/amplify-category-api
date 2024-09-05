@@ -20,7 +20,7 @@ import {
   defaultPrintTransformerLog,
 } from '../graphql-transformer';
 
-const numOfTransformers = 17;
+const numOfTransformers = 18;
 describe('constructTransformerChain', () => {
   it(`returns ${numOfTransformers} transformers when no custom transformers are provided`, () => {
     expect(constructTransformerChain().length).toEqual(numOfTransformers);

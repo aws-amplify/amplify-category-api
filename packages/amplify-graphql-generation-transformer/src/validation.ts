@@ -1,7 +1,7 @@
 import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { GenerationDirectiveConfiguration } from './grapqhl-generation-transformer';
-import { isQueryType } from '@aws-amplify/graphql-transformer-core/src/utils';
+import { isQueryType } from '@aws-amplify/graphql-transformer-core';
 
 /**
  * Validates the configuration for the `@generation` directive.
