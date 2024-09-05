@@ -23,6 +23,7 @@ type KeyAttributeDefinition = {
   type: 'S' | 'N';
 };
 
+// TODO: add explanation for the tool model queries
 export class ConversationResolverGenerator {
   generateResolvers(directives: ConversationDirectiveConfiguration[], ctx: TransformerContextProvider): void {
     for (const directive of directives) {

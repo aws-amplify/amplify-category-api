@@ -39,7 +39,7 @@ const createInvokeLambdaRequestFunction = (
   const graphqlEndpoint = ctx.api.graphqlUrl;
 
   const toolsConfigurationLine = toolDefinitions
-    ? dedent`const dataTools = toolDefinitions.tools
+    ? dedent`const dataTools = toolDefinitions.tools;
      const toolsConfiguration = {
       dataTools,
       clientTools,
