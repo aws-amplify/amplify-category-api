@@ -59,6 +59,8 @@ const createVerifySessionOwnerResponseFunction = (): MappingTemplateProvider => 
           return ctx.result.items[0];
         } else if (ctx.result.items.length === 0 && ctx.result.scannedCount === 1) {
           util.unauthorized();
+        } else {
+          util.unauthorized();
         }
         return null;
       }`;
