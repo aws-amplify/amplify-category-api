@@ -76,7 +76,7 @@ Object {
 };
 
     const clientTools = args.toolConfiguration?.tools?.map((tool) => { return { ...tool.toolSpec }});
-    const dataTools = toolDefinitions.tools
+    const dataTools = toolDefinitions.tools;
  const toolsConfiguration = {
   dataTools,
   clientTools,
@@ -441,7 +441,7 @@ Object {
 };
 
     const clientTools = args.toolConfiguration?.tools?.map((tool) => { return { ...tool.toolSpec }});
-    const dataTools = toolDefinitions.tools
+    const dataTools = toolDefinitions.tools;
  const toolsConfiguration = {
   dataTools,
   clientTools,
@@ -564,7 +564,7 @@ Object {
 };
 
     const clientTools = args.toolConfiguration?.tools?.map((tool) => { return { ...tool.toolSpec }});
-    const dataTools = toolDefinitions.tools
+    const dataTools = toolDefinitions.tools;
  const toolsConfiguration = {
   dataTools,
   clientTools,
@@ -808,7 +808,7 @@ Object {
 };
 
     const clientTools = args.toolConfiguration?.tools?.map((tool) => { return { ...tool.toolSpec }});
-    const dataTools = toolDefinitions.tools
+    const dataTools = toolDefinitions.tools;
  const toolsConfiguration = {
   dataTools,
   clientTools,
