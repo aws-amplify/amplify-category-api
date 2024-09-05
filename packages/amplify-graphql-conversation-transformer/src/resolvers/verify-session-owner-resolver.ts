@@ -55,14 +55,12 @@ const createVerifySessionOwnerResponseFunction = (): MappingTemplateProvider => 
         if (ctx.error) {
           util.error(ctx.error.message, ctx.error.type);
         }
-        if (ctx.result.items.length !== 0 && ctx.result.scannedCount === 1) {
+
+        if (ctx.result.items.length !== 0) {
           return ctx.result.items[0];
-        } else if (ctx.result.items.length === 0 && ctx.result.scannedCount === 1) {
-          util.unauthorized();
-        } else {
-          util.unauthorized();
         }
-        return null;
+
+        util.error('Conversation not found', 'ResourceNotFound');
       }`;
 
   return MappingTemplate.inlineTemplateFromString(dedent(responseFunctionString));

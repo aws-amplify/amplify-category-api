@@ -115,7 +115,7 @@ describe('conversation', () => {
         const sendMessageErrors = sendMessageResult.body.errors;
 
         expect(sendMessageErrors).toHaveLength(1);
-        expect(sendMessageErrors[0].errorType).toEqual('Unauthorized');
+        expect(sendMessageErrors[0].errorType).toEqual('ResourceNotFound');
       });
 
       test('userB cannot read userAs conversation history', async () => {
