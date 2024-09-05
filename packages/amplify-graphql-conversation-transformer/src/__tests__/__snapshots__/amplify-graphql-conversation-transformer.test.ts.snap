@@ -50,8 +50,7 @@ Object {
       "  import { util } from '@aws-appsync/utils';
 
   export function request(ctx) {
-    const { args, identity, source, request, prev } = ctx;
-    const { typeName, fieldName } = ctx.stash;
+    const { args, identity, request, prev } = ctx;
     const toolDefinitions = {\\"tools\\":[{\\"name\\":\\"getTemperature\\",\\"description\\":\\"does a thing\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"city\\":{\\"type\\":\\"string\\",\\"description\\":\\"A UTF-8 character sequence.\\"}},\\"required\\":[\\"city\\"]}},\\"graphqlRequestInputDescriptor\\":{\\"selectionSet\\":\\"value unit\\",\\"propertyTypes\\":{\\"city\\":\\"String!\\"},\\"queryName\\":\\"getTemperature\\"}}]};
     const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
     const graphqlApiEndpoint = '",
@@ -72,7 +71,7 @@ Object {
     const currentMessageId = ctx.stash.defaultValues.id;
     const modelConfiguration = {
   modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
-  systemPrompt: 'You are a helpful chatbot.',
+  systemPrompt: \\"You are a helpful chatbot.\\",
   
 };
 
@@ -83,24 +82,16 @@ Object {
   clientTools,
 };
 
-    const requestArgs = {
-      ...args,
+    const authHeader = request.headers['authorization'];
+    const payload = {
+      conversationId: args.conversationId,
       currentMessageId,
       responseMutation,
       graphqlApiEndpoint,
       modelConfiguration,
-      toolsConfiguration,
+      request: { headers: { authorization: authHeader }},
       messages,
-    };
-
-    const payload = {
-      typeName,
-      fieldName,
-      ...requestArgs,
-      identity,
-      source,
-      request,
-      prev
+      toolsConfiguration,
     };
 
     return {
@@ -182,8 +173,7 @@ Object {
       "  import { util } from '@aws-appsync/utils';
 
   export function request(ctx) {
-    const { args, identity, source, request, prev } = ctx;
-    const { typeName, fieldName } = ctx.stash;
+    const { args, identity, request, prev } = ctx;
     
     const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
     const graphqlApiEndpoint = '",
@@ -204,7 +194,7 @@ Object {
     const currentMessageId = ctx.stash.defaultValues.id;
     const modelConfiguration = {
   modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
-  systemPrompt: 'You are a helpful chatbot.',
+  systemPrompt: \\"You are a helpful chatbot.\\",
   
 };
 
@@ -213,24 +203,16 @@ Object {
   clientTools
 };
 
-    const requestArgs = {
-      ...args,
+    const authHeader = request.headers['authorization'];
+    const payload = {
+      conversationId: args.conversationId,
       currentMessageId,
       responseMutation,
       graphqlApiEndpoint,
       modelConfiguration,
-      toolsConfiguration,
+      request: { headers: { authorization: authHeader }},
       messages,
-    };
-
-    const payload = {
-      typeName,
-      fieldName,
-      ...requestArgs,
-      identity,
-      source,
-      request,
-      prev
+      toolsConfiguration,
     };
 
     return {
@@ -312,8 +294,7 @@ Object {
       "  import { util } from '@aws-appsync/utils';
 
   export function request(ctx) {
-    const { args, identity, source, request, prev } = ctx;
-    const { typeName, fieldName } = ctx.stash;
+    const { args, identity, request, prev } = ctx;
     
     const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
     const graphqlApiEndpoint = '",
@@ -334,7 +315,7 @@ Object {
     const currentMessageId = ctx.stash.defaultValues.id;
     const modelConfiguration = {
   modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
-  systemPrompt: 'You are a helpful chatbot.',
+  systemPrompt: \\"You are a helpful chatbot.\\",
   inferenceConfiguration: {\\"temperature\\":0.5,\\"topP\\":0.9,\\"maxTokens\\":100},
 };
 
@@ -343,24 +324,16 @@ Object {
   clientTools
 };
 
-    const requestArgs = {
-      ...args,
+    const authHeader = request.headers['authorization'];
+    const payload = {
+      conversationId: args.conversationId,
       currentMessageId,
       responseMutation,
       graphqlApiEndpoint,
       modelConfiguration,
-      toolsConfiguration,
+      request: { headers: { authorization: authHeader }},
       messages,
-    };
-
-    const payload = {
-      typeName,
-      fieldName,
-      ...requestArgs,
-      identity,
-      source,
-      request,
-      prev
+      toolsConfiguration,
     };
 
     return {
@@ -442,8 +415,7 @@ Object {
       "  import { util } from '@aws-appsync/utils';
 
   export function request(ctx) {
-    const { args, identity, source, request, prev } = ctx;
-    const { typeName, fieldName } = ctx.stash;
+    const { args, identity, request, prev } = ctx;
     const toolDefinitions = {\\"tools\\":[{\\"name\\":\\"listTodos\\",\\"description\\":\\"lists todos\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{},\\"required\\":[]}},\\"graphqlRequestInputDescriptor\\":{\\"selectionSet\\":\\"items { content isDone id createdAt updatedAt owner } nextToken\\",\\"propertyTypes\\":{},\\"queryName\\":\\"listTodos\\"}}]};
     const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
     const graphqlApiEndpoint = '",
@@ -464,7 +436,7 @@ Object {
     const currentMessageId = ctx.stash.defaultValues.id;
     const modelConfiguration = {
   modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
-  systemPrompt: 'You are a helpful chatbot. Answer questions to the best of your ability.',
+  systemPrompt: \\"You are a helpful chatbot. Answer questions to the best of your ability.\\",
   
 };
 
@@ -475,24 +447,16 @@ Object {
   clientTools,
 };
 
-    const requestArgs = {
-      ...args,
+    const authHeader = request.headers['authorization'];
+    const payload = {
+      conversationId: args.conversationId,
       currentMessageId,
       responseMutation,
       graphqlApiEndpoint,
       modelConfiguration,
-      toolsConfiguration,
+      request: { headers: { authorization: authHeader }},
       messages,
-    };
-
-    const payload = {
-      typeName,
-      fieldName,
-      ...requestArgs,
-      identity,
-      source,
-      request,
-      prev
+      toolsConfiguration,
     };
 
     return {
@@ -574,8 +538,7 @@ Object {
       "  import { util } from '@aws-appsync/utils';
 
   export function request(ctx) {
-    const { args, identity, source, request, prev } = ctx;
-    const { typeName, fieldName } = ctx.stash;
+    const { args, identity, request, prev } = ctx;
     const toolDefinitions = {\\"tools\\":[{\\"name\\":\\"listCustomers\\",\\"description\\":\\"Provides data about the customer sending a message\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{},\\"required\\":[]}},\\"graphqlRequestInputDescriptor\\":{\\"selectionSet\\":\\"items { name email activeCart { products { name price } customerId id createdAt updatedAt owner } orderHistory { items { products { name price } customerId id createdAt updatedAt owner } nextToken } id createdAt updatedAt owner } nextToken\\",\\"propertyTypes\\":{},\\"queryName\\":\\"listCustomers\\"}}]};
     const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
     const graphqlApiEndpoint = '",
@@ -596,7 +559,7 @@ Object {
     const currentMessageId = ctx.stash.defaultValues.id;
     const modelConfiguration = {
   modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
-  systemPrompt: 'You are a helpful chatbot. Answer questions to the best of your ability.',
+  systemPrompt: \\"You are a helpful chatbot. Answer questions to the best of your ability.\\",
   
 };
 
@@ -607,24 +570,16 @@ Object {
   clientTools,
 };
 
-    const requestArgs = {
-      ...args,
+    const authHeader = request.headers['authorization'];
+    const payload = {
+      conversationId: args.conversationId,
       currentMessageId,
       responseMutation,
       graphqlApiEndpoint,
       modelConfiguration,
-      toolsConfiguration,
+      request: { headers: { authorization: authHeader }},
       messages,
-    };
-
-    const payload = {
-      typeName,
-      fieldName,
-      ...requestArgs,
-      identity,
-      source,
-      request,
-      prev
+      toolsConfiguration,
     };
 
     return {
@@ -706,8 +661,7 @@ Object {
       "  import { util } from '@aws-appsync/utils';
 
   export function request(ctx) {
-    const { args, identity, source, request, prev } = ctx;
-    const { typeName, fieldName } = ctx.stash;
+    const { args, identity, request, prev } = ctx;
     
     const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
     const graphqlApiEndpoint = '",
@@ -728,7 +682,7 @@ Object {
     const currentMessageId = ctx.stash.defaultValues.id;
     const modelConfiguration = {
   modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
-  systemPrompt: 'You are a helpful chatbot. Answer questions to the best of your ability.',
+  systemPrompt: \\"You are a helpful chatbot. Answer questions to the best of your ability.\\",
   inferenceConfiguration: {\\"temperature\\":0.5,\\"topP\\":0.9,\\"maxTokens\\":100},
 };
 
@@ -737,24 +691,16 @@ Object {
   clientTools
 };
 
-    const requestArgs = {
-      ...args,
+    const authHeader = request.headers['authorization'];
+    const payload = {
+      conversationId: args.conversationId,
       currentMessageId,
       responseMutation,
       graphqlApiEndpoint,
       modelConfiguration,
-      toolsConfiguration,
+      request: { headers: { authorization: authHeader }},
       messages,
-    };
-
-    const payload = {
-      typeName,
-      fieldName,
-      ...requestArgs,
-      identity,
-      source,
-      request,
-      prev
+      toolsConfiguration,
     };
 
     return {
@@ -836,8 +782,7 @@ Object {
       "  import { util } from '@aws-appsync/utils';
 
   export function request(ctx) {
-    const { args, identity, source, request, prev } = ctx;
-    const { typeName, fieldName } = ctx.stash;
+    const { args, identity, request, prev } = ctx;
     const toolDefinitions = {\\"tools\\":[{\\"name\\":\\"getTemperature\\",\\"description\\":\\"does a thing\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"city\\":{\\"type\\":\\"string\\",\\"description\\":\\"A UTF-8 character sequence.\\"}},\\"required\\":[\\"city\\"]}},\\"graphqlRequestInputDescriptor\\":{\\"selectionSet\\":\\"value unit\\",\\"propertyTypes\\":{\\"city\\":\\"String!\\"},\\"queryName\\":\\"getTemperature\\"}},{\\"name\\":\\"plus\\",\\"description\\":\\"does a different thing\\",\\"inputSchema\\":{\\"json\\":{\\"type\\":\\"object\\",\\"properties\\":{\\"a\\":{\\"type\\":\\"number\\",\\"description\\":\\"A signed 32-bit integer value.\\"},\\"b\\":{\\"type\\":\\"number\\",\\"description\\":\\"A signed 32-bit integer value.\\"}},\\"required\\":[]}},\\"graphqlRequestInputDescriptor\\":{\\"selectionSet\\":\\"\\",\\"propertyTypes\\":{\\"a\\":\\"Int\\",\\"b\\":\\"Int\\"},\\"queryName\\":\\"plus\\"}}]};
     const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
     const graphqlApiEndpoint = '",
@@ -858,7 +803,7 @@ Object {
     const currentMessageId = ctx.stash.defaultValues.id;
     const modelConfiguration = {
   modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
-  systemPrompt: 'You are a helpful chatbot. Answer questions to the best of your ability.',
+  systemPrompt: \\"You are a helpful chatbot. Answer questions to the best of your ability.\\",
   
 };
 
@@ -869,24 +814,16 @@ Object {
   clientTools,
 };
 
-    const requestArgs = {
-      ...args,
+    const authHeader = request.headers['authorization'];
+    const payload = {
+      conversationId: args.conversationId,
       currentMessageId,
       responseMutation,
       graphqlApiEndpoint,
       modelConfiguration,
-      toolsConfiguration,
+      request: { headers: { authorization: authHeader }},
       messages,
-    };
-
-    const payload = {
-      typeName,
-      fieldName,
-      ...requestArgs,
-      identity,
-      source,
-      request,
-      prev
+      toolsConfiguration,
     };
 
     return {
