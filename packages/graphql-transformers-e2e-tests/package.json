@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-graphql-transformers-e2e-tests",
-  "version": "8.8.7",
+  "version": "9.0.0",
   "description": "End to end functional tests for appsync supported transformers.",
   "private": true,
   "repository": {
@@ -40,7 +40,7 @@
     "@aws-amplify/graphql-model-transformer": "3.0.1",
     "@aws-amplify/graphql-transformer-core": "3.0.1",
     "@aws-amplify/graphql-transformer-interfaces": "4.0.1",
-    "@aws-amplify/graphql-transformer-test-utils": "0.6.1",
+    "@aws-amplify/graphql-transformer-test-utils": "1.0.0",
     "@types/node": "^18.0.0",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",

@@ -46,7 +46,7 @@
     "@aws-amplify/graphql-model-transformer": "3.0.1",
     "@aws-amplify/graphql-relational-transformer": "3.0.1",
     "@aws-amplify/graphql-searchable-transformer": "3.0.1",
-    "@aws-amplify/graphql-transformer-test-utils": "0.6.1",
+    "@aws-amplify/graphql-transformer-test-utils": "1.0.0",
     "graphql": "^15.5.0"
   },
   "jest": {

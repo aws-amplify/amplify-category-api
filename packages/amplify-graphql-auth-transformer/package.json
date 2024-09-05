@@ -46,7 +46,7 @@
     "@aws-amplify/graphql-index-transformer": "3.0.1",
     "@aws-amplify/graphql-searchable-transformer": "3.0.1",
     "@aws-amplify/graphql-sql-transformer": "0.4.1",
-    "@aws-amplify/graphql-transformer-test-utils": "0.6.1",
+    "@aws-amplify/graphql-transformer-test-utils": "1.0.0",
     "@types/node": "^18.0.0"
   },
   "peerDependencies": {
