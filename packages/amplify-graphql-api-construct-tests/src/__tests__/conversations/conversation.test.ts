@@ -24,7 +24,9 @@ describe('conversation', () => {
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projFolderName);
       const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'configurable-stack'));
-      const name = await initCDKProject(projRoot, templatePath);
+      const name = await initCDKProject(projRoot, templatePath, {
+        additionalDependencies: ['@aws-sdk/client-bedrock-runtime', 'esbuild'],
+      });
 
       const conversationSchemaPath = path.resolve(path.join(__dirname, 'graphql', 'schema-conversation.graphql'));
       const conversationSchema = fs.readFileSync(conversationSchemaPath).toString();
@@ -36,7 +38,7 @@ describe('conversation', () => {
         },
       };
 
-      writeStackConfig(projRoot, { prefix: 'Conversation', useSandbox: true });
+      writeStackConfig(projRoot, { prefix: 'Conversation' });
       writeTestDefinitions(testDefinitions, projRoot);
 
       const outputs = await cdkDeploy(projRoot, '--all');
@@ -84,17 +86,21 @@ describe('conversation', () => {
 
     test('happy path', async () => {
       const conversationResult = await doCreateConversationPirateChat(apiEndpoint, accessToken);
+
       const { id } = conversationResult.body.data.createConversationPirateChat;
       expect(id).toBeDefined();
 
       const sendMessageResult = await doSendMessagePirateChat(apiEndpoint, accessToken, id, [{ text: 'Hello, world!' }]);
+
       const message = sendMessageResult.body.data.pirateChat;
       expect(message).toBeDefined();
-      expect(message.content).toEqual([{ text: 'Hello, world!' }]);
+      expect(message.content).toHaveLength(1);
+      expect(message.content[0].text).toEqual('Hello, world!');
       expect(message.conversationId).toEqual(id);
 
       const messages = await doListConversationMessagesPirateChat(apiEndpoint, accessToken, id);
-      expect(messages.body.data.listConversationMessagePirateChats.items.length).toBe(1);
+
+      expect(messages.body.data.listConversationMessagePirateChats.items).toHaveLength(1);
       expect(messages.body.data.listConversationMessagePirateChats.items[0].conversationId).toBe(id);
     });
 
@@ -104,21 +110,33 @@ describe('conversation', () => {
         const { id } = conversationResult.body.data.createConversationPirateChat;
 
         const sendMessageResult = await doSendMessagePirateChat(apiEndpoint, accessToken2, id, [{ text: 'Hello, world!' }]);
+
         expect(sendMessageResult.body.data.pirateChat).toBeNull();
         const sendMessageErrors = sendMessageResult.body.errors;
-        expect(sendMessageErrors.length).toBe(1);
-        expect(sendMessageErrors[0].message).toContain('Conversation not found');
+
+        expect(sendMessageErrors).toHaveLength(1);
+        expect(sendMessageErrors[0].errorType).toEqual('Unauthorized');
       });
 
       test('userB cannot read userAs conversation history', async () => {
         const conversationResult = await doCreateConversationPirateChat(apiEndpoint, accessToken);
         const { id } = conversationResult.body.data.createConversationPirateChat;
 
-        const listMessages = await doListConversationMessagesPirateChat(apiEndpoint, accessToken2, id);
-        expect(listMessages.body.data.listConversationMessagePirateChats.items.length).toBe(0);
-        const listMessageErrors = listMessages.body.errors;
-        expect(listMessageErrors.length).toBe(1);
-        expect(listMessageErrors[0].message).toContain('Unauthorized');
+        const sendMessageResult = await doSendMessagePirateChat(apiEndpoint, accessToken, id, [{ text: 'Hello, world!' }]);
+        const message = sendMessageResult.body.data.pirateChat;
+        expect(message).toBeDefined();
+        expect(message.content).toHaveLength(1);
+        expect(message.content[0].text).toEqual('Hello, world!');
+        expect(message.conversationId).toEqual(id);
+
+        // This should return messages because userA is the conversation owner.
+        const messages = await doListConversationMessagesPirateChat(apiEndpoint, accessToken, id);
+        expect(messages.body.data.listConversationMessagePirateChats.items).toHaveLength(1);
+        expect(messages.body.data.listConversationMessagePirateChats.items[0].conversationId).toBe(id);
+
+        // This should not return messages because userB is not the conversation owner.
+        const messagesB = await doListConversationMessagesPirateChat(apiEndpoint, accessToken2, id);
+        expect(messagesB.body.data.listConversationMessagePirateChats.items).toHaveLength(0);
       });
     });
   });

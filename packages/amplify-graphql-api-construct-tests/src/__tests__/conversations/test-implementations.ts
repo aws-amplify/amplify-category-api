@@ -12,10 +12,11 @@ export const doCreateConversationPirateChat = async (
   apiEndpoint: string,
   accessToken: string,
 ): Promise<AppSyncGraphqlResponse<CreateConversationPirateChatMutation>> => {
-  return doAppSyncGraphqlMutation({
+  return doAppSyncGraphqlOperation({
     apiEndpoint,
     auth: { accessToken: accessToken },
     query: createConversationPirateChat,
+    variables: { input: { name: 'test conversation' } },
   });
 };
 
