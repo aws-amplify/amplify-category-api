@@ -30,8 +30,6 @@ const v1TransformerSupportedRegions = JSON.parse(fs.readFileSync(v1TransformerSu
   (region: TestRegion) => region.name,
 );
 
-type ForceTests = 'interactions' | 'containers';
-
 type TestTiming = {
   test: string;
   medianRuntime: number;
@@ -77,6 +75,8 @@ const FORCE_REGION_MAP = {
   containers: 'us-east-1',
   generation: 'us-west-2',
   conversation: 'us-west-2',
+  custom_policies_container: 'us-east-1',
+  'sql-pg-canary': 'us-east-1',
 };
 
 // some tests require additional time, the parent account can handle longer tests (up to 90 minutes)
@@ -86,6 +86,7 @@ const USE_PARENT_ACCOUNT = [
   'src/__tests__/FunctionTransformerTestsV2.e2e.test.ts',
   'src/__tests__/generations/generation.test.ts',
   'src/__tests__/conversations/conversation.test.ts',
+  'src/__tests__/sql-pg-canary.test.ts',
 ];
 const TEST_TIMINGS_PATH = join(REPO_ROOT, 'scripts', 'test-timings.data.json');
 const CODEBUILD_CONFIG_BASE_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_base.yml');
@@ -189,7 +190,7 @@ const DEBUG_FLAG = '--debug';
 
 const EXCLUDE_TEST_IDS: string[] = [];
 
-const MAX_WORKERS = 4;
+const MAX_WORKERS = 5;
 
 // eslint-disable-next-line import/namespace
 const loadConfigBase = (): ConfigBase => yaml.load(fs.readFileSync(CODEBUILD_CONFIG_BASE_PATH, 'utf8')) as ConfigBase;
@@ -303,14 +304,16 @@ const splitTests = (
         ...JSON.parse(JSON.stringify(baseJobLinux)), // deep clone base job
         identifier: getIdentifier(names),
       };
-      tmp.env.variables = {};
+      tmp.env.variables = tmp.env.variables ?? {};
       tmp.env.variables.TEST_SUITE = j.tests.join('|');
       tmp.env.variables.CLI_REGION = j.region;
       if (j.useParentAccount) {
         tmp.env.variables.USE_PARENT_ACCOUNT = 1;
       }
       if (j.runSolo) {
-        tmp.env['compute-type'] = 'BUILD_GENERAL1_SMALL';
+        tmp.env['compute-type'] = 'BUILD_GENERAL1_MEDIUM';
+        // BUILD_GENERAL1_MEDIUM has 7GB of memory. 6656 = 6.5GB. Leave 0.5GB for the OS and other processes.
+        tmp.env.variables.NODE_OPTIONS = '--max-old-space-size=6656';
       }
       result.push(tmp);
     }
@@ -322,10 +325,10 @@ const setJobRegion = (test: string, job: CandidateJob, jobIdx: number, useBetaLa
   const FORCE_REGION = Object.keys(FORCE_REGION_MAP).find((key) => {
     const testName = getTestNameFromPath(test);
     return testName.startsWith(key);
-  });
+  }) as keyof typeof FORCE_REGION_MAP;
 
   if (FORCE_REGION) {
-    job.region = FORCE_REGION_MAP[FORCE_REGION as ForceTests];
+    job.region = FORCE_REGION_MAP[FORCE_REGION];
     return;
   }
 
@@ -386,7 +389,11 @@ const main = (): void => {
         identifier: 'run_e2e_tests',
         buildspec: 'codebuild_specs/run_e2e_tests.yml',
         env: {
-          'compute-type': 'BUILD_GENERAL1_MEDIUM',
+          'compute-type': 'BUILD_GENERAL1_LARGE',
+          variables: {
+            // BUILD_GENERAL1_LARGE has 15GB of memory. 14848MB = 14.5GB. Leave 0.5GB for the OS and other processes.
+            NODE_OPTIONS: '--max-old-space-size=14848',
+          },
         },
         'depend-on': ['publish_to_local_registry'],
       },
@@ -398,7 +405,11 @@ const main = (): void => {
         identifier: 'run_cdk_tests',
         buildspec: 'codebuild_specs/run_cdk_tests.yml',
         env: {
-          'compute-type': 'BUILD_GENERAL1_MEDIUM',
+          'compute-type': 'BUILD_GENERAL1_LARGE',
+          variables: {
+            // BUILD_GENERAL1_LARGE has 15GB of memory. 14848MB = 14.5GB. Leave 0.5GB for the OS and other processes.
+            NODE_OPTIONS: '--max-old-space-size=14848',
+          },
         },
         'depend-on': ['publish_to_local_registry'],
       },
@@ -410,7 +421,11 @@ const main = (): void => {
         identifier: 'gql_e2e_tests',
         buildspec: 'codebuild_specs/graphql_e2e_tests.yml',
         env: {
-          'compute-type': 'BUILD_GENERAL1_MEDIUM',
+          'compute-type': 'BUILD_GENERAL1_LARGE',
+          variables: {
+            // BUILD_GENERAL1_LARGE has 15GB of memory. 14848MB = 14.5GB. Leave 0.5GB for the OS and other processes.
+            NODE_OPTIONS: '--max-old-space-size=14848',
+          },
         },
         'depend-on': ['publish_to_local_registry'],
       },
