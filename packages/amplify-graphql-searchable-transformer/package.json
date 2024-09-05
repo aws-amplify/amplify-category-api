@@ -42,7 +42,7 @@
     "constructs": "^10.3.0"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-test-utils": "0.6.1",
+    "@aws-amplify/graphql-transformer-test-utils": "1.0.0",
     "@types/node": "^18.0.0"
   },
   "jest": {
