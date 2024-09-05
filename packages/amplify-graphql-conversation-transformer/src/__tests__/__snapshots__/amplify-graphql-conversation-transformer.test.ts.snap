@@ -1104,7 +1104,7 @@ input CreateConversationMessagePirateChatAssistantInput {
 }
 
 type Subscription {
-  onCreateAssistantResponsePirateChat(conversationId: ID): ConversationMessage @aws_subscribe(mutations: [\\"conversationId\\"]) @aws_cognito_user_pools
+  onCreateAssistantResponsePirateChat(conversationId: ID): ConversationMessage @aws_subscribe(mutations: [\\"createAssistantResponsePirateChat\\"]) @aws_cognito_user_pools
   onCreateConversationMessagePirateChat(filter: ModelSubscriptionConversationMessagePirateChatFilterInput, owner: String): ConversationMessagePirateChat @aws_subscribe(mutations: [\\"createConversationMessagePirateChat\\"])
 }
 
