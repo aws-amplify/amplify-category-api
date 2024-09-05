@@ -97,7 +97,7 @@
     "@aws-amplify/graphql-transformer-core": "3.0.0",
     "@aws-amplify/graphql-transformer-interfaces": "4.0.0",
     "@aws-amplify/graphql-generation-transformer": "0.1.0",
-    "@aws-amplify/ai-constructs": "^0.1.0",
+    "@aws-amplify/ai-constructs": "^0.1.1",
     "@aws-sdk/client-bedrock-runtime": "^3.622.0",
     "@aws-amplify/platform-core": "^0.2.0",
     "@aws-amplify/plugin-types": "^0.4.1",

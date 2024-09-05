@@ -5,7 +5,7 @@ import { JSResolverFunctionProvider } from '../resolvers/js-resolver-function-pr
 import { TransformerResolver } from '@aws-amplify/graphql-transformer-core';
 import { ResolverResourceIDs, FunctionResourceIDs, ResourceConstants, toUpper } from 'graphql-transformer-common';
 import * as cdk from 'aws-cdk-lib';
-import { conversation } from '@aws-amplify/ai-constructs/lib';
+import { conversation } from '@aws-amplify/ai-constructs';
 import { IFunction, Function } from 'aws-cdk-lib/aws-lambda';
 import { getModelDataSourceNameForTypeName, getTable } from '@aws-amplify/graphql-transformer-core';
 import { initMappingTemplate } from '../resolvers/init-resolver';
