@@ -52,8 +52,7 @@ const createInvokeLambdaRequestFunction = (
   import { util } from '@aws-appsync/utils';
 
   export function request(ctx) {
-    const { args, identity, source, request, prev } = ctx;
-    const { typeName, fieldName } = ctx.stash;
+    const { args, identity, request, prev } = ctx;
     ${toolDefinitionsLine}
     const selectionSet = '${selectionSet}';
     const graphqlApiEndpoint = '${graphqlEndpoint}';
@@ -70,24 +69,16 @@ const createInvokeLambdaRequestFunction = (
     const clientTools = args.toolConfiguration?.tools?.map((tool) => { return { ...tool.toolSpec }});
     ${toolsConfigurationLine}
 
-    const requestArgs = {
-      ...args,
+    const authHeader = request.headers['authorization'];
+    const payload = {
+      conversationId: args.conversationId,
       currentMessageId,
       responseMutation,
       graphqlApiEndpoint,
       modelConfiguration,
-      toolsConfiguration,
+      request: { headers: { authorization: authHeader }},
       messages,
-    };
-
-    const payload = {
-      typeName,
-      fieldName,
-      ...requestArgs,
-      identity,
-      source,
-      request,
-      prev
+      toolsConfiguration,
     };
 
     return {
@@ -134,7 +125,7 @@ const generateModelConfigurationLine = (config: ConversationDirectiveConfigurati
 
   return dedent`const modelConfiguration = {
     modelId: '${aiModel}',
-    systemPrompt: '${systemPrompt}',
+    systemPrompt: ${JSON.stringify(systemPrompt)},
     ${generateModelInferenceConfigurationLine(config)}
   };`;
 };
