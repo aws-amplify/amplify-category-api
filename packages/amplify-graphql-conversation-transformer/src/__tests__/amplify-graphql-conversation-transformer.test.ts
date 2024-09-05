@@ -4,7 +4,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration, ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { parse } from 'graphql';
+import { parse, print } from 'graphql';
 import { ConversationTransformer } from '..';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 import * as fs from 'fs-extra';
@@ -53,6 +53,7 @@ describe('ConversationTransformer', () => {
       expect(resolverFnCode).toMatchSnapshot();
 
       const schema = parse(out.schema);
+      expect(print(schema)).toMatchSnapshot();
       validateModelSchema(schema);
     });
 
