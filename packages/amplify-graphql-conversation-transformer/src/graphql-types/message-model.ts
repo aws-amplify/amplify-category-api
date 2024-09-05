@@ -89,11 +89,7 @@ export const createMessageModel = (
     conversationMessageInterface,
   );
 
-  const messageSubscription = constructMessageSubscription(
-    messageSubscriptionFieldName,
-    messageModelName,
-    assistantMutationFieldName,
-  );
+  const messageSubscription = constructMessageSubscription(messageSubscriptionFieldName, messageModelName, assistantMutationFieldName);
 
   const assistantMutationInput = constructAssistantResponseMutationInput(messageModelName);
   const assistantMutationField = constructAssistantMutationField(
