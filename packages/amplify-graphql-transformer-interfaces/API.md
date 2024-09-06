@@ -7,6 +7,7 @@
 import { BackedDataSource } from 'aws-cdk-lib/aws-appsync';
 import { BaseDataSource } from 'aws-cdk-lib/aws-appsync';
 import { CfnDomain } from 'aws-cdk-lib/aws-elasticsearch';
+import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
 import { CfnParameter } from 'aws-cdk-lib';
 import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import { CfnResource } from 'aws-cdk-lib';
@@ -24,6 +25,7 @@ import { FieldNode } from 'graphql';
 import { Grant } from 'aws-cdk-lib/aws-iam';
 import { GraphqlApiBase } from 'aws-cdk-lib/aws-appsync';
 import { HttpDataSource } from 'aws-cdk-lib/aws-appsync';
+import { HttpDataSourceOptions } from 'aws-cdk-lib/aws-appsync';
 import { IamResource } from 'aws-cdk-lib/aws-appsync';
 import { IAsset } from 'aws-cdk-lib';
 import { IConstruct } from 'constructs';
@@ -204,6 +206,8 @@ export interface GraphQLAPIProvider extends IConstruct {
     grantQuery: (grantee: IGrantable, ...fields: string[]) => Grant;
     // (undocumented)
     grantSubscription: (grantee: IGrantable, ...fields: string[]) => Grant;
+    // (undocumented)
+    readonly graphqlUrl: string;
     // (undocumented)
     readonly host: TransformHostProvider;
     // (undocumented)
@@ -867,11 +871,11 @@ export type TransformerValidationStepContextProvider = Pick<TransformerContextPr
 // @public (undocumented)
 export interface TransformHostProvider {
     // (undocumented)
-    addAppSyncFunction: (name: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, dataSourceName: string, scope?: Construct) => AppSyncFunctionConfigurationProvider;
+    addAppSyncFunction: (name: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, dataSourceName: string, scope?: Construct, runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty) => AppSyncFunctionConfigurationProvider;
     // (undocumented)
     addDynamoDbDataSource(name: string, table: ITable, options?: DynamoDbDataSourceOptions, scope?: Construct): DynamoDbDataSource;
     // (undocumented)
-    addHttpDataSource(name: string, endpoint: string, options?: DataSourceOptions, scope?: Construct): HttpDataSource;
+    addHttpDataSource(name: string, endpoint: string, options?: HttpDataSourceOptions, scope?: Construct): HttpDataSource;
     // (undocumented)
     addLambdaDataSource(name: string, lambdaFunction: IFunction, options?: DataSourceOptions, scope?: Construct): LambdaDataSource;
     // (undocumented)
@@ -881,7 +885,7 @@ export interface TransformHostProvider {
     // (undocumented)
     addNoneDataSource(name: string, options?: DataSourceOptions, scope?: Construct): NoneDataSource;
     // (undocumented)
-    addResolver: (typeName: string, fieldName: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, resolverLogicalId?: string, dataSourceName?: string, pipelineConfig?: string[], scope?: Construct) => CfnResolver;
+    addResolver: (typeName: string, fieldName: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, resolverLogicalId?: string, dataSourceName?: string, pipelineConfig?: string[], scope?: Construct, runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty) => CfnResolver;
     // (undocumented)
     addSearchableDataSource(name: string, endpoint: string, region: string, options?: SearchableDataSourceOptions, scope?: Construct): BaseDataSource;
     // (undocumented)
