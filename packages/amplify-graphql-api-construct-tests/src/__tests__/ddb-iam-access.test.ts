@@ -7,6 +7,7 @@ import { CognitoIdentityPoolCredentialsFactory } from '../cognito-identity-pool-
 import { assumeIamRole } from '../assume-role';
 import { CRUDLTester } from '../crudl-tester';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
+import { authConstructDependency } from './additional-dependencies';
 
 jest.setTimeout(DURATION_1_HOUR);
 
@@ -32,13 +33,13 @@ describe('CDK DDB Iam Access', () => {
     projRootWithIam = await createNewProjectDir(projFolderName);
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'ddb-iam-access'));
     const name = await initCDKProject(projRoot, templatePath, {
-      additionalDependencies: ['@aws-amplify/auth-construct@^1.0.0'],
+      additionalDependencies: [authConstructDependency],
       cdkContext: {
         'enable-iam-authorization-mode': 'false',
       },
     });
     const nameWithIam = await initCDKProject(projRootWithIam, templatePath, {
-      additionalDependencies: ['@aws-amplify/auth-construct@^1.0.0'],
+      additionalDependencies: [authConstructDependency],
       cdkContext: {
         'enable-iam-authorization-mode': 'true',
       },

@@ -9,6 +9,7 @@ import { assumeIamRole } from '../assume-role';
 import { CRUDLTester } from '../crudl-tester';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { DURATION_1_HOUR, ONE_MINUTE } from '../utils/duration-constants';
+import { authConstructDependency } from './additional-dependencies';
 
 jest.setTimeout(DURATION_1_HOUR);
 
@@ -58,13 +59,13 @@ describe('CDK SQL Iam Access', () => {
     await databaseController.setupDatabase();
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'sql-iam-access'));
     const name = await initCDKProject(projRoot, templatePath, {
-      additionalDependencies: ['@aws-amplify/auth-construct@^1.0.0'],
+      additionalDependencies: [authConstructDependency],
       cdkContext: {
         'enable-iam-authorization-mode': 'false',
       },
     });
     const nameWithIam = await initCDKProject(projRootWithIam, templatePath, {
-      additionalDependencies: ['@aws-amplify/auth-construct@^1.0.0'],
+      additionalDependencies: [authConstructDependency],
       cdkContext: {
         'enable-iam-authorization-mode': 'true',
       },
