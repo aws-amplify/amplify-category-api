@@ -98,7 +98,7 @@
     "@aws-amplify/graphql-transformer-interfaces": "4.0.1",
     "@aws-amplify/platform-core": "^0.2.0",
     "@aws-amplify/plugin-types": "^0.4.1",
-    "@aws-amplify/ai-constructs": "^0.1.1",
+    "@aws-amplify/ai-constructs": "^0.1.2",
     "charenc": "^0.0.2",
     "crypt": "^0.0.2",
     "fs-extra": "^8.1.0",
