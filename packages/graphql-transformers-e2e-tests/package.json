@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-graphql-transformers-e2e-tests",
-  "version": "8.8.7",
+  "version": "9.0.0",
   "description": "End to end functional tests for appsync supported transformers.",
   "private": true,
   "repository": {
@@ -40,8 +40,8 @@
     "@aws-amplify/graphql-model-transformer": "3.0.1",
     "@aws-amplify/graphql-transformer-core": "3.0.1",
     "@aws-amplify/graphql-transformer-interfaces": "4.0.1",
-    "@aws-amplify/graphql-transformer-test-utils": "0.6.1",
-    "@types/node": "^12.12.6",
+    "@aws-amplify/graphql-transformer-test-utils": "1.0.0",
+    "@types/node": "^18.0.0",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-sdk": "^2.1113.0",
@@ -56,7 +56,12 @@
   },
   "jest": {
     "transform": {
-      "^.+\\.tsx?$": "ts-jest"
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "tsconfig": "<rootDir>/tsconfig.tests.json"
+        }
+      ]
     },
     "collectCoverage": true,
     "coverageProvider": "v8",
@@ -78,7 +83,9 @@
         }
       ]
     ],
-    "testURL": "http://localhost",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "testRegex": "(src/__tests__/.*.test.*)$",
     "testPathIgnorePatterns": [
       "/lib/",
@@ -94,19 +101,16 @@
       "node"
     ],
     "globals": {
-      "window": {},
-      "ts-jest": {
-        "tsconfig": "<rootDir>/tsconfig.tests.json"
-      }
+      "window": {}
     },
-    "moduleNameMapper": {
-      "axios": "axios/dist/node/axios.cjs"
-    },
-    "testEnvironment": "../../FixJestEnvironment.js",
     "coveragePathIgnorePatterns": [
       "/node_modules",
       "/__tests__/"
-    ]
+    ],
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    }
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",

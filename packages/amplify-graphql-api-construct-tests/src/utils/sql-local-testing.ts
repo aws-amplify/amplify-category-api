@@ -2,7 +2,7 @@ import path from 'path';
 import * as fs from 'fs-extra';
 import { SqlEngine } from 'amplify-category-api-e2e-core';
 
-export const getClusterIdentifier = (region: string, engine: SqlEngine): string | undefined => {
+export const getClusterIdFromLocalConfig = (region: string, engine: SqlEngine): string | undefined => {
   const repoRoot = path.join(__dirname, '..', '..', '..', '..');
   const localClusterPath = path.join(repoRoot, 'scripts', 'e2e-test-local-cluster-config.json');
   if (!fs.existsSync(localClusterPath)) {

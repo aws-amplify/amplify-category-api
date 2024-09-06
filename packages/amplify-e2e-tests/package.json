@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-e2e-tests",
-  "version": "3.22.11",
+  "version": "4.0.0",
   "description": "E2e test suite",
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
     "@aws-amplify/amplify-app": "^5.0.35",
     "@aws-amplify/graphql-schema-generator": "0.10.1",
     "@aws-amplify/graphql-transformer-core": "3.0.1",
-    "amplify-category-api-e2e-core": "4.9.1",
+    "amplify-category-api-e2e-core": "5.0.0",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-sdk": "^2.1113.0",
@@ -63,9 +63,16 @@
     "testRunner": "amplify-category-api-e2e-core/runner",
     "testEnvironment": "amplify-category-api-e2e-core/environment",
     "transform": {
-      "^.+\\.tsx?$": "ts-jest"
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "diagnostics": false
+        }
+      ]
     },
-    "testURL": "http://localhost",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "testRegex": "(src/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
     "testPathIgnorePatterns": [
       "/node_modules/",
@@ -106,19 +113,19 @@
       "<rootDir>/src/setup-tests.ts"
     ],
     "globals": {
-      "window": {},
-      "ts-jest": {
-        "diagnostics": false
-      }
+      "window": {}
     },
     "moduleNameMapper": {
-      "axios": "axios/dist/node/axios.cjs",
       "^csv-parse/sync": "<rootDir>/../../node_modules/csv-parse/dist/cjs/sync.cjs"
     },
     "coveragePathIgnorePatterns": [
       "/node_modules/",
       "/__tests__/"
-    ]
+    ],
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    }
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",

@@ -153,14 +153,15 @@ export class PredictionsTransformer extends TransformerPluginBase {
   };
 
   generateResolvers = (context: TransformerContextProvider): void => {
+    if (this.directiveList.length === 0) {
+      return;
+    }
+
     // This validation can't occur in validate because the api has not been initialized until generateResolvers
     if (!context.transformParameters.allowGen1Patterns) {
       cdk.Annotations.of(context.api).addWarning(
         `@${PredictionsDirective.name} is deprecated. This functionality will be removed in the next major release.`,
       );
-    }
-    if (this.directiveList.length === 0) {
-      return;
     }
 
     const stack: cdk.Stack = context.stackManager.createStack(PREDICTIONS_DIRECTIVE_STACK);

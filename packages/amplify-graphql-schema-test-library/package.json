@@ -40,7 +40,7 @@
     "@aws-amplify/graphql-searchable-transformer": "3.0.1",
     "@aws-amplify/graphql-transformer-core": "3.0.1",
     "@aws-amplify/graphql-transformer-interfaces": "4.0.1",
-    "@aws-amplify/graphql-transformer-test-utils": "0.6.1"
+    "@aws-amplify/graphql-transformer-test-utils": "1.0.0"
   },
   "jest": {
     "transform": {
@@ -68,12 +68,15 @@
       "clover",
       "text"
     ],
-    "testEnvironment": "../../FixJestEnvironment.js",
     "collectCoverageFrom": [
       "src/**/*.ts"
     ],
     "coveragePathIgnorePatterns": [
       "/__tests__/"
-    ]
+    ],
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    }
   }
 }
