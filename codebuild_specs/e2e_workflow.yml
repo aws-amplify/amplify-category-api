@@ -70,5 +70,4 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_SMALL
       depend-on:
-        - >-
-          custom_transformers_invalid_input_arguments_schema_data_access_patterns_schema_predictions_function_10
+        - generation
