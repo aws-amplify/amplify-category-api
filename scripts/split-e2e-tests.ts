@@ -73,6 +73,8 @@ type CandidateJob = {
 const FORCE_REGION_MAP = {
   interactions: 'us-west-2',
   containers: 'us-east-1',
+  generation: 'us-west-2',
+  conversation: 'us-west-2',
   custom_policies_container: 'us-east-1',
   'sql-pg-canary': 'us-east-1',
 };
@@ -82,6 +84,8 @@ const USE_PARENT_ACCOUNT = [
   'src/__tests__/graphql-v2/searchable-datastore',
   'src/__tests__/schema-searchable',
   'src/__tests__/FunctionTransformerTestsV2.e2e.test.ts',
+  'src/__tests__/generations/generation.test.ts',
+  'src/__tests__/conversations/conversation.test.ts',
   'src/__tests__/sql-pg-canary.test.ts',
 ];
 const TEST_TIMINGS_PATH = join(REPO_ROOT, 'scripts', 'test-timings.data.json');
@@ -146,6 +150,10 @@ const RUN_SOLO: (string | RegExp)[] = [
   /src\/__tests__\/owner-auth\/.*\.test\.ts/,
   /src\/__tests__\/relationships\/.*\.test\.ts/,
   /src\/__tests__\/restricted-field-auth\/.*\.test\.ts/,
+  // Generation tests
+  'src/__tests__/generations/generation.test.ts',
+  // Conversation tests
+  'src/__tests__/conversations/conversation.test.ts',
 ];
 
 const RUN_IN_ALL_REGIONS = [

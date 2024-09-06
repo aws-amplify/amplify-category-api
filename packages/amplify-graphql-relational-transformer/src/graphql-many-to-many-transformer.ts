@@ -510,6 +510,10 @@ export class ManyToManyTransformer extends TransformerPluginBase {
   };
 
   generateResolvers = (ctx: TransformerContextProvider): void => {
+    if (this.directiveList.length === 0) {
+      return;
+    }
+
     const context = ctx as TransformerContextProvider;
     // This validation can't occur in validate because the api has not been initialized until generateResolvers
     if (!context.transformParameters.allowGen1Patterns) {
