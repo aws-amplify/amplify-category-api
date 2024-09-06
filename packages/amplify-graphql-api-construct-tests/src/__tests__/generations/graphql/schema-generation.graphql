@@ -1,7 +1,7 @@
 type Recipe {
-  name: String
-  ingredients: [String]
-  instructions: String
+  name: String!
+  ingredients: [String!]!
+  instructions: String!
 }
 
 type Query {
