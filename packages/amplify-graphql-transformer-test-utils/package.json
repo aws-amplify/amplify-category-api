@@ -1,7 +1,7 @@
 {
   "name": "@aws-amplify/graphql-transformer-test-utils",
-  "version": "0.5.6",
-  "description": "Test utils for graphql transformers",
+  "version": "0.6.1",
+  "description": "Test utils for graphql transformers ",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-category-api.git",
