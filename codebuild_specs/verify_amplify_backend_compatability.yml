@@ -4,7 +4,8 @@ env:
   variables:
     NODE_OPTIONS: --max-old-space-size=8096
 phases:
+  pre_build:
+      - codebuild-breakpoint
   build:
     commands:
-      - codebuild-breakpoint
       - source ./shared-scripts.sh && _verifyAmplifyBackendCompatability
