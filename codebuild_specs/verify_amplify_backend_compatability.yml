@@ -8,3 +8,6 @@ phases:
     commands:
       - codebuild-breakpoint
       - source ./shared-scripts.sh && _verifyAmplifyBackendCompatability
+env:
+  variables:
+    CODEBUILD_DEBUG: "true"
