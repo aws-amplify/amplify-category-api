@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.1-ai.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.9.0...amplify-graphql-api-construct-tests@1.9.1-ai.0) (2024-09-09)
+
+### Bug Fixes
+
+- experimental bedrock bundling - use pinned ai-constructs dep ([5b4b708](https://github.com/aws-amplify/amplify-category-api/commit/5b4b7085219a2766d9992ad557f886b93d5f1a91))
+
 # [1.9.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.8.2...amplify-graphql-api-construct-tests@1.9.0) (2024-09-06)
 
 ### Features
