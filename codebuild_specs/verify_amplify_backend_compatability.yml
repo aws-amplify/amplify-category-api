@@ -3,7 +3,6 @@ env:
   shell: bash
   variables:
     NODE_OPTIONS: --max-old-space-size=8096
-    CODEBUILD_DEBUG: "true"
 phases:
   build:
     commands:
