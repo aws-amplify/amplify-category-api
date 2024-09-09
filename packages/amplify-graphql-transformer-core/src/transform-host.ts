@@ -15,6 +15,7 @@ import {
   LambdaDataSource,
   NoneDataSource,
   CfnResolver,
+  CfnFunctionConfiguration,
 } from 'aws-cdk-lib/aws-appsync';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IRole } from 'aws-cdk-lib/aws-iam';
@@ -25,9 +26,10 @@ import hash from 'object-hash';
 import { Construct } from 'constructs';
 import { AppSyncFunctionConfiguration } from './appsync-function';
 import { SearchableDataSource } from './cdk-compat/searchable-datasource';
-import { InlineTemplate, S3MappingFunctionCode } from './cdk-compat/template-asset';
+import { S3MappingFunctionCode } from './cdk-compat/template-asset';
 import { GraphQLApi } from './graphql-api';
 import { setResourceName } from './utils';
+import { getRuntimeSpecificFunctionProps } from './utils/function-runtime';
 
 type Slot = {
   requestMappingTemplate?: string;
@@ -138,6 +140,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     responseMappingTemplate: MappingTemplateProvider,
     dataSourceName: string,
     scope?: Construct,
+    runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
   ): AppSyncFunctionConfiguration => {
     if (dataSourceName && !Token.isUnresolved(dataSourceName) && !this.dataSources.has(dataSourceName)) {
       throw new Error(`DataSource ${dataSourceName} is missing in the API`);
@@ -168,6 +171,7 @@ export class DefaultTransformHost implements TransformHostProvider {
       dataSource: dataSource || dataSourceName,
       requestMappingTemplate,
       responseMappingTemplate,
+      runtime,
     });
     this.appsyncFunctions.set(slotHash, fn);
     return fn;
@@ -182,15 +186,20 @@ export class DefaultTransformHost implements TransformHostProvider {
     dataSourceName?: string,
     pipelineConfig?: string[],
     scope?: Construct,
+    runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
   ): CfnResolver => {
     if (dataSourceName && !Token.isUnresolved(dataSourceName) && !this.dataSources.has(dataSourceName)) {
       throw new Error(`DataSource ${dataSourceName} is missing in the API`);
     }
 
-    const requestTemplateLocation = requestMappingTemplate.bind(this.api, this.api.assetProvider);
-    const responseTemplateLocation = responseMappingTemplate.bind(this.api, this.api.assetProvider);
     const resolverName = toCamelCase([resourceName(typeName), resourceName(fieldName), 'Resolver']);
     const resourceId = resolverLogicalId ?? ResolverResourceIDs.ResolverResourceID(typeName, fieldName);
+    const runtimeSpecificProps = getRuntimeSpecificFunctionProps(this.api, {
+      requestMappingTemplate,
+      responseMappingTemplate,
+      runtime,
+      api: this.api,
+    });
 
     if (dataSourceName) {
       const dataSource = this.dataSources.get(dataSourceName);
@@ -200,12 +209,7 @@ export class DefaultTransformHost implements TransformHostProvider {
         typeName,
         kind: 'UNIT',
         dataSourceName: dataSource?.ds.attrName || dataSourceName,
-        ...(requestMappingTemplate instanceof InlineTemplate
-          ? { requestMappingTemplate: requestTemplateLocation }
-          : { requestMappingTemplateS3Location: requestTemplateLocation }),
-        ...(responseMappingTemplate instanceof InlineTemplate
-          ? { responseMappingTemplate: responseTemplateLocation }
-          : { responseMappingTemplateS3Location: responseTemplateLocation }),
+        ...runtimeSpecificProps,
       });
       resolver.overrideLogicalId(resourceId);
       setResourceName(resolver, { name: `${typeName}.${fieldName}` });
@@ -218,16 +222,12 @@ export class DefaultTransformHost implements TransformHostProvider {
         fieldName,
         typeName,
         kind: 'PIPELINE',
-        ...(requestMappingTemplate instanceof InlineTemplate
-          ? { requestMappingTemplate: requestTemplateLocation }
-          : { requestMappingTemplateS3Location: requestTemplateLocation }),
-        ...(responseMappingTemplate instanceof InlineTemplate
-          ? { responseMappingTemplate: responseTemplateLocation }
-          : { responseMappingTemplateS3Location: responseTemplateLocation }),
         pipelineConfig: {
           functions: pipelineConfig,
         },
+        ...runtimeSpecificProps,
       });
+
       resolver.overrideLogicalId(resourceId);
       setResourceName(resolver, { name: `${typeName}.${fieldName}` });
       this.api.addSchemaDependency(resolver);

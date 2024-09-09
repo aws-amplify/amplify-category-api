@@ -2,8 +2,9 @@
 import 'source-map-support/register';
 import * as fs from 'fs';
 import * as path from 'path';
-import { App, CfnOutput, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { App, Aspects, CfnOutput, Duration, IAspect, RemovalPolicy, Stack, TagManager, Tags } from 'aws-cdk-lib';
 import { CfnUserPoolGroup, UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
+import { CfnFunction, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
 import {
   AmplifyGraphqlApi,
   AmplifyGraphqlDefinition,
@@ -11,6 +12,7 @@ import {
   IAmplifyGraphqlDefinition,
   ModelDataSourceStrategy,
 } from '@aws-amplify/graphql-api-construct';
+import { IConstruct } from 'constructs';
 
 // This app defines a CDK stack that is configured with various command files written into the project root directory. To use it:
 // - Write test definition(s) to `projRoot/*-test-definition.json`
@@ -38,6 +40,12 @@ interface StackConfig {
    * If true, disable Cognito User Pool creation and only use API Key auth in sandbox mode.
    */
   useSandbox?: boolean;
+
+  /**
+   * If provided, use the provided Lambda Layer ARN instead of the default retrieved from the Lambda Layer version resolver. Suitable for
+   * overriding the default layers during tests.
+   */
+  sqlLambdaLayerArn?: string;
 }
 
 const createUserPool = (prefix: string): { userPool: UserPool; userPoolClient: UserPoolClient } => {
@@ -125,10 +133,35 @@ if (stackConfig.useSandbox) {
 
 const combinedDefinition = combineTestDefinitionsInDirectory(projRoot);
 
-new AmplifyGraphqlApi(stack, `${stackConfig.prefix}Api`, {
+const api = new AmplifyGraphqlApi(stack, `${stackConfig.prefix}Api`, {
   definition: combinedDefinition,
   authorizationModes,
   translationBehavior: {
     sandboxModeEnabled: stackConfig.useSandbox,
   },
 });
+
+const isFunction = (obj: any): obj is CfnFunction => {
+  return obj && obj instanceof CfnFunction;
+};
+
+class LambdaLayerVersionOverride implements IAspect {
+  constructor(private sqlLambdaLayerArn: string) {}
+
+  public visit(node: IConstruct): void {
+    if (!isFunction(node)) {
+      return;
+    }
+    node.layers = [this.sqlLambdaLayerArn];
+  }
+}
+
+if (stackConfig.sqlLambdaLayerArn) {
+  // Ideally, we'd pick up something a bit more definitive than string matching on the function name, but the function's environment
+  // variables and tags aren't inspectable at prepare time, so Aspects can't operate on them.
+  const sqlFunctionKey = Object.keys(api.resources.functions).find((key) => key.startsWith('SQLFunction'));
+  if (sqlFunctionKey) {
+    const fn = api.resources.functions[sqlFunctionKey];
+    Aspects.of(fn).add(new LambdaLayerVersionOverride(stackConfig.sqlLambdaLayerArn));
+  }
+}

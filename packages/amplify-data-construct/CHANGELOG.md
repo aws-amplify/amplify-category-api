@@ -3,6 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.10.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.9.8...@aws-amplify/data-construct@1.10.0) (2024-09-06)
+
+### Features
+
+- **conversation:** add conversation transformer ([#2827](https://github.com/aws-amplify/amplify-category-api/issues/2827)) ([cee6aef](https://github.com/aws-amplify/amplify-category-api/commit/cee6aef1358293fe51909a64d1cf9941afc46aba))
+- **generation-transformer:** add generation transformer ([#2820](https://github.com/aws-amplify/amplify-category-api/issues/2820)) ([a86db4e](https://github.com/aws-amplify/amplify-category-api/commit/a86db4e40962565fb55b7262a7d771f21bacef2a))
+
+## [1.9.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.9.7...@aws-amplify/data-construct@1.9.8) (2024-09-03)
+
+**Note:** Version bump only for package @aws-amplify/data-construct
+
+## [1.9.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.9.6...@aws-amplify/data-construct@1.9.7) (2024-08-28)
+
+**Note:** Version bump only for package @aws-amplify/data-construct
+
+## [1.9.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.9.5...@aws-amplify/data-construct@1.9.6) (2024-08-20)
+
+**Note:** Version bump only for package @aws-amplify/data-construct
+
+## [1.9.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.9.4...@aws-amplify/data-construct@1.9.5) (2024-08-12)
+
+**Note:** Version bump only for package @aws-amplify/data-construct
+
+## [1.9.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.9.3...@aws-amplify/data-construct@1.9.4) (2024-08-01)
+
+**Note:** Version bump only for package @aws-amplify/data-construct
+
+## [1.9.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.9.2...@aws-amplify/data-construct@1.9.3) (2024-07-25)
+
+**Note:** Version bump only for package @aws-amplify/data-construct
+
+## [1.9.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.9.1...@aws-amplify/data-construct@1.9.2) (2024-07-15)
+
+**Note:** Version bump only for package @aws-amplify/data-construct
+
+## [1.9.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.9.0...@aws-amplify/data-construct@1.9.1) (2024-07-02)
+
+**Note:** Version bump only for package @aws-amplify/data-construct
+
+# [1.9.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.8.6...@aws-amplify/data-construct@1.9.0) (2024-07-01)
+
+### Features
+
+- support custom SSL certs in SQL lambda handler ([#2631](https://github.com/aws-amplify/amplify-category-api/issues/2631)) ([f444517](https://github.com/aws-amplify/amplify-category-api/commit/f444517f2deebdb16dcc16257ed083ead4af9c9b))
+
+## [1.8.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.8.5...@aws-amplify/data-construct@1.8.6) (2024-06-25)
+
+**Note:** Version bump only for package @aws-amplify/data-construct
+
 ## [1.8.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.8.4...@aws-amplify/data-construct@1.8.5) (2024-06-06)
 
 **Note:** Version bump only for package @aws-amplify/data-construct

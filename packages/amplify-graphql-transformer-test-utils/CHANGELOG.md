@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-test-utils@0.6.1...@aws-amplify/graphql-transformer-test-utils@1.0.1) (2024-09-06)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-test-utils
+
+## [0.6.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-test-utils@0.6.0...@aws-amplify/graphql-transformer-test-utils@0.6.1) (2024-08-28)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-test-utils
+
+# [0.6.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-test-utils@0.5.6...@aws-amplify/graphql-transformer-test-utils@0.6.0) (2024-08-20)
+
+### Bug Fixes
+
+- change gen 1 patterns to warning message instead of error ([#2768](https://github.com/aws-amplify/amplify-category-api/issues/2768)) ([97b1f36](https://github.com/aws-amplify/amplify-category-api/commit/97b1f36e405808df2ed694c3b94a3da7b3d9759f))
+
+- feat!: bump version for v2 transformer packages ([7dac35c](https://github.com/aws-amplify/amplify-category-api/commit/7dac35cceb971b256b5688b0745ef82afc78b641))
+
+### BREAKING CHANGES
+
+- distinguish from LTS version
+
+## [0.5.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-test-utils@0.5.5...@aws-amplify/graphql-transformer-test-utils@0.5.6) (2024-07-15)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-test-utils
+
+## [0.5.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-test-utils@0.5.4...@aws-amplify/graphql-transformer-test-utils@0.5.5) (2024-07-02)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-test-utils
+
+## [0.5.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-test-utils@0.5.3...@aws-amplify/graphql-transformer-test-utils@0.5.4) (2024-07-01)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-test-utils
+
+## [0.5.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-test-utils@0.5.2...@aws-amplify/graphql-transformer-test-utils@0.5.3) (2024-06-25)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-test-utils
+
 ## [0.5.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-test-utils@0.5.1...@aws-amplify/graphql-transformer-test-utils@0.5.2) (2024-05-10)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-test-utils

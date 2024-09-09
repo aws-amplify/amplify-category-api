@@ -7,6 +7,7 @@
 import { BackedDataSource } from 'aws-cdk-lib/aws-appsync';
 import { BaseDataSource } from 'aws-cdk-lib/aws-appsync';
 import { CfnDomain } from 'aws-cdk-lib/aws-elasticsearch';
+import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
 import { CfnParameter } from 'aws-cdk-lib';
 import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import { CfnResource } from 'aws-cdk-lib';
@@ -24,6 +25,8 @@ import { FieldNode } from 'graphql';
 import { Grant } from 'aws-cdk-lib/aws-iam';
 import { GraphqlApiBase } from 'aws-cdk-lib/aws-appsync';
 import { HttpDataSource } from 'aws-cdk-lib/aws-appsync';
+import { HttpDataSourceOptions } from 'aws-cdk-lib/aws-appsync';
+import { IamResource } from 'aws-cdk-lib/aws-appsync';
 import { IAsset } from 'aws-cdk-lib';
 import { IConstruct } from 'constructs';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
@@ -55,12 +58,6 @@ export interface AmplifyDynamoDbModelDataSourceStrategy extends ModelDataSourceS
     readonly dbType: 'DYNAMODB';
     // (undocumented)
     readonly provisionStrategy: 'AMPLIFY_TABLE';
-}
-
-// @public (undocumented)
-export interface APIIAMResourceProvider {
-    // (undocumented)
-    resourceArns: (api: GraphQLAPIProvider) => string[];
 }
 
 // @public (undocumented)
@@ -202,13 +199,15 @@ export interface GraphQLAPIProvider extends IConstruct {
     // (undocumented)
     readonly assetProvider: AssetProvider;
     // (undocumented)
-    grant: (grantee: IGrantable, resources: APIIAMResourceProvider, ...actions: string[]) => Grant;
+    grant: (grantee: IGrantable, resources: IamResource, ...actions: string[]) => Grant;
     // (undocumented)
     grantMutation: (grantee: IGrantable, ...fields: string[]) => Grant;
     // (undocumented)
     grantQuery: (grantee: IGrantable, ...fields: string[]) => Grant;
     // (undocumented)
     grantSubscription: (grantee: IGrantable, ...fields: string[]) => Grant;
+    // (undocumented)
+    readonly graphqlUrl: string;
     // (undocumented)
     readonly host: TransformHostProvider;
     // (undocumented)
@@ -236,6 +235,9 @@ export const isSqlModelDataSourceSsmDbConnectionConfig: (obj: any) => obj is Sql
 
 // @public (undocumented)
 export const isSqlModelDataSourceSsmDbConnectionStringConfig: (obj: any) => obj is SqlModelDataSourceSsmDbConnectionStringConfig;
+
+// @public (undocumented)
+export const isSslCertSsmPathConfig: (obj: any) => obj is SslCertSsmPathConfig;
 
 // @public (undocumented)
 export type MappingTemplateProvider = InlineMappingTemplateProvider | S3MappingTemplateProvider;
@@ -415,6 +417,8 @@ export interface SqlModelDataSourceSecretsManagerDbConnectionConfig {
     readonly port: number;
     // (undocumented)
     readonly secretArn: string;
+    // (undocumented)
+    readonly sslCertConfig?: SslCertConfig;
 }
 
 // @public (undocumented)
@@ -428,6 +432,8 @@ export interface SqlModelDataSourceSsmDbConnectionConfig {
     // (undocumented)
     readonly portSsmPath: string;
     // (undocumented)
+    readonly sslCertConfig?: SslCertConfig;
+    // (undocumented)
     readonly usernameSsmPath: string;
 }
 
@@ -435,6 +441,18 @@ export interface SqlModelDataSourceSsmDbConnectionConfig {
 export interface SqlModelDataSourceSsmDbConnectionStringConfig {
     // (undocumented)
     readonly connectionUriSsmPath: string | string[];
+    // (undocumented)
+    readonly sslCertConfig?: SslCertConfig;
+}
+
+// @public (undocumented)
+export interface SslCertConfig {
+}
+
+// @public (undocumented)
+export interface SslCertSsmPathConfig extends SslCertConfig {
+    // (undocumented)
+    readonly ssmPath: string | string[];
 }
 
 // @public (undocumented)
@@ -483,6 +501,7 @@ export type SynthParameters = {
     identityPoolId?: string;
     adminRoles?: string[];
     enableIamAccess?: boolean;
+    provisionHotswapFriendlyResources?: boolean;
 };
 
 // @public (undocumented)
@@ -852,11 +871,11 @@ export type TransformerValidationStepContextProvider = Pick<TransformerContextPr
 // @public (undocumented)
 export interface TransformHostProvider {
     // (undocumented)
-    addAppSyncFunction: (name: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, dataSourceName: string, scope?: Construct) => AppSyncFunctionConfigurationProvider;
+    addAppSyncFunction: (name: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, dataSourceName: string, scope?: Construct, runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty) => AppSyncFunctionConfigurationProvider;
     // (undocumented)
     addDynamoDbDataSource(name: string, table: ITable, options?: DynamoDbDataSourceOptions, scope?: Construct): DynamoDbDataSource;
     // (undocumented)
-    addHttpDataSource(name: string, endpoint: string, options?: DataSourceOptions, scope?: Construct): HttpDataSource;
+    addHttpDataSource(name: string, endpoint: string, options?: HttpDataSourceOptions, scope?: Construct): HttpDataSource;
     // (undocumented)
     addLambdaDataSource(name: string, lambdaFunction: IFunction, options?: DataSourceOptions, scope?: Construct): LambdaDataSource;
     // (undocumented)
@@ -866,7 +885,7 @@ export interface TransformHostProvider {
     // (undocumented)
     addNoneDataSource(name: string, options?: DataSourceOptions, scope?: Construct): NoneDataSource;
     // (undocumented)
-    addResolver: (typeName: string, fieldName: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, resolverLogicalId?: string, dataSourceName?: string, pipelineConfig?: string[], scope?: Construct) => CfnResolver;
+    addResolver: (typeName: string, fieldName: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, resolverLogicalId?: string, dataSourceName?: string, pipelineConfig?: string[], scope?: Construct, runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty) => CfnResolver;
     // (undocumented)
     addSearchableDataSource(name: string, endpoint: string, region: string, options?: SearchableDataSourceOptions, scope?: Construct): BaseDataSource;
     // (undocumented)
@@ -895,6 +914,7 @@ export type TransformParameters = {
     sandboxModeEnabled: boolean;
     allowDestructiveGraphqlSchemaUpdates: boolean;
     replaceTableUponGsiUpdate: boolean;
+    allowGen1Patterns: boolean;
     useSubUsernameForDefaultIdentityClaim: boolean;
     populateOwnerFieldForStaticGroupAuth: boolean;
     suppressApiKeyGeneration: boolean;
@@ -923,7 +943,7 @@ export interface VpcConfig {
 
 // Warnings were encountered during analysis:
 //
-// src/graphql-api-provider.ts:36:3 - (ae-forgotten-export) The symbol "OpenIDConnectConfig" needs to be exported by the entry point index.d.ts
+// src/graphql-api-provider.ts:37:3 - (ae-forgotten-export) The symbol "OpenIDConnectConfig" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

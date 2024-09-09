@@ -20,6 +20,7 @@ export * from './sleep';
 export * from './transformConfig';
 export * from './rds';
 export * from './credentials-rotator';
+export * from './test-regions';
 
 // run dotenv config to update env variable
 config();

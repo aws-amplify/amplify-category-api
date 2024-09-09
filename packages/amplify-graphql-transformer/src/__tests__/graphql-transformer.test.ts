@@ -20,7 +20,7 @@ import {
   defaultPrintTransformerLog,
 } from '../graphql-transformer';
 
-const numOfTransformers = 16;
+const numOfTransformers = 18;
 describe('constructTransformerChain', () => {
   it(`returns ${numOfTransformers} transformers when no custom transformers are provided`, () => {
     expect(constructTransformerChain().length).toEqual(numOfTransformers);
@@ -56,6 +56,7 @@ const defaultTransformConfig: TransformConfig = {
     enableTransformerCfnOutputs: true,
     allowDestructiveGraphqlSchemaUpdates: false,
     replaceTableUponGsiUpdate: false,
+    allowGen1Patterns: true,
   },
 };
 

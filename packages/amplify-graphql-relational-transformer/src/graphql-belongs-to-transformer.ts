@@ -17,6 +17,7 @@ import {
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { BelongsToDirective } from '@aws-amplify/graphql-directives';
+import { Annotations } from 'aws-cdk-lib';
 import {
   DirectiveNode,
   DocumentNode,
@@ -24,6 +25,7 @@ import {
   InterfaceTypeDefinitionNode,
   NamedTypeNode,
   ObjectTypeDefinitionNode,
+  Kind,
 } from 'graphql';
 import { getBaseType, isListType, isNonNullType, makeField, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
 import produce from 'immer';
@@ -149,6 +151,22 @@ export class BelongsToTransformer extends TransformerPluginBase {
     const context = ctx as TransformerContextProvider;
 
     for (const config of this.directiveList) {
+      // This validation can't occur in validate because the api has not been initialized until generateResolvers
+      if (!ctx.transformParameters.allowGen1Patterns) {
+        const { field, object } = config;
+        const modelName = object.name.value;
+        const fieldName = field.name.value;
+        if (field.type.kind === Kind.NON_NULL_TYPE) {
+          Annotations.of(ctx.api).addWarning(
+            `@${BelongsToDirective.name} on required fields is deprecated. Modify ${modelName}.${fieldName} to be optional. This functionality will be removed in the next major release.`,
+          );
+        }
+        if (config.fields) {
+          Annotations.of(ctx.api).addWarning(
+            `fields argument on @${BelongsToDirective.name} is deprecated. Modify ${modelName}.${fieldName} to use references instead. This functionality will be removed in the next major release.`,
+          );
+        }
+      }
       const dbType = getStrategyDbTypeFromTypeNode(config.field.type, context);
       const dataSourceBasedTransformer = getBelongsToDirectiveTransformer(dbType, config);
       dataSourceBasedTransformer.generateResolvers(ctx, config);
@@ -158,7 +176,6 @@ export class BelongsToTransformer extends TransformerPluginBase {
 
 const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field, object } = config;
-
   let dbType: ModelDataSourceStrategyDbType;
   try {
     // getStrategyDbTypeFromTypeNode throws if a datasource is not found for the model. We want to catch that condition

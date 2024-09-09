@@ -1,11 +1,20 @@
 import {
   RDSClient,
+  CreateDBClusterCommand,
   CreateDBInstanceCommand,
   CreateDBInstanceCommandInput,
   DBInstance,
+  CreateDBClusterMessage,
+  DeleteDBClusterCommand,
+  DeleteDBClusterCommandInput,
   DeleteDBInstanceCommand,
+  DescribeDBClustersCommand,
+  DescribeDBInstancesCommand,
+  waitUntilDBClusterAvailable,
   waitUntilDBInstanceAvailable,
 } from '@aws-sdk/client-rds';
+import { RDSDataClient, ExecuteStatementCommand, ExecuteStatementCommandInput, Field } from '@aws-sdk/client-rds-data';
+import generator from 'generate-password';
 import { EC2Client, AuthorizeSecurityGroupIngressCommand, RevokeSecurityGroupIngressCommand } from '@aws-sdk/client-ec2';
 import {
   SSMClient,
@@ -32,13 +41,31 @@ export type SqlEngine = 'mysql' | 'postgres';
 export type RDSConfig = {
   identifier: string;
   engine: SqlEngine;
-  dbname: string;
+  dbname?: string;
   username: string;
   password?: string;
   region: string;
   instanceClass?: string;
   storage?: number;
   publiclyAccessible?: boolean;
+};
+
+export type ClusterInfo = {
+  clusterArn: string;
+  endpoint: string;
+  port: number;
+  dbName: string;
+  secretArn: string;
+  dbInstance: DBInstance;
+  username?: string;
+};
+
+const getRDSEngineType = (engine: SqlEngine): string => {
+  if (engine == 'postgres') {
+    return 'aurora-postgresql';
+  } else {
+    throw new Error('Unsupported engine type for cluster');
+  }
 };
 
 /**
@@ -54,7 +81,7 @@ export const createRDSInstance = async (
   dbName: string;
   dbInstance: DBInstance;
   password: string;
-  managedSecretArn: string;
+  secretArn: string;
 }> => {
   const rdsClient = new RDSClient({ region: config.region });
   const params: CreateDBInstanceCommandInput = {
@@ -71,10 +98,10 @@ export const createRDSInstance = async (
     // use RDS managed password, then retrieve the password and store in all other credential store options
     ManageMasterUserPassword: !config.password,
   };
-  const command = new CreateDBInstanceCommand(params);
+  const createInstanceCommand = new CreateDBInstanceCommand(params);
 
   try {
-    const rdsResponse = await rdsClient.send(command);
+    const createInstanceResponse = await rdsClient.send(createInstanceCommand);
 
     const availableResponse = await waitUntilDBInstanceAvailable(
       {
@@ -99,7 +126,7 @@ export const createRDSInstance = async (
     let password = config.password;
     let masterUserSecret;
     if (!config.password) {
-      masterUserSecret = rdsResponse.DBInstance?.MasterUserSecret;
+      masterUserSecret = createInstanceResponse.DBInstance?.MasterUserSecret;
       const secretsManagerClient = new SecretsManagerClient({ region: config.region });
       const secretManagerCommand = new GetSecretValueCommand({
         SecretId: masterUserSecret.SecretArn,
@@ -118,11 +145,187 @@ export const createRDSInstance = async (
       dbName: dbInstance.DBName as string,
       dbInstance,
       password,
-      managedSecretArn: masterUserSecret?.SecretArn,
+      secretArn: masterUserSecret?.SecretArn,
     };
   } catch (error) {
     console.error(error);
     throw new Error('Error in creating RDS instance.');
+  }
+};
+
+/**
+ * Creates a new RDS Aurora serverless V2 cluster with one DB instance using the given input configuration.
+ * @param config Configuration of the database cluster. If password is not passed an RDS managed password will be created.
+ * @returns EndPoint address, port and database name of the created RDS cluster.
+ */
+export const createRDSCluster = async (config: RDSConfig): Promise<ClusterInfo> => {
+  const rdsClient = new RDSClient({ region: config.region });
+  const initialDBName = 'defaultdb';
+
+  const params: CreateDBClusterMessage = {
+    /** input parameters */
+    EnableHttpEndpoint: true,
+    Engine: getRDSEngineType(config.engine),
+    DatabaseName: initialDBName,
+    DBClusterIdentifier: config.identifier,
+    MasterUsername: config.username,
+    // use RDS managed password, then retrieve the password and store in all other credential store options
+    ManageMasterUserPassword: true,
+    ServerlessV2ScalingConfiguration: {
+      MinCapacity: 4,
+      MaxCapacity: 10,
+    },
+  };
+
+  const createClusterCommand = new CreateDBClusterCommand(params);
+
+  const instanceParams: CreateDBInstanceCommandInput = {
+    DBInstanceClass: 'db.serverless',
+    DBInstanceIdentifier: createInstanceIdentifier(config.identifier),
+    Engine: getRDSEngineType(config.engine),
+    DBClusterIdentifier: config.identifier,
+    PubliclyAccessible: config.publiclyAccessible ?? true,
+  };
+
+  const instanceCommand = new CreateDBInstanceCommand(instanceParams);
+
+  try {
+    const createClusterResponse = await rdsClient.send(createClusterCommand);
+
+    const availableResponse = await waitUntilDBClusterAvailable(
+      {
+        maxWaitTime: 3600,
+        maxDelay: 120,
+        minDelay: 60,
+        client: rdsClient,
+      },
+      {
+        DBClusterIdentifier: config.identifier,
+      },
+    );
+
+    if (availableResponse.state !== 'SUCCESS') {
+      throw new Error('Error in creating a new RDS cluster.');
+    }
+
+    const dbCluster = availableResponse.reason.DBClusters[0];
+    if (!dbCluster) {
+      throw new Error('RDS cluster details are missing.');
+    }
+
+    const instanceResponse = await rdsClient.send(instanceCommand);
+    const availableInstanceResponse = await waitUntilDBInstanceAvailable(
+      {
+        maxWaitTime: 3600,
+        maxDelay: 120,
+        minDelay: 60,
+        client: rdsClient,
+      },
+      {
+        DBInstanceIdentifier: instanceParams.DBInstanceIdentifier,
+      },
+    );
+
+    if (availableInstanceResponse.state !== 'SUCCESS') {
+      throw new Error('Error in creating a new RDS instance inside the cluster.');
+    }
+
+    return {
+      clusterArn: dbCluster.DBClusterArn as string,
+      endpoint: dbCluster.Endpoint as string,
+      port: dbCluster.Port as number,
+      dbName: dbCluster.DatabaseName as string,
+      secretArn: createClusterResponse.DBCluster.MasterUserSecret.SecretArn,
+      dbInstance: instanceResponse?.DBInstance,
+    };
+  } catch (error) {
+    console.error(error);
+    throw new Error('Error in creating RDS cluster with an instance.');
+  }
+};
+
+/**
+ * Setup the test database and data in the pre-existing RDS Aurora serverless V2 cluster with one writer DB instance. Get the necessary configuration settings of the cluster and instance.
+ * @param identifier Cluster idenfitier.
+ * @param config Configuration of the database cluster.
+ * @param queries Initial queries to be executed.
+ * @returns Cluster configuration information.
+ */
+export const setupDataInExistingCluster = async (
+  identifier: string,
+  config: RDSConfig,
+  queries: string[],
+  secretArn?: string,
+): Promise<ClusterInfo> => {
+  try {
+    const client = new RDSClient({ region: config.region });
+    const describeClusterResponse = await client.send(
+      new DescribeDBClustersCommand({ Filters: [{ Name: 'db-cluster-id', Values: [identifier] }] }),
+    );
+    if (!describeClusterResponse || !describeClusterResponse?.DBClusters[0]) {
+      throw Error('Specified cluster info cannot be fetched');
+    }
+    const dbClusterObj = describeClusterResponse.DBClusters[0];
+    const instances = dbClusterObj?.DBClusterMembers;
+    if (!instances || instances?.length === 0) {
+      throw new Error('No instances are present in the specified cluster');
+    }
+    const instanceId = instances[0]?.DBInstanceIdentifier;
+    const describeInstanceCommand = new DescribeDBInstancesCommand({ DBInstanceIdentifier: instanceId });
+    const describeInstanceResponse = await client.send(describeInstanceCommand);
+    if (!describeInstanceResponse || describeInstanceResponse?.DBInstances?.length === 0) {
+      throw Error('Specified cluster instance info cannot be fetched');
+    }
+
+    const clusterArn = dbClusterObj.DBClusterArn;
+    // use the provided database user secret or fallback to using master user secret
+    const dbUserSecretArn = secretArn || dbClusterObj?.MasterUserSecret?.SecretArn;
+    const defaultDbName = dbClusterObj.DatabaseName;
+    const dataClient = new RDSDataClient({ region: config.region });
+    const sanitizedDbName = config.dbname?.replace(/[^a-zA-Z0-9_]/g, '');
+
+    const createDBInput: ExecuteStatementCommandInput = {
+      resourceArn: clusterArn,
+      secretArn: dbUserSecretArn,
+      sql: `create database ${sanitizedDbName}`,
+      database: defaultDbName,
+    };
+
+    const createDBCommand = new ExecuteStatementCommand(createDBInput);
+    try {
+      const createDBResponse = await dataClient.send(createDBCommand);
+      console.log('Create database response: ' + JSON.stringify(createDBResponse));
+    } catch (err) {
+      console.log(err);
+    }
+
+    // create the test tables in the test database
+    for (const query of queries ?? []) {
+      try {
+        const executeStatementInput: ExecuteStatementCommandInput = {
+          resourceArn: clusterArn,
+          secretArn: dbUserSecretArn,
+          sql: query,
+          database: sanitizedDbName,
+        };
+        const executeStatementResponse = await dataClient.send(new ExecuteStatementCommand(executeStatementInput));
+        console.log('Run query response: ' + JSON.stringify(executeStatementResponse));
+      } catch (err) {
+        throw new Error(`Error in creating tables in test database: ${JSON.stringify(err, null, 4)}`);
+      }
+    }
+
+    return {
+      clusterArn,
+      endpoint: dbClusterObj.Endpoint,
+      port: dbClusterObj.Port,
+      dbName: sanitizedDbName,
+      dbInstance: describeInstanceResponse.DBInstances[0],
+      secretArn: dbUserSecretArn,
+      username: dbClusterObj.MasterUsername,
+    };
+  } catch (error) {
+    console.log('Error while setting up the test data in existing cluster: ', JSON.stringify(error));
   }
 };
 
@@ -136,7 +339,7 @@ export const createRDSInstance = async (
 export const setupRDSInstanceAndData = async (
   config: RDSConfig,
   queries?: string[],
-): Promise<{ endpoint: string; port: number; dbName: string; dbInstance: DBInstance; password: string; managedSecretArn: string }> => {
+): Promise<{ endpoint: string; port: number; dbName: string; dbInstance: DBInstance; password: string; secretArn: string }> => {
   console.log(`Creating RDS ${config.engine} instance with identifier ${config.identifier}`);
   const dbConfig = await createRDSInstance(config);
 
@@ -186,6 +389,67 @@ export const setupRDSInstanceAndData = async (
 };
 
 /**
+ * Creates a new RDS Aurora serverless V2 cluster with one DB instance using the given input configuration, runs the given queries and returns the details of the created RDS
+ * instance.
+ * @param config Configuration of the database cluster
+ * @param queries Initial queries to be executed
+ * @returns Endpoint address, port and database name of the created RDS cluster.
+ */
+
+export const setupRDSClusterAndData = async (config: RDSConfig, queries?: string[]): Promise<ClusterInfo> => {
+  console.log(`Creating RDS ${config.engine} DB cluster with identifier ${config.identifier}`);
+  const dbCluster = await createRDSCluster(config);
+
+  if (!dbCluster.secretArn) {
+    throw new Error('Failed to store db connection config in secrets manager');
+  }
+
+  const client = new RDSDataClient({ region: config.region });
+
+  const sanitizedDbName = config.dbname?.replace(/[^a-zA-Z0-9_]/g, '');
+
+  const createDBInput: ExecuteStatementCommandInput = {
+    resourceArn: dbCluster.clusterArn,
+    secretArn: dbCluster.secretArn,
+    sql: `create database ${sanitizedDbName}`,
+    database: dbCluster.dbName,
+  };
+
+  const createDBCommand = new ExecuteStatementCommand(createDBInput);
+  try {
+    const createDBResponse = await client.send(createDBCommand);
+    console.log('Create database response: ' + JSON.stringify(createDBResponse));
+  } catch (err) {
+    console.log(err);
+  }
+
+  // create the test tables in the test database
+  for (const query of queries ?? []) {
+    try {
+      const executeStatementInput: ExecuteStatementCommandInput = {
+        resourceArn: dbCluster.clusterArn,
+        secretArn: dbCluster.secretArn,
+        sql: query,
+        database: sanitizedDbName,
+      };
+      const executeStatementResponse = await client.send(new ExecuteStatementCommand(executeStatementInput));
+      console.log('Run query response: ' + JSON.stringify(executeStatementResponse));
+    } catch (err) {
+      throw new Error(`Error in creating tables in test database: ${JSON.stringify(err, null, 4)}`);
+    }
+  }
+
+  return {
+    clusterArn: dbCluster.clusterArn,
+    endpoint: dbCluster.endpoint,
+    port: dbCluster.port,
+    dbName: sanitizedDbName,
+    dbInstance: dbCluster.dbInstance,
+    secretArn: dbCluster.secretArn,
+  };
+};
+
+/**
  * Deletes the given RDS instance
  * @param identifier RDS Instance identifier to delete
  * @param region RDS Instance region
@@ -217,9 +481,46 @@ export const deleteDBInstance = async (identifier: string, region: string): Prom
     // );
   } catch (error) {
     console.log(error);
-    throw new Error('Error in deleting RDS instance.');
+    throw new Error(`Error in deleting RDS instance: ${JSON.stringify(error)}`);
   }
 };
+
+/**
+ * Deletes the given RDS cluster and instances it contains
+ * @param identifier RDS cluster identifier to delete
+ * @param region RDS cluster region
+ */
+export const deleteDBCluster = async (identifier: string, region: string): Promise<void> => {
+  // First the instance deletion is triggered
+  const instanceID = createInstanceIdentifier(identifier);
+  console.log(`Deleting instance: ${instanceID}`);
+  await deleteDBInstance(instanceID, region);
+
+  // Now delete the cluster
+  const client = new RDSClient({ region });
+  const params: DeleteDBClusterCommandInput = {
+    DBClusterIdentifier: identifier,
+    SkipFinalSnapshot: true,
+  };
+  console.log(`Deleting cluster: ${identifier}`);
+  const command = new DeleteDBClusterCommand(params);
+  try {
+    await client.send(command);
+  } catch (error) {
+    console.log(error);
+    throw new Error(`Error in deleting RDS cluster ${identifier}: ${JSON.stringify(error)}`);
+  }
+};
+
+const createInstanceIdentifier = (prefix: string): string => {
+  return `${prefix}instance`;
+};
+
+export const generateDBName = (): string =>
+  generator
+    .generate({ length: 8 })
+    .toLowerCase()
+    .replace(/[^a-zA-Z0-9_]/g, '');
 
 /**
  * Adds the given inbound rule to the security group.

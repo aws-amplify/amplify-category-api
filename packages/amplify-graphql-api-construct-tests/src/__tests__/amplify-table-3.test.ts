@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { createNewProjectDir, deleteProjectDir, getDDBTable } from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir, getDDBTable, getDDBTableTags } from 'amplify-category-api-e2e-core';
 import { cdkDestroy, initCDKProject, cdkDeploy, updateCDKAppWithTemplate } from '../commands';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
 
@@ -35,6 +35,16 @@ describe('CDK amplify table 3', () => {
       AttributeName: 'id',
       KeyType: 'HASH',
     });
+    const tableTags = await getDDBTableTags(table.Table.TableArn, region);
+    expect(tableTags.Tags).toBeDefined();
+    expect(tableTags.Tags.length).toBe(3);
+    expect(tableTags.Tags).toEqual(
+      expect.arrayContaining([
+        { Key: 'amplify:deployment-type', Value: 'sandbox-original' },
+        { Key: 'amplify:friendly-name', Value: 'amplifyData-original' },
+        { Key: 'created-by', Value: 'amplify-original' },
+      ]),
+    );
     // deploy with destructive update disabled
     let updateTemplatePath;
     updateTemplatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', 'simple-todo', 'updateKeySchema', 'disabled'));
@@ -45,6 +55,17 @@ describe('CDK amplify table 3', () => {
       AttributeName: 'id',
       KeyType: 'HASH',
     });
+    const tableAfterFailureTags = await getDDBTableTags(tableAfterFailure.Table.TableArn, region);
+    expect(tableAfterFailureTags.Tags).toBeDefined();
+    expect(tableAfterFailureTags.Tags.length).toBe(3);
+    expect(tableAfterFailureTags.Tags).toEqual(
+      expect.arrayContaining([
+        { Key: 'amplify:deployment-type', Value: 'sandbox-original' },
+        { Key: 'amplify:friendly-name', Value: 'amplifyData-original' },
+        { Key: 'created-by', Value: 'amplify-original' },
+      ]),
+    );
+
     // deploy with destructive update enabled
     updateTemplatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', 'simple-todo', 'updateKeySchema', 'enabled'));
     updateCDKAppWithTemplate(projRoot, updateTemplatePath);
@@ -54,5 +75,15 @@ describe('CDK amplify table 3', () => {
       AttributeName: 'todoid',
       KeyType: 'HASH',
     });
+    const updatedTableTags = await getDDBTableTags(updatedTable.Table.TableArn, region);
+    expect(updatedTableTags.Tags).toBeDefined();
+    expect(updatedTableTags.Tags.length).toBe(3);
+    expect(updatedTableTags.Tags).toEqual(
+      expect.arrayContaining([
+        { Key: 'amplify:deployment-type', Value: 'sandbox-updated' },
+        { Key: 'amplify:friendly-name', Value: 'amplifyData-updated' },
+        { Key: 'created-by', Value: 'amplify-updated' },
+      ]),
+    );
   });
 });

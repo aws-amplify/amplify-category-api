@@ -224,6 +224,33 @@ Object {
 }
 `;
 
+exports[`Directive Definitions ConversationDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @conversation(
+    aiModel: String!
+    systemPrompt: String!
+    functionName: String
+    tools: [ToolMap]
+    inferenceConfiguration: ConversationInferenceConfiguration
+  ) on FIELD_DEFINITION
+
+  input ToolMap {
+    name: String
+    description: String
+  }
+
+  input ConversationInferenceConfiguration {
+    maxTokens: Int
+    temperature: Float
+    topP: Float
+  }
+",
+  "name": "conversation",
+}
+`;
+
 exports[`Directive Definitions DefaultDirective 1`] = `
 Object {
   "defaults": Object {},
@@ -267,6 +294,26 @@ Object {
   directive @function(name: String!, region: String) repeatable on FIELD_DEFINITION
 ",
   "name": "function",
+}
+`;
+
+exports[`Directive Definitions GenerationDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @generation(
+    aiModel: String!
+    systemPrompt: String!
+    inferenceConfiguration: GenerationInferenceConfiguration
+  ) on FIELD_DEFINITION
+
+  input GenerationInferenceConfiguration {
+    maxTokens: Int
+    temperature: Float
+    topP: Float
+  }
+",
+  "name": "generation",
 }
 `;
 
@@ -593,7 +640,9 @@ Array [
   "belongsTo",
   "default",
   "deprecated",
+  "conversation",
   "function",
+  "generation",
   "hasMany",
   "hasOne",
   "http",
@@ -622,7 +671,9 @@ Array [
   "belongsTo",
   "default",
   "deprecated",
+  "conversation",
   "function",
+  "generation",
   "hasMany",
   "hasOne",
   "http",

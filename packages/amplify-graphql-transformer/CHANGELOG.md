@@ -3,6 +3,57 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@2.0.1...@aws-amplify/graphql-transformer@2.1.0) (2024-09-06)
+
+### Features
+
+- **conversation:** add conversation transformer ([#2827](https://github.com/aws-amplify/amplify-category-api/issues/2827)) ([cee6aef](https://github.com/aws-amplify/amplify-category-api/commit/cee6aef1358293fe51909a64d1cf9941afc46aba))
+- **generation-transformer:** add generation transformer ([#2820](https://github.com/aws-amplify/amplify-category-api/issues/2820)) ([a86db4e](https://github.com/aws-amplify/amplify-category-api/commit/a86db4e40962565fb55b7262a7d771f21bacef2a))
+
+## [2.0.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@2.0.0...@aws-amplify/graphql-transformer@2.0.1) (2024-08-28)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer
+
+# [2.0.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.6.5...@aws-amplify/graphql-transformer@2.0.0) (2024-08-20)
+
+### Bug Fixes
+
+- change gen 1 patterns to warning message instead of error ([#2768](https://github.com/aws-amplify/amplify-category-api/issues/2768)) ([97b1f36](https://github.com/aws-amplify/amplify-category-api/commit/97b1f36e405808df2ed694c3b94a3da7b3d9759f))
+
+- feat!: bump version for v2 transformer packages ([7dac35c](https://github.com/aws-amplify/amplify-category-api/commit/7dac35cceb971b256b5688b0745ef82afc78b641))
+
+### BREAKING CHANGES
+
+- distinguish from LTS version
+
+## [1.6.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.6.4...@aws-amplify/graphql-transformer@1.6.5) (2024-08-12)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer
+
+## [1.6.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.6.3...@aws-amplify/graphql-transformer@1.6.4) (2024-07-25)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer
+
+## [1.6.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.6.2...@aws-amplify/graphql-transformer@1.6.3) (2024-07-15)
+
+### Bug Fixes
+
+- add translation behavior to disable gen 1 patterns ([#2670](https://github.com/aws-amplify/amplify-category-api/issues/2670)) ([38d1a71](https://github.com/aws-amplify/amplify-category-api/commit/38d1a718ec2b0290f514780c6d1d5f0790ba7764))
+
+## [1.6.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.6.1...@aws-amplify/graphql-transformer@1.6.2) (2024-07-02)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer
+
+## [1.6.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.6.0...@aws-amplify/graphql-transformer@1.6.1) (2024-07-01)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer
+
+# [1.6.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.5.7...@aws-amplify/graphql-transformer@1.6.0) (2024-06-25)
+
+### Features
+
+- allow subscriptions to inherit primary model auth rules for relational fields behind a feature flag ([#2649](https://github.com/aws-amplify/amplify-category-api/issues/2649)) ([56a853a](https://github.com/aws-amplify/amplify-category-api/commit/56a853ace0026de97395cfa17ca156cf360ac5c2))
+
 ## [1.5.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.5.6...@aws-amplify/graphql-transformer@1.5.7) (2024-06-06)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer

@@ -1,9 +1,0 @@
-type Blog @model {
-  id: ID!
-  posts: [Post] @hasMany
-}
-
-type Post @model {
-  id: ID!
-  blog: Blog @hasOne
-}

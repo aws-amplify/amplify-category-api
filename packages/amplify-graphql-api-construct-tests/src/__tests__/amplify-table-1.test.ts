@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { createNewProjectDir, deleteProjectDir, getDDBTable } from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir, getDDBTable, getDDBTableTags } from 'amplify-category-api-e2e-core';
 import { cdkDestroy, initCDKProject, cdkDeploy, updateCDKAppWithTemplate } from '../commands';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
 
@@ -36,6 +36,19 @@ describe('CDK amplify table 1', () => {
     expect(table.Table.GlobalSecondaryIndexes[0].IndexName).toBe('byName');
     expect(table.Table.SSEDescription.Status).toBe('ENABLED');
     expect(table.Table.StreamSpecification.StreamViewType).toBe('NEW_AND_OLD_IMAGES');
+
+    // Verify the tags on the table
+    const tableTags = await getDDBTableTags(table.Table.TableArn, region);
+    expect(tableTags.Tags).toBeDefined();
+    expect(tableTags.Tags.length).toBe(3);
+    expect(tableTags.Tags).toEqual(
+      expect.arrayContaining([
+        { Key: 'amplify:deployment-type', Value: 'sandbox-original' },
+        { Key: 'amplify:friendly-name', Value: 'amplifyData-original' },
+        { Key: 'created-by', Value: 'amplify-original' },
+      ]),
+    );
+
     const updateTemplatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', 'simple-todo', 'updateIndex'));
     updateCDKAppWithTemplate(projRoot, updateTemplatePath);
     await cdkDeploy(projRoot, '--all');
@@ -45,5 +58,19 @@ describe('CDK amplify table 1', () => {
     expect(updatedTable.Table.GlobalSecondaryIndexes[0].IndexName).toBe('byName2');
     expect(updatedTable.Table.SSEDescription).toBeUndefined();
     expect(updatedTable.Table.StreamSpecification.StreamViewType).toBe('KEYS_ONLY');
+
+    // Verify the tags on the table after update
+    const updatedTableTags = await getDDBTableTags(updatedTable.Table.TableArn, region);
+    expect(updatedTableTags.Tags).toBeDefined();
+    expect(updatedTableTags.Tags.length).toBe(5);
+    expect(updatedTableTags.Tags).toEqual(
+      expect.arrayContaining([
+        { Key: 'amplify:deployment-type', Value: 'pipeline-updated' },
+        { Key: 'amplify:deployment-branch', Value: 'main-updated' },
+        { Key: 'amplify:appId', Value: '123456-updated' },
+        { Key: 'amplify:friendly-name', Value: 'amplifyData-updated' },
+        { Key: 'created-by', Value: 'amplify-updated' },
+      ]),
+    );
   });
 });

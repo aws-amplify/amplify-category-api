@@ -1,3 +1,5 @@
+import { Stack } from 'aws-cdk-lib';
+
 export interface Template {
   AWSTemplateFormatVersion?: string;
   Description?: string;
@@ -34,6 +36,8 @@ export interface ResolversFunctionsAndSchema {
 export interface NestedStacks {
   // The root stack template.
   rootStack: Template;
+  // root stack as a CDK stack
+  rawRootStack: Stack;
   // All the nested stack templates.
   stacks: Record<string, Template>;
   // The full stack mapping for the deployment.

@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@3.0.1...@aws-amplify/graphql-model-transformer@3.0.2) (2024-09-06)
+
+**Note:** Version bump only for package @aws-amplify/graphql-model-transformer
+
+## [3.0.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@3.0.0...@aws-amplify/graphql-model-transformer@3.0.1) (2024-08-28)
+
+**Note:** Version bump only for package @aws-amplify/graphql-model-transformer
+
+# [3.0.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.11.4...@aws-amplify/graphql-model-transformer@3.0.0) (2024-08-20)
+
+- feat!: bump version for v2 transformer packages ([7dac35c](https://github.com/aws-amplify/amplify-category-api/commit/7dac35cceb971b256b5688b0745ef82afc78b641))
+
+### BREAKING CHANGES
+
+- distinguish from LTS version
+
+## [2.11.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.11.3...@aws-amplify/graphql-model-transformer@2.11.4) (2024-08-12)
+
+**Note:** Version bump only for package @aws-amplify/graphql-model-transformer
+
+## [2.11.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.11.2...@aws-amplify/graphql-model-transformer@2.11.3) (2024-07-25)
+
+### Bug Fixes
+
+- add tags to dynamodb tables ([#2694](https://github.com/aws-amplify/amplify-category-api/issues/2694)) ([e8070b9](https://github.com/aws-amplify/amplify-category-api/commit/e8070b94077a706ba95ed94cdd52f27f15490ea2))
+
+## [2.11.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.11.1...@aws-amplify/graphql-model-transformer@2.11.2) (2024-07-15)
+
+**Note:** Version bump only for package @aws-amplify/graphql-model-transformer
+
+## [2.11.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.11.0...@aws-amplify/graphql-model-transformer@2.11.1) (2024-07-02)
+
+**Note:** Version bump only for package @aws-amplify/graphql-model-transformer
+
+# [2.11.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.10.2...@aws-amplify/graphql-model-transformer@2.11.0) (2024-07-01)
+
+### Bug Fixes
+
+- auth to use validateUsingSource in place of auth filter to show error message ([#2523](https://github.com/aws-amplify/amplify-category-api/issues/2523)) ([b7d83f9](https://github.com/aws-amplify/amplify-category-api/commit/b7d83f991f85eaffb2408cff98e1880c7fa680ef))
+
+### Features
+
+- support custom SSL certs in SQL lambda handler ([#2631](https://github.com/aws-amplify/amplify-category-api/issues/2631)) ([f444517](https://github.com/aws-amplify/amplify-category-api/commit/f444517f2deebdb16dcc16257ed083ead4af9c9b))
+
+## [2.10.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.10.1...@aws-amplify/graphql-model-transformer@2.10.2) (2024-06-25)
+
+**Note:** Version bump only for package @aws-amplify/graphql-model-transformer
+
 ## [2.10.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.10.0...@aws-amplify/graphql-model-transformer@2.10.1) (2024-05-15)
 
 ### Bug Fixes

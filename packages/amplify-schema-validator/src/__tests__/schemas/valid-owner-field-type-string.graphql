@@ -1,7 +1,0 @@
-type Inicio
-  @model
-  @auth(
-    rules: [{ allow: owner, operations: [create, delete, update, read], provider: userPools, ownerField: "autores", groups: ["MeuCPD"] }]
-  ) {
-  Name: String!
-}

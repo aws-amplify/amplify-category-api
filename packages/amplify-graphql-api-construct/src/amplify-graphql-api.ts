@@ -156,7 +156,7 @@ export class AmplifyGraphqlApi extends Construct {
 
     if (conflictResolution && dataStoreConfiguration) {
       throw new Error(
-        `conflictResolution is deprecated. conflictResolution and dataStoreConfiguration cannot be used together. Please use dataStoreConfiguration.`,
+        'conflictResolution is deprecated. conflictResolution and dataStoreConfiguration cannot be used together. Please use dataStoreConfiguration.',
       );
     }
 
@@ -184,6 +184,11 @@ export class AmplifyGraphqlApi extends Construct {
 
     const assetProvider = new AssetProvider(this);
 
+    const transformParameters = {
+      ...defaultTranslationBehavior,
+      ...(translationBehavior ?? {}),
+      allowGen1Patterns: false,
+    };
     const executeTransformConfig: ExecuteTransformConfig = {
       scope: this,
       nestedStackProvider: {
@@ -194,6 +199,7 @@ export class AmplifyGraphqlApi extends Construct {
         amplifyEnvironmentName: amplifyEnvironmentName,
         apiName: props.apiName ?? id,
         ...authSynthParameters,
+        provisionHotswapFriendlyResources: translationBehavior?._provisionHotswapFriendlyResources,
       },
       schema: definition.schema,
       userDefinedSlots: parseUserDefinedSlots(separatedFunctionSlots),
@@ -208,10 +214,7 @@ export class AmplifyGraphqlApi extends Construct {
       authConfig,
       stackMapping: stackMappings ?? {},
       resolverConfig: this.dataStoreConfiguration ? convertToResolverConfig(this.dataStoreConfiguration) : undefined,
-      transformParameters: {
-        ...defaultTranslationBehavior,
-        ...(translationBehavior ?? {}),
-      },
+      transformParameters,
       // CDK construct uses a custom resource. We'll define this explicitly here to remind ourselves that this value is unused in the CDK
       // construct flow
       rdsLayerMapping: undefined,
