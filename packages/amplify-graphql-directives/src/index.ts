@@ -36,6 +36,7 @@ import {
   SearchableDirectiveV1,
   SqlDirective,
   VersionedDirectiveV1,
+  SequenceDirective,
 } from './directives';
 
 export const AppSyncDirectives: readonly Directive[] = [
@@ -53,6 +54,7 @@ export const V2Directives: readonly Directive[] = [
   AuthDirective,
   BelongsToDirective,
   DefaultDirective,
+  SequenceDirective,
   DeprecatedDirective,
   ConversationDirective,
   FunctionDirective,

@@ -6,6 +6,7 @@ import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-in
 import { MapsToTransformer, RefersToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { SqlTransformer } from '@aws-amplify/graphql-sql-transformer';
+import { SequenceTransformer } from '@aws-amplify/graphql-sequence-transformer';
 import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
 import {
   BelongsToTransformer,
@@ -69,6 +70,7 @@ export const constructTransformerChain = (options?: TransformerFactoryArgs): Tra
   // The default list of transformers should match DefaultDirectives in packages/amplify-graphql-directives/src/index.ts
   return [
     modelTransformer,
+    new SequenceTransformer(),
     new FunctionTransformer(options?.functionNameMap),
     new HttpTransformer(),
     new PredictionsTransformer(options?.storageConfig),

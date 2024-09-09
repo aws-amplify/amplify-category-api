@@ -69,6 +69,8 @@ export {
   isSqlDbType,
   isSqlModel,
   isSqlStrategy,
+  isPostgresDbType,
+  isPostgresModel,
   normalizeDbType,
   setResourceName,
   SQLLambdaResourceNames,
