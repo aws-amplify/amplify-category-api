@@ -1931,6 +1931,7 @@ exports[`rds simple model with apiKey and iam access 7`] = `
   #if( !$authResult || ($authResult && !$authResult.authorized) )
     $util.unauthorized()
   #end
+  $util.qr($ctx.stash.put(\\"authRules\\", $authRules))
   #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
     #set( $ctx.stash.authFilter = $authResult.authFilter )
   #end
@@ -1975,6 +1976,7 @@ exports[`rds simple model with apiKey and iam access 9`] = `
   #if( !$authResult || ($authResult && !$authResult.authorized) )
     $util.unauthorized()
   #end
+  $util.qr($ctx.stash.put(\\"authRules\\", $authRules))
   #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
     #set( $ctx.stash.authFilter = $authResult.authFilter )
   #end
@@ -2276,6 +2278,7 @@ $util.qr($authRules.add({
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
+$util.qr($ctx.stash.put(\\"authRules\\", $authRules))
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #set( $ctx.stash.authFilter = $authResult.authFilter )
 #end
@@ -2312,6 +2315,7 @@ $util.qr($authRules.add({
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
+$util.qr($ctx.stash.put(\\"authRules\\", $authRules))
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #set( $ctx.stash.authFilter = $authResult.authFilter )
 #end
@@ -2617,6 +2621,7 @@ exports[`rds simple model with iam provider and iam access 7`] = `
   #if( !$authResult || ($authResult && !$authResult.authorized) )
     $util.unauthorized()
   #end
+  $util.qr($ctx.stash.put(\\"authRules\\", $authRules))
   #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
     #set( $ctx.stash.authFilter = $authResult.authFilter )
   #end
@@ -2662,6 +2667,7 @@ exports[`rds simple model with iam provider and iam access 9`] = `
   #if( !$authResult || ($authResult && !$authResult.authorized) )
     $util.unauthorized()
   #end
+  $util.qr($ctx.stash.put(\\"authRules\\", $authRules))
   #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
     #set( $ctx.stash.authFilter = $authResult.authFilter )
   #end
@@ -2998,6 +3004,7 @@ exports[`rds simple model with iam provider and iam access and non default AWS_I
   #if( !$authResult || ($authResult && !$authResult.authorized) )
     $util.unauthorized()
   #end
+  $util.qr($ctx.stash.put(\\"authRules\\", $authRules))
   #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
     #set( $ctx.stash.authFilter = $authResult.authFilter )
   #end
@@ -3043,6 +3050,7 @@ exports[`rds simple model with iam provider and iam access and non default AWS_I
   #if( !$authResult || ($authResult && !$authResult.authorized) )
     $util.unauthorized()
   #end
+  $util.qr($ctx.stash.put(\\"authRules\\", $authRules))
   #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
     #set( $ctx.stash.authFilter = $authResult.authFilter )
   #end
@@ -3351,6 +3359,7 @@ $util.qr($authRules.add({
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
+$util.qr($ctx.stash.put(\\"authRules\\", $authRules))
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #set( $ctx.stash.authFilter = $authResult.authFilter )
 #end
@@ -3388,6 +3397,7 @@ $util.qr($authRules.add({
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
+$util.qr($ctx.stash.put(\\"authRules\\", $authRules))
 #if( $authResult && !$util.isNullOrEmpty($authResult.authFilter) )
   #set( $ctx.stash.authFilter = $authResult.authFilter )
 #end

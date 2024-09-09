@@ -41,6 +41,9 @@ export const BelongsToDirective: Directive;
 export const ConnectionDirectiveV1: Directive;
 
 // @public (undocumented)
+export const ConversationDirective: Directive;
+
+// @public (undocumented)
 export const DefaultDirective: Directive;
 
 // @public (undocumented)
@@ -73,6 +76,9 @@ export type FunctionDirectiveDefaults = {
 
 // @public (undocumented)
 export const FunctionDirectiveV1: Directive;
+
+// @public (undocumented)
+export const GenerationDirective: Directive;
 
 // @public (undocumented)
 export const HasManyDirective: Directive<HasManyDirectiveDefaults>;

@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-default-value-transformer@3.0.1...@aws-amplify/graphql-default-value-transformer@3.0.2) (2024-09-06)
+
+**Note:** Version bump only for package @aws-amplify/graphql-default-value-transformer
+
+## [3.0.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-default-value-transformer@3.0.0...@aws-amplify/graphql-default-value-transformer@3.0.1) (2024-08-28)
+
+**Note:** Version bump only for package @aws-amplify/graphql-default-value-transformer
+
+# [3.0.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-default-value-transformer@2.3.13...@aws-amplify/graphql-default-value-transformer@3.0.0) (2024-08-20)
+
+- feat!: bump version for v2 transformer packages ([7dac35c](https://github.com/aws-amplify/amplify-category-api/commit/7dac35cceb971b256b5688b0745ef82afc78b641))
+
+### BREAKING CHANGES
+
+- distinguish from LTS version
+
+## [2.3.13](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-default-value-transformer@2.3.12...@aws-amplify/graphql-default-value-transformer@2.3.13) (2024-08-12)
+
+**Note:** Version bump only for package @aws-amplify/graphql-default-value-transformer
+
+## [2.3.12](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-default-value-transformer@2.3.11...@aws-amplify/graphql-default-value-transformer@2.3.12) (2024-07-25)
+
+**Note:** Version bump only for package @aws-amplify/graphql-default-value-transformer
+
+## [2.3.11](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-default-value-transformer@2.3.10...@aws-amplify/graphql-default-value-transformer@2.3.11) (2024-07-15)
+
+**Note:** Version bump only for package @aws-amplify/graphql-default-value-transformer
+
+## [2.3.10](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-default-value-transformer@2.3.9...@aws-amplify/graphql-default-value-transformer@2.3.10) (2024-07-02)
+
+**Note:** Version bump only for package @aws-amplify/graphql-default-value-transformer
+
+## [2.3.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-default-value-transformer@2.3.8...@aws-amplify/graphql-default-value-transformer@2.3.9) (2024-07-01)
+
+**Note:** Version bump only for package @aws-amplify/graphql-default-value-transformer
+
+## [2.3.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-default-value-transformer@2.3.7...@aws-amplify/graphql-default-value-transformer@2.3.8) (2024-06-25)
+
+**Note:** Version bump only for package @aws-amplify/graphql-default-value-transformer
+
 ## [2.3.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-default-value-transformer@2.3.6...@aws-amplify/graphql-default-value-transformer@2.3.7) (2024-05-15)
 
 **Note:** Version bump only for package @aws-amplify/graphql-default-value-transformer

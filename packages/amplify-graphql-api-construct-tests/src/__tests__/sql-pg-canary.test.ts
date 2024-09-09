@@ -11,9 +11,9 @@ jest.setTimeout(DURATION_1_HOUR);
 describe('Canary using Postgres lambda model datasource strategy', () => {
   let projRoot: string;
   const projFolderName = 'pgcanary';
-  const [username, password, identifier] = generator.generateMultiple(3);
-  const region = process.env.CLI_REGION;
-  const dbname = 'default_db';
+  // sufficient password length that meets the requirements for RDS cluster/instance
+  const [username, password, identifier] = generator.generateMultiple(3, { length: 11 });
+  const region = process.env.CLI_REGION ?? 'us-west-2';
   const engine = 'postgres';
 
   const databaseController: SqlDatatabaseController = new SqlDatatabaseController(
@@ -21,7 +21,6 @@ describe('Canary using Postgres lambda model datasource strategy', () => {
     {
       identifier,
       engine,
-      dbname,
       username,
       password,
       region,
@@ -32,7 +31,9 @@ describe('Canary using Postgres lambda model datasource strategy', () => {
   const resourceNames = getResourceNamesForStrategyName(strategyName);
 
   beforeAll(async () => {
+    console.time('sql-pg-canary test setup');
     await databaseController.setupDatabase();
+    console.timeEnd('sql-pg-canary test setup');
   });
 
   afterAll(async () => {

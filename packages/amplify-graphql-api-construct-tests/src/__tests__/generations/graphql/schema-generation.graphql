@@ -1,0 +1,15 @@
+type Recipe {
+  name: String
+  ingredients: [String]
+  instructions: String
+}
+
+type Query {
+  summarize(input: String): String @generation(aiModel: "anthropic.claude-3-haiku-20240307-v1:0", systemPrompt: "summarize the input.")
+
+  generateRecipe(description: String): Recipe
+    @generation(aiModel: "anthropic.claude-3-haiku-20240307-v1:0", systemPrompt: "You are a 3 star michelin chef that generates recipes.")
+
+  solveEquation(equation: String): Int
+    @generation(aiModel: "anthropic.claude-3-haiku-20240307-v1:0", systemPrompt: "Solve the equation and return the result.")
+}

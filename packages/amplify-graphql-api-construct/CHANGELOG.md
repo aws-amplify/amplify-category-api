@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.12.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.11.8...@aws-amplify/graphql-api-construct@1.12.0) (2024-09-06)
+
+### Bug Fixes
+
+- don't print deprecation warning when pattern is not used ([#2816](https://github.com/aws-amplify/amplify-category-api/issues/2816)) ([4c5fc2a](https://github.com/aws-amplify/amplify-category-api/commit/4c5fc2aeebfc727a2ef6d02bee93543f732ec996))
+
+### Features
+
+- **conversation:** add conversation transformer ([#2827](https://github.com/aws-amplify/amplify-category-api/issues/2827)) ([cee6aef](https://github.com/aws-amplify/amplify-category-api/commit/cee6aef1358293fe51909a64d1cf9941afc46aba))
+- **generation-transformer:** add generation transformer ([#2820](https://github.com/aws-amplify/amplify-category-api/issues/2820)) ([a86db4e](https://github.com/aws-amplify/amplify-category-api/commit/a86db4e40962565fb55b7262a7d771f21bacef2a))
+
+## [1.11.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.11.7...@aws-amplify/graphql-api-construct@1.11.8) (2024-09-03)
+
+**Note:** Version bump only for package @aws-amplify/graphql-api-construct
+
+## [1.11.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.11.6...@aws-amplify/graphql-api-construct@1.11.7) (2024-08-28)
+
+**Note:** Version bump only for package @aws-amplify/graphql-api-construct
+
+## [1.11.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.11.5...@aws-amplify/graphql-api-construct@1.11.6) (2024-08-20)
+
+### Bug Fixes
+
+- change gen 1 patterns to warning message instead of error ([#2768](https://github.com/aws-amplify/amplify-category-api/issues/2768)) ([97b1f36](https://github.com/aws-amplify/amplify-category-api/commit/97b1f36e405808df2ed694c3b94a3da7b3d9759f))
+
+## [1.11.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.11.4...@aws-amplify/graphql-api-construct@1.11.5) (2024-08-12)
+
+**Note:** Version bump only for package @aws-amplify/graphql-api-construct
+
+## [1.11.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.11.3...@aws-amplify/graphql-api-construct@1.11.4) (2024-08-01)
+
+**Note:** Version bump only for package @aws-amplify/graphql-api-construct
+
+## [1.11.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.11.2...@aws-amplify/graphql-api-construct@1.11.3) (2024-07-25)
+
+**Note:** Version bump only for package @aws-amplify/graphql-api-construct
+
+## [1.11.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.11.1...@aws-amplify/graphql-api-construct@1.11.2) (2024-07-15)
+
+### Bug Fixes
+
+- add translation behavior to disable gen 1 patterns ([#2670](https://github.com/aws-amplify/amplify-category-api/issues/2670)) ([38d1a71](https://github.com/aws-amplify/amplify-category-api/commit/38d1a718ec2b0290f514780c6d1d5f0790ba7764))
+
+## [1.11.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.11.0...@aws-amplify/graphql-api-construct@1.11.1) (2024-07-02)
+
+**Note:** Version bump only for package @aws-amplify/graphql-api-construct
+
+# [1.11.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.10.0...@aws-amplify/graphql-api-construct@1.11.0) (2024-07-01)
+
+### Features
+
+- support custom SSL certs in SQL lambda handler ([#2631](https://github.com/aws-amplify/amplify-category-api/issues/2631)) ([f444517](https://github.com/aws-amplify/amplify-category-api/commit/f444517f2deebdb16dcc16257ed083ead4af9c9b))
+
+# [1.10.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.9.5...@aws-amplify/graphql-api-construct@1.10.0) (2024-06-25)
+
+### Features
+
+- allow subscriptions to inherit primary model auth rules for relational fields behind a feature flag ([#2649](https://github.com/aws-amplify/amplify-category-api/issues/2649)) ([56a853a](https://github.com/aws-amplify/amplify-category-api/commit/56a853ace0026de97395cfa17ca156cf360ac5c2))
+
 ## [1.9.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.9.4...@aws-amplify/graphql-api-construct@1.9.5) (2024-06-06)
 
 **Note:** Version bump only for package @aws-amplify/graphql-api-construct

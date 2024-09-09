@@ -1,0 +1,81 @@
+{
+  "name": "@aws-amplify/graphql-conversation-transformer",
+  "version": "0.2.0",
+  "description": "Amplify GraphQL @conversation transformer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-category-api.git",
+    "directory": "packages/amplify-graphql-conversation-transformer"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "keywords": [],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rimraf ./lib",
+    "test": "jest",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
+  },
+  "dependencies": {
+    "@aws-amplify/ai-constructs": "^0.1.2",
+    "@aws-amplify/graphql-directives": "2.1.0",
+    "@aws-amplify/graphql-index-transformer": "3.0.2",
+    "@aws-amplify/graphql-model-transformer": "3.0.2",
+    "@aws-amplify/graphql-relational-transformer": "3.0.2",
+    "@aws-amplify/graphql-transformer-core": "3.1.0",
+    "@aws-amplify/graphql-transformer-interfaces": "4.1.0",
+    "graphql": "^15.5.0",
+    "graphql-mapping-template": "5.0.1",
+    "graphql-transformer-common": "5.0.1",
+    "immer": "^9.0.12"
+  },
+  "devDependencies": {
+    "@aws-amplify/graphql-transformer-test-utils": "1.0.1"
+  },
+  "peerDependencies": {
+    "aws-cdk-lib": "^2.152.0",
+    "constructs": "^10.3.0"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.(ts|tsx)?$": "ts-jest"
+    },
+    "testRegex": "(src/__tests__/.*.test.ts)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "collectCoverage": true,
+    "coverageProvider": "v8",
+    "coverageThreshold": {
+      "global": {
+        "branches": 85,
+        "functions": 90,
+        "lines": 90
+      }
+    },
+    "coverageReporters": [
+      "clover",
+      "text"
+    ],
+    "modulePathIgnorePatterns": [
+      "overrides"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/__tests__/"
+    ]
+  }
+}

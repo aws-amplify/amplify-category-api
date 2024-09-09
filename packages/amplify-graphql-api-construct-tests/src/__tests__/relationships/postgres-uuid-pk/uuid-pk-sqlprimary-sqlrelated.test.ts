@@ -23,7 +23,6 @@ describe('PostgreSQL tables with UUID primary keys', () => {
   const baseProjFolderName = path.basename(__filename, '.test.ts');
 
   const [dbUsername, dbIdentifier] = generator.generateMultiple(2);
-  const dbname = 'postgres';
   let dbDetails: SqlDatabaseDetails;
 
   // Note that the SQL database is created with slightly non-standard naming conventions, to avoid us having to use `refersTo` in the schema
@@ -45,7 +44,6 @@ describe('PostgreSQL tables with UUID primary keys', () => {
     {
       identifier: dbIdentifier,
       engine: 'postgres',
-      dbname,
       username: dbUsername,
       region,
     },

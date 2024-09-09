@@ -5,7 +5,6 @@
 ```ts
 
 import { AmplifyDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
-import { APIIAMResourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ApiKeyConfig } from 'aws-cdk-lib/aws-appsync';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AppSyncDataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
@@ -14,6 +13,7 @@ import { AssetProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationConfig } from 'aws-cdk-lib/aws-appsync';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
+import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
 import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
 import { CfnParameter } from 'aws-cdk-lib';
 import { CfnResource } from 'aws-cdk-lib';
@@ -37,6 +37,7 @@ import { GraphqlApiBase } from 'aws-cdk-lib/aws-appsync';
 import { GraphQLAPIProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLError } from 'graphql';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { IamResource } from 'aws-cdk-lib/aws-appsync';
 import { IGrantable } from 'aws-cdk-lib/aws-iam';
 import { InlineMappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { InputObjectTypeDefinitionNode } from 'graphql';
@@ -96,6 +97,7 @@ import { TypeNode } from 'graphql';
 import { TypeSystemDefinitionNode } from 'graphql';
 import { UnionTypeDefinitionNode } from 'graphql';
 import { UnionTypeExtensionNode } from 'graphql';
+import { Visibility } from 'aws-cdk-lib/aws-appsync';
 
 // @public (undocumented)
 export const APICategory = "api";
@@ -126,7 +128,7 @@ export const enum ConflictHandlerType {
 export const constructArrayFieldsStatement: (tableName: string, ctx: TransformerContextProvider) => Expression;
 
 // @public (undocumented)
-export const constructAuthFilterStatement: (keyName: string) => Expression;
+export const constructAuthFilterStatement: (keyName: string, emptyAuthFilter?: boolean) => Expression;
 
 // @public (undocumented)
 export const constructDataSourceStrategies: (schema: string, dataSourceStrategy: ModelDataSourceStrategy) => Record<string, ModelDataSourceStrategy>;
@@ -139,6 +141,9 @@ export const constructNonScalarFieldsStatement: (tableName: string, ctx: Transfo
 
 // @public (undocumented)
 export const constructSqlDirectiveDataSourceStrategies: (schema: string, dataSourceStrategy: ModelDataSourceStrategy, customSqlStatements?: Record<string, string>) => SqlDirectiveDataSourceStrategy[];
+
+// @public (undocumented)
+export const convertNamedTypeToJSONSchema: (namedType: NamedTypeNode) => JSONSchema;
 
 // @public (undocumented)
 function createSyncLambdaIAMPolicy(context: TransformerContextProvider, scope: Construct, name: string, region?: string): iam.Policy;
@@ -295,6 +300,24 @@ export const getTable: (ctx: TransformerContextProvider, object: ObjectTypeDefin
 export const getType: (schema: DocumentNode_2, typeName: string) => ObjectTypeDefinitionNode | undefined;
 
 // @public (undocumented)
+export const GraphQLScalarJSONSchemaDefinition: {
+    Boolean: JSONSchema;
+    Int: JSONSchema;
+    Float: JSONSchema;
+    String: JSONSchema;
+    AWSDateTime: JSONSchema;
+    ID: JSONSchema;
+    AWSJSON: JSONSchema;
+    AWSEmail: JSONSchema;
+    AWSDate: JSONSchema;
+    AWSTime: JSONSchema;
+    AWSTimestamp: JSONSchema;
+    AWSPhone: JSONSchema;
+    AWSURL: JSONSchema;
+    AWSIPAddress: JSONSchema;
+};
+
+// @public (undocumented)
 export class GraphQLTransform {
     constructor(options: GraphQLTransformOptions);
     // Warning: (ae-forgotten-export) The symbol "TransformerOutput" needs to be exported by the entry point index.d.ts
@@ -433,6 +456,9 @@ export const isBuiltInGraphqlNode: (obj: DefinitionNode) => obj is ObjectTypeDef
 export const isDefaultDynamoDbModelDataSourceStrategy: (strategy: ModelDataSourceStrategy) => strategy is DefaultDynamoDbModelDataSourceStrategy;
 
 // @public (undocumented)
+export const isDisallowedScalarType: (type: string) => boolean;
+
+// @public (undocumented)
 export const isDynamoDbModel: (ctx: DataSourceStrategiesProvider, typename: string) => boolean;
 
 // @public (undocumented)
@@ -462,6 +488,9 @@ export const isQueryNode: (obj: DefinitionNode) => obj is ObjectTypeDefinitionNo
 });
 
 // @public (undocumented)
+export const isQueryType: (typeName: string) => typeName is "Query";
+
+// @public (undocumented)
 export const isSqlDbType: (dbType: ModelDataSourceStrategyDbType) => dbType is ModelDataSourceStrategySqlDbType;
 
 // @public (undocumented)
@@ -469,6 +498,24 @@ export const isSqlModel: (ctx: DataSourceStrategiesProvider, typename: string) =
 
 // @public (undocumented)
 export const isSqlStrategy: (strategy: ModelDataSourceStrategy) => strategy is SQLLambdaModelDataSourceStrategy;
+
+// @public (undocumented)
+export type JSONSchema = {
+    type: string;
+    properties?: Record<string, JSONSchema>;
+    required?: string[];
+    items?: JSONSchema;
+    enum?: (string | number | boolean | null)[];
+    minimum?: number;
+    maximum?: number;
+    minLength?: number;
+    maxLength?: number;
+    pattern?: string;
+    format?: string;
+    description?: string;
+    default?: JSONLike;
+    additionalProperties?: boolean | JSONSchema;
+};
 
 // @public (undocumented)
 export class MappingTemplate {
@@ -610,6 +657,9 @@ export class StackManager implements StackManagerProvider {
     // (undocumented)
     readonly scope: Construct;
 }
+
+// @public (undocumented)
+export const supportedScalarTypes: string[];
 
 // @public (undocumented)
 export type SyncConfig = SyncConfigOptimistic | SyncConfigServer | SyncConfigLambda;
@@ -767,9 +817,9 @@ export abstract class TransformerPluginBase implements TransformerPluginProvider
 
 // @public (undocumented)
 export class TransformerResolver implements TransformerResolverProvider {
-    constructor(typeName: string, fieldName: string, resolverLogicalId: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, requestSlots: string[], responseSlots: string[], datasource?: DataSourceProvider | undefined);
+    constructor(typeName: string, fieldName: string, resolverLogicalId: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, requestSlots: string[], responseSlots: string[], datasource?: DataSourceProvider | undefined, runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty | undefined);
     // (undocumented)
-    addToSlot: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider, dataSource?: DataSourceProvider) => void;
+    addToSlot: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider, dataSource?: DataSourceProvider, runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty) => void;
     // Warning: (ae-forgotten-export) The symbol "Slot" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -817,6 +867,7 @@ function validateResolverConfigForType(ctx: TransformerSchemaVisitStepContextPro
 // Warnings were encountered during analysis:
 //
 // src/config/transformer-config.ts:26:3 - (ae-forgotten-export) The symbol "LambdaConflictHandler" needs to be exported by the entry point index.d.ts
+// src/utils/ai/json-schema.ts:14:3 - (ae-forgotten-export) The symbol "JSONLike" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

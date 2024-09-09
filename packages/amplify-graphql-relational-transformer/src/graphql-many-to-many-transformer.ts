@@ -23,6 +23,7 @@ import {
   ModelDataSourceStrategy,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { ManyToManyDirective } from '@aws-amplify/graphql-directives';
+import { Annotations } from 'aws-cdk-lib';
 import {
   DirectiveNode,
   DocumentNode,
@@ -509,7 +510,17 @@ export class ManyToManyTransformer extends TransformerPluginBase {
   };
 
   generateResolvers = (ctx: TransformerContextProvider): void => {
+    if (this.directiveList.length === 0) {
+      return;
+    }
+
     const context = ctx as TransformerContextProvider;
+    // This validation can't occur in validate because the api has not been initialized until generateResolvers
+    if (!context.transformParameters.allowGen1Patterns) {
+      Annotations.of(context.api).addWarning(
+        `@${ManyToManyDirective.name} is deprecated. This functionality will be removed in the next major release.`,
+      );
+    }
 
     for (const config of this.directiveList) {
       updateTableForConnection(config, context);

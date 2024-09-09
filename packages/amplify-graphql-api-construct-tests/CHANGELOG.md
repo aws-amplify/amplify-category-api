@@ -3,6 +3,64 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.9.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.8.2...amplify-graphql-api-construct-tests@1.9.0) (2024-09-06)
+
+### Features
+
+- **conversation:** add conversation transformer ([#2827](https://github.com/aws-amplify/amplify-category-api/issues/2827)) ([cee6aef](https://github.com/aws-amplify/amplify-category-api/commit/cee6aef1358293fe51909a64d1cf9941afc46aba))
+- **generation-transformer:** add generation transformer ([#2820](https://github.com/aws-amplify/amplify-category-api/issues/2820)) ([a86db4e](https://github.com/aws-amplify/amplify-category-api/commit/a86db4e40962565fb55b7262a7d771f21bacef2a))
+
+## [1.8.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.8.1...amplify-graphql-api-construct-tests@1.8.2) (2024-09-03)
+
+**Note:** Version bump only for package amplify-graphql-api-construct-tests
+
+## [1.8.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.8.0...amplify-graphql-api-construct-tests@1.8.1) (2024-08-28)
+
+**Note:** Version bump only for package amplify-graphql-api-construct-tests
+
+# [1.8.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.7.5...amplify-graphql-api-construct-tests@1.8.0) (2024-08-20)
+
+### Bug Fixes
+
+- encode password to handle special chars ([baa9bf3](https://github.com/aws-amplify/amplify-category-api/commit/baa9bf313edc1e4f241837f62c934fea91001b99))
+- encode the username as well since mysql supports spaces ([e96acfa](https://github.com/aws-amplify/amplify-category-api/commit/e96acfadcdc5bd7bfade1a01e21502d554bbc86c))
+
+### Features
+
+- add ([7a42189](https://github.com/aws-amplify/amplify-category-api/commit/7a42189e0c26276350e7f05954953a167f39d5cd))
+
+## [1.7.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.7.4...amplify-graphql-api-construct-tests@1.7.5) (2024-08-12)
+
+**Note:** Version bump only for package amplify-graphql-api-construct-tests
+
+## [1.7.4](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.7.3...amplify-graphql-api-construct-tests@1.7.4) (2024-08-01)
+
+**Note:** Version bump only for package amplify-graphql-api-construct-tests
+
+## [1.7.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.7.2...amplify-graphql-api-construct-tests@1.7.3) (2024-07-25)
+
+### Bug Fixes
+
+- add tags to dynamodb tables ([#2694](https://github.com/aws-amplify/amplify-category-api/issues/2694)) ([e8070b9](https://github.com/aws-amplify/amplify-category-api/commit/e8070b94077a706ba95ed94cdd52f27f15490ea2))
+
+## [1.7.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.7.1...amplify-graphql-api-construct-tests@1.7.2) (2024-07-15)
+
+**Note:** Version bump only for package amplify-graphql-api-construct-tests
+
+## [1.7.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.7.0...amplify-graphql-api-construct-tests@1.7.1) (2024-07-02)
+
+**Note:** Version bump only for package amplify-graphql-api-construct-tests
+
+# [1.7.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.6.6...amplify-graphql-api-construct-tests@1.7.0) (2024-07-01)
+
+### Features
+
+- support custom SSL certs in SQL lambda handler ([#2631](https://github.com/aws-amplify/amplify-category-api/issues/2631)) ([f444517](https://github.com/aws-amplify/amplify-category-api/commit/f444517f2deebdb16dcc16257ed083ead4af9c9b))
+
+## [1.6.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.6.5...amplify-graphql-api-construct-tests@1.6.6) (2024-06-25)
+
+**Note:** Version bump only for package amplify-graphql-api-construct-tests
+
 ## [1.6.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.6.4...amplify-graphql-api-construct-tests@1.6.5) (2024-06-06)
 
 ### Bug Fixes

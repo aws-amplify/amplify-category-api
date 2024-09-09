@@ -14,6 +14,9 @@ Object {
           "dynamodb:DescribeTimeToLive",
           "dynamodb:UpdateContinuousBackups",
           "dynamodb:UpdateTimeToLive",
+          "dynamodb:TagResource",
+          "dynamodb:UntagResource",
+          "dynamodb:ListTagsOfResource",
         ],
         "Effect": "Allow",
         "Resource": Object {
@@ -27,6 +30,16 @@ Object {
                 "Ref": "referencetotransformerrootstackenv10C5A902Ref",
               },
             },
+          ],
+        },
+      },
+      Object {
+        "Action": "lambda:ListTags",
+        "Effect": "Allow",
+        "Resource": Object {
+          "Fn::Sub": Array [
+            "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:*TableManager*",
+            Object {},
           ],
         },
       },

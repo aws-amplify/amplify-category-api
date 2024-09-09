@@ -604,6 +604,16 @@ export interface PartialTranslationBehavior {
    * @experimental
    */
   readonly replaceTableUponGsiUpdate?: boolean;
+
+  /**
+   * When enabled, sandbox deployment will be faster by skipping the creation of the Hotswap friendly resources.
+   *
+   * @default false
+   * @internal
+   * WARNING: Although this has `public` access, it is intended for internal use and should not be used directly.
+   * The behavior of this may change without warning.
+   */
+  readonly _provisionHotswapFriendlyResources?: boolean;
 }
 
 /**
@@ -726,7 +736,7 @@ export interface AmplifyGraphqlApiProps {
 
   /**
    * Provide a list of additional custom transformers which are injected into the transform process.
-   * These custom transformers must be implemented with aws-cdk-lib >=2.80.0, and @aws-amplify/graphql-transformer-core >= 2.1.1
+   * These custom transformers must be implemented with aws-cdk-lib >=2.129.0, and @aws-amplify/graphql-transformer-core >= 2.1.1
    * @experimental
    */
   readonly transformerPlugins?: any[];
