@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-function-transformer",
-  "version": "2.1.26",
+  "version": "2.1.27",
   "description": "Amplify GraphQL @function transformer",
   "repository": {
     "type": "git",
@@ -36,7 +36,7 @@
     "graphql-transformer-common": "4.31.1"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-test-utils": "0.6.1"
+    "@aws-amplify/graphql-transformer-test-utils": "0.6.2"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.129.0",

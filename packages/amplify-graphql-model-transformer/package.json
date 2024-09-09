@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-model-transformer",
-  "version": "2.11.4",
+  "version": "2.11.5",
   "description": "Amplify graphql @model transformer",
   "repository": {
     "type": "git",
@@ -44,7 +44,7 @@
     "constructs": "^10.3.0"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-test-utils": "0.6.1",
+    "@aws-amplify/graphql-transformer-test-utils": "0.6.2",
     "@aws-sdk/client-dynamodb": "^3.624.0",
     "@aws-sdk/client-lambda": "^3.624.0",
     "@aws-sdk/client-sfn": "^3.624.0",
