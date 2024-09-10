@@ -32,8 +32,8 @@ else
 fi
 
 if [ "$RUN_POST_PUBLISH_ONLY" = "true" ]; then
-  # yarn postpublish:$BRANCH_NAME
-  echo "Post publish script is called"
+  echo "Post publish script is invoked on branch $BRANCH_NAME"
+  yarn postpublish:$BRANCH_NAME
   exit 0
 fi
 
@@ -59,5 +59,5 @@ if [[ "$BRANCH_NAME" =~ ^tagged-release ]]; then
     yarn publish:tag
   fi
 else
-  # yarn publish:$BRANCH_NAME
+  yarn publish:$BRANCH_NAME
 fi
