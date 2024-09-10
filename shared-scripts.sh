@@ -161,6 +161,10 @@ function _verifyAmplifyBackendCompatability {
   # Create a new local branch for testing 
   git checkout -B validate-amplify-backend
 
+  # Dummy git config to avoid errors
+  git config user.email not@used.com
+  git config user.name "Doesnt Matter"
+
   # Start Verdaccio server and publish the local workspace
   source ./shared-scripts.sh && _publishLocalWorkspace
   setNpmRegistryUrlToLocal
