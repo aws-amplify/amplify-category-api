@@ -155,12 +155,11 @@ function _verifyAmplifyBackendCompatability {
   # 2. Publish Shell (Emulating the "publish" shell)
   echo "Starting Publish Shell"
 
-  # list the files in the current directory
-  echo "Listing files in the current directory"
-  ls -la
-
   # Clean Verdaccio cache and prepare for publishing
   rm -rf ../verdaccio-cache && mkdir ../verdaccio-cache
+
+  # Create a new local branch for testing 
+  git checkout -B validate-amplify-backend
 
   # Start Verdaccio server and publish the local workspace
   source ./shared-scripts.sh && _publishLocalWorkspace
@@ -178,6 +177,9 @@ function _verifyAmplifyBackendCompatability {
   cd ..
   git clone https://github.com/aws-amplify/amplify-backend.git
   cd amplify-backend
+
+  # Create a new local branch for testing 
+  git checkout -B validate-amplify-backend
 
   # Update the packages and ensure the correct versions are being used
   npm update
