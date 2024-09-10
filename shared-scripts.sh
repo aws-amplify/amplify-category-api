@@ -162,6 +162,10 @@ function _verifyAmplifyBackendCompatability {
   git clone https://github.com/aws-amplify/amplify-category-api.git
   cd amplify-category-api
 
+  # Install Lerna
+  echo "Installing Lerna"
+  npm install --global lerna
+
   # Clean Verdaccio cache and prepare for publishing
   rm -rf ../verdaccio-cache && mkdir ../verdaccio-cache
 
