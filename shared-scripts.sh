@@ -133,10 +133,7 @@ function _lint {
   chmod +x codebuild_specs/scripts/lint_pr.sh && ./codebuild_specs/scripts/lint_pr.sh
 }
 function _verifyAmplifyBackendCompatability {
-  # 1. Set up the environment
-  echo "Setting up environment for Amplify Backend Compatibility verification"
-
-  # Load cache from build job
+  echo "Verify Amplify Backend Compatibility"
   loadCacheFromBuildJob
 
   # Install NVM and set Node.js version
@@ -158,9 +155,9 @@ function _verifyAmplifyBackendCompatability {
   # 2. Publish Shell (Emulating the "publish" shell)
   echo "Starting Publish Shell"
 
-  # Clone the amplify-category-api repository and publish to local Verdaccio server
-  git clone https://github.com/aws-amplify/amplify-category-api.git
-  cd amplify-category-api
+  # list the files in the current directory
+  echo "Listing files in the current directory"
+  ls -la
 
   # Clean Verdaccio cache and prepare for publishing
   rm -rf ../verdaccio-cache && mkdir ../verdaccio-cache
