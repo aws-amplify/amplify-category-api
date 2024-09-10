@@ -136,6 +136,9 @@ function _verifyAmplifyBackendCompatability {
   # 1. Set up the environment
   echo "Setting up environment for Amplify Backend Compatibility verification"
 
+  # Load cache from build job
+  loadCacheFromBuildJob
+
   # Install NVM and set Node.js version
   echo "Installing NVM and setting Node.js version"
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
