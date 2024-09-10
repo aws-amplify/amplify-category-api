@@ -31,6 +31,12 @@ else
   git config --global user.name $GITHUB_USER
 fi
 
+if [ "$RUN_POST_PUBLISH_ONLY" = "true" ]; then
+  # yarn postpublish:$BRANCH_NAME
+  echo "Post publish script is called"
+  exit 0
+fi
+
 RESERVED_TAGS=(alpha beta dev latest main api-plugin-stable)
 
 if [[ "$BRANCH_NAME" =~ ^tagged-release ]]; then
@@ -53,5 +59,5 @@ if [[ "$BRANCH_NAME" =~ ^tagged-release ]]; then
     yarn publish:tag
   fi
 else
-  yarn publish:$BRANCH_NAME
+  # yarn publish:$BRANCH_NAME
 fi

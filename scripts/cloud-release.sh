@@ -15,6 +15,17 @@ function triggerRelease {
   fi
 }
 
+function triggerPostPublish {
+  branch_name=$(git branch --show-current)
+  if isReleaseBranch "$branch_name"; then
+    echo "Running release workflow from branch ${branch_name}"
+    triggerProjectBatchWithEnvOverrides $RELEASE_ACCOUNT_PROD $RELEASE_ROLE_NAME "${RELEASE_PROFILE_NAME}Prod" $RELEASE_PROJECT_NAME $branch_name \
+    name=RUN_POST_PUBLISH_ONLY,value=\""true\"",type=PLAINTEXT
+  else
+    echo "The post publish workflow can only be triggered from a release branch."
+  fi
+}
+
 function triggerTagRelease {
   branch_name=$(git branch --show-current)
   echo "Running tag release workflow from branch ${branch_name}"
