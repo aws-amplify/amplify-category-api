@@ -6,5 +6,6 @@ env:
 phases:
   build:
     commands:
+      - echo "Running verify_amplify_backend_compatability"
       - codebuild-breakpoint
       - source ./shared-scripts.sh && _verifyAmplifyBackendCompatability
