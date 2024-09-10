@@ -133,7 +133,8 @@ function _lint {
   chmod +x codebuild_specs/scripts/lint_pr.sh && ./codebuild_specs/scripts/lint_pr.sh
 }
 function _verifyAmplifyBackendCompatability {
-  echo "Verify Amplify Backend Compatability"
+  # 1. Set up the environment
+  echo "Setting up environment for Amplify Backend Compatibility verification"
 
   # Install NVM and set Node.js version
   echo "Installing NVM and setting Node.js version"
@@ -147,42 +148,57 @@ function _verifyAmplifyBackendCompatability {
   echo "Node.js version in use:"
   node -v
 
-  loadCacheFromBuildJob
-
   # Increase buffer size to avoid error when git operations return large response on CI
   git config http.version HTTP/1.1
   git config http.postBuffer 157286400
 
-  git checkout -b _vab
-  git symbolic-ref HEAD --short
-  git rev-parse HEAD
+  # 2. Publish Shell (Emulating the "publish" shell)
+  echo "Starting Publish Shell"
 
-  # Fetching git tags from upstream
-  # For forked repo only
-  # Can be removed when using team account
-  echo "fetching tags"
-  git fetch --tags https://github.com/aws-amplify/amplify-category-api
-  # Create the folder to avoid failure when no packages are published due to no change detected
+  # Clone the amplify-category-api repository and publish to local Verdaccio server
+  git clone https://github.com/aws-amplify/amplify-category-api.git
+  cd amplify-category-api
+
+  # Clean Verdaccio cache and prepare for publishing
   rm -rf ../verdaccio-cache && mkdir ../verdaccio-cache
 
-  git config user.email not@used.com
-  git config user.name "Doesnt Matter"
-
+  # Start Verdaccio server and publish the local workspace
   source ./shared-scripts.sh && _publishLocalWorkspace
   setNpmRegistryUrlToLocal
+
+  # Verify that the NPM registry has been set to the local Verdaccio server
   npm config get registry
 
+  # At this point, you have published the workspace to the local Verdaccio server
+
+  # 3. Validate Shell (Emulating the "validate" shell)
+  echo "Starting Validate Shell"
+
+  # Move back to root and clone amplify-backend repo
   cd ..
   git clone https://github.com/aws-amplify/amplify-backend.git
   cd amplify-backend
+
+  # Update the packages and ensure the correct versions are being used
   npm update
+
+  # Verify that the package-lock.json contains the updated version with localhost tarballs
   git diff package-lock.json | grep -e 'graphql-api-construct' -e 'data-construct'
+
+  # Build and test the backend
   npm run build && npm run test
 
-  cd $CODEBUILD_SRC_DIR
+  # 4. Clean Up and Reset NPM Registry
+  echo "Cleaning up environment"
+
+  # Reset NPM registry to npmjs.org
   unsetNpmRegistryUrl
   npm config get registry
+
+  # Stop Verdaccio server
   yarn verdaccio-stop
+
+  echo "Amplify Backend Compatibility verification complete."
 }
 function _publishToLocalRegistry {
     echo "Publish To Local Registry"
