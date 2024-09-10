@@ -6,8 +6,8 @@ env:
 batch:
   fast-fail: false
   build-graph:
-    # - identifier: build_linux
-    #   buildspec: codebuild_specs/build_linux.yml
+    - identifier: build_linux
+      buildspec: codebuild_specs/build_linux.yml
     # - identifier: build_windows
     #   buildspec: codebuild_specs/build_windows.yml
     #   env:
@@ -49,6 +49,6 @@ batch:
     #     - build_linux
     - identifier: verify_amplify_backend_compatability
       buildspec: codebuild_specs/verify_amplify_backend_compatability.yml
-      # depend-on:
-      #   - build_linux
+      depend-on:
+        - build_linux
       # debug-session: true
