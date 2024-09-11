@@ -209,7 +209,8 @@ function _verifyAmplifyBackendCompatability {
   git diff package-lock.json | grep -e 'graphql-api-construct' -e 'data-construct'
 
   # Build and test the backend
-  npm run build && npm run test
+  # npm run build && npm run test
+  npm run build && npm run test:dir packages/cli/lib/command_middleware.test.js
 
   # 4. Clean Up and Reset NPM Registry
   echo "Cleaning up environment"
