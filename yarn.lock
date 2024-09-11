@@ -10,10 +10,10 @@
     "@jridgewell/gen-mapping" "^0.3.5"
     "@jridgewell/trace-mapping" "^0.3.24"
 
-"@aws-amplify/ai-constructs@^0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/ai-constructs/-/ai-constructs-0.1.2.tgz#572f46c308edf5823861116cd9152eb429e9453f"
-  integrity sha512-fMwCPTBrf80Lk3/fyIUqDH79NVbo+kdroYj3wOOIqFsDHAnrQbnV64UgBNHqv7PUcQD11V+tLbC5qEb30+5Emg==
+"@aws-amplify/ai-constructs@^0.1.3":
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/ai-constructs/-/ai-constructs-0.1.3.tgz#dc371ff76937635042d50376c233308775495e87"
+  integrity sha512-6WynWa4R6AuogXqqRncU7PXJ+ZeWEIGmJuYcFot+x+oxp3juj51oFnPwdfj65QSqNcq2TbxSUe7jE/2A0pZ5OQ==
   dependencies:
     "@aws-amplify/plugin-types" "^1.0.1"
     "@aws-sdk/client-bedrock-runtime" "^3.622.0"
