@@ -25,7 +25,7 @@ describe('conversation', () => {
       projRoot = await createNewProjectDir(projFolderName);
       const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'configurable-stack'));
       const name = await initCDKProject(projRoot, templatePath, {
-        additionalDependencies: ['@aws-sdk/client-bedrock-runtime', 'esbuild'],
+        additionalDependencies: ['esbuild'],
       });
 
       const conversationSchemaPath = path.resolve(path.join(__dirname, 'graphql', 'schema-conversation.graphql'));

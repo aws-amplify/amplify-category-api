@@ -1,5 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
+import { AuthorizationType, Visibility } from 'aws-cdk-lib/aws-appsync';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 
@@ -608,6 +610,59 @@ describe('generated resource access', () => {
       });
 
       expect(graphqlApi).toBeDefined();
+    });
+
+    it('provides a graphql api with populated properties from the L1 construct', () => {
+      const stack = new cdk.Stack();
+      const authFunction = lambda.Function.fromFunctionName(stack, 'ImportedFn', 'ImportedFn');
+
+      const api = new AmplifyGraphqlApi(stack, 'TestApi', {
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+          type Todo @model @auth(rules: [{ allow: public }]) {
+            description: String!
+          }
+        `),
+        authorizationModes: {
+          defaultAuthorizationMode: 'API_KEY',
+          apiKeyConfig: { expires: cdk.Duration.days(7) },
+          userPoolConfig: { userPool: new cognito.UserPool(stack, 'TestUserPool', {}) },
+          lambdaConfig: {
+            function: authFunction,
+            ttl: cdk.Duration.minutes(5),
+          },
+          oidcConfig: {
+            oidcProviderName: 'testProvider',
+            oidcIssuerUrl: 'https://test.client/',
+            clientId: 'testClient',
+            tokenExpiryFromAuth: cdk.Duration.minutes(5),
+            tokenExpiryFromIssue: cdk.Duration.minutes(5),
+          },
+          iamConfig: {
+            enableIamAuthorizationMode: true,
+          },
+        },
+      });
+
+      const {
+        resources: { graphqlApi, cfnResources },
+      } = api;
+
+      expect(graphqlApi.apiId).toEqual(api.apiId);
+      expect(graphqlApi.apiId).toEqual(cfnResources.cfnGraphqlApi.attrApiId);
+      expect(graphqlApi.arn).toEqual(cfnResources.cfnGraphqlApi.attrArn);
+      expect(graphqlApi.graphQLEndpointArn).toEqual(cfnResources.cfnGraphqlApi.attrGraphQlEndpointArn);
+      expect(graphqlApi.visibility.toString()).toEqual(Visibility.GLOBAL);
+
+      expect(graphqlApi.modes).toBeDefined();
+      expect(graphqlApi.modes).toEqual(
+        expect.arrayContaining([
+          AuthorizationType.API_KEY,
+          AuthorizationType.IAM,
+          AuthorizationType.LAMBDA,
+          AuthorizationType.OIDC,
+          AuthorizationType.USER_POOL,
+        ]),
+      );
     });
 
     it('provides tables', () => {
