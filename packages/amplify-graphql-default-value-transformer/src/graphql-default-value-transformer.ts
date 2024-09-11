@@ -123,6 +123,7 @@ export class DefaultValueTransformer extends TransformerPluginBase {
         const input = InputObjectDefinitionWrapper.fromObject(name, config.object, ctx.inputDocument);
         const fieldWrapper = input.fields.find((f) => f.name === config.field.name.value);
         fieldWrapper?.makeNullable();
+        ctx.output.updateInput(input.serialize());
       }
     }
   };
