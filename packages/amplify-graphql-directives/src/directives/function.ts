@@ -1,10 +1,9 @@
 import { Directive } from './directive';
 
-const name = 'function';
-// export type FunctionInvocationType = 'RequestResponse' | 'Event'
 export type FunctionDirectiveDefaults = {
   invocationType: string;
 };
+const name = 'function';
 const defaults: FunctionDirectiveDefaults = {
   invocationType: 'RequestResponse',
 };
