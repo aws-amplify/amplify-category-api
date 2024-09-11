@@ -13,33 +13,17 @@ import { GenerationTransformer } from '@aws-amplify/graphql-generation-transform
 
 const conversationSchemaTypes = fs.readFileSync(path.join(__dirname, '../graphql-types/conversation-schema-types.graphql'), 'utf8');
 
+const getSchema = (fileName: string, template: Record<string, string>) => {
+  const schema = fs.readFileSync(path.join(__dirname, '/schemas/', fileName), 'utf8');
+  const templated = schema.replace(/\${([^}]*)}/g, (_,k) => template[k]);
+  return templated + '\n' + conversationSchemaTypes;
+};
+
 describe('ConversationTransformer', () => {
   describe('valid schemas', () => {
     it('should transform a conversation route with query tools', () => {
       const routeName = 'pirateChat';
-      const inputSchema = `
-        type Temperature {
-          value: Int
-          unit: String
-        }
-
-        type Query {
-          getTemperature(city: String!): Temperature
-          plus(a: Int, b: Int): Int
-        }
-
-        type Mutation {
-          ${routeName}(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
-          @conversation(
-            aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
-            functionName: "conversation-handler",
-            systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
-            tools: [{ name: "getTemperature", description: "does a thing" }, { name: "plus", description: "does a different thing" }]
-          )
-        }
-
-        ${conversationSchemaTypes}
-      `;
+      const inputSchema = getSchema('conversation-route-custom-query-tool.graphql', { routeName });
 
       const out = transform(inputSchema);
       expect(out).toBeDefined();
@@ -59,6 +43,8 @@ describe('ConversationTransformer', () => {
 
     it('conversation route with model query tool', () => {
       const routeName = 'pirateChat';
+
+      const inputSchema = getSchema('conversation-route-model-query-tool.graphql', { routeName });consut 
       const inputSchema = `
         type Todo @model @auth(rules: [{ allow: owner }]) {
           content: String
@@ -97,22 +83,22 @@ describe('ConversationTransformer', () => {
       const routeName = 'pirateChat';
 
       const inputSchema = `
-    type Mutation {
-        ${routeName}(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
-        @conversation(
-          aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
-          systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
-          functionName: "conversation-handler",
-          inferenceConfiguration: {
-            temperature: 0.5,
-            topP: 0.9,
-            maxTokens: 100,
-          }
-        )
-    }
+      type Mutation {
+          ${routeName}(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
+          @conversation(
+            aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
+            systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
+            functionName: "conversation-handler",
+            inferenceConfiguration: {
+              temperature: 0.5,
+              topP: 0.9,
+              maxTokens: 100,
+            }
+          )
+      }
 
-    ${conversationSchemaTypes}
-  `;
+      ${conversationSchemaTypes}
+    `;
 
       const out = transform(inputSchema);
       expect(out).toBeDefined();
@@ -132,41 +118,41 @@ describe('ConversationTransformer', () => {
     it('should transform a conversation route with a model query tool including relationships', () => {
       const routeName = 'pirateChat';
       const inputSchema = `
-    type Product {
-      name: String!
-      price: Float!
-    }
-    type Customer @model @auth(rules: [{ allow: owner }]) {
-      name: String
-      email: String
-      activeCart: Cart @hasOne(references: "customerId")
-      orderHistory: [Order] @hasMany(references: "customerId")
-    }
+      type Product {
+        name: String!
+        price: Float!
+      }
+      type Customer @model @auth(rules: [{ allow: owner }]) {
+        name: String
+        email: String
+        activeCart: Cart @hasOne(references: "customerId")
+        orderHistory: [Order] @hasMany(references: "customerId")
+      }
 
-    type Cart @model @auth(rules: [{ allow: owner }]) {
-      products: [Product]
-      customerId: ID
-      customer: Customer @belongsTo(references: "customerId")
-    }
+      type Cart @model @auth(rules: [{ allow: owner }]) {
+        products: [Product]
+        customerId: ID
+        customer: Customer @belongsTo(references: "customerId")
+      }
 
-    type Order @model @auth(rules: [{ allow: owner }]) {
-      products: [Product]
-      customerId: ID
-      customer: Customer @belongsTo(references: "customerId")
-    }
+      type Order @model @auth(rules: [{ allow: owner }]) {
+        products: [Product]
+        customerId: ID
+        customer: Customer @belongsTo(references: "customerId")
+      }
 
-    type Mutation {
-        ${routeName}(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
-        @conversation(
-          aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
-          functionName: "conversation-handler",
-          systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
-          tools: [{ name: "listCustomers", description: "Provides data about the customer sending a message" }]
-        )
-    }
+      type Mutation {
+          ${routeName}(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
+          @conversation(
+            aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
+            functionName: "conversation-handler",
+            systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
+            tools: [{ name: "listCustomers", description: "Provides data about the customer sending a message" }]
+          )
+      }
 
-    ${conversationSchemaTypes}
-  `;
+      ${conversationSchemaTypes}
+    `;
 
       const out = transform(inputSchema);
       expect(out).toBeDefined();
