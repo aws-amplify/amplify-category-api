@@ -31,6 +31,12 @@ else
   git config --global user.name $GITHUB_USER
 fi
 
+if [ "$RUN_POST_PUBLISH_ONLY" = "true" ]; then
+  echo "Post publish script is invoked on branch $BRANCH_NAME"
+  yarn postpublish:$BRANCH_NAME
+  exit 0
+fi
+
 RESERVED_TAGS=(alpha beta dev latest main api-plugin-stable)
 
 if [[ "$BRANCH_NAME" =~ ^tagged-release ]]; then
