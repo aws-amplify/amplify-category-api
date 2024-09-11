@@ -189,7 +189,7 @@ input ModelTestConditionInput {
 
 input CreateTestInput {
   id: ID
-  stringValue: String!
+  stringValue: String
 }
 
 input UpdateTestInput {
