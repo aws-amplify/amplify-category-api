@@ -158,6 +158,14 @@ function _verifyAmplifyBackendCompatability {
   # Clean Verdaccio cache and prepare for publishing
   rm -rf ../verdaccio-cache && mkdir ../verdaccio-cache
 
+  # Unset AWS credentials and disable metadata access
+  echo "Disabling AWS credential access"
+  unset AWS_ACCESS_KEY_ID
+  unset AWS_SECRET_ACCESS_KEY
+  unset AWS_SESSION_TOKEN
+  unset AWS_PROFILE
+  export AWS_EC2_METADATA_DISABLED=true
+
   # Create a new local branch for testing 
   git checkout -B validate-amplify-backend
 
