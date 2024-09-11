@@ -158,12 +158,21 @@ function _verifyAmplifyBackendCompatability {
   # Clean Verdaccio cache and prepare for publishing
   rm -rf ../verdaccio-cache && mkdir ../verdaccio-cache
 
-  # Unset AWS credentials and disable metadata access
-  echo "Disabling AWS credential access"
+  # Unset AWS credentials, SSO configuration, Web Identity Token, and disable INI config files
+  echo "Disabling AWS credential, SSO, Web Identity Token, and INI file access"
   unset AWS_ACCESS_KEY_ID
   unset AWS_SECRET_ACCESS_KEY
   unset AWS_SESSION_TOKEN
   unset AWS_PROFILE
+  unset AWS_SSO_START_URL
+  unset AWS_SSO_ACCOUNT_ID
+  unset AWS_SSO_REGION
+  unset AWS_SSO_ROLE_NAME
+  unset AWS_WEB_IDENTITY_TOKEN_FILE
+  unset AWS_ROLE_ARN
+  unset AWS_ROLE_SESSION_NAME
+  export AWS_SHARED_CREDENTIALS_FILE=/dev/null
+  export AWS_CONFIG_FILE=/dev/null
   export AWS_EC2_METADATA_DISABLED=true
 
   # Create a new local branch for testing 
