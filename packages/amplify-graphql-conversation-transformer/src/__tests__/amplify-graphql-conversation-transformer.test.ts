@@ -15,7 +15,7 @@ const conversationSchemaTypes = fs.readFileSync(path.join(__dirname, '../graphql
 
 describe('ConversationTransformer', () => {
   describe('valid schemas', () => {
-    it.only('should transform a conversation route with query tools', () => {
+    it('should transform a conversation route with query tools', () => {
       const routeName = 'pirateChat';
       const inputSchema = `
         type Temperature {
@@ -56,7 +56,6 @@ describe('ConversationTransformer', () => {
       expect(print(schema)).toMatchSnapshot();
       validateModelSchema(schema);
 
-      console.log(JSON.stringify(out.stacks.ConversationMessagePirateChat.Resources!.ListConversationMessagePirateChatResolver, null, 2));
       expect(
         out.stacks.ConversationMessagePirateChat.Resources!.ListConversationMessagePirateChatResolver.Properties.PipelineConfig.Functions,
       ).toHaveLength(4);
