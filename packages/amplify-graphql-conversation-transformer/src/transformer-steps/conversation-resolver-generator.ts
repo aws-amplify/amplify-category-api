@@ -2,7 +2,7 @@ import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-int
 import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-transformer';
 import { processTools } from '../utils/tools';
 import { JSResolverFunctionProvider } from '../resolvers/js-resolver-function-provider';
-import { MappingTemplate, TransformerResolver } from '@aws-amplify/graphql-transformer-core';
+import { InvalidTransformerError, MappingTemplate, TransformerResolver } from '@aws-amplify/graphql-transformer-core';
 import { ResolverResourceIDs, FunctionResourceIDs, ResourceConstants, toUpper } from 'graphql-transformer-common';
 import * as cdk from 'aws-cdk-lib';
 import { conversation } from '@aws-amplify/ai-constructs';
@@ -19,6 +19,7 @@ import { conversationMessageSubscriptionMappingTamplate } from '../resolvers/ass
 import { overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
 import pluralize from 'pluralize';
 import { listMessagePostDataLoadMappingTemplate } from '../resolvers/list-message-post-data-load-resolver';
+import { listMessageInitMappingTemplate } from '../resolvers/list-messages-init-resolver';
 
 type KeyAttributeDefinition = {
   name: string;
@@ -361,11 +362,23 @@ export class ConversationResolverGenerator {
   ): void {
     const messageModelName = directive.messageModel.messageModel.name.value;
     const pluralized = pluralize(messageModelName);
-    const { req, res } = listMessagePostDataLoadMappingTemplate();
+    const postDataLoadResolverFn = listMessagePostDataLoadMappingTemplate();
     const listMessagesResolver = ctx.resolvers.getResolver('Query', `list${pluralized}`) as TransformerResolver;
-    if (listMessagesResolver) {
-      listMessagesResolver.addToSlot('postDataLoad', req, res, undefined, { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' });
+    if (!listMessagesResolver) {
+      throw new InvalidTransformerError(`list${pluralized} resolver not found`);
     }
+
+    listMessagesResolver.addToSlot('postDataLoad', postDataLoadResolverFn.req, postDataLoadResolverFn.res, undefined, {
+      name: 'APPSYNC_JS',
+      runtimeVersion: '1.0.0',
+    });
+
+    const initResolverFn = listMessageInitMappingTemplate();
+
+    listMessagesResolver.addToSlot('init', initResolverFn.req, initResolverFn.res, undefined, {
+      name: 'APPSYNC_JS',
+      runtimeVersion: '1.0.0',
+    });
   }
 
   private addGlobalSecondaryIndex(

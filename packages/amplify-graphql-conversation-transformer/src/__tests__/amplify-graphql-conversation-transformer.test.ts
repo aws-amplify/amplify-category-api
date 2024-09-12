@@ -58,7 +58,7 @@ describe('ConversationTransformer', () => {
 
       expect(
         out.stacks.ConversationMessagePirateChat.Resources!.ListConversationMessagePirateChatResolver.Properties.PipelineConfig.Functions,
-      ).toHaveLength(4);
+      ).toHaveLength(5);
     });
 
     it('conversation route with model query tool', () => {
