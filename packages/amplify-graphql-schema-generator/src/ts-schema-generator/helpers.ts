@@ -1,7 +1,7 @@
 import ts from 'typescript';
 import { TYPESCRIPT_DATA_SCHEMA_CONSTANTS } from 'graphql-transformer-common';
 import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
-import { DBEngineType, Field, FieldType, Model, Schema } from '../schema-representation';
+import { DBEngineType, EnumType, Field, FieldType, Model, Schema } from '../schema-representation';
 
 const GQL_TYPESCRIPT_DATA_SCHEMA_TYPE_MAP = {
   string: 'string',
@@ -38,6 +38,7 @@ const createProperty = (field: Field): ts.Node => {
  * @returns Typescript data schema type in TS Node format
  */
 const createDataType = (type: FieldType): ts.Node => {
+
   if (type.kind === 'Scalar') {
     return ts.factory.createCallExpression(
       ts.factory.createIdentifier(`${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REFERENCE_A}.${getTypescriptDataSchemaType(type.name)}`),
@@ -47,21 +48,19 @@ const createDataType = (type: FieldType): ts.Node => {
   }
 
   if (type.kind === 'Enum') {
+
     return ts.factory.createCallExpression(
-      ts.factory.createIdentifier(`${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REFERENCE_A}.${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.ENUM_METHOD}`),
+      ts.factory.createIdentifier(`${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REFERENCE_A}.${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REF_METHOD}`),
       undefined,
-      [
-        ts.factory.createArrayLiteralExpression(
-          type.values.map((value) => ts.factory.createStringLiteral(value)),
-          true,
-        ),
-      ],
+      [ts.factory.createStringLiteral(type.name)]
+      
     );
   }
 
   // We do not import any Database type as 'Custom' type.
   // In case if there is a custom type in the IR schema, we will import it as string.
   if (type.kind === 'Custom') {
+    console.log(type);
     return ts.factory.createCallExpression(
       ts.factory.createIdentifier(`${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REFERENCE_A}.${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.STRING_METHOD}`),
       undefined,
@@ -90,6 +89,18 @@ const createModelDefinition = (model: Model): ts.Node => {
   });
   return ts.factory.createObjectLiteralExpression(properties as ts.ObjectLiteralElementLike[], true);
 };
+
+const createEnums = (type: EnumType): ts.Node => {
+  const typeExpression =  ts.factory.createCallExpression(ts.factory.createIdentifier(`${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REFERENCE_A}.${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.ENUM_METHOD}`), undefined, 
+  [
+    ts.factory.createArrayLiteralExpression(
+      type.values.map((value) => ts.factory.createStringLiteral(value)),
+      true,
+    ),
+  ],
+  );
+  return ts.factory.createPropertyAssignment(ts.factory.createIdentifier(type.name), typeExpression);
+}
 
 const createModel = (model: Model): ts.Node => {
   const modelExpr = ts.factory.createCallExpression(
@@ -147,19 +158,44 @@ export const createSchema = (schema: Schema, config?: DataSourceGenerateConfig):
     throw new Error('No valid tables found. Make sure at least one table has a primary key.');
   }
 
+  // find enums in all models
+
+  const enums = schema
+    .getModels()
+    .map((model) => model
+        .getFields()
+        .map((field) => {
+            if(field.type.kind === 'Enum'){
+                return createEnums(field.type);
+            }
+            else if(field.type.kind === 'NonNull' && field.type.type.kind === 'Enum'){
+                return createEnums(field.type.type);
+            } 
+            else {
+              return undefined;
+            }
+  }));
+
+  const filteredEnums = enums.map((element) => {
+      element.filter((item) => item !== undefined)
+  });
+
   const models = schema
     .getModels()
     .filter((model) => model.getPrimaryKey())
     .map((model) => {
       return createModel(model);
     });
+
+  const modelWithEnums = models.concat(filteredEnums);
+  
   const tsSchema = ts.factory.createCallExpression(
     ts.factory.createPropertyAccessExpression(
       createConfigureExpression(schema, config),
-      ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.SCHEMA_METHOD),
+      ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.SCHEMA_METHOD), // create a.schema()
     ),
     undefined,
-    [ts.factory.createObjectLiteralExpression(models as ts.ObjectLiteralElementLike[], true)],
+    [ts.factory.createObjectLiteralExpression(modelWithEnums as ts.ObjectLiteralElementLike[], true)],
   );
   return ts.factory.createVariableStatement(
     [exportModifier],
