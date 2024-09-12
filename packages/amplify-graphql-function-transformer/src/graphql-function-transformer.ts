@@ -200,37 +200,26 @@ export class FunctionTransformer extends TransformerPluginBase {
  * @returns the response mapping template used by AppSync to handle responses from the Lambda function invocation.
  */
 const responseMappingTemplate = (config: FunctionDirectiveConfiguration): string => {
-  if (config.invocationType === 'Event') {
-    /*
-      #set( $success = true )
-      #if( $ctx.error )
-        $util.appendError($ctx.error.message, $ctx.error.type)
-        #set( $success = false )
-      #end
-      #set( $response = {
-        "success": $success
-      } )
-      $util.toJson($response)
-    */
-    return printBlock('Handle error or return result')(
-      compoundExpression([
-        set(ref('success'), bool(true)),
-        iff(
-          ref('ctx.error'),
-          compoundExpression([raw('$util.appendError($ctx.error.message, $ctx.error.type)'), set(ref('success'), bool(false))]),
-        ),
-        compoundExpression([set(ref('response'), obj({ success: ref('success') })), raw('$util.toJson($response)')]),
-      ]),
-    );
-  }
+  return config.invocationType === 'Event'
+    ? responseMappingTemplateEventInvocationType()
+    : responseMappingTemplateRequestResponseInvocationType();
+};
 
-  /*
-    #if( $ctx.error )
-      $util.error($ctx.error.message, $ctx.error.type)
-    #end
-    $util.toJson($ctx.result)
-  */
-  return printBlock('Handle error or return result')(
+const responseMappingTemplateEventInvocationType = (): string => {
+  return printBlock('Handle error and return result for event invocation type')(
+    compoundExpression([
+      set(ref('success'), bool(true)),
+      iff(
+        ref('ctx.error'),
+        compoundExpression([raw('$util.appendError($ctx.error.message, $ctx.error.type)'), set(ref('success'), bool(false))]),
+      ),
+      compoundExpression([set(ref('response'), obj({ success: ref('success') })), raw('$util.toJson($response)')]),
+    ]),
+  );
+};
+
+const responseMappingTemplateRequestResponseInvocationType = (): string => {
+  return printBlock('Handle error or return result for request response invocation type')(
     compoundExpression([
       iff(ref('ctx.error'), compoundExpression([raw('$util.error($ctx.error.message, $ctx.error.type)')])),
       raw('$util.toJson($ctx.result)'),
@@ -266,7 +255,7 @@ const lambdaArnKey = (name: string, region?: string, accountId?: string): string
  */
 const validate = (config: FunctionDirectiveConfiguration, definition: FieldDefinitionNode, ctx: TransformerContextProvider): void => {
   if (config.invocationType === 'Event') {
-    // For any occurance  of 'invocationType: Event' validate:
+    // For any occurence  of 'invocationType: Event' validate:
     // is used on field where parent type is Mutation or Query.
     validateIsSupportedEventInvocationParentType(config);
 

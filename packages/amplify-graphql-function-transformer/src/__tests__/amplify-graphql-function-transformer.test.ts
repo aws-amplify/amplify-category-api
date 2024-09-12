@@ -454,6 +454,8 @@ describe('Event invocation type', () => {
       `;
       const out = testTransform({ schema, transformers: [new FunctionTransformer()] });
       expect(out).toBeDefined();
+      expect(out.resolvers['InvokeAsyncstuffLambdaDataSource.res.vtl']).toMatchSnapshot();
+      expect(out.resolvers['InvokeAsyncstuff2LambdaDataSource.res.vtl']).toMatchSnapshot();
     });
 
     test('chained @function -- RequestResponse > Event fails without EventInvocationResponse', () => {
@@ -486,6 +488,8 @@ describe('Event invocation type', () => {
     `;
       const out = testTransform({ schema, transformers: [new FunctionTransformer()] });
       expect(out).toBeDefined();
+      expect(out.resolvers['InvokeAsyncstuffLambdaDataSource.res.vtl']).toMatchSnapshot();
+      expect(out.resolvers['InvokeAsyncstuff2LambdaDataSource.res.vtl']).toMatchSnapshot();
     });
 
     test('chained @function -- Event > Event fails without EventInvocationResponse', () => {
@@ -503,16 +507,18 @@ describe('Event invocation type', () => {
       expect(() => testTransform({ schema, transformers: [new FunctionTransformer()] })).toThrowError(expectedErrorMessage);
     });
 
-    test('chained @function -- RequestResponse > Event succeeds without EventInvocationResponse', () => {
+    test('chained @function -- Event > RequestResponse succeeds without EventInvocationResponse', () => {
       const schema = `
         type Mutation {
-          asyncStuff(msg: String): String
+          syncStuff(msg: String): String
           @function(name: "asyncstuff-\${env}", invocationType: Event)
           @function(name: "asyncstuff2-\${env}")
         }
       `;
       const out = testTransform({ schema, transformers: [new FunctionTransformer()] });
       expect(out).toBeDefined();
+      expect(out.resolvers['InvokeSyncstuffLambdaDataSource.res.vtl']).toMatchSnapshot();
+      expect(out.resolvers['InvokeSyncstuff2LambdaDataSource.res.vtl']).toMatchSnapshot();
     });
   });
 
