@@ -145,8 +145,8 @@ function _verifyAmplifyBackendCompatability {
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
   export NVM_DIR="$HOME/.nvm"
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-  nvm install 18.20.4
-  nvm use 18.20.4
+  nvm install 20.9.0
+  nvm use 20.9.0
 
   # Echo to verify the Node.js version
   echo "Node.js version in use:"
@@ -197,8 +197,6 @@ function _verifyAmplifyBackendCompatability {
 
   # Verify that the NPM registry has been set to the local Verdaccio server
   npm config get registry
-
-  # At this point, you have published the workspace to the local Verdaccio server
 
   # 3. Validate Shell (Emulating the "validate" shell)
   echo "Starting Validate Shell"
