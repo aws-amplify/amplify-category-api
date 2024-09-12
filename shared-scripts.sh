@@ -136,6 +136,10 @@ function _verifyAmplifyBackendCompatability {
   echo "Verify Amplify Backend Compatibility"
   loadCacheFromBuildJob
 
+  # Set npm to use Bash as the shell
+  echo "Configuring npm to use Bash as the script shell"
+  npm config set script-shell $(which bash)
+
   # Install NVM and set Node.js version
   echo "Installing NVM and setting Node.js version"
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
@@ -160,19 +164,24 @@ function _verifyAmplifyBackendCompatability {
 
   # Unset AWS credentials, SSO configuration, Web Identity Token, and disable INI config files
   echo "Disabling AWS credential, SSO, Web Identity Token, and INI file access"
+  # Disable Environment variables exposed via process.env
   unset AWS_ACCESS_KEY_ID
   unset AWS_SECRET_ACCESS_KEY
   unset AWS_SESSION_TOKEN
   unset AWS_PROFILE
+  # Disable SSO credentials from token cache
   unset AWS_SSO_START_URL
   unset AWS_SSO_ACCOUNT_ID
   unset AWS_SSO_REGION
   unset AWS_SSO_ROLE_NAME
+  # Disable Web identity token credentials
   unset AWS_WEB_IDENTITY_TOKEN_FILE
   unset AWS_ROLE_ARN
   unset AWS_ROLE_SESSION_NAME
+  # Disable Shared credentials and config ini files
   export AWS_SHARED_CREDENTIALS_FILE=/dev/null
   export AWS_CONFIG_FILE=/dev/null
+  # Disable EC2 instance metadata service
   export AWS_EC2_METADATA_DISABLED=true
 
   # Create a new local branch for testing 
