@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@4.0.1...@aws-amplify/graphql-transformer-interfaces@4.1.0) (2024-09-06)
+
+### Features
+
+- **generation-transformer:** add generation transformer ([#2820](https://github.com/aws-amplify/amplify-category-api/issues/2820)) ([a86db4e](https://github.com/aws-amplify/amplify-category-api/commit/a86db4e40962565fb55b7262a7d771f21bacef2a))
+
+## [4.0.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@4.0.0...@aws-amplify/graphql-transformer-interfaces@4.0.1) (2024-08-28)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-interfaces
+
 # [4.0.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.10.1...@aws-amplify/graphql-transformer-interfaces@4.0.0) (2024-08-20)
 
 - feat!: bump version for v2 transformer packages ([7dac35c](https://github.com/aws-amplify/amplify-category-api/commit/7dac35cceb971b256b5688b0745ef82afc78b641))

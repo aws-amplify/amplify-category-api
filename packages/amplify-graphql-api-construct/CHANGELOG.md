@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.12.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.11.8...@aws-amplify/graphql-api-construct@1.12.0) (2024-09-06)
+
+### Bug Fixes
+
+- don't print deprecation warning when pattern is not used ([#2816](https://github.com/aws-amplify/amplify-category-api/issues/2816)) ([4c5fc2a](https://github.com/aws-amplify/amplify-category-api/commit/4c5fc2aeebfc727a2ef6d02bee93543f732ec996))
+
+### Features
+
+- **conversation:** add conversation transformer ([#2827](https://github.com/aws-amplify/amplify-category-api/issues/2827)) ([cee6aef](https://github.com/aws-amplify/amplify-category-api/commit/cee6aef1358293fe51909a64d1cf9941afc46aba))
+- **generation-transformer:** add generation transformer ([#2820](https://github.com/aws-amplify/amplify-category-api/issues/2820)) ([a86db4e](https://github.com/aws-amplify/amplify-category-api/commit/a86db4e40962565fb55b7262a7d771f21bacef2a))
+
+## [1.11.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.11.7...@aws-amplify/graphql-api-construct@1.11.8) (2024-09-03)
+
+**Note:** Version bump only for package @aws-amplify/graphql-api-construct
+
+## [1.11.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.11.6...@aws-amplify/graphql-api-construct@1.11.7) (2024-08-28)
+
+**Note:** Version bump only for package @aws-amplify/graphql-api-construct
+
 ## [1.11.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.11.5...@aws-amplify/graphql-api-construct@1.11.6) (2024-08-20)
 
 ### Bug Fixes
