@@ -15,12 +15,6 @@ export const listMessagePostDataLoadMappingTemplate = (): JSResolverFunctionProv
   return { req, res };
 };
 
-
-
-
-
-
-
 /**
  *
  * @returns {MappingTemplateProvider} A MappingTemplateProvider for the request function.

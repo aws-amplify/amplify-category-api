@@ -353,6 +353,8 @@ export class ConversationResolverGenerator {
     );
   }
 
+  // TODO: This is a temporary solution to include assistant messages in the list messages resolver.
+  // The real fix will likely entail representing conversation messages as tuples of (user, assistant) within a single DynamoDB record (and GraphQL type).
   private addPostProcessingSlotToListMessagesPipeline(
     ctx: TransformerContextProvider,
     directive: ConversationDirectiveConfiguration,
@@ -360,7 +362,7 @@ export class ConversationResolverGenerator {
     const messageModelName = directive.messageModel.messageModel.name.value;
     const pluralized = pluralize(messageModelName);
     const { req, res } = listMessagePostDataLoadMappingTemplate();
-    const listMessagesResolver = ctx.resolvers.getResolver('Query', `list${pluralized}`) as TransformerResolver
+    const listMessagesResolver = ctx.resolvers.getResolver('Query', `list${pluralized}`) as TransformerResolver;
     if (listMessagesResolver) {
       listMessagesResolver.addToSlot('postDataLoad', req, res, undefined, { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' });
     }

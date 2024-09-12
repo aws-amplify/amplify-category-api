@@ -52,12 +52,14 @@ describe('ConversationTransformer', () => {
       expect(resolverFnCode).toBeDefined();
       expect(resolverFnCode).toMatchSnapshot();
 
-      const schema = parse(out.schema); 
+      const schema = parse(out.schema);
       expect(print(schema)).toMatchSnapshot();
       validateModelSchema(schema);
 
       console.log(JSON.stringify(out.stacks.ConversationMessagePirateChat.Resources!.ListConversationMessagePirateChatResolver, null, 2));
-      expect(out.stacks.ConversationMessagePirateChat.Resources!.ListConversationMessagePirateChatResolver.Properties.PipelineConfig.Functions).toHaveLength(4);
+      expect(
+        out.stacks.ConversationMessagePirateChat.Resources!.ListConversationMessagePirateChatResolver.Properties.PipelineConfig.Functions,
+      ).toHaveLength(4);
     });
 
     it('conversation route with model query tool', () => {
