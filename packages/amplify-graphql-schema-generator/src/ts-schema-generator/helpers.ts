@@ -158,27 +158,33 @@ export const createSchema = (schema: Schema, config?: DataSourceGenerateConfig):
     throw new Error('No valid tables found. Make sure at least one table has a primary key.');
   }
 
-  // find enums in all models
-
-  const enums = schema
+  const nullEnums = schema  // find null enums in all models
     .getModels()
     .map((model) => model
         .getFields()
+        .filter((field) => field.type.kind === 'Enum')
         .map((field) => {
-            if(field.type.kind === 'Enum'){
-                return createEnums(field.type);
-            }
-            else if(field.type.kind === 'NonNull' && field.type.type.kind === 'Enum'){
-                return createEnums(field.type.type);
-            } 
-            else {
-              return undefined;
-            }
-  }));
+          if(field.type.kind === 'Enum'){
+            return createEnums(field.type);
+          }
+          else{
+            return undefined;
+          }
+     }));
 
-  const filteredEnums = enums.map((element) => {
-      element.filter((item) => item !== undefined)
-  });
+    const notNullEnums = schema  // find Non null enums in all models
+    .getModels()
+    .map((model) => model
+        .getFields()
+        .filter((field) => field.type.kind === 'NonNull' && field.type.type.kind === 'Enum')
+        .map((field) => {
+          if(field.type.kind === 'NonNull' && field.type.type.kind === 'Enum'){
+            return createEnums(field.type.type);
+          }
+          else{
+            return undefined;
+          }
+     }));
 
   const models = schema
     .getModels()
@@ -187,7 +193,9 @@ export const createSchema = (schema: Schema, config?: DataSourceGenerateConfig):
       return createModel(model);
     });
 
-  const modelWithEnums = models.concat(filteredEnums);
+  const combinedEnums = nullEnums.concat(notNullEnums).flat() // making 1 D array
+    
+  const modelsWithEnums = models.concat(combinedEnums); // appending enums to models
   
   const tsSchema = ts.factory.createCallExpression(
     ts.factory.createPropertyAccessExpression(
@@ -195,7 +203,7 @@ export const createSchema = (schema: Schema, config?: DataSourceGenerateConfig):
       ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.SCHEMA_METHOD), // create a.schema()
     ),
     undefined,
-    [ts.factory.createObjectLiteralExpression(modelWithEnums as ts.ObjectLiteralElementLike[], true)],
+    [ts.factory.createObjectLiteralExpression(modelsWithEnums as ts.ObjectLiteralElementLike[], true)],
   );
   return ts.factory.createVariableStatement(
     [exportModifier],
