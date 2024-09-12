@@ -72,10 +72,21 @@ const validateDefaultValueType = (ctx: TransformerSchemaVisitStepContextProvider
   }
 };
 
+const validateNotPrimaryKey = (field: FieldDefinitionNode): void => {
+  const isPrimaryKeyField =
+    field.directives!.find((dir) => dir.name.value === 'primaryKey') ||
+    (getBaseType(field.type) === 'ID' && field.type.kind === Kind.NON_NULL_TYPE && field.name.value === 'id');
+
+  if (isPrimaryKeyField) {
+    throw new InvalidDirectiveError('The @default directive may not be applied to primaryKey fields.');
+  }
+};
+
 const validate = (ctx: TransformerSchemaVisitStepContextProvider, config: DefaultValueDirectiveConfiguration): void => {
   validateModelDirective(config);
   validateFieldType(ctx, config.field.type);
   validateDirectiveArguments(config.directive);
+  validateNotPrimaryKey(config.field);
 
   // Validate the default values only for the DynamoDB datasource.
   // For SQL, the database determines and sets the default value. We will not validate the value in transformers.
