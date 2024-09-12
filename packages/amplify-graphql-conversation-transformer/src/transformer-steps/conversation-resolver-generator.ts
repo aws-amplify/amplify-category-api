@@ -2,7 +2,7 @@ import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-int
 import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-transformer';
 import { processTools } from '../utils/tools';
 import { JSResolverFunctionProvider } from '../resolvers/js-resolver-function-provider';
-import { TransformerResolver } from '@aws-amplify/graphql-transformer-core';
+import { MappingTemplate, TransformerResolver } from '@aws-amplify/graphql-transformer-core';
 import { ResolverResourceIDs, FunctionResourceIDs, ResourceConstants, toUpper } from 'graphql-transformer-common';
 import * as cdk from 'aws-cdk-lib';
 import { conversation } from '@aws-amplify/ai-constructs';
@@ -17,6 +17,8 @@ import { invokeLambdaMappingTemplate } from '../resolvers/invoke-lambda-resolver
 import { assistantMutationResolver } from '../resolvers/assistant-mutation-resolver';
 import { conversationMessageSubscriptionMappingTamplate } from '../resolvers/assistant-messages-subscription-resolver';
 import { overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
+import pluralize from 'pluralize';
+import { listMessagePostDataLoadMappingTemplate } from '../resolvers/list-message-post-data-load-resolver';
 
 type KeyAttributeDefinition = {
   name: string;
@@ -29,6 +31,7 @@ export class ConversationResolverGenerator {
     for (const directive of directives) {
       this.processToolsForDirective(directive, ctx);
       this.generateResolversForDirective(directive, ctx);
+      this.addPostProcessingSlotToListMessagesPipeline(ctx, directive);
     }
   }
 
@@ -348,6 +351,19 @@ export class ConversationResolverGenerator {
       ctx,
       messageModelName,
     );
+  }
+
+  private addPostProcessingSlotToListMessagesPipeline(
+    ctx: TransformerContextProvider,
+    directive: ConversationDirectiveConfiguration,
+  ): void {
+    const messageModelName = directive.messageModel.messageModel.name.value;
+    const pluralized = pluralize(messageModelName);
+    const { req, res } = listMessagePostDataLoadMappingTemplate();
+    const listMessagesResolver = ctx.resolvers.getResolver('Query', `list${pluralized}`) as TransformerResolver
+    if (listMessagesResolver) {
+      listMessagesResolver.addToSlot('postDataLoad', req, res, undefined, { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' });
+    }
   }
 
   private addGlobalSecondaryIndex(
