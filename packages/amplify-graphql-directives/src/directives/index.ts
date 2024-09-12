@@ -6,7 +6,7 @@ export { BelongsToDirective } from './belongs-to';
 export { DefaultDirective } from './default';
 export { DeprecatedDirective } from './deprecated';
 export { ConversationDirective } from './conversation';
-export { FunctionDirective } from './function';
+export { FunctionDirective, FunctionDirectiveDefaults } from './function';
 export { GenerationDirective } from './generation';
 export { HasManyDirective, HasManyDirectiveDefaults } from './has-many';
 export { HasOneDirective } from './has-one';

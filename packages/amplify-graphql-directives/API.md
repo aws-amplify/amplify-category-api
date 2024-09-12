@@ -67,7 +67,12 @@ export interface DirectiveDefaults {
 }
 
 // @public (undocumented)
-export const FunctionDirective: Directive;
+export const FunctionDirective: Directive<FunctionDirectiveDefaults>;
+
+// @public (undocumented)
+export type FunctionDirectiveDefaults = {
+    invocationType: string;
+};
 
 // @public (undocumented)
 export const FunctionDirectiveV1: Directive;
