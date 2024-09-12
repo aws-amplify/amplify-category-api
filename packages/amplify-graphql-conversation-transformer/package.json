@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-conversation-transformer",
-  "version": "0.2.1-ai.0",
+  "version": "0.2.1-ai.1",
   "description": "Amplify GraphQL @conversation transformer",
   "repository": {
     "type": "git",
