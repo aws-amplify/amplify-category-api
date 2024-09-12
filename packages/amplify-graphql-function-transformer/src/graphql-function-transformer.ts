@@ -2,8 +2,9 @@ import {
   DirectiveWrapper,
   generateGetArgumentsInput,
   InvalidDirectiveError,
-  isObjectTypeDefinitionNode, MappingTemplate,
-  TransformerPluginBase
+  isObjectTypeDefinitionNode,
+  MappingTemplate,
+  TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FunctionDirective } from '@aws-amplify/graphql-directives';
