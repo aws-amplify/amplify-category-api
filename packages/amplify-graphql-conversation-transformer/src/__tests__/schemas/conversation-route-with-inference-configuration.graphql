@@ -1,0 +1,18 @@
+type Mutation {
+    ${routeName}(
+        conversationId: ID!,
+        content: [ContentBlockInput],
+        aiContext: AWSJSON,
+        toolConfiguration: ToolConfigurationInput
+    ): ConversationMessage
+    @conversation(
+        aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
+        systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
+        functionName: "conversation-handler",
+        inferenceConfiguration: {
+            temperature: 0.5,
+            topP: 0.9,
+            maxTokens: 100,
+        }
+    )
+}
