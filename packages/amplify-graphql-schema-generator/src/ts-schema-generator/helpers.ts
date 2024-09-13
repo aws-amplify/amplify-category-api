@@ -1,5 +1,5 @@
 import ts from 'typescript';
-import { TYPESCRIPT_DATA_SCHEMA_CONSTANTS } from 'graphql-transformer-common';
+import { TYPESCRIPT_DATA_SCHEMA_CONSTANTS, toPascalCase } from 'graphql-transformer-common';
 import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import { DBEngineType, EnumType, Field, FieldType, Model, Schema } from '../schema-representation';
 
@@ -47,8 +47,8 @@ const createDataType = (type: FieldType): ts.Node => {
     );
   }
 
+  // make it in the form a.ref('name') 
   if (type.kind === 'Enum') {
-
     return ts.factory.createCallExpression(
       ts.factory.createIdentifier(`${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REFERENCE_A}.${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REF_METHOD}`),
       undefined,
@@ -90,16 +90,35 @@ const createModelDefinition = (model: Model): ts.Node => {
   return ts.factory.createObjectLiteralExpression(properties as ts.ObjectLiteralElementLike[], true);
 };
 
-const createEnums = (type: EnumType): ts.Node => {
-  const typeExpression =  ts.factory.createCallExpression(ts.factory.createIdentifier(`${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REFERENCE_A}.${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.ENUM_METHOD}`), undefined, 
-  [
-    ts.factory.createArrayLiteralExpression(
-      type.values.map((value) => ts.factory.createStringLiteral(value)),
-      true,
-    ),
-  ],
-  );
-  return ts.factory.createPropertyAssignment(ts.factory.createIdentifier(type.name), typeExpression);
+/**
+ * Creates a typescript data schema type from internal SQL schema representation
+ * Example typescript data schema type output: `a.enum()`
+ * @param type SQL IR Enum type
+ * @returns Typescript data schema type in TS Node format
+ */
+const createEnums = (type: EnumType, engine: string, modelName: string, enumName: string): ts.Node => {
+  if (engine === 'Postgres'){
+    const typeExpression =  ts.factory.createCallExpression(ts.factory.createIdentifier(`${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REFERENCE_A}.${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.ENUM_METHOD}`), undefined, 
+    [
+      ts.factory.createArrayLiteralExpression(
+        type.values.map((value) => ts.factory.createStringLiteral(value)),
+        true,
+      ),
+    ],
+    );
+    return ts.factory.createPropertyAssignment(ts.factory.createIdentifier(toPascalCase([type.name])), typeExpression);
+  }
+  else {
+    const typeExpression =  ts.factory.createCallExpression(ts.factory.createIdentifier(`${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REFERENCE_A}.${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.ENUM_METHOD}`), undefined, 
+    [
+      ts.factory.createArrayLiteralExpression(
+        type.values.map((value) => ts.factory.createStringLiteral(value)),
+        true,
+      ),
+    ],
+    );
+    return ts.factory.createPropertyAssignment(ts.factory.createIdentifier(toPascalCase([modelName, enumName])), typeExpression);
+  }
 }
 
 const createModel = (model: Model): ts.Node => {
@@ -158,6 +177,8 @@ export const createSchema = (schema: Schema, config?: DataSourceGenerateConfig):
     throw new Error('No valid tables found. Make sure at least one table has a primary key.');
   }
 
+  const engine = schema.getEngine().type;
+
   const nullEnums = schema  // find null enums in all models
     .getModels()
     .map((model) => model
@@ -165,7 +186,7 @@ export const createSchema = (schema: Schema, config?: DataSourceGenerateConfig):
         .filter((field) => field.type.kind === 'Enum')
         .map((field) => {
           if(field.type.kind === 'Enum'){
-            return createEnums(field.type);
+            return createEnums(field.type, engine, model.getName(), field.name);
           }
           else{
             return undefined;
@@ -179,7 +200,7 @@ export const createSchema = (schema: Schema, config?: DataSourceGenerateConfig):
         .filter((field) => field.type.kind === 'NonNull' && field.type.type.kind === 'Enum')
         .map((field) => {
           if(field.type.kind === 'NonNull' && field.type.type.kind === 'Enum'){
-            return createEnums(field.type.type);
+            return createEnums(field.type.type, engine, model.getName(), field.name);
           }
           else{
             return undefined;
