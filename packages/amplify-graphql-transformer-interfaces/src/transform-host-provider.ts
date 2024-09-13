@@ -21,6 +21,7 @@ import {
   MappingTemplateProvider,
 } from './graphql-api-provider';
 import { VpcConfig } from './model-datasource';
+import { FunctionRuntimeTemplate } from './transformer-context';
 
 export interface DynamoDbDataSourceOptions extends DataSourceOptions {
   /**
@@ -46,9 +47,8 @@ export interface TransformHostProvider {
 
   addAppSyncFunction: (
     name: string,
-    requestMappingTemplate: MappingTemplateProvider,
-    responseMappingTemplate: MappingTemplateProvider,
     dataSourceName: string,
+    mappingTemplate: FunctionRuntimeTemplate,
     scope?: Construct,
     runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
   ) => AppSyncFunctionConfigurationProvider;
@@ -56,8 +56,7 @@ export interface TransformHostProvider {
   addResolver: (
     typeName: string,
     fieldName: string,
-    requestMappingTemplate: MappingTemplateProvider,
-    responseMappingTemplate: MappingTemplateProvider,
+    mappingTemplate: FunctionRuntimeTemplate,
     resolverLogicalId?: string,
     dataSourceName?: string,
     pipelineConfig?: string[],

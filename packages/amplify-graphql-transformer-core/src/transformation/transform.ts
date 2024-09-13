@@ -416,15 +416,20 @@ export class GraphQLTransform {
     for (const [resolverName, resolver] of resolverEntries) {
       const userSlots = this.userDefinedSlots[resolverName] || [];
 
-      userSlots.forEach((slot) => {
+      for (const slot of userSlots) {
         const requestTemplate = slot.requestResolver
           ? MappingTemplate.s3MappingTemplateFromString(slot.requestResolver.template, slot.requestResolver.fileName)
           : undefined;
         const responseTemplate = slot.responseResolver
           ? MappingTemplate.s3MappingTemplateFromString(slot.responseResolver.template, slot.responseResolver.fileName)
           : undefined;
-        resolver.addToSlot(slot.slotName, requestTemplate, responseTemplate);
-      });
+
+          // TODO: This is probably going to cause issues because it reads like it supports defining either or both
+          // request and responnse functions, while this requires both to be defined.
+        if (requestTemplate && responseTemplate) {
+          resolver.addToSlot(slot.slotName, { requestMappingTemplate: requestTemplate, responseMappingTemplate: responseTemplate });
+        }
+      }
 
       resolver.synthesize(context, api);
     }

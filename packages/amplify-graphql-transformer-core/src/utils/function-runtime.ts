@@ -1,4 +1,4 @@
-import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { FunctionRuntimeTemplate, JSRuntimeTemplate, MappingTemplateProvider, VTLRuntimeTemplate } from '@aws-amplify/graphql-transformer-interfaces';
 import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
 import { GraphQLApi } from '../graphql-api';
 import { InlineTemplate } from '../cdk-compat';
@@ -27,6 +27,8 @@ type RuntimeSpecificFunctionProps = {
   runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty;
   /** The function code as a string. Used for JavaScript runtimes. */
   code?: string;
+  /** The S3 location of the function code. Used for JavaScript runtimes with S3-stored templates. */
+  codeS3Location?: string;
 };
 
 /**
@@ -43,24 +45,28 @@ type RuntimeSpecificFunctionProps = {
 export const getRuntimeSpecificFunctionProps = (
   scope: Construct,
   props: {
-    requestMappingTemplate: MappingTemplateProvider;
-    responseMappingTemplate: MappingTemplateProvider;
+    mappingTemplate: FunctionRuntimeTemplate;
     runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty;
     api: GraphQLApi;
   },
 ): RuntimeSpecificFunctionProps => {
-  const { requestMappingTemplate, responseMappingTemplate, runtime, api } = props;
+  const { mappingTemplate, runtime, api } = props;
 
-  const requestTemplateLocation = requestMappingTemplate.bind(scope, api.assetProvider);
-  const responseTemplateLocation = responseMappingTemplate.bind(scope, api.assetProvider);
 
   if (isJsResolverFnRuntime(runtime)) {
-    return {
-      runtime,
-      code: requestTemplateLocation + '\n\n' + responseTemplateLocation,
-    };
+    const { codeMappingTemplate } = mappingTemplate as JSRuntimeTemplate;
+    if (!codeMappingTemplate) {
+      throw new Error('codeMappingTemplate is required for JavaScript resolver function runtimes');
+    }
+    const codeTemplateLocation = codeMappingTemplate.bind(scope, api.assetProvider);
+    return codeMappingTemplate instanceof InlineTemplate
+      ? { runtime, code: codeTemplateLocation }
+      : { runtime, codeS3Location: codeTemplateLocation };
   }
 
+  const { requestMappingTemplate, responseMappingTemplate } = mappingTemplate as VTLRuntimeTemplate;
+  const requestTemplateLocation = requestMappingTemplate.bind(scope, api.assetProvider);
+  const responseTemplateLocation = responseMappingTemplate.bind(scope, api.assetProvider);
   return {
     ...(requestMappingTemplate instanceof InlineTemplate
       ? { requestMappingTemplate: requestTemplateLocation }

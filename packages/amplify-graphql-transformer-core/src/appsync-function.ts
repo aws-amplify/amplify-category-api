@@ -1,4 +1,4 @@
-import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { FunctionRuntimeTemplate, MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { BackedDataSource, BaseDataSource, CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
 import { Construct } from 'constructs';
 import { InlineTemplate } from './cdk-compat/template-asset';
@@ -7,20 +7,9 @@ import { setResourceName } from './utils';
 import { getRuntimeSpecificFunctionProps } from './utils/function-runtime';
 
 export interface BaseFunctionConfigurationProps {
-  /**
-   * The request mapping template for this resolver
-   *
-   * @default - No mapping template
-   */
-  readonly requestMappingTemplate: MappingTemplateProvider;
-  /**
-   * The response mapping template for this resolver
-   *
-   * @default - No mapping template
-   */
-  readonly responseMappingTemplate: MappingTemplateProvider;
-
   readonly description?: string;
+
+  readonly mappingTemplate: FunctionRuntimeTemplate;
 }
 
 /**

@@ -1,9 +1,12 @@
 import {
   DynamoDbDataSourceOptions,
+  FunctionRuntimeTemplate,
+  JSRuntimeTemplate,
   MappingTemplateProvider,
   SearchableDataSourceOptions,
   TransformHostProvider,
   VpcConfig,
+  VTLRuntimeTemplate,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   BaseDataSource,
@@ -32,8 +35,7 @@ import { setResourceName } from './utils';
 import { getRuntimeSpecificFunctionProps } from './utils/function-runtime';
 
 type Slot = {
-  requestMappingTemplate?: string;
-  responseMappingTemplate?: string;
+  mappingTemplate?: FunctionRuntimeTemplate;
   dataSource?: string;
 };
 
@@ -136,9 +138,8 @@ export class DefaultTransformHost implements TransformHostProvider {
 
   public addAppSyncFunction = (
     name: string,
-    requestMappingTemplate: MappingTemplateProvider,
-    responseMappingTemplate: MappingTemplateProvider,
     dataSourceName: string,
+    mappingTemplate: FunctionRuntimeTemplate,
     scope?: Construct,
     runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
   ): AppSyncFunctionConfiguration => {
@@ -153,24 +154,25 @@ export class DefaultTransformHost implements TransformHostProvider {
 
     const obj: Slot = {
       dataSource: dataSourceName,
-      requestMappingTemplate: requestMappingTemplate.getTemplateHash(),
-      responseMappingTemplate: responseMappingTemplate.getTemplateHash(),
+      mappingTemplate: mappingTemplate,
     };
 
     const slotHash = hash(obj);
     if (!this.api.disableResolverDeduping && this.appsyncFunctions.has(slotHash)) {
       const appsyncFunction = this.appsyncFunctions.get(slotHash)!;
       // generating duplicate appsync functions vtl files to help in custom overrides
+      const { requestMappingTemplate, responseMappingTemplate } = mappingTemplate as VTLRuntimeTemplate;
+      const { codeMappingTemplate } = mappingTemplate as JSRuntimeTemplate;
       requestMappingTemplate.bind(appsyncFunction, this.api.assetProvider);
       responseMappingTemplate.bind(appsyncFunction, this.api.assetProvider);
+      codeMappingTemplate.bind(appsyncFunction, this.api.assetProvider);
       return appsyncFunction;
     }
 
     const fn = new AppSyncFunctionConfiguration(scope || this.api, name, {
       api: this.api,
       dataSource: dataSource || dataSourceName,
-      requestMappingTemplate,
-      responseMappingTemplate,
+      mappingTemplate,
       runtime,
     });
     this.appsyncFunctions.set(slotHash, fn);
@@ -180,8 +182,7 @@ export class DefaultTransformHost implements TransformHostProvider {
   public addResolver = (
     typeName: string,
     fieldName: string,
-    requestMappingTemplate: MappingTemplateProvider,
-    responseMappingTemplate: MappingTemplateProvider,
+    mappingTemplate: FunctionRuntimeTemplate,
     resolverLogicalId?: string,
     dataSourceName?: string,
     pipelineConfig?: string[],
@@ -195,8 +196,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     const resolverName = toCamelCase([resourceName(typeName), resourceName(fieldName), 'Resolver']);
     const resourceId = resolverLogicalId ?? ResolverResourceIDs.ResolverResourceID(typeName, fieldName);
     const runtimeSpecificProps = getRuntimeSpecificFunctionProps(this.api, {
-      requestMappingTemplate,
-      responseMappingTemplate,
+      mappingTemplate,
       runtime,
       api: this.api,
     });
@@ -265,10 +265,11 @@ export class DefaultTransformHost implements TransformHostProvider {
     fn.addLayers();
     const cfnFn = fn.node.defaultChild as CfnFunction;
     setResourceName(fn, { name: functionName, setOnDefaultChild: true });
-    const functionCode = new S3MappingFunctionCode(functionKey, filePath).bind(fn, this.api.assetProvider);
+    const functionCode = new S3MappingFunctionCode(functionKey, filePath);
+    functionCode.bind(fn, this.api.assetProvider);
     cfnFn.code = {
-      s3Key: functionCode.s3ObjectKey,
-      s3Bucket: functionCode.s3BucketName,
+      s3Key: functionCode.asset?.s3ObjectKey,
+      s3Bucket: functionCode.asset?.s3BucketName,
     };
 
     const subnetIds = vpc?.subnetAvailabilityZoneConfig.map((sn) => sn.subnetId);

@@ -121,10 +121,11 @@ export interface S3MappingTemplateProvider {
 
 export interface S3MappingFunctionCodeProvider {
   type: TemplateType.S3_LOCATION;
-  bind: (scope: Construct, assetProvider: AssetProvider) => IAsset;
+  bind: (scope: Construct, assetProvider: AssetProvider) => string;
+  getTemplateHash: () => string;
 }
 
-export type MappingTemplateProvider = InlineMappingTemplateProvider | S3MappingTemplateProvider;
+export type MappingTemplateProvider = InlineMappingTemplateProvider | S3MappingTemplateProvider | S3MappingFunctionCodeProvider;
 
 export interface GraphQLAPIProvider extends IConstruct {
   readonly apiId: string;

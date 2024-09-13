@@ -12,26 +12,28 @@ import { Construct } from 'constructs';
 
 export class S3MappingFunctionCode implements S3MappingFunctionCodeProvider {
   public readonly type = MappingTemplateType.S3_LOCATION;
+  public asset?: S3Asset;
+  private content: string;
+  public readonly name: string;
 
-  private asset?: S3Asset;
-
-  private fileName: string;
-
-  private filePath: string;
-
-  constructor(fileName: string, filePath: string) {
-    this.fileName = fileName;
-    this.filePath = filePath;
+  constructor(content: string, name?: string) {
+    this.content = content;
+    const assetHash = crypto.createHash('sha256').update(content).digest('hex');
+    this.name = name || `function-code-${assetHash}.js`;
   }
 
-  bind(scope: Construct, assetProvider: AssetProvider): S3Asset {
+  bind(scope: Construct, assetProvider: AssetProvider): string {
     if (!this.asset) {
-      this.asset = assetProvider.provide(scope, `Code${this.fileName}`, {
-        fileContent: this.filePath,
-        fileName: this.fileName,
+      this.asset = assetProvider.provide(scope, `Code${this.name}`, {
+        fileContent: this.content,
+        fileName: this.name,
       });
     }
-    return this.asset;
+    return this.asset.s3ObjectUrl;
+  }
+
+  getTemplateHash(): string {
+    return crypto.createHash('sha256').update(this.content).digest('base64');
   }
 }
 
@@ -110,5 +112,10 @@ export class MappingTemplate {
   static s3MappingTemplateFromString(template: string, templateName: string): S3MappingTemplate {
     const templatePrefix = 'resolvers';
     return new S3MappingTemplate(template, `${templatePrefix}/${templateName}`);
+  }
+
+  static s3MappingFunctionCodeFromString(template: string, templateName: string): S3MappingFunctionCode {
+    const templatePrefix = 'resolvers';
+    return new S3MappingFunctionCode(template, `${templatePrefix}/${templateName}`);
   }
 }
