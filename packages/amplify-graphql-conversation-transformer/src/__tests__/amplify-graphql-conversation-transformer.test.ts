@@ -150,7 +150,7 @@ const assertResolverSnapshot = (routeName: string, resources: DeploymentResource
   const resolverFnCode = getResolverFnResource(routeName, resources.rootStack.Resources)['Properties']['Code'];
   expect(resolverFnCode).toBeDefined();
   expect(resolverFnCode).toMatchSnapshot();
-}
+};
 
 const getResolverResource = (mutationName: string, resources?: Record<string, any>): Record<string, any> => {
   const resolverName = `Mutation${mutationName}Resolver`;
