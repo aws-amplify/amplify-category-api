@@ -61,6 +61,8 @@ export {
   isDefaultDynamoDbModelDataSourceStrategy,
   isDynamoDbModel,
   isDynamoDbType,
+  isPostgresModel,
+  isPostgresDbType,
   isModelType,
   isMutationNode,
   isObjectTypeDefinitionNode,

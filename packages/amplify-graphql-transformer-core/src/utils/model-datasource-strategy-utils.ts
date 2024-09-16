@@ -142,6 +142,27 @@ export const isSqlModel = (ctx: DataSourceStrategiesProvider, typename: string):
 };
 
 /**
+ * Checks if the given model is a SQL model
+ * @param ctx Transformer Context
+ * @param typename Model name
+ * @returns boolean
+ */
+export const isPostgresModel = (ctx: DataSourceStrategiesProvider, typename: string): boolean => {
+  if (isBuiltInGraphqlType(typename)) {
+    return false;
+  }
+  const modelDataSourceType = getModelDataSourceStrategy(ctx, typename);
+  return isPostgresDbType(modelDataSourceType.dbType);
+};
+
+/**
+ * Type predicate that returns true if `dbType` is a supported SQL database type
+ */
+export const isPostgresDbType = (dbType: ModelDataSourceStrategyDbType): dbType is ModelDataSourceStrategySqlDbType => {
+  return dbType === POSTGRES_DB_TYPE;
+};
+
+/**
  * Type predicate that returns true if `obj` is a SQLLambdaModelDataSourceStrategy
  */
 export const isSqlStrategy = (strategy: ModelDataSourceStrategy): strategy is SQLLambdaModelDataSourceStrategy => {
