@@ -1,5 +1,10 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { constructDataSourceStrategies, getResourceNamesForStrategy, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import {
+  constructDataSourceStrategies,
+  getResourceNamesForStrategy,
+  POSTGRES_DB_TYPE,
+  validateModelSchema,
+} from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
 import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
@@ -45,7 +50,7 @@ describe('DefaultValueModelTransformer:', () => {
     {
       type: 'String',
       value: undefined,
-      expectedError: 'Directive "@default" argument "value" of type "String!" is required, but it was not provided.',
+      expectedError: 'The @default directive requires a value property on non Postgres datasources.',
     },
     { type: 'Int', value: '"text"', expectedError: 'Default value "text" is not a valid Int.' },
     { type: 'Boolean', value: '"text"', expectedError: 'Default value "text" is not a valid Boolean.' },
@@ -192,5 +197,71 @@ describe('DefaultValueModelTransformer:', () => {
     expect(out.stacks[resourceNames.sqlStack].Resources).toBeDefined();
     expect(out.resolvers['Mutation.createNote.init.1.req.vtl']).toBeDefined();
     expect(out.resolvers['Mutation.createNote.init.2.req.vtl']).toBeUndefined();
+  });
+
+  it.each([{ strategy: mockSqlDataSourceStrategy() }])(
+    'throws if auto-increment is implied on a non-Postgres datasource',
+    ({ strategy }) => {
+      const schema = `
+      type CoffeeQueue @model {
+        id: ID! @primaryKey
+        orderNumber: Int! @default
+        name: String
+      }`;
+      expect(() => {
+        testTransform({
+          schema: schema,
+          transformers: [new ModelTransformer(), new DefaultValueTransformer(), new PrimaryKeyTransformer()],
+          dataSourceStrategies: constructDataSourceStrategies(schema, strategy),
+        });
+      }).toThrow('The @default directive requires a value property on non Postgres datasources.');
+    },
+  );
+
+  it.each([
+    { typeStr: 'Boolean' },
+    { typeStr: 'AWSJSON' },
+    { typeStr: 'AWSDate' },
+    { typeStr: 'AWSDateTime' },
+    { typeStr: 'AWSTime' },
+    { typeStr: 'AWSTime' },
+    { typeStr: 'AWSURL' },
+    { typeStr: 'AWSPhone' },
+    { typeStr: 'AWSIPAddress' },
+  ])('throws if auto-increment is implied on non-int types', ({ typeStr }) => {
+    const strategy = mockSqlDataSourceStrategy({ dbType: POSTGRES_DB_TYPE });
+
+    expect(() => {
+      const schema = `
+      type Test @model {
+        id: ID! @primaryKey
+        value: ${typeStr} @default
+      }
+    `;
+      testTransform({
+        schema,
+        transformers: [new ModelTransformer(), new DefaultValueTransformer(), new PrimaryKeyTransformer()],
+        dataSourceStrategies: constructDataSourceStrategies(schema, strategy),
+      });
+    }).toThrow('The empty @default (auto-increment) may only be applied to integer fields.');
+  });
+
+  it('should successfully transform a schema that implies auto-increment', async () => {
+    const schema = `
+      type TestAutoIncrement @model {
+        id: ID! @primaryKey
+        value: Int @default
+      }
+    `;
+    const strategy = mockSqlDataSourceStrategy({ dbType: POSTGRES_DB_TYPE });
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new DefaultValueTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: constructDataSourceStrategies(schema, strategy),
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).toMatchSnapshot();
+    const parsedSchema = parse(out.schema);
+    validateModelSchema(parsedSchema);
   });
 });
