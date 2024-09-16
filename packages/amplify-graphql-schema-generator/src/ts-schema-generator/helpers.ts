@@ -2,6 +2,7 @@ import ts from 'typescript';
 import { TYPESCRIPT_DATA_SCHEMA_CONSTANTS, toPascalCase } from 'graphql-transformer-common';
 import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import { DBEngineType, EnumType, Field, FieldType, Model, Schema } from '../schema-representation';
+import { CommentNode } from '../../../graphql-mapping-template/lib/ast';
 
 const GQL_TYPESCRIPT_DATA_SCHEMA_TYPE_MAP = {
   string: 'string',
@@ -26,8 +27,8 @@ const GQL_TYPESCRIPT_DATA_SCHEMA_TYPE_MAP = {
  * @param field SQL IR field
  * @returns Typescript data schema property in TS Node format
  */
-const createProperty = (field: Field): ts.Node => {
-  const typeExpression = createDataType(field.type);
+const createProperty = (field: Field, engine: string, modelName: string): ts.Node => {
+  const typeExpression = createDataType(field.type, engine, modelName, field.name);
   return ts.factory.createPropertyAssignment(ts.factory.createIdentifier(field.name), typeExpression as ts.Expression);
 };
 
@@ -37,7 +38,7 @@ const createProperty = (field: Field): ts.Node => {
  * @param type SQL IR field type
  * @returns Typescript data schema type in TS Node format
  */
-const createDataType = (type: FieldType): ts.Node => {
+const createDataType = (type: FieldType, engine: string, modelName: string, fieldName: string): ts.Node => {
 
   if (type.kind === 'Scalar') {
     return ts.factory.createCallExpression(
@@ -49,18 +50,27 @@ const createDataType = (type: FieldType): ts.Node => {
 
   // make it in the form a.ref('name') 
   if (type.kind === 'Enum') {
-    return ts.factory.createCallExpression(
-      ts.factory.createIdentifier(`${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REFERENCE_A}.${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REF_METHOD}`),
-      undefined,
-      [ts.factory.createStringLiteral(type.name)]
-      
-    );
+    if(engine === 'Postgres'){
+      return ts.factory.createCallExpression(
+        ts.factory.createIdentifier(`${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REFERENCE_A}.${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REF_METHOD}`),
+        undefined,
+        [ts.factory.createStringLiteral(toPascalCase([type.name]))]
+        
+      );
+    }
+    else {
+      return ts.factory.createCallExpression(
+        ts.factory.createIdentifier(`${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REFERENCE_A}.${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REF_METHOD}`),
+        undefined,
+        [ts.factory.createStringLiteral(toPascalCase([modelName, fieldName]))]
+        
+      );
+    }
   }
 
   // We do not import any Database type as 'Custom' type.
   // In case if there is a custom type in the IR schema, we will import it as string.
   if (type.kind === 'Custom') {
-    console.log(type);
     return ts.factory.createCallExpression(
       ts.factory.createIdentifier(`${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REFERENCE_A}.${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.STRING_METHOD}`),
       undefined,
@@ -71,7 +81,8 @@ const createDataType = (type: FieldType): ts.Node => {
   // List or NonNull
   const modifier = type.kind === 'List' ? TYPESCRIPT_DATA_SCHEMA_CONSTANTS.ARRAY_METHOD : TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REQUIRED_METHOD;
   return ts.factory.createCallExpression(
-    ts.factory.createPropertyAccessExpression(createDataType(type.type) as ts.Expression, ts.factory.createIdentifier(modifier)),
+    ts.factory.createPropertyAccessExpression(createDataType(type.type, engine, modelName, fieldName) as ts.Expression, 
+    ts.factory.createIdentifier(modifier)),
     undefined,
     undefined,
   );
@@ -83,9 +94,9 @@ const getTypescriptDataSchemaType = (type: string): string => {
   return tsDataSchemaType ?? DEFAULT_DATATYPE;
 };
 
-const createModelDefinition = (model: Model): ts.Node => {
+const createModelDefinition = (model: Model, engine: string): ts.Node => {
   const properties = model.getFields().map((field) => {
-    return createProperty(field);
+    return createProperty(field, engine, model.getName());
   });
   return ts.factory.createObjectLiteralExpression(properties as ts.ObjectLiteralElementLike[], true);
 };
@@ -121,11 +132,11 @@ const createEnums = (type: EnumType, engine: string, modelName: string, enumName
   }
 }
 
-const createModel = (model: Model): ts.Node => {
+const createModel = (model: Model, engine: string): ts.Node => {
   const modelExpr = ts.factory.createCallExpression(
     ts.factory.createIdentifier(`${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REFERENCE_A}.${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.MODEL_METHOD}`),
     undefined,
-    [createModelDefinition(model) as ts.Expression],
+    [createModelDefinition(model, engine) as ts.Expression],
   );
 
   // Add primary key to the model
@@ -211,12 +222,50 @@ export const createSchema = (schema: Schema, config?: DataSourceGenerateConfig):
     .getModels()
     .filter((model) => model.getPrimaryKey())
     .map((model) => {
-      return createModel(model);
+      return createModel(model, engine);
     });
 
   const combinedEnums = nullEnums.concat(notNullEnums).flat() // making 1 D array
+
+  if (engine === 'Postgres') { // for postgresql
+    const seenEnums = new Set<string>();
+    const uniqueEnums = combinedEnums.filter((node) => {
+      if(seenEnums.has(node['name'].escapedText)) {
+        return false;
+      }
+      else{
+        seenEnums.add(node['name'].escapedText);
+        return true;
+      }
+    });
+    const modelsWithEnums = models.concat(uniqueEnums); // appending enums to models
+  
+    const tsSchema = ts.factory.createCallExpression(
+      ts.factory.createPropertyAccessExpression(
+        createConfigureExpression(schema, config),
+        ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.SCHEMA_METHOD), // create a.schema()
+      ),
+      undefined,
+      [ts.factory.createObjectLiteralExpression(modelsWithEnums as ts.ObjectLiteralElementLike[], true)],
+    );
+    return ts.factory.createVariableStatement(
+      [exportModifier],
+      ts.factory.createVariableDeclarationList(
+        [
+          ts.factory.createVariableDeclaration(
+            ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.EXPORT_VARIABLE_NAME),
+            undefined,
+            undefined,
+            tsSchema,
+          ),
+        ],
+        ts.NodeFlags.Const,
+      ),
+    );
+  } 
+
     
-  const modelsWithEnums = models.concat(combinedEnums); // appending enums to models
+  const modelsWithEnums = models.concat(combinedEnums); // appending enums to models for MySql
   
   const tsSchema = ts.factory.createCallExpression(
     ts.factory.createPropertyAccessExpression(
