@@ -41,180 +41,35 @@ describe('DefaultValueModelTransformer:', () => {
     ).toThrow('The @default directive may only be added to scalar or enum field types.');
   });
 
-  it('throws if @default is used with a null value', () => {
+  it.each([
+    {
+      type: 'String',
+      value: undefined,
+      expectedError: 'Directive "@default" argument "value" of type "String!" is required, but it was not provided.',
+    },
+    { type: 'Int', value: '"text"', expectedError: 'Default value "text" is not a valid Int.' },
+    { type: 'Boolean', value: '"text"', expectedError: 'Default value "text" is not a valid Boolean.' },
+    { type: 'AWSJSON', value: '"text"', expectedError: 'Default value "text" is not a valid AWSJSON.' },
+    { type: 'AWSDate', value: '"text"', expectedError: 'Default value "text" is not a valid AWSDate.' },
+    { type: 'AWSDateTime', value: '"text"', expectedError: 'Default value "text" is not a valid AWSDateTime.' },
+    { type: 'AWSTime', value: '"text"', expectedError: 'Default value "text" is not a valid AWSTime.' },
+    { type: 'AWSTimestamp', value: '"text"', expectedError: 'Default value "text" is not a valid AWSTimestamp.' },
+    { type: 'AWSURL', value: '"text"', expectedError: 'Default value "text" is not a valid AWSURL.' },
+    { type: 'AWSPhone', value: '"text"', expectedError: 'Default value "text" is not a valid AWSPhone.' },
+    { type: 'AWSIPAddress', value: '"text"', expectedError: 'Default value "text" is not a valid AWSIPAddress.' },
+  ])(`throws if @default is used with invalid type. %type check.`, ({ type, value, expectedError }) => {
     const schema = `
       type Test @model {
-        id: ID!
-        name: String @default
+      id: ID!
+      value: ${type} ${value !== undefined ? `@default(value: ${value})` : '@default'}
       }
     `;
-
     expect(() =>
       testTransform({
         schema,
         transformers: [new ModelTransformer(), new DefaultValueTransformer()],
       }),
-    ).toThrow('Directive "@default" argument "value" of type "String!" is required, but it was not provided.');
-  });
-
-  it('throws if @default is used with invalid type. Int check.', () => {
-    const schema = `
-      type Test @model {
-        id: ID!
-        value: Int @default(value: "text")
-      }
-    `;
-
-    expect(() =>
-      testTransform({
-        schema,
-        transformers: [new ModelTransformer(), new DefaultValueTransformer()],
-      }),
-    ).toThrow('Default value "text" is not a valid Int.');
-  });
-
-  it('throws if @default is used with invalid type. Boolean check.', () => {
-    const schema = `
-      type Test @model {
-        id: ID!
-        value: Boolean @default(value: "text")
-      }
-    `;
-
-    expect(() =>
-      testTransform({
-        schema,
-        transformers: [new ModelTransformer(), new DefaultValueTransformer()],
-      }),
-    ).toThrow('Default value "text" is not a valid Boolean.');
-  });
-
-  it('throws if @default is used with invalid type. AWSJSON check.', () => {
-    const schema = `
-      type Test @model {
-        id: ID!
-        value: AWSJSON @default(value: "text")
-      }
-    `;
-
-    expect(() =>
-      testTransform({
-        schema,
-        transformers: [new ModelTransformer(), new DefaultValueTransformer()],
-      }),
-    ).toThrow('Default value "text" is not a valid AWSJSON.');
-  });
-
-  it('throws if @default is used with invalid type. AWSDate check.', () => {
-    const schema = `
-      type Test @model {
-        id: ID!
-        value: AWSDate @default(value: "text")
-      }
-    `;
-
-    expect(() =>
-      testTransform({
-        schema,
-        transformers: [new ModelTransformer(), new DefaultValueTransformer()],
-      }),
-    ).toThrow('Default value "text" is not a valid AWSDate.');
-  });
-
-  it('throws if @default is used with invalid type. AWSDateTime check.', () => {
-    const schema = `
-      type Test @model {
-        id: ID!
-        value: AWSDateTime @default(value: "text")
-      }
-    `;
-
-    expect(() =>
-      testTransform({
-        schema,
-        transformers: [new ModelTransformer(), new DefaultValueTransformer()],
-      }),
-    ).toThrow('Default value "text" is not a valid AWSDateTime.');
-  });
-
-  it('throws if @default is used with invalid type. AWSTime check.', () => {
-    const schema = `
-      type Test @model {
-        id: ID!
-        value: AWSTime @default(value: "text")
-      }
-    `;
-
-    expect(() =>
-      testTransform({
-        schema,
-        transformers: [new ModelTransformer(), new DefaultValueTransformer()],
-      }),
-    ).toThrow('Default value "text" is not a valid AWSTime.');
-  });
-
-  it('throws if @default is used with invalid type. AWSTimestamp check.', () => {
-    const schema = `
-      type Test @model {
-        id: ID!
-        value: AWSTimestamp @default(value: "text")
-      }
-    `;
-
-    expect(() =>
-      testTransform({
-        schema,
-        transformers: [new ModelTransformer(), new DefaultValueTransformer()],
-      }),
-    ).toThrow('Default value "text" is not a valid AWSTimestamp.');
-  });
-
-  it('throws if @default is used with invalid type. AWSURL check.', () => {
-    const schema = `
-      type Test @model {
-        id: ID!
-        value: AWSURL @default(value: "text")
-      }
-    `;
-
-    expect(() =>
-      testTransform({
-        schema,
-        transformers: [new ModelTransformer(), new DefaultValueTransformer()],
-      }),
-    ).toThrow('Default value "text" is not a valid AWSURL.');
-  });
-
-  it('throws if @default is used with invalid type. AWSPhone check.', () => {
-    const schema = `
-      type Test @model {
-        id: ID!
-        value: AWSPhone @default(value: "text")
-      }
-    `;
-
-    expect(() =>
-      testTransform({
-        schema,
-        transformers: [new ModelTransformer(), new DefaultValueTransformer()],
-      }),
-    ).toThrow('Default value "text" is not a valid AWSPhone.');
-  });
-
-  it('throws if @default is used with invalid type. AWSIPAddress check.', () => {
-    const schema = `
-      type Test @model {
-        id: ID!
-        value: AWSIPAddress @default(value: "text")
-      }
-    `;
-
-    expect(() =>
-      testTransform({
-        schema,
-        transformers: [new ModelTransformer(), new DefaultValueTransformer()],
-      }),
-    ).toThrow('Default value "text" is not a valid AWSIPAddress.');
+    ).toThrow(expectedError);
   });
 
   it('should validate enum values', async () => {
