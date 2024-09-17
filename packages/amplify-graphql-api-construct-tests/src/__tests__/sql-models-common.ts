@@ -666,7 +666,7 @@ export const testGraphQLAPI = async (options: {
       }),
     ]),
   );
-  expect(listStudentsWithFilter2.body.listStudents.nextToken).toBeNull();
+  expect(listStudentsWithFilter2.listStudents.nextToken).toBeNull();
 
   // Check SQL Lambda provisioned concurrency
   const client = new LambdaClient({ region });
