@@ -18,7 +18,10 @@ describe('CDK GraphQL Transformer deployments with Postgres SQL datasources', ()
   const engine = 'postgres';
 
   const databaseController: SqlDatatabaseController = new SqlDatatabaseController(
-    ['CREATE TABLE "todos" ("id" VARCHAR(40) PRIMARY KEY, "description" VARCHAR(256))'],
+    [
+      'CREATE TABLE "todos" ("id" VARCHAR(40) PRIMARY KEY, "description" VARCHAR(256))',
+      'CREATE TABLE "students" ("studentId" integer NOT NULL, "classId" text NOT NULL, "firstName" text, "lastName" text, PRIMARY KEY ("studentId", "classId"))',
+    ],
     {
       identifier,
       engine,

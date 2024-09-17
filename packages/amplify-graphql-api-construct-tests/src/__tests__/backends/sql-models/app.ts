@@ -51,6 +51,13 @@ const api = new AmplifyGraphqlApi(stack, 'SqlBoundApi', {
         id: ID! @primaryKey
         description: String!
       }
+
+      type Student @model @refersTo(name: "students") {
+        studentId: Int! @primaryKey(sortKeyFields: ["classId"])
+        classId: String!
+        firstName: String
+        lastName: String
+      }
     `,
     {
       name: strategyName,

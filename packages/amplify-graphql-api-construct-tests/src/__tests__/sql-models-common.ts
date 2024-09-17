@@ -158,7 +158,7 @@ export const testGraphQLAPI = async (options: {
 
   const checkGenericError = async (errorMessage?: string): Promise<void> => {
     expect(errorMessage).toBeDefined();
-    console.log(errorMessage);
+    expect(errorMessage).toEqual('GraphQL error: Error processing the request. Check the logs for more details.');
   };
 
   // Test: check CRUDL on contact table with default primary key - postgres
@@ -303,8 +303,8 @@ export const testGraphQLAPI = async (options: {
     ]),
   );
   // expect(listTodosWithNextTokenResult.nextToken).toBeNull();
-  // console.log(listTodosWithNextTokenResult.nextToken);
-  // console.log(atob(listTodosWithNextTokenResult.nextToken));
+  console.log(listTodosWithNextTokenResult.nextToken);
+  console.log(atob(listTodosWithNextTokenResult.nextToken));
 
   // Check and validate filter
   const listTodosWithFilter = await listTodo(10, null, { description: { contains: 'Updated' } });
@@ -370,7 +370,305 @@ export const testGraphQLAPI = async (options: {
     await checkGenericError(error?.message);
   }
 
-  // Check SQL Lambda provisioned concurrency setting
+  const createStudent = async (studentId: number, classId: string, firstName: string, lastName: string): Promise<Record<string, any>> => {
+    const createMutation = /* GraphQL */ `
+      mutation CreateStuden($input: CreateStudentInput!, $condition: ModelStudentConditionInput) {
+        createStudent(input: $input, condition: $condition) {
+          studentId
+          classId
+          firstName
+          lastName
+        }
+      }
+    `;
+    const createInput = {
+      input: {
+        studentId,
+        classId,
+        firstName,
+        lastName,
+      },
+    };
+    const createResult: any = await appSyncClient.mutate({
+      mutation: gql(createMutation),
+      fetchPolicy: 'no-cache',
+      variables: createInput,
+    });
+
+    return createResult;
+  };
+
+  const updateStudent = async (studentId: number, classId: string, firstName: string, lastName: string): Promise<Record<string, any>> => {
+    const updateMutation = /* GraphQL */ `
+      mutation UpdateStudent($input: UpdateStudentInput!, $condition: ModelStudentConditionInput) {
+        updateStudent(input: $input, condition: $condition) {
+          studentId
+          classId
+          firstName
+          lastName
+        }
+      }
+    `;
+    const updateInput = {
+      input: {
+        studentId,
+        classId,
+        firstName,
+        lastName,
+      },
+    };
+    const updateResult: any = await appSyncClient.mutate({
+      mutation: gql(updateMutation),
+      fetchPolicy: 'no-cache',
+      variables: updateInput,
+    });
+
+    return updateResult;
+  };
+
+  const deleteStudent = async (studentId: number, classId: string): Promise<Record<string, any>> => {
+    const deleteMutation = /* GraphQL */ `
+      mutation DeleteStudent($input: DeleteStudentInput!, $condition: ModelStudentConditionInput) {
+        deleteStudent(input: $input, condition: $condition) {
+          studentId
+          classId
+          firstName
+          lastName
+        }
+      }
+    `;
+    const deleteInput = {
+      input: {
+        studentId,
+        classId,
+      },
+    };
+    const deleteResult: any = await appSyncClient.mutate({
+      mutation: gql(deleteMutation),
+      fetchPolicy: 'no-cache',
+      variables: deleteInput,
+    });
+
+    return deleteResult;
+  };
+
+  const getStudent = async (studentId: number, classId: string): Promise<Record<string, any>> => {
+    const getQuery = /* GraphQL */ `
+      query GetStudent($studentId: Int!, $classId: String!) {
+        getStudent(studentId: $studentId, classId: $classId) {
+          studentId
+          classId
+          firstName
+          lastName
+        }
+      }
+    `;
+    const getInput = {
+      studentId,
+      classId,
+    };
+    const getResult: any = await appSyncClient.query({
+      query: gql(getQuery),
+      fetchPolicy: 'no-cache',
+      variables: getInput,
+    });
+
+    return getResult;
+  };
+
+  const listStudents = async (limit = 100, nextToken: string | null = null, filter: any = null): Promise<Record<string, any>> => {
+    const listQuery = /* GraphQL */ `
+      query ListStudents($limit: Int, $nextToken: String, $filter: ModelStudentFilterInput) {
+        listStudents(limit: $limit, nextToken: $nextToken, filter: $filter) {
+          items {
+            studentId
+            classId
+            firstName
+            lastName
+          }
+          nextToken
+        }
+      }
+    `;
+    const listResult: any = await appSyncClient.query({
+      query: gql(listQuery),
+      fetchPolicy: 'no-cache',
+      variables: {
+        limit,
+        nextToken,
+        filter,
+      },
+    });
+
+    return listResult;
+  };
+
+  // Test: check CRUDL, filter, limit and nextToken on student table with composite key - postgres
+  const createStudent1 = await createStudent(1, 'A', 'John', 'Doe');
+  const createStudent2 = await createStudent(1, 'B', 'Jane', 'Doe');
+  const createStudent3 = await createStudent(2, 'A', 'Bob', 'Smith');
+  const createStudent4 = await createStudent(2, 'B', 'Alice', 'Jones');
+
+  const createStudent1Result = createStudent1.data.createStudent;
+  const createStudent2Result = createStudent2.data.createStudent;
+  const createStudent3Result = createStudent3.data.createStudent;
+  const createStudent4Result = createStudent4.data.createStudent;
+
+  expect(createStudent1Result.studentId).toEqual(1);
+  expect(createStudent1Result.classId).toEqual('A');
+  expect(createStudent1Result.firstName).toEqual('John');
+  expect(createStudent1Result.lastName).toEqual('Doe');
+
+  expect(createStudent2Result.studentId).toEqual(1);
+  expect(createStudent2Result.classId).toEqual('B');
+  expect(createStudent2Result.firstName).toEqual('Jane');
+  expect(createStudent2Result.lastName).toEqual('Doe');
+
+  expect(createStudent3Result.studentId).toEqual(2);
+  expect(createStudent3Result.classId).toEqual('A');
+  expect(createStudent3Result.firstName).toEqual('Bob');
+  expect(createStudent3Result.lastName).toEqual('Smith');
+
+  expect(createStudent4Result.studentId).toEqual(2);
+  expect(createStudent4Result.classId).toEqual('B');
+  expect(createStudent4Result.firstName).toEqual('Alice');
+  expect(createStudent4Result.lastName).toEqual('Jones');
+
+  const udpateStudent1 = await updateStudent(1, 'A', 'David', 'Jones');
+  const updateStudent2 = await updateStudent(2, 'A', 'John', 'Smith');
+
+  const updateStudent1Result = udpateStudent1.data.updateStudent;
+  const updateStudent2Result = updateStudent2.data.updateStudent;
+
+  expect(updateStudent1Result.studentId).toEqual(1);
+  expect(updateStudent1Result.classId).toEqual('A');
+  expect(updateStudent1Result.firstName).toEqual('David');
+  expect(updateStudent1Result.lastName).toEqual('Jones');
+
+  expect(updateStudent2Result.studentId).toEqual(2);
+  expect(updateStudent2Result.classId).toEqual('A');
+  expect(updateStudent2Result.firstName).toEqual('John');
+  expect(updateStudent2Result.lastName).toEqual('Smith');
+
+  const deleteStudent1 = await deleteStudent(1, 'A');
+  const deleteStudent1Result = deleteStudent1.data.deleteStudent;
+
+  expect(deleteStudent1Result.studentId).toEqual(1);
+  expect(deleteStudent1Result.classId).toEqual('A');
+  expect(deleteStudent1Result.firstName).toEqual('David');
+  expect(deleteStudent1Result.lastName).toEqual('Jones');
+
+  const getStudent1 = await getStudent(1, 'B');
+  const getStudent1Result = getStudent1.data.getStudent;
+
+  expect(getStudent1Result.studentId).toEqual(1);
+  expect(getStudent1Result.classId).toEqual('B');
+  expect(getStudent1Result.firstName).toEqual('Jane');
+  expect(getStudent1Result.lastName).toEqual('Doe');
+
+  const listStudentsCurr = await listStudents();
+  const listStudentsResult = listStudentsCurr.data.listStudents.items;
+  expect(listStudentsResult.length).toEqual(3);
+  expect(listStudentsResult).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        studentId: 1,
+        classId: 'B',
+        firstName: 'Jane',
+        lastName: 'Doe',
+      }),
+      expect.objectContaining({
+        studentId: 2,
+        classId: 'A',
+        firstName: 'John',
+        lastName: 'Smith',
+      }),
+      expect.objectContaining({
+        studentId: 2,
+        classId: 'B',
+        firstName: 'Alice',
+        lastName: 'Jones',
+      }),
+    ]),
+  );
+
+  // Validate limit and nextToken
+  const listStudentsWithLimit = await listStudents(2);
+  const listStudentsWithLimitResult = listStudentsWithLimit.body.data.listStudents.items;
+  expect(listStudentsWithLimitResult.length).toEqual(2);
+  expect(listStudentsWithLimitResult).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        studentId: 1,
+        classId: 'B',
+        firstName: 'Jane',
+        lastName: 'Doe',
+      }),
+      expect.objectContaining({
+        studentId: 2,
+        classId: 'A',
+        firstName: 'John',
+        lastName: 'Smith',
+      }),
+    ]),
+  );
+  expect(listStudentsWithLimit.body.data.listStudents.nextToken).toBeDefined();
+
+  const listStudentsWithLimitAndNextToken = await listStudents(2, listStudentsWithLimit.body.data.listStudents.nextToken);
+  const listStudentsWithLimitAndNextTokenResult = listStudentsWithLimitAndNextToken.body.data.listStudents.items;
+  expect(listStudentsWithLimitAndNextTokenResult.length).toEqual(1);
+  expect(listStudentsWithLimitAndNextTokenResult).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        studentId: 2,
+        classId: 'B',
+        firstName: 'Alice',
+        lastName: 'Jones',
+      }),
+    ]),
+  );
+  expect(listStudentsWithLimitAndNextToken.body.data.listStudents.nextToken).toBeNull();
+
+  // Validate filter
+  const listStudentsWithFilter1 = await listStudents(10, null, {
+    and: [{ firstName: { eq: 'John' } }, { lastName: { eq: 'Smith' } }],
+  });
+  const listStudentsWithFilter1Result = listStudentsWithFilter1.body.data.listStudents.items;
+  expect(listStudentsWithFilter1Result.length).toEqual(1);
+  expect(listStudentsWithFilter1Result).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        studentId: 2,
+        classId: 'A',
+        firstName: 'John',
+        lastName: 'Smith',
+      }),
+    ]),
+  );
+  expect(listStudentsWithFilter1.body.data.listStudents.nextToken).toBeNull();
+
+  const listStudentsWithFilter2 = await listStudents(10, null, { firstName: { size: { eq: 4 } } });
+  const listStudentsWithFilter2Result = listStudentsWithFilter2.body.data.listStudents.items;
+  expect(listStudentsWithFilter2Result.length).toEqual(2);
+  expect(listStudentsWithFilter2Result).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        studentId: 1,
+        classId: 'B',
+        firstName: 'Jane',
+        lastName: 'Doe',
+      }),
+      expect.objectContaining({
+        studentId: 2,
+        classId: 'A',
+        firstName: 'John',
+        lastName: 'Smith',
+      }),
+    ]),
+  );
+  expect(listStudentsWithFilter2.body.data.listStudents.nextToken).toBeNull();
+
+  // Check SQL Lambda provisioned concurrency
   const client = new LambdaClient({ region });
   const functionName = outputs[name].SQLFunctionName;
   const command = new GetProvisionedConcurrencyConfigCommand({
