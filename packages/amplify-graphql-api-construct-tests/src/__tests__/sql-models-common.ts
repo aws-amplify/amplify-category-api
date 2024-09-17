@@ -594,7 +594,7 @@ export const testGraphQLAPI = async (options: {
 
   // Validate limit and nextToken
   const listStudentsWithLimit = await listStudents(2);
-  const listStudentsWithLimitResult = listStudentsWithLimit.body.data.listStudents.items;
+  const listStudentsWithLimitResult = listStudentsWithLimit.data.listStudents.items;
   expect(listStudentsWithLimitResult.length).toEqual(2);
   expect(listStudentsWithLimitResult).toEqual(
     expect.arrayContaining([
@@ -612,10 +612,10 @@ export const testGraphQLAPI = async (options: {
       }),
     ]),
   );
-  expect(listStudentsWithLimit.body.data.listStudents.nextToken).toBeDefined();
+  expect(listStudentsWithLimit.data.listStudents.nextToken).toBeDefined();
 
-  const listStudentsWithLimitAndNextToken = await listStudents(2, listStudentsWithLimit.body.data.listStudents.nextToken);
-  const listStudentsWithLimitAndNextTokenResult = listStudentsWithLimitAndNextToken.body.data.listStudents.items;
+  const listStudentsWithLimitAndNextToken = await listStudents(2, listStudentsWithLimit.data.listStudents.nextToken);
+  const listStudentsWithLimitAndNextTokenResult = listStudentsWithLimitAndNextToken.data.listStudents.items;
   expect(listStudentsWithLimitAndNextTokenResult.length).toEqual(1);
   expect(listStudentsWithLimitAndNextTokenResult).toEqual(
     expect.arrayContaining([
@@ -627,13 +627,13 @@ export const testGraphQLAPI = async (options: {
       }),
     ]),
   );
-  expect(listStudentsWithLimitAndNextToken.body.data.listStudents.nextToken).toBeNull();
+  expect(listStudentsWithLimitAndNextToken.data.listStudents.nextToken).toBeNull();
 
   // Validate filter
   const listStudentsWithFilter1 = await listStudents(10, null, {
     and: [{ firstName: { eq: 'John' } }, { lastName: { eq: 'Smith' } }],
   });
-  const listStudentsWithFilter1Result = listStudentsWithFilter1.body.data.listStudents.items;
+  const listStudentsWithFilter1Result = listStudentsWithFilter1.data.listStudents.items;
   expect(listStudentsWithFilter1Result.length).toEqual(1);
   expect(listStudentsWithFilter1Result).toEqual(
     expect.arrayContaining([
@@ -645,10 +645,10 @@ export const testGraphQLAPI = async (options: {
       }),
     ]),
   );
-  expect(listStudentsWithFilter1.body.data.listStudents.nextToken).toBeNull();
+  expect(listStudentsWithFilter1.data.listStudents.nextToken).toBeNull();
 
   const listStudentsWithFilter2 = await listStudents(10, null, { firstName: { size: { eq: 4 } } });
-  const listStudentsWithFilter2Result = listStudentsWithFilter2.body.data.listStudents.items;
+  const listStudentsWithFilter2Result = listStudentsWithFilter2.data.listStudents.items;
   expect(listStudentsWithFilter2Result.length).toEqual(2);
   expect(listStudentsWithFilter2Result).toEqual(
     expect.arrayContaining([
@@ -666,7 +666,7 @@ export const testGraphQLAPI = async (options: {
       }),
     ]),
   );
-  expect(listStudentsWithFilter2.body.data.listStudents.nextToken).toBeNull();
+  expect(listStudentsWithFilter2.body.listStudents.nextToken).toBeNull();
 
   // Check SQL Lambda provisioned concurrency
   const client = new LambdaClient({ region });
