@@ -1,5 +1,10 @@
 type Mutation {
-  testChat(conversationId: ID!, content: [ContentBlockInput], aiContext: AWSJSON, toolConfiguration: ToolConfigurationInput): ConversationMessage
+  testChat(
+    conversationId: ID!,
+    content: [ContentBlockInput],
+    aiContext: AWSJSON,
+    toolConfiguration: ToolConfigurationInput
+  ): ConversationMessage
   @conversation(
     aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
     functionName: "conversation-handler",

@@ -1,13 +1,13 @@
 type Mutation {
-  ${routeName}(
+  invalidChat(
     conversationId: ID!,
     content: [ContentBlockInput],
     aiContext: AWSJSON,
     toolConfiguration: ToolConfigurationInput
   ): String
-    @conversation(
-        aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
-        functionName: "conversation-handler",
-        systemPrompt: "You are a helpful chatbot."
-    )
+  @conversation(
+    aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
+    functionName: "conversation-handler",
+    systemPrompt: "You are a helpful chatbot."
+  )
 }

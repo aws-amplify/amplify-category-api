@@ -1,25 +1,25 @@
 type Product {
-    name: String!
-    price: Float!
+  name: String!
+  price: Float!
 }
 
 type Customer @model @auth(rules: [{ allow: owner }]) {
-    name: String
-    email: String
-    activeCart: Cart @hasOne(references: "customerId")
-    orderHistory: [Order] @hasMany(references: "customerId")
+  name: String
+  email: String
+  activeCart: Cart @hasOne(references: "customerId")
+  orderHistory: [Order] @hasMany(references: "customerId")
 }
 
 type Cart @model @auth(rules: [{ allow: owner }]) {
-    products: [Product]
-    customerId: ID
-    customer: Customer @belongsTo(references: "customerId")
+  products: [Product]
+  customerId: ID
+  customer: Customer @belongsTo(references: "customerId")
 }
 
 type Order @model @auth(rules: [{ allow: owner }]) {
-    products: [Product]
-    customerId: ID
-    customer: Customer @belongsTo(references: "customerId")
+  products: [Product]
+  customerId: ID
+  customer: Customer @belongsTo(references: "customerId")
 }
 
 type Mutation {
@@ -29,10 +29,10 @@ type Mutation {
     aiContext: AWSJSON,
     toolConfiguration: ToolConfigurationInput
   ): ConversationMessage
-    @conversation(
-      aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
-      functionName: "conversation-handler",
-      systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
-      tools: [{ name: "listCustomers", description: "Provides data about the customer sending a message" }]
-    )
+  @conversation(
+    aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
+    functionName: "conversation-handler",
+    systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
+    tools: [{ name: "listCustomers", description: "Provides data about the customer sending a message" }]
+  )
 }

@@ -4,63 +4,32 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration, ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { parse, print } from 'graphql';
+import { parse } from 'graphql';
 import { ConversationTransformer } from '..';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { GenerationTransformer } from '@aws-amplify/graphql-generation-transformer';
+import { toUpper } from 'graphql-transformer-common';
 
 const conversationSchemaTypes = fs.readFileSync(path.join(__dirname, 'schemas/conversation-schema-types.graphql'), 'utf8');
 
-const getSchema = (fileName: string, template: Record<string, string>) => {
+const getSchema = (fileName: string, substitutions: Record<string, string> = {}) => {
   const schema = fs.readFileSync(path.join(__dirname, '/schemas/', fileName), 'utf8');
-  const templated = schema.replace(/\${([^}]*)}/g, (_, k) => template[k]);
+  const templated = schema.replace(/\${([^}]*)}/g, (_, k) => substitutions[k]);
   return templated + '\n' + conversationSchemaTypes;
 };
 
 describe('ConversationTransformer', () => {
   describe('valid schemas', () => {
-    it('should transform a conversation route with query tools', () => {
+    it.each([
+      ['conversation route with query tools', 'conversation-route-custom-query-tool.graphql'],
+      ['conversation route with model query tool', 'conversation-route-model-query-tool.graphql'],
+      ['conversation route with inference configuration', 'conversation-route-with-inference-configuration.graphql'],
+      ['conversation route with model query tool including relationships', 'conversation-route-model-query-tool-with-relationships.graphql'],
+    ])('should transform %s', (_, schemaFile) => {
       const routeName = 'pirateChat';
-      const inputSchema = getSchema('conversation-route-custom-query-tool.graphql', { routeName });
-
-      const out = transform(inputSchema);
-      expect(out).toBeDefined();
-      assertResolverSnapshot(routeName, out);
-
-      const schema = parse(out.schema);
-      expect(print(schema)).toMatchSnapshot();
-      validateModelSchema(schema);
-    });
-
-    it('conversation route with model query tool', () => {
-      const routeName = 'pirateChat';
-      const inputSchema = getSchema('conversation-route-model-query-tool.graphql', { routeName });
-
-      const out = transform(inputSchema);
-      expect(out).toBeDefined();
-      assertResolverSnapshot(routeName, out);
-
-      const schema = parse(out.schema);
-      validateModelSchema(schema);
-    });
-
-    it('should transform a conversation route with inference configuration', () => {
-      const routeName = 'pirateChat';
-      const inputSchema = getSchema('conversation-route-with-inference-configuration.graphql', { routeName });
-
-      const out = transform(inputSchema);
-      expect(out).toBeDefined();
-      assertResolverSnapshot(routeName, out);
-
-      const schema = parse(out.schema);
-      validateModelSchema(schema);
-    });
-
-    it('should transform a conversation route with a model query tool including relationships', () => {
-      const routeName = 'pirateChat';
-      const inputSchema = getSchema('conversation-route-model-query-tool-with-relationships.graphql', { routeName });
+      const inputSchema = getSchema(schemaFile, { routeName });
 
       const out = transform(inputSchema);
       expect(out).toBeDefined();
@@ -73,69 +42,32 @@ describe('ConversationTransformer', () => {
 
   describe('invalid schemas', () => {
     it('should throw an error if the return type is not ConversationMessage', () => {
-      const routeName = 'invalidChat';
-      const inputSchema = getSchema('conversation-route-invalid-return-type.graphql', { routeName });
+      const inputSchema = getSchema('conversation-route-invalid-return-type.graphql');
       expect(() => transform(inputSchema)).toThrow('@conversation return type must be ConversationMessage');
     });
 
-    it('should throw an error when aiModel is missing', () => {
-      const routeName = 'invalidChat';
-      const inputSchema = getSchema('conversation-route-invalid-missing-ai-model.graphql', { routeName });
+    it.each([
+      ['aiModel', 'conversation-route-invalid-missing-ai-model.graphql'],
+      ['systemPrompt', 'conversation-route-invalid-missing-system-prompt.graphql'],
+    ])('should throw an error when %s is missing in directive definition', (argName, schemaFile) => {
+      const inputSchema = getSchema(schemaFile);
       expect(() => transform(inputSchema)).toThrow(
-        'Directive "@conversation" argument "aiModel" of type "String!" is required, but it was not provided.',
-      );
-    });
-
-    it('should throw an error when systemPrompt is missing', () => {
-      const routeName = 'invalidChat';
-      const inputSchema = getSchema('conversation-route-invalid-missing-system-prompt.graphql', { routeName });
-      expect(() => transform(inputSchema)).toThrow(
-        'Directive "@conversation" argument "systemPrompt" of type "String!" is required, but it was not provided.',
+        `Directive "@conversation" argument "${argName}" of type "String!" is required, but it was not provided.`
       );
     });
 
     describe('invalid inference configuration', () => {
-      const maxTokens = 'inferenceConfiguration: { maxTokens: 0 }';
-      const temperature = {
-        over: 'inferenceConfiguration: { temperature: 1.1 }',
-        under: 'inferenceConfiguration: { temperature: -0.1 }',
-      };
-      const topP = {
-        over: 'inferenceConfiguration: { topP: 1.1 }',
-        under: 'inferenceConfiguration: { topP: -0.1 }',
-      };
-
-      const conversationRoute = (inferenceConfiguration: string): string => {
-        return getSchema('conversation-route-inference-configuration-template.graphql', { inferenceConfiguration });
-      };
-
-      it('throws error for maxTokens under', () => {
-        expect(() => transform(conversationRoute(maxTokens))).toThrow(
-          '@conversation directive maxTokens valid range: Minimum value of 1. Provided: 0',
-        );
-      });
-
-      it('throws error for temperature over', () => {
-        expect(() => transform(conversationRoute(temperature.over))).toThrow(
-          '@conversation directive temperature valid range: Minimum value of 0. Maximum value of 1. Provided: 1.1',
-        );
-      });
-
-      it('throws error for topP over', () => {
-        expect(() => transform(conversationRoute(topP.over))).toThrow(
-          '@conversation directive topP valid range: Minimum value of 0. Maximum value of 1. Provided: 1.1',
-        );
-      });
-
-      it('throws error for temperature under', () => {
-        expect(() => transform(conversationRoute(temperature.under))).toThrow(
-          '@conversation directive temperature valid range: Minimum value of 0. Maximum value of 1. Provided: -0.1',
-        );
-      });
-
-      it('throws error for topP under', () => {
-        expect(() => transform(conversationRoute(topP.under))).toThrow(
-          '@conversation directive topP valid range: Minimum value of 0. Maximum value of 1. Provided: -0.1',
+      it.each([
+        ['maxTokens', 0, 'Minimum value of 1'],
+        ['temperature', 1.1, 'Minimum value of 0. Maximum value of 1'],
+        ['temperature', -0.1, 'Minimum value of 0. Maximum value of 1'],
+        ['topP', 1.1, 'Minimum value of 0. Maximum value of 1'],
+        ['topP', -0.1, 'Minimum value of 0. Maximum value of 1'],
+      ])('throws error for %s with value %s', (param, value, errorMessage) => {
+        const inferenceConfiguration = `inferenceConfiguration: { ${param}: ${value} }`;
+        const inputSchema = getSchema('conversation-route-inference-configuration-template.graphql', { inferenceConfiguration });
+        expect(() => transform(inputSchema)).toThrow(
+          `@conversation directive ${param} valid range: ${errorMessage}. Provided: ${value}`
         );
       });
     });
@@ -143,34 +75,15 @@ describe('ConversationTransformer', () => {
 });
 
 const assertResolverSnapshot = (routeName: string, resources: DeploymentResources) => {
-  const resolverCode = getResolverResource(routeName, resources.rootStack.Resources)['Properties']['Code'];
+  const resolverCode = resources.rootStack.Resources?.[`Mutation${routeName}Resolver`]?.['Properties']['Code'];
+  const resolverFnCode = resources.rootStack.Resources && Object.entries(resources.rootStack.Resources).find(
+    ([key, _]) => key.startsWith(`Mutation${toUpper(routeName)}DataResolverFn`)
+  )?.[1]['Properties']['Code'];
+
   expect(resolverCode).toBeDefined();
   expect(resolverCode).toMatchSnapshot();
-
-  const resolverFnCode = getResolverFnResource(routeName, resources.rootStack.Resources)['Properties']['Code'];
   expect(resolverFnCode).toBeDefined();
   expect(resolverFnCode).toMatchSnapshot();
-};
-
-const getResolverResource = (mutationName: string, resources?: Record<string, any>): Record<string, any> => {
-  const resolverName = `Mutation${mutationName}Resolver`;
-  return resources?.[resolverName];
-};
-
-const getResolverFnResource = (mtuationName: string, resources?: Record<string, any>): Record<string, any> => {
-  const capitalizedQueryName = mtuationName.charAt(0).toUpperCase() + mtuationName.slice(1);
-  const resourcePrefix = `Mutation${capitalizedQueryName}DataResolverFn`;
-  if (!resources) {
-    fail('No resources found.');
-  }
-  const resource = Object.entries(resources).find(([key, _]) => {
-    return key.startsWith(resourcePrefix);
-  })?.[1];
-
-  if (!resource) {
-    fail(`Resource named with prefix ${resourcePrefix} not found.`);
-  }
-  return resource;
 };
 
 const defaultAuthConfig: AppSyncAuthConfiguration = {
