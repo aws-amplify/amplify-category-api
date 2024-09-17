@@ -80,8 +80,29 @@ function _setShell {
   echo "Setting Shell"
   yarn config set script-shell $(which bash)
 }
+
+function _installNVM {
+  echo "Installing latest version of NVM"
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+}
+
+function _installNode {
+  nodeVersion=$1
+  if [ -z "$nodeVersion" ]; then
+    echo "Node version is not provided"
+    exit 1
+  fi
+  echo "Installing $nodeVersion version of nodejs"
+  nvm install $nodeVersion
+  nvm use $nodeVersion
+}
+
 function _buildLinux {
   _setShell
+  _installNVM
+  _installNode 18
   echo "Linux Build"
   node --version
   yarn run production-build
@@ -92,6 +113,8 @@ function _buildLinux {
 # used when build is not necessary for codebuild project
 function _installLinux {
   _setShell
+  _installNVM
+  _installNode 18
   echo "Linux Install"
   yarn run production-install
   storeCacheForBuildJob
