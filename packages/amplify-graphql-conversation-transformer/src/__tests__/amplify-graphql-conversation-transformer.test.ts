@@ -26,7 +26,10 @@ describe('ConversationTransformer', () => {
       ['conversation route with query tools', 'conversation-route-custom-query-tool.graphql'],
       ['conversation route with model query tool', 'conversation-route-model-query-tool.graphql'],
       ['conversation route with inference configuration', 'conversation-route-with-inference-configuration.graphql'],
-      ['conversation route with model query tool including relationships', 'conversation-route-model-query-tool-with-relationships.graphql'],
+      [
+        'conversation route with model query tool including relationships',
+        'conversation-route-model-query-tool-with-relationships.graphql',
+      ],
     ])('should transform %s', (_, schemaFile) => {
       const routeName = 'pirateChat';
       const inputSchema = getSchema(schemaFile, { routeName });
@@ -52,7 +55,7 @@ describe('ConversationTransformer', () => {
     ])('should throw an error when %s is missing in directive definition', (argName, schemaFile) => {
       const inputSchema = getSchema(schemaFile);
       expect(() => transform(inputSchema)).toThrow(
-        `Directive "@conversation" argument "${argName}" of type "String!" is required, but it was not provided.`
+        `Directive "@conversation" argument "${argName}" of type "String!" is required, but it was not provided.`,
       );
     });
 
@@ -66,9 +69,7 @@ describe('ConversationTransformer', () => {
       ])('throws error for %s with value %s', (param, value, errorMessage) => {
         const inferenceConfiguration = `inferenceConfiguration: { ${param}: ${value} }`;
         const inputSchema = getSchema('conversation-route-inference-configuration-template.graphql', { inferenceConfiguration });
-        expect(() => transform(inputSchema)).toThrow(
-          `@conversation directive ${param} valid range: ${errorMessage}. Provided: ${value}`
-        );
+        expect(() => transform(inputSchema)).toThrow(`@conversation directive ${param} valid range: ${errorMessage}. Provided: ${value}`);
       });
     });
   });
@@ -76,9 +77,11 @@ describe('ConversationTransformer', () => {
 
 const assertResolverSnapshot = (routeName: string, resources: DeploymentResources) => {
   const resolverCode = resources.rootStack.Resources?.[`Mutation${routeName}Resolver`]?.['Properties']['Code'];
-  const resolverFnCode = resources.rootStack.Resources && Object.entries(resources.rootStack.Resources).find(
-    ([key, _]) => key.startsWith(`Mutation${toUpper(routeName)}DataResolverFn`)
-  )?.[1]['Properties']['Code'];
+  const resolverFnCode =
+    resources.rootStack.Resources &&
+    Object.entries(resources.rootStack.Resources).find(([key, _]) => key.startsWith(`Mutation${toUpper(routeName)}DataResolverFn`))?.[1][
+      'Properties'
+    ]['Code'];
 
   expect(resolverCode).toBeDefined();
   expect(resolverCode).toMatchSnapshot();
