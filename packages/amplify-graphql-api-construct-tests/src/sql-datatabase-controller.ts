@@ -83,7 +83,7 @@ export class SqlDatatabaseController {
         const identifier = this.usePreProvisionedCluster
           ? preProvisionedClusterInfo.clusterIdentifier
           : getClusterIdFromLocalConfig(this.options.region, this.options.engine);
-        dbConfig = await setupDataInExistingCluster(identifier, this.options, this.setupQueries, preProvisionedClusterInfo.secretArn);
+        dbConfig = await setupDataInExistingCluster(identifier, this.options, this.setupQueries, preProvisionedClusterInfo?.secretArn);
         this.options.username = dbConfig.username;
         this.options.dbname = dbConfig.dbName;
       } else {

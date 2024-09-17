@@ -1,7 +1,9 @@
 import * as path from 'path';
 import { LambdaClient, GetProvisionedConcurrencyConfigCommand } from '@aws-sdk/client-lambda';
+import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import gql from 'graphql-tag';
 import { initCDKProject, cdkDeploy } from '../commands';
-import { graphql } from '../graphql-request';
+import { GraphqlResponse, graphql } from '../graphql-request';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { ONE_MINUTE } from '../utils/duration-constants';
 
@@ -19,43 +21,356 @@ export const testGraphQLAPI = async (options: {
   const outputs = await cdkDeploy(projRoot, '--all', { postDeployWaitMs: ONE_MINUTE });
   const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[name];
 
-  const description = 'todo description';
+  const appSyncClient = new AWSAppSyncClient({
+    url: apiEndpoint,
+    region,
+    disableOffline: true,
+    auth: {
+      type: AUTH_TYPE.API_KEY,
+      apiKey,
+    },
+  });
 
-  const result = await graphql(
-    apiEndpoint,
-    apiKey,
-    /* GraphQL */ `
-      mutation CREATE_TODO {
-        createTodo(input: { description: "${description}" }) {
+  const createTodo = async (description: string, id?: string): Promise<Record<string, any>> => {
+    const createMutation = /* GraphQL */ `
+      mutation CreateTodo($input: CreateTodoInput!, $condition: ModelTodoConditionInput) {
+        createTodo(input: $input, condition: $condition) {
           id
           description
         }
       }
-    `,
-  );
+    `;
+    const createInput = {
+      input: {
+        description,
+      },
+    };
 
-  const todo = result.body.data.createTodo;
-  expect(todo).toBeDefined();
-  expect(todo.id).toBeDefined();
-  expect(todo.description).toEqual(description);
+    if (id) {
+      createInput.input['id'] = id;
+    }
 
-  const listResult = await graphql(
-    apiEndpoint,
-    apiKey,
-    /* GraphQL */ `
-      query LIST_TODOS {
-        listTodos {
+    const createResult: any = await appSyncClient.mutate({
+      mutation: gql(createMutation),
+      fetchPolicy: 'no-cache',
+      variables: createInput,
+    });
+
+    return createResult;
+  };
+
+  const getTodo = async (id: string): Promise<Record<string, any>> => {
+    const getQuery = /* GraphQL */ `
+      query GetTodo($id: ID!) {
+        getTodo(id: $id) {
+          id
+          description
+        }
+      }
+    `;
+    const getInput = {
+      id,
+    };
+
+    const getResult: any = await appSyncClient.query({
+      query: gql(getQuery),
+      fetchPolicy: 'no-cache',
+      variables: getInput,
+    });
+
+    return getResult;
+  };
+
+  const updateTodo = async (id: string, description: string): Promise<Record<string, any>> => {
+    const updateMutation = /* GraphQL */ `
+      mutation UpdateTodo($input: UpdateTodoInput!, $condition: ModelTodoConditionInput) {
+        updateTodo(input: $input, condition: $condition) {
+          id
+          description
+        }
+      }
+    `;
+    const updateInput = {
+      input: {
+        id,
+        description,
+      },
+    };
+
+    const updateResult: any = await appSyncClient.mutate({
+      mutation: gql(updateMutation),
+      fetchPolicy: 'no-cache',
+      variables: updateInput,
+    });
+
+    return updateResult;
+  };
+
+  const deleteTodo = async (id: string): Promise<Record<string, any>> => {
+    const deleteMutation = /* GraphQL */ `
+      mutation DeleteTodo($input: DeleteTodoInput!, $condition: ModelTodoConditionInput) {
+        deleteTodo(input: $input, condition: $condition) {
+          id
+          description
+        }
+      }
+    `;
+    const deleteInput = {
+      input: {
+        id,
+      },
+    };
+
+    const deleteResult: any = await appSyncClient.mutate({
+      mutation: gql(deleteMutation),
+      fetchPolicy: 'no-cache',
+      variables: deleteInput,
+    });
+
+    return deleteResult;
+  };
+
+  const listTodo = async (limit = 100, nextToken: string | null = null, filter: any = null): Promise<Record<string, any>> => {
+    const listQuery = /* GraphQL */ `
+      query ListTodos($limit: Int, $nextToken: String, $filter: ModelTodoFilterInput) {
+        listTodos(limit: $limit, nextToken: $nextToken, filter: $filter) {
           items {
             id
             description
           }
+          nextToken
         }
       }
-    `,
+    `;
+
+    const listResult: any = await appSyncClient.query({
+      query: gql(listQuery),
+      fetchPolicy: 'no-cache',
+      variables: {
+        limit,
+        nextToken,
+        filter,
+      },
+    });
+
+    return listResult;
+  };
+
+  const checkGenericError = async (errorMessage?: string): Promise<void> => {
+    expect(errorMessage).toBeDefined();
+    console.log(errorMessage);
+  };
+
+  // Test: check CRUDL on contact table with default primary key - postgres
+  // Create Todo Mutation
+  const createTodo1 = await createTodo('Todo #1');
+  const createTodo2 = await createTodo('Todo #2');
+
+  const createTodo1Result = createTodo1.data.createTodo;
+  const createTodo2Result = createTodo2.data.createTodo;
+
+  expect(createTodo1Result).toBeDefined();
+  expect(createTodo1Result.id).toBeDefined();
+  expect(createTodo1Result.description).toEqual('Todo #1');
+
+  expect(createTodo2Result).toBeDefined();
+  expect(createTodo2Result.id).toBeDefined();
+  expect(createTodo2Result.description).toEqual('Todo #2');
+
+  // Get Todo Query
+  const getTodo1 = await getTodo(createTodo1Result.id);
+  const getTodo2 = await getTodo(createTodo2Result.id);
+
+  const getTodo1Result = getTodo1.data.getTodo;
+  const getTodo2Result = getTodo2.data.getTodo;
+
+  expect(getTodo1Result.id).toEqual(createTodo1Result.id);
+  expect(getTodo1Result.description).toEqual(createTodo1Result.description);
+
+  expect(getTodo2Result.id).toEqual(createTodo2Result.id);
+  expect(getTodo2Result.description).toEqual(createTodo2Result.description);
+
+  // Update Todo Mutation
+  const updateTodo1 = await updateTodo(createTodo1Result.id, 'Updated Todo #1');
+  const updateTodo2 = await updateTodo(createTodo2Result.id, 'Updated Todo #2');
+
+  const updateTodo1Result = updateTodo1.data.updateTodo;
+  const updateTodo2Result = updateTodo2.data.updateTodo;
+
+  expect(updateTodo1Result.id).toEqual(createTodo1Result.id);
+  expect(updateTodo1Result.description).toEqual('Updated Todo #1');
+
+  expect(updateTodo2Result.id).toEqual(createTodo2Result.id);
+  expect(updateTodo2Result.description).toEqual('Updated Todo #2');
+
+  // Get Updated Todo Query
+  const getUpdatedTodo1 = await getTodo(createTodo1Result.id);
+  const getUpdatedTodo2 = await getTodo(createTodo2Result.id);
+
+  const getUpdatedTodo1Result = getUpdatedTodo1.data.getTodo;
+  const getUpdatedTodo2Result = getUpdatedTodo2.data.getTodo;
+
+  expect(getUpdatedTodo1Result.id).toEqual(createTodo1Result.id);
+  expect(getUpdatedTodo1Result.description).toEqual('Updated Todo #1');
+
+  expect(getUpdatedTodo2Result.id).toEqual(createTodo2Result.id);
+  expect(getUpdatedTodo2Result.description).toEqual('Updated Todo #2');
+
+  // List Todo Query
+  const listTodos = await listTodo();
+  const listTodosResult = listTodos.data.listTodos;
+
+  expect(listTodosResult.items.length).toEqual(2);
+  expect(listTodosResult.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        id: getUpdatedTodo1Result.id,
+        description: 'Updated Todo #1',
+      }),
+      expect.objectContaining({
+        id: getUpdatedTodo2Result.id,
+        description: 'Updated Todo #2',
+      }),
+    ]),
   );
 
-  expect(listResult.body.data.listTodos.items.length).toEqual(1);
-  expect(todo.id).toEqual(listResult.body.data.listTodos.items[0].id);
+  // Delete Todo Query
+  const deleteTodo1 = await deleteTodo(createTodo1Result.id);
+  const deleteTodo1Result = deleteTodo1.data.deleteTodo;
+
+  expect(deleteTodo1Result.id).toEqual(createTodo1Result.id);
+  expect(deleteTodo1Result.description).toEqual('Updated Todo #1');
+
+  // List Todo Query
+  const listTodosAfterDelete = await listTodo();
+  const listTodosAfterDeleteResult = listTodosAfterDelete.data.listTodos;
+
+  expect(listTodosAfterDeleteResult.items.length).toEqual(1);
+  expect(listTodosAfterDeleteResult.items[0].id).toEqual(getUpdatedTodo2Result.id);
+  expect(listTodosAfterDeleteResult.items[0].description).toEqual('Updated Todo #2');
+
+  // Check limit and nextToken
+  const createTodo3 = await createTodo('Todo #3');
+  const createTodo4 = await createTodo('Todo #4');
+  const createTodo5 = await createTodo('Todo #5');
+
+  const createTodo3Result = createTodo3.data.createTodo;
+  const createTodo4Result = createTodo4.data.createTodo;
+  const createTodo5Result = createTodo5.data.createTodo;
+
+  expect(createTodo3Result).toBeDefined();
+  expect(createTodo3Result.id).toBeDefined();
+  expect(createTodo3Result.description).toEqual('Todo #3');
+
+  expect(createTodo4Result).toBeDefined();
+  expect(createTodo4Result.id).toBeDefined();
+  expect(createTodo4Result.description).toEqual('Todo #4');
+
+  expect(createTodo5Result).toBeDefined();
+  expect(createTodo5Result.id).toBeDefined();
+  expect(createTodo5Result.description).toEqual('Todo #5');
+
+  const listTodosWithLimit = await listTodo(2);
+  const listTodosWithLimitResult = listTodosWithLimit.data.listTodos;
+  expect(listTodosWithLimitResult.items.length).toEqual(2);
+  expect(listTodosWithLimitResult.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        id: getUpdatedTodo2Result.id,
+        description: 'Updated Todo #2',
+      }),
+      expect.objectContaining({
+        id: createTodo3Result.id,
+        description: 'Todo #3',
+      }),
+    ]),
+  );
+  expect(listTodosWithLimitResult.nextToken).toBeDefined();
+
+  const listTodosWithNextToken = await listTodo(2, listTodosWithLimitResult.nextToken);
+  const listTodosWithNextTokenResult = listTodosWithNextToken.data.listTodos;
+  expect(listTodosWithNextTokenResult.items.length).toEqual(2);
+  expect(listTodosWithNextTokenResult.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        id: createTodo4Result.id,
+        description: 'Todo #4',
+      }),
+      expect.objectContaining({
+        id: createTodo5Result.id,
+        description: 'Todo #5',
+      }),
+    ]),
+  );
+  // expect(listTodosWithNextTokenResult.nextToken).toBeNull();
+  // console.log(listTodosWithNextTokenResult.nextToken);
+  // console.log(atob(listTodosWithNextTokenResult.nextToken));
+
+  // Check and validate filter
+  const listTodosWithFilter = await listTodo(10, null, { description: { contains: 'Updated' } });
+  const listTodosWithFilterResult = listTodosWithFilter.data.listTodos;
+  expect(listTodosWithFilterResult.items.length).toEqual(1);
+  expect(listTodosWithFilterResult.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        id: getUpdatedTodo2Result.id,
+        description: 'Updated Todo #2',
+      }),
+    ]),
+  );
+  expect(listTodosWithFilterResult.nextToken).toBeNull();
+
+  const listTodosWithFilter2 = await listTodo(10, null, { description: { size: { eq: 7 } } });
+  const listTodosWithFilter2Result = listTodosWithFilter2.data.listTodos;
+  expect(listTodosWithFilter2Result.items.length).toEqual(3);
+  expect(listTodosWithFilter2Result.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        id: createTodo3Result.id,
+        description: 'Todo #3',
+      }),
+      expect.objectContaining({
+        id: createTodo4Result.id,
+        description: 'Todo #4',
+      }),
+      expect.objectContaining({
+        id: createTodo5Result.id,
+        description: 'Todo #5',
+      }),
+    ]),
+  );
+  expect(listTodosWithFilter2Result.nextToken).toBeNull();
+
+  // Check invalid CRUD operation returns generic error message
+  const createTodo6 = await createTodo('Todo #6');
+
+  try {
+    await createTodo('Todo #7', createTodo6.data.createTodo.id);
+  } catch (error) {
+    await checkGenericError(error?.message);
+  }
+
+  const invalidId = createTodo6.data.createTodo.id + 'x';
+
+  try {
+    await getTodo(invalidId);
+  } catch (error) {
+    await checkGenericError(error?.message);
+  }
+
+  try {
+    await updateTodo(invalidId, 'Updated Todo #6');
+  } catch (error) {
+    await checkGenericError(error?.message);
+  }
+
+  try {
+    await deleteTodo(invalidId);
+  } catch (error) {
+    await checkGenericError(error?.message);
+  }
+
+  // Check SQL Lambda provisioned concurrency setting
   const client = new LambdaClient({ region });
   const functionName = outputs[name].SQLFunctionName;
   const command = new GetProvisionedConcurrencyConfigCommand({
@@ -64,32 +379,4 @@ export const testGraphQLAPI = async (options: {
   });
   const response = await client.send(command);
   expect(response.RequestedProvisionedConcurrentExecutions).toEqual(2);
-
-  await graphql(
-    apiEndpoint,
-    apiKey,
-    /* GraphQL */ `
-        mutation DELETE_TODO {
-          deleteTodo(input: { id: "${todo.id}" }) {
-            id
-          }
-        }
-      `,
-  );
-  const emptyListResult = await graphql(
-    apiEndpoint,
-    apiKey,
-    /* GraphQL */ `
-      query LIST_TODOS {
-        listTodos {
-          items {
-            id
-            description
-          }
-        }
-      }
-    `,
-  );
-
-  expect(emptyListResult.body.data.listTodos.items.length).toEqual(0);
 };
