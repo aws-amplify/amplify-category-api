@@ -86,6 +86,7 @@ function _installNVM {
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
   export NVM_DIR="$HOME/.nvm"
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 }
 
 function _installNode {
@@ -102,7 +103,8 @@ function _installNode {
 function _buildLinux {
   _setShell
   _installNVM
-  _installNode 18
+  nvm ls-remote
+  _installNode 18.20.4
   echo "Linux Build"
   node --version
   yarn run production-build
