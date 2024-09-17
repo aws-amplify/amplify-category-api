@@ -134,7 +134,7 @@ function _lint {
 }
 function _verifyAmplifyBackendCompatability {
   echo "Verify Amplify Backend Compatibility"
-  loadCacheFromBuildJob
+  loadCacheFromBuildJob 
 
   # Set npm to use Bash as the shell
   echo "Configuring npm to use Bash as the script shell"
