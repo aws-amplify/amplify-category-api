@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-function-transformer@3.0.2...@aws-amplify/graphql-function-transformer@3.1.0) (2024-09-16)
+
+### Features
+
+- **function-transformer:** add support for event invocation types (async lambda) ([#2864](https://github.com/aws-amplify/amplify-category-api/issues/2864)) ([6a54bad](https://github.com/aws-amplify/amplify-category-api/commit/6a54bad19206d91a4c8db300cafb1a205fba6b25))
+
+## [3.0.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-function-transformer@3.0.1...@aws-amplify/graphql-function-transformer@3.0.2) (2024-09-06)
+
+**Note:** Version bump only for package @aws-amplify/graphql-function-transformer
+
 ## [3.0.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-function-transformer@3.0.0...@aws-amplify/graphql-function-transformer@3.0.1) (2024-08-28)
 
 **Note:** Version bump only for package @aws-amplify/graphql-function-transformer

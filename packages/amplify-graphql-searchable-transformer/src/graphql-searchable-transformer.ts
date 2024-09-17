@@ -281,15 +281,15 @@ export class SearchableModelTransformer extends TransformerPluginBase {
   }
 
   generateResolvers = (context: TransformerContextProvider): void => {
+    if (!this.isSearchableConfigured()) {
+      return;
+    }
+
     // This validation can't occur in validate because the api has not been initialized until generateResolvers
     if (!context.transformParameters.allowGen1Patterns) {
       Annotations.of(context.api).addWarning(
         `@${SearchableDirective.name} is deprecated. This functionality will be removed in the next major release.`,
       );
-    }
-
-    if (!this.isSearchableConfigured()) {
-      return;
     }
 
     const { HasEnvironmentParameter } = ResourceConstants.CONDITIONS;
