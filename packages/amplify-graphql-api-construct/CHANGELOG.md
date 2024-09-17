@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.13.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.12.0...@aws-amplify/graphql-api-construct@1.13.0) (2024-09-16)
+
+### Features
+
+- Add L1 construct properties to resources.graphqlApi ([#2840](https://github.com/aws-amplify/amplify-category-api/issues/2840)) ([f467967](https://github.com/aws-amplify/amplify-category-api/commit/f467967f2d01113f868d10876542f1df0887c6d9))
+
 # [1.12.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.11.8...@aws-amplify/graphql-api-construct@1.12.0) (2024-09-06)
 
 ### Bug Fixes
