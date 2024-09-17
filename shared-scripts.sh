@@ -96,6 +96,7 @@ function _installNode {
     exit 1
   fi
   echo "Installing $nodeVersion version of nodejs"
+  export NVM_NODEJS_ORG_MIRROR=http://nodejs.org/dist
   nvm install $nodeVersion
   nvm use $nodeVersion
 }
@@ -103,7 +104,6 @@ function _installNode {
 function _buildLinux {
   _setShell
   _installNVM
-  nvm ls-remote
   _installNode 18.20.4
   echo "Linux Build"
   node --version
