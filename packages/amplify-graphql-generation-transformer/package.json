@@ -16,9 +16,10 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && yarn copy-js-resolver-templates",
     "watch": "tsc -w",
     "clean": "rimraf ./lib",
+    "copy-js-resolver-templates": "cp ./src/resolvers/*.js ./lib/resolvers",
     "test": "jest",
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },

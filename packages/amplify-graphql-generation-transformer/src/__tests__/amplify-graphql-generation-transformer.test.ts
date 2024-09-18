@@ -53,9 +53,9 @@ test('generation route scalar type', () => {
   expect(resolverCode).toBeDefined();
   expect(resolverCode).toMatchSnapshot();
 
-  const resolverFnCode = getResolverFnResource(queryName, out.rootStack.Resources)['Properties']['Code'];
-  expect(resolverFnCode).toBeDefined();
-  expect(resolverFnCode).toMatchSnapshot();
+  const resolvers = out.resolvers;
+  expect(resolvers).toBeDefined();
+  expect(resolvers).toMatchSnapshot();
 
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -92,9 +92,9 @@ test('generation route custom query', () => {
   expect(resolverCode).toBeDefined();
   expect(resolverCode).toMatchSnapshot();
 
-  const resolverFnCode = getResolverFnResource(queryName, out.rootStack.Resources)['Properties']['Code'];
-  expect(resolverFnCode).toBeDefined();
-  expect(resolverFnCode).toMatchSnapshot();
+  const resolvers = out.resolvers;
+  expect(resolvers).toBeDefined();
+  expect(resolvers).toMatchSnapshot();
 
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -124,9 +124,9 @@ test('generation route model type with null timestamps', () => {
   expect(resolverCode).toBeDefined();
   expect(resolverCode).toMatchSnapshot();
 
-  const resolverFnCode = getResolverFnResource(queryName, out.rootStack.Resources)['Properties']['Code'];
-  expect(resolverFnCode).toBeDefined();
-  expect(resolverFnCode).toMatchSnapshot();
+  const resolverFn = out.resolvers['makeTodo-invoke-bedrock-fn'];
+  expect(resolverFn).toBeDefined();
+  expect(resolverFn).toMatchSnapshot();
 
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -226,9 +226,9 @@ test('generation route all scalar types', () => {
   expect(resolverCode).toBeDefined();
   expect(resolverCode).toMatchSnapshot();
 
-  const resolverFnCode = getResolverFnResource(queryName, out.rootStack.Resources)['Properties']['Code'];
-  expect(resolverFnCode).toBeDefined();
-  expect(resolverFnCode).toMatchSnapshot();
+  const resolvers = out.resolvers;
+  expect(resolvers).toBeDefined();
+  expect(resolvers).toMatchSnapshot();
 
   const schema = parse(out.schema);
   validateModelSchema(schema);
