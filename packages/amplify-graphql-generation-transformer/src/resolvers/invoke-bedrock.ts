@@ -50,8 +50,7 @@ const createInvokeBedrockRequestFunction = (config: GenerationConfigurationWithT
         }
       }
     }
-  }
-`;
+  }`;
 
   return requestFunctionString;
 };
