@@ -129,7 +129,7 @@ export class GenerationTransformer extends TransformerPluginBase {
       parentName,
       fieldName,
       resolverResourceId,
-      mappingTemplate,
+      { codeMappingTemplate: invokeBedrockFunction },
       ['auth'],
       [],
       dataSource as any,

@@ -1,7 +1,8 @@
 import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { dedent } from 'ts-dedent';
 import { GenerationConfigurationWithToolConfig, InferenceConfiguration } from '../grapqhl-generation-transformer';
+import fs from 'fs';
+import path from 'path';
 
 /**
  * Creates the resolver functions for invoking Amazon Bedrock.
@@ -9,82 +10,33 @@ import { GenerationConfigurationWithToolConfig, InferenceConfiguration } from '.
  * @param {GenerationConfigurationWithToolConfig} config - The configuration object containing AI model details, tool config, and inference settings.
  * @returns {Object} An object containing request and response resolver functions.
  */
+export const createInvokeBedrockResolverFunction = (
+  config: GenerationConfigurationWithToolConfig,
+): MappingTemplateProvider => {
+  const { aiModel, toolConfig, inferenceConfiguration, field } = config;
+  const AI_MODEL = aiModel;
+  const TOOL_CONFIG = JSON.stringify(toolConfig);
+  const SYSTEM_PROMPT = JSON.stringify(config.systemPrompt);
+  const INFERENCE_CONFIG = getInferenceConfigResolverDefinition(inferenceConfiguration);
 
-export const createInvokeBedrockResolverFunction = (config: GenerationConfigurationWithToolConfig): MappingTemplateProvider => {
-  const req = createInvokeBedrockRequestFunction(config);
-  const res = createInvokeBedrockResponseFunction();
-  return MappingTemplate.inlineTemplateFromString(dedent(req + '\n' + res));
+  const resolver = generateResolver('invoke-bedrock-resolver-fn.js', {
+    AI_MODEL,
+    TOOL_CONFIG,
+    SYSTEM_PROMPT,
+    INFERENCE_CONFIG,
+  });
+
+  const templateName = `${field.name.value}-invoke-bedrock-fn`;
+  return MappingTemplate.s3MappingFunctionCodeFromString(resolver, templateName);
 };
 
-/**
- * Creates the request function for the Bedrock resolver.
- *
- * @param {GenerationConfigurationWithToolConfig} config - The configuration object for the resolver.
- * @returns {MappingTemplateProvider} A MappingTemplateProvider for the request function.
- */
-const createInvokeBedrockRequestFunction = (config: GenerationConfigurationWithToolConfig): string => {
-  const { aiModel, toolConfig, inferenceConfiguration } = config;
-  const stringifiedToolConfig = JSON.stringify(toolConfig);
-  const stringifiedSystemPrompt = JSON.stringify(config.systemPrompt);
-  // TODO: add stopReason: max_tokens error handling
-  const inferenceConfig = getInferenceConfigResolverDefinition(inferenceConfiguration);
-  const requestFunctionString = `
-  export function request(ctx) {
-    const toolConfig = ${stringifiedToolConfig};
-    const prompt = ${stringifiedSystemPrompt};
-    const args = JSON.stringify(ctx.args);
-
-    return {
-      resourcePath: '/model/${aiModel}/converse',
-      method: 'POST',
-      params: {
-        headers: { 'Content-Type': 'application/json' },
-        body: {
-          messages: [{
-            role: 'user',
-            content: [{ text: args }],
-          }],
-          system: [{ text: prompt }],
-          toolConfig,
-          ${inferenceConfig}
-        }
-      }
-    }
-  }`;
-
-  return requestFunctionString;
-};
-
-/**
- * Creates the response function for the Bedrock resolver.
- *
- * @returns {MappingTemplateProvider} A MappingTemplateProvider for the response function.
- */
-const createInvokeBedrockResponseFunction = (): string => {
-  // TODO: add stopReason: max_tokens error handling
-  const responseFunctionString = `
-  export function response(ctx) {
-    if (ctx.error) {
-      util.error(ctx.error.message, ctx.error.type);
-    }
-    const body = JSON.parse(ctx.result.body);
-    const { content } = body.output.message;
-
-    if (content.length < 1) {
-      util.error('No content block in assistant response.', 'error');
-    }
-
-    const toolUse = content[0].toolUse;
-    if (!toolUse) {
-      util.error('Missing tool use block in assistant response.', 'error');
-    }
-
-    const response = toolUse.input.value;
-    return response;
-  }
-`;
-
-  return responseFunctionString;
+const generateResolver = (fileName: string, values: Record<string, string>): string => {
+  let resolver = fs.readFileSync(path.join(__dirname, fileName), 'utf8');
+  Object.entries(values).forEach(([key, value]) => {
+    const replaced = resolver.replace(new RegExp(key, 'g'), value);
+    resolver = replaced;
+  });
+  return resolver;
 };
 
 /**
