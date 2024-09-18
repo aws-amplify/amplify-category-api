@@ -179,13 +179,16 @@ export class DefaultValueTransformer extends TransformerPluginBase {
 
   private addSnippetToResolverSlot = (resolver: TransformerResolverProvider, snippets: string[]): void => {
     const res = resolver as any;
-    res.addToSlot(
-      'init',
-      MappingTemplate.s3MappingTemplateFromString(
+    const mappingTemplate = {
+      requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
         // eslint-disable-next-line prefer-template
         snippets.join('\n') + '\n{}',
         `${res.typeName}.${res.fieldName}.{slotName}.{slotIndex}.req.vtl`,
       ),
+    }
+    res.addToSlot(
+      'init',
+      mappingTemplate,
     );
   };
 }
