@@ -302,9 +302,6 @@ export const testGraphQLAPI = async (options: {
       }),
     ]),
   );
-  // expect(listTodosWithNextTokenResult.nextToken).toBeNull();
-  console.log(listTodosWithNextTokenResult.nextToken);
-  console.log(atob(listTodosWithNextTokenResult.nextToken));
 
   // Check and validate filter
   const listTodosWithFilter = await listTodo(10, null, { description: { contains: 'Updated' } });
