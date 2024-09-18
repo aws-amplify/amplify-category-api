@@ -567,11 +567,8 @@ export const makeQueryResolver = (
       generatePostAuthExpression(ctx.transformParameters.sandboxModeEnabled, ctx.synthParameters.enableIamAccess),
       `${queryTypeName}.${queryField}.{slotName}.{slotIndex}.res.vtl`,
     ),
-  }
-  resolver.addToSlot(
-    'postAuth',
-    mappingTemplate,
-  );
+  };
+  resolver.addToSlot('postAuth', mappingTemplate);
 
   resolver.setScope(ctx.stackManager.getScopeFor(resolverResourceId, stackId));
   ctx.resolvers.addResolver(queryTypeName, queryField, resolver);
@@ -628,10 +625,7 @@ export const addIndexToResolverSlot = (resolver: TransformerResolverProvider, li
       `${res.typeName}.${res.fieldName}.{slotName}.{slotIndex}.req.vtl`,
     ),
   };
-  res.addToSlot(
-    'preAuth',
-    mappingTemplate,
-  );
+  res.addToSlot('preAuth', mappingTemplate);
 };
 
 const makeSyncResolver = (

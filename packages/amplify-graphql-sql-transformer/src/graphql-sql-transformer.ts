@@ -137,12 +137,9 @@ export class SqlTransformer extends TransformerPluginBase {
           requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
             generatePostAuthExpression(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess),
             `${config.resolverTypeName}.${config.resolverFieldName}.{slotName}.{slotIndex}.req.vtl`,
-          )
-        }
-        resolver.addToSlot(
-          'postAuth',
-          mappingTemplate,
-        );
+          ),
+        };
+        resolver.addToSlot('postAuth', mappingTemplate);
         resolver.setScope(context.stackManager.getScopeFor(resolverResourceId, SQL_DIRECTIVE_STACK));
         context.resolvers.addResolver(config.resolverTypeName, config.resolverFieldName, resolver);
       });

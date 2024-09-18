@@ -14,11 +14,7 @@ import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IFunction, ILayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
-import {
-  AppSyncFunctionConfigurationProvider,
-  DataSourceOptions,
-  SearchableDataSourceOptions,
-} from './graphql-api-provider';
+import { AppSyncFunctionConfigurationProvider, DataSourceOptions, SearchableDataSourceOptions } from './graphql-api-provider';
 import { VpcConfig } from './model-datasource';
 import { FunctionRuntimeTemplate } from './transformer-context';
 

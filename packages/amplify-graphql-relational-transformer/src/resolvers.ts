@@ -332,12 +332,9 @@ const addIndexToResolverSlot = (resolver: TransformerResolverProvider, lines: st
     requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
       `${lines.join('\n')}\n${!isSync ? '{}' : ''}`,
       `${res.typeName}.${res.fieldName}.{slotName}.{slotIndex}.req.vtl`,
-    )
-  }
-  res.addToSlot(
-    'preAuth',
-    mappingTemplate,
-  );
+    ),
+  };
+  res.addToSlot('preAuth', mappingTemplate);
 };
 
 const mergeInputsAndDefaultsSnippet = (): string => {

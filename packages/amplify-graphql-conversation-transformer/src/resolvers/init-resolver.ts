@@ -44,7 +44,7 @@ const createInitRequestFunction = (): string => {
  *
  * @returns {MappingTemplateProvider} A MappingTemplateProvider for the response function.
  */
-  const createInitResponseFunction = (): string => {
+const createInitResponseFunction = (): string => {
   const responseFunctionString = `
       export function response(ctx) {
         return {};

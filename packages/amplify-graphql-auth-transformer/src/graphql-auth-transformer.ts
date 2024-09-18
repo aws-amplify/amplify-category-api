@@ -569,11 +569,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
           this.getVtlGenerator(ctx, def.name.value).generateFieldResolverForOwner(fieldName),
           `${typeName}.${fieldName}.{slotName}.{slotIndex}.res.vtl`,
         ),
-      }
-      resolver.addToSlot(
-        'finish',
-        mappingTemplate
-      );
+      };
+      resolver.addToSlot('finish', mappingTemplate);
     } else {
       const hasModelDirective = def.directives.some((dir) => dir.name.value === 'model');
       const scope = getScopeForField(ctx, def, fieldName, hasModelDirective);
@@ -586,7 +583,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
           this.getVtlGenerator(ctx, def.name.value).generateFieldResolverForOwner(fieldName),
           `${typeName}.${fieldName}.res.vtl`,
         ),
-      }
+      };
       resolver = ctx.resolvers.addResolver(
         typeName,
         fieldName,
@@ -689,12 +686,12 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       undefined,
     );
     const mappingTemplate = {
-      requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
-    }
-    resolver.addToSlot(
-      'auth',
-      mappingTemplate
-    );
+      requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
+        authExpression,
+        `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`,
+      ),
+    };
+    resolver.addToSlot('auth', mappingTemplate);
   };
 
   protectListResolver = (
@@ -716,12 +713,12 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       indexName,
     );
     const mappingTemplate = {
-      requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
-    }
-    resolver.addToSlot(
-      'auth',
-      mappingTemplate,
-    );
+      requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
+        authExpression,
+        `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`,
+      ),
+    };
+    resolver.addToSlot('auth', mappingTemplate);
   };
 
   protectRelationalResolver = (
@@ -841,27 +838,24 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const resolver = ctx.resolvers.getResolver(typeName, field.name.value) as TransformerResolverProvider;
     if (fieldAuthExpression) {
       const mappingTemplate = {
-        requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(fieldAuthExpression, `${typeName}.${field.name.value}.{slotName}.{slotIndex}.req.vtl`),
+        requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
+          fieldAuthExpression,
+          `${typeName}.${field.name.value}.{slotName}.{slotIndex}.req.vtl`,
+        ),
         responseMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
           relatedAuthExpression,
           `${typeName}.${field.name.value}.{slotName}.{slotIndex}.res.vtl`,
         ),
-      }
-      resolver.addToSlot(
-        'auth',
-        mappingTemplate,
-      );
+      };
+      resolver.addToSlot('auth', mappingTemplate);
     } else {
       const mappingTemplate = {
         requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
           relatedAuthExpression,
           `${typeName}.${field.name.value}.{slotName}.{slotIndex}.req.vtl`,
         ),
-      }
-      resolver.addToSlot(
-        'auth',
-        mappingTemplate,
-      );
+      };
+      resolver.addToSlot('auth', mappingTemplate);
     }
   };
 
@@ -884,12 +878,12 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         undefined,
       );
       const mappingTemplate = {
-        requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
-      }
-      resolver.addToSlot(
-        'auth',
-        mappingTemplate,
-      );
+        requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
+          authExpression,
+          `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`,
+        ),
+      };
+      resolver.addToSlot('auth', mappingTemplate);
     }
   };
 
@@ -935,11 +929,12 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       modelFields,
       allowedAggFields,
     );
-    resolver.addToSlot(
-      'auth',
-      { requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
-    }
-    );
+    resolver.addToSlot('auth', {
+      requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
+        authExpression,
+        `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`,
+      ),
+    });
   };
 
   /*
@@ -1002,13 +997,16 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       const existingResolver = ctx.resolvers.hasResolver(typeName, fieldName);
       if (existingResolver) {
         const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
-        resolver.addToSlot(
-          'auth',
-          {
-            requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(fieldAuthExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
-            responseMappingTemplate:  MappingTemplate.s3MappingTemplateFromString(fieldResponse, `${typeName}.${fieldName}.{slotName}.{slotIndex}.res.vtl`)
-          },
-        );
+        resolver.addToSlot('auth', {
+          requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
+            fieldAuthExpression,
+            `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`,
+          ),
+          responseMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
+            fieldResponse,
+            `${typeName}.${fieldName}.{slotName}.{slotIndex}.res.vtl`,
+          ),
+        });
         resolver.setScope(scope);
       } else {
         const resolver = ctx.resolvers.addResolver(
@@ -1020,7 +1018,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
             ResolverResourceIDs.ResolverResourceID(typeName, fieldName),
             {
               requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(fieldAuthExpression, `${typeName}.${fieldName}.req.vtl`),
-              responseMappingTemplate:  MappingTemplate.s3MappingTemplateFromString(fieldResponse, `${typeName}.${fieldName}.res.vtl`)
+              responseMappingTemplate: MappingTemplate.s3MappingTemplateFromString(fieldResponse, `${typeName}.${fieldName}.res.vtl`),
             },
             ['init'],
             ['finish'],
@@ -1054,12 +1052,12 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       def.fields ?? [],
     );
     const mappingTemplate = {
-      requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
-    }
-    resolver.addToSlot(
-      'auth',
-      mappingTemplate,
-    );
+      requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
+        authExpression,
+        `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`,
+      ),
+    };
+    resolver.addToSlot('auth', mappingTemplate);
   };
 
   protectUpdateResolver = (
@@ -1096,14 +1094,16 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       def.fields ?? [],
     );
     const mappingTemplate = {
-      requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(requestExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
-      responseMappingTemplate: MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.res.vtl`),
-    }
-    resolver.addToSlot(
-      'auth',
-      mappingTemplate,
-      dataSource,
-    );
+      requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
+        requestExpression,
+        `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`,
+      ),
+      responseMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
+        authExpression,
+        `${typeName}.${fieldName}.{slotName}.{slotIndex}.res.vtl`,
+      ),
+    };
+    resolver.addToSlot('auth', mappingTemplate, dataSource);
   };
 
   protectDeleteResolver = (
@@ -1133,14 +1133,16 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       def.fields ?? [],
     );
     const mappingTemplate = {
-      requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(requestExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
-      responseMappingTemplate: MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.res.vtl`),
-    }
-    resolver.addToSlot(
-      'auth',
-      mappingTemplate,
-      dataSource,
-    );
+      requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
+        requestExpression,
+        `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`,
+      ),
+      responseMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
+        authExpression,
+        `${typeName}.${fieldName}.{slotName}.{slotIndex}.res.vtl`,
+      ),
+    };
+    resolver.addToSlot('auth', mappingTemplate, dataSource);
   };
 
   protectSubscriptionResolver = (
@@ -1156,12 +1158,12 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       subscriptionRoles,
     );
     const mappingTemplate = {
-      requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
-    }
-    resolver.addToSlot(
-      'auth',
-      mappingTemplate,
-    );
+      requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
+        authExpression,
+        `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`,
+      ),
+    };
+    resolver.addToSlot('auth', mappingTemplate);
   };
 
   /*

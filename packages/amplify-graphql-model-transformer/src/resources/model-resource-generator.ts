@@ -129,12 +129,9 @@ export abstract class ModelResourceGenerator {
           requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
             generatePostAuthExpression(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess),
             `${query.typeName}.${query.fieldName}.{slotName}.{slotIndex}.req.vtl`,
-          )
-        }
-        resolver.addToSlot(
-          'postAuth',
-          mappingTemplate,
-        );
+          ),
+        };
+        resolver.addToSlot('postAuth', mappingTemplate);
         resolver.setScope(context.stackManager.getScopeFor(query.resolverLogicalId, def!.name.value));
         context.resolvers.addResolver(query.typeName, query.fieldName, resolver);
       });
@@ -166,12 +163,9 @@ export abstract class ModelResourceGenerator {
           requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
             generatePostAuthExpression(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess),
             `${mutation.typeName}.${mutation.fieldName}.{slotName}.{slotIndex}.req.vtl`,
-          )
-        }
-        resolver.addToSlot(
-          'postAuth',
-          mappingTemplate,
-        );
+          ),
+        };
+        resolver.addToSlot('postAuth', mappingTemplate);
         resolver.setScope(context.stackManager.getScopeFor(mutation.resolverLogicalId, def!.name.value));
         context.resolvers.addResolver(mutation.typeName, mutation.fieldName, resolver);
       });
@@ -215,12 +209,9 @@ export abstract class ModelResourceGenerator {
               requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
                 generatePostAuthExpression(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess),
                 `${subscription.typeName}.${subscription.fieldName}.{slotName}.{slotIndex}.req.vtl`,
-              )
-            }
-            resolver.addToSlot(
-              'postAuth',
-              mappingTemplate,
-            );
+              ),
+            };
+            resolver.addToSlot('postAuth', mappingTemplate);
           }
           resolver.setScope(context.stackManager.getScopeFor(subscription.resolverLogicalId, def!.name.value));
           context.resolvers.addResolver(subscription.typeName, subscription.fieldName, resolver);
@@ -377,12 +368,9 @@ export abstract class ModelResourceGenerator {
         requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
           vtlGenerator.generateCreateInitSlotTemplate(initSlotConfig, initializeIdField),
           `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`,
-        )
-      }
-      resolver.addToSlot(
-        'init',
-        mappingTemplate,
-      );
+        ),
+      };
+      resolver.addToSlot('init', mappingTemplate);
     }
     return this.resolverMap[resolverKey];
   };
@@ -441,12 +429,9 @@ export abstract class ModelResourceGenerator {
         requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
           vtlGenerator.generateUpdateInitSlotTemplate(updateInitConfig),
           `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`,
-        )
-      }
-      resolver.addToSlot(
-        'init',
-        mappingTemplate,
-      );
+        ),
+      };
+      resolver.addToSlot('init', mappingTemplate);
       this.resolverMap[resolverKey] = resolver;
     }
     return this.resolverMap[resolverKey];

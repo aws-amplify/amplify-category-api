@@ -1,4 +1,10 @@
-import { FunctionRuntimeTemplate, JSRuntimeTemplate, MappingTemplateProvider, MappingTemplateType, VTLRuntimeTemplate } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  FunctionRuntimeTemplate,
+  JSRuntimeTemplate,
+  MappingTemplateProvider,
+  MappingTemplateType,
+  VTLRuntimeTemplate,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
 import { GraphQLApi } from '../graphql-api';
 import { InlineTemplate } from '../cdk-compat';

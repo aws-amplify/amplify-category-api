@@ -27,10 +27,7 @@ export const invokeLambdaMappingTemplate = (
  * @param {TransformerContextProvider} ctx - The transformer context provider.
  * @returns {MappingTemplateProvider} A function that generates the request mapping template.
  */
-const createInvokeLambdaRequestFunction = (
-  config: ConversationDirectiveConfiguration,
-  ctx: TransformerContextProvider,
-): string => {
+const createInvokeLambdaRequestFunction = (config: ConversationDirectiveConfiguration, ctx: TransformerContextProvider): string => {
   const { responseMutationInputTypeName, responseMutationName } = config;
   const toolDefinitions = JSON.stringify(config.toolSpec);
   const toolDefinitionsLine = toolDefinitions ? `const toolDefinitions = ${toolDefinitions};` : '';

@@ -185,10 +185,7 @@ export class DefaultValueTransformer extends TransformerPluginBase {
         snippets.join('\n') + '\n{}',
         `${res.typeName}.${res.fieldName}.{slotName}.{slotIndex}.req.vtl`,
       ),
-    }
-    res.addToSlot(
-      'init',
-      mappingTemplate,
-    );
+    };
+    res.addToSlot('init', mappingTemplate);
   };
 }
