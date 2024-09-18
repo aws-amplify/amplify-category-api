@@ -1,4 +1,5 @@
-import { fromNodeProviderChain } from '@aws-sdk/credential-providers';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { fromNodeProviderChain } = require('@aws-sdk/credential-providers');
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const loadCredentials = async () => {
