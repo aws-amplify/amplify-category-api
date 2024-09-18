@@ -30,6 +30,7 @@ const loadCredentials = async () => {
     console.log(fs.readFileSync(credentialsPath, 'utf8'));
   } catch (e) {
     console.log('File not found:', credentialsPath);
+  }
   // log contents in ~/.aws/config
   const configPath = path.join(process.env.HOME, '.aws', 'config');
   console.log('Contents in ~/.aws/config:');
