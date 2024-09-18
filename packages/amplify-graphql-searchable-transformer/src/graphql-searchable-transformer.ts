@@ -379,12 +379,15 @@ export class SearchableModelTransformer extends TransformerPluginBase {
           `${typeName}.${def.fieldName}.res.vtl`,
         ),
       );
-      resolver.addToSlot(
-        'postAuth',
-        MappingTemplate.s3MappingTemplateFromString(
+      const mappingTemplate = {
+        requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
           postAuthMappingTemplate(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess, fields),
           `${typeName}.${def.fieldName}.{slotName}.{slotIndex}.res.vtl`,
-        ),
+        )
+      }
+      resolver.addToSlot(
+        'postAuth',
+        mappingTemplate,
       );
 
       resolver.setScope(stack);
