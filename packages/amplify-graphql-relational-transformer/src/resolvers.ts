@@ -328,12 +328,15 @@ export const updateRelatedModelMutationResolversForCompositeSortKeys = (
 const addIndexToResolverSlot = (resolver: TransformerResolverProvider, lines: string[], isSync = false): void => {
   const res = resolver as any;
 
-  res.addToSlot(
-    'preAuth',
-    MappingTemplate.s3MappingTemplateFromString(
+  const mappingTemplate = {
+    requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
       `${lines.join('\n')}\n${!isSync ? '{}' : ''}`,
       `${res.typeName}.${res.fieldName}.{slotName}.{slotIndex}.req.vtl`,
-    ),
+    )
+  }
+  res.addToSlot(
+    'preAuth',
+    mappingTemplate,
   );
 };
 
