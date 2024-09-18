@@ -1,9 +1,12 @@
 import {
   DynamoDbDataSourceOptions,
+  FunctionRuntimeTemplate,
+  JSRuntimeTemplate,
   MappingTemplateProvider,
   SearchableDataSourceOptions,
   TransformHostProvider,
   VpcConfig,
+  VTLRuntimeTemplate,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   BaseDataSource,
@@ -29,11 +32,12 @@ import { SearchableDataSource } from './cdk-compat/searchable-datasource';
 import { S3MappingFunctionCode } from './cdk-compat/template-asset';
 import { GraphQLApi } from './graphql-api';
 import { setResourceName } from './utils';
-import { getRuntimeSpecificFunctionProps } from './utils/function-runtime';
+import { getRuntimeSpecificFunctionProps, isJsResolverFnRuntime } from './utils/function-runtime';
 
 type Slot = {
   requestMappingTemplate?: string;
   responseMappingTemplate?: string;
+  codeMappingTemplate?: string;
   dataSource?: string;
 };
 
@@ -136,8 +140,7 @@ export class DefaultTransformHost implements TransformHostProvider {
 
   public addAppSyncFunction = (
     name: string,
-    requestMappingTemplate: MappingTemplateProvider,
-    responseMappingTemplate: MappingTemplateProvider,
+    mappingTemplate: FunctionRuntimeTemplate,
     dataSourceName: string,
     scope?: Construct,
     runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
@@ -150,27 +153,42 @@ export class DefaultTransformHost implements TransformHostProvider {
     // if the slot exists for the hash, then return same fn else create function
 
     const dataSource = this.dataSources.get(dataSourceName);
-
+    // TODO: Do this gooder
+    const hashes = isJsResolverFnRuntime(runtime)
+    ? { codeMappingTemplate: (mappingTemplate as JSRuntimeTemplate).codeMappingTemplate.getTemplateHash() }
+    : {
+      requestMappingTemplate: (mappingTemplate as VTLRuntimeTemplate).requestMappingTemplate?.getTemplateHash(),
+      responseMappingTemplate: (mappingTemplate as VTLRuntimeTemplate).responseMappingTemplate?.getTemplateHash(),
+    };
     const obj: Slot = {
       dataSource: dataSourceName,
-      requestMappingTemplate: requestMappingTemplate.getTemplateHash(),
-      responseMappingTemplate: responseMappingTemplate.getTemplateHash(),
+      ...hashes,
     };
 
     const slotHash = hash(obj);
     if (!this.api.disableResolverDeduping && this.appsyncFunctions.has(slotHash)) {
       const appsyncFunction = this.appsyncFunctions.get(slotHash)!;
       // generating duplicate appsync functions vtl files to help in custom overrides
-      requestMappingTemplate.bind(appsyncFunction, this.api.assetProvider);
-      responseMappingTemplate.bind(appsyncFunction, this.api.assetProvider);
+      if (isJsResolverFnRuntime(runtime)) {
+        const { codeMappingTemplate } = mappingTemplate as JSRuntimeTemplate;
+        codeMappingTemplate.bind(appsyncFunction, this.api.assetProvider);
+      } else {
+        const { requestMappingTemplate, responseMappingTemplate } = mappingTemplate as VTLRuntimeTemplate;
+        if (requestMappingTemplate) {
+          requestMappingTemplate.bind(appsyncFunction, this.api.assetProvider);
+        }
+        if (responseMappingTemplate) {
+          responseMappingTemplate.bind(appsyncFunction, this.api.assetProvider);
+        }
+      }
+
       return appsyncFunction;
     }
 
     const fn = new AppSyncFunctionConfiguration(scope || this.api, name, {
       api: this.api,
       dataSource: dataSource || dataSourceName,
-      requestMappingTemplate,
-      responseMappingTemplate,
+      mappingTemplate,
       runtime,
     });
     this.appsyncFunctions.set(slotHash, fn);
@@ -180,8 +198,7 @@ export class DefaultTransformHost implements TransformHostProvider {
   public addResolver = (
     typeName: string,
     fieldName: string,
-    requestMappingTemplate: MappingTemplateProvider,
-    responseMappingTemplate: MappingTemplateProvider,
+    mappingTemplate: FunctionRuntimeTemplate,
     resolverLogicalId?: string,
     dataSourceName?: string,
     pipelineConfig?: string[],
@@ -195,8 +212,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     const resolverName = toCamelCase([resourceName(typeName), resourceName(fieldName), 'Resolver']);
     const resourceId = resolverLogicalId ?? ResolverResourceIDs.ResolverResourceID(typeName, fieldName);
     const runtimeSpecificProps = getRuntimeSpecificFunctionProps(this.api, {
-      requestMappingTemplate,
-      responseMappingTemplate,
+      mappingTemplate,
       runtime,
       api: this.api,
     });
