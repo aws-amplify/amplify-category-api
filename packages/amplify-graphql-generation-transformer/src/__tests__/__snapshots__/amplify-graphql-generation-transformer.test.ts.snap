@@ -79,7 +79,6 @@ exports[`generation route all scalar types 2`] = `
   }
 }
 
-
 export function response(ctx) {
   if (ctx.error) {
     util.error(ctx.error.message, ctx.error.type);
@@ -179,7 +178,6 @@ exports[`generation route custom query 2`] = `
     }
   }
 }
-
 
 export function response(ctx) {
   if (ctx.error) {
@@ -281,7 +279,6 @@ exports[`generation route model type with null timestamps 2`] = `
   }
 }
 
-
 export function response(ctx) {
   if (ctx.error) {
     util.error(ctx.error.message, ctx.error.type);
@@ -381,7 +378,6 @@ exports[`generation route scalar type 2`] = `
     }
   }
 }
-
 
 export function response(ctx) {
   if (ctx.error) {
