@@ -1,18 +1,17 @@
 import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { dedent } from 'ts-dedent';
-import { JSResolverFunctionProvider } from './js-resolver-function-provider';
 
 /**
  * Creates a mapping template for writing a message to a table in a conversation.
  *
  * @param {string} fieldName - The name of the field to write to the table.
- * @returns {JSResolverFunctionProvider} An object containing request and response MappingTemplateProviders.
+ * @returns {MappingTemplateProvider} An object containing request and response MappingTemplateProviders.
  */
-export const writeMessageToTableMappingTemplate = (fieldName: string): JSResolverFunctionProvider => {
+export const writeMessageToTableMappingTemplate = (fieldName: string): MappingTemplateProvider => {
   const req = createWriteMessageToTableRequestFunction(fieldName);
   const res = createWriteMessageToTableResponseFunction();
-  return { req, res };
+  return MappingTemplate.inlineTemplateFromString(dedent(req + '\n' + res));
 };
 
 /**
@@ -21,7 +20,7 @@ export const writeMessageToTableMappingTemplate = (fieldName: string): JSResolve
  * @param {string} fieldName - The name of the field to write to the table.
  * @returns {MappingTemplateProvider} A MappingTemplateProvider for the request function.
  */
-const createWriteMessageToTableRequestFunction = (fieldName: string): MappingTemplateProvider => {
+const createWriteMessageToTableRequestFunction = (fieldName: string): string => {
   const requestFunctionString = `
     import { util } from '@aws-appsync/utils'
     import * as ddb from '@aws-appsync/utils/dynamodb'
@@ -41,7 +40,7 @@ const createWriteMessageToTableRequestFunction = (fieldName: string): MappingTem
     }
     `;
 
-  return MappingTemplate.inlineTemplateFromString(dedent(requestFunctionString));
+  return requestFunctionString;
 };
 
 /**
@@ -49,7 +48,7 @@ const createWriteMessageToTableRequestFunction = (fieldName: string): MappingTem
  *
  * @returns {MappingTemplateProvider} A MappingTemplateProvider for the response function.
  */
-const createWriteMessageToTableResponseFunction = (): MappingTemplateProvider => {
+const createWriteMessageToTableResponseFunction = (): string => {
   const responseFunctionString = `
     export function response(ctx) {
       if (ctx.error) {
@@ -60,5 +59,5 @@ const createWriteMessageToTableResponseFunction = (): MappingTemplateProvider =>
     }
     `;
 
-  return MappingTemplate.inlineTemplateFromString(dedent(responseFunctionString));
+  return responseFunctionString;
 };

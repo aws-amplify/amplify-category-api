@@ -1,17 +1,16 @@
 import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { dedent } from 'ts-dedent';
-import { JSResolverFunctionProvider } from './js-resolver-function-provider';
 
 /**
  * Creates a mapping template for verifying the session owner in a conversation.
  *
- * @returns {JSResolverFunctionProvider} An object containing request and response MappingTemplateProviders.
+ * @returns {MappingTemplateProvider} An object containing request and response MappingTemplateProviders.
  */
-export const verifySessionOwnerMappingTemplate = (): JSResolverFunctionProvider => {
+export const verifySessionOwnerMappingTemplate = (): MappingTemplateProvider => {
   const req = createVerifySessionOwnerRequestFunction();
   const res = createVerifySessionOwnerResponseFunction();
-  return { req, res };
+  return MappingTemplate.inlineTemplateFromString(dedent(req + '\n' + res));
 };
 
 /**
@@ -19,7 +18,7 @@ export const verifySessionOwnerMappingTemplate = (): JSResolverFunctionProvider 
  *
  * @returns {MappingTemplateProvider} A MappingTemplateProvider for the request function.
  */
-const createVerifySessionOwnerRequestFunction = (): MappingTemplateProvider => {
+const createVerifySessionOwnerRequestFunction = (): string => {
   const requestFunctionString = `
       export function request(ctx) {
         const { authFilter } = ctx.stash;
@@ -41,7 +40,7 @@ const createVerifySessionOwnerRequestFunction = (): MappingTemplateProvider => {
       }
       `;
 
-  return MappingTemplate.inlineTemplateFromString(dedent(requestFunctionString));
+  return requestFunctionString;
 };
 
 /**
@@ -49,7 +48,7 @@ const createVerifySessionOwnerRequestFunction = (): MappingTemplateProvider => {
  *
  * @returns {MappingTemplateProvider} A MappingTemplateProvider for the response function.
  */
-const createVerifySessionOwnerResponseFunction = (): MappingTemplateProvider => {
+const createVerifySessionOwnerResponseFunction = (): string => {
   const responseFunctionString = `
       export function response(ctx) {
         if (ctx.error) {
@@ -63,5 +62,5 @@ const createVerifySessionOwnerResponseFunction = (): MappingTemplateProvider => 
         util.error('Conversation not found', 'ResourceNotFound');
       }`;
 
-  return MappingTemplate.inlineTemplateFromString(dedent(responseFunctionString));
+  return responseFunctionString;
 };
