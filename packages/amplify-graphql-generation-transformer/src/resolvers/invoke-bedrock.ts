@@ -10,9 +10,7 @@ import { GenerationConfigurationWithToolConfig, InferenceConfiguration } from '.
  * @returns {Object} An object containing request and response resolver functions.
  */
 
-export const createInvokeBedrockResolverFunction = (
-  config: GenerationConfigurationWithToolConfig,
-): MappingTemplateProvider => {
+export const createInvokeBedrockResolverFunction = (config: GenerationConfigurationWithToolConfig): MappingTemplateProvider => {
   const req = createInvokeBedrockRequestFunction(config);
   const res = createInvokeBedrockResponseFunction();
   return MappingTemplate.inlineTemplateFromString(dedent(req + '\n' + res));

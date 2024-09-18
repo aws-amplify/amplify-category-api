@@ -155,11 +155,11 @@ export class DefaultTransformHost implements TransformHostProvider {
     const dataSource = this.dataSources.get(dataSourceName);
     // TODO: Do this gooder
     const hashes = isJsResolverFnRuntime(runtime)
-    ? { codeMappingTemplate: (mappingTemplate as JSRuntimeTemplate).codeMappingTemplate.getTemplateHash() }
-    : {
-      requestMappingTemplate: (mappingTemplate as VTLRuntimeTemplate).requestMappingTemplate?.getTemplateHash(),
-      responseMappingTemplate: (mappingTemplate as VTLRuntimeTemplate).responseMappingTemplate?.getTemplateHash(),
-    };
+      ? { codeMappingTemplate: (mappingTemplate as JSRuntimeTemplate).codeMappingTemplate.getTemplateHash() }
+      : {
+          requestMappingTemplate: (mappingTemplate as VTLRuntimeTemplate).requestMappingTemplate?.getTemplateHash(),
+          responseMappingTemplate: (mappingTemplate as VTLRuntimeTemplate).responseMappingTemplate?.getTemplateHash(),
+        };
     const obj: Slot = {
       dataSource: dataSourceName,
       ...hashes,

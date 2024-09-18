@@ -198,21 +198,11 @@ export class ConversationResolverGenerator {
   ): void {
     // Add init function
     const initFunction = initMappingTemplate();
-    resolver.addToSlot(
-      'init',
-      { codeMappingTemplate: initFunction },
-      undefined,
-      runtime,
-    );
+    resolver.addToSlot('init', { codeMappingTemplate: initFunction }, undefined, runtime);
 
     // Add auth function
     const authFunction = authMappingTemplate();
-    resolver.addToSlot(
-      'auth',
-      { codeMappingTemplate: authFunction },
-      undefined,
-      runtime,
-    );
+    resolver.addToSlot('auth', { codeMappingTemplate: authFunction }, undefined, runtime);
 
     // Add verifySessionOwner function
     const verifySessionOwnerFunction = verifySessionOwnerMappingTemplate();
@@ -231,12 +221,7 @@ export class ConversationResolverGenerator {
     const messageModelName = `ConversationMessage${capitalizedFieldName}`;
     const messageModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, messageModelName);
     const messageDDBDataSource = ctx.api.host.getDataSource(messageModelDDBDataSourceName);
-    resolver.addToSlot(
-      'writeMessageToTable',
-      { codeMappingTemplate: writeMessageToTableFunction },
-      messageDDBDataSource as any,
-      runtime,
-    );
+    resolver.addToSlot('writeMessageToTable', { codeMappingTemplate: writeMessageToTableFunction }, messageDDBDataSource as any, runtime);
 
     // Add retrieveMessageHistory function
     const retrieveMessageHistoryFunction = readHistoryMappingTemplate();
