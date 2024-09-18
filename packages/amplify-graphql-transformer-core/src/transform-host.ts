@@ -153,7 +153,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     // calculate hash of the slot object
     // if the slot exists for the hash, then return same fn else create function
     const dataSource = this.dataSources.get(dataSourceName);
-    const hashes = this.getMappingTemplateHash(mappingTemplate, runtime);
+    const hashes = this.getMappingTemplateHash(mappingTemplate);
     const obj: Slot = {
       dataSource: dataSourceName,
       ...hashes,
@@ -395,15 +395,16 @@ export class DefaultTransformHost implements TransformHostProvider {
     return ds;
   }
 
-  private getMappingTemplateHash(
-    mappingTemplate: FunctionRuntimeTemplate,
-    runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
-  ): Omit<Slot, 'dataSource'> {
-    return isJsResolverFnRuntime(runtime)
-      ? { codeMappingTemplate: (mappingTemplate as JSRuntimeTemplate).codeMappingTemplate.getTemplateHash() }
+  private getMappingTemplateHash(mappingTemplate: FunctionRuntimeTemplate): Omit<Slot, 'dataSource'> {
+    const isJsRuntimeTemplate = (mappingTemplate: FunctionRuntimeTemplate): mappingTemplate is JSRuntimeTemplate => {
+      return (mappingTemplate as JSRuntimeTemplate).codeMappingTemplate !== undefined;
+    };
+
+    return isJsRuntimeTemplate(mappingTemplate)
+      ? { codeMappingTemplate: mappingTemplate.codeMappingTemplate.getTemplateHash() }
       : {
-          requestMappingTemplate: (mappingTemplate as VTLRuntimeTemplate).requestMappingTemplate?.getTemplateHash(),
-          responseMappingTemplate: (mappingTemplate as VTLRuntimeTemplate).responseMappingTemplate?.getTemplateHash(),
+          requestMappingTemplate: mappingTemplate.requestMappingTemplate?.getTemplateHash(),
+          responseMappingTemplate: mappingTemplate.responseMappingTemplate?.getTemplateHash(),
         };
   }
 
