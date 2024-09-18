@@ -1,4 +1,5 @@
 import {
+  AssetProvider,
   DynamoDbDataSourceOptions,
   FunctionRuntimeTemplate,
   JSRuntimeTemplate,
@@ -151,15 +152,8 @@ export class DefaultTransformHost implements TransformHostProvider {
 
     // calculate hash of the slot object
     // if the slot exists for the hash, then return same fn else create function
-
     const dataSource = this.dataSources.get(dataSourceName);
-    // TODO: Do this gooder
-    const hashes = isJsResolverFnRuntime(runtime)
-      ? { codeMappingTemplate: (mappingTemplate as JSRuntimeTemplate).codeMappingTemplate.getTemplateHash() }
-      : {
-          requestMappingTemplate: (mappingTemplate as VTLRuntimeTemplate).requestMappingTemplate?.getTemplateHash(),
-          responseMappingTemplate: (mappingTemplate as VTLRuntimeTemplate).responseMappingTemplate?.getTemplateHash(),
-        };
+    const hashes = this.getMappingTemplateHash(mappingTemplate, runtime);
     const obj: Slot = {
       dataSource: dataSourceName,
       ...hashes,
@@ -169,19 +163,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     if (!this.api.disableResolverDeduping && this.appsyncFunctions.has(slotHash)) {
       const appsyncFunction = this.appsyncFunctions.get(slotHash)!;
       // generating duplicate appsync functions vtl files to help in custom overrides
-      if (isJsResolverFnRuntime(runtime)) {
-        const { codeMappingTemplate } = mappingTemplate as JSRuntimeTemplate;
-        codeMappingTemplate.bind(appsyncFunction, this.api.assetProvider);
-      } else {
-        const { requestMappingTemplate, responseMappingTemplate } = mappingTemplate as VTLRuntimeTemplate;
-        if (requestMappingTemplate) {
-          requestMappingTemplate.bind(appsyncFunction, this.api.assetProvider);
-        }
-        if (responseMappingTemplate) {
-          responseMappingTemplate.bind(appsyncFunction, this.api.assetProvider);
-        }
-      }
-
+      this.bindMappingTemplate(mappingTemplate, appsyncFunction, this.api.assetProvider, runtime);
       return appsyncFunction;
     }
 
@@ -411,5 +393,33 @@ export class DefaultTransformHost implements TransformHostProvider {
     setResourceName(ds, { name: options?.name ?? id, setOnDefaultChild: true });
 
     return ds;
+  }
+
+  private getMappingTemplateHash(
+    mappingTemplate: FunctionRuntimeTemplate,
+    runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
+  ): Omit<Slot, 'dataSource'> {
+    return isJsResolverFnRuntime(runtime)
+      ? { codeMappingTemplate: (mappingTemplate as JSRuntimeTemplate).codeMappingTemplate.getTemplateHash() }
+      : {
+          requestMappingTemplate: (mappingTemplate as VTLRuntimeTemplate).requestMappingTemplate?.getTemplateHash(),
+          responseMappingTemplate: (mappingTemplate as VTLRuntimeTemplate).responseMappingTemplate?.getTemplateHash(),
+        };
+  }
+
+  private bindMappingTemplate(
+    mappingTemplate: FunctionRuntimeTemplate,
+    functionConfiguration: AppSyncFunctionConfiguration,
+    assetProvider: AssetProvider,
+    runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
+  ): void {
+    if (isJsResolverFnRuntime(runtime)) {
+      const { codeMappingTemplate } = mappingTemplate as JSRuntimeTemplate;
+      codeMappingTemplate.bind(functionConfiguration, assetProvider);
+    } else {
+      const { requestMappingTemplate, responseMappingTemplate } = mappingTemplate as VTLRuntimeTemplate;
+      requestMappingTemplate && requestMappingTemplate.bind(functionConfiguration, assetProvider);
+      responseMappingTemplate && responseMappingTemplate.bind(functionConfiguration, assetProvider);
+    }
   }
 }
