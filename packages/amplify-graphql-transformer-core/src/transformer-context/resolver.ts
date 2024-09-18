@@ -428,7 +428,7 @@ export class TransformerResolver implements TransformerResolverProvider {
 
     const initResolverMappingTemplate: FunctionRuntimeTemplate = isJsResolverFnRuntime(this.runtime)
       ? {
-          codeMappingTemplate: MappingTemplate.inlineTemplateFromString(initResolver + '\n' + initResponseResolver),
+          codeMappingTemplate: MappingTemplate.inlineTemplateFromString(initResolver + '\n\n' + initResponseResolver),
         }
       : {
           requestMappingTemplate: MappingTemplate.inlineTemplateFromString(initResolver),

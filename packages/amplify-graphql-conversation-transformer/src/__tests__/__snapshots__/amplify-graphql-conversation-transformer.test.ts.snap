@@ -33,6 +33,7 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
   ctx.stash.adminRoles = [];
   return {};
 }
+
 export const response = (ctx) => {
   return ctx.prev.result;
 };",
@@ -276,6 +277,7 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
   ctx.stash.adminRoles = [];
   return {};
 }
+
 export const response = (ctx) => {
   return ctx.prev.result;
 };",
@@ -398,6 +400,7 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
   ctx.stash.adminRoles = [];
   return {};
 }
+
 export const response = (ctx) => {
   return ctx.prev.result;
 };",
