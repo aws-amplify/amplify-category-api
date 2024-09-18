@@ -33,6 +33,7 @@ exports[`ConversationTransformer parameterized tests should transform a conversa
   ctx.stash.adminRoles = [];
   return {};
 }
+
 export const response = (ctx) => {
   return ctx.prev.result;
 };",
@@ -153,6 +154,7 @@ exports[`ConversationTransformer parameterized tests should transform a conversa
   ctx.stash.adminRoles = [];
   return {};
 }
+
 export const response = (ctx) => {
   return ctx.prev.result;
 };",
@@ -275,6 +277,7 @@ exports[`ConversationTransformer parameterized tests should transform a conversa
   ctx.stash.adminRoles = [];
   return {};
 }
+
 export const response = (ctx) => {
   return ctx.prev.result;
 };",
@@ -395,6 +398,7 @@ exports[`ConversationTransformer valid schemas conversation route with model que
   ctx.stash.adminRoles = [];
   return {};
 }
+
 export const response = (ctx) => {
   return ctx.prev.result;
 };",
@@ -517,6 +521,7 @@ exports[`ConversationTransformer valid schemas should transform a conversation r
   ctx.stash.adminRoles = [];
   return {};
 }
+
 export const response = (ctx) => {
   return ctx.prev.result;
 };",
@@ -639,6 +644,7 @@ exports[`ConversationTransformer valid schemas should transform a conversation r
   ctx.stash.adminRoles = [];
   return {};
 }
+
 export const response = (ctx) => {
   return ctx.prev.result;
 };",
@@ -759,6 +765,7 @@ exports[`ConversationTransformer valid schemas should transform a conversation r
   ctx.stash.adminRoles = [];
   return {};
 }
+
 export const response = (ctx) => {
   return ctx.prev.result;
 };",
