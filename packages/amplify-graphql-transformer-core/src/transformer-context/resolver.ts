@@ -211,7 +211,6 @@ export class TransformerResolver implements TransformerResolverProvider {
 
   findSlot = (slotName: string, mappingTemplate?: FunctionRuntimeTemplate): Slot | undefined => {
     const slotEntries = this.slotMap.get(slotName);
-    // TODO: FIX
     const requestMappingTemplateName = (mappingTemplate as any)?.request?.name ?? '';
     const responseMappingTemplateName = (mappingTemplate as any)?.response?.name ?? '';
     if (!slotEntries || requestMappingTemplateName.includes('{slotIndex}') || responseMappingTemplateName.includes('{slotIndex}')) {
@@ -221,12 +220,10 @@ export class TransformerResolver implements TransformerResolverProvider {
     let slotIndex = 1;
     for (const slotEntry of slotEntries) {
       const { requestMappingTemplate, responseMappingTemplate } = slotEntry.mappingTemplate as VTLRuntimeTemplate;
-      const { codeMappingTemplate } = slotEntry.mappingTemplate as JSRuntimeTemplate;
 
       const [slotEntryRequestMappingTemplate, slotEntryResponseMappingTemplate] = [
         (requestMappingTemplate as any)?.name ?? 'NOT-FOUND',
         (responseMappingTemplate as any)?.name ?? 'NOT-FOUND',
-        (codeMappingTemplate as any)?.name ?? 'NOT-FOUND',
         // eslint-disable-next-line no-loop-func
       ].map((name) => name.replace('{slotName}', slotName).replace('{slotIndex}', slotIndex));
 
