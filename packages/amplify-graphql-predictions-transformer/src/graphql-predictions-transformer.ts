@@ -351,27 +351,27 @@ function createResolver(
         }),
       ) as unknown as string);
 
+  const requestMappingTemplate = MappingTemplate.inlineTemplateFromString(
+    cdk.Fn.join('\n', [setBucketLine, print(compoundExpression([qref('$ctx.stash.put("isList", false)'), obj({})]))]) as unknown as string,
+  );
+
+  const responseMappingTemplate = MappingTemplate.inlineTemplateFromString(
+    print(
+      compoundExpression([
+        comment('If the result is a list return the result as a list'),
+        ifElse(
+          ref('ctx.stash.get("isList")'),
+          compoundExpression([set(ref('result'), ref('ctx.result.split("[ ,]+")')), toJson(ref('result'))]),
+          toJson(ref('ctx.result')),
+        ),
+      ]),
+    ),
+  );
+
   return context.api.host.addResolver(
     config.resolverTypeName,
     config.resolverFieldName,
-    MappingTemplate.inlineTemplateFromString(
-      cdk.Fn.join('\n', [
-        setBucketLine,
-        print(compoundExpression([qref('$ctx.stash.put("isList", false)'), obj({})])),
-      ]) as unknown as string,
-    ),
-    MappingTemplate.inlineTemplateFromString(
-      print(
-        compoundExpression([
-          comment('If the result is a list return the result as a list'),
-          ifElse(
-            ref('ctx.stash.get("isList")'),
-            compoundExpression([set(ref('result'), ref('ctx.result.split("[ ,]+")')), toJson(ref('result'))]),
-            toJson(ref('ctx.result')),
-          ),
-        ]),
-      ),
-    ),
+    { requestMappingTemplate, responseMappingTemplate },
     undefined,
     undefined,
     resolvers,
@@ -699,8 +699,10 @@ function createActionFunction(context: TransformerContextProvider, stack: cdk.St
 
   return context.api.host.addAppSyncFunction(
     `${action}Function`,
-    MappingTemplate.inlineTemplateFromString(print(actionFunctionResolver.request)),
-    MappingTemplate.inlineTemplateFromString(print(actionFunctionResolver.response)),
+    {
+      requestMappingTemplate: MappingTemplate.inlineTemplateFromString(print(actionFunctionResolver.request)),
+      responseMappingTemplate: MappingTemplate.inlineTemplateFromString(print(actionFunctionResolver.response)),
+    },
     datasourceName,
     stack,
   );
