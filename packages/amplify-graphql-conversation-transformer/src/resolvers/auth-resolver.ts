@@ -1,18 +1,17 @@
 import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { dedent } from 'ts-dedent';
-import { JSResolverFunctionProvider } from './js-resolver-function-provider';
 
 /**
  * Creates and returns the mapping template for the auth resolver.
  * This includes both request and response functions.
  *
- * @returns {JSResolverFunctionProvider} An object containing request and response MappingTemplateProviders.
+ * @returns {MappingTemplateProvider} An object containing request and response MappingTemplateProviders.
  */
-export const authMappingTemplate = (): JSResolverFunctionProvider => {
+export const authMappingTemplate = (): MappingTemplateProvider => {
   const req = createAuthRequestFunction();
   const res = createAuthResponseFunction();
-  return { req, res };
+  return MappingTemplate.inlineTemplateFromString(dedent(req + '\n' + res));
 };
 
 /**
@@ -21,7 +20,7 @@ export const authMappingTemplate = (): JSResolverFunctionProvider => {
  *
  * @returns {MappingTemplateProvider} A MappingTemplateProvider for the request function.
  */
-const createAuthRequestFunction = (): MappingTemplateProvider => {
+const createAuthRequestFunction = (): string => {
   const requestFunctionString = `
       export function request(ctx) {
         ctx.stash.hasAuth = true;
@@ -58,7 +57,7 @@ const createAuthRequestFunction = (): MappingTemplateProvider => {
         return { version: '2018-05-29', payload: {} };
       }`;
 
-  return MappingTemplate.inlineTemplateFromString(dedent(requestFunctionString));
+  return requestFunctionString;
 };
 
 /**
@@ -68,11 +67,11 @@ const createAuthRequestFunction = (): MappingTemplateProvider => {
  * @returns {MappingTemplateProvider} A MappingTemplateProvider for the response function.
  */
 
-const createAuthResponseFunction = (): MappingTemplateProvider => {
+const createAuthResponseFunction = (): string => {
   const responseFunctionString = `
       export function response(ctx) {
         return {};
       }`;
 
-  return MappingTemplate.inlineTemplateFromString(dedent(responseFunctionString));
+  return responseFunctionString;
 };

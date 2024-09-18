@@ -1,7 +1,6 @@
-import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { MappingTemplateProvider, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-transformer';
 import { processTools } from '../utils/tools';
-import { JSResolverFunctionProvider } from '../resolvers/js-resolver-function-provider';
 import { TransformerResolver } from '@aws-amplify/graphql-transformer-core';
 import { ResolverResourceIDs, FunctionResourceIDs, ResourceConstants, toUpper } from 'graphql-transformer-common';
 import * as cdk from 'aws-cdk-lib';
@@ -161,17 +160,18 @@ export class ConversationResolverGenerator {
     fieldName: string,
     capitalizedFieldName: string,
     functionDataSource: any,
-    invokeLambdaFunction: JSResolverFunctionProvider,
+    invokeLambdaFunction: MappingTemplateProvider,
   ): void {
     const resolverResourceId = ResolverResourceIDs.ResolverResourceID(parentName, fieldName);
     const runtime = { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' };
-
+    const mappingTemplate = {
+      codeMappingTemplate: invokeLambdaFunction,
+    };
     const conversationPipelineResolver = new TransformerResolver(
       parentName,
       fieldName,
       resolverResourceId,
-      invokeLambdaFunction.req,
-      invokeLambdaFunction.res,
+      mappingTemplate,
       ['init', 'auth', 'verifySessionOwner', 'writeMessageToTable', 'retrieveMessageHistory'],
       ['handleLambdaResponse', 'finish'],
       functionDataSource,
@@ -198,11 +198,21 @@ export class ConversationResolverGenerator {
   ): void {
     // Add init function
     const initFunction = initMappingTemplate();
-    resolver.addToSlot('init', initFunction.req, initFunction.res, undefined, runtime);
+    resolver.addToSlot(
+      'init',
+      { codeMappingTemplate: initFunction },
+      undefined,
+      runtime,
+    );
 
     // Add auth function
     const authFunction = authMappingTemplate();
-    resolver.addToSlot('auth', authFunction.req, authFunction.res, undefined, runtime);
+    resolver.addToSlot(
+      'auth',
+      { codeMappingTemplate: authFunction },
+      undefined,
+      runtime,
+    );
 
     // Add verifySessionOwner function
     const verifySessionOwnerFunction = verifySessionOwnerMappingTemplate();
@@ -211,8 +221,7 @@ export class ConversationResolverGenerator {
     const conversationSessionDDBDataSource = ctx.api.host.getDataSource(sessionModelDDBDataSourceName);
     resolver.addToSlot(
       'verifySessionOwner',
-      verifySessionOwnerFunction.req,
-      verifySessionOwnerFunction.res,
+      { codeMappingTemplate: verifySessionOwnerFunction },
       conversationSessionDDBDataSource as any,
       runtime,
     );
@@ -224,8 +233,7 @@ export class ConversationResolverGenerator {
     const messageDDBDataSource = ctx.api.host.getDataSource(messageModelDDBDataSourceName);
     resolver.addToSlot(
       'writeMessageToTable',
-      writeMessageToTableFunction.req,
-      writeMessageToTableFunction.res,
+      { codeMappingTemplate: writeMessageToTableFunction },
       messageDDBDataSource as any,
       runtime,
     );
@@ -234,8 +242,9 @@ export class ConversationResolverGenerator {
     const retrieveMessageHistoryFunction = readHistoryMappingTemplate();
     resolver.addToSlot(
       'retrieveMessageHistory',
-      retrieveMessageHistoryFunction.req,
-      retrieveMessageHistoryFunction.res,
+      {
+        codeMappingTemplate: retrieveMessageHistoryFunction,
+      },
       messageDDBDataSource as any,
       runtime,
     );
@@ -258,12 +267,14 @@ export class ConversationResolverGenerator {
     const conversationMessageDataSource = ctx.api.host.getDataSource(conversationMessageDataSourceName);
 
     const runtime = { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' };
+    const mappingTemplate = {
+      codeMappingTemplate: assistantResponseResolverFunction,
+    };
     const assistantResponseResolver = new TransformerResolver(
       'Mutation',
       directive.responseMutationName,
       assistantResponseResolverResourceId,
-      assistantResponseResolverFunction.req,
-      assistantResponseResolverFunction.res,
+      mappingTemplate,
       [],
       [],
       conversationMessageDataSource as any,
@@ -287,12 +298,14 @@ export class ConversationResolverGenerator {
     const onAssistantResponseSubscriptionResolverFunction = conversationMessageSubscriptionMappingTamplate();
 
     const runtime = { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' };
+    const mappingTemplate = {
+      codeMappingTemplate: onAssistantResponseSubscriptionResolverFunction,
+    };
     const onAssistantResponseSubscriptionResolver = new TransformerResolver(
       'Subscription',
       onAssistantResponseSubscriptionFieldName,
       onAssistantResponseSubscriptionResolverResourceId,
-      onAssistantResponseSubscriptionResolverFunction.req,
-      onAssistantResponseSubscriptionResolverFunction.res,
+      mappingTemplate,
       [],
       [],
       undefined,

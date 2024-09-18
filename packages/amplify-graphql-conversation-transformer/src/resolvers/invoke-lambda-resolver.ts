@@ -2,22 +2,21 @@ import { TransformerContextProvider, MappingTemplateProvider } from '@aws-amplif
 import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-transformer';
 import { dedent } from 'ts-dedent';
-import { JSResolverFunctionProvider } from './js-resolver-function-provider';
 
 /**
  * Creates a mapping template for invoking a Lambda function in the context of a GraphQL conversation.
  *
  * @param {ConversationDirectiveConfiguration} config - The configuration for the conversation directive.
  * @param {TransformerContextProvider} ctx - The transformer context provider.
- * @returns {JSResolverFunctionProvider} An object containing request and response mapping functions.
+ * @returns {MappingTemplateProvider} An object containing request and response mapping functions.
  */
 export const invokeLambdaMappingTemplate = (
   config: ConversationDirectiveConfiguration,
   ctx: TransformerContextProvider,
-): JSResolverFunctionProvider => {
+): MappingTemplateProvider => {
   const req = createInvokeLambdaRequestFunction(config, ctx);
   const res = createInvokeLambdaResponseFunction(config);
-  return { req, res };
+  return MappingTemplate.inlineTemplateFromString(dedent(req + '\n' + res));
 };
 
 /**
@@ -31,7 +30,7 @@ export const invokeLambdaMappingTemplate = (
 const createInvokeLambdaRequestFunction = (
   config: ConversationDirectiveConfiguration,
   ctx: TransformerContextProvider,
-): MappingTemplateProvider => {
+): string => {
   const { responseMutationInputTypeName, responseMutationName } = config;
   const toolDefinitions = JSON.stringify(config.toolSpec);
   const toolDefinitionsLine = toolDefinitions ? `const toolDefinitions = ${toolDefinitions};` : '';
@@ -88,30 +87,30 @@ const createInvokeLambdaRequestFunction = (
     };
   }`;
 
-  return MappingTemplate.inlineTemplateFromString(dedent(requestFunctionString));
+  return requestFunctionString;
 };
 
-const createInvokeLambdaResponseFunction = (config: ConversationDirectiveConfiguration): MappingTemplateProvider => {
+const createInvokeLambdaResponseFunction = (config: ConversationDirectiveConfiguration): string => {
   const responseFunctionString = `
-  export function response(ctx) {
-    let success = true;
-    if (ctx.error) {
-      util.appendError(ctx.error.message, ctx.error.type);
-      success = false;
-    }
-    const response = {
-        __typename: '${config.messageModel.messageModel.name.value}',
-        id: ctx.stash.defaultValues.id,
-        conversationId: ctx.args.conversationId,
-        role: 'user',
-        content: ctx.args.content,
-        createdAt: ctx.stash.defaultValues.createdAt,
-        updatedAt: ctx.stash.defaultValues.updatedAt,
-    };
-    return response;
-  }`;
+export function response(ctx) {
+  let success = true;
+  if (ctx.error) {
+    util.appendError(ctx.error.message, ctx.error.type);
+    success = false;
+  }
+  const response = {
+      __typename: '${config.messageModel.messageModel.name.value}',
+      id: ctx.stash.defaultValues.id,
+      conversationId: ctx.args.conversationId,
+      role: 'user',
+      content: ctx.args.content,
+      createdAt: ctx.stash.defaultValues.createdAt,
+      updatedAt: ctx.stash.defaultValues.updatedAt,
+  };
+  return response;
+}`;
 
-  return MappingTemplate.inlineTemplateFromString(dedent(responseFunctionString));
+  return responseFunctionString;
 };
 
 /**
