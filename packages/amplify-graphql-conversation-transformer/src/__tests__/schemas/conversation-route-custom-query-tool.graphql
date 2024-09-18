@@ -9,7 +9,7 @@ type Query {
 }
 
 type Mutation {
-  ${routeName}(
+  ROUTE_NAME(
     conversationId: ID!,
     content: [ContentBlockInput],
     aiContext: AWSJSON,

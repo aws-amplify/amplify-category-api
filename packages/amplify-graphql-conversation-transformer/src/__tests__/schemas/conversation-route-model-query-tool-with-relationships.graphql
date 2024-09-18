@@ -23,7 +23,7 @@ type Order @model @auth(rules: [{ allow: owner }]) {
 }
 
 type Mutation {
-  ${routeName}(
+  ROUTE_NAME(
     conversationId: ID!,
     content: [ContentBlockInput],
     aiContext: AWSJSON,

@@ -15,9 +15,12 @@ import { toUpper } from 'graphql-transformer-common';
 const conversationSchemaTypes = fs.readFileSync(path.join(__dirname, 'schemas/conversation-schema-types.graphql'), 'utf8');
 
 const getSchema = (fileName: string, substitutions: Record<string, string> = {}) => {
-  const schema = fs.readFileSync(path.join(__dirname, '/schemas/', fileName), 'utf8');
-  const templated = schema.replace(/\${([^}]*)}/g, (_, k) => substitutions[k]);
-  return templated + '\n' + conversationSchemaTypes;
+  let schema = fs.readFileSync(path.join(__dirname, '/schemas/', fileName), 'utf8');
+  Object.entries(substitutions).forEach(([key, value]) => {
+    const replaced = schema.replace(new RegExp(key, 'g'), value);
+    schema = replaced;
+  });
+  return schema + '\n' + conversationSchemaTypes;
 };
 
 describe('ConversationTransformer', () => {
@@ -32,7 +35,7 @@ describe('ConversationTransformer', () => {
       ],
     ])('should transform %s', (_, schemaFile) => {
       const routeName = 'pirateChat';
-      const inputSchema = getSchema(schemaFile, { routeName });
+      const inputSchema = getSchema(schemaFile, { ROUTE_NAME: routeName });
 
       const out = transform(inputSchema);
       expect(out).toBeDefined();
@@ -67,8 +70,8 @@ describe('ConversationTransformer', () => {
         ['topP', 1.1, 'Minimum value of 0. Maximum value of 1'],
         ['topP', -0.1, 'Minimum value of 0. Maximum value of 1'],
       ])('throws error for %s with value %s', (param, value, errorMessage) => {
-        const inferenceConfiguration = `inferenceConfiguration: { ${param}: ${value} }`;
-        const inputSchema = getSchema('conversation-route-inference-configuration-template.graphql', { inferenceConfiguration });
+        const INFERENENCE_CONFIGURATION = `inferenceConfiguration: { ${param}: ${value} }`;
+        const inputSchema = getSchema('conversation-route-inference-configuration-template.graphql', { INFERENENCE_CONFIGURATION });
         expect(() => transform(inputSchema)).toThrow(`@conversation directive ${param} valid range: ${errorMessage}. Provided: ${value}`);
       });
     });
