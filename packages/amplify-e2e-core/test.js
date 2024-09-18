@@ -25,11 +25,20 @@ const loadCredentials = async () => {
   // log contents in ~/.aws/credentials
   const credentialsPath = path.join(process.env.HOME, '.aws', 'credentials');
   console.log('Contents in ~/.aws/credentials:');
-  console.log(fs.readFileSync(credentialsPath, 'utf8'));
+  // use try catch to avoid error when the file does not exist
+  try {
+    console.log(fs.readFileSync(credentialsPath, 'utf8'));
+  } catch (e) {
+    console.log('File not found:', credentialsPath);
   // log contents in ~/.aws/config
   const configPath = path.join(process.env.HOME, '.aws', 'config');
   console.log('Contents in ~/.aws/config:');
-  console.log(fs.readFileSync(configPath, 'utf8'));
+  // use try catch to avoid error when the file does not exist
+  try {
+    console.log(fs.readFileSync(configPath, 'utf8'));
+  } catch (e) {
+    console.log('File not found:', configPath);
+  }
 
   // log env var AWS_WEB_IDENTITY_TOKEN_FILE
   console.log('AWS_WEB_IDENTITY_TOKEN_FILE env var:', process.env.AWS_WEB_IDENTITY_TOKEN_FILE);
