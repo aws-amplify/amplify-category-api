@@ -51,4 +51,4 @@ batch:
       buildspec: codebuild_specs/verify_amplify_backend_compatability.yml
       depend-on:
         - build_linux
-      debug-session: true
+      # debug-session: true

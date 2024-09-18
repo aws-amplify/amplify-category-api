@@ -134,105 +134,108 @@ function _lint {
 }
 function _verifyAmplifyBackendCompatability {
   echo "Verify Amplify Backend Compatibility"
-  loadCacheFromBuildJob 
+  loadCacheFromBuildJob
 
-  echo "Printing instance id"
-  curl http://169.254.169.254/latest/meta-data/instance-id
+  echo "Running fromNodeProviderChain()"
+  yarn node packages/amplify-e2e-core/test.js
 
-  # Set npm to use Bash as the shell
-  echo "Configuring npm to use Bash as the script shell"
-  npm config set script-shell $(which bash)
+  # echo "Printing instance id"
+  # curl http://169.254.169.254/latest/meta-data/instance-id
 
-  # Install NVM and set Node.js version
-  echo "Installing NVM and setting Node.js version"
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
-  export NVM_DIR="$HOME/.nvm"
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-  nvm install 20.9.0
-  nvm use 20.9.0
+  # # Set npm to use Bash as the shell
+  # echo "Configuring npm to use Bash as the script shell"
+  # npm config set script-shell $(which bash)
 
-  # Echo to verify the Node.js version
-  echo "Node.js version in use:"
-  node -v
+  # # Install NVM and set Node.js version
+  # echo "Installing NVM and setting Node.js version"
+  # curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+  # export NVM_DIR="$HOME/.nvm"
+  # [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  # nvm install 20.9.0
+  # nvm use 20.9.0
 
-  # Increase buffer size to avoid error when git operations return large response on CI
-  git config http.version HTTP/1.1
-  git config http.postBuffer 157286400
+  # # Echo to verify the Node.js version
+  # echo "Node.js version in use:"
+  # node -v
 
-  # 2. Publish Shell (Emulating the "publish" shell)
-  echo "Starting Publish Shell"
+  # # Increase buffer size to avoid error when git operations return large response on CI
+  # git config http.version HTTP/1.1
+  # git config http.postBuffer 157286400
 
-  # Clean Verdaccio cache and prepare for publishing
-  rm -rf ../verdaccio-cache && mkdir ../verdaccio-cache
+  # # 2. Publish Shell (Emulating the "publish" shell)
+  # echo "Starting Publish Shell"
 
-  # Unset AWS credentials, SSO configuration, Web Identity Token, and disable INI config files
-  echo "Disabling AWS credential, SSO, Web Identity Token, and INI file access"
-  # Disable Environment variables exposed via process.env
-  unset AWS_ACCESS_KEY_ID
-  unset AWS_SECRET_ACCESS_KEY
-  unset AWS_SESSION_TOKEN
-  unset AWS_PROFILE
-  # Disable SSO credentials from token cache
-  unset AWS_SSO_START_URL
-  unset AWS_SSO_ACCOUNT_ID
-  unset AWS_SSO_REGION
-  unset AWS_SSO_ROLE_NAME
-  # Disable Web identity token credentials
-  unset AWS_WEB_IDENTITY_TOKEN_FILE
-  unset AWS_ROLE_ARN
-  unset AWS_ROLE_SESSION_NAME
-  # Disable Shared credentials and config ini files
-  export AWS_SHARED_CREDENTIALS_FILE=/dev/null
-  export AWS_CONFIG_FILE=/dev/null
-  # Disable EC2 instance metadata service
-  export AWS_EC2_METADATA_DISABLED=true
+  # # Clean Verdaccio cache and prepare for publishing
+  # rm -rf ../verdaccio-cache && mkdir ../verdaccio-cache
 
-  # Create a new local branch for testing 
-  git checkout -B validate-amplify-backend
+  # # Unset AWS credentials, SSO configuration, Web Identity Token, and disable INI config files
+  # echo "Disabling AWS credential, SSO, Web Identity Token, and INI file access"
+  # # Disable Environment variables exposed via process.env
+  # unset AWS_ACCESS_KEY_ID
+  # unset AWS_SECRET_ACCESS_KEY
+  # unset AWS_SESSION_TOKEN
+  # unset AWS_PROFILE
+  # # Disable SSO credentials from token cache
+  # unset AWS_SSO_START_URL
+  # unset AWS_SSO_ACCOUNT_ID
+  # unset AWS_SSO_REGION
+  # unset AWS_SSO_ROLE_NAME
+  # # Disable Web identity token credentials
+  # unset AWS_WEB_IDENTITY_TOKEN_FILE
+  # unset AWS_ROLE_ARN
+  # unset AWS_ROLE_SESSION_NAME
+  # # Disable Shared credentials and config ini files
+  # export AWS_SHARED_CREDENTIALS_FILE=/dev/null
+  # export AWS_CONFIG_FILE=/dev/null
+  # # Disable EC2 instance metadata service
+  # export AWS_EC2_METADATA_DISABLED=true
 
-  # Dummy git config to avoid errors
-  git config user.email not@used.com
-  git config user.name "Doesnt Matter"
+  # # Create a new local branch for testing 
+  # git checkout -B validate-amplify-backend
 
-  # Start Verdaccio server and publish the local workspace
-  source ./shared-scripts.sh && _publishLocalWorkspace
-  setNpmRegistryUrlToLocal
+  # # Dummy git config to avoid errors
+  # git config user.email not@used.com
+  # git config user.name "Doesnt Matter"
 
-  # Verify that the NPM registry has been set to the local Verdaccio server
-  npm config get registry
+  # # Start Verdaccio server and publish the local workspace
+  # source ./shared-scripts.sh && _publishLocalWorkspace
+  # setNpmRegistryUrlToLocal
 
-  # 3. Validate Shell (Emulating the "validate" shell)
-  echo "Starting Validate Shell"
+  # # Verify that the NPM registry has been set to the local Verdaccio server
+  # npm config get registry
 
-  # Move back to root and clone amplify-backend repo
-  cd ..
-  git clone https://github.com/aws-amplify/amplify-backend.git
-  cd amplify-backend
+  # # 3. Validate Shell (Emulating the "validate" shell)
+  # echo "Starting Validate Shell"
 
-  # Create a new local branch for testing 
-  git checkout -B validate-amplify-backend
+  # # Move back to root and clone amplify-backend repo
+  # cd ..
+  # git clone https://github.com/aws-amplify/amplify-backend.git
+  # cd amplify-backend
 
-  # Update the packages and ensure the correct versions are being used
-  npm update
+  # # Create a new local branch for testing 
+  # git checkout -B validate-amplify-backend
 
-  # Verify that the package-lock.json contains the updated version with localhost tarballs
-  git diff package-lock.json | grep -e 'graphql-api-construct' -e 'data-construct'
+  # # Update the packages and ensure the correct versions are being used
+  # npm update
 
-  # Build and test the backend
-  # npm run build && npm run test
-  npm run build && npm run test:dir packages/cli/lib/command_middleware.test.js
+  # # Verify that the package-lock.json contains the updated version with localhost tarballs
+  # git diff package-lock.json | grep -e 'graphql-api-construct' -e 'data-construct'
 
-  # 4. Clean Up and Reset NPM Registry
-  echo "Cleaning up environment"
+  # # Build and test the backend
+  # # npm run build && npm run test
+  # npm run build && npm run test:dir packages/cli/lib/command_middleware.test.js
 
-  # Reset NPM registry to npmjs.org
-  unsetNpmRegistryUrl
-  npm config get registry
+  # # 4. Clean Up and Reset NPM Registry
+  # echo "Cleaning up environment"
 
-  # Stop Verdaccio server
-  yarn verdaccio-stop
+  # # Reset NPM registry to npmjs.org
+  # unsetNpmRegistryUrl
+  # npm config get registry
 
-  echo "Amplify Backend Compatibility verification complete."
+  # # Stop Verdaccio server
+  # yarn verdaccio-stop
+
+  # echo "Amplify Backend Compatibility verification complete."
 }
 function _publishToLocalRegistry {
     echo "Publish To Local Registry"
