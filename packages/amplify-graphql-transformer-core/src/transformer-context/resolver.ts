@@ -211,32 +211,28 @@ export class TransformerResolver implements TransformerResolverProvider {
 
   findSlot = (slotName: string, mappingTemplate?: FunctionRuntimeTemplate): Slot | undefined => {
     const slotEntries = this.slotMap.get(slotName);
-    const requestMappingTemplateName = (mappingTemplate as any)?.request?.name ?? '';
-    const responseMappingTemplateName = (mappingTemplate as any)?.response?.name ?? '';
-    if (!slotEntries || requestMappingTemplateName.includes('{slotIndex}') || responseMappingTemplateName.includes('{slotIndex}')) {
+    const mappingTemplateNames = this.getMappingTemplateNames(mappingTemplate);
+    if (!slotEntries || mappingTemplateNames.find((name) => name.includes('{slotIndex}'))) {
       return;
     }
 
     let slotIndex = 1;
     for (const slotEntry of slotEntries) {
-      const { requestMappingTemplate, responseMappingTemplate } = slotEntry.mappingTemplate as VTLRuntimeTemplate;
-
-      const [slotEntryRequestMappingTemplate, slotEntryResponseMappingTemplate] = [
-        (requestMappingTemplate as any)?.name ?? 'NOT-FOUND',
-        (responseMappingTemplate as any)?.name ?? 'NOT-FOUND',
-        // eslint-disable-next-line no-loop-func
-      ].map((name) => name.replace('{slotName}', slotName).replace('{slotIndex}', slotIndex));
+      // const { requestMappingTemplate, responseMappingTemplate } = slotEntry.mappingTemplate as VTLRuntimeTemplate;
+      const slotEntryMappingTemplateNames = this.getMappingTemplateNames(slotEntry.mappingTemplate, 'NOT-FOUND').map((name) =>
+        name.replace('{slotName}', slotName).replace('{slotIndex}', slotIndex.toString()),
+      );
 
       // If both request and response mapping templates are inline, skip check
-      if (slotEntryRequestMappingTemplate === '' && slotEntryResponseMappingTemplate === '') {
+      if (slotEntryMappingTemplateNames.every((name) => name === '')) {
         // eslint-disable-next-line no-continue
         continue;
       }
 
       // If name matches, then it is an overridden resolver
       if (
-        slotEntryRequestMappingTemplate === requestMappingTemplateName ||
-        slotEntryResponseMappingTemplate === responseMappingTemplateName
+        slotEntryMappingTemplateNames.length === mappingTemplateNames.length &&
+        slotEntryMappingTemplateNames.every((element, index) => element === mappingTemplateNames[index])
       ) {
         // eslint-disable-next-line consistent-return
         return slotEntry;
@@ -545,6 +541,20 @@ export class TransformerResolver implements TransformerResolverProvider {
     };
 
     return isJsResolverFnRuntime(runtime) ? generateJsStashStatement : generateVtlStashStatement;
+  }
+
+  private getMappingTemplateNames(mappingTemplate?: FunctionRuntimeTemplate, fallbackName: string = ''): string[] {
+    if (this.isJsRuntimeTemplate(mappingTemplate)) {
+      return [(mappingTemplate.codeMappingTemplate as any).name ?? fallbackName];
+    } else {
+      const requestMappingTemplateName = (mappingTemplate?.requestMappingTemplate as any)?.name ?? fallbackName;
+      const responseMappingTemplateName = (mappingTemplate?.responseMappingTemplate as any)?.name ?? fallbackName;
+      return [requestMappingTemplateName, responseMappingTemplateName];
+    }
+  }
+
+  private isJsRuntimeTemplate(mappingTemplate?: FunctionRuntimeTemplate): mappingTemplate is JSRuntimeTemplate {
+    return (mappingTemplate as JSRuntimeTemplate).codeMappingTemplate !== undefined;
   }
 }
 
