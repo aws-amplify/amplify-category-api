@@ -294,23 +294,26 @@ function createResolver(stack: cdk.Stack, dataSourceId: string, context: Transfo
         functionRequestTemplateString,
         `${config.resolverTypeName}.${config.resolverFieldName}.DataResolver.req.vtl`,
       );
+  const functionResponseMappingTemplate = MappingTemplate.s3MappingTemplateFromString(
+    printBlock('Process response')(
+      ifElse(
+        supportsBody ? raw('$ctx.result.statusCode == 200 || $ctx.result.statusCode == 201') : raw('$ctx.result.statusCode == 200'),
+        ifElse(
+          ref('ctx.result.headers.get("Content-Type").toLowerCase().contains("xml")'),
+          ref('utils.xml.toJsonString($ctx.result.body)'),
+          ref('ctx.result.body'),
+        ),
+        ref('util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))'),
+      ),
+    ),
+    `${config.resolverTypeName}.${config.resolverFieldName}.DataResolver.res.vtl`,
+  );
   const appsyncFunction = context.api.host.addAppSyncFunction(
     functionId,
-    functionRequestMappingTemplate,
-    MappingTemplate.s3MappingTemplateFromString(
-      printBlock('Process response')(
-        ifElse(
-          supportsBody ? raw('$ctx.result.statusCode == 200 || $ctx.result.statusCode == 201') : raw('$ctx.result.statusCode == 200'),
-          ifElse(
-            ref('ctx.result.headers.get("Content-Type").toLowerCase().contains("xml")'),
-            ref('utils.xml.toJsonString($ctx.result.body)'),
-            ref('ctx.result.body'),
-          ),
-          ref('util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))'),
-        ),
-      ),
-      `${config.resolverTypeName}.${config.resolverFieldName}.DataResolver.res.vtl`,
-    ),
+    {
+      requestMappingTemplate: functionRequestMappingTemplate,
+      responseMappingTemplate: functionResponseMappingTemplate,
+    },
     dataSourceId,
     stack,
   );
@@ -318,11 +321,15 @@ function createResolver(stack: cdk.Stack, dataSourceId: string, context: Transfo
   return context.api.host.addResolver(
     config.resolverTypeName,
     config.resolverFieldName,
-    MappingTemplate.inlineTemplateFromString(printBlock('Stash resolver specific context.')(compoundExpression(requestTemplate))),
-    MappingTemplate.s3MappingTemplateFromString(
-      '$util.toJson($ctx.prev.result)',
-      `${config.resolverTypeName}.${config.resolverFieldName}.res.vtl`,
-    ),
+    {
+      requestMappingTemplate: MappingTemplate.inlineTemplateFromString(
+        printBlock('Stash resolver specific context.')(compoundExpression(requestTemplate)),
+      ),
+      responseMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
+        '$util.toJson($ctx.prev.result)',
+        `${config.resolverTypeName}.${config.resolverFieldName}.res.vtl`,
+      ),
+    },
     undefined,
     undefined,
     [appsyncFunction.functionId],
