@@ -31,6 +31,7 @@ export const testGraphQLAPI = async (options: {
     },
   });
 
+  // Test: check CRUDL on contact table with default primary key - postgres
   const createTodo = async (description: string, id?: string): Promise<Record<string, any>> => {
     const createMutation = /* GraphQL */ `
       mutation CreateTodo($input: CreateTodoInput!, $condition: ModelTodoConditionInput) {
@@ -161,7 +162,6 @@ export const testGraphQLAPI = async (options: {
     expect(errorMessage).toEqual('GraphQL error: Error processing the request. Check the logs for more details.');
   };
 
-  // Test: check CRUDL on contact table with default primary key - postgres
   // Create Todo Mutation
   const createTodo1 = await createTodo('Todo #1');
   const createTodo2 = await createTodo('Todo #2');
@@ -343,14 +343,15 @@ export const testGraphQLAPI = async (options: {
 
   // Check invalid CRUD operation returns generic error message
   const createTodo6 = await createTodo('Todo #6');
+  const createTodo6Result = createTodo6.data.createTodo;
 
   try {
-    await createTodo('Todo #7', createTodo6.data.createTodo.id);
+    await createTodo('Todo #7', createTodo6Result.id);
   } catch (error) {
     await checkGenericError(error?.message);
   }
 
-  const invalidId = createTodo6.data.createTodo.id + 'x';
+  const invalidId = createTodo6Result.id + 'x';
 
   try {
     await getTodo(invalidId);
@@ -370,6 +371,40 @@ export const testGraphQLAPI = async (options: {
     await checkGenericError(error?.message);
   }
 
+  // Cleanup current database for next SSM Connection test
+  const deleteTodo2 = await deleteTodo(getUpdatedTodo2Result.id);
+  const deleteTodo2Result = deleteTodo2.data.deleteTodo;
+
+  expect(deleteTodo2Result.id).toEqual(getUpdatedTodo2Result.id);
+  expect(deleteTodo2Result.description).toEqual('Updated Todo #2');
+
+  const deleteTodo3 = await deleteTodo(createTodo3Result.id);
+  const deleteTodo3Result = deleteTodo3.data.deleteTodo;
+
+  expect(deleteTodo3Result.id).toEqual(createTodo3Result.id);
+  expect(deleteTodo3Result.description).toEqual('Todo #3');
+
+  const deleteTodo4 = await deleteTodo(createTodo4Result.id);
+  const deleteTodo4Result = deleteTodo4.data.deleteTodo;
+
+  expect(deleteTodo4Result.id).toEqual(createTodo4Result.id);
+  expect(deleteTodo4Result.description).toEqual('Todo #4');
+
+  const deleteTodo5 = await deleteTodo(createTodo5Result.id);
+  const deleteTodo5Result = deleteTodo5.data.deleteTodo;
+
+  expect(deleteTodo5Result.id).toEqual(createTodo5Result.id);
+  expect(deleteTodo5Result.description).toEqual('Todo #5');
+
+  const deleteTodo6 = await deleteTodo(createTodo6Result.id);
+  const deleteTodo6Result = deleteTodo6.data.deleteTodo;
+
+  expect(deleteTodo6Result.id).toEqual(createTodo6Result.id);
+  expect(deleteTodo6Result.description).toEqual('Todo #6');
+
+  console.log('Todo database cleaned up for next test');
+
+  // Test: check CRUDL, filter, limit and nextToken on student table with composite key - postgres
   const createStudent = async (studentId: number, classId: string, firstName: string, lastName: string): Promise<Record<string, any>> => {
     const createMutation = /* GraphQL */ `
       mutation CreateStuden($input: CreateStudentInput!, $condition: ModelStudentConditionInput) {
@@ -503,7 +538,6 @@ export const testGraphQLAPI = async (options: {
     return listResult;
   };
 
-  // Test: check CRUDL, filter, limit and nextToken on student table with composite key - postgres
   const createStudent1 = await createStudent(1, 'A', 'John', 'Doe');
   const createStudent2 = await createStudent(1, 'B', 'Jane', 'Doe');
   const createStudent3 = await createStudent(2, 'A', 'Bob', 'Smith');
@@ -667,6 +701,33 @@ export const testGraphQLAPI = async (options: {
     ]),
   );
   expect(listStudentsWithFilter2.data.listStudents.nextToken).toBeNull();
+
+  // Cleanup current database for next SSM Connection test
+  const deleteStudent2 = await deleteStudent(1, 'B');
+  const deleteStudent2Result = deleteStudent2.data.deleteStudent;
+
+  expect(deleteStudent2Result.studentId).toEqual(1);
+  expect(deleteStudent2Result.classId).toEqual('B');
+  expect(deleteStudent2Result.firstName).toEqual('Jane');
+  expect(deleteStudent2Result.lastName).toEqual('Doe');
+
+  const deleteStudent3 = await deleteStudent(2, 'A');
+  const deleteStudent3Result = deleteStudent3.data.deleteStudent;
+
+  expect(deleteStudent3Result.studentId).toEqual(2);
+  expect(deleteStudent3Result.classId).toEqual('A');
+  expect(deleteStudent3Result.firstName).toEqual('John');
+  expect(deleteStudent3Result.lastName).toEqual('Smith');
+
+  const deleteStudent4 = await deleteStudent(2, 'B');
+  const deleteStudent4Result = deleteStudent4.data.deleteStudent;
+
+  expect(deleteStudent4Result.studentId).toEqual(2);
+  expect(deleteStudent4Result.classId).toEqual('B');
+  expect(deleteStudent4Result.firstName).toEqual('Alice');
+  expect(deleteStudent4Result.lastName).toEqual('Jones');
+
+  console.log('Student database cleaned up for next test');
 
   // Check SQL Lambda provisioned concurrency
   const client = new LambdaClient({ region });
