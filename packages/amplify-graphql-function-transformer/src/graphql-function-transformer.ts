@@ -109,29 +109,34 @@ export class FunctionTransformer extends TransformerPluginBase {
         let func = createdResources.get(functionId);
 
         if (func === undefined) {
+          const functionRequestMappingTemplate = MappingTemplate.s3MappingTemplateFromString(
+            printBlock(`Invoke AWS Lambda data source: ${dataSourceId}`)(
+              obj({
+                version: str('2018-05-29'),
+                operation: str('Invoke'),
+                payload: obj({
+                  typeName: ref('util.toJson($ctx.stash.get("typeName"))'),
+                  fieldName: ref('util.toJson($ctx.stash.get("fieldName"))'),
+                  arguments: ref('util.toJson($ctx.arguments)'),
+                  identity: ref('util.toJson($ctx.identity)'),
+                  source: ref('util.toJson($ctx.source)'),
+                  request: ref('util.toJson($ctx.request)'),
+                  prev: ref('util.toJson($ctx.prev)'),
+                }),
+                invocationType: str(config.invocationType),
+              }),
+            ),
+            `${functionId}.req.vtl`,
+          );
+
+          const functionResponseMappingTemplate = MappingTemplate.s3MappingTemplateFromString(
+            responseMappingTemplate(config),
+            `${functionId}.res.vtl`,
+          );
           const funcScope = context.stackManager.getScopeFor(functionId, FUNCTION_DIRECTIVE_STACK);
           func = context.api.host.addAppSyncFunction(
             functionId,
-            MappingTemplate.s3MappingTemplateFromString(
-              printBlock(`Invoke AWS Lambda data source: ${dataSourceId}`)(
-                obj({
-                  version: str('2018-05-29'),
-                  operation: str('Invoke'),
-                  payload: obj({
-                    typeName: ref('util.toJson($ctx.stash.get("typeName"))'),
-                    fieldName: ref('util.toJson($ctx.stash.get("fieldName"))'),
-                    arguments: ref('util.toJson($ctx.arguments)'),
-                    identity: ref('util.toJson($ctx.identity)'),
-                    source: ref('util.toJson($ctx.source)'),
-                    request: ref('util.toJson($ctx.request)'),
-                    prev: ref('util.toJson($ctx.prev)'),
-                  }),
-                  invocationType: str(config.invocationType),
-                }),
-              ),
-              `${functionId}.req.vtl`,
-            ),
-            MappingTemplate.s3MappingTemplateFromString(responseMappingTemplate(config), `${functionId}.res.vtl`),
+            { requestMappingTemplate: functionRequestMappingTemplate, responseMappingTemplate: functionResponseMappingTemplate },
             dataSourceId,
             funcScope,
           );
@@ -170,15 +175,20 @@ export class FunctionTransformer extends TransformerPluginBase {
 
         if (resolver === undefined) {
           // TODO: update function to use resolver manager.
+          const mappingTemplate = {
+            requestMappingTemplate: MappingTemplate.inlineTemplateFromString(
+              printBlock('Stash resolver specific context.')(compoundExpression(requestTemplate)),
+            ),
+            responseMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
+              '$util.toJson($ctx.prev.result)',
+              `${config.resolverTypeName}.${config.resolverFieldName}.res.vtl`,
+            ),
+          };
           const resolverScope = context.stackManager.getScopeFor(resolverId, FUNCTION_DIRECTIVE_STACK);
           resolver = context.api.host.addResolver(
             config.resolverTypeName,
             config.resolverFieldName,
-            MappingTemplate.inlineTemplateFromString(printBlock('Stash resolver specific context.')(compoundExpression(requestTemplate))),
-            MappingTemplate.s3MappingTemplateFromString(
-              '$util.toJson($ctx.prev.result)',
-              `${config.resolverTypeName}.${config.resolverFieldName}.res.vtl`,
-            ),
+            mappingTemplate,
             resolverId,
             undefined,
             [],
