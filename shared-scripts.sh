@@ -136,6 +136,9 @@ function _verifyAmplifyBackendCompatability {
   echo "Verify Amplify Backend Compatibility"
   loadCacheFromBuildJob 
 
+  echo "Printing instance id"
+  curl http://169.254.169.254/latest/meta-data/instance-id
+
   # Set npm to use Bash as the shell
   echo "Configuring npm to use Bash as the script shell"
   npm config set script-shell $(which bash)
