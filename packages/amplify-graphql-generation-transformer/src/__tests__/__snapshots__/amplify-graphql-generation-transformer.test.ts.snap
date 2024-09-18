@@ -46,7 +46,6 @@ exports[`generation route all scalar types 1`] = `
   ctx.stash.adminRoles = [];
   return {};
 }
-
 export const response = (ctx) => {
   return ctx.prev.result;
 };",
@@ -78,6 +77,7 @@ exports[`generation route all scalar types 2`] = `
     }
   }
 }
+
 
 export function response(ctx) {
   if (ctx.error) {
@@ -146,7 +146,6 @@ exports[`generation route custom query 1`] = `
   ctx.stash.adminRoles = [];
   return {};
 }
-
 export const response = (ctx) => {
   return ctx.prev.result;
 };",
@@ -178,6 +177,7 @@ exports[`generation route custom query 2`] = `
     }
   }
 }
+
 
 export function response(ctx) {
   if (ctx.error) {
@@ -246,7 +246,6 @@ exports[`generation route model type with null timestamps 1`] = `
   ctx.stash.adminRoles = [];
   return {};
 }
-
 export const response = (ctx) => {
   return ctx.prev.result;
 };",
@@ -278,6 +277,7 @@ exports[`generation route model type with null timestamps 2`] = `
     }
   }
 }
+
 
 export function response(ctx) {
   if (ctx.error) {
@@ -346,7 +346,6 @@ exports[`generation route scalar type 1`] = `
   ctx.stash.adminRoles = [];
   return {};
 }
-
 export const response = (ctx) => {
   return ctx.prev.result;
 };",
@@ -378,6 +377,7 @@ exports[`generation route scalar type 2`] = `
     }
   }
 }
+
 
 export function response(ctx) {
   if (ctx.error) {

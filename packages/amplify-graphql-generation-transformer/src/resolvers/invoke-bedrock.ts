@@ -12,10 +12,10 @@ import { GenerationConfigurationWithToolConfig, InferenceConfiguration } from '.
 
 export const createInvokeBedrockResolverFunction = (
   config: GenerationConfigurationWithToolConfig,
-): { req: MappingTemplateProvider; res: MappingTemplateProvider } => {
+): MappingTemplateProvider => {
   const req = createInvokeBedrockRequestFunction(config);
   const res = createInvokeBedrockResponseFunction();
-  return { req, res };
+  return MappingTemplate.inlineTemplateFromString(dedent(req + '\n' + res));
 };
 
 /**
@@ -24,7 +24,7 @@ export const createInvokeBedrockResolverFunction = (
  * @param {GenerationConfigurationWithToolConfig} config - The configuration object for the resolver.
  * @returns {MappingTemplateProvider} A MappingTemplateProvider for the request function.
  */
-const createInvokeBedrockRequestFunction = (config: GenerationConfigurationWithToolConfig): MappingTemplateProvider => {
+const createInvokeBedrockRequestFunction = (config: GenerationConfigurationWithToolConfig): string => {
   const { aiModel, toolConfig, inferenceConfiguration } = config;
   const stringifiedToolConfig = JSON.stringify(toolConfig);
   const stringifiedSystemPrompt = JSON.stringify(config.systemPrompt);
@@ -55,7 +55,7 @@ const createInvokeBedrockRequestFunction = (config: GenerationConfigurationWithT
   }
 `;
 
-  return MappingTemplate.inlineTemplateFromString(dedent(requestFunctionString));
+  return requestFunctionString;
 };
 
 /**
@@ -63,7 +63,7 @@ const createInvokeBedrockRequestFunction = (config: GenerationConfigurationWithT
  *
  * @returns {MappingTemplateProvider} A MappingTemplateProvider for the response function.
  */
-const createInvokeBedrockResponseFunction = (): MappingTemplateProvider => {
+const createInvokeBedrockResponseFunction = (): string => {
   // TODO: add stopReason: max_tokens error handling
   const responseFunctionString = `
   export function response(ctx) {
@@ -87,7 +87,7 @@ const createInvokeBedrockResponseFunction = (): MappingTemplateProvider => {
   }
 `;
 
-  return MappingTemplate.inlineTemplateFromString(dedent(responseFunctionString));
+  return responseFunctionString;
 };
 
 /**
