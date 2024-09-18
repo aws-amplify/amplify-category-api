@@ -37,13 +37,12 @@ type AttachInputMappingSlotParams = {
  * Calls createPostDataLoadMapping to create a slot to map origAttrName back to currAttrName in the response
  */
 export const attachInputMappingSlot = ({ resolver, resolverTypeName, resolverFieldName, fieldMap }: AttachInputMappingSlotParams): void => {
-  resolver.addToSlot(
-    'preUpdate',
-    MappingTemplate.s3MappingTemplateFromString(
+  resolver.addToSlot('preUpdate', {
+    requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
       print(compoundExpression([createMultiRemapExpression('ctx.args.input', fieldMap, 'CURR_TO_ORIG'), toJson(raw('{}'))])),
       `${resolverTypeName}.${resolverFieldName}.{slotName}.{slotIndex}.req.vtl`,
     ),
-  );
+  });
 };
 
 /**
@@ -51,13 +50,12 @@ export const attachInputMappingSlot = ({ resolver, resolverTypeName, resolverFie
  * Calls createPostDataLoadMapping to create a slot to map origAttrName back to currAttrName in the response
  */
 export const attachFieldMappingSlot = ({ resolver, resolverTypeName, resolverFieldName, fieldMap }: AttachInputMappingSlotParams): void => {
-  resolver.addToSlot(
-    'preAuth',
-    MappingTemplate.s3MappingTemplateFromString(
+  resolver.addToSlot('preAuth', {
+    requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
       print(compoundExpression([createFieldMapExpression(fieldMap), toJson(raw('{}'))])),
       `${resolverTypeName}.${resolverFieldName}.{slotName}.{slotIndex}.req.vtl`,
     ),
-  );
+  });
 };
 
 type AttachResponseMappingSlotParams = {
@@ -81,10 +79,8 @@ export const attachResponseMappingSlot = ({
   fieldMap,
   isList,
 }: AttachResponseMappingSlotParams) => {
-  resolver.addToSlot(
-    slotName,
-    undefined,
-    MappingTemplate.s3MappingTemplateFromString(
+  const mappingTemplate = {
+    responseMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
       print(
         compoundExpression([
           isList
@@ -95,7 +91,8 @@ export const attachResponseMappingSlot = ({
       ),
       `${resolverTypeName}.${resolverFieldName}.{slotName}.{slotIndex}.res.vtl`,
     ),
-  );
+  };
+  resolver.addToSlot(slotName, mappingTemplate);
 };
 
 type AttachFilterConditionInputMappingSlotParams = {
@@ -120,49 +117,51 @@ export const attachFilterAndConditionInputMappingSlot = ({
     return acc;
   }, {} as Record<string, string>);
   const fieldMapRef = ref('fieldMap');
-  resolver.addToSlot(
-    slotName,
-    MappingTemplate.s3MappingTemplateFromString(
-      print(
-        compoundExpression([
-          set(fieldMapRef, raw(JSON.stringify(fieldMapVtl))),
-          iff(or([methodCall(ref('util.isNull'), fieldMapRef), raw('$fieldMap.keySet().size() <= 0')]), ret(ref('ctx.args'))),
-          iff(
-            and([
-              methodCall(ref('util.isNull'), ref('ctx.args.filter')),
-              methodCall(ref('util.isNull'), ref('ctx.args.condition')),
-              methodCall(ref('util.isNull'), ref('ctx.args.sort')),
-              methodCall(ref('util.isNull'), ref('ctx.args.aggregates')),
-            ]),
-            ret(ref('ctx.args')),
-          ),
-          set(
-            ref('invoke'),
-            obj({
-              operation: str('Invoke'),
-              payload: obj({
-                args: ref('ctx.args'),
-                fieldMap: fieldMapRef,
-              }),
+  const requestMappingTemplate = MappingTemplate.s3MappingTemplateFromString(
+    print(
+      compoundExpression([
+        set(fieldMapRef, raw(JSON.stringify(fieldMapVtl))),
+        iff(or([methodCall(ref('util.isNull'), fieldMapRef), raw('$fieldMap.keySet().size() <= 0')]), ret(ref('ctx.args'))),
+        iff(
+          and([
+            methodCall(ref('util.isNull'), ref('ctx.args.filter')),
+            methodCall(ref('util.isNull'), ref('ctx.args.condition')),
+            methodCall(ref('util.isNull'), ref('ctx.args.sort')),
+            methodCall(ref('util.isNull'), ref('ctx.args.aggregates')),
+          ]),
+          ret(ref('ctx.args')),
+        ),
+        set(
+          ref('invoke'),
+          obj({
+            operation: str('Invoke'),
+            payload: obj({
+              args: ref('ctx.args'),
+              fieldMap: fieldMapRef,
             }),
-          ),
-          toJson(ref('invoke')),
-        ]),
-      ),
-      `${resolverTypeName}.${resolverFieldName}.{slotName}.{slotIndex}.req.vtl`,
+          }),
+        ),
+        toJson(ref('invoke')),
+      ]),
     ),
-    MappingTemplate.s3MappingTemplateFromString(
-      print(
-        compoundExpression([
-          iff(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type'))),
-          setTransformedArgs(ref('ctx.result')),
-          toJson(raw('{}')),
-        ]),
-      ),
-      `${resolverTypeName}.${resolverFieldName}.{slotName}.{slotIndex}.res.vtl`,
-    ),
-    dataSource,
+    `${resolverTypeName}.${resolverFieldName}.{slotName}.{slotIndex}.req.vtl`,
   );
+
+  const responseMappingTemplate = MappingTemplate.s3MappingTemplateFromString(
+    print(
+      compoundExpression([
+        iff(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type'))),
+        setTransformedArgs(ref('ctx.result')),
+        toJson(raw('{}')),
+      ]),
+    ),
+    `${resolverTypeName}.${resolverFieldName}.{slotName}.{slotIndex}.res.vtl`,
+  );
+  const mappingTemplate = {
+    requestMappingTemplate,
+    responseMappingTemplate,
+  };
+  resolver.addToSlot(slotName, mappingTemplate, dataSource);
 };
 
 const createListRemapExpression = (
