@@ -125,12 +125,15 @@ export abstract class ModelResourceGenerator {
         }
         // TODO: add mechanism to add an auth like rule to all non auth @models
         // this way we can just depend on auth to add the check
-        resolver.addToSlot(
-          'postAuth',
-          MappingTemplate.s3MappingTemplateFromString(
+        const mappingTemplate = {
+          requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
             generatePostAuthExpression(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess),
             `${query.typeName}.${query.fieldName}.{slotName}.{slotIndex}.req.vtl`,
-          ),
+          )
+        }
+        resolver.addToSlot(
+          'postAuth',
+          mappingTemplate,
         );
         resolver.setScope(context.stackManager.getScopeFor(query.resolverLogicalId, def!.name.value));
         context.resolvers.addResolver(query.typeName, query.fieldName, resolver);
@@ -159,12 +162,15 @@ export abstract class ModelResourceGenerator {
           default:
             throw new Error('Unknown mutation field type');
         }
-        resolver.addToSlot(
-          'postAuth',
-          MappingTemplate.s3MappingTemplateFromString(
+        const mappingTemplate = {
+          requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
             generatePostAuthExpression(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess),
             `${mutation.typeName}.${mutation.fieldName}.{slotName}.{slotIndex}.req.vtl`,
-          ),
+          )
+        }
+        resolver.addToSlot(
+          'postAuth',
+          mappingTemplate,
         );
         resolver.setScope(context.stackManager.getScopeFor(mutation.resolverLogicalId, def!.name.value));
         context.resolvers.addResolver(mutation.typeName, mutation.fieldName, resolver);
@@ -205,12 +211,15 @@ export abstract class ModelResourceGenerator {
               throw new Error('Unknown subscription field type');
           }
           if (subscriptionLevel === SubscriptionLevel.on) {
-            resolver.addToSlot(
-              'postAuth',
-              MappingTemplate.s3MappingTemplateFromString(
+            const mappingTemplate = {
+              requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
                 generatePostAuthExpression(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess),
                 `${subscription.typeName}.${subscription.fieldName}.{slotName}.{slotIndex}.req.vtl`,
-              ),
+              )
+            }
+            resolver.addToSlot(
+              'postAuth',
+              mappingTemplate,
             );
           }
           resolver.setScope(context.stackManager.getScopeFor(subscription.resolverLogicalId, def!.name.value));
@@ -364,12 +373,15 @@ export abstract class ModelResourceGenerator {
             (field.type.kind === 'NamedType' && (field.type.name.value === 'ID' || field.type.name.value === 'String'))),
       );
 
-      resolver.addToSlot(
-        'init',
-        MappingTemplate.s3MappingTemplateFromString(
+      const mappingTemplate = {
+        requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
           vtlGenerator.generateCreateInitSlotTemplate(initSlotConfig, initializeIdField),
           `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`,
-        ),
+        )
+      }
+      resolver.addToSlot(
+        'init',
+        mappingTemplate,
       );
     }
     return this.resolverMap[resolverKey];
@@ -425,12 +437,15 @@ export abstract class ModelResourceGenerator {
         operation: 'UPDATE',
         operationName: fieldName,
       };
-      resolver.addToSlot(
-        'init',
-        MappingTemplate.s3MappingTemplateFromString(
+      const mappingTemplate = {
+        requestMappingTemplate: MappingTemplate.s3MappingTemplateFromString(
           vtlGenerator.generateUpdateInitSlotTemplate(updateInitConfig),
           `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`,
-        ),
+        )
+      }
+      resolver.addToSlot(
+        'init',
+        mappingTemplate,
       );
       this.resolverMap[resolverKey] = resolver;
     }
