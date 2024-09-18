@@ -218,9 +218,8 @@ export class TransformerResolver implements TransformerResolverProvider {
 
     let slotIndex = 1;
     for (const slotEntry of slotEntries) {
-      // const { requestMappingTemplate, responseMappingTemplate } = slotEntry.mappingTemplate as VTLRuntimeTemplate;
       const slotEntryMappingTemplateNames = this.getMappingTemplateNames(slotEntry.mappingTemplate, 'NOT-FOUND').map((name) =>
-        name.replace('{slotName}', slotName).replace('{slotIndex}', slotIndex.toString()),
+        name.replace('{slotName}', slotName).replace('{slotIndex}', `${slotIndex}`),
       );
 
       // If both request and response mapping templates are inline, skip check
@@ -244,7 +243,43 @@ export class TransformerResolver implements TransformerResolverProvider {
   updateSlot = (slotName: string, mappingTemplate?: FunctionRuntimeTemplate): void => {
     const slot = this.findSlot(slotName, mappingTemplate);
     if (slot) {
-      slot.mappingTemplate = mappingTemplate;
+      // If the mapping template is a JS runtime template, we don't really care whether the slot is currently occupied by a
+      // VTL or JS runtime template. We just replace it with the JS runtime template.
+      if (this.isJsRuntimeTemplate(mappingTemplate)) {
+        slot.mappingTemplate = mappingTemplate;
+        slot.runtime = { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' };
+      } else if (mappingTemplate) {
+        // VTL runtime template updates require some extra care because we allow a request or response mappingTemplate to be passed individually.
+
+        //  can have a requestMappingTemplate
+        // If the mapping template is a VTL runtime template, we need to do some checks to make sure we can update the slot.
+        const { requestMappingTemplate, responseMappingTemplate } = mappingTemplate;
+        // If both request and response mapping templates are provided, we can update the slot.
+        if (requestMappingTemplate && responseMappingTemplate) {
+          slot.mappingTemplate = mappingTemplate;
+        }
+
+        // If the slot is currently a JS runtime template, we can also assign the VTL template regardless of whether both request and
+        // response mapping template are provided because defaults will be added further downstream.
+        if (this.isJsRuntimeTemplate(slot.mappingTemplate)) {
+          slot.mappingTemplate = mappingTemplate;
+          slot.runtime = undefined;
+        } else if (slot.mappingTemplate) {
+          const { requestMappingTemplate: slotRequestMappingTemplate, responseMappingTemplate: slotResponseMappingTemplate } =
+            slot.mappingTemplate as VTLRuntimeTemplate;
+          // The slot is currently a occupied by a VTL runtime template, we need to be sure not to discard existing request or
+          // response mapping templates when that mapping template isn't provided.
+          slot.mappingTemplate.requestMappingTemplate = (requestMappingTemplate as any).name
+            ? requestMappingTemplate
+            : slotRequestMappingTemplate;
+          slot.mappingTemplate.responseMappingTemplate = (responseMappingTemplate as any).name
+            ? responseMappingTemplate
+            : slotResponseMappingTemplate;
+        } else {
+          // The slot is currently unoccupied, so we can assign the provided mapping template.
+          slot.mappingTemplate = mappingTemplate;
+        }
+      }
     }
   };
 
