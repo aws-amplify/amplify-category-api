@@ -4,27 +4,27 @@ import { getResourceNamesForStrategyName } from '@aws-amplify/graphql-transforme
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { cdkDestroy } from '../commands';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
-import { testGraphQLAPI } from '../rds-tests-common/rds-models-common';
+import { testGraphQLAPIArrayAndObjects } from '../rds-tests-common/rds-array-objects';
 
 jest.setTimeout(DURATION_1_HOUR);
 
-describe('Canary using MySQL lambda model datasource strategy', () => {
+describe('CDK GraphQL Transformer deployments with Postgres SQL datasources', () => {
   let projRoot: string;
-  const projFolderName = 'mysqlcanary';
-  const [username, password, identifier] = generator.generateMultiple(3);
-  const region = process.env.CLI_REGION;
-  const dbname = 'default_db';
-  const engine = 'mysql';
+  const projFolderName = 'pgmodels';
+
+  // sufficient password length that meets the requirements for RDS cluster/instance
+  const [username, password, identifier] = generator.generateMultiple(3, { length: 11 });
+  const region = process.env.CLI_REGION ?? 'us-west-2';
+  const engine = 'postgres';
 
   const databaseController: SqlDatatabaseController = new SqlDatatabaseController(
     [
-      'CREATE TABLE todos (id VARCHAR(40) PRIMARY KEY, description VARCHAR(256))',
-      'CREATE TABLE students (studentId INT NOT NULL, classId VARCHAR(256) NOT NULL, firstName VARCHAR(256), lastName VARCHAR(256), PRIMARY KEY (studentId, classId))',
+      'CREATE TABLE "todos" ("id" VARCHAR(40) PRIMARY KEY, "description" VARCHAR(256))',
+      'CREATE TABLE "students" ("studentId" integer NOT NULL, "classId" text NOT NULL, "firstName" text, "lastName" text, PRIMARY KEY ("studentId", "classId"))',
     ],
     {
       identifier,
       engine,
-      dbname,
       username,
       password,
       region,
@@ -56,8 +56,12 @@ describe('Canary using MySQL lambda model datasource strategy', () => {
     deleteProjectDir(projRoot);
   });
 
-  test('Able to deploy simple schema', async () => {
-    await testGraphQLAPI(constructTestOptions('connectionUri'));
+  describe('RDS Model Directive with SSM Credential Store', () => {
+    testGraphQLAPIArrayAndObjects(constructTestOptions('ssm'));
+  });
+
+  describe('RDS Model Directive using Connection String SSM parameter', () => {
+    testGraphQLAPIArrayAndObjects(constructTestOptions('connectionUri'));
   });
 
   const constructTestOptions = (connectionConfigName: string) => ({
