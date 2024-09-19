@@ -20,7 +20,10 @@ describe('CDK GraphQL Transformer deployments with SQL datasources', () => {
   const engine = 'mysql';
 
   const databaseController: SqlDatatabaseController = new SqlDatatabaseController(
-    ['CREATE TABLE todos (id VARCHAR(40) PRIMARY KEY, description VARCHAR(256))'],
+    [
+      'CREATE TABLE todos (id VARCHAR(40) PRIMARY KEY, description VARCHAR(256))',
+      'CREATE TABLE students (studentId INT NOT NULL, classId VARCHAR(256) NOT NULL, firstName VARCHAR(256), lastName VARCHAR(256), PRIMARY KEY (studentId, classId))',
+    ],
     {
       identifier,
       engine,
