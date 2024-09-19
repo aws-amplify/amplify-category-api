@@ -189,11 +189,7 @@ export class ConversationResolverGenerator {
    * @param capitalizedFieldName - The capitalized field name
    * @param runtime - The runtime configuration
    */
-  private addPipelineResolverFunctions(
-    ctx: TransformerContextProvider,
-    resolver: TransformerResolver,
-    capitalizedFieldName: string,
-  ): void {
+  private addPipelineResolverFunctions(ctx: TransformerContextProvider, resolver: TransformerResolver, capitalizedFieldName: string): void {
     // Add init function
     const initFunction = initMappingTemplate();
     resolver.addJsFunctionToSlot('init', initFunction);
@@ -207,11 +203,7 @@ export class ConversationResolverGenerator {
     const sessionModelName = `Conversation${capitalizedFieldName}`;
     const sessionModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, sessionModelName);
     const conversationSessionDDBDataSource = ctx.api.host.getDataSource(sessionModelDDBDataSourceName);
-    resolver.addJsFunctionToSlot(
-      'verifySessionOwner',
-      verifySessionOwnerFunction,
-      conversationSessionDDBDataSource as any,
-    );
+    resolver.addJsFunctionToSlot('verifySessionOwner', verifySessionOwnerFunction, conversationSessionDDBDataSource as any);
 
     // Add writeMessageToTable function
     const writeMessageToTableFunction = writeMessageToTableMappingTemplate(capitalizedFieldName);
@@ -222,11 +214,7 @@ export class ConversationResolverGenerator {
 
     // Add retrieveMessageHistory function
     const retrieveMessageHistoryFunction = readHistoryMappingTemplate();
-    resolver.addJsFunctionToSlot(
-      'retrieveMessageHistory',
-      retrieveMessageHistoryFunction,
-      messageDDBDataSource as any,
-    );
+    resolver.addJsFunctionToSlot('retrieveMessageHistory', retrieveMessageHistoryFunction, messageDDBDataSource as any);
   }
 
   /**

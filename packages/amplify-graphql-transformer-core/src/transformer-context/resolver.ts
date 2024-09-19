@@ -512,7 +512,13 @@ export class TransformerResolver implements TransformerResolverProvider {
           if (this.isJsRuntimeTemplate(mappingTemplate)) {
             const { codeMappingTemplate } = mappingTemplate;
             this.substituteSlotInfo(codeMappingTemplate, slotName, index);
-            const fn = api.host.addAppSyncFunction(name, mappingTemplate, dataSource?.name || NONE_DATA_SOURCE_NAME, scope, slotItem.runtime);
+            const fn = api.host.addAppSyncFunction(
+              name,
+              mappingTemplate,
+              dataSource?.name || NONE_DATA_SOURCE_NAME,
+              scope,
+              slotItem.runtime,
+            );
             appSyncFunctions.push(fn);
           } else {
             const { requestMappingTemplate, responseMappingTemplate } = mappingTemplate as VTLRuntimeTemplate;
