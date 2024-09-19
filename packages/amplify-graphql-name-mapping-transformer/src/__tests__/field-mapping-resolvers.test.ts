@@ -4,7 +4,7 @@ import { attachInputMappingSlot, attachResponseMappingSlot, attachFieldMappingSl
 const addToSlot_mock = jest.fn();
 
 const resolver_stub = {
-  addToSlot: addToSlot_mock,
+  addVtlFunctionToSlot: addToSlot_mock,
 };
 
 const resolver_typed = resolver_stub as unknown as TransformerResolverProvider;
@@ -46,8 +46,7 @@ describe('attachInputMappingSlot', () => {
       resolverFieldName: 'createTestType',
       fieldMap: singleTestFieldMap,
     });
-    const mappingTemplateArg = addToSlot_mock.mock.calls[0][1];
-    expect(mappingTemplateArg.requestMappingTemplate).toMatchInlineSnapshot(`
+    expect(addToSlot_mock.mock.calls[0][1]).toMatchInlineSnapshot(`
       S3MappingTemplate {
         "content": "$util.qr($ctx.args.input.put(\\"origFieldName\\", $ctx.args.input.newFieldName))
       $util.qr($ctx.args.input.remove(\\"newFieldName\\"))
@@ -65,8 +64,7 @@ describe('attachInputMappingSlot', () => {
       resolverFieldName: 'createTestType',
       fieldMap: multiTestFieldMap,
     });
-    const mappingTemplateArg = addToSlot_mock.mock.calls[0][1];
-    expect(mappingTemplateArg.requestMappingTemplate).toMatchInlineSnapshot(`
+    expect(addToSlot_mock.mock.calls[0][1]).toMatchInlineSnapshot(`
       S3MappingTemplate {
         "content": "$util.qr($ctx.args.input.put(\\"origFieldName\\", $ctx.args.input.newFieldName))
       $util.qr($ctx.args.input.remove(\\"newFieldName\\"))
@@ -102,9 +100,8 @@ describe('attachResponseMappingSlot', () => {
       fieldMap: singleTestFieldMap,
       isList: false,
     });
-    const mappingTemplateArg = addToSlot_mock.mock.calls[0][1];
-    expect(mappingTemplateArg.requestMappingTemplate).toBeUndefined();
-    expect(mappingTemplateArg.responseMappingTemplate).toMatchInlineSnapshot(`
+    expect(addToSlot_mock.mock.calls[0][1]).toBeUndefined();
+    expect(addToSlot_mock.mock.calls[0][2]).toMatchInlineSnapshot(`
       S3MappingTemplate {
         "content": "$util.qr($ctx.prev.result.put(\\"newFieldName\\", $ctx.prev.result.origFieldName))
       $util.qr($ctx.prev.result.remove(\\"origFieldName\\"))
@@ -124,9 +121,8 @@ describe('attachResponseMappingSlot', () => {
       fieldMap: multiTestFieldMap,
       isList: false,
     });
-    const mappingTemplateArg = addToSlot_mock.mock.calls[0][1];
-    expect(mappingTemplateArg.requestMappingTemplate).toBeUndefined();
-    expect(mappingTemplateArg.responseMappingTemplate).toMatchInlineSnapshot(`
+    expect(addToSlot_mock.mock.calls[0][1]).toBeUndefined();
+    expect(addToSlot_mock.mock.calls[0][2]).toMatchInlineSnapshot(`
       S3MappingTemplate {
         "content": "$util.qr($ctx.prev.result.put(\\"newFieldName\\", $ctx.prev.result.origFieldName))
       $util.qr($ctx.prev.result.remove(\\"origFieldName\\"))
@@ -148,9 +144,8 @@ describe('attachResponseMappingSlot', () => {
       fieldMap: singleTestFieldMap,
       isList: true,
     });
-    const mappingTemplateArg = addToSlot_mock.mock.calls[0][1];
-    expect(mappingTemplateArg.requestMappingTemplate).toBeUndefined();
-    expect(mappingTemplateArg.responseMappingTemplate).toMatchInlineSnapshot(`
+    expect(addToSlot_mock.mock.calls[0][1]).toBeUndefined();
+    expect(addToSlot_mock.mock.calls[0][2]).toMatchInlineSnapshot(`
       S3MappingTemplate {
         "content": "#foreach( $item in $ctx.prev.result.items )
         $util.qr($item.put(\\"newFieldName\\", $item.origFieldName))
@@ -172,9 +167,8 @@ describe('attachResponseMappingSlot', () => {
       fieldMap: multiTestFieldMap,
       isList: true,
     });
-    const mappingTemplateArg = addToSlot_mock.mock.calls[0][1];
-    expect(mappingTemplateArg.requestMappingTemplate).toBeUndefined();
-    expect(mappingTemplateArg.responseMappingTemplate).toMatchInlineSnapshot(`
+    expect(addToSlot_mock.mock.calls[0][1]).toBeUndefined();
+    expect(addToSlot_mock.mock.calls[0][2]).toMatchInlineSnapshot(`
       S3MappingTemplate {
         "content": "#foreach( $item in $ctx.prev.result.items )
         $util.qr($item.put(\\"newFieldName\\", $item.origFieldName))
