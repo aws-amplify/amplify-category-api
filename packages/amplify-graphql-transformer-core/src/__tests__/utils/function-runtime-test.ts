@@ -1,4 +1,4 @@
-import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
+import { APPSYNC_JS_RUNTIME, MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { getRuntimeSpecificFunctionProps } from '../../utils/function-runtime';
 import { App, Stack } from 'aws-cdk-lib';
 import { GraphQLApi } from '../../graphql-api';
@@ -10,7 +10,6 @@ describe('Function Runtime Util Tests', () => {
   const api = new GraphQLApi(stack, 'testId', { name: 'testApiName', assetProvider: new AssetProvider(stack) });
 
   describe('APPSYNC_JS runtime', () => {
-    const runtime = { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' };
     const code = `
     export function request(ctx) {
         return {};
@@ -23,11 +22,11 @@ describe('Function Runtime Util Tests', () => {
     it('should return runtime and code for inline template', () => {
       const codeMappingTemplate = MappingTemplate.inlineTemplateFromString(code);
       const mappingTemplate = { codeMappingTemplate };
-      const props = { mappingTemplate, runtime, api };
+      const props = { mappingTemplate, APPSYNC_JS_RUNTIME, api };
 
       const runtimeSpecificProps = getRuntimeSpecificFunctionProps(stack, props);
       expect(runtimeSpecificProps).toEqual({
-        runtime,
+        APPSYNC_JS_RUNTIME,
         code,
       });
     });
@@ -35,10 +34,10 @@ describe('Function Runtime Util Tests', () => {
     it('should return runtime and codeS3Location for S3 mapping template', () => {
       const codeMappingTemplate = MappingTemplate.s3MappingTemplateFromString(code, 'test-template');
       const mappingTemplate = { codeMappingTemplate };
-      const props = { mappingTemplate, runtime, api };
+      const props = { mappingTemplate, APPSYNC_JS_RUNTIME, api };
 
       const { runtime: receivedRuntime, codeS3Location } = getRuntimeSpecificFunctionProps(stack, props);
-      expect(runtime).toEqual(receivedRuntime);
+      expect(APPSYNC_JS_RUNTIME).toEqual(receivedRuntime);
       expect(codeS3Location).toBeDefined();
     });
   });

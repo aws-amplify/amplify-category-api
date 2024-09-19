@@ -4,6 +4,7 @@ import {
   TransformerPluginBase,
   generateGetArgumentsInput,
   TransformerResolver,
+  APPSYNC_JS_RUNTIME,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   MappingTemplateProvider,
@@ -132,7 +133,7 @@ export class GenerationTransformer extends TransformerPluginBase {
       ['auth'],
       [],
       dataSource as any,
-      { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' },
+      APPSYNC_JS_RUNTIME,
     );
 
     ctx.resolvers.addResolver(parentName, fieldName, conversationPipelineResolver);

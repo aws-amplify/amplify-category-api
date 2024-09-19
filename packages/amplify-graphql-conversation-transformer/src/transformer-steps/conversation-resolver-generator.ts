@@ -233,7 +233,6 @@ export class ConversationResolverGenerator {
     const conversationMessageDataSourceName = getModelDataSourceNameForTypeName(ctx, `ConversationMessage${capitalizedFieldName}`);
     const conversationMessageDataSource = ctx.api.host.getDataSource(conversationMessageDataSourceName);
 
-    const runtime = { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' };
     const mappingTemplate = {
       codeMappingTemplate: assistantResponseResolverFunction,
     };
@@ -245,7 +244,7 @@ export class ConversationResolverGenerator {
       [],
       [],
       conversationMessageDataSource as any,
-      runtime,
+      APPSYNC_JS_RUNTIME,
     );
 
     ctx.resolvers.addResolver('Mutation', directive.responseMutationName, assistantResponseResolver);
@@ -264,7 +263,6 @@ export class ConversationResolverGenerator {
     );
     const onAssistantResponseSubscriptionResolverFunction = conversationMessageSubscriptionMappingTamplate();
 
-    const runtime = { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' };
     const mappingTemplate = {
       codeMappingTemplate: onAssistantResponseSubscriptionResolverFunction,
     };
@@ -276,7 +274,7 @@ export class ConversationResolverGenerator {
       [],
       [],
       undefined,
-      runtime,
+      APPSYNC_JS_RUNTIME,
     );
 
     ctx.resolvers.addResolver('Subscription', onAssistantResponseSubscriptionFieldName, onAssistantResponseSubscriptionResolver);
