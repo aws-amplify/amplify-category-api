@@ -139,6 +139,27 @@ export class DefaultTransformHost implements TransformHostProvider {
     return dataSource;
   };
 
+  public addAppSyncJsRuntimeFunction = (
+    name: string,
+    codeMappingTemplate: MappingTemplateProvider,
+    dataSourceName: string,
+    scope?: Construct,
+    runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
+  ): AppSyncFunctionConfiguration => {
+    return this.addAppSyncFunction(name, { codeMappingTemplate }, dataSourceName, scope, runtime);
+  };
+
+  public addAppSyncVtlRuntimeFunction = (
+    name: string,
+    requestMappingTemplate: MappingTemplateProvider,
+    responseMappingTemplate: MappingTemplateProvider,
+    dataSourceName: string,
+    scope?: Construct,
+    runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
+  ): AppSyncFunctionConfiguration => {
+    return this.addAppSyncFunction(name, { requestMappingTemplate, responseMappingTemplate }, dataSourceName, scope, runtime);
+  };
+
   public addAppSyncFunction = (
     name: string,
     mappingTemplate: FunctionRuntimeTemplate,
@@ -175,6 +196,51 @@ export class DefaultTransformHost implements TransformHostProvider {
     });
     this.appsyncFunctions.set(slotHash, fn);
     return fn;
+  };
+
+  public addJsRuntimeResolver = (
+    typeName: string,
+    fieldName: string,
+    codeMappingTemplate: MappingTemplateProvider,
+    resolverLogicalId?: string,
+    dataSourceName?: string,
+    pipelineConfig?: string[],
+    scope?: Construct,
+    runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
+  ): CfnResolver => {
+    return this.addResolver(
+      typeName,
+      fieldName,
+      { codeMappingTemplate },
+      resolverLogicalId,
+      dataSourceName,
+      pipelineConfig,
+      scope,
+      runtime,
+    );
+  };
+
+  public addVtlRuntimeResolver = (
+    typeName: string,
+    fieldName: string,
+    requestMappingTemplate: MappingTemplateProvider,
+    responseMappingTemplate: MappingTemplateProvider,
+    resolverLogicalId?: string,
+    dataSourceName?: string,
+    pipelineConfig?: string[],
+    scope?: Construct,
+    runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
+  ): CfnResolver => {
+    return this.addResolver(
+      typeName,
+      fieldName,
+      { requestMappingTemplate, responseMappingTemplate },
+      resolverLogicalId,
+      dataSourceName,
+      pipelineConfig,
+      scope,
+      runtime,
+    );
   };
 
   public addResolver = (

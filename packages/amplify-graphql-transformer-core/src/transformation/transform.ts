@@ -424,7 +424,7 @@ export class GraphQLTransform {
           ? MappingTemplate.s3MappingTemplateFromString(slot.responseResolver.template, slot.responseResolver.fileName)
           : undefined;
 
-        resolver.addToSlot(slot.slotName, requestTemplate, responseTemplate);
+        resolver.addVtlFunctionToSlot(slot.slotName, requestTemplate, responseTemplate);
       });
 
       resolver.synthesize(context, api);

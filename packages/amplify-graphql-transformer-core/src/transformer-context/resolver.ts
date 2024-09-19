@@ -22,9 +22,16 @@ import { InvalidDirectiveError } from '../errors';
 // eslint-disable-next-line import/no-cycle
 import * as SyncUtils from '../transformation/sync-utils';
 import { isJsResolverFnRuntime } from '../utils/function-runtime';
+import { APPSYNC_JS_RUNTIME, VTL_RUNTIME } from '../types';
+
+/**
+ * Represents a `FunctionRuntimeTemplate` that can be either a partial VTL template or a JS template.
+ * This is only used within this file because some existing functions expect a partial VTL template.
+ */
+type FunctionRuntimeTemplatePartialVTL = Partial<VTLRuntimeTemplate> | JSRuntimeTemplate;
 
 type Slot = {
-  mappingTemplate?: FunctionRuntimeTemplate;
+  mappingTemplate?: FunctionRuntimeTemplatePartialVTL;
   dataSource?: DataSourceProvider;
   runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty;
 };
@@ -179,22 +186,21 @@ export class TransformerResolver implements TransformerResolverProvider {
   };
 
   addJsFunctionToSlot = (slotName: string, codeMappingTemplate: MappingTemplateProvider, dataSource?: DataSourceProvider): void => {
-    this._addToSlot(slotName, { codeMappingTemplate }, dataSource);
+    this.addToSlot(slotName, { codeMappingTemplate }, dataSource, APPSYNC_JS_RUNTIME);
   };
 
-  addToSlot = (
+  addVtlFunctionToSlot = (
     slotName: string,
     requestMappingTemplate?: MappingTemplateProvider,
     responseMappingTemplate?: MappingTemplateProvider,
     dataSource?: DataSourceProvider,
-    runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
   ): void => {
-    this._addToSlot(slotName, { requestMappingTemplate, responseMappingTemplate }, dataSource, runtime);
+    this.addToSlot(slotName, { requestMappingTemplate, responseMappingTemplate }, dataSource, VTL_RUNTIME);
   };
 
-  private _addToSlot = (
+  private addToSlot = (
     slotName: string,
-    mappingTemplate: FunctionRuntimeTemplate,
+    mappingTemplate: FunctionRuntimeTemplatePartialVTL,
     dataSource?: DataSourceProvider,
     runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
   ): void => {
@@ -220,10 +226,10 @@ export class TransformerResolver implements TransformerResolverProvider {
     this.slotMap.set(slotName, slotEntry);
   };
 
-  slotExists = (slotName: string, mappingTemplate?: FunctionRuntimeTemplate): boolean =>
+  slotExists = (slotName: string, mappingTemplate: FunctionRuntimeTemplatePartialVTL): boolean =>
     this.findSlot(slotName, mappingTemplate) !== undefined;
 
-  findSlot = (slotName: string, mappingTemplate?: FunctionRuntimeTemplate): Slot | undefined => {
+  findSlot = (slotName: string, mappingTemplate: FunctionRuntimeTemplatePartialVTL): Slot | undefined => {
     const slotEntries = this.slotMap.get(slotName);
     const mappingTemplateNames = this.getMappingTemplateNames(mappingTemplate);
     if (!slotEntries || mappingTemplateNames.find((name) => name.includes('{slotIndex}'))) {
@@ -254,14 +260,14 @@ export class TransformerResolver implements TransformerResolverProvider {
     }
   };
 
-  updateSlot = (slotName: string, mappingTemplate?: FunctionRuntimeTemplate): void => {
+  updateSlot = (slotName: string, mappingTemplate: FunctionRuntimeTemplatePartialVTL): void => {
     const slot = this.findSlot(slotName, mappingTemplate);
     if (slot) {
       // If the mapping template is a JS runtime template, we don't really care whether the slot is currently occupied by a
       // VTL or JS runtime template. We just replace it with the JS runtime template.
       if (this.isJsRuntimeTemplate(mappingTemplate)) {
         slot.mappingTemplate = mappingTemplate;
-        slot.runtime = { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' };
+        slot.runtime = APPSYNC_JS_RUNTIME;
       } else if (mappingTemplate) {
         // VTL runtime template updates require some extra care because we allow a request or response mappingTemplate to be passed individually.
 
@@ -270,7 +276,7 @@ export class TransformerResolver implements TransformerResolverProvider {
         const { requestMappingTemplate, responseMappingTemplate } = mappingTemplate;
         // If both request and response mapping templates are provided, we can update the slot.
         if (requestMappingTemplate && responseMappingTemplate) {
-          slot.mappingTemplate = mappingTemplate;
+          slot.mappingTemplate = { requestMappingTemplate, responseMappingTemplate };
         }
 
         // If the slot is currently a JS runtime template, we can also assign the VTL template regardless of whether both request and
@@ -503,28 +509,26 @@ export class TransformerResolver implements TransformerResolverProvider {
         for (const slotItem of slotEntries!) {
           const name = `${this.typeName}${this.fieldName}${slotName}${index++}Function`;
           const { mappingTemplate, dataSource } = slotItem;
-          const { requestMappingTemplate, responseMappingTemplate } = mappingTemplate as VTLRuntimeTemplate;
-          const { codeMappingTemplate } = mappingTemplate as JSRuntimeTemplate;
+          if (this.isJsRuntimeTemplate(mappingTemplate)) {
+            const { codeMappingTemplate } = mappingTemplate;
+            this.substituteSlotInfo(codeMappingTemplate, slotName, index);
+            const fn = api.host.addAppSyncFunction(name, mappingTemplate, dataSource?.name || NONE_DATA_SOURCE_NAME, scope, slotItem.runtime);
+            appSyncFunctions.push(fn);
+          } else {
+            const { requestMappingTemplate, responseMappingTemplate } = mappingTemplate as VTLRuntimeTemplate;
+            // eslint-disable-next-line no-unused-expressions
+            requestMappingTemplate && this.substituteSlotInfo(requestMappingTemplate, slotName, index);
+            // eslint-disable-next-line no-unused-expressions
+            responseMappingTemplate && this.substituteSlotInfo(responseMappingTemplate, slotName, index);
 
-          // eslint-disable-next-line no-unused-expressions
-          requestMappingTemplate && this.substituteSlotInfo(requestMappingTemplate, slotName, index);
-          // eslint-disable-next-line no-unused-expressions
-          responseMappingTemplate && this.substituteSlotInfo(responseMappingTemplate, slotName, index);
-          // eslint-disable-next-line no-unused-expressions
-          codeMappingTemplate && this.substituteSlotInfo(codeMappingTemplate, slotName, index);
-
-          const defaultVtlTemplate = MappingTemplate.inlineTemplateFromString('$util.toJson({})');
-          const defaultJsTemplate = MappingTemplate.inlineTemplateFromString('return {};');
-
-          const template = isJsResolverFnRuntime(slotItem.runtime)
-            ? { codeMappingTemplate: codeMappingTemplate || defaultJsTemplate }
-            : {
-                requestMappingTemplate: requestMappingTemplate || defaultVtlTemplate,
-                responseMappingTemplate: responseMappingTemplate || defaultVtlTemplate,
-              };
-
-          const fn = api.host.addAppSyncFunction(name, template, dataSource?.name || NONE_DATA_SOURCE_NAME, scope, slotItem.runtime);
-          appSyncFunctions.push(fn);
+            const defaultVtlTemplate = MappingTemplate.inlineTemplateFromString('$util.toJson({})');
+            const template = {
+              requestMappingTemplate: requestMappingTemplate || defaultVtlTemplate,
+              responseMappingTemplate: responseMappingTemplate || defaultVtlTemplate,
+            };
+            const fn = api.host.addAppSyncFunction(name, template, dataSource?.name || NONE_DATA_SOURCE_NAME, scope, slotItem.runtime);
+            appSyncFunctions.push(fn);
+          }
         }
       }
     }
@@ -592,7 +596,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     return isJsResolverFnRuntime(runtime) ? generateJsStashStatement : generateVtlStashStatement;
   }
 
-  private getMappingTemplateNames(mappingTemplate?: FunctionRuntimeTemplate, fallbackName: string = ''): string[] {
+  private getMappingTemplateNames(mappingTemplate?: FunctionRuntimeTemplatePartialVTL, fallbackName: string = ''): string[] {
     if (this.isJsRuntimeTemplate(mappingTemplate)) {
       return [(mappingTemplate.codeMappingTemplate as any).name ?? fallbackName];
     } else {
@@ -602,7 +606,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     }
   }
 
-  private isJsRuntimeTemplate(mappingTemplate?: FunctionRuntimeTemplate): mappingTemplate is JSRuntimeTemplate {
+  private isJsRuntimeTemplate(mappingTemplate?: FunctionRuntimeTemplatePartialVTL): mappingTemplate is JSRuntimeTemplate {
     return (mappingTemplate as JSRuntimeTemplate).codeMappingTemplate !== undefined;
   }
 }

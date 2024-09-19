@@ -103,6 +103,8 @@ export {
   RDSConnectionSecrets,
   RDSDataSourceConfig,
   SQL_SCHEMA_FILE_NAME,
+  APPSYNC_JS_RUNTIME,
+  VTL_RUNTIME,
 } from './types';
 /**
  * Returns the extra set of directives that are supported by AppSync service.
