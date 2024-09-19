@@ -10,6 +10,7 @@ describe('Function Runtime Util Tests', () => {
   const api = new GraphQLApi(stack, 'testId', { name: 'testApiName', assetProvider: new AssetProvider(stack) });
 
   describe('APPSYNC_JS runtime', () => {
+    const runtime = APPSYNC_JS_RUNTIME;
     const code = `
     export function request(ctx) {
         return {};
@@ -22,22 +23,20 @@ describe('Function Runtime Util Tests', () => {
     it('should return runtime and code for inline template', () => {
       const codeMappingTemplate = MappingTemplate.inlineTemplateFromString(code);
       const mappingTemplate = { codeMappingTemplate };
-      const props = { mappingTemplate, APPSYNC_JS_RUNTIME, api };
+      const props = { mappingTemplate, runtime, api };
 
       const runtimeSpecificProps = getRuntimeSpecificFunctionProps(stack, props);
-      expect(runtimeSpecificProps).toEqual({
-        APPSYNC_JS_RUNTIME,
-        code,
-      });
+      expect(runtimeSpecificProps.code).toEqual(code);
+      expect(runtimeSpecificProps.runtime).toEqual(runtime);
     });
 
     it('should return runtime and codeS3Location for S3 mapping template', () => {
       const codeMappingTemplate = MappingTemplate.s3MappingTemplateFromString(code, 'test-template');
       const mappingTemplate = { codeMappingTemplate };
-      const props = { mappingTemplate, APPSYNC_JS_RUNTIME, api };
+      const props = { mappingTemplate, runtime, api };
 
       const { runtime: receivedRuntime, codeS3Location } = getRuntimeSpecificFunctionProps(stack, props);
-      expect(APPSYNC_JS_RUNTIME).toEqual(receivedRuntime);
+      expect(runtime).toEqual(receivedRuntime);
       expect(codeS3Location).toBeDefined();
     });
   });
