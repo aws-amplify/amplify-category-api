@@ -138,21 +138,12 @@ function _verifyAmplifyBackendCompatability {
 
   # Unset container credentials environment variables since some of the tests in packages/cli/src/command_middleware.test.ts 
   # expect not to fetch the credentials. This is to avoid the tests from failing.
+  echo "Unsetting container credentials environment variables"
   unset AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
   unset AWS_CONTAINER_CREDENTIALS_FULL_URI
   unset ECS_AGENT_URI
   unset ECS_CONTAINER_METADATA_URI_V4
   unset ECS_CONTAINER_METADATA_URI
-
-  # echo "Running fromNodeProviderChain()"
-  # yarn node packages/amplify-e2e-core/test.js
-
-  # echo "Printing instance id"
-  # curl http://169.254.169.254/latest/meta-data/instance-id
-
-  # # Set npm to use Bash as the shell
-  # echo "Configuring npm to use Bash as the script shell"
-  # npm config set script-shell $(which bash)
 
   # 1. Install NVM and set up
   echo "Installing NVM and setting Node.js version"
@@ -197,7 +188,7 @@ function _verifyAmplifyBackendCompatability {
   git diff package-lock.json | grep -e 'graphql-api-construct' -e 'data-construct'
   # Build and test the backend
   # npm run build && npm run test
-  npm run build && npm run test:dir packages/cli/lib/command_middleware.test.js
+  npm run build && npm run test
 
   # 4. Clean Up and Reset NPM Registry
   echo "Cleaning up environment"
