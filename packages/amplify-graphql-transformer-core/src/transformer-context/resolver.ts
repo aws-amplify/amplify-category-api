@@ -178,9 +178,23 @@ export class TransformerResolver implements TransformerResolverProvider {
     this.scope = scope;
   };
 
+  addJsFunctionToSlot = (slotName: string, codeMappingTemplate: MappingTemplateProvider, dataSource?: DataSourceProvider): void => {
+    this._addToSlot(slotName, { codeMappingTemplate }, dataSource);
+  };
+
   addToSlot = (
     slotName: string,
-    mappingTemplate?: FunctionRuntimeTemplate,
+    requestMappingTemplate: MappingTemplateProvider,
+    responseMappingTemplate: MappingTemplateProvider,
+    dataSource?: DataSourceProvider,
+    runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
+  ): void => {
+    this._addToSlot(slotName, { requestMappingTemplate, responseMappingTemplate }, dataSource, runtime);
+  };
+
+  private _addToSlot = (
+    slotName: string,
+    mappingTemplate: FunctionRuntimeTemplate,
     dataSource?: DataSourceProvider,
     runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
   ): void => {
