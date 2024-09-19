@@ -801,7 +801,9 @@ export interface TransformerProviderRegistry {
 // @public (undocumented)
 export interface TransformerResolverProvider {
     // (undocumented)
-    addToSlot: (slotName: string, mappingTemplate: FunctionRuntimeTemplate, dataSource?: DataSourceProvider) => void;
+    addJsFunctionToSlot: (slotName: string, codeMappingTemplate: MappingTemplateProvider, dataSource?: DataSourceProvider) => void;
+    // (undocumented)
+    addVtlFunctionToSlot: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider, dataSource?: DataSourceProvider) => void;
     // (undocumented)
     mapToStack: (stack: Stack) => void;
     // (undocumented)
@@ -881,9 +883,15 @@ export interface TransformHostProvider {
     // (undocumented)
     addAppSyncFunction: (name: string, mappingTemplate: FunctionRuntimeTemplate, dataSourceName: string, scope?: Construct, runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty) => AppSyncFunctionConfigurationProvider;
     // (undocumented)
+    addAppSyncJsRuntimeFunction: (name: string, codeMappingTemplate: MappingTemplateProvider, dataSourceName: string, scope?: Construct) => AppSyncFunctionConfigurationProvider;
+    // (undocumented)
+    addAppSyncVtlRuntimeFunction: (name: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, dataSourceName: string, scope?: Construct) => AppSyncFunctionConfigurationProvider;
+    // (undocumented)
     addDynamoDbDataSource(name: string, table: ITable, options?: DynamoDbDataSourceOptions, scope?: Construct): DynamoDbDataSource;
     // (undocumented)
     addHttpDataSource(name: string, endpoint: string, options?: HttpDataSourceOptions, scope?: Construct): HttpDataSource;
+    // (undocumented)
+    addJsRuntimeResolver: (typeName: string, fieldName: string, codeMappingTemplate: MappingTemplateProvider, resolverLogicalId?: string, dataSourceName?: string, pipelineConfig?: string[], scope?: Construct) => CfnResolver;
     // (undocumented)
     addLambdaDataSource(name: string, lambdaFunction: IFunction, options?: DataSourceOptions, scope?: Construct): LambdaDataSource;
     // (undocumented)
@@ -896,6 +904,8 @@ export interface TransformHostProvider {
     addResolver: (typeName: string, fieldName: string, mappingTemplate: FunctionRuntimeTemplate, resolverLogicalId?: string, dataSourceName?: string, pipelineConfig?: string[], scope?: Construct, runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty) => CfnResolver;
     // (undocumented)
     addSearchableDataSource(name: string, endpoint: string, region: string, options?: SearchableDataSourceOptions, scope?: Construct): BaseDataSource;
+    // (undocumented)
+    addVtlRuntimeResolver: (typeName: string, fieldName: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, resolverLogicalId?: string, dataSourceName?: string, pipelineConfig?: string[], scope?: Construct) => CfnResolver;
     // (undocumented)
     getDataSource: (name: string) => BaseDataSource | void;
     // (undocumented)
@@ -951,8 +961,8 @@ export interface VpcConfig {
 
 // @public (undocumented)
 export type VTLRuntimeTemplate = {
-    requestMappingTemplate?: MappingTemplateProvider;
-    responseMappingTemplate?: MappingTemplateProvider;
+    requestMappingTemplate: MappingTemplateProvider;
+    responseMappingTemplate: MappingTemplateProvider;
 };
 
 // Warnings were encountered during analysis:
