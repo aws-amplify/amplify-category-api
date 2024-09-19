@@ -51,7 +51,4 @@ batch:
       buildspec: codebuild_specs/verify_amplify_backend_compatability.yml
       depend-on:
         - build_linux
-      # debug-session: true
-      env:
-        variables:
-          ECS_ENABLE_CONTAINER_METADATA: false
+      debug-session: true
