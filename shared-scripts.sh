@@ -141,9 +141,6 @@ function _verifyAmplifyBackendCompatability {
   echo "Unsetting container credentials environment variables"
   unset AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
   unset AWS_CONTAINER_CREDENTIALS_FULL_URI
-  unset ECS_AGENT_URI
-  unset ECS_CONTAINER_METADATA_URI_V4
-  unset ECS_CONTAINER_METADATA_URI
 
   # 1. Install NVM and set up
   echo "Installing NVM and setting Node.js version"
