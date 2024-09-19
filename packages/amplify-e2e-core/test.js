@@ -1,6 +1,6 @@
 // disable eslint rule for this file
 /* eslint-disable */
-const { fromInstanceMetadata, fromNodeProviderChain } = require('@aws-sdk/credential-providers');
+const { fromContainerMetadata, fromNodeProviderChain } = require('@aws-sdk/credential-providers');
 const fs = require('fs');
 const path = require('path');
 
@@ -49,10 +49,10 @@ const loadCredentials = async () => {
   // log env var AWS_ROLE_SESSION_NAME
   console.log('AWS_ROLE_SESSION_NAME env var:', process.env.AWS_ROLE_SESSION_NAME);
 
-  // output from fromInstanceMetadata
+  // output from fromContainerMetadata
   try {
-    const credentials = await fromInstanceMetadata()();
-    console.log('Output from fromInstanceMetadata:');
+    const credentials = await fromContainerMetadata()();
+    console.log('Output from fromContainerMetadata:');
     console.log(credentials);
   }
   catch (e) {
