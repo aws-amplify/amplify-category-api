@@ -1,7 +1,7 @@
 import { MappingTemplateProvider, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-transformer';
 import { processTools } from '../utils/tools';
-import { TransformerResolver } from '@aws-amplify/graphql-transformer-core';
+import { APPSYNC_JS_RUNTIME, TransformerResolver } from '@aws-amplify/graphql-transformer-core';
 import { ResolverResourceIDs, FunctionResourceIDs, ResourceConstants, toUpper } from 'graphql-transformer-common';
 import * as cdk from 'aws-cdk-lib';
 import { conversation } from '@aws-amplify/ai-constructs';
@@ -163,7 +163,6 @@ export class ConversationResolverGenerator {
     invokeLambdaFunction: MappingTemplateProvider,
   ): void {
     const resolverResourceId = ResolverResourceIDs.ResolverResourceID(parentName, fieldName);
-    const runtime = { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' };
     const mappingTemplate = {
       codeMappingTemplate: invokeLambdaFunction,
     };
@@ -175,10 +174,10 @@ export class ConversationResolverGenerator {
       ['init', 'auth', 'verifySessionOwner', 'writeMessageToTable', 'retrieveMessageHistory'],
       ['handleLambdaResponse', 'finish'],
       functionDataSource,
-      runtime,
+      APPSYNC_JS_RUNTIME,
     );
 
-    this.addPipelineResolverFunctions(ctx, conversationPipelineResolver, capitalizedFieldName, runtime);
+    this.addPipelineResolverFunctions(ctx, conversationPipelineResolver, capitalizedFieldName);
 
     ctx.resolvers.addResolver(parentName, fieldName, conversationPipelineResolver);
   }
@@ -194,26 +193,24 @@ export class ConversationResolverGenerator {
     ctx: TransformerContextProvider,
     resolver: TransformerResolver,
     capitalizedFieldName: string,
-    runtime: { name: string; runtimeVersion: string },
   ): void {
     // Add init function
     const initFunction = initMappingTemplate();
-    resolver.addToSlot('init', { codeMappingTemplate: initFunction }, undefined, runtime);
+    resolver.addJsFunctionToSlot('init', initFunction);
 
     // Add auth function
     const authFunction = authMappingTemplate();
-    resolver.addToSlot('auth', { codeMappingTemplate: authFunction }, undefined, runtime);
+    resolver.addJsFunctionToSlot('auth', authFunction);
 
     // Add verifySessionOwner function
     const verifySessionOwnerFunction = verifySessionOwnerMappingTemplate();
     const sessionModelName = `Conversation${capitalizedFieldName}`;
     const sessionModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, sessionModelName);
     const conversationSessionDDBDataSource = ctx.api.host.getDataSource(sessionModelDDBDataSourceName);
-    resolver.addToSlot(
+    resolver.addJsFunctionToSlot(
       'verifySessionOwner',
-      { codeMappingTemplate: verifySessionOwnerFunction },
+      verifySessionOwnerFunction,
       conversationSessionDDBDataSource as any,
-      runtime,
     );
 
     // Add writeMessageToTable function
@@ -221,17 +218,14 @@ export class ConversationResolverGenerator {
     const messageModelName = `ConversationMessage${capitalizedFieldName}`;
     const messageModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, messageModelName);
     const messageDDBDataSource = ctx.api.host.getDataSource(messageModelDDBDataSourceName);
-    resolver.addToSlot('writeMessageToTable', { codeMappingTemplate: writeMessageToTableFunction }, messageDDBDataSource as any, runtime);
+    resolver.addJsFunctionToSlot('writeMessageToTable', writeMessageToTableFunction, messageDDBDataSource as any);
 
     // Add retrieveMessageHistory function
     const retrieveMessageHistoryFunction = readHistoryMappingTemplate();
-    resolver.addToSlot(
+    resolver.addJsFunctionToSlot(
       'retrieveMessageHistory',
-      {
-        codeMappingTemplate: retrieveMessageHistoryFunction,
-      },
+      retrieveMessageHistoryFunction,
       messageDDBDataSource as any,
-      runtime,
     );
   }
 
