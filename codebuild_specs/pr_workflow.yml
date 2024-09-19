@@ -54,5 +54,4 @@ batch:
       # debug-session: true
       env:
         variables:
-          ECS_ENABLE_CONTAINER_METADATA: "false"
-
+          ECS_ENABLE_CONTAINER_METADATA: false
