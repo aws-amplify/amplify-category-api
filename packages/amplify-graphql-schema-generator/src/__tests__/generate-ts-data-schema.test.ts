@@ -182,7 +182,7 @@ describe('Type name conversions', () => {
     const model = new Model('User');
     model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
     model.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
-    model.addField(new Field('status', { kind: 'NonNull', type: {kind: 'Enum', name: 'UserStatus', values: ['ACTIVE', 'INACTIVE'] }}));
+    model.addField(new Field('status', { kind: 'NonNull', type: { kind: 'Enum', name: 'UserStatus', values: ['ACTIVE', 'INACTIVE'] } }));
     model.setPrimaryKey(['id']);
     dbschema.addModel(model);
 
@@ -196,12 +196,16 @@ describe('Type name conversions', () => {
     const modelTest = new Model('Test');
     modelUser.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
     modelUser.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
-    modelUser.addField(new Field('status', { kind: 'NonNull', type: {kind: 'Enum', name: 'UserStatus', values: ['ACTIVE', 'INACTIVE'] }}));
+    modelUser.addField(
+      new Field('status', { kind: 'NonNull', type: { kind: 'Enum', name: 'UserStatus', values: ['ACTIVE', 'INACTIVE'] } }),
+    );
     modelUser.setPrimaryKey(['id']);
     dbschema.addModel(modelUser);
     modelTest.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
     modelTest.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
-    modelTest.addField(new Field('status', { kind: 'NonNull', type: {kind: 'Enum', name: 'UserStatus', values: ['ACTIVE', 'INACTIVE'] }}));
+    modelTest.addField(
+      new Field('status', { kind: 'NonNull', type: { kind: 'Enum', name: 'UserStatus', values: ['ACTIVE', 'INACTIVE'] } }),
+    );
     modelTest.setPrimaryKey(['id']);
     dbschema.addModel(modelTest);
 
@@ -215,12 +219,14 @@ describe('Type name conversions', () => {
     const modelTest = new Model('Test');
     modelUser.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
     modelUser.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
-    modelUser.addField(new Field('status', { kind: 'NonNull', type: {kind: 'Enum', name: 'userStatus', values: ['ACTIVE', 'INACTIVE'] }}));
+    modelUser.addField(
+      new Field('status', { kind: 'NonNull', type: { kind: 'Enum', name: 'userStatus', values: ['ACTIVE', 'INACTIVE'] } }),
+    );
     modelUser.setPrimaryKey(['id']);
     dbschema.addModel(modelUser);
     modelTest.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
     modelTest.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
-    modelTest.addField(new Field('age', { kind: 'NonNull', type: {kind: 'Enum', name: 'Testage', values: ['Above18', 'Below18'] }}));
+    modelTest.addField(new Field('age', { kind: 'NonNull', type: { kind: 'Enum', name: 'Testage', values: ['Above18', 'Below18'] } }));
     modelTest.setPrimaryKey(['id']);
     dbschema.addModel(modelTest);
 
@@ -228,19 +234,22 @@ describe('Type name conversions', () => {
     expect(graphqlSchema).toMatchSnapshot();
   });
 
-
   it('generates enums with random names to pascalCase', () => {
     const dbschema = new Schema(new Engine('MySQL'));
     const modelUser = new Model('User');
     const modelTest = new Model('Test');
     modelUser.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
     modelUser.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
-    modelUser.addField(new Field('status', { kind: 'NonNull', type: {kind: 'Enum', name: 'userStatus_test', values: ['ACTIVE', 'INACTIVE'] }}));
+    modelUser.addField(
+      new Field('status', { kind: 'NonNull', type: { kind: 'Enum', name: 'userStatus_test', values: ['ACTIVE', 'INACTIVE'] } }),
+    );
     modelUser.setPrimaryKey(['id']);
     dbschema.addModel(modelUser);
     modelTest.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
     modelTest.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
-    modelTest.addField(new Field('age', { kind: 'NonNull', type: {kind: 'Enum', name: 'Testage_age_tre', values: ['Above18', 'Below18'] }}));
+    modelTest.addField(
+      new Field('age', { kind: 'NonNull', type: { kind: 'Enum', name: 'Testage_age_tre', values: ['Above18', 'Below18'] } }),
+    );
     modelTest.setPrimaryKey(['id']);
     dbschema.addModel(modelTest);
 

@@ -19,7 +19,3 @@ export const generateTypescriptDataSchema = (schema: Schema, config?: DataSource
   );
   return result;
 };
-
-
-
-
