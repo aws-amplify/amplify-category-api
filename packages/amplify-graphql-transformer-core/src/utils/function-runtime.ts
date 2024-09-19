@@ -57,10 +57,10 @@ export const getRuntimeSpecificFunctionProps = (
 ): RuntimeSpecificFunctionProps => {
   const { mappingTemplate, runtime, api } = props;
 
-  if (isJsResolverFnRuntime(runtime)) {
-    const { codeMappingTemplate } = mappingTemplate as JSRuntimeTemplate;
-    if (!codeMappingTemplate) {
-      throw new Error('codeMappingTemplate is required for JavaScript resolver function runtimes');
+  if (isJsRuntimeTemplate(mappingTemplate)) {
+    const { codeMappingTemplate } = mappingTemplate;
+    if (!isJsResolverFnRuntime(runtime)) {
+      throw new Error('Runtime provided with codeMappingTemplate is not a JavaScript runtime');
     }
     const codeTemplateLocation = codeMappingTemplate.bind(scope, api.assetProvider);
     return codeMappingTemplate.type === MappingTemplateType.INLINE
@@ -68,7 +68,7 @@ export const getRuntimeSpecificFunctionProps = (
       : { runtime, codeS3Location: codeTemplateLocation };
   }
 
-  const { requestMappingTemplate, responseMappingTemplate } = mappingTemplate as VTLRuntimeTemplate;
+  const { requestMappingTemplate, responseMappingTemplate } = mappingTemplate;
   const requestTemplateLocation = requestMappingTemplate?.bind(scope, api.assetProvider);
   const responseTemplateLocation = responseMappingTemplate?.bind(scope, api.assetProvider);
   return {
@@ -79,4 +79,10 @@ export const getRuntimeSpecificFunctionProps = (
       ? { responseMappingTemplate: responseTemplateLocation }
       : { responseMappingTemplateS3Location: responseTemplateLocation }),
   };
+};
+
+export const isJsRuntimeTemplate = (
+  mappingTemplate?: Partial<VTLRuntimeTemplate> | JSRuntimeTemplate,
+): mappingTemplate is JSRuntimeTemplate => {
+  return (mappingTemplate as JSRuntimeTemplate).codeMappingTemplate !== undefined;
 };
