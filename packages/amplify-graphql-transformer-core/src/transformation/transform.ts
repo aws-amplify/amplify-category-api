@@ -417,14 +417,14 @@ export class GraphQLTransform {
       const userSlots = this.userDefinedSlots[resolverName] || [];
 
       userSlots.forEach((slot) => {
-        const requestMappingTemplate = slot.requestResolver
+        const requestTemplate = slot.requestResolver
           ? MappingTemplate.s3MappingTemplateFromString(slot.requestResolver.template, slot.requestResolver.fileName)
           : undefined;
-        const responseMappingTemplate = slot.responseResolver
+        const responseTemplate = slot.responseResolver
           ? MappingTemplate.s3MappingTemplateFromString(slot.responseResolver.template, slot.responseResolver.fileName)
           : undefined;
 
-        resolver.addToSlot(slot.slotName, { requestMappingTemplate, responseMappingTemplate });
+        resolver.addToSlot(slot.slotName, requestTemplate, responseTemplate);
       });
 
       resolver.synthesize(context, api);

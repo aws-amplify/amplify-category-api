@@ -184,8 +184,8 @@ export class TransformerResolver implements TransformerResolverProvider {
 
   addToSlot = (
     slotName: string,
-    requestMappingTemplate: MappingTemplateProvider,
-    responseMappingTemplate: MappingTemplateProvider,
+    requestMappingTemplate?: MappingTemplateProvider,
+    responseMappingTemplate?: MappingTemplateProvider,
     dataSource?: DataSourceProvider,
     runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
   ): void => {

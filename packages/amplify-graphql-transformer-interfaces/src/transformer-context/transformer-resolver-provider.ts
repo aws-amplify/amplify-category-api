@@ -9,7 +9,7 @@ export type JSRuntimeTemplate = { codeMappingTemplate: MappingTemplateProvider }
 export type FunctionRuntimeTemplate = VTLRuntimeTemplate | JSRuntimeTemplate;
 
 export interface TransformerResolverProvider {
-  addToSlot: (slotName: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, dataSource?: DataSourceProvider) => void;
+  addToSlot: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider, dataSource?: DataSourceProvider) => void;
   addJsFunctionToSlot: (slotName: string, codeMappingTemplate: MappingTemplateProvider, dataSource?: DataSourceProvider) => void;
   synthesize: (context: TransformerContextProvider, api: GraphQLAPIProvider) => void;
   setScope: (scope: Construct) => void;
