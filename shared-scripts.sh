@@ -136,6 +136,11 @@ function _verifyAmplifyBackendCompatability {
   echo "Verify Amplify Backend Compatibility"
   loadCacheFromBuildJob
 
+  unset AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
+  unset ECS_AGENT_URI
+  unset ECS_CONTAINER_METADATA_URI_V4
+  unset ECS_CONTAINER_METADATA_URI
+
   echo "Running fromNodeProviderChain()"
   yarn node packages/amplify-e2e-core/test.js
 
