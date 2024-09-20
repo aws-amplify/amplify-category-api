@@ -174,7 +174,7 @@ function _verifyAmplifyBackendCompatability {
   echo "Emulating Validate Shell"
   # Move back to root and clone amplify-backend repo
   cd ..
-  git clone https://github.com/aws-amplify/amplify-backend.git
+  git clone --depth 1 https://github.com/aws-amplify/amplify-backend.git
   cd amplify-backend
   # Create a new local branch for testing 
   git checkout -B validate-amplify-backend
