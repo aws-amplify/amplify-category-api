@@ -144,7 +144,7 @@ function _verifyAmplifyBackendCompatability {
 
   # 1. Install NVM and set up
   echo "Installing NVM and setting Node.js version"
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+  curl -o - https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
   export NVM_DIR="$HOME/.nvm"
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
   nvm install 18.20.4
