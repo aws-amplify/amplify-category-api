@@ -152,9 +152,6 @@ function _verifyAmplifyBackendCompatability {
   nvm use 18.20.4
   echo "Node.js version in use:"
   node -v
-  # # Increase buffer size to avoid error when git operations return large response on CI
-  # git config http.version HTTP/1.1
-  # git config http.postBuffer 157286400
 
   # 2. Publish Shell (Emulating the "publish" shell)
   echo "Emulating Publish Shell"
@@ -182,18 +179,19 @@ function _verifyAmplifyBackendCompatability {
   # Update the packages and ensure the correct versions are being used
   npm update
   # Verify that the package-lock.json contains the updated version with localhost tarballs
-  git diff package-lock.json | grep -e 'graphql-api-construct' -e 'data-construct'
+  git diff package-lock.json | grep -E 'graphql-api-construct.*localhost:4873.*tgz|data-construct.*localhost:4873.*tgz'
+  echo "package-lock.json diff:"
+  git diff package-lock.json
   # Build and test the backend
-  # npm run build && npm run test
   npm run build && npm run test
 
   # 4. Clean Up and Reset NPM Registry
   echo "Cleaning up environment"
-  # Reset NPM registry to npmjs.org
-  cd $CODEBUILD_SRC_DIR
+  # # Reset NPM registry to npmjs.org
+  # cd $CODEBUILD_SRC_DIR
   unsetNpmRegistryUrl
-  npm config get registry
-  # Stop Verdaccio server
+  # npm config get registry
+  # # Stop Verdaccio server
   yarn verdaccio-stop
 
   echo "Amplify Backend Compatibility verification complete."
