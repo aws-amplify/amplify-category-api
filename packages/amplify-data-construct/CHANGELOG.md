@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.10.1-ai.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.10.1...@aws-amplify/data-construct@1.10.1-ai.2) (2024-09-20)
+
+### Bug Fixes
+
+- experimental bedrock bundling - use pinned ai-constructs dep ([5b4b708](https://github.com/aws-amplify/amplify-category-api/commit/5b4b7085219a2766d9992ad557f886b93d5f1a91))
+
 ## [1.10.1-ai.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.10.1-ai.0...@aws-amplify/data-construct@1.10.1-ai.1) (2024-09-12)
 
 **Note:** Version bump only for package @aws-amplify/data-construct

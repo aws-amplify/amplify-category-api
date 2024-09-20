@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.1-ai.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-directives@2.2.0...@aws-amplify/graphql-directives@2.2.1-ai.0) (2024-09-20)
+
+**Note:** Version bump only for package @aws-amplify/graphql-directives
+
 # [2.2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-directives@2.1.0...@aws-amplify/graphql-directives@2.2.0) (2024-09-16)
 
 ### Features
