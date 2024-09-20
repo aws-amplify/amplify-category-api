@@ -4,7 +4,7 @@ import { getResourceNamesForStrategyName } from '@aws-amplify/graphql-transforme
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { cdkDestroy } from '../commands';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
-import { testGraphQLAPI } from './sql-models-common';
+import { testGraphQLAPI } from '../rds-tests-common/rds-models-common';
 
 jest.setTimeout(DURATION_1_HOUR);
 

@@ -28,12 +28,21 @@ interface DBDetails {
     };
   };
   dbConnectionConfig: SqlModelDataSourceDbConnectionConfig;
+  schemaConfig: string | null;
 }
+
+const defaultSchemaConfig = `
+  type Todo @model @refersTo(name: "todos") {
+    id: ID! @primaryKey
+    description: String!
+  }
+`;
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const dbDetails: DBDetails = require('../db-details.json');
 const strategyName = dbDetails.dbConfig.strategyName;
 const dbType = dbDetails.dbConfig.dbType;
+const schemaConfig = dbDetails.schemaConfig ?? defaultSchemaConfig;
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
@@ -45,36 +54,21 @@ const stack = new Stack(app, packageJson.name.replace(/_/g, '-'), {
 
 const api = new AmplifyGraphqlApi(stack, 'SqlBoundApi', {
   apiName: `${dbType}${Date.now()}`,
-  definition: AmplifyGraphqlDefinition.fromString(
-    /* GraphQL */ `
-      type Todo @model @refersTo(name: "todos") {
-        id: ID! @primaryKey
-        description: String!
-      }
-
-      type Student @model @refersTo(name: "students") {
-        studentId: Int! @primaryKey(sortKeyFields: ["classId"])
-        classId: String!
-        firstName: String
-        lastName: String
-      }
-    `,
-    {
-      name: strategyName,
-      dbType,
-      vpcConfiguration: {
-        vpcId: dbDetails.dbConfig.vpcConfig.vpcId,
-        securityGroupIds: dbDetails.dbConfig.vpcConfig.securityGroupIds,
-        subnetAvailabilityZoneConfig: dbDetails.dbConfig.vpcConfig.subnetAvailabilityZones,
-      },
-      dbConnectionConfig: {
-        ...dbDetails.dbConnectionConfig,
-      },
-      sqlLambdaProvisionedConcurrencyConfig: {
-        provisionedConcurrentExecutions: 2,
-      },
+  definition: AmplifyGraphqlDefinition.fromString(schemaConfig, {
+    name: strategyName,
+    dbType,
+    vpcConfiguration: {
+      vpcId: dbDetails.dbConfig.vpcConfig.vpcId,
+      securityGroupIds: dbDetails.dbConfig.vpcConfig.securityGroupIds,
+      subnetAvailabilityZoneConfig: dbDetails.dbConfig.vpcConfig.subnetAvailabilityZones,
     },
-  ),
+    dbConnectionConfig: {
+      ...dbDetails.dbConnectionConfig,
+    },
+    sqlLambdaProvisionedConcurrencyConfig: {
+      provisionedConcurrentExecutions: 2,
+    },
+  }),
   authorizationModes: {
     apiKeyConfig: { expires: Duration.days(7) },
   },

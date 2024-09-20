@@ -3,7 +3,6 @@ import { LambdaClient, GetProvisionedConcurrencyConfigCommand } from '@aws-sdk/c
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
 import { initCDKProject, cdkDeploy } from '../commands';
-import { GraphqlResponse, graphql } from '../graphql-request';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { ONE_MINUTE } from '../utils/duration-constants';
 
@@ -14,10 +13,23 @@ export const testGraphQLAPI = async (options: {
   dbController: SqlDatatabaseController;
   resourceNames: { sqlLambdaAliasName: string };
 }): Promise<void> => {
-  const templatePath = path.resolve(path.join(__dirname, 'backends', 'sql-models'));
+  const amplifyGraphqlSchema = `
+    type Todo @model @refersTo(name: "todos") {
+      id: ID! @primaryKey
+      description: String!
+    }
+    type Student @model @refersTo(name: "students") {
+      studentId: Int! @primaryKey(sortKeyFields: ["classId"])
+      classId: String!
+      firstName: String
+      lastName: String
+    }
+  `;
+
+  const templatePath = path.resolve(path.join(__dirname, '..', '__tests__', 'backends', 'sql-models'));
   const { projRoot, region, connectionConfigName, dbController, resourceNames } = options;
   const name = await initCDKProject(projRoot, templatePath);
-  dbController.writeDbDetails(projRoot, connectionConfigName);
+  dbController.writeDbDetails(projRoot, connectionConfigName, amplifyGraphqlSchema);
   const outputs = await cdkDeploy(projRoot, '--all', { postDeployWaitMs: ONE_MINUTE });
   const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[name];
 
