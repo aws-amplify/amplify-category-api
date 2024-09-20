@@ -149,8 +149,8 @@ function _verifyAmplifyBackendCompatability {
   # [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
   # nvm install 18.20.4
   # nvm use 18.20.4
-  # echo "Node.js version in use:"
-  # node -v
+  echo "Node.js version in use:"
+  node -v
   # Increase buffer size to avoid error when git operations return large response on CI
   git config http.version HTTP/1.1
   git config http.postBuffer 157286400
