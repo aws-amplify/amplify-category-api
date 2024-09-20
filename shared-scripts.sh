@@ -149,7 +149,6 @@ function _verifyAmplifyBackendCompatability {
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
   nvm install 18.20.4
   nvm use 18.20.4
-  # Echo to verify the Node.js version
   echo "Node.js version in use:"
   node -v
   # Increase buffer size to avoid error when git operations return large response on CI
