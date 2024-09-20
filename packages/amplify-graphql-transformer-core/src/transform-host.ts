@@ -34,6 +34,7 @@ import { S3MappingFunctionCode } from './cdk-compat/template-asset';
 import { GraphQLApi } from './graphql-api';
 import { setResourceName } from './utils';
 import { getRuntimeSpecificFunctionProps, isJsResolverFnRuntime } from './utils/function-runtime';
+import { APPSYNC_JS_RUNTIME, VTL_RUNTIME } from './types';
 
 type Slot = {
   requestMappingTemplate?: string;
@@ -144,9 +145,8 @@ export class DefaultTransformHost implements TransformHostProvider {
     codeMappingTemplate: MappingTemplateProvider,
     dataSourceName: string,
     scope?: Construct,
-    runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
   ): AppSyncFunctionConfiguration => {
-    return this.addAppSyncFunction(name, { codeMappingTemplate }, dataSourceName, scope, runtime);
+    return this.addAppSyncFunction(name, { codeMappingTemplate }, dataSourceName, scope, APPSYNC_JS_RUNTIME);
   };
 
   public addAppSyncVtlRuntimeFunction = (
@@ -155,9 +155,8 @@ export class DefaultTransformHost implements TransformHostProvider {
     responseMappingTemplate: MappingTemplateProvider,
     dataSourceName: string,
     scope?: Construct,
-    runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
   ): AppSyncFunctionConfiguration => {
-    return this.addAppSyncFunction(name, { requestMappingTemplate, responseMappingTemplate }, dataSourceName, scope, runtime);
+    return this.addAppSyncFunction(name, { requestMappingTemplate, responseMappingTemplate }, dataSourceName, scope, VTL_RUNTIME);
   };
 
   public addAppSyncFunction = (
@@ -206,7 +205,6 @@ export class DefaultTransformHost implements TransformHostProvider {
     dataSourceName?: string,
     pipelineConfig?: string[],
     scope?: Construct,
-    runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
   ): CfnResolver => {
     return this.addResolver(
       typeName,
@@ -216,7 +214,7 @@ export class DefaultTransformHost implements TransformHostProvider {
       dataSourceName,
       pipelineConfig,
       scope,
-      runtime,
+      APPSYNC_JS_RUNTIME,
     );
   };
 
@@ -229,7 +227,6 @@ export class DefaultTransformHost implements TransformHostProvider {
     dataSourceName?: string,
     pipelineConfig?: string[],
     scope?: Construct,
-    runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
   ): CfnResolver => {
     return this.addResolver(
       typeName,
@@ -239,7 +236,7 @@ export class DefaultTransformHost implements TransformHostProvider {
       dataSourceName,
       pipelineConfig,
       scope,
-      runtime,
+      VTL_RUNTIME,
     );
   };
 
