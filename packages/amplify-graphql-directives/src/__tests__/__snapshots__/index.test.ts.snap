@@ -273,9 +273,15 @@ Object {
 
 exports[`Directive Definitions FunctionDirective 1`] = `
 Object {
-  "defaults": Object {},
+  "defaults": Object {
+    "invocationType": "RequestResponse",
+  },
   "definition": "
-  directive @function(name: String!, region: String, accountId: String) repeatable on FIELD_DEFINITION
+  directive @function(name: String!, region: String, accountId: String, invocationType: InvocationType = RequestResponse) repeatable on FIELD_DEFINITION
+  enum InvocationType {
+    RequestResponse
+    Event
+  }
 ",
   "name": "function",
 }

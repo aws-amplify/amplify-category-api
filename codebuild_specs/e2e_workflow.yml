@@ -54,84 +54,51 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
       depend-on:
         - build_linux
-    - identifier: auth_2_datastore_modelgen_mock_api_amplify_app_custom_transformers
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=14848'
-          TEST_SUITE: >-
-            src/__tests__/auth_2.test.ts|src/__tests__/datastore-modelgen.test.ts|src/__tests__/mock-api.test.ts|src/__tests__/amplify-app.test.ts|src/__tests__/graphql-v2/custom-transformers.test.ts
-          CLI_REGION: ap-northeast-1
-      depend-on:
-        - publish_to_local_registry
     - identifier: >-
-        invalid_input_arguments_schema_data_access_patterns_schema_predictions_function_10_api_7
+        custom_transformers_invalid_input_arguments_schema_data_access_patterns_schema_predictions_function_10
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
           TEST_SUITE: >-
-            src/__tests__/graphql-v2/invalid-input-arguments.test.ts|src/__tests__/schema-data-access-patterns.test.ts|src/__tests__/schema-predictions.test.ts|src/__tests__/function_10.test.ts|src/__tests__/api_7.test.ts
-          CLI_REGION: ap-southeast-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: >-
-        schema_function_2_global_sandbox_schema_iterative_update_3_api_8_schema_iterative_update_locking
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=14848'
-          TEST_SUITE: >-
-            src/__tests__/schema-function-2.test.ts|src/__tests__/global_sandbox.test.ts|src/__tests__/schema-iterative-update-3.test.ts|src/__tests__/api_8.test.ts|src/__tests__/schema-iterative-update-locking.test.ts
-          CLI_REGION: eu-south-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: >-
-        schema_iterative_update_1_lambda_conflict_handler_index_with_stack_mappings_schema_iterative_update_2_custom_policies_container
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=14848'
-          TEST_SUITE: >-
-            src/__tests__/schema-iterative-update-1.test.ts|src/__tests__/graphql-v2/lambda-conflict-handler.test.ts|src/__tests__/graphql-v2/index-with-stack-mappings.test.ts|src/__tests__/schema-iterative-update-2.test.ts|src/__tests__/custom_policies_container.test.ts
-          CLI_REGION: us-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_4_containers_api_secrets_api_5_schema_function_1_api_3
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=14848'
-          TEST_SUITE: >-
-            src/__tests__/api_4.test.ts|src/__tests__/containers-api-secrets.test.ts|src/__tests__/api_5.test.ts|src/__tests__/schema-function-1.test.ts|src/__tests__/api_3.test.ts
+            src/__tests__/graphql-v2/custom-transformers.test.ts|src/__tests__/graphql-v2/invalid-input-arguments.test.ts|src/__tests__/schema-data-access-patterns.test.ts|src/__tests__/schema-predictions.test.ts|src/__tests__/function_10.test.ts
           CLI_REGION: ap-northeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        generate_ts_data_schema_resolvers_sync_query_datastore_api_6_api_lambda_auth
+        api_7_schema_function_2_global_sandbox_lambda_conflict_handler_index_with_stack_mappings
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
           TEST_SUITE: >-
-            src/__tests__/generate_ts_data_schema.test.ts|src/__tests__/resolvers.test.ts|src/__tests__/graphql-v2/sync_query_datastore.test.ts|src/__tests__/api_6.test.ts|src/__tests__/graphql-v2/api_lambda_auth.test.ts
-          CLI_REGION: ap-southeast-1
+            src/__tests__/api_7.test.ts|src/__tests__/schema-function-2.test.ts|src/__tests__/global_sandbox.test.ts|src/__tests__/graphql-v2/lambda-conflict-handler.test.ts|src/__tests__/graphql-v2/index-with-stack-mappings.test.ts
+          CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
-    - identifier: api_9
+    - identifier: >-
+        api_5_schema_function_1_generate_ts_data_schema_resolvers_sync_query_datastore
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
-          TEST_SUITE: src/__tests__/api_9.test.ts
-          CLI_REGION: ap-southeast-2
+          TEST_SUITE: >-
+            src/__tests__/api_5.test.ts|src/__tests__/schema-function-1.test.ts|src/__tests__/generate_ts_data_schema.test.ts|src/__tests__/resolvers.test.ts|src/__tests__/graphql-v2/sync_query_datastore.test.ts
+          CLI_REGION: ca-central-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: api_6_api_lambda_auth
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          NODE_OPTIONS: '--max-old-space-size=14848'
+          TEST_SUITE: >-
+            src/__tests__/api_6.test.ts|src/__tests__/graphql-v2/api_lambda_auth.test.ts
+          CLI_REGION: eu-west-3
       depend-on:
         - publish_to_local_registry
     - identifier: rds_v2
@@ -141,17 +108,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-v2.test.ts
-          CLI_REGION: ap-southeast-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_10
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/api_10.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: ap-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_iterative_update_5
@@ -161,7 +118,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/schema-iterative-update-5.test.ts
-          CLI_REGION: ca-central-1
+          CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_2
@@ -171,7 +128,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/schema-auth-2.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_10
@@ -181,7 +138,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/schema-auth-10.test.ts
-          CLI_REGION: eu-north-1
+          CLI_REGION: ca-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_1
@@ -191,7 +148,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/schema-auth-1.test.ts
-          CLI_REGION: eu-south-1
+          CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_13
@@ -201,7 +158,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/schema-auth-13.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: eu-north-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_12
@@ -211,7 +168,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/schema-auth-12.test.ts
-          CLI_REGION: eu-west-3
+          CLI_REGION: eu-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_3
@@ -221,7 +178,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/schema-auth-3.test.ts
-          CLI_REGION: me-south-1
+          CLI_REGION: eu-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_15
@@ -231,27 +188,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/schema-auth-15.test.ts
-          CLI_REGION: sa-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: schema_iterative_rollback_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/schema-iterative-rollback-1.test.ts
-          CLI_REGION: us-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: schema_iterative_rollback_2
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/schema-iterative-rollback-2.test.ts
-          CLI_REGION: us-west-1
+          CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_8
@@ -261,7 +198,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/schema-auth-8.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: me-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_4
@@ -271,17 +208,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/schema-auth-4.test.ts
-          CLI_REGION: ap-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: containers_api_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/containers-api-1.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: sa-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_11
@@ -291,7 +218,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/schema-auth-11.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: sql_generate_unauth
@@ -301,7 +228,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/sql-generate-unauth.test.ts
-          CLI_REGION: eu-north-1
+          CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_model
@@ -311,7 +238,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/schema-model.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: us-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_v2_test_utils
@@ -321,7 +248,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-v2-test-utils.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: ap-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_relational_directives
@@ -331,7 +258,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-relational-directives.test.ts
-          CLI_REGION: eu-west-3
+          CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_pg_v2_generate_schema
@@ -341,7 +268,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-pg-v2-generate-schema.test.ts
-          CLI_REGION: sa-east-1
+          CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: rds_pg_userpool_auth
@@ -351,7 +278,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-pg-userpool-auth.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: ca-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_pg_userpool_auth_fields
@@ -361,7 +288,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-pg-userpool-auth-fields.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_pg_relational_directives
@@ -371,7 +298,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-pg-relational-directives.test.ts
-          CLI_REGION: us-west-1
+          CLI_REGION: eu-north-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_pg_refers_to
@@ -381,7 +308,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-pg-refers-to.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: eu-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_pg_refers_to_fields
@@ -391,7 +318,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-pg-refers-to-fields.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: rds_pg_oidc_auth
@@ -401,7 +328,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-pg-oidc-auth.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: eu-west-3
       depend-on:
         - publish_to_local_registry
     - identifier: rds_pg_oidc_auth_fields
@@ -411,7 +338,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-pg-oidc-auth-fields.test.ts
-          CLI_REGION: ap-south-1
+          CLI_REGION: sa-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_pg_model_v2
@@ -421,7 +348,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-pg-model-v2.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_pg_import
@@ -431,7 +358,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-pg-import.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
     - identifier: rds_pg_field_auth_userpool_static_dynamic
@@ -441,7 +368,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-pg-field-auth-userpool-static-dynamic.test.ts
-          CLI_REGION: ca-central-1
+          CLI_REGION: us-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_pg_field_auth_userpool_iam
@@ -451,7 +378,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-pg-field-auth-userpool-iam.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: rds_pg_field_auth_lambda
@@ -461,7 +388,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-pg-field-auth-lambda.test.ts
-          CLI_REGION: eu-north-1
+          CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_pg_field_auth_identityPool
@@ -471,7 +398,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-pg-field-auth-identityPool.test.ts
-          CLI_REGION: eu-west-1
+          CLI_REGION: ap-northeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: rds_pg_field_auth_iam
@@ -481,7 +408,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-pg-field-auth-iam.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: ap-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_pg_field_auth_apikey
@@ -491,7 +418,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-pg-field-auth-apikey.test.ts
-          CLI_REGION: eu-west-3
+          CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_pg_custom_claims_refersto_auth
@@ -501,7 +428,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-pg-custom-claims-refersto-auth.test.ts
-          CLI_REGION: sa-east-1
+          CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: rds_pg_auth_iam
@@ -511,7 +438,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-pg-auth-iam.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: ca-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_pg_auth_iam_apikey_lambda_subscription
@@ -521,7 +448,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-pg-auth-iam-apikey-lambda-subscription.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_pg_auth_apikey_lambda
@@ -531,7 +458,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-pg-auth-apikey-lambda.test.ts
-          CLI_REGION: us-west-1
+          CLI_REGION: eu-north-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_pg_array_objects
@@ -541,7 +468,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-pg-array-objects.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: eu-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_v2_generate_schema
@@ -551,7 +478,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-mysql-v2-generate-schema.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_userpool_auth
@@ -561,7 +488,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-mysql-userpool-auth.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: eu-west-3
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_userpool_auth_fields
@@ -571,7 +498,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-mysql-userpool-auth-fields.test.ts
-          CLI_REGION: ap-south-1
+          CLI_REGION: sa-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_refers_to
@@ -581,7 +508,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-mysql-refers-to.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_refers_to_fields
@@ -591,7 +518,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-mysql-refers-to-fields.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_oidc_auth
@@ -601,7 +528,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-mysql-oidc-auth.test.ts
-          CLI_REGION: ca-central-1
+          CLI_REGION: us-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_oidc_auth_fields
@@ -611,7 +538,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-mysql-oidc-auth-fields.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_multi_auth_1
@@ -621,7 +548,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-mysql-multi-auth-1.test.ts
-          CLI_REGION: eu-north-1
+          CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_model_v2
@@ -631,7 +558,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-mysql-model-v2.test.ts
-          CLI_REGION: eu-west-1
+          CLI_REGION: ap-northeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_field_auth_userpool_static_dynamic
@@ -641,7 +568,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-mysql-field-auth-userpool-static-dynamic.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: ap-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_field_auth_userpool_iam
@@ -651,7 +578,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-mysql-field-auth-userpool-iam.test.ts
-          CLI_REGION: eu-west-3
+          CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_field_auth_lambda
@@ -661,7 +588,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-mysql-field-auth-lambda.test.ts
-          CLI_REGION: sa-east-1
+          CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_field_auth_identityPool
@@ -671,7 +598,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-mysql-field-auth-identityPool.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: ca-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_field_auth_iam
@@ -681,7 +608,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-mysql-field-auth-iam.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_field_auth_apikey
@@ -691,7 +618,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-mysql-field-auth-apikey.test.ts
-          CLI_REGION: us-west-1
+          CLI_REGION: eu-north-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_custom_claims_refersto_auth
@@ -701,7 +628,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-mysql-custom-claims-refersto-auth.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: eu-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_auth_iam
@@ -711,7 +638,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-mysql-auth-iam.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_auth_iam_apikey_lambda_subscription
@@ -721,7 +648,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-mysql-auth-iam-apikey-lambda-subscription.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: eu-west-3
       depend-on:
         - publish_to_local_registry
     - identifier: rds_mysql_auth_apikey_lambda
@@ -731,217 +658,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/rds-mysql-auth-apikey-lambda.test.ts
-          CLI_REGION: ap-south-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_ap_east_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: ap-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_ap_northeast_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: ap-northeast-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_ap_northeast_2
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: ap-northeast-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_ap_south_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: ap-south-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_ap_southeast_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: ap-southeast-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_ap_southeast_2
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: ap-southeast-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_ca_central_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: ca-central-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_eu_central_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: eu-central-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_eu_north_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: eu-north-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_eu_south_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: eu-south-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_eu_west_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: eu-west-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_eu_west_2
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: eu-west-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_eu_west_3
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: eu-west-3
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_me_south_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: me-south-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_sa_east_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/api_canary.test.ts
           CLI_REGION: sa-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_us_east_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: us-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_us_east_2
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: us-east-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_us_west_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: us-west-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_canary_us_west_2
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/api_canary.test.ts
-          CLI_REGION: us-west-2
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_11
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/api_11.test.ts
-          CLI_REGION: eu-west-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: apigw
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/apigw.test.ts
-          CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_9
@@ -951,7 +668,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/schema-auth-9.test.ts
-          CLI_REGION: eu-west-3
+          CLI_REGION: ap-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_7
@@ -961,7 +678,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/schema-auth-7.test.ts
-          CLI_REGION: me-south-1
+          CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_14
@@ -971,27 +688,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/schema-auth-14.test.ts
-          CLI_REGION: sa-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: containers_api_2
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/containers-api-2.test.ts
-          CLI_REGION: us-east-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_1
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/api_1.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_5
@@ -1001,7 +698,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/schema-auth-5.test.ts
-          CLI_REGION: us-west-1
+          CLI_REGION: ca-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_searchable
@@ -1011,18 +708,8 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/schema-searchable.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: ca-central-1
           USE_PARENT_ACCOUNT: 1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: schema_iterative_update_4
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/schema-iterative-update-4.test.ts
-          CLI_REGION: ap-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: searchable_datastore
@@ -1032,7 +719,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/graphql-v2/searchable-datastore.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: ap-south-1
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
@@ -1043,7 +730,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/schema-auth-6.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: eu-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: searchable_previous_deployment_had_node_to_node
@@ -1054,7 +741,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-had-node-to-node.test.ts
-          CLI_REGION: ap-south-1
+          CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: searchable_previous_deployment_no_node_to_node
@@ -1065,16 +752,6 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-no-node-to-node.test.ts
-          CLI_REGION: ap-southeast-1
-      depend-on:
-        - publish_to_local_registry
-    - identifier: api_2
-      buildspec: codebuild_specs/run_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/api_2.test.ts
           CLI_REGION: ca-central-1
       depend-on:
         - publish_to_local_registry
@@ -2100,4 +1777,5 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_SMALL
       depend-on:
-        - auth_2_datastore_modelgen_mock_api_amplify_app_custom_transformers
+        - >-
+          custom_transformers_invalid_input_arguments_schema_data_access_patterns_schema_predictions_function_10

@@ -282,7 +282,7 @@
     "zod": "^3.22.2"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-test-utils": "1.0.1",
+    "@aws-amplify/graphql-transformer-test-utils": "1.0.2",
     "@types/fs-extra": "^8.0.1",
     "@types/node": "^18.0.0",
     "aws-cdk-lib": "2.152.0",
