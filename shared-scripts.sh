@@ -142,16 +142,8 @@ function _verifyAmplifyBackendCompatability {
   unset AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
   unset AWS_CONTAINER_CREDENTIALS_FULL_URI
 
-  # 1. Install NVM and set up
-  # Overriding container's node version as the lower version seems to cause race conditions and fail some tests
-  echo "Installing NVM and setting Node.js version"
-  curl -o - https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
-  export NVM_DIR="$HOME/.nvm"
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-  nvm install 18.20.4
-  nvm use 18.20.4
-  echo "Node.js version in use:"
-  node -v
+  # 1. # Set Node.js version to 18.20.4 to avoid race conditions and test failures
+  _setupNodeVersion 18.20.4
 
   # 2. Publish Shell (Emulating the "publish" shell)
   echo "Emulating Publish Shell"
@@ -179,9 +171,9 @@ function _verifyAmplifyBackendCompatability {
   # Update the packages and ensure the correct versions are being used
   npm update
   # Verify that the package-lock.json contains the updated version with localhost tarballs
-  git diff package-lock.json | grep -E 'graphql-api-construct.*localhost:4873.*tgz|data-construct.*localhost:4873.*tgz'
   echo "package-lock.json diff:"
   git diff package-lock.json
+  git diff package-lock.json | grep -E 'graphql-api-construct.*localhost:4873.*tgz|data-construct.*localhost:4873.*tgz'
   # Build and test the backend
   npm run build && npm run test
 
@@ -195,6 +187,26 @@ function _verifyAmplifyBackendCompatability {
   yarn verdaccio-stop
 
   echo "Amplify Backend Compatibility verification complete."
+}
+function _setupNodeVersion {
+  local version=$1  # Version number passed as an argument
+  
+  echo "Installing NVM and setting Node.js version to $version"
+  
+  # Install NVM
+  curl -o - https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+  
+  # Load NVM
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  
+  # Install and use the specified Node.js version
+  nvm install "$version"
+  nvm use "$version"
+  
+  # Verify the Node.js version in use
+  echo "Node.js version in use:"
+  node -v
 }
 function _publishToLocalRegistry {
     echo "Publish To Local Registry"
