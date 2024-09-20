@@ -142,13 +142,14 @@ function _verifyAmplifyBackendCompatability {
   unset AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
   unset AWS_CONTAINER_CREDENTIALS_FULL_URI
 
-  # # 1. Install NVM and set up
-  # echo "Installing NVM and setting Node.js version"
-  # curl -o - https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
-  # export NVM_DIR="$HOME/.nvm"
-  # [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-  # nvm install 18.20.4
-  # nvm use 18.20.4
+  # 1. Install NVM and set up
+  # Overriding container's node version as the lower version seems to cause race conditions and fail some tests
+  echo "Installing NVM and setting Node.js version"
+  curl -o - https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  nvm install 18.20.4
+  nvm use 18.20.4
   echo "Node.js version in use:"
   node -v
   # Increase buffer size to avoid error when git operations return large response on CI
