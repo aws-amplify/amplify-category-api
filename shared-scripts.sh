@@ -175,15 +175,6 @@ function _verifyAmplifyBackendCompatability {
   # Build and test the backend
   npm run build && npm run test
 
-  # # 4. Clean Up and Reset NPM Registry
-  # echo "Cleaning up environment"
-  # # # Reset NPM registry to npmjs.org
-  # # cd $CODEBUILD_SRC_DIR
-  # unsetNpmRegistryUrl
-  # # npm config get registry
-  # # # Stop Verdaccio server
-  # yarn verdaccio-stop
-
   echo "Amplify Backend Compatibility verification complete."
 }
 function _setupNodeVersion {
