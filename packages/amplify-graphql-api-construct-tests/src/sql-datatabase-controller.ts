@@ -258,7 +258,7 @@ export class SqlDatatabaseController {
    *
    * @param projRoot the destination directory to write the `db-details.json` file to
    */
-  writeDbDetails = (projRoot: string, connectionConfigName: string, schemaConfigString?: string): void => {
+  writeDbDetails = (projRoot: string, connectionConfigName: string, schemaConfigString: string | null = null): void => {
     if (!this.databaseDetails) {
       throw new Error('Database has not been set up. Make sure to call setupDatabase first');
     }
@@ -273,7 +273,7 @@ export class SqlDatatabaseController {
     const detailsStr = JSON.stringify({
       dbConfig: this.databaseDetails.dbConfig,
       dbConnectionConfig,
-      schemaConfig: schemaConfigString ?? null,
+      schemaConfig: schemaConfigString,
     });
     const filePath = path.join(projRoot, 'db-details.json');
     fs.writeFileSync(filePath, detailsStr);
