@@ -172,8 +172,7 @@ function _verifyAmplifyBackendCompatability {
   npm update
   # Verify that the package-lock.json contains the updated version with localhost tarballs
   echo "package-lock.json diff:"
-  git diff package-lock.json
-  git diff package-lock.json | grep -E 'graphql-api-construct.*localhost:4873.*tgz|data-construct.*localhost:4873.*tgz'
+  git diff package-lock.json | grep -E '@aws-amplify/(graphql-api-construct|data-construct).*localhost:4873.*tgz'
   # Build and test the backend
   npm run build && npm run test
 
