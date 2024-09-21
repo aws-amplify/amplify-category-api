@@ -142,7 +142,7 @@ function _verifyAmplifyBackendCompatability {
   unset AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
   unset AWS_CONTAINER_CREDENTIALS_FULL_URI
 
-  # 1. # Set Node.js version to 18.20.4 to avoid race conditions and test failures
+  # 1. Set Node.js version to 18.20.4 to avoid race conditions and test failures
   _setupNodeVersion 18.20.4
 
   # 2. Publish Shell (Emulating the "publish" shell)
@@ -177,14 +177,14 @@ function _verifyAmplifyBackendCompatability {
   # Build and test the backend
   npm run build && npm run test
 
-  # 4. Clean Up and Reset NPM Registry
-  echo "Cleaning up environment"
-  # # Reset NPM registry to npmjs.org
-  # cd $CODEBUILD_SRC_DIR
-  unsetNpmRegistryUrl
-  # npm config get registry
-  # # Stop Verdaccio server
-  yarn verdaccio-stop
+  # # 4. Clean Up and Reset NPM Registry
+  # echo "Cleaning up environment"
+  # # # Reset NPM registry to npmjs.org
+  # # cd $CODEBUILD_SRC_DIR
+  # unsetNpmRegistryUrl
+  # # npm config get registry
+  # # # Stop Verdaccio server
+  # yarn verdaccio-stop
 
   echo "Amplify Backend Compatibility verification complete."
 }
