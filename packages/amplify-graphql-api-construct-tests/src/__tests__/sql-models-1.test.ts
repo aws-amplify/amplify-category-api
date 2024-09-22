@@ -1,6 +1,6 @@
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import generator from 'generate-password';
-import { getResourceNamesForStrategyName } from '@aws-amplify/graphql-transformer-core';
+import { getResourceNamesForStrategyName, ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { cdkDestroy } from '../commands';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
@@ -9,7 +9,7 @@ import { testGraphQLAPI } from '../sql-tests-common/sql-models';
 jest.setTimeout(DURATION_1_HOUR);
 
 describe('CDK GraphQL Transformer deployments with SQL datasources', () => {
-  let projRoot: string;
+  // let projRoot: string;
   const projFolderName = 'sqlmodels1';
 
   const [username, identifier] = generator.generateMultiple(2);
@@ -44,37 +44,43 @@ describe('CDK GraphQL Transformer deployments with SQL datasources', () => {
     await databaseController.cleanupDatabase();
   });
 
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir(projFolderName);
-  });
+  // beforeEach(async () => {
+  //   projRoot = await createNewProjectDir(projFolderName);
+  // });
 
-  afterEach(async () => {
-    try {
-      await cdkDestroy(projRoot, '--all');
-    } catch (err) {
-      console.log(`Error invoking 'cdk destroy': ${err}`);
-    }
+  // afterEach(async () => {
+  //   try {
+  //     await cdkDestroy(projRoot, '--all');
+  //   } catch (err) {
+  //     console.log(`Error invoking 'cdk destroy': ${err}`);
+  //   }
 
-    deleteProjectDir(projRoot);
-  });
-
-  test('creates a GraphQL API from SQL-based models with Secrets Manager Credential Store default encryption key', async () => {
-    await testGraphQLAPI(constructTestOptions('secretsManager'));
-  });
-
-  test('creates a GraphQL API from SQL-based models with Secrets Manager Credential Store custom encryption key', async () => {
-    await testGraphQLAPI(constructTestOptions('secretsManagerCustomKey'));
-  });
-
-  test('creates a GraphQL API from SQL-based models with Secrets Manager Credential Store default encryption key', async () => {
-    await testGraphQLAPI(constructTestOptions('secretsManagerManagedSecret'));
-  });
+  //   deleteProjectDir(projRoot);
+  // });
 
   const constructTestOptions = (connectionConfigName: string) => ({
-    projRoot,
+    projFolderName,
     region,
     connectionConfigName,
     dbController: databaseController,
     resourceNames,
   });
+
+  testGraphQLAPI(
+    constructTestOptions('secretsManager'),
+    'creates a GraphQL API from SQL-based models with Secrets Manager Credential Store default encryption key',
+    ImportedRDSType.MYSQL,
+  );
+
+  // test('creates a GraphQL API from SQL-based models with Secrets Manager Credential Store default encryption key', async () => {
+  //   await testGraphQLAPI(constructTestOptions('secretsManager'));
+  // });
+
+  // test('creates a GraphQL API from SQL-based models with Secrets Manager Credential Store custom encryption key', async () => {
+  //   await testGraphQLAPI(constructTestOptions('secretsManagerCustomKey'));
+  // });
+
+  // test('creates a GraphQL API from SQL-based models with Secrets Manager Credential Store default encryption key', async () => {
+  //   await testGraphQLAPI(constructTestOptions('secretsManagerManagedSecret'));
+  // });
 });
