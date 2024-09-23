@@ -21,16 +21,16 @@ export const testGraphQLAPI = (
 ): void => {
   describe(`${testBlockDescription} - ${engine}`, () => {
     const amplifyGraphqlSchema = `
-    type Todo @model @refersTo(name: "e2e_test_todos") {
-      id: ID! @primaryKey
-      description: String!
-    }
-    type Student @model @refersTo(name: "e2e_test_students") {
-      studentId: Int! @primaryKey(sortKeyFields: ["classId"])
-      classId: String!
-      firstName: String
-      lastName: String
-    }
+      type Todo @model @refersTo(name: "e2e_test_todos") {
+        id: ID! @primaryKey
+        description: String!
+      }
+      type Student @model @refersTo(name: "e2e_test_students") {
+        studentId: Int! @primaryKey(sortKeyFields: ["classId"])
+        classId: String!
+        firstName: String
+        lastName: String
+      }
     `;
     const { projFolderName, region, connectionConfigName, dbController, resourceNames } = options;
     const templatePath = path.resolve(path.join(__dirname, '..', '__tests__', 'backends', 'sql-models'));
@@ -38,9 +38,7 @@ export const testGraphQLAPI = (
     let projRoot;
     let name;
     let outputs;
-    let appSyncClient;
-    let toDoTableCRUDLHelper;
-    let studentCRUDLHelper;
+    let toDoTableCRUDLHelper, studentTableCRUDLHelper;
 
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projFolderName);
@@ -49,7 +47,7 @@ export const testGraphQLAPI = (
       outputs = await cdkDeploy(projRoot, '--all', { postDeployWaitMs: ONE_MINUTE });
       const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[name];
 
-      appSyncClient = new AWSAppSyncClient({
+      const appSyncClient = new AWSAppSyncClient({
         url: apiEndpoint,
         region,
         disableOffline: true,
@@ -60,7 +58,7 @@ export const testGraphQLAPI = (
       });
 
       toDoTableCRUDLHelper = new CRUDLHelper(appSyncClient, 'Todo', 'Todos', ['id', 'description']);
-      studentCRUDLHelper = new CRUDLHelper(appSyncClient, 'Student', 'Students', ['studentId', 'classId', 'firstName', 'lastName']);
+      studentTableCRUDLHelper = new CRUDLHelper(appSyncClient, 'Student', 'Students', ['studentId', 'classId', 'firstName', 'lastName']);
     });
 
     afterAll(async () => {
@@ -229,10 +227,10 @@ export const testGraphQLAPI = (
 
     test(`check CRUDL, filter, limit and nextToken on student table with composite key - ${engine}`, async () => {
       // Create Student Mutation
-      const createStudent1 = await studentCRUDLHelper.create({ studentId: 1, classId: 'A', firstName: 'John', lastName: 'Doe' });
-      const createStudent2 = await studentCRUDLHelper.create({ studentId: 1, classId: 'B', firstName: 'Jane', lastName: 'Doe' });
-      const createStudent3 = await studentCRUDLHelper.create({ studentId: 2, classId: 'A', firstName: 'Bob', lastName: 'Smith' });
-      const createStudent4 = await studentCRUDLHelper.create({ studentId: 2, classId: 'B', firstName: 'Alice', lastName: 'Jones' });
+      const createStudent1 = await studentTableCRUDLHelper.create({ studentId: 1, classId: 'A', firstName: 'John', lastName: 'Doe' });
+      const createStudent2 = await studentTableCRUDLHelper.create({ studentId: 1, classId: 'B', firstName: 'Jane', lastName: 'Doe' });
+      const createStudent3 = await studentTableCRUDLHelper.create({ studentId: 2, classId: 'A', firstName: 'Bob', lastName: 'Smith' });
+      const createStudent4 = await studentTableCRUDLHelper.create({ studentId: 2, classId: 'B', firstName: 'Alice', lastName: 'Jones' });
 
       expect(createStudent1.studentId).toEqual(1);
       expect(createStudent1.classId).toEqual('A');
@@ -240,7 +238,7 @@ export const testGraphQLAPI = (
       expect(createStudent1.lastName).toEqual('Doe');
 
       // Get Student Query
-      const getStudent1 = await studentCRUDLHelper.get({ studentId: 1, classId: 'A' });
+      const getStudent1 = await studentTableCRUDLHelper.get({ studentId: 1, classId: 'A' });
 
       expect(getStudent1.studentId).toEqual(1);
       expect(getStudent1.classId).toEqual('A');
@@ -248,8 +246,8 @@ export const testGraphQLAPI = (
       expect(getStudent1.lastName).toEqual('Doe');
 
       // Update Student Query
-      const updateStudent1 = await studentCRUDLHelper.update({ studentId: 1, classId: 'A', firstName: 'David', lastName: 'Jones' });
-      const updateStudent2 = await studentCRUDLHelper.update({ studentId: 2, classId: 'A', firstName: 'John', lastName: 'Smith' });
+      const updateStudent1 = await studentTableCRUDLHelper.update({ studentId: 1, classId: 'A', firstName: 'David', lastName: 'Jones' });
+      const updateStudent2 = await studentTableCRUDLHelper.update({ studentId: 2, classId: 'A', firstName: 'John', lastName: 'Smith' });
 
       expect(updateStudent1.studentId).toEqual(1);
       expect(updateStudent1.classId).toEqual('A');
@@ -262,19 +260,19 @@ export const testGraphQLAPI = (
       expect(updateStudent2.lastName).toEqual('Smith');
 
       // Delete Student Mutation
-      const deleteStudent1 = await studentCRUDLHelper.delete({ studentId: 1, classId: 'A' });
+      const deleteStudent1 = await studentTableCRUDLHelper.delete({ studentId: 1, classId: 'A' });
 
       expect(deleteStudent1.studentId).toEqual(1);
       expect(deleteStudent1.classId).toEqual('A');
       expect(deleteStudent1.firstName).toEqual('David');
       expect(deleteStudent1.lastName).toEqual('Jones');
 
-      const getDeletedStudent1 = await studentCRUDLHelper.get({ studentId: 1, classId: 'A' });
+      const getDeletedStudent1 = await studentTableCRUDLHelper.get({ studentId: 1, classId: 'A' });
 
       expect(getDeletedStudent1).toBeNull();
 
       // Get Student Query
-      const getStudent2 = await studentCRUDLHelper.get({ studentId: 1, classId: 'B' });
+      const getStudent2 = await studentTableCRUDLHelper.get({ studentId: 1, classId: 'B' });
 
       expect(getStudent2.studentId).toEqual(1);
       expect(getStudent2.classId).toEqual('B');
@@ -282,7 +280,7 @@ export const testGraphQLAPI = (
       expect(getStudent2.lastName).toEqual('Doe');
 
       // List Student Query
-      const listStudent = await studentCRUDLHelper.list();
+      const listStudent = await studentTableCRUDLHelper.list();
 
       expect(listStudent.items.length).toEqual(3);
       expect(listStudent.items).toEqual(
@@ -309,7 +307,7 @@ export const testGraphQLAPI = (
       );
 
       // Check limit and nextToken
-      const listStudentWithLimit1 = await studentCRUDLHelper.list(2);
+      const listStudentWithLimit1 = await studentTableCRUDLHelper.list(2);
 
       expect(listStudentWithLimit1.items.length).toEqual(2);
       expect(listStudentWithLimit1.items).toEqual(
@@ -330,7 +328,7 @@ export const testGraphQLAPI = (
       );
       expect(listStudentWithLimit1.nextToken).toBeDefined();
 
-      const listStudentWithLimit2 = await studentCRUDLHelper.list(2, listStudentWithLimit1.nextToken);
+      const listStudentWithLimit2 = await studentTableCRUDLHelper.list(2, listStudentWithLimit1.nextToken);
 
       expect(listStudentWithLimit2.items.length).toEqual(1);
       expect(listStudentWithLimit2.items).toEqual(
@@ -346,7 +344,7 @@ export const testGraphQLAPI = (
       expect(listStudentWithLimit2.nextToken).toBeNull();
 
       // Check filter
-      const listStudentWithFilter1 = await studentCRUDLHelper.list(10, null, {
+      const listStudentWithFilter1 = await studentTableCRUDLHelper.list(10, null, {
         and: [{ firstName: { eq: 'John' } }, { lastName: { eq: 'Smith' } }],
       });
       expect(listStudentWithFilter1.items.length).toEqual(1);
@@ -362,7 +360,7 @@ export const testGraphQLAPI = (
       );
       expect(listStudentWithFilter1.nextToken).toBeNull();
 
-      const listStudentWithFilter2 = await studentCRUDLHelper.list(10, null, { firstName: { size: { eq: 4 } } });
+      const listStudentWithFilter2 = await studentTableCRUDLHelper.list(10, null, { firstName: { size: { eq: 4 } } });
       expect(listStudentWithFilter2.items.length).toEqual(2);
       expect(listStudentWithFilter2.items).toEqual(
         expect.arrayContaining([
@@ -393,37 +391,5 @@ export const testGraphQLAPI = (
       const response = await client.send(command);
       expect(response.RequestedProvisionedConcurrentExecutions).toEqual(2);
     });
-
-    // -----------------
-
-    // Test: check CRUDL, filter, limit and nextToken on student table with composite key - postgres
-    // Create Student Mutation
-
-    // // Cleanup current database for next SSM Connection test
-    // const deleteStudent2 = await deleteStudent(1, 'B');
-    // const deleteStudent2Result = deleteStudent2.data.deleteStudent;
-
-    // expect(deleteStudent2Result.studentId).toEqual(1);
-    // expect(deleteStudent2Result.classId).toEqual('B');
-    // expect(deleteStudent2Result.firstName).toEqual('Jane');
-    // expect(deleteStudent2Result.lastName).toEqual('Doe');
-
-    // const deleteStudent3 = await deleteStudent(2, 'A');
-    // const deleteStudent3Result = deleteStudent3.data.deleteStudent;
-
-    // expect(deleteStudent3Result.studentId).toEqual(2);
-    // expect(deleteStudent3Result.classId).toEqual('A');
-    // expect(deleteStudent3Result.firstName).toEqual('John');
-    // expect(deleteStudent3Result.lastName).toEqual('Smith');
-
-    // const deleteStudent4 = await deleteStudent(2, 'B');
-    // const deleteStudent4Result = deleteStudent4.data.deleteStudent;
-
-    // expect(deleteStudent4Result.studentId).toEqual(2);
-    // expect(deleteStudent4Result.classId).toEqual('B');
-    // expect(deleteStudent4Result.firstName).toEqual('Alice');
-    // expect(deleteStudent4Result.lastName).toEqual('Jones');
-
-    // console.log('Student database cleaned up for next test');
   });
 };
