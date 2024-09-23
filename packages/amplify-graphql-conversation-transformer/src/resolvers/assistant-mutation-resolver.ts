@@ -1,19 +1,17 @@
 import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { dedent } from 'ts-dedent';
-import { JSResolverFunctionProvider } from './js-resolver-function-provider';
 
 /**
  * Creates and returns the mapping template for the assistant mutation resolver.
  * This includes both request and response functions.
  *
- * @returns {JSResolverFunctionProvider} An object containing request and response MappingTemplateProviders.
+ * @returns {MappingTemplateProvider} An object containing request and response MappingTemplateProviders.
  */
-
-export const assistantMutationResolver = (): JSResolverFunctionProvider => {
+export const assistantMutationResolver = (): MappingTemplateProvider => {
   const req = createAssistantMutationRequestFunction();
   const res = createAssistantMutationResponseFunction();
-  return { req, res };
+  return MappingTemplate.inlineTemplateFromString(dedent(req + '\n' + res));
 };
 
 /**
@@ -22,7 +20,7 @@ export const assistantMutationResolver = (): JSResolverFunctionProvider => {
  *
  * @returns {MappingTemplateProvider} A MappingTemplateProvider for the request function.
  */
-const createAssistantMutationRequestFunction = (): MappingTemplateProvider => {
+const createAssistantMutationRequestFunction = (): string => {
   const requestFunctionString = `
     import { util } from '@aws-appsync/utils';
 
@@ -58,7 +56,7 @@ const createAssistantMutationRequestFunction = (): MappingTemplateProvider => {
         };
     }`;
 
-  return MappingTemplate.inlineTemplateFromString(dedent(requestFunctionString));
+  return requestFunctionString;
 };
 
 /**
@@ -67,7 +65,7 @@ const createAssistantMutationRequestFunction = (): MappingTemplateProvider => {
  *
  * @returns {MappingTemplateProvider} A MappingTemplateProvider for the response function.
  */
-const createAssistantMutationResponseFunction = (): MappingTemplateProvider => {
+const createAssistantMutationResponseFunction = (): string => {
   const responseFunctionString = `
     /**
      * Returns the resolver result
@@ -94,5 +92,5 @@ const createAssistantMutationResponseFunction = (): MappingTemplateProvider => {
         };
     }`;
 
-  return MappingTemplate.inlineTemplateFromString(dedent(responseFunctionString));
+  return responseFunctionString;
 };

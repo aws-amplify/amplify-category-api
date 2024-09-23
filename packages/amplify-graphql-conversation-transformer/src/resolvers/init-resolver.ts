@@ -1,18 +1,17 @@
 import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { dedent } from 'ts-dedent';
-import { JSResolverFunctionProvider } from './js-resolver-function-provider';
 
 /**
  * Creates and returns the mapping template for the init resolver.
  * This includes both request and response functions.
  *
- * @returns {JSResolverFunctionProvider} An object containing request and response MappingTemplateProviders.
+ * @returns {MappingTemplateProvider} An object containing request and response MappingTemplateProviders.
  */
-export const initMappingTemplate = (): JSResolverFunctionProvider => {
+export const initMappingTemplate = (): MappingTemplateProvider => {
   const req = createInitRequestFunction();
   const res = createInitResponseFunction();
-  return { req, res };
+  return MappingTemplate.inlineTemplateFromString(dedent(req + '\n' + res));
 };
 
 /**
@@ -22,7 +21,7 @@ export const initMappingTemplate = (): JSResolverFunctionProvider => {
  * @returns {MappingTemplateProvider} A MappingTemplateProvider for the request function.
  */
 
-const createInitRequestFunction = (): MappingTemplateProvider => {
+const createInitRequestFunction = (): string => {
   const requestFunctionString = `
       export function request(ctx) {
         ctx.stash.defaultValues = ctx.stash.defaultValues ?? {};
@@ -36,7 +35,7 @@ const createInitRequestFunction = (): MappingTemplateProvider => {
         };
       }`;
 
-  return MappingTemplate.inlineTemplateFromString(dedent(requestFunctionString));
+  return requestFunctionString;
 };
 
 /**
@@ -45,11 +44,11 @@ const createInitRequestFunction = (): MappingTemplateProvider => {
  *
  * @returns {MappingTemplateProvider} A MappingTemplateProvider for the response function.
  */
-const createInitResponseFunction = (): MappingTemplateProvider => {
+const createInitResponseFunction = (): string => {
   const responseFunctionString = `
       export function response(ctx) {
         return {};
       }`;
 
-  return MappingTemplate.inlineTemplateFromString(dedent(responseFunctionString));
+  return responseFunctionString;
 };

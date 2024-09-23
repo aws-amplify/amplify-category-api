@@ -35,6 +35,33 @@ export class S3MappingFunctionCode implements S3MappingFunctionCodeProvider {
   }
 }
 
+export class S3MappingJSResolverFunctionCode implements S3MappingTemplateProvider {
+  public readonly type = MappingTemplateType.S3_LOCATION;
+  public asset?: S3Asset;
+  private content: string;
+  public readonly name: string;
+
+  constructor(content: string, name?: string) {
+    this.content = content;
+    const assetHash = crypto.createHash('sha256').update(content).digest('hex');
+    this.name = name || `function-code-${assetHash}.js`;
+  }
+
+  bind(scope: Construct, assetProvider: AssetProvider): string {
+    if (!this.asset) {
+      this.asset = assetProvider.provide(scope, `Code${this.name}`, {
+        fileContent: this.content,
+        fileName: this.name,
+      });
+    }
+    return this.asset.s3ObjectUrl;
+  }
+
+  getTemplateHash(): string {
+    return crypto.createHash('sha256').update(this.content).digest('base64');
+  }
+}
+
 export class S3MappingTemplate implements S3MappingTemplateProvider {
   private content: string;
 
@@ -110,5 +137,10 @@ export class MappingTemplate {
   static s3MappingTemplateFromString(template: string, templateName: string): S3MappingTemplate {
     const templatePrefix = 'resolvers';
     return new S3MappingTemplate(template, `${templatePrefix}/${templateName}`);
+  }
+
+  static s3MappingFunctionCodeFromString(template: string, templateName: string): S3MappingJSResolverFunctionCode {
+    const templatePrefix = 'resolvers';
+    return new S3MappingJSResolverFunctionCode(template, `${templatePrefix}/${templateName}`);
   }
 }

@@ -1,19 +1,17 @@
 import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { dedent } from 'ts-dedent';
-import { JSResolverFunctionProvider } from './js-resolver-function-provider';
 
 /**
  * Creates and returns the mapping template for the conversation message subscription resolver.
  * This includes both request and response functions.
  *
- * @returns {JSResolverFunctionProvider} An object containing request and response MappingTemplateProviders.
+ * @returns {MappingTemplateProvider} An object containing request and response MappingTemplateProviders.
  */
-export const conversationMessageSubscriptionMappingTamplate = (): JSResolverFunctionProvider => {
+export const conversationMessageSubscriptionMappingTamplate = (): MappingTemplateProvider => {
   const req = createAssistantMessagesSubscriptionRequestFunction();
   const res = createAssistantMessagesSubscriptionResponseFunction();
-
-  return { req, res };
+  return MappingTemplate.inlineTemplateFromString(dedent(req + '\n' + res));
 };
 
 /**
@@ -22,7 +20,7 @@ export const conversationMessageSubscriptionMappingTamplate = (): JSResolverFunc
  *
  * @returns {MappingTemplateProvider} A MappingTemplateProvider for the request function.
  */
-const createAssistantMessagesSubscriptionRequestFunction = (): MappingTemplateProvider => {
+const createAssistantMessagesSubscriptionRequestFunction = (): string => {
   const requestFunctionString = `
       export function request(ctx) {
         ctx.stash.hasAuth = true;
@@ -60,7 +58,7 @@ const createAssistantMessagesSubscriptionRequestFunction = (): MappingTemplatePr
         return { version: '2018-05-29', payload: {} };
       }`;
 
-  return MappingTemplate.inlineTemplateFromString(dedent(requestFunctionString));
+  return requestFunctionString;
 };
 
 /**
@@ -69,7 +67,7 @@ const createAssistantMessagesSubscriptionRequestFunction = (): MappingTemplatePr
  *
  * @returns {MappingTemplateProvider} A MappingTemplateProvider for the response function.
  */
-const createAssistantMessagesSubscriptionResponseFunction = (): MappingTemplateProvider => {
+const createAssistantMessagesSubscriptionResponseFunction = (): string => {
   const responseFunctionString = `
       import { util, extensions } from '@aws-appsync/utils';
 
@@ -79,5 +77,5 @@ const createAssistantMessagesSubscriptionResponseFunction = (): MappingTemplateP
           return null;
       }`;
 
-  return MappingTemplate.inlineTemplateFromString(dedent(responseFunctionString));
+  return responseFunctionString;
 };
