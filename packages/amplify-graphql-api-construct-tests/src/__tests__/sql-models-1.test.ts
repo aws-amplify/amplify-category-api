@@ -1,15 +1,12 @@
-import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import generator from 'generate-password';
 import { getResourceNamesForStrategyName, ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
-import { cdkDestroy } from '../commands';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
 import { testGraphQLAPI } from '../sql-tests-common/sql-models';
 
 jest.setTimeout(DURATION_1_HOUR);
 
 describe('CDK GraphQL Transformer deployments with SQL datasources', () => {
-  // let projRoot: string;
   const projFolderName = 'sqlmodels1';
 
   const [username, identifier] = generator.generateMultiple(2);
@@ -21,8 +18,8 @@ describe('CDK GraphQL Transformer deployments with SQL datasources', () => {
 
   const databaseController: SqlDatatabaseController = new SqlDatatabaseController(
     [
-      'CREATE TABLE todos (id VARCHAR(40) PRIMARY KEY, description VARCHAR(256))',
-      'CREATE TABLE students (studentId INT NOT NULL, classId VARCHAR(256) NOT NULL, firstName VARCHAR(256), lastName VARCHAR(256), PRIMARY KEY (studentId, classId))',
+      'CREATE TABLE e2e_test_todos (id VARCHAR(40) PRIMARY KEY, description VARCHAR(256))',
+      'CREATE TABLE e2e_test_students (studentId INT NOT NULL, classId VARCHAR(256) NOT NULL, firstName VARCHAR(256), lastName VARCHAR(256), PRIMARY KEY (studentId, classId))',
     ],
     {
       identifier,
@@ -44,20 +41,6 @@ describe('CDK GraphQL Transformer deployments with SQL datasources', () => {
     await databaseController.cleanupDatabase();
   });
 
-  // beforeEach(async () => {
-  //   projRoot = await createNewProjectDir(projFolderName);
-  // });
-
-  // afterEach(async () => {
-  //   try {
-  //     await cdkDestroy(projRoot, '--all');
-  //   } catch (err) {
-  //     console.log(`Error invoking 'cdk destroy': ${err}`);
-  //   }
-
-  //   deleteProjectDir(projRoot);
-  // });
-
   const constructTestOptions = (connectionConfigName: string) => ({
     projFolderName,
     region,
@@ -72,15 +55,15 @@ describe('CDK GraphQL Transformer deployments with SQL datasources', () => {
     ImportedRDSType.MYSQL,
   );
 
-  // test('creates a GraphQL API from SQL-based models with Secrets Manager Credential Store default encryption key', async () => {
-  //   await testGraphQLAPI(constructTestOptions('secretsManager'));
-  // });
+  testGraphQLAPI(
+    constructTestOptions('secretsManager'),
+    'creates a GraphQL API from SQL-based models with Secrets Manager Credential Store custom encryption key',
+    ImportedRDSType.MYSQL,
+  );
 
-  // test('creates a GraphQL API from SQL-based models with Secrets Manager Credential Store custom encryption key', async () => {
-  //   await testGraphQLAPI(constructTestOptions('secretsManagerCustomKey'));
-  // });
-
-  // test('creates a GraphQL API from SQL-based models with Secrets Manager Credential Store default encryption key', async () => {
-  //   await testGraphQLAPI(constructTestOptions('secretsManagerManagedSecret'));
-  // });
+  testGraphQLAPI(
+    constructTestOptions('secretsManagerManagedSecret'),
+    'creates a GraphQL API from SQL-based models with Secrets Manager Managed Credential Store default encryption key',
+    ImportedRDSType.MYSQL,
+  );
 });

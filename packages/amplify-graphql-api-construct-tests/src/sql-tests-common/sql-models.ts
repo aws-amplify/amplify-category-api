@@ -21,11 +21,11 @@ export const testGraphQLAPI = (
 ): void => {
   describe(`${testBlockDescription} - ${engine}`, () => {
     const amplifyGraphqlSchema = `
-    type Todo @model @refersTo(name: "todos") {
+    type Todo @model @refersTo(name: "e2e_test_todos") {
       id: ID! @primaryKey
       description: String!
     }
-    type Student @model @refersTo(name: "students") {
+    type Student @model @refersTo(name: "e2e_test_students") {
       studentId: Int! @primaryKey(sortKeyFields: ["classId"])
       classId: String!
       firstName: String
@@ -66,32 +66,13 @@ export const testGraphQLAPI = (
     afterAll(async () => {
       try {
         await cdkDestroy(projRoot, '--all');
+        await dbController.clearDatabase();
       } catch (err) {
         console.log(`Error invoking 'cdk destroy': ${err}`);
       }
 
       deleteProjectDir(projRoot);
     });
-
-    // const templatePath = path.resolve(path.join(__dirname, '..', '__tests__', 'backends', 'sql-models'));
-    // const { projRoot, region, connectionConfigName, dbController, resourceNames } = options;
-    // const name = await initCDKProject(projRoot, templatePath);
-    // dbController.writeDbDetails(projRoot, connectionConfigName, amplifyGraphqlSchema);
-    // const outputs = await cdkDeploy(projRoot, '--all', { postDeployWaitMs: ONE_MINUTE });
-    // const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[name];
-
-    // const appSyncClient = new AWSAppSyncClient({
-    //   url: apiEndpoint,
-    //   region,
-    //   disableOffline: true,
-    //   auth: {
-    //     type: AUTH_TYPE.API_KEY,
-    //     apiKey,
-    //   },
-    // });
-
-    // let toDoTableCRUDLHelper = new CRUDLHelper(appSyncClient, 'Todo', 'Todos', ['id', 'description']);
-    // let studentCRUDLHelper = new CRUDLHelper(appSyncClient, 'Student', 'Students', ['studentId', 'classId', 'firstName', 'lastName']);
 
     // Test: check CRUDL on contact table with default primary key - postgres
     test(`check CRUDL on contact table with default primary key - ${engine}`, async () => {
@@ -175,7 +156,7 @@ export const testGraphQLAPI = (
 
       expect(listToDoWithLimit2.items.length).toEqual(2);
       // expect(listToDoWithLimit2.nextToken).toBeNull();
-      console.log(listToDoWithLimit2.nextToken);
+      // console.log(listToDoWithLimit2.nextToken);
 
       // Check filter
       const listTodosWithFilter1 = await toDoTableCRUDLHelper.list(10, null, { description: { contains: '#2' } });

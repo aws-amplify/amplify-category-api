@@ -2,6 +2,9 @@ import path from 'path';
 import * as fs from 'fs-extra';
 import { SqlModelDataSourceDbConnectionConfig, ModelDataSourceStrategySqlDbType } from '@aws-amplify/graphql-api-construct';
 import {
+  ClusterInfo,
+  clearRDSClusterData,
+  clearRDSInstanceData,
   deleteSSMParameters,
   deleteDbConnectionConfigWithSecretsManager,
   deleteDBCluster,
@@ -54,6 +57,7 @@ export interface SqlDatabaseDetails {
  */
 export class SqlDatatabaseController {
   private databaseDetails: SqlDatabaseDetails | undefined;
+  private clusterInfo: ClusterInfo | undefined;
   private useDataAPI: boolean;
   private enableLocalTesting: boolean;
   private usePreProvisionedCluster: boolean;
@@ -84,13 +88,16 @@ export class SqlDatatabaseController {
           ? preProvisionedClusterInfo.clusterIdentifier
           : getClusterIdFromLocalConfig(this.options.region, this.options.engine);
         dbConfig = await setupDataInExistingCluster(identifier, this.options, this.setupQueries, preProvisionedClusterInfo?.secretArn);
+        this.clusterInfo = dbConfig;
         this.options.username = dbConfig.username;
         this.options.dbname = dbConfig.dbName;
       } else {
         dbConfig = await setupRDSClusterAndData(this.options, this.setupQueries);
+        this.clusterInfo = dbConfig;
       }
     } else {
       dbConfig = await setupRDSInstanceAndData(this.options, this.setupQueries);
+      this.options.password = dbConfig.password;
     }
 
     if (!dbConfig) {
@@ -203,6 +210,15 @@ export class SqlDatatabaseController {
       },
     };
     return this.databaseDetails;
+  };
+
+  clearDatabase = async (): Promise<void> => {
+    if (this.useDataAPI) {
+      await clearRDSClusterData(this.clusterInfo, this.options.region);
+      return;
+    }
+
+    await clearRDSInstanceData(this.options, this.databaseDetails.dbConfig.endpoint, this.databaseDetails.dbConfig.port);
   };
 
   cleanupDatabase = async (): Promise<void> => {

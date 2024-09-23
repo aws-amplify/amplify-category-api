@@ -449,6 +449,115 @@ export const setupRDSClusterAndData = async (config: RDSConfig, queries?: string
   };
 };
 
+export const clearRDSClusterData = async (clusterInfo: ClusterInfo, region: string): Promise<void> => {
+  const client = new RDSDataClient({ region });
+
+  // Get all table names
+  const tableQuery = `
+    SELECT table_name 
+    FROM information_schema.tables 
+    WHERE table_schema = 'public'
+      AND table_type = 'BASE TABLE'
+      AND table_catalog = '${clusterInfo.dbName}'
+      AND table_name LIKE 'e2e_test_%';
+  `;
+  const tableQueryInput: ExecuteStatementCommandInput = {
+    resourceArn: clusterInfo.clusterArn,
+    secretArn: clusterInfo.secretArn,
+    sql: tableQuery,
+    database: clusterInfo.dbName,
+  };
+
+  const tableQueryCommand = new ExecuteStatementCommand(tableQueryInput);
+  let tableQueryResponse;
+  try {
+    tableQueryResponse = await client.send(tableQueryCommand);
+  } catch (err) {
+    console.log(err);
+  }
+
+  const tables = tableQueryResponse.records?.map((record) => record[0].stringValue) || [];
+
+  // Truncate each table
+  for (const table of tables) {
+    const truncateQuery = `TRUNCATE TABLE ${table} CASCADE;`;
+    const truncateQueryInput: ExecuteStatementCommandInput = {
+      resourceArn: clusterInfo.clusterArn,
+      secretArn: clusterInfo.secretArn,
+      sql: truncateQuery,
+      database: clusterInfo.dbName,
+    };
+
+    const truncateQueryCommand = new ExecuteStatementCommand(truncateQueryInput);
+    try {
+      await client.send(truncateQueryCommand);
+      console.log(`Table truncated: ${table}`);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  console.log(`[Postgres] Database [${clusterInfo.dbName}] - data cleared and all tables truncated`);
+};
+
+export const clearRDSInstanceData = async (config: RDSConfig, endpoint: string, port: number): Promise<void> => {
+  const ipAddresses = await getIpRanges();
+  await Promise.all(
+    ipAddresses.map((ip) =>
+      addRDSPortInboundRule({
+        region: config.region,
+        port: port,
+        cidrIp: ip,
+      }),
+    ),
+  );
+  console.log('Waiting for the security rules to take effect');
+  await sleep(1 * 60 * 1000);
+
+  const dbAdapter = new RDSTestDataProvider({
+    engine: config.engine,
+    host: endpoint,
+    port: port,
+    username: config.username,
+    password: config.password,
+    database: config.dbname,
+  });
+
+  try {
+    await dbAdapter.executeQuery('SET FOREIGN_KEY_CHECKS = 0');
+    const tables = await dbAdapter.executeQuery(`
+      SELECT TABLE_NAME
+      FROM INFORMATION_SCHEMA.TABLES
+      WHERE TABLE_NAME LIKE 'e2e_test\\_%' ESCAPE '\\\\';
+    `);
+
+    for (const { TABLE_NAME } of tables) {
+      await dbAdapter.executeQuery(`TRUNCATE TABLE \`${TABLE_NAME}\`;`);
+      console.log(`Table truncated: ${TABLE_NAME}`);
+    }
+
+    await dbAdapter.executeQuery('SET FOREIGN_KEY_CHECKS = 1');
+  } catch (err) {
+    console.log(err);
+  }
+
+  dbAdapter.cleanup();
+
+  await Promise.all(
+    ipAddresses.map((ip) =>
+      removeRDSPortInboundRule({
+        region: config.region,
+        port: port,
+        cidrIp: ip,
+      }),
+    ),
+  );
+  console.log('Waiting for the security rules to be disabled');
+  await sleep(1 * 60 * 1000);
+
+  console.log(`[MySQL] Database [${config.dbname}] - data cleared and all tables truncated`);
+};
+
 /**
  * Deletes the given RDS instance
  * @param identifier RDS Instance identifier to delete
@@ -670,6 +779,11 @@ export class RDSTestDataProvider {
     for (const statement of statements) {
       await this.dbBuilder.raw(statement);
     }
+  }
+
+  public async executeQuery(statement: string): Promise<any> {
+    const result = await this.dbBuilder.raw(statement);
+    return result[0];
   }
 }
 
