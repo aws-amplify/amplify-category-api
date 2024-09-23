@@ -72,8 +72,7 @@ export const testGraphQLAPI = (
       deleteProjectDir(projRoot);
     });
 
-    // Test: check CRUDL on contact table with default primary key - postgres
-    test(`check CRUDL on contact table with default primary key - ${engine}`, async () => {
+    test(`check CRUDL on todo table with default primary key - ${engine}`, async () => {
       // Create Todo Mutation
       const createTodo1 = await toDoTableCRUDLHelper.create({ description: 'Todo #1' });
 
