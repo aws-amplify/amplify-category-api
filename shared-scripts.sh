@@ -40,11 +40,13 @@ function storeCacheForBuildJob {
   # upload [repo, .cache] to s3
   storeCache $CODEBUILD_SRC_DIR repo
   storeCache $HOME/.cache .cache
+  storeCache $HOME/.nvm .nvm
 }
 function loadCacheFromBuildJob {
   # download [repo, .cache] from s3
   loadCache repo $CODEBUILD_SRC_DIR
   loadCache .cache $HOME/.cache
+  loadCache .nvm $HOME/.nvm
 }
 function storeCacheFile {
     localFilePath="$1"
@@ -81,30 +83,9 @@ function _setShell {
   yarn config set script-shell $(which bash)
 }
 
-function _installNVM {
-  echo "Installing latest version of NVM"
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
-  export NVM_DIR="$HOME/.nvm"
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-}
-
-function _installNode {
-  nodeVersion=$1
-  if [ -z "$nodeVersion" ]; then
-    echo "Node version is not provided"
-    exit 1
-  fi
-  echo "Installing $nodeVersion version of nodejs"
-  export NVM_NODEJS_ORG_MIRROR=http://nodejs.org/dist
-  nvm install $nodeVersion
-  nvm use $nodeVersion
-}
-
 function _buildLinux {
   _setShell
-  _installNVM
-  _installNode 18.20.4
+  _setupNodeVersion 18.20.4
   echo "Linux Build"
   node --version
   yarn run production-build
@@ -115,8 +96,7 @@ function _buildLinux {
 # used when build is not necessary for codebuild project
 function _installLinux {
   _setShell
-  _installNVM
-  _installNode 18
+  _setupNodeVersion 18.20.4
   echo "Linux Install"
   yarn run production-install
   storeCacheForBuildJob
