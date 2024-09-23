@@ -476,7 +476,7 @@ export const clearRDSClusterData = async (clusterInfo: ClusterInfo, region: stri
     console.log(err);
   }
 
-  const tables = tableQueryResponse.records?.map((record) => record[0].stringValue) || [];
+  const tables = tableQueryResponse?.records?.map((record) => record[0]?.stringValue) || [];
 
   // Truncate each table
   for (const table of tables) {

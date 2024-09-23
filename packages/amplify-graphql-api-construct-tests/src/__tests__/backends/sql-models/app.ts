@@ -28,7 +28,7 @@ interface DBDetails {
     };
   };
   dbConnectionConfig: SqlModelDataSourceDbConnectionConfig;
-  schemaConfig: string | null;
+  schemaConfig: string;
 }
 
 const defaultSchemaConfig = `

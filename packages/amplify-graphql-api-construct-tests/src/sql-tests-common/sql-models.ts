@@ -152,8 +152,6 @@ export const testGraphQLAPI = (
       const listToDoWithLimit2 = await toDoTableCRUDLHelper.list(2, listToDoWithLimit1.nextToken);
 
       expect(listToDoWithLimit2.items.length).toEqual(2);
-      // expect(listToDoWithLimit2.nextToken).toBeNull();
-      // console.log(listToDoWithLimit2.nextToken);
 
       // Check filter
       const listTodosWithFilter1 = await toDoTableCRUDLHelper.list(10, null, { description: { contains: '#2' } });

@@ -58,13 +58,13 @@ describe('CDK GraphQL Transformer deployments with SQL datasources', () => {
   );
 
   testGraphQLAPI(
-    constructTestOptions('ssm'),
+    constructTestOptions('connectionUri'),
     'creates a GraphQL API from SQL-based models using Connection Uri SSM path',
     ImportedRDSType.MYSQL,
   );
 
   testGraphQLAPI(
-    constructTestOptions('ssm'),
+    constructTestOptions('connectionUriMultiple'),
     'creates a GraphQL API from SQL-based models using multiple Connection Uri SSM paths',
     ImportedRDSType.MYSQL,
   );

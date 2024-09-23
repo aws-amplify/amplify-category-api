@@ -274,7 +274,7 @@ export class SqlDatatabaseController {
    *
    * @param projRoot the destination directory to write the `db-details.json` file to
    */
-  writeDbDetails = (projRoot: string, connectionConfigName: string, schemaConfigString: string | null = null): void => {
+  writeDbDetails = (projRoot: string, connectionConfigName: string, schemaConfigString?: string): void => {
     if (!this.databaseDetails) {
       throw new Error('Database has not been set up. Make sure to call setupDatabase first');
     }

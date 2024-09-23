@@ -56,7 +56,7 @@ describe('CDK GraphQL Transformer deployments with SQL datasources', () => {
   );
 
   testGraphQLAPI(
-    constructTestOptions('secretsManager'),
+    constructTestOptions('secretsManagerCustomKey'),
     'creates a GraphQL API from SQL-based models with Secrets Manager Credential Store custom encryption key',
     ImportedRDSType.MYSQL,
   );
