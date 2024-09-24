@@ -15,7 +15,9 @@ export function request(ctx) {
   const currentMessageId = ctx.stash.defaultValues.id;
   MODEL_CONFIGURATION_LINE
 
-  const clientTools = args.toolConfiguration?.tools?.map((tool) => { return { ...tool.toolSpec }});
+  const clientTools = args.toolConfiguration?.tools?.map((tool) => {
+    return { ...tool.toolSpec };
+  });
   TOOLS_CONFIGURATION_LINE
 
   const authHeader = request.headers['authorization'];
@@ -25,7 +27,7 @@ export function request(ctx) {
     responseMutation,
     graphqlApiEndpoint,
     modelConfiguration,
-    request: { headers: { authorization: authHeader }},
+    request: { headers: { authorization: authHeader } },
     messages,
     toolsConfiguration,
   };
@@ -33,7 +35,7 @@ export function request(ctx) {
   return {
     operation: 'Invoke',
     payload,
-    invocationType: 'Event'
+    invocationType: 'Event',
   };
 }
 
@@ -42,13 +44,13 @@ export function response(ctx) {
     util.appendError(ctx.error.message, ctx.error.type);
   }
   const response = {
-      __typename: 'MESSAGE_MODEL_NAME',
-      id: ctx.stash.defaultValues.id,
-      conversationId: ctx.args.conversationId,
-      role: 'user',
-      content: ctx.args.content,
-      createdAt: ctx.stash.defaultValues.createdAt,
-      updatedAt: ctx.stash.defaultValues.updatedAt,
+    __typename: 'MESSAGE_MODEL_NAME',
+    id: ctx.stash.defaultValues.id,
+    conversationId: ctx.args.conversationId,
+    role: 'user',
+    content: ctx.args.content,
+    createdAt: ctx.stash.defaultValues.createdAt,
+    updatedAt: ctx.stash.defaultValues.updatedAt,
   };
   return response;
 }

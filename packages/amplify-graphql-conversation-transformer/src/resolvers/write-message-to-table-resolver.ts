@@ -2,6 +2,7 @@ import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import fs from 'fs';
 import path from 'path';
+
 /**
  * Creates a mapping template for writing a message to a table in a conversation.
  *

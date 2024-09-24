@@ -75,7 +75,9 @@ export function request(ctx) {
   inferenceConfiguration: {"temperature":0.5,"topP":0.9,"maxTokens":100},
 };
 
-  const clientTools = args.toolConfiguration?.tools?.map((tool) => { return { ...tool.toolSpec }});
+  const clientTools = args.toolConfiguration?.tools?.map((tool) => {
+    return { ...tool.toolSpec };
+  });
   const toolsConfiguration = {
   clientTools
 };
@@ -87,7 +89,7 @@ export function request(ctx) {
     responseMutation,
     graphqlApiEndpoint,
     modelConfiguration,
-    request: { headers: { authorization: authHeader }},
+    request: { headers: { authorization: authHeader } },
     messages,
     toolsConfiguration,
   };
@@ -95,7 +97,7 @@ export function request(ctx) {
   return {
     operation: 'Invoke',
     payload,
-    invocationType: 'Event'
+    invocationType: 'Event',
   };
 }
 
@@ -104,16 +106,17 @@ export function response(ctx) {
     util.appendError(ctx.error.message, ctx.error.type);
   }
   const response = {
-      __typename: 'ConversationMessagePirateChat',
-      id: ctx.stash.defaultValues.id,
-      conversationId: ctx.args.conversationId,
-      role: 'user',
-      content: ctx.args.content,
-      createdAt: ctx.stash.defaultValues.createdAt,
-      updatedAt: ctx.stash.defaultValues.updatedAt,
+    __typename: 'ConversationMessagePirateChat',
+    id: ctx.stash.defaultValues.id,
+    conversationId: ctx.args.conversationId,
+    role: 'user',
+    content: ctx.args.content,
+    createdAt: ctx.stash.defaultValues.createdAt,
+    updatedAt: ctx.stash.defaultValues.updatedAt,
   };
   return response;
-}",
+}
+",
     ],
   ],
 }
@@ -194,7 +197,9 @@ export function request(ctx) {
   
 };
 
-  const clientTools = args.toolConfiguration?.tools?.map((tool) => { return { ...tool.toolSpec }});
+  const clientTools = args.toolConfiguration?.tools?.map((tool) => {
+    return { ...tool.toolSpec };
+  });
   const dataTools = toolDefinitions.tools;
  const toolsConfiguration = {
   dataTools,
@@ -208,7 +213,7 @@ export function request(ctx) {
     responseMutation,
     graphqlApiEndpoint,
     modelConfiguration,
-    request: { headers: { authorization: authHeader }},
+    request: { headers: { authorization: authHeader } },
     messages,
     toolsConfiguration,
   };
@@ -216,7 +221,7 @@ export function request(ctx) {
   return {
     operation: 'Invoke',
     payload,
-    invocationType: 'Event'
+    invocationType: 'Event',
   };
 }
 
@@ -225,16 +230,17 @@ export function response(ctx) {
     util.appendError(ctx.error.message, ctx.error.type);
   }
   const response = {
-      __typename: 'ConversationMessagePirateChat',
-      id: ctx.stash.defaultValues.id,
-      conversationId: ctx.args.conversationId,
-      role: 'user',
-      content: ctx.args.content,
-      createdAt: ctx.stash.defaultValues.createdAt,
-      updatedAt: ctx.stash.defaultValues.updatedAt,
+    __typename: 'ConversationMessagePirateChat',
+    id: ctx.stash.defaultValues.id,
+    conversationId: ctx.args.conversationId,
+    role: 'user',
+    content: ctx.args.content,
+    createdAt: ctx.stash.defaultValues.createdAt,
+    updatedAt: ctx.stash.defaultValues.updatedAt,
   };
   return response;
-}",
+}
+",
     ],
   ],
 }
@@ -315,7 +321,9 @@ export function request(ctx) {
   
 };
 
-  const clientTools = args.toolConfiguration?.tools?.map((tool) => { return { ...tool.toolSpec }});
+  const clientTools = args.toolConfiguration?.tools?.map((tool) => {
+    return { ...tool.toolSpec };
+  });
   const dataTools = toolDefinitions.tools;
  const toolsConfiguration = {
   dataTools,
@@ -329,7 +337,7 @@ export function request(ctx) {
     responseMutation,
     graphqlApiEndpoint,
     modelConfiguration,
-    request: { headers: { authorization: authHeader }},
+    request: { headers: { authorization: authHeader } },
     messages,
     toolsConfiguration,
   };
@@ -337,7 +345,7 @@ export function request(ctx) {
   return {
     operation: 'Invoke',
     payload,
-    invocationType: 'Event'
+    invocationType: 'Event',
   };
 }
 
@@ -346,16 +354,17 @@ export function response(ctx) {
     util.appendError(ctx.error.message, ctx.error.type);
   }
   const response = {
-      __typename: 'ConversationMessagePirateChat',
-      id: ctx.stash.defaultValues.id,
-      conversationId: ctx.args.conversationId,
-      role: 'user',
-      content: ctx.args.content,
-      createdAt: ctx.stash.defaultValues.createdAt,
-      updatedAt: ctx.stash.defaultValues.updatedAt,
+    __typename: 'ConversationMessagePirateChat',
+    id: ctx.stash.defaultValues.id,
+    conversationId: ctx.args.conversationId,
+    role: 'user',
+    content: ctx.args.content,
+    createdAt: ctx.stash.defaultValues.createdAt,
+    updatedAt: ctx.stash.defaultValues.updatedAt,
   };
   return response;
-}",
+}
+",
     ],
   ],
 }
@@ -436,7 +445,9 @@ export function request(ctx) {
   
 };
 
-  const clientTools = args.toolConfiguration?.tools?.map((tool) => { return { ...tool.toolSpec }});
+  const clientTools = args.toolConfiguration?.tools?.map((tool) => {
+    return { ...tool.toolSpec };
+  });
   const dataTools = toolDefinitions.tools;
  const toolsConfiguration = {
   dataTools,
@@ -450,7 +461,7 @@ export function request(ctx) {
     responseMutation,
     graphqlApiEndpoint,
     modelConfiguration,
-    request: { headers: { authorization: authHeader }},
+    request: { headers: { authorization: authHeader } },
     messages,
     toolsConfiguration,
   };
@@ -458,7 +469,7 @@ export function request(ctx) {
   return {
     operation: 'Invoke',
     payload,
-    invocationType: 'Event'
+    invocationType: 'Event',
   };
 }
 
@@ -467,16 +478,17 @@ export function response(ctx) {
     util.appendError(ctx.error.message, ctx.error.type);
   }
   const response = {
-      __typename: 'ConversationMessagePirateChat',
-      id: ctx.stash.defaultValues.id,
-      conversationId: ctx.args.conversationId,
-      role: 'user',
-      content: ctx.args.content,
-      createdAt: ctx.stash.defaultValues.createdAt,
-      updatedAt: ctx.stash.defaultValues.updatedAt,
+    __typename: 'ConversationMessagePirateChat',
+    id: ctx.stash.defaultValues.id,
+    conversationId: ctx.args.conversationId,
+    role: 'user',
+    content: ctx.args.content,
+    createdAt: ctx.stash.defaultValues.createdAt,
+    updatedAt: ctx.stash.defaultValues.updatedAt,
   };
   return response;
-}",
+}
+",
     ],
   ],
 }

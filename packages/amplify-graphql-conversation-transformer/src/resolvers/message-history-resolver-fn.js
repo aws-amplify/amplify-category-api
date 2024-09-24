@@ -6,8 +6,8 @@ export function request(ctx) {
   const query = {
     expression: 'conversationId = :conversationId',
     expressionValues: util.dynamodb.toMapValues({
-      ':conversationId': ctx.args.conversationId
-    })
+      ':conversationId': ctx.args.conversationId,
+    }),
   };
 
   const filter = JSON.parse(util.transform.toDynamoDBFilterExpression(authFilter));
@@ -19,7 +19,7 @@ export function request(ctx) {
     filter,
     index,
     scanIndexForward: false,
-  }
+  };
 }
 
 export function response(ctx) {
@@ -29,10 +29,10 @@ export function response(ctx) {
   const messagesWithAssistantResponse = ctx.result.items
     .filter((message) => message.assistantContent !== undefined)
     .reduce((acc, current) => {
-        acc.push({ role: 'user', content: current.content });
-        acc.push({ role: 'assistant', content: current.assistantContent });
-        return acc;
-    }, [])
+      acc.push({ role: 'user', content: current.content });
+      acc.push({ role: 'assistant', content: current.assistantContent });
+      return acc;
+    }, []);
 
   const currentMessage = { role: 'user', content: ctx.prev.result.content };
   const items = [...messagesWithAssistantResponse, currentMessage];

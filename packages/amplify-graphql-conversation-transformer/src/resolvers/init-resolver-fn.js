@@ -6,7 +6,7 @@ export function request(ctx) {
   ctx.stash.defaultValues.updatedAt = createdAt;
   return {
     version: '2018-05-09',
-    payload: {}
+    payload: {},
   };
 }
 

@@ -51,7 +51,6 @@ const generateToolLines = (config: ConversationDirectiveConfiguration) => {
   const toolDefinitions = JSON.stringify(config.toolSpec);
   const TOOL_DEFINITIONS_LINE = toolDefinitions ? `const toolDefinitions = ${toolDefinitions};` : '';
 
-
   const TOOLS_CONFIGURATION_LINE = toolDefinitions
     ? dedent`const dataTools = toolDefinitions.tools;
      const toolsConfiguration = {
@@ -62,10 +61,8 @@ const generateToolLines = (config: ConversationDirectiveConfiguration) => {
       clientTools
     };`;
 
-    return { TOOL_DEFINITIONS_LINE, TOOLS_CONFIGURATION_LINE };
+  return { TOOL_DEFINITIONS_LINE, TOOLS_CONFIGURATION_LINE };
 };
-
-
 
 /**
  * Generates a line of code for the model configuration in the context of a GraphQL conversation.

@@ -3,7 +3,6 @@ import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interf
 import fs from 'fs';
 import path from 'path';
 import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-transformer';
-import { toUpper } from 'graphql-transformer-common';
 
 /**
  * Creates and returns the mapping template for the assistant mutation resolver.

@@ -1,7 +1,6 @@
 import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import fs from 'fs';
-import { toUpper } from 'graphql-transformer-common';
 import path from 'path';
 import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-transformer';
 

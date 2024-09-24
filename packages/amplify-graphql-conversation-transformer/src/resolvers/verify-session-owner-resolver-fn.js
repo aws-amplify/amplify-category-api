@@ -4,8 +4,8 @@ export function request(ctx) {
   const query = {
     expression: 'id = :id',
     expressionValues: util.dynamodb.toMapValues({
-      ':id': ctx.args.conversationId
-    })
+      ':id': ctx.args.conversationId,
+    }),
   };
 
   const filter = JSON.parse(util.transform.toDynamoDBFilterExpression(authFilter));
@@ -13,7 +13,7 @@ export function request(ctx) {
   return {
     operation: 'Query',
     query,
-    filter
+    filter,
   };
 }
 

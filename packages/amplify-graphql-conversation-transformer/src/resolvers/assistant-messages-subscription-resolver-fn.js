@@ -12,7 +12,7 @@ export function request(ctx) {
       const currentClaim1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
       if (ownerClaim0 && currentClaim1) {
         ownerClaim0 = ownerClaim0 + '::' + currentClaim1;
-        authFilter.push({ owner: { eq: ownerClaim0 } })
+        authFilter.push({ owner: { eq: ownerClaim0 } });
       }
       const role0_0 = ctx.identity['claims']['sub'];
       if (role0_0) {
@@ -22,7 +22,7 @@ export function request(ctx) {
       // vtl auth resolver.
       const role0_1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
       if (role0_1) {
-        authFilter.push({ owner: { eq: role0_1 }});
+        authFilter.push({ owner: { eq: role0_1 } });
       }
       if (authFilter.length !== 0) {
         ctx.stash.authFilter = { or: authFilter };
@@ -32,12 +32,12 @@ export function request(ctx) {
   if (!isAuthorized && ctx.stash.authFilter.length === 0) {
     util.unauthorized();
   }
-  ctx.args.filter = { ...ctx.args.filter, and: [{ conversationId: { eq: ctx.args.conversationId  }}]};
+  ctx.args.filter = { ...ctx.args.filter, and: [{ conversationId: { eq: ctx.args.conversationId } }] };
   return { version: '2018-05-29', payload: {} };
 }
 
 export function response(ctx) {
-    const subscriptionFilter = util.transform.toSubscriptionFilter(ctx.args.filter);
-    extensions.setSubscriptionFilter(subscriptionFilter);
-    return null;
+  const subscriptionFilter = util.transform.toSubscriptionFilter(ctx.args.filter);
+  extensions.setSubscriptionFilter(subscriptionFilter);
+  return null;
 }

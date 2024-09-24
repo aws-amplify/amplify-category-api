@@ -14,6 +14,7 @@ packages/amplify-graphql-api-construct-tests/amplify-e2e-reports
 packages/amplify-graphql-api-construct/README.md
 packages/amplify-graphql-api-construct/tsconfig.json
 packages/amplify-graphql-conversation-transformer/src/__tests__/schemas/*.graphql
+packages/amplify-graphql-conversation-transformer/src/resolvers/*.js
 packages/amplify-data-construct/README.md
 packages/amplify-data-construct/tsconfig.json
 packages/amplify-graphql-model-transformer/publish-notification-lambda/lib/

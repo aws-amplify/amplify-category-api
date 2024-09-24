@@ -1,14 +1,14 @@
-import { util } from '@aws-appsync/utils'
-import * as ddb from '@aws-appsync/utils/dynamodb'
+import { util } from '@aws-appsync/utils';
+import * as ddb from '@aws-appsync/utils/dynamodb';
 
 export function request(ctx) {
   const args = ctx.stash.transformedArgs ?? ctx.args;
   const defaultValues = ctx.stash.defaultValues ?? {};
   const message = {
-      __typename: 'CONVERSATION_MESSAGE_TYPE_NAME',
-      role: 'user',
-      ...args,
-      ...defaultValues,
+    __typename: 'CONVERSATION_MESSAGE_TYPE_NAME',
+    role: 'user',
+    ...args,
+    ...defaultValues,
   };
   const id = ctx.stash.defaultValues.id;
 
