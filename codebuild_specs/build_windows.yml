@@ -6,6 +6,7 @@ variables:
 phases:
   build:
     commands:
+      - bash -c "source ./shared-scripts.sh && _setupNodeVersion 18.20.4"
       - yarn run production-build
       - yarn build-tests
 
