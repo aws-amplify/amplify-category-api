@@ -33,7 +33,7 @@ export const createInvokeBedrockResolverFunction = (
 const generateResolver = (fileName: string, values: Record<string, string>): string => {
   let resolver = fs.readFileSync(path.join(__dirname, fileName), 'utf8');
   Object.entries(values).forEach(([key, value]) => {
-    const replaced = resolver.replace(new RegExp(key, 'g'), value);
+    const replaced = resolver.replace(new RegExp(`\\[\\[${key}\\]\\]`, 'g'), value);
     resolver = replaced;
   });
   return resolver;
@@ -47,6 +47,6 @@ const generateResolver = (fileName: string, values: Record<string, string>): str
  */
 const getInferenceConfigResolverDefinition = (inferenceConfiguration?: InferenceConfiguration): string => {
   return inferenceConfiguration && Object.keys(inferenceConfiguration).length > 0
-    ? `inferenceConfig: ${JSON.stringify(inferenceConfiguration)},`
-    : '// default inference config';
+    ? `{ inferenceConfig: ${JSON.stringify(inferenceConfiguration)} },`
+    : 'undefined';
 };

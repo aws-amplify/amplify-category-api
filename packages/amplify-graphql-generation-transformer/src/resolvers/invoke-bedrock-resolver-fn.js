@@ -1,10 +1,11 @@
 export function request(ctx) {
-  const toolConfig = TOOL_CONFIG;
-  const prompt = SYSTEM_PROMPT;
+  const toolConfig = [[TOOL_CONFIG]];
+  const prompt = [[SYSTEM_PROMPT]];
   const args = JSON.stringify(ctx.args);
+  const inferenceConfig = [[INFERENCE_CONFIG]];
 
   return {
-    resourcePath: '/model/AI_MODEL/converse',
+    resourcePath: '/model/[[AI_MODEL]]/converse',
     method: 'POST',
     params: {
       headers: { 'Content-Type': 'application/json' },
@@ -15,7 +16,7 @@ export function request(ctx) {
         }],
         system: [{ text: prompt }],
         toolConfig,
-        INFERENCE_CONFIG
+        ...inferenceConfig,
       }
     }
   }
