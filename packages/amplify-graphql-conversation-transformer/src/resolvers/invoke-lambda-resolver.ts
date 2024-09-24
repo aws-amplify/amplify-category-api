@@ -42,7 +42,7 @@ export const invokeLambdaMappingTemplate = (
   });
 
   // This unfortunately needs to be an inline template because an s3 mapping template doesn't allow the CDK
-  // to substitute token values, which is necessaru for this resolver function due to its  reference of
+  // to substitute token values, which is necessary for this resolver function due to its reference of
   // `ctx.api.graphqlUrl`.
   return MappingTemplate.inlineTemplateFromString(resolver);
 };
@@ -100,100 +100,3 @@ const generateModelInferenceConfigurationLine = (config: ConversationDirectiveCo
  * The selection set for the conversation message.
  */
 const selectionSet = `id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt`;
-
-
-
-
-// /**
-//  * Creates a request function for invoking a Lambda function in the context of a GraphQL conversation.
-//  * This function prepares the necessary data and configuration for the Lambda invocation.
-//  *
-//  * @param {ConversationDirectiveConfiguration} config - The configuration for the conversation directive.
-//  * @param {TransformerContextProvider} ctx - The transformer context provider.
-//  * @returns {MappingTemplateProvider} A function that generates the request mapping template.
-//  */
-// const createInvokeLambdaRequestFunction = (
-//   config: ConversationDirectiveConfiguration,
-//   ctx: TransformerContextProvider,
-// ): MappingTemplateProvider => {
-//   const { responseMutationInputTypeName, responseMutationName } = config;
-//   const toolDefinitions = JSON.stringify(config.toolSpec);
-//   const toolDefinitionsLine = toolDefinitions ? `const toolDefinitions = ${toolDefinitions};` : '';
-//   const modelConfigurationLine = generateModelConfigurationLine(config);
-//   const graphqlEndpoint = ctx.api.graphqlUrl;
-
-//   const toolsConfigurationLine = toolDefinitions
-//     ? dedent`const dataTools = toolDefinitions.tools;
-//      const toolsConfiguration = {
-//       dataTools,
-//       clientTools,
-//     };`
-//     : dedent`const toolsConfiguration = {
-//       clientTools
-//     };`;
-
-//   const requestFunctionString = `
-//   import { util } from '@aws-appsync/utils';
-
-//   export function request(ctx) {
-//     const { args, identity, request, prev } = ctx;
-//     ${toolDefinitionsLine}
-//     const selectionSet = '${selectionSet}';
-//     const graphqlApiEndpoint = '${graphqlEndpoint}';
-
-//     const messages = prev.result.items;
-//     const responseMutation = {
-//       name: '${responseMutationName}',
-//       inputTypeName: '${responseMutationInputTypeName}',
-//       selectionSet,
-//     };
-//     const currentMessageId = ctx.stash.defaultValues.id;
-//     ${modelConfigurationLine}
-
-//     const clientTools = args.toolConfiguration?.tools?.map((tool) => { return { ...tool.toolSpec }});
-//     ${toolsConfigurationLine}
-
-//     const authHeader = request.headers['authorization'];
-//     const payload = {
-//       conversationId: args.conversationId,
-//       currentMessageId,
-//       responseMutation,
-//       graphqlApiEndpoint,
-//       modelConfiguration,
-//       request: { headers: { authorization: authHeader }},
-//       messages,
-//       toolsConfiguration,
-//     };
-
-//     return {
-//       operation: 'Invoke',
-//       payload,
-//       invocationType: 'Event'
-//     };
-//   }`;
-
-//   return MappingTemplate.inlineTemplateFromString(dedent(requestFunctionString));
-// };
-
-// const createInvokeLambdaResponseFunction = (config: ConversationDirectiveConfiguration): MappingTemplateProvider => {
-//   const responseFunctionString = `
-//   export function response(ctx) {
-//     let success = true;
-//     if (ctx.error) {
-//       util.appendError(ctx.error.message, ctx.error.type);
-//       success = false;
-//     }
-//     const response = {
-//         __typename: '${config.messageModel.messageModel.name.value}',
-//         id: ctx.stash.defaultValues.id,
-//         conversationId: ctx.args.conversationId,
-//         role: 'user',
-//         content: ctx.args.content,
-//         createdAt: ctx.stash.defaultValues.createdAt,
-//         updatedAt: ctx.stash.defaultValues.updatedAt,
-//     };
-//     return response;
-//   }`;
-
-//   return MappingTemplate.inlineTemplateFromString(dedent(responseFunctionString));
-// };
