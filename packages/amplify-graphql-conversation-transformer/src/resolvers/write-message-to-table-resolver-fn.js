@@ -5,7 +5,7 @@ export function request(ctx) {
   const args = ctx.stash.transformedArgs ?? ctx.args;
   const defaultValues = ctx.stash.defaultValues ?? {};
   const message = {
-    __typename: 'CONVERSATION_MESSAGE_TYPE_NAME',
+    __typename: '[[CONVERSATION_MESSAGE_TYPE_NAME]]',
     role: 'user',
     ...args,
     ...defaultValues,

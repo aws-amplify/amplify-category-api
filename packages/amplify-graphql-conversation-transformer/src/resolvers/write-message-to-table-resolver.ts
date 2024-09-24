@@ -14,7 +14,7 @@ export const writeMessageToTableMappingTemplate = (fieldName: string): MappingTe
   };
   let resolver = fs.readFileSync(path.join(__dirname, 'write-message-to-table-resolver-fn.js'), 'utf8');
   Object.entries(substitutions).forEach(([key, value]) => {
-    const replaced = resolver.replace(new RegExp(key, 'g'), value);
+    const replaced = resolver.replace(new RegExp(`\\[\\[${key}\\]\\]`, 'g'), value);
     resolver = replaced;
   });
 

@@ -6,7 +6,7 @@ export function request(ctx) {
   const query = {
     expression: 'conversationId = :conversationId',
     expressionValues: util.dynamodb.toMapValues({
-      ':conversationId': ctx.args.conversationId,
+      ':conversationId': conversationId,
     }),
   };
 
