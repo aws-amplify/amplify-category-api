@@ -24,7 +24,7 @@ export type GenerateRecipeQueryVariables = {
 
 export type GenerateRecipeQuery = {
   generateRecipe?: {
-    __typename: 'GenerateRecipeReturnType';
+    __typename: 'Recipe';
     ingredients: Array<string>;
     instructions: string;
     name: string;
