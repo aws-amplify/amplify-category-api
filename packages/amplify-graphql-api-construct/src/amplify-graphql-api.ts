@@ -87,6 +87,9 @@ export class AmplifyGraphqlApi extends Construct {
    */
   public readonly resources: AmplifyGraphqlApiResources;
 
+  /**
+   * Stack reference for root stack of data construct
+   */
   public readonly stack: Stack;
 
   /**
