@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-schema-generator",
-  "version": "0.9.3",
+  "version": "0.10.3",
   "description": "Amplify GraphQL schema generator",
   "repository": {
     "type": "git",
@@ -16,7 +16,8 @@
     "schema",
     "aws",
     "amplify",
-    "generator"
+    "generator",
+    "transformer"
   ],
   "publishConfig": {
     "access": "public"
@@ -29,8 +30,8 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "2.9.3",
-    "@aws-amplify/graphql-transformer-interfaces": "3.10.1",
+    "@aws-amplify/graphql-transformer-core": "3.1.1",
+    "@aws-amplify/graphql-transformer-interfaces": "4.1.0",
     "@aws-sdk/client-ec2": "3.624.0",
     "@aws-sdk/client-iam": "3.624.0",
     "@aws-sdk/client-lambda": "3.624.0",
@@ -38,7 +39,7 @@
     "csv-parse": "^5.5.2",
     "fs-extra": "11.1.1",
     "graphql": "^15.5.0",
-    "graphql-transformer-common": "4.31.1",
+    "graphql-transformer-common": "5.0.1",
     "knex": "~2.4.0",
     "mysql2": "~3.9.7",
     "ora": "^4.0.3",
@@ -47,14 +48,16 @@
     "typescript": "^4.8.4"
   },
   "devDependencies": {
-    "@types/node": "^18.17.0",
+    "@types/node": "^18.0.0",
     "@types/pluralize": "^0.0.29"
   },
   "jest": {
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
-    "testURL": "http://localhost",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "testRegex": "(src/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "modulePathIgnorePatterns": [
       "__utils__"
@@ -83,12 +86,15 @@
     "moduleNameMapper": {
       "^csv-parse/sync": "<rootDir>/../../node_modules/csv-parse/dist/cjs/sync.cjs"
     },
-    "testEnvironment": "../../FixJestEnvironment.js",
     "collectCoverageFrom": [
       "src/**/*.ts"
     ],
     "coveragePathIgnorePatterns": [
       "/__tests__/"
-    ]
+    ],
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    }
   }
 }

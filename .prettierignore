@@ -7,14 +7,13 @@ node_modules
 API.md
 CHANGELOG.md
 client-test-apps
-packages/amplify-category-api/resources/
-packages/amplify-category-api/src/__tests__/commands/api/mock-data/invalid_schema.graphql
 packages/amplify-dynamodb-simulator/emulator/dynamodb-local-metadata.json
 packages/amplify-e2e-core/dist/index.html
 packages/amplify-e2e-tests/amplify-e2e-reports
 packages/amplify-graphql-api-construct-tests/amplify-e2e-reports
 packages/amplify-graphql-api-construct/README.md
 packages/amplify-graphql-api-construct/tsconfig.json
+packages/amplify-graphql-conversation-transformer/src/__tests__/schemas/*.graphql
 packages/amplify-data-construct/README.md
 packages/amplify-data-construct/tsconfig.json
 packages/amplify-graphql-model-transformer/publish-notification-lambda/lib/

@@ -4,6 +4,7 @@ import { SqlModelDataSourceDbConnectionConfig, ModelDataSourceStrategySqlDbType 
 import {
   deleteSSMParameters,
   deleteDbConnectionConfigWithSecretsManager,
+  deleteDBCluster,
   deleteDBInstance,
   extractVpcConfigFromDbInstance,
   RDSConfig,
@@ -13,15 +14,19 @@ import {
   storeDbConnectionConfig,
   storeDbConnectionStringConfig,
   storeDbConnectionConfigWithSecretsManager,
-  deleteDBCluster,
-  isOptInRegion,
+  isDataAPISupported,
+  isCI,
+  generateDBName,
+  setupDataInExistingCluster,
 } from 'amplify-category-api-e2e-core';
-import { SecretsManagerClient, CreateSecretCommand, DeleteSecretCommand, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
+import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
 import {
   isSqlModelDataSourceSecretsManagerDbConnectionConfig,
   isSqlModelDataSourceSsmDbConnectionConfig,
   isSqlModelDataSourceSsmDbConnectionStringConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { getClusterIdFromLocalConfig } from './utils/sql-local-testing';
+import { getPreProvisionedClusterInfo } from './utils/sql-pre-provisioned-cluster';
 
 export interface SqlDatabaseDetails {
   dbConfig: {
@@ -50,20 +55,40 @@ export interface SqlDatabaseDetails {
 export class SqlDatatabaseController {
   private databaseDetails: SqlDatabaseDetails | undefined;
   private useDataAPI: boolean;
+  private enableLocalTesting: boolean;
+  private usePreProvisionedCluster: boolean;
 
-  constructor(private readonly setupQueries: Array<string>, private readonly options: RDSConfig) {
+  constructor(private readonly setupQueries: Array<string>, private options: RDSConfig) {
     // Data API is not supported in opted-in regions
-    if (options.engine === 'postgres' && !isOptInRegion(options.region)) {
+    if (options.engine === 'postgres' && isDataAPISupported(options.region)) {
       this.useDataAPI = true;
+      this.enableLocalTesting = !isCI() && getClusterIdFromLocalConfig(options.region, options.engine) !== undefined;
     } else {
       this.useDataAPI = false;
+    }
+
+    // If database name not manually set, provide and sanitize the config dbname
+    if (!options.dbname || options.dbname.length == 0 || this.enableLocalTesting) {
+      this.options.dbname = generateDBName().replace(/[^a-zA-Z0-9_]/g, '');
     }
   }
 
   setupDatabase = async (): Promise<SqlDatabaseDetails> => {
     let dbConfig;
+
     if (this.useDataAPI) {
-      dbConfig = await setupRDSClusterAndData(this.options, this.setupQueries);
+      const preProvisionedClusterInfo = await getPreProvisionedClusterInfo(this.options.region, this.options.engine);
+      this.usePreProvisionedCluster = preProvisionedClusterInfo !== undefined;
+      if (this.enableLocalTesting || this.usePreProvisionedCluster) {
+        const identifier = this.usePreProvisionedCluster
+          ? preProvisionedClusterInfo.clusterIdentifier
+          : getClusterIdFromLocalConfig(this.options.region, this.options.engine);
+        dbConfig = await setupDataInExistingCluster(identifier, this.options, this.setupQueries, preProvisionedClusterInfo.secretArn);
+        this.options.username = dbConfig.username;
+        this.options.dbname = dbConfig.dbName;
+      } else {
+        dbConfig = await setupRDSClusterAndData(this.options, this.setupQueries);
+      }
     } else {
       dbConfig = await setupRDSInstanceAndData(this.options, this.setupQueries);
     }
@@ -80,7 +105,7 @@ export class SqlDatatabaseController {
     };
     console.log(`Stored db connection config in Secrets manager: ${JSON.stringify(dbConnectionConfigSecretsManager)}`);
 
-    if (this.useDataAPI || !this.options.password) {
+    if (this.useDataAPI || !this.options.password || this.enableLocalTesting) {
       const secretArn = dbConfig.secretArn;
       const secretsManagerClient = new SecretsManagerClient({ region: this.options.region });
       const secretManagerCommand = new GetSecretValueCommand({
@@ -93,14 +118,14 @@ export class SqlDatatabaseController {
       }
       this.options.password = managedPassword;
     }
-
-    const { secretArn: secretArnWithCustomKey, keyArn } = await storeDbConnectionConfigWithSecretsManager({
+    const { secretArn: secretArnWithCustomKey, keyArn: keyArn } = await storeDbConnectionConfigWithSecretsManager({
       region: this.options.region,
       username: this.options.username,
       password: this.options.password,
-      secretName: `${this.options.identifier}-secret-custom-key`,
+      secretName: `${this.options.identifier}-${this.options.dbname}-secret-custom-key`,
       useCustomEncryptionKey: true,
     });
+
     if (!secretArnWithCustomKey) {
       throw new Error('Failed to store db connection config for secrets manager');
     }
@@ -113,7 +138,7 @@ export class SqlDatatabaseController {
     };
     console.log(`Stored db connection config in Secrets manager: ${JSON.stringify(dbConnectionConfigSecretsManagerCustomKey)}`);
 
-    const pathPrefix = `/${this.options.identifier}/test`;
+    const pathPrefix = `/${this.options.identifier}/${this.options.dbname}/test`;
     const engine = this.options.engine;
     const dbConnectionConfigSSM = await storeDbConnectionConfig({
       region: this.options.region,
@@ -177,20 +202,20 @@ export class SqlDatatabaseController {
         connectionUriMultiple: dbConnectionStringConfigMultiple,
       },
     };
-
     return this.databaseDetails;
   };
 
   cleanupDatabase = async (): Promise<void> => {
-    if (!this.databaseDetails) {
-      // Database has not been set up.
+    if (this.usePreProvisionedCluster || !this.databaseDetails) {
       return;
     }
 
-    if (this.useDataAPI) {
-      await deleteDBCluster(this.options.identifier, this.options.region);
-    } else {
-      await deleteDBInstance(this.options.identifier, this.options.region);
+    if (!this.enableLocalTesting) {
+      if (this.useDataAPI) {
+        await deleteDBCluster(this.options.identifier, this.options.region);
+      } else {
+        await deleteDBInstance(this.options.identifier, this.options.region);
+      }
     }
 
     const { connectionConfigs } = this.databaseDetails;
@@ -259,6 +284,6 @@ export class SqlDatatabaseController {
    */
   getConnectionUri = (engine: SqlEngine, username: string, password: string, hostname: string, port: number, dbName: string): string => {
     const protocol = engine === 'postgres' ? 'postgresql' : 'mysql';
-    return `${protocol}://${username}:${password}@${hostname}:${port}/${dbName}`;
+    return `${protocol}://${encodeURIComponent(username)}:${encodeURIComponent(password)}@${hostname}:${port}/${dbName}`;
   };
 }

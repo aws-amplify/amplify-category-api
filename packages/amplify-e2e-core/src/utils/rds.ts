@@ -4,13 +4,14 @@ import {
   CreateDBInstanceCommand,
   CreateDBInstanceCommandInput,
   DBInstance,
-  DeleteDBInstanceCommand,
-  waitUntilDBInstanceAvailable,
-  CreateDBClusterCommandInput,
   CreateDBClusterMessage,
-  waitUntilDBClusterAvailable,
   DeleteDBClusterCommand,
   DeleteDBClusterCommandInput,
+  DeleteDBInstanceCommand,
+  DescribeDBClustersCommand,
+  DescribeDBInstancesCommand,
+  waitUntilDBClusterAvailable,
+  waitUntilDBInstanceAvailable,
 } from '@aws-sdk/client-rds';
 import { RDSDataClient, ExecuteStatementCommand, ExecuteStatementCommandInput, Field } from '@aws-sdk/client-rds-data';
 import generator from 'generate-password';
@@ -40,7 +41,7 @@ export type SqlEngine = 'mysql' | 'postgres';
 export type RDSConfig = {
   identifier: string;
   engine: SqlEngine;
-  dbname: string;
+  dbname?: string;
   username: string;
   password?: string;
   region: string;
@@ -56,6 +57,7 @@ export type ClusterInfo = {
   dbName: string;
   secretArn: string;
   dbInstance: DBInstance;
+  username?: string;
 };
 
 const getRDSEngineType = (engine: SqlEngine): string => {
@@ -243,6 +245,91 @@ export const createRDSCluster = async (config: RDSConfig): Promise<ClusterInfo> 
 };
 
 /**
+ * Setup the test database and data in the pre-existing RDS Aurora serverless V2 cluster with one writer DB instance. Get the necessary configuration settings of the cluster and instance.
+ * @param identifier Cluster idenfitier.
+ * @param config Configuration of the database cluster.
+ * @param queries Initial queries to be executed.
+ * @returns Cluster configuration information.
+ */
+export const setupDataInExistingCluster = async (
+  identifier: string,
+  config: RDSConfig,
+  queries: string[],
+  secretArn?: string,
+): Promise<ClusterInfo> => {
+  try {
+    const client = new RDSClient({ region: config.region });
+    const describeClusterResponse = await client.send(
+      new DescribeDBClustersCommand({ Filters: [{ Name: 'db-cluster-id', Values: [identifier] }] }),
+    );
+    if (!describeClusterResponse || !describeClusterResponse?.DBClusters[0]) {
+      throw Error('Specified cluster info cannot be fetched');
+    }
+    const dbClusterObj = describeClusterResponse.DBClusters[0];
+    const instances = dbClusterObj?.DBClusterMembers;
+    if (!instances || instances?.length === 0) {
+      throw new Error('No instances are present in the specified cluster');
+    }
+    const instanceId = instances[0]?.DBInstanceIdentifier;
+    const describeInstanceCommand = new DescribeDBInstancesCommand({ DBInstanceIdentifier: instanceId });
+    const describeInstanceResponse = await client.send(describeInstanceCommand);
+    if (!describeInstanceResponse || describeInstanceResponse?.DBInstances?.length === 0) {
+      throw Error('Specified cluster instance info cannot be fetched');
+    }
+
+    const clusterArn = dbClusterObj.DBClusterArn;
+    // use the provided database user secret or fallback to using master user secret
+    const dbUserSecretArn = secretArn || dbClusterObj?.MasterUserSecret?.SecretArn;
+    const defaultDbName = dbClusterObj.DatabaseName;
+    const dataClient = new RDSDataClient({ region: config.region });
+    const sanitizedDbName = config.dbname?.replace(/[^a-zA-Z0-9_]/g, '');
+
+    const createDBInput: ExecuteStatementCommandInput = {
+      resourceArn: clusterArn,
+      secretArn: dbUserSecretArn,
+      sql: `create database ${sanitizedDbName}`,
+      database: defaultDbName,
+    };
+
+    const createDBCommand = new ExecuteStatementCommand(createDBInput);
+    try {
+      const createDBResponse = await dataClient.send(createDBCommand);
+      console.log('Create database response: ' + JSON.stringify(createDBResponse));
+    } catch (err) {
+      console.log(err);
+    }
+
+    // create the test tables in the test database
+    for (const query of queries ?? []) {
+      try {
+        const executeStatementInput: ExecuteStatementCommandInput = {
+          resourceArn: clusterArn,
+          secretArn: dbUserSecretArn,
+          sql: query,
+          database: sanitizedDbName,
+        };
+        const executeStatementResponse = await dataClient.send(new ExecuteStatementCommand(executeStatementInput));
+        console.log('Run query response: ' + JSON.stringify(executeStatementResponse));
+      } catch (err) {
+        throw new Error(`Error in creating tables in test database: ${JSON.stringify(err, null, 4)}`);
+      }
+    }
+
+    return {
+      clusterArn,
+      endpoint: dbClusterObj.Endpoint,
+      port: dbClusterObj.Port,
+      dbName: sanitizedDbName,
+      dbInstance: describeInstanceResponse.DBInstances[0],
+      secretArn: dbUserSecretArn,
+      username: dbClusterObj.MasterUsername,
+    };
+  } catch (error) {
+    console.log('Error while setting up the test data in existing cluster: ', JSON.stringify(error));
+  }
+};
+
+/**
  * Creates a new RDS instance using the given input configuration, runs the given queries and returns the details of the created RDS
  * instance.
  * @param config Configuration of the database instance
@@ -311,7 +398,6 @@ export const setupRDSInstanceAndData = async (
 
 export const setupRDSClusterAndData = async (config: RDSConfig, queries?: string[]): Promise<ClusterInfo> => {
   console.log(`Creating RDS ${config.engine} DB cluster with identifier ${config.identifier}`);
-
   const dbCluster = await createRDSCluster(config);
 
   if (!dbCluster.secretArn) {
@@ -320,8 +406,7 @@ export const setupRDSClusterAndData = async (config: RDSConfig, queries?: string
 
   const client = new RDSDataClient({ region: config.region });
 
-  // create a new test database with given name
-  const sanitizedDbName = config.dbname.replace(/[^a-zA-Z0-9_]/g, '');
+  const sanitizedDbName = config.dbname?.replace(/[^a-zA-Z0-9_]/g, '');
 
   const createDBInput: ExecuteStatementCommandInput = {
     resourceArn: dbCluster.clusterArn,
@@ -339,7 +424,7 @@ export const setupRDSClusterAndData = async (config: RDSConfig, queries?: string
   }
 
   // create the test tables in the test database
-  queries?.map(async (query) => {
+  for (const query of queries ?? []) {
     try {
       const executeStatementInput: ExecuteStatementCommandInput = {
         resourceArn: dbCluster.clusterArn,
@@ -348,11 +433,11 @@ export const setupRDSClusterAndData = async (config: RDSConfig, queries?: string
         database: sanitizedDbName,
       };
       const executeStatementResponse = await client.send(new ExecuteStatementCommand(executeStatementInput));
-      console.log('Create table response: ' + JSON.stringify(executeStatementResponse));
+      console.log('Run query response: ' + JSON.stringify(executeStatementResponse));
     } catch (err) {
-      throw new Error(`Error in creating tables in test database: ${err.response.json}`);
+      throw new Error(`Error in creating tables in test database: ${JSON.stringify(err, null, 4)}`);
     }
-  });
+  }
 
   return {
     clusterArn: dbCluster.clusterArn,
@@ -396,7 +481,7 @@ export const deleteDBInstance = async (identifier: string, region: string): Prom
     // );
   } catch (error) {
     console.log(error);
-    throw new Error(`Error in deleting RDS instance: ${error.response.json}`);
+    throw new Error(`Error in deleting RDS instance: ${JSON.stringify(error)}`);
   }
 };
 
@@ -423,15 +508,19 @@ export const deleteDBCluster = async (identifier: string, region: string): Promi
     await client.send(command);
   } catch (error) {
     console.log(error);
-    throw new Error(`Error in deleting RDS cluster ${identifier}: ${error.response.json}`);
+    throw new Error(`Error in deleting RDS cluster ${identifier}: ${JSON.stringify(error)}`);
   }
 };
 
-const createInstanceIdentifier = (prefix: string) => {
+const createInstanceIdentifier = (prefix: string): string => {
   return `${prefix}instance`;
 };
 
-export const generateDBName = () => generator.generate({ length: 8 }).toLowerCase();
+export const generateDBName = (): string =>
+  generator
+    .generate({ length: 8 })
+    .toLowerCase()
+    .replace(/[^a-zA-Z0-9_]/g, '');
 
 /**
  * Adds the given inbound rule to the security group.

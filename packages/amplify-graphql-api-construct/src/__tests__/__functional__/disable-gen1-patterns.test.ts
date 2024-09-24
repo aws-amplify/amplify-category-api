@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Annotations } from 'aws-cdk-lib/assertions';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
@@ -9,23 +9,21 @@ import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
  * @param schema schema to test
  * @param allowGen1Patterns if gen 1 patterns are allowed.
  */
-const verifySchema = (schema: string, allowGen1Patterns: boolean): void => {
+const verifySchema = (schema: string): cdk.Stack => {
   const stack = new cdk.Stack();
   new AmplifyGraphqlApi(stack, 'TestApi', {
     definition: AmplifyGraphqlDefinition.fromString(schema),
     authorizationModes: {
       apiKeyConfig: { expires: cdk.Duration.days(7) },
     },
-    translationBehavior: {
-      _allowGen1Patterns: allowGen1Patterns,
-    },
   });
-  Template.fromStack(stack);
+
+  return stack;
 };
 
-describe('_allowGen1Patterns', () => {
-  test('defaults to allow', () => {
-    const schema = `
+describe('Deprecate Gen 1 patterns', () => {
+  test('does not allow @manyToMany', () => {
+    const stack = verifySchema(/* GraphQL */ `
       type Post @model {
         tags: [Tag] @manyToMany(relationName: "PostTags")
       }
@@ -33,325 +31,280 @@ describe('_allowGen1Patterns', () => {
       type Tag @model {
         posts: [Post] @manyToMany(relationName: "PostTags")
       }
+    `);
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/TestApi/GraphQLAPI',
+      '@manyToMany is deprecated. This functionality will be removed in the next major release.',
+    );
+  });
+
+  test('does not print @manyToMany warning when @manyToMany is not used', () => {
+    const stack = verifySchema(/* GraphQL */ `
+      type Post @model {
+        title: String
+      }
+    `);
+
+    Annotations.fromStack(stack).hasNoWarning(
+      '/Default/TestApi/GraphQLAPI',
+      '@manyToMany is deprecated. This functionality will be removed in the next major release.',
+    );
+  });
+
+  test('does not allow @searchable', () => {
+    const stack = verifySchema(/* GraphQL */ `
+      type Post @model @searchable {
+        title: String
+      }
+    `);
+
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/TestApi/GraphQLAPI',
+      '@searchable is deprecated. This functionality will be removed in the next major release.',
+    );
+  });
+
+  test('does not print @searchable warning when @searchable is not used', () => {
+    const stack = verifySchema(/* GraphQL */ `
+      type Post @model {
+        title: String
+      }
+    `);
+
+    Annotations.fromStack(stack).hasNoWarning(
+      '/Default/TestApi/GraphQLAPI',
+      '@searchable is deprecated. This functionality will be removed in the next major release.',
+    );
+  });
+
+  test('does not allow @predictions', () => {
+    const schema = /* GraphQL */ `
+      type Query {
+        recognizeLabelsFromImage: [String] @predictions(actions: [identifyLabels])
+      }
     `;
     const stack = new cdk.Stack();
-    expect(
-      () =>
-        new AmplifyGraphqlApi(stack, 'TestApi', {
-          definition: AmplifyGraphqlDefinition.fromString(schema),
-          authorizationModes: {
-            apiKeyConfig: { expires: cdk.Duration.days(7) },
-          },
-        }),
-    ).not.toThrow();
+    new AmplifyGraphqlApi(stack, 'TestApi', {
+      definition: AmplifyGraphqlDefinition.fromString(schema),
+      authorizationModes: {
+        apiKeyConfig: { expires: cdk.Duration.days(7) },
+      },
+      predictionsBucket: new Bucket(stack, 'myfakebucket'),
+    });
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/TestApi/GraphQLAPI',
+      '@predictions is deprecated. This functionality will be removed in the next major release.',
+    );
   });
 
-  describe('_allowGen1Patterns: true', () => {
-    test('allows @manyToMany', () => {
-      expect(() =>
-        verifySchema(
-          `
-            type Post @model {
-              tags: [Tag] @manyToMany(relationName: "PostTags")
-            }
+  test('does not print @predictions warning when @predictions is not used', () => {
+    const stack = verifySchema(/* GraphQL */ `
+      type Post @model {
+        title: String
+      }
+    `);
 
-            type Tag @model {
-              posts: [Post] @manyToMany(relationName: "PostTags")
-            }
-          `,
-          true,
-        ),
-      ).not.toThrow();
-    });
-
-    test('allows @searchable', () => {
-      expect(() =>
-        verifySchema(
-          `
-            type Post @model @searchable {
-              title: String
-            }
-          `,
-          true,
-        ),
-      ).not.toThrow();
-    });
-
-    test('allows @predictions', () => {
-      const schema = `
-        type Query {
-          recognizeLabelsFromImage: [String] @predictions(actions: [identifyLabels])
-        }
-      `;
-      const stack = new cdk.Stack();
-      expect(
-        () =>
-          new AmplifyGraphqlApi(stack, 'TestApi', {
-            definition: AmplifyGraphqlDefinition.fromString(schema),
-            authorizationModes: {
-              apiKeyConfig: { expires: cdk.Duration.days(7) },
-            },
-            translationBehavior: {
-              _allowGen1Patterns: true,
-            },
-            predictionsBucket: new Bucket(stack, 'myfakebucket'),
-          }),
-      ).not.toThrow();
-    });
-
-    test('allows fields on @belongsTo', () => {
-      expect(() =>
-        verifySchema(
-          `
-            type Post @model {
-              authorID: ID
-              author: Author @belongsTo(fields: ["authorID"])
-            }
-
-            type Author @model {
-              posts: [Post] @hasMany
-            }
-          `,
-          true,
-        ),
-      ).not.toThrow();
-    });
-
-    test('allows fields on @hasMany', () => {
-      expect(() =>
-        verifySchema(
-          `
-            type Post @model {
-              author: Author @belongsTo
-            }
-
-            type Author @model {
-              postID: ID
-              posts: [Post] @hasMany(fields: ["postID"])
-            }
-          `,
-          true,
-        ),
-      ).not.toThrow();
-    });
-
-    test('allows fields on @hasOne', () => {
-      expect(() =>
-        verifySchema(
-          `
-            type Profile @model {
-              author: Author @belongsTo
-            }
-
-            type Author @model {
-              profileID: ID
-              profile: Profile @hasOne(fields: ["profileID"])
-            }
-          `,
-          true,
-        ),
-      ).not.toThrow();
-    });
-
-    test('allows required @belongsTo fields', () => {
-      expect(() =>
-        verifySchema(
-          `
-            type Post @model {
-              author: Author! @belongsTo
-            }
-
-            type Author @model {
-              posts: [Post] @hasMany
-            }
-          `,
-          true,
-        ),
-      ).not.toThrow();
-    });
-
-    test('allows required @hasMany fields', () => {
-      expect(() =>
-        verifySchema(
-          `
-            type Post @model {
-              author: Author @belongsTo
-            }
-
-            type Author @model {
-              posts: [Post]! @hasMany
-            }
-          `,
-          true,
-        ),
-      ).not.toThrow();
-    });
-
-    test('allows required @hasOne fields', () => {
-      expect(() =>
-        verifySchema(
-          `
-            type Profile @model {
-              author: Author @belongsTo
-            }
-
-            type Author @model {
-              profile: Profile! @hasOne
-            }
-          `,
-          true,
-        ),
-      ).not.toThrow();
-    });
+    Annotations.fromStack(stack).hasNoWarning(
+      '/Default/TestApi/GraphQLAPI',
+      '@predictions is deprecated. This functionality will be removed in the next major release.',
+    );
   });
 
-  describe('_allowGen1Patterns: false', () => {
-    test('does not allow @manyToMany', () => {
-      expect(() =>
-        verifySchema(
-          `
-            type Post @model {
-              tags: [Tag] @manyToMany(relationName: "PostTags")
-            }
+  test('does not allow fields on @belongsTo', () => {
+    const stack = verifySchema(/* GraphQL */ `
+      type Post @model {
+        authorID: ID
+        author: Author @belongsTo(fields: ["authorID"])
+      }
 
-            type Tag @model {
-              posts: [Post] @manyToMany(relationName: "PostTags")
-            }
-          `,
-          false,
-        ),
-      ).toThrow('Unknown directive "@manyToMany".');
-    });
+      type Author @model {
+        posts: [Post] @hasMany
+      }
+    `);
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/TestApi/GraphQLAPI',
+      'fields argument on @belongsTo is deprecated. Modify Post.author to use references instead. This functionality will be removed in the next major release.',
+    );
+  });
 
-    test('does not allow @searchable', () => {
-      expect(() =>
-        verifySchema(
-          `
-            type Post @model @searchable {
-              title: String
-            }
-          `,
-          false,
-        ),
-      ).toThrow('Unknown directive "@searchable".');
-    });
+  test('does not print warning when fields is not used on @belongsTo', () => {
+    const stack = verifySchema(/* GraphQL */ `
+      type Post @model {
+        authorID: ID
+        author: Author @belongsTo(references: "authorID")
+      }
 
-    test('does not allow @predictions', () => {
-      expect(() =>
-        verifySchema(
-          `
-            type Query {
-              recognizeLabelsFromImage: [String] @predictions(actions: [identifyLabels])
-            }
-          `,
-          false,
-        ),
-      ).toThrow('Unknown directive "@predictions".');
-    });
+      type Author @model {
+        posts: [Post] @hasMany(references: "authorID")
+      }
+    `);
+    Annotations.fromStack(stack).hasNoWarning(
+      '/Default/TestApi/GraphQLAPI',
+      'fields argument on @belongsTo is deprecated. Modify Post.author to use references instead. This functionality will be removed in the next major release.',
+    );
+  });
 
-    test('does not allow fields on @belongsTo', () => {
-      expect(() =>
-        verifySchema(
-          `
-            type Post @model {
-              authorID: ID
-              author: Author @belongsTo(fields: ["authorID"])
-            }
+  test('does not allow fields on @hasMany', () => {
+    const stack = verifySchema(/* GraphQL */ `
+      type Post @model {
+        author: Author @belongsTo
+      }
 
-            type Author @model {
-              posts: [Post] @hasMany
-            }
-          `,
-          false,
-        ),
-      ).toThrow('fields argument on @belongsTo is disallowed. Modify Post.author to use references instead.');
-    });
+      type Author @model {
+        postID: ID
+        posts: [Post] @hasMany(fields: ["postID"])
+      }
+    `);
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/TestApi/GraphQLAPI',
+      'fields argument on @hasMany is deprecated. Modify Author.posts to use references instead. This functionality will be removed in the next major release.',
+    );
+  });
 
-    test('does not allow fields on @hasMany', () => {
-      expect(() =>
-        verifySchema(
-          `
-            type Post @model {
-              author: Author @belongsTo
-            }
+  test('does not print warning when fields is not used on @hasMany', () => {
+    const stack = verifySchema(/* GraphQL */ `
+      type Post @model {
+        authorID: ID
+        author: Author @belongsTo(references: "authorID")
+      }
 
-            type Author @model {
-              postID: ID
-              posts: [Post] @hasMany(fields: ["postID"])
-            }
-          `,
-          false,
-        ),
-      ).toThrow('fields argument on @hasMany is disallowed. Modify Author.posts to use references instead.');
-    });
+      type Author @model {
+        posts: [Post] @hasMany(references: "authorID")
+      }
+    `);
+    Annotations.fromStack(stack).hasNoWarning(
+      '/Default/TestApi/GraphQLAPI',
+      'fields argument on @hasMany is deprecated. Modify Author.posts to use references instead. This functionality will be removed in the next major release.',
+    );
+  });
 
-    test('does not allow fields on @hasOne', () => {
-      expect(() =>
-        verifySchema(
-          `
-            type Profile @model {
-              author: Author @belongsTo
-            }
+  test('does not allow fields on @hasOne', () => {
+    const stack = verifySchema(/* GraphQL */ `
+      type Profile @model {
+        author: Author @belongsTo
+      }
 
-            type Author @model {
-              profileID: ID
-              profile: Profile @hasOne(fields: ["profileID"])
-            }
-          `,
-          false,
-        ),
-      ).toThrow('fields argument on @hasOne is disallowed. Modify Author.profile to use references instead.');
-    });
+      type Author @model {
+        profileID: ID
+        profile: Profile @hasOne(fields: ["profileID"])
+      }
+    `);
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/TestApi/GraphQLAPI',
+      'fields argument on @hasOne is deprecated. Modify Author.profile to use references instead. This functionality will be removed in the next major release.',
+    );
+  });
 
-    test('does not allow required @belongsTo fields', () => {
-      expect(() =>
-        verifySchema(
-          `
-            type Post @model {
-              author: Author! @belongsTo
-            }
+  test('does not print warning when fields is not used on @hasOne', () => {
+    const stack = verifySchema(/* GraphQL */ `
+      type Profile @model {
+        authorID: ID
+        author: Author @belongsTo(references: "authorID")
+      }
 
-            type Author @model {
-              posts: [Post] @hasMany
-            }
-          `,
-          false,
-        ),
-      ).toThrow('@belongsTo cannot be used on required fields. Modify Post.author to be optional.');
-    });
+      type Author @model {
+        profile: Profile @hasOne(references: "authorID")
+      }
+    `);
+    Annotations.fromStack(stack).hasNoWarning(
+      '/Default/TestApi/GraphQLAPI',
+      'fields argument on @hasOne is deprecated. Modify Author.profile to use references instead. This functionality will be removed in the next major release.',
+    );
+  });
 
-    test('does not allow required @hasMany fields', () => {
-      expect(() =>
-        verifySchema(
-          `
-            type Post @model {
-              author: Author @belongsTo
-            }
+  test('does not allow required @belongsTo fields', () => {
+    const stack = verifySchema(/* GraphQL */ `
+      type Post @model {
+        author: Author! @belongsTo
+      }
 
-            type Author @model {
-              posts: [Post]! @hasMany
-            }
-          `,
-          false,
-        ),
-      ).toThrow('@hasMany cannot be used on required fields. Modify Author.posts to be optional.');
-    });
+      type Author @model {
+        posts: [Post] @hasMany
+      }
+    `);
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/TestApi/GraphQLAPI',
+      '@belongsTo on required fields is deprecated. Modify Post.author to be optional. This functionality will be removed in the next major release.',
+    );
+  });
 
-    test('does not allow required @hasOne fields', () => {
-      expect(() =>
-        verifySchema(
-          `
-            type Profile @model {
-              author: Author @belongsTo
-            }
+  test('does not print when not using required @belongsTo fields', () => {
+    const stack = verifySchema(/* GraphQL */ `
+      type Post @model {
+        author: Author @belongsTo
+      }
 
-            type Author @model {
-              profile: Profile! @hasOne
-            }
-          `,
-          false,
-        ),
-      ).toThrow('@hasOne cannot be used on required fields. Modify Author.profile to be optional.');
-    });
+      type Author @model {
+        posts: [Post] @hasMany
+      }
+    `);
+    Annotations.fromStack(stack).hasNoWarning(
+      '/Default/TestApi/GraphQLAPI',
+      '@belongsTo on required fields is deprecated. Modify Author.posts to be optional. This functionality will be removed in the next major release.',
+    );
+  });
+
+  test('does not allow required @hasMany fields', () => {
+    const stack = verifySchema(/* GraphQL */ `
+      type Post @model {
+        author: Author @belongsTo
+      }
+
+      type Author @model {
+        posts: [Post]! @hasMany
+      }
+    `);
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/TestApi/GraphQLAPI',
+      '@hasMany on required fields is deprecated. Modify Author.posts to be optional. This functionality will be removed in the next major release.',
+    );
+  });
+
+  test('does not print warning when not using required @hasMany fields', () => {
+    const stack = verifySchema(/* GraphQL */ `
+      type Post @model {
+        author: Author @belongsTo
+      }
+
+      type Author @model {
+        posts: [Post] @hasMany
+      }
+    `);
+    Annotations.fromStack(stack).hasNoWarning(
+      '/Default/TestApi/GraphQLAPI',
+      '@hasMany on required fields is deprecated. Modify Author.posts to be optional. This functionality will be removed in the next major release.',
+    );
+  });
+
+  test('does not allow required @hasOne fields', () => {
+    const stack = verifySchema(/* GraphQL */ `
+      type Profile @model {
+        author: Author @belongsTo
+      }
+
+      type Author @model {
+        profile: Profile! @hasOne
+      }
+    `);
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/TestApi/GraphQLAPI',
+      '@hasOne on required fields is deprecated. Modify Author.profile to be optional. This functionality will be removed in the next major release.',
+    );
+  });
+
+  test('does not print warning when not using required @hasOne fields', () => {
+    const stack = verifySchema(/* GraphQL */ `
+      type Profile @model {
+        author: Author @belongsTo
+      }
+
+      type Author @model {
+        profile: Profile @hasOne
+      }
+    `);
+    Annotations.fromStack(stack).hasNoWarning(
+      '/Default/TestApi/GraphQLAPI',
+      '@hasOne on required fields is deprecated. Modify Author.profile to be optional. This functionality will be removed in the next major release.',
+    );
   });
 });

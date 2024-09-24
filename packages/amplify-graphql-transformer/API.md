@@ -56,7 +56,6 @@ export type TransformerFactoryArgs = {
     storageConfig?: any;
     customTransformers?: TransformerPluginProvider[];
     functionNameMap?: Record<string, IFunction>;
-    allowGen1Patterns?: boolean;
 };
 
 // (No @packageDocumentation comment for this package)

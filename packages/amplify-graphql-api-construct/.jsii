@@ -6,47 +6,131 @@
     ]
   },
   "bundled": {
-    "@aws-amplify/backend-output-schemas": "^0.4.0",
-    "@aws-amplify/backend-output-storage": "^0.2.2",
-    "@aws-amplify/graphql-auth-transformer": "3.6.4",
-    "@aws-amplify/graphql-default-value-transformer": "2.3.12",
-    "@aws-amplify/graphql-directives": "1.1.0",
-    "@aws-amplify/graphql-function-transformer": "2.1.26",
-    "@aws-amplify/graphql-http-transformer": "2.1.26",
-    "@aws-amplify/graphql-index-transformer": "2.4.8",
-    "@aws-amplify/graphql-maps-to-transformer": "3.4.22",
-    "@aws-amplify/graphql-model-transformer": "2.11.3",
-    "@aws-amplify/graphql-predictions-transformer": "2.1.26",
-    "@aws-amplify/graphql-relational-transformer": "2.5.10",
-    "@aws-amplify/graphql-searchable-transformer": "2.7.8",
-    "@aws-amplify/graphql-sql-transformer": "0.3.8",
-    "@aws-amplify/graphql-transformer": "1.6.4",
-    "@aws-amplify/graphql-transformer-core": "2.9.3",
-    "@aws-amplify/graphql-transformer-interfaces": "3.10.1",
-    "@aws-amplify/platform-core": "^0.2.0",
-    "@aws-amplify/plugin-types": "^0.4.1",
+    "@aws-amplify/ai-constructs": "^0.1.4",
+    "@aws-amplify/backend-output-schemas": "^1.0.0",
+    "@aws-amplify/backend-output-storage": "^1.0.0",
+    "@aws-amplify/graphql-auth-transformer": "4.1.1",
+    "@aws-amplify/graphql-conversation-transformer": "0.2.1",
+    "@aws-amplify/graphql-default-value-transformer": "3.0.3",
+    "@aws-amplify/graphql-directives": "2.2.0",
+    "@aws-amplify/graphql-function-transformer": "3.1.0",
+    "@aws-amplify/graphql-generation-transformer": "0.2.1",
+    "@aws-amplify/graphql-http-transformer": "3.0.3",
+    "@aws-amplify/graphql-index-transformer": "3.0.3",
+    "@aws-amplify/graphql-maps-to-transformer": "4.0.3",
+    "@aws-amplify/graphql-model-transformer": "3.0.3",
+    "@aws-amplify/graphql-predictions-transformer": "3.0.3",
+    "@aws-amplify/graphql-relational-transformer": "3.0.3",
+    "@aws-amplify/graphql-searchable-transformer": "3.0.3",
+    "@aws-amplify/graphql-sql-transformer": "0.4.3",
+    "@aws-amplify/graphql-transformer": "2.1.1",
+    "@aws-amplify/graphql-transformer-core": "3.1.1",
+    "@aws-amplify/graphql-transformer-interfaces": "4.1.0",
+    "@aws-amplify/platform-core": "^1.0.0",
+    "@aws-amplify/plugin-types": "^1.0.0",
+    "@aws-crypto/crc32": "5.2.0",
+    "@aws-crypto/sha256-browser": "5.2.0",
+    "@aws-crypto/sha256-js": "^5.2.0",
+    "@aws-crypto/supports-web-crypto": "^5.2.0",
+    "@aws-crypto/util": "^5.2.0",
+    "@aws-sdk/client-bedrock-runtime": "^3.622.0",
+    "@aws-sdk/client-sso": "3.637.0",
+    "@aws-sdk/client-sso-oidc": "3.637.0",
+    "@aws-sdk/client-sts": "^3.624.0",
+    "@aws-sdk/core": "3.635.0",
+    "@aws-sdk/credential-provider-env": "3.620.1",
+    "@aws-sdk/credential-provider-http": "3.635.0",
+    "@aws-sdk/credential-provider-ini": "3.637.0",
+    "@aws-sdk/credential-provider-node": "3.637.0",
+    "@aws-sdk/credential-provider-process": "3.620.1",
+    "@aws-sdk/credential-provider-sso": "3.637.0",
+    "@aws-sdk/credential-provider-web-identity": "3.621.0",
+    "@aws-sdk/middleware-host-header": "3.620.0",
+    "@aws-sdk/middleware-logger": "3.609.0",
+    "@aws-sdk/middleware-recursion-detection": "3.620.0",
+    "@aws-sdk/middleware-user-agent": "3.637.0",
+    "@aws-sdk/region-config-resolver": "3.614.0",
+    "@aws-sdk/token-providers": "3.614.0",
+    "@aws-sdk/types": "3.609.0",
+    "@aws-sdk/util-endpoints": "3.637.0",
+    "@aws-sdk/util-locate-window": "^3.0.0",
+    "@aws-sdk/util-user-agent-browser": "3.609.0",
+    "@aws-sdk/util-user-agent-node": "3.614.0",
+    "@smithy/abort-controller": "^3.1.1",
+    "@smithy/config-resolver": "^3.0.5",
+    "@smithy/core": "^2.4.0",
+    "@smithy/credential-provider-imds": "^3.2.0",
+    "@smithy/eventstream-codec": "^3.1.2",
+    "@smithy/eventstream-serde-browser": "^3.0.6",
+    "@smithy/eventstream-serde-config-resolver": "^3.0.3",
+    "@smithy/eventstream-serde-node": "^3.0.5",
+    "@smithy/eventstream-serde-universal": "^3.0.5",
+    "@smithy/fetch-http-handler": "^3.2.4",
+    "@smithy/hash-node": "^3.0.3",
+    "@smithy/invalid-dependency": "^3.0.3",
+    "@smithy/is-array-buffer": "^3.0.0",
+    "@smithy/middleware-content-length": "^3.0.5",
+    "@smithy/middleware-endpoint": "^3.1.0",
+    "@smithy/middleware-retry": "^3.0.15",
+    "@smithy/middleware-serde": "^3.0.3",
+    "@smithy/middleware-stack": "^3.0.3",
+    "@smithy/node-config-provider": "^3.1.4",
+    "@smithy/node-http-handler": "^3.1.4",
+    "@smithy/property-provider": "^3.1.3",
+    "@smithy/protocol-http": "^4.1.0",
+    "@smithy/querystring-builder": "^3.0.3",
+    "@smithy/querystring-parser": "^3.0.3",
+    "@smithy/service-error-classification": "^3.0.3",
+    "@smithy/shared-ini-file-loader": "^3.1.4",
+    "@smithy/signature-v4": "^4.1.0",
+    "@smithy/smithy-client": "^3.2.0",
+    "@smithy/types": "^3.3.0",
+    "@smithy/url-parser": "^3.0.3",
+    "@smithy/util-base64": "^3.0.0",
+    "@smithy/util-body-length-browser": "^3.0.0",
+    "@smithy/util-body-length-node": "^3.0.0",
+    "@smithy/util-buffer-from": "^3.0.0",
+    "@smithy/util-config-provider": "^3.0.0",
+    "@smithy/util-defaults-mode-browser": "^3.0.15",
+    "@smithy/util-defaults-mode-node": "^3.0.15",
+    "@smithy/util-endpoints": "^2.0.5",
+    "@smithy/util-hex-encoding": "^3.0.0",
+    "@smithy/util-middleware": "^3.0.3",
+    "@smithy/util-retry": "^3.0.3",
+    "@smithy/util-stream": "^3.1.3",
+    "@smithy/util-uri-escape": "^3.0.0",
+    "@smithy/util-utf8": "^3.0.0",
+    "bowser": "^2.11.0",
     "charenc": "^0.0.2",
+    "ci-info": "^3.2.0",
     "crypt": "^0.0.2",
+    "fast-xml-parser": "4.4.1",
     "fs-extra": "^8.1.0",
-    "graceful-fs": "^4.2.11",
+    "graceful-fs": "^4.2.0",
     "graphql": "^15.5.0",
-    "graphql-mapping-template": "4.20.16",
-    "graphql-transformer-common": "4.31.1",
+    "graphql-mapping-template": "5.0.1",
+    "graphql-transformer-common": "5.0.1",
     "hjson": "^3.2.2",
     "immer": "^9.0.12",
-    "is-buffer": "^2.0.5",
-    "jsonfile": "^6.1.0",
+    "is-buffer": "~1.1.6",
+    "is-ci": "^3.0.1",
+    "jsonfile": "^4.0.0",
     "libphonenumber-js": "1.9.47",
     "lodash": "^4.17.21",
-    "md5": "^2.3.0",
+    "lodash.mergewith": "^4.6.2",
+    "md5": "^2.2.1",
     "object-hash": "^3.0.0",
-    "pluralize": "^8.0.0",
+    "pluralize": "8.0.0",
+    "semver": "^7.6.3",
+    "strnum": "^1.0.5",
     "ts-dedent": "^2.0.0",
-    "universalify": "^2.0.0",
-    "zod": "^3.22.3"
+    "tslib": "^2.6.2",
+    "universalify": "^0.1.0",
+    "uuid": "^9.0.1",
+    "zod": "^3.22.2"
   },
   "dependencies": {
-    "aws-cdk-lib": "^2.129.0",
+    "aws-cdk-lib": "^2.152.0",
     "constructs": "^10.3.0"
   },
   "dependencyClosure": {
@@ -260,8 +344,32 @@
             }
           }
         },
-        "aws-cdk-lib.aws_apigatewayv2_authorizers": {},
-        "aws-cdk-lib.aws_apigatewayv2_integrations": {},
+        "aws-cdk-lib.aws_apigatewayv2_authorizers": {
+          "targets": {
+            "dotnet": {
+              "namespace": "Amazon.CDK.AwsApigatewayv2Authorizers"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.aws_apigatewayv2_authorizers"
+            },
+            "python": {
+              "module": "aws_cdk.aws_apigatewayv2_authorizers"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_apigatewayv2_integrations": {
+          "targets": {
+            "dotnet": {
+              "namespace": "Amazon.CDK.AwsApigatewayv2Integrations"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.aws_apigatewayv2_integrations"
+            },
+            "python": {
+              "module": "aws_cdk.aws_apigatewayv2_integrations"
+            }
+          }
+        },
         "aws-cdk-lib.aws_appconfig": {
           "targets": {
             "dotnet": {
@@ -327,6 +435,19 @@
             }
           }
         },
+        "aws-cdk-lib.aws_applicationsignals": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.ApplicationSignals"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.applicationsignals"
+            },
+            "python": {
+              "module": "aws_cdk.aws_applicationsignals"
+            }
+          }
+        },
         "aws-cdk-lib.aws_appmesh": {
           "targets": {
             "dotnet": {
@@ -376,6 +497,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_appsync"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_apptest": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.AppTest"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.apptest"
+            },
+            "python": {
+              "module": "aws_cdk.aws_apptest"
             }
           }
         },
@@ -535,10 +669,23 @@
             }
           }
         },
+        "aws-cdk-lib.aws_bcmdataexports": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.BCMDataExports"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.bcmdataexports"
+            },
+            "python": {
+              "module": "aws_cdk.aws_bcmdataexports"
+            }
+          }
+        },
         "aws-cdk-lib.aws_bedrock": {
           "targets": {
             "dotnet": {
-              "namespace": "Amazon.CDK.AWS.Bedrock"
+              "package": "Amazon.CDK.AWS.Bedrock"
             },
             "java": {
               "package": "software.amazon.awscdk.services.bedrock"
@@ -636,6 +783,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_cleanrooms"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_cleanroomsml": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.CleanRoomsML"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.cleanroomsml"
+            },
+            "python": {
+              "module": "aws_cdk.aws_cleanroomsml"
             }
           }
         },
@@ -767,6 +927,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_codecommit"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_codeconnections": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.CodeConnections"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.codeconnections"
+            },
+            "python": {
+              "module": "aws_cdk.aws_codeconnections"
             }
           }
         },
@@ -1040,6 +1213,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_dax"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_deadline": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.Deadline"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.deadline"
+            },
+            "python": {
+              "module": "aws_cdk.aws_deadline"
             }
           }
         },
@@ -2564,6 +2750,19 @@
             }
           }
         },
+        "aws-cdk-lib.aws_paymentcryptography": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.PaymentCryptography"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.paymentcryptography"
+            },
+            "python": {
+              "module": "aws_cdk.aws_paymentcryptography"
+            }
+          }
+        },
         "aws-cdk-lib.aws_pcaconnectorad": {
           "targets": {
             "dotnet": {
@@ -2639,6 +2838,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_proton"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_qbusiness": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.QBusiness"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.qbusiness"
+            },
+            "python": {
+              "module": "aws_cdk.aws_qbusiness"
             }
           }
         },
@@ -2847,6 +3059,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_route53_targets"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_route53profiles": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.Route53Profiles"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.route53profiles"
+            },
+            "python": {
+              "module": "aws_cdk.aws_route53profiles"
             }
           }
         },
@@ -3068,6 +3293,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_securityhub"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_securitylake": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.SecurityLake"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.securitylake"
+            },
+            "python": {
+              "module": "aws_cdk.aws_securitylake"
             }
           }
         },
@@ -3688,7 +3926,7 @@
     "stability": "stable"
   },
   "homepage": "https://github.com/aws-amplify/amplify-category-api.git",
-  "jsiiVersion": "5.4.23 (build 4babcb9)",
+  "jsiiVersion": "5.5.4 (build 1378d94)",
   "keywords": [
     "awscdk",
     "aws-cdk",
@@ -3734,7 +3972,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 892
+        "line": 868
       },
       "name": "AddFunctionProps",
       "properties": [
@@ -3747,7 +3985,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 896
+            "line": 872
           },
           "name": "dataSource",
           "type": {
@@ -3763,7 +4001,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 901
+            "line": 877
           },
           "name": "name",
           "type": {
@@ -3780,7 +4018,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 936
+            "line": 912
           },
           "name": "code",
           "optional": true,
@@ -3798,7 +4036,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 908
+            "line": 884
           },
           "name": "description",
           "optional": true,
@@ -3816,7 +4054,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 915
+            "line": 891
           },
           "name": "requestMappingTemplate",
           "optional": true,
@@ -3834,7 +4072,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 922
+            "line": 898
           },
           "name": "responseMappingTemplate",
           "optional": true,
@@ -3852,7 +4090,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 929
+            "line": 905
           },
           "name": "runtime",
           "optional": true,
@@ -4148,7 +4386,7 @@
         },
         "locationInModule": {
           "filename": "src/amplify-graphql-api.ts",
-          "line": 139
+          "line": 138
         },
         "parameters": [
           {
@@ -4183,7 +4421,7 @@
       "kind": "class",
       "locationInModule": {
         "filename": "src/amplify-graphql-api.ts",
-        "line": 85
+        "line": 84
       },
       "methods": [
         {
@@ -4195,7 +4433,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 294
+            "line": 287
           },
           "name": "addDynamoDbDataSource",
           "parameters": [
@@ -4244,7 +4482,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 306
+            "line": 299
           },
           "name": "addElasticsearchDataSource",
           "parameters": [
@@ -4291,7 +4529,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 316
+            "line": 309
           },
           "name": "addEventBridgeDataSource",
           "parameters": [
@@ -4338,7 +4576,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 398
+            "line": 391
           },
           "name": "addFunction",
           "parameters": [
@@ -4373,7 +4611,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 327
+            "line": 320
           },
           "name": "addHttpDataSource",
           "parameters": [
@@ -4421,7 +4659,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 338
+            "line": 331
           },
           "name": "addLambdaDataSource",
           "parameters": [
@@ -4469,7 +4707,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 349
+            "line": 342
           },
           "name": "addNoneDataSource",
           "parameters": [
@@ -4508,7 +4746,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 360
+            "line": 353
           },
           "name": "addOpenSearchDataSource",
           "parameters": [
@@ -4556,7 +4794,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 373
+            "line": 366
           },
           "name": "addRdsDataSource",
           "parameters": [
@@ -4623,7 +4861,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 389
+            "line": 382
           },
           "name": "addResolver",
           "parameters": [
@@ -4664,7 +4902,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 120
+            "line": 119
           },
           "name": "apiId",
           "type": {
@@ -4679,7 +4917,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 100
+            "line": 99
           },
           "name": "generatedFunctionSlots",
           "type": {
@@ -4712,7 +4950,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 105
+            "line": 104
           },
           "name": "graphqlUrl",
           "type": {
@@ -4728,7 +4966,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 110
+            "line": 109
           },
           "name": "realtimeUrl",
           "type": {
@@ -4743,7 +4981,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 89
+            "line": 88
           },
           "name": "resources",
           "type": {
@@ -4759,7 +4997,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 115
+            "line": 114
           },
           "name": "apiKey",
           "optional": true,
@@ -4782,7 +5020,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 795
+        "line": 771
       },
       "name": "AmplifyGraphqlApiCfnResources",
       "properties": [
@@ -4795,7 +5033,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 849
+            "line": 825
           },
           "name": "additionalCfnResources",
           "type": {
@@ -4816,7 +5054,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 834
+            "line": 810
           },
           "name": "amplifyDynamoDbTables",
           "type": {
@@ -4837,7 +5075,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 824
+            "line": 800
           },
           "name": "cfnDataSources",
           "type": {
@@ -4858,7 +5096,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 819
+            "line": 795
           },
           "name": "cfnFunctionConfigurations",
           "type": {
@@ -4879,7 +5117,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 844
+            "line": 820
           },
           "name": "cfnFunctions",
           "type": {
@@ -4900,7 +5138,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 799
+            "line": 775
           },
           "name": "cfnGraphqlApi",
           "type": {
@@ -4916,7 +5154,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 804
+            "line": 780
           },
           "name": "cfnGraphqlSchema",
           "type": {
@@ -4932,7 +5170,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 814
+            "line": 790
           },
           "name": "cfnResolvers",
           "type": {
@@ -4953,7 +5191,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 839
+            "line": 815
           },
           "name": "cfnRoles",
           "type": {
@@ -4974,7 +5212,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 829
+            "line": 805
           },
           "name": "cfnTables",
           "type": {
@@ -4995,7 +5233,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 809
+            "line": 785
           },
           "name": "cfnApiKey",
           "optional": true,
@@ -5018,7 +5256,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 712
+        "line": 688
       },
       "name": "AmplifyGraphqlApiProps",
       "properties": [
@@ -5032,7 +5270,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 729
+            "line": 705
           },
           "name": "authorizationModes",
           "type": {
@@ -5049,7 +5287,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 717
+            "line": 693
           },
           "name": "definition",
           "type": {
@@ -5066,7 +5304,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 723
+            "line": 699
           },
           "name": "apiName",
           "optional": true,
@@ -5085,7 +5323,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 744
+            "line": 720
           },
           "name": "conflictResolution",
           "optional": true,
@@ -5103,7 +5341,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 788
+            "line": 764
           },
           "name": "dataStoreConfiguration",
           "optional": true,
@@ -5123,7 +5361,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 737
+            "line": 713
           },
           "name": "functionNameMap",
           "optional": true,
@@ -5146,7 +5384,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 759
+            "line": 735
           },
           "name": "functionSlots",
           "optional": true,
@@ -5181,7 +5419,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 782
+            "line": 758
           },
           "name": "outputStorageStrategy",
           "optional": true,
@@ -5198,7 +5436,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 771
+            "line": 747
           },
           "name": "predictionsBucket",
           "optional": true,
@@ -5216,7 +5454,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 753
+            "line": 729
           },
           "name": "stackMappings",
           "optional": true,
@@ -5242,7 +5480,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 766
+            "line": 742
           },
           "name": "transformerPlugins",
           "optional": true,
@@ -5264,7 +5502,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 777
+            "line": 753
           },
           "name": "translationBehavior",
           "optional": true,
@@ -5287,7 +5525,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 856
+        "line": 832
       },
       "name": "AmplifyGraphqlApiResources",
       "properties": [
@@ -5300,7 +5538,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 880
+            "line": 856
           },
           "name": "cfnResources",
           "type": {
@@ -5316,7 +5554,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 875
+            "line": 851
           },
           "name": "functions",
           "type": {
@@ -5337,7 +5575,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 860
+            "line": 836
           },
           "name": "graphqlApi",
           "type": {
@@ -5353,7 +5591,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 885
+            "line": 861
           },
           "name": "nestedStacks",
           "type": {
@@ -5374,7 +5612,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 870
+            "line": 846
           },
           "name": "roles",
           "type": {
@@ -5395,7 +5633,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 865
+            "line": 841
           },
           "name": "tables",
           "type": {
@@ -6440,7 +6678,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 646
+        "line": 622
       },
       "name": "IAmplifyGraphqlDefinition",
       "properties": [
@@ -6455,7 +6693,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 671
+            "line": 647
           },
           "name": "dataSourceStrategies",
           "type": {
@@ -6492,7 +6730,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 657
+            "line": 633
           },
           "name": "functionSlots",
           "type": {
@@ -6526,7 +6764,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 651
+            "line": 627
           },
           "name": "schema",
           "type": {
@@ -6543,7 +6781,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 677
+            "line": 653
           },
           "name": "customSqlDataSourceStrategies",
           "optional": true,
@@ -6567,7 +6805,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 665
+            "line": 641
           },
           "name": "referencedLambdaFunctions",
           "optional": true,
@@ -6593,7 +6831,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 683
+        "line": 659
       },
       "name": "IBackendOutputEntry",
       "properties": [
@@ -6606,7 +6844,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 692
+            "line": 668
           },
           "name": "payload",
           "type": {
@@ -6627,7 +6865,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 687
+            "line": 663
           },
           "name": "version",
           "type": {
@@ -6647,7 +6885,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 698
+        "line": 674
       },
       "methods": [
         {
@@ -6658,7 +6896,7 @@
           },
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 705
+            "line": 681
           },
           "name": "addBackendOutputEntry",
           "parameters": [
@@ -7072,7 +7310,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 521
+        "line": 504
       },
       "name": "PartialTranslationBehavior",
       "properties": [
@@ -7087,7 +7325,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 613
+            "line": 596
           },
           "name": "allowDestructiveGraphqlSchemaUpdates",
           "optional": true,
@@ -7105,7 +7343,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 533
+            "line": 516
           },
           "name": "disableResolverDeduping",
           "optional": true,
@@ -7127,7 +7365,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 578
+            "line": 561
           },
           "name": "enableAutoIndexQueryNames",
           "optional": true,
@@ -7146,7 +7384,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 593
+            "line": 576
           },
           "name": "enableSearchNodeToNodeEncryption",
           "optional": true,
@@ -7164,7 +7402,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 599
+            "line": 582
           },
           "name": "enableTransformerCfnOutputs",
           "optional": true,
@@ -7182,7 +7420,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 558
+            "line": 541
           },
           "name": "populateOwnerFieldForStaticGroupAuth",
           "optional": true,
@@ -7201,7 +7439,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 623
+            "line": 606
           },
           "name": "replaceTableUponGsiUpdate",
           "optional": true,
@@ -7219,7 +7457,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 584
+            "line": 567
           },
           "name": "respectPrimaryKeyAttributesOnConnectionField",
           "optional": true,
@@ -7237,7 +7475,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 539
+            "line": 522
           },
           "name": "sandboxModeEnabled",
           "optional": true,
@@ -7258,7 +7496,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 571
+            "line": 554
           },
           "name": "secondaryKeyAsGSI",
           "optional": true,
@@ -7279,7 +7517,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 526
+            "line": 509
           },
           "name": "shouldDeepMergeDirectiveConfigDefaults",
           "optional": true,
@@ -7297,7 +7535,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 552
+            "line": 535
           },
           "name": "subscriptionsInheritPrimaryAuth",
           "optional": true,
@@ -7316,7 +7554,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 565
+            "line": 548
           },
           "name": "suppressApiKeyGeneration",
           "optional": true,
@@ -7334,7 +7572,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 546
+            "line": 529
           },
           "name": "useSubUsernameForDefaultIdentityClaim",
           "optional": true,
@@ -8721,6 +8959,6 @@
       "symbolId": "src/model-datasource-strategy-types:VpcConfig"
     }
   },
-  "version": "1.11.4",
-  "fingerprint": "XY3Z184MdovYkT3seBsjRrjyNpUc7UHYgTyP6qT0Xnc="
+  "version": "1.13.0",
+  "fingerprint": "SvUg/laowa+2kCDSW7tShjvINY9o1V4/u3HBb9mcdYA="
 }

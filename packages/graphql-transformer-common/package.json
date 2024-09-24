@@ -1,6 +1,6 @@
 {
   "name": "graphql-transformer-common",
-  "version": "4.31.1",
+  "version": "5.0.1",
   "description": "Common code and constants for AppSync Transformers",
   "repository": {
     "type": "git",
@@ -14,7 +14,8 @@
   "keywords": [
     "graphql",
     "appsync",
-    "aws"
+    "aws",
+    "amplify"
   ],
   "scripts": {
     "test": "jest",
@@ -25,7 +26,7 @@
   },
   "dependencies": {
     "graphql": "^15.5.0",
-    "graphql-mapping-template": "4.20.16",
+    "graphql-mapping-template": "5.0.1",
     "md5": "^2.2.1",
     "pluralize": "8.0.0"
   },
@@ -49,7 +50,9 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
-    "testURL": "http://localhost",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "testRegex": "(src/__tests__/.*.test.*)$",
     "moduleFileExtensions": [
       "ts",
@@ -64,6 +67,10 @@
     ],
     "coveragePathIgnorePatterns": [
       "/__tests__/"
-    ]
+    ],
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    }
   }
 }

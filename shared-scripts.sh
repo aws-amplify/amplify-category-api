@@ -83,6 +83,7 @@ function _setShell {
 function _buildLinux {
   _setShell
   echo "Linux Build"
+  node --version
   yarn run production-build
   yarn build-tests
   storeCacheForBuildJob
@@ -130,6 +131,71 @@ function _lint {
   echo "Lint"
   loadCacheFromBuildJob
   chmod +x codebuild_specs/scripts/lint_pr.sh && ./codebuild_specs/scripts/lint_pr.sh
+}
+function _verifyAmplifyBackendCompatability {
+  echo "Verify Amplify Backend Compatibility"
+  loadCacheFromBuildJob
+
+  # Unset container credentials environment variables since some of the tests in packages/cli/src/command_middleware.test.ts 
+  # expect not to fetch the credentials. This is to avoid the tests from failing.
+  echo "Unsetting container credentials environment variables"
+  unset AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
+  unset AWS_CONTAINER_CREDENTIALS_FULL_URI
+
+  # 1. Set Node.js version to 18.20.4 to avoid race conditions and test failures
+  _setupNodeVersion 18.20.4
+
+  # 2. Publish Shell (Emulating the "publish" shell)
+  echo "Emulating Publish Shell"
+  # Clean Verdaccio cache and prepare for publishing
+  rm -rf ../verdaccio-cache && mkdir ../verdaccio-cache
+  # Create a new local branch for testing 
+  git checkout -B validate-amplify-backend
+  # Dummy git config to avoid errors
+  git config user.email not@used.com
+  git config user.name "Doesnt Matter"
+  # Start Verdaccio server and publish the local workspace
+  source ./shared-scripts.sh && _publishLocalWorkspace
+  setNpmRegistryUrlToLocal
+  # Verify that the NPM registry has been set to the local Verdaccio server
+  npm config get registry
+
+  # 3. Validate Shell (Emulating the "validate" shell)
+  echo "Emulating Validate Shell"
+  # Move back to root and clone amplify-backend repo
+  cd ..
+  git clone --depth 1 https://github.com/aws-amplify/amplify-backend.git
+  cd amplify-backend
+  # Create a new local branch for testing 
+  git checkout -B validate-amplify-backend
+  # Update the packages and ensure the correct versions are being used
+  npm update
+  # Verify that the package-lock.json contains the updated version with localhost tarballs
+  git diff package-lock.json | grep -Pz '@aws-amplify\/(graphql-api-construct|data-construct)[\s\S]*localhost:4873[\s\S]*tgz'
+  # Build and test the backend
+  npm run build && npm run test
+
+  echo "Amplify Backend Compatibility verification complete."
+}
+function _setupNodeVersion {
+  local version=$1  # Version number passed as an argument
+  
+  echo "Installing NVM and setting Node.js version to $version"
+  
+  # Install NVM
+  curl -o - https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+  
+  # Load NVM
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  
+  # Install and use the specified Node.js version
+  nvm install "$version"
+  nvm use "$version"
+  
+  # Verify the Node.js version in use
+  echo "Node.js version in use:"
+  node -v
 }
 function _publishToLocalRegistry {
     echo "Publish To Local Registry"
@@ -420,9 +486,9 @@ function runE2eTest {
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then
         # read the content of failed tests
         failedTests=$(<$FAILED_TEST_REGEX_FILE)
-        yarn run e2e --maxWorkers=4 $TEST_SUITE -t "$failedTests"
+        yarn run e2e --maxWorkers=5 $TEST_SUITE -t "$failedTests"
     else
-        yarn run e2e --maxWorkers=4 $TEST_SUITE
+        yarn run e2e --maxWorkers=5 $TEST_SUITE
     fi
 }
 
@@ -436,9 +502,9 @@ function runCDKTest {
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then
         # read the content of failed tests
         failedTests=$(<$FAILED_TEST_REGEX_FILE)
-        yarn run e2e --maxWorkers=4 $TEST_SUITE -t "$failedTests"
+        yarn run e2e --maxWorkers=5 $TEST_SUITE -t "$failedTests"
     else
-        yarn run e2e --maxWorkers=4 $TEST_SUITE
+        yarn run e2e --maxWorkers=5 $TEST_SUITE
     fi
 }
 
@@ -452,9 +518,9 @@ function runGraphQLE2eTest {
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then
         # read the content of failed tests
         failedTests=$(<$FAILED_TEST_REGEX_FILE)
-        yarn run e2e --maxWorkers=4 $TEST_SUITE -t "$failedTests"
+        yarn run e2e --maxWorkers=5 $TEST_SUITE -t "$failedTests"
     else
-        yarn run e2e --maxWorkers=4 $TEST_SUITE
+        yarn run e2e --maxWorkers=5 $TEST_SUITE
     fi
 }
 

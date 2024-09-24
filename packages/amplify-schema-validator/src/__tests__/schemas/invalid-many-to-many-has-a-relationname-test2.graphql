@@ -1,4 +1,0 @@
-type Foo @model {
-  id: ID!
-  bars: [Bar] @manyToMany(test: "test")
-}

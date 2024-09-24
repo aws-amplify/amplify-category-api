@@ -119,6 +119,7 @@ export class TransformManager {
       rootStack: rootStackTemplate!,
       stackMapping: {},
       userOverriddenSlots: [],
+      rawRootStack: this.rootStack,
     };
   }
 
