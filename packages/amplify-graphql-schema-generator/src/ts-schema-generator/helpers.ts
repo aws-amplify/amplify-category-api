@@ -203,7 +203,8 @@ export const createSchema = (schema: Schema, config?: DataSourceGenerateConfig):
 
   const combinedEnums = nullEnumFields.concat(RequiredEnumFields).flat(); // making 1 D array
 
-  const seenEnums = new Set<string>(); // for handling case where same enum is referenced in 2 differed models
+  // to eliminate duplicate definition of enums in case where same enum is referenced in 2 differed models
+  const seenEnums = new Set<string>(); 
   const uniqueEnums = combinedEnums.filter((node) => {
     if (seenEnums.has(node['name'].escapedText)) {
       return false;
@@ -212,6 +213,7 @@ export const createSchema = (schema: Schema, config?: DataSourceGenerateConfig):
       return true;
     }
   });
+  
   const modelsWithEnums = models.concat(uniqueEnums);
 
   const tsSchema = ts.factory.createCallExpression(
