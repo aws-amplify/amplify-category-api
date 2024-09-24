@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.6.0-gen1-migration-0924.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.5.5...amplify-category-api-util-mock@6.6.0-gen1-migration-0924.0) (2024-09-24)
+
+### Features
+
+- get datasource map for migration ([#2668](https://github.com/aws-amplify/amplify-category-api/issues/2668)) ([f20ba2a](https://github.com/aws-amplify/amplify-category-api/commit/f20ba2aa46224ee59d6efb8d5be6d82efc5867df))
+
 ## [6.5.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.5.4...amplify-category-api-util-mock@6.5.5) (2024-08-12)
 
 **Note:** Version bump only for package amplify-category-api-util-mock

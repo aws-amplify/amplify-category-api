@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-transformer",
-  "version": "1.6.5",
+  "version": "1.7.0-gen1-migration-0924.0",
   "description": "Amplify GraphQL Transformer Root Package",
   "repository": {
     "type": "git",
@@ -28,19 +28,19 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/graphql-auth-transformer": "3.6.5",
-    "@aws-amplify/graphql-default-value-transformer": "2.3.13",
-    "@aws-amplify/graphql-function-transformer": "2.1.26",
-    "@aws-amplify/graphql-http-transformer": "2.1.26",
-    "@aws-amplify/graphql-index-transformer": "2.4.9",
-    "@aws-amplify/graphql-maps-to-transformer": "3.4.23",
-    "@aws-amplify/graphql-model-transformer": "2.11.4",
-    "@aws-amplify/graphql-predictions-transformer": "2.1.26",
-    "@aws-amplify/graphql-relational-transformer": "2.5.11",
-    "@aws-amplify/graphql-searchable-transformer": "2.7.9",
-    "@aws-amplify/graphql-sql-transformer": "0.3.9",
-    "@aws-amplify/graphql-transformer-core": "2.9.3",
-    "@aws-amplify/graphql-transformer-interfaces": "3.10.1"
+    "@aws-amplify/graphql-auth-transformer": "3.6.6-gen1-migration-0924.0",
+    "@aws-amplify/graphql-default-value-transformer": "2.3.14-gen1-migration-0924.0",
+    "@aws-amplify/graphql-function-transformer": "2.1.27-gen1-migration-0924.0",
+    "@aws-amplify/graphql-http-transformer": "2.1.27-gen1-migration-0924.0",
+    "@aws-amplify/graphql-index-transformer": "2.4.10-gen1-migration-0924.0",
+    "@aws-amplify/graphql-maps-to-transformer": "3.4.24-gen1-migration-0924.0",
+    "@aws-amplify/graphql-model-transformer": "2.12.0-gen1-migration-0924.0",
+    "@aws-amplify/graphql-predictions-transformer": "2.1.27-gen1-migration-0924.0",
+    "@aws-amplify/graphql-relational-transformer": "2.5.12-gen1-migration-0924.0",
+    "@aws-amplify/graphql-searchable-transformer": "2.7.10-gen1-migration-0924.0",
+    "@aws-amplify/graphql-sql-transformer": "0.3.10-gen1-migration-0924.0",
+    "@aws-amplify/graphql-transformer-core": "2.10.0-gen1-migration-0924.0",
+    "@aws-amplify/graphql-transformer-interfaces": "3.11.0-gen1-migration-0924.0"
   },
   "devDependencies": {
     "@types/node": "^12.12.6",
