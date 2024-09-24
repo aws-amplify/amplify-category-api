@@ -290,5 +290,4 @@ export class MySQLStringDataSourceAdapter extends StringDataSourceAdapter {
     }
     return enumName;
   }
-
 }
