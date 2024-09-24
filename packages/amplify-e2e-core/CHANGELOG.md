@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.8.7-gen1-migration-0924-2.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.8.6...amplify-category-api-e2e-core@4.8.7-gen1-migration-0924-2.0) (2024-09-24)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
 ## [4.8.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.8.5...amplify-category-api-e2e-core@4.8.6) (2024-08-12)
 
 **Note:** Version bump only for package amplify-category-api-e2e-core
