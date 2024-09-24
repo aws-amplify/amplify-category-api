@@ -10,9 +10,7 @@ import path from 'path';
  * @param {GenerationConfigurationWithToolConfig} config - The configuration object containing AI model details, tool config, and inference settings.
  * @returns {Object} An object containing request and response resolver functions.
  */
-export const createInvokeBedrockResolverFunction = (
-  config: GenerationConfigurationWithToolConfig,
-): MappingTemplateProvider => {
+export const createInvokeBedrockResolverFunction = (config: GenerationConfigurationWithToolConfig): MappingTemplateProvider => {
   const { aiModel, toolConfig, inferenceConfiguration, field } = config;
   const AI_MODEL = aiModel;
   const TOOL_CONFIG = JSON.stringify(toolConfig);

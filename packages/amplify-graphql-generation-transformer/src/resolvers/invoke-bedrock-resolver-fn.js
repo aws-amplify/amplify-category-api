@@ -10,16 +10,18 @@ export function request(ctx) {
     params: {
       headers: { 'Content-Type': 'application/json' },
       body: {
-        messages: [{
-          role: 'user',
-          content: [{ text: args }],
-        }],
+        messages: [
+          {
+            role: 'user',
+            content: [{ text: args }],
+          },
+        ],
         system: [{ text: prompt }],
         toolConfig,
         ...inferenceConfig,
-      }
-    }
-  }
+      },
+    },
+  };
 }
 
 export function response(ctx) {
