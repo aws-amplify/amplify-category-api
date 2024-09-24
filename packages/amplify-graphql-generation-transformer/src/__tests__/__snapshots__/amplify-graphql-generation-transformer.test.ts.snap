@@ -69,16 +69,18 @@ exports[`generation route all scalar types 2`] = `
     params: {
       headers: { 'Content-Type': 'application/json' },
       body: {
-        messages: [{
-          role: 'user',
-          content: [{ text: args }],
-        }],
+        messages: [
+          {
+            role: 'user',
+            content: [{ text: args }],
+          },
+        ],
         system: [{ text: prompt }],
         toolConfig,
         ...inferenceConfig,
-      }
-    }
-  }
+      },
+    },
+  };
 }
 
 export function response(ctx) {
@@ -99,7 +101,8 @@ export function response(ctx) {
 
   const response = toolUse.input.value;
   return response;
-}",
+}
+",
 }
 `;
 
@@ -172,16 +175,18 @@ exports[`generation route custom query 2`] = `
     params: {
       headers: { 'Content-Type': 'application/json' },
       body: {
-        messages: [{
-          role: 'user',
-          content: [{ text: args }],
-        }],
+        messages: [
+          {
+            role: 'user',
+            content: [{ text: args }],
+          },
+        ],
         system: [{ text: prompt }],
         toolConfig,
         ...inferenceConfig,
-      }
-    }
-  }
+      },
+    },
+  };
 }
 
 export function response(ctx) {
@@ -202,7 +207,8 @@ export function response(ctx) {
 
   const response = toolUse.input.value;
   return response;
-}",
+}
+",
 }
 `;
 
@@ -274,16 +280,18 @@ exports[`generation route model type with null timestamps 2`] = `
     params: {
       headers: { 'Content-Type': 'application/json' },
       body: {
-        messages: [{
-          role: 'user',
-          content: [{ text: args }],
-        }],
+        messages: [
+          {
+            role: 'user',
+            content: [{ text: args }],
+          },
+        ],
         system: [{ text: prompt }],
         toolConfig,
         ...inferenceConfig,
-      }
-    }
-  }
+      },
+    },
+  };
 }
 
 export function response(ctx) {
@@ -304,7 +312,8 @@ export function response(ctx) {
 
   const response = toolUse.input.value;
   return response;
-}"
+}
+"
 `;
 
 exports[`generation route scalar type 1`] = `
@@ -393,16 +402,18 @@ $util.toJson($context.source["makeTodo"])
     params: {
       headers: { 'Content-Type': 'application/json' },
       body: {
-        messages: [{
-          role: 'user',
-          content: [{ text: args }],
-        }],
+        messages: [
+          {
+            role: 'user',
+            content: [{ text: args }],
+          },
+        ],
         system: [{ text: prompt }],
         toolConfig,
         ...inferenceConfig,
-      }
-    }
-  }
+      },
+    },
+  };
 }
 
 export function response(ctx) {
@@ -423,7 +434,8 @@ export function response(ctx) {
 
   const response = toolUse.input.value;
   return response;
-}",
+}
+",
 }
 `;
 
@@ -441,16 +453,18 @@ exports[`generation route with valid inference configuration 1`] = `
     params: {
       headers: { 'Content-Type': 'application/json' },
       body: {
-        messages: [{
-          role: 'user',
-          content: [{ text: args }],
-        }],
+        messages: [
+          {
+            role: 'user',
+            content: [{ text: args }],
+          },
+        ],
         system: [{ text: prompt }],
         toolConfig,
         ...inferenceConfig,
-      }
-    }
-  }
+      },
+    },
+  };
 }
 
 export function response(ctx) {
@@ -471,6 +485,7 @@ export function response(ctx) {
 
   const response = toolUse.input.value;
   return response;
-}",
+}
+",
 }
 `;
