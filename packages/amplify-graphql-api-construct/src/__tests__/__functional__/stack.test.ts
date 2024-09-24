@@ -1,6 +1,15 @@
 import * as cdk from 'aws-cdk-lib';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
+import { Construct } from 'constructs';
+
+class CustomL3Construct extends Construct {
+  data: AmplifyGraphqlApi; 
+  constructor(scope, id, props) {
+    super(scope, id);
+    this.data = new AmplifyGraphqlApi(scope, id, props);
+  };
+};
 
 describe('stack parameter access and verification', () => {
   it('verifies the stack property is accessible and set to the expected value', () => {
@@ -17,5 +26,21 @@ describe('stack parameter access and verification', () => {
     });
 
     expect(api.stack).toBe(stack);
+  });
+
+  it('verifies stack refers to parent stack of data construct', () => {
+    const stack = new cdk.Stack();
+    const customConstruct = new CustomL3Construct(stack, 'test', {
+      definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+          type Todo @model @auth(rules: [{ allow: public }]) {
+          description: String!
+          }
+      `),
+      authorizationModes: {
+          apiKeyConfig: { expires: cdk.Duration.days(7) },
+      },
+    });
+
+    expect(customConstruct.data.stack).toBe(stack);
   });
 });
