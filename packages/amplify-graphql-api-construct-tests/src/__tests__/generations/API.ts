@@ -4,9 +4,9 @@
 
 export type Recipe = {
   __typename: 'Recipe';
-  ingredients: Array< string >,
-  instructions: string,
-  name: string,
+  ingredients: Array<string>;
+  instructions: string;
+  name: string;
 };
 
 export type Todo = {
@@ -23,12 +23,12 @@ export type GenerateRecipeQueryVariables = {
 };
 
 export type GenerateRecipeQuery = {
-  generateRecipe?:  {
-    __typename: "GenerateRecipeReturnType",
-    ingredients: Array< string >,
-    instructions: string,
-    name: string,
-  } | null,
+  generateRecipe?: {
+    __typename: 'GenerateRecipeReturnType';
+    ingredients: Array<string>;
+    instructions: string;
+    name: string;
+  } | null;
 };
 
 export type GetTodoQueryVariables = {
