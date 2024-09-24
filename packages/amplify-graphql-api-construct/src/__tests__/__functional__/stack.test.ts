@@ -18,7 +18,7 @@ describe('stack parameter access and verification', () => {
     expect(api.stack).toBeDefined();
   });
 
-  it('', () => {
+  it('verifies the stack property is set to the expected value', () => {
     const api = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
         definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
             type Todo @model @auth(rules: [{ allow: public }]) {
