@@ -43,6 +43,11 @@ describe('ConversationTransformer', () => {
 
       const schema = parse(out.schema);
       validateModelSchema(schema);
+
+      expect(
+        out.stacks.ConversationMessagePirateChat.Resources![`ListConversationMessage${toUpper(routeName)}Resolver`].Properties
+          .PipelineConfig.Functions,
+      ).toHaveLength(5);
     });
   });
 

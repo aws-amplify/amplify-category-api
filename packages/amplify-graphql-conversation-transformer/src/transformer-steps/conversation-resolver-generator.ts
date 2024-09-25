@@ -16,6 +16,9 @@ import { invokeLambdaMappingTemplate } from '../resolvers/invoke-lambda-resolver
 import { assistantMutationResolver } from '../resolvers/assistant-mutation-resolver';
 import { conversationMessageSubscriptionMappingTamplate } from '../resolvers/assistant-messages-subscription-resolver';
 import { overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
+import pluralize from 'pluralize';
+import { listMessagePostDataLoadMappingTemplate } from '../resolvers/list-messages-post-data-load-resolver';
+import { listMessageInitMappingTemplate } from '../resolvers/list-messages-init-resolver';
 
 type KeyAttributeDefinition = {
   name: string;
@@ -28,6 +31,7 @@ export class ConversationResolverGenerator {
     for (const directive of directives) {
       this.processToolsForDirective(directive, ctx);
       this.generateResolversForDirective(directive, ctx);
+      this.addPostProcessingSlotToListMessagesPipeline(ctx, directive);
     }
   }
 
@@ -311,6 +315,23 @@ export class ConversationResolverGenerator {
       `${capitalizedFieldName}ConversationDirectiveLambdaStack`,
     );
     return ctx.api.host.addLambdaDataSource(functionDataSourceId, referencedFunction, {}, functionDataSourceScope);
+  }
+
+  private addPostProcessingSlotToListMessagesPipeline(
+    ctx: TransformerContextProvider,
+    directive: ConversationDirectiveConfiguration,
+  ): void {
+    const messageModelName = directive.messageModel.messageModel.name.value;
+    const pluralized = pluralize(messageModelName);
+    const listMessagesResolver = ctx.resolvers.getResolver('Query', `list${pluralized}`) as TransformerResolver;
+
+    const listMessagePostDataLoadFunction = listMessagePostDataLoadMappingTemplate(directive);
+    const initResolverFn = listMessageInitMappingTemplate(directive);
+
+    if (listMessagesResolver) {
+      listMessagesResolver.addJsFunctionToSlot('postDataLoad', listMessagePostDataLoadFunction);
+      listMessagesResolver.addJsFunctionToSlot('init', initResolverFn);
+    }
   }
 
   /**
