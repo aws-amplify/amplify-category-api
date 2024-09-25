@@ -1,0 +1,61 @@
+import generator from 'generate-password';
+import { getResourceNamesForStrategyName, ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { getRDSTableNamePrefix } from 'amplify-category-api-e2e-core';
+import { SqlDatatabaseController } from '../sql-datatabase-controller';
+import { DURATION_1_HOUR } from '../utils/duration-constants';
+import { testGraphQLAPIArrayAndObjects } from '../sql-tests-common/sql-array-objects';
+
+jest.setTimeout(DURATION_1_HOUR);
+
+describe('CDK GraphQL Transformer deployments with Postgres SQL datasources', () => {
+  const projFolderName = 'pgmodels';
+
+  // sufficient password length that meets the requirements for RDS cluster/instance
+  const [username, password, identifier] = generator.generateMultiple(3, { length: 11 });
+  const region = process.env.CLI_REGION ?? 'us-west-2';
+  const engine = 'postgres';
+
+  const databaseController: SqlDatatabaseController = new SqlDatatabaseController(
+    [
+      `CREATE TABLE "${getRDSTableNamePrefix()}contact" ("id" INT PRIMARY KEY, "firstname" VARCHAR(20), "lastname" VARCHAR(50), "tags" VARCHAR[], "address" JSON)`,
+    ],
+    {
+      identifier,
+      engine,
+      username,
+      password,
+      region,
+    },
+  );
+
+  const strategyName = `${engine}DBStrategy`;
+  const resourceNames = getResourceNamesForStrategyName(strategyName);
+
+  beforeAll(async () => {
+    await databaseController.setupDatabase();
+  });
+
+  afterAll(async () => {
+    await databaseController.cleanupDatabase();
+  });
+
+  const constructTestOptions = (connectionConfigName: string) => ({
+    projFolderName,
+    region,
+    connectionConfigName,
+    dbController: databaseController,
+    resourceNames,
+  });
+
+  testGraphQLAPIArrayAndObjects(
+    constructTestOptions('ssm'),
+    'RDS Postgres Model Directive with SSM Credential Store',
+    ImportedRDSType.POSTGRESQL,
+  );
+
+  testGraphQLAPIArrayAndObjects(
+    constructTestOptions('connectionUri'),
+    'RDS Postgres Model Directive using Connection String SSM parameter',
+    ImportedRDSType.POSTGRESQL,
+  );
+});
