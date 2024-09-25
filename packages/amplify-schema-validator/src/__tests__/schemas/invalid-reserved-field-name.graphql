@@ -1,5 +1,0 @@
-type Test @model {
-  id: ID!
-  str: String
-  _version: String
-}

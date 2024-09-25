@@ -2,6 +2,8 @@ version: 0.2
 env:
   shell: bash
   compute-type: BUILD_GENERAL1_MEDIUM
+  variables:
+    NODE_OPTIONS: '--max-old-space-size=6656'
 batch:
   fast-fail: false
   build-graph:
@@ -24,7 +26,6 @@ batch:
     - identifier: sql_pg_canary_ap_northeast_1
       buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
       env:
-        compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/sql-pg-canary.test.ts
           CLI_REGION: ap-northeast-1
@@ -34,7 +35,6 @@ batch:
     - identifier: sql_pg_canary_ap_northeast_2
       buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
       env:
-        compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/sql-pg-canary.test.ts
           CLI_REGION: ap-northeast-2
@@ -44,7 +44,6 @@ batch:
     - identifier: sql_pg_canary_ap_south_1
       buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
       env:
-        compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/sql-pg-canary.test.ts
           CLI_REGION: ap-south-1
@@ -54,7 +53,6 @@ batch:
     - identifier: sql_pg_canary_ap_southeast_1
       buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
       env:
-        compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/sql-pg-canary.test.ts
           CLI_REGION: ap-southeast-1
@@ -64,7 +62,6 @@ batch:
     - identifier: sql_pg_canary_ap_southeast_2
       buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
       env:
-        compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/sql-pg-canary.test.ts
           CLI_REGION: ap-southeast-2
@@ -74,7 +71,6 @@ batch:
     - identifier: sql_pg_canary_ca_central_1
       buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
       env:
-        compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/sql-pg-canary.test.ts
           CLI_REGION: ca-central-1
@@ -84,7 +80,6 @@ batch:
     - identifier: sql_pg_canary_eu_central_1
       buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
       env:
-        compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/sql-pg-canary.test.ts
           CLI_REGION: eu-central-1
@@ -94,7 +89,6 @@ batch:
     - identifier: sql_pg_canary_eu_north_1
       buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
       env:
-        compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/sql-pg-canary.test.ts
           CLI_REGION: eu-north-1
@@ -104,7 +98,6 @@ batch:
     - identifier: sql_pg_canary_eu_west_1
       buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
       env:
-        compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/sql-pg-canary.test.ts
           CLI_REGION: eu-west-1
@@ -114,7 +107,6 @@ batch:
     - identifier: sql_pg_canary_eu_west_2
       buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
       env:
-        compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/sql-pg-canary.test.ts
           CLI_REGION: eu-west-2
@@ -124,7 +116,6 @@ batch:
     - identifier: sql_pg_canary_eu_west_3
       buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
       env:
-        compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/sql-pg-canary.test.ts
           CLI_REGION: eu-west-3
@@ -134,7 +125,6 @@ batch:
     - identifier: sql_pg_canary_sa_east_1
       buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
       env:
-        compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/sql-pg-canary.test.ts
           CLI_REGION: sa-east-1
@@ -144,7 +134,6 @@ batch:
     - identifier: sql_pg_canary_us_east_1
       buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
       env:
-        compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/sql-pg-canary.test.ts
           CLI_REGION: us-east-1
@@ -154,7 +143,6 @@ batch:
     - identifier: sql_pg_canary_us_east_2
       buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
       env:
-        compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/sql-pg-canary.test.ts
           CLI_REGION: us-east-2
@@ -164,7 +152,6 @@ batch:
     - identifier: sql_pg_canary_us_west_1
       buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
       env:
-        compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/sql-pg-canary.test.ts
           CLI_REGION: us-west-1
@@ -174,7 +161,6 @@ batch:
     - identifier: sql_pg_canary_us_west_2
       buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
       env:
-        compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/sql-pg-canary.test.ts
           CLI_REGION: us-west-2

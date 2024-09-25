@@ -45,7 +45,7 @@ describe('Auth field-level auth combinations: manyToMany', () => {
   beforeEach(() => {
     // Fix all Date.now() calls to 1704067200000 epoch milliseconds
     const fakeDate = Date.UTC(2024, 0, 1, 0, 0, 0);
-    jest.useFakeTimers('modern');
+    jest.useFakeTimers();
     jest.setSystemTime(fakeDate);
   });
 

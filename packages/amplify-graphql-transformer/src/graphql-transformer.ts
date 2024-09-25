@@ -33,6 +33,8 @@ import type {
 import { GraphQLTransform, ResolverConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 import { Construct } from 'constructs';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { GenerationTransformer } from '@aws-amplify/graphql-generation-transformer';
+import { ConversationTransformer } from '@aws-amplify/graphql-conversation-transformer';
 
 /**
  * Arguments passed into a TransformerFactory
@@ -42,7 +44,6 @@ export type TransformerFactoryArgs = {
   storageConfig?: any;
   customTransformers?: TransformerPluginProvider[];
   functionNameMap?: Record<string, IFunction>;
-  allowGen1Patterns?: boolean;
 };
 
 /**
@@ -62,27 +63,29 @@ export const constructTransformerChain = (options?: TransformerFactoryArgs): Tra
   const authTransformer = new AuthTransformer();
   const indexTransformer = new IndexTransformer();
   const hasOneTransformer = new HasOneTransformer();
-
-  const allowGen1Patterns = options?.allowGen1Patterns === undefined ? true : options?.allowGen1Patterns;
+  const hasManyTransformer = new HasManyTransformer();
+  const belongsToTransformer = new BelongsToTransformer();
 
   // The default list of transformers should match DefaultDirectives in packages/amplify-graphql-directives/src/index.ts
   return [
     modelTransformer,
     new FunctionTransformer(options?.functionNameMap),
     new HttpTransformer(),
-    ...(allowGen1Patterns ? [new PredictionsTransformer(options?.storageConfig)] : []),
+    new PredictionsTransformer(options?.storageConfig),
     new PrimaryKeyTransformer(),
     indexTransformer,
-    new HasManyTransformer(),
+    hasManyTransformer,
     hasOneTransformer,
-    ...(allowGen1Patterns ? [new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer)] : []),
-    new BelongsToTransformer(),
+    new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
+    belongsToTransformer,
+    new ConversationTransformer(modelTransformer, hasManyTransformer, belongsToTransformer, authTransformer),
+    new GenerationTransformer(),
     new DefaultValueTransformer(),
     authTransformer,
     new MapsToTransformer(),
     new SqlTransformer(),
     new RefersToTransformer(),
-    ...(allowGen1Patterns ? [new SearchableModelTransformer()] : []),
+    new SearchableModelTransformer(),
     ...(options?.customTransformers ?? []),
   ];
 };

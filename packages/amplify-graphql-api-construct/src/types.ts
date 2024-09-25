@@ -496,23 +496,6 @@ export interface TranslationBehavior {
    * @experimental
    */
   readonly replaceTableUponGsiUpdate: boolean;
-
-  /**
-   * When disabled usage of Gen 1 patterns will result in an error thrown.
-   *
-   * Gen 1 Patterns that will be disabled when set to false:
-   * - Use of @manyToMany
-   * - Use of @searchable
-   * - Use of @predictions
-   * - Use of fields argument on @hasOne, @hasMany, and @belongsTo.
-   * - Use of @hasOne, @hasMany, and @belongsTo on required fields.
-   *
-   * @default true
-   * @internal
-   * Warning: Although this has `public` access, it is intended for internal use and should not be used directly.
-   * The behavior of this may change without warning.
-   */
-  readonly _allowGen1Patterns: boolean;
 }
 
 /**
@@ -623,21 +606,14 @@ export interface PartialTranslationBehavior {
   readonly replaceTableUponGsiUpdate?: boolean;
 
   /**
-   * When disabled usage of Gen 1 patterns will result in an error thrown.
+   * When enabled, sandbox deployment will be faster by skipping the creation of the Hotswap friendly resources.
    *
-   * Gen 1 Patterns that will be disabled when set to false:
-   * - Use of @manyToMany
-   * - Use of @searchable
-   * - Use of @predictions
-   * - Use of fields argument on @hasOne, @hasMany, and @belongsTo.
-   * - Use of @hasOne, @hasMany, and @belongsTo on required fields.
-   *
-   * @default true
+   * @default false
    * @internal
-   * Warning: Although this has `public` access, it is intended for internal use and should not be used directly.
+   * WARNING: Although this has `public` access, it is intended for internal use and should not be used directly.
    * The behavior of this may change without warning.
    */
-  readonly _allowGen1Patterns?: boolean;
+  readonly _provisionHotswapFriendlyResources?: boolean;
 }
 
 /**

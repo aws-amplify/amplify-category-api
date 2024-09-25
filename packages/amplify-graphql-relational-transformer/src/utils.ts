@@ -442,13 +442,24 @@ export const getRelatedType = (
 ): ObjectTypeDefinitionNode => {
   const { field } = config;
   const relatedTypeName = getBaseType(field.type);
+
   const relatedType = ctx.inputDocument.definitions.find(
     (d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === relatedTypeName,
   ) as ObjectTypeDefinitionNode | undefined;
 
   if (!relatedType) {
-    throw new Error(`Could not find related type with name ${relatedTypeName} while processing relationships.`);
+    // We just checked the input document, but there are cases where the related type is only in the output.
+    // This can happen when the transformer creates new types with a relationship directive  based on a directive.
+    // For example, the `@conversation` directive creates two models `Conversation<RouteName>` and `ConversationMessage<RouteName>` that
+    // are related to each other through a `hasMany` / `belongsTo` relationship.
+    const outputRelatedType = ctx.output.getObject(relatedTypeName);
+    if (outputRelatedType) {
+      return outputRelatedType;
+    } else {
+      throw new Error(`Could not find related type with name ${relatedTypeName} while processing relationships.`);
+    }
   }
+
   return relatedType;
 };
 

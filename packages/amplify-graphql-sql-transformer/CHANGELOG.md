@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-sql-transformer@0.4.2...@aws-amplify/graphql-sql-transformer@0.4.3) (2024-09-16)
+
+**Note:** Version bump only for package @aws-amplify/graphql-sql-transformer
+
+## [0.4.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-sql-transformer@0.4.1...@aws-amplify/graphql-sql-transformer@0.4.2) (2024-09-06)
+
+**Note:** Version bump only for package @aws-amplify/graphql-sql-transformer
+
+## [0.4.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-sql-transformer@0.4.0...@aws-amplify/graphql-sql-transformer@0.4.1) (2024-08-28)
+
+**Note:** Version bump only for package @aws-amplify/graphql-sql-transformer
+
+# [0.4.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-sql-transformer@0.3.9...@aws-amplify/graphql-sql-transformer@0.4.0) (2024-08-20)
+
+- feat!: bump version for v2 transformer packages ([7dac35c](https://github.com/aws-amplify/amplify-category-api/commit/7dac35cceb971b256b5688b0745ef82afc78b641))
+
+### BREAKING CHANGES
+
+- distinguish from LTS version
+
+## [0.3.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-sql-transformer@0.3.8...@aws-amplify/graphql-sql-transformer@0.3.9) (2024-08-12)
+
+**Note:** Version bump only for package @aws-amplify/graphql-sql-transformer
+
 ## [0.3.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-sql-transformer@0.3.7...@aws-amplify/graphql-sql-transformer@0.3.8) (2024-07-25)
 
 **Note:** Version bump only for package @aws-amplify/graphql-sql-transformer
