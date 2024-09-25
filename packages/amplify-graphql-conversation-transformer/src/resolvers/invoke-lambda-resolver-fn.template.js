@@ -49,6 +49,8 @@ export function response(ctx) {
     conversationId: ctx.args.conversationId,
     role: 'user',
     content: ctx.args.content,
+    aiContext: ctx.args.aiContext,
+    toolConfiguration: ctx.args.toolConfiguration,
     createdAt: ctx.stash.defaultValues.createdAt,
     updatedAt: ctx.stash.defaultValues.updatedAt,
   };
