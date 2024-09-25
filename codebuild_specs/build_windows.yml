@@ -6,7 +6,7 @@ variables:
 phases:
   build:
     commands:
-      - .\codebuild\Setup-NodeVersion.ps1 -version 18.20.4
+      - .\codebuild_specs\Setup-NodeVersion.ps1 -version 18.20.4
       - yarn run production-build
       - yarn build-tests
 
