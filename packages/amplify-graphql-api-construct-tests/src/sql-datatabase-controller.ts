@@ -215,10 +215,9 @@ export class SqlDatatabaseController {
   clearDatabase = async (): Promise<void> => {
     if (this.useDataAPI) {
       await clearTestDataUsingDataApi(this.clusterInfo, this.options.region);
-      return;
+    } else {
+      await clearTestDataUsingDirectConnection(this.options, this.databaseDetails.dbConfig.endpoint, this.databaseDetails.dbConfig.port);
     }
-
-    await clearTestDataUsingDirectConnection(this.options, this.databaseDetails.dbConfig.endpoint, this.databaseDetails.dbConfig.port);
   };
 
   cleanupDatabase = async (): Promise<void> => {
