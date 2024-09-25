@@ -29,12 +29,21 @@ export function response(ctx) {
   const messagesWithAssistantResponse = ctx.result.items
     .filter((message) => message.assistantContent !== undefined)
     .reduce((acc, current) => {
-      acc.push({ role: 'user', content: current.content });
-      acc.push({ role: 'assistant', content: current.assistantContent });
+      const { content, assistantContent, aiContext } = current;
+      const userContent = aiContext
+        ? [...content, { text: JSON.stringify(aiContext) }]
+        : content;
+
+      acc.push({ role: 'user', content: userContent });
+      acc.push({ role: 'assistant', content: assistantContent });
       return acc;
     }, []);
 
-  const currentMessage = { role: 'user', content: ctx.prev.result.content };
+  const { content, aiContext } = ctx.prev.result;
+  const currentUserMessageContent = aiContext
+    ? [...content, { text: JSON.stringify(aiContext) }]
+    : content;
+  const currentMessage = { role: 'user', content: currentUserMessageContent };
   const items = [...messagesWithAssistantResponse, currentMessage];
   return { items };
 }
