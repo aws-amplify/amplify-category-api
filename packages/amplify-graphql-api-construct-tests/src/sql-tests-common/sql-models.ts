@@ -63,15 +63,12 @@ export const testGraphQLAPI = (
 
     afterAll(async () => {
       try {
-        console.log('Destroying CDK');
         await cdkDestroy(projRoot, '--all');
-        console.log('Clearing database');
         await dbController.clearDatabase();
       } catch (err) {
         console.log(`Error invoking 'cdk destroy': ${err}`);
       }
 
-      console.log('Deleting project');
       deleteProjectDir(projRoot);
     });
 

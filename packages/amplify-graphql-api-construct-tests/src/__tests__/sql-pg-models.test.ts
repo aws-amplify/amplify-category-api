@@ -37,7 +37,6 @@ describe('CDK GraphQL Transformer deployments with Postgres SQL datasources', ()
   });
 
   afterAll(async () => {
-    console.log('Cleaning up database');
     await databaseController.cleanupDatabase();
   });
 
