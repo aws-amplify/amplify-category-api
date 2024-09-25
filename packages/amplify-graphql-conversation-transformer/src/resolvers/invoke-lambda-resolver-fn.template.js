@@ -1,12 +1,11 @@
 import { util } from '@aws-appsync/utils';
 
 export function request(ctx) {
-  const { args, request, prev } = ctx;
+  const { args, request } = ctx;
   [[TOOL_DEFINITIONS_LINE]]
   const selectionSet = '[[SELECTION_SET]]';
   const graphqlApiEndpoint = '[[GRAPHQL_API_ENDPOINT]]';
 
-  const messages = prev.result.items;
   const responseMutation = {
     name: '[[RESPONSE_MUTATION_NAME]]',
     inputTypeName: '[[RESPONSE_MUTATION_INPUT_TYPE_NAME]]',

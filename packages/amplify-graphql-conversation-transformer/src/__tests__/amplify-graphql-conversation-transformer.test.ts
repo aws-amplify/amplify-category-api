@@ -47,7 +47,7 @@ describe('ConversationTransformer', () => {
       expect(
         out.stacks.ConversationMessagePirateChat.Resources![`ListConversationMessage${toUpper(routeName)}Resolver`].Properties
           .PipelineConfig.Functions,
-      ).toHaveLength(5);
+      ).toHaveLength(4);
     });
   });
 

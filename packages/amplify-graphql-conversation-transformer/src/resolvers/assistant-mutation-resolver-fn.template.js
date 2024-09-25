@@ -1,4 +1,5 @@
 import { util } from '@aws-appsync/utils';
+import * as ddb from '@aws-appsync/utils/dynamodb';
 
 /**
  * Sends a request to the attached data source
@@ -6,30 +7,42 @@ import { util } from '@aws-appsync/utils';
  * @returns {*} the request
  */
 export function request(ctx) {
-  const owner = ctx.identity['claims']['sub'];
-  ctx.stash.owner = owner;
   const { conversationId, content, associatedUserMessageId } = ctx.args.input;
-  const updatedAt = util.time.nowISO8601();
+  const { owner } = ctx.args;
+  const defaultValues = ctx.stash.defaultValues ?? {};
 
-  const expression = 'SET #assistantContent = :assistantContent, #updatedAt = :updatedAt';
-  const expressionNames = { '#assistantContent': 'assistantContent', '#updatedAt': 'updatedAt' };
-  const expressionValues = { ':assistantContent': content, ':updatedAt': updatedAt };
-  const condition = JSON.parse(
-    util.transform.toDynamoDBConditionExpression({
-      owner: { eq: owner },
-      conversationId: { eq: conversationId },
-    }),
-  );
-  return {
-    operation: 'UpdateItem',
-    key: util.dynamodb.toMapValues({ id: associatedUserMessageId }),
-    condition,
-    update: {
-      expression,
-      expressionNames,
-      expressionValues: util.dynamodb.toMapValues(expressionValues),
-    },
+  const message = {
+    __typename: '[[CONVERSATION_MESSAGE_TYPE_NAME]]',
+    id,
+    role: 'assistant',
+    content,
+    conversationId,
+    associatedUserMessageId,
+    owner,
+    ...defaultValues,
   };
+
+  return ddb.put({ key: { id }, item: message });
+
+  // const expression = 'SET #assistantContent = :assistantContent, #updatedAt = :updatedAt';
+  // const expressionNames = { '#assistantContent': 'assistantContent', '#updatedAt': 'updatedAt' };
+  // const expressionValues = { ':assistantContent': content, ':updatedAt': updatedAt };
+  // const condition = JSON.parse(
+  //   util.transform.toDynamoDBConditionExpression({
+  //     owner: { eq: owner },
+  //     conversationId: { eq: conversationId },
+  //   }),
+  // );
+  // return {
+  //   operation: 'UpdateItem',
+  //   key: util.dynamodb.toMapValues({ id: associatedUserMessageId }),
+  //   condition,
+  //   update: {
+  //     expression,
+  //     expressionNames,
+  //     expressionValues: util.dynamodb.toMapValues(expressionValues),
+  //   },
+  // };
 }
 
 /**
