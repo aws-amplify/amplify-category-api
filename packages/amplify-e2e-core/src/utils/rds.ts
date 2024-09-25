@@ -449,6 +449,12 @@ export const setupRDSClusterAndData = async (config: RDSConfig, queries?: string
   };
 };
 
+/**
+ * Clear data/records in the database left by previous test with Data API, only applicable to RDS Aurora Cluster - Postgres SQL instance
+ * @param clusterInfo Database cluster config information
+ * @param region RDS Aurora cluster region
+ * @returns void.
+ */
 export const clearTestDataUsingDataApi = async (clusterInfo: ClusterInfo, region: string): Promise<void> => {
   const client = new RDSDataClient({ region });
 
@@ -503,6 +509,13 @@ export const clearTestDataUsingDataApi = async (clusterInfo: ClusterInfo, region
   console.log(`[Postgres] Database [${clusterInfo.dbName}] - data cleared and all tables truncated`);
 };
 
+/**
+ * Clear data/records in the database left by previous test with Knex direct database connection, applicable to RDS MySQL instance
+ * @param config Configuration of the database instance
+ * @param endpoint host/endpoint of the RDS instance
+ * @param port port of the RDS instance
+ * @returns void.
+ */
 export const clearTestDataUsingDirectConnection = async (config: RDSConfig, endpoint: string, port: number): Promise<void> => {
   const ipAddresses = await getIpRanges();
   await Promise.all(
