@@ -2,6 +2,9 @@ import path from 'path';
 import * as fs from 'fs-extra';
 import { SqlModelDataSourceDbConnectionConfig, ModelDataSourceStrategySqlDbType } from '@aws-amplify/graphql-api-construct';
 import {
+  ClusterInfo,
+  clearTestDataUsingDataApi,
+  clearTestDataUsingDirectConnection,
   deleteSSMParameters,
   deleteDbConnectionConfigWithSecretsManager,
   deleteDBCluster,
@@ -54,6 +57,7 @@ export interface SqlDatabaseDetails {
  */
 export class SqlDatatabaseController {
   private databaseDetails: SqlDatabaseDetails | undefined;
+  private clusterInfo: ClusterInfo | undefined;
   private useDataAPI: boolean;
   private enableLocalTesting: boolean;
   private usePreProvisionedCluster: boolean;
@@ -83,14 +87,17 @@ export class SqlDatatabaseController {
         const identifier = this.usePreProvisionedCluster
           ? preProvisionedClusterInfo.clusterIdentifier
           : getClusterIdFromLocalConfig(this.options.region, this.options.engine);
-        dbConfig = await setupDataInExistingCluster(identifier, this.options, this.setupQueries, preProvisionedClusterInfo.secretArn);
+        dbConfig = await setupDataInExistingCluster(identifier, this.options, this.setupQueries, preProvisionedClusterInfo?.secretArn);
+        this.clusterInfo = dbConfig;
         this.options.username = dbConfig.username;
         this.options.dbname = dbConfig.dbName;
       } else {
         dbConfig = await setupRDSClusterAndData(this.options, this.setupQueries);
+        this.clusterInfo = dbConfig;
       }
     } else {
       dbConfig = await setupRDSInstanceAndData(this.options, this.setupQueries);
+      this.options.password = dbConfig.password;
     }
 
     if (!dbConfig) {
@@ -205,6 +212,14 @@ export class SqlDatatabaseController {
     return this.databaseDetails;
   };
 
+  clearDatabase = async (): Promise<void> => {
+    if (this.useDataAPI) {
+      await clearTestDataUsingDataApi(this.clusterInfo, this.options.region);
+    } else {
+      await clearTestDataUsingDirectConnection(this.options, this.databaseDetails.dbConfig.endpoint, this.databaseDetails.dbConfig.port);
+    }
+  };
+
   cleanupDatabase = async (): Promise<void> => {
     if (this.usePreProvisionedCluster || !this.databaseDetails) {
       return;
@@ -258,7 +273,7 @@ export class SqlDatatabaseController {
    *
    * @param projRoot the destination directory to write the `db-details.json` file to
    */
-  writeDbDetails = (projRoot: string, connectionConfigName: string): void => {
+  writeDbDetails = (projRoot: string, connectionConfigName: string, schemaConfigString?: string): void => {
     if (!this.databaseDetails) {
       throw new Error('Database has not been set up. Make sure to call setupDatabase first');
     }
@@ -273,6 +288,7 @@ export class SqlDatatabaseController {
     const detailsStr = JSON.stringify({
       dbConfig: this.databaseDetails.dbConfig,
       dbConnectionConfig,
+      schemaConfig: schemaConfigString,
     });
     const filePath = path.join(projRoot, 'db-details.json');
     fs.writeFileSync(filePath, detailsStr);
