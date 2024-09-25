@@ -2,6 +2,16 @@ import AWSAppSyncClient from 'aws-appsync';
 import gql from 'graphql-tag';
 
 /**
+ * Type that represents the GraphQL field selection string structure
+ * GraphQL does not diffrentiate between return single object or array of primitives/objects
+ * If field value is an object or array of objects, define as nested object, otherwise <[key]: true> pair
+ * Future: handle edge cases e.g. nested arrays and optional fields
+ */
+export type FieldMap = {
+  [key: string]: true | FieldMap;
+};
+
+/**
  * A class that attempts to handle basic/generic CRUDL operations using AppSyncClient API
  */
 export class CRUDLHelper {
@@ -9,14 +19,14 @@ export class CRUDLHelper {
     private readonly appSyncClient: AWSAppSyncClient<any>,
     private readonly modelName: string,
     private readonly modelListName: string,
-    private readonly fields: Array<string>,
+    private readonly fieldMap: FieldMap,
   ) {}
 
   public create = async (args: Record<string, any>): Promise<Record<string, any>> => {
     const mutation = `
       mutation Create${this.modelName}($input: Create${this.modelName}Input!, $condition: Model${this.modelName}ConditionInput) {
         create${this.modelName}(input: $input, condition: $condition) {
-          ${this.getOutputFields()}
+          ${this.getOutputFields(this.fieldMap)}
         }
       }
     `;
@@ -34,7 +44,7 @@ export class CRUDLHelper {
     const query = `
       query Get${this.modelName}(${this.getQueryInputTypes(args)}) {
         get${this.modelName}(${this.getQueryInputs(args)}) {
-          ${this.getOutputFields()}
+          ${this.getOutputFields(this.fieldMap)}
         }
       }
     `;
@@ -53,7 +63,7 @@ export class CRUDLHelper {
     const query = `
       query {
         get${this.modelName}(id: "${id}") {
-          ${this.getOutputFields()}
+          ${this.getOutputFields(this.fieldMap)}
         }
       }
     `;
@@ -70,7 +80,7 @@ export class CRUDLHelper {
     const mutation = `
       mutation Update${this.modelName}($input: Update${this.modelName}Input!, $condition: Model${this.modelName}ConditionInput) {
         update${this.modelName}(input: $input, condition: $condition) {
-          ${this.getOutputFields()}
+          ${this.getOutputFields(this.fieldMap)}
         }
       }
     `;
@@ -88,7 +98,7 @@ export class CRUDLHelper {
     const mutation = `
       mutation Delete${this.modelName}($input: Delete${this.modelName}Input!, $condition: Model${this.modelName}ConditionInput) {
         delete${this.modelName}(input: $input, condition: $condition) {
-          ${this.getOutputFields()}
+          ${this.getOutputFields(this.fieldMap)}
         }
       }
     `;
@@ -107,7 +117,7 @@ export class CRUDLHelper {
       query List${this.modelListName}($limit: Int, $nextToken: String, $filter: Model${this.modelName}FilterInput) {
         list${this.modelListName}(limit: $limit, nextToken: $nextToken, filter: $filter) {
           items {
-            ${this.getOutputFields()}
+           ${this.getOutputFields(this.fieldMap)}
           }
           nextToken
         }
@@ -132,14 +142,21 @@ export class CRUDLHelper {
     expect(errorMessage).toEqual('GraphQL error: Error processing the request. Check the logs for more details.');
   };
 
-  private getMutationInputs = (args: Record<string, any>): string => {
-    return Object.entries(args)
-      .map(([key, value]) => `${key}: "${value}"`)
-      .join(', ');
-  };
+  private getOutputFields = (fieldMap: FieldMap, indentLevel = 1): string => {
+    let output = '';
+    const indent = '  '.repeat(indentLevel);
 
-  private getOutputFields = (): string => {
-    return `${this.fields.join('\n')}\n`;
+    for (const [key, value] of Object.entries(fieldMap)) {
+      if (value === true) {
+        output += `${indent}${key}\n`;
+      } else if (typeof value === 'object') {
+        output += `${indent}${key} {\n`;
+        output += this.getOutputFields(value, indentLevel + 1);
+        output += `${indent}}\n`;
+      }
+    }
+
+    return output;
   };
 
   private getQueryInputTypes = (args: Record<string, any>): string => {
