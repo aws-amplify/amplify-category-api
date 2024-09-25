@@ -19,8 +19,8 @@ batch:
       # failures later in the cycle, but since those are infrequent, and this
       # step is a long one, we are optimizing for shorter wallclock time in the
       # average case where there are no Windows build failures.
-      depend-on:
-        - build_linux
+      # depend-on:
+      #   - build_linux
     - identifier: test
       buildspec: codebuild_specs/test.yml
       depend-on:

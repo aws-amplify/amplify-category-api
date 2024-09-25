@@ -2,11 +2,11 @@ version: 0.2
 env:
   shell: powershell.exe
 variables:
-  NODE_OPTIONS: --max-old-space-size=16192
+  NODE_OPTIONS: --max-old-space-size=8096
 phases:
   build:
     commands:
-      - bash -c "source ./shared-scripts.sh && _setupNodeVersion 18.20.4"
+      - .\Setup-NodeVersion.ps1 -version 18.20.4
       - yarn run production-build
       - yarn build-tests
 
