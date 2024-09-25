@@ -187,7 +187,6 @@ export class AmplifyGraphqlApi extends Construct {
     const transformParameters = {
       ...defaultTranslationBehavior,
       ...(translationBehavior ?? {}),
-      enableGen2Migration: false,
       allowGen1Patterns: false,
     };
     const executeTransformConfig: ExecuteTransformConfig = {

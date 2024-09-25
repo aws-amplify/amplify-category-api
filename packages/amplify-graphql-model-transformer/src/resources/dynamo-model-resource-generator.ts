@@ -68,10 +68,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
       expression: cdk.Fn.conditionEquals(pointInTimeRecovery, 'true'),
     });
 
-    const removalPolicy =
-      this.options.EnableDeletionProtection || context.transformParameters.enableGen2Migration
-        ? cdk.RemovalPolicy.RETAIN
-        : cdk.RemovalPolicy.DESTROY;
+    const removalPolicy = this.options.EnableDeletionProtection ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY;
 
     // Expose a way in context to allow proper resource naming
     const table = new Table(scope, tableLogicalName, {
