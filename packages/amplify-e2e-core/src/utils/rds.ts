@@ -449,7 +449,7 @@ export const setupRDSClusterAndData = async (config: RDSConfig, queries?: string
   };
 };
 
-export const clearRDSClusterData = async (clusterInfo: ClusterInfo, region: string): Promise<void> => {
+export const clearTestDataUsingDataApi = async (clusterInfo: ClusterInfo, region: string): Promise<void> => {
   const client = new RDSDataClient({ region });
 
   // Get all table names
@@ -458,7 +458,6 @@ export const clearRDSClusterData = async (clusterInfo: ClusterInfo, region: stri
     FROM information_schema.tables 
     WHERE table_schema = 'public'
       AND table_type = 'BASE TABLE'
-      AND table_catalog = '${clusterInfo.dbName}'
       AND table_name LIKE 'e2e_test_%';
   `;
   const tableQueryInput: ExecuteStatementCommandInput = {
@@ -476,10 +475,14 @@ export const clearRDSClusterData = async (clusterInfo: ClusterInfo, region: stri
     console.log(err);
   }
 
-  const tables = tableQueryResponse?.records?.map((record) => record[0]?.stringValue) || [];
+  const tables: string[] = tableQueryResponse?.records?.map((record) => record[0]?.stringValue) || [];
 
   // Truncate each table
   for (const table of tables) {
+    if (!verifyRDSTableName(table)) {
+      throw new Error(`Invalid table name detected in truncating database [${clusterInfo.dbName}]: Table [${table}]`);
+    }
+
     const truncateQuery = `TRUNCATE TABLE ${table} CASCADE;`;
     const truncateQueryInput: ExecuteStatementCommandInput = {
       resourceArn: clusterInfo.clusterArn,
@@ -500,7 +503,7 @@ export const clearRDSClusterData = async (clusterInfo: ClusterInfo, region: stri
   console.log(`[Postgres] Database [${clusterInfo.dbName}] - data cleared and all tables truncated`);
 };
 
-export const clearRDSInstanceData = async (config: RDSConfig, endpoint: string, port: number): Promise<void> => {
+export const clearTestDataUsingDirectConnection = async (config: RDSConfig, endpoint: string, port: number): Promise<void> => {
   const ipAddresses = await getIpRanges();
   await Promise.all(
     ipAddresses.map((ip) =>
@@ -532,6 +535,9 @@ export const clearRDSInstanceData = async (config: RDSConfig, endpoint: string, 
     `);
 
     for (const { TABLE_NAME } of tables) {
+      if (!verifyRDSTableName(TABLE_NAME)) {
+        throw new Error(`Invalid table name detected in truncating database [${config.dbname}]: Table [${TABLE_NAME}]`);
+      }
       await dbAdapter.executeQuery(`TRUNCATE TABLE \`${TABLE_NAME}\`;`);
       console.log(`Table truncated: ${TABLE_NAME}`);
     }
@@ -969,3 +975,26 @@ export const extractVpcConfigFromDbInstance = (
     subnetAvailabilityZones,
   };
 };
+
+export const getRDSTableNamePrefix = () => {
+  return 'e2e_test_';
+};
+
+export function verifyRDSTableName(tableName: string): boolean {
+  const prefix = getRDSTableNamePrefix();
+
+  // Check if the table name starts with the correct prefix
+  if (!tableName.startsWith(prefix)) {
+    return false;
+  }
+
+  // Remove the prefix for further validation
+  const nameWithoutPrefix = tableName.slice(prefix.length);
+
+  // Check if the remaining part of the name is valid
+  // This regex allows alphanumeric characters and underscores
+  // It also ensures the name doesn't start with a number
+  const validNameRegex = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+
+  return validNameRegex.test(nameWithoutPrefix);
+}

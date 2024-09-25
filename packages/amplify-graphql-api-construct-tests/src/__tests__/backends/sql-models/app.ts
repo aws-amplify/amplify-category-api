@@ -31,7 +31,7 @@ interface DBDetails {
   schemaConfig: string;
 }
 
-const defaultSchemaConfig = `
+const defaultSchemaConfig = /* GraphQL */ `
   type Todo @model @refersTo(name: "todos") {
     id: ID! @primaryKey
     description: String!

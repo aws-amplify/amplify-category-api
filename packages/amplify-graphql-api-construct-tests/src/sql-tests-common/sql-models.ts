@@ -2,7 +2,7 @@ import * as path from 'path';
 import { LambdaClient, GetProvisionedConcurrencyConfigCommand } from '@aws-sdk/client-lambda';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir, getRDSTableNamePrefix } from 'amplify-category-api-e2e-core';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { CRUDLHelper } from '../utils/sql-crudl-helper';
@@ -21,11 +21,11 @@ export const testGraphQLAPI = (
 ): void => {
   describe(`${testBlockDescription} - ${engine}`, () => {
     const amplifyGraphqlSchema = `
-      type Todo @model @refersTo(name: "e2e_test_todos") {
+      type Todo @model @refersTo(name: "${getRDSTableNamePrefix()}todos") {
         id: ID! @primaryKey
         description: String!
       }
-      type Student @model @refersTo(name: "e2e_test_students") {
+      type Student @model @refersTo(name: "${getRDSTableNamePrefix()}students") {
         studentId: Int! @primaryKey(sortKeyFields: ["classId"])
         classId: String!
         firstName: String

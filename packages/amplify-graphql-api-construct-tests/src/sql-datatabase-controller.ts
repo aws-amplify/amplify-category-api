@@ -3,8 +3,8 @@ import * as fs from 'fs-extra';
 import { SqlModelDataSourceDbConnectionConfig, ModelDataSourceStrategySqlDbType } from '@aws-amplify/graphql-api-construct';
 import {
   ClusterInfo,
-  clearRDSClusterData,
-  clearRDSInstanceData,
+  clearTestDataUsingDataApi,
+  clearTestDataUsingDirectConnection,
   deleteSSMParameters,
   deleteDbConnectionConfigWithSecretsManager,
   deleteDBCluster,
@@ -214,11 +214,11 @@ export class SqlDatatabaseController {
 
   clearDatabase = async (): Promise<void> => {
     if (this.useDataAPI) {
-      await clearRDSClusterData(this.clusterInfo, this.options.region);
+      await clearTestDataUsingDataApi(this.clusterInfo, this.options.region);
       return;
     }
 
-    await clearRDSInstanceData(this.options, this.databaseDetails.dbConfig.endpoint, this.databaseDetails.dbConfig.port);
+    await clearTestDataUsingDirectConnection(this.options, this.databaseDetails.dbConfig.endpoint, this.databaseDetails.dbConfig.port);
   };
 
   cleanupDatabase = async (): Promise<void> => {
