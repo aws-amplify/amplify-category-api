@@ -20,6 +20,14 @@ export function request(ctx) {
   });
   [[TOOLS_CONFIGURATION_LINE]]
 
+  const messageHistoryQuery = {
+    getQueryName: '[[GET_QUERY_NAME]]',
+    getQueryInputTypeName: '[[GET_QUERY_INPUT_TYPE_NAME]]',
+    listQueryName: '[[LIST_QUERY_NAME]]',
+    listQueryInputTypeName: '[[LIST_QUERY_INPUT_TYPE_NAME]]',
+    listQueryLimit: [[LIST_QUERY_LIMIT]],
+  };
+
   const authHeader = request.headers['authorization'];
   const payload = {
     conversationId: args.conversationId,
@@ -28,7 +36,7 @@ export function request(ctx) {
     graphqlApiEndpoint,
     modelConfiguration,
     request: { headers: { authorization: authHeader } },
-    messages,
+    messageHistoryQuery,
     toolsConfiguration,
   };
 

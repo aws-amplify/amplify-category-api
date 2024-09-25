@@ -82,6 +82,14 @@ export function request(ctx) {
   clientTools
 };
 
+  const messageHistoryQuery = {
+    getQueryName: 'getConversationMessagePirateChat',
+    getQueryInputTypeName: 'ID',
+    listQueryName: 'listConversationMessagesPirateChats',
+    listQueryInputTypeName: 'ModelConversationMessagePirateChatFilterInput',
+    listQueryLimit: undefined,
+  };
+
   const authHeader = request.headers['authorization'];
   const payload = {
     conversationId: args.conversationId,
@@ -90,7 +98,7 @@ export function request(ctx) {
     graphqlApiEndpoint,
     modelConfiguration,
     request: { headers: { authorization: authHeader } },
-    messages,
+    messageHistoryQuery,
     toolsConfiguration,
   };
 
@@ -208,6 +216,14 @@ export function request(ctx) {
   clientTools,
 };
 
+  const messageHistoryQuery = {
+    getQueryName: 'getConversationMessagePirateChat',
+    getQueryInputTypeName: 'ID',
+    listQueryName: 'listConversationMessagesPirateChats',
+    listQueryInputTypeName: 'ModelConversationMessagePirateChatFilterInput',
+    listQueryLimit: undefined,
+  };
+
   const authHeader = request.headers['authorization'];
   const payload = {
     conversationId: args.conversationId,
@@ -216,7 +232,7 @@ export function request(ctx) {
     graphqlApiEndpoint,
     modelConfiguration,
     request: { headers: { authorization: authHeader } },
-    messages,
+    messageHistoryQuery,
     toolsConfiguration,
   };
 
@@ -334,6 +350,14 @@ export function request(ctx) {
   clientTools,
 };
 
+  const messageHistoryQuery = {
+    getQueryName: 'getConversationMessagePirateChat',
+    getQueryInputTypeName: 'ID',
+    listQueryName: 'listConversationMessagesPirateChats',
+    listQueryInputTypeName: 'ModelConversationMessagePirateChatFilterInput',
+    listQueryLimit: undefined,
+  };
+
   const authHeader = request.headers['authorization'];
   const payload = {
     conversationId: args.conversationId,
@@ -342,7 +366,7 @@ export function request(ctx) {
     graphqlApiEndpoint,
     modelConfiguration,
     request: { headers: { authorization: authHeader } },
-    messages,
+    messageHistoryQuery,
     toolsConfiguration,
   };
 
@@ -460,6 +484,14 @@ export function request(ctx) {
   clientTools,
 };
 
+  const messageHistoryQuery = {
+    getQueryName: 'getConversationMessagePirateChat',
+    getQueryInputTypeName: 'ID',
+    listQueryName: 'listConversationMessagesPirateChats',
+    listQueryInputTypeName: 'ModelConversationMessagePirateChatFilterInput',
+    listQueryLimit: undefined,
+  };
+
   const authHeader = request.headers['authorization'];
   const payload = {
     conversationId: args.conversationId,
@@ -468,7 +500,7 @@ export function request(ctx) {
     graphqlApiEndpoint,
     modelConfiguration,
     request: { headers: { authorization: authHeader } },
-    messages,
+    messageHistoryQuery,
     toolsConfiguration,
   };
 
