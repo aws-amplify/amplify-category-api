@@ -2,12 +2,13 @@ import * as cdk from 'aws-cdk-lib';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 import { Construct } from 'constructs';
+import { AmplifyGraphqlApiProps } from '../../types';
 
 class CustomL3Construct extends Construct {
   data: AmplifyGraphqlApi; 
-  constructor(scope, id, props) {
+  constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps) {
     super(scope, id);
-    this.data = new AmplifyGraphqlApi(scope, id, props);
+    this.data = new AmplifyGraphqlApi(scope, 'data-test', props);
   };
 };
 
