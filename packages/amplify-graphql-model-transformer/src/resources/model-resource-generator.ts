@@ -730,8 +730,4 @@ export abstract class ModelResourceGenerator {
 
     return fields;
   };
-
-  getDatasourceMap(): Record<string, DataSourceProvider> {
-    return this.datasourceMap;
-  }
 }
