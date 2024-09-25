@@ -1,6 +1,8 @@
 import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { dedent } from 'ts-dedent';
+import fs from 'fs';
+import path from 'path';
+import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-transformer';
 
 /**
  * Creates and returns the mapping template for the init resolver.
@@ -8,47 +10,8 @@ import { dedent } from 'ts-dedent';
  *
  * @returns {MappingTemplateProvider} An object containing request and response MappingTemplateProviders.
  */
-export const initMappingTemplate = (): MappingTemplateProvider => {
-  const req = createInitRequestFunction();
-  const res = createInitResponseFunction();
-  return MappingTemplate.inlineTemplateFromString(dedent(req + '\n' + res));
-};
-
-/**
- * Creates the request function for the init resolver.
- * This function sets up default values for id, createdAt, and updatedAt.
- *
- * @returns {MappingTemplateProvider} A MappingTemplateProvider for the request function.
- */
-
-const createInitRequestFunction = (): string => {
-  const requestFunctionString = `
-      export function request(ctx) {
-        ctx.stash.defaultValues = ctx.stash.defaultValues ?? {};
-        ctx.stash.defaultValues.id = util.autoId();
-        const createdAt = util.time.nowISO8601();
-        ctx.stash.defaultValues.createdAt = createdAt;
-        ctx.stash.defaultValues.updatedAt = createdAt;
-        return {
-          version: '2018-05-09',
-          payload: {}
-        };
-      }`;
-
-  return requestFunctionString;
-};
-
-/**
- * Creates the response function for the init resolver.
- * This function currently returns an empty object.
- *
- * @returns {MappingTemplateProvider} A MappingTemplateProvider for the response function.
- */
-const createInitResponseFunction = (): string => {
-  const responseFunctionString = `
-      export function response(ctx) {
-        return {};
-      }`;
-
-  return responseFunctionString;
+export const initMappingTemplate = (config: ConversationDirectiveConfiguration): MappingTemplateProvider => {
+  const resolver = fs.readFileSync(path.join(__dirname, 'init-resolver-fn.js'), 'utf8');
+  const templateName = `Mutation.${config.field.name.value}.init.js`;
+  return MappingTemplate.s3MappingFunctionCodeFromString(resolver, templateName);
 };
