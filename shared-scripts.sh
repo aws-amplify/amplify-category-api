@@ -193,6 +193,10 @@ function _setupNodeVersion {
   # Load NVM
   export NVM_DIR="$HOME/.nvm"
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+  echo "About to install Node.js version $version"
+  echo "List of available Node.js versions:"
+  nvm ls-remote
   
   # Install and use the specified Node.js version
   nvm install "$version"
