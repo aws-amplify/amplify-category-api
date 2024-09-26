@@ -17,7 +17,7 @@ export const createInvokeBedrockResolverFunction = (config: GenerationConfigurat
   const SYSTEM_PROMPT = JSON.stringify(config.systemPrompt);
   const INFERENCE_CONFIG = getInferenceConfigResolverDefinition(inferenceConfiguration);
 
-  const resolver = generateResolver('invoke-bedrock-resolver-fn.js', {
+  const resolver = generateResolver('invoke-bedrock-resolver-fn.js.template', {
     AI_MODEL,
     TOOL_CONFIG,
     SYSTEM_PROMPT,
