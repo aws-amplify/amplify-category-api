@@ -1,15 +1,16 @@
 version: 0.2
 env:
   shell: powershell.exe
-variables:
-  NODE_OPTIONS: --max-old-space-size=8096
+  variables:
+    NODE_OPTIONS: --max-old-space-size=8096
+    NVM_HOME: 'C:\ProgramData\nodejs'
+    NVM_SYMLINK: 'C:\Program Files\nodejs'
 phases:
   build:
     commands:
       - .\codebuild_specs\scripts\Setup-NodeVersion.ps1 -version 18.20.4
       - yarn run production-build
       - yarn build-tests
-
 artifacts:
   files:
     - 'shared-scripts.sh'
