@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "amplify-category-api",
   "scripts": {
-    "add-cli-no-save": "yarn add @aws-amplify/cli-internal -W --pure-lockfile && git checkout -- package.json",
+    "add-cli-no-save": "yarn add @aws-amplify/cli-internal@12.13.0-gen2-migration-test-alpha.0 -W --pure-lockfile && git checkout -- package.json",
     "authenticate-e2e-profile": "source scripts/cloud-utils.sh && authenticateWithE2EProfile",
     "build-tests-changed": "lerna run build-tests --since main",
     "build-tests": "lerna run build-tests",
@@ -23,7 +23,7 @@
     "e2e": "lerna run e2e",
     "extract-api": "lerna run extract-api",
     "extract-dependency-licenses": "./scripts/extract-dependency-licenses.sh",
-    "hoist-cli-win": "rimraf node_modules/amplify-cli-internal@12.13.0-gen2-migration-test-alpha.0 && mkdir node_modules\\amplify-cli-internal && xcopy /e /q node_modules\\@aws-amplify\\cli-internal node_modules\\amplify-cli-internal\\",
+    "hoist-cli-win": "rimraf node_modules/amplify-cli-internal && mkdir node_modules\\amplify-cli-internal && xcopy /e /q node_modules\\@aws-amplify\\cli-internal node_modules\\amplify-cli-internal\\",
     "hoist-cli": "rm -rf node_modules/amplify-cli-internal && mkdir node_modules/amplify-cli-internal && cp -r node_modules/@aws-amplify/cli-internal/* node_modules/amplify-cli-internal",
     "link-dev": "cd node_modules/amplify-cli-internal && ln -s \"$(pwd)/bin/amplify\" \"$(yarn global bin)/amplify-dev\" && cd -",
     "link-win": "node ./scripts/link-bin.js node_modules/amplify-cli-internal/bin/amplify amplify-dev",
