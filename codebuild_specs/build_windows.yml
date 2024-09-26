@@ -9,7 +9,7 @@ phases:
       nodejs: 20.11.0
   build:
     commands:
-      # - .\codebuild_specs\scripts\Setup-NodeVersion.ps1 -version 18.20.4
+      - .\codebuild_specs\scripts\Setup-NodeVersion.ps1 -version 18.20.4
       - yarn run production-build
       - yarn build-tests
 
