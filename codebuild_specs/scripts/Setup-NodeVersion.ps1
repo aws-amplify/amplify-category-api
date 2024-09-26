@@ -33,8 +33,18 @@ Write-Host "Starting Node.js setup with version $version`n" -ForegroundColor Cya
 Write-Host "Installing NVM"
 choco install nvm -y
 
-nvm install 18.20.4
-nvm use 18.20.4
+Write-Host "Setting Environment Variables" -ForegroundColor Yellow
+setx NVM_HOME "C:\ProgramData\nvm" /M
+setx NVM_SYMLINK "C:\Program Files\nodejs" /M
 
-Write-Host "Verifying Node Version"
+# Refresh environment variables in the current session
+$env:NVM_HOME = 'C:\ProgramData\nvm'
+$env:NVM_SYMLINK = 'C:\Program Files\nodejs'
+$env:PATH = [System.Environment]::GetEnvironmentVariable("PATH", "Machine") + ";$env:NVM_HOME;$env:NVM_SYMLINK"
+
+Write-Host "Installing Node.js version $version" -ForegroundColor Yellow
+nvm install $version
+nvm use $version
+
+Write-Host "Verifying Node Version" -ForegroundColor Cyan
 node -v

@@ -3,7 +3,7 @@ env:
   shell: powershell.exe
   variables:
     NODE_OPTIONS: --max-old-space-size=8096
-    NVM_HOME: 'C:\ProgramData\nodejs'
+    NVM_HOME: 'C:\ProgramData\nvm'
     NVM_SYMLINK: 'C:\Program Files\nodejs'
 phases:
   build:
