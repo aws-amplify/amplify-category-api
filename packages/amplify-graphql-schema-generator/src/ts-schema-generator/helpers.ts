@@ -164,7 +164,7 @@ export const createSchema = (schema: Schema, config?: DataSourceGenerateConfig):
     throw new Error('No valid tables found. Make sure at least one table has a primary key.');
   }
 
-  const nullEnumFields = schema // find null enum fields in all models
+  const nullableEnumFields = schema 
     .getModels()
     .map((model) =>
       model
@@ -179,7 +179,7 @@ export const createSchema = (schema: Schema, config?: DataSourceGenerateConfig):
         }),
     );
 
-  const requiredEnumFields = schema // find required enum fields in all models
+  const requiredEnumFields = schema
     .getModels()
     .map((model) =>
       model
@@ -201,7 +201,7 @@ export const createSchema = (schema: Schema, config?: DataSourceGenerateConfig):
       return createModel(model);
     });
 
-  const combinedEnums = nullEnumFields.concat(requiredEnumFields).flat(); // making 1 D array
+  const combinedEnums = nullableEnumFields.concat(requiredEnumFields).flat(); // making 1 D array
 
   // to eliminate duplicate definition of enums in case where same enum is referenced in 2 differed models
   const seenEnums = new Set<string>(); 
