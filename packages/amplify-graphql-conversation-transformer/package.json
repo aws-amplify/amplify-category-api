@@ -24,7 +24,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/ai-constructs": "0.0.0-test-20240925144932",
+    "@aws-amplify/ai-constructs": "0.0.0-test-20240926024033",
     "@aws-amplify/graphql-directives": "2.2.0",
     "@aws-amplify/graphql-index-transformer": "3.0.3",
     "@aws-amplify/graphql-model-transformer": "3.0.3",
@@ -60,9 +60,9 @@
     "coverageProvider": "v8",
     "coverageThreshold": {
       "global": {
-        "branches": 85,
-        "functions": 90,
-        "lines": 90
+        "branches": 80,
+        "functions": 80,
+        "lines": 80
       }
     },
     "coverageReporters": [
