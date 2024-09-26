@@ -6,25 +6,26 @@ param (
 function Ensure-Administrator {
   $currentUser = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
   if (-not $currentUser.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-      Write-Warning "Administrator privileges are required. Attempting to restart as Administrator..."
+    Write-Warning "Administrator privileges are required. Attempting to restart as Administrator..."
 
-      # Retrieve the script path dynamically
-      $scriptPath = $PSCommandPath
+    # Retrieve the script path dynamically
+    $scriptPath = $PSCommandPath
 
-      if (-not (Test-Path $scriptPath)) {
-          Write-Error "Script path not found: $scriptPath"
-          exit 1
-      }
+    if (-not (Test-Path $scriptPath)) {
+      Write-Error "Script path not found: $scriptPath"
+      exit 1
+    }
 
-      # Create a new process with elevated privileges
-      Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$scriptPath`" -version `"$version`"" -Verb RunAs
+    # Create a new process with elevated privileges
+    Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$scriptPath`" -version `"$version`"" -Verb RunAs
 
-      # Exit the current non-elevated script
-      exit
+    # Exit the current non-elevated script
+    exit
   }
 }
 
 # Call the self-elevation function
+Write-Host "Elevating script to Administrator privileges"
 Ensure-Administrator
 
 Write-Host "Starting Node.js setup with version $version`n" -ForegroundColor Cyan
