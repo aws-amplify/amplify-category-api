@@ -11,7 +11,7 @@ import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-tran
  * @returns {MappingTemplateProvider} An object containing request and response MappingTemplateProviders.
  */
 export const conversationMessageSubscriptionMappingTamplate = (config: ConversationDirectiveConfiguration): MappingTemplateProvider => {
-  const resolver = fs.readFileSync(path.join(__dirname, 'assistant-messages-subscription-resolver-fn.js.template'), 'utf8');
+  const resolver = fs.readFileSync(path.join(__dirname, 'assistant-messages-subscription-resolver-fn.template.js'), 'utf8');
   const templateName = `Subscription.${config.field.name.value}.assistant-message.js`;
   return MappingTemplate.s3MappingFunctionCodeFromString(resolver, templateName);
 };

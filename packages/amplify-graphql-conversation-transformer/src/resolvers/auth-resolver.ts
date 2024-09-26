@@ -11,7 +11,7 @@ import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-tran
  * @returns {MappingTemplateProvider} An object containing request and response MappingTemplateProviders.
  */
 export const authMappingTemplate = (config: ConversationDirectiveConfiguration): MappingTemplateProvider => {
-  const resolver = fs.readFileSync(path.join(__dirname, 'auth-resolver-fn.js.template'), 'utf8');
+  const resolver = fs.readFileSync(path.join(__dirname, 'auth-resolver-fn.template.js'), 'utf8');
   const templateName = `Mutation.${config.field.name.value}.auth.js`;
   return MappingTemplate.s3MappingFunctionCodeFromString(resolver, templateName);
 };

@@ -12,7 +12,7 @@ export const writeMessageToTableMappingTemplate = (fieldName: string): MappingTe
   const substitutions = {
     CONVERSATION_MESSAGE_TYPE_NAME: `ConversationMessage${fieldName}`,
   };
-  let resolver = fs.readFileSync(path.join(__dirname, 'write-message-to-table-resolver-fn.js.template'), 'utf8');
+  let resolver = fs.readFileSync(path.join(__dirname, 'write-message-to-table-resolver-fn.template.js'), 'utf8');
   Object.entries(substitutions).forEach(([key, value]) => {
     const replaced = resolver.replace(new RegExp(`\\[\\[${key}\\]\\]`, 'g'), value);
     resolver = replaced;
