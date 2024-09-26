@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.1-ai.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@0.2.1-ai.2...@aws-amplify/graphql-conversation-transformer@0.2.1-ai.3) (2024-09-26)
+
+### Bug Fixes
+
+- **conversation:** missing aiContext in message payload ([70ce4fd](https://github.com/aws-amplify/amplify-category-api/commit/70ce4fddbc6f0c7d97e1ab1b2f9503905d4b5ded))
+- **conversation:** split messages by role and use existing GSI for createdAt DESC order in list queries ([f0e578d](https://github.com/aws-amplify/amplify-category-api/commit/f0e578df266564cc6b582ef6ef077322b3e97798))
+
 ## [0.2.1-ai.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@0.2.1...@aws-amplify/graphql-conversation-transformer@0.2.1-ai.2) (2024-09-20)
 
 ### Bug Fixes
