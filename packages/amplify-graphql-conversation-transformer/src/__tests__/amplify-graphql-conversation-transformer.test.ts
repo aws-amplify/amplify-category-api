@@ -83,9 +83,21 @@ const assertResolverSnapshot = (routeName: string, resources: DeploymentResource
   expect(resolverCode).toBeDefined();
   expect(resolverCode).toMatchSnapshot();
 
-  const resolverFnCode = getResolverFnResource(routeName, resources);
-  expect(resolverFnCode).toBeDefined();
-  expect(resolverFnCode).toMatchSnapshot();
+  const authFn = resources?.resolvers[`Mutation.${routeName}.auth.js`]
+  expect(authFn).toBeDefined();
+  expect(authFn).toMatchSnapshot();
+
+  const verifySessionOwnerFn = resources?.resolvers[`Mutation.${routeName}.verify-session-owner.js`]
+  expect(verifySessionOwnerFn).toBeDefined();
+  expect(verifySessionOwnerFn).toMatchSnapshot();
+
+  const writeMessageToTableFn = resources?.resolvers[`Mutation.${routeName}.write-message-to-table.js`]
+  expect(writeMessageToTableFn).toBeDefined();
+  expect(writeMessageToTableFn).toMatchSnapshot();
+
+  const invokeLambdaFn = resources?.resolvers[`Mutation.${routeName}.invoke-lambda.js`]
+  expect(invokeLambdaFn).toBeDefined();
+  expect(invokeLambdaFn).toMatchSnapshot();
 };
 
 const getResolverResource = (mutationName: string, resources?: Record<string, any>): Record<string, any> => {
