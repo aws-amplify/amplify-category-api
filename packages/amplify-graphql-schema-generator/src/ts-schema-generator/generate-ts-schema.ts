@@ -1,7 +1,6 @@
 import * as ts from 'typescript';
 import { Schema } from '../schema-representation';
 import { createImportExpression, createSchema, DataSourceGenerateConfig } from './helpers';
-import { LogFormat } from '@aws-sdk/client-lambda';
 
 const file = ts.createSourceFile('schema.ts', '', ts.ScriptTarget.ESNext, false, ts.ScriptKind.TS);
 const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
