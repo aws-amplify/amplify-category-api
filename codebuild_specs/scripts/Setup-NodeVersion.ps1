@@ -23,9 +23,12 @@ try {
     Write-Host "Chocolatey is already installed.`n"
   }
 
+  # List installed Node.js versions using Chocolatey
+  choco list nodejs.install --all
+
   # Install the specified Node.js version using Chocolatey
   Write-Host "Installing Node.js version $version using Chocolatey..."
-  choco install nodejs --version $version -y --no-progress
+  choco install nodejs.install --version $version -y --no-progress
   if ($LASTEXITCODE -ne 0) {
     Write-Error "Failed to install Node.js version $version."
     exit 1
