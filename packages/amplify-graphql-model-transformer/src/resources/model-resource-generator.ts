@@ -125,7 +125,7 @@ export abstract class ModelResourceGenerator {
         }
         // TODO: add mechanism to add an auth like rule to all non auth @models
         // this way we can just depend on auth to add the check
-        resolver.addToSlot(
+        resolver.addVtlFunctionToSlot(
           'postAuth',
           MappingTemplate.s3MappingTemplateFromString(
             generatePostAuthExpression(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess),
@@ -159,7 +159,7 @@ export abstract class ModelResourceGenerator {
           default:
             throw new Error('Unknown mutation field type');
         }
-        resolver.addToSlot(
+        resolver.addVtlFunctionToSlot(
           'postAuth',
           MappingTemplate.s3MappingTemplateFromString(
             generatePostAuthExpression(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess),
@@ -205,7 +205,7 @@ export abstract class ModelResourceGenerator {
               throw new Error('Unknown subscription field type');
           }
           if (subscriptionLevel === SubscriptionLevel.on) {
-            resolver.addToSlot(
+            resolver.addVtlFunctionToSlot(
               'postAuth',
               MappingTemplate.s3MappingTemplateFromString(
                 generatePostAuthExpression(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess),
@@ -364,7 +364,7 @@ export abstract class ModelResourceGenerator {
             (field.type.kind === 'NamedType' && (field.type.name.value === 'ID' || field.type.name.value === 'String'))),
       );
 
-      resolver.addToSlot(
+      resolver.addVtlFunctionToSlot(
         'init',
         MappingTemplate.s3MappingTemplateFromString(
           vtlGenerator.generateCreateInitSlotTemplate(initSlotConfig, initializeIdField),
@@ -425,7 +425,7 @@ export abstract class ModelResourceGenerator {
         operation: 'UPDATE',
         operationName: fieldName,
       };
-      resolver.addToSlot(
+      resolver.addVtlFunctionToSlot(
         'init',
         MappingTemplate.s3MappingTemplateFromString(
           vtlGenerator.generateUpdateInitSlotTemplate(updateInitConfig),

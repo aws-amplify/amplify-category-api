@@ -1,4 +1,4 @@
-import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
+import { APPSYNC_JS_RUNTIME, MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { getRuntimeSpecificFunctionProps } from '../../utils/function-runtime';
 import { App, Stack } from 'aws-cdk-lib';
 import { GraphQLApi } from '../../graphql-api';
@@ -9,32 +9,35 @@ describe('Function Runtime Util Tests', () => {
   const stack = new Stack(app, 'test-root-stack');
   const api = new GraphQLApi(stack, 'testId', { name: 'testApiName', assetProvider: new AssetProvider(stack) });
 
-  it('should return the correct CfnFunctionConfiguration props for APPSYNC_JS runtime', () => {
-    const request = `
-        export function request(ctx) {
-            return {}
-        }
-    `;
+  describe('APPSYNC_JS runtime', () => {
+    const runtime = APPSYNC_JS_RUNTIME;
+    const code = `
+    export function request(ctx) {
+        return {};
+    }
 
-    const response = `
-        export function response(ctx) {
-            return {}
-        }
-    `;
-    const requestMappingTemplate = MappingTemplate.inlineTemplateFromString(request);
-    const responseMappingTemplate = MappingTemplate.inlineTemplateFromString(response);
+     export function response(ctx) {
+        return {};
+    }`;
 
-    const props = {
-      requestMappingTemplate,
-      responseMappingTemplate,
-      runtime: { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' },
-      api,
-    };
+    it('should return runtime and code for inline template', () => {
+      const codeMappingTemplate = MappingTemplate.inlineTemplateFromString(code);
+      const mappingTemplate = { codeMappingTemplate };
+      const props = { mappingTemplate, runtime, api };
 
-    const runtimeSpecificProps = getRuntimeSpecificFunctionProps(stack, props);
-    expect(runtimeSpecificProps).toEqual({
-      runtime: { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' },
-      code: request + '\n\n' + response,
+      const runtimeSpecificProps = getRuntimeSpecificFunctionProps(stack, props);
+      expect(runtimeSpecificProps.code).toEqual(code);
+      expect(runtimeSpecificProps.runtime).toEqual(runtime);
+    });
+
+    it('should return runtime and codeS3Location for S3 mapping template', () => {
+      const codeMappingTemplate = MappingTemplate.s3MappingTemplateFromString(code, 'test-template');
+      const mappingTemplate = { codeMappingTemplate };
+      const props = { mappingTemplate, runtime, api };
+
+      const { runtime: receivedRuntime, codeS3Location } = getRuntimeSpecificFunctionProps(stack, props);
+      expect(runtime).toEqual(receivedRuntime);
+      expect(codeS3Location).toBeDefined();
     });
   });
 
@@ -42,12 +45,13 @@ describe('Function Runtime Util Tests', () => {
     const request = '$util.toJson({})';
     const response = '$util.toJson({})';
 
-    const requestMappingTemplate = MappingTemplate.inlineTemplateFromString(request);
-    const responseMappingTemplate = MappingTemplate.inlineTemplateFromString(response);
+    const mappingTemplate = {
+      requestMappingTemplate: MappingTemplate.inlineTemplateFromString(request),
+      responseMappingTemplate: MappingTemplate.inlineTemplateFromString(response),
+    };
 
     const props = {
-      requestMappingTemplate,
-      responseMappingTemplate,
+      mappingTemplate,
       api,
     };
 

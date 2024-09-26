@@ -43,6 +43,11 @@ describe('ConversationTransformer', () => {
 
       const schema = parse(out.schema);
       validateModelSchema(schema);
+
+      expect(
+        out.stacks.ConversationMessagePirateChat.Resources![`ListConversationMessage${toUpper(routeName)}Resolver`].Properties
+          .PipelineConfig.Functions,
+      ).toHaveLength(4);
     });
   });
 
@@ -79,17 +84,28 @@ describe('ConversationTransformer', () => {
 });
 
 const assertResolverSnapshot = (routeName: string, resources: DeploymentResources) => {
-  const resolverCode = resources.rootStack.Resources?.[`Mutation${routeName}Resolver`]?.['Properties']['Code'];
+  const resolverCode = getResolverResource(routeName, resources.rootStack.Resources)['Properties']['Code'];
+  expect(resolverCode).toBeDefined();
+  expect(resolverCode).toMatchSnapshot();
+
+  const resolverFnCode = getResolverFnResource(routeName, resources);
+  expect(resolverFnCode).toBeDefined();
+  expect(resolverFnCode).toMatchSnapshot();
+};
+
+const getResolverResource = (mutationName: string, resources?: Record<string, any>): Record<string, any> => {
+  const resolverName = `Mutation${mutationName}Resolver`;
+  return resources?.[resolverName];
+};
+
+const getResolverFnResource = (mutationName: string, resources: DeploymentResources): string => {
   const resolverFnCode =
     resources.rootStack.Resources &&
-    Object.entries(resources.rootStack.Resources).find(([key, _]) => key.startsWith(`Mutation${toUpper(routeName)}DataResolverFn`))?.[1][
+    Object.entries(resources.rootStack.Resources).find(([key, _]) => key.startsWith(`Mutation${toUpper(mutationName)}DataResolverFn`))?.[1][
       'Properties'
     ]['Code'];
 
-  expect(resolverCode).toBeDefined();
-  expect(resolverCode).toMatchSnapshot();
-  expect(resolverFnCode).toBeDefined();
-  expect(resolverFnCode).toMatchSnapshot();
+  return resolverFnCode;
 };
 
 const defaultAuthConfig: AppSyncAuthConfiguration = {

@@ -1,8 +1,7 @@
-import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { MappingTemplateProvider, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-transformer';
 import { processTools } from '../utils/tools';
-import { JSResolverFunctionProvider } from '../resolvers/js-resolver-function-provider';
-import { InvalidTransformerError, MappingTemplate, TransformerResolver } from '@aws-amplify/graphql-transformer-core';
+import { APPSYNC_JS_RUNTIME, TransformerResolver } from '@aws-amplify/graphql-transformer-core';
 import { ResolverResourceIDs, FunctionResourceIDs, ResourceConstants, toUpper } from 'graphql-transformer-common';
 import * as cdk from 'aws-cdk-lib';
 import { conversation } from '@aws-amplify/ai-constructs';
@@ -10,15 +9,16 @@ import { IFunction, Function } from 'aws-cdk-lib/aws-lambda';
 import { getModelDataSourceNameForTypeName, getTable } from '@aws-amplify/graphql-transformer-core';
 import { initMappingTemplate } from '../resolvers/init-resolver';
 import { authMappingTemplate } from '../resolvers/auth-resolver';
-import { verifySessionOwnerMappingTemplate } from '../resolvers/verify-session-owner-resolver';
+import {
+  verifySessionOwnerSendMessageMappingTemplate,
+  verifySessionOwnerAssistantResponseMappingTemplate,
+} from '../resolvers/verify-session-owner-resolver';
 import { writeMessageToTableMappingTemplate } from '../resolvers/write-message-to-table-resolver';
-import { readHistoryMappingTemplate } from '../resolvers/message-history-resolver';
 import { invokeLambdaMappingTemplate } from '../resolvers/invoke-lambda-resolver';
 import { assistantMutationResolver } from '../resolvers/assistant-mutation-resolver';
 import { conversationMessageSubscriptionMappingTamplate } from '../resolvers/assistant-messages-subscription-resolver';
 import { overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
 import pluralize from 'pluralize';
-import { listMessagePostDataLoadMappingTemplate } from '../resolvers/list-message-post-data-load-resolver';
 import { listMessageInitMappingTemplate } from '../resolvers/list-messages-init-resolver';
 
 type KeyAttributeDefinition = {
@@ -51,16 +51,36 @@ export class ConversationResolverGenerator {
 
     const functionStack = this.createFunctionStack(ctx, capitalizedFieldName);
     const { functionDataSourceId, referencedFunction } = this.setupFunctionDataSource(directive, functionStack, capitalizedFieldName);
-
-    this.createAssistantResponseResolver(ctx, directive, capitalizedFieldName);
-    this.createAssistantResponseSubscriptionResolver(ctx, capitalizedFieldName);
-
     const functionDataSource = this.addLambdaDataSource(ctx, functionDataSourceId, referencedFunction, capitalizedFieldName);
     const invokeLambdaFunction = invokeLambdaMappingTemplate(directive, ctx);
 
     this.setupMessageTableIndex(ctx, directive);
+    const initResolverFunction = initMappingTemplate(directive);
+    const authResolverFunction = authMappingTemplate(directive);
+    const verifySessionOwnerSendMessageResolverFunction = verifySessionOwnerSendMessageMappingTemplate(directive);
+    const verifySessionOwnerAssistantResponseResolverFunction = verifySessionOwnerAssistantResponseMappingTemplate(directive);
 
-    this.createConversationPipelineResolver(ctx, parentName, fieldName, capitalizedFieldName, functionDataSource, invokeLambdaFunction);
+    this.createConversationPipelineResolver(
+      ctx,
+      parentName,
+      fieldName,
+      capitalizedFieldName,
+      functionDataSource,
+      invokeLambdaFunction,
+      initResolverFunction,
+      authResolverFunction,
+      verifySessionOwnerSendMessageResolverFunction,
+    );
+
+    this.createAssistantResponseResolver(
+      ctx,
+      directive,
+      capitalizedFieldName,
+      initResolverFunction,
+      authResolverFunction,
+      verifySessionOwnerAssistantResponseResolverFunction,
+    );
+    this.createAssistantResponseSubscriptionResolver(ctx, directive, capitalizedFieldName);
   }
 
   /**
@@ -165,24 +185,32 @@ export class ConversationResolverGenerator {
     fieldName: string,
     capitalizedFieldName: string,
     functionDataSource: any,
-    invokeLambdaFunction: JSResolverFunctionProvider,
+    invokeLambdaFunction: MappingTemplateProvider,
+    initResolverFunction: MappingTemplateProvider,
+    authResolverFunction: MappingTemplateProvider,
+    verifySessionOwnerResolverFunction: MappingTemplateProvider,
   ): void {
     const resolverResourceId = ResolverResourceIDs.ResolverResourceID(parentName, fieldName);
-    const runtime = { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' };
-
+    const runtime = APPSYNC_JS_RUNTIME;
     const conversationPipelineResolver = new TransformerResolver(
       parentName,
       fieldName,
       resolverResourceId,
-      invokeLambdaFunction.req,
-      invokeLambdaFunction.res,
-      ['init', 'auth', 'verifySessionOwner', 'writeMessageToTable', 'retrieveMessageHistory'],
+      { codeMappingTemplate: invokeLambdaFunction },
+      ['init', 'auth', 'verifySessionOwner', 'writeMessageToTable'],
       ['handleLambdaResponse', 'finish'],
       functionDataSource,
       runtime,
     );
 
-    this.addPipelineResolverFunctions(ctx, conversationPipelineResolver, capitalizedFieldName, runtime);
+    this.addPipelineResolverFunctions(
+      ctx,
+      conversationPipelineResolver,
+      capitalizedFieldName,
+      initResolverFunction,
+      authResolverFunction,
+      verifySessionOwnerResolverFunction,
+    );
 
     ctx.resolvers.addResolver(parentName, fieldName, conversationPipelineResolver);
   }
@@ -198,51 +226,28 @@ export class ConversationResolverGenerator {
     ctx: TransformerContextProvider,
     resolver: TransformerResolver,
     capitalizedFieldName: string,
-    runtime: { name: string; runtimeVersion: string },
+    initResolverFunction: MappingTemplateProvider,
+    authResolverFunction: MappingTemplateProvider,
+    verifySessionOwnerResolverFunction: MappingTemplateProvider,
   ): void {
     // Add init function
-    const initFunction = initMappingTemplate();
-    resolver.addToSlot('init', initFunction.req, initFunction.res, undefined, runtime);
+    resolver.addJsFunctionToSlot('init', initResolverFunction);
 
     // Add auth function
-    const authFunction = authMappingTemplate();
-    resolver.addToSlot('auth', authFunction.req, authFunction.res, undefined, runtime);
+    resolver.addJsFunctionToSlot('auth', authResolverFunction);
 
     // Add verifySessionOwner function
-    const verifySessionOwnerFunction = verifySessionOwnerMappingTemplate();
     const sessionModelName = `Conversation${capitalizedFieldName}`;
     const sessionModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, sessionModelName);
     const conversationSessionDDBDataSource = ctx.api.host.getDataSource(sessionModelDDBDataSourceName);
-    resolver.addToSlot(
-      'verifySessionOwner',
-      verifySessionOwnerFunction.req,
-      verifySessionOwnerFunction.res,
-      conversationSessionDDBDataSource as any,
-      runtime,
-    );
+    resolver.addJsFunctionToSlot('verifySessionOwner', verifySessionOwnerResolverFunction, conversationSessionDDBDataSource as any);
 
     // Add writeMessageToTable function
     const writeMessageToTableFunction = writeMessageToTableMappingTemplate(capitalizedFieldName);
     const messageModelName = `ConversationMessage${capitalizedFieldName}`;
     const messageModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, messageModelName);
     const messageDDBDataSource = ctx.api.host.getDataSource(messageModelDDBDataSourceName);
-    resolver.addToSlot(
-      'writeMessageToTable',
-      writeMessageToTableFunction.req,
-      writeMessageToTableFunction.res,
-      messageDDBDataSource as any,
-      runtime,
-    );
-
-    // Add retrieveMessageHistory function
-    const retrieveMessageHistoryFunction = readHistoryMappingTemplate();
-    resolver.addToSlot(
-      'retrieveMessageHistory',
-      retrieveMessageHistoryFunction.req,
-      retrieveMessageHistoryFunction.res,
-      messageDDBDataSource as any,
-      runtime,
-    );
+    resolver.addJsFunctionToSlot('writeMessageToTable', writeMessageToTableFunction, messageDDBDataSource as any);
   }
 
   /**
@@ -255,26 +260,38 @@ export class ConversationResolverGenerator {
     ctx: TransformerContextProvider,
     directive: ConversationDirectiveConfiguration,
     capitalizedFieldName: string,
+    initResolverFunction: MappingTemplateProvider,
+    authResolverFunction: MappingTemplateProvider,
+    verifySessionOwnerResolverFunction: MappingTemplateProvider,
   ): void {
     const assistantResponseResolverResourceId = ResolverResourceIDs.ResolverResourceID('Mutation', directive.responseMutationName);
-    const assistantResponseResolverFunction = assistantMutationResolver();
+    const assistantResponseResolverFunction = assistantMutationResolver(directive);
     const conversationMessageDataSourceName = getModelDataSourceNameForTypeName(ctx, `ConversationMessage${capitalizedFieldName}`);
     const conversationMessageDataSource = ctx.api.host.getDataSource(conversationMessageDataSourceName);
-
-    const runtime = { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' };
-    const assistantResponseResolver = new TransformerResolver(
+    const resolver = new TransformerResolver(
       'Mutation',
       directive.responseMutationName,
       assistantResponseResolverResourceId,
-      assistantResponseResolverFunction.req,
-      assistantResponseResolverFunction.res,
-      [],
+      { codeMappingTemplate: assistantResponseResolverFunction },
+      ['init', 'auth', 'verifySessionOwner'],
       [],
       conversationMessageDataSource as any,
-      runtime,
+      APPSYNC_JS_RUNTIME,
     );
 
-    ctx.resolvers.addResolver('Mutation', directive.responseMutationName, assistantResponseResolver);
+    // Add init function
+    resolver.addJsFunctionToSlot('init', initResolverFunction);
+
+    // Add auth function
+    resolver.addJsFunctionToSlot('auth', authResolverFunction);
+
+    // Add verifySessionOwner function
+    const sessionModelName = `Conversation${capitalizedFieldName}`;
+    const sessionModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, sessionModelName);
+    const conversationSessionDDBDataSource = ctx.api.host.getDataSource(sessionModelDDBDataSourceName);
+    resolver.addJsFunctionToSlot('verifySessionOwner', verifySessionOwnerResolverFunction, conversationSessionDDBDataSource as any);
+
+    ctx.resolvers.addResolver('Mutation', directive.responseMutationName, resolver);
   }
 
   /**
@@ -282,25 +299,30 @@ export class ConversationResolverGenerator {
    * @param ctx - The transformer context provider
    * @param capitalizedFieldName - The capitalized field name
    */
-  private createAssistantResponseSubscriptionResolver(ctx: TransformerContextProvider, capitalizedFieldName: string): void {
+  private createAssistantResponseSubscriptionResolver(
+    ctx: TransformerContextProvider,
+    directive: ConversationDirectiveConfiguration,
+    capitalizedFieldName: string,
+  ): void {
     const onAssistantResponseSubscriptionFieldName = `onCreateAssistantResponse${capitalizedFieldName}`;
     const onAssistantResponseSubscriptionResolverResourceId = ResolverResourceIDs.ResolverResourceID(
       'Subscription',
       onAssistantResponseSubscriptionFieldName,
     );
-    const onAssistantResponseSubscriptionResolverFunction = conversationMessageSubscriptionMappingTamplate();
+    const onAssistantResponseSubscriptionResolverFunction = conversationMessageSubscriptionMappingTamplate(directive);
 
-    const runtime = { name: 'APPSYNC_JS', runtimeVersion: '1.0.0' };
+    const mappingTemplate = {
+      codeMappingTemplate: onAssistantResponseSubscriptionResolverFunction,
+    };
     const onAssistantResponseSubscriptionResolver = new TransformerResolver(
       'Subscription',
       onAssistantResponseSubscriptionFieldName,
       onAssistantResponseSubscriptionResolverResourceId,
-      onAssistantResponseSubscriptionResolverFunction.req,
-      onAssistantResponseSubscriptionResolverFunction.res,
+      mappingTemplate,
       [],
       [],
       undefined,
-      runtime,
+      APPSYNC_JS_RUNTIME,
     );
 
     ctx.resolvers.addResolver('Subscription', onAssistantResponseSubscriptionFieldName, onAssistantResponseSubscriptionResolver);
@@ -325,6 +347,22 @@ export class ConversationResolverGenerator {
       `${capitalizedFieldName}ConversationDirectiveLambdaStack`,
     );
     return ctx.api.host.addLambdaDataSource(functionDataSourceId, referencedFunction, {}, functionDataSourceScope);
+  }
+
+  private addPostProcessingSlotToListMessagesPipeline(
+    ctx: TransformerContextProvider,
+    directive: ConversationDirectiveConfiguration,
+  ): void {
+    const messageModelName = directive.messageModel.messageModel.name.value;
+    const pluralized = pluralize(messageModelName);
+    const listMessagesResolver = ctx.resolvers.getResolver('Query', `list${pluralized}`) as TransformerResolver;
+    const initResolverFn = listMessageInitMappingTemplate(directive);
+
+    if (listMessagesResolver) {
+      listMessagesResolver.addJsFunctionToSlot('init', initResolverFn);
+    } else {
+      // TODO: add error handling
+    }
   }
 
   /**
@@ -352,33 +390,6 @@ export class ConversationResolverGenerator {
       ctx,
       messageModelName,
     );
-  }
-
-  // TODO: This is a temporary solution to include assistant messages in the list messages resolver.
-  // The real fix will likely entail representing conversation messages as tuples of (user, assistant) within a single DynamoDB record (and GraphQL type).
-  private addPostProcessingSlotToListMessagesPipeline(
-    ctx: TransformerContextProvider,
-    directive: ConversationDirectiveConfiguration,
-  ): void {
-    const messageModelName = directive.messageModel.messageModel.name.value;
-    const pluralized = pluralize(messageModelName);
-    const postDataLoadResolverFn = listMessagePostDataLoadMappingTemplate();
-    const listMessagesResolver = ctx.resolvers.getResolver('Query', `list${pluralized}`) as TransformerResolver;
-    if (!listMessagesResolver) {
-      throw new InvalidTransformerError(`list${pluralized} resolver not found`);
-    }
-
-    listMessagesResolver.addToSlot('postDataLoad', postDataLoadResolverFn.req, postDataLoadResolverFn.res, undefined, {
-      name: 'APPSYNC_JS',
-      runtimeVersion: '1.0.0',
-    });
-
-    const initResolverFn = listMessageInitMappingTemplate();
-
-    listMessagesResolver.addToSlot('init', initResolverFn.req, initResolverFn.res, undefined, {
-      name: 'APPSYNC_JS',
-      runtimeVersion: '1.0.0',
-    });
   }
 
   private addGlobalSecondaryIndex(
