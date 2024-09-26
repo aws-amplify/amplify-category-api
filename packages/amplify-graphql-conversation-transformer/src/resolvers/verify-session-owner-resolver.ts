@@ -30,12 +30,12 @@ export const verifySessionOwnerAssistantResponseMappingTemplate = (config: Conve
   return verifySessionOwnerMappingTemplate(templateName, substitutions);
 };
 
-const verifySessionOwnerMappingTemplate = (name: string, substitute: Record<string, string>) => {
+const verifySessionOwnerMappingTemplate = (templateName: string, substitute: Record<string, string>) => {
   let resolver = fs.readFileSync(path.join(__dirname, 'verify-session-owner-resolver-fn.template.js'), 'utf8');
   Object.entries(substitute).forEach(([key, value]) => {
     const replaced = resolver.replace(new RegExp(`\\[\\[${key}\\]\\]`, 'g'), value);
     resolver = replaced;
   });
-  const templateName = `Mutation.${name}.verify-session-owner.js`;
+
   return MappingTemplate.s3MappingFunctionCodeFromString(resolver, templateName);
 };

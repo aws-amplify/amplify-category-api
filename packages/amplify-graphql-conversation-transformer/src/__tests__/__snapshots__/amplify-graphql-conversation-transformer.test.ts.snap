@@ -43,24 +43,119 @@ export const response = (ctx) => {
 `;
 
 exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration 2`] = `
-{
-  "Fn::Join": [
-    "",
-    [
-      "import { util } from '@aws-appsync/utils';
+"export function request(ctx) {
+  ctx.stash.hasAuth = true;
+  const isAuthorized = false;
+
+  if (util.authType() === 'User Pool Authorization') {
+    if (!isAuthorized) {
+      const authFilter = [];
+      let ownerClaim0 = ctx.identity['claims']['sub'];
+      ctx.args.owner = ownerClaim0;
+      const currentClaim1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (ownerClaim0 && currentClaim1) {
+        ownerClaim0 = ownerClaim0 + '::' + currentClaim1;
+        authFilter.push({ owner: { eq: ownerClaim0 } });
+      }
+      const role0_0 = ctx.identity['claims']['sub'];
+      if (role0_0) {
+        authFilter.push({ owner: { eq: role0_0 } });
+      }
+      // we can just reuse currentClaim1 here, but doing this (for now) to mirror the existing
+      // vtl auth resolver.
+      const role0_1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (role0_1) {
+        authFilter.push({ owner: { eq: role0_1 } });
+      }
+      if (authFilter.length !== 0) {
+        ctx.stash.authFilter = { or: authFilter };
+      }
+    }
+  }
+  if (!isAuthorized && ctx.stash.authFilter.length === 0) {
+    util.unauthorized();
+  }
+  return { version: '2018-05-29', payload: {} };
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration 3`] = `
+"export function request(ctx) {
+  const { authFilter } = ctx.stash;
+  const { conversationId } = ctx.args;
+
+  const query = {
+    expression: 'id = :id',
+    expressionValues: util.dynamodb.toMapValues({
+      ':id': conversationId,
+    }),
+  };
+
+  const filter = JSON.parse(util.transform.toDynamoDBFilterExpression(authFilter));
+
+  return {
+    operation: 'Query',
+    query,
+    filter,
+  };
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  }
+
+  if (ctx.result.items.length !== 0) {
+    return ctx.result.items[0];
+  }
+
+  util.error('Conversation not found', 'ResourceNotFound');
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration 4`] = `
+"import { util } from '@aws-appsync/utils';
+import * as ddb from '@aws-appsync/utils/dynamodb';
 
 export function request(ctx) {
-  const { args, request } = ctx;
+  const args = ctx.stash.transformedArgs ?? ctx.args;
+  const defaultValues = ctx.stash.defaultValues ?? {};
+  const message = {
+    __typename: 'ConversationMessagepirateChat',
+    role: 'user',
+    ...args,
+    ...defaultValues,
+  };
+  const id = ctx.stash.defaultValues.id;
+
+  return ddb.put({ key: { id }, item: message });
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  } else {
+    return ctx.result;
+  }
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration 5`] = `
+"import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
+  const { args, request, prev } = ctx;
+  const { graphqlApiEndpoint } = ctx.stash;
+
   
   const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
-  const graphqlApiEndpoint = '",
-      {
-        "Fn::GetAtt": [
-          "GraphQLAPI",
-          "GraphQLUrl",
-        ],
-      },
-      "';
 
   const responseMutation = {
     name: 'createAssistantResponsePirateChat',
@@ -125,10 +220,7 @@ export function response(ctx) {
   };
   return response;
 }
-",
-    ],
-  ],
-}
+"
 `;
 
 exports[`ConversationTransformer valid schemas should transform conversation route with model query tool 1`] = `
@@ -174,24 +266,119 @@ export const response = (ctx) => {
 `;
 
 exports[`ConversationTransformer valid schemas should transform conversation route with model query tool 2`] = `
-{
-  "Fn::Join": [
-    "",
-    [
-      "import { util } from '@aws-appsync/utils';
+"export function request(ctx) {
+  ctx.stash.hasAuth = true;
+  const isAuthorized = false;
+
+  if (util.authType() === 'User Pool Authorization') {
+    if (!isAuthorized) {
+      const authFilter = [];
+      let ownerClaim0 = ctx.identity['claims']['sub'];
+      ctx.args.owner = ownerClaim0;
+      const currentClaim1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (ownerClaim0 && currentClaim1) {
+        ownerClaim0 = ownerClaim0 + '::' + currentClaim1;
+        authFilter.push({ owner: { eq: ownerClaim0 } });
+      }
+      const role0_0 = ctx.identity['claims']['sub'];
+      if (role0_0) {
+        authFilter.push({ owner: { eq: role0_0 } });
+      }
+      // we can just reuse currentClaim1 here, but doing this (for now) to mirror the existing
+      // vtl auth resolver.
+      const role0_1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (role0_1) {
+        authFilter.push({ owner: { eq: role0_1 } });
+      }
+      if (authFilter.length !== 0) {
+        ctx.stash.authFilter = { or: authFilter };
+      }
+    }
+  }
+  if (!isAuthorized && ctx.stash.authFilter.length === 0) {
+    util.unauthorized();
+  }
+  return { version: '2018-05-29', payload: {} };
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool 3`] = `
+"export function request(ctx) {
+  const { authFilter } = ctx.stash;
+  const { conversationId } = ctx.args;
+
+  const query = {
+    expression: 'id = :id',
+    expressionValues: util.dynamodb.toMapValues({
+      ':id': conversationId,
+    }),
+  };
+
+  const filter = JSON.parse(util.transform.toDynamoDBFilterExpression(authFilter));
+
+  return {
+    operation: 'Query',
+    query,
+    filter,
+  };
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  }
+
+  if (ctx.result.items.length !== 0) {
+    return ctx.result.items[0];
+  }
+
+  util.error('Conversation not found', 'ResourceNotFound');
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool 4`] = `
+"import { util } from '@aws-appsync/utils';
+import * as ddb from '@aws-appsync/utils/dynamodb';
 
 export function request(ctx) {
-  const { args, request } = ctx;
+  const args = ctx.stash.transformedArgs ?? ctx.args;
+  const defaultValues = ctx.stash.defaultValues ?? {};
+  const message = {
+    __typename: 'ConversationMessagepirateChat',
+    role: 'user',
+    ...args,
+    ...defaultValues,
+  };
+  const id = ctx.stash.defaultValues.id;
+
+  return ddb.put({ key: { id }, item: message });
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  } else {
+    return ctx.result;
+  }
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool 5`] = `
+"import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
+  const { args, request, prev } = ctx;
+  const { graphqlApiEndpoint } = ctx.stash;
+
   const toolDefinitions = {"tools":[{"name":"listTodos","description":"lists todos","inputSchema":{"json":{"type":"object","properties":{},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"items { content isDone id createdAt updatedAt owner } nextToken","propertyTypes":{},"queryName":"listTodos"}}]};
   const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
-  const graphqlApiEndpoint = '",
-      {
-        "Fn::GetAtt": [
-          "GraphQLAPI",
-          "GraphQLUrl",
-        ],
-      },
-      "';
 
   const responseMutation = {
     name: 'createAssistantResponsePirateChat',
@@ -258,10 +445,7 @@ export function response(ctx) {
   };
   return response;
 }
-",
-    ],
-  ],
-}
+"
 `;
 
 exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships 1`] = `
@@ -307,24 +491,119 @@ export const response = (ctx) => {
 `;
 
 exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships 2`] = `
-{
-  "Fn::Join": [
-    "",
-    [
-      "import { util } from '@aws-appsync/utils';
+"export function request(ctx) {
+  ctx.stash.hasAuth = true;
+  const isAuthorized = false;
+
+  if (util.authType() === 'User Pool Authorization') {
+    if (!isAuthorized) {
+      const authFilter = [];
+      let ownerClaim0 = ctx.identity['claims']['sub'];
+      ctx.args.owner = ownerClaim0;
+      const currentClaim1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (ownerClaim0 && currentClaim1) {
+        ownerClaim0 = ownerClaim0 + '::' + currentClaim1;
+        authFilter.push({ owner: { eq: ownerClaim0 } });
+      }
+      const role0_0 = ctx.identity['claims']['sub'];
+      if (role0_0) {
+        authFilter.push({ owner: { eq: role0_0 } });
+      }
+      // we can just reuse currentClaim1 here, but doing this (for now) to mirror the existing
+      // vtl auth resolver.
+      const role0_1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (role0_1) {
+        authFilter.push({ owner: { eq: role0_1 } });
+      }
+      if (authFilter.length !== 0) {
+        ctx.stash.authFilter = { or: authFilter };
+      }
+    }
+  }
+  if (!isAuthorized && ctx.stash.authFilter.length === 0) {
+    util.unauthorized();
+  }
+  return { version: '2018-05-29', payload: {} };
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships 3`] = `
+"export function request(ctx) {
+  const { authFilter } = ctx.stash;
+  const { conversationId } = ctx.args;
+
+  const query = {
+    expression: 'id = :id',
+    expressionValues: util.dynamodb.toMapValues({
+      ':id': conversationId,
+    }),
+  };
+
+  const filter = JSON.parse(util.transform.toDynamoDBFilterExpression(authFilter));
+
+  return {
+    operation: 'Query',
+    query,
+    filter,
+  };
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  }
+
+  if (ctx.result.items.length !== 0) {
+    return ctx.result.items[0];
+  }
+
+  util.error('Conversation not found', 'ResourceNotFound');
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships 4`] = `
+"import { util } from '@aws-appsync/utils';
+import * as ddb from '@aws-appsync/utils/dynamodb';
 
 export function request(ctx) {
-  const { args, request } = ctx;
+  const args = ctx.stash.transformedArgs ?? ctx.args;
+  const defaultValues = ctx.stash.defaultValues ?? {};
+  const message = {
+    __typename: 'ConversationMessagepirateChat',
+    role: 'user',
+    ...args,
+    ...defaultValues,
+  };
+  const id = ctx.stash.defaultValues.id;
+
+  return ddb.put({ key: { id }, item: message });
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  } else {
+    return ctx.result;
+  }
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships 5`] = `
+"import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
+  const { args, request, prev } = ctx;
+  const { graphqlApiEndpoint } = ctx.stash;
+
   const toolDefinitions = {"tools":[{"name":"listCustomers","description":"Provides data about the customer sending a message","inputSchema":{"json":{"type":"object","properties":{},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"items { name email activeCart { products { name price } customerId id createdAt updatedAt owner } orderHistory { items { products { name price } customerId id createdAt updatedAt owner } nextToken } id createdAt updatedAt owner } nextToken","propertyTypes":{},"queryName":"listCustomers"}}]};
   const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
-  const graphqlApiEndpoint = '",
-      {
-        "Fn::GetAtt": [
-          "GraphQLAPI",
-          "GraphQLUrl",
-        ],
-      },
-      "';
 
   const responseMutation = {
     name: 'createAssistantResponsePirateChat',
@@ -391,10 +670,7 @@ export function response(ctx) {
   };
   return response;
 }
-",
-    ],
-  ],
-}
+"
 `;
 
 exports[`ConversationTransformer valid schemas should transform conversation route with query tools 1`] = `
@@ -440,24 +716,119 @@ export const response = (ctx) => {
 `;
 
 exports[`ConversationTransformer valid schemas should transform conversation route with query tools 2`] = `
-{
-  "Fn::Join": [
-    "",
-    [
-      "import { util } from '@aws-appsync/utils';
+"export function request(ctx) {
+  ctx.stash.hasAuth = true;
+  const isAuthorized = false;
+
+  if (util.authType() === 'User Pool Authorization') {
+    if (!isAuthorized) {
+      const authFilter = [];
+      let ownerClaim0 = ctx.identity['claims']['sub'];
+      ctx.args.owner = ownerClaim0;
+      const currentClaim1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (ownerClaim0 && currentClaim1) {
+        ownerClaim0 = ownerClaim0 + '::' + currentClaim1;
+        authFilter.push({ owner: { eq: ownerClaim0 } });
+      }
+      const role0_0 = ctx.identity['claims']['sub'];
+      if (role0_0) {
+        authFilter.push({ owner: { eq: role0_0 } });
+      }
+      // we can just reuse currentClaim1 here, but doing this (for now) to mirror the existing
+      // vtl auth resolver.
+      const role0_1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (role0_1) {
+        authFilter.push({ owner: { eq: role0_1 } });
+      }
+      if (authFilter.length !== 0) {
+        ctx.stash.authFilter = { or: authFilter };
+      }
+    }
+  }
+  if (!isAuthorized && ctx.stash.authFilter.length === 0) {
+    util.unauthorized();
+  }
+  return { version: '2018-05-29', payload: {} };
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with query tools 3`] = `
+"export function request(ctx) {
+  const { authFilter } = ctx.stash;
+  const { conversationId } = ctx.args;
+
+  const query = {
+    expression: 'id = :id',
+    expressionValues: util.dynamodb.toMapValues({
+      ':id': conversationId,
+    }),
+  };
+
+  const filter = JSON.parse(util.transform.toDynamoDBFilterExpression(authFilter));
+
+  return {
+    operation: 'Query',
+    query,
+    filter,
+  };
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  }
+
+  if (ctx.result.items.length !== 0) {
+    return ctx.result.items[0];
+  }
+
+  util.error('Conversation not found', 'ResourceNotFound');
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with query tools 4`] = `
+"import { util } from '@aws-appsync/utils';
+import * as ddb from '@aws-appsync/utils/dynamodb';
 
 export function request(ctx) {
-  const { args, request } = ctx;
+  const args = ctx.stash.transformedArgs ?? ctx.args;
+  const defaultValues = ctx.stash.defaultValues ?? {};
+  const message = {
+    __typename: 'ConversationMessagepirateChat',
+    role: 'user',
+    ...args,
+    ...defaultValues,
+  };
+  const id = ctx.stash.defaultValues.id;
+
+  return ddb.put({ key: { id }, item: message });
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  } else {
+    return ctx.result;
+  }
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with query tools 5`] = `
+"import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
+  const { args, request, prev } = ctx;
+  const { graphqlApiEndpoint } = ctx.stash;
+
   const toolDefinitions = {"tools":[{"name":"getTemperature","description":"does a thing","inputSchema":{"json":{"type":"object","properties":{"city":{"type":"string","description":"A UTF-8 character sequence."}},"required":["city"]}},"graphqlRequestInputDescriptor":{"selectionSet":"value unit","propertyTypes":{"city":"String!"},"queryName":"getTemperature"}},{"name":"plus","description":"does a different thing","inputSchema":{"json":{"type":"object","properties":{"a":{"type":"number","description":"A signed 32-bit integer value."},"b":{"type":"number","description":"A signed 32-bit integer value."}},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"","propertyTypes":{"a":"Int","b":"Int"},"queryName":"plus"}}]};
   const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
-  const graphqlApiEndpoint = '",
-      {
-        "Fn::GetAtt": [
-          "GraphQLAPI",
-          "GraphQLUrl",
-        ],
-      },
-      "';
 
   const responseMutation = {
     name: 'createAssistantResponsePirateChat',
@@ -524,8 +895,5 @@ export function response(ctx) {
   };
   return response;
 }
-",
-    ],
-  ],
-}
+"
 `;
