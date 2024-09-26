@@ -10,7 +10,7 @@ import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-tran
  * @returns {MappingTemplateProvider}
  */
 export const listMessageInitMappingTemplate = (config: ConversationDirectiveConfiguration): MappingTemplateProvider => {
-  const resolver = fs.readFileSync(path.join(__dirname, 'list-messages-init-resolver-fn.js'), 'utf8');
+  const resolver = fs.readFileSync(path.join(__dirname, 'list-messages-init-resolver-fn.template.js'), 'utf8');
   const templateName = `Query.${config.field.name.value}.list-message-init.js`;
   return MappingTemplate.s3MappingFunctionCodeFromString(resolver, templateName);
 };
