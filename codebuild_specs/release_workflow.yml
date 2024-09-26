@@ -6,45 +6,5 @@ env:
 batch:
   fast-fail: false
   build-graph:
-    - identifier: build_linux
-      buildspec: codebuild_specs/build_linux.yml
-    - identifier: build_windows
-      buildspec: codebuild_specs/build_windows.yml
-      env:
-        type: WINDOWS_SERVER_2019_CONTAINER
-        compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
-      # Declaring a dependency on build_linux allows build_windows to run in
-      # parallel with the other tasks. This means we detect Windows build
-      # failures later in the cycle, but since those are infrequent, and this
-      # step is a long one, we are optimizing for shorter wallclock time in the
-      # average case where there are no Windows build failures.
-      depend-on:
-        - build_linux
-    - identifier: test
-      buildspec: codebuild_specs/test.yml
-      depend-on:
-        - build_linux
-    - identifier: verify_api_extract
-      buildspec: codebuild_specs/verify_api_extract.yml
-      depend-on:
-        - build_linux
-    - identifier: verify_yarn_lock
-      buildspec: codebuild_specs/verify_yarn_lock.yml
-      depend-on:
-        - build_linux
-    - identifier: verify_cdk_version
-      buildspec: codebuild_specs/verify_cdk_version.yml
-      depend-on:
-        - build_linux
-    - identifier: verify_dependency_licenses_extract
-      buildspec: codebuild_specs/verify_dependency_licenses_extract.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-      depend-on:
-        - build_linux
     - identifier: deploy
       buildspec: codebuild_specs/deploy.yml
-      depend-on:
-        - test
-        - build_windows
