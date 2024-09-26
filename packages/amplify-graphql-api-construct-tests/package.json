@@ -18,7 +18,7 @@
   "private": true,
   "scripts": {
     "e2e": "npm run setup-profile && jest --verbose --forceExit",
-    "setup-profile": "ts-node ./src/configure_tests.ts",
+    "setup-profile": "ts-node ../amplify-e2e-tests/src/configure_tests.ts",
     "build-tests": "tsc --build tsconfig.tests.json"
   },
   "dependencies": {
