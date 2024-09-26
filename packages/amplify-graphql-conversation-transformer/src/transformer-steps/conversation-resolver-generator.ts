@@ -9,7 +9,10 @@ import { IFunction, Function } from 'aws-cdk-lib/aws-lambda';
 import { getModelDataSourceNameForTypeName, getTable } from '@aws-amplify/graphql-transformer-core';
 import { initMappingTemplate } from '../resolvers/init-resolver';
 import { authMappingTemplate } from '../resolvers/auth-resolver';
-import { verifySessionOwnerMappingTemplate } from '../resolvers/verify-session-owner-resolver';
+import {
+  verifySessionOwnerSendMessageMappingTemplate,
+  verifySessionOwnerAssistantResponseMappingTemplate,
+} from '../resolvers/verify-session-owner-resolver';
 import { writeMessageToTableMappingTemplate } from '../resolvers/write-message-to-table-resolver';
 import { invokeLambdaMappingTemplate } from '../resolvers/invoke-lambda-resolver';
 import { assistantMutationResolver } from '../resolvers/assistant-mutation-resolver';
@@ -54,8 +57,8 @@ export class ConversationResolverGenerator {
     this.setupMessageTableIndex(ctx, directive);
     const initResolverFunction = initMappingTemplate(directive);
     const authResolverFunction = authMappingTemplate(directive);
-    const verifySessionOwnerResolverFunction = verifySessionOwnerMappingTemplate(directive);
-
+    const verifySessionOwnerSendMessageResolverFunction = verifySessionOwnerSendMessageMappingTemplate(directive);
+    const verifySessionOwnerAssistantResponseResolverFunction = verifySessionOwnerAssistantResponseMappingTemplate(directive);
 
     this.createConversationPipelineResolver(
       ctx,
@@ -66,10 +69,17 @@ export class ConversationResolverGenerator {
       invokeLambdaFunction,
       initResolverFunction,
       authResolverFunction,
-      verifySessionOwnerResolverFunction,
+      verifySessionOwnerSendMessageResolverFunction,
     );
 
-    this.createAssistantResponseResolver(ctx, directive, capitalizedFieldName, initResolverFunction, authResolverFunction, verifySessionOwnerResolverFunction);
+    this.createAssistantResponseResolver(
+      ctx,
+      directive,
+      capitalizedFieldName,
+      initResolverFunction,
+      authResolverFunction,
+      verifySessionOwnerAssistantResponseResolverFunction,
+    );
     this.createAssistantResponseSubscriptionResolver(ctx, directive, capitalizedFieldName);
   }
 
@@ -193,7 +203,14 @@ export class ConversationResolverGenerator {
       runtime,
     );
 
-    this.addPipelineResolverFunctions(ctx, conversationPipelineResolver, capitalizedFieldName, initResolverFunction, authResolverFunction, verifySessionOwnerResolverFunction);
+    this.addPipelineResolverFunctions(
+      ctx,
+      conversationPipelineResolver,
+      capitalizedFieldName,
+      initResolverFunction,
+      authResolverFunction,
+      verifySessionOwnerResolverFunction,
+    );
 
     ctx.resolvers.addResolver(parentName, fieldName, conversationPipelineResolver);
   }
@@ -256,12 +273,11 @@ export class ConversationResolverGenerator {
       directive.responseMutationName,
       assistantResponseResolverResourceId,
       { codeMappingTemplate: assistantResponseResolverFunction },
-      ['init', 'auth', 'verifySessionOwner',],
+      ['init', 'auth', 'verifySessionOwner'],
       [],
       conversationMessageDataSource as any,
       APPSYNC_JS_RUNTIME,
     );
-
 
     // Add init function
     resolver.addJsFunctionToSlot('init', initResolverFunction);

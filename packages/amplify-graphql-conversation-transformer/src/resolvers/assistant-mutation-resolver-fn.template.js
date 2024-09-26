@@ -10,6 +10,7 @@ export function request(ctx) {
   const { conversationId, content, associatedUserMessageId } = ctx.args.input;
   const { owner } = ctx.args;
   const defaultValues = ctx.stash.defaultValues ?? {};
+  const id = defaultValues.id;
 
   const message = {
     __typename: '[[CONVERSATION_MESSAGE_TYPE_NAME]]',
@@ -23,26 +24,6 @@ export function request(ctx) {
   };
 
   return ddb.put({ key: { id }, item: message });
-
-  // const expression = 'SET #assistantContent = :assistantContent, #updatedAt = :updatedAt';
-  // const expressionNames = { '#assistantContent': 'assistantContent', '#updatedAt': 'updatedAt' };
-  // const expressionValues = { ':assistantContent': content, ':updatedAt': updatedAt };
-  // const condition = JSON.parse(
-  //   util.transform.toDynamoDBConditionExpression({
-  //     owner: { eq: owner },
-  //     conversationId: { eq: conversationId },
-  //   }),
-  // );
-  // return {
-  //   operation: 'UpdateItem',
-  //   key: util.dynamodb.toMapValues({ id: associatedUserMessageId }),
-  //   condition,
-  //   update: {
-  //     expression,
-  //     expressionNames,
-  //     expressionValues: util.dynamodb.toMapValues(expressionValues),
-  //   },
-  // };
 }
 
 /**
@@ -56,16 +37,5 @@ export function response(ctx) {
     util.error(ctx.error.message, ctx.error.type);
   }
 
-  const { conversationId, content, associatedUserMessageId } = ctx.args.input;
-  const { createdAt, updatedAt } = ctx.result;
-
-  return {
-    id: associatedUserMessageId,
-    content,
-    conversationId,
-    role: 'assistant',
-    owner: ctx.stash.owner,
-    createdAt,
-    updatedAt,
-  };
+  return ctx.result;
 }
