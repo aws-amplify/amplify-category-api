@@ -179,7 +179,7 @@ export const createSchema = (schema: Schema, config?: DataSourceGenerateConfig):
         }),
     );
 
-  const RequiredEnumFields = schema // find required enum fields in all models
+  const requiredEnumFields = schema // find required enum fields in all models
     .getModels()
     .map((model) =>
       model
@@ -201,7 +201,7 @@ export const createSchema = (schema: Schema, config?: DataSourceGenerateConfig):
       return createModel(model);
     });
 
-  const combinedEnums = nullEnumFields.concat(RequiredEnumFields).flat(); // making 1 D array
+  const combinedEnums = nullEnumFields.concat(requiredEnumFields).flat(); // making 1 D array
 
   // to eliminate duplicate definition of enums in case where same enum is referenced in 2 differed models
   const seenEnums = new Set<string>(); 
