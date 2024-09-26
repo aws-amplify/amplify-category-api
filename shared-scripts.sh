@@ -169,20 +169,12 @@ function _verifyAmplifyBackendCompatability {
   echo "Fetching the latest release tag from GitHub"
   LATEST_RELEASE_JSON=$(curl -s https://api.github.com/repos/aws-amplify/amplify-backend/releases/latest)
   # Extract the tag name
-  # if command -v jq &> /dev/null; then
   LATEST_RELEASE_TAG=$(echo "${LATEST_RELEASE_JSON}" | jq -r '.tag_name')
-  # else
-  #   # Fallback to grep and sed if jq is not installed
-  #   LATEST_RELEASE_TAG=$(echo "${LATEST_RELEASE_JSON}" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-  # fi
   echo "Latest release tag: ${LATEST_RELEASE_TAG}"
-
   # Clone the repository at the specific tag
   echo "Cloning the repository at tag ${LATEST_RELEASE_TAG}"
   git clone --depth 1 --branch "${LATEST_RELEASE_TAG}" "${REPO_URL}" "${REPO_DIR}"
   cd "${REPO_DIR}" || { echo "Failed to enter directory ${REPO_DIR}"; exit 1; }
-
-  # Update the packages and ensure the correct versions are being used
   npm update
   # Verify that the package-lock.json contains the updated version with localhost tarballs
   git diff package-lock.json | grep -Pz '@aws-amplify\/(graphql-api-construct|data-construct)[\s\S]*localhost:4873[\s\S]*tgz'
