@@ -122,9 +122,6 @@ export class GenerationTransformer extends TransformerPluginBase {
     invokeBedrockFunction: MappingTemplateProvider,
     dataSource: cdk.aws_appsync.HttpDataSource,
   ): void {
-    const mappingTemplate = {
-      codeMappingTemplate: invokeBedrockFunction,
-    };
     const conversationPipelineResolver = new TransformerResolver(
       parentName,
       fieldName,
