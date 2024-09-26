@@ -85,7 +85,7 @@ export function request(ctx) {
   const messageHistoryQuery = {
     getQueryName: 'getConversationMessagePirateChat',
     getQueryInputTypeName: 'ID',
-    listQueryName: 'listConversationMessagesPirateChats',
+    listQueryName: 'listConversationMessagePirateChats',
     listQueryInputTypeName: 'ModelConversationMessagePirateChatFilterInput',
     listQueryLimit: undefined,
   };
@@ -219,7 +219,7 @@ export function request(ctx) {
   const messageHistoryQuery = {
     getQueryName: 'getConversationMessagePirateChat',
     getQueryInputTypeName: 'ID',
-    listQueryName: 'listConversationMessagesPirateChats',
+    listQueryName: 'listConversationMessagePirateChats',
     listQueryInputTypeName: 'ModelConversationMessagePirateChatFilterInput',
     listQueryLimit: undefined,
   };
@@ -353,7 +353,7 @@ export function request(ctx) {
   const messageHistoryQuery = {
     getQueryName: 'getConversationMessagePirateChat',
     getQueryInputTypeName: 'ID',
-    listQueryName: 'listConversationMessagesPirateChats',
+    listQueryName: 'listConversationMessagePirateChats',
     listQueryInputTypeName: 'ModelConversationMessagePirateChatFilterInput',
     listQueryLimit: undefined,
   };
@@ -487,7 +487,7 @@ export function request(ctx) {
   const messageHistoryQuery = {
     getQueryName: 'getConversationMessagePirateChat',
     getQueryInputTypeName: 'ID',
-    listQueryName: 'listConversationMessagesPirateChats',
+    listQueryName: 'listConversationMessagePirateChats',
     listQueryInputTypeName: 'ModelConversationMessagePirateChatFilterInput',
     listQueryLimit: undefined,
   };
