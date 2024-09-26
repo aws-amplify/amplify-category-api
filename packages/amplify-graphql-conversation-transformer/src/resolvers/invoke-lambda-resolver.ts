@@ -35,7 +35,7 @@ export const invokeLambdaMappingTemplate = (
     MESSAGE_MODEL_NAME,
   };
 
-  let resolver = fs.readFileSync(path.join(__dirname, 'invoke-lambda-resolver-fn.js'), 'utf8');
+  let resolver = fs.readFileSync(path.join(__dirname, 'invoke-lambda-resolver-fn.js.template'), 'utf8');
   Object.entries(substitutions).forEach(([key, value]) => {
     const replaced = resolver.replace(new RegExp(`\\[\\[${key}\\]\\]`, 'g'), value);
     resolver = replaced;
