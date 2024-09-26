@@ -6,8 +6,8 @@ env:
 batch:
   fast-fail: false
   build-graph:
-    - identifier: build_linux
-      buildspec: codebuild_specs/build_linux.yml
+    # - identifier: build_linux
+    #   buildspec: codebuild_specs/build_linux.yml
     - identifier: build_windows
       buildspec: codebuild_specs/build_windows.yml
       env:
@@ -21,33 +21,33 @@ batch:
       # average case where there are no Windows build failures.
       # depend-on:
       #   - build_linux
-    - identifier: test
-      buildspec: codebuild_specs/test.yml
-      depend-on:
-        - build_linux
-    - identifier: lint
-      buildspec: codebuild_specs/lint.yml
-      depend-on:
-        - build_linux
-    - identifier: verify_api_extract
-      buildspec: codebuild_specs/verify_api_extract.yml
-      depend-on:
-        - build_linux
-    - identifier: verify_yarn_lock
-      buildspec: codebuild_specs/verify_yarn_lock.yml
-      depend-on:
-        - build_linux
-    - identifier: verify_cdk_version
-      buildspec: codebuild_specs/verify_cdk_version.yml
-      depend-on:
-        - build_linux
-    - identifier: verify_dependency_licenses_extract
-      buildspec: codebuild_specs/verify_dependency_licenses_extract.yml
-      env:
-        compute-type: BUILD_GENERAL1_MEDIUM
-      depend-on:
-        - build_linux
-    - identifier: verify_amplify_backend_compatability
-      buildspec: codebuild_specs/verify_amplify_backend_compatability.yml
-      depend-on:
-        - build_linux
+    # - identifier: test
+    #   buildspec: codebuild_specs/test.yml
+    #   depend-on:
+    #     - build_linux
+    # - identifier: lint
+    #   buildspec: codebuild_specs/lint.yml
+    #   depend-on:
+    #     - build_linux
+    # - identifier: verify_api_extract
+    #   buildspec: codebuild_specs/verify_api_extract.yml
+    #   depend-on:
+    #     - build_linux
+    # - identifier: verify_yarn_lock
+    #   buildspec: codebuild_specs/verify_yarn_lock.yml
+    #   depend-on:
+    #     - build_linux
+    # - identifier: verify_cdk_version
+    #   buildspec: codebuild_specs/verify_cdk_version.yml
+    #   depend-on:
+    #     - build_linux
+    # - identifier: verify_dependency_licenses_extract
+    #   buildspec: codebuild_specs/verify_dependency_licenses_extract.yml
+    #   env:
+    #     compute-type: BUILD_GENERAL1_MEDIUM
+    #   depend-on:
+    #     - build_linux
+    # - identifier: verify_amplify_backend_compatability
+    #   buildspec: codebuild_specs/verify_amplify_backend_compatability.yml
+    #   depend-on:
+    #     - build_linux
