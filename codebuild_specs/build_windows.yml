@@ -12,8 +12,6 @@ phases:
         Write-Host "Node version: $nodeVersion"
   build:
     commands:
-      # - .\codebuild_specs\scripts\Install-NVM.ps1
-      # - .\codebuild_specs\scripts\Setup-NodeVersion.ps1
       - yarn run production-build
       - yarn build-tests
 artifacts:
