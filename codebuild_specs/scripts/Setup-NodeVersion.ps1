@@ -28,19 +28,22 @@ param (
 # Write-Host "Elevating script to Administrator privileges"
 # Ensure-Administrator
 
-# Write-Host "Starting Node.js setup with version $version`n"
+Write-Host "Starting Node.js setup with version $version`n"
 
-# Write-Host "Installing NVM"
-# choco install nvm -y
+Write-Host "Installing NVM"
+choco install nvm -y
 
-# Write-Host "Setting Environment Variables"
-# setx NVM_HOME "C:\ProgramData\nvm" /M
-# setx NVM_SYMLINK "C:\Program Files\nodejs" /M
+Write-Host "Setting Environment Variables"
+setx NVM_HOME "C:\ProgramData\nvm" /M
+setx NVM_SYMLINK "C:\Program Files\nodejs" /M
 
-# # Refresh environment variables in the current session
-# $env:NVM_HOME = 'C:\ProgramData\nvm'
-# $env:NVM_SYMLINK = 'C:\Program Files\nodejs'
-# $env:PATH = [System.Environment]::GetEnvironmentVariable("PATH", "Machine") + ";$env:NVM_HOME;$env:NVM_SYMLINK"
+# Refresh environment variables in the current session
+$env:NVM_HOME = 'C:\ProgramData\nvm'
+$env:NVM_SYMLINK = 'C:\Program Files\nodejs'
+$env:PATH = [System.Environment]::GetEnvironmentVariable("PATH", "Machine") + ";$env:NVM_HOME;$env:NVM_SYMLINK"
+
+Write-Host "Refreshing Environment Variables"
+refreshenv
 
 Write-Host "PATH: "
 $env:PATH
