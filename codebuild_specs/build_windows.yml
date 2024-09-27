@@ -6,13 +6,12 @@ env:
     # NVM_HOME: "C:\ProgramData\nvm"
     # NVM_SYMLINK: "C:\Program Files\nodejs"
 phases:
-  # pre_build:
-  #   commands:
-  #     - Write-Host "Loading NVM Environment Variables"
-  #     - $env:NVM_HOME = $env:NVM_HOME
-  #     - $env:NVM_SYMLINK = $env:NVM_SYMLINK
-  #     - Write-Host "NVM_HOME is set to $env:NVM_HOME"
-  #     - Write-Host "NVM_SYMLINK is set to $env:NVM_SYMLINK"
+  pre_build:
+    commands:
+      - Write-Host "Setting Environment Variables"
+      - setx NVM_HOME "C:\ProgramData\nvm" /M
+      - setx NVM_SYMLINK "C:\Program Files\nodejs" /M
+      - setx PATH "%PATH%;%NVM_HOME%;%NVM_SYMLINK%" /M
   build:
     commands:
       - .\codebuild_specs\scripts\Install-NVM.ps1
