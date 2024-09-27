@@ -105,8 +105,12 @@ describe('References Migration', () => {
       import { AmplifyGraphqlApi } from '@aws-amplify/graphql-api-construct';
 
       export const applyOverrides = (api: AmplifyGraphqlApi): void => {
-        const todoTable = api.resources.cfnResources.additionalCfnResources['Todo'];
-        todoTable.addOverride('Properties.sseSpecification', { sseEnabled: false });
+        const primaryTable = api.resources.cfnResources.additionalCfnResources['Primary'];
+        const relatedManyTable = api.resources.cfnResources.additionalCfnResources['RelatedMany'];
+        const relatedOneTable = api.resources.cfnResources.additionalCfnResources['RelatedOne'];
+        primaryTable.addOverride('Properties.sseSpecification', { sseEnabled: false });
+        relatedManyTable.addOverride('Properties.sseSpecification', { sseEnabled: false });
+        relatedOneTable.addOverride('Properties.sseSpecification', { sseEnabled: false });
       };
     `;
     writeOverrides(overrides, gen2ProjRoot);

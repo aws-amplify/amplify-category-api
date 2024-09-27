@@ -107,8 +107,12 @@ describe('Many-to-many Migration', () => {
       import { AmplifyGraphqlApi } from '@aws-amplify/graphql-api-construct';
 
       export const applyOverrides = (api: AmplifyGraphqlApi): void => {
-        const todoTable = api.resources.cfnResources.additionalCfnResources['Todo'];
-        todoTable.addOverride('Properties.sseSpecification', { sseEnabled: false });
+        const postTable = api.resources.cfnResources.additionalCfnResources['Post'];
+        const tagTable = api.resources.cfnResources.additionalCfnResources['Post'];
+        const postTagsTable = api.resources.cfnResources.additionalCfnResources['PostTags'];
+        postTable.addOverride('Properties.sseSpecification', { sseEnabled: false });
+        tagTable.addOverride('Properties.sseSpecification', { sseEnabled: false });
+        postTagsTable.addOverride('Properties.sseSpecification', { sseEnabled: false });
       };
     `;
     writeOverrides(overrides, gen2ProjRoot);
