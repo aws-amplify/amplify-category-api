@@ -1174,7 +1174,7 @@ $util.toJson({})
   $util.qr($ListRequest.put(\\"operation\\", \\"Scan\\"))
 #end
 #if( !$util.isNull($ctx.stash.metadata.index) )
-  #set( $ListRequest.IndexName = $ctx.stash.metadata.index )
+  #set( $ListRequest.index = $ctx.stash.metadata.index )
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
