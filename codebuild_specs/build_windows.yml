@@ -3,19 +3,15 @@ env:
   shell: powershell.exe
   variables:
     NODE_OPTIONS: --max-old-space-size=8096
-    # NVM_HOME: "C:\ProgramData\nvm"
-    # NVM_SYMLINK: "C:\Program Files\nodejs"
 phases:
   pre_build:
     commands:
-      - Write-Host "Setting Environment Variables"
-      - setx NVM_HOME "C:\ProgramData\nvm" /M
-      - setx NVM_SYMLINK "C:\Program Files\nodejs" /M
-      - setx PATH "%PATH%;%NVM_HOME%;%NVM_SYMLINK%" /M
+      - choco install -fy nodejs-lts --version=18.20.4
+      - Write-Host "Node version: $(node -v)"
   build:
     commands:
-      - .\codebuild_specs\scripts\Install-NVM.ps1
-      - .\codebuild_specs\scripts\Setup-NodeVersion.ps1
+      # - .\codebuild_specs\scripts\Install-NVM.ps1
+      # - .\codebuild_specs\scripts\Setup-NodeVersion.ps1
       - yarn run production-build
       - yarn build-tests
 artifacts:
