@@ -4,27 +4,12 @@ env:
   variables:
     NODE_OPTIONS: --max-old-space-size=8096
 phases:
-  # install:
-  #   commands:
-  #     - echo Installing NVM
-  #     - choco install nvm -y
-  #     - echo Setting Environment Variables
-  #     - setx NVM_HOME "C:\ProgramData\nvm" /M
-  #     - setx NVM_SYMLINK "C:\Program Files\nodejs" /M
-  #     - echo Refreshing Environment Variables in Current Session
-  #     - $env:NVM_HOME = 'C:\ProgramData\nvm'
-  #     - $env:NVM_SYMLINK = 'C:\Program Files\nodejs'
-  #     - $env:PATH = [System.Environment]::GetEnvironmentVariable("PATH", "Machine") + ";$env:NVM_HOME;$env:NVM_SYMLINK"
-      # - echo Installing Node.js version 18.20.4
-      # - nvm install 18.20.4
-      # - nvm use 18.20.4
-      # - echo Verifying Node.js installation
-      # - node -v
-      # - echo Verifying NVM installation
-      # - nvm version
+  install:
+    runtime-versions:
+      nodejs: 20.x
   build:
     commands:
-      - .\codebuild_specs\scripts\Setup-NodeVersion.ps1 -version 18.20.4
+      # - .\codebuild_specs\scripts\Setup-NodeVersion.ps1 -version 18.20.4
       - yarn run production-build
       - yarn build-tests
 artifacts:
