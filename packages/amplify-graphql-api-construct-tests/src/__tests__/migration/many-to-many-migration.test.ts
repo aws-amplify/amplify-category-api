@@ -28,7 +28,7 @@ describe('Many-to-many Migration', () => {
       /* No-op */
     }
     try {
-      // await cdkDestroy(gen2ProjRoot, '--all');
+      await cdkDestroy(gen2ProjRoot, '--all');
     } catch (_) {
       /* No-op */
     }
@@ -42,7 +42,7 @@ describe('Many-to-many Migration', () => {
     }
 
     deleteProjectDir(gen1ProjRoot);
-    // deleteProjectDir(gen2ProjRoot);
+    deleteProjectDir(gen2ProjRoot);
   });
 
   test('many-to-many migration', async () => {
@@ -108,7 +108,7 @@ describe('Many-to-many Migration', () => {
 
       export const applyOverrides = (api: AmplifyGraphqlApi): void => {
         const postTable = api.resources.cfnResources.additionalCfnResources['Post'];
-        const tagTable = api.resources.cfnResources.additionalCfnResources['Post'];
+        const tagTable = api.resources.cfnResources.additionalCfnResources['Tag'];
         const postTagsTable = api.resources.cfnResources.additionalCfnResources['PostTags'];
         postTable.addOverride('Properties.sseSpecification', { sseEnabled: false });
         tagTable.addOverride('Properties.sseSpecification', { sseEnabled: false });
