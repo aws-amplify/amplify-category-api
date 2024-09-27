@@ -2,30 +2,30 @@ param (
   [string]$version
 )
 
-# Ensure the script runs with administrative privileges
-if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)) {
-  Write-Warning "You do not have Administrator rights to run this script.`nPlease re-run this script as an Administrator."
-  exit 1
-}
+# # Ensure the script runs with administrative privileges
+# if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)) {
+#   Write-Warning "You do not have Administrator rights to run this script.`nPlease re-run this script as an Administrator."
+#   exit 1
+# }
 
-# Define the Node.js version you want to install
-$version = "18.20.4"
+# # Define the Node.js version you want to install
+# $version = "18.20.4"
 
 Write-Host "Starting Node.js setup with version $version`n"
 
-# Step 1: Install Chocolatey (if not already installed)
-if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-  Write-Host "Installing Chocolatey..."
-  Set-ExecutionPolicy Bypass -Scope Process -Force
-  [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-  iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-} else {
-  Write-Host "Chocolatey is already installed."
-}
+# # Step 1: Install Chocolatey (if not already installed)
+# if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+#   Write-Host "Installing Chocolatey..."
+#   Set-ExecutionPolicy Bypass -Scope Process -Force
+#   [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+#   iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+# } else {
+#   Write-Host "Chocolatey is already installed."
+# }
 
-# Refresh Chocolatey's environment in the script
-$env:ChocolateyInstall = $env:ChocolateyInstall -ne $null ? $env:ChocolateyInstall : "C:\ProgramData\chocolatey"
-Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1" -ErrorAction SilentlyContinue
+# Refresh Chocolatey's environment
+$env:ChocolateyInstall = "C:\ProgramData\chocolatey"
+Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
 
 # Step 2: Install NVM via Chocolatey
 Write-Host "Installing NVM via Chocolatey..."
