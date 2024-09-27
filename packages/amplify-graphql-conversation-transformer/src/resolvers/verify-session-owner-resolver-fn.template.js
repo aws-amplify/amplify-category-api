@@ -1,10 +1,11 @@
 export function request(ctx) {
   const { authFilter } = ctx.stash;
+  const { conversationId } = [[CONVERSATION_ID_PARENT]];
 
   const query = {
     expression: 'id = :id',
     expressionValues: util.dynamodb.toMapValues({
-      ':id': ctx.args.conversationId,
+      ':id': conversationId,
     }),
   };
 
