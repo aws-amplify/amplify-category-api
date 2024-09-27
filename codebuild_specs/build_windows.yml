@@ -5,8 +5,27 @@ env:
     NODE_OPTIONS: --max-old-space-size=8096
 phases:
   install:
-    runtime-versions:
-      nodejs: 20.x
+    commands:
+      # Remove any existing Node.js installations
+      - Write-Host "Removing any existing Node.js installations"
+      - if (Get-Command node -ErrorAction SilentlyContinue) { Remove-Item -Recurse -Force "$($env:ProgramFiles)\nodejs" }
+
+      # Download Node.js 18.20.4
+      - Write-Host "Downloading Node.js 18.20.4"
+      - Invoke-WebRequest -Uri "https://nodejs.org/dist/v18.20.4/node-v18.20.4-x64.msi" -OutFile "C:\node-v18.20.4-x64.msi"
+
+      # Install Node.js 18.20.4
+      - Write-Host "Installing Node.js 18.20.4"
+      - Start-Process msiexec.exe -ArgumentList '/i', 'C:\node-v18.20.4-x64.msi', '/quiet', '/norestart' -NoNewWindow -Wait
+
+      # Verify the installation and update PATH
+      - Write-Host "Adding Node.js to PATH"
+      - $nodePath = [System.Environment]::GetEnvironmentVariable('ProgramFiles') + "\nodejs"
+      - [System.Environment]::SetEnvironmentVariable('PATH', $nodePath + ';' + [System.Environment]::GetEnvironmentVariable('PATH'), [System.EnvironmentVariableTarget]::Machine)
+
+      # Confirm Node.js and npm versions
+      - node -v
+      - npm -v
   build:
     commands:
       # - .\codebuild_specs\scripts\Setup-NodeVersion.ps1 -version 18.20.4
