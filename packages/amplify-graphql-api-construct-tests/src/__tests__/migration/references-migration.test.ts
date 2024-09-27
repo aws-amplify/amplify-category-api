@@ -58,7 +58,7 @@ describe('References Migration', () => {
       Primary: {
         schema: /* GraphQL */ `
           type Primary @model @auth(rules: [{ allow: public }]) {
-            id: ID! @primaryKey
+            id: ID!
             relatedMany: [RelatedMany] @hasMany(references: "primaryId")
             relatedOne: RelatedOne @hasOne(references: "primaryId")
           }
@@ -72,7 +72,7 @@ describe('References Migration', () => {
       RelatedMany: {
         schema: /* GraphQL */ `
           type RelatedMany @model @auth(rules: [{ allow: public }]) {
-            id: ID! @primaryKey
+            id: ID!
             primaryId: String
             primary: Primary @belongsTo(references: ["primaryId"])
           }
@@ -86,7 +86,7 @@ describe('References Migration', () => {
       RelatedOne: {
         schema: /* GraphQL */ `
           type RelatedOne @model @auth(rules: [{ allow: public }]) {
-            id: ID! @primaryKey
+            id: ID!
             primaryId: String
             primary: Primary @belongsTo(references: ["primaryId"])
           }
