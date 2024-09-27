@@ -7,7 +7,9 @@ phases:
   pre_build:
     commands:
       - choco install -fy nodejs-lts --version=18.20.4
-      - Write-Host "Node version: $(node -v)"
+      - |
+        $nodeVersion = node -v
+        Write-Host "Node version: $nodeVersion"
   build:
     commands:
       # - .\codebuild_specs\scripts\Install-NVM.ps1
