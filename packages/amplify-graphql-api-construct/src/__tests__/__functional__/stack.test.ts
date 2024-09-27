@@ -5,25 +5,25 @@ import { Construct } from 'constructs';
 import { AmplifyGraphqlApiProps } from '../../types';
 
 class CustomL3Construct extends Construct {
-  data: AmplifyGraphqlApi; 
+  data: AmplifyGraphqlApi;
   constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps) {
     super(scope, id);
     this.data = new AmplifyGraphqlApi(scope, 'data-test', props);
-  };
-};
+  }
+}
 
 describe('stack parameter access and verification', () => {
   it('verifies the stack property is accessible and set to the expected value', () => {
     const stack = new cdk.Stack();
     const api = new AmplifyGraphqlApi(stack, 'TestApi', {
-        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
-            type Todo @model @auth(rules: [{ allow: public }]) {
-            description: String!
-            }
-        `),
-        authorizationModes: {
-            apiKeyConfig: { expires: cdk.Duration.days(7) },
-        },
+      definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+        type Todo @model @auth(rules: [{ allow: public }]) {
+          description: String!
+        }
+      `),
+      authorizationModes: {
+        apiKeyConfig: { expires: cdk.Duration.days(7) },
+      },
     });
 
     expect(api.stack).toBe(stack);
@@ -33,12 +33,12 @@ describe('stack parameter access and verification', () => {
     const stack = new cdk.Stack();
     const customConstruct = new CustomL3Construct(stack, 'test', {
       definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
-          type Todo @model @auth(rules: [{ allow: public }]) {
+        type Todo @model @auth(rules: [{ allow: public }]) {
           description: String!
-          }
+        }
       `),
       authorizationModes: {
-          apiKeyConfig: { expires: cdk.Duration.days(7) },
+        apiKeyConfig: { expires: cdk.Duration.days(7) },
       },
     });
 
