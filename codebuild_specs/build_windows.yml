@@ -6,11 +6,6 @@ env:
 phases:
   install:
     commands:
-      - echo Installing Chocolatey
-      - Set-ExecutionPolicy Bypass -Scope Process -Force; `
-        [System.Net.ServicePointManager]::SecurityProtocol = `
-        [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; `
-        iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
       - echo Installing NVM
       - choco install nvm -y
       - echo Setting Environment Variables
@@ -20,13 +15,13 @@ phases:
       - $env:NVM_HOME = 'C:\ProgramData\nvm'
       - $env:NVM_SYMLINK = 'C:\Program Files\nodejs'
       - $env:PATH = [System.Environment]::GetEnvironmentVariable("PATH", "Machine") + ";$env:NVM_HOME;$env:NVM_SYMLINK"
-      - echo Installing Node.js version 18.20.4
-      - nvm install 18.20.4
-      - nvm use 18.20.4
-      - echo Verifying Node.js installation
-      - node -v
-      - echo Verifying NVM installation
-      - nvm version
+      # - echo Installing Node.js version 18.20.4
+      # - nvm install 18.20.4
+      # - nvm use 18.20.4
+      # - echo Verifying Node.js installation
+      # - node -v
+      # - echo Verifying NVM installation
+      # - nvm version
   build:
     commands:
       - .\codebuild_specs\scripts\Setup-NodeVersion.ps1 -version 18.20.4
