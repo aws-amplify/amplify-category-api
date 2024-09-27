@@ -3,12 +3,19 @@ env:
   shell: powershell.exe
   variables:
     NODE_OPTIONS: --max-old-space-size=8096
+    # NVM_HOME: "C:\ProgramData\nvm"
+    # NVM_SYMLINK: "C:\Program Files\nodejs"
 phases:
+  # pre_build:
+  #   commands:
+  #     - Write-Host "Loading NVM Environment Variables"
+  #     - $env:NVM_HOME = $env:NVM_HOME
+  #     - $env:NVM_SYMLINK = $env:NVM_SYMLINK
+  #     - Write-Host "NVM_HOME is set to $env:NVM_HOME"
+  #     - Write-Host "NVM_SYMLINK is set to $env:NVM_SYMLINK"
   build:
     commands:
-      - echo "Installing NVM"
       - .\codebuild_specs\scripts\Install-NVM.ps1
-      - echo "Setting up Node Version"
       - .\codebuild_specs\scripts\Setup-NodeVersion.ps1
       - yarn run production-build
       - yarn build-tests
