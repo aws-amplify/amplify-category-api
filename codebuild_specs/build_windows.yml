@@ -20,7 +20,7 @@ phases:
 
       # Verify the installation and update PATH
       - Write-Host "Adding Node.js to PATH"
-      - $nodePath = [System.Environment]::GetEnvironmentVariable('ProgramFiles') + "\nodejs"
+      - '$nodePath = [System.Environment]::GetEnvironmentVariable("ProgramFiles") + "\nodejs"'
       - [System.Environment]::SetEnvironmentVariable('PATH', $nodePath + ';' + [System.Environment]::GetEnvironmentVariable('PATH'), [System.EnvironmentVariableTarget]::Machine)
 
       # Confirm Node.js and npm versions
