@@ -1,152 +1,95 @@
+# param (
+#   [string]$version
+# )
+
+# Write-Host "Installing NVM"
+# choco install nvm -y
+
+# Write-Host "Setting Environment Variables"
+# setx NVM_HOME "C:\ProgramData\nvm" /M
+# setx NVM_SYMLINK "C:\Program Files\nodejs" /M
+
+# # Refresh environment variables in the current session
+# $env:NVM_HOME = 'C:\ProgramData\nvm'
+# $env:NVM_SYMLINK = 'C:\Program Files\nodejs'
+# $env:PATH = [System.Environment]::GetEnvironmentVariable("PATH", "Machine") + ";$env:NVM_HOME;$env:NVM_SYMLINK"
+
+# Write-Host "Installing Node.js version $version"
+# nvm install $version
+# nvm use $version
+
+# Write-Host "Verifying Node Version"
+# node -v
+
 param (
-  [string]$version
+    [string]$version
 )
 
-# Define Variables
-$nodeVersion = "18.20.4"
-$githubApiUrl = "https://api.github.com/repos/coreybutler/nvm-windows/releases/latest"
-$installerTempPath = "$env:TEMP\nvm-setup.exe"
-
-Write-Host "========================================================"
-Write-Host "Starting installation of the latest nvm-windows and Node.js $nodeVersion"
-Write-Host "========================================================`n"
-
-# Step 1: Uninstall Existing nvm and nvm.install via Chocolatey (if any)
-Write-Host "Uninstalling existing 'nvm' and 'nvm.install' Chocolatey packages (if any)..."
-choco uninstall nvm -y | Out-Null
-choco uninstall nvm.install -y | Out-Null
-Write-Host "Uninstallation completed.`n"
-
-# Step 2: Fetch Latest nvm-windows Release Information from GitHub
-Write-Host "Fetching the latest nvm-windows release information from GitHub..."
-try {
-    $response = Invoke-RestMethod -Uri $githubApiUrl -Headers @{
-        "User-Agent" = "PowerShell"
-    } -ErrorAction Stop
-} catch {
-    Write-Error "Failed to fetch release information from GitHub. $_"
-    exit 1
+# Function to check if the script is running with administrator privileges
+function Test-IsAdmin {
+    $currentUser = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+    return $currentUser.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
 
-# Extract the download URL for nvm-setup.exe
-$nvmInstallerAsset = $response.assets | Where-Object { $_.name -eq "nvm-setup.exe" }
+# Function to relaunch the script with administrator privileges
+function Restart-AsAdmin {
+    param (
+        [string]$ScriptPath,
+        [string[]]$ScriptArgs
+    )
 
-if (-not $nvmInstallerAsset) {
-    Write-Error "nvm-setup.exe asset not found in the latest release."
-    exit 1
-}
+    $arguments = "-NoProfile -ExecutionPolicy Bypass -File `"$ScriptPath`" " + ($ScriptArgs | ForEach-Object { "`"$_`"" }) -join ' '
+    $psi = New-Object System.Diagnostics.ProcessStartInfo
+    $psi.FileName = "powershell.exe"
+    $psi.Arguments = $arguments
+    $psi.Verb = "runas"  # Specifies to run the process as an administrator
 
-$nvmInstallerUrl = $nvmInstallerAsset.browser_download_url
-
-Write-Host "Latest nvm-windows version: $($response.tag_name)"
-Write-Host "Download URL: $nvmInstallerUrl`n"
-
-# Step 3: Download the nvm-windows Installer
-Write-Host "Downloading nvm-windows installer to $installerTempPath..."
-try {
-    Invoke-WebRequest -Uri $nvmInstallerUrl -OutFile $installerTempPath -UseBasicParsing -ErrorAction Stop
-    Write-Host "Download completed: $installerTempPath`n"
-} catch {
-    Write-Error "Failed to download nvm-windows installer. $_"
-    exit 1
-}
-
-# Step 4: Install nvm-windows Silently
-Write-Host "Installing nvm-windows silently..."
-try {
-    Start-Process -FilePath $installerTempPath -ArgumentList "/S" -Wait -ErrorAction Stop
-    Write-Host "nvm-windows installation completed.`n"
-} catch {
-    Write-Error "Failed to install nvm-windows. $_"
-    exit 1
-}
-
-# Optional: Remove the installer after installation
-Write-Host "Removing the installer file..."
-Remove-Item $installerTempPath -Force
-Write-Host "Installer removed.`n"
-
-# Step 5: Set Environment Variables Persistently Using setx
-Write-Host "Setting Environment Variables..."
-# Define installation paths
-$nvmHome = "C:\Program Files\nvm"
-$nvmSymlink = "C:\Program Files\nodejs"
-
-# Set NVM_HOME and NVM_SYMLINK
-setx NVM_HOME "$nvmHome" /M
-setx NVM_SYMLINK "$nvmSymlink" /M
-
-# Append NVM directories to the system PATH if not already present
-Write-Host "Appending NVM directories to system PATH if not already present..."
-$machinePath = [System.Environment]::GetEnvironmentVariable('PATH', 'Machine')
-$pathsToAdd = @($nvmHome, $nvmSymlink)
-
-foreach ($path in $pathsToAdd) {
-    if (-not ($machinePath -split ';' | ForEach-Object { $_.Trim() }) -contains $path) {
-        $machinePath += ";$path"
+    try {
+        [System.Diagnostics.Process]::Start($psi) | Out-Null
+        Write-Host "Relaunching script with administrator privileges..."
+        exit  # Exit the current script
     }
-}
-
-setx PATH "$machinePath" /M
-Write-Host "Environment Variables set successfully.`n"
-
-# Step 6: Update Current PowerShell Session's Environment Variables
-Write-Host "Updating current PowerShell session's environment variables..."
-$env:NVM_HOME = $nvmHome
-$env:NVM_SYMLINK = $nvmSymlink
-
-foreach ($path in $pathsToAdd) {
-    if (-not ($env:PATH -split ';' | ForEach-Object { $_.Trim() }) -contains $path)) {
-        $env:PATH += ";$path"
-    }
-}
-
-Write-Host "Current session PATH updated: $env:PATH`n"
-
-# Step 7: Verify nvm Accessibility
-Write-Host "Verifying if nvm is accessible..."
-if (Get-Command nvm -ErrorAction SilentlyContinue) {
-    Write-Host "nvm is accessible.`n"
-} else {
-    Write-Warning "nvm is not accessible. Attempting to use the full path to nvm.exe."
-    $nvmPath = "$nvmHome\nvm.exe"
-    if (Test-Path $nvmPath) {
-        Write-Host "Found nvm.exe at $nvmPath"
-        # Add nvm to PATH for current session
-        $env:PATH += ";$nvmHome"
-    } else {
-        Write-Error "nvm.exe not found at $nvmPath. Installation failed."
+    catch {
+        Write-Error "Failed to relaunch script as administrator. $_"
         exit 1
     }
 }
 
-# Step 8: Install and Use the Desired Node.js Version
-Write-Host "Installing Node.js version $nodeVersion using nvm..."
+# Main Script Execution Starts Here
+
+# Install NVM using Chocolatey
+Write-Host "Installing NVM via Chocolatey..."
+choco install nvm -y
+
+# Refresh environment variables to include NVM's installation path
+# This is necessary because the current PowerShell session may not recognize NVM immediately after installation
+Write-Host "Refreshing environment variables..."
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + `
+           [System.Environment]::GetEnvironmentVariable("Path", "User")
+
+# Verify if NVM is installed by checking its version
 try {
-    nvm install $nodeVersion
-    nvm use $nodeVersion
-    Write-Host "Node.js version $nodeVersion installed and set as default.`n"
-} catch {
-    Write-Error "Failed to install or use Node.js version $nodeVersion. $_"
-    exit 1
+    Write-Host "Verifying NVM installation..."
+    $nvmVersion = nvm version
+    Write-Host "NVM Version: $nvmVersion"
+}
+catch {
+    Write-Warning "'nvm' is still not recognized. Attempting to relaunch the script as admin..."
+    Restart-AsAdmin -ScriptPath $MyInvocation.MyCommand.Definition -ScriptArgs $args
 }
 
-# Step 9: Verify Node.js Installation
-Write-Host "Verifying Node.js installation..."
-$installedNodeVersion = node -v
-if ($installedNodeVersion) {
-    Write-Host "Node.js version $installedNodeVersion installed successfully."
-} else {
-    Write-Error "Node.js installation verification failed."
-    exit 1
+# Proceed to install and use the specified Node.js version
+Write-Host "Installing Node.js version $version using NVM..."
+nvm install $version
+
+Write-Host "Switching to Node.js version $version..."
+nvm use $version
+
+# Optional: Verify Node.js installation
+try {
+    $nodeVersion = node -v
+    Write-Host "Successfully switched to Node.js version: $nodeVersion"
 }
-
-# Optional: Clean Up Environment Variables Duplication (Avoid Duplicates in PATH)
-Write-Host "`nCleaning up duplicate entries in PATH (if any)..."
-$env:PATH = ($env:PATH -split ';' | Select-Object -Unique) -join ';'
-setx PATH "$env:PATH" /M
-Write-Host "Cleanup completed.`n"
-
-Write-Host "========================================================"
-Write-Host "nvm-windows and Node.js installation completed successfully!"
-Write-Host "========================================================"
+catch {
+    Write-Error "Failed to verify Node.js installation. $_"
+}
