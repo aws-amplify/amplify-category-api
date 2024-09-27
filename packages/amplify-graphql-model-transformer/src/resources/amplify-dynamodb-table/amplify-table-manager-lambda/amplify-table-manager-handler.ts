@@ -1153,7 +1153,22 @@ export const getExpectedTableProperties = (createTableInput: CreateTableCommandI
   return {
     AttributeDefinitions: createTableInput.AttributeDefinitions,
     KeySchema: createTableInput.KeySchema,
-    GlobalSecondaryIndexes: createTableInput.GlobalSecondaryIndexes,
+    GlobalSecondaryIndexes: createTableInput.GlobalSecondaryIndexes?.map((gsi) => {
+      if (createTableInput.BillingMode === 'PAY_PER_REQUEST') {
+        // When the billing mode is PAY_PER_REQUEST, the ProvisionedThroughput read and write capacity units will be 0
+        // even if a different number is supplied
+        return {
+          ...gsi,
+          ProvisionedThroughput: gsi.ProvisionedThroughput
+            ? {
+                ReadCapacityUnits: 0,
+                WriteCapacityUnits: 0,
+              }
+            : undefined,
+        };
+      }
+      return gsi;
+    }),
     BillingModeSummary: {
       BillingMode: createTableInput.BillingMode,
     },
@@ -1201,8 +1216,25 @@ export const validateImportedTableProperties = (
     addError('KeySchema', importedTable.KeySchema, expectedTableProperties.KeySchema);
   }
 
-  if (!isEqual(importedTable.GlobalSecondaryIndexes, expectedTableProperties.GlobalSecondaryIndexes)) {
-    addError('GlobalSecondaryIndexes', importedTable.GlobalSecondaryIndexes, expectedTableProperties.GlobalSecondaryIndexes);
+  // don't compare IndexArn, IndexStatus, IndexSizeBytes, ItemCount, ProvisionedThroughput.NumberOfDecreasesToday,
+  // ProvisionedThroughput.LastDecreaseDateTime, and ProvisionedThroughput.LastIncreaseDateTime on GlobalSecondaryIndexes
+  const globalSecondaryIndexes = importedTable.GlobalSecondaryIndexes?.map((gsi) => {
+    const gsiToCompare = {
+      ...gsi,
+    };
+    if (gsiToCompare.ProvisionedThroughput) {
+      delete gsiToCompare.IndexArn;
+      delete gsiToCompare.IndexStatus;
+      delete gsiToCompare.IndexSizeBytes;
+      delete gsiToCompare.ItemCount;
+      delete gsiToCompare.ProvisionedThroughput.NumberOfDecreasesToday;
+      delete gsiToCompare.ProvisionedThroughput.LastDecreaseDateTime;
+      delete gsiToCompare.ProvisionedThroughput.LastIncreaseDateTime;
+    }
+    return gsiToCompare;
+  });
+  if (!isEqual(globalSecondaryIndexes, expectedTableProperties.GlobalSecondaryIndexes)) {
+    addError('GlobalSecondaryIndexes', globalSecondaryIndexes, expectedTableProperties.GlobalSecondaryIndexes);
   }
 
   // don't compare LastUpdateToPayPerRequestDateTime on BillingMode
