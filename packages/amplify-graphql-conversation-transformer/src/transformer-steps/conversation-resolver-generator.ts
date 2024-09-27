@@ -249,10 +249,6 @@ export class ConversationResolverGenerator {
     const messageModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, messageModelName);
     const messageDDBDataSource = ctx.api.host.getDataSource(messageModelDDBDataSourceName);
     resolver.addJsFunctionToSlot('writeMessageToTable', writeMessageToTableFunction, messageDDBDataSource as any);
-
-    // Add retrieveMessageHistory function
-    const retrieveMessageHistoryFunction = readHistoryMappingTemplate(directive);
-    resolver.addJsFunctionToSlot('retrieveMessageHistory', retrieveMessageHistoryFunction, messageDDBDataSource as any);
   }
 
   /**
