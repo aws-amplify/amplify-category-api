@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.2-ai.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-generation-transformer@0.2.2-ai.1...@aws-amplify/graphql-generation-transformer@0.2.2-ai.2) (2024-09-27)
+
+### Bug Fixes
+
+- **generation:** trailing comma in inference config resolver code ([7aa4176](https://github.com/aws-amplify/amplify-category-api/commit/7aa417666645a135bea2b4248af569e4993511fe))
+
 ## [0.2.2-ai.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-generation-transformer@0.2.2-ai.0...@aws-amplify/graphql-generation-transformer@0.2.2-ai.1) (2024-09-26)
 
 **Note:** Version bump only for package @aws-amplify/graphql-generation-transformer
