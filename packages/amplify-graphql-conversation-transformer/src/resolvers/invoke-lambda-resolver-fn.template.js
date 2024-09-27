@@ -1,12 +1,11 @@
 import { util } from '@aws-appsync/utils';
 
 export function request(ctx) {
-  const { args, request, prev } = ctx;
+  const { args, request } = ctx;
   [[TOOL_DEFINITIONS_LINE]]
   const selectionSet = '[[SELECTION_SET]]';
   const graphqlApiEndpoint = '[[GRAPHQL_API_ENDPOINT]]';
 
-  const messages = prev.result.items;
   const responseMutation = {
     name: '[[RESPONSE_MUTATION_NAME]]',
     inputTypeName: '[[RESPONSE_MUTATION_INPUT_TYPE_NAME]]',
@@ -20,6 +19,14 @@ export function request(ctx) {
   });
   [[TOOLS_CONFIGURATION_LINE]]
 
+  const messageHistoryQuery = {
+    getQueryName: '[[GET_QUERY_NAME]]',
+    getQueryInputTypeName: '[[GET_QUERY_INPUT_TYPE_NAME]]',
+    listQueryName: '[[LIST_QUERY_NAME]]',
+    listQueryInputTypeName: '[[LIST_QUERY_INPUT_TYPE_NAME]]',
+    listQueryLimit: [[LIST_QUERY_LIMIT]],
+  };
+
   const authHeader = request.headers['authorization'];
   const payload = {
     conversationId: args.conversationId,
@@ -28,7 +35,7 @@ export function request(ctx) {
     graphqlApiEndpoint,
     modelConfiguration,
     request: { headers: { authorization: authHeader } },
-    messages,
+    messageHistoryQuery,
     toolsConfiguration,
   };
 
@@ -49,6 +56,8 @@ export function response(ctx) {
     conversationId: ctx.args.conversationId,
     role: 'user',
     content: ctx.args.content,
+    aiContext: ctx.args.aiContext,
+    toolConfiguration: ctx.args.toolConfiguration,
     createdAt: ctx.stash.defaultValues.createdAt,
     updatedAt: ctx.stash.defaultValues.updatedAt,
   };
