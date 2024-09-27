@@ -50,7 +50,7 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
       "import { util } from '@aws-appsync/utils';
 
 export function request(ctx) {
-  const { args, request, prev } = ctx;
+  const { args, request } = ctx;
   
   const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
   const graphqlApiEndpoint = '",
@@ -62,7 +62,6 @@ export function request(ctx) {
       },
       "';
 
-  const messages = prev.result.items;
   const responseMutation = {
     name: 'createAssistantResponsePirateChat',
     inputTypeName: 'CreateConversationMessagePirateChatAssistantInput',
@@ -82,6 +81,14 @@ export function request(ctx) {
   clientTools
 };
 
+  const messageHistoryQuery = {
+    getQueryName: 'getConversationMessagePirateChat',
+    getQueryInputTypeName: 'ID',
+    listQueryName: 'listConversationMessagePirateChats',
+    listQueryInputTypeName: 'ModelConversationMessagePirateChatFilterInput',
+    listQueryLimit: undefined,
+  };
+
   const authHeader = request.headers['authorization'];
   const payload = {
     conversationId: args.conversationId,
@@ -90,7 +97,7 @@ export function request(ctx) {
     graphqlApiEndpoint,
     modelConfiguration,
     request: { headers: { authorization: authHeader } },
-    messages,
+    messageHistoryQuery,
     toolsConfiguration,
   };
 
@@ -111,6 +118,8 @@ export function response(ctx) {
     conversationId: ctx.args.conversationId,
     role: 'user',
     content: ctx.args.content,
+    aiContext: ctx.args.aiContext,
+    toolConfiguration: ctx.args.toolConfiguration,
     createdAt: ctx.stash.defaultValues.createdAt,
     updatedAt: ctx.stash.defaultValues.updatedAt,
   };
@@ -172,7 +181,7 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
       "import { util } from '@aws-appsync/utils';
 
 export function request(ctx) {
-  const { args, request, prev } = ctx;
+  const { args, request } = ctx;
   const toolDefinitions = {"tools":[{"name":"listTodos","description":"lists todos","inputSchema":{"json":{"type":"object","properties":{},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"items { content isDone id createdAt updatedAt owner } nextToken","propertyTypes":{},"queryName":"listTodos"}}]};
   const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
   const graphqlApiEndpoint = '",
@@ -184,7 +193,6 @@ export function request(ctx) {
       },
       "';
 
-  const messages = prev.result.items;
   const responseMutation = {
     name: 'createAssistantResponsePirateChat',
     inputTypeName: 'CreateConversationMessagePirateChatAssistantInput',
@@ -206,6 +214,14 @@ export function request(ctx) {
   clientTools,
 };
 
+  const messageHistoryQuery = {
+    getQueryName: 'getConversationMessagePirateChat',
+    getQueryInputTypeName: 'ID',
+    listQueryName: 'listConversationMessagePirateChats',
+    listQueryInputTypeName: 'ModelConversationMessagePirateChatFilterInput',
+    listQueryLimit: undefined,
+  };
+
   const authHeader = request.headers['authorization'];
   const payload = {
     conversationId: args.conversationId,
@@ -214,7 +230,7 @@ export function request(ctx) {
     graphqlApiEndpoint,
     modelConfiguration,
     request: { headers: { authorization: authHeader } },
-    messages,
+    messageHistoryQuery,
     toolsConfiguration,
   };
 
@@ -235,6 +251,8 @@ export function response(ctx) {
     conversationId: ctx.args.conversationId,
     role: 'user',
     content: ctx.args.content,
+    aiContext: ctx.args.aiContext,
+    toolConfiguration: ctx.args.toolConfiguration,
     createdAt: ctx.stash.defaultValues.createdAt,
     updatedAt: ctx.stash.defaultValues.updatedAt,
   };
@@ -296,7 +314,7 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
       "import { util } from '@aws-appsync/utils';
 
 export function request(ctx) {
-  const { args, request, prev } = ctx;
+  const { args, request } = ctx;
   const toolDefinitions = {"tools":[{"name":"listCustomers","description":"Provides data about the customer sending a message","inputSchema":{"json":{"type":"object","properties":{},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"items { name email activeCart { products { name price } customerId id createdAt updatedAt owner } orderHistory { items { products { name price } customerId id createdAt updatedAt owner } nextToken } id createdAt updatedAt owner } nextToken","propertyTypes":{},"queryName":"listCustomers"}}]};
   const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
   const graphqlApiEndpoint = '",
@@ -308,7 +326,6 @@ export function request(ctx) {
       },
       "';
 
-  const messages = prev.result.items;
   const responseMutation = {
     name: 'createAssistantResponsePirateChat',
     inputTypeName: 'CreateConversationMessagePirateChatAssistantInput',
@@ -330,6 +347,14 @@ export function request(ctx) {
   clientTools,
 };
 
+  const messageHistoryQuery = {
+    getQueryName: 'getConversationMessagePirateChat',
+    getQueryInputTypeName: 'ID',
+    listQueryName: 'listConversationMessagePirateChats',
+    listQueryInputTypeName: 'ModelConversationMessagePirateChatFilterInput',
+    listQueryLimit: undefined,
+  };
+
   const authHeader = request.headers['authorization'];
   const payload = {
     conversationId: args.conversationId,
@@ -338,7 +363,7 @@ export function request(ctx) {
     graphqlApiEndpoint,
     modelConfiguration,
     request: { headers: { authorization: authHeader } },
-    messages,
+    messageHistoryQuery,
     toolsConfiguration,
   };
 
@@ -359,6 +384,8 @@ export function response(ctx) {
     conversationId: ctx.args.conversationId,
     role: 'user',
     content: ctx.args.content,
+    aiContext: ctx.args.aiContext,
+    toolConfiguration: ctx.args.toolConfiguration,
     createdAt: ctx.stash.defaultValues.createdAt,
     updatedAt: ctx.stash.defaultValues.updatedAt,
   };
@@ -420,7 +447,7 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
       "import { util } from '@aws-appsync/utils';
 
 export function request(ctx) {
-  const { args, request, prev } = ctx;
+  const { args, request } = ctx;
   const toolDefinitions = {"tools":[{"name":"getTemperature","description":"does a thing","inputSchema":{"json":{"type":"object","properties":{"city":{"type":"string","description":"A UTF-8 character sequence."}},"required":["city"]}},"graphqlRequestInputDescriptor":{"selectionSet":"value unit","propertyTypes":{"city":"String!"},"queryName":"getTemperature"}},{"name":"plus","description":"does a different thing","inputSchema":{"json":{"type":"object","properties":{"a":{"type":"number","description":"A signed 32-bit integer value."},"b":{"type":"number","description":"A signed 32-bit integer value."}},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"","propertyTypes":{"a":"Int","b":"Int"},"queryName":"plus"}}]};
   const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
   const graphqlApiEndpoint = '",
@@ -432,7 +459,6 @@ export function request(ctx) {
       },
       "';
 
-  const messages = prev.result.items;
   const responseMutation = {
     name: 'createAssistantResponsePirateChat',
     inputTypeName: 'CreateConversationMessagePirateChatAssistantInput',
@@ -454,6 +480,14 @@ export function request(ctx) {
   clientTools,
 };
 
+  const messageHistoryQuery = {
+    getQueryName: 'getConversationMessagePirateChat',
+    getQueryInputTypeName: 'ID',
+    listQueryName: 'listConversationMessagePirateChats',
+    listQueryInputTypeName: 'ModelConversationMessagePirateChatFilterInput',
+    listQueryLimit: undefined,
+  };
+
   const authHeader = request.headers['authorization'];
   const payload = {
     conversationId: args.conversationId,
@@ -462,7 +496,7 @@ export function request(ctx) {
     graphqlApiEndpoint,
     modelConfiguration,
     request: { headers: { authorization: authHeader } },
-    messages,
+    messageHistoryQuery,
     toolsConfiguration,
   };
 
@@ -483,6 +517,8 @@ export function response(ctx) {
     conversationId: ctx.args.conversationId,
     role: 'user',
     content: ctx.args.content,
+    aiContext: ctx.args.aiContext,
+    toolConfiguration: ctx.args.toolConfiguration,
     createdAt: ctx.stash.defaultValues.createdAt,
     updatedAt: ctx.stash.defaultValues.updatedAt,
   };
