@@ -10,7 +10,7 @@
     "@aws-amplify/backend-output-schemas": "^1.0.0",
     "@aws-amplify/backend-output-storage": "^1.0.0",
     "@aws-amplify/graphql-auth-transformer": "4.1.2-ai.1",
-    "@aws-amplify/graphql-conversation-transformer": "0.2.1-ai.3",
+    "@aws-amplify/graphql-conversation-transformer": "0.2.1-ai.4",
     "@aws-amplify/graphql-default-value-transformer": "3.0.4-ai.1",
     "@aws-amplify/graphql-directives": "2.2.1-ai.0",
     "@aws-amplify/graphql-function-transformer": "3.1.1-ai.1",
@@ -23,7 +23,7 @@
     "@aws-amplify/graphql-relational-transformer": "3.0.4-ai.1",
     "@aws-amplify/graphql-searchable-transformer": "3.0.4-ai.1",
     "@aws-amplify/graphql-sql-transformer": "0.4.4-ai.1",
-    "@aws-amplify/graphql-transformer": "2.1.1-ai.3",
+    "@aws-amplify/graphql-transformer": "2.1.1-ai.4",
     "@aws-amplify/graphql-transformer-core": "3.1.2-ai.1",
     "@aws-amplify/graphql-transformer-interfaces": "4.1.1-ai.0",
     "@aws-amplify/platform-core": "^1.0.0",
@@ -8886,6 +8886,6 @@
       "symbolId": "src/model-datasource-strategy-types:VpcConfig"
     }
   },
-  "version": "1.13.0-ai.3",
-  "fingerprint": "RQj9f7s85Y1iz4+uj0dEqHV/MX13tYXyskCSnWS/a8Y="
+  "version": "1.13.0-ai.4",
+  "fingerprint": "6VnEQnKZ1VL1BajCrT/hpHbS5XzvhoqwBFoFZoW8fkc="
 }
