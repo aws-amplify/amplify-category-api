@@ -9,7 +9,7 @@ phases:
       - echo "Installing NVM"
       - .\codebuild_specs\scripts\Install-NVM.ps1
       - echo "Setting up Node Version"
-      - .\codebuild_specs\scripts\Set-Node-Version.ps1
+      - .\codebuild_specs\scripts\Setup-NodeVersion.ps1
       - yarn run production-build
       - yarn build-tests
 artifacts:
