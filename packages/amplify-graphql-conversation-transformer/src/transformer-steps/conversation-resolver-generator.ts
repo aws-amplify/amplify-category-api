@@ -14,7 +14,6 @@ import {
   verifySessionOwnerAssistantResponseMappingTemplate,
 } from '../resolvers/verify-session-owner-resolver';
 import { writeMessageToTableMappingTemplate } from '../resolvers/write-message-to-table-resolver';
-import { readHistoryMappingTemplate } from '../resolvers/message-history-resolver';
 import { invokeLambdaMappingTemplate } from '../resolvers/invoke-lambda-resolver';
 import { assistantMutationResolver } from '../resolvers/assistant-mutation-resolver';
 import { conversationMessageSubscriptionMappingTamplate } from '../resolvers/assistant-messages-subscription-resolver';
