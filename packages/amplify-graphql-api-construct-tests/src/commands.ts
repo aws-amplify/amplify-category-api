@@ -122,9 +122,6 @@ export const cdkDeploy = async (cwd: string, option: string, props?: CdkDeployPr
     env: { npm_config_registry: 'https://registry.npmjs.org/' },
     noOutputTimeout,
   };
-  // This prevents us from maintaining a separate CDK account bootstrap process as we add support for new accounts, regions.
-  // Checks and succeeds early (a no-op) if the account-region combination is already bootstrapped.
-  await spawn(getNpxPath(), ['cdk', 'bootstrap'], commandOptions).runAsync();
 
   await spawn(
     getNpxPath(),

@@ -47,13 +47,13 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
   "Fn::Join": [
     "",
     [
-      "  import { util } from '@aws-appsync/utils';
+      "import { util } from '@aws-appsync/utils';
 
-  export function request(ctx) {
-    const { args, identity, request, prev } = ctx;
-    
-    const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
-    const graphqlApiEndpoint = '",
+export function request(ctx) {
+  const { args, request, prev } = ctx;
+  
+  const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
+  const graphqlApiEndpoint = '",
       {
         "Fn::GetAtt": [
           "GraphQLAPI",
@@ -62,60 +62,61 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
       },
       "';
 
-    const messages = prev.result.items;
-    const responseMutation = {
-      name: 'createAssistantResponsePirateChat',
-      inputTypeName: 'CreateConversationMessagePirateChatAssistantInput',
-      selectionSet,
-    };
-    const currentMessageId = ctx.stash.defaultValues.id;
-    const modelConfiguration = {
+  const messages = prev.result.items;
+  const responseMutation = {
+    name: 'createAssistantResponsePirateChat',
+    inputTypeName: 'CreateConversationMessagePirateChatAssistantInput',
+    selectionSet,
+  };
+  const currentMessageId = ctx.stash.defaultValues.id;
+  const modelConfiguration = {
   modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
   systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
   inferenceConfiguration: {"temperature":0.5,"topP":0.9,"maxTokens":100},
 };
 
-    const clientTools = args.toolConfiguration?.tools?.map((tool) => { return { ...tool.toolSpec }});
-    const toolsConfiguration = {
+  const clientTools = args.toolConfiguration?.tools?.map((tool) => {
+    return { ...tool.toolSpec };
+  });
+  const toolsConfiguration = {
   clientTools
 };
 
-    const authHeader = request.headers['authorization'];
-    const payload = {
-      conversationId: args.conversationId,
-      currentMessageId,
-      responseMutation,
-      graphqlApiEndpoint,
-      modelConfiguration,
-      request: { headers: { authorization: authHeader }},
-      messages,
-      toolsConfiguration,
-    };
+  const authHeader = request.headers['authorization'];
+  const payload = {
+    conversationId: args.conversationId,
+    currentMessageId,
+    responseMutation,
+    graphqlApiEndpoint,
+    modelConfiguration,
+    request: { headers: { authorization: authHeader } },
+    messages,
+    toolsConfiguration,
+  };
 
-    return {
-      operation: 'Invoke',
-      payload,
-      invocationType: 'Event'
-    };
-  }
+  return {
+    operation: 'Invoke',
+    payload,
+    invocationType: 'Event',
+  };
+}
 
 export function response(ctx) {
-  let success = true;
   if (ctx.error) {
     util.appendError(ctx.error.message, ctx.error.type);
-    success = false;
   }
   const response = {
-      __typename: 'ConversationMessagePirateChat',
-      id: ctx.stash.defaultValues.id,
-      conversationId: ctx.args.conversationId,
-      role: 'user',
-      content: ctx.args.content,
-      createdAt: ctx.stash.defaultValues.createdAt,
-      updatedAt: ctx.stash.defaultValues.updatedAt,
+    __typename: 'ConversationMessagePirateChat',
+    id: ctx.stash.defaultValues.id,
+    conversationId: ctx.args.conversationId,
+    role: 'user',
+    content: ctx.args.content,
+    createdAt: ctx.stash.defaultValues.createdAt,
+    updatedAt: ctx.stash.defaultValues.updatedAt,
   };
   return response;
-}",
+}
+",
     ],
   ],
 }
@@ -168,13 +169,13 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
   "Fn::Join": [
     "",
     [
-      "  import { util } from '@aws-appsync/utils';
+      "import { util } from '@aws-appsync/utils';
 
-  export function request(ctx) {
-    const { args, identity, request, prev } = ctx;
-    const toolDefinitions = {"tools":[{"name":"listTodos","description":"lists todos","inputSchema":{"json":{"type":"object","properties":{},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"items { content isDone id createdAt updatedAt owner } nextToken","propertyTypes":{},"queryName":"listTodos"}}]};
-    const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
-    const graphqlApiEndpoint = '",
+export function request(ctx) {
+  const { args, request, prev } = ctx;
+  const toolDefinitions = {"tools":[{"name":"listTodos","description":"lists todos","inputSchema":{"json":{"type":"object","properties":{},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"items { content isDone id createdAt updatedAt owner } nextToken","propertyTypes":{},"queryName":"listTodos"}}]};
+  const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
+  const graphqlApiEndpoint = '",
       {
         "Fn::GetAtt": [
           "GraphQLAPI",
@@ -183,62 +184,63 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
       },
       "';
 
-    const messages = prev.result.items;
-    const responseMutation = {
-      name: 'createAssistantResponsePirateChat',
-      inputTypeName: 'CreateConversationMessagePirateChatAssistantInput',
-      selectionSet,
-    };
-    const currentMessageId = ctx.stash.defaultValues.id;
-    const modelConfiguration = {
+  const messages = prev.result.items;
+  const responseMutation = {
+    name: 'createAssistantResponsePirateChat',
+    inputTypeName: 'CreateConversationMessagePirateChatAssistantInput',
+    selectionSet,
+  };
+  const currentMessageId = ctx.stash.defaultValues.id;
+  const modelConfiguration = {
   modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
   systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
   
 };
 
-    const clientTools = args.toolConfiguration?.tools?.map((tool) => { return { ...tool.toolSpec }});
-    const dataTools = toolDefinitions.tools;
+  const clientTools = args.toolConfiguration?.tools?.map((tool) => {
+    return { ...tool.toolSpec };
+  });
+  const dataTools = toolDefinitions.tools;
  const toolsConfiguration = {
   dataTools,
   clientTools,
 };
 
-    const authHeader = request.headers['authorization'];
-    const payload = {
-      conversationId: args.conversationId,
-      currentMessageId,
-      responseMutation,
-      graphqlApiEndpoint,
-      modelConfiguration,
-      request: { headers: { authorization: authHeader }},
-      messages,
-      toolsConfiguration,
-    };
+  const authHeader = request.headers['authorization'];
+  const payload = {
+    conversationId: args.conversationId,
+    currentMessageId,
+    responseMutation,
+    graphqlApiEndpoint,
+    modelConfiguration,
+    request: { headers: { authorization: authHeader } },
+    messages,
+    toolsConfiguration,
+  };
 
-    return {
-      operation: 'Invoke',
-      payload,
-      invocationType: 'Event'
-    };
-  }
+  return {
+    operation: 'Invoke',
+    payload,
+    invocationType: 'Event',
+  };
+}
 
 export function response(ctx) {
-  let success = true;
   if (ctx.error) {
     util.appendError(ctx.error.message, ctx.error.type);
-    success = false;
   }
   const response = {
-      __typename: 'ConversationMessagePirateChat',
-      id: ctx.stash.defaultValues.id,
-      conversationId: ctx.args.conversationId,
-      role: 'user',
-      content: ctx.args.content,
-      createdAt: ctx.stash.defaultValues.createdAt,
-      updatedAt: ctx.stash.defaultValues.updatedAt,
+    __typename: 'ConversationMessagePirateChat',
+    id: ctx.stash.defaultValues.id,
+    conversationId: ctx.args.conversationId,
+    role: 'user',
+    content: ctx.args.content,
+    createdAt: ctx.stash.defaultValues.createdAt,
+    updatedAt: ctx.stash.defaultValues.updatedAt,
   };
   return response;
-}",
+}
+",
     ],
   ],
 }
@@ -291,13 +293,13 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
   "Fn::Join": [
     "",
     [
-      "  import { util } from '@aws-appsync/utils';
+      "import { util } from '@aws-appsync/utils';
 
-  export function request(ctx) {
-    const { args, identity, request, prev } = ctx;
-    const toolDefinitions = {"tools":[{"name":"listCustomers","description":"Provides data about the customer sending a message","inputSchema":{"json":{"type":"object","properties":{},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"items { name email activeCart { products { name price } customerId id createdAt updatedAt owner } orderHistory { items { products { name price } customerId id createdAt updatedAt owner } nextToken } id createdAt updatedAt owner } nextToken","propertyTypes":{},"queryName":"listCustomers"}}]};
-    const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
-    const graphqlApiEndpoint = '",
+export function request(ctx) {
+  const { args, request, prev } = ctx;
+  const toolDefinitions = {"tools":[{"name":"listCustomers","description":"Provides data about the customer sending a message","inputSchema":{"json":{"type":"object","properties":{},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"items { name email activeCart { products { name price } customerId id createdAt updatedAt owner } orderHistory { items { products { name price } customerId id createdAt updatedAt owner } nextToken } id createdAt updatedAt owner } nextToken","propertyTypes":{},"queryName":"listCustomers"}}]};
+  const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
+  const graphqlApiEndpoint = '",
       {
         "Fn::GetAtt": [
           "GraphQLAPI",
@@ -306,62 +308,63 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
       },
       "';
 
-    const messages = prev.result.items;
-    const responseMutation = {
-      name: 'createAssistantResponsePirateChat',
-      inputTypeName: 'CreateConversationMessagePirateChatAssistantInput',
-      selectionSet,
-    };
-    const currentMessageId = ctx.stash.defaultValues.id;
-    const modelConfiguration = {
+  const messages = prev.result.items;
+  const responseMutation = {
+    name: 'createAssistantResponsePirateChat',
+    inputTypeName: 'CreateConversationMessagePirateChatAssistantInput',
+    selectionSet,
+  };
+  const currentMessageId = ctx.stash.defaultValues.id;
+  const modelConfiguration = {
   modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
   systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
   
 };
 
-    const clientTools = args.toolConfiguration?.tools?.map((tool) => { return { ...tool.toolSpec }});
-    const dataTools = toolDefinitions.tools;
+  const clientTools = args.toolConfiguration?.tools?.map((tool) => {
+    return { ...tool.toolSpec };
+  });
+  const dataTools = toolDefinitions.tools;
  const toolsConfiguration = {
   dataTools,
   clientTools,
 };
 
-    const authHeader = request.headers['authorization'];
-    const payload = {
-      conversationId: args.conversationId,
-      currentMessageId,
-      responseMutation,
-      graphqlApiEndpoint,
-      modelConfiguration,
-      request: { headers: { authorization: authHeader }},
-      messages,
-      toolsConfiguration,
-    };
+  const authHeader = request.headers['authorization'];
+  const payload = {
+    conversationId: args.conversationId,
+    currentMessageId,
+    responseMutation,
+    graphqlApiEndpoint,
+    modelConfiguration,
+    request: { headers: { authorization: authHeader } },
+    messages,
+    toolsConfiguration,
+  };
 
-    return {
-      operation: 'Invoke',
-      payload,
-      invocationType: 'Event'
-    };
-  }
+  return {
+    operation: 'Invoke',
+    payload,
+    invocationType: 'Event',
+  };
+}
 
 export function response(ctx) {
-  let success = true;
   if (ctx.error) {
     util.appendError(ctx.error.message, ctx.error.type);
-    success = false;
   }
   const response = {
-      __typename: 'ConversationMessagePirateChat',
-      id: ctx.stash.defaultValues.id,
-      conversationId: ctx.args.conversationId,
-      role: 'user',
-      content: ctx.args.content,
-      createdAt: ctx.stash.defaultValues.createdAt,
-      updatedAt: ctx.stash.defaultValues.updatedAt,
+    __typename: 'ConversationMessagePirateChat',
+    id: ctx.stash.defaultValues.id,
+    conversationId: ctx.args.conversationId,
+    role: 'user',
+    content: ctx.args.content,
+    createdAt: ctx.stash.defaultValues.createdAt,
+    updatedAt: ctx.stash.defaultValues.updatedAt,
   };
   return response;
-}",
+}
+",
     ],
   ],
 }
@@ -414,13 +417,13 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
   "Fn::Join": [
     "",
     [
-      "  import { util } from '@aws-appsync/utils';
+      "import { util } from '@aws-appsync/utils';
 
-  export function request(ctx) {
-    const { args, identity, request, prev } = ctx;
-    const toolDefinitions = {"tools":[{"name":"getTemperature","description":"does a thing","inputSchema":{"json":{"type":"object","properties":{"city":{"type":"string","description":"A UTF-8 character sequence."}},"required":["city"]}},"graphqlRequestInputDescriptor":{"selectionSet":"value unit","propertyTypes":{"city":"String!"},"queryName":"getTemperature"}},{"name":"plus","description":"does a different thing","inputSchema":{"json":{"type":"object","properties":{"a":{"type":"number","description":"A signed 32-bit integer value."},"b":{"type":"number","description":"A signed 32-bit integer value."}},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"","propertyTypes":{"a":"Int","b":"Int"},"queryName":"plus"}}]};
-    const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
-    const graphqlApiEndpoint = '",
+export function request(ctx) {
+  const { args, request, prev } = ctx;
+  const toolDefinitions = {"tools":[{"name":"getTemperature","description":"does a thing","inputSchema":{"json":{"type":"object","properties":{"city":{"type":"string","description":"A UTF-8 character sequence."}},"required":["city"]}},"graphqlRequestInputDescriptor":{"selectionSet":"value unit","propertyTypes":{"city":"String!"},"queryName":"getTemperature"}},{"name":"plus","description":"does a different thing","inputSchema":{"json":{"type":"object","properties":{"a":{"type":"number","description":"A signed 32-bit integer value."},"b":{"type":"number","description":"A signed 32-bit integer value."}},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"","propertyTypes":{"a":"Int","b":"Int"},"queryName":"plus"}}]};
+  const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
+  const graphqlApiEndpoint = '",
       {
         "Fn::GetAtt": [
           "GraphQLAPI",
@@ -429,62 +432,63 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
       },
       "';
 
-    const messages = prev.result.items;
-    const responseMutation = {
-      name: 'createAssistantResponsePirateChat',
-      inputTypeName: 'CreateConversationMessagePirateChatAssistantInput',
-      selectionSet,
-    };
-    const currentMessageId = ctx.stash.defaultValues.id;
-    const modelConfiguration = {
+  const messages = prev.result.items;
+  const responseMutation = {
+    name: 'createAssistantResponsePirateChat',
+    inputTypeName: 'CreateConversationMessagePirateChatAssistantInput',
+    selectionSet,
+  };
+  const currentMessageId = ctx.stash.defaultValues.id;
+  const modelConfiguration = {
   modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
   systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
   
 };
 
-    const clientTools = args.toolConfiguration?.tools?.map((tool) => { return { ...tool.toolSpec }});
-    const dataTools = toolDefinitions.tools;
+  const clientTools = args.toolConfiguration?.tools?.map((tool) => {
+    return { ...tool.toolSpec };
+  });
+  const dataTools = toolDefinitions.tools;
  const toolsConfiguration = {
   dataTools,
   clientTools,
 };
 
-    const authHeader = request.headers['authorization'];
-    const payload = {
-      conversationId: args.conversationId,
-      currentMessageId,
-      responseMutation,
-      graphqlApiEndpoint,
-      modelConfiguration,
-      request: { headers: { authorization: authHeader }},
-      messages,
-      toolsConfiguration,
-    };
+  const authHeader = request.headers['authorization'];
+  const payload = {
+    conversationId: args.conversationId,
+    currentMessageId,
+    responseMutation,
+    graphqlApiEndpoint,
+    modelConfiguration,
+    request: { headers: { authorization: authHeader } },
+    messages,
+    toolsConfiguration,
+  };
 
-    return {
-      operation: 'Invoke',
-      payload,
-      invocationType: 'Event'
-    };
-  }
+  return {
+    operation: 'Invoke',
+    payload,
+    invocationType: 'Event',
+  };
+}
 
 export function response(ctx) {
-  let success = true;
   if (ctx.error) {
     util.appendError(ctx.error.message, ctx.error.type);
-    success = false;
   }
   const response = {
-      __typename: 'ConversationMessagePirateChat',
-      id: ctx.stash.defaultValues.id,
-      conversationId: ctx.args.conversationId,
-      role: 'user',
-      content: ctx.args.content,
-      createdAt: ctx.stash.defaultValues.createdAt,
-      updatedAt: ctx.stash.defaultValues.updatedAt,
+    __typename: 'ConversationMessagePirateChat',
+    id: ctx.stash.defaultValues.id,
+    conversationId: ctx.args.conversationId,
+    role: 'user',
+    content: ctx.args.content,
+    createdAt: ctx.stash.defaultValues.createdAt,
+    updatedAt: ctx.stash.defaultValues.updatedAt,
   };
   return response;
-}",
+}
+",
     ],
   ],
 }
