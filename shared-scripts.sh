@@ -167,13 +167,19 @@ function _verifyAmplifyBackendCompatability {
 
   # 3. Validate Shell (Emulating the "validate" shell)
   echo "Emulating Validate Shell"
-  # Move back to root and clone amplify-backend repo
   cd ..
-  git clone --depth 1 https://github.com/aws-amplify/amplify-backend.git
-  cd amplify-backend
-  # Create a new local branch for testing 
-  git checkout -B validate-amplify-backend
-  # Update the packages and ensure the correct versions are being used
+  REPO_URL="https://github.com/aws-amplify/amplify-backend.git"
+  REPO_DIR="amplify-backend"
+  # Fetch the latest release tag
+  echo "Fetching the latest release tag from GitHub"
+  LATEST_RELEASE_JSON=$(curl -s https://api.github.com/repos/aws-amplify/amplify-backend/releases/latest)
+  # Extract the tag name
+  LATEST_RELEASE_TAG=$(echo "${LATEST_RELEASE_JSON}" | jq -r '.tag_name')
+  echo "Latest release tag: ${LATEST_RELEASE_TAG}"
+  # Clone the repository at the specific tag
+  echo "Cloning the repository at tag ${LATEST_RELEASE_TAG}"
+  git clone --depth 1 --branch "${LATEST_RELEASE_TAG}" "${REPO_URL}" "${REPO_DIR}"
+  cd "${REPO_DIR}" || { echo "Failed to enter directory ${REPO_DIR}"; exit 1; }
   npm update
   # Verify that the package-lock.json contains the updated version with localhost tarballs
   git diff package-lock.json | grep -Pz '@aws-amplify\/(graphql-api-construct|data-construct)[\s\S]*localhost:4873[\s\S]*tgz'
