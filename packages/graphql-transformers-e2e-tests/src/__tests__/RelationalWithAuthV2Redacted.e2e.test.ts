@@ -12,6 +12,7 @@ import { ResourceConstants } from 'graphql-transformer-common';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { S3, CognitoIdentityServiceProvider as CognitoClient } from 'aws-sdk';
 import { default as moment } from 'moment';
+import { v4 as uuid } from 'uuid';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { GraphQLClient } from '../GraphQLClient';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
@@ -39,8 +40,9 @@ const customS3Client = new S3Client(region);
 const awsS3Client = new S3({ region: region });
 const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: region });
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
+const UNIQUE_ID = uuid();
 const STACK_NAME = `RelationalAuthV2TransformersFFTest-${BUILD_TIMESTAMP}`;
-const BUCKET_NAME = `appsync-relational-auth-transformer-ff-test-${BUILD_TIMESTAMP}`;
+const BUCKET_NAME = `appsync-relational-auth-transformer-ff-test-${BUILD_TIMESTAMP}-${UNIQUE_ID}`;
 const LOCAL_FS_BUILD_DIR = '/tmp/relational_auth_transformer_ff_tests/';
 const S3_ROOT_DIR_KEY = 'deployments';
 
