@@ -15,13 +15,15 @@ batch:
         compute-type: BUILD_GENERAL1_MEDIUM
       depend-on:
         - build_linux
-    - identifier: HttpTransformerV2
+    - identifier: >-
+        AuthV2ExhaustiveT2B_AuthV2ExhaustiveT2D_AuthV2ExhaustiveT2C_RelationalWithAuthV2Redacted_RelationalWithAuthV2NonRedacted
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
-        compute-type: BUILD_GENERAL1_MEDIUM
+        compute-type: BUILD_GENERAL1_LARGE
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/HttpTransformerV2.e2e.test.ts
-          CLI_REGION: ap-south-1
+          NODE_OPTIONS: '--max-old-space-size=14848'
+          TEST_SUITE: >-
+            src/__tests__/AuthV2ExhaustiveT2B.test.ts|src/__tests__/AuthV2ExhaustiveT2D.test.ts|src/__tests__/AuthV2ExhaustiveT2C.test.ts|src/__tests__/RelationalWithAuthV2Redacted.e2e.test.ts|src/__tests__/RelationalWithAuthV2NonRedacted.e2e.test.ts
+          CLI_REGION: eu-north-1
       depend-on:
         - publish_to_local_registry
