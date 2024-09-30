@@ -1,8 +1,3 @@
-input AMPLIFY {
-  engine: String = "postgres"
-  globalAuthRule: AuthRule = { allow: public }
-}
-
 type Contact @refersTo(name: "e2e_test_contact") @model {
   id: Int! @primaryKey
   firstname: String
