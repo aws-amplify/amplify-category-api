@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0-gen2-migration-0930.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@3.0.3...@aws-amplify/graphql-relational-transformer@3.1.0-gen2-migration-0930.0) (2024-09-30)
+
+### Features
+
+- add overrideIndexName to configure index name ([#2738](https://github.com/aws-amplify/amplify-category-api/issues/2738)) ([c4e59d3](https://github.com/aws-amplify/amplify-category-api/commit/c4e59d37d987254d102146a27267501d44fca263))
+
 ## [3.0.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@3.0.2...@aws-amplify/graphql-relational-transformer@3.0.3) (2024-09-16)
 
 **Note:** Version bump only for package @aws-amplify/graphql-relational-transformer

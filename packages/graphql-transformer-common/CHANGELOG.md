@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0-gen2-migration-0930.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@5.0.1...graphql-transformer-common@5.1.0-gen2-migration-0930.0) (2024-09-30)
+
+### Features
+
+- get datasource map for migration ([#2668](https://github.com/aws-amplify/amplify-category-api/issues/2668)) ([02c7da0](https://github.com/aws-amplify/amplify-category-api/commit/02c7da0da0d5837ca05a8e4ff1b1536cc20ae15b))
+
+### Reverts
+
+- Revert "feat: get datasource map for migration (#2668)" (#2907) ([2b17871](https://github.com/aws-amplify/amplify-category-api/commit/2b17871b600dbfa6d911057c30498f7df6a7e8dc)), closes [#2668](https://github.com/aws-amplify/amplify-category-api/issues/2668) [#2907](https://github.com/aws-amplify/amplify-category-api/issues/2907)
+
 ## [5.0.1](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@5.0.0...graphql-transformer-common@5.0.1) (2024-09-06)
 
 **Note:** Version bump only for package graphql-transformer-common

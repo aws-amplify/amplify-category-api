@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.10.0-gen2-migration-0930.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.9.1...amplify-graphql-api-construct-tests@1.10.0-gen2-migration-0930.0) (2024-09-30)
+
+### Bug Fixes
+
+- migration validation assertion ([1209096](https://github.com/aws-amplify/amplify-category-api/commit/1209096d332503ad4b321109037b0be2101fe6bd))
+
+### Features
+
+- add overrideIndexName to configure index name ([#2738](https://github.com/aws-amplify/amplify-category-api/issues/2738)) ([c4e59d3](https://github.com/aws-amplify/amplify-category-api/commit/c4e59d37d987254d102146a27267501d44fca263))
+
 ## [1.9.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.9.0...amplify-graphql-api-construct-tests@1.9.1) (2024-09-16)
 
 **Note:** Version bump only for package amplify-graphql-api-construct-tests

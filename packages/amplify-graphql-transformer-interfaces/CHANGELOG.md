@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.2.0-gen2-migration-0930.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@4.1.0...@aws-amplify/graphql-transformer-interfaces@4.2.0-gen2-migration-0930.0) (2024-09-30)
+
+### Features
+
+- get datasource map for migration ([#2668](https://github.com/aws-amplify/amplify-category-api/issues/2668)) ([02c7da0](https://github.com/aws-amplify/amplify-category-api/commit/02c7da0da0d5837ca05a8e4ff1b1536cc20ae15b))
+- import existing table to amplify managed table ([#2634](https://github.com/aws-amplify/amplify-category-api/issues/2634)) ([b3fb28f](https://github.com/aws-amplify/amplify-category-api/commit/b3fb28f6a253cae523625c0b2e93ec9ce2c37bab))
+
+### Reverts
+
+- Revert "feat: get datasource map for migration (#2668)" (#2907) ([2b17871](https://github.com/aws-amplify/amplify-category-api/commit/2b17871b600dbfa6d911057c30498f7df6a7e8dc)), closes [#2668](https://github.com/aws-amplify/amplify-category-api/issues/2668) [#2907](https://github.com/aws-amplify/amplify-category-api/issues/2907)
+
 # [4.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@4.0.1...@aws-amplify/graphql-transformer-interfaces@4.1.0) (2024-09-06)
 
 ### Features
