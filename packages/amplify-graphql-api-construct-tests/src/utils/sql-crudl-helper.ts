@@ -159,12 +159,6 @@ export class CRUDLHelper {
     return output;
   };
 
-  private getQueryInputTypes = (args: Record<string, any>): string => {
-    return Object.entries(args)
-      .map(([key, value]) => `$${key}: ${this.getGraphQLType(value)}!`)
-      .join(', ');
-  };
-
   private getQueryInputs = (args: Record<string, any>): string => {
     return Object.keys(args)
       .map((key) => `${key}: $${key}`)
@@ -180,5 +174,11 @@ export class CRUDLHelper {
       default:
         return 'String';
     }
+  };
+
+  private getQueryInputTypes = (args: Record<string, any>): string => {
+    return Object.entries(args)
+      .map(([key, value]) => `$${key}: ${this.getGraphQLType(value)}!`)
+      .join(', ');
   };
 }
