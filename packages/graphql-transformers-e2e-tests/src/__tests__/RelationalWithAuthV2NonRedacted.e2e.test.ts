@@ -170,7 +170,6 @@ beforeAll(async () => {
       })
       .promise();
   } catch (e) {
-    console.log(`bucket name: ${BUCKET_NAME}`);
     console.error(`Failed to create S3 bucket: ${e}`);
     expect(true).toEqual(false);
   }
