@@ -6,10 +6,10 @@ batch:
   fast-fail: false
   build-graph:
     - identifier: HttpTransformerV2
-    buildspec: codebuild_specs/graphql_e2e_tests.yml
-    env:
-      compute-type: BUILD_GENERAL1_MEDIUM
-      variables:
-        NODE_OPTIONS: '--max-old-space-size=6656'
-        TEST_SUITE: src/__tests__/HttpTransformerV2.e2e.test.ts
-        CLI_REGION: ap-south-1
+      buildspec: codebuild_specs/graphql_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          NODE_OPTIONS: '--max-old-space-size=6656'
+          TEST_SUITE: src/__tests__/HttpTransformerV2.e2e.test.ts
+          CLI_REGION: ap-south-1
