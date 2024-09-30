@@ -217,6 +217,54 @@ describe('DefaultValueModelTransformer:', () => {
     ).toThrow('Default value "text" is not a valid AWSIPAddress.');
   });
 
+  it('throws if @default is used on an implicit primaryKey', () => {
+    const schema = `
+      type Test @model {
+        id: ID! @default(value: "ID: 80361")
+        stringValue: String!
+      }
+    `;
+
+    expect(() =>
+      testTransform({
+        schema,
+        transformers: [new ModelTransformer(), new DefaultValueTransformer()],
+      }),
+    ).toThrow('The @default directive may not be applied to primaryKey fields.');
+  });
+
+  it('throws if @default is used on an explicit primaryKey', () => {
+    const schema = `
+      type Test @model {
+        id: ID! @default(value: "ID: 80361") @primaryKey
+        stringValue: String!
+      }
+    `;
+
+    expect(() =>
+      testTransform({
+        schema,
+        transformers: [new ModelTransformer(), new DefaultValueTransformer(), new PrimaryKeyTransformer()],
+      }),
+    ).toThrow('The @default directive may not be applied to primaryKey fields.');
+  });
+
+  it('throws if @default is used on a composite key member', () => {
+    const schema = `
+    type Project @model {
+      projectId: ID! @primaryKey(sortKeyFields: ["name"])
+      name: String! @default(value: "Mustapha Mond")
+    }
+    `;
+
+    expect(() =>
+      testTransform({
+        schema,
+        transformers: [new ModelTransformer(), new DefaultValueTransformer(), new PrimaryKeyTransformer()],
+      }),
+    ).toThrow('The @default directive may not be applied to composite key member fields.');
+  });
+
   it('should validate enum values', async () => {
     const inputSchema = `
       type Post @model {

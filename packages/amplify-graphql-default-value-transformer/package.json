@@ -75,7 +75,8 @@
       "src/**/*.ts"
     ],
     "coveragePathIgnorePatterns": [
-      "/__tests__/"
+      "/__tests__/",
+      "types.ts"
     ],
     "snapshotFormat": {
       "escapeString": true,
