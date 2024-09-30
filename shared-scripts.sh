@@ -333,6 +333,10 @@ function _runCDKTestsLinux {
 
 function _runGqlE2ETests {
     echo "RUN GraphQL E2E tests"
+
+    # Set Node.js version to 18.20.4 as one of the package requires version ">= 18.18.0"
+    _setupNodeVersion 18.20.4
+
     loadCacheFromBuildJob
     _loadTestAccountCredentials
     retry runGraphQLE2eTest
