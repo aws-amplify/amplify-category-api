@@ -23,3 +23,5 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/HttpTransformerV2.e2e.test.ts
           CLI_REGION: ap-south-1
+      depend-on:
+        - publish_to_local_registry
