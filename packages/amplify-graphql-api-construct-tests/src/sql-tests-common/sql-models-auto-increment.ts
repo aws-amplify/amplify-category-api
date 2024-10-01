@@ -20,6 +20,10 @@ export const testGraphQLAPIAutoIncrement = (
   engine: ImportedRDSType,
 ): void => {
   describe(`${testBlockDescription} - ${engine}`, () => {
+    // In particular, we want to verify that the new CREATE operation
+    // is allowed to omit the primary key field, and that the primary key
+    // we get back is the correct, db generated value.
+    // NOTE: Expects underlying orderNumber column to be a serial primary key in Postgres table
     const amplifyGraphqlSchema = `
       type CoffeeQueue @model @refersTo(name: "${getRDSTableNamePrefix()}coffee_queue") {
         orderNumber: Int! @primaryKey @default
