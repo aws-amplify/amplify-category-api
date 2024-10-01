@@ -264,4 +264,24 @@ describe('DefaultValueModelTransformer:', () => {
     const parsedSchema = parse(out.schema);
     validateModelSchema(parsedSchema);
   });
+
+  it('should allow auto-increment primary key', async () => {
+    const schema = `
+      type CoffeeQueue @model {
+        orderNumber: Int! @primaryKey @default
+        order: String!
+        customer: String
+      }
+    `;
+    const strategy = mockSqlDataSourceStrategy({ dbType: POSTGRES_DB_TYPE });
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new DefaultValueTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: constructDataSourceStrategies(schema, strategy),
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).toMatchSnapshot();
+    const parsedSchema = parse(out.schema);
+    validateModelSchema(parsedSchema);
+  });
 });
