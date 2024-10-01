@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.2-ai.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-generation-transformer@0.2.2-ai.2...@aws-amplify/graphql-generation-transformer@0.2.2-ai.3) (2024-10-01)
+
+### Bug Fixes
+
+- **generation:** gracefully handle stringified responses ([c3f298f](https://github.com/aws-amplify/amplify-category-api/commit/c3f298fb94bfea88cc1e5c3b07e096aba2b61487))
+
 ## [0.2.2-ai.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-generation-transformer@0.2.2-ai.1...@aws-amplify/graphql-generation-transformer@0.2.2-ai.2) (2024-09-27)
 
 ### Bug Fixes
