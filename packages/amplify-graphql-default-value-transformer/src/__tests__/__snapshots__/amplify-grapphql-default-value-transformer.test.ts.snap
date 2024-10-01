@@ -453,7 +453,7 @@ $util.qr($context.args.input.put(\\"stringValue\\", $util.defaultIfNull($ctx.arg
 {}"
 `;
 
-exports[`DefaultValueModelTransformer: should successfully transform a schema that implies auto-increment 1`] = `
+exports[`DefaultValueModelTransformer: should successfully transform a simple schema with @default 1`] = `
 "type TestAutoIncrement {
   id: ID!
   value: Int

@@ -1,5 +1,4 @@
 import * as path from 'path';
-import { LambdaClient, GetProvisionedConcurrencyConfigCommand } from '@aws-sdk/client-lambda';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { createNewProjectDir, deleteProjectDir, getRDSTableNamePrefix } from 'amplify-category-api-e2e-core';
@@ -32,7 +31,7 @@ export const testGraphQLAPIAutoIncrement = (
       }
     `;
 
-    const { projFolderName, region, connectionConfigName, dbController, resourceNames } = options;
+    const { projFolderName, region, connectionConfigName, dbController } = options;
     const templatePath = path.resolve(path.join(__dirname, '..', '__tests__', 'backends', 'sql-models'));
 
     let projRoot: string;

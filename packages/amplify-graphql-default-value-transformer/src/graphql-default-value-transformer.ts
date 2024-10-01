@@ -39,7 +39,7 @@ const validateFieldType = (ctx: TransformerSchemaVisitStepContextProvider, confi
     throw new InvalidDirectiveError('The @default directive may only be added to scalar or enum field types.');
   }
   if (isPostgresModel(ctx, config.object.name.value) && argc === 0 && getBaseType(type) !== 'Int') {
-    throw new InvalidDirectiveError('The empty @default (auto-increment) may only be applied to integer fields.');
+    throw new InvalidDirectiveError('The @default directive requires a value property on non-Int types.');
   }
 };
 
@@ -47,7 +47,7 @@ const validateDirectiveArguments = (ctx: TransformerSchemaVisitStepContextProvid
   const argc = config.directive.arguments!.length;
   const isPostgres = isPostgresModel(ctx, config.object.name.value);
   if (!isPostgres && argc === 0)
-    throw new InvalidDirectiveError('The @default directive requires a value property on non Postgres datasources.');
+    throw new InvalidDirectiveError('The @default directive requires a value property on non-Postgres datasources.');
   if (argc > 1) throw new InvalidDirectiveError('The @default directive only takes a value property');
 };
 
