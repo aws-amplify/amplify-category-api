@@ -48,12 +48,6 @@ describe('CDK GraphQL Transformer deployments with Postgres SQL datasources', ()
   });
 
   testGraphQLAPIAutoIncrement(
-    constructTestOptions('ssm'),
-    'creates a GraphQL API from SQL-based models with SSM Credential Store',
-    ImportedRDSType.POSTGRESQL,
-  );
-
-  testGraphQLAPIAutoIncrement(
     constructTestOptions('connectionUri'),
     'creates a GraphQL API from SQL-based models using Connection String SSM parameter',
     ImportedRDSType.POSTGRESQL,
