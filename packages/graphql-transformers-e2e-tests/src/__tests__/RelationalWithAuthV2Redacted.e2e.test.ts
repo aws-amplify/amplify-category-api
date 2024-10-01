@@ -345,6 +345,7 @@ test('creating a post and immediately view it via the User.posts connection.', a
     }`,
     {},
   );
+  console.log(JSON.stringify(getResponse, null, 4));
   expect(getResponse.data.getUser.posts.items[0].id).toBeDefined();
   expect(getResponse.data.getUser.posts.items[0].title).toEqual('Hello, World!');
   expect(getResponse.data.getUser.posts.items[0].owner).toEqual('user1@test.com');
