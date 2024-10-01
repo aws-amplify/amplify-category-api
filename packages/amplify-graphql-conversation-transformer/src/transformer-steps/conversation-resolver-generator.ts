@@ -349,16 +349,12 @@ export class ConversationResolverGenerator {
     return ctx.api.host.addLambdaDataSource(functionDataSourceId, referencedFunction, {}, functionDataSourceScope);
   }
 
-  private addInitSlotToListMessagesPipeline(
-    ctx: TransformerContextProvider,
-    directive: ConversationDirectiveConfiguration,
-  ): void {
+  private addInitSlotToListMessagesPipeline(ctx: TransformerContextProvider, directive: ConversationDirectiveConfiguration): void {
     const messageModelName = directive.messageModel.messageModel.name.value;
     const pluralized = pluralize(messageModelName);
     const listMessagesResolver = ctx.resolvers.getResolver('Query', `list${pluralized}`) as TransformerResolver;
     const initResolverFn = listMessageInitMappingTemplate(directive);
     listMessagesResolver.addJsFunctionToSlot('init', initResolverFn);
-
   }
 
   /**
