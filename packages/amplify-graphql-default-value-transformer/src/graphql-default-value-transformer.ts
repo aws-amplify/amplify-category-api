@@ -33,7 +33,7 @@ const nonStringTypes = ['Int', 'Float', 'Boolean', 'AWSTimestamp', 'AWSJSON'];
 
 const validateFieldType = (ctx: TransformerSchemaVisitStepContextProvider, config: DefaultValueDirectiveConfiguration): void => {
   const type = config.field.type;
-  const argc = config.directive.arguments!.length;
+  const argc = config.directive.arguments?.length ?? 0;
   const enums = ctx.output.getTypeDefinitionsOfKind(Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[];
   if (isListType(type) || !isScalarOrEnum(type, enums)) {
     throw new InvalidDirectiveError('The @default directive may only be added to scalar or enum field types.');
@@ -44,7 +44,7 @@ const validateFieldType = (ctx: TransformerSchemaVisitStepContextProvider, confi
 };
 
 const validateDirectiveArguments = (ctx: TransformerSchemaVisitStepContextProvider, config: DefaultValueDirectiveConfiguration): void => {
-  const argc = config.directive.arguments!.length;
+  const argc = config.directive.arguments?.length ?? 0;
   const isPostgres = isPostgresModel(ctx, config.object.name.value);
   if (!isPostgres && argc === 0)
     throw new InvalidDirectiveError('The @default directive requires a value property on non-Postgres datasources.');
