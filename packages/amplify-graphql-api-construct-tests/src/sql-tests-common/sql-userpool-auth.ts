@@ -67,7 +67,7 @@ export const testGraphQLAPIWithUserPoolAccess = (
 
     afterAll(async () => {
       try {
-        // await cdkDestroy(projRoot, '--all');
+        await cdkDestroy(projRoot, '--all');
         await dbController.clearDatabase();
       } catch (err) {
         console.log(`Error invoking 'cdk destroy': ${err}`);

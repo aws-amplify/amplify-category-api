@@ -22,7 +22,6 @@ export class CognitoIdentityPoolCredentialsManager {
         identityPoolId: this.outputs.identityPoolId,
       },
     });
-    console.log('outputs: ', this.outputs);
   }
 
   public getAuthRoleCredentials = async (user: Record<string, string>): Promise<any> => {

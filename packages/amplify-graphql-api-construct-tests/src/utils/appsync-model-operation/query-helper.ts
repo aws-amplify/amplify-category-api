@@ -41,6 +41,7 @@ export class GQLQueryHelper {
     const createInput = {
       input,
     };
+    console.log('Create mutation:', createMutation);
     const createResult: any = await this.client.mutate({
       mutation: gql`
         ${createMutation}
@@ -198,6 +199,7 @@ export class GQLQueryHelper {
     };
     const subscriptionResult = [];
 
+    console.log('Subscription operation:', subscriptionOperation);
     const observer = this.client.subscribe({
       query: gql`
         ${subscriptionOperation}
@@ -217,7 +219,7 @@ export class GQLQueryHelper {
       },
     });
 
-    await new Promise<void>((res) => setTimeout(() => res(), 4000));
+    await new Promise<void>((res) => setTimeout(() => res(), 300000));
     for (const mutation of mutationsToSubscribe) {
       await mutation();
       await new Promise<void>((res) => setTimeout(() => res(), 4000)); // ensure correct order in received data
