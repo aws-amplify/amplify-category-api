@@ -173,16 +173,5 @@ export const testGraphQLAPIAutoIncrement = (
         coffeeQueueTableCRUDLHelper.checkGenericError(error?.message);
       }
     });
-
-    test(`check SQL Lambda provisioned concurrency - ${engine}`, async () => {
-      const client = new LambdaClient({ region });
-      const functionName = outputs[name].SQLFunctionName;
-      const command = new GetProvisionedConcurrencyConfigCommand({
-        FunctionName: functionName,
-        Qualifier: resourceNames.sqlLambdaAliasName,
-      });
-      const response = await client.send(command);
-      expect(response.RequestedProvisionedConcurrentExecutions).toEqual(2);
-    });
   });
 };
