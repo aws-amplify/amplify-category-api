@@ -73,6 +73,34 @@ export const testGraphQLAPI = (
       deleteProjectDir(projRoot);
     });
 
+    test(`check default value on todo table - ${engine}`, async () => {
+      const defaultTodoDescription = 'Lorem ipsum yadda yadda...';
+
+      // Create Todo Mutation
+      const createTodo1 = await toDoTableCRUDLHelper.create({});
+
+      expect(createTodo1).toBeDefined();
+      expect(createTodo1.id).toBeDefined();
+      expect(createTodo1.description).toEqual(defaultTodoDescription);
+
+      // Get Todo Query
+      const getTodo1 = await toDoTableCRUDLHelper.getById(createTodo1.id);
+      expect(getTodo1.id).toEqual(createTodo1.id);
+      expect(getTodo1.description).toEqual(createTodo1.description);
+
+      // Update Todo Mutation
+      const updateTodo1 = await toDoTableCRUDLHelper.update({ id: createTodo1.id, description: 'Updated Todo #1' });
+
+      expect(updateTodo1.id).toEqual(createTodo1.id);
+      expect(updateTodo1.description).toEqual('Updated Todo #1');
+
+      // Get Todo Query after update
+      const getUpdatedTodo1 = await toDoTableCRUDLHelper.getById(createTodo1.id);
+
+      expect(getUpdatedTodo1.id).toEqual(createTodo1.id);
+      expect(getUpdatedTodo1.description).toEqual('Updated Todo #1');
+    });
+
     test(`check CRUDL on todo table with default primary key - ${engine}`, async () => {
       // Create Todo Mutation
       const createTodo1 = await toDoTableCRUDLHelper.create({ description: 'Todo #1' });
