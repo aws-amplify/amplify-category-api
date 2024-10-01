@@ -147,27 +147,28 @@ export const testGraphQLAPIAutoIncrement = (
       const createTodo6 = await coffeeQueueTableCRUDLHelper.create({ order: 'mocha' });
 
       try {
+        // Invalid because the pk (orderNumber) already exists
         await coffeeQueueTableCRUDLHelper.create({ orderNumber: createTodo6.orderNumber, order: 'americano' });
       } catch (error) {
         coffeeQueueTableCRUDLHelper.checkGenericError(error?.message);
       }
 
-      const invalidOrderNumber = 99999999;
+      const biggerThanAnyExistingOrderNumber = 99999999;
 
       try {
-        await coffeeQueueTableCRUDLHelper.get({ orderNumber: invalidOrderNumber });
+        await coffeeQueueTableCRUDLHelper.get({ orderNumber: biggerThanAnyExistingOrderNumber });
       } catch (error) {
         coffeeQueueTableCRUDLHelper.checkGenericError(error?.message);
       }
 
       try {
-        await coffeeQueueTableCRUDLHelper.update({ orderNumber: invalidOrderNumber, order: 'cortado' });
+        await coffeeQueueTableCRUDLHelper.update({ orderNumber: biggerThanAnyExistingOrderNumber, order: 'cortado' });
       } catch (error) {
         coffeeQueueTableCRUDLHelper.checkGenericError(error?.message);
       }
 
       try {
-        await coffeeQueueTableCRUDLHelper.delete({ orderNumber: invalidOrderNumber });
+        await coffeeQueueTableCRUDLHelper.delete({ orderNumber: biggerThanAnyExistingOrderNumber });
       } catch (error) {
         coffeeQueueTableCRUDLHelper.checkGenericError(error?.message);
       }
