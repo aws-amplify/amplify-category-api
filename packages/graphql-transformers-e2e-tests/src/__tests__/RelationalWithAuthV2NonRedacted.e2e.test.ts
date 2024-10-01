@@ -26,6 +26,8 @@ import {
   signupUser,
 } from '../cognitoUtils';
 import { resolveTestRegion } from '../testSetup';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const AWS = require('aws-sdk');
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -163,17 +165,56 @@ beforeAll(async () => {
     console.error(`Failed to transform schema: ${e}`);
     expect(true).toEqual(false);
   }
+  // try {
+  //   await awsS3Client
+  //     .createBucket({
+  //       Bucket: BUCKET_NAME,
+  //     })
+  //     .promise();
+  // } catch (e) {
+  //   console.log(`bucket name: ${BUCKET_NAME}`);
+  //   console.error(`Failed to create S3 bucket: ${e}`);
+  //   expect(true).toEqual(false);
+  // }
   try {
-    await awsS3Client
-      .createBucket({
-        Bucket: BUCKET_NAME,
-      })
-      .promise();
+    // Log the AWS account ID to verify you're in the correct account
+    const sts = new AWS.STS();
+    const identity = await sts.getCallerIdentity({}).promise();
+    console.log(`AWS Account ID: ${identity.Account}`);
+  
+    // List existing buckets to see if the bucket already exists
+    const existingBuckets = await awsS3Client.listBuckets().promise();
+    console.log('Existing buckets in your account:');
+    existingBuckets.Buckets.forEach(bucket => {
+      console.log(` - ${bucket.Name}`);
+    });
+  
+    // Check if the bucket already exists
+    console.log(`Checking if bucket "${BUCKET_NAME}" exists...`);
+    try {
+      await awsS3Client.headBucket({ Bucket: BUCKET_NAME }).promise();
+      console.log(`Bucket "${BUCKET_NAME}" already exists.`);
+    } catch (headErr) {
+      if (headErr.code === 'NotFound') {
+        console.log(`Bucket "${BUCKET_NAME}" does not exist. Proceeding to create it.`);
+        await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
+        console.log(`Bucket "${BUCKET_NAME}" created successfully.`);
+      } else {
+        console.error(`Error checking if bucket exists:`, headErr);
+        throw headErr;
+      }
+    }
   } catch (e) {
-    console.log(`bucket name: ${BUCKET_NAME}`);
-    console.error(`Failed to create S3 bucket: ${e}`);
+    console.log(`Bucket name: ${BUCKET_NAME}`);
+    console.error(`Failed to create S3 bucket:`, e);
+    console.error(`Error code: ${e.code}`);
+    console.error(`Error message: ${e.message}`);
+    console.error(`Error stack: ${e.stack}`);
     expect(true).toEqual(false);
   }
+  
+
+
   const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
   USER_POOL_ID = userPoolResponse.UserPool.Id;
   const userPoolClientResponse = await createUserPoolClient(cognitoClient, USER_POOL_ID, `UserPool${STACK_NAME}`);
