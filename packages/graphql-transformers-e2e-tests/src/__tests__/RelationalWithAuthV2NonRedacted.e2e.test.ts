@@ -40,7 +40,7 @@ const cf = new CloudFormationClient(region);
 const customS3Client = new S3Client(region);
 const awsS3Client = new S3({ region: region });
 const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: region });
-const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmssSSS');
+const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `RelationalAuthV2TransformersFFTest-${BUILD_TIMESTAMP}`;
 const BUCKET_NAME = `appsync-relational-auth-transformer-ff-test-${BUILD_TIMESTAMP}`;
 const LOCAL_FS_BUILD_DIR = '/tmp/relational_auth_transformer_ff_tests/';
@@ -165,56 +165,16 @@ beforeAll(async () => {
     console.error(`Failed to transform schema: ${e}`);
     expect(true).toEqual(false);
   }
-  // try {
-  //   await awsS3Client
-  //     .createBucket({
-  //       Bucket: BUCKET_NAME,
-  //     })
-  //     .promise();
-  // } catch (e) {
-  //   console.log(`bucket name: ${BUCKET_NAME}`);
-  //   console.error(`Failed to create S3 bucket: ${e}`);
-  //   expect(true).toEqual(false);
-  // }
   try {
-    // Log the AWS account ID to verify you're in the correct account
-    const sts = new AWS.STS();
-    const identity = await sts.getCallerIdentity({}).promise();
-    console.log(`AWS Account ID: ${identity.Account}`);
-  
-    // List existing buckets to see if the bucket already exists
-    const existingBuckets = await awsS3Client.listBuckets().promise();
-    console.log('Existing buckets in your account:');
-    existingBuckets.Buckets.forEach(bucket => {
-      console.log(` - ${bucket.Name}`);
-    });
-  
-    // Check if the bucket already exists
-    console.log(`Checking if bucket "${BUCKET_NAME}" exists...`);
-    try {
-      await awsS3Client.headBucket({ Bucket: BUCKET_NAME }).promise();
-      console.log(`Bucket "${BUCKET_NAME}" already exists.`);
-    } catch (headErr) {
-      if (headErr.code === 'NotFound') {
-        console.log(`Bucket "${BUCKET_NAME}" does not exist. Proceeding to create it.`);
-        await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
-        console.log(`Bucket "${BUCKET_NAME}" created successfully.`);
-      } else {
-        console.error(`Error checking if bucket exists:`, headErr);
-        throw headErr;
-      }
-    }
+    await awsS3Client
+      .createBucket({
+        Bucket: BUCKET_NAME,
+      })
+      .promise();
   } catch (e) {
-    console.log(`Bucket name: ${BUCKET_NAME}`);
-    console.error(`Failed to create S3 bucket:`, e);
-    console.error(`Error code: ${e.code}`);
-    console.error(`Error message: ${e.message}`);
-    console.error(`Error stack: ${e.stack}`);
+    console.error(`Failed to create S3 bucket: ${e}`);
     expect(true).toEqual(false);
   }
-  
-
-
   const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
   USER_POOL_ID = userPoolResponse.UserPool.Id;
   const userPoolClientResponse = await createUserPoolClient(cognitoClient, USER_POOL_ID, `UserPool${STACK_NAME}`);
