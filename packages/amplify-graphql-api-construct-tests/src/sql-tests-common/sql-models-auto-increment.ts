@@ -149,7 +149,6 @@ export const testGraphQLAPIAutoIncrement = (
       try {
         await coffeeQueueTableCRUDLHelper.create({ orderNumber: createTodo6.orderNumber, order: 'americano' });
       } catch (error) {
-        console.log('throw in create');
         coffeeQueueTableCRUDLHelper.checkGenericError(error?.message);
       }
 
@@ -158,21 +157,18 @@ export const testGraphQLAPIAutoIncrement = (
       try {
         await coffeeQueueTableCRUDLHelper.get({ orderNumber: invalidOrderNumber });
       } catch (error) {
-        console.log('throw in get');
         coffeeQueueTableCRUDLHelper.checkGenericError(error?.message);
       }
 
       try {
         await coffeeQueueTableCRUDLHelper.update({ orderNumber: invalidOrderNumber, order: 'cortado' });
       } catch (error) {
-        console.log('throw in update');
         coffeeQueueTableCRUDLHelper.checkGenericError(error?.message);
       }
 
       try {
         await coffeeQueueTableCRUDLHelper.delete({ orderNumber: invalidOrderNumber });
       } catch (error) {
-        console.log('throw in delete');
         coffeeQueueTableCRUDLHelper.checkGenericError(error?.message);
       }
     });
