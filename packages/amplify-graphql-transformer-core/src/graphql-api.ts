@@ -22,6 +22,7 @@ import { Construct } from 'constructs';
 import { TransformerSchema } from './cdk-compat/schema-asset';
 import { DefaultTransformHost } from './transform-host';
 import { setResourceName } from './utils';
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 
 export interface GraphqlApiProps {
   /**
@@ -302,6 +303,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       cloudWatchLogsRoleArn: role.roleArn,
       excludeVerboseContent: config.excludeVerboseContent,
       fieldLogLevel: config.fieldLogLevel,
+      retention: RetentionDays.ONE_WEEK,
     };
   }
 
