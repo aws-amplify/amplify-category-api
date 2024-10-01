@@ -158,7 +158,7 @@ export const isPostgresModel = (ctx: DataSourceStrategiesProvider, typename: str
 /**
  * Type predicate that returns true if `dbType` is a PostgreSQL database type
  */
-export const isPostgresDbType = (dbType: ModelDataSourceStrategyDbType): dbType is ModelDataSourceStrategySqlDbType => {
+export const isPostgresDbType = (dbType: ModelDataSourceStrategyDbType): dbType is 'POSTGRES' => {
   return dbType === POSTGRES_DB_TYPE;
 };
 
