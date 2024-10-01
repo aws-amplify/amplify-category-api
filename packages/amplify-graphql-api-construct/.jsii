@@ -9,22 +9,22 @@
     "@aws-amplify/ai-constructs": "^0.1.4",
     "@aws-amplify/backend-output-schemas": "^1.0.0",
     "@aws-amplify/backend-output-storage": "^1.0.0",
-    "@aws-amplify/graphql-auth-transformer": "4.1.0",
-    "@aws-amplify/graphql-conversation-transformer": "0.2.0",
-    "@aws-amplify/graphql-default-value-transformer": "3.0.2",
-    "@aws-amplify/graphql-directives": "2.1.0",
-    "@aws-amplify/graphql-function-transformer": "3.0.2",
-    "@aws-amplify/graphql-generation-transformer": "0.2.0",
-    "@aws-amplify/graphql-http-transformer": "3.0.2",
-    "@aws-amplify/graphql-index-transformer": "3.0.2",
-    "@aws-amplify/graphql-maps-to-transformer": "4.0.2",
-    "@aws-amplify/graphql-model-transformer": "3.0.2",
-    "@aws-amplify/graphql-predictions-transformer": "3.0.2",
-    "@aws-amplify/graphql-relational-transformer": "3.0.2",
-    "@aws-amplify/graphql-searchable-transformer": "3.0.2",
-    "@aws-amplify/graphql-sql-transformer": "0.4.2",
-    "@aws-amplify/graphql-transformer": "2.1.0",
-    "@aws-amplify/graphql-transformer-core": "3.1.0",
+    "@aws-amplify/graphql-auth-transformer": "4.1.1",
+    "@aws-amplify/graphql-conversation-transformer": "0.2.1",
+    "@aws-amplify/graphql-default-value-transformer": "3.0.3",
+    "@aws-amplify/graphql-directives": "2.2.0",
+    "@aws-amplify/graphql-function-transformer": "3.1.0",
+    "@aws-amplify/graphql-generation-transformer": "0.2.1",
+    "@aws-amplify/graphql-http-transformer": "3.0.3",
+    "@aws-amplify/graphql-index-transformer": "3.0.3",
+    "@aws-amplify/graphql-maps-to-transformer": "4.0.3",
+    "@aws-amplify/graphql-model-transformer": "3.0.3",
+    "@aws-amplify/graphql-predictions-transformer": "3.0.3",
+    "@aws-amplify/graphql-relational-transformer": "3.0.3",
+    "@aws-amplify/graphql-searchable-transformer": "3.0.3",
+    "@aws-amplify/graphql-sql-transformer": "0.4.3",
+    "@aws-amplify/graphql-transformer": "2.1.1",
+    "@aws-amplify/graphql-transformer-core": "3.1.1",
     "@aws-amplify/graphql-transformer-interfaces": "4.1.0",
     "@aws-amplify/platform-core": "^1.0.0",
     "@aws-amplify/plugin-types": "^1.0.0",
@@ -3926,7 +3926,7 @@
     "stability": "stable"
   },
   "homepage": "https://github.com/aws-amplify/amplify-category-api.git",
-  "jsiiVersion": "5.4.23 (build 4babcb9)",
+  "jsiiVersion": "5.5.4 (build 1378d94)",
   "keywords": [
     "awscdk",
     "aws-cdk",
@@ -4386,7 +4386,7 @@
         },
         "locationInModule": {
           "filename": "src/amplify-graphql-api.ts",
-          "line": 138
+          "line": 143
         },
         "parameters": [
           {
@@ -4433,7 +4433,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 286
+            "line": 292
           },
           "name": "addDynamoDbDataSource",
           "parameters": [
@@ -4482,7 +4482,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 298
+            "line": 304
           },
           "name": "addElasticsearchDataSource",
           "parameters": [
@@ -4529,7 +4529,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 308
+            "line": 314
           },
           "name": "addEventBridgeDataSource",
           "parameters": [
@@ -4576,7 +4576,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 390
+            "line": 396
           },
           "name": "addFunction",
           "parameters": [
@@ -4611,7 +4611,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 319
+            "line": 325
           },
           "name": "addHttpDataSource",
           "parameters": [
@@ -4659,7 +4659,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 330
+            "line": 336
           },
           "name": "addLambdaDataSource",
           "parameters": [
@@ -4707,7 +4707,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 341
+            "line": 347
           },
           "name": "addNoneDataSource",
           "parameters": [
@@ -4746,7 +4746,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 352
+            "line": 358
           },
           "name": "addOpenSearchDataSource",
           "parameters": [
@@ -4794,7 +4794,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 365
+            "line": 371
           },
           "name": "addRdsDataSource",
           "parameters": [
@@ -4861,7 +4861,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 381
+            "line": 387
           },
           "name": "addResolver",
           "parameters": [
@@ -4902,7 +4902,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 119
+            "line": 124
           },
           "name": "apiId",
           "type": {
@@ -4917,7 +4917,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 99
+            "line": 104
           },
           "name": "generatedFunctionSlots",
           "type": {
@@ -4950,7 +4950,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 104
+            "line": 109
           },
           "name": "graphqlUrl",
           "type": {
@@ -4966,7 +4966,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 109
+            "line": 114
           },
           "name": "realtimeUrl",
           "type": {
@@ -4990,6 +4990,21 @@
         },
         {
           "docs": {
+            "stability": "stable",
+            "summary": "Reference to parent stack of data construct."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/amplify-graphql-api.ts",
+            "line": 93
+          },
+          "name": "stack",
+          "type": {
+            "fqn": "aws-cdk-lib.Stack"
+          }
+        },
+        {
+          "docs": {
             "remarks": "May be a CDK Token.",
             "stability": "stable",
             "summary": "Generated Api Key if generated."
@@ -4997,7 +5012,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 114
+            "line": 119
           },
           "name": "apiKey",
           "optional": true,
@@ -8886,6 +8901,6 @@
       "symbolId": "src/model-datasource-strategy-types:VpcConfig"
     }
   },
-  "version": "1.12.0",
-  "fingerprint": "WQe8bESYXwkHuayA70K/y1utQFCo4AT58swUXMJSDuc="
+  "version": "1.13.0",
+  "fingerprint": "vpuBiEwYGxPp4Ed7JJUbpcLRtderB+ArtF4LhEUgnQg="
 }

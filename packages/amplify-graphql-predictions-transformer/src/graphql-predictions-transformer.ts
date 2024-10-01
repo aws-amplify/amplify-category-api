@@ -351,7 +351,7 @@ function createResolver(
         }),
       ) as unknown as string);
 
-  return context.api.host.addResolver(
+  return context.api.host.addVtlRuntimeResolver(
     config.resolverTypeName,
     config.resolverFieldName,
     MappingTemplate.inlineTemplateFromString(
@@ -697,7 +697,7 @@ function createActionFunction(context: TransformerContextProvider, stack: cdk.St
       break;
   }
 
-  return context.api.host.addAppSyncFunction(
+  return context.api.host.addAppSyncVtlRuntimeFunction(
     `${action}Function`,
     MappingTemplate.inlineTemplateFromString(print(actionFunctionResolver.request)),
     MappingTemplate.inlineTemplateFromString(print(actionFunctionResolver.response)),
