@@ -2,10 +2,40 @@ import AWSAppSyncClient from 'aws-appsync';
 import gql from 'graphql-tag';
 
 /**
- * Type that represents the GraphQL field selection string structure
- * GraphQL does not diffrentiate between return single object or array of primitives/objects
- * If field value is an object or array of objects, define as nested object, otherwise <[key]: true> pair
- * Future: handle edge cases e.g. nested arrays and optional fields
+ * Type that represents the GraphQL seletion set structure, used for conversion of FieldMap object to selection set string.
+ *
+ * Selecting scalar array:
+ * - Scalar array in GraphQL custom type is same in syntax in selection set as a single scalar field.
+ *
+ * Selecting object/array of objects:
+ * - Syntax for selecting fields is the same regardless of whether a field returns a single object or an array of objects.
+ *
+ * Example:
+ * - selection set in object:
+ *   ```typescript
+ *   { id: number, name: string, tags: string[], address: { street: string, city: string } }
+ *   ```
+ * - in FieldMap:
+ *   ```typescript
+ *   { id: true, name: true, tags: true, address: { street: true, city: true } }
+ *   ```
+ * - in selection set syntax string:
+ *   ```typescript
+ *   `id
+ *    name
+ *    tags
+ *    address {
+ *      street
+ *      city
+ *    }`
+ *   ```
+ *
+ * Note:
+ * - If field value is an object or array of objects, define as nested object.
+ * - Otherwise, use a `<[key]: true>` pair
+ *
+ * Future:
+ * - Handle edge cases e.g. nested arrays and optional fields.
  */
 export type FieldMap = {
   [key: string]: true | FieldMap;
