@@ -219,7 +219,7 @@ export class GQLQueryHelper {
       },
     });
 
-    await new Promise<void>((res) => setTimeout(() => res(), 300000));
+    await new Promise<void>((res) => setTimeout(() => res(), 4000));
     for (const mutation of mutationsToSubscribe) {
       await mutation();
       await new Promise<void>((res) => setTimeout(() => res(), 4000)); // ensure correct order in received data
