@@ -101,10 +101,12 @@ export const testGraphQLAPIAutoIncrement = (
       expect(getUpdatedCoffeeOrder1.orderNumber).toEqual(createCoffeeOrder1.orderNumber);
       expect(getUpdatedCoffeeOrder1.order).toEqual('hot brew');
 
-      // List Todo Query
-      const createCofffeeOrder2 = await coffeeQueueTableCRUDLHelper.create({ order: 'latte' });
-      const listTodo = await coffeeQueueTableCRUDLHelper.list();
+      // List Todo Query & Create with custom SERIAL field value
+      const customOrderNumber = 42;
+      const createCofffeeOrder2 = await coffeeQueueTableCRUDLHelper.create({ orderNumber: customOrderNumber, order: 'latte' });
+      expect(createCofffeeOrder2.orderNumber).toEqual(customOrderNumber);
 
+      const listTodo = await coffeeQueueTableCRUDLHelper.list();
       expect(listTodo.items.length).toEqual(2);
       expect(listTodo.items).toEqual(
         expect.arrayContaining([
