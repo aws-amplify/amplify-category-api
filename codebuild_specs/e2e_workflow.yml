@@ -834,13 +834,13 @@ batch:
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
-    - identifier: sql_pg_array_objects
+    - identifier: sql_pg_auto_increment
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
-          TEST_SUITE: src/__tests__/sql-pg-array-objects.test.ts
+          TEST_SUITE: src/__tests__/sql-pg-auto-increment.test.ts
           CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry

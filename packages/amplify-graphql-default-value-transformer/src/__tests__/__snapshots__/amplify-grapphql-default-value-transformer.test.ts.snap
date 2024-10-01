@@ -3,8 +3,8 @@
 exports[`DefaultValueModelTransformer: should allow auto-increment primary key 1`] = `
 "type CoffeeQueue {
   orderNumber: Int!
-  customer: String!
-  order: String
+  order: String!
+  customer: String
 }
 
 input ModelStringInput {
@@ -164,8 +164,8 @@ type ModelCoffeeQueueConnection {
 
 input ModelCoffeeQueueFilterInput {
   orderNumber: ModelIntInput
-  customer: ModelStringInput
   order: ModelStringInput
+  customer: ModelStringInput
   and: [ModelCoffeeQueueFilterInput]
   or: [ModelCoffeeQueueFilterInput]
   not: ModelCoffeeQueueFilterInput
@@ -177,8 +177,8 @@ type Query {
 }
 
 input ModelCoffeeQueueConditionInput {
-  customer: ModelStringInput
   order: ModelStringInput
+  customer: ModelStringInput
   and: [ModelCoffeeQueueConditionInput]
   or: [ModelCoffeeQueueConditionInput]
   not: ModelCoffeeQueueConditionInput
@@ -186,14 +186,14 @@ input ModelCoffeeQueueConditionInput {
 
 input CreateCoffeeQueueInput {
   orderNumber: Int
-  customer: String!
-  order: String
+  order: String!
+  customer: String
 }
 
 input UpdateCoffeeQueueInput {
   orderNumber: Int!
-  customer: String
   order: String
+  customer: String
 }
 
 input DeleteCoffeeQueueInput {
@@ -208,8 +208,8 @@ type Mutation {
 
 input ModelSubscriptionCoffeeQueueFilterInput {
   orderNumber: ModelSubscriptionIntInput
-  customer: ModelSubscriptionStringInput
   order: ModelSubscriptionStringInput
+  customer: ModelSubscriptionStringInput
   and: [ModelSubscriptionCoffeeQueueFilterInput]
   or: [ModelSubscriptionCoffeeQueueFilterInput]
 }
