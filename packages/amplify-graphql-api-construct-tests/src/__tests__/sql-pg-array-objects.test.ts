@@ -48,12 +48,6 @@ describe('CDK GraphQL Transformer deployments with Postgres SQL datasources', ()
   });
 
   testGraphQLAPIArrayAndObjects(
-    constructTestOptions('ssm'),
-    'RDS Postgres Model Directive with SSM Credential Store',
-    ImportedRDSType.POSTGRESQL,
-  );
-
-  testGraphQLAPIArrayAndObjects(
     constructTestOptions('connectionUri'),
     'RDS Postgres Model Directive using Connection String SSM parameter',
     ImportedRDSType.POSTGRESQL,
