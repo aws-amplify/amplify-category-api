@@ -41,5 +41,9 @@ export function response(ctx) {
   }
 
   const response = toolUse.input.value;
+  if (typeof response === 'string') {
+    return JSON.parse(response);
+  }
+
   return response;
 }
