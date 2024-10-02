@@ -20,6 +20,9 @@ export class CognitoIdentityPoolCredentialsManager {
         userPoolId: this.outputs.userPoolId,
         userPoolWebClientId: this.outputs.webClientId,
         identityPoolId: this.outputs.identityPoolId,
+        signIn: {
+          username: true,
+        },
       },
     });
   }

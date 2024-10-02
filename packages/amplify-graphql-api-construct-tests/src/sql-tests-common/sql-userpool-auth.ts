@@ -58,6 +58,7 @@ export const testGraphQLAPIWithUserPoolAccess = (
       outputs = outputs[name];
       ({ awsAppsyncApiEndpoint } = outputs);
 
+      console.log('Outputs:', outputs);
       const cognitoIdentityPoolCredentialsManager = new CognitoIdentityPoolCredentialsManager(outputs as AuthConstructStackOutputs);
       await cognitoIdentityPoolCredentialsManager.createUser({ username: userName1, email: userName1, password }, [adminGroupName]);
       await cognitoIdentityPoolCredentialsManager.createUser({ username: userName2, email: userName2, password }, [devGroupName]);
@@ -241,8 +242,6 @@ export const testGraphQLAPIWithUserPoolAccess = (
       const createResult = await todoHelper.create(resultSetName, todo);
       expect(createResult.data[resultSetName].id).toBeDefined();
       todo['id'] = createResult.data[resultSetName].id;
-      console.log('user1: ', userMap[userName1]);
-      console.log('result: ', createResult.data[resultSetName]);
       expect(createResult.data[resultSetName].content).toEqual(todo.content);
       expect(createResult.data[resultSetName].author).toEqual(userName1);
 

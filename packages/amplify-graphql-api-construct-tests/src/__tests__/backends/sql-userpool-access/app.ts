@@ -10,6 +10,7 @@ import {
 } from '@aws-amplify/graphql-api-construct';
 import { AmplifyAuth, AuthProps } from '@aws-amplify/auth-construct';
 import { AccountPrincipal, Effect, PolicyDocument, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
+import { CfnUserPoolGroup, UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
 
 interface DBDetails {
   dbConfig: {
@@ -43,14 +44,44 @@ const stack = new Stack(app, packageJson.name.replace(/_/g, '-'), {
   env: { region: process.env.CLI_REGION || 'us-west-2' },
 });
 
-const authProps: AuthProps = {
-  loginWith: {
-    email: true,
-  },
-  groups: ['Admin', 'Dev'],
-};
+// const authProps: AuthProps = {
+//   loginWith: {
+//     email: true,
+//   },
+//   groups: ['Admin', 'Dev'],
+// };
 
-const auth = new AmplifyAuth(stack, 'Auth', authProps);
+// const auth = new AmplifyAuth(stack, 'Auth', authProps);
+
+const userPool = new UserPool(stack, 'UserPool', {
+  signInAliases: {
+    username: true, // Use username as the sign-in alias
+    email: false, // Disable email as a sign-in alias
+  },
+  selfSignUpEnabled: true,
+  autoVerify: { email: true },
+  standardAttributes: {
+    email: {
+      required: true,
+      mutable: false,
+    },
+  },
+});
+userPool.applyRemovalPolicy(RemovalPolicy.DESTROY);
+
+['Admin', 'Dev'].forEach((group) => {
+  new CfnUserPoolGroup(userPool, `CUPGroup${group}`, {
+    userPoolId: userPool.userPoolId,
+    groupName: group,
+  });
+});
+
+const userPoolClient = userPool.addClient('UserPoolClient', {
+  authFlows: {
+    userPassword: true,
+    userSrp: true,
+  },
+});
 
 const api = new AmplifyGraphqlApi(stack, 'SqlBoundApi', {
   apiName: `${dbDetails.dbConfig.dbType}${Date.now()}`,
@@ -73,7 +104,7 @@ const api = new AmplifyGraphqlApi(stack, 'SqlBoundApi', {
     defaultAuthorizationMode: 'API_KEY',
     apiKeyConfig: { expires: Duration.days(7) },
     userPoolConfig: {
-      userPool: auth.resources.userPool,
+      userPool,
     },
   },
   translationBehavior: {
@@ -106,4 +137,5 @@ basicRole.addToPolicy(
 );
 
 new CfnOutput(stack, 'BasicRoleArn', { value: basicRole.roleArn });
-new CfnOutput(stack, 'UserPoolId', { value: auth.resources.userPool.userPoolId });
+new CfnOutput(stack, 'userPoolId', { value: userPool.userPoolId });
+new CfnOutput(stack, 'webClientId', { value: userPoolClient.userPoolClientId });
