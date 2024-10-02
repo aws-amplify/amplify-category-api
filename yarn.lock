@@ -459,10 +459,10 @@
   resolved "https://registry.npmjs.org/@aws-cdk/asset-node-proxy-agent-v6/-/asset-node-proxy-agent-v6-2.1.0.tgz#6d3c7860354d4856a7e75375f2f0ecab313b4989"
   integrity sha512-7bY3J8GCVxLupn/kNmpPc5VJz8grx+4RKfnnJiO1LG+uxkZfANZG3RMHhE+qQxxwkyQ9/MfPtTpf748UhR425A==
 
-"@aws-cdk/aws-cognito-identitypool-alpha@2.158.0-alpha.0":
-  version "2.158.0-alpha.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-cognito-identitypool-alpha/-/aws-cognito-identitypool-alpha-2.158.0-alpha.0.tgz#6bcbfe8ec4060645e9747ebc65f221cf5dec1fdb"
-  integrity sha512-k28MJXn8HXuVdv/uB+6HtUph2Upx9sp9mDmZQKZKrsmTaX/IG1eeoQ2txFmsuWisgY1F0/89rB1Wps8YRSkKng==
+"@aws-cdk/aws-cognito-identitypool-alpha@2.152.0-alpha.0":
+  version "2.152.0-alpha.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-cognito-identitypool-alpha/-/aws-cognito-identitypool-alpha-2.152.0-alpha.0.tgz#5d29345675171afd1eaa594da59561b38ff0ea9d"
+  integrity sha512-6KbF4jog139kAARMBNDbbGQYSon+ggG4peQgv3hDFH49l6r6w+SbrW+jFzgfTGhQLDrlQEB4rPh7EW64xxtfVg==
 
 "@aws-cdk/cloud-assembly-schema@^36.0.24":
   version "36.0.25"

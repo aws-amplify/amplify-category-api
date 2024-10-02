@@ -26,8 +26,6 @@ import {
   signupUser,
 } from '../cognitoUtils';
 import { resolveTestRegion } from '../testSetup';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const AWS = require('aws-sdk');
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
