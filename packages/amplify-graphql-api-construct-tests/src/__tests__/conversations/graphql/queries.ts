@@ -11,10 +11,6 @@ type GeneratedQuery<InputType, OutputType> = string & {
 export const getConversationMessagePirateChat = /* GraphQL */ `query GetConversationMessagePirateChat($id: ID!) {
   getConversationMessagePirateChat(id: $id) {
     aiContext
-    assistantContent {
-      text
-      __typename
-    }
     content {
       text
       __typename
