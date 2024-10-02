@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.14.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.13.0...@aws-amplify/graphql-api-construct@1.14.0) (2024-10-01)
+
+### Features
+
+- exposing stack property for data construct ([#2899](https://github.com/aws-amplify/amplify-category-api/issues/2899)) ([48685dd](https://github.com/aws-amplify/amplify-category-api/commit/48685dd2c0ac5995d5562ff779331669929204f7))
+
 # [1.13.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.12.0...@aws-amplify/graphql-api-construct@1.13.0) (2024-09-16)
 
 ### Features

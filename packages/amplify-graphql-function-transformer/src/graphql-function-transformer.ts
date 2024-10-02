@@ -110,7 +110,7 @@ export class FunctionTransformer extends TransformerPluginBase {
 
         if (func === undefined) {
           const funcScope = context.stackManager.getScopeFor(functionId, FUNCTION_DIRECTIVE_STACK);
-          func = context.api.host.addAppSyncFunction(
+          func = context.api.host.addAppSyncVtlRuntimeFunction(
             functionId,
             MappingTemplate.s3MappingTemplateFromString(
               printBlock(`Invoke AWS Lambda data source: ${dataSourceId}`)(
@@ -171,7 +171,7 @@ export class FunctionTransformer extends TransformerPluginBase {
         if (resolver === undefined) {
           // TODO: update function to use resolver manager.
           const resolverScope = context.stackManager.getScopeFor(resolverId, FUNCTION_DIRECTIVE_STACK);
-          resolver = context.api.host.addResolver(
+          resolver = context.api.host.addVtlRuntimeResolver(
             config.resolverTypeName,
             config.resolverFieldName,
             MappingTemplate.inlineTemplateFromString(printBlock('Stash resolver specific context.')(compoundExpression(requestTemplate))),
