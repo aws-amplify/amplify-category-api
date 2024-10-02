@@ -101,7 +101,7 @@ const api = new AmplifyGraphqlApi(stack, 'SqlBoundApi', {
     },
   }),
   authorizationModes: {
-    defaultAuthorizationMode: 'API_KEY',
+    defaultAuthorizationMode: 'AMAZON_COGNITO_USER_POOLS',
     apiKeyConfig: { expires: Duration.days(7) },
     userPoolConfig: {
       userPool,
