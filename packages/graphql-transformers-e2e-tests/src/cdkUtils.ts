@@ -26,15 +26,6 @@ export const deployJsonServer = () => {
     throw new Error(`'yarn' failed with exit code: ${yarnServerResult.exitCode}`);
   }
 
-  const cdkBootstrapResult = execa.sync('npx', ['cdk', 'bootstrap', '--require-approval', 'never'], {
-    cwd: jsonServerRootDirectory,
-    stdio: 'inherit',
-  });
-
-  if (cdkBootstrapResult.exitCode !== 0) {
-    throw new Error(`CDK bootstrap failed with exit code: ${cdkBootstrapResult.exitCode}`);
-  }
-
   const cdkDeployResult = execa.sync('npx', ['cdk', 'deploy', '--outputsFile', outputValuesFile, '--require-approval', 'never'], {
     cwd: jsonServerRootDirectory,
     stdio: 'inherit',

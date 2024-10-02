@@ -1,0 +1,12 @@
+type Mutation {
+  invalidChat(
+    conversationId: ID!,
+    content: [ContentBlockInput],
+    aiContext: AWSJSON,
+    toolConfiguration: ToolConfigurationInput
+  ): ConversationMessage
+  @conversation(
+    functionName: "conversation-handler",
+    systemPrompt: "You are a helpful chatbot."
+  )
+}

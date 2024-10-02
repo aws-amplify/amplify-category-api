@@ -11231,11 +11231,6 @@ graphql-iso-date@^3.6.1:
   resolved "https://registry.npmjs.org/graphql-iso-date/-/graphql-iso-date-3.6.1.tgz#bd2d0dc886e0f954cbbbc496bbf1d480b57ffa96"
   integrity sha512-AwFGIuYMJQXOEAgRlJlFL4H1ncFM8n8XmoVDTNypNOZyQ8LFDG2ppMFlsS862BSTCDcSUfHp8PD3/uJhv7t59Q==
 
-graphql-mapping-template@4.20.16:
-  version "4.20.16"
-  resolved "https://registry.npmjs.org/graphql-mapping-template/-/graphql-mapping-template-4.20.16.tgz#10e4f1164e09160862bffcb6292df428ba6c0545"
-  integrity sha512-J+shdngmnAxBM4mS4ga2RGusbPRMMO/TfRiNuHNKHxEU8O85us9zC6l7kSQ9hkWQDrKISJfDaesNKO3Jo5GerA==
-
 graphql-request@^1.5.0:
   version "1.8.2"
   resolved "https://registry.npmjs.org/graphql-request/-/graphql-request-1.8.2.tgz#398d10ae15c585676741bde3fc01d5ca948f8fbe"
@@ -11256,39 +11251,6 @@ graphql-tag@^2.10.1:
   integrity sha512-FdSNcu2QQcWnM2VNvSCCDCVS5PpPqpzgFT8+GXzqJuoDd0CBncxCY278u4mhRO7tMgo2JjgJA5aZ+nWSQ/Z+xg==
   dependencies:
     tslib "^2.1.0"
-
-graphql-transformer-common@4.31.1:
-  version "4.31.1"
-  resolved "https://registry.npmjs.org/graphql-transformer-common/-/graphql-transformer-common-4.31.1.tgz#073b9b49e53ad4837b33f6dc466ce94ca6511e9c"
-  integrity sha512-s+C2S3PrDyuAR0ZDj9vq/DaV3ZUMf04VzacIPrc9wodvtF76Jr4E/ZzXnUAC1dKX96oK3E31W/7jilQoyZj8Rg==
-  dependencies:
-    graphql "^15.5.0"
-    graphql-mapping-template "4.20.16"
-    md5 "^2.2.1"
-    pluralize "8.0.0"
-
-graphql-transformer-core@8.2.13:
-  version "8.2.13"
-  resolved "https://registry.npmjs.org/graphql-transformer-core/-/graphql-transformer-core-8.2.13.tgz#bdae5552dd5faf3d08077a07fed6186426e893ce"
-  integrity sha512-gan8hGjilklcDl4XtyepILMVBHNvXy3TyqBVsHINPiv7jHSPJua/fGRGVsbrjCbdhbzjEyE+grSes6MQ9R1UXw==
-  dependencies:
-    cloudform-types "^4.2.0"
-    deep-diff "^1.0.2"
-    fs-extra "^8.1.0"
-    glob "^10.3.0"
-    graphql "^15.5.0"
-    graphql-transformer-common "4.31.1"
-    lodash "^4.17.21"
-
-graphql-versioned-transformer@5.2.80:
-  version "5.2.80"
-  resolved "https://registry.npmjs.org/graphql-versioned-transformer/-/graphql-versioned-transformer-5.2.80.tgz#cec826cf091b64d1f44ab12e42d4c35f2cc5612d"
-  integrity sha512-8fmuuTRZ9v4syn1cjUQOnRaZidpch7Ximq9bbpj4wsdcZbgSquRnodtyGVlIuHp8irMbAxX5TnDlvpSf2k71qw==
-  dependencies:
-    graphql "^15.5.0"
-    graphql-mapping-template "4.20.16"
-    graphql-transformer-common "4.31.1"
-    graphql-transformer-core "8.2.13"
 
 graphql@15.8.0:
   version "15.8.0"

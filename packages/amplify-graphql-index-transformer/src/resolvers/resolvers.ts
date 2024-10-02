@@ -562,7 +562,7 @@ export const makeQueryResolver = (
       `${queryTypeName}.${queryField}.res.vtl`,
     ),
   );
-  resolver.addToSlot(
+  resolver.addVtlFunctionToSlot(
     'postAuth',
     MappingTemplate.s3MappingTemplateFromString(
       generatePostAuthExpression(ctx.transformParameters.sandboxModeEnabled, ctx.synthParameters.enableIamAccess),
@@ -619,7 +619,7 @@ export const mergeInputsAndDefaultsSnippet = (): string => {
 export const addIndexToResolverSlot = (resolver: TransformerResolverProvider, lines: string[], isSync = false): void => {
   const res = resolver as any;
 
-  res.addToSlot(
+  resolver.addVtlFunctionToSlot(
     'preAuth',
     MappingTemplate.s3MappingTemplateFromString(
       `${lines.join('\n')}\n${!isSync ? '{}' : ''}`,
