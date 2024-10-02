@@ -41,7 +41,6 @@ export class GQLQueryHelper {
     const createInput = {
       input,
     };
-    console.log('Create mutation:', createMutation);
     const createResult: any = await this.client.mutate({
       mutation: gql`
         ${createMutation}
@@ -199,7 +198,6 @@ export class GQLQueryHelper {
     };
     const subscriptionResult = [];
 
-    console.log('Subscription operation:', subscriptionOperation);
     const observer = this.client.subscribe({
       query: gql`
         ${subscriptionOperation}
