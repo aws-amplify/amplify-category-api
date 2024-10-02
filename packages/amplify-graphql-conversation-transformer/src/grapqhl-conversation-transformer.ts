@@ -3,6 +3,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import {
+  DataSourceProvider,
   TransformerAuthProvider,
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
@@ -33,6 +34,11 @@ export type ConversationDirectiveConfiguration = {
   conversationModel: ConversationModel;
   messageModel: MessageModel;
   inferenceConfiguration: ConversationInferenceConfiguration;
+  dataSources: {
+    conversationTable: DataSourceProvider;
+    messageTable: DataSourceProvider;
+    lambdaFunction: DataSourceProvider;
+  };
 };
 
 /**
