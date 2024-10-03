@@ -18,7 +18,7 @@ export const createInvokeBedrockResolverFunction = (config: GenerationConfigurat
   const SYSTEM_PROMPT = JSON.stringify(config.systemPrompt);
   const INFERENCE_CONFIG = getInferenceConfigResolverDefinition(inferenceConfiguration);
 
-  const NON_STRING_RESPONSE_HANDLING = getBaseType(config.field.type)  === 'String'
+  const NON_STRING_RESPONSE_HANDLING = stringTypedScalarTypes.includes(getBaseType(config.field.type))
     ? ''
     : `// Added for non-string scalar response types
   // This catches the occasional stringified JSON response.
@@ -58,3 +58,5 @@ const getInferenceConfigResolverDefinition = (inferenceConfiguration?: Inference
     ? `{ inferenceConfig: ${JSON.stringify(inferenceConfiguration)} },`
     : 'undefined';
 };
+
+const stringTypedScalarTypes = ['String', 'ID', 'AWSJSON'];
