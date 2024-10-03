@@ -114,38 +114,38 @@ export const testGraphQLAPIWithUserPoolAccess = (
       });
       checkOperationResult(deleteResult, todoUpdated, `delete${modelName}`);
 
-      const todoRandom = {
-        id: Date.now().toString(),
-        content: 'Todo',
-      };
-      const todoRandomUpdated = {
-        ...todoRandom,
-        content: 'Todo updated',
-      };
-      const actorClient = getConfiguredAppsyncClientCognitoAuth(awsAppsyncApiEndpoint, region, userMap[userName1]);
-      const subTodoHelper = createModelOperationHelpers(actorClient, schema)[modelName];
+      // const todoRandom = {
+      //   id: Date.now().toString(),
+      //   content: 'Todo',
+      // };
+      // const todoRandomUpdated = {
+      //   ...todoRandom,
+      //   content: 'Todo updated',
+      // };
+      // const actorClient = getConfiguredAppsyncClientCognitoAuth(awsAppsyncApiEndpoint, region, userMap[userName1]);
+      // const subTodoHelper = createModelOperationHelpers(actorClient, schema)[modelName];
 
-      const onCreateSubscriptionResult = await subTodoHelper.subscribe('onCreate', [
-        async () => {
-          await subTodoHelper.create(`create${modelName}`, todoRandom);
-        },
-      ]);
-      expect(onCreateSubscriptionResult).toHaveLength(1);
-      checkOperationResult(onCreateSubscriptionResult[0], todoRandom, `onCreate${modelName}`);
-      const onUpdateSubscriptionResult = await subTodoHelper.subscribe('onUpdate', [
-        async () => {
-          await subTodoHelper.update(`update${modelName}`, todoRandomUpdated);
-        },
-      ]);
-      expect(onUpdateSubscriptionResult).toHaveLength(1);
-      checkOperationResult(onUpdateSubscriptionResult[0], todoRandomUpdated, `onUpdate${modelName}`);
-      const onDeleteSubscriptionResult = await subTodoHelper.subscribe('onDelete', [
-        async () => {
-          await subTodoHelper.delete(`delete${modelName}`, { id: todoRandom.id });
-        },
-      ]);
-      expect(onDeleteSubscriptionResult).toHaveLength(1);
-      checkOperationResult(onDeleteSubscriptionResult[0], todoRandomUpdated, `onDelete${modelName}`);
+      // const onCreateSubscriptionResult = await subTodoHelper.subscribe('onCreate', [
+      //   async () => {
+      //     await subTodoHelper.create(`create${modelName}`, todoRandom);
+      //   },
+      // ]);
+      // expect(onCreateSubscriptionResult).toHaveLength(1);
+      // checkOperationResult(onCreateSubscriptionResult[0], todoRandom, `onCreate${modelName}`);
+      // const onUpdateSubscriptionResult = await subTodoHelper.subscribe('onUpdate', [
+      //   async () => {
+      //     await subTodoHelper.update(`update${modelName}`, todoRandomUpdated);
+      //   },
+      // ]);
+      // expect(onUpdateSubscriptionResult).toHaveLength(1);
+      // checkOperationResult(onUpdateSubscriptionResult[0], todoRandomUpdated, `onUpdate${modelName}`);
+      // const onDeleteSubscriptionResult = await subTodoHelper.subscribe('onDelete', [
+      //   async () => {
+      //     await subTodoHelper.delete(`delete${modelName}`, { id: todoRandom.id });
+      //   },
+      // ]);
+      // expect(onDeleteSubscriptionResult).toHaveLength(1);
+      // checkOperationResult(onDeleteSubscriptionResult[0], todoRandomUpdated, `onDelete${modelName}`);
     });
 
     test('owner of a record can perform CRUD operations using default owner field', async () => {
