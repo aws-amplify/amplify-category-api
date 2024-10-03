@@ -57,7 +57,9 @@ export const response = (ctx) => {
 
 exports[`generation route all scalar types 2`] = `
 {
-  "makeBox-invoke-bedrock-fn": "export function request(ctx) {
+  "makeBox-invoke-bedrock-fn": "import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
   const toolConfig = {"tools":[{"toolSpec":{"name":"responseType","description":"Generate a response type for the given field","inputSchema":{"json":{"type":"object","properties":{"value":{"type":"object","properties":{"int":{"type":"number","description":"A signed 32-bit integer value."},"float":{"type":"number","description":"An IEEE 754 floating point value."},"string":{"type":"string","description":"A UTF-8 character sequence."},"id":{"type":"string","description":"A unique identifier for an object. This scalar is serialized like a String but isn't meant to be human-readable."},"boolean":{"type":"boolean","description":"A boolean value."},"awsjson":{"type":"string","description":"A JSON string. Any valid JSON construct is automatically parsed and loaded in the resolver code as maps, lists, or scalar values rather than as the literal input strings. Unquoted strings or otherwise invalid JSON result in a GraphQL validation error."},"awsemail":{"type":"string","description":"An email address in the format local-part@domain-part as defined by RFC 822.","pattern":"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$"},"awsdate":{"type":"string","description":"An extended ISO 8601 date string in the format YYYY-MM-DD.","pattern":"^\\\\d{4}-d{2}-d{2}$"},"awstime":{"type":"string","description":"An extended ISO 8601 time string in the format hh:mm:ss.sss.","pattern":"^\\\\d{2}:\\\\d{2}:\\\\d{2}\\\\.\\\\d{3}$"},"awsdatetime":{"type":"string","description":"An extended ISO 8601 date and time string in the format YYYY-MM-DDThh:mm:ss.sssZ.","pattern":"^\\\\d{4}-\\\\d{2}-\\\\d{2}T\\\\d{2}:\\\\d{2}:\\\\d{2}\\\\.\\\\d{3}Z$"},"awstimestamp":{"type":"string","description":"An integer value representing the number of seconds before or after 1970-01-01-T00:00Z.","pattern":"^\\\\d+$"},"awsphone":{"type":"string","description":"A phone number. This value is stored as a string. Phone numbers can contain either spaces or hyphens to separate digit groups. Phone numbers without a country code are assumed to be US/North American numbers adhering to the North American Numbering Plan (NANP).","pattern":"^\\\\d{3}-d{3}-d{4}$"},"awsurl":{"type":"string","description":"A URL as defined by RFC 1738. For example, https://www.amazon.com/dp/B000NZW3KC/ or mailto:example@example.com. URLs must contain a schema (http, mailto) and can't contain two forward slashes (//) in the path part.","pattern":"^(https?|mailto)://[^s/$.?#].[^s]*$"},"awsipaddress":{"type":"string","description":"A valid IPv4 or IPv6 address. IPv4 addresses are expected in quad-dotted notation (123.12.34.56). IPv6 addresses are expected in non-bracketed, colon-separated format (1a2b:3c4b::1234:4567). You can include an optional CIDR suffix (123.45.67.89/16) to indicate subnet mask."}},"required":[]}},"required":["value"]}}}}],"toolChoice":{"tool":{"name":"responseType"}}};
   const prompt = "";
   const args = JSON.stringify(ctx.args);
@@ -87,24 +89,37 @@ export function response(ctx) {
   if (ctx.error) {
     util.error(ctx.error.message, ctx.error.type);
   }
+
+  // Check for AccessDeniedException.
+  // This can happen if:
+  //   1. The Bedrock model isn't enabled in enabled in this region.
+  //   2. The IAM policy statement for the role assumed by the data source for this
+  //    resolver doesn't include them model. This shouldn't happen.
+  // We're using a generic error description here (as opposed to using the response body)
+  // to prevent information about the system from leaking.
+  const errorType = ctx.result.headers['x-amzn-ErrorType'];
+  if (errorType) {
+    if (errorType.startsWith('AccessDeniedException')) {
+      const errorMessage = 'The model is disabled or this generation route is missing a necessaryidentity-based policy.';
+      util.error(errorMessage, 'AccessDeniedException');
+    }
+
+   util.error('', errorType);
+  }
+
   const body = JSON.parse(ctx.result.body);
-  const { content } = body.output.message;
+  const value = body?.output?.message?.content?.[0]?.toolUse?.input?.value;
 
-  if (content.length < 1) {
-    util.error('No content block in assistant response.', 'error');
+  if (!value) {
+    util.error('Invalid Bedrock response', 'InvalidResponseException');
   }
 
-  const toolUse = content[0].toolUse;
-  if (!toolUse) {
-    util.error('Missing tool use block in assistant response.', 'error');
+  // Added for non-string scalar response types
+  // This catches the occasional stringified JSON response.
+  if (typeof value === 'string') {
+    return JSON.parse(value);
   }
-
-  const response = toolUse.input.value;
-  if (typeof response === 'string') {
-    return JSON.parse(response);
-  }
-
-  return response;
+  return value;
 }
 ",
 }
@@ -167,7 +182,9 @@ export const response = (ctx) => {
 
 exports[`generation route custom query 2`] = `
 {
-  "generateRecipe-invoke-bedrock-fn": "export function request(ctx) {
+  "generateRecipe-invoke-bedrock-fn": "import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
   const toolConfig = {"tools":[{"toolSpec":{"name":"responseType","description":"Generate a response type for the given field","inputSchema":{"json":{"type":"object","properties":{"value":{"type":"object","properties":{"name":{"type":"string","description":"A UTF-8 character sequence."},"ingredients":{"type":"array","items":{"type":"string","description":"A UTF-8 character sequence."}},"instructions":{"type":"string","description":"A UTF-8 character sequence."},"meal":{"type":"object","properties":{"Meal":{"type":"string","enum":["BREAKFAST","LUNCH","DINNER"]}},"required":[]}},"required":[]}},"required":["value"]}}}}],"toolChoice":{"tool":{"name":"responseType"}}};
   const prompt = "You are a helpful assistant that generates recipes.";
   const args = JSON.stringify(ctx.args);
@@ -197,24 +214,37 @@ export function response(ctx) {
   if (ctx.error) {
     util.error(ctx.error.message, ctx.error.type);
   }
+
+  // Check for AccessDeniedException.
+  // This can happen if:
+  //   1. The Bedrock model isn't enabled in enabled in this region.
+  //   2. The IAM policy statement for the role assumed by the data source for this
+  //    resolver doesn't include them model. This shouldn't happen.
+  // We're using a generic error description here (as opposed to using the response body)
+  // to prevent information about the system from leaking.
+  const errorType = ctx.result.headers['x-amzn-ErrorType'];
+  if (errorType) {
+    if (errorType.startsWith('AccessDeniedException')) {
+      const errorMessage = 'The model is disabled or this generation route is missing a necessaryidentity-based policy.';
+      util.error(errorMessage, 'AccessDeniedException');
+    }
+
+   util.error('', errorType);
+  }
+
   const body = JSON.parse(ctx.result.body);
-  const { content } = body.output.message;
+  const value = body?.output?.message?.content?.[0]?.toolUse?.input?.value;
 
-  if (content.length < 1) {
-    util.error('No content block in assistant response.', 'error');
+  if (!value) {
+    util.error('Invalid Bedrock response', 'InvalidResponseException');
   }
 
-  const toolUse = content[0].toolUse;
-  if (!toolUse) {
-    util.error('Missing tool use block in assistant response.', 'error');
+  // Added for non-string scalar response types
+  // This catches the occasional stringified JSON response.
+  if (typeof value === 'string') {
+    return JSON.parse(value);
   }
-
-  const response = toolUse.input.value;
-  if (typeof response === 'string') {
-    return JSON.parse(response);
-  }
-
-  return response;
+  return value;
 }
 ",
 }
@@ -276,7 +306,9 @@ export const response = (ctx) => {
 `;
 
 exports[`generation route model type with null timestamps 2`] = `
-"export function request(ctx) {
+"import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
   const toolConfig = {"tools":[{"toolSpec":{"name":"responseType","description":"Generate a response type for the given field","inputSchema":{"json":{"type":"object","properties":{"value":{"type":"object","properties":{"content":{"type":"string","description":"A UTF-8 character sequence."},"isDone":{"type":"boolean","description":"A boolean value."},"id":{"type":"string","description":"A unique identifier for an object. This scalar is serialized like a String but isn't meant to be human-readable."}},"required":["id"]}},"required":["value"]}}}}],"toolChoice":{"tool":{"name":"responseType"}}};
   const prompt = "Make a string based on the description.";
   const args = JSON.stringify(ctx.args);
@@ -306,24 +338,37 @@ export function response(ctx) {
   if (ctx.error) {
     util.error(ctx.error.message, ctx.error.type);
   }
+
+  // Check for AccessDeniedException.
+  // This can happen if:
+  //   1. The Bedrock model isn't enabled in enabled in this region.
+  //   2. The IAM policy statement for the role assumed by the data source for this
+  //    resolver doesn't include them model. This shouldn't happen.
+  // We're using a generic error description here (as opposed to using the response body)
+  // to prevent information about the system from leaking.
+  const errorType = ctx.result.headers['x-amzn-ErrorType'];
+  if (errorType) {
+    if (errorType.startsWith('AccessDeniedException')) {
+      const errorMessage = 'The model is disabled or this generation route is missing a necessaryidentity-based policy.';
+      util.error(errorMessage, 'AccessDeniedException');
+    }
+
+   util.error('', errorType);
+  }
+
   const body = JSON.parse(ctx.result.body);
-  const { content } = body.output.message;
+  const value = body?.output?.message?.content?.[0]?.toolUse?.input?.value;
 
-  if (content.length < 1) {
-    util.error('No content block in assistant response.', 'error');
+  if (!value) {
+    util.error('Invalid Bedrock response', 'InvalidResponseException');
   }
 
-  const toolUse = content[0].toolUse;
-  if (!toolUse) {
-    util.error('Missing tool use block in assistant response.', 'error');
+  // Added for non-string scalar response types
+  // This catches the occasional stringified JSON response.
+  if (typeof value === 'string') {
+    return JSON.parse(value);
   }
-
-  const response = toolUse.input.value;
-  if (typeof response === 'string') {
-    return JSON.parse(response);
-  }
-
-  return response;
+  return value;
 }
 "
 `;
@@ -402,7 +447,9 @@ $util.toJson({"version":"2018-05-29","payload":{}})
   "Query.makeTodo.auth.1.res.vtl": "## [Start] Return Source Field. **
 $util.toJson($context.source["makeTodo"])
 ## [End] Return Source Field. **",
-  "makeTodo-invoke-bedrock-fn": "export function request(ctx) {
+  "makeTodo-invoke-bedrock-fn": "import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
   const toolConfig = {"tools":[{"toolSpec":{"name":"responseType","description":"Generate a response type for the given field","inputSchema":{"json":{"type":"object","properties":{"value":{"type":"string","description":"A UTF-8 character sequence."}},"required":["value"]}}}}],"toolChoice":{"tool":{"name":"responseType"}}};
   const prompt = "Make a string based on the description.";
   const args = JSON.stringify(ctx.args);
@@ -432,24 +479,33 @@ export function response(ctx) {
   if (ctx.error) {
     util.error(ctx.error.message, ctx.error.type);
   }
+
+  // Check for AccessDeniedException.
+  // This can happen if:
+  //   1. The Bedrock model isn't enabled in enabled in this region.
+  //   2. The IAM policy statement for the role assumed by the data source for this
+  //    resolver doesn't include them model. This shouldn't happen.
+  // We're using a generic error description here (as opposed to using the response body)
+  // to prevent information about the system from leaking.
+  const errorType = ctx.result.headers['x-amzn-ErrorType'];
+  if (errorType) {
+    if (errorType.startsWith('AccessDeniedException')) {
+      const errorMessage = 'The model is disabled or this generation route is missing a necessaryidentity-based policy.';
+      util.error(errorMessage, 'AccessDeniedException');
+    }
+
+   util.error('', errorType);
+  }
+
   const body = JSON.parse(ctx.result.body);
-  const { content } = body.output.message;
+  const value = body?.output?.message?.content?.[0]?.toolUse?.input?.value;
 
-  if (content.length < 1) {
-    util.error('No content block in assistant response.', 'error');
+  if (!value) {
+    util.error('Invalid Bedrock response', 'InvalidResponseException');
   }
 
-  const toolUse = content[0].toolUse;
-  if (!toolUse) {
-    util.error('Missing tool use block in assistant response.', 'error');
-  }
-
-  const response = toolUse.input.value;
-  if (typeof response === 'string') {
-    return JSON.parse(response);
-  }
-
-  return response;
+  
+  return value;
 }
 ",
 }
@@ -457,7 +513,9 @@ export function response(ctx) {
 
 exports[`generation route with valid inference configuration 1`] = `
 {
-  "generateWithConfig-invoke-bedrock-fn": "export function request(ctx) {
+  "generateWithConfig-invoke-bedrock-fn": "import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
   const toolConfig = {"tools":[{"toolSpec":{"name":"responseType","description":"Generate a response type for the given field","inputSchema":{"json":{"type":"object","properties":{"value":{"type":"string","description":"A UTF-8 character sequence."}},"required":["value"]}}}}],"toolChoice":{"tool":{"name":"responseType"}}};
   const prompt = "Generate a string based on the description.";
   const args = JSON.stringify(ctx.args);
@@ -487,24 +545,33 @@ export function response(ctx) {
   if (ctx.error) {
     util.error(ctx.error.message, ctx.error.type);
   }
+
+  // Check for AccessDeniedException.
+  // This can happen if:
+  //   1. The Bedrock model isn't enabled in enabled in this region.
+  //   2. The IAM policy statement for the role assumed by the data source for this
+  //    resolver doesn't include them model. This shouldn't happen.
+  // We're using a generic error description here (as opposed to using the response body)
+  // to prevent information about the system from leaking.
+  const errorType = ctx.result.headers['x-amzn-ErrorType'];
+  if (errorType) {
+    if (errorType.startsWith('AccessDeniedException')) {
+      const errorMessage = 'The model is disabled or this generation route is missing a necessaryidentity-based policy.';
+      util.error(errorMessage, 'AccessDeniedException');
+    }
+
+   util.error('', errorType);
+  }
+
   const body = JSON.parse(ctx.result.body);
-  const { content } = body.output.message;
+  const value = body?.output?.message?.content?.[0]?.toolUse?.input?.value;
 
-  if (content.length < 1) {
-    util.error('No content block in assistant response.', 'error');
+  if (!value) {
+    util.error('Invalid Bedrock response', 'InvalidResponseException');
   }
 
-  const toolUse = content[0].toolUse;
-  if (!toolUse) {
-    util.error('Missing tool use block in assistant response.', 'error');
-  }
-
-  const response = toolUse.input.value;
-  if (typeof response === 'string') {
-    return JSON.parse(response);
-  }
-
-  return response;
+  
+  return value;
 }
 ",
 }

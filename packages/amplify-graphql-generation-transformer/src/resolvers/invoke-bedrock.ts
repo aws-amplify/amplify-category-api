@@ -3,6 +3,7 @@ import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interf
 import { GenerationConfigurationWithToolConfig, InferenceConfiguration } from '../grapqhl-generation-transformer';
 import fs from 'fs';
 import path from 'path';
+import { getBaseType } from 'graphql-transformer-common';
 
 /**
  * Creates the resolver functions for invoking Amazon Bedrock.
@@ -17,11 +18,20 @@ export const createInvokeBedrockResolverFunction = (config: GenerationConfigurat
   const SYSTEM_PROMPT = JSON.stringify(config.systemPrompt);
   const INFERENCE_CONFIG = getInferenceConfigResolverDefinition(inferenceConfiguration);
 
+  const NON_STRING_RESPONSE_HANDLING = getBaseType(config.field.type)  === 'String'
+    ? ''
+    : `// Added for non-string scalar response types
+  // This catches the occasional stringified JSON response.
+  if (typeof value === 'string') {
+    return JSON.parse(value);
+  }`;
+
   const resolver = generateResolver('invoke-bedrock-resolver-fn.template.js', {
     AI_MODEL,
     TOOL_CONFIG,
     SYSTEM_PROMPT,
     INFERENCE_CONFIG,
+    NON_STRING_RESPONSE_HANDLING,
   });
 
   const templateName = `${field.name.value}-invoke-bedrock-fn`;
