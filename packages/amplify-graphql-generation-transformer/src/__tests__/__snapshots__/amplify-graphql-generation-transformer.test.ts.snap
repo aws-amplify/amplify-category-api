@@ -60,7 +60,7 @@ exports[`generation route all scalar types 2`] = `
   "makeBox-invoke-bedrock-fn": "import { util } from '@aws-appsync/utils';
 
 export function request(ctx) {
-  const toolConfig = {"tools":[{"toolSpec":{"name":"responseType","description":"Generate a response type for the given field. Use well-structured JSON. JSON.parse(value) will be used to parse the response.","inputSchema":{"json":{"type":"object","properties":{"value":{"type":"object","properties":{"int":{"type":"number","description":"A signed 32-bit integer value."},"float":{"type":"number","description":"An IEEE 754 floating point value."},"string":{"type":"string","description":"A UTF-8 character sequence."},"id":{"type":"string","description":"A unique identifier for an object. This scalar is serialized like a String but isn't meant to be human-readable."},"boolean":{"type":"boolean","description":"A boolean value."},"awsjson":{"type":"string","description":"A JSON string. Any valid JSON construct is automatically parsed and loaded in the resolver code as maps, lists, or scalar values rather than as the literal input strings. Unquoted strings or otherwise invalid JSON result in a GraphQL validation error."},"awsemail":{"type":"string","description":"An email address in the format local-part@domain-part as defined by RFC 822.","pattern":"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$"},"awsdate":{"type":"string","description":"An extended ISO 8601 date string in the format YYYY-MM-DD.","pattern":"^\\\\d{4}-d{2}-d{2}$"},"awstime":{"type":"string","description":"An extended ISO 8601 time string in the format hh:mm:ss.sss.","pattern":"^\\\\d{2}:\\\\d{2}:\\\\d{2}\\\\.\\\\d{3}$"},"awsdatetime":{"type":"string","description":"An extended ISO 8601 date and time string in the format YYYY-MM-DDThh:mm:ss.sssZ.","pattern":"^\\\\d{4}-\\\\d{2}-\\\\d{2}T\\\\d{2}:\\\\d{2}:\\\\d{2}\\\\.\\\\d{3}Z$"},"awstimestamp":{"type":"string","description":"An integer value representing the number of seconds before or after 1970-01-01-T00:00Z.","pattern":"^\\\\d+$"},"awsphone":{"type":"string","description":"A phone number. This value is stored as a string. Phone numbers can contain either spaces or hyphens to separate digit groups. Phone numbers without a country code are assumed to be US/North American numbers adhering to the North American Numbering Plan (NANP).","pattern":"^\\\\d{3}-d{3}-d{4}$"},"awsurl":{"type":"string","description":"A URL as defined by RFC 1738. For example, https://www.amazon.com/dp/B000NZW3KC/ or mailto:example@example.com. URLs must contain a schema (http, mailto) and can't contain two forward slashes (//) in the path part.","pattern":"^(https?|mailto)://[^s/$.?#].[^s]*$"},"awsipaddress":{"type":"string","description":"A valid IPv4 or IPv6 address. IPv4 addresses are expected in quad-dotted notation (123.12.34.56). IPv6 addresses are expected in non-bracketed, colon-separated format (1a2b:3c4b::1234:4567). You can include an optional CIDR suffix (123.45.67.89/16) to indicate subnet mask."}},"required":[]}},"required":["value"]}}}}],"toolChoice":{"tool":{"name":"responseType"}}};
+  const toolConfig = {"tools":[{"toolSpec":{"name":"responseType","description":"Generate a response type for the given field.","inputSchema":{"json":{"type":"object","properties":{"value":{"type":"object","properties":{"int":{"type":"number","description":"A signed 32-bit integer value."},"float":{"type":"number","description":"An IEEE 754 floating point value."},"string":{"type":"string","description":"A UTF-8 character sequence."},"id":{"type":"string","description":"A unique identifier for an object. This scalar is serialized like a String but isn't meant to be human-readable."},"boolean":{"type":"boolean","description":"A boolean value."},"awsjson":{"type":"string","description":"A JSON string. Any valid JSON construct is automatically parsed and loaded in the resolver code as maps, lists, or scalar values rather than as the literal input strings. Unquoted strings or otherwise invalid JSON result in a GraphQL validation error."},"awsemail":{"type":"string","description":"An email address in the format local-part@domain-part as defined by RFC 822.","pattern":"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$"},"awsdate":{"type":"string","description":"An extended ISO 8601 date string in the format YYYY-MM-DD.","pattern":"^\\\\d{4}-d{2}-d{2}$"},"awstime":{"type":"string","description":"An extended ISO 8601 time string in the format hh:mm:ss.sss.","pattern":"^\\\\d{2}:\\\\d{2}:\\\\d{2}\\\\.\\\\d{3}$"},"awsdatetime":{"type":"string","description":"An extended ISO 8601 date and time string in the format YYYY-MM-DDThh:mm:ss.sssZ.","pattern":"^\\\\d{4}-\\\\d{2}-\\\\d{2}T\\\\d{2}:\\\\d{2}:\\\\d{2}\\\\.\\\\d{3}Z$"},"awstimestamp":{"type":"string","description":"An integer value representing the number of seconds before or after 1970-01-01-T00:00Z.","pattern":"^\\\\d+$"},"awsphone":{"type":"string","description":"A phone number. This value is stored as a string. Phone numbers can contain either spaces or hyphens to separate digit groups. Phone numbers without a country code are assumed to be US/North American numbers adhering to the North American Numbering Plan (NANP).","pattern":"^\\\\d{3}-d{3}-d{4}$"},"awsurl":{"type":"string","description":"A URL as defined by RFC 1738. For example, https://www.amazon.com/dp/B000NZW3KC/ or mailto:example@example.com. URLs must contain a schema (http, mailto) and can't contain two forward slashes (//) in the path part.","pattern":"^(https?|mailto)://[^s/$.?#].[^s]*$"},"awsipaddress":{"type":"string","description":"A valid IPv4 or IPv6 address. IPv4 addresses are expected in quad-dotted notation (123.12.34.56). IPv6 addresses are expected in non-bracketed, colon-separated format (1a2b:3c4b::1234:4567). You can include an optional CIDR suffix (123.45.67.89/16) to indicate subnet mask."}},"required":[]}},"required":["value"]}}}}],"toolChoice":{"tool":{"name":"responseType"}}};
   const prompt = "";
   const args = JSON.stringify(ctx.args);
   const inferenceConfig = undefined;
@@ -104,7 +104,7 @@ export function response(ctx) {
       util.error(errorMessage, 'AccessDeniedException');
     }
 
-   util.error('', errorType);
+    util.error('', errorType);
   }
 
   const body = JSON.parse(ctx.result.body);
@@ -185,7 +185,7 @@ exports[`generation route custom query 2`] = `
   "generateRecipe-invoke-bedrock-fn": "import { util } from '@aws-appsync/utils';
 
 export function request(ctx) {
-  const toolConfig = {"tools":[{"toolSpec":{"name":"responseType","description":"Generate a response type for the given field. Use well-structured JSON. JSON.parse(value) will be used to parse the response.","inputSchema":{"json":{"type":"object","properties":{"value":{"type":"object","properties":{"name":{"type":"string","description":"A UTF-8 character sequence."},"ingredients":{"type":"array","items":{"type":"string","description":"A UTF-8 character sequence."}},"instructions":{"type":"string","description":"A UTF-8 character sequence."},"meal":{"type":"object","properties":{"Meal":{"type":"string","enum":["BREAKFAST","LUNCH","DINNER"]}},"required":[]}},"required":[]}},"required":["value"]}}}}],"toolChoice":{"tool":{"name":"responseType"}}};
+  const toolConfig = {"tools":[{"toolSpec":{"name":"responseType","description":"Generate a response type for the given field.","inputSchema":{"json":{"type":"object","properties":{"value":{"type":"object","properties":{"name":{"type":"string","description":"A UTF-8 character sequence."},"ingredients":{"type":"array","items":{"type":"string","description":"A UTF-8 character sequence."}},"instructions":{"type":"string","description":"A UTF-8 character sequence."},"meal":{"type":"object","properties":{"Meal":{"type":"string","enum":["BREAKFAST","LUNCH","DINNER"]}},"required":[]}},"required":[]}},"required":["value"]}}}}],"toolChoice":{"tool":{"name":"responseType"}}};
   const prompt = "You are a helpful assistant that generates recipes.";
   const args = JSON.stringify(ctx.args);
   const inferenceConfig = undefined;
@@ -229,7 +229,7 @@ export function response(ctx) {
       util.error(errorMessage, 'AccessDeniedException');
     }
 
-   util.error('', errorType);
+    util.error('', errorType);
   }
 
   const body = JSON.parse(ctx.result.body);
@@ -309,7 +309,7 @@ exports[`generation route model type with null timestamps 2`] = `
 "import { util } from '@aws-appsync/utils';
 
 export function request(ctx) {
-  const toolConfig = {"tools":[{"toolSpec":{"name":"responseType","description":"Generate a response type for the given field. Use well-structured JSON. JSON.parse(value) will be used to parse the response.","inputSchema":{"json":{"type":"object","properties":{"value":{"type":"object","properties":{"content":{"type":"string","description":"A UTF-8 character sequence."},"isDone":{"type":"boolean","description":"A boolean value."},"id":{"type":"string","description":"A unique identifier for an object. This scalar is serialized like a String but isn't meant to be human-readable."}},"required":["id"]}},"required":["value"]}}}}],"toolChoice":{"tool":{"name":"responseType"}}};
+  const toolConfig = {"tools":[{"toolSpec":{"name":"responseType","description":"Generate a response type for the given field.","inputSchema":{"json":{"type":"object","properties":{"value":{"type":"object","properties":{"content":{"type":"string","description":"A UTF-8 character sequence."},"isDone":{"type":"boolean","description":"A boolean value."},"id":{"type":"string","description":"A unique identifier for an object. This scalar is serialized like a String but isn't meant to be human-readable."}},"required":["id"]}},"required":["value"]}}}}],"toolChoice":{"tool":{"name":"responseType"}}};
   const prompt = "Make a string based on the description.";
   const args = JSON.stringify(ctx.args);
   const inferenceConfig = undefined;
@@ -353,7 +353,7 @@ export function response(ctx) {
       util.error(errorMessage, 'AccessDeniedException');
     }
 
-   util.error('', errorType);
+    util.error('', errorType);
   }
 
   const body = JSON.parse(ctx.result.body);
@@ -450,7 +450,7 @@ $util.toJson($context.source["makeTodo"])
   "makeTodo-invoke-bedrock-fn": "import { util } from '@aws-appsync/utils';
 
 export function request(ctx) {
-  const toolConfig = {"tools":[{"toolSpec":{"name":"responseType","description":"Generate a response type for the given field. Use well-structured JSON. JSON.parse(value) will be used to parse the response.","inputSchema":{"json":{"type":"object","properties":{"value":{"type":"string","description":"A UTF-8 character sequence."}},"required":["value"]}}}}],"toolChoice":{"tool":{"name":"responseType"}}};
+  const toolConfig = {"tools":[{"toolSpec":{"name":"responseType","description":"Generate a response type for the given field.","inputSchema":{"json":{"type":"object","properties":{"value":{"type":"string","description":"A UTF-8 character sequence."}},"required":["value"]}}}}],"toolChoice":{"tool":{"name":"responseType"}}};
   const prompt = "Make a string based on the description.";
   const args = JSON.stringify(ctx.args);
   const inferenceConfig = undefined;
@@ -494,7 +494,7 @@ export function response(ctx) {
       util.error(errorMessage, 'AccessDeniedException');
     }
 
-   util.error('', errorType);
+    util.error('', errorType);
   }
 
   const body = JSON.parse(ctx.result.body);
@@ -516,7 +516,7 @@ exports[`generation route with valid inference configuration 1`] = `
   "generateWithConfig-invoke-bedrock-fn": "import { util } from '@aws-appsync/utils';
 
 export function request(ctx) {
-  const toolConfig = {"tools":[{"toolSpec":{"name":"responseType","description":"Generate a response type for the given field. Use well-structured JSON. JSON.parse(value) will be used to parse the response.","inputSchema":{"json":{"type":"object","properties":{"value":{"type":"string","description":"A UTF-8 character sequence."}},"required":["value"]}}}}],"toolChoice":{"tool":{"name":"responseType"}}};
+  const toolConfig = {"tools":[{"toolSpec":{"name":"responseType","description":"Generate a response type for the given field.","inputSchema":{"json":{"type":"object","properties":{"value":{"type":"string","description":"A UTF-8 character sequence."}},"required":["value"]}}}}],"toolChoice":{"tool":{"name":"responseType"}}};
   const prompt = "Generate a string based on the description.";
   const args = JSON.stringify(ctx.args);
   const inferenceConfig = { inferenceConfig: {"maxTokens":100,"temperature":0.7,"topP":0.9} },;
@@ -560,7 +560,7 @@ export function response(ctx) {
       util.error(errorMessage, 'AccessDeniedException');
     }
 
-   util.error('', errorType);
+    util.error('', errorType);
   }
 
   const body = JSON.parse(ctx.result.body);
