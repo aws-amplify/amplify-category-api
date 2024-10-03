@@ -122,7 +122,7 @@ export type ExecuteTransformConfig = TransformConfig &
     parameterProvider?: TransformParameterProvider;
     assetProvider: AssetProvider;
     synthParameters: SynthParameters;
-    logConfig?: LogConfig;
+    logging?: true | LogConfig;
   };
 
 /**
@@ -166,7 +166,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
     scope,
     sqlDirectiveDataSourceStrategies,
     synthParameters,
-    logConfig,
+    logging,
   } = config;
 
   const printLog = printTransformerLog ?? defaultPrintTransformerLog;
@@ -183,7 +183,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
       scope,
       sqlDirectiveDataSourceStrategies,
       synthParameters,
-      logConfig,
+      logging,
     });
   } finally {
     transform.getLogs().forEach(printLog);

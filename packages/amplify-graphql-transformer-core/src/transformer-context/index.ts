@@ -66,7 +66,7 @@ export interface TransformerContextConstructorOptions
   stackMapping: Record<string, string>;
   synthParameters: SynthParameters;
   transformParameters: TransformParameters;
-  logConfig?: LogConfig;
+  logging?: true | LogConfig;
 }
 
 export class TransformerContext implements TransformerContextProvider {
@@ -106,7 +106,7 @@ export class TransformerContext implements TransformerContextProvider {
 
   public readonly inputDocument: DocumentNode;
 
-  public readonly logConfig?: LogConfig;
+  public readonly logging?: true | LogConfig;
 
   constructor(options: TransformerContextConstructorOptions) {
     const {
@@ -124,7 +124,7 @@ export class TransformerContext implements TransformerContextProvider {
       stackMapping,
       synthParameters,
       transformParameters,
-      logConfig,
+      logging,
     } = options;
     this.authConfig = authConfig;
     this.sqlDirectiveDataSourceStrategies = sqlDirectiveDataSourceStrategies ?? [];
@@ -143,7 +143,7 @@ export class TransformerContext implements TransformerContextProvider {
     this.assetProvider = assetProvider;
     this.synthParameters = synthParameters;
     this.transformParameters = transformParameters;
-    this.logConfig = logConfig;
+    this.logging = logging;
   }
 
   /**

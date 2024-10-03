@@ -3926,7 +3926,7 @@
     "stability": "stable"
   },
   "homepage": "https://github.com/aws-amplify/amplify-category-api.git",
-  "jsiiVersion": "5.4.23 (build 4babcb9)",
+  "jsiiVersion": "5.5.4 (build 1378d94)",
   "keywords": [
     "awscdk",
     "aws-cdk",
@@ -3972,7 +3972,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 875
+        "line": 882
       },
       "name": "AddFunctionProps",
       "properties": [
@@ -3985,7 +3985,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 879
+            "line": 886
           },
           "name": "dataSource",
           "type": {
@@ -4001,7 +4001,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 884
+            "line": 891
           },
           "name": "name",
           "type": {
@@ -4018,7 +4018,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 919
+            "line": 926
           },
           "name": "code",
           "optional": true,
@@ -4036,7 +4036,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 891
+            "line": 898
           },
           "name": "description",
           "optional": true,
@@ -4054,7 +4054,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 898
+            "line": 905
           },
           "name": "requestMappingTemplate",
           "optional": true,
@@ -4072,7 +4072,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 905
+            "line": 912
           },
           "name": "responseMappingTemplate",
           "optional": true,
@@ -4090,7 +4090,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 912
+            "line": 919
           },
           "name": "runtime",
           "optional": true,
@@ -5020,7 +5020,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 778
+        "line": 785
       },
       "name": "AmplifyGraphqlApiCfnResources",
       "properties": [
@@ -5033,7 +5033,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 832
+            "line": 839
           },
           "name": "additionalCfnResources",
           "type": {
@@ -5054,7 +5054,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 817
+            "line": 824
           },
           "name": "amplifyDynamoDbTables",
           "type": {
@@ -5075,7 +5075,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 807
+            "line": 814
           },
           "name": "cfnDataSources",
           "type": {
@@ -5096,7 +5096,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 802
+            "line": 809
           },
           "name": "cfnFunctionConfigurations",
           "type": {
@@ -5117,7 +5117,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 827
+            "line": 834
           },
           "name": "cfnFunctions",
           "type": {
@@ -5138,7 +5138,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 782
+            "line": 789
           },
           "name": "cfnGraphqlApi",
           "type": {
@@ -5154,7 +5154,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 787
+            "line": 794
           },
           "name": "cfnGraphqlSchema",
           "type": {
@@ -5170,7 +5170,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 797
+            "line": 804
           },
           "name": "cfnResolvers",
           "type": {
@@ -5191,7 +5191,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 822
+            "line": 829
           },
           "name": "cfnRoles",
           "type": {
@@ -5212,7 +5212,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 812
+            "line": 819
           },
           "name": "cfnTables",
           "type": {
@@ -5233,7 +5233,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 792
+            "line": 799
           },
           "name": "cfnApiKey",
           "optional": true,
@@ -5412,18 +5412,28 @@
         {
           "abstract": true,
           "docs": {
+            "remarks": "`logging: true` or `logging: {}` enables logging with default settings.\n\nDefault values are:\n- excludeVerboseContent: true\n- fieldLogLevel: NONE\n- retention: ONE_WEEK",
             "stability": "stable",
-            "summary": "Specifies the logging configuration when writing GraphQL operations and tracing to Amazon CloudWatch for an AWS AppSync GraphQL API, refer to https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_appsync.CfnGraphQLApi.LogConfigProperty.html."
+            "summary": "Specifies the logging configuration when writing GraphQL operations and tracing to Amazon CloudWatch for an AWS AppSync GraphQL API."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 771
+            "line": 778
           },
-          "name": "logConfig",
+          "name": "logging",
           "optional": true,
           "type": {
-            "fqn": "aws-cdk-lib.aws_appsync.LogConfig"
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "aws-cdk-lib.aws_appsync.LogConfig"
+                }
+              ]
+            }
           }
         },
         {
@@ -5542,7 +5552,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 839
+        "line": 846
       },
       "name": "AmplifyGraphqlApiResources",
       "properties": [
@@ -5555,7 +5565,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 863
+            "line": 870
           },
           "name": "cfnResources",
           "type": {
@@ -5571,7 +5581,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 858
+            "line": 865
           },
           "name": "functions",
           "type": {
@@ -5592,7 +5602,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 843
+            "line": 850
           },
           "name": "graphqlApi",
           "type": {
@@ -5608,7 +5618,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 868
+            "line": 875
           },
           "name": "nestedStacks",
           "type": {
@@ -5629,7 +5639,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 853
+            "line": 860
           },
           "name": "roles",
           "type": {
@@ -5650,7 +5660,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 848
+            "line": 855
           },
           "name": "tables",
           "type": {
@@ -8904,5 +8914,5 @@
     }
   },
   "version": "1.13.0",
-  "fingerprint": "CWI7tvAgRRspIWtzup6m6nvrWmksUPUY6vVIl6LNbes="
+  "fingerprint": "yK1brlV7dleQhdRQRYWVzKnBIh0klkpS6XmM8Qq+HGQ="
 }
