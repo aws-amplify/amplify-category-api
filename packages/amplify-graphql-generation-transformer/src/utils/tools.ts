@@ -57,7 +57,8 @@ export const createResponseTypeTool = (field: FieldDefinitionNode, ctx: Transfor
     required: ['value'],
   };
 
-  const description = 'Generate a response type for the given field. Use well-structured JSON. JSON.parse(value) will be used to parse the response.';
+  const description =
+    'Generate a response type for the given field. Use well-structured JSON. JSON.parse(value) will be used to parse the response.';
   const tools: Tool[] = [
     {
       toolSpec: {

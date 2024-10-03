@@ -45,7 +45,7 @@ export function response(ctx) {
       util.error(errorMessage, 'AccessDeniedException');
     }
 
-   util.error('', errorType);
+    util.error('', errorType);
   }
 
   const body = JSON.parse(ctx.result.body);
