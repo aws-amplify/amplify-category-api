@@ -92,7 +92,6 @@ const userPoolClient = userPool.addClient('UserPoolClient', {
   authFlows: {
     userPassword: true,
     userSrp: true,
-    custom: true,
   },
 });
 
@@ -119,8 +118,8 @@ const api = new AmplifyGraphqlApi(stack, 'SqlBoundApi', {
       oidcProviderName: 'awscognitouserpool',
       oidcIssuerUrl: `https://cognito-idp.${stack.region}.amazonaws.com/${userPool.userPoolId}`,
       clientId: userPoolClient.userPoolClientId,
-      tokenExpiryFromAuth: Duration.millis(3600000),
-      tokenExpiryFromIssue: Duration.millis(3600000),
+      tokenExpiryFromAuth: Duration.hours(1),
+      tokenExpiryFromIssue: Duration.hours(1),
     },
   },
   translationBehavior: {

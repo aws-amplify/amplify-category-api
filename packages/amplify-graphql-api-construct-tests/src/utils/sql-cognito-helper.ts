@@ -19,7 +19,6 @@ export class CognitoIdentityPoolCredentialsManager {
         region: this.outputs.authRegion,
         userPoolId: this.outputs.userPoolId,
         userPoolWebClientId: this.outputs.webClientId,
-        identityPoolId: this.outputs.identityPoolId,
         signIn: {
           username: true,
         },
