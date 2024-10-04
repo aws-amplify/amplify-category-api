@@ -33,9 +33,9 @@ export function response(ctx) {
 
   // Check for AccessDeniedException.
   // This can happen if:
-  //   1. The Bedrock model isn't enabled in enabled in this region.
-  //   2. The IAM policy statement for the role assumed by the data source for this
-  //    resolver doesn't include them model. This shouldn't happen.
+  //   1. The Bedrock model isn't enabled in this region.
+  //   2. The IAM policy statement for the role assumed by the data source for this resolver doesn't include them model.
+  //    This shouldn't happen because we're managing the policy statements.
   // We're using a generic error description here (as opposed to using the response body)
   // to prevent information about the system from leaking.
   const errorType = ctx.result.headers['x-amzn-ErrorType'];
