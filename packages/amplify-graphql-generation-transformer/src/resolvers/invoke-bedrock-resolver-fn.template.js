@@ -41,7 +41,7 @@ export function response(ctx) {
   const errorType = ctx.result.headers['x-amzn-ErrorType'];
   if (errorType) {
     if (errorType.startsWith('AccessDeniedException')) {
-      const errorMessage = 'The model is disabled or this generation route is missing a necessaryidentity-based policy.';
+      const errorMessage = 'The model is disabled or this generation route is missing a necessary identity-based policy.';
       util.error(errorMessage, 'AccessDeniedException');
     }
 
