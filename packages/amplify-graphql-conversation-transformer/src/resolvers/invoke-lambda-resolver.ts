@@ -37,9 +37,6 @@ export const invokeLambdaMappingTemplate = (config: ConversationDirectiveConfigu
   });
   const templateName = `Mutation.${config.field.name.value}.invoke-lambda.js`;
 
-  // This unfortunately needs to be an inline template because an s3 mapping template doesn't allow the CDK
-  // to substitute token values, which is necessary for this resolver function due to its reference of
-  // `ctx.api.graphqlUrl`.
   return MappingTemplate.s3MappingFunctionCodeFromString(resolver, templateName);
 };
 
