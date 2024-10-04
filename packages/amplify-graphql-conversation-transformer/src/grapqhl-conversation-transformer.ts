@@ -59,7 +59,7 @@ export class ConversationTransformer extends TransformerPluginBase {
     hasManyTransformer: HasManyTransformer,
     belongsToTransformer: BelongsToTransformer,
     authProvider: TransformerAuthProvider,
-    functionNameMap?: Record<string, lambda.IFunction>
+    functionNameMap?: Record<string, lambda.IFunction>,
   ) {
     super('amplify-conversation-transformer', ConversationDirective.definition);
     this.fieldHandler = new ConversationFieldHandler();

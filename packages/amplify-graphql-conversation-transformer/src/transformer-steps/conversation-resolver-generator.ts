@@ -103,9 +103,7 @@ export class ConversationResolverGenerator {
    * @param functionStack - The CDK stack to add the function to
    * @returns An object containing the function data source ID and the referenced function
    */
-  private setupExistingFunctionDataSource(
-    functionName: string,
-  ): { functionDataSourceId: string; referencedFunction: IFunction } {
+  private setupExistingFunctionDataSource(functionName: string): { functionDataSourceId: string; referencedFunction: IFunction } {
     const functionDataSourceId = FunctionResourceIDs.FunctionDataSourceID(functionName);
     if (!this.functionNameMap) {
       throw new Error('Function name map is not provided');
