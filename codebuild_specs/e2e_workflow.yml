@@ -763,7 +763,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=14848'
           TEST_SUITE: >-
             src/__tests__/utils.test.ts|src/__tests__/ddb-iam-access.test.ts|src/__tests__/data-construct.test.ts|src/__tests__/custom-logic.test.ts|src/__tests__/amplify-table-5.test.ts
-          CLI_REGION: eu-west-1
+          CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: >-
@@ -775,7 +775,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=14848'
           TEST_SUITE: >-
             src/__tests__/add-resources.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-empty-table.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-10k-records.test.ts
-          CLI_REGION: ap-south-1
+          CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
@@ -787,7 +787,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=14848'
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-empty-table.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-10k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-single-record.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: >-
@@ -799,7 +799,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=14848'
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-empty-table.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-10k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-empty-table.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: ca-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: 3_gsis_1k_records_3_gsis_10k_records
@@ -810,7 +810,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=14848'
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-10k-records.test.ts
-          CLI_REGION: ca-central-1
+          CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: sql_pg_userpool_auth
@@ -823,6 +823,16 @@ batch:
           CLI_REGION: ap-south-1
       depend-on:
         - publish_to_local_registry
+    - identifier: sql_pg_oidc_auth
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          NODE_OPTIONS: '--max-old-space-size=6656'
+          TEST_SUITE: src/__tests__/sql-pg-oidc-auth.test.ts
+          CLI_REGION: ap-southeast-1
+      depend-on:
+        - publish_to_local_registry
     - identifier: sql_pg_models
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
@@ -830,7 +840,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/sql-pg-models.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: sql_pg_canary
@@ -851,7 +861,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/sql-pg-array-objects.test.ts
-          CLI_REGION: ca-central-1
+          CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: sql_mysql_canary
@@ -861,7 +871,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/sql-mysql-canary.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: eu-north-1
       depend-on:
         - publish_to_local_registry
     - identifier: sql_models_2
@@ -871,7 +881,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/sql-models-2.test.ts
-          CLI_REGION: eu-north-1
+          CLI_REGION: eu-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: sql_models_1
@@ -881,7 +891,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/sql-models-1.test.ts
-          CLI_REGION: eu-west-1
+          CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: sql_iam_access
@@ -891,7 +901,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/sql-iam-access.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: eu-west-3
       depend-on:
         - publish_to_local_registry
     - identifier: default_ddb_canary
@@ -901,7 +911,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/default-ddb-canary.test.ts
-          CLI_REGION: eu-west-1
+          CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: base_cdk_ap_east_1
@@ -1101,7 +1111,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/amplify-table-4.test.ts
-          CLI_REGION: eu-west-3
+          CLI_REGION: me-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: amplify_table_3
@@ -1111,7 +1121,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/amplify-table-3.test.ts
-          CLI_REGION: me-south-1
+          CLI_REGION: sa-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: amplify_table_2
@@ -1121,7 +1131,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/amplify-table-2.test.ts
-          CLI_REGION: sa-east-1
+          CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: amplify_table_1
@@ -1131,7 +1141,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/amplify-table-1.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
     - identifier: amplify_ddb_canary
@@ -1141,7 +1151,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/amplify-ddb-canary.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: us-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: all_auth_modes
@@ -1151,7 +1161,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/all-auth-modes.test.ts
-          CLI_REGION: us-west-1
+          CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: admin_role
@@ -1161,7 +1171,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/admin-role.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: ap-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: sql_custom_ssl
@@ -1171,7 +1181,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/sql-custom-ssl/sql-custom-ssl.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: eu-north-1
       depend-on:
         - publish_to_local_registry
     - identifier: restricted_field_auth_gen2
@@ -1182,7 +1192,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/restricted-field-auth/restricted-field-auth-gen2.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: restricted_field_auth_gen1
@@ -1193,7 +1203,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/restricted-field-auth/restricted-field-auth-gen1.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: ca-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: restricted_field_auth_gen2_subscriptions_off
@@ -1204,7 +1214,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/restricted-field-auth/subscriptions-off/restricted-field-auth-gen2-subscriptions-off.test.ts
-          CLI_REGION: ca-central-1
+          CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: restricted_field_auth_gen1_subscriptions_off
@@ -1215,7 +1225,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/restricted-field-auth/subscriptions-off/restricted-field-auth-gen1-subscriptions-off.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: eu-north-1
       depend-on:
         - publish_to_local_registry
     - identifier: references_sqlprimary_sqlrelated
@@ -1226,7 +1236,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/relationships/references/references-sqlprimary-sqlrelated.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: ca-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: references_sqlprimary_ddbrelated
@@ -1237,7 +1247,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/relationships/references/references-sqlprimary-ddbrelated.test.ts
-          CLI_REGION: ca-central-1
+          CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: references_ddbprimary_sqlrelated
@@ -1248,7 +1258,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/relationships/references/references-ddbprimary-sqlrelated.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: eu-north-1
       depend-on:
         - publish_to_local_registry
     - identifier: references_ddbprimary_ddbrelated
@@ -1259,7 +1269,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/relationships/references/references-ddbprimary-ddbrelated.test.ts
-          CLI_REGION: eu-north-1
+          CLI_REGION: eu-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: recursive_relationships_sql
@@ -1270,7 +1280,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/relationships/recursive/recursive-relationships-sql.test.ts
-          CLI_REGION: eu-south-1
+          CLI_REGION: eu-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: recursive_relationships_ddb
@@ -1281,7 +1291,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/relationships/recursive/recursive-relationships-ddb.test.ts
-          CLI_REGION: eu-west-1
+          CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: uuid_pk_sqlprimary_sqlrelated
@@ -1292,7 +1302,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/relationships/postgres-uuid-pk/uuid-pk-sqlprimary-sqlrelated.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: eu-west-3
       depend-on:
         - publish_to_local_registry
     - identifier: uuid_pk_sqlprimary_ddbrelated
@@ -1303,7 +1313,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/relationships/postgres-uuid-pk/uuid-pk-sqlprimary-ddbrelated.test.ts
-          CLI_REGION: eu-west-3
+          CLI_REGION: me-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: uuid_pk_ddbprimary_sqlrelated
@@ -1314,7 +1324,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/relationships/postgres-uuid-pk/uuid-pk-ddbprimary-sqlrelated.test.ts
-          CLI_REGION: me-south-1
+          CLI_REGION: sa-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: multi_relationship_sqlprimary_sqlrelated
@@ -1325,7 +1335,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/relationships/multi-relationship/multi-relationship-sqlprimary-sqlrelated.test.ts
-          CLI_REGION: sa-east-1
+          CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: multi_relationship_sqlprimary_ddbrelated
@@ -1336,7 +1346,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/relationships/multi-relationship/multi-relationship-sqlprimary-ddbrelated.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
     - identifier: multi_relationship_ddbprimary_sqlrelated
@@ -1347,7 +1357,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/relationships/multi-relationship/multi-relationship-ddbprimary-sqlrelated.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: us-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: multi_relationship_ddbprimary_ddbrelated
@@ -1358,7 +1368,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/relationships/multi-relationship/multi-relationship-ddbprimary-ddbrelated.test.ts
-          CLI_REGION: us-west-1
+          CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: relationships_gen1
@@ -1368,7 +1378,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/relationships/gen1/relationships-gen1.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: ap-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: assoc_field_subscriptions_off
@@ -1379,7 +1389,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/owner-auth/subscriptions-off/assoc-field-subscriptions-off.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: bind_sql_ids
@@ -1389,7 +1399,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/owner-auth/bind-sql-ids/bind-sql-ids.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: ca-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: assoc_field_sqlprimary_sqlrelated
@@ -1400,7 +1410,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/owner-auth/assoc-field/assoc-field-sqlprimary-sqlrelated.test.ts
-          CLI_REGION: ca-central-1
+          CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: assoc_field_sqlprimary_ddbrelated
@@ -1411,7 +1421,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/owner-auth/assoc-field/assoc-field-sqlprimary-ddbrelated.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: eu-north-1
       depend-on:
         - publish_to_local_registry
     - identifier: assoc_field_ddbprimary_sqlrelated
@@ -1422,7 +1432,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/owner-auth/assoc-field/assoc-field-ddbprimary-sqlrelated.test.ts
-          CLI_REGION: eu-north-1
+          CLI_REGION: eu-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: assoc_field_ddbprimary_ddbrelated
@@ -1433,7 +1443,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/owner-auth/assoc-field/assoc-field-ddbprimary-ddbrelated.test.ts
-          CLI_REGION: eu-south-1
+          CLI_REGION: eu-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: static_group_auth_sqlprimary_sqlrelated_subscriptions_off
@@ -1444,7 +1454,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/group-auth/subscriptions-off/static-group-auth/static-group-auth-sqlprimary-sqlrelated-subscriptions-off.test.ts
-          CLI_REGION: eu-west-1
+          CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: static_group_auth_sqlprimary_ddbrelated_subscriptions_off
@@ -1455,7 +1465,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/group-auth/subscriptions-off/static-group-auth/static-group-auth-sqlprimary-ddbrelated-subscriptions-off.test.ts
-          CLI_REGION: eu-west-2
+          CLI_REGION: eu-west-3
       depend-on:
         - publish_to_local_registry
     - identifier: static_group_auth_ddbprimary_sqlrelated_subscriptions_off
@@ -1466,7 +1476,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/group-auth/subscriptions-off/static-group-auth/static-group-auth-ddbprimary-sqlrelated-subscriptions-off.test.ts
-          CLI_REGION: eu-west-3
+          CLI_REGION: me-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: static_group_auth_ddbprimary_ddbrelated_subscriptions_off
@@ -1477,7 +1487,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/group-auth/subscriptions-off/static-group-auth/static-group-auth-ddbprimary-ddbrelated-subscriptions-off.test.ts
-          CLI_REGION: me-south-1
+          CLI_REGION: sa-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: dynamic_group_auth_sqlprimary_sqlrelated_subscriptions_off
@@ -1488,7 +1498,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/group-auth/subscriptions-off/dynamic-group-auth/dynamic-group-auth-sqlprimary-sqlrelated-subscriptions-off.test.ts
-          CLI_REGION: sa-east-1
+          CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: dynamic_group_auth_sqlprimary_ddbrelated_subscriptions_off
@@ -1499,7 +1509,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/group-auth/subscriptions-off/dynamic-group-auth/dynamic-group-auth-sqlprimary-ddbrelated-subscriptions-off.test.ts
-          CLI_REGION: us-east-1
+          CLI_REGION: us-east-2
       depend-on:
         - publish_to_local_registry
     - identifier: dynamic_group_auth_ddbprimary_sqlrelated_subscriptions_off
@@ -1510,7 +1520,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/group-auth/subscriptions-off/dynamic-group-auth/dynamic-group-auth-ddbprimary-sqlrelated-subscriptions-off.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: us-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: dynamic_group_auth_ddbprimary_ddbrelated_subscriptions_off
@@ -1521,7 +1531,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/group-auth/subscriptions-off/dynamic-group-auth/dynamic-group-auth-ddbprimary-ddbrelated-subscriptions-off.test.ts
-          CLI_REGION: us-west-1
+          CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: static_group_auth_sqlprimary_sqlrelated
@@ -1532,7 +1542,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/group-auth/static-group-auth/static-group-auth-sqlprimary-sqlrelated.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: static_group_auth_sqlprimary_ddbrelated
@@ -1543,7 +1553,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/group-auth/static-group-auth/static-group-auth-sqlprimary-ddbrelated.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: ap-northeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: static_group_auth_ddbprimary_sqlrelated
@@ -1554,7 +1564,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/group-auth/static-group-auth/static-group-auth-ddbprimary-sqlrelated.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: ap-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: static_group_auth_ddbprimary_ddbrelated
@@ -1565,7 +1575,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/group-auth/static-group-auth/static-group-auth-ddbprimary-ddbrelated.test.ts
-          CLI_REGION: ap-south-1
+          CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: dynamic_group_auth_sqlprimary_sqlrelated
@@ -1576,7 +1586,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/group-auth/dynamic-group-auth/dynamic-group-auth-sqlprimary-sqlrelated.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: dynamic_group_auth_sqlprimary_ddbrelated
@@ -1587,7 +1597,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/group-auth/dynamic-group-auth/dynamic-group-auth-sqlprimary-ddbrelated.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: ca-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: dynamic_group_auth_ddbprimary_sqlrelated
@@ -1598,7 +1608,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/group-auth/dynamic-group-auth/dynamic-group-auth-ddbprimary-sqlrelated.test.ts
-          CLI_REGION: ca-central-1
+          CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: dynamic_group_auth_ddbprimary_ddbrelated
@@ -1609,7 +1619,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/group-auth/dynamic-group-auth/dynamic-group-auth-ddbprimary-ddbrelated.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: eu-north-1
       depend-on:
         - publish_to_local_registry
     - identifier: generation
@@ -1630,7 +1640,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/deploy-velocity/single-gsi-100k-records.test.ts
-          CLI_REGION: eu-central-1
+          CLI_REGION: eu-north-1
       depend-on:
         - publish_to_local_registry
     - identifier: replace_2_gsis_update_attr_100k_records
@@ -1641,7 +1651,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/deploy-velocity/replace-2-gsis-update-attr-100k-records.test.ts
-          CLI_REGION: eu-north-1
+          CLI_REGION: eu-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: replace_2_gsis_100k_records
@@ -1651,7 +1661,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/deploy-velocity/replace-2-gsis-100k-records.test.ts
-          CLI_REGION: eu-south-1
+          CLI_REGION: eu-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: 3_gsis_100k_records
@@ -1661,7 +1671,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/deploy-velocity/3-gsis-100k-records.test.ts
-          CLI_REGION: eu-west-1
+          CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: conversation

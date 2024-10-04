@@ -19,13 +19,13 @@ export const configureAppSyncClients = async (
     });
   }
 
-  //   if (authProviders?.includes('oidc') && userMap) {
-  //     appSyncClients['oidc'] = {};
-  //     Object.keys(userMap)?.map((userName: string) => {
-  //       const userAppSyncClient = getConfiguredAppsyncClientOIDCAuth(apiEndPoint, appRegion, userMap[userName]);
-  //       appSyncClients['oidc'][userName] = userAppSyncClient;
-  //     });
-  //   }
+  if (authProviders?.includes('oidc') && userMap) {
+    appSyncClients['oidc'] = {};
+    Object.keys(userMap)?.map((userName: string) => {
+      const userAppSyncClient = getConfiguredAppsyncClientOIDCAuth(apiEndpoint, region, userMap[userName]);
+      appSyncClients['oidc'][userName] = userAppSyncClient;
+    });
+  }
 
   //   if (authProviders?.includes('apiKey')) {
   //     expect(GraphQLAPIKeyOutput).toBeDefined();
@@ -42,6 +42,18 @@ export function getConfiguredAppsyncClientCognitoAuth(url: string, region: strin
     disableOffline: true,
     auth: {
       type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
+      jwtToken: user.signInUserSession.idToken.jwtToken,
+    },
+  });
+}
+
+export function getConfiguredAppsyncClientOIDCAuth(url: string, region: string, user: any): any {
+  return new AWSAppSyncClient({
+    url,
+    region,
+    disableOffline: true,
+    auth: {
+      type: AUTH_TYPE.OPENID_CONNECT,
       jwtToken: user.signInUserSession.idToken.jwtToken,
     },
   });
