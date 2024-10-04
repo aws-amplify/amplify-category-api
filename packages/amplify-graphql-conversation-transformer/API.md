@@ -9,6 +9,7 @@ import { DirectiveNode } from 'graphql';
 import { FieldDefinitionNode } from 'graphql';
 import { HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { InterfaceTypeDefinitionNode } from 'graphql';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { TransformerAuthProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -19,7 +20,7 @@ import { TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-
 
 // @public (undocumented)
 export class ConversationTransformer extends TransformerPluginBase {
-    constructor(modelTransformer: ModelTransformer, hasManyTransformer: HasManyTransformer, belongsToTransformer: BelongsToTransformer, authProvider: TransformerAuthProvider);
+    constructor(modelTransformer: ModelTransformer, hasManyTransformer: HasManyTransformer, belongsToTransformer: BelongsToTransformer, authProvider: TransformerAuthProvider, functionNameMap?: Record<string, lambda.IFunction>);
     // (undocumented)
     field: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, definition: FieldDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
     // (undocumented)
