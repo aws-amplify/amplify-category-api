@@ -1,5 +1,5 @@
 import { Stack, Duration } from 'aws-cdk-lib';
-import { FieldLogLevel, CfnGraphQLApi } from 'aws-cdk-lib/aws-appsync'; 
+import { FieldLogLevel, CfnGraphQLApi } from 'aws-cdk-lib/aws-appsync';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';

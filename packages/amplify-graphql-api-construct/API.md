@@ -131,7 +131,7 @@ export interface AmplifyGraphqlApiProps {
     readonly definition: IAmplifyGraphqlDefinition;
     readonly functionNameMap?: Record<string, IFunction>;
     readonly functionSlots?: FunctionSlot[];
-    readonly logConfig?: LogConfig;
+    readonly logging?: true | LogConfig;
     readonly outputStorageStrategy?: IBackendOutputStorageStrategy;
     readonly predictionsBucket?: IBucket;
     readonly stackMappings?: Record<string, string>;

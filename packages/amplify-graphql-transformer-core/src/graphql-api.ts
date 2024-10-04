@@ -223,7 +223,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
         typeof props.logging === 'object' && 'retention' in props.logging
           ? props.logging.retention ?? RetentionDays.ONE_WEEK
           : RetentionDays.ONE_WEEK;
-    
+
       const logRetention = new LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/appsync/apis/${this.apiId}`,
         retention: retention,
@@ -310,9 +310,9 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     return true;
   }
 
-  /** 
+  /**
    * Set up the log configuration for the GraphQL API
-   * 
+   *
    * Default values are:
    * - excludeVerboseContent: true
    * - fieldLogLevel: NONE
@@ -335,9 +335,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
 
     const apiLogsRole = new Role(this, 'ApiLogsRole', {
       assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
-      managedPolicies: [
-        ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs'),
-      ],
+      managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs')],
     });
     setResourceName(apiLogsRole, { name: 'ApiLogsRole', setOnDefaultChild: true });
 

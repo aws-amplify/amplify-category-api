@@ -40,7 +40,7 @@ export type ExecuteTransformConfig = TransformConfig & DataSourceStrategiesProvi
     parameterProvider?: TransformParameterProvider;
     assetProvider: AssetProvider;
     synthParameters: SynthParameters;
-    logConfig?: LogConfig;
+    logging?: true | LogConfig;
 };
 
 // @public (undocumented)

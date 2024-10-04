@@ -766,10 +766,10 @@ export interface AmplifyGraphqlApiProps {
 
   /**
    * Specifies the logging configuration when writing GraphQL operations and tracing to Amazon CloudWatch for an AWS AppSync
-   * GraphQL API. 
-   * 
+   * GraphQL API.
+   *
    * `logging: true` or `logging: {}` enables logging with default settings.
-   * 
+   *
    * Default values are:
    * - excludeVerboseContent: true
    * - fieldLogLevel: NONE

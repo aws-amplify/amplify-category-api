@@ -39,6 +39,7 @@ import { GraphQLError } from 'graphql';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { IamResource } from 'aws-cdk-lib/aws-appsync';
 import { IGrantable } from 'aws-cdk-lib/aws-iam';
+import { ILogGroup } from 'aws-cdk-lib/aws-logs';
 import { InlineMappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { InputObjectTypeDefinitionNode } from 'graphql';
 import { InputObjectTypeExtensionNode } from 'graphql';
@@ -324,7 +325,7 @@ export class GraphQLTransform {
     // Warning: (ae-forgotten-export) The symbol "GraphQLApi" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    protected generateGraphQlApi(stackManager: StackManagerProvider, assetProvider: AssetProvider, synthParameters: SynthParameters, output: TransformerOutput, transformParameters: TransformParameters, logConfig?: LogConfig): GraphQLApi;
+    protected generateGraphQlApi(stackManager: StackManagerProvider, assetProvider: AssetProvider, synthParameters: SynthParameters, output: TransformerOutput, transformParameters: TransformParameters, logging?: true | LogConfig): GraphQLApi;
     // (undocumented)
     getLogs(): TransformerLog[];
     // (undocumented)
@@ -332,7 +333,7 @@ export class GraphQLTransform {
     // Warning: (ae-forgotten-export) The symbol "TransformOption" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    transform({ assetProvider, dataSourceStrategies, nestedStackProvider, parameterProvider, rdsLayerMapping, rdsSnsTopicMapping, schema, scope, sqlDirectiveDataSourceStrategies, synthParameters, logConfig, }: TransformOption): void;
+    transform({ assetProvider, dataSourceStrategies, nestedStackProvider, parameterProvider, rdsLayerMapping, rdsSnsTopicMapping, schema, scope, sqlDirectiveDataSourceStrategies, synthParameters, logging, }: TransformOption): void;
 }
 
 // @public (undocumented)
