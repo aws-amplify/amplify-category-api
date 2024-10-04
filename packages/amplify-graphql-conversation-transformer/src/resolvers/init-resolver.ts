@@ -9,9 +9,7 @@ import path from 'path';
  *
  * @returns {MappingTemplateProvider} An object containing request and response MappingTemplateProviders.
  */
-export const initMappingTemplate = (
-  ctx: TransformerContextProvider,
-): MappingTemplateProvider => {
+export const initMappingTemplate = (ctx: TransformerContextProvider): MappingTemplateProvider => {
   const substitutions = {
     GRAPHQL_API_ENDPOINT: ctx.api.graphqlUrl,
   };
