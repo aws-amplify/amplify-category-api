@@ -8,7 +8,7 @@ import { UserPoolAuthConstructStackOutputs } from '../types';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { schema as generateSchema } from '../sql-tests-common/schemas/sql-userpool-auth/userpool-auth-provider';
 import { CognitoUserPoolAuthHelper } from '../utils/sql-cognito-helper';
-import { configureAppSyncClients, getConfiguredAppsyncClientCognitoAuth } from '../utils/appsync-model-operation/appsync-client-helper';
+import { configureAppSyncClients } from '../utils/appsync-model-operation/appsync-client-helper';
 import {
   createModelOperationHelpers,
   checkOperationResult,

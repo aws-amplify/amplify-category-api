@@ -3,11 +3,11 @@ import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import { gql } from 'graphql-tag';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
-import { AuthConstructStackOutputs } from '../types';
+import { UserPoolAuthConstructStackOutputs } from '../types';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { schema as generateSchema } from '../sql-tests-common/schemas/sql-oidc-auth/oidc-auth-provider';
 import { CognitoUserPoolAuthHelper } from '../utils/sql-cognito-helper';
-import { configureAppSyncClients, getConfiguredAppsyncClientCognitoAuth } from '../utils/appsync-model-operation/appsync-client-helper';
+import { configureAppSyncClients } from '../utils/appsync-model-operation/appsync-client-helper';
 import {
   createModelOperationHelpers,
   checkOperationResult,
@@ -59,7 +59,7 @@ export const testGraphQLAPIWithOIDCAccess = (
       ({ awsAppsyncApiEndpoint } = outputs);
 
       console.log('Outputs:', outputs);
-      const cognitoIdentityPoolCredentialsManager = new CognitoUserPoolAuthHelper(outputs);
+      const cognitoIdentityPoolCredentialsManager = new CognitoUserPoolAuthHelper(outputs as UserPoolAuthConstructStackOutputs);
       await cognitoIdentityPoolCredentialsManager.createUser({ username: userName1, email: userName1, password }, [adminGroupName]);
       await cognitoIdentityPoolCredentialsManager.createUser({ username: userName2, email: userName2, password }, [devGroupName]);
 
