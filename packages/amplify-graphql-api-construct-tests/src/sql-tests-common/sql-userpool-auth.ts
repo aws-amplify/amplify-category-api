@@ -1,12 +1,13 @@
 import * as path from 'path';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
+import { AUTH_TYPE } from 'aws-appsync';
 import { gql } from 'graphql-tag';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
-import { AuthConstructStackOutputs } from '../types';
+import { UserPoolAuthConstructStackOutputs } from '../types';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { schema as generateSchema } from '../sql-tests-common/schemas/sql-userpool-auth/userpool-auth-provider';
-import { CognitoIdentityPoolCredentialsManager } from '../utils/sql-cognito-helper';
+import { CognitoUserPoolAuthHelper } from '../utils/sql-cognito-helper';
 import { configureAppSyncClients, getConfiguredAppsyncClientCognitoAuth } from '../utils/appsync-model-operation/appsync-client-helper';
 import {
   createModelOperationHelpers,
@@ -53,18 +54,18 @@ export const testGraphQLAPIWithUserPoolAccess = (
       const name = await initCDKProject(projRoot, templatePath, {
         additionalDependencies: [authConstructDependency],
       });
-      dbController.writeDbDetails(projRoot, connectionConfigName, schema);
+      dbController.writeDbDetails(projRoot, connectionConfigName, schema, AUTH_TYPE.AMAZON_COGNITO_USER_POOLS);
       let outputs = await cdkDeploy(projRoot, '--all', { postDeployWaitMs: ONE_MINUTE });
       outputs = outputs[name];
       ({ awsAppsyncApiEndpoint } = outputs);
 
       console.log('Outputs:', outputs);
-      const cognitoIdentityPoolCredentialsManager = new CognitoIdentityPoolCredentialsManager(outputs as AuthConstructStackOutputs);
-      await cognitoIdentityPoolCredentialsManager.createUser({ username: userName1, email: userName1, password }, [adminGroupName]);
-      await cognitoIdentityPoolCredentialsManager.createUser({ username: userName2, email: userName2, password }, [devGroupName]);
+      const authHelper = new CognitoUserPoolAuthHelper(outputs as UserPoolAuthConstructStackOutputs);
+      await authHelper.createUser({ username: userName1, email: userName1, password }, [adminGroupName]);
+      await authHelper.createUser({ username: userName2, email: userName2, password }, [devGroupName]);
 
-      userMap[userName1] = await cognitoIdentityPoolCredentialsManager.getAuthRoleCredentials({ username: userName1, password });
-      userMap[userName2] = await cognitoIdentityPoolCredentialsManager.getAuthRoleCredentials({ username: userName2, password });
+      userMap[userName1] = await authHelper.getAuthRoleCredentials({ username: userName1, password });
+      userMap[userName2] = await authHelper.getAuthRoleCredentials({ username: userName2, password });
 
       appSyncClients = await configureAppSyncClients(awsAppsyncApiEndpoint, region, [userPoolProvider], userMap);
     });

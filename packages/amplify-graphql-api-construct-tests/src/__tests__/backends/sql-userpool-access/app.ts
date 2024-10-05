@@ -1,16 +1,24 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
-import { App, Stack, Duration, CfnOutput, RemovalPolicy } from 'aws-cdk-lib';
+import { App, Stack, CfnOutput, Duration, RemovalPolicy } from 'aws-cdk-lib';
 // @ts-ignore
 import {
   AmplifyGraphqlApi,
   AmplifyGraphqlDefinition,
+  AuthorizationModes,
   SqlModelDataSourceDbConnectionConfig,
   ModelDataSourceStrategySqlDbType,
 } from '@aws-amplify/graphql-api-construct';
-import { AmplifyAuth, AuthProps } from '@aws-amplify/auth-construct';
 import { AccountPrincipal, Effect, PolicyDocument, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
 import { CfnUserPoolGroup, UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
+
+enum AUTH_MODE {
+  API_KEY = 'API_KEY',
+  AWS_IAM = 'AWS_IAM',
+  AMAZON_COGNITO_USER_POOLS = 'AMAZON_COGNITO_USER_POOLS',
+  OPENID_CONNECT = 'OPENID_CONNECT',
+  AWS_LAMBDA = 'AWS_LAMBDA',
+}
 
 interface DBDetails {
   dbConfig: {
@@ -31,7 +39,46 @@ interface DBDetails {
   };
   dbConnectionConfig: SqlModelDataSourceDbConnectionConfig;
   schemaConfig: string;
+  apiAuthMode: AUTH_MODE;
 }
+
+// #region Utilities
+
+const createUserPool = (prefix: string): { userPool: UserPool; userPoolClient: UserPoolClient } => {
+  const userPool = new UserPool(stack, `${prefix}UserPool`, {
+    signInAliases: {
+      username: true,
+      email: false,
+    },
+    selfSignUpEnabled: true,
+    autoVerify: { email: true },
+    standardAttributes: {
+      email: {
+        required: true,
+        mutable: false,
+      },
+    },
+  });
+  userPool.applyRemovalPolicy(RemovalPolicy.DESTROY);
+
+  ['Admin', 'Dev'].forEach((group) => {
+    new CfnUserPoolGroup(userPool, `Group${group}`, {
+      userPoolId: userPool.userPoolId,
+      groupName: group,
+    });
+  });
+
+  const userPoolClient = userPool.addClient(`${prefix}UserPoolClient`, {
+    authFlows: {
+      userPassword: true,
+      userSrp: true,
+    },
+  });
+
+  return { userPool, userPoolClient };
+};
+
+// #endregion Utilities
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const dbDetails: DBDetails = require('../db-details.json');
@@ -44,44 +91,26 @@ const stack = new Stack(app, packageJson.name.replace(/_/g, '-'), {
   env: { region: process.env.CLI_REGION || 'us-west-2' },
 });
 
-// const authProps: AuthProps = {
-//   loginWith: {
-//     email: true,
-//   },
-//   groups: ['Admin', 'Dev'],
-// };
+const { userPool, userPoolClient } = createUserPool(dbDetails.dbConfig.dbName);
+let authorizationModes: AuthorizationModes;
 
-// const auth = new AmplifyAuth(stack, 'Auth', authProps);
+switch (dbDetails.apiAuthMode) {
+  case AUTH_MODE.AMAZON_COGNITO_USER_POOLS:
+    authorizationModes = {
+      defaultAuthorizationMode: 'AMAZON_COGNITO_USER_POOLS',
+      userPoolConfig: {
+        userPool,
+      },
+      apiKeyConfig: { expires: Duration.days(2) },
+    };
 
-const userPool = new UserPool(stack, 'UserPool', {
-  signInAliases: {
-    username: true, // Use username as the sign-in alias
-    email: false, // Disable email as a sign-in alias
-  },
-  selfSignUpEnabled: true,
-  autoVerify: { email: true },
-  standardAttributes: {
-    email: {
-      required: true,
-      mutable: false,
-    },
-  },
-});
-userPool.applyRemovalPolicy(RemovalPolicy.DESTROY);
+    new CfnOutput(stack, 'userPoolId', { value: userPool.userPoolId });
+    new CfnOutput(stack, 'webClientId', { value: userPoolClient.userPoolClientId });
 
-['Admin', 'Dev'].forEach((group) => {
-  new CfnUserPoolGroup(userPool, `CUPGroup${group}`, {
-    userPoolId: userPool.userPoolId,
-    groupName: group,
-  });
-});
-
-const userPoolClient = userPool.addClient('UserPoolClient', {
-  authFlows: {
-    userPassword: true,
-    userSrp: true,
-  },
-});
+    break;
+  default:
+    throw new Error(`Unsupported auth mode: ${dbDetails.apiAuthMode}`);
+}
 
 const api = new AmplifyGraphqlApi(stack, 'SqlBoundApi', {
   apiName: `${dbDetails.dbConfig.dbType}${Date.now()}`,
@@ -100,13 +129,7 @@ const api = new AmplifyGraphqlApi(stack, 'SqlBoundApi', {
       provisionedConcurrentExecutions: 2,
     },
   }),
-  authorizationModes: {
-    defaultAuthorizationMode: 'AMAZON_COGNITO_USER_POOLS',
-    apiKeyConfig: { expires: Duration.days(7) },
-    userPoolConfig: {
-      userPool,
-    },
-  },
+  authorizationModes,
   translationBehavior: {
     sandboxModeEnabled: true,
   },
@@ -137,5 +160,3 @@ basicRole.addToPolicy(
 );
 
 new CfnOutput(stack, 'BasicRoleArn', { value: basicRole.roleArn });
-new CfnOutput(stack, 'userPoolId', { value: userPool.userPoolId });
-new CfnOutput(stack, 'webClientId', { value: userPoolClient.userPoolClientId });

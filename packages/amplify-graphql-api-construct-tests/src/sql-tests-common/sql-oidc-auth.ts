@@ -6,7 +6,7 @@ import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { AuthConstructStackOutputs } from '../types';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { schema as generateSchema } from '../sql-tests-common/schemas/sql-oidc-auth/oidc-auth-provider';
-import { CognitoIdentityPoolCredentialsManager } from '../utils/sql-cognito-helper';
+import { CognitoUserPoolAuthHelper } from '../utils/sql-cognito-helper';
 import { configureAppSyncClients, getConfiguredAppsyncClientCognitoAuth } from '../utils/appsync-model-operation/appsync-client-helper';
 import {
   createModelOperationHelpers,
@@ -59,7 +59,7 @@ export const testGraphQLAPIWithOIDCAccess = (
       ({ awsAppsyncApiEndpoint } = outputs);
 
       console.log('Outputs:', outputs);
-      const cognitoIdentityPoolCredentialsManager = new CognitoIdentityPoolCredentialsManager(outputs as AuthConstructStackOutputs);
+      const cognitoIdentityPoolCredentialsManager = new CognitoUserPoolAuthHelper(outputs);
       await cognitoIdentityPoolCredentialsManager.createUser({ username: userName1, email: userName1, password }, [adminGroupName]);
       await cognitoIdentityPoolCredentialsManager.createUser({ username: userName2, email: userName2, password }, [devGroupName]);
 

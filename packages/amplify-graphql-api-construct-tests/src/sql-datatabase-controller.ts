@@ -1,6 +1,10 @@
 import path from 'path';
 import * as fs from 'fs-extra';
-import { SqlModelDataSourceDbConnectionConfig, ModelDataSourceStrategySqlDbType } from '@aws-amplify/graphql-api-construct';
+import {
+  SqlModelDataSourceDbConnectionConfig,
+  ModelDataSourceStrategySqlDbType,
+  AuthorizationModes,
+} from '@aws-amplify/graphql-api-construct';
 import {
   ClusterInfo,
   clearTestDataUsingDataApi,
@@ -28,6 +32,7 @@ import {
   isSqlModelDataSourceSsmDbConnectionConfig,
   isSqlModelDataSourceSsmDbConnectionStringConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { AUTH_TYPE } from 'aws-appsync';
 import { getClusterIdFromLocalConfig } from './utils/sql-local-testing';
 import { getPreProvisionedClusterInfo } from './utils/sql-pre-provisioned-cluster';
 
@@ -273,7 +278,7 @@ export class SqlDatatabaseController {
    *
    * @param projRoot the destination directory to write the `db-details.json` file to
    */
-  writeDbDetails = (projRoot: string, connectionConfigName: string, schemaConfigString?: string): void => {
+  writeDbDetails = (projRoot: string, connectionConfigName: string, schemaConfigString?: string, apiAuthMode?: AUTH_TYPE): void => {
     if (!this.databaseDetails) {
       throw new Error('Database has not been set up. Make sure to call setupDatabase first');
     }
@@ -289,6 +294,7 @@ export class SqlDatatabaseController {
       dbConfig: this.databaseDetails.dbConfig,
       dbConnectionConfig,
       schemaConfig: schemaConfigString,
+      apiAuthMode,
     });
     const filePath = path.join(projRoot, 'db-details.json');
     fs.writeFileSync(filePath, detailsStr);

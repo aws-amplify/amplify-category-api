@@ -5,33 +5,27 @@ import {
 } from '@aws-sdk/client-cognito-identity-provider';
 import { Amplify, Auth } from 'aws-amplify';
 import { ICredentials } from '@aws-amplify/core';
-import { AuthConstructStackOutputs } from '../types';
+import { UserPoolAuthConstructStackOutputs } from '../types';
 
-export class CognitoIdentityPoolCredentialsManager {
+export class CognitoUserPoolAuthHelper {
   private cognitoClient: CognitoIdentityProviderClient;
 
   private readonly tempPassword = 'Password123!';
 
-  constructor(private readonly outputs: AuthConstructStackOutputs) {
-    this.cognitoClient = new CognitoIdentityProviderClient({ region: this.outputs.authRegion });
+  constructor(private readonly outputs: UserPoolAuthConstructStackOutputs) {
+    this.cognitoClient = new CognitoIdentityProviderClient({ region: this.outputs.awsAppsyncRegion });
     Amplify.configure({
       Auth: {
-        region: this.outputs.authRegion,
+        region: this.outputs.awsAppsyncRegion,
         userPoolId: this.outputs.userPoolId,
         userPoolWebClientId: this.outputs.webClientId,
-        signIn: {
-          username: true,
-        },
       },
     });
   }
 
   public getAuthRoleCredentials = async (user: Record<string, string>): Promise<any> => {
-    const credentials = await Auth.signIn(user.username, user.password);
-    return credentials;
-    // console.log(temp.signInUserSession.idToken.jwtToken);
-    // const credentials = await Auth.currentCredentials();
-    // return credentials;
+    const cognitoUser = await Auth.signIn(user.username, user.password);
+    return cognitoUser;
   };
 
   public getUnAuthRoleCredentials = async (user: Record<string, string>): Promise<ICredentials> => {
