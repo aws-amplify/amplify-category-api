@@ -7,6 +7,7 @@ import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { UserPoolAuthConstructStackOutputs } from '../types';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { schema as generateSchema } from '../sql-tests-common/schemas/sql-userpool-auth/userpool-auth-provider';
+import { StackConfig } from '../utils/sql-auth-stack-config';
 import { CognitoUserPoolAuthHelper } from '../utils/sql-cognito-helper';
 import { configureAppSyncClients } from '../utils/appsync-model-operation/appsync-client-helper';
 import {
@@ -47,14 +48,20 @@ export const testGraphQLAPIWithUserPoolAccess = (
     beforeAll(async () => {
       ({ dbController, region } = options);
       const { projFolderName, connectionConfigName } = options;
-      const templatePath = path.resolve(path.join(__dirname, '..', '__tests__', 'backends', 'sql-userpool-access'));
+      const templatePath = path.resolve(path.join(__dirname, '..', '__tests__', 'backends', 'sql-configurable-stack'));
 
       projRoot = await createNewProjectDir(projFolderName);
 
       const name = await initCDKProject(projRoot, templatePath, {
         additionalDependencies: [authConstructDependency],
       });
-      dbController.writeDbDetails(projRoot, connectionConfigName, schema, AUTH_TYPE.AMAZON_COGNITO_USER_POOLS);
+
+      const stackConfig: StackConfig = {
+        schema,
+        authMode: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
+      };
+
+      dbController.writeDbDetailsWithStackConfig(projRoot, connectionConfigName, stackConfig);
       let outputs = await cdkDeploy(projRoot, '--all', { postDeployWaitMs: ONE_MINUTE });
       outputs = outputs[name];
       ({ awsAppsyncApiEndpoint } = outputs);

@@ -1,11 +1,13 @@
 import * as path from 'path';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
+import { AUTH_TYPE } from 'aws-appsync';
 import { gql } from 'graphql-tag';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { UserPoolAuthConstructStackOutputs } from '../types';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { schema as generateSchema } from '../sql-tests-common/schemas/sql-oidc-auth/oidc-auth-provider';
+import { StackConfig } from '../utils/sql-auth-stack-config';
 import { CognitoUserPoolAuthHelper } from '../utils/sql-cognito-helper';
 import { configureAppSyncClients } from '../utils/appsync-model-operation/appsync-client-helper';
 import {
@@ -46,14 +48,36 @@ export const testGraphQLAPIWithOIDCAccess = (
     beforeAll(async () => {
       ({ dbController, region } = options);
       const { projFolderName, connectionConfigName } = options;
-      const templatePath = path.resolve(path.join(__dirname, '..', '__tests__', 'backends', 'sql-oidc-access'));
+      const templatePath = path.resolve(path.join(__dirname, '..', '__tests__', 'backends', 'sql-configurable-stack'));
 
       projRoot = await createNewProjectDir(projFolderName);
 
       const name = await initCDKProject(projRoot, templatePath, {
         additionalDependencies: [authConstructDependency],
       });
-      dbController.writeDbDetails(projRoot, connectionConfigName, schema);
+
+      const stackConfig: StackConfig = {
+        schema,
+        authMode: AUTH_TYPE.OPENID_CONNECT,
+        oidcOptions: {
+          triggers: {
+            preTokenGeneration: `
+              exports.handler = async event => {
+                  event.response = {
+                      claimsOverrideDetails: {
+                          claimsToAddOrOverride: {
+                              user_id: event.userName,
+                          }
+                      }
+                  };
+                  return event;
+              };
+            `,
+          },
+        },
+      };
+
+      dbController.writeDbDetailsWithStackConfig(projRoot, connectionConfigName, stackConfig);
       let outputs = await cdkDeploy(projRoot, '--all', { postDeployWaitMs: ONE_MINUTE });
       outputs = outputs[name];
       ({ awsAppsyncApiEndpoint } = outputs);
