@@ -56,11 +56,13 @@ export const createResponseTypeTool = (field: FieldDefinitionNode, ctx: Transfor
     },
     required: ['value'],
   };
+
+  const description = 'Generate a response type for the given field.';
   const tools: Tool[] = [
     {
       toolSpec: {
         name: 'responseType',
-        description: 'Generate a response type for the given field',
+        description,
         inputSchema: {
           json: boxedSchema,
         },
