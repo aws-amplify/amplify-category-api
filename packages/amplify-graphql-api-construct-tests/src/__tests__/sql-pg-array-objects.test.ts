@@ -4,6 +4,7 @@ import { getRDSTableNamePrefix } from 'amplify-category-api-e2e-core';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
 import { testGraphQLAPIArrayAndObjects } from '../sql-tests-common/sql-array-objects';
+import { sqlCreateStatements } from '../sql-tests-common/tests-sources/sql-array-objects/provider';
 
 jest.setTimeout(DURATION_1_HOUR);
 
@@ -15,18 +16,13 @@ describe('CDK GraphQL Transformer deployments with Postgres SQL datasources', ()
   const region = process.env.CLI_REGION ?? 'us-west-2';
   const engine = 'postgres';
 
-  const databaseController: SqlDatatabaseController = new SqlDatatabaseController(
-    [
-      `CREATE TABLE "${getRDSTableNamePrefix()}contact" ("id" INT PRIMARY KEY, "firstname" VARCHAR(20), "lastname" VARCHAR(50), "tags" VARCHAR[], "address" JSON)`,
-    ],
-    {
-      identifier,
-      engine,
-      username,
-      password,
-      region,
-    },
-  );
+  const databaseController: SqlDatatabaseController = new SqlDatatabaseController(sqlCreateStatements(ImportedRDSType.POSTGRESQL), {
+    identifier,
+    engine,
+    username,
+    password,
+    region,
+  });
 
   const strategyName = `${engine}DBStrategy`;
   const resourceNames = getResourceNamesForStrategyName(strategyName);

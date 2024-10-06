@@ -9,7 +9,12 @@ export interface StackConfig {
   /**
    * The AuthorizationMode type for AmplifyGraphqlApi Construct.
    */
-  authMode?: AUTH_TYPE;
+  authMode: AUTH_TYPE;
+
+  /**
+   * If true, disable Cognito User Pool/Auth resources creation and only use API Key auth in sandbox mode.
+   */
+  useSandbox?: boolean;
 
   /**
    * The OIDC options/config when using OIDC AuthorizationMode for AmplifyGraphqlApi Construct.

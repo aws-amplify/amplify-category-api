@@ -35,7 +35,7 @@ import {
 import { AUTH_TYPE } from 'aws-appsync';
 import { getClusterIdFromLocalConfig } from './utils/sql-local-testing';
 import { getPreProvisionedClusterInfo } from './utils/sql-pre-provisioned-cluster';
-import { StackConfig } from './utils/sql-auth-stack-config';
+import { StackConfig } from './utils/sql-stack-config';
 
 export interface SqlDatabaseDetails {
   dbConfig: {
@@ -272,37 +272,6 @@ export class SqlDatatabaseController {
   };
 
   /**
-   * Writes the specified DB details to a file named `db-details.json` in the specified directory.
-   * Used to pass db configs from setup code to the CDK app under test.
-   *
-   * **NOTE** Do not call this until the CDK project is initialized: `cdk init` fails if the working directory is not empty.
-   *
-   * @param projRoot the destination directory to write the `db-details.json` file to
-   */
-  writeDbDetails = (projRoot: string, connectionConfigName: string, schemaConfigString?: string, apiAuthMode?: AUTH_TYPE): void => {
-    if (!this.databaseDetails) {
-      throw new Error('Database has not been set up. Make sure to call setupDatabase first');
-    }
-    const dbConnectionConfig = this.databaseDetails.connectionConfigs[connectionConfigName];
-    if (!dbConnectionConfig) {
-      throw new Error(
-        `Invalid connection config ${connectionConfigName}. Available options are ${JSON.stringify(
-          Object.keys(this.databaseDetails.connectionConfigs),
-        )}`,
-      );
-    }
-    const detailsStr = JSON.stringify({
-      dbConfig: this.databaseDetails.dbConfig,
-      dbConnectionConfig,
-      schemaConfig: schemaConfigString,
-      apiAuthMode,
-    });
-    const filePath = path.join(projRoot, 'db-details.json');
-    fs.writeFileSync(filePath, detailsStr);
-    console.log(`Wrote DB details at ${filePath}`);
-  };
-
-  /**
    * Writes the specified DB details and CDK stack config to files named `db-details.json` and `stack-config.json` in the specified directory.
    * Used to pass db and cdk config configs from setup code to the CDK app under test.
    *
@@ -312,7 +281,7 @@ export class SqlDatatabaseController {
    * @param connectionConfigName the name of the connection config to write to the file
    * @param stackConfig the stack config to write to the file
    */
-  writeDbDetailsWithStackConfig = (projRoot: string, connectionConfigName: string, stackConfig?: StackConfig): void => {
+  writeDbDetails = (projRoot: string, connectionConfigName: string, stackConfig?: StackConfig): void => {
     if (!this.databaseDetails) {
       throw new Error('Database has not been set up. Make sure to call setupDatabase first');
     }
@@ -324,19 +293,20 @@ export class SqlDatatabaseController {
         )}`,
       );
     }
+
     const detailsStr = JSON.stringify({
       dbConfig: this.databaseDetails.dbConfig,
       dbConnectionConfig,
     });
+    const stackConfigStr = JSON.stringify(stackConfig ?? {});
+
     const dbDetailsfilePath = path.join(projRoot, 'db-details.json');
     fs.writeFileSync(dbDetailsfilePath, detailsStr);
     console.log(`Wrote DB details at ${dbDetailsfilePath}`);
 
-    if (stackConfig) {
-      const stackConfigFilePath = path.join(projRoot, 'stack-config.json');
-      fs.writeFileSync(stackConfigFilePath, JSON.stringify(stackConfig));
-      console.log(`Wrote stack config to ${stackConfigFilePath}`);
-    }
+    const stackConfigFilePath = path.join(projRoot, 'stack-config.json');
+    fs.writeFileSync(stackConfigFilePath, stackConfigStr);
+    console.log(`Wrote stack config to ${stackConfigFilePath}`);
   };
 
   /**

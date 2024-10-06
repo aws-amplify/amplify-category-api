@@ -9,6 +9,7 @@ import {
   IAmplifyGraphqlDefinition,
   SqlModelDataSourceDbConnectionConfig,
   ModelDataSourceStrategySqlDbType,
+  PartialTranslationBehavior,
 } from '@aws-amplify/graphql-api-construct';
 import { AccountPrincipal, Effect, PolicyDocument, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
 import { CfnUserPoolGroup, UserPool, UserPoolClient, UserPoolTriggers } from 'aws-cdk-lib/aws-cognito';
@@ -24,12 +25,22 @@ enum AUTH_MODE {
   AWS_LAMBDA = 'AWS_LAMBDA',
 }
 
+enum SCHEMA {
+  DEFAULT = /* GraphQL */ `
+    type Todo @model @refersTo(name: "todos") {
+      id: ID! @primaryKey
+      description: String!
+    }
+  `,
+}
+
 interface DBDetails {
   dbConfig: {
     endpoint: string;
     port: number;
     dbName: string;
     dbType: ModelDataSourceStrategySqlDbType;
+    strategyName: string;
     vpcConfig: {
       vpcId: string;
       securityGroupIds: string[];
@@ -56,6 +67,11 @@ interface StackConfig {
   authMode?: AUTH_MODE;
 
   /**
+   * If true, disable Cognito User Pool/Auth resources creation and only use API Key auth in sandbox mode.
+   */
+  useSandbox?: boolean;
+
+  /**
    * The OIDC options/config when using OIDC AuthorizationMode for AmplifyGraphqlApi Construct.
    *
    * @property {Record<string, string>} [triggers] - UserPoolTriggers for Cognito User Pool when provisioning the User Pool as OIDC provider.
@@ -74,8 +90,10 @@ interface StackConfig {
 }
 
 const createApiDefinition = (): IAmplifyGraphqlDefinition => {
-  return AmplifyGraphqlDefinition.fromString(stackConfig.schema, {
-    name: `${dbDetails.dbConfig.dbType}DBStrategy`,
+  const schema = stackConfig.schema ?? SCHEMA.DEFAULT;
+
+  return AmplifyGraphqlDefinition.fromString(schema, {
+    name: dbDetails.dbConfig.strategyName,
     dbType: dbDetails.dbConfig.dbType,
     vpcConfiguration: {
       vpcId: dbDetails.dbConfig.vpcConfig.vpcId,
@@ -92,9 +110,18 @@ const createApiDefinition = (): IAmplifyGraphqlDefinition => {
 };
 
 const createAuthorizationModes = (): AuthorizationModes => {
+  const auth = stackConfig.authMode ?? AUTH_MODE.API_KEY;
   let authorizationModes: AuthorizationModes;
 
-  switch (stackConfig.authMode) {
+  switch (auth) {
+    case AUTH_MODE.API_KEY: {
+      authorizationModes = {
+        defaultAuthorizationMode: 'API_KEY',
+        apiKeyConfig: { expires: Duration.days(7) },
+      };
+
+      break;
+    }
     case AUTH_MODE.AMAZON_COGNITO_USER_POOLS: {
       const { userPool, userPoolClient } = createUserPool(dbDetails.dbConfig.dbName);
 
@@ -105,9 +132,6 @@ const createAuthorizationModes = (): AuthorizationModes => {
         },
         apiKeyConfig: { expires: Duration.days(2) },
       };
-
-      new CfnOutput(stack, 'userPoolId', { value: userPool.userPoolId });
-      new CfnOutput(stack, 'webClientId', { value: userPoolClient.userPoolClientId });
 
       break;
     }
@@ -125,9 +149,6 @@ const createAuthorizationModes = (): AuthorizationModes => {
         },
       };
 
-      new CfnOutput(stack, 'userPoolId', { value: userPool.userPoolId });
-      new CfnOutput(stack, 'webClientId', { value: userPoolClient.userPoolClientId });
-
       break;
     }
     default: {
@@ -136,6 +157,13 @@ const createAuthorizationModes = (): AuthorizationModes => {
   }
 
   return authorizationModes;
+};
+
+const createTranslationBehavior = (): PartialTranslationBehavior => {
+  const translationBehavior: PartialTranslationBehavior = {
+    sandboxModeEnabled: stackConfig.useSandbox ?? false,
+  };
+  return translationBehavior;
 };
 
 const createUserPool = (prefix: string, triggers?: Record<string, string>): { userPool: UserPool; userPoolClient: UserPoolClient } => {
@@ -152,7 +180,7 @@ const createUserPool = (prefix: string, triggers?: Record<string, string>): { us
         mutable: false,
       },
     },
-    lambdaTriggers: triggers ? createTriggers(triggers) : {},
+    lambdaTriggers: triggers ? createUserPoolTriggers(triggers) : {},
   });
   userPool.applyRemovalPolicy(RemovalPolicy.DESTROY);
 
@@ -170,10 +198,13 @@ const createUserPool = (prefix: string, triggers?: Record<string, string>): { us
     },
   });
 
+  new CfnOutput(stack, 'userPoolId', { value: userPool.userPoolId });
+  new CfnOutput(stack, 'webClientId', { value: userPoolClient.userPoolClientId });
+
   return { userPool, userPoolClient };
 };
 
-const createTriggers = (triggers: Record<string, string>): UserPoolTriggers => {
+const createUserPoolTriggers = (triggers: Record<string, string>): UserPoolTriggers => {
   const userPoolTriggers: UserPoolTriggers = {};
 
   Object.keys(triggers).forEach((triggerName) => {
@@ -183,8 +214,8 @@ const createTriggers = (triggers: Record<string, string>): UserPoolTriggers => {
   return userPoolTriggers;
 };
 
-const createLambdaFunction = (triggernName: string, code: string): Function => {
-  return new Function(stack, `${triggernName}Lambda`, {
+const createLambdaFunction = (name: string, code: string): Function => {
+  return new Function(stack, `${name}Lambda`, {
     runtime: Runtime.NODEJS_18_X,
     handler: 'index.handler',
     code: Code.fromInline(code),
@@ -220,6 +251,24 @@ const createBasicRole = () => {
   new CfnOutput(stack, 'BasicRoleArn', { value: basicRole.roleArn });
 };
 
+const createAdditionalCfnOutputs = () => {
+  switch (stackConfig.authMode) {
+    case AUTH_MODE.API_KEY: {
+      const {
+        resources: { functions },
+      } = api;
+      const sqlLambda = functions[`SQLFunction${dbDetails.dbConfig.strategyName}`];
+
+      new CfnOutput(stack, 'SQLFunctionName', { value: sqlLambda.functionName });
+    }
+    default: {
+      new CfnOutput(stack, 'GraphQLApiId', { value: api.resources.graphqlApi.apiId });
+      new CfnOutput(stack, 'GraphQLApiArn', { value: api.resources.graphqlApi.arn });
+      new CfnOutput(stack, 'region', { value: stack.region });
+    }
+  }
+};
+
 // #endregion Utilities
 
 // #region CDK App
@@ -238,12 +287,16 @@ const stack = new Stack(app, packageJson.name.replace(/_/g, '-'), {
 
 const definition = createApiDefinition();
 const authorizationModes = createAuthorizationModes();
+const translationBehavior = createTranslationBehavior();
 
-const api = new AmplifyGraphqlApi(stack, `${dbDetails.dbConfig.dbType}SqlBoundApi`, {
+const api = new AmplifyGraphqlApi(stack, `SqlBoundApi`, {
+  apiName: `${dbDetails.dbConfig.dbType}${Date.now()}`,
   definition,
   authorizationModes,
+  translationBehavior,
 });
 
 createBasicRole();
+createAdditionalCfnOutputs();
 
 // #endregion CDK App

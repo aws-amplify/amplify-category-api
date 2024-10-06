@@ -4,7 +4,7 @@ import { ModelDataSourceStrategySqlDbType } from '@aws-amplify/graphql-api-const
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
 import { testGraphQLAPIWithOIDCAccess } from '../sql-tests-common/sql-oidc-auth';
-import { sqlCreateStatements } from '../sql-tests-common/schemas/sql-oidc-auth/oidc-auth-provider';
+import { sqlCreateStatements } from '../sql-tests-common/tests-sources/sql-oidc-auth/oidc-auth-provider';
 
 jest.setTimeout(DURATION_1_HOUR);
 

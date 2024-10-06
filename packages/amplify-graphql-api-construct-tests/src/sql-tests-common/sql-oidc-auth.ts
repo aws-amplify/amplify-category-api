@@ -6,8 +6,8 @@ import { gql } from 'graphql-tag';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { UserPoolAuthConstructStackOutputs } from '../types';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
-import { schema as generateSchema } from '../sql-tests-common/schemas/sql-oidc-auth/oidc-auth-provider';
-import { StackConfig } from '../utils/sql-auth-stack-config';
+import { schema as generateSchema } from './tests-sources/sql-oidc-auth/oidc-auth-provider';
+import { StackConfig } from '../utils/sql-stack-config';
 import { CognitoUserPoolAuthHelper } from '../utils/sql-cognito-helper';
 import { configureAppSyncClients } from '../utils/appsync-model-operation/appsync-client-helper';
 import {
@@ -77,7 +77,7 @@ export const testGraphQLAPIWithOIDCAccess = (
         },
       };
 
-      dbController.writeDbDetailsWithStackConfig(projRoot, connectionConfigName, stackConfig);
+      dbController.writeDbDetails(projRoot, connectionConfigName, stackConfig);
       let outputs = await cdkDeploy(projRoot, '--all', { postDeployWaitMs: ONE_MINUTE });
       outputs = outputs[name];
       ({ awsAppsyncApiEndpoint } = outputs);

@@ -1,13 +1,14 @@
 import * as path from 'path';
-import * as fs from 'fs-extra';
 import { LambdaClient, GetProvisionedConcurrencyConfigCommand } from '@aws-sdk/client-lambda';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
+import { schema as generateSchema } from './tests-sources/sql-models/provider';
+import { toDoFieldMap, studentFieldMap } from './tests-sources/sql-models/field-map';
+import { StackConfig } from '../utils/sql-stack-config';
 import { CRUDLHelper } from '../utils/sql-crudl-helper';
-import { toDoFieldMap, studentFieldMap } from './schemas/sql-models/field-map';
 import { ONE_MINUTE } from '../utils/duration-constants';
 
 export const testGraphQLAPI = (
@@ -37,16 +38,24 @@ export const testGraphQLAPI = (
       } = options);
       const { projFolderName, connectionConfigName } = options;
 
-      const templatePath = path.resolve(path.join(__dirname, '..', '__tests__', 'backends', 'sql-models'));
-      const schemaPath = path.resolve(path.join(__dirname, '..', 'sql-tests-common', 'schemas', 'sql-models', 'schema.graphql'));
-      const schemaConfigString = fs.readFileSync(schemaPath).toString();
+      const templatePath = path.resolve(path.join(__dirname, '..', '__tests__', 'backends', 'sql-configurable-stack'));
+      // const schemaPath = path.resolve(path.join(__dirname, '..', 'sql-tests-common', 'schemas', 'sql-models', 'schema.graphql'));
+      // const schema = fs.readFileSync(schemaPath).toString();
 
       projRoot = await createNewProjectDir(projFolderName);
       const name = await initCDKProject(projRoot, templatePath);
-      dbController.writeDbDetails(projRoot, connectionConfigName, schemaConfigString);
+
+      const stackConfig: StackConfig = {
+        schema: generateSchema(),
+        authMode: AUTH_TYPE.API_KEY,
+        useSandbox: true,
+      };
+
+      dbController.writeDbDetails(projRoot, connectionConfigName, stackConfig);
       const outputs = await cdkDeploy(projRoot, '--all', { postDeployWaitMs: ONE_MINUTE });
       const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[name];
       lambdaFunctionName = outputs[name].SQLFunctionName;
+      console.log(outputs[name]);
 
       const appSyncClient = new AWSAppSyncClient({
         url: apiEndpoint,

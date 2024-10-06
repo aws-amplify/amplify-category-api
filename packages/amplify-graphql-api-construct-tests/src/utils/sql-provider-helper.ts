@@ -113,3 +113,7 @@ const convertToSQLType = (type: string): string => {
       return 'VARCHAR(255)';
   }
 };
+
+export const getRDSTableNamePrefix = () => {
+  return 'e2e_test_';
+};
