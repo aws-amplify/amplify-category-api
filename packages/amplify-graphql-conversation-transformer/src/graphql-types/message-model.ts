@@ -227,12 +227,12 @@ const constructConversationMessageModel = (
   const content = makeField('content', [], makeListType(makeNamedType('ContentBlock')));
   const context = makeField('aiContext', [], makeNamedType('AWSJSON'));
   const uiComponents = makeField('toolConfiguration', [], makeNamedType('ToolConfiguration'));
-  const assistantContent = makeField('assistantContent', [], makeListType(makeNamedType('ContentBlock')));
+  const associatedUserMessageId = makeField('associatedUserMessageId', [], makeNamedType('ID'));
 
   const object = {
     ...blankObject(modelName),
     interfaces: [conversationMessageInterface],
-    fields: [id, conversationId, sessionField, role, content, context, uiComponents, assistantContent],
+    fields: [id, conversationId, sessionField, role, content, context, uiComponents, associatedUserMessageId],
     directives: typeDirectives,
   };
 
