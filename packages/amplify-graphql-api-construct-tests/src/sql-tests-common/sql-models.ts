@@ -39,8 +39,6 @@ export const testGraphQLAPI = (
       const { projFolderName, connectionConfigName } = options;
 
       const templatePath = path.resolve(path.join(__dirname, '..', '__tests__', 'backends', 'sql-configurable-stack'));
-      // const schemaPath = path.resolve(path.join(__dirname, '..', 'sql-tests-common', 'schemas', 'sql-models', 'schema.graphql'));
-      // const schema = fs.readFileSync(schemaPath).toString();
 
       projRoot = await createNewProjectDir(projFolderName);
       const name = await initCDKProject(projRoot, templatePath);

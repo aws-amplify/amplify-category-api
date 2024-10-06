@@ -6,7 +6,7 @@ import { gql } from 'graphql-tag';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { UserPoolAuthConstructStackOutputs } from '../types';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
-import { schema as generateSchema } from './tests-sources/sql-userpool-auth/userpool-auth-provider';
+import { schema as generateSchema } from './tests-sources/sql-userpool-auth/provider';
 import { StackConfig } from '../utils/sql-stack-config';
 import { CognitoUserPoolAuthHelper } from '../utils/sql-cognito-helper';
 import { configureAppSyncClients } from '../utils/appsync-model-operation/appsync-client-helper';

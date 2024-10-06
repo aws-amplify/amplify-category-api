@@ -1,5 +1,4 @@
 import * as path from 'path';
-import * as fs from 'fs-extra';
 import { LambdaClient, GetProvisionedConcurrencyConfigCommand } from '@aws-sdk/client-lambda';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
@@ -39,8 +38,6 @@ export const testGraphQLAPIArrayAndObjects = (
       const { projFolderName, connectionConfigName } = options;
 
       const templatePath = path.resolve(path.join(__dirname, '..', '__tests__', 'backends', 'sql-configurable-stack'));
-      // const schemaPath = path.resolve(path.join(__dirname, '..', 'sql-tests-common', 'schemas', 'sql-array-objects', 'schema.graphql'));
-      // const schema = fs.readFileSync(schemaPath).toString();
 
       projRoot = await createNewProjectDir(projFolderName);
       const name = await initCDKProject(projRoot, templatePath);
