@@ -37,7 +37,8 @@
     "immer": "^9.0.12"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-test-utils": "1.0.3"
+    "@aws-amplify/graphql-transformer-test-utils": "1.0.3",
+    "esbuild": "^0.24.0"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.158.0",

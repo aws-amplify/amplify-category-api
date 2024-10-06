@@ -226,6 +226,7 @@ export type TestTransformParameters = RDSLayerMappingProvider & RDSSNSTopicMappi
     transformers: TransformerPluginProvider[];
     transformParameters?: Partial<TransformParameters>;
     userDefinedSlots?: Record<string, UserDefinedSlot[]>;
+    transformerManager?: TransformManager;
 };
 
 // @public (undocumented)

@@ -22,11 +22,9 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
   ctx.stash.connectionAttributes = {};
   ctx.stash.lambdaFunctionArn = "",
       {
-        "Fn::Sub": [
-          "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:\${name}",
-          {
-            "name": "conversation-handler",
-          },
+        "Fn::GetAtt": [
+          "PirateChatConversationDirectiveLambdaStack",
+          "Outputs.transformerrootstackPirateChatConversationDirectiveLambdaStackPirateChatDefaultConversationHandlerconversationHandlerFunction2B526F1AArn",
         ],
       },
       "";
@@ -235,11 +233,9 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
   ctx.stash.connectionAttributes = {};
   ctx.stash.lambdaFunctionArn = "",
       {
-        "Fn::Sub": [
-          "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:\${name}",
-          {
-            "name": "conversation-handler",
-          },
+        "Fn::GetAtt": [
+          "PirateChatConversationDirectiveLambdaStack",
+          "Outputs.transformerrootstackPirateChatConversationDirectiveLambdaStackPirateChatDefaultConversationHandlerconversationHandlerFunction2B526F1AArn",
         ],
       },
       "";
@@ -450,11 +446,9 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
   ctx.stash.connectionAttributes = {};
   ctx.stash.lambdaFunctionArn = "",
       {
-        "Fn::Sub": [
-          "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:\${name}",
-          {
-            "name": "conversation-handler",
-          },
+        "Fn::GetAtt": [
+          "PirateChatConversationDirectiveLambdaStack",
+          "Outputs.transformerrootstackPirateChatConversationDirectiveLambdaStackPirateChatDefaultConversationHandlerconversationHandlerFunction2B526F1AArn",
         ],
       },
       "";
@@ -665,11 +659,9 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
   ctx.stash.connectionAttributes = {};
   ctx.stash.lambdaFunctionArn = "",
       {
-        "Fn::Sub": [
-          "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:\${name}",
-          {
-            "name": "conversation-handler",
-          },
+        "Fn::GetAtt": [
+          "PirateChatConversationDirectiveLambdaStack",
+          "Outputs.transformerrootstackPirateChatConversationDirectiveLambdaStackPirateChatDefaultConversationHandlerconversationHandlerFunction2B526F1AArn",
         ],
       },
       "";

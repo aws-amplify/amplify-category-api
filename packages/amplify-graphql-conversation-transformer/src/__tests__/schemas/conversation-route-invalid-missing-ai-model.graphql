@@ -6,7 +6,6 @@ type Mutation {
     toolConfiguration: ToolConfigurationInput
   ): ConversationMessage
   @conversation(
-    functionName: "conversation-handler",
     systemPrompt: "You are a helpful chatbot."
   )
 }
