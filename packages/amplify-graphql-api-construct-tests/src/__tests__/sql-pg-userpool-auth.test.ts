@@ -1,7 +1,7 @@
 import generator from 'generate-password';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
-import { ModelDataSourceStrategySqlDbType } from '@aws-amplify/graphql-api-construct';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
+import { TestOptions } from '../utils/sql-test-config-helper';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
 import { testGraphQLAPIWithUserPoolAccess } from '../sql-tests-common/sql-userpool-auth';
 import { sqlCreateStatements } from '../sql-tests-common/tests-sources/sql-userpool-auth/provider';
@@ -32,7 +32,7 @@ describe('CDK GraphQL Transformer deployments with Postgres SQL datasources - Us
     await databaseController.cleanupDatabase();
   });
 
-  const constructTestOptions = (connectionConfigName: string) => ({
+  const constructTestOptions = (connectionConfigName: string): TestOptions => ({
     projFolderName,
     region,
     connectionConfigName,

@@ -1,10 +1,6 @@
 import path from 'path';
 import * as fs from 'fs-extra';
-import {
-  SqlModelDataSourceDbConnectionConfig,
-  ModelDataSourceStrategySqlDbType,
-  AuthorizationModes,
-} from '@aws-amplify/graphql-api-construct';
+import { SqlModelDataSourceDbConnectionConfig, ModelDataSourceStrategySqlDbType } from '@aws-amplify/graphql-api-construct';
 import {
   ClusterInfo,
   clearTestDataUsingDataApi,
@@ -32,7 +28,6 @@ import {
   isSqlModelDataSourceSsmDbConnectionConfig,
   isSqlModelDataSourceSsmDbConnectionStringConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { AUTH_TYPE } from 'aws-appsync';
 import { getClusterIdFromLocalConfig } from './utils/sql-local-testing';
 import { getPreProvisionedClusterInfo } from './utils/sql-pre-provisioned-cluster';
 import { StackConfig } from './utils/sql-stack-config';

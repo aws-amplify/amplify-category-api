@@ -1,24 +1,16 @@
 import { LambdaClient, GetProvisionedConcurrencyConfigCommand } from '@aws-sdk/client-lambda';
-import { ImportedRDSType, SQLLambdaResourceNames } from '@aws-amplify/graphql-transformer-core';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { SqlDatatabaseController } from '../sql-datatabase-controller';
+import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { AUTH_TYPE } from 'aws-appsync';
 import { toDoFieldMap, studentFieldMap } from './tests-sources/sql-models/field-map';
-import { setupTest, cleanupTest } from '../utils/sql-test-config-helper';
+import { configureAppSyncClients } from '../utils/sql-appsync-client-helper';
+import { TestOptions, setupTest, cleanupTest } from '../utils/sql-test-config-helper';
 import { stackConfig as generateStackConfig } from './tests-sources/sql-models/stack-config';
 import { CRUDLHelper } from '../utils/sql-crudl-helper';
 
-export const testGraphQLAPI = (
-  options: {
-    projFolderName: string;
-    region: string;
-    connectionConfigName: string;
-    dbController: SqlDatatabaseController;
-    resourceNames: SQLLambdaResourceNames;
-  },
-  testBlockDescription: string,
-  engine: ImportedRDSType,
-): void => {
+export const testGraphQLAPI = (options: TestOptions, testBlockDescription: string, engine: ImportedRDSType): void => {
   describe(`${testBlockDescription} - ${engine}`, () => {
+    const authProvider = AUTH_TYPE.API_KEY;
+
     let toDoTableCRUDLHelper: CRUDLHelper;
     let studentTableCRUDLHelper: CRUDLHelper;
     let testConfigOutput;
@@ -29,18 +21,10 @@ export const testGraphQLAPI = (
         stackConfig: generateStackConfig(),
       });
 
-      const appSyncClient = new AWSAppSyncClient({
-        url: testConfigOutput.apiEndpoint,
-        region: testConfigOutput.region,
-        disableOffline: true,
-        auth: {
-          type: AUTH_TYPE.API_KEY,
-          apiKey: testConfigOutput.apiKey,
-        },
-      });
+      const appSyncClients = await configureAppSyncClients(testConfigOutput);
 
-      toDoTableCRUDLHelper = new CRUDLHelper(appSyncClient, 'Todo', 'Todos', toDoFieldMap);
-      studentTableCRUDLHelper = new CRUDLHelper(appSyncClient, 'Student', 'Students', studentFieldMap);
+      toDoTableCRUDLHelper = new CRUDLHelper(appSyncClients[authProvider], 'Todo', 'Todos', toDoFieldMap);
+      studentTableCRUDLHelper = new CRUDLHelper(appSyncClients[authProvider], 'Student', 'Students', studentFieldMap);
     });
 
     afterAll(async () => {

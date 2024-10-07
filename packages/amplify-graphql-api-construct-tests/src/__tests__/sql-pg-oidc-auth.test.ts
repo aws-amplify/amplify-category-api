@@ -1,6 +1,7 @@
 import generator from 'generate-password';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
+import { TestOptions } from '../utils/sql-test-config-helper';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
 import { testGraphQLAPIWithOIDCAccess } from '../sql-tests-common/sql-oidc-auth';
 import { sqlCreateStatements } from '../sql-tests-common/tests-sources/sql-oidc-auth/provider';
@@ -31,7 +32,7 @@ describe('CDK GraphQL Transformer deployments with Postgres SQL datasources - OI
     await databaseController.cleanupDatabase();
   });
 
-  const constructTestOptions = (connectionConfigName: string) => ({
+  const constructTestOptions = (connectionConfigName: string): TestOptions => ({
     projFolderName,
     region,
     connectionConfigName,

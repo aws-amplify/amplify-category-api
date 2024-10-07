@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { AUTH_TYPE } from 'aws-appsync';
 import { SQLLambdaResourceNames } from '@aws-amplify/graphql-transformer-core';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
@@ -6,19 +7,22 @@ import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { StackConfig } from './sql-stack-config';
 import { ONE_MINUTE } from './duration-constants';
 
+export interface TestOptions {
+  projFolderName: string;
+  region: string;
+  connectionConfigName: string;
+  dbController: SqlDatatabaseController;
+  resourceNames?: SQLLambdaResourceNames;
+}
+
 export interface TestConfigInput {
-  options: {
-    projFolderName: string;
-    region: string;
-    connectionConfigName: string;
-    dbController: SqlDatatabaseController;
-    resourceNames?: SQLLambdaResourceNames;
-  };
+  options: TestOptions;
   stackConfig: StackConfig;
   additionalDependencies?: string[];
 }
 
 export interface TestConfigOutput {
+  authType: AUTH_TYPE;
   dbController: SqlDatatabaseController;
   projRoot: string;
   apiEndpoint: string;
@@ -47,6 +51,7 @@ export const setupTest = async (input: TestConfigInput): Promise<TestConfigOutpu
   const testOutputs = outputs[name];
 
   return {
+    authType: stackConfig.authMode,
     dbController,
     projRoot,
     apiEndpoint: testOutputs.awsAppsyncApiEndpoint,

@@ -1,39 +1,31 @@
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { AUTH_TYPE } from 'aws-appsync';
 import { gql } from 'graphql-tag';
 import { UserPoolAuthConstructStackOutputs } from '../types';
-import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { schema as generateSchema } from './tests-sources/sql-oidc-auth/provider';
 import { CognitoUserPoolAuthHelper } from '../utils/sql-cognito-helper';
-import { configureAppSyncClients } from '../utils/appsync-model-operation/appsync-client-helper';
+import { configureAppSyncClients } from '../utils/sql-appsync-client-helper';
 import {
   createModelOperationHelpers,
   checkOperationResult,
   checkListItemExistence,
 } from '../utils/appsync-model-operation/model-operation-helper';
-import { setupTest, cleanupTest } from '../utils/sql-test-config-helper';
+import { TestOptions, setupTest, cleanupTest } from '../utils/sql-test-config-helper';
 import { stackConfig as generateStackConfig } from './tests-sources/sql-oidc-auth/stack-config';
 import { authConstructDependency } from '../__tests__/additional-dependencies';
 
-export const testGraphQLAPIWithOIDCAccess = (
-  options: {
-    projFolderName: string;
-    region: string;
-    connectionConfigName: string;
-    dbController: SqlDatatabaseController;
-  },
-  testBlockDescription: string,
-  engine: ImportedRDSType,
-): void => {
+export const testGraphQLAPIWithOIDCAccess = (options: TestOptions, testBlockDescription: string, engine: ImportedRDSType): void => {
   describe(`${testBlockDescription} - ${engine}`, () => {
     const schema = generateSchema(engine);
-    const oidcProvider = 'oidc';
-    const userMap = {};
+    const authProvider = AUTH_TYPE.OPENID_CONNECT;
+
     const userName1 = 'user1@amazon.com';
     const userName2 = 'user2@amazon.com';
     const password = 'Password1234!';
     const adminGroupName = 'Admin';
     const devGroupName = 'Dev';
 
+    let userMap = {};
     let appSyncClients = {};
     let testConfigOutput;
 
@@ -51,7 +43,7 @@ export const testGraphQLAPIWithOIDCAccess = (
       userMap[userName1] = await cognitoIdentityPoolCredentialsManager.getAuthRoleCredentials({ username: userName1, password });
       userMap[userName2] = await cognitoIdentityPoolCredentialsManager.getAuthRoleCredentials({ username: userName2, password });
 
-      appSyncClients = await configureAppSyncClients(testConfigOutput.apiEndpoint, testConfigOutput.region, [oidcProvider], userMap);
+      appSyncClients = await configureAppSyncClients(testConfigOutput, userMap);
     });
 
     afterAll(async () => {
@@ -60,7 +52,7 @@ export const testGraphQLAPIWithOIDCAccess = (
 
     test('logged in user can perform CRUD and subscription operations', async () => {
       const modelName = 'TodoPrivate';
-      const modelOperationHelpers = createModelOperationHelpers(appSyncClients[oidcProvider][userName1], schema);
+      const modelOperationHelpers = createModelOperationHelpers(appSyncClients[authProvider][userName1], schema);
       const todoHelper = modelOperationHelpers[modelName];
 
       const todo = {
@@ -95,7 +87,7 @@ export const testGraphQLAPIWithOIDCAccess = (
 
     test('owner of a record can perform CRUD and subscription operations using default owner field', async () => {
       const modelName = 'TodoOwner';
-      const modelOperationHelpers = createModelOperationHelpers(appSyncClients[oidcProvider][userName1], schema);
+      const modelOperationHelpers = createModelOperationHelpers(appSyncClients[authProvider][userName1], schema);
       const todoHelper = modelOperationHelpers[modelName];
 
       const todo = {
@@ -137,8 +129,8 @@ export const testGraphQLAPIWithOIDCAccess = (
 
     test('non-owner of a record cannot access or subscribe to it using default owner field', async () => {
       const modelName = 'TodoOwner';
-      const modelOperationHelpersOwner = createModelOperationHelpers(appSyncClients[oidcProvider][userName1], schema);
-      const modelOperationHelpersNonOwner = createModelOperationHelpers(appSyncClients[oidcProvider][userName2], schema);
+      const modelOperationHelpersOwner = createModelOperationHelpers(appSyncClients[authProvider][userName1], schema);
+      const modelOperationHelpersNonOwner = createModelOperationHelpers(appSyncClients[authProvider][userName2], schema);
       const todoHelperOwner = modelOperationHelpersOwner[modelName];
       const todoHelperNonOwner = modelOperationHelpersNonOwner[modelName];
 
@@ -177,7 +169,7 @@ export const testGraphQLAPIWithOIDCAccess = (
 
     test('custom owner field used to store owner information', async () => {
       const modelName = 'TodoOwnerFieldString';
-      const modelOperationHelpers = createModelOperationHelpers(appSyncClients[oidcProvider][userName1], schema);
+      const modelOperationHelpers = createModelOperationHelpers(appSyncClients[authProvider][userName1], schema);
       const todoHelper = modelOperationHelpers[modelName];
 
       const todo = {
@@ -219,8 +211,8 @@ export const testGraphQLAPIWithOIDCAccess = (
 
     test('non-owner of a record cannot pretend to be an owner and gain access', async () => {
       const modelName = 'TodoOwnerFieldString';
-      const modelOperationHelpersOwner = createModelOperationHelpers(appSyncClients[oidcProvider][userName1], schema);
-      const modelOperationHelpersNonOwner = createModelOperationHelpers(appSyncClients[oidcProvider][userName2], schema);
+      const modelOperationHelpersOwner = createModelOperationHelpers(appSyncClients[authProvider][userName1], schema);
+      const modelOperationHelpersNonOwner = createModelOperationHelpers(appSyncClients[authProvider][userName2], schema);
       const todoHelperOwner = modelOperationHelpersOwner[modelName];
       const todoHelperNonOwner = modelOperationHelpersNonOwner[modelName];
 
@@ -259,7 +251,7 @@ export const testGraphQLAPIWithOIDCAccess = (
 
     test('member in list of owners can perform CRUD and subscription operations', async () => {
       const modelName = 'TodoOwnerFieldList';
-      const modelOperationHelpers = createModelOperationHelpers(appSyncClients[oidcProvider][userName1], schema);
+      const modelOperationHelpers = createModelOperationHelpers(appSyncClients[authProvider][userName1], schema);
       const todoHelper = modelOperationHelpers[modelName];
 
       const todo = {
@@ -297,8 +289,8 @@ export const testGraphQLAPIWithOIDCAccess = (
 
     test('non-owner of a record cannot add themself to owner list', async () => {
       const modelName = 'TodoOwnerFieldList';
-      const modelOperationHelpersOwner = createModelOperationHelpers(appSyncClients[oidcProvider][userName1], schema);
-      const modelOperationHelpersNonOwner = createModelOperationHelpers(appSyncClients[oidcProvider][userName2], schema);
+      const modelOperationHelpersOwner = createModelOperationHelpers(appSyncClients[authProvider][userName1], schema);
+      const modelOperationHelpersNonOwner = createModelOperationHelpers(appSyncClients[authProvider][userName2], schema);
       const todoHelperOwner = modelOperationHelpersOwner[modelName];
       const todoHelperNonOwner = modelOperationHelpersNonOwner[modelName];
 
@@ -338,8 +330,8 @@ export const testGraphQLAPIWithOIDCAccess = (
 
     test('owner can add another user to the owner list', async () => {
       const modelName = 'TodoOwnerFieldList';
-      const modelOperationHelpersOwner = createModelOperationHelpers(appSyncClients[oidcProvider][userName1], schema);
-      const modelOperationHelpersNonOwner = createModelOperationHelpers(appSyncClients[oidcProvider][userName2], schema);
+      const modelOperationHelpersOwner = createModelOperationHelpers(appSyncClients[authProvider][userName1], schema);
+      const modelOperationHelpersNonOwner = createModelOperationHelpers(appSyncClients[authProvider][userName2], schema);
       const todoHelperOwner = modelOperationHelpersOwner[modelName];
       const todoHelperAnotherOwner = modelOperationHelpersNonOwner[modelName];
 
@@ -376,7 +368,7 @@ export const testGraphQLAPIWithOIDCAccess = (
 
     test('users in static group can perform CRUD and subscription operations', async () => {
       const modelName = 'TodoStaticGroup';
-      const modelOperationHelpers = createModelOperationHelpers(appSyncClients[oidcProvider][userName1], schema);
+      const modelOperationHelpers = createModelOperationHelpers(appSyncClients[authProvider][userName1], schema);
       const todoHelper = modelOperationHelpers[modelName];
 
       const todo = {
@@ -411,8 +403,8 @@ export const testGraphQLAPIWithOIDCAccess = (
 
     test('users not in static group cannot perform CRUD operations', async () => {
       const modelName = 'TodoStaticGroup';
-      const modelOperationHelpersAdmin = createModelOperationHelpers(appSyncClients[oidcProvider][userName1], schema);
-      const modelOperationHelpersNonAdmin = createModelOperationHelpers(appSyncClients[oidcProvider][userName2], schema);
+      const modelOperationHelpersAdmin = createModelOperationHelpers(appSyncClients[authProvider][userName1], schema);
+      const modelOperationHelpersNonAdmin = createModelOperationHelpers(appSyncClients[authProvider][userName2], schema);
       const todoHelperAdmin = modelOperationHelpersAdmin[modelName];
       const todoHelperNonAdmin = modelOperationHelpersNonAdmin[modelName];
 
@@ -453,7 +445,7 @@ export const testGraphQLAPIWithOIDCAccess = (
 
     test('users in group stored as string can perform CRUD and subscription operations', async () => {
       const modelName = 'TodoGroupFieldString';
-      const modelOperationHelpers = createModelOperationHelpers(appSyncClients[oidcProvider][userName1], schema);
+      const modelOperationHelpers = createModelOperationHelpers(appSyncClients[authProvider][userName1], schema);
       const todoHelper = modelOperationHelpers[modelName];
 
       const todo = {
@@ -491,8 +483,8 @@ export const testGraphQLAPIWithOIDCAccess = (
 
     test('users cannot spoof their group membership and gain access', async () => {
       const modelName = 'TodoGroupFieldString';
-      const modelOperationHelpersAdmin = createModelOperationHelpers(appSyncClients[oidcProvider][userName1], schema);
-      const modelOperationHelpersNonAdmin = createModelOperationHelpers(appSyncClients[oidcProvider][userName2], schema);
+      const modelOperationHelpersAdmin = createModelOperationHelpers(appSyncClients[authProvider][userName1], schema);
+      const modelOperationHelpersNonAdmin = createModelOperationHelpers(appSyncClients[authProvider][userName2], schema);
       const todoHelperAdmin = modelOperationHelpersAdmin[modelName];
       const todoHelperNonAdmin = modelOperationHelpersNonAdmin[modelName];
 
@@ -536,7 +528,7 @@ export const testGraphQLAPIWithOIDCAccess = (
 
     test('users in groups stored as list can perform CRUD and subscription operations', async () => {
       const modelName = 'TodoGroupFieldList';
-      const modelOperationHelpers = createModelOperationHelpers(appSyncClients[oidcProvider][userName1], schema);
+      const modelOperationHelpers = createModelOperationHelpers(appSyncClients[authProvider][userName1], schema);
       const todoHelper = modelOperationHelpers[modelName];
 
       const todo = {
@@ -574,8 +566,8 @@ export const testGraphQLAPIWithOIDCAccess = (
 
     test('users not part of allowed groups cannot access the records or modify allowed groups', async () => {
       const modelName = 'TodoGroupFieldList';
-      const modelOperationHelpersAdmin = createModelOperationHelpers(appSyncClients[oidcProvider][userName1], schema);
-      const modelOperationHelpersNonAdmin = createModelOperationHelpers(appSyncClients[oidcProvider][userName2], schema);
+      const modelOperationHelpersAdmin = createModelOperationHelpers(appSyncClients[authProvider][userName1], schema);
+      const modelOperationHelpersNonAdmin = createModelOperationHelpers(appSyncClients[authProvider][userName2], schema);
       const todoHelperAdmin = modelOperationHelpersAdmin[modelName];
       const todoHelperNonAdmin = modelOperationHelpersNonAdmin[modelName];
 
@@ -615,8 +607,8 @@ export const testGraphQLAPIWithOIDCAccess = (
 
     test('Admin user can give access to another group of users', async () => {
       const modelName = 'TodoGroupFieldList';
-      const modelOperationHelpersAdmin = createModelOperationHelpers(appSyncClients[oidcProvider][userName1], schema);
-      const modelOperationHelpersNonAdmin = createModelOperationHelpers(appSyncClients[oidcProvider][userName2], schema);
+      const modelOperationHelpersAdmin = createModelOperationHelpers(appSyncClients[authProvider][userName1], schema);
+      const modelOperationHelpersNonAdmin = createModelOperationHelpers(appSyncClients[authProvider][userName2], schema);
       const todoHelperAdmin = modelOperationHelpersAdmin[modelName];
       const todoHelperNonAdmin = modelOperationHelpersNonAdmin[modelName];
 
@@ -652,7 +644,7 @@ export const testGraphQLAPIWithOIDCAccess = (
     });
 
     test('logged in user can perform custom operations', async () => {
-      const appSyncClient = appSyncClients[oidcProvider][userName2];
+      const appSyncClient = appSyncClients[authProvider][userName2];
       const todo = {
         id: Date.now().toString(),
         content: 'Todo',
@@ -693,7 +685,7 @@ export const testGraphQLAPIWithOIDCAccess = (
     });
 
     test('users in static group can perform custom operations', async () => {
-      const appSyncClient = appSyncClients[oidcProvider][userName1];
+      const appSyncClient = appSyncClients[authProvider][userName1];
       const todo = {
         id: Date.now().toString(),
         content: 'Todo',
@@ -734,7 +726,7 @@ export const testGraphQLAPIWithOIDCAccess = (
     });
 
     test('users not in static group cannot perform custom operations', async () => {
-      const appSyncClient = appSyncClients[oidcProvider][userName2];
+      const appSyncClient = appSyncClients[authProvider][userName2];
       const todo = {
         id: Date.now().toString(),
         content: 'Todo',

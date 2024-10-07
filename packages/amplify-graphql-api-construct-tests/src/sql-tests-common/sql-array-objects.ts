@@ -1,26 +1,18 @@
 import { LambdaClient, GetProvisionedConcurrencyConfigCommand } from '@aws-sdk/client-lambda';
-import { ImportedRDSType, SQLLambdaResourceNames } from '@aws-amplify/graphql-transformer-core';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { SqlDatatabaseController } from '../sql-datatabase-controller';
+import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { AUTH_TYPE } from 'aws-appsync';
 import { contactFieldMap } from './tests-sources/sql-array-objects/field-map';
-import { setupTest, cleanupTest } from '../utils/sql-test-config-helper';
+import { configureAppSyncClients } from '../utils/sql-appsync-client-helper';
+import { TestOptions, setupTest, cleanupTest } from '../utils/sql-test-config-helper';
 import { stackConfig as generateStackConfig } from './tests-sources/sql-array-objects/stack-config';
 import { CRUDLHelper } from '../utils/sql-crudl-helper';
 
-export const testGraphQLAPIArrayAndObjects = (
-  options: {
-    projFolderName: string;
-    region: string;
-    connectionConfigName: string;
-    dbController: SqlDatatabaseController;
-    resourceNames: SQLLambdaResourceNames;
-  },
-  testBlockDescription: string,
-  engine: ImportedRDSType,
-): void => {
+export const testGraphQLAPIArrayAndObjects = (options: TestOptions, testBlockDescription: string, engine: ImportedRDSType): void => {
   describe(`${testBlockDescription} - ${engine}`, () => {
-    let contactTableCRUDLHelper: CRUDLHelper;
+    const authProvider = AUTH_TYPE.API_KEY;
+
     let testConfigOutput;
+    let contactTableCRUDLHelper;
 
     beforeAll(async () => {
       testConfigOutput = await setupTest({
@@ -28,17 +20,9 @@ export const testGraphQLAPIArrayAndObjects = (
         stackConfig: generateStackConfig(engine),
       });
 
-      const appSyncClient = new AWSAppSyncClient({
-        url: testConfigOutput.apiEndpoint,
-        region: testConfigOutput.region,
-        disableOffline: true,
-        auth: {
-          type: AUTH_TYPE.API_KEY,
-          apiKey: testConfigOutput.apiKey,
-        },
-      });
+      const appSyncClients = await configureAppSyncClients(testConfigOutput);
 
-      contactTableCRUDLHelper = new CRUDLHelper(appSyncClient, 'Contact', 'Contacts', contactFieldMap);
+      contactTableCRUDLHelper = new CRUDLHelper(appSyncClients[authProvider], 'Contact', 'Contacts', contactFieldMap);
     });
 
     afterAll(async () => {
