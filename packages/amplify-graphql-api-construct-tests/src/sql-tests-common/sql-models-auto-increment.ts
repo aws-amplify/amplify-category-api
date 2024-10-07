@@ -1,4 +1,5 @@
 import * as path from 'path';
+import * as fs from 'fs-extra';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { createNewProjectDir, deleteProjectDir, getRDSTableNamePrefix } from 'amplify-category-api-e2e-core';
@@ -6,6 +7,7 @@ import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { CRUDLHelper } from '../utils/sql-crudl-helper';
 import { ONE_MINUTE } from '../utils/duration-constants';
+import { coffeeQueueFieldMap } from './schemas/sql-auto-increment/field-map';
 
 export const testGraphQLAPIAutoIncrement = (
   options: {
@@ -23,14 +25,8 @@ export const testGraphQLAPIAutoIncrement = (
     // is allowed to omit the primary key field, and that the primary key
     // we get back is the correct, db generated value.
     // NOTE: Expects underlying orderNumber column to be a serial primary key in Postgres table
-    const amplifyGraphqlSchema = `
-      type CoffeeQueue @model @refersTo(name: "${getRDSTableNamePrefix()}coffee_queue") {
-        orderNumber: Int! @primaryKey @default
-        order: String!
-        customer: String
-      }
-    `;
-
+    const schemaPath = path.resolve(path.join(__dirname, '..', 'sql-tests-common', 'schemas', 'sql-auto-increment', 'schema.graphql'));
+    const schemaConfigString = fs.readFileSync(schemaPath).toString();
     const { projFolderName, region, connectionConfigName, dbController } = options;
     const templatePath = path.resolve(path.join(__dirname, '..', '__tests__', 'backends', 'sql-models'));
 
@@ -42,7 +38,7 @@ export const testGraphQLAPIAutoIncrement = (
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projFolderName);
       name = await initCDKProject(projRoot, templatePath);
-      dbController.writeDbDetails(projRoot, connectionConfigName, amplifyGraphqlSchema);
+      dbController.writeDbDetails(projRoot, connectionConfigName, schemaConfigString);
       outputs = await cdkDeploy(projRoot, '--all', { postDeployWaitMs: ONE_MINUTE });
       const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[name];
 
@@ -56,7 +52,7 @@ export const testGraphQLAPIAutoIncrement = (
         },
       });
 
-      coffeeQueueTableCRUDLHelper = new CRUDLHelper(appSyncClient, 'CoffeeQueue', 'CoffeeQueues', ['orderNumber', 'order', 'customer']);
+      coffeeQueueTableCRUDLHelper = new CRUDLHelper(appSyncClient, 'CoffeeQueue', 'CoffeeQueues', coffeeQueueFieldMap);
     });
 
     afterAll(async () => {
