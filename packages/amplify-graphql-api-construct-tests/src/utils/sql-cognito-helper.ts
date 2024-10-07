@@ -4,7 +4,7 @@ import {
   CognitoIdentityProviderClient,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { Amplify, Auth } from 'aws-amplify';
-import { ICredentials } from '@aws-amplify/core';
+import { CognitoUser } from 'amazon-cognito-identity-js';
 import { UserPoolAuthConstructStackOutputs } from '../types';
 
 export class CognitoUserPoolAuthHelper {
@@ -23,14 +23,9 @@ export class CognitoUserPoolAuthHelper {
     });
   }
 
-  public getAuthRoleCredentials = async (user: Record<string, string>): Promise<any> => {
+  public getAuthRoleCredentials = async (user: Record<string, string>): Promise<CognitoUser> => {
     const cognitoUser = await Auth.signIn(user.username, user.password);
     return cognitoUser;
-  };
-
-  public getUnAuthRoleCredentials = async (user: Record<string, string>): Promise<ICredentials> => {
-    await Auth.signOut();
-    return await Auth.currentCredentials();
   };
 
   public createUser = async (user: Record<string, string>, group?: string[]): Promise<void> => {
