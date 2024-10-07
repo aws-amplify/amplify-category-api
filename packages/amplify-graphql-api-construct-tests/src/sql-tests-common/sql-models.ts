@@ -1,15 +1,11 @@
-import * as path from 'path';
 import { LambdaClient, GetProvisionedConcurrencyConfigCommand } from '@aws-sdk/client-lambda';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { ImportedRDSType, SQLLambdaResourceNames } from '@aws-amplify/graphql-transformer-core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
-import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
-import { schema as generateSchema } from './tests-sources/sql-models/provider';
 import { toDoFieldMap, studentFieldMap } from './tests-sources/sql-models/field-map';
-import { StackConfig } from '../utils/sql-stack-config';
+import { setupTest, cleanupTest } from '../utils/sql-test-config-helper';
+import { stackConfig as generateStackConfig } from './tests-sources/sql-models/stack-config';
 import { CRUDLHelper } from '../utils/sql-crudl-helper';
-import { ONE_MINUTE } from '../utils/duration-constants';
 
 export const testGraphQLAPI = (
   options: {
@@ -17,51 +13,29 @@ export const testGraphQLAPI = (
     region: string;
     connectionConfigName: string;
     dbController: SqlDatatabaseController;
-    resourceNames: { sqlLambdaAliasName: string };
+    resourceNames: SQLLambdaResourceNames;
   },
   testBlockDescription: string,
   engine: ImportedRDSType,
 ): void => {
   describe(`${testBlockDescription} - ${engine}`, () => {
-    let projRoot;
-    let region, lambdaFunctionName, lambdaAliasName;
-
-    let dbController: SqlDatatabaseController;
     let toDoTableCRUDLHelper: CRUDLHelper;
     let studentTableCRUDLHelper: CRUDLHelper;
+    let testConfigOutput;
 
     beforeAll(async () => {
-      ({
-        region,
-        dbController,
-        resourceNames: { sqlLambdaAliasName: lambdaAliasName },
-      } = options);
-      const { projFolderName, connectionConfigName } = options;
-
-      const templatePath = path.resolve(path.join(__dirname, '..', '__tests__', 'backends', 'sql-configurable-stack'));
-
-      projRoot = await createNewProjectDir(projFolderName);
-      const name = await initCDKProject(projRoot, templatePath);
-
-      const stackConfig: StackConfig = {
-        schema: generateSchema(),
-        authMode: AUTH_TYPE.API_KEY,
-        useSandbox: true,
-      };
-
-      dbController.writeDbDetails(projRoot, connectionConfigName, stackConfig);
-      const outputs = await cdkDeploy(projRoot, '--all', { postDeployWaitMs: ONE_MINUTE });
-      const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[name];
-      lambdaFunctionName = outputs[name].SQLFunctionName;
-      console.log(outputs[name]);
+      testConfigOutput = await setupTest({
+        options,
+        stackConfig: generateStackConfig(),
+      });
 
       const appSyncClient = new AWSAppSyncClient({
-        url: apiEndpoint,
-        region,
+        url: testConfigOutput.apiEndpoint,
+        region: testConfigOutput.region,
         disableOffline: true,
         auth: {
           type: AUTH_TYPE.API_KEY,
-          apiKey,
+          apiKey: testConfigOutput.apiKey,
         },
       });
 
@@ -70,14 +44,7 @@ export const testGraphQLAPI = (
     });
 
     afterAll(async () => {
-      try {
-        await cdkDestroy(projRoot, '--all');
-        await dbController.clearDatabase();
-      } catch (err) {
-        console.log(`Error invoking 'cdk destroy': ${err}`);
-      }
-
-      deleteProjectDir(projRoot);
+      cleanupTest(testConfigOutput);
     });
 
     test(`check CRUDL on todo table with default primary key - ${engine}`, async () => {
@@ -387,10 +354,10 @@ export const testGraphQLAPI = (
     });
 
     test(`check SQL Lambda provisioned concurrency - ${engine}`, async () => {
-      const client = new LambdaClient({ region });
+      const client = new LambdaClient({ region: testConfigOutput.region });
       const command = new GetProvisionedConcurrencyConfigCommand({
-        FunctionName: lambdaFunctionName,
-        Qualifier: lambdaAliasName,
+        FunctionName: testConfigOutput.lambdaFunctionName,
+        Qualifier: testConfigOutput.lambdaAliasName,
       });
       const response = await client.send(command);
       expect(response.RequestedProvisionedConcurrentExecutions).toEqual(2);

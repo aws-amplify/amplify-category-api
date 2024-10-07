@@ -1,6 +1,5 @@
 import generator from 'generate-password';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
-import { ModelDataSourceStrategySqlDbType } from '@aws-amplify/graphql-api-construct';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
 import { testGraphQLAPIWithOIDCAccess } from '../sql-tests-common/sql-oidc-auth';

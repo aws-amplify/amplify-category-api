@@ -1,6 +1,5 @@
 import generator from 'generate-password';
 import { getResourceNamesForStrategyName, ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
-import { getRDSTableNamePrefix } from 'amplify-category-api-e2e-core';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
 import { testGraphQLAPIArrayAndObjects } from '../sql-tests-common/sql-array-objects';
@@ -9,12 +8,14 @@ import { sqlCreateStatements } from '../sql-tests-common/tests-sources/sql-array
 jest.setTimeout(DURATION_1_HOUR);
 
 describe('CDK GraphQL Transformer deployments with Postgres SQL datasources', () => {
-  const projFolderName = 'pgmodels';
+  const projFolderName = 'pgarrayobjects';
 
   // sufficient password length that meets the requirements for RDS cluster/instance
   const [username, password, identifier] = generator.generateMultiple(3, { length: 11 });
   const region = process.env.CLI_REGION ?? 'us-west-2';
   const engine = 'postgres';
+
+  console.log(sqlCreateStatements(ImportedRDSType.POSTGRESQL));
 
   const databaseController: SqlDatatabaseController = new SqlDatatabaseController(sqlCreateStatements(ImportedRDSType.POSTGRESQL), {
     identifier,

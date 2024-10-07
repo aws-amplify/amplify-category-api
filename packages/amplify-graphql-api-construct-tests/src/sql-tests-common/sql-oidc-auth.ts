@@ -1,13 +1,8 @@
-import * as path from 'path';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
-import { AUTH_TYPE } from 'aws-appsync';
 import { gql } from 'graphql-tag';
-import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { UserPoolAuthConstructStackOutputs } from '../types';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { schema as generateSchema } from './tests-sources/sql-oidc-auth/provider';
-import { StackConfig } from '../utils/sql-stack-config';
 import { CognitoUserPoolAuthHelper } from '../utils/sql-cognito-helper';
 import { configureAppSyncClients } from '../utils/appsync-model-operation/appsync-client-helper';
 import {
@@ -15,7 +10,8 @@ import {
   checkOperationResult,
   checkListItemExistence,
 } from '../utils/appsync-model-operation/model-operation-helper';
-import { ONE_MINUTE } from '../utils/duration-constants';
+import { setupTest, cleanupTest } from '../utils/sql-test-config-helper';
+import { stackConfig as generateStackConfig } from './tests-sources/sql-oidc-auth/stack-config';
 import { authConstructDependency } from '../__tests__/additional-dependencies';
 
 export const testGraphQLAPIWithOIDCAccess = (
@@ -38,72 +34,28 @@ export const testGraphQLAPIWithOIDCAccess = (
     const adminGroupName = 'Admin';
     const devGroupName = 'Dev';
 
-    let projRoot;
-    let region;
-    let dbController: SqlDatatabaseController;
-
     let appSyncClients = {};
-    let awsAppsyncApiEndpoint;
+    let testConfigOutput;
 
     beforeAll(async () => {
-      ({ dbController, region } = options);
-      const { projFolderName, connectionConfigName } = options;
-      const templatePath = path.resolve(path.join(__dirname, '..', '__tests__', 'backends', 'sql-configurable-stack'));
-
-      projRoot = await createNewProjectDir(projFolderName);
-
-      const name = await initCDKProject(projRoot, templatePath, {
+      testConfigOutput = await setupTest({
+        options,
+        stackConfig: generateStackConfig(engine),
         additionalDependencies: [authConstructDependency],
       });
 
-      const stackConfig: StackConfig = {
-        schema,
-        authMode: AUTH_TYPE.OPENID_CONNECT,
-        oidcOptions: {
-          triggers: {
-            preTokenGeneration: `
-              exports.handler = async event => {
-                  event.response = {
-                      claimsOverrideDetails: {
-                          claimsToAddOrOverride: {
-                              user_id: event.userName,
-                          }
-                      }
-                  };
-                  return event;
-              };
-            `,
-          },
-        },
-      };
-
-      dbController.writeDbDetails(projRoot, connectionConfigName, stackConfig);
-      let outputs = await cdkDeploy(projRoot, '--all', { postDeployWaitMs: ONE_MINUTE });
-      outputs = outputs[name];
-      ({ awsAppsyncApiEndpoint } = outputs);
-
-      console.log('Outputs:', outputs);
-      const cognitoIdentityPoolCredentialsManager = new CognitoUserPoolAuthHelper(outputs as UserPoolAuthConstructStackOutputs);
+      const cognitoIdentityPoolCredentialsManager = new CognitoUserPoolAuthHelper(testConfigOutput as UserPoolAuthConstructStackOutputs);
       await cognitoIdentityPoolCredentialsManager.createUser({ username: userName1, email: userName1, password }, [adminGroupName]);
       await cognitoIdentityPoolCredentialsManager.createUser({ username: userName2, email: userName2, password }, [devGroupName]);
 
       userMap[userName1] = await cognitoIdentityPoolCredentialsManager.getAuthRoleCredentials({ username: userName1, password });
-      console.log('userMap[userName1]:', userMap[userName1]);
       userMap[userName2] = await cognitoIdentityPoolCredentialsManager.getAuthRoleCredentials({ username: userName2, password });
-      console.log('userMap[userName2]:', userMap[userName2]);
 
-      appSyncClients = await configureAppSyncClients(awsAppsyncApiEndpoint, region, [oidcProvider], userMap);
+      appSyncClients = await configureAppSyncClients(testConfigOutput.apiEndpoint, testConfigOutput.region, [oidcProvider], userMap);
     });
 
     afterAll(async () => {
-      try {
-        await cdkDestroy(projRoot, '--all');
-        await dbController.clearDatabase();
-      } catch (err) {
-        console.log(`Error invoking 'cdk destroy': ${err}`);
-      }
-
-      deleteProjectDir(projRoot);
+      cleanupTest(testConfigOutput);
     });
 
     test('logged in user can perform CRUD and subscription operations', async () => {

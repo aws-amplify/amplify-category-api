@@ -1,13 +1,8 @@
-import * as path from 'path';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
-import { AUTH_TYPE } from 'aws-appsync';
 import { gql } from 'graphql-tag';
-import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { UserPoolAuthConstructStackOutputs } from '../types';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { schema as generateSchema } from './tests-sources/sql-userpool-auth/provider';
-import { StackConfig } from '../utils/sql-stack-config';
 import { CognitoUserPoolAuthHelper } from '../utils/sql-cognito-helper';
 import { configureAppSyncClients } from '../utils/appsync-model-operation/appsync-client-helper';
 import {
@@ -15,7 +10,8 @@ import {
   checkOperationResult,
   checkListItemExistence,
 } from '../utils/appsync-model-operation/model-operation-helper';
-import { ONE_MINUTE } from '../utils/duration-constants';
+import { setupTest, cleanupTest } from '../utils/sql-test-config-helper';
+import { stackConfig as generateStackConfig } from './tests-sources/sql-userpool-auth/stack-config';
 import { authConstructDependency } from '../__tests__/additional-dependencies';
 
 export const testGraphQLAPIWithUserPoolAccess = (
@@ -38,54 +34,28 @@ export const testGraphQLAPIWithUserPoolAccess = (
     const adminGroupName = 'Admin';
     const devGroupName = 'Dev';
 
-    let projRoot;
-    let region;
-    let dbController: SqlDatatabaseController;
-
     let appSyncClients = {};
-    let awsAppsyncApiEndpoint;
+    let testConfigOutput;
 
     beforeAll(async () => {
-      ({ dbController, region } = options);
-      const { projFolderName, connectionConfigName } = options;
-      const templatePath = path.resolve(path.join(__dirname, '..', '__tests__', 'backends', 'sql-configurable-stack'));
-
-      projRoot = await createNewProjectDir(projFolderName);
-
-      const name = await initCDKProject(projRoot, templatePath, {
+      testConfigOutput = await setupTest({
+        options,
+        stackConfig: generateStackConfig(engine),
         additionalDependencies: [authConstructDependency],
       });
 
-      const stackConfig: StackConfig = {
-        schema,
-        authMode: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
-      };
-
-      dbController.writeDbDetails(projRoot, connectionConfigName, stackConfig);
-      let outputs = await cdkDeploy(projRoot, '--all', { postDeployWaitMs: ONE_MINUTE });
-      outputs = outputs[name];
-      ({ awsAppsyncApiEndpoint } = outputs);
-
-      console.log('Outputs:', outputs);
-      const authHelper = new CognitoUserPoolAuthHelper(outputs as UserPoolAuthConstructStackOutputs);
+      const authHelper = new CognitoUserPoolAuthHelper(testConfigOutput as UserPoolAuthConstructStackOutputs);
       await authHelper.createUser({ username: userName1, email: userName1, password }, [adminGroupName]);
       await authHelper.createUser({ username: userName2, email: userName2, password }, [devGroupName]);
 
       userMap[userName1] = await authHelper.getAuthRoleCredentials({ username: userName1, password });
       userMap[userName2] = await authHelper.getAuthRoleCredentials({ username: userName2, password });
 
-      appSyncClients = await configureAppSyncClients(awsAppsyncApiEndpoint, region, [userPoolProvider], userMap);
+      appSyncClients = await configureAppSyncClients(testConfigOutput.apiEndpoint, testConfigOutput.region, [userPoolProvider], userMap);
     });
 
     afterAll(async () => {
-      try {
-        await cdkDestroy(projRoot, '--all');
-        await dbController.clearDatabase();
-      } catch (err) {
-        console.log(`Error invoking 'cdk destroy': ${err}`);
-      }
-
-      deleteProjectDir(projRoot);
+      cleanupTest(testConfigOutput);
     });
 
     test('logged in user can perform CRUD and subscription operations', async () => {

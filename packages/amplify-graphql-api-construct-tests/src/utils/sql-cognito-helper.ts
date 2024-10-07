@@ -13,10 +13,10 @@ export class CognitoUserPoolAuthHelper {
   private readonly tempPassword = 'Password123!';
 
   constructor(private readonly outputs: UserPoolAuthConstructStackOutputs) {
-    this.cognitoClient = new CognitoIdentityProviderClient({ region: this.outputs.awsAppsyncRegion });
+    this.cognitoClient = new CognitoIdentityProviderClient({ region: this.outputs.region });
     Amplify.configure({
       Auth: {
-        region: this.outputs.awsAppsyncRegion,
+        region: this.outputs.region,
         userPoolId: this.outputs.userPoolId,
         userPoolWebClientId: this.outputs.webClientId,
       },

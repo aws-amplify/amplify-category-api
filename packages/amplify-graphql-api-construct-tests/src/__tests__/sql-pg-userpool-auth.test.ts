@@ -9,7 +9,7 @@ import { sqlCreateStatements } from '../sql-tests-common/tests-sources/sql-userp
 jest.setTimeout(DURATION_1_HOUR);
 
 describe('CDK GraphQL Transformer deployments with Postgres SQL datasources - UserPool Auth', () => {
-  const projFolderName = 'sqlmodelsuserpoolaccess';
+  const projFolderName = 'pguserpoolaccess';
 
   // sufficient password length that meets the requirements for RDS cluster/instance
   const [username, password, identifier] = generator.generateMultiple(3, { length: 11 });

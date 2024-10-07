@@ -1,6 +1,5 @@
 import generator from 'generate-password';
 import { getResourceNamesForStrategyName, ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
-import { getRDSTableNamePrefix } from 'amplify-category-api-e2e-core';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
 import { testGraphQLAPI } from '../sql-tests-common/sql-models';
