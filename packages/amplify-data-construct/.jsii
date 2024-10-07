@@ -131,7 +131,7 @@
   },
   "dependencies": {
     "@aws-amplify/graphql-api-construct": "1.14.0",
-    "aws-cdk-lib": "^2.152.0",
+    "aws-cdk-lib": "^2.158.0",
     "constructs": "^10.3.0"
   },
   "dependencyClosure": {
@@ -217,6 +217,36 @@
         "python": {
           "distName": "aws-cdk.asset-node-proxy-agent-v6",
           "module": "aws_cdk.asset_node_proxy_agent_v6"
+        }
+      }
+    },
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "go": {
+          "moduleName": "github.com/cdklabs/cloud-assembly-schema-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
         }
       }
     },
@@ -2290,6 +2320,19 @@
             }
           }
         },
+        "aws-cdk-lib.aws_launchwizard": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.LaunchWizard"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.launchwizard"
+            },
+            "python": {
+              "module": "aws_cdk.aws_launchwizard"
+            }
+          }
+        },
         "aws-cdk-lib.aws_lex": {
           "targets": {
             "dotnet": {
@@ -2781,6 +2824,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_pcaconnectorad"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_pcaconnectorscep": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.PCAConnectorSCEP"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.pcaconnectorscep"
+            },
+            "python": {
+              "module": "aws_cdk.aws_pcaconnectorscep"
             }
           }
         },
@@ -3499,6 +3555,19 @@
             }
           }
         },
+        "aws-cdk-lib.aws_ssmquicksetup": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.SSMQuickSetup"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.ssmquicksetup"
+            },
+            "python": {
+              "module": "aws_cdk.aws_ssmquicksetup"
+            }
+          }
+        },
         "aws-cdk-lib.aws_sso": {
           "targets": {
             "dotnet": {
@@ -3746,19 +3815,7 @@
             }
           }
         },
-        "aws-cdk-lib.cloud_assembly_schema": {
-          "targets": {
-            "dotnet": {
-              "namespace": "Amazon.CDK.CloudAssembly.Schema"
-            },
-            "java": {
-              "package": "software.amazon.awscdk.cloudassembly.schema"
-            },
-            "python": {
-              "module": "aws_cdk.cloud_assembly_schema"
-            }
-          }
-        },
+        "aws-cdk-lib.cloud_assembly_schema": {},
         "aws-cdk-lib.cloudformation_include": {
           "targets": {
             "dotnet": {
@@ -3970,5 +4027,5 @@
   },
   "types": {},
   "version": "1.10.2",
-  "fingerprint": "Ur2Iw+iIJolzSkulUyEDgbJ9aLqUExVDrAiHRMhbnL4="
+  "fingerprint": "naLvPjdr9z9wuDIK2e15PtMBvodNvsprfPj2tyr4FaA="
 }
