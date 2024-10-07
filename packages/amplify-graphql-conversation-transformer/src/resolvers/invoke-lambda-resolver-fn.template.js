@@ -2,9 +2,10 @@ import { util } from '@aws-appsync/utils';
 
 export function request(ctx) {
   const { args, request, prev } = ctx;
+  const { graphqlApiEndpoint } = ctx.stash;
+
   [[TOOL_DEFINITIONS_LINE]]
   const selectionSet = '[[SELECTION_SET]]';
-  const graphqlApiEndpoint = '[[GRAPHQL_API_ENDPOINT]]';
 
   const messages = prev.result.items;
   const responseMutation = {
