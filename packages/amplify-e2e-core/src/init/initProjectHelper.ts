@@ -56,6 +56,8 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
       disableCIDetection: s.disableCIDetection,
       noOutputTimeout: 10 * 60 * 1000,
     })
+      .wait('Do you want to continue with Amplify Gen 1?')
+      .sendConfirmYes()
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
@@ -113,6 +115,8 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Object): Pr
         CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
       },
     })
+      .wait('Do you want to continue with Amplify Gen 1?')
+      .sendConfirmYes()
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
@@ -163,6 +167,8 @@ export function initIosProjectWithProfile(cwd: string, settings: Object): Promis
         CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
       },
     })
+      .wait('Do you want to continue with Amplify Gen 1?')
+      .sendConfirmYes()
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
@@ -200,6 +206,8 @@ export function initFlutterProjectWithProfile(cwd: string, settings: Object): Pr
 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
+      .wait('Do you want to continue with Amplify Gen 1?')
+      .sendConfirmYes()
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
@@ -250,6 +258,8 @@ export function initProjectWithAccessKey(
         CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
       },
     })
+      .wait('Do you want to continue with Amplify Gen 1?')
+      .sendConfirmYes()
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
