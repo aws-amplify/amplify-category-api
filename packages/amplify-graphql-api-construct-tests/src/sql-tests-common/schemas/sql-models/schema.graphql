@@ -1,6 +1,6 @@
 type Todo @model @refersTo(name: "e2e_test_todos") {
   id: ID! @primaryKey
-  description: String!
+  description: String! @default(value: "Lorem ipsum yadda yadda...")
 }
 type Student @model @refersTo(name: "e2e_test_students") {
   studentId: Int! @primaryKey(sortKeyFields: ["classId"])
