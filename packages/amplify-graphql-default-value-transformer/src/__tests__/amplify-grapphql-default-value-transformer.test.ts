@@ -1,6 +1,7 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import {
   constructDataSourceStrategies,
+  DDB_DEFAULT_DATASOURCE_STRATEGY,
   getResourceNamesForStrategy,
   MYSQL_DB_TYPE,
   POSTGRES_DB_TYPE,
@@ -200,24 +201,40 @@ describe('DefaultValueModelTransformer:', () => {
     expect(out.resolvers['Mutation.createNote.init.2.req.vtl']).toBeUndefined();
   });
 
-  it.each([{ strategy: mockSqlDataSourceStrategy({ dbType: MYSQL_DB_TYPE }), datasourceName: 'mysql' }])(
-    'throws if @default (no args) is used non-Postgres datasource (%datasourceName)',
-    ({ strategy }) => {
-      const schema = `
+  it('cannot use `null` as a default value', () => {
+    const schema = `
+      type CoffeeQueue @model {
+        id: ID! @primaryKey
+        orderNumber: Int! @default(value: null)
+        name: String
+      }`;
+
+    expect(() => {
+      testTransform({
+        schema: schema,
+        transformers: [new ModelTransformer(), new DefaultValueTransformer(), new PrimaryKeyTransformer()],
+      });
+    }).toThrow('The @default directive does not support null values.');
+  });
+
+  it.each([
+    { strategy: mockSqlDataSourceStrategy({ dbType: MYSQL_DB_TYPE }), datasourceName: 'mysql' },
+    { strategy: DDB_DEFAULT_DATASOURCE_STRATEGY, datasourceName: 'DynamoDB (Deafult)' },
+  ])('throws if @default (no args) is used non-Postgres datasource (%datasourceName)', ({ strategy }) => {
+    const schema = `
       type CoffeeQueue @model {
         id: ID! @primaryKey
         orderNumber: Int! @default
         name: String
       }`;
-      expect(() => {
-        testTransform({
-          schema: schema,
-          transformers: [new ModelTransformer(), new DefaultValueTransformer(), new PrimaryKeyTransformer()],
-          dataSourceStrategies: constructDataSourceStrategies(schema, strategy),
-        });
-      }).toThrow('The @default directive requires a value property on non-Postgres datasources.');
-    },
-  );
+    expect(() => {
+      testTransform({
+        schema: schema,
+        transformers: [new ModelTransformer(), new DefaultValueTransformer(), new PrimaryKeyTransformer()],
+        dataSourceStrategies: constructDataSourceStrategies(schema, strategy),
+      });
+    }).toThrow('The @default directive requires a value property on non-Postgres datasources.');
+  });
 
   it.each([
     { typeStr: 'Boolean' },
