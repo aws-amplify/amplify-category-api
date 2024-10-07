@@ -275,6 +275,7 @@ export class AmplifyCLI {
     const chain = spawn(cliPath, cliArgs, { cwd: this.projectRoot, env, disableCIDetection: s.disableCIDetection })
       .wait('Do you want to continue with Amplify Gen 1?')
       .sendConfirmYes()
+      .sendCarriageReturn()
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
