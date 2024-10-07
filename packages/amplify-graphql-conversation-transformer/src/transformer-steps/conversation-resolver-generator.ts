@@ -51,7 +51,7 @@ export class ConversationResolverGenerator {
     this.createAssistantResponseSubscriptionResolver(ctx, directive, capitalizedFieldName);
 
     const functionDataSource = this.addLambdaDataSource(ctx, functionDataSourceId, referencedFunction, capitalizedFieldName);
-    const invokeLambdaFunction = invokeLambdaMappingTemplate(directive, ctx);
+    const invokeLambdaFunction = invokeLambdaMappingTemplate(directive);
 
     this.setupMessageTableIndex(ctx, directive);
 
@@ -203,7 +203,7 @@ export class ConversationResolverGenerator {
     directive: ConversationDirectiveConfiguration,
   ): void {
     // Add init function
-    const initFunction = initMappingTemplate(directive);
+    const initFunction = initMappingTemplate(ctx);
     resolver.addJsFunctionToSlot('init', initFunction);
 
     // Add auth function
@@ -218,7 +218,7 @@ export class ConversationResolverGenerator {
     resolver.addJsFunctionToSlot('verifySessionOwner', verifySessionOwnerFunction, conversationSessionDDBDataSource as any);
 
     // Add writeMessageToTable function
-    const writeMessageToTableFunction = writeMessageToTableMappingTemplate(capitalizedFieldName);
+    const writeMessageToTableFunction = writeMessageToTableMappingTemplate(directive.field.name.value);
     const messageModelName = `ConversationMessage${capitalizedFieldName}`;
     const messageModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, messageModelName);
     const messageDDBDataSource = ctx.api.host.getDataSource(messageModelDDBDataSourceName);
