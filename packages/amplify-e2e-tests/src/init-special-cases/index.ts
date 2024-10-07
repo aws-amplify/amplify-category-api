@@ -51,6 +51,8 @@ async function initWorkflow(cwd: string, settings: { accessKeyId: string; secret
         CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
       },
     })
+      .wait('Do you want to continue with Amplify Gen 1?')
+      .sendConfirmYes()
       .wait('Enter a name for the project')
       .sendCarriageReturn()
       .wait('Initialize the project with the above configuration?')
