@@ -53,6 +53,7 @@ async function initWorkflow(cwd: string, settings: { accessKeyId: string; secret
     })
       .wait('Do you want to continue with Amplify Gen 1?')
       .sendConfirmYes()
+      .wait('Why would you like to use Amplify Gen 1?')
       .sendCarriageReturn()
       .wait('Enter a name for the project')
       .sendCarriageReturn()
