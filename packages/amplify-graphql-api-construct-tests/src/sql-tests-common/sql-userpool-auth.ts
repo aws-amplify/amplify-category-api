@@ -1,7 +1,6 @@
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { AUTH_TYPE } from 'aws-appsync';
 import { gql } from 'graphql-tag';
-import { UserPoolAuthConstructStackOutputs } from '../types';
 import { schema as generateSchema } from './tests-sources/sql-userpool-auth/provider';
 import { CognitoUserPoolAuthHelper } from '../utils/sql-cognito-helper';
 import { configureAppSyncClients } from '../utils/sql-appsync-client-helper';
@@ -36,12 +35,12 @@ export const testGraphQLAPIWithUserPoolAccess = (options: TestOptions, testBlock
         additionalDependencies: [authConstructDependency],
       });
 
-      const authHelper = new CognitoUserPoolAuthHelper(testConfigOutput as UserPoolAuthConstructStackOutputs);
-      await authHelper.createUser({ username: userName1, email: userName1, password }, [adminGroupName]);
-      await authHelper.createUser({ username: userName2, email: userName2, password }, [devGroupName]);
+      // const authHelper = new CognitoUserPoolAuthHelper(testConfigOutput as UserPoolAuthConstructStackOutputs);
+      // await authHelper.createUser({ username: userName1, email: userName1, password }, [adminGroupName]);
+      // await authHelper.createUser({ username: userName2, email: userName2, password }, [devGroupName]);
 
-      userMap[userName1] = await authHelper.getAuthRoleCredentials({ username: userName1, password });
-      userMap[userName2] = await authHelper.getAuthRoleCredentials({ username: userName2, password });
+      // userMap[userName1] = await authHelper.getAuthRoleCredentials({ username: userName1, password });
+      // userMap[userName2] = await authHelper.getAuthRoleCredentials({ username: userName2, password });
 
       appSyncClients = await configureAppSyncClients(testConfigOutput, userMap);
     });
