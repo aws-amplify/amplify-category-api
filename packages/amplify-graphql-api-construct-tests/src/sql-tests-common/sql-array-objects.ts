@@ -42,7 +42,7 @@ export const testGraphQLAPIArrayAndObjects = (
     });
 
     afterAll(async () => {
-      cleanupTest(testConfigOutput);
+      await cleanupTest(testConfigOutput);
     });
 
     test(`check CRUDL on contact table with array and objects - ${engine}`, async () => {

@@ -44,7 +44,7 @@ export const testGraphQLAPI = (
     });
 
     afterAll(async () => {
-      cleanupTest(testConfigOutput);
+      await cleanupTest(testConfigOutput);
     });
 
     test(`check CRUDL on todo table with default primary key - ${engine}`, async () => {

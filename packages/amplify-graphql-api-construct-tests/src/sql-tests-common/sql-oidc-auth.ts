@@ -55,7 +55,7 @@ export const testGraphQLAPIWithOIDCAccess = (
     });
 
     afterAll(async () => {
-      cleanupTest(testConfigOutput);
+      await cleanupTest(testConfigOutput);
     });
 
     test('logged in user can perform CRUD and subscription operations', async () => {
