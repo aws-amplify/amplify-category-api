@@ -20,6 +20,7 @@ import { conversationMessageSubscriptionMappingTamplate } from '../resolvers/ass
 import { overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
 import pluralize from 'pluralize';
 import { listMessageInitMappingTemplate } from '../resolvers/list-messages-init-resolver';
+import { listMessagePostDataLoadMappingTemplate } from '../resolvers/list-messages-post-data-load-resolver';
 
 type KeyAttributeDefinition = {
   name: string;
@@ -347,6 +348,9 @@ export class ConversationResolverGenerator {
     const listMessagesResolver = ctx.resolvers.getResolver('Query', `list${pluralized}`) as TransformerResolver;
     const initResolverFn = listMessageInitMappingTemplate(directive);
     listMessagesResolver.addJsFunctionToSlot('init', initResolverFn);
+
+    const postDataLoadResolverFn = listMessagePostDataLoadMappingTemplate(directive);
+    listMessagesResolver.addJsFunctionToSlot('postDataLoad', postDataLoadResolverFn);
   }
 
   /**
