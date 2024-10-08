@@ -31,6 +31,7 @@ export type TestTransformParameters = RDSLayerMappingProvider &
     transformers: TransformerPluginProvider[];
     transformParameters?: Partial<TransformParameters>;
     userDefinedSlots?: Record<string, UserDefinedSlot[]>;
+    transformerManager?: TransformManager;
   };
 
 /**
@@ -52,6 +53,7 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     transformers,
     transformParameters,
     userDefinedSlots,
+    transformerManager,
   } = params;
 
   const transform = new GraphQLTransform({
@@ -63,7 +65,7 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     resolverConfig,
   });
 
-  const transformManager = new TransformManager(overrideConfig);
+  const transformManager = transformerManager ?? new TransformManager(overrideConfig);
 
   const authConfigTypes = [authConfig?.defaultAuthentication, ...(authConfig?.additionalAuthenticationProviders ?? [])].map(
     (authConfigEntry) => authConfigEntry?.authenticationType,
