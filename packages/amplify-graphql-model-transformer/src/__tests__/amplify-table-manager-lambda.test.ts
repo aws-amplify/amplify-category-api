@@ -10,7 +10,8 @@ import {
   isTtlModified,
   validateImportedTableProperties,
   getExpectedTableProperties,
-  ExpectedTableProperties,
+  TableComparisonProperties,
+  getImportedTableComparisonProperties,
 } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
 import * as ddbTableManagerLambda from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
 import * as CustomDDB from '../resources/amplify-dynamodb-table/amplify-table-types';
@@ -1240,10 +1241,13 @@ describe('Custom Resource Lambda Tests', () => {
             {
               AttributeName: 'name2',
               AttributeType: 'S',
+              // @ts-expect-error Attribute should be ignored in comparison. AWS SDK may add additional fields in the future
+              foo: 'bar',
+              baz: undefined,
             },
           ],
         };
-        const expected: ExpectedTableProperties = {
+        const expected: TableComparisonProperties = {
           AttributeDefinitions: [
             {
               AttributeName: 'todoId',
@@ -1260,7 +1264,7 @@ describe('Custom Resource Lambda Tests', () => {
           ],
         };
 
-        expect(() => validateImportedTableProperties(actual, expected)).not.toThrow();
+        expect(() => validateImportedTableProperties(getImportedTableComparisonProperties(actual), expected)).not.toThrow();
       });
 
       test('KeySchema', () => {
@@ -1273,10 +1277,13 @@ describe('Custom Resource Lambda Tests', () => {
             {
               AttributeName: 'name',
               KeyType: 'RANGE',
+              // @ts-expect-error Attribute should be ignored in comparison. AWS SDK may add additional fields in the future
+              foo: 'bar',
+              baz: undefined,
             },
           ],
         };
-        const expected: ExpectedTableProperties = {
+        const expected: TableComparisonProperties = {
           KeySchema: [
             {
               AttributeName: 'todoId',
@@ -1289,7 +1296,7 @@ describe('Custom Resource Lambda Tests', () => {
           ],
         };
 
-        expect(() => validateImportedTableProperties(actual, expected)).not.toThrow();
+        expect(() => validateImportedTableProperties(getImportedTableComparisonProperties(actual), expected)).not.toThrow();
       });
 
       test('GlobalSecondaryIndexes', () => {
@@ -1310,10 +1317,13 @@ describe('Custom Resource Lambda Tests', () => {
                 ReadCapacityUnits: 5,
                 WriteCapacityUnits: 5,
               },
+              // @ts-expect-error Attribute should be ignored in comparison. AWS SDK may add additional fields in the future
+              foo: 'bar',
+              baz: undefined,
             },
           ],
         };
-        const expected: ExpectedTableProperties = {
+        const expected: TableComparisonProperties = {
           GlobalSecondaryIndexes: [
             {
               IndexName: 'byName2',
@@ -1334,7 +1344,7 @@ describe('Custom Resource Lambda Tests', () => {
           ],
         };
 
-        expect(() => validateImportedTableProperties(actual, expected)).not.toThrow();
+        expect(() => validateImportedTableProperties(getImportedTableComparisonProperties(actual), expected)).not.toThrow();
       });
 
       test('BillingModeSummary', () => {
@@ -1343,15 +1353,18 @@ describe('Custom Resource Lambda Tests', () => {
             BillingMode: 'PROVISIONED',
             // should be ignored
             LastUpdateToPayPerRequestDateTime: new Date(),
+            // @ts-expect-error Attribute should be ignored in comparison. AWS SDK may add additional fields in the future
+            foo: 'bar',
+            baz: undefined,
           },
         };
-        const expected: ExpectedTableProperties = {
+        const expected: TableComparisonProperties = {
           BillingModeSummary: {
             BillingMode: 'PROVISIONED',
           },
         };
 
-        expect(() => validateImportedTableProperties(actual, expected)).not.toThrow();
+        expect(() => validateImportedTableProperties(getImportedTableComparisonProperties(actual), expected)).not.toThrow();
       });
 
       test('ProvisionedThroughput', () => {
@@ -1359,20 +1372,23 @@ describe('Custom Resource Lambda Tests', () => {
           ProvisionedThroughput: {
             ReadCapacityUnits: 5,
             WriteCapacityUnits: 5,
+            // @ts-expect-error Attribute should be ignored in comparison. AWS SDK may add additional fields in the future
+            foo: 'bar',
+            baz: undefined,
             // should be ingnored
             LastDecreaseDateTime: new Date(),
             LastIncreaseDateTime: new Date(),
             NumberOfDecreasesToday: 0,
           },
         };
-        const expected: ExpectedTableProperties = {
+        const expected: TableComparisonProperties = {
           ProvisionedThroughput: {
             ReadCapacityUnits: 5,
             WriteCapacityUnits: 5,
           },
         };
 
-        expect(() => validateImportedTableProperties(actual, expected)).not.toThrow();
+        expect(() => validateImportedTableProperties(getImportedTableComparisonProperties(actual), expected)).not.toThrow();
       });
 
       test('StreamSpecification', () => {
@@ -1380,44 +1396,50 @@ describe('Custom Resource Lambda Tests', () => {
           StreamSpecification: {
             StreamEnabled: true,
             StreamViewType: 'NEW_AND_OLD_IMAGES',
+            // @ts-expect-error Attribute should be ignored in comparison. AWS SDK may add additional fields in the future
+            foo: 'bar',
+            baz: undefined,
           },
         };
-        const expected: ExpectedTableProperties = {
+        const expected: TableComparisonProperties = {
           StreamSpecification: {
             StreamEnabled: true,
             StreamViewType: 'NEW_AND_OLD_IMAGES',
           },
         };
 
-        expect(() => validateImportedTableProperties(actual, expected)).not.toThrow();
+        expect(() => validateImportedTableProperties(getImportedTableComparisonProperties(actual), expected)).not.toThrow();
       });
 
       test('SSEDescription', () => {
         const actual: TableDescription = {
           SSEDescription: {
             SSEType: 'KMS',
+            // @ts-expect-error Attribute should be ignored in comparison. AWS SDK may add additional fields in the future
+            foo: 'bar',
+            baz: undefined,
             // should be ignored
             Status: 'ENABLED',
           },
         };
-        const expected: ExpectedTableProperties = {
+        const expected: TableComparisonProperties = {
           SSEDescription: {
             SSEType: 'KMS',
           },
         };
 
-        expect(() => validateImportedTableProperties(actual, expected)).not.toThrow();
+        expect(() => validateImportedTableProperties(getImportedTableComparisonProperties(actual), expected)).not.toThrow();
       });
 
       test('DeletionProtectionEnabled', () => {
         const actual: TableDescription = {
           DeletionProtectionEnabled: true,
         };
-        const expected: ExpectedTableProperties = {
+        const expected: TableComparisonProperties = {
           DeletionProtectionEnabled: true,
         };
 
-        expect(() => validateImportedTableProperties(actual, expected)).not.toThrow();
+        expect(() => validateImportedTableProperties(getImportedTableComparisonProperties(actual), expected)).not.toThrow();
       });
     });
 
@@ -1428,6 +1450,9 @@ describe('Custom Resource Lambda Tests', () => {
             {
               AttributeName: 'todoId',
               AttributeType: 'S',
+              // @ts-expect-error Attribute should be ignored in comparison. AWS SDK may add additional fields in the future
+              foo: 'bar',
+              baz: undefined,
             },
             {
               AttributeName: 'name',
@@ -1439,7 +1464,7 @@ describe('Custom Resource Lambda Tests', () => {
             },
           ],
         };
-        const expected: ExpectedTableProperties = {
+        const expected: TableComparisonProperties = {
           AttributeDefinitions: [
             {
               AttributeName: 'todoId',
@@ -1456,7 +1481,8 @@ describe('Custom Resource Lambda Tests', () => {
           ],
         };
 
-        expect(() => validateImportedTableProperties(actual, expected)).toThrowErrorMatchingInlineSnapshot(`
+        expect(() => validateImportedTableProperties(getImportedTableComparisonProperties(actual), expected))
+          .toThrowErrorMatchingInlineSnapshot(`
           "Imported table properties did not match the expected table properties.
           AttributeDefintions does not match the expected value.
           Actual: [{\\"AttributeName\\":\\"todoId\\",\\"AttributeType\\":\\"S\\"},{\\"AttributeName\\":\\"name\\",\\"AttributeType\\":\\"S\\"},{\\"AttributeName\\":\\"name2\\",\\"AttributeType\\":\\"S\\"}]
@@ -1470,6 +1496,9 @@ describe('Custom Resource Lambda Tests', () => {
             {
               AttributeName: 'todoId',
               KeyType: 'HASH',
+              // @ts-expect-error Attribute should be ignored in comparison. AWS SDK may add additional fields in the future
+              foo: 'bar',
+              baz: undefined,
             },
             {
               AttributeName: 'name',
@@ -1477,7 +1506,7 @@ describe('Custom Resource Lambda Tests', () => {
             },
           ],
         };
-        const expected: ExpectedTableProperties = {
+        const expected: TableComparisonProperties = {
           KeySchema: [
             {
               AttributeName: 'todoId',
@@ -1490,7 +1519,8 @@ describe('Custom Resource Lambda Tests', () => {
           ],
         };
 
-        expect(() => validateImportedTableProperties(actual, expected)).toThrowErrorMatchingInlineSnapshot(`
+        expect(() => validateImportedTableProperties(getImportedTableComparisonProperties(actual), expected))
+          .toThrowErrorMatchingInlineSnapshot(`
           "Imported table properties did not match the expected table properties.
           KeySchema does not match the expected value.
           Actual: [{\\"AttributeName\\":\\"todoId\\",\\"KeyType\\":\\"HASH\\"},{\\"AttributeName\\":\\"name\\",\\"KeyType\\":\\"RANGE\\"}]
@@ -1516,10 +1546,13 @@ describe('Custom Resource Lambda Tests', () => {
                 ReadCapacityUnits: 5,
                 WriteCapacityUnits: 5,
               },
+              // @ts-expect-error Attribute should be ignored in comparison. AWS SDK may add additional fields in the future
+              foo: 'bar',
+              baz: undefined,
             },
           ],
         };
-        const expected: ExpectedTableProperties = {
+        const expected: TableComparisonProperties = {
           GlobalSecondaryIndexes: [
             {
               IndexName: 'byName2',
@@ -1540,7 +1573,8 @@ describe('Custom Resource Lambda Tests', () => {
           ],
         };
 
-        expect(() => validateImportedTableProperties(actual, expected)).toThrowErrorMatchingInlineSnapshot(`
+        expect(() => validateImportedTableProperties(getImportedTableComparisonProperties(actual), expected))
+          .toThrowErrorMatchingInlineSnapshot(`
           "Imported table properties did not match the expected table properties.
           GlobalSecondaryIndexes does not match the expected value.
           Actual: [{\\"IndexName\\":\\"byName2\\",\\"KeySchema\\":[{\\"AttributeName\\":\\"name2\\",\\"KeyType\\":\\"HASH\\"}],\\"Projection\\":{\\"ProjectionType\\":\\"ALL\\"},\\"ProvisionedThroughput\\":{\\"ReadCapacityUnits\\":5,\\"WriteCapacityUnits\\":5}}]
@@ -1552,17 +1586,21 @@ describe('Custom Resource Lambda Tests', () => {
         const actual: TableDescription = {
           BillingModeSummary: {
             BillingMode: 'PROVISIONED',
+            // @ts-expect-error Attribute should be ignored in comparison. AWS SDK may add additional fields in the future
+            foo: 'bar',
+            baz: undefined,
             // should be ignored
             LastUpdateToPayPerRequestDateTime: new Date(),
           },
         };
-        const expected: ExpectedTableProperties = {
+        const expected: TableComparisonProperties = {
           BillingModeSummary: {
             BillingMode: 'PAY_PER_REQUEST',
           },
         };
 
-        expect(() => validateImportedTableProperties(actual, expected)).toThrowErrorMatchingInlineSnapshot(`
+        expect(() => validateImportedTableProperties(getImportedTableComparisonProperties(actual), expected))
+          .toThrowErrorMatchingInlineSnapshot(`
           "Imported table properties did not match the expected table properties.
           BillingModeSummary does not match the expected value.
           Actual: {\\"BillingMode\\":\\"PROVISIONED\\"}
@@ -1575,20 +1613,24 @@ describe('Custom Resource Lambda Tests', () => {
           ProvisionedThroughput: {
             ReadCapacityUnits: 5,
             WriteCapacityUnits: 5,
+            // @ts-expect-error Attribute should be ignored in comparison. AWS SDK may add additional fields in the future
+            foo: 'bar',
+            baz: undefined,
             // should be ingnored
             LastDecreaseDateTime: new Date(),
             LastIncreaseDateTime: new Date(),
             NumberOfDecreasesToday: 0,
           },
         };
-        const expected: ExpectedTableProperties = {
+        const expected: TableComparisonProperties = {
           ProvisionedThroughput: {
             ReadCapacityUnits: 5,
             WriteCapacityUnits: 10,
           },
         };
 
-        expect(() => validateImportedTableProperties(actual, expected)).toThrowErrorMatchingInlineSnapshot(`
+        expect(() => validateImportedTableProperties(getImportedTableComparisonProperties(actual), expected))
+          .toThrowErrorMatchingInlineSnapshot(`
           "Imported table properties did not match the expected table properties.
           ProvisionedThroughput does not match the expected value.
           Actual: {\\"ReadCapacityUnits\\":5,\\"WriteCapacityUnits\\":5}
@@ -1601,16 +1643,20 @@ describe('Custom Resource Lambda Tests', () => {
           StreamSpecification: {
             StreamEnabled: true,
             StreamViewType: 'NEW_AND_OLD_IMAGES',
+            // @ts-expect-error Attribute should be ignored in comparison. AWS SDK may add additional fields in the future
+            foo: 'bar',
+            baz: undefined,
           },
         };
-        const expected: ExpectedTableProperties = {
+        const expected: TableComparisonProperties = {
           StreamSpecification: {
             StreamEnabled: false,
             StreamViewType: 'NEW_AND_OLD_IMAGES',
           },
         };
 
-        expect(() => validateImportedTableProperties(actual, expected)).toThrowErrorMatchingInlineSnapshot(`
+        expect(() => validateImportedTableProperties(getImportedTableComparisonProperties(actual), expected))
+          .toThrowErrorMatchingInlineSnapshot(`
           "Imported table properties did not match the expected table properties.
           StreamSpecification does not match the expected value.
           Actual: {\\"StreamEnabled\\":true,\\"StreamViewType\\":\\"NEW_AND_OLD_IMAGES\\"}
@@ -1622,13 +1668,14 @@ describe('Custom Resource Lambda Tests', () => {
         const actual: TableDescription = {
           SSEDescription: undefined,
         };
-        const expected: ExpectedTableProperties = {
+        const expected: TableComparisonProperties = {
           SSEDescription: {
             SSEType: 'KMS',
           },
         };
 
-        expect(() => validateImportedTableProperties(actual, expected)).toThrowErrorMatchingInlineSnapshot(`
+        expect(() => validateImportedTableProperties(getImportedTableComparisonProperties(actual), expected))
+          .toThrowErrorMatchingInlineSnapshot(`
           "Imported table properties did not match the expected table properties.
           SSEDescription does not match the expected value.
           Actual: undefined
@@ -1640,11 +1687,12 @@ describe('Custom Resource Lambda Tests', () => {
         const actual: TableDescription = {
           DeletionProtectionEnabled: true,
         };
-        const expected: ExpectedTableProperties = {
+        const expected: TableComparisonProperties = {
           DeletionProtectionEnabled: false,
         };
 
-        expect(() => validateImportedTableProperties(actual, expected)).toThrowErrorMatchingInlineSnapshot(`
+        expect(() => validateImportedTableProperties(getImportedTableComparisonProperties(actual), expected))
+          .toThrowErrorMatchingInlineSnapshot(`
           "Imported table properties did not match the expected table properties.
           DeletionProtectionEnabled does not match the expected value.
           Actual: true
@@ -1657,14 +1705,15 @@ describe('Custom Resource Lambda Tests', () => {
           SSEDescription: undefined,
           DeletionProtectionEnabled: true,
         };
-        const expected: ExpectedTableProperties = {
+        const expected: TableComparisonProperties = {
           SSEDescription: {
             SSEType: 'KMS',
           },
           DeletionProtectionEnabled: false,
         };
 
-        expect(() => validateImportedTableProperties(actual, expected)).toThrowErrorMatchingInlineSnapshot(`
+        expect(() => validateImportedTableProperties(getImportedTableComparisonProperties(actual), expected))
+          .toThrowErrorMatchingInlineSnapshot(`
           "Imported table properties did not match the expected table properties.
           SSEDescription does not match the expected value.
           Actual: undefined

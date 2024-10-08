@@ -26,6 +26,8 @@ import * as cfnResponse from './cfn-response';
 import { startExecution } from './outbound';
 import { getEnv, log } from './util';
 import { CfnTag } from 'aws-cdk-lib';
+import { table } from 'console';
+import { OnDemandAllocationStrategy } from 'aws-cdk-lib/aws-autoscaling';
 
 const ddbClient = new DynamoDB();
 const lambdaClient = new Lambda();
@@ -1129,7 +1131,7 @@ export const toCreateTableInput = (props: CustomDDB.Input): CreateTableCommandIn
   return parsePropertiesToDynamoDBInput(createTableInput) as CreateTableCommandInput;
 };
 
-export type ExpectedTableProperties = Partial<
+export type TableComparisonProperties = Partial<
   Pick<
     TableDescription,
     | 'AttributeDefinitions'
@@ -1149,7 +1151,7 @@ export type ExpectedTableProperties = Partial<
  *
  * @param createTableInput input properties for the table creation.
  */
-export const getExpectedTableProperties = (createTableInput: CreateTableCommandInput): ExpectedTableProperties => {
+export const getExpectedTableProperties = (createTableInput: CreateTableCommandInput): TableComparisonProperties => {
   return {
     AttributeDefinitions: createTableInput.AttributeDefinitions,
     KeySchema: createTableInput.KeySchema,
@@ -1187,13 +1189,13 @@ export const getExpectedTableProperties = (createTableInput: CreateTableCommandI
 
 /**
  * Util function to validate imported table properties against expected properties.
- * @param importedTable table to import
+ * @param importedTableProperties table to import
  * @param expectedTableProperties expected properties that the imported table is validated against
  * @throws Will throw if any properties do not match the expected values
  */
 export const validateImportedTableProperties = (
-  importedTable: TableDescription,
-  expectedTableProperties: ExpectedTableProperties,
+  importedTableProperties: TableComparisonProperties,
+  expectedTableProperties: TableComparisonProperties,
 ): void => {
   const errors: string[] = [];
   const addError = (
@@ -1206,85 +1208,68 @@ export const validateImportedTableProperties = (
     );
   };
 
+  // remove undefined attributes from the objects
+  // lodash isEqual treats undefined as a value when comparing objects
+  // example isEqual({ a: undefined }, {}) returns false
+  const sanitizedImportedTableProperties = JSON.parse(JSON.stringify(importedTableProperties));
+  const sanitizedExpectedTableProperties = JSON.parse(JSON.stringify(expectedTableProperties));
+
   // for loop can't be used here because of TS error:
   // type 'string' can't be used to index type 'TableDescription'
-  if (!isEqual(importedTable.AttributeDefinitions, expectedTableProperties.AttributeDefinitions)) {
-    addError('AttributeDefintions', importedTable.AttributeDefinitions, expectedTableProperties.AttributeDefinitions);
+  if (!isEqual(sanitizedImportedTableProperties.AttributeDefinitions, sanitizedExpectedTableProperties.AttributeDefinitions)) {
+    addError(
+      'AttributeDefintions',
+      sanitizedImportedTableProperties.AttributeDefinitions,
+      sanitizedExpectedTableProperties.AttributeDefinitions,
+    );
   }
 
-  if (!isEqual(importedTable.KeySchema, expectedTableProperties.KeySchema)) {
-    addError('KeySchema', importedTable.KeySchema, expectedTableProperties.KeySchema);
+  if (!isEqual(sanitizedImportedTableProperties.KeySchema, sanitizedExpectedTableProperties.KeySchema)) {
+    addError('KeySchema', sanitizedImportedTableProperties.KeySchema, sanitizedExpectedTableProperties.KeySchema);
   }
 
-  // don't compare IndexArn, IndexStatus, IndexSizeBytes, ItemCount, ProvisionedThroughput.NumberOfDecreasesToday,
-  // ProvisionedThroughput.LastDecreaseDateTime, and ProvisionedThroughput.LastIncreaseDateTime on GlobalSecondaryIndexes
-  const globalSecondaryIndexes = importedTable.GlobalSecondaryIndexes?.map((gsi) => {
-    const gsiToCompare = {
-      ...gsi,
-    };
-    if (gsiToCompare.ProvisionedThroughput) {
-      delete gsiToCompare.IndexArn;
-      delete gsiToCompare.IndexStatus;
-      delete gsiToCompare.IndexSizeBytes;
-      delete gsiToCompare.ItemCount;
-      delete gsiToCompare.ProvisionedThroughput.NumberOfDecreasesToday;
-      delete gsiToCompare.ProvisionedThroughput.LastDecreaseDateTime;
-      delete gsiToCompare.ProvisionedThroughput.LastIncreaseDateTime;
-    }
-    return gsiToCompare;
-  });
-  if (!isEqual(globalSecondaryIndexes, expectedTableProperties.GlobalSecondaryIndexes)) {
-    addError('GlobalSecondaryIndexes', globalSecondaryIndexes, expectedTableProperties.GlobalSecondaryIndexes);
+  if (!isEqual(sanitizedImportedTableProperties.GlobalSecondaryIndexes, sanitizedExpectedTableProperties.GlobalSecondaryIndexes)) {
+    addError(
+      'GlobalSecondaryIndexes',
+      sanitizedImportedTableProperties.GlobalSecondaryIndexes,
+      sanitizedExpectedTableProperties.GlobalSecondaryIndexes,
+    );
   }
 
-  // don't compare LastUpdateToPayPerRequestDateTime on BillingMode
-  const billingMode = importedTable.BillingModeSummary
-    ? {
-        ...importedTable.BillingModeSummary,
-      }
-    : undefined;
-  if (billingMode) {
-    delete billingMode.LastUpdateToPayPerRequestDateTime;
-  }
-  if (!isEqual(billingMode, expectedTableProperties.BillingModeSummary)) {
-    addError('BillingModeSummary', billingMode, expectedTableProperties.BillingModeSummary);
+  if (!isEqual(sanitizedImportedTableProperties.BillingModeSummary, sanitizedExpectedTableProperties.BillingModeSummary)) {
+    addError(
+      'BillingModeSummary',
+      sanitizedImportedTableProperties.BillingModeSummary,
+      sanitizedExpectedTableProperties.BillingModeSummary,
+    );
   }
 
-  // don't compare LastDecreaseDateTime, LastIncreaseDateTime, and NumberOfDecreasesToday on ProvisionedThroughput
-  const provisionedThroughput = importedTable.ProvisionedThroughput
-    ? {
-        ...importedTable.ProvisionedThroughput,
-      }
-    : undefined;
-  if (provisionedThroughput) {
-    delete provisionedThroughput.LastDecreaseDateTime;
-    delete provisionedThroughput.LastIncreaseDateTime;
-    delete provisionedThroughput.NumberOfDecreasesToday;
+  if (!isEqual(sanitizedImportedTableProperties.ProvisionedThroughput, sanitizedExpectedTableProperties.ProvisionedThroughput)) {
+    addError(
+      'ProvisionedThroughput',
+      sanitizedImportedTableProperties.ProvisionedThroughput,
+      sanitizedExpectedTableProperties.ProvisionedThroughput,
+    );
   }
 
-  if (!isEqual(provisionedThroughput, expectedTableProperties.ProvisionedThroughput)) {
-    addError('ProvisionedThroughput', provisionedThroughput, expectedTableProperties.ProvisionedThroughput);
+  if (!isEqual(sanitizedImportedTableProperties.StreamSpecification, sanitizedExpectedTableProperties.StreamSpecification)) {
+    addError(
+      'StreamSpecification',
+      sanitizedImportedTableProperties.StreamSpecification,
+      sanitizedExpectedTableProperties.StreamSpecification,
+    );
   }
 
-  if (!isEqual(importedTable.StreamSpecification, expectedTableProperties.StreamSpecification)) {
-    addError('StreamSpecification', importedTable.StreamSpecification, expectedTableProperties.StreamSpecification);
+  if (!isEqual(sanitizedImportedTableProperties.SSEDescription, sanitizedExpectedTableProperties.SSEDescription)) {
+    addError('SSEDescription', sanitizedImportedTableProperties.SSEDescription, sanitizedExpectedTableProperties.SSEDescription);
   }
 
-  // don't compare Status on SSEDescription
-  const sseDescription = importedTable.SSEDescription
-    ? {
-        ...importedTable.SSEDescription,
-      }
-    : undefined;
-  if (sseDescription) {
-    delete sseDescription.Status;
-  }
-  if (!isEqual(sseDescription, expectedTableProperties.SSEDescription)) {
-    addError('SSEDescription', sseDescription, expectedTableProperties.SSEDescription);
-  }
-
-  if (!isEqual(importedTable.DeletionProtectionEnabled, expectedTableProperties.DeletionProtectionEnabled)) {
-    addError('DeletionProtectionEnabled', importedTable.DeletionProtectionEnabled, expectedTableProperties.DeletionProtectionEnabled);
+  if (!isEqual(sanitizedImportedTableProperties.DeletionProtectionEnabled, sanitizedExpectedTableProperties.DeletionProtectionEnabled)) {
+    addError(
+      'DeletionProtectionEnabled',
+      sanitizedImportedTableProperties.DeletionProtectionEnabled,
+      sanitizedExpectedTableProperties.DeletionProtectionEnabled,
+    );
   }
 
   if (errors.length > 0) {
@@ -1579,7 +1564,8 @@ const importTable = async (tableDef: CustomDDB.Input): Promise<AWSCDKAsyncCustom
   log('Current table state: ', describeTableResult);
   const createTableInput = toCreateTableInput(tableDef);
   const expectedTableProperties = getExpectedTableProperties(createTableInput);
-  validateImportedTableProperties(describeTableResult.Table, expectedTableProperties);
+  const importedTableProperties = getImportedTableComparisonProperties(describeTableResult.Table);
+  validateImportedTableProperties(importedTableProperties, expectedTableProperties);
   const result = {
     PhysicalResourceId: describeTableResult.Table.TableName,
     Data: {
@@ -1590,6 +1576,68 @@ const importTable = async (tableDef: CustomDDB.Input): Promise<AWSCDKAsyncCustom
   };
   console.log('Returning result: ', result);
   return result;
+};
+
+export const getImportedTableComparisonProperties = (importedTable: TableDescription): TableComparisonProperties => {
+  const tableComparisonProperties = {
+    AttributeDefinitions: importedTable.AttributeDefinitions?.map((attributeDefinition) => ({
+      AttributeName: attributeDefinition.AttributeName,
+      AttributeType: attributeDefinition.AttributeType,
+    })),
+    KeySchema: importedTable.KeySchema?.map((key) => ({
+      AttributeName: key.AttributeName,
+      KeyType: key.KeyType,
+    })),
+    GlobalSecondaryIndexes: importedTable.GlobalSecondaryIndexes?.map((gsi) => ({
+      IndexName: gsi.IndexName,
+      KeySchema: gsi.KeySchema?.map((key) => ({
+        AttributeName: key.AttributeName,
+        KeyType: key.KeyType,
+      })),
+      OnDemandThroughput: gsi.OnDemandThroughput
+        ? {
+            MaxReadRequestUnits: gsi.OnDemandThroughput.MaxReadRequestUnits,
+            MaxWriteRequestUnits: gsi.OnDemandThroughput.MaxWriteRequestUnits,
+          }
+        : undefined,
+      Projection: gsi.Projection
+        ? {
+            NonKeyAttributes: gsi.Projection.NonKeyAttributes,
+            ProjectionType: gsi.Projection.ProjectionType,
+          }
+        : undefined,
+      ProvisionedThroughput: gsi.ProvisionedThroughput
+        ? {
+            ReadCapacityUnits: gsi.ProvisionedThroughput.ReadCapacityUnits,
+            WriteCapacityUnits: gsi.ProvisionedThroughput.WriteCapacityUnits,
+          }
+        : undefined,
+    })),
+    BillingModeSummary: importedTable.BillingModeSummary
+      ? {
+          BillingMode: importedTable.BillingModeSummary.BillingMode,
+        }
+      : undefined,
+    ProvisionedThroughput: importedTable.ProvisionedThroughput
+      ? {
+          ReadCapacityUnits: importedTable.ProvisionedThroughput.ReadCapacityUnits,
+          WriteCapacityUnits: importedTable.ProvisionedThroughput.WriteCapacityUnits,
+        }
+      : undefined,
+    StreamSpecification: importedTable.StreamSpecification
+      ? {
+          StreamEnabled: importedTable.StreamSpecification?.StreamEnabled,
+          StreamViewType: importedTable.StreamSpecification?.StreamViewType,
+        }
+      : undefined,
+    SSEDescription: importedTable.SSEDescription
+      ? {
+          SSEType: importedTable.SSEDescription.SSEType,
+        }
+      : undefined,
+    DeletionProtectionEnabled: importedTable.DeletionProtectionEnabled,
+  };
+  return tableComparisonProperties;
 };
 
 // #endregion Helpers
