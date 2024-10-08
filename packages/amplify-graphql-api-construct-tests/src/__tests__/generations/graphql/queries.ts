@@ -11,7 +11,6 @@ type GeneratedQuery<InputType, OutputType> = string & {
 export const generateRecipe = /* GraphQL */ `query GenerateRecipe($description: String) {
   generateRecipe(description: $description) {
     ingredients
-    instructions
     name
     __typename
   }

@@ -5,8 +5,7 @@
 export type Recipe = {
   __typename: 'Recipe';
   ingredients?: Array<string | null> | null;
-  instructions?: string | null;
-  name?: string | null;
+  name: string;
 };
 
 export type Todo = {
@@ -26,8 +25,7 @@ export type GenerateRecipeQuery = {
   generateRecipe?: {
     __typename: 'Recipe';
     ingredients?: Array<string | null> | null;
-    instructions?: string | null;
-    name?: string | null;
+    name: string;
   } | null;
 };
 
