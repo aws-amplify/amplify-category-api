@@ -55,10 +55,11 @@ export class ConversationResolverGenerator {
     const invokeLambdaFunction = invokeLambdaMappingTemplate(directive);
 
     this.setupMessageTableIndex(ctx, directive);
-    const initResolverFunction = initMappingTemplate(directive);
+    const initResolverFunction = initMappingTemplate(ctx);
     const authResolverFunction = authMappingTemplate(directive);
     const verifySessionOwnerSendMessageResolverFunction = verifySessionOwnerSendMessageMappingTemplate(directive);
     const verifySessionOwnerAssistantResponseResolverFunction = verifySessionOwnerAssistantResponseMappingTemplate(directive);
+    const writeMessageToTableFunction = writeMessageToTableMappingTemplate(directive);
 
     this.createConversationPipelineResolver(
       ctx,
@@ -70,6 +71,7 @@ export class ConversationResolverGenerator {
       initResolverFunction,
       authResolverFunction,
       verifySessionOwnerSendMessageResolverFunction,
+      writeMessageToTableFunction,
     );
 
     this.createAssistantResponseResolver(
@@ -189,6 +191,7 @@ export class ConversationResolverGenerator {
     initResolverFunction: MappingTemplateProvider,
     authResolverFunction: MappingTemplateProvider,
     verifySessionOwnerResolverFunction: MappingTemplateProvider,
+    writeMessageToTableFunction: MappingTemplateProvider,
   ): void {
     const resolverResourceId = ResolverResourceIDs.ResolverResourceID(parentName, fieldName);
     const runtime = APPSYNC_JS_RUNTIME;
@@ -210,6 +213,7 @@ export class ConversationResolverGenerator {
       initResolverFunction,
       authResolverFunction,
       verifySessionOwnerResolverFunction,
+      writeMessageToTableFunction,
     );
 
     ctx.resolvers.addResolver(parentName, fieldName, conversationPipelineResolver);
@@ -229,6 +233,7 @@ export class ConversationResolverGenerator {
     initResolverFunction: MappingTemplateProvider,
     authResolverFunction: MappingTemplateProvider,
     verifySessionOwnerResolverFunction: MappingTemplateProvider,
+    writeMessageToTableFunction: MappingTemplateProvider,
   ): void {
     // Add init function
     resolver.addJsFunctionToSlot('init', initResolverFunction);
@@ -243,7 +248,6 @@ export class ConversationResolverGenerator {
     resolver.addJsFunctionToSlot('verifySessionOwner', verifySessionOwnerResolverFunction, conversationSessionDDBDataSource as any);
 
     // Add writeMessageToTable function
-    const writeMessageToTableFunction = writeMessageToTableMappingTemplate(directive.field.name.value);
     const messageModelName = `ConversationMessage${capitalizedFieldName}`;
     const messageModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, messageModelName);
     const messageDDBDataSource = ctx.api.host.getDataSource(messageModelDDBDataSourceName);

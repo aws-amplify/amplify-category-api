@@ -87,11 +87,12 @@ export function response(ctx) {
 exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration 3`] = `
 "export function request(ctx) {
   const { authFilter } = ctx.stash;
+  const { conversationId } = ctx.args;
 
   const query = {
     expression: 'id = :id',
     expressionValues: util.dynamodb.toMapValues({
-      ':id': ctx.args.conversationId,
+      ':id': conversationId,
     }),
   };
 
@@ -126,7 +127,7 @@ export function request(ctx) {
   const args = ctx.stash.transformedArgs ?? ctx.args;
   const defaultValues = ctx.stash.defaultValues ?? {};
   const message = {
-    __typename: 'ConversationMessagepirateChat',
+    __typename: 'ConversationMessagePirateChat',
     role: 'user',
     ...args,
     ...defaultValues,
@@ -153,7 +154,7 @@ export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
 
-
+  
   const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
 
   const responseMutation = {
@@ -309,11 +310,12 @@ export function response(ctx) {
 exports[`ConversationTransformer valid schemas should transform conversation route with model query tool 3`] = `
 "export function request(ctx) {
   const { authFilter } = ctx.stash;
+  const { conversationId } = ctx.args;
 
   const query = {
     expression: 'id = :id',
     expressionValues: util.dynamodb.toMapValues({
-      ':id': ctx.args.conversationId,
+      ':id': conversationId,
     }),
   };
 
@@ -348,7 +350,7 @@ export function request(ctx) {
   const args = ctx.stash.transformedArgs ?? ctx.args;
   const defaultValues = ctx.stash.defaultValues ?? {};
   const message = {
-    __typename: 'ConversationMessagepirateChat',
+    __typename: 'ConversationMessagePirateChat',
     role: 'user',
     ...args,
     ...defaultValues,
@@ -387,7 +389,7 @@ export function request(ctx) {
   const modelConfiguration = {
   modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
   systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
-
+  
 };
 
   const clientTools = args.toolConfiguration?.tools?.map((tool) => {
@@ -533,11 +535,12 @@ export function response(ctx) {
 exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships 3`] = `
 "export function request(ctx) {
   const { authFilter } = ctx.stash;
+  const { conversationId } = ctx.args;
 
   const query = {
     expression: 'id = :id',
     expressionValues: util.dynamodb.toMapValues({
-      ':id': ctx.args.conversationId,
+      ':id': conversationId,
     }),
   };
 
@@ -572,7 +575,7 @@ export function request(ctx) {
   const args = ctx.stash.transformedArgs ?? ctx.args;
   const defaultValues = ctx.stash.defaultValues ?? {};
   const message = {
-    __typename: 'ConversationMessagepirateChat',
+    __typename: 'ConversationMessagePirateChat',
     role: 'user',
     ...args,
     ...defaultValues,
@@ -611,7 +614,7 @@ export function request(ctx) {
   const modelConfiguration = {
   modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
   systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
-
+  
 };
 
   const clientTools = args.toolConfiguration?.tools?.map((tool) => {
@@ -757,11 +760,12 @@ export function response(ctx) {
 exports[`ConversationTransformer valid schemas should transform conversation route with query tools 3`] = `
 "export function request(ctx) {
   const { authFilter } = ctx.stash;
+  const { conversationId } = ctx.args;
 
   const query = {
     expression: 'id = :id',
     expressionValues: util.dynamodb.toMapValues({
-      ':id': ctx.args.conversationId,
+      ':id': conversationId,
     }),
   };
 
@@ -796,7 +800,7 @@ export function request(ctx) {
   const args = ctx.stash.transformedArgs ?? ctx.args;
   const defaultValues = ctx.stash.defaultValues ?? {};
   const message = {
-    __typename: 'ConversationMessagepirateChat',
+    __typename: 'ConversationMessagePirateChat',
     role: 'user',
     ...args,
     ...defaultValues,
@@ -835,7 +839,7 @@ export function request(ctx) {
   const modelConfiguration = {
   modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
   systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
-
+  
 };
 
   const clientTools = args.toolConfiguration?.tools?.map((tool) => {
