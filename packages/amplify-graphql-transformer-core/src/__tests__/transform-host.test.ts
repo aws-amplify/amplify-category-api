@@ -14,8 +14,10 @@ describe('addResolver', () => {
     const cfnResolver = transformHost.addResolver(
       'test_type',
       'testField',
-      new InlineTemplate('testTemplate'),
-      new InlineTemplate('testTemplate'),
+      {
+        requestMappingTemplate: new InlineTemplate('testTemplate'),
+        responseMappingTemplate: new InlineTemplate('testTemplate'),
+      },
       undefined,
       undefined,
       ['testPipelineConfig'],
@@ -28,8 +30,10 @@ describe('addResolver', () => {
     const cfnResolver = transformHost.addResolver(
       'testType',
       'test_field',
-      new InlineTemplate('testTemplate'),
-      new InlineTemplate('testTemplate'),
+      {
+        requestMappingTemplate: new InlineTemplate('testTemplate'),
+        responseMappingTemplate: new InlineTemplate('testTemplate'),
+      },
       undefined,
       undefined,
       ['testPipelineConfig'],

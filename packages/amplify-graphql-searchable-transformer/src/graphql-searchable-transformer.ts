@@ -379,7 +379,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
           `${typeName}.${def.fieldName}.res.vtl`,
         ),
       );
-      resolver.addToSlot(
+      resolver.addVtlFunctionToSlot(
         'postAuth',
         MappingTemplate.s3MappingTemplateFromString(
           postAuthMappingTemplate(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess, fields),

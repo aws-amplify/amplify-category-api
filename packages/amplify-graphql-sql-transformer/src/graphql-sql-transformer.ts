@@ -133,7 +133,7 @@ export class SqlTransformer extends TransformerPluginBase {
           ),
         );
 
-        resolver.addToSlot(
+        resolver.addVtlFunctionToSlot(
           'postAuth',
           MappingTemplate.s3MappingTemplateFromString(
             generatePostAuthExpression(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess),

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-sql-transformer",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "Amplify GraphQL @sql transformer",
   "repository": {
     "type": "git",
@@ -30,18 +30,18 @@
   },
   "dependencies": {
     "@aws-amplify/graphql-directives": "2.2.0",
-    "@aws-amplify/graphql-model-transformer": "3.0.3",
-    "@aws-amplify/graphql-transformer-core": "3.1.1",
-    "@aws-amplify/graphql-transformer-interfaces": "4.1.0",
+    "@aws-amplify/graphql-model-transformer": "3.0.4",
+    "@aws-amplify/graphql-transformer-core": "3.1.2",
+    "@aws-amplify/graphql-transformer-interfaces": "4.1.1",
     "graphql": "^15.5.0",
     "graphql-mapping-template": "5.0.1",
     "graphql-transformer-common": "5.0.1"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-test-utils": "1.0.2"
+    "@aws-amplify/graphql-transformer-test-utils": "1.0.3"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.152.0",
+    "aws-cdk-lib": "^2.158.0",
     "constructs": "^10.3.0"
   },
   "jest": {
