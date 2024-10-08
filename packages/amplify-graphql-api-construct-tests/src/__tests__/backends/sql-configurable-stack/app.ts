@@ -72,6 +72,14 @@ interface StackConfig {
   useSandbox?: boolean;
 
   /**
+   * Cognito User Pool groups to create when provisioning the User Pool.
+   *
+   * **NOTE**
+   * Provide at least two group names for setup and testing purposes.
+   */
+  userGroups?: string[];
+
+  /**
    * The OIDC options/config when using OIDC AuthorizationMode for AmplifyGraphqlApi Construct.
    *
    * @property {Record<string, string>} [triggers] - UserPoolTriggers for Cognito User Pool when provisioning the User Pool as OIDC provider.
@@ -184,7 +192,7 @@ const createUserPool = (prefix: string, triggers?: Record<string, string>): { us
   });
   userPool.applyRemovalPolicy(RemovalPolicy.DESTROY);
 
-  ['Admin', 'Dev'].forEach((group) => {
+  stackConfig.userGroups?.forEach((group) => {
     new CfnUserPoolGroup(userPool, `Group${group}`, {
       userPoolId: userPool.userPoolId,
       groupName: group,

@@ -4,7 +4,7 @@ import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { TestOptions } from '../utils/sql-test-config-helper';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
 import { testGraphQLAPIWithOIDCAccess } from '../sql-tests-common/sql-oidc-auth';
-import { sqlCreateStatements } from '../sql-tests-common/tests-sources/sql-oidc-auth/provider';
+import { sqlCreateStatements } from '../sql-tests-common/tests-sources/sql-dynamic-model-auth/sql-oidc-auth/provider';
 
 jest.setTimeout(DURATION_1_HOUR);
 

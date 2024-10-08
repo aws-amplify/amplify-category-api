@@ -1,3 +1,4 @@
+import * as generator from 'generate-password';
 import { parse, ObjectTypeDefinitionNode, Kind, visit, FieldDefinitionNode, StringValueNode, valueFromASTUntyped, TypeNode } from 'graphql';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { getBaseType, isArrayOrObject, isListType, toPascalCase } from 'graphql-transformer-common';
@@ -114,6 +115,17 @@ const convertToSQLType = (type: string): string => {
   }
 };
 
-export const getRDSTableNamePrefix = () => {
+export const getRDSTableNamePrefix = (): string => {
   return 'e2e_test_';
 };
+
+export const getUserGroupNames = (): string[] => {
+  return generator.generateMultiple(2, {
+    length: 5,
+    lowercase: true,
+    strict: true,
+    uppercase: true,
+  });
+};
+
+export const userGroupNames = getUserGroupNames();

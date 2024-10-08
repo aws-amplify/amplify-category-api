@@ -22,6 +22,7 @@ export interface TestConfigInput {
 }
 
 export interface TestConfigOutput {
+  schema: string;
   authType: AUTH_TYPE;
   dbController: SqlDatatabaseController;
   projRoot: string;
@@ -32,6 +33,7 @@ export interface TestConfigOutput {
   lambdaAliasName?: string;
   userPoolId?: string;
   webClientId?: string;
+  userGroups?: string[];
 }
 
 export const setupTest = async (input: TestConfigInput): Promise<TestConfigOutput> => {
@@ -51,6 +53,7 @@ export const setupTest = async (input: TestConfigInput): Promise<TestConfigOutpu
   const testOutputs = outputs[name];
 
   return {
+    schema: stackConfig.schema,
     authType: stackConfig.authMode,
     dbController,
     projRoot,
@@ -61,6 +64,7 @@ export const setupTest = async (input: TestConfigInput): Promise<TestConfigOutpu
     ...(resourceNames !== undefined && { lambdaAliasName: resourceNames.sqlLambdaAliasName }),
     ...(testOutputs.userPoolId !== undefined && { userPoolId: testOutputs.userPoolId }),
     ...(testOutputs.webClientId !== undefined && { webClientId: testOutputs.webClientId }),
+    ...(stackConfig.userGroups !== undefined && { userGroups: stackConfig.userGroups }),
   };
 };
 

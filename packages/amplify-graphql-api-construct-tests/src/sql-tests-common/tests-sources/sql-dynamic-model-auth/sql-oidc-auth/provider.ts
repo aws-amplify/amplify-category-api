@@ -1,5 +1,5 @@
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
-import { convertToDBSpecificGraphQLString, generateDDL } from '../../../utils/sql-provider-helper';
+import { convertToDBSpecificGraphQLString, generateDDL, userGroupNames } from '../../../../utils/sql-provider-helper';
 
 export const schema = (engine: ImportedRDSType): string => `
   input AMPLIFY {
@@ -30,7 +30,9 @@ export const schema = (engine: ImportedRDSType): string => `
     authors: [String]
   }
 
-  type TodoStaticGroup @model @auth(rules: [{ allow: groups, groups: ["Admin"], provider: oidc, groupClaim: "cognito:groups" }]) {
+  type TodoStaticGroup @model @auth(rules: [{ allow: groups, groups: ["${
+    userGroupNames[0]
+  }"], provider: oidc, groupClaim: "cognito:groups" }]) {
     id: ID! @primaryKey
     content: String
   }
@@ -60,7 +62,7 @@ export const schema = (engine: ImportedRDSType): string => `
     customGetTodoStaticGroup(id: ID!): [TodoNonModel] @sql(statement: "SELECT * FROM ${convertToDBSpecificGraphQLString(
       'TodoStaticGroup',
       engine,
-    )} WHERE id = :id") @auth(rules: [{ allow: groups, groups: ["Admin"], provider: oidc, groupClaim: "cognito:groups" }])
+    )} WHERE id = :id") @auth(rules: [{ allow: groups, groups: ["${userGroupNames[0]}"], provider: oidc, groupClaim: "cognito:groups" }])
   }
 
   type Mutation {
@@ -71,7 +73,9 @@ export const schema = (engine: ImportedRDSType): string => `
     addTodoStaticGroup(id: ID!, content: String): TodoNonModel @sql(statement: "INSERT INTO ${convertToDBSpecificGraphQLString(
       'TodoStaticGroup',
       engine,
-    )} VALUES(:id, :content)") @auth(rules: [{ allow: groups, groups: ["Admin"], provider: oidc, groupClaim: "cognito:groups" }])
+    )} VALUES(:id, :content)") @auth(rules: [{ allow: groups, groups: ["${
+  userGroupNames[0]
+}"], provider: oidc, groupClaim: "cognito:groups" }])
   }
 `;
 

@@ -4,7 +4,7 @@ import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { TestOptions } from '../utils/sql-test-config-helper';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
 import { testGraphQLAPIWithUserPoolAccess } from '../sql-tests-common/sql-userpool-auth';
-import { sqlCreateStatements } from '../sql-tests-common/tests-sources/sql-userpool-auth/provider';
+import { sqlCreateStatements } from '../sql-tests-common/tests-sources/sql-dynamic-model-auth/sql-userpool-auth/provider';
 
 jest.setTimeout(DURATION_1_HOUR);
 

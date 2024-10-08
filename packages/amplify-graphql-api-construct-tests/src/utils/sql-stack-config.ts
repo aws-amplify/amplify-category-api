@@ -17,6 +17,14 @@ export interface StackConfig {
   useSandbox?: boolean;
 
   /**
+   * Cognito User Pool groups to create when provisioning the User Pool.
+   *
+   * **NOTE**
+   * Provide at least two group names for setup and testing purposes.
+   */
+  userGroups?: string[];
+
+  /**
    * The OIDC options/config when using OIDC AuthorizationMode for AmplifyGraphqlApi Construct.
    *
    * @property {Record<string, string>} [triggers] - UserPoolTriggers for Cognito User Pool when provisioning the User Pool as OIDC provider.

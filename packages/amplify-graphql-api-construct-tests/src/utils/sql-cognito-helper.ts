@@ -121,8 +121,8 @@ export interface UserMap {
 }
 
 export const getUserMap = async (testConfigOutput: TestConfigOutput): Promise<UserMap> => {
-  const groupName1 = 'Admin';
-  const groupName2 = 'Dev';
+  const groupName1 = testConfigOutput.userGroups[0];
+  const groupName2 = testConfigOutput.userGroups[1];
 
   const authHelper = new CognitoUserPoolAuthHelper(testConfigOutput);
 
