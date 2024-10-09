@@ -40,11 +40,13 @@ function storeCacheForBuildJob {
   # upload [repo, .cache] to s3
   storeCache $CODEBUILD_SRC_DIR repo
   storeCache $HOME/.cache .cache
+  storeCache $HOME/.nvm .nvm
 }
 function loadCacheFromBuildJob {
   # download [repo, .cache] from s3
   loadCache repo $CODEBUILD_SRC_DIR
   loadCache .cache $HOME/.cache
+  loadCache .nvm $HOME/.nvm
 }
 function storeCacheFile {
     localFilePath="$1"
@@ -80,8 +82,10 @@ function _setShell {
   echo "Setting Shell"
   yarn config set script-shell $(which bash)
 }
+
 function _buildLinux {
   _setShell
+  _setupNodeVersion 18.20.4
   echo "Linux Build"
   node --version
   yarn run production-build
@@ -92,6 +96,7 @@ function _buildLinux {
 # used when build is not necessary for codebuild project
 function _installLinux {
   _setShell
+  _setupNodeVersion 18.20.4
   echo "Linux Install"
   yarn run production-install
   storeCacheForBuildJob
@@ -330,6 +335,10 @@ function _runCDKTestsLinux {
 
 function _runGqlE2ETests {
     echo "RUN GraphQL E2E tests"
+
+    # Set Node.js version to 18.20.4 as one of the package requires version ">= 18.18.0"
+    _setupNodeVersion 18.20.4
+
     loadCacheFromBuildJob
     _loadTestAccountCredentials
     retry runGraphQLE2eTest

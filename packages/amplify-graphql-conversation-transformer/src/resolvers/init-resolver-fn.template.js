@@ -1,4 +1,5 @@
 export function request(ctx) {
+  ctx.stash.graphqlApiEndpoint = '[[GRAPHQL_API_ENDPOINT]]';
   ctx.stash.defaultValues = ctx.stash.defaultValues ?? {};
   ctx.stash.defaultValues.id = util.autoId();
   const createdAt = util.time.nowISO8601();
