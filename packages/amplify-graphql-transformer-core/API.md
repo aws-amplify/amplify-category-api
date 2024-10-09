@@ -488,6 +488,12 @@ export const isMutationNode: (obj: DefinitionNode) => obj is ObjectTypeDefinitio
 export const isObjectTypeDefinitionNode: (obj: DefinitionNode) => obj is ObjectTypeDefinitionNode;
 
 // @public (undocumented)
+export const isPostgresDbType: (dbType: ModelDataSourceStrategyDbType) => dbType is "POSTGRES";
+
+// @public (undocumented)
+export const isPostgresModel: (ctx: DataSourceStrategiesProvider, typename: string) => boolean;
+
+// @public (undocumented)
 export const isQueryNode: (obj: DefinitionNode) => obj is ObjectTypeDefinitionNode | (InterfaceTypeDefinitionNode & {
     name: {
         value: 'Query';
