@@ -21,6 +21,7 @@ import { EnumTypeDefinitionNode } from 'graphql';
 import { EnumTypeExtensionNode } from 'graphql';
 import { EnumValueDefinitionNode } from 'graphql';
 import { FieldDefinitionNode } from 'graphql';
+import { FieldLogLevel } from 'aws-cdk-lib/aws-appsync';
 import { FieldNode } from 'graphql';
 import { Grant } from 'aws-cdk-lib/aws-iam';
 import { GraphqlApiBase } from 'aws-cdk-lib/aws-appsync';
@@ -43,6 +44,7 @@ import { LambdaDataSource } from 'aws-cdk-lib/aws-appsync';
 import { NoneDataSource } from 'aws-cdk-lib/aws-appsync';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { ObjectTypeExtensionNode } from 'graphql';
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { ScalarTypeDefinitionNode } from 'graphql';
 import { SchemaDefinitionNode } from 'graphql';
@@ -238,6 +240,16 @@ export const isSqlModelDataSourceSsmDbConnectionStringConfig: (obj: any) => obj 
 
 // @public (undocumented)
 export const isSslCertSsmPathConfig: (obj: any) => obj is SslCertSsmPathConfig;
+
+// @public (undocumented)
+export interface LogConfig {
+    // (undocumented)
+    excludeVerboseContent?: boolean;
+    // (undocumented)
+    fieldLogLevel?: FieldLogLevel;
+    // (undocumented)
+    retention?: RetentionDays;
+}
 
 // @public (undocumented)
 export type MappingTemplateProvider = InlineMappingTemplateProvider | S3MappingTemplateProvider;

@@ -56,6 +56,7 @@ import {
   VpcConfig,
   FieldLogLevel,
   RetentionDays,
+  Logging,
   LogConfig,
 } from '@aws-amplify/graphql-api-construct';
 
@@ -117,5 +118,6 @@ export {
   VpcConfig,
   FieldLogLevel,
   RetentionDays,
+  Logging,
   LogConfig,
 };

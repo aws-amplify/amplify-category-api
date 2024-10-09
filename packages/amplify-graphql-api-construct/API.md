@@ -25,6 +25,7 @@ import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { ElasticsearchDataSource } from 'aws-cdk-lib/aws-appsync';
 import { EventBridgeDataSource } from 'aws-cdk-lib/aws-appsync';
 import { ExtendedResolverProps } from 'aws-cdk-lib/aws-appsync';
+import { FieldLogLevel } from 'aws-cdk-lib/aws-appsync';
 import { FunctionRuntime } from 'aws-cdk-lib/aws-appsync';
 import { HttpDataSource } from 'aws-cdk-lib/aws-appsync';
 import { HttpDataSourceOptions } from 'aws-cdk-lib/aws-appsync';
@@ -40,7 +41,6 @@ import { IServerlessCluster } from 'aws-cdk-lib/aws-rds';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { LambdaDataSource } from 'aws-cdk-lib/aws-appsync';
-import { LogConfig } from 'aws-cdk-lib/aws-appsync';
 import { MappingTemplate } from 'aws-cdk-lib/aws-appsync';
 import { NestedStack } from 'aws-cdk-lib';
 import { NoneDataSource } from 'aws-cdk-lib/aws-appsync';
@@ -48,6 +48,7 @@ import { OpenSearchDataSource } from 'aws-cdk-lib/aws-appsync';
 import { RdsDataSource } from 'aws-cdk-lib/aws-appsync';
 import { RemovalPolicy } from 'aws-cdk-lib';
 import { Resolver } from 'aws-cdk-lib/aws-appsync';
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { StreamViewType } from 'aws-cdk-lib/aws-dynamodb';
 
 // @public
@@ -131,7 +132,7 @@ export interface AmplifyGraphqlApiProps {
     readonly definition: IAmplifyGraphqlDefinition;
     readonly functionNameMap?: Record<string, IFunction>;
     readonly functionSlots?: FunctionSlot[];
-    readonly logging?: true | LogConfig;
+    readonly logging?: Logging;
     readonly outputStorageStrategy?: IBackendOutputStorageStrategy;
     readonly predictionsBucket?: IBucket;
     readonly stackMappings?: Record<string, string>;
@@ -222,6 +223,8 @@ export interface DefaultDynamoDbModelDataSourceStrategy {
     readonly provisionStrategy: 'DEFAULT';
 }
 
+export { FieldLogLevel }
+
 // @public
 export type FunctionSlot = MutationFunctionSlot | QueryFunctionSlot | SubscriptionFunctionSlot;
 
@@ -283,6 +286,16 @@ export interface LambdaAuthorizationConfig {
     readonly function: IFunction;
     readonly ttl: Duration;
 }
+
+// @public
+export interface LogConfig {
+    readonly excludeVerboseContent?: boolean;
+    readonly fieldLogLevel?: FieldLogLevel;
+    readonly retention?: RetentionDays;
+}
+
+// @public
+export type Logging = true | LogConfig;
 
 // @public
 export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
@@ -349,6 +362,8 @@ export interface QueryFunctionSlot extends FunctionSlotBase {
     readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preDataLoad' | 'postDataLoad' | 'finish';
     readonly typeName: 'Query';
 }
+
+export { RetentionDays }
 
 // @public
 export interface SQLLambdaModelDataSourceStrategy {

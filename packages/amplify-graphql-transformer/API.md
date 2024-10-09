@@ -10,7 +10,7 @@ import { Construct } from 'constructs';
 import type { DataSourceStrategiesProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
-import { LogConfig } from 'aws-cdk-lib/aws-appsync';
+import type { LogConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import type { RDSLayerMappingProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import type { RDSSNSTopicMappingProvider } from '@aws-amplify/graphql-transformer-interfaces';

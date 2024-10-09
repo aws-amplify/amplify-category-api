@@ -47,7 +47,7 @@ import { InputValueDefinitionNode } from 'graphql';
 import { InterfaceTypeDefinitionNode } from 'graphql';
 import { InterfaceTypeExtensionNode } from 'graphql';
 import { Location as Location_2 } from 'graphql';
-import { LogConfig } from 'aws-cdk-lib/aws-appsync';
+import { LogConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelDataSourceStrategyDbType } from '@aws-amplify/graphql-transformer-interfaces';

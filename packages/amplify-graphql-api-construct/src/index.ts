@@ -35,6 +35,7 @@ export type {
   AddFunctionProps,
   FieldLogLevel,
   RetentionDays,
+  Logging,
   LogConfig,
 } from './types';
 export { AmplifyGraphqlApi } from './amplify-graphql-api';
