@@ -32,6 +32,7 @@ import { EnumTypeExtensionNode } from 'graphql';
 import { Expression } from 'graphql-mapping-template';
 import { FieldDefinitionNode } from 'graphql';
 import { FieldNode } from 'graphql';
+import { FunctionRuntimeTemplate } from '@aws-amplify/graphql-transformer-interfaces';
 import { Grant } from 'aws-cdk-lib/aws-iam';
 import { GraphqlApiBase } from 'aws-cdk-lib/aws-appsync';
 import { GraphQLAPIProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -46,6 +47,7 @@ import { InputObjectTypeExtensionNode } from 'graphql';
 import { InputValueDefinitionNode } from 'graphql';
 import { InterfaceTypeDefinitionNode } from 'graphql';
 import { InterfaceTypeExtensionNode } from 'graphql';
+import { JSRuntimeTemplate } from '@aws-amplify/graphql-transformer-interfaces';
 import { Location as Location_2 } from 'graphql';
 import { LogConfig } from 'aws-cdk-lib/aws-appsync';
 import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -64,6 +66,7 @@ import { RDSLayerMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSLayerMappingProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSSNSTopicMapping } from '@aws-amplify/graphql-transformer-interfaces';
 import { RDSSNSTopicMappingProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { S3Asset } from '@aws-amplify/graphql-transformer-interfaces';
 import { S3MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { SchemaDefinitionNode } from 'graphql';
 import { SqlDirectiveDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
@@ -99,9 +102,13 @@ import { TypeSystemDefinitionNode } from 'graphql';
 import { UnionTypeDefinitionNode } from 'graphql';
 import { UnionTypeExtensionNode } from 'graphql';
 import { Visibility } from 'aws-cdk-lib/aws-appsync';
+import { VTLRuntimeTemplate } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
 export const APICategory = "api";
+
+// @public (undocumented)
+export const APPSYNC_JS_RUNTIME: CfnFunctionConfiguration.AppSyncRuntimeProperty;
 
 // @public (undocumented)
 export function collectDirectives(sdl: string): DirectiveNode[];
@@ -485,6 +492,12 @@ export const isMutationNode: (obj: DefinitionNode) => obj is ObjectTypeDefinitio
 export const isObjectTypeDefinitionNode: (obj: DefinitionNode) => obj is ObjectTypeDefinitionNode;
 
 // @public (undocumented)
+export const isPostgresDbType: (dbType: ModelDataSourceStrategyDbType) => dbType is "POSTGRES";
+
+// @public (undocumented)
+export const isPostgresModel: (ctx: DataSourceStrategiesProvider, typename: string) => boolean;
+
+// @public (undocumented)
 export const isQueryNode: (obj: DefinitionNode) => obj is ObjectTypeDefinitionNode | (InterfaceTypeDefinitionNode & {
     name: {
         value: 'Query';
@@ -527,6 +540,10 @@ export class MappingTemplate {
     //
     // (undocumented)
     static inlineTemplateFromString(template: string): InlineTemplate;
+    // Warning: (ae-forgotten-export) The symbol "S3MappingJSResolverFunctionCode" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    static s3MappingFunctionCodeFromString(template: string, templateName: string): S3MappingJSResolverFunctionCode;
     // Warning: (ae-forgotten-export) The symbol "S3MappingTemplate" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -821,25 +838,29 @@ export abstract class TransformerPluginBase implements TransformerPluginProvider
 
 // @public (undocumented)
 export class TransformerResolver implements TransformerResolverProvider {
-    constructor(typeName: string, fieldName: string, resolverLogicalId: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, requestSlots: string[], responseSlots: string[], datasource?: DataSourceProvider | undefined, runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty | undefined);
+    constructor(typeName: string, fieldName: string, resolverLogicalId: string, mappingTemplate: FunctionRuntimeTemplate, requestSlots: string[], responseSlots: string[], datasource?: DataSourceProvider | undefined, runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty | undefined);
     // (undocumented)
-    addToSlot: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider, dataSource?: DataSourceProvider, runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty) => void;
+    addJsFunctionToSlot: (slotName: string, codeMappingTemplate: MappingTemplateProvider, dataSource?: DataSourceProvider) => void;
+    // (undocumented)
+    addVtlFunctionToSlot: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider, dataSource?: DataSourceProvider) => void;
     // Warning: (ae-forgotten-export) The symbol "Slot" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    findSlot: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider) => Slot | undefined;
+    findSlot: (slotName: string, mappingTemplate: FunctionRuntimeTemplatePartialVTL) => Slot | undefined;
     // (undocumented)
     mapToStack: (stack: Stack) => void;
     // (undocumented)
     setScope: (scope: Construct) => void;
+    // Warning: (ae-forgotten-export) The symbol "FunctionRuntimeTemplatePartialVTL" needs to be exported by the entry point index.d.ts
+    //
     // (undocumented)
-    slotExists: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider) => boolean;
+    slotExists: (slotName: string, mappingTemplate: FunctionRuntimeTemplatePartialVTL) => boolean;
     // (undocumented)
     synthesize: (context: TransformerContextProvider, api: GraphQLAPIProvider) => void;
     // (undocumented)
     synthesizeResolvers: (scope: Construct, api: GraphQLAPIProvider, slotsNames: string[]) => AppSyncFunctionConfigurationProvider[];
     // (undocumented)
-    updateSlot: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider) => void;
+    updateSlot: (slotName: string, mappingTemplate: FunctionRuntimeTemplatePartialVTL) => void;
 }
 
 // @public (undocumented)
@@ -867,6 +888,9 @@ export const validateModelSchema: (doc: DocumentNode) => readonly GraphQLError[]
 
 // @public (undocumented)
 function validateResolverConfigForType(ctx: TransformerSchemaVisitStepContextProvider, typeName: string): void;
+
+// @public (undocumented)
+export const VTL_RUNTIME: CfnFunctionConfiguration.AppSyncRuntimeProperty | undefined;
 
 // Warnings were encountered during analysis:
 //
