@@ -19,10 +19,10 @@ import {
   TransformParameterProvider,
   TransformParameters,
   RDSSNSTopicMapping,
+  LogConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode } from 'graphql';
 import { Construct } from 'constructs';
-import { LogConfig } from 'aws-cdk-lib/aws-appsync';
 import { ResolverConfig } from '../config/transformer-config';
 import { TransformerDataSourceManager } from './datasource';
 import { TransformerOutput } from './output';

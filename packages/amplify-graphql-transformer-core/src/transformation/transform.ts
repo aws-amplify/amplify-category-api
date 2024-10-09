@@ -6,6 +6,7 @@ import {
   TransformerLog,
   NestedStackProvider,
   SynthParameters,
+  LogConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type {
   AssetProvider,
@@ -16,7 +17,7 @@ import type {
   RDSLayerMappingProvider,
   RDSSNSTopicMappingProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { AuthorizationMode, AuthorizationType, LogConfig } from 'aws-cdk-lib/aws-appsync';
+import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { Aws, CfnOutput, Fn, Stack } from 'aws-cdk-lib';
 import {
   EnumTypeDefinitionNode,

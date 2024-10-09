@@ -29,13 +29,13 @@ import type {
   RDSLayerMappingProvider,
   RDSSNSTopicMappingProvider,
   TransformParameters,
+  LogConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLTransform, ResolverConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 import { Construct } from 'constructs';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { GenerationTransformer } from '@aws-amplify/graphql-generation-transformer';
 import { ConversationTransformer } from '@aws-amplify/graphql-conversation-transformer';
-import { LogConfig } from 'aws-cdk-lib/aws-appsync';
 
 /**
  * Arguments passed into a TransformerFactory
