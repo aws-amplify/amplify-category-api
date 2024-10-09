@@ -687,7 +687,7 @@ export interface IBackendOutputStorageStrategy {
 export { FieldLogLevel, RetentionDays };
 
 /**
- * Customizable configuration when writing GraphQL operations and tracing to Amazon CloudWatch for an AWS AppSync GraphQL API.
+ * Customizable logging configuration when writing GraphQL operations and tracing to Amazon CloudWatch for an AWS AppSync GraphQL API.
  *
  * ### Defaults
  * Default settings will be applied for unspecified fields:

@@ -215,7 +215,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       });
     }
 
-    // set up log group for log retention
+    // set up log retention and log group
     if (props.logging) {
       // Default retention is ONE_WEEK
       const retention =
