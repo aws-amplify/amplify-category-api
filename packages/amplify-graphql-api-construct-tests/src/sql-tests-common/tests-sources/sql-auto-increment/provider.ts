@@ -9,4 +9,8 @@ export const schema = (): string => /* GraphQL */ `
   }
 `;
 
-export const sqlCreateStatements = (engine: ImportedRDSType): string[] => generateDDL(schema(), engine);
+export const sqlCreateStatements = (): string[] => {
+  return [
+    `CREATE TABLE "${getRDSTableNamePrefix()}coffee_queue" ("orderNumber" SERIAL PRIMARY KEY, "order" VARCHAR(256) NOT NULL, "customer" VARCHAR(256))`,
+  ];
+};

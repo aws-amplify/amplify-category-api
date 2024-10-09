@@ -9,14 +9,14 @@ import { sqlCreateStatements } from '../sql-tests-common/tests-sources/sql-auto-
 jest.setTimeout(DURATION_1_HOUR);
 
 describe('CDK GraphQL Transformer deployments with Postgres SQL datasources', () => {
-  const projFolderName = 'pgmodels';
+  const projFolderName = 'pgautoincrement';
 
   // sufficient password length that meets the requirements for RDS cluster/instance
   const [username, password, identifier] = generator.generateMultiple(3, { length: 11 });
   const region = process.env.CLI_REGION ?? 'us-west-2';
   const engine = 'postgres';
 
-  const databaseController: SqlDatatabaseController = new SqlDatatabaseController(sqlCreateStatements(ImportedRDSType.POSTGRESQL), {
+  const databaseController: SqlDatatabaseController = new SqlDatatabaseController(sqlCreateStatements(), {
     identifier,
     engine,
     username,
