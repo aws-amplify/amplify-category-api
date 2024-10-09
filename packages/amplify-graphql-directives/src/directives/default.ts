@@ -2,7 +2,7 @@ import { Directive } from './directive';
 
 const name = 'default';
 const definition = /* GraphQL */ `
-  directive @${name}(value: String!) on FIELD_DEFINITION
+  directive @${name}(value: String) on FIELD_DEFINITION
 `;
 const defaults = {};
 

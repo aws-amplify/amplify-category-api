@@ -64,6 +64,8 @@ export {
   isModelType,
   isMutationNode,
   isObjectTypeDefinitionNode,
+  isPostgresDbType,
+  isPostgresModel,
   isQueryNode,
   isQueryType,
   isSqlDbType,

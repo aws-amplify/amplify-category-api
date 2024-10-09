@@ -5,7 +5,6 @@
 export type ConversationMessagePirateChat = {
   __typename: 'ConversationMessagePirateChat';
   aiContext?: string | null;
-  assistantContent?: Array<ContentBlock | null> | null;
   content?: Array<ContentBlock | null> | null;
   conversation?: ConversationPirateChat | null;
   conversationId: string;
@@ -285,7 +284,6 @@ export type ModelConversationMessagePirateChatConditionInput = {
 
 export type CreateConversationMessagePirateChatInput = {
   aiContext?: string | null;
-  assistantContent?: Array<ContentBlockInput | null> | null;
   content?: Array<ContentBlockInput | null> | null;
   conversationId: string;
   id?: string | null;
@@ -386,10 +384,6 @@ export type GetConversationMessagePirateChatQuery = {
   getConversationMessagePirateChat?: {
     __typename: 'ConversationMessagePirateChat';
     aiContext?: string | null;
-    assistantContent?: Array<{
-      __typename: 'ContentBlock';
-      text?: string | null;
-    } | null> | null;
     content?: Array<{
       __typename: 'ContentBlock';
       text?: string | null;
@@ -488,10 +482,6 @@ export type CreateAssistantResponsePirateChatMutation = {
   createAssistantResponsePirateChat?: {
     __typename: 'ConversationMessagePirateChat';
     aiContext?: string | null;
-    assistantContent?: Array<{
-      __typename: 'ContentBlock';
-      text?: string | null;
-    } | null> | null;
     content?: Array<{
       __typename: 'ContentBlock';
       text?: string | null;
@@ -526,10 +516,6 @@ export type CreateConversationMessagePirateChatMutation = {
   createConversationMessagePirateChat?: {
     __typename: 'ConversationMessagePirateChat';
     aiContext?: string | null;
-    assistantContent?: Array<{
-      __typename: 'ContentBlock';
-      text?: string | null;
-    } | null> | null;
     content?: Array<{
       __typename: 'ContentBlock';
       text?: string | null;
@@ -585,10 +571,6 @@ export type DeleteConversationMessagePirateChatMutation = {
   deleteConversationMessagePirateChat?: {
     __typename: 'ConversationMessagePirateChat';
     aiContext?: string | null;
-    assistantContent?: Array<{
-      __typename: 'ContentBlock';
-      text?: string | null;
-    } | null> | null;
     content?: Array<{
       __typename: 'ContentBlock';
       text?: string | null;
@@ -659,10 +641,6 @@ export type PirateChatMutation = {
       __typename: 'ToolConfiguration';
     } | null;
     updatedAt?: string | null;
-    assistantContent?: Array<{
-      __typename: 'ContentBlock';
-      text?: string | null;
-    } | null> | null;
     conversation?: {
       __typename: 'ConversationPirateChat';
       createdAt: string;
@@ -683,10 +661,6 @@ export type OnCreateAssistantResponsePirateChatSubscription = {
   onCreateAssistantResponsePirateChat?: {
     __typename: 'ConversationMessagePirateChat';
     aiContext?: string | null;
-    assistantContent?: Array<{
-      __typename: 'ContentBlock';
-      text?: string | null;
-    } | null> | null;
     content?: Array<{
       __typename: 'ContentBlock';
       text?: string | null;
@@ -721,10 +695,6 @@ export type OnCreateConversationMessagePirateChatSubscription = {
   onCreateConversationMessagePirateChat?: {
     __typename: 'ConversationMessagePirateChat';
     aiContext?: string | null;
-    assistantContent?: Array<{
-      __typename: 'ContentBlock';
-      text?: string | null;
-    } | null> | null;
     content?: Array<{
       __typename: 'ContentBlock';
       text?: string | null;
