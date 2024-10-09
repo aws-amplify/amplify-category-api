@@ -696,7 +696,7 @@ export { FieldLogLevel, RetentionDays };
  * - `retention`: `ONE_WEEK`
  *
  * **WARNING**: Verbose logging will log the full incoming query including user parameters.
- * Sensitive information may be exposed in CloudWatch logs. Use with caution.
+ * Sensitive information may be exposed in CloudWatch logs. Ensure that your IAM policies only grant access to authorized users.
  *
  * For information on LogConfig, refer to https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-graphqlapi-logconfig.html.
  * For information on RetentionDays, refer to https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_logs.RetentionDays.html.
