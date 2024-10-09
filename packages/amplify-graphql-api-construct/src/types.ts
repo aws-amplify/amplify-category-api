@@ -713,7 +713,7 @@ export interface LogConfig {
    * This setting applies regardless of the specified logging level.
    *
    * **WARNING**: Verbose logging will log the full incoming query including user parameters.
-   * Sensitive information may be exposed in CloudWatch logs. Use with caution.
+   * Sensitive information may be exposed in CloudWatch logs. Ensure that your IAM policies only grant access to authorized users.
    *
    * @default true
    */
