@@ -47,9 +47,9 @@ export type FieldMap = {
 export class CRUDLHelper {
   constructor(
     private readonly appSyncClient: AWSAppSyncClient<any>,
-    private readonly modelName: string,
-    private readonly modelListName: string,
-    private readonly fieldMap: FieldMap,
+    private readonly modelName?: string,
+    private readonly modelListName?: string,
+    private readonly fieldMap?: FieldMap,
   ) {}
 
   public create = async (args: Record<string, any>): Promise<Record<string, any>> => {
@@ -210,5 +210,59 @@ export class CRUDLHelper {
     return Object.entries(args)
       .map(([key, value]) => `$${key}: ${this.getGraphQLType(value)}!`)
       .join(', ');
+  };
+
+  public checkOperationResult = (result: any, expected: any, isList: boolean = false, errors?: string[]): void => {
+    delete result['__typename'];
+    expect(result).toBeDefined();
+
+    switch (isList) {
+      case true:
+        expect(result.items).toHaveLength(expected?.length);
+        result?.items?.forEach((item: any, index: number) => {
+          delete item['__typename'];
+          expect(item).toEqual(expected[index]);
+        });
+
+        break;
+      case false:
+        expect(result).toEqual(expected);
+        return;
+      default:
+    }
+
+    if (errors && errors.length > 0) {
+      expect(result.errors).toBeDefined();
+      expect(result.errors).toHaveLength(errors.length);
+      errors.map((error: string) => {
+        expect(result.errors).toContain(error);
+      });
+    }
+  };
+
+  public checkListItemExistence = (result: any, primaryKeyValue: string, shouldExist = false, primaryKeyName = 'id') => {
+    expect(result).toBeDefined();
+    expect(result.items).toBeDefined();
+    expect(result.items?.filter((item: any) => item[primaryKeyName] === primaryKeyValue)?.length).toEqual(shouldExist ? 1 : 0);
+  };
+
+  public runCustomMutate = async (mutation: string, input: any): Promise<Record<string, any>> => {
+    const customMutateResult: any = await this.appSyncClient.mutate({
+      mutation: gql(mutation),
+      fetchPolicy: 'no-cache',
+      variables: input,
+    });
+
+    return customMutateResult.data;
+  };
+
+  public runCustomQuery = async (query: string, input: any): Promise<Record<string, any>> => {
+    const customQueryResult: any = await this.appSyncClient.query({
+      query: gql(query),
+      fetchPolicy: 'no-cache',
+      variables: input,
+    });
+
+    return customQueryResult.data;
   };
 }

@@ -22,7 +22,6 @@ export interface TestConfigInput {
 }
 
 export interface TestConfigOutput {
-  schema: string;
   authType: AUTH_TYPE;
   dbController: SqlDatatabaseController;
   projRoot: string;
@@ -53,7 +52,6 @@ export const setupTest = async (input: TestConfigInput): Promise<TestConfigOutpu
   const testOutputs = outputs[name];
 
   return {
-    schema: stackConfig.schema,
     authType: stackConfig.authMode,
     dbController,
     projRoot,

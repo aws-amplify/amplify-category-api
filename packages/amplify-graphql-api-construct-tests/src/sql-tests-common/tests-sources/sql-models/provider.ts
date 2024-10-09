@@ -3,7 +3,7 @@ import { getRDSTableNamePrefix } from '../../../utils/sql-provider-helper';
 export const schema = (): string => /* GraphQL */ `
   type Todo @model @refersTo(name: "${getRDSTableNamePrefix()}todos") {
     id: ID! @primaryKey
-    description: String!
+    description: String
   }
   type Student @model @refersTo(name: "${getRDSTableNamePrefix()}students") {
     studentId: Int! @primaryKey(sortKeyFields: ["classId"])

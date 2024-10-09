@@ -1,21 +1,16 @@
-import { AUTH_TYPE } from 'aws-appsync';
-import { gql } from 'graphql-tag';
+import AWSAppSyncClient from 'aws-appsync';
+import { NormalizedCacheObject } from 'apollo-cache-inmemory';
 import { TestConfigOutput } from '../../../utils/sql-test-config-helper';
-import { AppSyncClients, configureAppSyncClients } from '../../../utils/sql-appsync-client-helper';
+import { configureAppSyncClients } from '../../../utils/sql-appsync-client-helper';
 import { getUserMap } from '../../../utils/sql-cognito-helper';
-import {
-  createModelOperationHelpers,
-  checkOperationResult,
-  checkListItemExistence,
-} from '../../../utils/appsync-model-operation/model-operation-helper';
+import { CRUDLHelper, FieldMap } from '../../../utils/sql-crudl-helper';
+import * as FieldMaps from './field-map';
 
 export class DynamicModelAuthTester {
   private readonly testConfigOutput: TestConfigOutput;
 
-  private readonly schema: string;
-  private readonly authProvider: AUTH_TYPE;
-
-  private appSyncClients: AppSyncClients;
+  private appSyncClient1: AWSAppSyncClient<NormalizedCacheObject>;
+  private appSyncClient2: AWSAppSyncClient<NormalizedCacheObject>;
 
   private userName1: string;
   private userName2: string;
@@ -24,774 +19,343 @@ export class DynamicModelAuthTester {
 
   constructor(testConfigOutput: TestConfigOutput) {
     this.testConfigOutput = testConfigOutput;
-
-    this.schema = this.testConfigOutput.schema;
-    this.authProvider = this.testConfigOutput.authType;
   }
 
   public initialize = async (): Promise<void> => {
     const userMap = await getUserMap(this.testConfigOutput);
-    this.appSyncClients = await configureAppSyncClients(this.testConfigOutput, userMap);
+    const appSyncClients = await configureAppSyncClients(this.testConfigOutput, userMap);
 
     this.userName1 = Object.keys(userMap)[0];
     this.userName2 = Object.keys(userMap)[1];
     this.groupName1 = this.testConfigOutput.userGroups[0];
     this.groupName2 = this.testConfigOutput.userGroups[1];
+
+    this.appSyncClient1 = appSyncClients[this.testConfigOutput.authType][this.userName1];
+    this.appSyncClient2 = appSyncClients[this.testConfigOutput.authType][this.userName2];
+  };
+
+  private checkCreateData = (createDataResult: Record<string, any>, fields: Record<string, boolean>): void => {
+    expect(createDataResult.id).toBeDefined();
+
+    Object.keys(fields).forEach((fieldName) => {
+      if (fields[fieldName]) {
+        expect(createDataResult[fieldName]).toBeDefined();
+      }
+    });
+  };
+
+  private completeCreateData = (
+    createData: Record<string, any>,
+    createDataResult: Record<string, any>,
+    fields: Record<string, boolean>,
+  ): Record<string, any> => {
+    createData['id'] = createDataResult.id;
+
+    Object.keys(fields).forEach((fieldName) => {
+      if (fields[fieldName]) {
+        createData[fieldName] = createDataResult[fieldName];
+      }
+    });
+
+    return createData;
+  };
+
+  private testValidCRUDL = async (
+    modelName: string,
+    fieldMap: FieldMap,
+    initializeFields: Record<string, boolean> = {},
+    testFieldsOverrides: Record<string, string | string[]> = {},
+    initialFieldsOverrides: Record<string, string | string[]> = {},
+    secondClientEnabled: boolean = false,
+  ): Promise<void> => {
+    const modelCRUDLHelper1 = new CRUDLHelper(this.appSyncClient1, modelName, `${modelName}s`, fieldMap);
+    const modelCRUDLHelper2 = new CRUDLHelper(this.appSyncClient2, modelName, `${modelName}s`, fieldMap);
+
+    const createData = {
+      ...initialFieldsOverrides,
+      content: 'Todo',
+    };
+    const createDataResult = await modelCRUDLHelper1.create(createData);
+
+    this.checkCreateData(createDataResult, initializeFields);
+    this.completeCreateData(createData, createDataResult, initializeFields);
+
+    modelCRUDLHelper1.checkOperationResult(createDataResult, createData);
+
+    const updateData = {
+      ...createData,
+      ...testFieldsOverrides,
+      content: 'Todo updated',
+    };
+    const updateDataResult = secondClientEnabled ? await modelCRUDLHelper2.update(updateData) : await modelCRUDLHelper1.update(updateData);
+    modelCRUDLHelper1.checkOperationResult(updateDataResult, updateData);
+
+    const getDataResult = secondClientEnabled
+      ? await modelCRUDLHelper2.getById(createData['id'])
+      : await modelCRUDLHelper1.getById(createData['id']);
+    modelCRUDLHelper1.checkOperationResult(getDataResult, updateData);
+
+    const listDataResult = secondClientEnabled ? await modelCRUDLHelper2.list() : await modelCRUDLHelper1.list();
+    modelCRUDLHelper1.checkListItemExistence(listDataResult, createData['id'], true);
+
+    const deleteDataResult = secondClientEnabled
+      ? await modelCRUDLHelper2.delete({ id: createData['id'] })
+      : await modelCRUDLHelper1.delete({ id: createData['id'] });
+    modelCRUDLHelper1.checkOperationResult(deleteDataResult, updateData);
+  };
+
+  private testInvalidCRUDL = async (
+    modelName: string,
+    fieldMap: FieldMap,
+    initializeFields: Record<string, boolean> = {},
+    testFieldsOverrides: Record<string, string | string[]> = {},
+    initialFieldsOverrides: Record<string, string | string[]> = {},
+  ): Promise<void> => {
+    const modelCRUDLHelper1 = new CRUDLHelper(this.appSyncClient1, modelName, `${modelName}s`, fieldMap);
+    const modelCRUDLHelper2 = new CRUDLHelper(this.appSyncClient2, modelName, `${modelName}s`, fieldMap);
+
+    const createData = {
+      ...initialFieldsOverrides,
+      content: 'Todo',
+    };
+    const createDataResult = await modelCRUDLHelper1.create(createData);
+
+    this.checkCreateData(createDataResult, initializeFields);
+    this.completeCreateData(createData, createDataResult, initializeFields);
+
+    modelCRUDLHelper1.checkOperationResult(createDataResult, createData);
+
+    await expect(modelCRUDLHelper2.create(createData)).rejects.toThrow(
+      `GraphQL error: Not Authorized to access create${modelName} on type Mutation`,
+    );
+
+    const updateData = {
+      ...createData,
+      ...testFieldsOverrides,
+      content: 'Todo updated',
+    };
+    await expect(modelCRUDLHelper2.update(updateData)).rejects.toThrow(
+      `GraphQL error: Not Authorized to access update${modelName} on type Mutation`,
+    );
+
+    await expect(async () => {
+      await modelCRUDLHelper2.getById(createData['id']);
+    }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access get${modelName} on type Query"`);
+
+    try {
+      const listDataResult = await modelCRUDLHelper2.list();
+      modelCRUDLHelper2.checkListItemExistence(listDataResult, createData['id']);
+    } catch (error) {
+      expect(error.message.includes(`GraphQL error: Not Authorized to access list${modelName}s on type Query`)).toBeTruthy();
+    }
+
+    await expect(
+      modelCRUDLHelper2.delete({
+        id: createData['id'],
+      }),
+    ).rejects.toThrow(`GraphQL error: Not Authorized to access delete${modelName} on type Mutation`);
+  };
+
+  private testValidCustomOperations = async (appSyncClient: AWSAppSyncClient<NormalizedCacheObject>, modelName: string): Promise<void> => {
+    const customCRUDLHelper = new CRUDLHelper(appSyncClient);
+
+    const createData = {
+      id: Date.now().toString(),
+      content: 'Todo',
+    };
+    const createMutation = /* GraphQL */ `
+      mutation CreateTodoCustom($id: ID!, $content: String) {
+        add${modelName}(id: $id, content: $content) {
+          id
+          content
+        }
+      }
+    `;
+    const createResult = await customCRUDLHelper.runCustomMutate(createMutation, createData);
+    expect(createResult[`add${modelName}`]).toBeDefined();
+
+    const getQuery = /* GraphQL */ `
+      query GetTodoCustom($id: ID!) {
+        customGet${modelName}(id: $id) {
+          id
+          content
+        }
+      }
+    `;
+    const getResult = await customCRUDLHelper.runCustomQuery(getQuery, { id: createData.id });
+    expect(getResult[`customGet${modelName}`]).toHaveLength(1);
+    expect(getResult[`customGet${modelName}`][0].id).toEqual(createData.id);
+    expect(getResult[`customGet${modelName}`][0].content).toEqual(createData.content);
+  };
+
+  private testInvalidCustomOperations = async (
+    appSyncClient: AWSAppSyncClient<NormalizedCacheObject>,
+    modelName: string,
+  ): Promise<void> => {
+    const customCRUDLHelper = new CRUDLHelper(appSyncClient);
+
+    const createData = {
+      id: Date.now().toString(),
+      content: 'Todo',
+    };
+    const createMutation = /* GraphQL */ `
+      mutation CreateTodoCustom($id: ID!, $content: String) {
+        add${modelName}(id: $id, content: $content) {
+          id
+          content
+        }
+      }
+    `;
+    await expect(customCRUDLHelper.runCustomMutate(createMutation, createData)).rejects.toThrow(
+      `GraphQL error: Not Authorized to access add${modelName} on type Mutation`,
+    );
+
+    const getQuery = /* GraphQL */ `
+      query GetTodoCustom($id: ID!) {
+        customGet${modelName}(id: $id) {
+          id
+          content
+        }
+      }
+    `;
+    await expect(customCRUDLHelper.runCustomQuery(getQuery, { id: createData.id })).rejects.toThrow(
+      `GraphQL error: Not Authorized to access customGet${modelName} on type Query`,
+    );
   };
 
   public testLoggedInUserCrudOperations = async (): Promise<void> => {
-    const modelName = 'TodoPrivate';
-    const modelOperationHelpers = createModelOperationHelpers(this.appSyncClients[this.authProvider][this.userName1], this.schema);
-    const todoHelper = modelOperationHelpers[modelName];
-
-    const todo = {
-      content: 'Todo',
-    };
-    const resultSetName = `create${modelName}`;
-    const createResult = await todoHelper.create(resultSetName, todo);
-    expect(createResult.data[resultSetName].id).toBeDefined();
-    todo['id'] = createResult.data[resultSetName].id;
-    checkOperationResult(createResult, todo, resultSetName);
-
-    const todoUpdated = {
-      id: todo['id'],
-      content: 'Todo updated',
-    };
-    const updateResult = await todoHelper.update(`update${modelName}`, todoUpdated);
-    checkOperationResult(updateResult, todoUpdated, `update${modelName}`);
-
-    const getResult = await todoHelper.get({
-      id: todo['id'],
-    });
-    checkOperationResult(getResult, todoUpdated, `get${modelName}`);
-
-    const listTodosResult = await todoHelper.list();
-    checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id'], true);
-
-    const deleteResult = await todoHelper.delete(`delete${modelName}`, {
-      id: todo['id'],
-    });
-    checkOperationResult(deleteResult, todoUpdated, `delete${modelName}`);
+    await this.testValidCRUDL('TodoPrivate', FieldMaps.TodoPrivateFieldMap);
   };
 
   public testRecordOwnerCrudOperationsWithDefaultOwnerField = async (): Promise<void> => {
-    const modelName = 'TodoOwner';
-    const modelOperationHelpers = createModelOperationHelpers(this.appSyncClients[this.authProvider][this.userName1], this.schema);
-    const todoHelper = modelOperationHelpers[modelName];
-
-    const todo = {
-      content: 'Todo',
-    };
-    const resultSetName = `create${modelName}`;
-    const createResult = await todoHelper.create(resultSetName, todo);
-    expect(createResult.data[resultSetName].id).toBeDefined();
-    todo['id'] = createResult.data[resultSetName].id;
-    expect(createResult.data[resultSetName].content).toEqual(todo.content);
-    expect(createResult.data[resultSetName].owner).toBeDefined();
-
-    const todoWithOwner = {
-      ...todo,
-      owner: createResult.data[resultSetName].owner,
-    };
-
-    const todoUpdated = {
-      id: todo['id'],
-      content: 'Todo updated',
-      owner: todoWithOwner.owner,
-    };
-    const updateResult = await todoHelper.update(`update${modelName}`, todoUpdated);
-    checkOperationResult(updateResult, todoUpdated, `update${modelName}`);
-
-    const getResult = await todoHelper.get({
-      id: todo['id'],
-    });
-    checkOperationResult(getResult, todoUpdated, `get${modelName}`);
-
-    const listTodosResult = await todoHelper.list();
-    checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id'], true);
-
-    const deleteResult = await todoHelper.delete(`delete${modelName}`, {
-      id: todo['id'],
-    });
-    checkOperationResult(deleteResult, todoUpdated, `delete${modelName}`);
+    await this.testValidCRUDL('TodoOwner', FieldMaps.TodoOwnerFieldMap, { owner: true });
   };
 
   public testNonRecordOwnerCannotAccessWithDefaultOwnerField = async (): Promise<void> => {
-    const modelName = 'TodoOwner';
-    const modelOperationHelpersOwner = createModelOperationHelpers(this.appSyncClients[this.authProvider][this.userName1], this.schema);
-    const modelOperationHelpersNonOwner = createModelOperationHelpers(this.appSyncClients[this.authProvider][this.userName2], this.schema);
-    const todoHelperOwner = modelOperationHelpersOwner[modelName];
-    const todoHelperNonOwner = modelOperationHelpersNonOwner[modelName];
-
-    const todo = {
-      content: 'Todo',
-    };
-    const resultSetName = `create${modelName}`;
-    const createResult = await todoHelperOwner.create(resultSetName, todo);
-    expect(createResult.data[resultSetName].id).toBeDefined();
-    todo['id'] = createResult.data[resultSetName].id;
-
-    const todoUpdated = {
-      id: todo['id'],
-      content: 'Todo updated',
-      owner: this.userName2,
-    };
-    await expect(todoHelperNonOwner.update(`update${modelName}`, todoUpdated)).rejects.toThrow(
-      'GraphQL error: Not Authorized to access updateTodoOwner on type Mutation',
-    );
-
-    await expect(async () => {
-      const getResult = await todoHelperNonOwner.get({
-        id: todo['id'],
-      });
-    }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoOwner on type Query"`);
-
-    const listTodosResult = await todoHelperNonOwner.list();
-    checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
-
-    await expect(
-      todoHelperNonOwner.delete(`delete${modelName}`, {
-        id: todo['id'],
-      }),
-    ).rejects.toThrow('GraphQL error: Not Authorized to access deleteTodoOwner on type Mutation');
+    await this.testInvalidCRUDL('TodoOwner', FieldMaps.TodoOwnerFieldMap, { owner: true }, { owner: this.userName2 });
   };
 
   public testStoreOwnerInCustomField = async (): Promise<void> => {
-    const modelName = 'TodoOwnerFieldString';
-    const modelOperationHelpers = createModelOperationHelpers(this.appSyncClients[this.authProvider][this.userName1], this.schema);
-    const todoHelper = modelOperationHelpers[modelName];
-
-    const todo = {
-      content: 'Todo',
-    };
-    const resultSetName = `create${modelName}`;
-    const createResult = await todoHelper.create(resultSetName, todo);
-    expect(createResult.data[resultSetName].id).toBeDefined();
-    todo['id'] = createResult.data[resultSetName].id;
-    expect(createResult.data[resultSetName].content).toEqual(todo.content);
-    expect(createResult.data[resultSetName].author).toEqual(this.userName1);
-
-    const todoWithOwner = {
-      ...todo,
-      author: this.userName1,
-    };
-
-    const todo1Updated = {
-      id: todo['id'],
-      content: 'Todo updated',
-      author: todoWithOwner.author,
-    };
-    const updateResult = await todoHelper.update(`update${modelName}`, todo1Updated);
-    checkOperationResult(updateResult, todo1Updated, `update${modelName}`);
-
-    const getResult = await todoHelper.get({
-      id: todo['id'],
-    });
-    checkOperationResult(getResult, todo1Updated, `get${modelName}`);
-
-    const listTodosResult = await todoHelper.list();
-    checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id'], true);
-
-    const deleteResult = await todoHelper.delete(`delete${modelName}`, {
-      id: todo['id'],
-    });
-    checkOperationResult(deleteResult, todo1Updated, `delete${modelName}`);
+    await this.testValidCRUDL('TodoOwnerFieldString', FieldMaps.TodoOwnerFieldStringFieldMap, { author: true }, { author: this.userName1 });
   };
 
   public testNonOwnerCannotPretendToBeOwner = async (): Promise<void> => {
-    const modelName = 'TodoOwnerFieldString';
-    const modelOperationHelpersOwner = createModelOperationHelpers(this.appSyncClients[this.authProvider][this.userName1], this.schema);
-    const modelOperationHelpersNonOwner = createModelOperationHelpers(this.appSyncClients[this.authProvider][this.userName2], this.schema);
-    const todoHelperOwner = modelOperationHelpersOwner[modelName];
-    const todoHelperNonOwner = modelOperationHelpersNonOwner[modelName];
-
-    const todo = {
-      content: 'Todo',
-    };
-    const resultSetName = `create${modelName}`;
-    const createResult = await todoHelperOwner.create(resultSetName, todo);
-    expect(createResult.data[resultSetName].id).toBeDefined();
-    todo['id'] = createResult.data[resultSetName].id;
-
-    const todoUpdated = {
-      id: todo['id'],
-      content: 'Todo updated',
-      author: this.userName1,
-    };
-    await expect(todoHelperNonOwner.update(`update${modelName}`, todoUpdated)).rejects.toThrow(
-      'GraphQL error: Not Authorized to access updateTodoOwnerFieldString on type Mutation',
+    await this.testInvalidCRUDL(
+      'TodoOwnerFieldString',
+      FieldMaps.TodoOwnerFieldStringFieldMap,
+      { author: true },
+      { author: this.userName1 },
     );
-
-    await expect(async () => {
-      const getResult = await todoHelperNonOwner.get({
-        id: todo['id'],
-      });
-    }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoOwnerFieldString on type Query"`);
-
-    const listTodosResult = await todoHelperNonOwner.list();
-    checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
-
-    await expect(
-      todoHelperNonOwner.delete(`delete${modelName}`, {
-        id: todo['id'],
-      }),
-    ).rejects.toThrow('GraphQL error: Not Authorized to access deleteTodoOwnerFieldString on type Mutation');
   };
 
   public testListOwnersMemberCrudOperations = async (): Promise<void> => {
-    const modelName = 'TodoOwnerFieldList';
-    const modelOperationHelpers = createModelOperationHelpers(this.appSyncClients[this.authProvider][this.userName1], this.schema);
-    const todoHelper = modelOperationHelpers[modelName];
-
-    const todo = {
-      content: 'Todo',
-      authors: [this.userName1],
-    };
-    const resultSetName = `create${modelName}`;
-    const createResult = await todoHelper.create(resultSetName, todo);
-    expect(createResult.data[resultSetName].id).toBeDefined();
-    todo['id'] = createResult.data[resultSetName].id;
-    expect(createResult.data[resultSetName].content).toEqual(todo.content);
-    expect(createResult.data[resultSetName].authors).toEqual([this.userName1]);
-
-    const todoUpdated = {
-      id: todo['id'],
-      content: 'Todo updated',
-      authors: [this.userName1],
-    };
-    const updateResult = await todoHelper.update(`update${modelName}`, todoUpdated);
-    checkOperationResult(updateResult, todoUpdated, `update${modelName}`);
-
-    const getResult = await todoHelper.get({
-      id: todo['id'],
-    });
-    checkOperationResult(getResult, todoUpdated, `get${modelName}`);
-
-    const listTodosResult = await todoHelper.list();
-    checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id'], true);
-
-    const deleteResult = await todoHelper.delete(`delete${modelName}`, {
-      id: todo['id'],
-    });
-    checkOperationResult(deleteResult, todoUpdated, `delete${modelName}`);
+    await this.testValidCRUDL('TodoOwnerFieldList', FieldMaps.TodoOwnerFieldListFieldMap, {}, {}, { authors: [this.userName1] });
   };
 
   public testNonOwnerCannotAddThemselvesToList = async (): Promise<void> => {
-    const modelName = 'TodoOwnerFieldList';
-    const modelOperationHelpersOwner = createModelOperationHelpers(this.appSyncClients[this.authProvider][this.userName1], this.schema);
-    const modelOperationHelpersNonOwner = createModelOperationHelpers(this.appSyncClients[this.authProvider][this.userName2], this.schema);
-    const todoHelperOwner = modelOperationHelpersOwner[modelName];
-    const todoHelperNonOwner = modelOperationHelpersNonOwner[modelName];
-
-    const todo = {
-      content: 'Todo',
-      authors: [this.userName1],
-    };
-    const resultSetName = `create${modelName}`;
-    const createResult = await todoHelperOwner.create(resultSetName, todo);
-    expect(createResult.data[resultSetName].id).toBeDefined();
-    todo['id'] = createResult.data[resultSetName].id;
-
-    const todoUpdated = {
-      id: todo['id'],
-      content: 'Todo updated',
-      authors: [this.userName1, this.userName2],
-    };
-    await expect(todoHelperNonOwner.update(`update${modelName}`, todoUpdated)).rejects.toThrow(
-      'GraphQL error: Not Authorized to access updateTodoOwnerFieldList on type Mutation',
+    await this.testInvalidCRUDL(
+      'TodoOwnerFieldList',
+      FieldMaps.TodoOwnerFieldListFieldMap,
+      {},
+      { authors: [this.userName1, this.userName2] },
+      { authors: [this.userName1] },
     );
-
-    await expect(async () => {
-      const getResult = await todoHelperNonOwner.get({
-        id: todo['id'],
-      });
-    }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoOwnerFieldList on type Query"`);
-
-    const listTodosResult = await todoHelperNonOwner.list();
-    checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
-
-    await expect(
-      todoHelperNonOwner.delete(`delete${modelName}`, {
-        id: todo['id'],
-      }),
-    ).rejects.toThrow('GraphQL error: Not Authorized to access deleteTodoOwnerFieldList on type Mutation');
   };
 
   public testOwnerCanAddAnotherUserToList = async (): Promise<void> => {
-    const modelName = 'TodoOwnerFieldList';
-    const modelOperationHelpersOwner = createModelOperationHelpers(this.appSyncClients[this.authProvider][this.userName1], this.schema);
-    const modelOperationHelpersNonOwner = createModelOperationHelpers(this.appSyncClients[this.authProvider][this.userName2], this.schema);
-    const todoHelperOwner = modelOperationHelpersOwner[modelName];
-    const todoHelperAnotherOwner = modelOperationHelpersNonOwner[modelName];
-
-    const todo = {
-      content: 'Todo',
-      authors: [this.userName1, this.userName2],
-    };
-    const resultSetName = `create${modelName}`;
-    const createResult = await todoHelperOwner.create(resultSetName, todo);
-    expect(createResult.data[resultSetName].id).toBeDefined();
-    todo['id'] = createResult.data[resultSetName].id;
-
-    const todoUpdated = {
-      id: todo['id'],
-      content: 'Todo updated',
-      authors: [this.userName1, this.userName2],
-    };
-    const updateResult = await todoHelperAnotherOwner.update(`update${modelName}`, todoUpdated);
-    checkOperationResult(updateResult, todoUpdated, `update${modelName}`);
-
-    const getResult = await todoHelperAnotherOwner.get({
-      id: todo['id'],
-    });
-    checkOperationResult(getResult, todoUpdated, `get${modelName}`);
-
-    const listTodosResult = await todoHelperAnotherOwner.list();
-    checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id'], true);
-
-    const deleteResult = await todoHelperAnotherOwner.delete(`delete${modelName}`, {
-      id: todo['id'],
-    });
-    checkOperationResult(deleteResult, todoUpdated, `delete${modelName}`);
+    await this.testValidCRUDL(
+      'TodoOwnerFieldList',
+      FieldMaps.TodoOwnerFieldListFieldMap,
+      {},
+      { authors: [this.userName1, this.userName2] },
+      { authors: [this.userName1, this.userName2] },
+      true,
+    );
   };
 
   public testStaticGroupUserCrudOperations = async (): Promise<void> => {
-    const modelName = 'TodoStaticGroup';
-    const modelOperationHelpers = createModelOperationHelpers(this.appSyncClients[this.authProvider][this.userName1], this.schema);
-    const todoHelper = modelOperationHelpers[modelName];
-
-    const todo = {
-      content: 'Todo',
-    };
-    const resultSetName = `create${modelName}`;
-    const createResult = await todoHelper.create(resultSetName, todo);
-    expect(createResult.data[resultSetName].id).toBeDefined();
-    todo['id'] = createResult.data[resultSetName].id;
-    expect(createResult.data[resultSetName].content).toEqual(todo.content);
-
-    const todoUpdated = {
-      id: todo['id'],
-      content: 'Todo updated',
-    };
-    const updateResult = await todoHelper.update(`update${modelName}`, todoUpdated);
-    checkOperationResult(updateResult, todoUpdated, `update${modelName}`);
-
-    const getResult = await todoHelper.get({
-      id: todo['id'],
-    });
-    checkOperationResult(getResult, todoUpdated, `get${modelName}`);
-
-    const listTodosResult = await todoHelper.list();
-    checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id'], true);
-
-    const deleteResult = await todoHelper.delete(`delete${modelName}`, {
-      id: todo['id'],
-    });
-    checkOperationResult(deleteResult, todoUpdated, `delete${modelName}`);
+    await this.testValidCRUDL('TodoStaticGroup', FieldMaps.TodoStaticGroupFieldMap);
   };
 
   public testNonStaticGroupUserCrudOperations = async (): Promise<void> => {
-    const modelName = 'TodoStaticGroup';
-    const modelOperationHelpersAdmin = createModelOperationHelpers(this.appSyncClients[this.authProvider][this.userName1], this.schema);
-    const modelOperationHelpersNonAdmin = createModelOperationHelpers(this.appSyncClients[this.authProvider][this.userName2], this.schema);
-    const todoHelperAdmin = modelOperationHelpersAdmin[modelName];
-    const todoHelperNonAdmin = modelOperationHelpersNonAdmin[modelName];
-
-    const todo = {
-      content: 'Todo',
-    };
-    const resultSetName = `create${modelName}`;
-    const createResult = await todoHelperAdmin.create(resultSetName, todo);
-    expect(createResult.data[resultSetName].id).toBeDefined();
-    todo['id'] = createResult.data[resultSetName].id;
-
-    await expect(todoHelperNonAdmin.create(`create${modelName}`, todo)).rejects.toThrow(
-      'GraphQL error: Not Authorized to access createTodoStaticGroup on type Mutation',
-    );
-
-    const todoUpdated = {
-      id: todo['id'],
-      content: 'Todo updated',
-    };
-    await expect(todoHelperNonAdmin.update(`update${modelName}`, todoUpdated)).rejects.toThrow(
-      'GraphQL error: Not Authorized to access updateTodoStaticGroup on type Mutation',
-    );
-
-    expect(
-      todoHelperNonAdmin.get({
-        id: todo['id'],
-      }),
-    ).rejects.toThrow('GraphQL error: Not Authorized to access getTodoStaticGroup on type Query');
-
-    await expect(todoHelperNonAdmin.list()).rejects.toThrow('GraphQL error: Not Authorized to access listTodoStaticGroups on type Query');
-
-    await expect(
-      todoHelperNonAdmin.delete(`delete${modelName}`, {
-        id: todo['id'],
-      }),
-    ).rejects.toThrow('GraphQL error: Not Authorized to access deleteTodoStaticGroup on type Mutation');
+    await this.testInvalidCRUDL('TodoStaticGroup', FieldMaps.TodoStaticGroupFieldMap);
   };
 
   public testGroupUserCrudOperations = async (): Promise<void> => {
-    const modelName = 'TodoGroupFieldString';
-    const modelOperationHelpers = createModelOperationHelpers(this.appSyncClients[this.authProvider][this.userName1], this.schema);
-    const todoHelper = modelOperationHelpers[modelName];
-
-    const todo = {
-      content: 'Todo',
-      groupField: this.groupName1,
-    };
-    const resultSetName = `create${modelName}`;
-    const createResult = await todoHelper.create(resultSetName, todo);
-    expect(createResult.data[resultSetName].id).toBeDefined();
-    todo['id'] = createResult.data[resultSetName].id;
-    expect(createResult.data[resultSetName].content).toEqual(todo.content);
-    expect(createResult.data[resultSetName].groupField).toEqual(this.groupName1);
-
-    const todoUpdated = {
-      id: todo['id'],
-      content: 'Todo updated',
-      groupField: this.groupName1,
-    };
-    const updateResult = await todoHelper.update(`update${modelName}`, todoUpdated);
-    checkOperationResult(updateResult, todoUpdated, `update${modelName}`);
-
-    const getResult = await todoHelper.get({
-      id: todo['id'],
-    });
-    checkOperationResult(getResult, todoUpdated, `get${modelName}`);
-
-    const listTodosResult = await todoHelper.list();
-    checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id'], true);
-
-    const deleteResult = await todoHelper.delete(`delete${modelName}`, {
-      id: todo['id'],
-    });
-    checkOperationResult(deleteResult, todoUpdated, `delete${modelName}`);
+    await this.testValidCRUDL(
+      'TodoGroupFieldString',
+      FieldMaps.TodoGroupFieldStringFieldMap,
+      {},
+      { groupField: this.groupName1 },
+      { groupField: this.groupName1 },
+    );
   };
 
   public testUsersCannotSpoofGroupMembership = async (): Promise<void> => {
-    const modelName = 'TodoGroupFieldString';
-    const modelOperationHelpersAdmin = createModelOperationHelpers(this.appSyncClients[this.authProvider][this.userName1], this.schema);
-    const modelOperationHelpersNonAdmin = createModelOperationHelpers(this.appSyncClients[this.authProvider][this.userName2], this.schema);
-    const todoHelperAdmin = modelOperationHelpersAdmin[modelName];
-    const todoHelperNonAdmin = modelOperationHelpersNonAdmin[modelName];
-
-    const todo = {
-      content: 'Todo',
-      groupField: this.groupName1,
-    };
-    const resultSetName = `create${modelName}`;
-    const createResult = await todoHelperAdmin.create(resultSetName, todo);
-    expect(createResult.data[resultSetName].id).toBeDefined();
-    todo['id'] = createResult.data[resultSetName].id;
-
-    await expect(todoHelperNonAdmin.create(resultSetName, todo)).rejects.toThrow(
-      'GraphQL error: Not Authorized to access createTodoGroupFieldString on type Mutation',
+    await this.testInvalidCRUDL(
+      'TodoGroupFieldString',
+      FieldMaps.TodoGroupFieldStringFieldMap,
+      {},
+      { groupField: this.groupName2 },
+      { groupField: this.groupName1 },
     );
-
-    const todoUpdated = {
-      id: todo['id'],
-      content: 'Todo updated',
-      groupField: this.groupName2,
-    };
-    await expect(todoHelperNonAdmin.update(`update${modelName}`, todoUpdated)).rejects.toThrow(
-      'GraphQL error: Not Authorized to access updateTodoGroupFieldString on type Mutation',
-    );
-
-    await expect(async () => {
-      const getResult = await todoHelperNonAdmin.get({
-        id: todo['id'],
-      });
-    }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoGroupFieldString on type Query"`);
-
-    const listTodosResult = await todoHelperNonAdmin.list();
-    checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
-
-    await expect(
-      todoHelperNonAdmin.delete(`delete${modelName}`, {
-        id: todo['id'],
-      }),
-    ).rejects.toThrow('GraphQL error: Not Authorized to access deleteTodoGroupFieldString on type Mutation');
   };
 
   public testListGroupUserCrudOperations = async (): Promise<void> => {
-    const modelName = 'TodoGroupFieldList';
-    const modelOperationHelpers = createModelOperationHelpers(this.appSyncClients[this.authProvider][this.userName1], this.schema);
-    const todoHelper = modelOperationHelpers[modelName];
-
-    const todo = {
-      content: 'Todo',
-      groupsField: [this.groupName1],
-    };
-    const resultSetName = `create${modelName}`;
-    const createResult = await todoHelper.create(resultSetName, todo);
-    expect(createResult.data[resultSetName].id).toBeDefined();
-    todo['id'] = createResult.data[resultSetName].id;
-    expect(createResult.data[resultSetName].content).toEqual(todo.content);
-    expect(createResult.data[resultSetName].groupsField).toEqual([this.groupName1]);
-
-    const todo1Updated = {
-      id: todo['id'],
-      content: 'Todo updated',
-      groupsField: [this.groupName1],
-    };
-    const updateResult = await todoHelper.update(`update${modelName}`, todo1Updated);
-    checkOperationResult(updateResult, todo1Updated, `update${modelName}`);
-
-    const getResult = await todoHelper.get({
-      id: todo['id'],
-    });
-    checkOperationResult(getResult, todo1Updated, `get${modelName}`);
-
-    const listTodosResult = await todoHelper.list();
-    checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id'], true);
-
-    const deleteResult = await todoHelper.delete(`delete${modelName}`, {
-      id: todo['id'],
-    });
-    checkOperationResult(deleteResult, todo1Updated, `delete${modelName}`);
+    await this.testValidCRUDL(
+      'TodoGroupFieldList',
+      FieldMaps.TodoGroupFieldListFieldMap,
+      {},
+      { groupsField: [this.groupName1] },
+      { groupsField: [this.groupName1] },
+    );
   };
 
   public testNotAllowedGroupUserCannotAccess = async (): Promise<void> => {
-    const modelName = 'TodoGroupFieldList';
-    const modelOperationHelpersAdmin = createModelOperationHelpers(this.appSyncClients[this.authProvider][this.userName1], this.schema);
-    const modelOperationHelpersNonAdmin = createModelOperationHelpers(this.appSyncClients[this.authProvider][this.userName2], this.schema);
-    const todoHelperAdmin = modelOperationHelpersAdmin[modelName];
-    const todoHelperNonAdmin = modelOperationHelpersNonAdmin[modelName];
-
-    const todo = {
-      content: 'Todo',
-      groupsField: [this.groupName1],
-    };
-    const resultSetName = `create${modelName}`;
-    const createResult = await todoHelperAdmin.create(resultSetName, todo);
-    expect(createResult.data[resultSetName].id).toBeDefined();
-    todo['id'] = createResult.data[resultSetName].id;
-
-    const todoUpdated = {
-      id: todo['id'],
-      content: 'Todo updated',
-      groupsField: [this.groupName1, this.groupName2],
-    };
-    await expect(todoHelperNonAdmin.update(`update${modelName}`, todoUpdated)).rejects.toThrow(
-      'GraphQL error: Not Authorized to access updateTodoGroupFieldList on type Mutation',
+    await this.testInvalidCRUDL(
+      'TodoGroupFieldList',
+      FieldMaps.TodoGroupFieldListFieldMap,
+      {},
+      { groupsField: [this.groupName1, this.groupName2] },
+      { groupsField: [this.groupName1] },
     );
-
-    await expect(async () => {
-      const getResult = await todoHelperNonAdmin.get({
-        id: todo['id'],
-      });
-    }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoGroupFieldList on type Query"`);
-
-    const listTodosResult = await todoHelperNonAdmin.list();
-    checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
-
-    await expect(
-      todoHelperNonAdmin.delete(`delete${modelName}`, {
-        id: todo['id'],
-      }),
-    ).rejects.toThrow('GraphQL error: Not Authorized to access deleteTodoGroupFieldList on type Mutation');
   };
 
   public testAdminUserCanGiveAccessToAnotherUserGroup = async (): Promise<void> => {
-    const modelName = 'TodoGroupFieldList';
-    const modelOperationHelpersAdmin = createModelOperationHelpers(this.appSyncClients[this.authProvider][this.userName1], this.schema);
-    const modelOperationHelpersNonAdmin = createModelOperationHelpers(this.appSyncClients[this.authProvider][this.userName2], this.schema);
-    const todoHelperAdmin = modelOperationHelpersAdmin[modelName];
-    const todoHelperNonAdmin = modelOperationHelpersNonAdmin[modelName];
-
-    const todo = {
-      content: 'Todo',
-      groupsField: [this.groupName1, this.groupName2],
-    };
-    const resultSetName = `create${modelName}`;
-    const createResult = await todoHelperAdmin.create(resultSetName, todo);
-    expect(createResult.data[resultSetName].id).toBeDefined();
-    todo['id'] = createResult.data[resultSetName].id;
-
-    const todoUpdated = {
-      id: todo['id'],
-      content: 'Todo updated',
-      groupsField: [this.groupName1, this.groupName2],
-    };
-    const updateResult = await todoHelperNonAdmin.update(`update${modelName}`, todoUpdated);
-    checkOperationResult(updateResult, todoUpdated, `update${modelName}`);
-
-    const getResult = await todoHelperNonAdmin.get({
-      id: todo['id'],
-    });
-    checkOperationResult(getResult, todoUpdated, `get${modelName}`);
-
-    const listTodosResult = await todoHelperNonAdmin.list();
-    checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id'], true);
-
-    const deleteResult = await todoHelperNonAdmin.delete(`delete${modelName}`, {
-      id: todo['id'],
-    });
-    checkOperationResult(deleteResult, todoUpdated, `delete${modelName}`);
+    await this.testValidCRUDL(
+      'TodoGroupFieldList',
+      FieldMaps.TodoGroupFieldListFieldMap,
+      {},
+      { groupsField: [this.groupName1, this.groupName2] },
+      { groupsField: [this.groupName1, this.groupName2] },
+      true,
+    );
   };
 
   public testLoggedInUserCustomOperations = async (): Promise<void> => {
-    const appSyncClient = this.appSyncClients[this.authProvider][this.userName2];
-    const todo = {
-      id: Date.now().toString(),
-      content: 'Todo',
-    };
-    const createTodoCustom = /* GraphQL */ `
-      mutation CreateTodoCustom($id: ID!, $content: String) {
-        addTodoPrivate(id: $id, content: $content) {
-          id
-          content
-        }
-      }
-    `;
-    const createResult = await appSyncClient.mutate({
-      mutation: gql(createTodoCustom),
-      fetchPolicy: 'no-cache',
-      variables: todo,
-    });
-    expect(createResult.data.addTodoPrivate).toBeDefined();
-
-    const getTodoCustom = /* GraphQL */ `
-      query GetTodoCustom($id: ID!) {
-        customGetTodoPrivate(id: $id) {
-          id
-          content
-        }
-      }
-    `;
-    const getResult = await appSyncClient.query({
-      query: gql(getTodoCustom),
-      fetchPolicy: 'no-cache',
-      variables: {
-        id: todo.id,
-      },
-    });
-    expect(getResult.data.customGetTodoPrivate).toHaveLength(1);
-    expect(getResult.data.customGetTodoPrivate[0].id).toEqual(todo.id);
-    expect(getResult.data.customGetTodoPrivate[0].content).toEqual(todo.content);
+    await this.testValidCustomOperations(this.appSyncClient1, 'TodoPrivate');
   };
 
   public testStaticGroupUserCustomOperations = async (): Promise<void> => {
-    const appSyncClient = this.appSyncClients[this.authProvider][this.userName1];
-    const todo = {
-      id: Date.now().toString(),
-      content: 'Todo',
-    };
-    const createTodoCustom = /* GraphQL */ `
-      mutation CreateTodoCustom($id: ID!, $content: String) {
-        addTodoStaticGroup(id: $id, content: $content) {
-          id
-          content
-        }
-      }
-    `;
-    const createResult = await appSyncClient.mutate({
-      mutation: gql(createTodoCustom),
-      fetchPolicy: 'no-cache',
-      variables: todo,
-    });
-    expect(createResult.data.addTodoStaticGroup).toBeDefined();
-
-    const getTodoCustom = /* GraphQL */ `
-      query GetTodoCustom($id: ID!) {
-        customGetTodoStaticGroup(id: $id) {
-          id
-          content
-        }
-      }
-    `;
-    const getResult = await appSyncClient.query({
-      query: gql(getTodoCustom),
-      fetchPolicy: 'no-cache',
-      variables: {
-        id: todo.id,
-      },
-    });
-    expect(getResult.data.customGetTodoStaticGroup).toHaveLength(1);
-    expect(getResult.data.customGetTodoStaticGroup[0].id).toEqual(todo.id);
-    expect(getResult.data.customGetTodoStaticGroup[0].content).toEqual(todo.content);
+    await this.testValidCustomOperations(this.appSyncClient1, 'TodoStaticGroup');
   };
 
   public testNonStaticGroupUserCustomOperations = async (): Promise<void> => {
-    const appSyncClient = this.appSyncClients[this.authProvider][this.userName2];
-    const todo = {
-      id: Date.now().toString(),
-      content: 'Todo',
-    };
-    const createTodoCustom = /* GraphQL */ `
-      mutation CreateTodoCustom($id: ID!, $content: String) {
-        addTodoStaticGroup(id: $id, content: $content) {
-          id
-          content
-        }
-      }
-    `;
-    await expect(
-      appSyncClient.mutate({
-        mutation: gql(createTodoCustom),
-        fetchPolicy: 'no-cache',
-        variables: todo,
-      }),
-    ).rejects.toThrow('GraphQL error: Not Authorized to access addTodoStaticGroup on type Mutation');
-
-    const getTodoCustom = /* GraphQL */ `
-      query GetTodoCustom($id: ID!) {
-        customGetTodoStaticGroup(id: $id) {
-          id
-          content
-        }
-      }
-    `;
-    await expect(
-      appSyncClient.query({
-        query: gql(getTodoCustom),
-        fetchPolicy: 'no-cache',
-        variables: {
-          id: todo.id,
-        },
-      }),
-    ).rejects.toThrow('GraphQL error: Not Authorized to access customGetTodoStaticGroup on type Query');
+    await this.testInvalidCustomOperations(this.appSyncClient2, 'TodoStaticGroup');
   };
 
   public testOwnerRileWithNullGroupsFieldAndMultipleDynamicAuth = async (): Promise<void> => {
-    const modelName = 'TodoOwnerAndGroup';
-    const modelHelper = createModelOperationHelpers(this.appSyncClients[this.authProvider][this.userName1], this.schema)[modelName];
-    const todo = {
-      id: Date.now().toString(),
-      content: 'Todo',
-      groupsField: null,
-      owners: [this.userName1],
-    };
-    const createResult = await modelHelper.create(`create${modelName}`, todo);
-    expect(createResult.data.createTodoOwnerAndGroup).toBeDefined();
-    expect(createResult.data.createTodoOwnerAndGroup.id).toEqual(todo.id);
-    expect(createResult.data.createTodoOwnerAndGroup.content).toEqual(todo.content);
-    expect(createResult.data.createTodoOwnerAndGroup.groupsField).toEqual(null);
-    expect(createResult.data.createTodoOwnerAndGroup.owners).toBeDefined();
-    expect(createResult.data.createTodoOwnerAndGroup.owners).toHaveLength(1);
-
-    const updatedTodo = {
-      id: todo.id,
-      content: 'Todo-Updated',
-    };
-    const updateResult = await modelHelper.update(`update${modelName}`, updatedTodo);
-    expect(updateResult.data.updateTodoOwnerAndGroup).toBeDefined();
-    expect(updateResult.data.updateTodoOwnerAndGroup.id).toEqual(updatedTodo.id);
-    expect(updateResult.data.updateTodoOwnerAndGroup.content).toEqual(updatedTodo.content);
-    expect(updateResult.data.updateTodoOwnerAndGroup.groupsField).toEqual(null);
-    expect(updateResult.data.updateTodoOwnerAndGroup.owners).toBeDefined();
-    expect(updateResult.data.updateTodoOwnerAndGroup.owners).toHaveLength(1);
-
-    const getResult = await modelHelper.get({
-      id: updatedTodo.id,
-    });
-    expect(getResult.data.getTodoOwnerAndGroup).toBeDefined();
-    expect(getResult.data.getTodoOwnerAndGroup.id).toEqual(updatedTodo.id);
-    expect(getResult.data.getTodoOwnerAndGroup.content).toEqual(updatedTodo.content);
-    expect(getResult.data.getTodoOwnerAndGroup.groupsField).toEqual(null);
-    expect(getResult.data.getTodoOwnerAndGroup.owners).toBeDefined();
-    expect(getResult.data.getTodoOwnerAndGroup.owners).toHaveLength(1);
+    await this.testValidCRUDL(
+      'TodoOwnerAndGroup',
+      FieldMaps.TodoOwnerAndGroupFieldMap,
+      {},
+      {},
+      {
+        id: Date.now().toString(),
+        content: 'Todo',
+        groupsField: null,
+        owners: [this.userName1],
+      },
+    );
   };
 }
