@@ -165,4 +165,24 @@ describe('log config', () => {
       RetentionInDays: RetentionDays.TWO_WEEKS,
     });
   });
+
+  it('should not create a log config when logging is not specified', () => {
+    const stack = new Stack();
+
+    const api = new AmplifyGraphqlApi(stack, 'api', {
+      apiName: 'MyApi',
+      definition: AmplifyGraphqlDefinition.fromString(`
+        type Query {
+          dummy: String
+        }
+      `),
+      authorizationModes: {
+        defaultAuthorizationMode: 'API_KEY',
+        apiKeyConfig: { expires: Duration.days(7) },
+      },
+    });
+
+    const createdLogConfig = api.resources.cfnResources.cfnGraphqlApi.logConfig as CfnGraphQLApi.LogConfigProperty;
+    expect(createdLogConfig).toBeUndefined();
+  });
 });

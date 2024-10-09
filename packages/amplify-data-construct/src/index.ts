@@ -54,6 +54,8 @@ import {
   TranslationBehavior,
   UserPoolAuthorizationConfig,
   VpcConfig,
+  FieldLogLevel,
+  RetentionDays,
 } from '@aws-amplify/graphql-api-construct';
 
 export {
@@ -112,4 +114,6 @@ export {
   TranslationBehavior,
   UserPoolAuthorizationConfig,
   VpcConfig,
+  FieldLogLevel,
+  RetentionDays,
 };

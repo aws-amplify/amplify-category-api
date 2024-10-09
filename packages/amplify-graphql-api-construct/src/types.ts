@@ -12,14 +12,19 @@ import {
   Code,
   FunctionRuntime,
   LogConfig,
+  FieldLogLevel,
 } from 'aws-cdk-lib/aws-appsync';
 import { CfnTable, ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IRole, CfnRole } from 'aws-cdk-lib/aws-iam';
 import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { IFunction, CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { AmplifyDynamoDbTableWrapper } from './amplify-dynamodb-table-wrapper';
 import { CustomSqlDataSourceStrategy, ModelDataSourceStrategy } from './model-datasource-strategy-types';
+
+// Reimporting and reexporting to reduce the number of imports required to use logConfig. 
+export { FieldLogLevel, RetentionDays };
 
 /**
  * Configuration for IAM Authorization on the Graphql Api.
@@ -765,15 +770,47 @@ export interface AmplifyGraphqlApiProps {
   readonly dataStoreConfiguration?: DataStoreConfiguration;
 
   /**
-   * Specifies the logging configuration when writing GraphQL operations and tracing to Amazon CloudWatch for an AWS AppSync
-   * GraphQL API.
-   *
-   * `logging: true` or `logging: {}` enables logging with default settings.
-   *
-   * Default values are:
-   * - excludeVerboseContent: true
-   * - fieldLogLevel: NONE
-   * - retention: ONE_WEEK
+   * Specifies the logging configuration when writing GraphQL operations and tracing to Amazon CloudWatch for an AWS AppSync GraphQL API.
+   * 
+   * ### fieldLogLevel
+   * The field logging level. Values can be `NONE`, `ERROR`, `INFO`, `DEBUG`, or `ALL`.
+   * 
+   * - **NONE**: No field-level logs are captured.
+   * - **ERROR**: Logs the following information only for the fields that are in the error category:
+   *   - The error section in the server response.
+   *   - Field-level errors.
+   *   - The generated request/response functions that got resolved for error fields.
+   * - **INFO**: Logs the following information only for the fields that are in the info and error categories:
+   *   - Info-level messages.
+   *   - The user messages sent through `$util.log.info` and `console.log`.
+   *   - Field-level tracing and mapping logs are not shown.
+   * - **DEBUG**: Logs the following information only for the fields that are in the debug, info, and error categories:
+   *   - Debug-level messages.
+   *   - The user messages sent through `$util.log.info`, `$util.log.debug`, `console.log`, and `console.debug`.
+   *   - Field-level tracing and mapping logs are not shown.
+   * - **ALL**: The following information is logged for all fields in the query:
+   *   - Field-level tracing information.
+   *   - The generated request/response functions that were resolved for each field.
+   * 
+   * ### excludeVerboseContent
+   * Set to `true` to exclude information such as GraphQL Query, headers, context, 
+   * and evaluated mapping templates, regardless of logging level.
+   * 
+   * ### retention
+   * The number of days log events are kept in CloudWatch Logs.
+   * 
+   * ### Defaults
+   * If logging is set to `true` or an empty object, default settings will be applied:
+   * - `excludeVerboseContent`: `true`
+   *   - Verbose content includes GraphQL Query, Request Headers, and Response Headers.
+   * - `fieldLogLevel`: `NONE`
+   * - `retention`: `ONE_WEEK`
+   * 
+   * **WARNING**: Verbose logging will log the full incoming query including user parameters. 
+   * Sensitive information may be exposed in CloudWatch logs. Use with caution.
+   * 
+   * For more information, refer to https://docs.aws.amazon.com/appsync/latest/APIReference/API_LogConfig.html.
+   * For information on retention, refer to https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_logs.RetentionDays.html.
    */
   readonly logging?: true | LogConfig;
 }

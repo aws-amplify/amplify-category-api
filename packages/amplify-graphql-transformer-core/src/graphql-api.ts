@@ -18,9 +18,8 @@ import {
 } from 'aws-cdk-lib/aws-appsync';
 import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
-import { ArnFormat, CfnResource, Duration, IResolvable, Stack } from 'aws-cdk-lib';
+import { ArnFormat, CfnResource, Duration, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { ILogGroup, LogGroup, LogRetention, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { TransformerSchema } from './cdk-compat/schema-asset';
 import { DefaultTransformHost } from './transform-host';
 import { setResourceName } from './utils';
@@ -144,11 +143,6 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
    */
   public readonly visibility: Visibility;
 
-  /**
-   * The CloudWatch Log Group for this API
-   */
-  public readonly logGroup?: ILogGroup;
-
   private schemaResource: CfnGraphQLSchema;
 
   private api: CfnGraphQLApi;
@@ -214,21 +208,6 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       this.host = new DefaultTransformHost({
         api: this,
       });
-    }
-
-    // set up log group for log retention
-    if (props.logging) {
-      // Default retention is ONE_WEEK
-      const retention =
-        typeof props.logging === 'object' && 'retention' in props.logging
-          ? props.logging.retention ?? RetentionDays.ONE_WEEK
-          : RetentionDays.ONE_WEEK;
-
-      const logRetention = new LogRetention(this, 'LogRetention', {
-        logGroupName: `/aws/appsync/apis/${this.apiId}`,
-        retention: retention,
-      });
-      this.logGroup = LogGroup.fromLogGroupArn(this, 'LogGroup', logRetention.logGroupArn);
     }
   }
 
@@ -311,7 +290,9 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   }
 
   /**
-   * Set up the log configuration for the GraphQL API
+   * Set up the log configuration for the GraphQL API.
+   * 
+   * If logging is set to `true` or an empty object, default settings will be used.
    *
    * Default values are:
    * - excludeVerboseContent: true
@@ -337,7 +318,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
       managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs')],
     });
-    setResourceName(apiLogsRole, { name: 'ApiLogsRole', setOnDefaultChild: true });
+    setResourceName(apiLogsRole, { name: 'ApiLogsRole', setOnDefaultChild: true });  
 
     return {
       cloudWatchLogsRoleArn: apiLogsRole.roleArn,
