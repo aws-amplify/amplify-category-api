@@ -55,7 +55,7 @@ const generateResolver = (fileName: string, values: Record<string, string>): str
  */
 const getInferenceConfigResolverDefinition = (inferenceConfiguration?: InferenceConfiguration): string => {
   return inferenceConfiguration && Object.keys(inferenceConfiguration).length > 0
-    ? `{ inferenceConfig: ${JSON.stringify(inferenceConfiguration)} },`
+    ? `{ inferenceConfig: ${JSON.stringify(inferenceConfiguration)} }`
     : 'undefined';
 };
 
