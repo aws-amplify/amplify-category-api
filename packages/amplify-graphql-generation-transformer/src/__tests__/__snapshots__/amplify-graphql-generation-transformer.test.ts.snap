@@ -519,7 +519,7 @@ export function request(ctx) {
   const toolConfig = {"tools":[{"toolSpec":{"name":"responseType","description":"Generate a response type for the given field.","inputSchema":{"json":{"type":"object","properties":{"value":{"type":"string","description":"A UTF-8 character sequence."}},"required":["value"]}}}}],"toolChoice":{"tool":{"name":"responseType"}}};
   const prompt = "Generate a string based on the description.";
   const args = JSON.stringify(ctx.args);
-  const inferenceConfig = { inferenceConfig: {"maxTokens":100,"temperature":0.7,"topP":0.9} },;
+  const inferenceConfig = { inferenceConfig: {"maxTokens":100,"temperature":0.7,"topP":0.9} };
 
   return {
     resourcePath: '/model/anthropic.claude-3-haiku-20240307-v1:0/converse',
