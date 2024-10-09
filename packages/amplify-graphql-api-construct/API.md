@@ -49,6 +49,7 @@ import { RdsDataSource } from 'aws-cdk-lib/aws-appsync';
 import { RemovalPolicy } from 'aws-cdk-lib';
 import { Resolver } from 'aws-cdk-lib/aws-appsync';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { Stack } from 'aws-cdk-lib';
 import { StreamViewType } from 'aws-cdk-lib/aws-dynamodb';
 
 // @public
@@ -105,6 +106,7 @@ export class AmplifyGraphqlApi extends Construct {
     readonly graphqlUrl: string;
     readonly realtimeUrl: string;
     readonly resources: AmplifyGraphqlApiResources;
+    readonly stack: Stack;
 }
 
 // @public

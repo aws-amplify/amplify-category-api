@@ -294,7 +294,7 @@ function createResolver(stack: cdk.Stack, dataSourceId: string, context: Transfo
         functionRequestTemplateString,
         `${config.resolverTypeName}.${config.resolverFieldName}.DataResolver.req.vtl`,
       );
-  const appsyncFunction = context.api.host.addAppSyncFunction(
+  const appsyncFunction = context.api.host.addAppSyncVtlRuntimeFunction(
     functionId,
     functionRequestMappingTemplate,
     MappingTemplate.s3MappingTemplateFromString(
@@ -315,7 +315,7 @@ function createResolver(stack: cdk.Stack, dataSourceId: string, context: Transfo
     stack,
   );
 
-  return context.api.host.addResolver(
+  return context.api.host.addVtlRuntimeResolver(
     config.resolverTypeName,
     config.resolverFieldName,
     MappingTemplate.inlineTemplateFromString(printBlock('Stash resolver specific context.')(compoundExpression(requestTemplate))),

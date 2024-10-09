@@ -79,7 +79,7 @@ export const constructTransformerChain = (options?: TransformerFactoryArgs): Tra
     hasOneTransformer,
     new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
     belongsToTransformer,
-    new ConversationTransformer(modelTransformer, hasManyTransformer, belongsToTransformer, authTransformer),
+    new ConversationTransformer(modelTransformer, hasManyTransformer, belongsToTransformer, authTransformer, options?.functionNameMap),
     new GenerationTransformer(),
     new DefaultValueTransformer(),
     authTransformer,

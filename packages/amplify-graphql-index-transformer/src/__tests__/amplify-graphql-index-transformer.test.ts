@@ -1398,7 +1398,7 @@ describe('Index query resolver creation', () => {
 
   const modelName = 'Test';
   const mockResolver = {
-    addToSlot: jest.fn(),
+    addVtlFunctionToSlot: jest.fn(),
     setScope: jest.fn(),
   };
   const mockModelFieldMap = {

@@ -53,9 +53,9 @@ test('generation route scalar type', () => {
   expect(resolverCode).toBeDefined();
   expect(resolverCode).toMatchSnapshot();
 
-  const resolverFnCode = getResolverFnResource(queryName, out.rootStack.Resources)['Properties']['Code'];
-  expect(resolverFnCode).toBeDefined();
-  expect(resolverFnCode).toMatchSnapshot();
+  const resolvers = out.resolvers;
+  expect(resolvers).toBeDefined();
+  expect(resolvers).toMatchSnapshot();
 
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -92,9 +92,9 @@ test('generation route custom query', () => {
   expect(resolverCode).toBeDefined();
   expect(resolverCode).toMatchSnapshot();
 
-  const resolverFnCode = getResolverFnResource(queryName, out.rootStack.Resources)['Properties']['Code'];
-  expect(resolverFnCode).toBeDefined();
-  expect(resolverFnCode).toMatchSnapshot();
+  const resolvers = out.resolvers;
+  expect(resolvers).toBeDefined();
+  expect(resolvers).toMatchSnapshot();
 
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -124,9 +124,9 @@ test('generation route model type with null timestamps', () => {
   expect(resolverCode).toBeDefined();
   expect(resolverCode).toMatchSnapshot();
 
-  const resolverFnCode = getResolverFnResource(queryName, out.rootStack.Resources)['Properties']['Code'];
-  expect(resolverFnCode).toBeDefined();
-  expect(resolverFnCode).toMatchSnapshot();
+  const resolverFn = out.resolvers['makeTodo-invoke-bedrock-fn'];
+  expect(resolverFn).toBeDefined();
+  expect(resolverFn).toMatchSnapshot();
 
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -226,9 +226,37 @@ test('generation route all scalar types', () => {
   expect(resolverCode).toBeDefined();
   expect(resolverCode).toMatchSnapshot();
 
-  const resolverFnCode = getResolverFnResource(queryName, out.rootStack.Resources)['Properties']['Code'];
-  expect(resolverFnCode).toBeDefined();
-  expect(resolverFnCode).toMatchSnapshot();
+  const resolvers = out.resolvers;
+  expect(resolvers).toBeDefined();
+  expect(resolvers).toMatchSnapshot();
+
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+});
+
+test('generation route with valid inference configuration', () => {
+  const queryName = 'generateWithConfig';
+  const inputSchema = `
+    type Query {
+        ${queryName}(description: String!): String
+        @generation(
+          aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
+          systemPrompt: "Generate a string based on the description.",
+          inferenceConfiguration: {
+            maxTokens: 100,
+            temperature: 0.7,
+            topP: 0.9
+          }
+        )
+    }
+  `;
+
+  const out = transform(inputSchema);
+  expect(out).toBeDefined();
+
+  const resolvers = out.resolvers;
+  expect(resolvers).toBeDefined();
+  expect(resolvers).toMatchSnapshot();
 
   const schema = parse(out.schema);
   validateModelSchema(schema);
@@ -292,22 +320,6 @@ describe('generation route invalid inference configuration', () => {
 const getResolverResource = (queryName: string, resources?: Record<string, any>): Record<string, any> => {
   const resolverName = `Query${queryName}Resolver`;
   return resources?.[resolverName];
-};
-
-const getResolverFnResource = (queryName: string, resources?: Record<string, any>): Record<string, any> => {
-  const capitalizedQueryName = queryName.charAt(0).toUpperCase() + queryName.slice(1);
-  const resourcePrefix = `Query${capitalizedQueryName}DataResolverFn`;
-  if (!resources) {
-    fail('No resources found.');
-  }
-  const resource = Object.entries(resources).find(([key, _]) => {
-    return key.startsWith(resourcePrefix);
-  })?.[1];
-
-  if (!resource) {
-    fail(`Resource named with prefix ${resourcePrefix} not found.`);
-  }
-  return resource;
 };
 
 const defaultAuthConfig: AppSyncAuthConfiguration = {

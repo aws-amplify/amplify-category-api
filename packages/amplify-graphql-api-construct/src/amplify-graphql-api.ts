@@ -88,6 +88,11 @@ export class AmplifyGraphqlApi extends Construct {
   public readonly resources: AmplifyGraphqlApiResources;
 
   /**
+   * Reference to parent stack of data construct
+   */
+  public readonly stack: Stack;
+
+  /**
    * Generated assets required for codegen steps. Persisted in order to render as part of the output strategy.
    */
   private readonly codegenAssets: CodegenAssets;
@@ -137,6 +142,7 @@ export class AmplifyGraphqlApi extends Construct {
    */
   constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps) {
     super(scope, id);
+    this.stack = Stack.of(scope);
 
     validateNoOtherAmplifyGraphqlApiInStack(this);
 

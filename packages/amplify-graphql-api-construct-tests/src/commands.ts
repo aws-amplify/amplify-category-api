@@ -68,7 +68,7 @@ export type InitCDKProjectProps = {
  * @returns a promise which resolves to the stack name
  */
 export const initCDKProject = async (cwd: string, templatePath: string, props?: InitCDKProjectProps): Promise<string> => {
-  const { cdkVersion = '2.152.0', additionalDependencies = [] } = props ?? {};
+  const { cdkVersion = '2.158.0', additionalDependencies = [] } = props ?? {};
 
   await spawn(getNpxPath(), ['cdk', 'init', 'app', '--language', 'typescript'], {
     cwd,
@@ -122,9 +122,6 @@ export const cdkDeploy = async (cwd: string, option: string, props?: CdkDeployPr
     env: { npm_config_registry: 'https://registry.npmjs.org/' },
     noOutputTimeout,
   };
-  // This prevents us from maintaining a separate CDK account bootstrap process as we add support for new accounts, regions.
-  // Checks and succeeds early (a no-op) if the account-region combination is already bootstrapped.
-  await spawn(getNpxPath(), ['cdk', 'bootstrap'], commandOptions).runAsync();
 
   await spawn(
     getNpxPath(),

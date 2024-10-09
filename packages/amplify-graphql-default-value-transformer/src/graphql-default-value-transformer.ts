@@ -4,6 +4,7 @@ import {
   InputObjectDefinitionWrapper,
   InvalidDirectiveError,
   isDynamoDbModel,
+  isPostgresModel,
   MappingTemplate,
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
@@ -22,7 +23,6 @@ import {
   Kind,
   ObjectTypeDefinitionNode,
   StringValueNode,
-  TypeNode,
 } from 'graphql';
 import { methodCall, printBlock, qref, raw, ref, str } from 'graphql-mapping-template';
 import { getBaseType, isEnum, isListType, isScalarOrEnum, ModelResourceIDs, toCamelCase } from 'graphql-transformer-common';
@@ -31,16 +31,24 @@ import { TypeValidators } from './validators';
 
 const nonStringTypes = ['Int', 'Float', 'Boolean', 'AWSTimestamp', 'AWSJSON'];
 
-const validateFieldType = (ctx: TransformerSchemaVisitStepContextProvider, type: TypeNode): void => {
+const validateFieldType = (ctx: TransformerSchemaVisitStepContextProvider, config: DefaultValueDirectiveConfiguration): void => {
+  const type = config.field.type;
+  const argc = config.directive.arguments?.length ?? 0;
   const enums = ctx.output.getTypeDefinitionsOfKind(Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[];
   if (isListType(type) || !isScalarOrEnum(type, enums)) {
     throw new InvalidDirectiveError('The @default directive may only be added to scalar or enum field types.');
   }
+  if (isPostgresModel(ctx, config.object.name.value) && argc === 0 && getBaseType(type) !== 'Int') {
+    throw new InvalidDirectiveError('The @default directive requires a value property on non-Int types.');
+  }
 };
 
-const validateDirectiveArguments = (directive: DirectiveNode): void => {
-  if (directive.arguments!.length === 0) throw new InvalidDirectiveError('The @default directive must have a value property');
-  if (directive.arguments!.length > 1) throw new InvalidDirectiveError('The @default directive only takes a value property');
+const validateDirectiveArguments = (ctx: TransformerSchemaVisitStepContextProvider, config: DefaultValueDirectiveConfiguration): void => {
+  const argc = config.directive.arguments?.length ?? 0;
+  const isPostgres = isPostgresModel(ctx, config.object.name.value);
+  if (!isPostgres && argc === 0)
+    throw new InvalidDirectiveError('The @default directive requires a value property on non-Postgres datasources.');
+  if (argc > 1) throw new InvalidDirectiveError('The @default directive only takes a value property');
 };
 
 const validateModelDirective = (config: DefaultValueDirectiveConfiguration): void => {
@@ -74,8 +82,8 @@ const validateDefaultValueType = (ctx: TransformerSchemaVisitStepContextProvider
 
 const validate = (ctx: TransformerSchemaVisitStepContextProvider, config: DefaultValueDirectiveConfiguration): void => {
   validateModelDirective(config);
-  validateFieldType(ctx, config.field.type);
-  validateDirectiveArguments(config.directive);
+  validateFieldType(ctx, config);
+  validateDirectiveArguments(ctx, config);
 
   // Validate the default values only for the DynamoDB datasource.
   // For SQL, the database determines and sets the default value. We will not validate the value in transformers.
@@ -123,6 +131,10 @@ export class DefaultValueTransformer extends TransformerPluginBase {
         const input = InputObjectDefinitionWrapper.fromObject(name, config.object, ctx.inputDocument);
         const fieldWrapper = input.fields.find((f) => f.name === config.field.name.value);
         fieldWrapper?.makeNullable();
+
+        if (isPostgresModel(ctx, typeName)) {
+          ctx.output.updateInput(input.serialize());
+        }
       }
     }
   };
@@ -179,7 +191,7 @@ export class DefaultValueTransformer extends TransformerPluginBase {
 
   private addSnippetToResolverSlot = (resolver: TransformerResolverProvider, snippets: string[]): void => {
     const res = resolver as any;
-    res.addToSlot(
+    res.addVtlFunctionToSlot(
       'init',
       MappingTemplate.s3MappingTemplateFromString(
         // eslint-disable-next-line prefer-template

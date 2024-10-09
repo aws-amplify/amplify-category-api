@@ -1,44 +1,65 @@
 import { TransformerContextProvider, MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-transformer';
-import { dedent } from 'ts-dedent';
-import { JSResolverFunctionProvider } from './js-resolver-function-provider';
+import fs from 'fs';
+import path from 'path';
+import dedent from 'ts-dedent';
+import { toUpper } from 'graphql-transformer-common';
+import pluralize from 'pluralize';
 
 /**
  * Creates a mapping template for invoking a Lambda function in the context of a GraphQL conversation.
  *
  * @param {ConversationDirectiveConfiguration} config - The configuration for the conversation directive.
  * @param {TransformerContextProvider} ctx - The transformer context provider.
- * @returns {JSResolverFunctionProvider} An object containing request and response mapping functions.
+ * @returns {MappingTemplateProvider} An object containing request and response mapping functions.
  */
-export const invokeLambdaMappingTemplate = (
-  config: ConversationDirectiveConfiguration,
-  ctx: TransformerContextProvider,
-): JSResolverFunctionProvider => {
-  const req = createInvokeLambdaRequestFunction(config, ctx);
-  const res = createInvokeLambdaResponseFunction(config);
-  return { req, res };
+export const invokeLambdaMappingTemplate = (config: ConversationDirectiveConfiguration): MappingTemplateProvider => {
+  const { TOOL_DEFINITIONS_LINE, TOOLS_CONFIGURATION_LINE } = generateToolLines(config);
+  const SELECTION_SET = selectionSet;
+  const MODEL_CONFIGURATION_LINE = generateModelConfigurationLine(config);
+  const RESPONSE_MUTATION_NAME = config.responseMutationName;
+  const RESPONSE_MUTATION_INPUT_TYPE_NAME = config.responseMutationInputTypeName;
+  const MESSAGE_MODEL_NAME = config.messageModel.messageModel.name.value;
+
+  // TODO: Create and add these values to `ConversationDirectiveConfiguration` in an earlier step and
+  // access them here.
+  const GET_QUERY_NAME = `getConversationMessage${toUpper(config.field.name.value)}`;
+  const GET_QUERY_INPUT_TYPE_NAME = 'ID';
+  const LIST_QUERY_NAME = `listConversationMessage${toUpper(pluralize(config.field.name.value))}`;
+  const LIST_QUERY_INPUT_TYPE_NAME = `ModelConversationMessage${toUpper(config.field.name.value)}FilterInput`;
+  const LIST_QUERY_LIMIT = 'undefined';
+
+  const substitutions = {
+    TOOL_DEFINITIONS_LINE,
+    TOOLS_CONFIGURATION_LINE,
+    SELECTION_SET,
+    MODEL_CONFIGURATION_LINE,
+    RESPONSE_MUTATION_NAME,
+    RESPONSE_MUTATION_INPUT_TYPE_NAME,
+    MESSAGE_MODEL_NAME,
+    GET_QUERY_NAME,
+    GET_QUERY_INPUT_TYPE_NAME,
+    LIST_QUERY_NAME,
+    LIST_QUERY_INPUT_TYPE_NAME,
+    LIST_QUERY_LIMIT,
+  };
+
+  let resolver = fs.readFileSync(path.join(__dirname, 'invoke-lambda-resolver-fn.template.js'), 'utf8');
+  Object.entries(substitutions).forEach(([key, value]) => {
+    const replaced = resolver.replace(new RegExp(`\\[\\[${key}\\]\\]`, 'g'), value);
+    resolver = replaced;
+  });
+  const templateName = `Mutation.${config.field.name.value}.invoke-lambda.js`;
+
+  return MappingTemplate.s3MappingFunctionCodeFromString(resolver, templateName);
 };
 
-/**
- * Creates a request function for invoking a Lambda function in the context of a GraphQL conversation.
- * This function prepares the necessary data and configuration for the Lambda invocation.
- *
- * @param {ConversationDirectiveConfiguration} config - The configuration for the conversation directive.
- * @param {TransformerContextProvider} ctx - The transformer context provider.
- * @returns {MappingTemplateProvider} A function that generates the request mapping template.
- */
-const createInvokeLambdaRequestFunction = (
-  config: ConversationDirectiveConfiguration,
-  ctx: TransformerContextProvider,
-): MappingTemplateProvider => {
-  const { responseMutationInputTypeName, responseMutationName } = config;
+const generateToolLines = (config: ConversationDirectiveConfiguration) => {
   const toolDefinitions = JSON.stringify(config.toolSpec);
-  const toolDefinitionsLine = toolDefinitions ? `const toolDefinitions = ${toolDefinitions};` : '';
-  const modelConfigurationLine = generateModelConfigurationLine(config);
-  const graphqlEndpoint = ctx.api.graphqlUrl;
+  const TOOL_DEFINITIONS_LINE = toolDefinitions ? `const toolDefinitions = ${toolDefinitions};` : '';
 
-  const toolsConfigurationLine = toolDefinitions
+  const TOOLS_CONFIGURATION_LINE = toolDefinitions
     ? dedent`const dataTools = toolDefinitions.tools;
      const toolsConfiguration = {
       dataTools,
@@ -48,70 +69,7 @@ const createInvokeLambdaRequestFunction = (
       clientTools
     };`;
 
-  const requestFunctionString = `
-  import { util } from '@aws-appsync/utils';
-
-  export function request(ctx) {
-    const { args, identity, request, prev } = ctx;
-    ${toolDefinitionsLine}
-    const selectionSet = '${selectionSet}';
-    const graphqlApiEndpoint = '${graphqlEndpoint}';
-
-    const messages = prev.result.items;
-    const responseMutation = {
-      name: '${responseMutationName}',
-      inputTypeName: '${responseMutationInputTypeName}',
-      selectionSet,
-    };
-    const currentMessageId = ctx.stash.defaultValues.id;
-    ${modelConfigurationLine}
-
-    const clientTools = args.toolConfiguration?.tools?.map((tool) => { return { ...tool.toolSpec }});
-    ${toolsConfigurationLine}
-
-    const authHeader = request.headers['authorization'];
-    const payload = {
-      conversationId: args.conversationId,
-      currentMessageId,
-      responseMutation,
-      graphqlApiEndpoint,
-      modelConfiguration,
-      request: { headers: { authorization: authHeader }},
-      messages,
-      toolsConfiguration,
-    };
-
-    return {
-      operation: 'Invoke',
-      payload,
-      invocationType: 'Event'
-    };
-  }`;
-
-  return MappingTemplate.inlineTemplateFromString(dedent(requestFunctionString));
-};
-
-const createInvokeLambdaResponseFunction = (config: ConversationDirectiveConfiguration): MappingTemplateProvider => {
-  const responseFunctionString = `
-  export function response(ctx) {
-    let success = true;
-    if (ctx.error) {
-      util.appendError(ctx.error.message, ctx.error.type);
-      success = false;
-    }
-    const response = {
-        __typename: '${config.messageModel.messageModel.name.value}',
-        id: ctx.stash.defaultValues.id,
-        conversationId: ctx.args.conversationId,
-        role: 'user',
-        content: ctx.args.content,
-        createdAt: ctx.stash.defaultValues.createdAt,
-        updatedAt: ctx.stash.defaultValues.updatedAt,
-    };
-    return response;
-  }`;
-
-  return MappingTemplate.inlineTemplateFromString(dedent(responseFunctionString));
+  return { TOOL_DEFINITIONS_LINE, TOOLS_CONFIGURATION_LINE };
 };
 
 /**
