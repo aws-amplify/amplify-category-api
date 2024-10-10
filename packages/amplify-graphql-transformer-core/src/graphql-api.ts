@@ -364,10 +364,9 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
     });
 
-    // Attach the policy to the role
-    // It's important to use this exact method, not any other "functionally equivalent" method.
+    // Attach the policy to the role using this method to avoid circular dependency issue.
     apiLogsPolicy.attachToRole(apiLogsRole);
-    
+
     setResourceName(apiLogsRole, { name: 'ApiLogsRole', setOnDefaultChild: true });
 
     return {
