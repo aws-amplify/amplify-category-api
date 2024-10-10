@@ -23,6 +23,7 @@ import { CustomConflictResolutionStrategy } from '@aws-amplify/graphql-api-const
 import { CustomSqlDataSourceStrategy } from '@aws-amplify/graphql-api-construct';
 import { DataStoreConfiguration } from '@aws-amplify/graphql-api-construct';
 import { DefaultDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-api-construct';
+import { FieldLogLevel } from '@aws-amplify/graphql-api-construct';
 import { FunctionSlot } from '@aws-amplify/graphql-api-construct';
 import { FunctionSlotBase } from '@aws-amplify/graphql-api-construct';
 import { FunctionSlotOverride } from '@aws-amplify/graphql-api-construct';
@@ -32,6 +33,8 @@ import { IBackendOutputEntry } from '@aws-amplify/graphql-api-construct';
 import { IBackendOutputStorageStrategy } from '@aws-amplify/graphql-api-construct';
 import { IdentityPoolAuthorizationConfig } from '@aws-amplify/graphql-api-construct';
 import { LambdaAuthorizationConfig } from '@aws-amplify/graphql-api-construct';
+import { LogConfig } from '@aws-amplify/graphql-api-construct';
+import { Logging } from '@aws-amplify/graphql-api-construct';
 import { ModelDataSourceStrategy } from '@aws-amplify/graphql-api-construct';
 import { ModelDataSourceStrategyDbType } from '@aws-amplify/graphql-api-construct';
 import { ModelDataSourceStrategySqlDbType } from '@aws-amplify/graphql-api-construct';
@@ -42,6 +45,7 @@ import { PartialTranslationBehavior } from '@aws-amplify/graphql-api-construct';
 import { ProvisionedConcurrencyConfig } from '@aws-amplify/graphql-api-construct';
 import { ProvisionedThroughput } from '@aws-amplify/graphql-api-construct';
 import { QueryFunctionSlot } from '@aws-amplify/graphql-api-construct';
+import { RetentionDays } from '@aws-amplify/graphql-api-construct';
 import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-api-construct';
 import { SQLLambdaModelDataSourceStrategyFactory } from '@aws-amplify/graphql-api-construct';
 import { SqlModelDataSourceDbConnectionConfig } from '@aws-amplify/graphql-api-construct';
@@ -98,6 +102,8 @@ export { DataStoreConfiguration }
 
 export { DefaultDynamoDbModelDataSourceStrategy }
 
+export { FieldLogLevel }
+
 export { FunctionSlot }
 
 export { FunctionSlotBase }
@@ -115,6 +121,10 @@ export { IBackendOutputStorageStrategy }
 export { IdentityPoolAuthorizationConfig }
 
 export { LambdaAuthorizationConfig }
+
+export { LogConfig }
+
+export { Logging }
 
 export { ModelDataSourceStrategy }
 
@@ -135,6 +145,8 @@ export { ProvisionedConcurrencyConfig }
 export { ProvisionedThroughput }
 
 export { QueryFunctionSlot }
+
+export { RetentionDays }
 
 export { SQLLambdaModelDataSourceStrategy }
 

@@ -19,6 +19,7 @@ import {
   TransformParameterProvider,
   TransformParameters,
   RDSSNSTopicMapping,
+  LogConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode } from 'graphql';
 import { Construct } from 'constructs';
@@ -65,6 +66,7 @@ export interface TransformerContextConstructorOptions
   stackMapping: Record<string, string>;
   synthParameters: SynthParameters;
   transformParameters: TransformParameters;
+  logging?: true | LogConfig;
 }
 
 export class TransformerContext implements TransformerContextProvider {
@@ -104,6 +106,8 @@ export class TransformerContext implements TransformerContextProvider {
 
   public readonly inputDocument: DocumentNode;
 
+  public readonly logging?: true | LogConfig;
+
   constructor(options: TransformerContextConstructorOptions) {
     const {
       assetProvider,
@@ -120,6 +124,7 @@ export class TransformerContext implements TransformerContextProvider {
       stackMapping,
       synthParameters,
       transformParameters,
+      logging,
     } = options;
     this.authConfig = authConfig;
     this.sqlDirectiveDataSourceStrategies = sqlDirectiveDataSourceStrategies ?? [];
@@ -138,6 +143,7 @@ export class TransformerContext implements TransformerContextProvider {
     this.assetProvider = assetProvider;
     this.synthParameters = synthParameters;
     this.transformParameters = transformParameters;
+    this.logging = logging;
   }
 
   /**
