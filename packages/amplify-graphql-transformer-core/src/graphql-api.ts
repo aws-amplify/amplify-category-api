@@ -15,7 +15,17 @@ import {
   Visibility,
   IamResource,
 } from 'aws-cdk-lib/aws-appsync';
-import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { 
+  Effect, 
+  Grant, 
+  IGrantable, 
+  ManagedPolicy, 
+  Policy, 
+  PolicyDocument, 
+  PolicyStatement, 
+  Role, 
+  ServicePrincipal 
+} from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import { ArnFormat, CfnResource, Duration, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
@@ -174,7 +184,6 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     this.api = new CfnGraphQLApi(this, 'Resource', {
       name: props.name,
       authenticationType: defaultMode.authorizationType,
-      logConfig: this.setupLogConfig(props.logging),
       openIdConnectConfig: this.setupOpenIdConnectConfig(defaultMode.openIdConnectConfig),
       userPoolConfig: this.setupUserPoolConfig(defaultMode.userPoolConfig),
       lambdaAuthorizerConfig: this.setupLambdaConfig(defaultMode.lambdaAuthorizerConfig),
@@ -228,6 +237,8 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
         retention: retention,
       });
       this.logGroup = LogGroup.fromLogGroupArn(this, 'LogGroup', logRetention.logGroupArn);
+
+      this.api.logConfig = this.setupLogConfig(props.logging);
     }
   }
 
@@ -325,10 +336,37 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
         ? defaultFieldLogLevel
         : logging.fieldLogLevel ?? defaultFieldLogLevel;
 
+    const region = Stack.of(this).region;
+    const accountId = Stack.of(this).account;
+    const logGroupResourceArn = `arn:aws:logs:${region}:${accountId}:log-group:/aws/appsync/apis/${this.apiId}:*`;
+
+    // Create the inline policy statements with the exact log group
+    const policyStatements = [
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['logs:CreateLogGroup'],
+        resources: [`arn:aws:logs:${region}:${accountId}:*`],
+      }),
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+        resources: [logGroupResourceArn],
+      }),
+    ];
+
+    // Create a standalone policy. This allows us to break the circular reference due to some CFN magic.
+    const apiLogsPolicy = new Policy(this, 'ApiLogsPolicy', {
+      statements: policyStatements,
+    });
+  
+    // Create the role
     const apiLogsRole = new Role(this, 'ApiLogsRole', {
       assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
-      managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs')],
     });
+
+    // Attach the policy to the role using this method to avoid circular dependency issue.
+    apiLogsPolicy.attachToRole(apiLogsRole);
+
     setResourceName(apiLogsRole, { name: 'ApiLogsRole', setOnDefaultChild: true });
 
     return {

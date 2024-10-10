@@ -4029,7 +4029,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 961
+        "line": 957
       },
       "name": "AddFunctionProps",
       "properties": [
@@ -4042,7 +4042,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 965
+            "line": 961
           },
           "name": "dataSource",
           "type": {
@@ -4058,7 +4058,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 970
+            "line": 966
           },
           "name": "name",
           "type": {
@@ -4075,7 +4075,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 1005
+            "line": 1001
           },
           "name": "code",
           "optional": true,
@@ -4093,7 +4093,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 977
+            "line": 973
           },
           "name": "description",
           "optional": true,
@@ -4111,7 +4111,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 984
+            "line": 980
           },
           "name": "requestMappingTemplate",
           "optional": true,
@@ -4129,7 +4129,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 991
+            "line": 987
           },
           "name": "responseMappingTemplate",
           "optional": true,
@@ -4147,7 +4147,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 998
+            "line": 994
           },
           "name": "runtime",
           "optional": true,
@@ -5092,7 +5092,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 864
+        "line": 860
       },
       "name": "AmplifyGraphqlApiCfnResources",
       "properties": [
@@ -5105,7 +5105,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 918
+            "line": 914
           },
           "name": "additionalCfnResources",
           "type": {
@@ -5126,7 +5126,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 903
+            "line": 899
           },
           "name": "amplifyDynamoDbTables",
           "type": {
@@ -5147,7 +5147,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 893
+            "line": 889
           },
           "name": "cfnDataSources",
           "type": {
@@ -5168,7 +5168,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 888
+            "line": 884
           },
           "name": "cfnFunctionConfigurations",
           "type": {
@@ -5189,7 +5189,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 913
+            "line": 909
           },
           "name": "cfnFunctions",
           "type": {
@@ -5210,7 +5210,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 868
+            "line": 864
           },
           "name": "cfnGraphqlApi",
           "type": {
@@ -5226,7 +5226,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 873
+            "line": 869
           },
           "name": "cfnGraphqlSchema",
           "type": {
@@ -5242,7 +5242,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 883
+            "line": 879
           },
           "name": "cfnResolvers",
           "type": {
@@ -5263,7 +5263,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 908
+            "line": 904
           },
           "name": "cfnRoles",
           "type": {
@@ -5284,7 +5284,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 898
+            "line": 894
           },
           "name": "cfnTables",
           "type": {
@@ -5305,7 +5305,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 878
+            "line": 874
           },
           "name": "cfnApiKey",
           "optional": true,
@@ -5328,7 +5328,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 776
+        "line": 772
       },
       "name": "AmplifyGraphqlApiProps",
       "properties": [
@@ -5342,7 +5342,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 793
+            "line": 789
           },
           "name": "authorizationModes",
           "type": {
@@ -5359,7 +5359,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 781
+            "line": 777
           },
           "name": "definition",
           "type": {
@@ -5376,7 +5376,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 787
+            "line": 783
           },
           "name": "apiName",
           "optional": true,
@@ -5395,7 +5395,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 808
+            "line": 804
           },
           "name": "conflictResolution",
           "optional": true,
@@ -5413,7 +5413,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 852
+            "line": 848
           },
           "name": "dataStoreConfiguration",
           "optional": true,
@@ -5433,7 +5433,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 801
+            "line": 797
           },
           "name": "functionNameMap",
           "optional": true,
@@ -5456,7 +5456,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 823
+            "line": 819
           },
           "name": "functionSlots",
           "optional": true,
@@ -5490,7 +5490,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 857
+            "line": 853
           },
           "name": "logging",
           "optional": true,
@@ -5517,7 +5517,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 846
+            "line": 842
           },
           "name": "outputStorageStrategy",
           "optional": true,
@@ -5534,7 +5534,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 835
+            "line": 831
           },
           "name": "predictionsBucket",
           "optional": true,
@@ -5552,7 +5552,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 817
+            "line": 813
           },
           "name": "stackMappings",
           "optional": true,
@@ -5578,7 +5578,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 830
+            "line": 826
           },
           "name": "transformerPlugins",
           "optional": true,
@@ -5600,7 +5600,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 841
+            "line": 837
           },
           "name": "translationBehavior",
           "optional": true,
@@ -5623,7 +5623,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 925
+        "line": 921
       },
       "name": "AmplifyGraphqlApiResources",
       "properties": [
@@ -5636,7 +5636,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 949
+            "line": 945
           },
           "name": "cfnResources",
           "type": {
@@ -5652,7 +5652,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 944
+            "line": 940
           },
           "name": "functions",
           "type": {
@@ -5673,7 +5673,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 929
+            "line": 925
           },
           "name": "graphqlApi",
           "type": {
@@ -5689,7 +5689,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 954
+            "line": 950
           },
           "name": "nestedStacks",
           "type": {
@@ -5710,7 +5710,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 939
+            "line": 935
           },
           "name": "roles",
           "type": {
@@ -5731,7 +5731,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 934
+            "line": 930
           },
           "name": "tables",
           "type": {
@@ -7186,7 +7186,8 @@
       "assembly": "@aws-amplify/graphql-api-construct",
       "datatype": true,
       "docs": {
-        "remarks": "### Defaults\nDefault settings will be applied for unspecified fields:\n- `excludeVerboseContent`: `true`\n- `fieldLogLevel`: `NONE`\n- `retention`: `ONE_WEEK`\n\n**WARNING**: Verbose logging will log the full incoming query including user parameters.\nSensitive information may be exposed in CloudWatch logs. Use with caution.\n\nFor information on LogConfig, refer to https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-graphqlapi-logconfig.html.\nFor information on RetentionDays, refer to https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_logs.RetentionDays.html.",
+        "default": "excludeVerboseContent: true, fieldLogLevel: FieldLogLevel.NONE, retention: RetentionDays.ONE_WEEK",
+        "remarks": "**WARNING**: Verbose logging will log the full incoming query including user parameters.\nSensitive information may be exposed in CloudWatch logs. Ensure that your IAM policies only grant access to authorized users.\n\nFor information on LogConfig, refer to https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-graphqlapi-logconfig.html.\nFor information on RetentionDays, refer to https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_logs.RetentionDays.html.",
         "stability": "stable",
         "summary": "Customizable logging configuration when writing GraphQL operations and tracing to Amazon CloudWatch for an AWS AppSync GraphQL API."
       },
@@ -7194,7 +7195,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 704
+        "line": 700
       },
       "name": "LogConfig",
       "properties": [
@@ -7202,14 +7203,14 @@
           "abstract": true,
           "docs": {
             "default": "true",
-            "remarks": "**WARNING**: Verbose logging will log the full incoming query including user parameters.\nSensitive information may be exposed in CloudWatch logs. Use with caution.",
+            "remarks": "**WARNING**: Verbose logging will log the full incoming query including user parameters.\nSensitive information may be exposed in CloudWatch logs. Ensure that your IAM policies only grant access to authorized users.",
             "stability": "stable",
             "summary": "When set to `true`, excludes verbose information from the logs, such as: - GraphQL Query - Request Headers - Response Headers - Context - Evaluated Mapping Templates  This setting applies regardless of the specified logging level."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 720
+            "line": 716
           },
           "name": "excludeVerboseContent",
           "optional": true,
@@ -7220,7 +7221,7 @@
         {
           "abstract": true,
           "docs": {
-            "default": "NONE",
+            "default": "FieldLogLevel.NONE",
             "remarks": "- **NONE**: No field-level logs are captured.\n- **ERROR**: Logs the following information only for the fields that are in the error category:\n  - The error section in the server response.\n  - Field-level errors.\n  - The generated request/response functions that got resolved for error fields.\n- **INFO**: Logs the following information only for the fields that are in the info and error categories:\n  - Info-level messages.\n  - The user messages sent through `$util.log.info` and `console.log`.\n  - Field-level tracing and mapping logs are not shown.\n- **DEBUG**: Logs the following information only for the fields that are in the debug, info, and error categories:\n  - Debug-level messages.\n  - The user messages sent through `$util.log.info`, `$util.log.debug`, `console.log`, and `console.debug`.\n  - Field-level tracing and mapping logs are not shown.\n- **ALL**: The following information is logged for all fields in the query:\n  - Field-level tracing information.\n  - The generated request/response functions that were resolved for each field.",
             "stability": "stable",
             "summary": "The field logging level. Values can be `NONE`, `ERROR`, `INFO`, `DEBUG`, or `ALL`."
@@ -7228,7 +7229,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 744
+            "line": 740
           },
           "name": "fieldLogLevel",
           "optional": true,
@@ -7239,7 +7240,7 @@
         {
           "abstract": true,
           "docs": {
-            "default": "ONE_WEEK",
+            "default": "RetentionDays.ONE_WEEK",
             "see": "https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_logs.RetentionDays.html",
             "stability": "stable",
             "summary": "The number of days log events are kept in CloudWatch Logs."
@@ -7247,7 +7248,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 752
+            "line": 748
           },
           "name": "retention",
           "optional": true,
@@ -9291,5 +9292,5 @@
     }
   },
   "version": "1.14.0",
-  "fingerprint": "tiui1qa5T7UmpBjjqLe1q0yu30G5I4VNR/Hl6GSsSZ4="
+  "fingerprint": "FEEwoHPGvvcfdvJWcgfn7a5v+5ILSd12H5Hp3bl+dGY="
 }
