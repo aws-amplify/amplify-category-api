@@ -694,7 +694,7 @@ export { FieldLogLevel, RetentionDays };
  *
  * For information on LogConfig, refer to https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-graphqlapi-logconfig.html.
  * For information on RetentionDays, refer to https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_logs.RetentionDays.html.
- * 
+ *
  * @default excludeVerboseContent: true, fieldLogLevel: FieldLogLevel.NONE, retention: RetentionDays.ONE_WEEK
  */
 export interface LogConfig {
