@@ -15,7 +15,17 @@ import {
   Visibility,
   IamResource,
 } from 'aws-cdk-lib/aws-appsync';
-import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal, PolicyDocument, PolicyStatement, Effect } from 'aws-cdk-lib/aws-iam';
+import { 
+  Effect, 
+  Grant, 
+  IGrantable, 
+  ManagedPolicy, 
+  Policy, 
+  PolicyDocument, 
+  PolicyStatement, 
+  Role, 
+  ServicePrincipal 
+} from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import { ArnFormat, CfnResource, Duration, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
@@ -174,7 +184,6 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     this.api = new CfnGraphQLApi(this, 'Resource', {
       name: props.name,
       authenticationType: defaultMode.authorizationType,
-      // logConfig: this.setupLogConfig(props.logging),
       openIdConnectConfig: this.setupOpenIdConnectConfig(defaultMode.openIdConnectConfig),
       userPoolConfig: this.setupUserPoolConfig(defaultMode.userPoolConfig),
       lambdaAuthorizerConfig: this.setupLambdaConfig(defaultMode.lambdaAuthorizerConfig),
@@ -329,8 +338,6 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
 
     const region = Stack.of(this).region;
     const accountId = Stack.of(this).account;
-  
-    // Define the exact log group ARN using the API ID
     const logGroupResourceArn = `arn:aws:logs:${region}:${accountId}:log-group:/aws/appsync/apis/${this.apiId}:*`;
 
     // Create the inline policy statements with the exact log group
@@ -346,16 +353,21 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
         resources: [logGroupResourceArn],
       }),
     ];
+
+    // Create a standalone policy. This allows us to break the circular reference due to some CFN magic.
+    const apiLogsPolicy = new Policy(this, 'ApiLogsPolicy', {
+      statements: policyStatements,
+    });
   
-    // Create the role with inline policies
+    // Create the role
     const apiLogsRole = new Role(this, 'ApiLogsRole', {
       assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
-      inlinePolicies: {
-        ApiLogsPolicy: new PolicyDocument({
-          statements: policyStatements,
-        }),
-      },
     });
+
+    // Attach the policy to the role
+    // It's important to use this exact method, not any other "functionally equivalent" method.
+    apiLogsPolicy.attachToRole(apiLogsRole);
+    
     setResourceName(apiLogsRole, { name: 'ApiLogsRole', setOnDefaultChild: true });
 
     return {
