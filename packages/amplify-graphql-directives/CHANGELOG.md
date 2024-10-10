@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-directives@2.2.0...@aws-amplify/graphql-directives@2.3.0) (2024-10-10)
+
+### Features
+
+- auto increment support ([#2883](https://github.com/aws-amplify/amplify-category-api/issues/2883)) ([4e66ac3](https://github.com/aws-amplify/amplify-category-api/commit/4e66ac3a9d276ca063c76a97aee791618b3c71ab))
+
 # [2.2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-directives@2.1.0...@aws-amplify/graphql-directives@2.2.0) (2024-09-16)
 
 ### Features
