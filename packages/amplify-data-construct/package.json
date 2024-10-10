@@ -157,7 +157,7 @@
     "semver"
   ],
   "dependencies": {
-    "@aws-amplify/ai-constructs": "^0.1.4",
+    "@aws-amplify/ai-constructs": "^0.2.0",
     "@aws-amplify/backend-output-schemas": "^1.0.0",
     "@aws-amplify/backend-output-storage": "^1.0.0",
     "@aws-amplify/graphql-api-construct": "1.14.0",
@@ -284,7 +284,7 @@
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
     "@types/node": "^18.0.0",
-    "aws-cdk-lib": "2.152.0",
+    "aws-cdk-lib": "2.158.0",
     "constructs": "10.3.0",
     "jsii": "^5.4.23",
     "jsii-pacmak": "^1.84.0",
@@ -294,7 +294,7 @@
     "ts-node": "^8.10.1"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.152.0",
+    "aws-cdk-lib": "^2.158.0",
     "constructs": "^10.3.0"
   },
   "stability": "stable",

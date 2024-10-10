@@ -91,8 +91,8 @@ const convertAuthModeToAuthProvider = (authMode: AuthorizationConfigMode): AppSy
           name: authMode.oidcProviderName,
           issuerUrl: authMode.oidcIssuerUrl,
           clientId: authMode.clientId,
-          iatTTL: authMode.tokenExpiryFromIssue.toSeconds(),
-          authTTL: authMode.tokenExpiryFromAuth.toSeconds(),
+          iatTTL: authMode.tokenExpiryFromIssue.toMilliseconds(),
+          authTTL: authMode.tokenExpiryFromAuth.toMilliseconds(),
         },
       };
     case 'AWS_LAMBDA':

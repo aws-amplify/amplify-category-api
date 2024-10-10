@@ -255,7 +255,7 @@ exports[`Directive Definitions DefaultDirective 1`] = `
 Object {
   "defaults": Object {},
   "definition": "
-  directive @default(value: String!) on FIELD_DEFINITION
+  directive @default(value: String) on FIELD_DEFINITION
 ",
   "name": "default",
 }
