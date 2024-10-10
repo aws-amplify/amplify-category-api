@@ -13,7 +13,7 @@ export function request(ctx) {
     associatedUserMessageId,
     contentBlockIndex,
     // text chunk
-    contentBlockDeltaText,
+    contentBlockText,
     contentBlockDeltaIndex,
     // tool use
     contentBlockToolUse,
@@ -24,89 +24,47 @@ export function request(ctx) {
   } = ctx.args.input;
 
   const { owner } = ctx.args;
-  const defaultValues = ctx.stash.defaultValues ?? {};
-  const id = defaultValues.id;
   const streamId = `${associatedUserMessageId}#stream`;
 
   if (stopReason) {
+    // should we be writing the turn complete chunk here?
+    // probably not. It's just the marker for us to reconcile the chunks.
     return ddb.get({ key: { id: streamId } });
-    // reconcile the assistantResponse ordering based on chunk indexes in the response resolver.
   }
 
-  if (contentBlockDoneAtIndex) {
-    // reconcile the assistantResponse ordering based on chunk indexes.
-  }
+  // not using this yet. we'll need to enable ttl on the table first.
+  const now = util.time.nowEpochSeconds()
+  const ttl = now + 60 * 60 * 24; // 1 day
 
-  if (contentBlockDeltaIndex && contentBlockDeltaText) {
-    // append the chunk to the existing content at contentBlockIndex
-    contentBlockIndex
-  }
-
-  if (contentBlockToolUse) {
-    // insert the full toolUse block at contentBlockIndex
-  }
-
-
-  // 1. if there is no assistantResponse with the associatedUserMessageId, create one
-  //    - read from conversation message table
-  // 2. if there is an assistantResponse, append this chunk to the existing content
-  // 3. write chunk to table with TTL
-  // 4. if input contains stopReason, reconcile the assistantResponse ordering based on chunk indexes. (maybe step 1.)
-
-
-  /*
-   persist each event --- somewhere ---
-   use `UpdateItem` because it updates or adds the item if it doesn't exist.
-   use update expression
-   use TTL for events. note -- this requires enabling ttl on the table.
-   on `stopReason`, reduce the events into a single item.
-
-   use associatedUserMessageId#stream as the id
-
-   do this for text and tool use.
-  */
-
-  const ttl = Math.floor(Date.now() / 1000) + 60 * 60 * 24; // 1 day
-
-  const streamItem = {
-    id: streamId,
-    conversationId,
-    ttl,
-    owner,
-    role: 'assistant',
-    events: [
-      {
-        contentBlockIndex,
-        contentBlockDeltaIndex,
-        contentBlockDeltaText,
-        contentBlockToolUse,
-        contentBlockDoneAtIndex,
-        stopReason,
-      },
-    ],
+  const event = {
+    contentBlockIndex,
+    contentBlockDeltaIndex,
+    contentBlockText,
+    contentBlockToolUse,
+    contentBlockDoneAtIndex,
   };
 
-  // update item -- set new event via append_...
+  // AppSync JS runtime doesn't support Object.fromEntries
+  const chunk = Object.keys(event)
+  .filter((k) => event[k] != null)
+  .reduce((a, k) => ({ ...a, [k]: event[k] }), {});
 
-  const message = {
-    __typename: '[[CONVERSATION_MESSAGE_TYPE_NAME]]',
-    id,
-    role: 'assistant',
-    content,
-    conversationId,
-    associatedUserMessageId,
-    owner,
-    ...defaultValues,
+  // TODO: add owner to stream item. `owner` is a reserved keyword in DDB, so we have to use an expression attribute name (alias).
+  // reference: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ReservedWords.html
+  const setExpression = 'SET events = list_append(if_not_exists(events, :empty_list), :events), conversationId = :conversationId'
+  const id = streamId
+  return {
+    operation: 'UpdateItem',
+    key: util.dynamodb.toMapValues({ id }),
+    update: {
+      expression: setExpression,
+      expressionValues: util.dynamodb.toMapValues({
+        ':events': [chunk],
+        ':empty_list': [],
+        ':conversationId': conversationId,
+      }),
+    },
   };
-
-  // UpdateExpression: 'SET events = list_append(if_not_exists(events, :empty_list), :event)'
-  // ExpressionAttributeValues: { ":event": [{ ... }], ":empty_list": [] }
-
-  const update = {
-  events: ddb.operations.append(ddb.operations.if_not_exists(streamItem.events, []), streamItem.events),
-}
-
-  // return ddb.update({ key: { streamId}, update: })
 }
 
 /**
@@ -115,10 +73,45 @@ export function request(ctx) {
  * @returns {*} the result
  */
 export function response(ctx) {
-  // Update with response logic
+  console.log('>>> response function ctx <<<', ctx);
   if (ctx.error) {
     util.error(ctx.error.message, ctx.error.type);
   }
 
+  if (ctx.args.input.contentBlockToolUse || ctx.args.input.contentBlockText) {
+    console.log('>>> contentBlockToolUse <<<', ctx.args.input.contentBlockToolUse);
+    console.log('>>> contentBlockText <<<', ctx.args.input.contentBlockText);
+
+    const { conversationId } = ctx.result;
+    const { owner } = ctx.args;
+    const { contentBlockToolUse: toolUse, contentBlockText: text } = ctx.args.input;
+    const { createdAt, updatedAt } = ctx.stash.defaultValues;
+
+    const content = ctx.args.input.contentBlockToolUse ? [{ toolUse }] : [{ text }];
+
+    return {
+      __typename: 'ConversationMessageCustomChat',
+      id: `${ctx.args.input.associatedUserMessageId}#response`,
+      conversationId: conversationId,
+      owner: owner,
+      role: 'assistant',
+      createdAt,
+      updatedAt,
+      content,
+    }
+  }
+
+  if (ctx.args.input.contentBlockDoneAtIndex) {
+    console.log('>>> contentBlockDoneAtIndex <<<', ctx.args.input.contentBlockDoneAtIndex);
+    // Do we actually need this event? It's forcing us to return a value to the client here, which is awkward... maybe.
+    return {
+      id: `${ctx.args.input.associatedUserMessageId}#response`,
+      createdAt: ctx.stash.defaultValues.createdAt,
+      updatedAt: ctx.stash.defaultValues.updatedAt,
+      conversationId: ctx.args.input.conversationId,
+    }
+  }
+
+  console.log('>>> stopReason <<<', ctx.args.input.stopReason);
   return ctx.result;
 }

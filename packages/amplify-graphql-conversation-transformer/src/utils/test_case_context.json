@@ -1,0 +1,51 @@
+{
+  "arguments": {
+      "input": {
+          "conversationId": "123",
+          "associatedUserMessageId": "456",
+          "contentBlockIndex": 1,
+          "contentBlockToolUse": {
+              "toolUse": {
+                 "name": "tool_one",
+                 "toolUseId": "789",
+                 "input": "{ \"foo\": 42 }"
+              }
+          }
+      }
+  },
+  "env": {},
+  "source": {},
+  "result": {}
+}
+
+{
+  "arguments": {
+    "input": {
+      "conversationId": "123",
+      "associatedUserMessageId": "456",
+      "contentBlockIndex": 1,
+      "contentBlockDeltaIndex": 0,
+      "contentBlockText": "hello world"
+    },
+    "owner": "abc::def"
+  },
+  "env": {},
+  "source": {},
+  "result": {
+    "events": [
+      {
+        "contentBlockText": "hello world",
+        "createdAt": "2024-10-10T14:32:59+0000",
+        "updatedAt": "2024-10-10T14:32:59+0000"
+      }
+    ]
+  },
+  "stash": {
+    "defaultValues": {
+      "createdAt": "2024-10-10T14:32:59+0000",
+      "updatedAt": "2024-10-10T14:32:59+0000",
+      "id": "999"
+    }
+  }
+}
+

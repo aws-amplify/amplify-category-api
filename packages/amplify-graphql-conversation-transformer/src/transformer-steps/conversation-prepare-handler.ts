@@ -86,6 +86,8 @@ export class ConversationPrepareHandler {
       messageSubscription,
       assistantMutationField,
       assistantMutationInput,
+      assistantStreamingMutationField,
+      assistantStreamingMutationInput,
     } = directive.messageModel;
 
     // Extract model names for later use
@@ -94,7 +96,8 @@ export class ConversationPrepareHandler {
 
     // Add necessary inputs, fields, and objects to the output schema
     ctx.output.addInput(assistantMutationInput);
-    ctx.output.addMutationFields([assistantMutationField]);
+    ctx.output.addInput(assistantStreamingMutationInput);
+    ctx.output.addMutationFields([assistantMutationField, assistantStreamingMutationField]);
     ctx.output.addSubscriptionFields([messageSubscription]);
     ctx.output.addObject(conversationModel);
     ctx.output.addObject(messageModel);
