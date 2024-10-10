@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.15.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.14.0...@aws-amplify/graphql-api-construct@1.15.0) (2024-10-10)
+
+### Bug Fixes
+
+- add aws_iam to custom operations when enableIamAuthorization is enabled; fix graphql type utils ([#2921](https://github.com/aws-amplify/amplify-category-api/issues/2921)) ([5cb5a2b](https://github.com/aws-amplify/amplify-category-api/commit/5cb5a2bcacf30ca9ff0f29fe32be57d1ffb6c1cf))
+- appsync ttl correct duration time unit in ms ([#2928](https://github.com/aws-amplify/amplify-category-api/issues/2928)) ([d690bfa](https://github.com/aws-amplify/amplify-category-api/commit/d690bfa7764bddb60db5dcb66bb85027e6a39598))
+
+### Features
+
+- **conversation:** per message items and lambda history retrieval pattern ([#2914](https://github.com/aws-amplify/amplify-category-api/issues/2914)) ([874a30a](https://github.com/aws-amplify/amplify-category-api/commit/874a30ace18885f63c6be3274f32e4331bca98ed))
+
 # [1.14.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.13.0...@aws-amplify/graphql-api-construct@1.14.0) (2024-10-01)
 
 ### Features
