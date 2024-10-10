@@ -1,21 +1,20 @@
 import {
   DirectiveWrapper,
-  TransformerContractError,
-  TransformerAuthBase,
-  InvalidDirectiveError,
-  MappingTemplate,
-  TransformerResolver,
-  getSortKeyFieldNames,
   generateGetArgumentsInput,
-  isSqlModel,
-  getModelDataSourceNameForTypeName,
-  isModelType,
-  getFilterInputName,
   getConditionInputName,
+  getFilterInputName,
+  getModelDataSourceNameForTypeName,
+  getSortKeyFieldNames,
   getSubscriptionFilterInputName,
-  getConnectionName,
-  InputFieldWrapper,
+  InvalidDirectiveError,
+  isBuiltInGraphqlNode,
   isDynamoDbModel,
+  isModelType,
+  isSqlModel,
+  MappingTemplate,
+  TransformerAuthBase,
+  TransformerContractError,
+  TransformerResolver,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
@@ -345,8 +344,34 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     }
   };
 
+  /**
+   * Adds custom Queries, Mutations, and Subscriptions to the authNonModelConfig map to ensure they are included when adding implicit
+   * aws_iam auth directives.
+   */
+  addCustomOperationFieldsToAuthNonModelConfig = (ctx: TransformerTransformSchemaStepContextProvider): void => {
+    if (!ctx.transformParameters.sandboxModeEnabled && !ctx.synthParameters.enableIamAccess) {
+      return;
+    }
+
+    const hasAwsIamDirective = (field: FieldDefinitionNode): boolean => {
+      return field.directives?.some((dir) => dir.name.value === 'aws_iam');
+    };
+
+    const allObjects = ctx.inputDocument.definitions.filter(isBuiltInGraphqlNode);
+    allObjects.forEach((object) => {
+      const typeName = object.name.value;
+      const fieldsWithoutIamDirective = object.fields.filter((field) => !hasAwsIamDirective(field));
+      fieldsWithoutIamDirective.forEach((field) => {
+        addDirectivesToField(ctx, typeName, field.name.value, [makeDirective('aws_iam', [])]);
+      });
+    });
+  };
+
   transformSchema = (context: TransformerTransformSchemaStepContextProvider): void => {
+    this.addCustomOperationFieldsToAuthNonModelConfig(context);
+
     const searchableAggregateServiceDirectives = new Set<AuthProvider>();
+
     const getOwnerFields = (acm: AccessControlMatrix): string[] =>
       acm.getRoles().reduce((prev: string[], role: string) => {
         if (this.roleMap.get(role)!.strategy === 'owner') prev.push(this.roleMap.get(role)!.entity!);
