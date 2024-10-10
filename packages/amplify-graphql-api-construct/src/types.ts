@@ -689,17 +689,13 @@ export { FieldLogLevel, RetentionDays };
 /**
  * Customizable logging configuration when writing GraphQL operations and tracing to Amazon CloudWatch for an AWS AppSync GraphQL API.
  *
- * ### Defaults
- * Default settings will be applied for unspecified fields:
- * - `excludeVerboseContent`: `true`
- * - `fieldLogLevel`: `NONE`
- * - `retention`: `ONE_WEEK`
- *
  * **WARNING**: Verbose logging will log the full incoming query including user parameters.
  * Sensitive information may be exposed in CloudWatch logs. Ensure that your IAM policies only grant access to authorized users.
  *
  * For information on LogConfig, refer to https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-graphqlapi-logconfig.html.
  * For information on RetentionDays, refer to https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_logs.RetentionDays.html.
+ * 
+ * @default excludeVerboseContent: true, fieldLogLevel: FieldLogLevel.NONE, retention: RetentionDays.ONE_WEEK
  */
 export interface LogConfig {
   /**
@@ -739,14 +735,14 @@ export interface LogConfig {
    *   - Field-level tracing information.
    *   - The generated request/response functions that were resolved for each field.
    *
-   * @default NONE
+   * @default FieldLogLevel.NONE
    */
   readonly fieldLogLevel?: FieldLogLevel;
 
   /**
    * The number of days log events are kept in CloudWatch Logs.
    *
-   * @default ONE_WEEK
+   * @default RetentionDays.ONE_WEEK
    * @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_logs.RetentionDays.html
    */
   readonly retention?: RetentionDays;
@@ -759,8 +755,8 @@ export interface LogConfig {
  * ### Defaults
  * Default settings will be applied when logging is set to `true` or an empty object, or for unspecified fields:
  * - `excludeVerboseContent`: `true`
- * - `fieldLogLevel`: `NONE`
- * - `retention`: `ONE_WEEK`
+ * - `fieldLogLevel`: `FieldLogLevel.NONE`
+ * - `retention`: `RetentionDays.ONE_WEEK`
  *
  * **WARNING**: Verbose logging will log the full incoming query including user parameters.
  * Sensitive information may be exposed in CloudWatch logs. Ensure that your IAM policies only grant access to authorized users.
