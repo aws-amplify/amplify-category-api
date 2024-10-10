@@ -19,15 +19,12 @@ import {
   ListTagsOfResourceCommand,
   Tag as DynamoDBTag,
 } from '@aws-sdk/client-dynamodb';
-import isEqual from 'lodash.isequal';
 import { Lambda, ListTagsCommand } from '@aws-sdk/client-lambda';
 import { OnEventResponse } from '../amplify-table-manager-lambda-types';
 import * as cfnResponse from './cfn-response';
 import { startExecution } from './outbound';
 import { getEnv, log } from './util';
-import { CfnTag } from 'aws-cdk-lib';
-import { table } from 'console';
-import { OnDemandAllocationStrategy } from 'aws-cdk-lib/aws-autoscaling';
+import { importTable } from './import-table';
 
 const ddbClient = new DynamoDB();
 const lambdaClient = new Lambda();
@@ -170,11 +167,11 @@ const processOnEvent = async (
   let result;
   switch (event.RequestType) {
     case 'Create':
+      const createTableInput = toCreateTableInput(tableDef);
       if (tableDef.isImported) {
-        return importTable(tableDef);
+        return importTable(createTableInput);
       }
       console.log('Initiating CREATE event');
-      const createTableInput = toCreateTableInput(tableDef);
       console.log('Create Table Params: ', createTableInput);
       const response = await createNewTable(createTableInput);
       result = {
@@ -1131,152 +1128,6 @@ export const toCreateTableInput = (props: CustomDDB.Input): CreateTableCommandIn
   return parsePropertiesToDynamoDBInput(createTableInput) as CreateTableCommandInput;
 };
 
-export type TableComparisonProperties = Partial<
-  Pick<
-    TableDescription,
-    | 'AttributeDefinitions'
-    | 'KeySchema'
-    | 'GlobalSecondaryIndexes'
-    | 'BillingModeSummary'
-    | 'ProvisionedThroughput'
-    | 'StreamSpecification'
-    | 'SSEDescription'
-    | 'DeletionProtectionEnabled'
-  >
->;
-
-/**
- * Get the expected table properties given the input properties.
- * This is used to ensure the imported table matches the input properties.
- *
- * @param createTableInput input properties for the table creation.
- */
-export const getExpectedTableProperties = (createTableInput: CreateTableCommandInput): TableComparisonProperties => {
-  return {
-    AttributeDefinitions: createTableInput.AttributeDefinitions,
-    KeySchema: createTableInput.KeySchema,
-    GlobalSecondaryIndexes: createTableInput.GlobalSecondaryIndexes?.map((gsi) => {
-      if (createTableInput.BillingMode === 'PAY_PER_REQUEST') {
-        // When the billing mode is PAY_PER_REQUEST, the ProvisionedThroughput read and write capacity units will be 0
-        // even if a different number is supplied
-        return {
-          ...gsi,
-          ProvisionedThroughput: gsi.ProvisionedThroughput
-            ? {
-                ReadCapacityUnits: 0,
-                WriteCapacityUnits: 0,
-              }
-            : undefined,
-        };
-      }
-      return gsi;
-    }),
-    BillingModeSummary: {
-      BillingMode: createTableInput.BillingMode,
-    },
-    StreamSpecification: createTableInput.StreamSpecification,
-    ProvisionedThroughput: createTableInput.ProvisionedThroughput || { ReadCapacityUnits: 0, WriteCapacityUnits: 0 },
-    SSEDescription:
-      createTableInput.SSESpecification && createTableInput.SSESpecification.Enabled
-        ? {
-            SSEType: createTableInput.SSESpecification.SSEType || 'KMS',
-            Status: 'ENABLED',
-          }
-        : undefined,
-    DeletionProtectionEnabled: createTableInput.DeletionProtectionEnabled || false,
-  };
-};
-
-/**
- * Util function to validate imported table properties against expected properties.
- * @param importedTableProperties table to import
- * @param expectedTableProperties expected properties that the imported table is validated against
- * @throws Will throw if any properties do not match the expected values
- */
-export const validateImportedTableProperties = (
-  importedTableProperties: TableComparisonProperties,
-  expectedTableProperties: TableComparisonProperties,
-): void => {
-  const errors: string[] = [];
-  const addError = (
-    propertyName: string,
-    actual: object | boolean | string | undefined,
-    expected: object | boolean | string | undefined,
-  ): void => {
-    errors.push(
-      `${propertyName} does not match the expected value.\nActual: ${JSON.stringify(actual)}\nExpected: ${JSON.stringify(expected)}`,
-    );
-  };
-
-  // remove undefined attributes from the objects
-  // lodash isEqual treats undefined as a value when comparing objects
-  // example isEqual({ a: undefined }, {}) returns false
-  const sanitizedImportedTableProperties = JSON.parse(JSON.stringify(importedTableProperties));
-  const sanitizedExpectedTableProperties = JSON.parse(JSON.stringify(expectedTableProperties));
-
-  // for loop can't be used here because of TS error:
-  // type 'string' can't be used to index type 'TableDescription'
-  if (!isEqual(sanitizedImportedTableProperties.AttributeDefinitions, sanitizedExpectedTableProperties.AttributeDefinitions)) {
-    addError(
-      'AttributeDefintions',
-      sanitizedImportedTableProperties.AttributeDefinitions,
-      sanitizedExpectedTableProperties.AttributeDefinitions,
-    );
-  }
-
-  if (!isEqual(sanitizedImportedTableProperties.KeySchema, sanitizedExpectedTableProperties.KeySchema)) {
-    addError('KeySchema', sanitizedImportedTableProperties.KeySchema, sanitizedExpectedTableProperties.KeySchema);
-  }
-
-  if (!isEqual(sanitizedImportedTableProperties.GlobalSecondaryIndexes, sanitizedExpectedTableProperties.GlobalSecondaryIndexes)) {
-    addError(
-      'GlobalSecondaryIndexes',
-      sanitizedImportedTableProperties.GlobalSecondaryIndexes,
-      sanitizedExpectedTableProperties.GlobalSecondaryIndexes,
-    );
-  }
-
-  if (!isEqual(sanitizedImportedTableProperties.BillingModeSummary, sanitizedExpectedTableProperties.BillingModeSummary)) {
-    addError(
-      'BillingModeSummary',
-      sanitizedImportedTableProperties.BillingModeSummary,
-      sanitizedExpectedTableProperties.BillingModeSummary,
-    );
-  }
-
-  if (!isEqual(sanitizedImportedTableProperties.ProvisionedThroughput, sanitizedExpectedTableProperties.ProvisionedThroughput)) {
-    addError(
-      'ProvisionedThroughput',
-      sanitizedImportedTableProperties.ProvisionedThroughput,
-      sanitizedExpectedTableProperties.ProvisionedThroughput,
-    );
-  }
-
-  if (!isEqual(sanitizedImportedTableProperties.StreamSpecification, sanitizedExpectedTableProperties.StreamSpecification)) {
-    addError(
-      'StreamSpecification',
-      sanitizedImportedTableProperties.StreamSpecification,
-      sanitizedExpectedTableProperties.StreamSpecification,
-    );
-  }
-
-  if (!isEqual(sanitizedImportedTableProperties.SSEDescription, sanitizedExpectedTableProperties.SSEDescription)) {
-    addError('SSEDescription', sanitizedImportedTableProperties.SSEDescription, sanitizedExpectedTableProperties.SSEDescription);
-  }
-
-  if (!isEqual(sanitizedImportedTableProperties.DeletionProtectionEnabled, sanitizedExpectedTableProperties.DeletionProtectionEnabled)) {
-    addError(
-      'DeletionProtectionEnabled',
-      sanitizedImportedTableProperties.DeletionProtectionEnabled,
-      sanitizedExpectedTableProperties.DeletionProtectionEnabled,
-    );
-  }
-
-  if (errors.length > 0) {
-    throw new Error(`Imported table properties did not match the expected table properties.\n${errors.join('\n')}`);
-  }
-};
-
 /**
  * Util function to make CreateTable DynamoDB call
  * @param input CreateTableInput object
@@ -1549,95 +1400,5 @@ const retry = async <T>(
  * @returns void
  */
 const sleep = async (milliseconds: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, milliseconds));
-
-/**
- * Imports an existing DDB table.
- * @param tableDef Tabel definition of imported table.
- */
-const importTable = async (tableDef: CustomDDB.Input): Promise<AWSCDKAsyncCustomResource.OnEventResponse> => {
-  console.log('Initiating table import process');
-  console.log(`Fetching current state of table ${tableDef.tableName}`);
-  const describeTableResult = await ddbClient.describeTable({ TableName: tableDef.tableName });
-  if (!describeTableResult.Table) {
-    throw new Error(`Could not find ${tableDef.tableName} to update`);
-  }
-  log('Current table state: ', describeTableResult);
-  const createTableInput = toCreateTableInput(tableDef);
-  const expectedTableProperties = getExpectedTableProperties(createTableInput);
-  const importedTableProperties = getImportedTableComparisonProperties(describeTableResult.Table);
-  validateImportedTableProperties(importedTableProperties, expectedTableProperties);
-  const result = {
-    PhysicalResourceId: describeTableResult.Table.TableName,
-    Data: {
-      TableArn: describeTableResult.Table.TableArn,
-      TableStreamArn: describeTableResult.Table.LatestStreamArn,
-      TableName: describeTableResult.Table.TableName,
-    },
-  };
-  console.log('Returning result: ', result);
-  return result;
-};
-
-export const getImportedTableComparisonProperties = (importedTable: TableDescription): TableComparisonProperties => {
-  const tableComparisonProperties = {
-    AttributeDefinitions: importedTable.AttributeDefinitions?.map((attributeDefinition) => ({
-      AttributeName: attributeDefinition.AttributeName,
-      AttributeType: attributeDefinition.AttributeType,
-    })),
-    KeySchema: importedTable.KeySchema?.map((key) => ({
-      AttributeName: key.AttributeName,
-      KeyType: key.KeyType,
-    })),
-    GlobalSecondaryIndexes: importedTable.GlobalSecondaryIndexes?.map((gsi) => ({
-      IndexName: gsi.IndexName,
-      KeySchema: gsi.KeySchema?.map((key) => ({
-        AttributeName: key.AttributeName,
-        KeyType: key.KeyType,
-      })),
-      OnDemandThroughput: gsi.OnDemandThroughput
-        ? {
-            MaxReadRequestUnits: gsi.OnDemandThroughput.MaxReadRequestUnits,
-            MaxWriteRequestUnits: gsi.OnDemandThroughput.MaxWriteRequestUnits,
-          }
-        : undefined,
-      Projection: gsi.Projection
-        ? {
-            NonKeyAttributes: gsi.Projection.NonKeyAttributes,
-            ProjectionType: gsi.Projection.ProjectionType,
-          }
-        : undefined,
-      ProvisionedThroughput: gsi.ProvisionedThroughput
-        ? {
-            ReadCapacityUnits: gsi.ProvisionedThroughput.ReadCapacityUnits,
-            WriteCapacityUnits: gsi.ProvisionedThroughput.WriteCapacityUnits,
-          }
-        : undefined,
-    })),
-    BillingModeSummary: importedTable.BillingModeSummary
-      ? {
-          BillingMode: importedTable.BillingModeSummary.BillingMode,
-        }
-      : undefined,
-    ProvisionedThroughput: importedTable.ProvisionedThroughput
-      ? {
-          ReadCapacityUnits: importedTable.ProvisionedThroughput.ReadCapacityUnits,
-          WriteCapacityUnits: importedTable.ProvisionedThroughput.WriteCapacityUnits,
-        }
-      : undefined,
-    StreamSpecification: importedTable.StreamSpecification
-      ? {
-          StreamEnabled: importedTable.StreamSpecification?.StreamEnabled,
-          StreamViewType: importedTable.StreamSpecification?.StreamViewType,
-        }
-      : undefined,
-    SSEDescription: importedTable.SSEDescription
-      ? {
-          SSEType: importedTable.SSEDescription.SSEType,
-        }
-      : undefined,
-    DeletionProtectionEnabled: importedTable.DeletionProtectionEnabled,
-  };
-  return tableComparisonProperties;
-};
 
 // #endregion Helpers
