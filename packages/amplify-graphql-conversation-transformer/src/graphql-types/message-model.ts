@@ -38,6 +38,8 @@ export type MessageModel = {
   messageSubscription: FieldDefinitionNode;
   assistantMutationInput: InputObjectTypeDefinitionNode;
   assistantMutationField: FieldDefinitionNode;
+  assistantStreamingMutationInput: InputObjectTypeDefinitionNode;
+  assistantStreamingMutationField: FieldDefinitionNode;
 };
 
 /**
@@ -76,6 +78,7 @@ export const createMessageModel = (
 ): MessageModel => {
   const messageSubscriptionFieldName = `onCreateAssistantResponse${capitalizedFieldName}`;
   const assistantMutationFieldName = `createAssistantResponse${capitalizedFieldName}`;
+  const assistantStreamingMutationFieldName = `createAssistantResponseStream${capitalizedFieldName}`;
 
   const messageAuthDirective = constructMessageAuthDirective();
   const messageModelDirective = constructMessageModelDirective();
@@ -89,13 +92,23 @@ export const createMessageModel = (
     conversationMessageInterface,
   );
 
-  const messageSubscription = constructMessageSubscription(messageSubscriptionFieldName, messageModelName, assistantMutationFieldName);
+  const messageSubscription = constructMessageSubscription(messageSubscriptionFieldName, messageModelName, [
+    assistantMutationFieldName,
+    assistantStreamingMutationFieldName,
+  ]);
 
   const assistantMutationInput = constructAssistantResponseMutationInput(messageModelName);
   const assistantMutationField = constructAssistantMutationField(
     assistantMutationFieldName,
     messageModelName,
     assistantMutationInput.name.value,
+  );
+
+  const assistantStreamingMutationInput = constructAssistantResponseStreamingMutationInput(messageModelName);
+  const assistantStreamingMutationField = constructAssistantStreamingMutationField(
+    assistantStreamingMutationFieldName,
+    messageModelName,
+    assistantStreamingMutationInput.name.value,
   );
 
   return {
@@ -107,6 +120,8 @@ export const createMessageModel = (
     messageSubscription,
     assistantMutationInput,
     assistantMutationField,
+    assistantStreamingMutationInput,
+    assistantStreamingMutationField,
   };
 };
 
@@ -242,9 +257,9 @@ const constructConversationMessageModel = (
 const constructMessageSubscription = (
   subscriptionName: string,
   conversationMessageTypeName: string,
-  onMutationName: string,
+  onMutationNames: string[],
 ): FieldDefinitionNode => {
-  const awsSubscribeDirective = makeDirective('aws_subscribe', [makeArgument('mutations', makeValueNode([onMutationName]))]);
+  const awsSubscribeDirective = makeDirective('aws_subscribe', [makeArgument('mutations', makeValueNode(onMutationNames))]);
   const cognitoAuthDirective = makeDirective('aws_cognito_user_pools', []);
 
   const args: InputValueDefinitionNode[] = [makeInputValueDefinition('conversationId', makeNamedType('ID'))];
@@ -272,6 +287,38 @@ const constructAssistantResponseMutationInput = (messageModelName: string): Inpu
       makeInputValueDefinition('conversationId', makeNamedType('ID')),
       makeInputValueDefinition('content', makeListType(makeNamedType('ContentBlockInput'))),
       makeInputValueDefinition('associatedUserMessageId', makeNamedType('ID')),
+    ],
+  };
+};
+
+const constructAssistantStreamingMutationField = (
+  fieldName: string,
+  messageModelName: string,
+  inputTypeName: string,
+): FieldDefinitionNode => {
+  const args = [makeInputValueDefinition('input', makeNonNullType(makeNamedType(inputTypeName)))];
+  const cognitoAuthDirective = makeDirective('aws_cognito_user_pools', []);
+  const createAssistantResponseMutation = makeField(fieldName, args, makeNamedType(messageModelName), [cognitoAuthDirective]);
+  return createAssistantResponseMutation;
+};
+
+const constructAssistantResponseStreamingMutationInput = (messageModelName: string): InputObjectTypeDefinitionNode => {
+  const inputName = `Create${messageModelName}AssistantStreamingInput`;
+  return {
+    kind: 'InputObjectTypeDefinition',
+    name: { kind: 'Name', value: inputName },
+    fields: [
+      makeInputValueDefinition('conversationId', makeNonNullType(makeNamedType('ID'))),
+      makeInputValueDefinition('associatedUserMessageId', makeNonNullType(makeNamedType('ID'))),
+      makeInputValueDefinition('contentBlockIndex', makeNonNullType(makeNamedType('Int'))),
+
+      makeInputValueDefinition('contentBlockText', makeNamedType('String')),
+      makeInputValueDefinition('contentBlockDeltaIndex', makeNamedType('Int')),
+
+      makeInputValueDefinition('contentBlockToolUse', makeNamedType('String')),
+      makeInputValueDefinition('contentBlockDoneAtIndex', makeNamedType('Int')),
+
+      makeInputValueDefinition('stopReason', makeNamedType('String')),
     ],
   };
 };

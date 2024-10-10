@@ -84,6 +84,16 @@ export class ConversationResolverGenerator {
       authResolverFunction,
       verifySessionOwnerAssistantResponseResolverFunction,
     );
+
+    this.createAssistantStreamingResponseResolver(
+      ctx,
+      directive,
+      capitalizedFieldName,
+      initResolverFunction,
+      authResolverFunction,
+      verifySessionOwnerAssistantResponseResolverFunction,
+    );
+
     this.createAssistantResponseSubscriptionResolver(ctx, directive, capitalizedFieldName);
   }
 
@@ -289,6 +299,44 @@ export class ConversationResolverGenerator {
 
     ctx.resolvers.addResolver('Mutation', directive.responseMutationName, resolver);
   }
+
+  private createAssistantStreamingResponseResolver(
+      ctx: TransformerContextProvider,
+      directive: ConversationDirectiveConfiguration,
+      capitalizedFieldName: string,
+      initResolverFunction: MappingTemplateProvider,
+      authResolverFunction: MappingTemplateProvider,
+      verifySessionOwnerResolverFunction: MappingTemplateProvider,
+    ): void {
+      const assistantResponseResolverResourceId = ResolverResourceIDs.ResolverResourceID('Mutation', directive.responseMutationName);
+      const assistantResponseResolverFunction = assistantMutationResolver(directive);
+      const conversationMessageDataSourceName = getModelDataSourceNameForTypeName(ctx, `ConversationMessage${capitalizedFieldName}`);
+      const conversationMessageDataSource = ctx.api.host.getDataSource(conversationMessageDataSourceName);
+      const resolver = new TransformerResolver(
+        'Mutation',
+        directive.responseMutationName,
+        assistantResponseResolverResourceId,
+        { codeMappingTemplate: assistantResponseResolverFunction },
+        ['init', 'auth', 'verifySessionOwner'],
+        [],
+        conversationMessageDataSource as any,
+        APPSYNC_JS_RUNTIME,
+      );
+
+      // Add init function
+      resolver.addJsFunctionToSlot('init', initResolverFunction);
+
+      // Add auth function
+      resolver.addJsFunctionToSlot('auth', authResolverFunction);
+
+      // Add verifySessionOwner function
+      const sessionModelName = `Conversation${capitalizedFieldName}`;
+      const sessionModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, sessionModelName);
+      const conversationSessionDDBDataSource = ctx.api.host.getDataSource(sessionModelDDBDataSourceName);
+      resolver.addJsFunctionToSlot('verifySessionOwner', verifySessionOwnerResolverFunction, conversationSessionDDBDataSource as any);
+
+      ctx.resolvers.addResolver('Mutation', directive.messageModel.assistantStreamingMutationField.name.value, resolver);
+    }
 
   /**
    * Creates the assistant response subscription resolver
