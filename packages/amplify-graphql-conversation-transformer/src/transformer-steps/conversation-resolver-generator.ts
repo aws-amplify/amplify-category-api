@@ -20,6 +20,7 @@ import { conversationMessageSubscriptionMappingTamplate } from '../resolvers/ass
 import { overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
 import pluralize from 'pluralize';
 import { listMessageInitMappingTemplate } from '../resolvers/list-messages-init-resolver';
+import { assistantStreamingMutationResolver } from '../resolvers/assistant-streaming-mutation-resolver';
 
 type KeyAttributeDefinition = {
   name: string;
@@ -308,13 +309,13 @@ export class ConversationResolverGenerator {
       authResolverFunction: MappingTemplateProvider,
       verifySessionOwnerResolverFunction: MappingTemplateProvider,
     ): void {
-      const assistantResponseResolverResourceId = ResolverResourceIDs.ResolverResourceID('Mutation', directive.responseMutationName);
-      const assistantResponseResolverFunction = assistantMutationResolver(directive);
+      const assistantResponseResolverResourceId = ResolverResourceIDs.ResolverResourceID('Mutation', directive.messageModel.assistantStreamingMutationField.name.value);
+      const assistantResponseResolverFunction = assistantStreamingMutationResolver(directive);
       const conversationMessageDataSourceName = getModelDataSourceNameForTypeName(ctx, `ConversationMessage${capitalizedFieldName}`);
       const conversationMessageDataSource = ctx.api.host.getDataSource(conversationMessageDataSourceName);
       const resolver = new TransformerResolver(
         'Mutation',
-        directive.responseMutationName,
+        directive.messageModel.assistantStreamingMutationField.name.value,
         assistantResponseResolverResourceId,
         { codeMappingTemplate: assistantResponseResolverFunction },
         ['init', 'auth', 'verifySessionOwner'],
