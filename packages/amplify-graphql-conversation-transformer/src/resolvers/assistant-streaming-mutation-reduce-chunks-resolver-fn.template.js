@@ -11,9 +11,7 @@ export function request(ctx) {
       runtime.earlyReturn(ctx.prev.result);
     }
     const { id, createdAt, updatedAt } = ctx.stash.defaultValues;
-
-    const streamItem = ctx.prev.result;
-    const { events } = streamItem;
+    const { events } = ctx.prev.result;
 
     const content = reduceChunks(events);
     const assistantMessage = {
@@ -74,18 +72,29 @@ function reduceChunks(events) {
 
   // Group events by contentBlockIndex
   const groupedEvents = events.reduce(function(acc, event) {
+    if (!acc[event.contentBlockIndex]) {
+      acc[event.contentBlockIndex] = [];
+    }
+
     if (event.contentBlockText) {
-      if (!acc[event.contentBlockIndex]) {
-        acc[event.contentBlockIndex] = [];
-      }
       acc[event.contentBlockIndex].push(event.contentBlockText);
+    }
+
+    if (event.contentBlockToolUse) {
+      acc[event.contentBlockIndex].push(event.contentBlockToolUse);
     }
     return acc;
   }, {});
 
   // Concatenate text for each content block
   const content = Object.keys(groupedEvents).map((index) => {
-    return { text: groupedEvents[index].join('') };
+    const contentBlock = groupedEvents[index];
+    // toolUse blocks are sent as a single event.
+    if (contentBlock.length === 1 && contentBlock[0].toolUseId) {
+      return { toolUse: contentBlock[0] };
+    }
+    // text blocks are chunked so we join them.
+    return { text: contentBlock.join('') };
   });
 
   return content;
