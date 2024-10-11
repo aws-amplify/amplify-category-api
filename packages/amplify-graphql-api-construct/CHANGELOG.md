@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.15.1-ai-streaming.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.15.0...@aws-amplify/graphql-api-construct@1.15.1-ai-streaming.0) (2024-10-11)
+
+**Note:** Version bump only for package @aws-amplify/graphql-api-construct
+
 # [1.15.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.14.0...@aws-amplify/graphql-api-construct@1.15.0) (2024-10-10)
 
 ### Bug Fixes
