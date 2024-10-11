@@ -35,8 +35,8 @@ export function request(ctx) {
     listQueryLimit: [[LIST_QUERY_LIMIT]],
   };
 
-  const disableStreaming = ctx.env['[[DISABLE_STREAMING_ENV_VAR]]'];
-  const responseMutation = disableStreaming === false
+  const disableStreaming = ctx.env['[[DISABLE_STREAMING_ENV_VAR]]'] === 'true';
+  const responseMutation = !!disableStreaming
     ? singleShotResponseMutation
     : streamingResponseMutation;
 
