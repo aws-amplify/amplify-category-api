@@ -6,9 +6,10 @@ import {
   TransformerAuthProvider,
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
+  TransformerPreProcessContextProvider,
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { DirectiveNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
+import { DirectiveNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode, OperationDefinitionNode } from 'graphql';
 import { ConversationModel } from './graphql-types/session-model';
 import { MessageModel } from './graphql-types/message-model';
 import { type ToolDefinition, type Tools } from './utils/tools';
@@ -66,6 +67,28 @@ export class ConversationTransformer extends TransformerPluginBase {
     this.prepareHandler = new ConversationPrepareHandler(modelTransformer, hasManyTransformer, belongsToTransformer, authProvider);
     this.resolverGenerator = new ConversationResolverGenerator(functionNameMap);
   }
+
+  preValidateSchema = (ctx: TransformerContextProvider): void => {
+    const mutations = ctx.inputDocument.definitions.filter(
+      (def): def is ObjectTypeDefinitionNode => def.kind === 'ObjectTypeDefinition' && def.name.value === 'Mutation',
+    );
+
+    const conversationMutations = mutations
+      .map((mut) => mut.fields)
+      .flat()
+      .map((field) => field?.directives)
+      .flat()
+      .find((directive): directive is DirectiveNode => directive?.name.value === 'conversation');
+
+    if (conversationMutations === undefined) {
+      console.log('no conversation mutations found');
+      return;
+    }
+
+    // TODO: add supporting types for conversation routes
+    // This is going to be a pain because DocumentNode.definitions is readonly.
+    // Maybe preValidateSchema can follow a similar pattern to mutateSchema and return a modified document?
+  };
 
   /**
    * Processes a field with the @conversation directive

@@ -21,8 +21,38 @@ const getSchema = (fileName: string, substitutions: Record<string, string> = {})
     const replaced = schema.replace(new RegExp(key, 'g'), value);
     schema = replaced;
   });
-  return schema + '\n' + conversationSchemaTypes;
+  return schema; // + '\n' + conversationSchemaTypes;
 };
+
+it('testme', () => {
+  const routeName = 'pirateChat';
+  const inputSchema = getSchema('conversation-route-custom-handler.graphql', { ROUTE_NAME: routeName });
+
+  const transformerManager = new TransformManager();
+  const stack = transformerManager.getTransformScope();
+  const customHandler = new Function(stack, 'conversation-handler', {
+    runtime: Runtime.NODEJS_18_X,
+    code: Code.fromInline('exports.handler = async (event) => { return "Hello World"; }'),
+    handler: 'index.handler',
+  });
+
+  const functionMap = {
+    [`Fn${routeName}`]: customHandler,
+  };
+
+  const out = transform(inputSchema, {}, defaultAuthConfig, functionMap, transformerManager);
+  expect(out).toBeDefined();
+
+  const expectedCustomHandlerArn = out.rawRootStack.resolve(customHandler.functionArn);
+  const conversationLambdaStackName = `${toUpper(routeName)}ConversationDirectiveLambdaStack`;
+  const conversationLambdaDataSourceName = `Fn${routeName}LambdaDataSource`;
+  const conversationLambdaDataSourceFunctionArnRef =
+    out.stacks[conversationLambdaStackName].Resources?.[conversationLambdaDataSourceName].Properties.LambdaConfig.LambdaFunctionArn.Ref;
+  const lambdaDataSourceFunctionArn =
+    out.rootStack.Resources?.[conversationLambdaStackName].Properties?.Parameters?.[conversationLambdaDataSourceFunctionArnRef];
+  expect(lambdaDataSourceFunctionArn).toEqual(expectedCustomHandlerArn);
+});
+
 
 describe('ConversationTransformer', () => {
   describe('valid schemas', () => {

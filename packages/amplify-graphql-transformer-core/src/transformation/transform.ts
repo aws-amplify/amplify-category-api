@@ -232,6 +232,13 @@ export class GraphQLTransform {
       allModelDefinitions = allModelDefinitions.concat(...transformer.typeDefinitions, transformer.directive);
     }
 
+    // Option 1. Add a preprocess step that corrects the schema before initial validation.
+    for (const transformer of this.transformers) {
+      if (isFunction(transformer.preValidateSchema)) {
+        transformer.preValidateSchema(context);
+      }
+    }
+
     const errors = validateModelSchema({
       kind: Kind.DOCUMENT,
       definitions: allModelDefinitions,

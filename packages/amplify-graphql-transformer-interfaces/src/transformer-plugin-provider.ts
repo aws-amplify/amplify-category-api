@@ -41,6 +41,13 @@ export interface TransformerPluginProvider {
   typeDefinitions: TypeDefinitionNode[];
 
   /**
+   * A pre-processing step executed prior to and separate from initial GraphQL schema validation.
+   * This method is used by plugins to make any necessary schema modifications
+   * before validation is done.
+   */
+  preValidateSchema?: (context: TransformerContextProvider) => void;
+
+  /**
    * The first method call in the pre-processing lifecycle giving opportunity
    * to build metadata prior to the mutation step which returns a mutated
    * schema
