@@ -3,12 +3,13 @@ import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-in
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration, ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
-import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { DeploymentResources, testTransform, TransformManager } from '@aws-amplify/graphql-transformer-test-utils';
 import { parse } from 'graphql';
 import { ConversationTransformer } from '..';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { Code, Function, IFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { GenerationTransformer } from '@aws-amplify/graphql-generation-transformer';
 import { toUpper } from 'graphql-transformer-common';
 
@@ -43,6 +44,40 @@ describe('ConversationTransformer', () => {
 
       const schema = parse(out.schema);
       validateModelSchema(schema);
+
+      expect(
+        out.stacks.ConversationMessagePirateChat.Resources![`ListConversationMessage${toUpper(routeName)}Resolver`].Properties
+          .PipelineConfig.Functions,
+      ).toHaveLength(4);
+    });
+
+    it('uses functionMap for custom handler', () => {
+      const routeName = 'pirateChat';
+      const inputSchema = getSchema('conversation-route-custom-handler.graphql', { ROUTE_NAME: routeName });
+
+      const transformerManager = new TransformManager();
+      const stack = transformerManager.getTransformScope();
+      const customHandler = new Function(stack, 'conversation-handler', {
+        runtime: Runtime.NODEJS_18_X,
+        code: Code.fromInline('exports.handler = async (event) => { return "Hello World"; }'),
+        handler: 'index.handler',
+      });
+
+      const functionMap = {
+        [`Fn${routeName}`]: customHandler,
+      };
+
+      const out = transform(inputSchema, {}, defaultAuthConfig, functionMap, transformerManager);
+      expect(out).toBeDefined();
+
+      const expectedCustomHandlerArn = out.rawRootStack.resolve(customHandler.functionArn);
+      const conversationLambdaStackName = `${toUpper(routeName)}ConversationDirectiveLambdaStack`;
+      const conversationLambdaDataSourceName = `Fn${routeName}LambdaDataSource`;
+      const conversationLambdaDataSourceFunctionArnRef =
+        out.stacks[conversationLambdaStackName].Resources?.[conversationLambdaDataSourceName].Properties.LambdaConfig.LambdaFunctionArn.Ref;
+      const lambdaDataSourceFunctionArn =
+        out.rootStack.Resources?.[conversationLambdaStackName].Properties?.Parameters?.[conversationLambdaDataSourceFunctionArnRef];
+      expect(lambdaDataSourceFunctionArn).toEqual(expectedCustomHandlerArn);
     });
   });
 
@@ -126,6 +161,8 @@ function transform(
   inputSchema: string,
   dataSourceStrategies?: Record<string, ModelDataSourceStrategy>,
   authConfig: AppSyncAuthConfiguration = defaultAuthConfig,
+  functionMap?: Record<string, IFunction>,
+  transformerManager?: TransformManager,
 ): DeploymentResources {
   const modelTransformer = new ModelTransformer();
   const authTransformer = new AuthTransformer();
@@ -141,7 +178,7 @@ function transform(
     hasManyTransformer,
     hasOneTransformer,
     belongsToTransformer,
-    new ConversationTransformer(modelTransformer, hasManyTransformer, belongsToTransformer, authTransformer),
+    new ConversationTransformer(modelTransformer, hasManyTransformer, belongsToTransformer, authTransformer, functionMap),
     new GenerationTransformer(),
     authTransformer,
   ];
@@ -151,6 +188,7 @@ function transform(
     authConfig,
     transformers,
     dataSourceStrategies,
+    transformerManager,
   });
 
   return out;
