@@ -4,12 +4,14 @@ import { copySync, moveSync, readFileSync, writeFileSync } from 'fs-extra';
 import {
   addApiWithoutSchema,
   amplifyPush,
+  amplifyPushForce,
   getProjectMeta,
   getScriptRunnerPath,
   initJSProjectWithProfile,
   nspawn as spawn,
   sleep,
   updateApiSchema,
+  addFeatureFlag,
 } from 'amplify-category-api-e2e-core';
 import { DynamoDBClient, DeleteTableCommand } from '@aws-sdk/client-dynamodb';
 
@@ -189,11 +191,9 @@ export const createGen1ProjectForMigration = async (
   await updateApiSchema(projRoot, name, schema);
   await amplifyPush(projRoot);
 
-  // TODO: can't use feature flag until released in CLI
   // The test should do a second push after enabling the feature flag to start the migration
-  // Add the feature flag and push before merging to main.
-  // addFeatureFlag(projRoot, 'graphqltransformer', 'enableGen2Migration', true);
-  // await amplifyPush(projRoot);
+  addFeatureFlag(projRoot, 'graphqltransformer', 'enablegen2migration', true);
+  await amplifyPushForce(projRoot);
 
   const meta = getProjectMeta(projRoot);
   const { output } = meta.api[name];
