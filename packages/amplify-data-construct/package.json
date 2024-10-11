@@ -157,7 +157,7 @@
     "semver"
   ],
   "dependencies": {
-    "@aws-amplify/ai-constructs": "0.0.0-test-20241010141034",
+    "@aws-amplify/ai-constructs": "0.0.0-test-20241011172758",
     "@aws-amplify/backend-output-schemas": "^1.0.0",
     "@aws-amplify/backend-output-storage": "^1.0.0",
     "@aws-amplify/graphql-api-construct": "1.15.1-ai-streaming.0",
