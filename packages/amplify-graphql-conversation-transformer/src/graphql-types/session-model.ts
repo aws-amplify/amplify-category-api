@@ -124,7 +124,6 @@ const createSessionModelDirective = (): DirectiveNode => {
   };
   return makeDirective('model', [
     makeArgument('subscriptions', subscriptionsOffValue),
-    makeArgument('mutations', makeValueNode({ update: null })),
   ]);
 };
 
