@@ -49,9 +49,9 @@ export function request(ctx) {
   .filter((k) => event[k] != null)
   .reduce((a, k) => ({ ...a, [k]: event[k] }), {});
 
-  // TODO: add owner to stream item. `owner` is a reserved keyword in DDB, so we have to use an expression attribute name (alias).
+  // TODO: Use expression names for all attributes.
   // reference: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ReservedWords.html
-  const setExpression = 'SET events = list_append(if_not_exists(events, :empty_list), :events), conversationId = :conversationId'
+  const setExpression = 'SET events = list_append(if_not_exists(events, :empty_list), :events), conversationId = :conversationId, #owner = :owner'
   const id = streamId
   return {
     operation: 'UpdateItem',
@@ -62,7 +62,11 @@ export function request(ctx) {
         ':events': [chunk],
         ':empty_list': [],
         ':conversationId': conversationId,
+        ':owner': owner,
       }),
+      expressionNames: {
+        '#owner': 'owner',
+      },
     },
   };
 }
