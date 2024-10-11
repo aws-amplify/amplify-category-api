@@ -30,6 +30,10 @@ export const invokeLambdaMappingTemplate = (config: ConversationDirectiveConfigu
   const LIST_QUERY_INPUT_TYPE_NAME = `ModelConversationMessage${toUpper(config.field.name.value)}FilterInput`;
   const LIST_QUERY_LIMIT = 'undefined';
 
+  const STREAMING_RESPONSE_MUTATION_NAME = config.messageModel.assistantStreamingMutationField.name.value;
+  const STREAMING_RESPONSE_MUTATION_INPUT_TYPE_NAME = config.messageModel.assistantStreamingMutationInput.name.value;
+  const DISABLE_STREAMING_ENV_VAR = `${config.field.name.value}_DISABLE_STREAMING`;
+
   const substitutions = {
     TOOL_DEFINITIONS_LINE,
     TOOLS_CONFIGURATION_LINE,
@@ -43,6 +47,9 @@ export const invokeLambdaMappingTemplate = (config: ConversationDirectiveConfigu
     LIST_QUERY_NAME,
     LIST_QUERY_INPUT_TYPE_NAME,
     LIST_QUERY_LIMIT,
+    STREAMING_RESPONSE_MUTATION_NAME,
+    STREAMING_RESPONSE_MUTATION_INPUT_TYPE_NAME,
+    DISABLE_STREAMING_ENV_VAR,
   };
 
   let resolver = fs.readFileSync(path.join(__dirname, 'invoke-lambda-resolver-fn.template.js'), 'utf8');

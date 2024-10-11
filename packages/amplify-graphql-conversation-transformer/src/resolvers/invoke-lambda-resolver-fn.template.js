@@ -7,11 +7,18 @@ export function request(ctx) {
   [[TOOL_DEFINITIONS_LINE]]
   const selectionSet = '[[SELECTION_SET]]';
 
-  const responseMutation = {
+  const singleShotResponseMutation = {
     name: '[[RESPONSE_MUTATION_NAME]]',
     inputTypeName: '[[RESPONSE_MUTATION_INPUT_TYPE_NAME]]',
     selectionSet,
   };
+
+  const streamingResponseMutation = {
+    name: '[[STREAMING_RESPONSE_MUTATION_NAME]]',
+    inputTypeName: '[[STREAMING_RESPONSE_MUTATION_INPUT_TYPE_NAME]]',
+    selectionSet,
+  };
+
   const currentMessageId = ctx.stash.defaultValues.id;
   [[MODEL_CONFIGURATION_LINE]]
 
@@ -28,6 +35,11 @@ export function request(ctx) {
     listQueryLimit: [[LIST_QUERY_LIMIT]],
   };
 
+  const disableStreaming = ctx.env['[[DISABLE_STREAMING_ENV_VAR]]'];
+  const responseMutation = disableStreaming === false
+    ? singleShotResponseMutation
+    : streamingResponseMutation;
+
   const authHeader = request.headers['authorization'];
   const payload = {
     conversationId: args.conversationId,
@@ -38,6 +50,7 @@ export function request(ctx) {
     request: { headers: { authorization: authHeader } },
     messageHistoryQuery,
     toolsConfiguration,
+    streamResponse: !disableStreaming,
   };
 
   return {
