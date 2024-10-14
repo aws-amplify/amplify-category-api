@@ -10,6 +10,7 @@ interface ConversationMessage {
   content: [ContentBlock]
   context: AWSJSON
   toolConfiguration: ToolConfiguration
+  associatedUserMessageId: ID
 }
 
 input DocumentBlockSourceInput {

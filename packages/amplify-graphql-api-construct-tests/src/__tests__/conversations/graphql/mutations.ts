@@ -13,10 +13,6 @@ export const createAssistantResponsePirateChat = /* GraphQL */ `mutation CreateA
 ) {
   createAssistantResponsePirateChat(input: $input) {
     aiContext
-    assistantContent {
-      text
-      __typename
-    }
     content {
       text
       __typename
@@ -49,10 +45,6 @@ export const createConversationMessagePirateChat = /* GraphQL */ `mutation Creat
 ) {
   createConversationMessagePirateChat(condition: $condition, input: $input) {
     aiContext
-    assistantContent {
-      text
-      __typename
-    }
     content {
       text
       __typename
@@ -104,10 +96,6 @@ export const deleteConversationMessagePirateChat = /* GraphQL */ `mutation Delet
 ) {
   deleteConversationMessagePirateChat(condition: $condition, input: $input) {
     aiContext
-    assistantContent {
-      text
-      __typename
-    }
     content {
       text
       __typename
@@ -181,10 +169,6 @@ export const pirateChat = /* GraphQL */ `mutation PirateChat(
     updatedAt
 
     ... on ConversationMessagePirateChat {
-      assistantContent {
-        text
-        __typename
-      }
       conversation {
         createdAt
         id

@@ -4,6 +4,8 @@ import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-tran
 import fs from 'fs';
 import path from 'path';
 import dedent from 'ts-dedent';
+import { toUpper } from 'graphql-transformer-common';
+import pluralize from 'pluralize';
 
 /**
  * Creates a mapping template for invoking a Lambda function in the context of a GraphQL conversation.
@@ -20,6 +22,14 @@ export const invokeLambdaMappingTemplate = (config: ConversationDirectiveConfigu
   const RESPONSE_MUTATION_INPUT_TYPE_NAME = config.responseMutationInputTypeName;
   const MESSAGE_MODEL_NAME = config.messageModel.messageModel.name.value;
 
+  // TODO: Create and add these values to `ConversationDirectiveConfiguration` in an earlier step and
+  // access them here.
+  const GET_QUERY_NAME = `getConversationMessage${toUpper(config.field.name.value)}`;
+  const GET_QUERY_INPUT_TYPE_NAME = 'ID';
+  const LIST_QUERY_NAME = `listConversationMessage${toUpper(pluralize(config.field.name.value))}`;
+  const LIST_QUERY_INPUT_TYPE_NAME = `ModelConversationMessage${toUpper(config.field.name.value)}FilterInput`;
+  const LIST_QUERY_LIMIT = 'undefined';
+
   const substitutions = {
     TOOL_DEFINITIONS_LINE,
     TOOLS_CONFIGURATION_LINE,
@@ -28,6 +38,11 @@ export const invokeLambdaMappingTemplate = (config: ConversationDirectiveConfigu
     RESPONSE_MUTATION_NAME,
     RESPONSE_MUTATION_INPUT_TYPE_NAME,
     MESSAGE_MODEL_NAME,
+    GET_QUERY_NAME,
+    GET_QUERY_INPUT_TYPE_NAME,
+    LIST_QUERY_NAME,
+    LIST_QUERY_INPUT_TYPE_NAME,
+    LIST_QUERY_LIMIT,
   };
 
   let resolver = fs.readFileSync(path.join(__dirname, 'invoke-lambda-resolver-fn.template.js'), 'utf8');

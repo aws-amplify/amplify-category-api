@@ -3,6 +3,7 @@ import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interf
 import { GenerationConfigurationWithToolConfig, InferenceConfiguration } from '../grapqhl-generation-transformer';
 import fs from 'fs';
 import path from 'path';
+import { getBaseType } from 'graphql-transformer-common';
 
 /**
  * Creates the resolver functions for invoking Amazon Bedrock.
@@ -17,11 +18,20 @@ export const createInvokeBedrockResolverFunction = (config: GenerationConfigurat
   const SYSTEM_PROMPT = JSON.stringify(config.systemPrompt);
   const INFERENCE_CONFIG = getInferenceConfigResolverDefinition(inferenceConfiguration);
 
+  const NON_STRING_RESPONSE_HANDLING = stringTypedScalarTypes.includes(getBaseType(config.field.type))
+    ? ''
+    : `// Added for non-string scalar response types
+  // This catches the occasional stringified JSON response.
+  if (typeof value === 'string') {
+    return JSON.parse(value);
+  }`;
+
   const resolver = generateResolver('invoke-bedrock-resolver-fn.template.js', {
     AI_MODEL,
     TOOL_CONFIG,
     SYSTEM_PROMPT,
     INFERENCE_CONFIG,
+    NON_STRING_RESPONSE_HANDLING,
   });
 
   const templateName = `${field.name.value}-invoke-bedrock-fn`;
@@ -45,6 +55,8 @@ const generateResolver = (fileName: string, values: Record<string, string>): str
  */
 const getInferenceConfigResolverDefinition = (inferenceConfiguration?: InferenceConfiguration): string => {
   return inferenceConfiguration && Object.keys(inferenceConfiguration).length > 0
-    ? `{ inferenceConfig: ${JSON.stringify(inferenceConfiguration)} },`
+    ? `{ inferenceConfig: ${JSON.stringify(inferenceConfiguration)} }`
     : 'undefined';
 };
+
+const stringTypedScalarTypes = ['String', 'ID', 'AWSJSON'];
