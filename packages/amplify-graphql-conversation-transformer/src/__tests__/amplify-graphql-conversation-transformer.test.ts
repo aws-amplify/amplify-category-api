@@ -1,10 +1,10 @@
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration, ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DeploymentResources, testTransform, TransformManager } from '@aws-amplify/graphql-transformer-test-utils';
-import { parse } from 'graphql';
+import { DocumentNode, parse, print } from 'graphql';
 import { ConversationTransformer } from '..';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 import * as fs from 'fs-extra';
@@ -22,36 +22,6 @@ const getSchema = (fileName: string, substitutions: Record<string, string> = {})
   return schema;
 };
 
-it('testme', () => {
-  const routeName = 'pirateChat';
-  const inputSchema = getSchema('conversation-route-custom-handler.graphql', { ROUTE_NAME: routeName });
-
-  const transformerManager = new TransformManager();
-  const stack = transformerManager.getTransformScope();
-  const customHandler = new Function(stack, 'conversation-handler', {
-    runtime: Runtime.NODEJS_18_X,
-    code: Code.fromInline('exports.handler = async (event) => { return "Hello World"; }'),
-    handler: 'index.handler',
-  });
-
-  const functionMap = {
-    [`Fn${routeName}`]: customHandler,
-  };
-
-  const out = transform(inputSchema, {}, defaultAuthConfig, functionMap, transformerManager);
-  expect(out).toBeDefined();
-
-  const expectedCustomHandlerArn = out.rawRootStack.resolve(customHandler.functionArn);
-  const conversationLambdaStackName = `${toUpper(routeName)}ConversationDirectiveLambdaStack`;
-  const conversationLambdaDataSourceName = `Fn${routeName}LambdaDataSource`;
-  const conversationLambdaDataSourceFunctionArnRef =
-    out.stacks[conversationLambdaStackName].Resources?.[conversationLambdaDataSourceName].Properties.LambdaConfig.LambdaFunctionArn.Ref;
-  const lambdaDataSourceFunctionArn =
-    out.rootStack.Resources?.[conversationLambdaStackName].Properties?.Parameters?.[conversationLambdaDataSourceFunctionArnRef];
-  expect(lambdaDataSourceFunctionArn).toEqual(expectedCustomHandlerArn);
-});
-
-
 describe('ConversationTransformer', () => {
   describe('valid schemas', () => {
     it.each([
@@ -66,12 +36,14 @@ describe('ConversationTransformer', () => {
       const routeName = 'pirateChat';
       const inputSchema = getSchema(schemaFile, { ROUTE_NAME: routeName });
 
-      const out = transform(inputSchema);
+      const { transform, preProcessSchema } = createTransformer();
+      const schema = preProcessSchema(inputSchema);
+      const out = transform(schema);
       expect(out).toBeDefined();
       assertResolverSnapshot(routeName, out);
 
-      const schema = parse(out.schema);
-      validateModelSchema(schema);
+      const transformedSchema = parse(out.schema);
+      validateModelSchema(transformedSchema);
 
       expect(
         out.stacks.ConversationMessagePirateChat.Resources![`ListConversationMessage${toUpper(routeName)}Resolver`].Properties
@@ -95,7 +67,9 @@ describe('ConversationTransformer', () => {
         [`Fn${routeName}`]: customHandler,
       };
 
-      const out = transform(inputSchema, {}, defaultAuthConfig, functionMap, transformerManager);
+      const { transform, preProcessSchema } = createTransformer({}, defaultAuthConfig, functionMap, transformerManager);
+      const schema = preProcessSchema(inputSchema);
+      const out = transform(schema);
       expect(out).toBeDefined();
 
       const expectedCustomHandlerArn = out.rawRootStack.resolve(customHandler.functionArn);
@@ -112,7 +86,9 @@ describe('ConversationTransformer', () => {
   describe('invalid schemas', () => {
     it('should throw an error if the return type is not ConversationMessage', () => {
       const inputSchema = getSchema('conversation-route-invalid-return-type.graphql');
-      expect(() => transform(inputSchema)).toThrow('@conversation return type must be ConversationMessage');
+      const { transform, preProcessSchema } = createTransformer();
+      const schema = preProcessSchema(inputSchema);
+      expect(() => transform(schema)).toThrow('@conversation return type must be ConversationMessage');
     });
 
     it.each([
@@ -120,7 +96,9 @@ describe('ConversationTransformer', () => {
       ['systemPrompt', 'conversation-route-invalid-missing-system-prompt.graphql'],
     ])('should throw an error when %s is missing in directive definition', (argName, schemaFile) => {
       const inputSchema = getSchema(schemaFile);
-      expect(() => transform(inputSchema)).toThrow(
+      const { transform, preProcessSchema } = createTransformer();
+      const schema = preProcessSchema(inputSchema);
+      expect(() => transform(schema)).toThrow(
         `Directive "@conversation" argument "${argName}" of type "String!" is required, but it was not provided.`,
       );
     });
@@ -135,7 +113,9 @@ describe('ConversationTransformer', () => {
       ])('throws error for %s with value %s', (param, value, errorMessage) => {
         const INFERENENCE_CONFIGURATION = `inferenceConfiguration: { ${param}: ${value} }`;
         const inputSchema = getSchema('conversation-route-inference-configuration-template.graphql', { INFERENENCE_CONFIGURATION });
-        expect(() => transform(inputSchema)).toThrow(`@conversation directive ${param} valid range: ${errorMessage}. Provided: ${value}`);
+        const { transform, preProcessSchema } = createTransformer();
+        const schema = preProcessSchema(inputSchema);
+        expect(() => transform(schema)).toThrow(`@conversation directive ${param} valid range: ${errorMessage}. Provided: ${value}`);
       });
     });
   });
@@ -168,16 +148,6 @@ const getResolverResource = (mutationName: string, resources?: Record<string, an
   return resources?.[resolverName];
 };
 
-const getResolverFnResource = (mutationName: string, resources: DeploymentResources): string => {
-  const resolverFnCode =
-    resources.rootStack.Resources &&
-    Object.entries(resources.rootStack.Resources).find(([key, _]) => key.startsWith(`Mutation${toUpper(mutationName)}DataResolverFn`))?.[1][
-      'Properties'
-    ]['Code'];
-
-  return resolverFnCode;
-};
-
 const defaultAuthConfig: AppSyncAuthConfiguration = {
   defaultAuthentication: {
     authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -185,13 +155,15 @@ const defaultAuthConfig: AppSyncAuthConfiguration = {
   additionalAuthenticationProviders: [],
 };
 
-function transform(
-  inputSchema: string,
+function createTransformer(
   dataSourceStrategies?: Record<string, ModelDataSourceStrategy>,
   authConfig: AppSyncAuthConfiguration = defaultAuthConfig,
   functionMap?: Record<string, IFunction>,
   transformerManager?: TransformManager,
-): DeploymentResources {
+): {
+  transform: (schema: string) => DeploymentResources & { logs: any[] };
+  preProcessSchema: (schema: string) => string;
+} {
   const modelTransformer = new ModelTransformer();
   const authTransformer = new AuthTransformer();
   const indexTransformer = new IndexTransformer();
@@ -211,13 +183,16 @@ function transform(
     authTransformer,
   ];
 
-  const out = testTransform({
-    schema: inputSchema,
-    authConfig,
-    transformers,
-    dataSourceStrategies,
-    transformerManager,
-  });
-
-  return out;
+  return {
+    transform: (schema: string) => testTransform({
+      schema,
+      authConfig,
+      transformers,
+      dataSourceStrategies,
+      transformerManager,
+    }),
+    preProcessSchema: (schema: string) => {
+      return print(new GraphQLTransform({ authConfig, transformers }).preProcessSchema(parse(schema)));
+    },
+  }
 }
