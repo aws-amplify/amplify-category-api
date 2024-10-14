@@ -1,7 +1,7 @@
 import { ConversationDirective } from '@aws-amplify/graphql-directives';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
+import { TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerAuthProvider,
   TransformerContextProvider,
@@ -9,13 +9,14 @@ import {
   TransformerPreProcessContextProvider,
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { DirectiveNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode, OperationDefinitionNode } from 'graphql';
+import { DirectiveNode, DocumentNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { ConversationModel } from './graphql-types/session-model';
 import { MessageModel } from './graphql-types/message-model';
 import { type ToolDefinition, type Tools } from './utils/tools';
 import { ConversationPrepareHandler } from './transformer-steps/conversation-prepare-handler';
 import { ConversationResolverGenerator } from './transformer-steps/conversation-resolver-generator';
 import { ConversationFieldHandler } from './transformer-steps/conversation-field-handler';
+import { ConversationSchemaMutator } from './transformer-steps/conversation-schema-mutator';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 /**
@@ -51,6 +52,7 @@ export type ConversationInferenceConfiguration = {
  */
 export class ConversationTransformer extends TransformerPluginBase {
   private directives: ConversationDirectiveConfiguration[] = [];
+  private schemaMutator: ConversationSchemaMutator;
   private fieldHandler: ConversationFieldHandler;
   private prepareHandler: ConversationPrepareHandler;
   private resolverGenerator: ConversationResolverGenerator;
@@ -66,28 +68,11 @@ export class ConversationTransformer extends TransformerPluginBase {
     this.fieldHandler = new ConversationFieldHandler();
     this.prepareHandler = new ConversationPrepareHandler(modelTransformer, hasManyTransformer, belongsToTransformer, authProvider);
     this.resolverGenerator = new ConversationResolverGenerator(functionNameMap);
+    this.schemaMutator = new ConversationSchemaMutator();
   }
 
-  preValidateSchema = (ctx: TransformerContextProvider): void => {
-    const mutations = ctx.inputDocument.definitions.filter(
-      (def): def is ObjectTypeDefinitionNode => def.kind === 'ObjectTypeDefinition' && def.name.value === 'Mutation',
-    );
-
-    const conversationMutations = mutations
-      .map((mut) => mut.fields)
-      .flat()
-      .map((field) => field?.directives)
-      .flat()
-      .find((directive): directive is DirectiveNode => directive?.name.value === 'conversation');
-
-    if (conversationMutations === undefined) {
-      console.log('no conversation mutations found');
-      return;
-    }
-
-    // TODO: add supporting types for conversation routes
-    // This is going to be a pain because DocumentNode.definitions is readonly.
-    // Maybe preValidateSchema can follow a similar pattern to mutateSchema and return a modified document?
+  mutateSchema = (ctx: TransformerPreProcessContextProvider): DocumentNode => {
+    return this.schemaMutator.mutateSchema(ctx);
   };
 
   /**
@@ -123,10 +108,3 @@ export class ConversationTransformer extends TransformerPluginBase {
     this.prepareHandler.prepare(ctx, this.directives);
   };
 }
-
-const validate = (config: ConversationDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-  const { field } = config;
-  if (field.type.kind !== 'NamedType' || field.type.name.value !== 'ConversationMessage') {
-    throw new InvalidDirectiveError('@conversation return type must be ConversationMessage');
-  }
-};
