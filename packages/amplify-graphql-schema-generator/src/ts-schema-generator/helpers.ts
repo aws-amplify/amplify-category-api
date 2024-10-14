@@ -1,7 +1,7 @@
 import ts from 'typescript';
 import { TYPESCRIPT_DATA_SCHEMA_CONSTANTS } from 'graphql-transformer-common';
 import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
-import { DBEngineType, Field, FieldType, Model, Schema } from '../schema-representation';
+import { DBEngineType, Field, Model, Schema } from '../schema-representation';
 
 const GQL_TYPESCRIPT_DATA_SCHEMA_TYPE_MAP = {
   string: 'string',
@@ -27,32 +27,47 @@ const GQL_TYPESCRIPT_DATA_SCHEMA_TYPE_MAP = {
  * @returns Typescript data schema property in TS Node format
  */
 const createProperty = (field: Field): ts.Node => {
-  const typeExpression = createDataType(field.type);
+  const typeExpression = createDataType(field);
   return ts.factory.createPropertyAssignment(ts.factory.createIdentifier(field.name), typeExpression as ts.Expression);
 };
 
 /**
  * Creates a typescript data schema type from internal SQL schema representation
  * Example typescript data schema type output: `a.string().required()`
- * @param type SQL IR field type
+ * @param field SQL IR field
  * @returns Typescript data schema type in TS Node format
  */
-const createDataType = (type: FieldType): ts.Node => {
-  if (type.kind === 'Scalar') {
+const createDataType = (field: Field): ts.Node => {
+  const baseType = field.type.kind === 'NonNull' ? field.type.type : field.type;
+
+  if (field.default?.kind === 'DB_GENERATED' && baseType.kind === 'Scalar' && baseType.name === 'Int') {
+    const baseTypeExpression =
+      field.type.kind === 'NonNull'
+        ? createDataType(new Field(field.name, field.type.type))
+        : createDataType(new Field(field.name, field.type));
+
     return ts.factory.createCallExpression(
-      ts.factory.createIdentifier(`${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REFERENCE_A}.${getTypescriptDataSchemaType(type.name)}`),
+      ts.factory.createPropertyAccessExpression(baseTypeExpression as ts.Expression, TYPESCRIPT_DATA_SCHEMA_CONSTANTS.DEFAULT_METHOD),
       undefined,
       undefined,
     );
   }
 
-  if (type.kind === 'Enum') {
+  if (field.type.kind === 'Scalar') {
+    return ts.factory.createCallExpression(
+      ts.factory.createIdentifier(`${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REFERENCE_A}.${getTypescriptDataSchemaType(field.type.name)}`),
+      undefined,
+      undefined,
+    );
+  }
+
+  if (field.type.kind === 'Enum') {
     return ts.factory.createCallExpression(
       ts.factory.createIdentifier(`${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REFERENCE_A}.${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.ENUM_METHOD}`),
       undefined,
       [
         ts.factory.createArrayLiteralExpression(
-          type.values.map((value) => ts.factory.createStringLiteral(value)),
+          field.type.values.map((value) => ts.factory.createStringLiteral(value)),
           true,
         ),
       ],
@@ -61,7 +76,7 @@ const createDataType = (type: FieldType): ts.Node => {
 
   // We do not import any Database type as 'Custom' type.
   // In case if there is a custom type in the IR schema, we will import it as string.
-  if (type.kind === 'Custom') {
+  if (field.type.kind === 'Custom') {
     return ts.factory.createCallExpression(
       ts.factory.createIdentifier(`${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REFERENCE_A}.${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.STRING_METHOD}`),
       undefined,
@@ -70,9 +85,11 @@ const createDataType = (type: FieldType): ts.Node => {
   }
 
   // List or NonNull
-  const modifier = type.kind === 'List' ? TYPESCRIPT_DATA_SCHEMA_CONSTANTS.ARRAY_METHOD : TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REQUIRED_METHOD;
+  const modifier =
+    field.type.kind === 'List' ? TYPESCRIPT_DATA_SCHEMA_CONSTANTS.ARRAY_METHOD : TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REQUIRED_METHOD;
+  const unwrappedField = new Field(field.name, field.type.type);
   return ts.factory.createCallExpression(
-    ts.factory.createPropertyAccessExpression(createDataType(type.type) as ts.Expression, ts.factory.createIdentifier(modifier)),
+    ts.factory.createPropertyAccessExpression(createDataType(unwrappedField) as ts.Expression, ts.factory.createIdentifier(modifier)),
     undefined,
     undefined,
   );
