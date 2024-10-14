@@ -122,9 +122,7 @@ const createSessionModelDirective = (): DirectiveNode => {
       },
     ],
   };
-  return makeDirective('model', [
-    makeArgument('subscriptions', subscriptionsOffValue),
-  ]);
+  return makeDirective('model', [makeArgument('subscriptions', subscriptionsOffValue)]);
 };
 
 /**
