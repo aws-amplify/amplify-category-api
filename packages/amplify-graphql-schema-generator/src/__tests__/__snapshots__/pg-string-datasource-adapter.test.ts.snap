@@ -279,3 +279,38 @@ Array [
   },
 ]
 `;
+
+exports[`testPostgresStringDataSourceAdapter sets the model field correctly from a schema with a SERIAL field 1`] = `
+Array [
+  Object {
+    "default": Object {
+      "kind": "DB_GENERATED",
+      "value": "nextval('serial_table_id_seq'::regclass)",
+    },
+    "length": "",
+    "name": "id",
+    "type": Object {
+      "kind": "NonNull",
+      "type": Object {
+        "kind": "Scalar",
+        "name": "Int",
+      },
+    },
+  },
+  Object {
+    "default": Object {
+      "kind": "DB_GENERATED",
+      "value": "nextval('serial_table_number_seq'::regclass)",
+    },
+    "length": "",
+    "name": "number",
+    "type": Object {
+      "kind": "NonNull",
+      "type": Object {
+        "kind": "Scalar",
+        "name": "Int",
+      },
+    },
+  },
+]
+`;

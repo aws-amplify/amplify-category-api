@@ -155,5 +155,16 @@ comments,comment_text,NULL,4,varchar,varchar(30),NO,30,NULL,NULL,NULL,NULL`,
 "stories",NULL,NULL,"placeholder",NULL,3,"character","bpchar","NO",1,NULL,NULL,NULL
 "stories",NULL,NULL,"pub_id",NULL,1,"integer","int4","NO",NULL,"stories_pkey","PRIMARY KEY","pub_id, pub_type"
 "stories",NULL,NULL,"pub_type","'S'::bpchar",2,"character","bpchar","NO",1,"stories_pkey","PRIMARY KEY","pub_id, pub_type"`,
+    /*
+     * CREATE TABLE serial_table (
+     * id SERIAL PRIMARY KEY,
+     * number SERIAL,
+     * );
+     */
+    serial: `
+      "table_name","enum_name","enum_values","column_name","column_default","ordinal_position","data_type","udt_name","is_nullable","character_maximum_length","indexname","constraint_type","index_columns"
+      serial_table,,,id,nextval('serial_table_id_seq'::regclass),1,integer,int4,NO,,serial_table_pkey,PRIMARY KEY,id
+      serial_table,,,number,nextval('serial_table_number_seq'::regclass),2,integer,int4,NO,,,,
+    `,
   },
 };

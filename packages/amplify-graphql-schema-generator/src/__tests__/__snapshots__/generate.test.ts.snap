@@ -145,6 +145,19 @@ type Story @refersTo(name: \\"stories\\") @model {
 "
 `;
 
+exports[`generate graphqlSchemaFromSQLSchema creates graphql schema from "postgres" "serial" schema 1`] = `
+"input AMPLIFY {
+ engine: String = \\"postgres\\"  
+}
+
+
+type SerialTable @refersTo(name: \\"      serial_table\\") @model {
+  id: Int! @primaryKey
+  number: Int
+}
+"
+`;
+
 exports[`generate graphqlSchemaFromSQLSchema creates graphql schema from "postgres" "todo" schema 1`] = `
 "input AMPLIFY {
  engine: String = \\"postgres\\"  
