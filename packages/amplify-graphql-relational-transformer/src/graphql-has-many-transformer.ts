@@ -9,44 +9,30 @@ import {
   getStrategyDbTypeFromTypeNode,
 } from '@aws-amplify/graphql-transformer-core';
 import {
-  ModelDataSourceStrategy,
   ModelDataSourceStrategyDbType,
-  TransformerContextProvider,
-  TransformerPreProcessContextProvider,
-  TransformerPrepareStepContextProvider,
+  TransformerContextProvider, TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
-  TransformerTransformSchemaStepContextProvider,
+  TransformerTransformSchemaStepContextProvider
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Annotations } from 'aws-cdk-lib';
 import {
-  DirectiveNode,
-  DocumentNode,
-  FieldDefinitionNode,
+  DirectiveNode, FieldDefinitionNode,
   InterfaceTypeDefinitionNode,
   NamedTypeNode,
-  ObjectTypeDefinitionNode,
-  ObjectTypeExtensionNode,
-  Kind,
+  ObjectTypeDefinitionNode, Kind
 } from 'graphql';
-import { getBaseType, isListType, isNonNullType, makeField, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
-import produce from 'immer';
-import { WritableDraft } from 'immer/dist/types/types-external';
+import { isListType } from 'graphql-transformer-common';
 import { getHasManyDirectiveTransformer } from './has-many/has-many-directive-transformer-factory';
 import {
-  addFieldsToDefinition,
-  convertSortKeyFieldsToSortKeyConnectionFields,
   ensureHasManyConnectionField,
-  extendTypeWithConnection,
-  getSortKeyFieldsNoContext,
+  extendTypeWithConnection
 } from './schema';
 import { HasManyDirectiveConfiguration } from './types';
 import {
-  getConnectionAttributeName,
-  getObjectPrimaryKey,
   getRelatedType,
   validateDisallowedDataStoreRelationships,
   validateModelDirective,
-  validateRelatedModelDirective,
+  validateRelatedModelDirective
 } from './utils';
 
 export class HasManyTransformer extends TransformerPluginBase {
@@ -76,51 +62,6 @@ export class HasManyTransformer extends TransformerPluginBase {
 
     validate(args, context as TransformerContextProvider);
     this.directiveList.push(args);
-  };
-
-  /** During the preProcess step, modify the document node and return it
-   * so that it represents any schema modifications the plugin needs
-   */
-  mutateSchema = (context: TransformerPreProcessContextProvider): DocumentNode => {
-    const resultDoc: DocumentNode = produce(context.inputDocument, (draftDoc) => {
-      const connectingFieldsMap = new Map<string, Array<WritableDraft<FieldDefinitionNode>>>(); // key: type name | value: connecting field
-      const filteredDefs = draftDoc?.definitions?.filter(
-        (def) => def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension',
-      );
-      const objectDefs = filteredDefs as Array<WritableDraft<ObjectTypeDefinitionNode | ObjectTypeExtensionNode>>;
-      // First iteration builds a map of the hasMany connecting fields that need to exist, second iteration ensures they exist
-      objectDefs?.forEach((def) => {
-        const filteredFields = def?.fields?.filter((field) => field?.directives?.some((dir) => dir.name.value === HasManyDirective.name));
-        filteredFields?.forEach((field) => {
-          const baseFieldType = getBaseType(field.type);
-          const connectionAttributeName = getConnectionAttributeName(
-            context.transformParameters,
-            def.name.value,
-            field.name.value,
-            getObjectPrimaryKey(def as ObjectTypeDefinitionNode).name.value,
-          );
-          const newField = makeField(
-            connectionAttributeName,
-            [],
-            isNonNullType(field.type) ? makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'),
-            [],
-          );
-          const sortKeyFields = convertSortKeyFieldsToSortKeyConnectionFields(getSortKeyFieldsNoContext(def), def, field);
-          const allNewFields = [newField, ...sortKeyFields];
-          connectingFieldsMap.set(baseFieldType, allNewFields as Array<WritableDraft<FieldDefinitionNode>>);
-        });
-      });
-
-      objectDefs
-        ?.filter((def) => connectingFieldsMap.has(def.name.value))
-        ?.forEach((def) => {
-          const fieldsToAdd = connectingFieldsMap.get(def.name.value);
-          if (fieldsToAdd) {
-            addFieldsToDefinition(def, fieldsToAdd);
-          }
-        });
-    });
-    return resultDoc;
   };
 
   /**

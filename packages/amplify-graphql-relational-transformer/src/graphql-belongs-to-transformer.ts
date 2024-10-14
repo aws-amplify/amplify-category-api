@@ -10,35 +10,27 @@ import {
 } from '@aws-amplify/graphql-transformer-core';
 import {
   ModelDataSourceStrategyDbType,
-  TransformerContextProvider,
-  TransformerPreProcessContextProvider,
-  TransformerPrepareStepContextProvider,
+  TransformerContextProvider, TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
-  TransformerTransformSchemaStepContextProvider,
+  TransformerTransformSchemaStepContextProvider
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { BelongsToDirective } from '@aws-amplify/graphql-directives';
 import { Annotations } from 'aws-cdk-lib';
 import {
-  DirectiveNode,
-  DocumentNode,
-  FieldDefinitionNode,
+  DirectiveNode, FieldDefinitionNode,
   InterfaceTypeDefinitionNode,
   NamedTypeNode,
   ObjectTypeDefinitionNode,
-  Kind,
+  Kind
 } from 'graphql';
-import { getBaseType, isListType, isNonNullType, makeField, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
-import produce from 'immer';
-import { WritableDraft } from 'immer/dist/types/types-external';
+import { getBaseType, isListType } from 'graphql-transformer-common';
 import { getBelongsToDirectiveTransformer } from './belongs-to/belongs-to-directive-transformer-factory';
 import { ensureBelongsToConnectionField } from './schema';
-import { BelongsToDirectiveConfiguration, ObjectDefinition } from './types';
+import { BelongsToDirectiveConfiguration } from './types';
 import {
-  getConnectionAttributeName,
-  getObjectPrimaryKey,
   getRelatedType,
   validateModelDirective,
-  validateRelatedModelDirective,
+  validateRelatedModelDirective
 } from './utils';
 
 /**
@@ -70,58 +62,6 @@ export class BelongsToTransformer extends TransformerPluginBase {
 
     validate(args, context as TransformerContextProvider);
     this.directiveList.push(args);
-  };
-
-  /** During the preProcess step, modify the document node and return it
-   * so that it represents any schema modifications the plugin needs
-   */
-  mutateSchema = (context: TransformerPreProcessContextProvider): DocumentNode => {
-    const resultDoc: DocumentNode = produce(context.inputDocument, (draftDoc) => {
-      const objectTypeMap = new Map<string, WritableDraft<ObjectDefinition>>(); // key: type name | value: object type node
-      // First iteration builds a map of the object types to reference for relation types
-      const filteredDefs = draftDoc?.definitions?.filter(
-        (def) => def.kind === 'ObjectTypeExtension' || def.kind === 'ObjectTypeDefinition',
-      );
-      const objectDefs = filteredDefs as Array<WritableDraft<ObjectDefinition>>;
-      objectDefs?.forEach((def) => objectTypeMap.set(def.name.value, def));
-
-      objectDefs?.forEach((def) => {
-        const filteredFields = def?.fields?.filter((field) =>
-          field?.directives?.some((dir) => dir.name.value === BelongsToDirective.name && objectTypeMap.get(getBaseType(field.type))),
-        );
-        filteredFields?.forEach((field) => {
-          const relatedType = objectTypeMap.get(getBaseType(field.type));
-          const relationTypeField = relatedType?.fields?.find(
-            (relatedField) =>
-              getBaseType(relatedField.type) === def.name.value &&
-              relatedField?.directives?.some((relatedDir) => relatedDir.name.value === 'hasOne' || relatedDir.name.value === 'hasMany'),
-          );
-          const relationTypeName = relationTypeField?.directives?.find(
-            (relationDir) => relationDir.name.value === 'hasOne' || relationDir.name.value === 'hasMany',
-          )?.name?.value;
-
-          if (relationTypeName === 'hasOne') {
-            const connectionAttributeName = getConnectionAttributeName(
-              context.transformParameters,
-              def.name.value,
-              field.name.value,
-              getObjectPrimaryKey(def as ObjectTypeDefinitionNode).name.value,
-            );
-            if (!def?.fields?.some((defField) => defField.name.value === connectionAttributeName)) {
-              def?.fields?.push(
-                makeField(
-                  connectionAttributeName,
-                  [],
-                  isNonNullType(field.type) ? makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'),
-                  [],
-                ) as WritableDraft<FieldDefinitionNode>,
-              );
-            }
-          }
-        });
-      });
-    });
-    return resultDoc;
   };
 
   /**

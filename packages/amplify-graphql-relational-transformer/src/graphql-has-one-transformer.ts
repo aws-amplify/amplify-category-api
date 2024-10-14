@@ -11,50 +11,30 @@ import {
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
-  TransformerTransformSchemaStepContextProvider,
-  TransformerPreProcessContextProvider,
-  ModelDataSourceStrategyDbType,
+  TransformerTransformSchemaStepContextProvider, ModelDataSourceStrategyDbType
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { HasOneDirective } from '@aws-amplify/graphql-directives';
 import { Annotations } from 'aws-cdk-lib';
 import {
-  ArgumentNode,
-  DirectiveNode,
-  DocumentNode,
-  FieldDefinitionNode,
+  DirectiveNode, FieldDefinitionNode,
   InterfaceTypeDefinitionNode,
   NamedTypeNode,
   ObjectTypeDefinitionNode,
-  Kind,
+  Kind
 } from 'graphql';
 import {
-  getBaseType,
-  isListType,
-  isNonNullType,
-  makeArgument,
-  makeField,
-  makeNamedType,
-  makeNonNullType,
-  makeValueNode,
+  isListType
 } from 'graphql-transformer-common';
-import { produce } from 'immer';
-import { WritableDraft } from 'immer/dist/types/types-external';
 import {
-  addFieldsToDefinition,
-  convertSortKeyFieldsToSortKeyConnectionFields,
-  ensureHasOneConnectionField,
-  getSortKeyFieldsNoContext,
+  ensureHasOneConnectionField
 } from './schema';
-import { HasOneDirectiveConfiguration, ObjectDefinition } from './types';
+import { HasOneDirectiveConfiguration } from './types';
 import {
-  getConnectionAttributeName,
-  getObjectPrimaryKey,
   getRelatedType,
   validateDisallowedDataStoreRelationships,
   validateModelDirective,
-  validateRelatedModelDirective,
+  validateRelatedModelDirective
 } from './utils';
-import { getGenerator } from './resolver/generator-factory';
 import { getHasOneDirectiveTransformer } from './has-one/has-one-directive-transformer-factory';
 
 /**
@@ -86,70 +66,6 @@ export class HasOneTransformer extends TransformerPluginBase {
 
     validate(args, context as TransformerContextProvider);
     this.directiveList.push(args);
-  };
-
-  /** During the preProcess step, modify the document node and return it
-   * so that it represents any schema modifications the plugin needs
-   */
-  mutateSchema = (context: TransformerPreProcessContextProvider): DocumentNode => {
-    const document: DocumentNode = produce(context.inputDocument, (draftDoc) => {
-      const filteredDefs = draftDoc?.definitions?.filter(
-        (def) => def.kind === 'ObjectTypeDefinition' || def.kind === 'ObjectTypeExtension',
-      );
-      const objectDefs = new Map<string, WritableDraft<ObjectDefinition>>(
-        (filteredDefs as Array<WritableDraft<ObjectDefinition>>).map((def) => [def.name.value, def]),
-      );
-
-      objectDefs?.forEach((def) => {
-        const filteredFields = def?.fields?.filter((field) => field?.directives?.some((dir) => dir.name.value === HasOneDirective.name));
-        filteredFields?.forEach((field) => {
-          field?.directives?.forEach((dir) => {
-            const connectionAttributeName = getConnectionAttributeName(
-              context.transformParameters,
-              def.name.value,
-              field.name.value,
-              getObjectPrimaryKey(def as ObjectTypeDefinitionNode).name.value,
-            );
-            let hasFieldsDefined = false;
-            let removalIndex = -1;
-            dir?.arguments?.forEach((arg, idx) => {
-              if (arg.name.value === 'fields') {
-                if (
-                  (arg.value.kind === 'StringValue' && arg.value.value) ||
-                  (arg.value.kind === 'ListValue' && arg.value.values && arg.value.values.length > 0)
-                ) {
-                  hasFieldsDefined = true;
-                } else {
-                  removalIndex = idx;
-                }
-              }
-            });
-            if (removalIndex !== -1) {
-              dir?.arguments?.splice(removalIndex, 1);
-            }
-            const relatedType = objectDefs.get(getBaseType(field.type));
-            if (!hasFieldsDefined && relatedType) {
-              const sortKeyFields = convertSortKeyFieldsToSortKeyConnectionFields(getSortKeyFieldsNoContext(relatedType), def, field);
-              const connField = makeField(
-                connectionAttributeName,
-                [],
-                isNonNullType(field.type) ? makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'),
-                [],
-              ) as WritableDraft<FieldDefinitionNode>;
-              // eslint-disable-next-line no-param-reassign
-              dir.arguments = [
-                makeArgument(
-                  'fields',
-                  makeValueNode([connectionAttributeName, ...sortKeyFields.map((skf) => skf.name.value)]),
-                ) as WritableDraft<ArgumentNode>,
-              ];
-              addFieldsToDefinition(def, [connField, ...sortKeyFields]);
-            }
-          });
-        });
-      });
-    });
-    return document;
   };
 
   /**
