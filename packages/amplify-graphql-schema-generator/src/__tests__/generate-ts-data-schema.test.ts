@@ -249,6 +249,34 @@ describe('Type name conversions', () => {
     expect(graphqlSchema).toMatchSnapshot();
   });
 
+  it('should annotate scalar int fields with existing default with `.default()`', async () => {
+    const dbschema = new Schema(new Engine('Postgres'));
+
+    const model = new Model('CoffeeQueue');
+
+    const serialPKField = new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'Int' } });
+    serialPKField.default = { kind: 'DB_GENERATED', value: 'foo' };
+    model.addField(serialPKField);
+    model.setPrimaryKey(['id']);
+
+    model.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
+
+    const serialField = new Field('orderNumber', { kind: 'Scalar', name: 'Int' });
+    serialField.default = { kind: 'DB_GENERATED', value: 'foo' };
+    model.addField(serialField);
+
+    dbschema.addModel(model);
+    const config: DataSourceGenerateConfig = {
+      identifier: 'ID1234567890',
+      secretNames: {
+        connectionUri: 'CONN_STR',
+      },
+    };
+
+    const graphqlSchema = generateTypescriptDataSchema(dbschema, config);
+    expect(graphqlSchema).toMatchSnapshot();
+  });
+
   it('schema with database config without vpc should generate typescript data schema with configure', () => {
     const dbschema = new Schema(new Engine('MySQL'));
     let model = new Model('User');
