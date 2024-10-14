@@ -38,14 +38,8 @@ const createProperty = (field: Field): ts.Node => {
  * @returns Typescript data schema type in TS Node format
  */
 const createDataType = (field: Field): ts.Node => {
-  const baseType = field.type.kind === 'NonNull' ? field.type.type : field.type;
-
-  if (
-    field.default?.kind === 'DB_GENERATED' &&
-    field.default.value.toString().includes('seq') &&
-    baseType.kind === 'Scalar' &&
-    baseType.name === 'Int'
-  ) {
+  const sequenceRegex = /^nextval\(.+::regclass\)$/;
+  if (field.default?.kind === 'DB_GENERATED' && sequenceRegex.test(field.default.value.toString())) {
     const baseTypeExpression =
       field.type.kind === 'NonNull'
         ? createDataType(new Field(field.name, field.type.type))
