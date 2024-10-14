@@ -291,6 +291,14 @@ describe('Type name conversions', () => {
       },
     },
     {
+      case: 'Default Integer Constant',
+      field: () => {
+        const f = new Field('field', { kind: 'Scalar', name: 'Int' });
+        f.default = { kind: 'DB_GENERATED', value: 42 };
+        return f;
+      },
+    },
+    {
       case: 'No default',
       field: () => new Field('field', { kind: 'Scalar', name: 'Int' }),
     },
@@ -321,14 +329,14 @@ describe('Type name conversions', () => {
     const model = new Model('CoffeeQueue');
 
     const serialPKField = new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'Int' } });
-    serialPKField.default = { kind: 'DB_GENERATED', value: 'foo' };
+    serialPKField.default = { kind: 'DB_GENERATED', value: "nextval('coffeequeue_id_seq'::regclass)" };
     model.addField(serialPKField);
     model.setPrimaryKey(['id']);
 
     model.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
 
     const serialField = new Field('orderNumber', { kind: 'Scalar', name: 'Int' });
-    serialField.default = { kind: 'DB_GENERATED', value: 'foo' };
+    serialField.default = { kind: 'DB_GENERATED', value: "nextval('coffeequeue_ordernumber_seq'::regclass)" };
     model.addField(serialField);
 
     dbschema.addModel(model);

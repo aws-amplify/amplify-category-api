@@ -40,7 +40,12 @@ const createProperty = (field: Field): ts.Node => {
 const createDataType = (field: Field): ts.Node => {
   const baseType = field.type.kind === 'NonNull' ? field.type.type : field.type;
 
-  if (field.default?.kind === 'DB_GENERATED' && baseType.kind === 'Scalar' && baseType.name === 'Int') {
+  if (
+    field.default?.kind === 'DB_GENERATED' &&
+    field.default.value.toString().includes('seq') &&
+    baseType.kind === 'Scalar' &&
+    baseType.name === 'Int'
+  ) {
     const baseTypeExpression =
       field.type.kind === 'NonNull'
         ? createDataType(new Field(field.name, field.type.type))
