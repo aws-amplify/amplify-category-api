@@ -164,18 +164,10 @@ export class GraphQLTransform {
     const context = new TransformerPreProcessContext(schema, this.transformParameters);
 
     this.transformers
-      // TODO: confirm that the relational transformer preProcess functions are not relevant for gen2.
-      // Context: mutateSchema is defined in hasOne / belongsTo / hasMany / manyToMany transformers, but those mutations are only
-      // relevant for the manyToMany transformer. They're also not being invoked today afaict.
-      // Assuming those implementations can be removed, remove this filter.
-      // If they are relevant, we'll need to find an alternative approach.
-      .filter((transformer) => transformer.directive.name.value === 'conversation')
       .filter((transformer) => isFunction(transformer.preMutateSchema))
       .forEach((transformer) => transformer.preMutateSchema && transformer.preMutateSchema(context));
 
     return this.transformers
-      // TODO: see todo above.
-      .filter((transformer) => transformer.directive.name.value === 'conversation')
       .filter((transformer) => isFunction(transformer.mutateSchema))
       .reduce((mutateContext, transformer) => {
         const updatedInputDocument = transformer.mutateSchema ? transformer.mutateSchema(mutateContext) : mutateContext.inputDocument;
@@ -205,7 +197,7 @@ export class GraphQLTransform {
     synthParameters,
   }: TransformOption): void {
     this.seenTransformations = {};
-    const parsedDocument = this.preProcessSchema(parse(schema));
+    const parsedDocument = parse(schema);
     const context = new TransformerContext({
       assetProvider,
       authConfig: this.authConfig,
