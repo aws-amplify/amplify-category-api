@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.5-gen2-migration-1014.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@4.0.4...amplify-category-api-e2e-tests@4.0.5-gen2-migration-1014.0) (2024-10-14)
+
+### Bug Fixes
+
+- allowlist comparison properties on imported table ([#2908](https://github.com/aws-amplify/amplify-category-api/issues/2908)) ([ae1f860](https://github.com/aws-amplify/amplify-category-api/commit/ae1f860a12dfd0cc4ae77675d6a6c9f6b45a920e))
+
 ## [4.0.4](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@4.0.3...amplify-category-api-e2e-tests@4.0.4) (2024-10-10)
 
 **Note:** Version bump only for package amplify-category-api-e2e-tests

@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0-gen2-migration-1014.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@3.0.5...@aws-amplify/graphql-model-transformer@3.1.0-gen2-migration-1014.0) (2024-10-14)
+
+### Bug Fixes
+
+- adjust default table properties ([#2726](https://github.com/aws-amplify/amplify-category-api/issues/2726)) ([df3a50b](https://github.com/aws-amplify/amplify-category-api/commit/df3a50b2effb88bc56525c628045c84e9d259a4c))
+- allowlist comparison properties on imported table ([#2908](https://github.com/aws-amplify/amplify-category-api/issues/2908)) ([ae1f860](https://github.com/aws-amplify/amplify-category-api/commit/ae1f860a12dfd0cc4ae77675d6a6c9f6b45a920e))
+
+### Features
+
+- get datasource map for migration ([#2668](https://github.com/aws-amplify/amplify-category-api/issues/2668)) ([02c7da0](https://github.com/aws-amplify/amplify-category-api/commit/02c7da0da0d5837ca05a8e4ff1b1536cc20ae15b))
+- import existing table to amplify managed table ([#2634](https://github.com/aws-amplify/amplify-category-api/issues/2634)) ([b3fb28f](https://github.com/aws-amplify/amplify-category-api/commit/b3fb28f6a253cae523625c0b2e93ec9ce2c37bab))
+- validate imported tables ([#2696](https://github.com/aws-amplify/amplify-category-api/issues/2696)) ([8c684a9](https://github.com/aws-amplify/amplify-category-api/commit/8c684a9cfe140bc9c45e1ec1212d9bc423acf170))
+
+### Reverts
+
+- Revert "feat: get datasource map for migration (#2668)" (#2907) ([2b17871](https://github.com/aws-amplify/amplify-category-api/commit/2b17871b600dbfa6d911057c30498f7df6a7e8dc)), closes [#2668](https://github.com/aws-amplify/amplify-category-api/issues/2668) [#2907](https://github.com/aws-amplify/amplify-category-api/issues/2907)
+
 ## [3.0.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@3.0.4...@aws-amplify/graphql-model-transformer@3.0.5) (2024-10-10)
 
 **Note:** Version bump only for package @aws-amplify/graphql-model-transformer
