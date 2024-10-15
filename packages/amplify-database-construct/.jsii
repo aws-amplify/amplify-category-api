@@ -3907,7 +3907,7 @@
         },
         "locationInModule": {
           "filename": "src/amplify-database.ts",
-          "line": 17
+          "line": 18
         },
         "parameters": [
           {
@@ -3933,7 +3933,7 @@
       "kind": "class",
       "locationInModule": {
         "filename": "src/amplify-database.ts",
-        "line": 6
+        "line": 7
       },
       "name": "AmplifyDatabase",
       "properties": [
@@ -3945,7 +3945,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-database.ts",
-            "line": 10
+            "line": 11
           },
           "name": "resources",
           "type": {
@@ -3960,7 +3960,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-database.ts",
-            "line": 15
+            "line": 16
           },
           "name": "stack",
           "type": {
@@ -3981,25 +3981,10 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 7
+        "line": 8
       },
       "name": "AmplifyDatabaseProps",
       "properties": [
-        {
-          "abstract": true,
-          "docs": {
-            "stability": "stable"
-          },
-          "immutable": true,
-          "locationInModule": {
-            "filename": "src/types.ts",
-            "line": 8
-          },
-          "name": "definition",
-          "type": {
-            "primitive": "string"
-          }
-        },
         {
           "abstract": true,
           "docs": {
@@ -4035,6 +4020,40 @@
         {
           "abstract": true,
           "docs": {
+            "remarks": "The Console user is used in the \"sandbox in the cloud\" for development on DB schema.",
+            "stability": "stable",
+            "summary": "Username and password for the console user."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 26
+          },
+          "name": "consoleSecret",
+          "type": {
+            "fqn": "aws-cdk-lib.aws_secretsmanager.ISecret"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "The Data API user is used to apply migrations and run SQL queries.",
+            "stability": "stable",
+            "summary": "Username and password for the data API user."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 21
+          },
+          "name": "dataApiSecret",
+          "type": {
+            "fqn": "aws-cdk-lib.aws_secretsmanager.ISecret"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
             "stability": "stable",
             "summary": "The database cluster created by the construct."
           },
@@ -4053,5 +4072,5 @@
     }
   },
   "version": "0.0.1",
-  "fingerprint": "qqCnWjcas0bFslmFvUmHD3Abut6eQGfl16AAD3jx1ac="
+  "fingerprint": "+ENwzosl42lXE1aSAX4MRjQCZGjQ8CZ/9vbsNImlsiA="
 }
