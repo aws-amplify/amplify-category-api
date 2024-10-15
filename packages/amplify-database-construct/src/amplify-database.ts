@@ -41,15 +41,13 @@ export class AmplifyDatabase extends Construct {
       consoleSecret,
     };
 
-    if (!databaseCluster.secret) {
-      throw new Error('Database cluster does not have an admin secret.');
-    }
     this.dataSourceStrategy = {
       name: 'AmplifyDatabaseDataSourceStrategy',
       dbType: props.dbType,
       dbConnectionConfig: {
         // use admin secret for data source
-        secretArn: databaseCluster.secret.secretArn,
+        // admin secret will always be created because we are not overriding the credentials in DatabaseCluster
+        secretArn: databaseCluster.secret!.secretArn,
         // use default port for db type
         // mysql: 3306, postgres: 5432
         port: props.dbType === 'MYSQL' ? 3306 : 5432,
