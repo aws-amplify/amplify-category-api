@@ -3907,7 +3907,7 @@
         },
         "locationInModule": {
           "filename": "src/amplify-database.ts",
-          "line": 11
+          "line": 17
         },
         "parameters": [
           {
@@ -3933,10 +3933,25 @@
       "kind": "class",
       "locationInModule": {
         "filename": "src/amplify-database.ts",
-        "line": 5
+        "line": 6
       },
       "name": "AmplifyDatabase",
       "properties": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Generated L1 and L2 CDK resources."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/amplify-database.ts",
+            "line": 10
+          },
+          "name": "resources",
+          "type": {
+            "fqn": "@aws-amplify/database-construct.AmplifyDatabaseResources"
+          }
+        },
         {
           "docs": {
             "stability": "stable",
@@ -3945,7 +3960,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-database.ts",
-            "line": 9
+            "line": 15
           },
           "name": "stack",
           "type": {
@@ -3966,7 +3981,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 4
+        "line": 7
       },
       "name": "AmplifyDatabaseProps",
       "properties": [
@@ -3978,17 +3993,65 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 5
+            "line": 8
           },
           "name": "definition",
           "type": {
             "primitive": "string"
           }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 9
+          },
+          "name": "vpc",
+          "type": {
+            "fqn": "aws-cdk-lib.aws_ec2.IVpc"
+          }
         }
       ],
       "symbolId": "src/types:AmplifyDatabaseProps"
+    },
+    "@aws-amplify/database-construct.AmplifyDatabaseResources": {
+      "assembly": "@aws-amplify/database-construct",
+      "datatype": true,
+      "docs": {
+        "stability": "stable"
+      },
+      "fqn": "@aws-amplify/database-construct.AmplifyDatabaseResources",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "src/types.ts",
+        "line": 12
+      },
+      "name": "AmplifyDatabaseResources",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The database cluster created by the construct."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 16
+          },
+          "name": "databaseCluster",
+          "type": {
+            "fqn": "aws-cdk-lib.aws_rds.IDatabaseCluster"
+          }
+        }
+      ],
+      "symbolId": "src/types:AmplifyDatabaseResources"
     }
   },
   "version": "0.0.1",
-  "fingerprint": "KP7H/t1dNTwdiSBEpt+tWdZSDtyN60bbn6wMnSz2nww="
+  "fingerprint": "qqCnWjcas0bFslmFvUmHD3Abut6eQGfl16AAD3jx1ac="
 }
