@@ -14,13 +14,9 @@ import pluralize from 'pluralize';
  * @param {TransformerContextProvider} ctx - The transformer context provider.
  * @returns {MappingTemplateProvider} An object containing request and response mapping functions.
  */
-export const invokeLambdaMappingTemplate = (
-  config: ConversationDirectiveConfiguration,
-  ctx: TransformerContextProvider,
-): MappingTemplateProvider => {
+export const invokeLambdaMappingTemplate = (config: ConversationDirectiveConfiguration): MappingTemplateProvider => {
   const { TOOL_DEFINITIONS_LINE, TOOLS_CONFIGURATION_LINE } = generateToolLines(config);
   const SELECTION_SET = selectionSet;
-  const GRAPHQL_API_ENDPOINT = ctx.api.graphqlUrl;
   const MODEL_CONFIGURATION_LINE = generateModelConfigurationLine(config);
   const RESPONSE_MUTATION_NAME = config.responseMutationName;
   const RESPONSE_MUTATION_INPUT_TYPE_NAME = config.responseMutationInputTypeName;
@@ -38,7 +34,6 @@ export const invokeLambdaMappingTemplate = (
     TOOL_DEFINITIONS_LINE,
     TOOLS_CONFIGURATION_LINE,
     SELECTION_SET,
-    GRAPHQL_API_ENDPOINT,
     MODEL_CONFIGURATION_LINE,
     RESPONSE_MUTATION_NAME,
     RESPONSE_MUTATION_INPUT_TYPE_NAME,
@@ -55,11 +50,9 @@ export const invokeLambdaMappingTemplate = (
     const replaced = resolver.replace(new RegExp(`\\[\\[${key}\\]\\]`, 'g'), value);
     resolver = replaced;
   });
+  const templateName = `Mutation.${config.field.name.value}.invoke-lambda.js`;
 
-  // This unfortunately needs to be an inline template because an s3 mapping template doesn't allow the CDK
-  // to substitute token values, which is necessary for this resolver function due to its reference of
-  // `ctx.api.graphqlUrl`.
-  return MappingTemplate.inlineTemplateFromString(resolver);
+  return MappingTemplate.s3MappingFunctionCodeFromString(resolver, templateName);
 };
 
 const generateToolLines = (config: ConversationDirectiveConfiguration) => {

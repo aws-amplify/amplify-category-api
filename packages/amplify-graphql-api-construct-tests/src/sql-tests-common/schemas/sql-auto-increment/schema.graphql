@@ -1,0 +1,5 @@
+type CoffeeQueue @model @refersTo(name: "e2e_test_coffee_queue") {
+  orderNumber: Int! @primaryKey @default
+  order: String!
+  customer: String
+}

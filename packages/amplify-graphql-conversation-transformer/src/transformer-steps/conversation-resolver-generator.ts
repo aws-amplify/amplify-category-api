@@ -5,7 +5,7 @@ import { APPSYNC_JS_RUNTIME, TransformerResolver } from '@aws-amplify/graphql-tr
 import { ResolverResourceIDs, FunctionResourceIDs, ResourceConstants, toUpper } from 'graphql-transformer-common';
 import * as cdk from 'aws-cdk-lib';
 import { conversation } from '@aws-amplify/ai-constructs';
-import { IFunction, Function } from 'aws-cdk-lib/aws-lambda';
+import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { getModelDataSourceNameForTypeName, getTable } from '@aws-amplify/graphql-transformer-core';
 import { writeMessageToTableMappingTemplate } from '../resolvers/write-message-to-table-resolver';
 import { assistantMutationResolver } from '../resolvers/assistant-mutation-resolver';
@@ -25,6 +25,8 @@ type KeyAttributeDefinition = {
 
 // TODO: add explanation for the tool model queries
 export class ConversationResolverGenerator {
+  constructor(private readonly functionNameMap?: Record<string, IFunction>) {}
+
   generateResolvers(directives: ConversationDirectiveConfiguration[], ctx: TransformerContextProvider): void {
     for (const directive of directives) {
       this.processToolsForDirective(directive, ctx);
@@ -111,7 +113,7 @@ export class ConversationResolverGenerator {
     capitalizedFieldName: string,
   ): { functionDataSourceId: string; referencedFunction: IFunction } {
     if (directive.functionName) {
-      return this.setupExistingFunctionDataSource(directive.functionName, functionStack);
+      return this.setupExistingFunctionDataSource(directive.functionName);
     } else {
       return this.setupDefaultConversationHandler(functionStack, capitalizedFieldName, directive.aiModel);
     }
@@ -123,26 +125,16 @@ export class ConversationResolverGenerator {
    * @param functionStack - The CDK stack to add the function to
    * @returns An object containing the function data source ID and the referenced function
    */
-  private setupExistingFunctionDataSource(
-    functionName: string,
-    functionStack: cdk.Stack,
-  ): { functionDataSourceId: string; referencedFunction: IFunction } {
+  private setupExistingFunctionDataSource(functionName: string): { functionDataSourceId: string; referencedFunction: IFunction } {
     const functionDataSourceId = FunctionResourceIDs.FunctionDataSourceID(functionName);
-    const referencedFunction = Function.fromFunctionAttributes(functionStack, `${functionDataSourceId}Function`, {
-      functionArn: this.lambdaArnResource(functionName),
-    });
-
+    if (!this.functionNameMap) {
+      throw new Error('Function name map is not provided');
+    }
+    const referencedFunction = this.functionNameMap[functionName];
+    if (!referencedFunction) {
+      throw new Error(`Function ${functionName} not found in function name map`);
+    }
     return { functionDataSourceId, referencedFunction };
-  }
-
-  /**
-   * Generates the Lambda ARN resource string
-   * @param name - The name of the Lambda function
-   * @returns The Lambda ARN resource string
-   */
-  private lambdaArnResource(name: string): string {
-    // eslint-disable-next-line no-template-curly-in-string
-    return cdk.Fn.sub('arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${name}', { name });
   }
 
   /**

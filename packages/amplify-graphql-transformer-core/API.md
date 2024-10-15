@@ -453,11 +453,11 @@ export class InvalidTransformerError extends Error {
 export const isAmplifyDynamoDbModelDataSourceStrategy: (strategy: ModelDataSourceStrategy) => strategy is AmplifyDynamoDbModelDataSourceStrategy;
 
 // @public (undocumented)
-export const isBuiltInGraphqlNode: (obj: DefinitionNode) => obj is ObjectTypeDefinitionNode | (InterfaceTypeDefinitionNode & {
+export const isBuiltInGraphqlNode: (obj: DefinitionNode) => obj is (ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode) & {
     name: {
-        value: 'Mutation' | 'Query';
+        value: 'Mutation' | 'Query' | 'Subscription';
     };
-});
+};
 
 // @public (undocumented)
 export const isDefaultDynamoDbModelDataSourceStrategy: (strategy: ModelDataSourceStrategy) => strategy is DefaultDynamoDbModelDataSourceStrategy;
@@ -478,21 +478,27 @@ function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncConfigLam
 export const isModelType: (ctx: DataSourceStrategiesProvider, typename: string) => boolean;
 
 // @public (undocumented)
-export const isMutationNode: (obj: DefinitionNode) => obj is ObjectTypeDefinitionNode | (InterfaceTypeDefinitionNode & {
+export const isMutationNode: (obj: DefinitionNode) => obj is (ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode) & {
     name: {
         value: 'Mutation';
     };
-});
+};
 
 // @public (undocumented)
 export const isObjectTypeDefinitionNode: (obj: DefinitionNode) => obj is ObjectTypeDefinitionNode;
 
 // @public (undocumented)
-export const isQueryNode: (obj: DefinitionNode) => obj is ObjectTypeDefinitionNode | (InterfaceTypeDefinitionNode & {
+export const isPostgresDbType: (dbType: ModelDataSourceStrategyDbType) => dbType is "POSTGRES";
+
+// @public (undocumented)
+export const isPostgresModel: (ctx: DataSourceStrategiesProvider, typename: string) => boolean;
+
+// @public (undocumented)
+export const isQueryNode: (obj: DefinitionNode) => obj is (ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode) & {
     name: {
         value: 'Query';
     };
-});
+};
 
 // @public (undocumented)
 export const isQueryType: (typeName: string) => typeName is "Query";

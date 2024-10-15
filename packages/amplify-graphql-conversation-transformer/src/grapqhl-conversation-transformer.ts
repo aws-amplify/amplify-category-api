@@ -16,6 +16,7 @@ import { type ToolDefinition, type Tools } from './utils/tools';
 import { ConversationPrepareHandler } from './transformer-steps/conversation-prepare-handler';
 import { ConversationResolverGenerator } from './transformer-steps/conversation-resolver-generator';
 import { ConversationFieldHandler } from './transformer-steps/conversation-field-handler';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 /**
  * Configuration for the Conversation Directive
@@ -64,11 +65,12 @@ export class ConversationTransformer extends TransformerPluginBase {
     hasManyTransformer: HasManyTransformer,
     belongsToTransformer: BelongsToTransformer,
     authProvider: TransformerAuthProvider,
+    functionNameMap?: Record<string, lambda.IFunction>,
   ) {
     super('amplify-conversation-transformer', ConversationDirective.definition);
     this.fieldHandler = new ConversationFieldHandler();
     this.prepareHandler = new ConversationPrepareHandler(modelTransformer, hasManyTransformer, belongsToTransformer, authProvider);
-    this.resolverGenerator = new ConversationResolverGenerator();
+    this.resolverGenerator = new ConversationResolverGenerator(functionNameMap);
   }
 
   /**

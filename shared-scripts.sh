@@ -1,5 +1,7 @@
 #!/bin/bash
 
+AMPLIFY_NODE_VERSION=18.20.4
+
 # set exit on error to true
 set -e
 
@@ -40,11 +42,13 @@ function storeCacheForBuildJob {
   # upload [repo, .cache] to s3
   storeCache $CODEBUILD_SRC_DIR repo
   storeCache $HOME/.cache .cache
+  storeCache $HOME/.nvm .nvm
 }
 function loadCacheFromBuildJob {
   # download [repo, .cache] from s3
   loadCache repo $CODEBUILD_SRC_DIR
   loadCache .cache $HOME/.cache
+  loadCache .nvm $HOME/.nvm
 }
 function storeCacheFile {
     localFilePath="$1"
@@ -80,8 +84,10 @@ function _setShell {
   echo "Setting Shell"
   yarn config set script-shell $(which bash)
 }
+
 function _buildLinux {
   _setShell
+  _setupNodeVersion $AMPLIFY_NODE_VERSION
   echo "Linux Build"
   node --version
   yarn run production-build
@@ -92,6 +98,7 @@ function _buildLinux {
 # used when build is not necessary for codebuild project
 function _installLinux {
   _setShell
+  _setupNodeVersion $AMPLIFY_NODE_VERSION
   echo "Linux Install"
   yarn run production-install
   storeCacheForBuildJob
@@ -142,8 +149,8 @@ function _verifyAmplifyBackendCompatability {
   unset AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
   unset AWS_CONTAINER_CREDENTIALS_FULL_URI
 
-  # 1. Set Node.js version to 18.20.4 to avoid race conditions and test failures
-  _setupNodeVersion 18.20.4
+  # 1. Set Node.js version to $AMPLIFY_NODE_VERSION to avoid race conditions and test failures
+  _setupNodeVersion $AMPLIFY_NODE_VERSION
 
   # 2. Publish Shell (Emulating the "publish" shell)
   echo "Emulating Publish Shell"
@@ -330,6 +337,10 @@ function _runCDKTestsLinux {
 
 function _runGqlE2ETests {
     echo "RUN GraphQL E2E tests"
+
+    # Set Node.js version to $AMPLIFY_NODE_VERSION as one of the package requires version ">= 18.18.0"
+    _setupNodeVersion $AMPLIFY_NODE_VERSION
+
     loadCacheFromBuildJob
     _loadTestAccountCredentials
     retry runGraphQLE2eTest
@@ -532,6 +543,7 @@ function runGraphQLE2eTest {
 
 function _deploy {
   _setShell
+  _setupNodeVersion $AMPLIFY_NODE_VERSION
   echo "Deploy"
   echo "Authenticate with NPM"
   PUBLISH_TOKEN=$(echo "$NPM_PUBLISH_TOKEN" | jq -r '.token')

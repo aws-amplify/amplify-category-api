@@ -36,6 +36,5 @@ const verifySessionOwnerMappingTemplate = (name: string, substitute: Record<stri
     const replaced = resolver.replace(new RegExp(`\\[\\[${key}\\]\\]`, 'g'), value);
     resolver = replaced;
   });
-  const templateName = `Mutation.${name}.verify-session-owner.js`;
-  return MappingTemplate.s3MappingFunctionCodeFromString(resolver, templateName);
+  return MappingTemplate.s3MappingFunctionCodeFromString(resolver, name);
 };
