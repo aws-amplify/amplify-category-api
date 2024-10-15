@@ -24,7 +24,13 @@ export type ConversationDirectiveConfiguration = {
   parent: ObjectTypeDefinitionNode;
   directive: DirectiveNode;
   aiModel: string;
+  /**
+   * Custom handler function name.
+   *
+   * @deprecated Replaced by 'handler'
+   */
   functionName: string | undefined;
+  handler: ConversationHandlerFunctionConfiguration | undefined;
   field: FieldDefinitionNode;
   responseMutationInputTypeName: string;
   responseMutationName: string;
@@ -34,6 +40,14 @@ export type ConversationDirectiveConfiguration = {
   conversationModel: ConversationModel;
   messageModel: MessageModel;
   inferenceConfiguration: ConversationInferenceConfiguration;
+};
+
+/**
+ * Conversation Handler Function Configuration
+ */
+export type ConversationHandlerFunctionConfiguration = {
+  functionName: string;
+  eventVersion: string;
 };
 
 /**

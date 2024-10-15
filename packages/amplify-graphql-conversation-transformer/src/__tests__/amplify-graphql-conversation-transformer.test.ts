@@ -12,6 +12,7 @@ import * as path from 'path';
 import { Code, Function, IFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { GenerationTransformer } from '@aws-amplify/graphql-generation-transformer';
 import { toUpper } from 'graphql-transformer-common';
+import { describe } from 'jest-circus';
 
 const conversationSchemaTypes = fs.readFileSync(path.join(__dirname, 'schemas/conversation-schema-types.graphql'), 'utf8');
 
@@ -51,9 +52,12 @@ describe('ConversationTransformer', () => {
       ).toHaveLength(4);
     });
 
-    it('uses functionMap for custom handler', () => {
+    it.each([
+      ['functionName', 'conversation-route-custom-handler-deprecated.graphql'],
+      ['handler ', 'conversation-route-custom-handler.graphql'],
+    ])('uses functionMap for custom handler - %s', (_, schemaFile) => {
       const routeName = 'pirateChat';
-      const inputSchema = getSchema('conversation-route-custom-handler.graphql', { ROUTE_NAME: routeName });
+      const inputSchema = getSchema(schemaFile, { ROUTE_NAME: routeName });
 
       const transformerManager = new TransformManager();
       const stack = transformerManager.getTransformScope();
@@ -108,6 +112,20 @@ describe('ConversationTransformer', () => {
         const INFERENENCE_CONFIGURATION = `inferenceConfiguration: { ${param}: ${value} }`;
         const inputSchema = getSchema('conversation-route-inference-configuration-template.graphql', { INFERENENCE_CONFIGURATION });
         expect(() => transform(inputSchema)).toThrow(`@conversation directive ${param} valid range: ${errorMessage}. Provided: ${value}`);
+      });
+    });
+
+    describe('invalid custom handler configuration', () => {
+      it('should throw if both functionName and handler are provided', () => {
+        const inputSchema = getSchema('conversation-route-invalid-custom-handler-function-name-and-handler-provided.graphql');
+        expect(() => transform(inputSchema)).toThrow("'functionName' and 'handler' are mutually exclusive");
+      });
+
+      it.each([['0.5'], ['2.0']])('throws error for event version $s', (eventVersion) => {
+        const inputSchema = getSchema('conversation-route-invalid-custom-handler-event-version.graphql', { EVENT_VERSION: eventVersion });
+        expect(() => transform(inputSchema)).toThrow(
+          `Unsupported custom conversation handler. Expected eventVersion to match 1.x, received ${eventVersion}`,
+        );
       });
     });
   });
