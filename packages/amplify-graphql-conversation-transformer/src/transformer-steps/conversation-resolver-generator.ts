@@ -20,6 +20,9 @@ import { conversationMessageSubscriptionMappingTamplate } from '../resolvers/ass
 import { overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
 import pluralize from 'pluralize';
 import { listMessageInitMappingTemplate } from '../resolvers/list-messages-init-resolver';
+import { sendMessagePipelineDefinition } from '../resolvers/send-message-pipeline-resolver';
+import { ConversationPipelineResolver } from '../resolvers/conversation-pipeline-resolver';
+import { assistantResponsePipelineDefinition } from '../resolvers/assistant-response-pipeline-definition';
 
 type KeyAttributeDefinition = {
   name: string;
@@ -52,34 +55,61 @@ export class ConversationResolverGenerator {
     const functionStack = this.createFunctionStack(ctx, capitalizedFieldName);
     const { functionDataSourceId, referencedFunction } = this.setupFunctionDataSource(directive, functionStack, capitalizedFieldName);
     const functionDataSource = this.addLambdaDataSource(ctx, functionDataSourceId, referencedFunction, capitalizedFieldName);
-    const invokeLambdaFunction = invokeLambdaMappingTemplate(directive, ctx);
+
+    const conversationMessageDataSourceName = getModelDataSourceNameForTypeName(ctx, `ConversationMessage${capitalizedFieldName}`);
+    const conversationMessageDataSource = ctx.api.host.getDataSource(conversationMessageDataSourceName);
+
+    const sessionModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, `Conversation${capitalizedFieldName}`);
+    const conversationSessionDDBDataSource = ctx.api.host.getDataSource(sessionModelDDBDataSourceName);
+
+    directive.dataSources = {
+      lambdaFunction: functionDataSource,
+      conversationTable: conversationSessionDDBDataSource as any,
+      messageTable: conversationMessageDataSource as any,
+    };
+    // const invokeLambdaFunction = invokeLambdaMappingTemplate(directive, ctx);
 
     this.setupMessageTableIndex(ctx, directive);
-    const initResolverFunction = initMappingTemplate(directive);
-    const authResolverFunction = authMappingTemplate(directive);
-    const verifySessionOwnerSendMessageResolverFunction = verifySessionOwnerSendMessageMappingTemplate(directive);
-    const verifySessionOwnerAssistantResponseResolverFunction = verifySessionOwnerAssistantResponseMappingTemplate(directive);
+    // const initResolverFunction = initMappingTemplate(directive);
+    // const authResolverFunction = authMappingTemplate(directive);
+    // const verifySessionOwnerSendMessageResolverFunction = verifySessionOwnerSendMessageMappingTemplate(directive);
+    // const verifySessionOwnerAssistantResponseResolverFunction = verifySessionOwnerAssistantResponseMappingTemplate(directive);/
 
-    this.createConversationPipelineResolver(
-      ctx,
-      parentName,
-      fieldName,
-      capitalizedFieldName,
-      functionDataSource,
-      invokeLambdaFunction,
-      initResolverFunction,
-      authResolverFunction,
-      verifySessionOwnerSendMessageResolverFunction,
-    );
-
-    this.createAssistantResponseResolver(
-      ctx,
+    const conversationPipelineResolver = new ConversationPipelineResolver(
       directive,
-      capitalizedFieldName,
-      initResolverFunction,
-      authResolverFunction,
-      verifySessionOwnerAssistantResponseResolverFunction,
-    );
+      ctx,
+      sendMessagePipelineDefinition,
+    ).generatePipelineResolver();
+    ctx.resolvers.addResolver(parentName, fieldName, conversationPipelineResolver);
+
+    const assistantResponsePipelineResolver = new ConversationPipelineResolver(
+      directive,
+      ctx,
+      assistantResponsePipelineDefinition,
+    ).generatePipelineResolver();
+
+
+    ctx.resolvers.addResolver(parentName, directive.responseMutationName, assistantResponsePipelineResolver);
+    // this.createConversationPipelineResolver(
+    //   ctx,
+    //   parentName,
+    //   fieldName,
+    //   capitalizedFieldName,
+    //   functionDataSource,
+    //   invokeLambdaFunction,
+    //   initResolverFunction,
+    //   authResolverFunction,
+    //   verifySessionOwnerSendMessageResolverFunction,
+    // );
+
+    // this.createAssistantResponseResolver(
+    //   ctx,
+    //   directive,
+    //   capitalizedFieldName,
+    //   initResolverFunction,
+    //   authResolverFunction,
+    //   verifySessionOwnerAssistantResponseResolverFunction,
+    // );
     this.createAssistantResponseSubscriptionResolver(ctx, directive, capitalizedFieldName);
   }
 
