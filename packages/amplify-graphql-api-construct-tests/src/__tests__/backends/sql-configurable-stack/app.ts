@@ -25,15 +25,6 @@ enum AUTH_MODE {
   AWS_LAMBDA = 'AWS_LAMBDA',
 }
 
-enum SCHEMA {
-  DEFAULT = /* GraphQL */ `
-    type Todo @model @refersTo(name: "todos") {
-      id: ID! @primaryKey
-      description: String!
-    }
-  `,
-}
-
 interface DBDetails {
   dbConfig: {
     endpoint: string;
@@ -98,9 +89,7 @@ interface StackConfig {
 }
 
 const createApiDefinition = (): IAmplifyGraphqlDefinition => {
-  const schema = stackConfig.schema ?? SCHEMA.DEFAULT;
-
-  return AmplifyGraphqlDefinition.fromString(schema, {
+  return AmplifyGraphqlDefinition.fromString(stackConfig.schema, {
     name: dbDetails.dbConfig.strategyName,
     dbType: dbDetails.dbConfig.dbType,
     vpcConfiguration: {

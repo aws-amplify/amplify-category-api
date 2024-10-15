@@ -171,7 +171,7 @@ export class DynamicModelAuthTester {
         }
       }
     `;
-    const createResult = await customCRUDLHelper.runCustomMutate(createMutation, createData);
+    const createResult = await customCRUDLHelper.runCustomMutation(createMutation, createData);
     expect(createResult[`add${modelName}`]).toBeDefined();
 
     const getQuery = /* GraphQL */ `
@@ -206,7 +206,7 @@ export class DynamicModelAuthTester {
         }
       }
     `;
-    await expect(customCRUDLHelper.runCustomMutate(createMutation, createData)).rejects.toThrow(
+    await expect(customCRUDLHelper.runCustomMutation(createMutation, createData)).rejects.toThrow(
       `GraphQL error: Not Authorized to access add${modelName} on type Mutation`,
     );
 

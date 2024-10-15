@@ -246,7 +246,7 @@ export class CRUDLHelper {
     expect(result.items?.filter((item: any) => item[primaryKeyName] === primaryKeyValue)?.length).toEqual(shouldExist ? 1 : 0);
   };
 
-  public runCustomMutate = async (mutation: string, input: any): Promise<Record<string, any>> => {
+  public runCustomMutation = async (mutation: string, input: any): Promise<Record<string, any>> => {
     const customMutateResult: any = await this.appSyncClient.mutate({
       mutation: gql(mutation),
       fetchPolicy: 'no-cache',
