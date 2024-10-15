@@ -5,18 +5,29 @@
 ```ts
 
 import { Construct } from 'constructs';
+import { IDatabaseCluster } from 'aws-cdk-lib/aws-rds';
+import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
+import { IVpc } from 'aws-cdk-lib/aws-ec2';
 import { Stack } from 'aws-cdk-lib';
 
 // @public (undocumented)
 export class AmplifyDatabase extends Construct {
     constructor(scope: Construct, id: string, props: AmplifyDatabaseProps);
+    readonly resources: AmplifyDatabaseResources;
     readonly stack: Stack;
 }
 
 // @public
 export interface AmplifyDatabaseProps {
     // (undocumented)
-    readonly definition: string;
+    readonly vpc: IVpc;
+}
+
+// @public (undocumented)
+export interface AmplifyDatabaseResources {
+    readonly consoleSecret: ISecret;
+    readonly dataApiSecret: ISecret;
+    readonly databaseCluster: IDatabaseCluster;
 }
 
 // (No @packageDocumentation comment for this package)

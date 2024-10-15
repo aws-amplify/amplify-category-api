@@ -11,4 +11,6 @@ export declare class AmplifyDatabase extends Construct {
      */
     readonly stack: Stack;
     constructor(scope: Construct, id: string, props: AmplifyDatabaseProps);
+    private createDatabaseSecret;
+    private createDatabaseCluster;
 }
