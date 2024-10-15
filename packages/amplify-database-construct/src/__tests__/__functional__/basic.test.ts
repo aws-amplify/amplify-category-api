@@ -4,7 +4,7 @@ import { Vpc, IpAddresses } from 'aws-cdk-lib/aws-ec2';
 import { AmplifyDatabase } from '../../amplify-database';
 
 describe('basic functionality', () => {
-  it('creates a db cluster', () => {
+  it('creates a db cluster with mysql', () => {
     const stack = new Stack();
 
     const vpc = new Vpc(stack, 'TestVPC', {
@@ -13,6 +13,7 @@ describe('basic functionality', () => {
 
     new AmplifyDatabase(stack, 'TestDatabase', {
       vpc,
+      dbType: 'MYSQL',
     });
 
     const template = Template.fromStack(stack);
@@ -21,6 +22,42 @@ describe('basic functionality', () => {
     template.hasResourceProperties('AWS::RDS::DBCluster', {
       Engine: 'aurora-mysql',
     });
+  });
+
+  it('creates a db cluster with postgres', () => {
+    const stack = new Stack();
+
+    const vpc = new Vpc(stack, 'TestVPC', {
+      ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
+    });
+
+    new AmplifyDatabase(stack, 'TestDatabase', {
+      vpc,
+      dbType: 'POSTGRES',
+    });
+
+    const template = Template.fromStack(stack);
+
+    template.resourceCountIs('AWS::RDS::DBCluster', 1);
+    template.hasResourceProperties('AWS::RDS::DBCluster', {
+      Engine: 'aurora-postgresql',
+    });
+  });
+
+  it('fails if dbType is not MYSQL or POSTGRES', () => {
+    const stack = new Stack();
+
+    const vpc = new Vpc(stack, 'TestVPC', {
+      ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
+    });
+
+    expect(() => {
+      new AmplifyDatabase(stack, 'TestDatabase', {
+        vpc,
+        // @ts-expect-error using invalid dbType
+        dbType: 'NOTADBTYPE',
+      });
+    }).toThrowError('Unsupported database type: NOTADBTYPE');
   });
 
   it('creates admin, dataapi, and console secrets', () => {
@@ -32,6 +69,7 @@ describe('basic functionality', () => {
 
     new AmplifyDatabase(stack, 'TestDatabase', {
       vpc,
+      dbType: 'MYSQL',
     });
 
     const template = Template.fromStack(stack);
@@ -63,6 +101,7 @@ describe('basic functionality', () => {
 
     const amplifyDatabase = new AmplifyDatabase(stack, 'TestDatabase', {
       vpc,
+      dbType: 'MYSQL',
     });
 
     expect(amplifyDatabase.dataSourceStrategy).toBeDefined();

@@ -7,6 +7,7 @@ import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
  */
 export interface AmplifyDatabaseProps {
   readonly vpc: IVpc;
+  readonly dbType: DBType;
 }
 
 export interface AmplifyDatabaseResources {
@@ -25,3 +26,5 @@ export interface AmplifyDatabaseResources {
    */
   readonly consoleSecret: ISecret;
 }
+
+export type DBType = 'MYSQL' | 'POSTGRES';

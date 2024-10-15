@@ -4015,6 +4015,21 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
+            "line": 10
+          },
+          "name": "dbType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
             "line": 9
           },
           "name": "vpc",
@@ -4035,7 +4050,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 12
+        "line": 13
       },
       "name": "AmplifyDatabaseResources",
       "properties": [
@@ -4049,7 +4064,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 26
+            "line": 27
           },
           "name": "consoleSecret",
           "type": {
@@ -4066,7 +4081,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 21
+            "line": 22
           },
           "name": "dataApiSecret",
           "type": {
@@ -4082,7 +4097,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 16
+            "line": 17
           },
           "name": "databaseCluster",
           "type": {
@@ -4094,5 +4109,5 @@
     }
   },
   "version": "0.0.1",
-  "fingerprint": "1suLSHq8jvdSkZJQvThI9yoQNsf9qzajrg5Mau992Gg="
+  "fingerprint": "0Ms7IdwcryqaoCV6pfkp+g9E81n9TkFSZ5W7D6q3d7E="
 }
