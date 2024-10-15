@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Stack } from 'aws-cdk-lib';
-import { DatabaseCluster, AuroraMysqlEngineVersion, DatabaseClusterEngine, ClusterInstance } from 'aws-cdk-lib/aws-rds';
+import { DatabaseCluster, AuroraMysqlEngineVersion, DatabaseClusterEngine, ClusterInstance, DatabaseSecret } from 'aws-cdk-lib/aws-rds';
 import { InstanceType, InstanceClass, InstanceSize } from 'aws-cdk-lib/aws-ec2';
 import { AmplifyDatabaseProps, AmplifyDatabaseResources } from './types';
 
@@ -19,8 +19,29 @@ export class AmplifyDatabase extends Construct {
     super(scope, id);
     this.stack = Stack.of(scope);
 
+    // TODO: pass secrets to database cluster
+    const dataApiSecret = this.createDatabaseSecret('dataapi');
+    const consoleSecret = this.createDatabaseSecret('console');
+    const databaseCluster = this.createDatabaseCluster(props);
+
+    this.resources = {
+      databaseCluster,
+      dataApiSecret,
+      consoleSecret,
+    };
+  }
+
+  private createDatabaseSecret(username: string): DatabaseSecret {
+    // TODO: is this ok with BGDs?
+    // should it be with SecretsManager directly?
+    return new DatabaseSecret(this, `AmplifyDatabaseSecret-${username}`, {
+      username,
+    });
+  }
+
+  private createDatabaseCluster(props: AmplifyDatabaseProps): DatabaseCluster {
     // TODO: set config
-    const databaseCluster = new DatabaseCluster(this, 'Database', {
+    return new DatabaseCluster(this, 'AmplifyDatabaseCluster', {
       engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_01_0 }),
       writer: ClusterInstance.provisioned('writer', {
         instanceType: InstanceType.of(InstanceClass.R6G, InstanceSize.XLARGE4),
@@ -35,9 +56,5 @@ export class AmplifyDatabase extends Construct {
       ],
       vpc: props.vpc,
     });
-
-    this.resources = {
-      databaseCluster: databaseCluster,
-    };
   }
 }
