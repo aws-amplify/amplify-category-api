@@ -5,6 +5,9 @@ import path from 'path';
 import fs from 'fs-extra';
 import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-transformer';
 
+export const NONE_DATA_SOURCE = () => undefined;
+export const NO_SUBSTITUTIONS = () => ({});
+
 export type ResolverFunctionDefinition = {
   slotName: string;
   fileName: string;

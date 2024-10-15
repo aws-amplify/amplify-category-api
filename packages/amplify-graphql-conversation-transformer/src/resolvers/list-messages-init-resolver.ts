@@ -1,7 +1,4 @@
-import { ResolverFunctionDefinition } from './conversation-pipeline-resolver';
-
-const NONE_DATA_SOURCE = () => undefined;
-const NO_SUBSTITUTIONS = () => ({});
+import { NO_SUBSTITUTIONS, NONE_DATA_SOURCE, ResolverFunctionDefinition } from './conversation-pipeline-resolver';
 
 export const listMessagesInitSlotDefinition: ResolverFunctionDefinition = {
   slotName: 'init',
