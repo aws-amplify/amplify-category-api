@@ -32,7 +32,6 @@ export class AmplifyDatabase extends Construct {
     super(scope, id);
     this.stack = Stack.of(scope);
 
-    // TODO: pass secrets to database cluster
     const dataApiSecret = this.createDatabaseSecret('dataapi');
     const consoleSecret = this.createDatabaseSecret('console');
     const databaseCluster = this.createDatabaseCluster(props);
@@ -50,7 +49,7 @@ export class AmplifyDatabase extends Construct {
       name: 'AmplifyDatabaseDataSourceStrategy',
       dbType: props.dbType,
       dbConnectionConfig: {
-        // use admin secret
+        // use admin secret for data source
         secretArn: databaseCluster.secret.secretArn,
         // TODO: get correct port
         port: 5000,
