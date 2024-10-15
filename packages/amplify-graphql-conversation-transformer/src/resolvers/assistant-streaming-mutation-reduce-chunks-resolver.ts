@@ -21,6 +21,6 @@ export const assistantStreamingMutationReduceChunksResolver = (config: Conversat
     const replaced = resolver.replace(new RegExp(`\\[\\[${key}\\]\\]`, 'g'), value);
     resolver = replaced;
   });
-  const templateName = `Mutation.${config.field.name.value}.assistant-response-stream.js`;
+  const templateName = `Mutation.${config.field.name.value}.assistant-response-stream-reduce-chunks.js`;
   return MappingTemplate.s3MappingFunctionCodeFromString(resolver, templateName);
 };
