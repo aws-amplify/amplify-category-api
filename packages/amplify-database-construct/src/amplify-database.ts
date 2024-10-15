@@ -1,9 +1,17 @@
 import { Construct } from 'constructs';
 import { Stack } from 'aws-cdk-lib';
-import { DatabaseCluster, AuroraMysqlEngineVersion, DatabaseClusterEngine, ClusterInstance, DatabaseSecret } from 'aws-cdk-lib/aws-rds';
+import {
+  AuroraMysqlEngineVersion,
+  AuroraPostgresEngineVersion,
+  ClusterInstance,
+  DatabaseCluster,
+  DatabaseClusterEngine,
+  DatabaseSecret,
+  IClusterEngine,
+} from 'aws-cdk-lib/aws-rds';
 import { InstanceType, InstanceClass, InstanceSize } from 'aws-cdk-lib/aws-ec2';
 import type { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-api-construct';
-import { AmplifyDatabaseProps, AmplifyDatabaseResources } from './types';
+import type { AmplifyDatabaseProps, AmplifyDatabaseResources, DBType } from './types';
 
 const DEFAULT_DATABASE_NAME = 'amplify';
 
@@ -40,8 +48,7 @@ export class AmplifyDatabase extends Construct {
     }
     this.dataSourceStrategy = {
       name: 'AmplifyDatabaseDataSourceStrategy',
-      // TODO: set same as cluster
-      dbType: 'MYSQL',
+      dbType: props.dbType,
       dbConnectionConfig: {
         // use admin secret
         secretArn: databaseCluster.secret.secretArn,
@@ -69,22 +76,26 @@ export class AmplifyDatabase extends Construct {
   }
 
   private createDatabaseCluster(props: AmplifyDatabaseProps): DatabaseCluster {
-    // TODO: set config
     return new DatabaseCluster(this, 'AmplifyDatabaseCluster', {
-      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_01_0 }),
+      engine: this.getDatabaseClusterEngine(props.dbType),
       writer: ClusterInstance.provisioned('writer', {
         instanceType: InstanceType.of(InstanceClass.R6G, InstanceSize.XLARGE4),
       }),
-      serverlessV2MinCapacity: 6.5,
-      serverlessV2MaxCapacity: 64,
-      readers: [
-        // will be put in promotion tier 1 and will scale with the writer
-        ClusterInstance.serverlessV2('reader1', { scaleWithWriter: true }),
-        // will be put in promotion tier 2 and will not scale with the writer
-        ClusterInstance.serverlessV2('reader2'),
-      ],
+      enableDataApi: true,
       defaultDatabaseName: DEFAULT_DATABASE_NAME,
       vpc: props.vpc,
     });
+  }
+
+  private getDatabaseClusterEngine(dbType: DBType): IClusterEngine {
+    switch (dbType) {
+      // TODO: what version to use
+      case 'MYSQL':
+        return DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 });
+      case 'POSTGRES':
+        return DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_16_3 });
+      default:
+        throw new Error(`Unsupported database type: ${dbType}`);
+    }
   }
 }
