@@ -50,8 +50,9 @@ export class AmplifyDatabase extends Construct {
       dbConnectionConfig: {
         // use admin secret for data source
         secretArn: databaseCluster.secret.secretArn,
-        // TODO: get correct port
-        port: 5000,
+        // use default port for db type
+        // mysql: 3306, postgres: 5432
+        port: props.dbType === 'MYSQL' ? 3306 : 5432,
         databaseName: DEFAULT_DATABASE_NAME,
         hostname: databaseCluster.clusterEndpoint.hostname,
       },
