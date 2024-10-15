@@ -1,2 +1,2 @@
-export type { AmplifyDatabaseProps, } from './types';
+export type { AmplifyDatabaseProps, AmplifyDatabaseResources } from './types';
 export { AmplifyDatabase } from './amplify-database';
