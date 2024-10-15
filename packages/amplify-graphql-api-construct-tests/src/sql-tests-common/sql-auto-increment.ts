@@ -11,7 +11,7 @@ export const testGraphQLAPIAutoIncrement = (options: TestOptions, testBlockDescr
     beforeAll(async () => {
       testConfigOutput = await setupTest({
         options,
-        stackConfig: generateStackConfig(),
+        stackConfig: generateStackConfig(engine),
       });
 
       tester = new AutoIncrementTester(testConfigOutput);

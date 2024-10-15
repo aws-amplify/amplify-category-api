@@ -1,6 +1,7 @@
-import { getRDSTableNamePrefix } from '../../../utils/sql-provider-helper';
+import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { generateDDL, getRDSTableNamePrefix } from '../../../utils/sql-provider-helper';
 
-export const schema = (): string => /* GraphQL */ `
+export const schema = (engine: ImportedRDSType): string => /* GraphQL */ `
   type Todo @model @refersTo(name: "${getRDSTableNamePrefix()}todos") {
     id: ID! @primaryKey
     description: String
@@ -13,9 +14,4 @@ export const schema = (): string => /* GraphQL */ `
   }
 `;
 
-export const sqlCreateStatements = (): string[] => {
-  return [
-    `CREATE TABLE "${getRDSTableNamePrefix()}todos" ("id" VARCHAR(40) PRIMARY KEY, "description" VARCHAR(256))`,
-    `CREATE TABLE "${getRDSTableNamePrefix()}students" ("studentId" integer NOT NULL, "classId" text NOT NULL, "firstName" text, "lastName" text, PRIMARY KEY ("studentId", "classId"))`,
-  ];
-};
+export const sqlCreateStatements = (engine: ImportedRDSType): string[] => generateDDL(schema(engine), engine);

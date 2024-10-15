@@ -11,7 +11,7 @@ export const testGraphQLAPI = (options: TestOptions, testBlockDescription: strin
     beforeAll(async () => {
       testConfigOutput = await setupTest({
         options,
-        stackConfig: generateStackConfig(),
+        stackConfig: generateStackConfig(engine),
       });
 
       tester = new ModelsTester(testConfigOutput);

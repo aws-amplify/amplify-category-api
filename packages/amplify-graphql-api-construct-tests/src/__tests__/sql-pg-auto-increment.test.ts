@@ -16,7 +16,7 @@ describe('CDK GraphQL Transformer deployments with Postgres SQL datasources', ()
   const region = process.env.CLI_REGION ?? 'us-west-2';
   const engine = 'postgres';
 
-  const databaseController: SqlDatatabaseController = new SqlDatatabaseController(sqlCreateStatements(), {
+  const databaseController: SqlDatatabaseController = new SqlDatatabaseController(sqlCreateStatements(ImportedRDSType.POSTGRESQL), {
     identifier,
     engine,
     username,
