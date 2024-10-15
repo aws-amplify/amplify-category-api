@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { Stack } from 'aws-cdk-lib';
 import { DatabaseCluster, AuroraMysqlEngineVersion, DatabaseClusterEngine, ClusterInstance } from 'aws-cdk-lib/aws-rds';
+import { InstanceType, InstanceClass, InstanceSize } from 'aws-cdk-lib/aws-ec2';
 import { AmplifyDatabaseProps, AmplifyDatabaseResources } from './types';
 
 export class AmplifyDatabase extends Construct {
@@ -22,7 +23,7 @@ export class AmplifyDatabase extends Construct {
     const databaseCluster = new DatabaseCluster(this, 'Database', {
       engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_01_0 }),
       writer: ClusterInstance.provisioned('writer', {
-        // instanceType: InstanceType.of(InstanceClass.R6G, InstanceSize.XLARGE4),
+        instanceType: InstanceType.of(InstanceClass.R6G, InstanceSize.XLARGE4),
       }),
       serverlessV2MinCapacity: 6.5,
       serverlessV2MaxCapacity: 64,
