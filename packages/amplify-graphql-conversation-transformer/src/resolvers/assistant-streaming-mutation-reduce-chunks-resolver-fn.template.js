@@ -56,7 +56,6 @@ export function response(ctx) {
     return ctx.prev.result;
 }
 
-// TODO: handle toolUse blocks
 function reduceChunks(events) {
   // we're limited by the AppSync JS runtime as to what we can do here.
   // so the code is uhh... a little creative.
