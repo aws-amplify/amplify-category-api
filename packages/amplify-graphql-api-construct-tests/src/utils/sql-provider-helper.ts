@@ -8,7 +8,6 @@ import {
   StringValueNode,
   valueFromASTUntyped,
   TypeNode,
-  DirectiveNode,
   ASTVisitor,
 } from 'graphql';
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
@@ -56,9 +55,9 @@ export const generateDDL = (schema: string, engine: ImportedRDSType = ImportedRD
         const compositeKeys = getCompositeKeys(node);
         const primaryKeyStatement =
           compositeKeys.length > 0
-            ? `PRIMARY KEY (${compositeKeys.join(', ')})`
+            ? `PRIMARY KEY (${compositeKeys.map((key) => convertToDBSpecificName(key, engine)).join(', ')})`
             : primaryKeys.length > 0
-            ? `PRIMARY KEY (${primaryKeys.join(', ')})`
+            ? `PRIMARY KEY (${primaryKeys.map((key) => convertToDBSpecificName(key, engine)).join(', ')})`
             : '';
         const sql = `CREATE TABLE ${convertToDBSpecificName(tableName, engine)} (${[...fieldStatements, primaryKeyStatement]
           .filter(Boolean)
@@ -194,7 +193,7 @@ export const convertToDBSpecificGraphQLString = (name: string, engine: ImportedR
     case ImportedRDSType.MYSQL:
       return name;
     case ImportedRDSType.POSTGRESQL:
-      return `\\"\\"${name}\\"\\"`;
+      return `"${name}"`;
     default:
       return name;
   }
