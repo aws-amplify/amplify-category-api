@@ -42,11 +42,13 @@
     "jsii-rosetta": "^5.4.23",
     "rimraf": "^3.0.0",
     "ts-jest": "^29.0.0",
-    "ts-node": "^8.10.1"
+    "ts-node": "^8.10.1",
+    "@aws-amplify/graphql-api-construct": "1.15.0"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.158.0",
-    "constructs": "^10.3.0"
+    "constructs": "^10.3.0",
+    "@aws-amplify/graphql-api-construct": "^1.15.0"
   },
   "stability": "stable",
   "types": "lib/index.d.ts",

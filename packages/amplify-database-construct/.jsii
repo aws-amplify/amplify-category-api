@@ -6,10 +6,18 @@
     ]
   },
   "dependencies": {
+    "@aws-amplify/graphql-api-construct": "^1.15.0",
     "aws-cdk-lib": "^2.158.0",
     "constructs": "^10.3.0"
   },
   "dependencyClosure": {
+    "@aws-amplify/graphql-api-construct": {
+      "targets": {
+        "js": {
+          "npm": "@aws-amplify/graphql-api-construct"
+        }
+      }
+    },
     "@aws-cdk/asset-awscli-v1": {
       "targets": {
         "dotnet": {
@@ -3907,7 +3915,7 @@
         },
         "locationInModule": {
           "filename": "src/amplify-database.ts",
-          "line": 18
+          "line": 23
         },
         "parameters": [
           {
@@ -3933,10 +3941,24 @@
       "kind": "class",
       "locationInModule": {
         "filename": "src/amplify-database.ts",
-        "line": 7
+        "line": 10
       },
       "name": "AmplifyDatabase",
       "properties": [
+        {
+          "docs": {
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/amplify-database.ts",
+            "line": 21
+          },
+          "name": "dataSourceStrategy",
+          "type": {
+            "fqn": "@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy"
+          }
+        },
         {
           "docs": {
             "stability": "stable",
@@ -3945,7 +3967,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-database.ts",
-            "line": 11
+            "line": 19
           },
           "name": "resources",
           "type": {
@@ -3960,7 +3982,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-database.ts",
-            "line": 16
+            "line": 14
           },
           "name": "stack",
           "type": {
@@ -4072,5 +4094,5 @@
     }
   },
   "version": "0.0.1",
-  "fingerprint": "+ENwzosl42lXE1aSAX4MRjQCZGjQ8CZ/9vbsNImlsiA="
+  "fingerprint": "1suLSHq8jvdSkZJQvThI9yoQNsf9qzajrg5Mau992Gg="
 }
