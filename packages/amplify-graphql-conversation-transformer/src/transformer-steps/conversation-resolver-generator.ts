@@ -21,6 +21,7 @@ import { overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer'
 import pluralize from 'pluralize';
 import { listMessageInitMappingTemplate } from '../resolvers/list-messages-init-resolver';
 import { assistantStreamingMutationResolver } from '../resolvers/assistant-streaming-mutation-resolver';
+import { assistantStreamingMutationReduceChunksResolver } from '../resolvers/assistant-streaming-mutation-reduce-chunks-resolver';
 
 type KeyAttributeDefinition = {
   name: string;
@@ -315,13 +316,14 @@ export class ConversationResolverGenerator {
       const assistantResponseResolverFunction = assistantStreamingMutationResolver(directive);
       const conversationMessageDataSourceName = getModelDataSourceNameForTypeName(ctx, `ConversationMessage${capitalizedFieldName}`);
       const conversationMessageDataSource = ctx.api.host.getDataSource(conversationMessageDataSourceName);
+
       const resolver = new TransformerResolver(
         'Mutation',
         directive.messageModel.assistantStreamingMutationField.name.value,
         assistantResponseResolverResourceId,
         { codeMappingTemplate: assistantResponseResolverFunction },
         ['init', 'auth', 'verifySessionOwner'],
-        [],
+        ['reduceChunks'],
         conversationMessageDataSource as any,
         APPSYNC_JS_RUNTIME,
       );
@@ -337,6 +339,10 @@ export class ConversationResolverGenerator {
       const sessionModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, sessionModelName);
       const conversationSessionDDBDataSource = ctx.api.host.getDataSource(sessionModelDDBDataSourceName);
       resolver.addJsFunctionToSlot('verifySessionOwner', verifySessionOwnerResolverFunction, conversationSessionDDBDataSource as any);
+
+      // Add reduceChunks function
+      const reduceChunksFunction = assistantStreamingMutationReduceChunksResolver(directive);
+      resolver.addJsFunctionToSlot('reduceChunks', reduceChunksFunction, conversationMessageDataSource as any);
 
       ctx.resolvers.addResolver('Mutation', directive.messageModel.assistantStreamingMutationField.name.value, resolver);
     }
