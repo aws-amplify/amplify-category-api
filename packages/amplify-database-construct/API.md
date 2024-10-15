@@ -22,6 +22,10 @@ export class AmplifyDatabase extends Construct {
 
 // @public
 export interface AmplifyDatabaseProps {
+    // Warning: (ae-forgotten-export) The symbol "DBType" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    readonly dbType: DBType;
     // (undocumented)
     readonly vpc: IVpc;
 }
