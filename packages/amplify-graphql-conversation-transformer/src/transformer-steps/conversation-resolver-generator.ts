@@ -116,7 +116,9 @@ export class ConversationResolverGenerator {
     if (directive.handler) {
       const eventVersion = semver.coerce(directive.handler.eventVersion);
       if (eventVersion?.major !== 1) {
-        throw new Error(`Unsupported custom conversation handler. Expected eventVersion to match 1.x, received ${directive.handler.eventVersion}`);
+        throw new Error(
+          `Unsupported custom conversation handler. Expected eventVersion to match 1.x, received ${directive.handler.eventVersion}`,
+        );
       }
       return this.setupExistingFunctionDataSource(directive.handler.functionName);
     } else if (directive.functionName) {
