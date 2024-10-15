@@ -189,8 +189,8 @@ export function request(ctx) {
     listQueryLimit: undefined,
   };
 
-  const disableStreaming = ctx.env['pirateChat_DISABLE_STREAMING'];
-  const responseMutation = disableStreaming === false
+  const disableStreaming = ctx.env['pirateChat_DISABLE_STREAMING'] === 'true';
+  const responseMutation = !!disableStreaming
     ? singleShotResponseMutation
     : streamingResponseMutation;
 
@@ -425,8 +425,8 @@ export function request(ctx) {
     listQueryLimit: undefined,
   };
 
-  const disableStreaming = ctx.env['pirateChat_DISABLE_STREAMING'];
-  const responseMutation = disableStreaming === false
+  const disableStreaming = ctx.env['pirateChat_DISABLE_STREAMING'] === 'true';
+  const responseMutation = !!disableStreaming
     ? singleShotResponseMutation
     : streamingResponseMutation;
 
@@ -661,8 +661,8 @@ export function request(ctx) {
     listQueryLimit: undefined,
   };
 
-  const disableStreaming = ctx.env['pirateChat_DISABLE_STREAMING'];
-  const responseMutation = disableStreaming === false
+  const disableStreaming = ctx.env['pirateChat_DISABLE_STREAMING'] === 'true';
+  const responseMutation = !!disableStreaming
     ? singleShotResponseMutation
     : streamingResponseMutation;
 
@@ -897,8 +897,8 @@ export function request(ctx) {
     listQueryLimit: undefined,
   };
 
-  const disableStreaming = ctx.env['pirateChat_DISABLE_STREAMING'];
-  const responseMutation = disableStreaming === false
+  const disableStreaming = ctx.env['pirateChat_DISABLE_STREAMING'] === 'true';
+  const responseMutation = !!disableStreaming
     ? singleShotResponseMutation
     : streamingResponseMutation;
 
