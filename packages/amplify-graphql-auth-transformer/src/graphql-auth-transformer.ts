@@ -6,10 +6,12 @@ import {
   getModelDataSourceNameForTypeName,
   getSortKeyFieldNames,
   getSubscriptionFilterInputName,
+  hasDirectiveWithName,
   InvalidDirectiveError,
   isBuiltInGraphqlNode,
   isDynamoDbModel,
   isModelType,
+  isObjectTypeDefinitionNode,
   isSqlModel,
   MappingTemplate,
   TransformerAuthBase,
@@ -20,23 +22,27 @@ import {
   DataSourceProvider,
   MutationFieldType,
   QueryFieldType,
-  TransformerTransformSchemaStepContextProvider,
-  TransformerContextProvider,
-  TransformerResolverProvider,
-  TransformerSchemaVisitStepContextProvider,
   TransformerAuthProvider,
   TransformerBeforeStepContextProvider,
+  TransformerContextProvider,
+  TransformerPreProcessContextProvider,
+  TransformerResolverProvider,
+  TransformerSchemaVisitStepContextProvider,
+  TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   DirectiveNode,
+  DocumentNode,
   FieldDefinitionNode,
-  ObjectTypeDefinitionNode,
   InterfaceTypeDefinitionNode,
   Kind,
-  TypeDefinitionNode,
   ListValueNode,
+  ObjectTypeDefinitionNode,
   StringValueNode,
+  TypeDefinitionNode,
 } from 'graphql';
+import produce from 'immer';
+import { WritableDraft } from 'immer/dist/types/types-external';
 import { merge } from 'lodash';
 import {
   SubscriptionLevel,
@@ -103,6 +109,7 @@ import {
   isFieldRoleHavingAccessToBothSide,
   isDynamicAuthOrCustomAuth,
   isIdenticalAuthRole,
+  addDirectivesToObject,
 } from './utils';
 import {
   defaultIdentityClaimWarning,
@@ -345,22 +352,37 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   };
 
   /**
-   * Adds custom Queries, Mutations, and Subscriptions to the authNonModelConfig map to ensure they are included when adding implicit
-   * aws_iam auth directives.
+   * If needed, adds aws_iam auth directive to non-model types
    */
-  addCustomOperationFieldsToAuthNonModelConfig = (ctx: TransformerTransformSchemaStepContextProvider): void => {
+  addIamAuthDirectiveToNonModelTypes = (ctx: TransformerTransformSchemaStepContextProvider): void => {
     if (!ctx.transformParameters.sandboxModeEnabled && !ctx.synthParameters.enableIamAccess) {
       return;
     }
 
-    const hasAwsIamDirective = (field: FieldDefinitionNode): boolean => {
-      return field.directives?.some((dir) => dir.name.value === 'aws_iam');
-    };
+    const nonModelObjects = ctx.inputDocument.definitions
+      .filter(isObjectTypeDefinitionNode)
+      .filter((objectDef) => !isBuiltInGraphqlNode(objectDef))
+      .filter((objectDef) => !hasDirectiveWithName(objectDef, 'model'))
+      .filter((objectDef) => !hasDirectiveWithName(objectDef, 'aws_iam'));
 
-    const allObjects = ctx.inputDocument.definitions.filter(isBuiltInGraphqlNode);
-    allObjects.forEach((object) => {
+    nonModelObjects.forEach((object) => {
       const typeName = object.name.value;
-      const fieldsWithoutIamDirective = object.fields.filter((field) => !hasAwsIamDirective(field));
+      addDirectivesToObject(ctx, typeName, [makeDirective('aws_iam', [])]);
+    });
+  };
+
+  /**
+   * If needed, adds aws_iam auth directive to custom operations (Queries, Mutations, Subscriptions)
+   */
+  addIamAuthDirectiveToCustomOperationFields = (ctx: TransformerTransformSchemaStepContextProvider): void => {
+    if (!ctx.transformParameters.sandboxModeEnabled && !ctx.synthParameters.enableIamAccess) {
+      return;
+    }
+
+    const builtInObjects = ctx.inputDocument.definitions.filter(isBuiltInGraphqlNode);
+    builtInObjects.forEach((object) => {
+      const typeName = object.name.value;
+      const fieldsWithoutIamDirective = object.fields.filter((field) => !hasDirectiveWithName(field, 'aws_iam'));
       fieldsWithoutIamDirective.forEach((field) => {
         addDirectivesToField(ctx, typeName, field.name.value, [makeDirective('aws_iam', [])]);
       });
@@ -368,7 +390,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   };
 
   transformSchema = (context: TransformerTransformSchemaStepContextProvider): void => {
-    this.addCustomOperationFieldsToAuthNonModelConfig(context);
+    this.addIamAuthDirectiveToNonModelTypes(context);
+    this.addIamAuthDirectiveToCustomOperationFields(context);
 
     const searchableAggregateServiceDirectives = new Set<AuthProvider>();
 

@@ -48,3 +48,13 @@ export const getField = (obj: ObjectTypeDefinitionNode, fieldName: string): Fiel
 
 export const getType = (schema: DocumentNode, typeName: string): ObjectTypeDefinitionNode | undefined =>
   schema.definitions.find((def) => isObjectTypeDefinitionNode(def) && def.name.value === typeName) as ObjectTypeDefinitionNode | undefined;
+
+/**
+ * Returns true if the node has a directive named `name`
+ */
+export const hasDirectiveWithName = (
+  node: FieldDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeDefinitionNode,
+  name: string,
+): boolean => {
+  return node.directives?.some((d) => d.name.value === name) ?? false;
+};
