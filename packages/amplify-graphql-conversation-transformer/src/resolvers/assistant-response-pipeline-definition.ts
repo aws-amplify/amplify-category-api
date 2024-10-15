@@ -1,7 +1,4 @@
-import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-transformer';
 import { toUpper } from 'graphql-transformer-common';
-import pluralize from 'pluralize';
-import dedent from 'ts-dedent';
 import { PipelineSlotDefinition, PipelineDefinition } from './conversation-pipeline-resolver';
 
 const NONE_DATA_SOURCE = () => undefined;
