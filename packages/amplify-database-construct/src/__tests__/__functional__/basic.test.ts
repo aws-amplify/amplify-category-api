@@ -53,4 +53,19 @@ describe('basic functionality', () => {
       },
     });
   });
+
+  it('creates a data source strategy', () => {
+    const stack = new Stack();
+
+    const vpc = new Vpc(stack, 'TestVPC', {
+      ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
+    });
+
+    const amplifyDatabase = new AmplifyDatabase(stack, 'TestDatabase', {
+      vpc,
+    });
+
+    expect(amplifyDatabase.dataSourceStrategy).toBeDefined();
+    // TODO: assert shape of dataSourceStrategy
+  });
 });
