@@ -1,11 +1,11 @@
-import { TransformerResolver, MappingTemplate, APPSYNC_JS_RUNTIME } from "@aws-amplify/graphql-transformer-core";
-import { TransformerContextProvider, MappingTemplateProvider, DataSourceProvider } from "@aws-amplify/graphql-transformer-interfaces";
-import { ResolverResourceIDs } from "graphql-transformer-common";
-import path from "path";
+import { TransformerResolver, MappingTemplate, APPSYNC_JS_RUNTIME } from '@aws-amplify/graphql-transformer-core';
+import { MappingTemplateProvider, DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { ResolverResourceIDs } from 'graphql-transformer-common';
+import path from 'path';
 import fs from 'fs-extra';
-import { ConversationDirectiveConfiguration } from "../grapqhl-conversation-transformer";
+import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-transformer';
 
-export type PipelineSlotDefinition = {
+export type ResolverFunctionDefinition = {
   slotName: string;
   fileName: string;
   templateName: (config: ConversationDirectiveConfiguration) => string;
@@ -14,24 +14,22 @@ export type PipelineSlotDefinition = {
 };
 
 export type PipelineDefinition = {
-  requestSlots: PipelineSlotDefinition[];
-  dataSlot: PipelineSlotDefinition;
-  responseSlots: PipelineSlotDefinition[];
+  requestSlots: ResolverFunctionDefinition[];
+  dataSlot: ResolverFunctionDefinition;
+  responseSlots: ResolverFunctionDefinition[];
   field: (config: ConversationDirectiveConfiguration) => { typeName: string; fieldName: string };
 };
-
 
 export class ConversationPipelineResolver {
   constructor(
     private readonly directiveConfig: ConversationDirectiveConfiguration,
-    private readonly ctx: TransformerContextProvider,
     private readonly pipelineDefinition: PipelineDefinition,
   ) {}
 
   generatePipelineResolver(): TransformerResolver {
     const { typeName, fieldName } = this.pipelineDefinition.field(this.directiveConfig);
     const resolverResourceId = ResolverResourceIDs.ResolverResourceID(typeName, fieldName);
-    const codeMappingTemplate = this.generateMappingTemplateForSlot(this.pipelineDefinition.dataSlot);
+    const codeMappingTemplate = generateResolverFunction(this.pipelineDefinition.dataSlot, this.directiveConfig);
     const dataSourceProvider = this.pipelineDefinition.dataSlot.dataSource(this.directiveConfig);
 
     const requestSlots = this.pipelineDefinition.requestSlots.map((slot) => slot.slotName);
@@ -50,26 +48,29 @@ export class ConversationPipelineResolver {
 
     const resolverSlots = [...this.pipelineDefinition.requestSlots, ...this.pipelineDefinition.responseSlots];
     for (const slot of resolverSlots) {
-      const mappingTemplate = this.generateMappingTemplateForSlot(slot);
+      const mappingTemplate = generateResolverFunction(slot, this.directiveConfig);
       pipelineResolver.addJsFunctionToSlot(slot.slotName, mappingTemplate, slot.dataSource(this.directiveConfig));
     }
 
     return pipelineResolver;
   }
-
-  private generateMappingTemplateForSlot(slot: PipelineSlotDefinition): MappingTemplateProvider {
-    const template = fs.readFileSync(path.join(__dirname, 'templates', slot.fileName), 'utf8');
-    const substitutions = slot.substitutions(this.directiveConfig);
-    const resolver = this.substituteResolverTemplateValues(template, substitutions);
-    const templateName = slot.templateName(this.directiveConfig);
-    return MappingTemplate.s3MappingFunctionCodeFromString(resolver, templateName);
-  }
-
-  private substituteResolverTemplateValues(resolver: string, substitutions: Record<string, string>): string {
-    Object.entries(substitutions).forEach(([key, value]) => {
-      const replaced = resolver.replace(new RegExp(`\\[\\[${key}\\]\\]`, 'g'), value);
-      resolver = replaced;
-    });
-    return resolver;
-  }
 }
+
+export const generateResolverFunction = (
+  definition: ResolverFunctionDefinition,
+  config: ConversationDirectiveConfiguration,
+): MappingTemplateProvider => {
+  const template = fs.readFileSync(path.join(__dirname, definition.fileName), 'utf8');
+  const substitutions = definition.substitutions(config);
+  const resolver = substituteResolverTemplateValues(template, substitutions);
+  const templateName = definition.templateName(config);
+  return MappingTemplate.s3MappingFunctionCodeFromString(resolver, templateName);
+};
+
+const substituteResolverTemplateValues = (resolver: string, substitutions: Record<string, string>): string => {
+  Object.entries(substitutions).forEach(([key, value]) => {
+    const replaced = resolver.replace(new RegExp(`\\[\\[${key}\\]\\]`, 'g'), value);
+    resolver = replaced;
+  });
+  return resolver;
+};

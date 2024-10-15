@@ -2,12 +2,12 @@ import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-tran
 import { toUpper } from 'graphql-transformer-common';
 import pluralize from 'pluralize';
 import dedent from 'ts-dedent';
-import { PipelineSlotDefinition, PipelineDefinition } from './conversation-pipeline-resolver';
+import { PipelineDefinition, ResolverFunctionDefinition } from './conversation-pipeline-resolver';
 
 const NONE_DATA_SOURCE = () => undefined;
 const NO_SUBSTITUTIONS = () => ({});
 
-const initSlotDefinition: PipelineSlotDefinition = {
+const initSlotDefinition: ResolverFunctionDefinition = {
   slotName: 'init',
   fileName: 'init-resolver-fn.template.js',
   templateName: (config) => `Mutation.${config.field.name.value}.init.js`,
@@ -15,7 +15,7 @@ const initSlotDefinition: PipelineSlotDefinition = {
   substitutions: NO_SUBSTITUTIONS,
 };
 
-const authSlotDefinition: PipelineSlotDefinition = {
+const authSlotDefinition: ResolverFunctionDefinition = {
   slotName: 'auth',
   fileName: 'auth-resolver-fn.template.js',
   templateName: (config) => `Mutation.${config.field.name.value}.auth.js`,
@@ -23,7 +23,7 @@ const authSlotDefinition: PipelineSlotDefinition = {
   substitutions: NO_SUBSTITUTIONS,
 };
 
-const verifySessionOwnerSlotDefinition: PipelineSlotDefinition = {
+const verifySessionOwnerSlotDefinition: ResolverFunctionDefinition = {
   slotName: 'verifySessionOwner',
   fileName: 'verify-session-owner-resolver-fn.template.js',
   templateName: (config) => `Mutation.${config.field.name.value}.verify-session-owner.js`,
@@ -33,7 +33,7 @@ const verifySessionOwnerSlotDefinition: PipelineSlotDefinition = {
   }),
 };
 
-const writeMessageToTableSlotDefinition: PipelineSlotDefinition = {
+const writeMessageToTableSlotDefinition: ResolverFunctionDefinition = {
   slotName: 'writeMessageToTable',
   fileName: 'write-message-to-table-resolver-fn.template.js',
   templateName: (config) => `Mutation.${config.field.name.value}.write-message-to-table.js`,
@@ -97,7 +97,7 @@ const generateToolLines = (config: ConversationDirectiveConfiguration) => {
   return { TOOL_DEFINITIONS_LINE, TOOLS_CONFIGURATION_LINE };
 };
 
-const invokeLambdaSlotDefinition: PipelineSlotDefinition = {
+const invokeLambdaSlotDefinition: ResolverFunctionDefinition = {
   slotName: 'data',
   fileName: 'invoke-lambda-resolver-fn.template.js',
   templateName: (config) => `Mutation.${config.field.name.value}.invoke-lambda.js`,

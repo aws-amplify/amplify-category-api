@@ -9,9 +9,9 @@ import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { getModelDataSourceNameForTypeName, getTable } from '@aws-amplify/graphql-transformer-core';
 import { overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
 import pluralize from 'pluralize';
-import { listMessageInitMappingTemplate } from '../resolvers/list-messages-init-resolver';
-import { sendMessagePipelineDefinition } from '../resolvers/send-message-pipeline-resolver';
-import { ConversationPipelineResolver } from '../resolvers/conversation-pipeline-resolver';
+import { listMessagesInitSlotDefinition } from '../resolvers/list-messages-init-resolver';
+import { sendMessagePipelineDefinition } from '../resolvers/send-message-pipeline-definition';
+import { ConversationPipelineResolver, generateResolverFunction } from '../resolvers/conversation-pipeline-resolver';
 import { assistantResponsePipelineDefinition } from '../resolvers/assistant-response-pipeline-definition';
 import { assistantResponseSubscriptionPipelineDefinition } from '../resolvers/assistant-response-subscription-pipeline-definition';
 
@@ -65,21 +65,18 @@ export class ConversationResolverGenerator {
 
     const conversationPipelineResolver = new ConversationPipelineResolver(
       directive,
-      ctx,
       sendMessagePipelineDefinition,
     ).generatePipelineResolver();
     ctx.resolvers.addResolver(parentName, fieldName, conversationPipelineResolver);
 
     const assistantResponsePipelineResolver = new ConversationPipelineResolver(
       directive,
-      ctx,
       assistantResponsePipelineDefinition,
     ).generatePipelineResolver();
     ctx.resolvers.addResolver(parentName, directive.responseMutationName, assistantResponsePipelineResolver);
 
     const assistantResponseSubscriptionPipelineResolver = new ConversationPipelineResolver(
       directive,
-      ctx,
       assistantResponseSubscriptionPipelineDefinition,
     ).generatePipelineResolver();
 
@@ -189,7 +186,7 @@ export class ConversationResolverGenerator {
     const messageModelName = directive.messageModel.messageModel.name.value;
     const pluralized = pluralize(messageModelName);
     const listMessagesResolver = ctx.resolvers.getResolver('Query', `list${pluralized}`) as TransformerResolver;
-    const initResolverFn = listMessageInitMappingTemplate(directive);
+    const initResolverFn = generateResolverFunction(listMessagesInitSlotDefinition, directive);
     listMessagesResolver.addJsFunctionToSlot('init', initResolverFn);
   }
 

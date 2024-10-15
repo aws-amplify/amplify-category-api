@@ -1,10 +1,10 @@
 import { toUpper } from 'graphql-transformer-common';
-import { PipelineSlotDefinition, PipelineDefinition } from './conversation-pipeline-resolver';
+import { PipelineDefinition, ResolverFunctionDefinition } from './conversation-pipeline-resolver';
 
 const NONE_DATA_SOURCE = () => undefined;
 const NO_SUBSTITUTIONS = () => ({});
 
-const initSlotDefinition: PipelineSlotDefinition = {
+const initSlotDefinition: ResolverFunctionDefinition = {
   slotName: 'init',
   fileName: 'init-resolver-fn.template.js',
   templateName: (config) => `Mutation.${config.responseMutationName}.init.js`,
@@ -12,7 +12,7 @@ const initSlotDefinition: PipelineSlotDefinition = {
   substitutions: NO_SUBSTITUTIONS,
 };
 
-const authSlotDefinition: PipelineSlotDefinition = {
+const authSlotDefinition: ResolverFunctionDefinition = {
   slotName: 'auth',
   fileName: 'auth-resolver-fn.template.js',
   templateName: (config) => `Mutation.${config.responseMutationName}.auth.js`,
@@ -20,7 +20,7 @@ const authSlotDefinition: PipelineSlotDefinition = {
   substitutions: NO_SUBSTITUTIONS,
 };
 
-const verifySessionOwnerSlotDefinition: PipelineSlotDefinition = {
+const verifySessionOwnerSlotDefinition: ResolverFunctionDefinition = {
   slotName: 'verifySessionOwner',
   fileName: 'verify-session-owner-resolver-fn.template.js',
   templateName: (config) => `Mutation.${config.responseMutationName}.verify-session-owner.js`,
@@ -30,7 +30,7 @@ const verifySessionOwnerSlotDefinition: PipelineSlotDefinition = {
   }),
 };
 
-const assistantMutationDataSlotDefinition: PipelineSlotDefinition = {
+const assistantMutationDataSlotDefinition: ResolverFunctionDefinition = {
   slotName: 'data',
   fileName: 'assistant-mutation-resolver-fn.template.js',
   templateName: (config) => `Mutation.${config.responseMutationName}.assistant-response.js`,

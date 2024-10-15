@@ -1,9 +1,9 @@
-import { PipelineSlotDefinition, PipelineDefinition } from './conversation-pipeline-resolver';
+import { PipelineDefinition, ResolverFunctionDefinition } from './conversation-pipeline-resolver';
 
 const NONE_DATA_SOURCE = () => undefined;
 const NO_SUBSTITUTIONS = () => ({});
 
-const dataSlot: PipelineSlotDefinition = {
+const dataSlot: ResolverFunctionDefinition = {
   slotName: 'init',
   fileName: 'assistant-messages-subscription-resolver-fn.template.js',
   templateName: (config) => `Subscription.${config.messageModel.messageSubscription.name.value}.assistant-message.js`,
