@@ -8,11 +8,14 @@ import { Construct } from 'constructs';
 import { IDatabaseCluster } from 'aws-cdk-lib/aws-rds';
 import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
 import { IVpc } from 'aws-cdk-lib/aws-ec2';
+import type { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-api-construct';
 import { Stack } from 'aws-cdk-lib';
 
 // @public (undocumented)
 export class AmplifyDatabase extends Construct {
     constructor(scope: Construct, id: string, props: AmplifyDatabaseProps);
+    // (undocumented)
+    readonly dataSourceStrategy: SQLLambdaModelDataSourceStrategy;
     readonly resources: AmplifyDatabaseResources;
     readonly stack: Stack;
 }
