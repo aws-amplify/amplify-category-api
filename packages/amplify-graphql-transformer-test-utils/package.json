@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-transformer-test-utils",
-  "version": "1.0.4",
+  "version": "1.0.5-gen2-migration-1015.0",
   "description": "Test utils for graphql transformers",
   "repository": {
     "type": "git",
@@ -30,8 +30,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "3.2.0",
-    "@aws-amplify/graphql-transformer-interfaces": "4.1.2"
+    "@aws-amplify/graphql-transformer-core": "3.3.0-gen2-migration-1015.0",
+    "@aws-amplify/graphql-transformer-interfaces": "4.2.0-gen2-migration-1015.0"
   },
   "devDependencies": {
     "@types/node": "^18.0.0",

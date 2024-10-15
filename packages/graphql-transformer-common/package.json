@@ -1,6 +1,6 @@
 {
   "name": "graphql-transformer-common",
-  "version": "5.0.1",
+  "version": "5.1.0-gen2-migration-1015.0",
   "description": "Common code and constants for AppSync Transformers",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "graphql": "^15.5.0",
-    "graphql-mapping-template": "5.0.1",
+    "graphql-mapping-template": "5.0.2-gen2-migration-1015.0",
     "md5": "^2.2.1",
     "pluralize": "8.0.0"
   },

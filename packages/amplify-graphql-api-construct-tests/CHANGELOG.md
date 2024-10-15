@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.11.0-gen2-migration-1015.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.10.0...amplify-graphql-api-construct-tests@1.11.0-gen2-migration-1015.0) (2024-10-15)
+
+### Bug Fixes
+
+- allowlist comparison properties on imported table ([#2908](https://github.com/aws-amplify/amplify-category-api/issues/2908)) ([ae1f860](https://github.com/aws-amplify/amplify-category-api/commit/ae1f860a12dfd0cc4ae77675d6a6c9f6b45a920e))
+
+### Features
+
+- add overrideIndexName to configure index name ([#2738](https://github.com/aws-amplify/amplify-category-api/issues/2738)) ([c4e59d3](https://github.com/aws-amplify/amplify-category-api/commit/c4e59d37d987254d102146a27267501d44fca263))
+
 # [1.10.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.9.2...amplify-graphql-api-construct-tests@1.10.0) (2024-10-10)
 
 ### Bug Fixes

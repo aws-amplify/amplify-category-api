@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-directives",
-  "version": "2.3.0",
+  "version": "2.4.0-gen2-migration-1015.0",
   "description": "Directive definitions for Amplify GraphQL transformers.",
   "repository": {
     "type": "git",
