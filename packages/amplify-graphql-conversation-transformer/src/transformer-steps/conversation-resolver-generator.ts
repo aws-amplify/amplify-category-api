@@ -1,15 +1,12 @@
-import { MappingTemplateProvider, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-transformer';
 import { processTools } from '../utils/tools';
-import { APPSYNC_JS_RUNTIME, TransformerResolver } from '@aws-amplify/graphql-transformer-core';
-import { ResolverResourceIDs, FunctionResourceIDs, ResourceConstants, toUpper } from 'graphql-transformer-common';
+import { TransformerResolver } from '@aws-amplify/graphql-transformer-core';
+import { FunctionResourceIDs, ResourceConstants, toUpper } from 'graphql-transformer-common';
 import * as cdk from 'aws-cdk-lib';
 import { conversation } from '@aws-amplify/ai-constructs';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { getModelDataSourceNameForTypeName, getTable } from '@aws-amplify/graphql-transformer-core';
-import { writeMessageToTableMappingTemplate } from '../resolvers/write-message-to-table-resolver';
-import { assistantMutationResolver } from '../resolvers/assistant-mutation-resolver';
-import { conversationMessageSubscriptionMappingTamplate } from '../resolvers/assistant-messages-subscription-resolver';
 import { overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
 import pluralize from 'pluralize';
 import { listMessageInitMappingTemplate } from '../resolvers/list-messages-init-resolver';

@@ -49,7 +49,6 @@ const invokeLambdaResolverSubstitutions = (config: ConversationDirectiveConfigur
     TOOL_DEFINITIONS_LINE,
     TOOLS_CONFIGURATION_LINE,
     SELECTION_SET: selectionSet,
-    // GRAPHQL_API_ENDPOINT: config.ctx.api.graphqlUrl, // TODO: remove this
     MODEL_CONFIGURATION_LINE: generateModelConfigurationLine(config),
     RESPONSE_MUTATION_NAME: config.responseMutationName,
     RESPONSE_MUTATION_INPUT_TYPE_NAME: config.responseMutationInputTypeName,
@@ -110,4 +109,5 @@ export const sendMessagePipelineDefinition: PipelineDefinition = {
   requestSlots: [initSlotDefinition, authSlotDefinition, verifySessionOwnerSlotDefinition, writeMessageToTableSlotDefinition],
   dataSlot: invokeLambdaSlotDefinition,
   responseSlots: [],
+  field: (config) => ({ typeName: 'Mutation', fieldName: config.field.name.value }),
 };

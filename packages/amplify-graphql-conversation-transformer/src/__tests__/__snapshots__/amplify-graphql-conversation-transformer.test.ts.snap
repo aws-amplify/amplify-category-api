@@ -152,7 +152,7 @@ export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
 
-
+  
   const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
 
   const responseMutation = {
@@ -385,7 +385,7 @@ export function request(ctx) {
   const modelConfiguration = {
   modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
   systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
-
+  
 };
 
   const clientTools = args.toolConfiguration?.tools?.map((tool) => {
@@ -608,7 +608,7 @@ export function request(ctx) {
   const modelConfiguration = {
   modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
   systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
-
+  
 };
 
   const clientTools = args.toolConfiguration?.tools?.map((tool) => {
@@ -831,7 +831,7 @@ export function request(ctx) {
   const modelConfiguration = {
   modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
   systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
-
+  
 };
 
   const clientTools = args.toolConfiguration?.tools?.map((tool) => {

@@ -15,4 +15,5 @@ export const assistantResponseSubscriptionPipelineDefinition: PipelineDefinition
   requestSlots: [],
   dataSlot,
   responseSlots: [],
+  field: (config) => ({ typeName: 'Subscription', fieldName: config.messageModel.messageSubscription.name.value }),
 };
