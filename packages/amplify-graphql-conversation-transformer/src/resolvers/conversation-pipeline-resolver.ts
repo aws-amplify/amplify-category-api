@@ -58,7 +58,7 @@ export class ConversationPipelineResolver {
   }
 
   private generateMappingTemplateForSlot(slot: PipelineSlotDefinition): MappingTemplateProvider {
-    const template = fs.readFileSync(path.join(__dirname, slot.fileName), 'utf8');
+    const template = fs.readFileSync(path.join(__dirname, 'templates', slot.fileName), 'utf8');
     const substitutions = slot.substitutions(this.directiveConfig);
     const resolver = this.substituteResolverTemplateValues(template, substitutions);
     const templateName = slot.templateName(this.directiveConfig);
