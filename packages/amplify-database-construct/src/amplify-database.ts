@@ -9,7 +9,6 @@ import {
   DatabaseSecret,
   IClusterEngine,
 } from 'aws-cdk-lib/aws-rds';
-import { InstanceType, InstanceClass, InstanceSize } from 'aws-cdk-lib/aws-ec2';
 import type { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-api-construct';
 import type { AmplifyDatabaseProps, AmplifyDatabaseResources, DBType } from './types';
 
@@ -77,9 +76,7 @@ export class AmplifyDatabase extends Construct {
   private createDatabaseCluster(props: AmplifyDatabaseProps): DatabaseCluster {
     return new DatabaseCluster(this, 'AmplifyDatabaseCluster', {
       engine: this.getDatabaseClusterEngine(props.dbType),
-      writer: ClusterInstance.provisioned('writer', {
-        instanceType: InstanceType.of(InstanceClass.R6G, InstanceSize.XLARGE4),
-      }),
+      writer: ClusterInstance.serverlessV2('writer'),
       enableDataApi: true,
       defaultDatabaseName: DEFAULT_DATABASE_NAME,
       vpc: props.vpc,
