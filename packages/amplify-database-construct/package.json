@@ -1,0 +1,105 @@
+{
+  "name": "@aws-amplify/database-construct",
+  "version": "0.0.1",
+  "description": "Database cluster for Amplify GraphQL API",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-category-api.git",
+    "directory": "packages/database-construct"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "jsii",
+    "watch": "jsii -w",
+    "package": "jsii-pacmak",
+    "clean": "rimraf lib dist tsconfig.json tsconfig.tsbuildinfo node_modules",
+    "test": "jest",
+    "test-watch": "jest --watch",
+    "extract-api": "ts-node --project extract-api.tsconfig.json ../../scripts/extract-api.ts",
+    "update-readme": "cp README_HEAD.md README.md && jsii && jsii-docgen --readme --output README.md",
+    "prepublishOnly": "jsii && git add .jsii && git commit -m \"chore: update .jsii assembly\" --no-verify"
+  },
+  "keywords": [
+    "awscdk",
+    "aws-cdk",
+    "sql",
+    "cdk",
+    "aws",
+    "amplify",
+    "database"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "aws-cdk-lib": "2.158.0",
+    "constructs": "10.3.0",
+    "jsii": "^5.4.23",
+    "jsii-docgen": "9.1.2",
+    "jsii-pacmak": "^1.84.0",
+    "jsii-rosetta": "^5.4.23",
+    "rimraf": "^3.0.0",
+    "ts-jest": "^29.0.0",
+    "ts-node": "^8.10.1"
+  },
+  "peerDependencies": {
+    "aws-cdk-lib": "^2.158.0",
+    "constructs": "^10.3.0"
+  },
+  "stability": "stable",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "excludeTypescript": [
+      "src/__tests__/*"
+    ],
+    "targets": {},
+    "versionFormat": "full",
+    "tsc": {
+      "rootDir": "src",
+      "outDir": "lib"
+    }
+  },
+  "jest": {
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "collectCoverage": true,
+    "coverageProvider": "v8",
+    "coverageThreshold": {
+      "global": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100
+      }
+    },
+    "coverageReporters": [
+      "clover",
+      "text"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/__tests__/"
+    ],
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    }
+  }
+}
