@@ -193,7 +193,7 @@ export const convertToDBSpecificGraphQLString = (name: string, engine: ImportedR
     case ImportedRDSType.MYSQL:
       return name;
     case ImportedRDSType.POSTGRESQL:
-      return `"${name}"`;
+      return `\\"\\"${name}\\"\\"`;
     default:
       return name;
   }
