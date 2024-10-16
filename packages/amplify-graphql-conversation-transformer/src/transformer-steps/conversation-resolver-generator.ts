@@ -11,7 +11,7 @@ import { overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer'
 import pluralize from 'pluralize';
 import { listMessagesInitSlotDefinition } from '../resolvers/list-messages-init-resolver';
 import { sendMessagePipelineDefinition } from '../resolvers/send-message-pipeline-definition';
-import { ConversationPipelineResolver, generateResolverFunction } from '../resolvers/conversation-pipeline-resolver';
+import { generatePipelineResolver, generateResolverFunction } from '../resolvers/conversation-pipeline-resolver';
 import { assistantResponsePipelineDefinition } from '../resolvers/assistant-response-pipeline-definition';
 import { assistantResponseSubscriptionPipelineDefinition } from '../resolvers/assistant-response-subscription-pipeline-definition';
 
@@ -63,23 +63,22 @@ export class ConversationResolverGenerator {
 
     this.setupMessageTableIndex(ctx, directive);
 
-    const conversationPipelineResolver = new ConversationPipelineResolver(
-      directive,
+    const conversationPipelineResolver = generatePipelineResolver(
       sendMessagePipelineDefinition,
-    ).generatePipelineResolver();
+      directive,
+    )
     ctx.resolvers.addResolver(parentName, fieldName, conversationPipelineResolver);
 
-    const assistantResponsePipelineResolver = new ConversationPipelineResolver(
-      directive,
+    const assistantResponsePipelineResolver = generatePipelineResolver(
       assistantResponsePipelineDefinition,
-    ).generatePipelineResolver();
+      directive,
+    );
     ctx.resolvers.addResolver(parentName, directive.responseMutationName, assistantResponsePipelineResolver);
 
-    const assistantResponseSubscriptionPipelineResolver = new ConversationPipelineResolver(
-      directive,
+    const assistantResponseSubscriptionPipelineResolver = generatePipelineResolver(
       assistantResponseSubscriptionPipelineDefinition,
-    ).generatePipelineResolver();
-
+      directive,
+    );
     const onAssistantResponseSubscriptionFieldName = directive.messageModel.messageSubscription.name.value;
     ctx.resolvers.addResolver('Subscription', onAssistantResponseSubscriptionFieldName, assistantResponseSubscriptionPipelineResolver);
   }

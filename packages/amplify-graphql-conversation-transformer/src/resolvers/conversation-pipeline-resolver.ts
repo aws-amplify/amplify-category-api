@@ -23,41 +23,38 @@ export type PipelineDefinition = {
   field: (config: ConversationDirectiveConfiguration) => { typeName: string; fieldName: string };
 };
 
-export class ConversationPipelineResolver {
-  constructor(
-    private readonly directiveConfig: ConversationDirectiveConfiguration,
-    private readonly pipelineDefinition: PipelineDefinition,
-  ) {}
+export const generatePipelineResolver = (
+  pipelineDefinition: PipelineDefinition,
+  directiveConfig: ConversationDirectiveConfiguration,
+): TransformerResolver => {
+  const { typeName, fieldName } = pipelineDefinition.field(directiveConfig);
+  const resolverResourceId = ResolverResourceIDs.ResolverResourceID(typeName, fieldName);
+  const codeMappingTemplate = generateResolverFunction(pipelineDefinition.dataSlot, directiveConfig);
+  const dataSourceProvider = pipelineDefinition.dataSlot.dataSource(directiveConfig);
 
-  generatePipelineResolver(): TransformerResolver {
-    const { typeName, fieldName } = this.pipelineDefinition.field(this.directiveConfig);
-    const resolverResourceId = ResolverResourceIDs.ResolverResourceID(typeName, fieldName);
-    const codeMappingTemplate = generateResolverFunction(this.pipelineDefinition.dataSlot, this.directiveConfig);
-    const dataSourceProvider = this.pipelineDefinition.dataSlot.dataSource(this.directiveConfig);
+  const requestSlots = pipelineDefinition.requestSlots.map((slot) => slot.slotName);
+  const responseSlots = pipelineDefinition.responseSlots.map((slot) => slot.slotName);
 
-    const requestSlots = this.pipelineDefinition.requestSlots.map((slot) => slot.slotName);
-    const responseSlots = this.pipelineDefinition.responseSlots.map((slot) => slot.slotName);
+  const pipelineResolver = new TransformerResolver(
+    typeName,
+    fieldName,
+    resolverResourceId,
+    { codeMappingTemplate },
+    requestSlots,
+    responseSlots,
+    dataSourceProvider,
+    APPSYNC_JS_RUNTIME,
+  );
 
-    const pipelineResolver = new TransformerResolver(
-      typeName,
-      fieldName,
-      resolverResourceId,
-      { codeMappingTemplate },
-      requestSlots,
-      responseSlots,
-      dataSourceProvider,
-      APPSYNC_JS_RUNTIME,
-    );
 
-    const resolverSlots = [...this.pipelineDefinition.requestSlots, ...this.pipelineDefinition.responseSlots];
-    for (const slot of resolverSlots) {
-      const mappingTemplate = generateResolverFunction(slot, this.directiveConfig);
-      pipelineResolver.addJsFunctionToSlot(slot.slotName, mappingTemplate, slot.dataSource(this.directiveConfig));
-    }
-
-    return pipelineResolver;
+  const resolverSlots = [...pipelineDefinition.requestSlots, ...pipelineDefinition.responseSlots];
+  for (const slot of resolverSlots) {
+    const mappingTemplate = generateResolverFunction(slot, directiveConfig);
+    pipelineResolver.addJsFunctionToSlot(slot.slotName, mappingTemplate, slot.dataSource(directiveConfig));
   }
-}
+
+  return pipelineResolver;
+};
 
 export const generateResolverFunction = (
   definition: ResolverFunctionDefinition,
