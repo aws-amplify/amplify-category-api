@@ -4,6 +4,7 @@ import { BelongsToTransformer, HasManyTransformer } from '@aws-amplify/graphql-r
 import { TransformerAuthProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY, InvalidTransformerError } from '@aws-amplify/graphql-transformer-core';
 import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-transformer';
+import { constructStreamResponseType } from '../graphql-types/message-model';
 
 /**
  * @class ConversationPrepareHandler
@@ -101,6 +102,8 @@ export class ConversationPrepareHandler {
     ctx.output.addSubscriptionFields([messageSubscription]);
     ctx.output.addObject(conversationModel);
     ctx.output.addObject(messageModel);
+
+    ctx.output.addObject(constructStreamResponseType());
 
     // Register data source providers for both models
     ctx.providerRegistry.registerDataSourceProvider(conversationModel, this.modelTransformer);
