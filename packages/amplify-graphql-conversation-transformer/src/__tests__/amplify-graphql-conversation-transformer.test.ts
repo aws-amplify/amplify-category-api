@@ -12,7 +12,6 @@ import * as path from 'path';
 import { Code, Function, IFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { GenerationTransformer } from '@aws-amplify/graphql-generation-transformer';
 import { toUpper } from 'graphql-transformer-common';
-import { describe } from 'jest-circus';
 
 const conversationSchemaTypes = fs.readFileSync(path.join(__dirname, 'schemas/conversation-schema-types.graphql'), 'utf8');
 
