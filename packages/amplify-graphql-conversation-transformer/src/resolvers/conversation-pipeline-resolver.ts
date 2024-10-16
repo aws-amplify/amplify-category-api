@@ -60,7 +60,7 @@ export const generateResolverFunction = (
   definition: ResolverFunctionDefinition,
   config: ConversationDirectiveConfiguration,
 ): MappingTemplateProvider => {
-  const template = fs.readFileSync(path.join(__dirname, definition.fileName), 'utf8');
+  const template = fs.readFileSync(path.join(__dirname, 'templates', definition.fileName), 'utf8');
   const substitutions = definition.substitutions(config);
   const resolver = substituteResolverTemplateValues(template, substitutions);
   const templateName = definition.templateName(config);
