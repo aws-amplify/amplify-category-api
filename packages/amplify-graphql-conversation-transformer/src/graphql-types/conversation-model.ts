@@ -47,19 +47,12 @@ export type ConversationModel = {
  * //   owner: String
  * // }
  */
-export const createConversationModel = (
-  conversationName: string,
-  messageName: string,
-  referenceFieldName: string,
-): ConversationModel => {
+export const createConversationModel = (conversationName: string, messageName: string, referenceFieldName: string): ConversationModel => {
   const authDirective = createConversationAuthDirective();
   const modelDirective = createConversationModelDirective();
   const hasManyMessagesDirective = createConversationModelMessagesFieldHasManyDirective(referenceFieldName);
   const messagesField = createConversationModelMessagesField(hasManyMessagesDirective, messageName);
-  const model = makeConversationModel(conversationName, messagesField, [
-    authDirective,
-    modelDirective,
-  ]);
+  const model = makeConversationModel(conversationName, messagesField, [authDirective, modelDirective]);
 
   return {
     authDirective,

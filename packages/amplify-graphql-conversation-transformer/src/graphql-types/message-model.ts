@@ -35,7 +35,6 @@ export type MessageModel = {
   belongsToConversationDirective: DirectiveNode;
   conversationField: FieldDefinitionNode;
   model: ObjectTypeDefinitionNode;
-
 };
 
 /**
