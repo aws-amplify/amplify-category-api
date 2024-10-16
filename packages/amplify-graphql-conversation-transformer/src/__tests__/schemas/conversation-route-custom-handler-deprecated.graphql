@@ -7,10 +7,7 @@ type Mutation {
   ): ConversationMessage
   @conversation(
     aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
-    handler: {
-      functionName: "FnROUTE_NAME",
-      eventVersion: "1.0"
-    },
+    functionName: "FnROUTE_NAME",
     systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
   )
 }
