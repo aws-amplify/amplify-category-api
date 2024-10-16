@@ -1,14 +1,14 @@
 import { HasManyDirective } from '@aws-amplify/graphql-directives';
-import { DirectiveNode, Kind, ObjectValueNode, FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
+import { DirectiveNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode, ObjectValueNode } from 'graphql';
 import {
-  makeDirective,
+  blankObject,
   makeArgument,
-  makeValueNode,
+  makeDirective,
   makeField,
   makeListType,
   makeNamedType,
+  makeValueNode,
   wrapNonNull,
-  blankObject,
 } from 'graphql-transformer-common';
 
 /**

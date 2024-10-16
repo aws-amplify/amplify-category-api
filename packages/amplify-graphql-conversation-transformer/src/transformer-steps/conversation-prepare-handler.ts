@@ -1,8 +1,7 @@
-import { TransformerPrepareStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { TransformerAuthProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY, InvalidTransformerError } from '@aws-amplify/graphql-transformer-core';
+import { TransformerAuthProvider, TransformerPrepareStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-transformer';
 
 /**

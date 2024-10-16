@@ -1,19 +1,18 @@
-import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-transformer';
-import { processTools } from '../utils/tools';
-import { TransformerResolver } from '@aws-amplify/graphql-transformer-core';
-import { FunctionResourceIDs, ResourceConstants, toUpper } from 'graphql-transformer-common';
-import * as cdk from 'aws-cdk-lib';
 import { conversation } from '@aws-amplify/ai-constructs';
-import { IFunction } from 'aws-cdk-lib/aws-lambda';
-import { getModelDataSourceNameForTypeName, getTable } from '@aws-amplify/graphql-transformer-core';
 import { overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
+import { getModelDataSourceNameForTypeName, getTable, TransformerResolver } from '@aws-amplify/graphql-transformer-core';
+import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import * as cdk from 'aws-cdk-lib';
+import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { FunctionResourceIDs, ResourceConstants, toUpper } from 'graphql-transformer-common';
 import pluralize from 'pluralize';
-import { listMessagesInitSlotDefinition } from '../resolvers/list-messages-init-resolver';
-import { sendMessagePipelineDefinition } from '../resolvers/send-message-pipeline-definition';
-import { generatePipelineResolver, generateResolverFunction } from '../resolvers/conversation-pipeline-resolver';
+import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-transformer';
 import { assistantResponsePipelineDefinition } from '../resolvers/assistant-response-pipeline-definition';
 import { assistantResponseSubscriptionPipelineDefinition } from '../resolvers/assistant-response-subscription-pipeline-definition';
+import { generatePipelineResolver, generateResolverFunction } from '../resolvers/conversation-pipeline-resolver';
+import { listMessagesInitSlotDefinition } from '../resolvers/list-messages-init-resolver';
+import { sendMessagePipelineDefinition } from '../resolvers/send-message-pipeline-definition';
+import { processTools } from '../utils/tools';
 
 type KeyAttributeDefinition = {
   name: string;

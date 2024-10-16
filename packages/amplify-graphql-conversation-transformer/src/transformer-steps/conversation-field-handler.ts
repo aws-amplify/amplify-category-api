@@ -2,9 +2,9 @@ import { DirectiveWrapper, InvalidDirectiveError, generateGetArgumentsInput } fr
 import { TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { toUpper } from 'graphql-transformer-common';
-import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-transformer';
-import { createConversationModel } from '../graphql-types/session-model';
 import { createMessageModel } from '../graphql-types/message-model';
+import { createConversationModel } from '../graphql-types/session-model';
+import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-transformer';
 
 /**
  * @class ConversationFieldHandler

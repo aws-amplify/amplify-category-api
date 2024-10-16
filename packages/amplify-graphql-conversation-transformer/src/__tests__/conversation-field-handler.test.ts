@@ -1,7 +1,7 @@
-import { ConversationFieldHandler } from '../transformer-steps/conversation-field-handler';
-import { DirectiveNode, FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { DirectiveNode, FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
+import { ConversationFieldHandler } from '../transformer-steps/conversation-field-handler';
 
 describe('ConversationFieldHandler', () => {
   let handler: ConversationFieldHandler;

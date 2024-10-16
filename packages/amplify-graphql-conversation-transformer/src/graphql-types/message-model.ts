@@ -1,24 +1,24 @@
 import { BelongsToDirective } from '@aws-amplify/graphql-directives';
 import {
   DirectiveNode,
-  Kind,
   FieldDefinitionNode,
-  ObjectTypeDefinitionNode,
-  NamedTypeNode,
-  InputValueDefinitionNode,
   InputObjectTypeDefinitionNode,
+  InputValueDefinitionNode,
+  Kind,
+  NamedTypeNode,
+  ObjectTypeDefinitionNode,
 } from 'graphql';
 import {
-  makeDirective,
-  makeArgument,
-  makeValueNode,
-  makeField,
-  makeNamedType,
-  wrapNonNull,
-  makeListType,
   blankObject,
+  makeArgument,
+  makeDirective,
+  makeField,
   makeInputValueDefinition,
+  makeListType,
+  makeNamedType,
   makeNonNullType,
+  makeValueNode,
+  wrapNonNull,
 } from 'graphql-transformer-common';
 
 /**

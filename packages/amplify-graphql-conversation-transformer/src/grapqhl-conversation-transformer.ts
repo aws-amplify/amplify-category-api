@@ -9,14 +9,14 @@ import {
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { DirectiveNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
-import { ConversationModel } from './graphql-types/session-model';
 import { MessageModel } from './graphql-types/message-model';
-import { type ToolDefinition, type Tools } from './utils/tools';
+import { ConversationModel } from './graphql-types/session-model';
+import { ConversationFieldHandler } from './transformer-steps/conversation-field-handler';
 import { ConversationPrepareHandler } from './transformer-steps/conversation-prepare-handler';
 import { ConversationResolverGenerator } from './transformer-steps/conversation-resolver-generator';
-import { ConversationFieldHandler } from './transformer-steps/conversation-field-handler';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { type ToolDefinition, type Tools } from './utils/tools';
 
 /**
  * Configuration for the Conversation Directive

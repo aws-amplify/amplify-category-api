@@ -1,8 +1,8 @@
-import { TransformerResolver, MappingTemplate, APPSYNC_JS_RUNTIME } from '@aws-amplify/graphql-transformer-core';
-import { MappingTemplateProvider, DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { APPSYNC_JS_RUNTIME, MappingTemplate, TransformerResolver } from '@aws-amplify/graphql-transformer-core';
+import { DataSourceProvider, MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import fs from 'fs-extra';
 import { ResolverResourceIDs } from 'graphql-transformer-common';
 import path from 'path';
-import fs from 'fs-extra';
 import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-transformer';
 
 export const NONE_DATA_SOURCE = () => undefined;
