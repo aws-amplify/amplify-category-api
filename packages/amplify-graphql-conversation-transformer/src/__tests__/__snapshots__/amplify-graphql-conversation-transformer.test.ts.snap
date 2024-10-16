@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`should transform conversation route with inference configuration 1`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration 1`] = `
 {
   "Fn::Join": [
     "",
@@ -40,7 +40,7 @@ export const response = (ctx) => {
 }
 `;
 
-exports[`should transform conversation route with inference configuration 2`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration 2`] = `
 "export function request(ctx) {
   ctx.stash.hasAuth = true;
   const isAuthorized = false;
@@ -82,7 +82,7 @@ export function response(ctx) {
 "
 `;
 
-exports[`should transform conversation route with inference configuration 3`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration 3`] = `
 "export function request(ctx) {
   const { authFilter } = ctx.stash;
   const { conversationId } = ctx.args;
@@ -117,7 +117,7 @@ export function response(ctx) {
 "
 `;
 
-exports[`should transform conversation route with inference configuration 4`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration 4`] = `
 "import { util } from '@aws-appsync/utils';
 import * as ddb from '@aws-appsync/utils/dynamodb';
 
@@ -145,7 +145,7 @@ export function response(ctx) {
 "
 `;
 
-exports[`should transform conversation route with inference configuration 5`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration 5`] = `
 "import { util } from '@aws-appsync/utils';
 
 export function request(ctx) {
@@ -221,7 +221,7 @@ export function response(ctx) {
 "
 `;
 
-exports[`should transform conversation route with model query tool 1`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool 1`] = `
 {
   "Fn::Join": [
     "",
@@ -261,7 +261,7 @@ export const response = (ctx) => {
 }
 `;
 
-exports[`should transform conversation route with model query tool 2`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool 2`] = `
 "export function request(ctx) {
   ctx.stash.hasAuth = true;
   const isAuthorized = false;
@@ -303,7 +303,7 @@ export function response(ctx) {
 "
 `;
 
-exports[`should transform conversation route with model query tool 3`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool 3`] = `
 "export function request(ctx) {
   const { authFilter } = ctx.stash;
   const { conversationId } = ctx.args;
@@ -338,7 +338,7 @@ export function response(ctx) {
 "
 `;
 
-exports[`should transform conversation route with model query tool 4`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool 4`] = `
 "import { util } from '@aws-appsync/utils';
 import * as ddb from '@aws-appsync/utils/dynamodb';
 
@@ -366,7 +366,7 @@ export function response(ctx) {
 "
 `;
 
-exports[`should transform conversation route with model query tool 5`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool 5`] = `
 "import { util } from '@aws-appsync/utils';
 
 export function request(ctx) {
@@ -444,7 +444,7 @@ export function response(ctx) {
 "
 `;
 
-exports[`should transform conversation route with model query tool including relationships 1`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships 1`] = `
 {
   "Fn::Join": [
     "",
@@ -484,7 +484,7 @@ export const response = (ctx) => {
 }
 `;
 
-exports[`should transform conversation route with model query tool including relationships 2`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships 2`] = `
 "export function request(ctx) {
   ctx.stash.hasAuth = true;
   const isAuthorized = false;
@@ -526,7 +526,7 @@ export function response(ctx) {
 "
 `;
 
-exports[`should transform conversation route with model query tool including relationships 3`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships 3`] = `
 "export function request(ctx) {
   const { authFilter } = ctx.stash;
   const { conversationId } = ctx.args;
@@ -561,7 +561,7 @@ export function response(ctx) {
 "
 `;
 
-exports[`should transform conversation route with model query tool including relationships 4`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships 4`] = `
 "import { util } from '@aws-appsync/utils';
 import * as ddb from '@aws-appsync/utils/dynamodb';
 
@@ -589,7 +589,7 @@ export function response(ctx) {
 "
 `;
 
-exports[`should transform conversation route with model query tool including relationships 5`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships 5`] = `
 "import { util } from '@aws-appsync/utils';
 
 export function request(ctx) {
@@ -667,7 +667,7 @@ export function response(ctx) {
 "
 `;
 
-exports[`should transform conversation route with query tools 1`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with query tools 1`] = `
 {
   "Fn::Join": [
     "",
@@ -707,7 +707,7 @@ export const response = (ctx) => {
 }
 `;
 
-exports[`should transform conversation route with query tools 2`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with query tools 2`] = `
 "export function request(ctx) {
   ctx.stash.hasAuth = true;
   const isAuthorized = false;
@@ -749,7 +749,7 @@ export function response(ctx) {
 "
 `;
 
-exports[`should transform conversation route with query tools 3`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with query tools 3`] = `
 "export function request(ctx) {
   const { authFilter } = ctx.stash;
   const { conversationId } = ctx.args;
@@ -784,7 +784,7 @@ export function response(ctx) {
 "
 `;
 
-exports[`should transform conversation route with query tools 4`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with query tools 4`] = `
 "import { util } from '@aws-appsync/utils';
 import * as ddb from '@aws-appsync/utils/dynamodb';
 
@@ -812,7 +812,7 @@ export function response(ctx) {
 "
 `;
 
-exports[`should transform conversation route with query tools 5`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with query tools 5`] = `
 "import { util } from '@aws-appsync/utils';
 
 export function request(ctx) {
