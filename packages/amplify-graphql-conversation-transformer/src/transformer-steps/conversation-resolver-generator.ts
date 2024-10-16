@@ -20,7 +20,6 @@ import { conversationMessageSubscriptionMappingTamplate } from '../resolvers/ass
 import { overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
 import pluralize from 'pluralize';
 import { listMessageInitMappingTemplate } from '../resolvers/list-messages-init-resolver';
-import * as semver from 'semver';
 
 type KeyAttributeDefinition = {
   name: string;
@@ -110,16 +109,7 @@ export class ConversationResolverGenerator {
     functionStack: cdk.Stack,
     capitalizedFieldName: string,
   ): { functionDataSourceId: string; referencedFunction: IFunction } {
-    if (directive.handler && directive.functionName) {
-      throw new Error("'functionName' and 'handler' are mutually exclusive");
-    }
     if (directive.handler) {
-      const eventVersion = semver.coerce(directive.handler.eventVersion);
-      if (eventVersion?.major !== 1) {
-        throw new Error(
-          `Unsupported custom conversation handler. Expected eventVersion to match 1.x, received ${directive.handler.eventVersion}`,
-        );
-      }
       return this.setupExistingFunctionDataSource(directive.handler.functionName);
     } else if (directive.functionName) {
       return this.setupExistingFunctionDataSource(directive.functionName);
