@@ -91,7 +91,7 @@ export function response(ctx) {
     const { contentBlockToolUse: toolUse, contentBlockText: text } = ctx.args.input;
     const { createdAt, updatedAt } = ctx.stash.defaultValues;
 
-    const content = ctx.args.input.contentBlockToolUse ? [{ toolUse }] : [{ text }];
+    const content = ctx.args.input.contentBlockToolUse ? [JSON.parse(toolUse)] : [{ text }];
 
     return {
       __typename: 'ConversationMessageCustomChat',
