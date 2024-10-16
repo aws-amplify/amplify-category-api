@@ -1,5 +1,5 @@
 export function request(ctx) {
-  ctx.stash.metadata.index = 'gsi-ConversationMessage.conversationId.createdAt';
+  ctx.stash.metadata.index = '[[INDEX_NAME]]';
   return {};
 }
 
