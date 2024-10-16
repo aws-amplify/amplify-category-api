@@ -1,5 +1,5 @@
 import { toUpper } from 'graphql-transformer-common';
-import { NONE_DATA_SOURCE, NO_SUBSTITUTIONS, PipelineDefinition, ResolverFunctionDefinition } from './conversation-pipeline-resolver';
+import { NO_SUBSTITUTIONS, NONE_DATA_SOURCE, PipelineDefinition, ResolverFunctionDefinition } from './resolver-function-definition';
 
 const initSlotDefinition: ResolverFunctionDefinition = {
   slotName: 'init',
