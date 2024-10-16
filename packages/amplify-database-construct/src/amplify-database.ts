@@ -69,6 +69,7 @@ export class AmplifyDatabase extends Construct {
     // should it be with SecretsManager directly?
     return new DatabaseSecret(this, `AmplifyDatabaseSecret-${username}`, {
       username,
+      dbname: DEFAULT_DATABASE_NAME,
     });
   }
 
