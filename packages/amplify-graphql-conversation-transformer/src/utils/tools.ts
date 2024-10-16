@@ -3,29 +3,21 @@ import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-int
 import { FieldDefinitionNode, InputValueDefinitionNode, ObjectTypeDefinitionNode, TypeNode } from 'graphql';
 import { getBaseType, isNonNullType, isScalar } from 'graphql-transformer-common';
 import { generateJSONSchemaFromTypeNode } from './graphql-json-schema-type';
+import { ToolDefinition } from '../conversation-directive-types';
 
-export type ToolDefinition = {
-  name: string;
-  description: string;
-};
-
-export type Tools = {
-  tools: Tool[];
-};
-
-type GraphQLRequestInputDescriptor = {
-  selectionSet: string;
-  propertyTypes: Record<string, string>;
-  queryName: string;
-};
-
-type Tool = {
+export type Tool = {
   name: string;
   description: string;
   inputSchema: {
     json: JSONSchema;
   };
   graphqlRequestInputDescriptor?: GraphQLRequestInputDescriptor;
+};
+
+type GraphQLRequestInputDescriptor = {
+  selectionSet: string;
+  propertyTypes: Record<string, string>;
+  queryName: string;
 };
 
 /**
@@ -107,7 +99,7 @@ const getObjectTypeFromName = (name: string, ctx: TransformerContextProvider): O
  * @returns {Tools | undefined} A Tools object if valid tool definitions are provided, undefined otherwise.
  * @throws {InvalidDirectiveError} If there are no queries or if a tool is defined without a matching Query field.
  */
-export const processTools = (toolDefinitions: ToolDefinition[], ctx: TransformerContextProvider): Tools | undefined => {
+export const processTools = (toolDefinitions: ToolDefinition[], ctx: TransformerContextProvider): { tools: Tool[] } | undefined => {
   // Early return if no tool definitions are provided
   if (!toolDefinitions || toolDefinitions.length === 0) {
     return undefined;

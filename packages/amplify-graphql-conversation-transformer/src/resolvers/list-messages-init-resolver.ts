@@ -1,9 +1,11 @@
-import { NONE_DATA_SOURCE, NO_SUBSTITUTIONS, ResolverFunctionDefinition } from './resolver-function-definition';
+import { createResolverFunctionDefinition, ResolverFunctionDefinition } from './resolver-function-definition';
 
-export const listMessagesInitSlotDefinition: ResolverFunctionDefinition = {
+/**
+ * The definition of the init slot for the list messages resolver.
+ * This is used to set the index within the model generated list query.
+ */
+export const listMessagesInitSlotDefinition: ResolverFunctionDefinition = createResolverFunctionDefinition({
   slotName: 'init',
   fileName: 'list-messages-init-resolver-fn.template.js',
   templateName: (config) => `Query.${config.field.name.value}.list-messages-init.js`,
-  dataSource: NONE_DATA_SOURCE,
-  substitutions: NO_SUBSTITUTIONS,
-};
+});

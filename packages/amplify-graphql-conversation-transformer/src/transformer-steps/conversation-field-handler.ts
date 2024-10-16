@@ -1,10 +1,21 @@
 import { DirectiveWrapper, InvalidDirectiveError, generateGetArgumentsInput } from '@aws-amplify/graphql-transformer-core';
 import { TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { DirectiveNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
+import {
+  DirectiveNode,
+  FieldDefinitionNode,
+  InputObjectTypeDefinitionNode,
+  InterfaceTypeDefinitionNode,
+  ObjectTypeDefinitionNode,
+} from 'graphql';
 import { toUpper } from 'graphql-transformer-common';
-import { createMessageModel } from '../graphql-types/message-model';
+import { ConversationDirectiveConfiguration } from '../conversation-directive-types';
+import {
+  createAssistantMutationField,
+  createAssistantResponseMutationInput,
+  createMessageModel,
+  createMessageSubscription,
+} from '../graphql-types/message-model';
 import { createConversationModel } from '../graphql-types/session-model';
-import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-transformer';
 
 /**
  * @class ConversationFieldHandler
@@ -31,12 +42,14 @@ export class ConversationFieldHandler {
     if (parent.name.value !== 'Mutation') {
       throw new InvalidDirectiveError('@conversation directive must be used on Mutation field.');
     }
-    const config = this.getConversationConfig(directive, parent, definition, context);
-    const { messageModel, conversationModel } = this.createModels(config, definition);
-    config.messageModel = messageModel;
-    config.conversationModel = conversationModel;
-    config.responseMutationInputTypeName = messageModel.assistantMutationInput.name.value;
-    config.responseMutationName = messageModel.assistantMutationField.name.value;
+    const parsedConfig = this.getConversationConfig(directive, parent, definition, context);
+    const conversationModels = this.createModels(parsedConfig, definition);
+    const supportingFields = this.createSupportingFields(parsedConfig);
+    const config = {
+      ...parsedConfig,
+      ...conversationModels,
+      ...supportingFields,
+    };
     this.validate(config);
     return config;
   }
@@ -93,15 +106,34 @@ export class ConversationFieldHandler {
     const conversationModelName = `Conversation${capitalizedFieldName}`;
     const referenceFieldName = 'conversationId';
 
-    const messageModel = createMessageModel(
-      conversationModelName,
-      messageModelName,
-      referenceFieldName,
-      capitalizedFieldName,
-      definition.type,
-    );
+    const messageModel = createMessageModel(conversationModelName, messageModelName, referenceFieldName, definition.type);
     const conversationModel = createConversationModel(conversationModelName, messageModelName, referenceFieldName);
     return { messageModel, conversationModel };
+  }
+
+  private createSupportingFields(config: ConversationDirectiveConfiguration): {
+    assistantResponseMutation: { field: FieldDefinitionNode; input: InputObjectTypeDefinitionNode };
+    assistantResponseSubscriptionField: FieldDefinitionNode;
+  } {
+    const capitalizedFieldName = toUpper(config.field.name.value);
+
+    const messageModelName = `ConversationMessage${capitalizedFieldName}`;
+    const messageSubscriptionFieldName = `onCreateAssistantResponse${capitalizedFieldName}`;
+    const assistantMutationFieldName = `createAssistantResponse${capitalizedFieldName}`;
+
+    const assistantResponseSubscriptionField = createMessageSubscription(
+      messageSubscriptionFieldName,
+      messageModelName,
+      assistantMutationFieldName,
+    );
+
+    const assistantResponseMutationField = createAssistantMutationField(assistantMutationFieldName, messageModelName, messageModelName);
+    const assistantResponseMutationInput = createAssistantResponseMutationInput(messageModelName);
+
+    return {
+      assistantResponseMutation: { field: assistantResponseMutationField, input: assistantResponseMutationInput },
+      assistantResponseSubscriptionField,
+    };
   }
 
   /**

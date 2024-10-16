@@ -1,9 +1,8 @@
 import { ConversationDirective } from '@aws-amplify/graphql-directives';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
+import { TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import {
-  DataSourceProvider,
   TransformerAuthProvider,
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
@@ -11,45 +10,10 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { DirectiveNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
-import { MessageModel } from './graphql-types/message-model';
-import { ConversationModel } from './graphql-types/session-model';
+import { ConversationDirectiveConfiguration } from './conversation-directive-types';
 import { ConversationFieldHandler } from './transformer-steps/conversation-field-handler';
 import { ConversationPrepareHandler } from './transformer-steps/conversation-prepare-handler';
 import { ConversationResolverGenerator } from './transformer-steps/conversation-resolver-generator';
-import { type ToolDefinition, type Tools } from './utils/tools';
-
-/**
- * Configuration for the Conversation Directive
- */
-export type ConversationDirectiveConfiguration = {
-  parent: ObjectTypeDefinitionNode;
-  directive: DirectiveNode;
-  aiModel: string;
-  functionName: string | undefined;
-  field: FieldDefinitionNode;
-  responseMutationInputTypeName: string;
-  responseMutationName: string;
-  systemPrompt: string;
-  tools: ToolDefinition[];
-  toolSpec: Tools;
-  conversationModel: ConversationModel;
-  messageModel: MessageModel;
-  inferenceConfiguration: ConversationInferenceConfiguration;
-  dataSources: {
-    conversationTable: DataSourceProvider;
-    messageTable: DataSourceProvider;
-    lambdaFunction: DataSourceProvider;
-  };
-};
-
-/**
- * Conversation Inference Configuration
- */
-export type ConversationInferenceConfiguration = {
-  maxTokens?: number;
-  temperature?: number;
-  topP?: number;
-};
 
 /**
  * Transformer for handling `@conversation` directives in GraphQL schemas
@@ -106,10 +70,3 @@ export class ConversationTransformer extends TransformerPluginBase {
     this.prepareHandler.prepare(ctx, this.directives);
   };
 }
-
-const validate = (config: ConversationDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-  const { field } = config;
-  if (field.type.kind !== 'NamedType' || field.type.name.value !== 'ConversationMessage') {
-    throw new InvalidDirectiveError('@conversation return type must be ConversationMessage');
-  }
-};

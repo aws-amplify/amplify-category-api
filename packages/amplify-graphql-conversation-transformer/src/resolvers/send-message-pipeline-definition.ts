@@ -1,54 +1,78 @@
 import { toUpper } from 'graphql-transformer-common';
 import pluralize from 'pluralize';
 import dedent from 'ts-dedent';
-import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-transformer';
-import { NO_SUBSTITUTIONS, NONE_DATA_SOURCE, PipelineDefinition, ResolverFunctionDefinition } from './resolver-function-definition';
+import { ConversationDirectiveConfiguration } from '../conversation-directive-types';
+import { createResolverFunctionDefinition, PipelineDefinition, ResolverFunctionDefinition } from './resolver-function-definition';
 
-const initSlotDefinition: ResolverFunctionDefinition = {
-  slotName: 'init',
-  fileName: 'init-resolver-fn.template.js',
-  templateName: (config) => `Mutation.${config.field.name.value}.init.js`,
-  dataSource: NONE_DATA_SOURCE,
-  substitutions: NO_SUBSTITUTIONS,
+/**
+ * The pipeline definition for the send message mutation resolver.
+ */
+export const sendMessagePipelineDefinition: PipelineDefinition = {
+  requestSlots: [initSlotDefinition(), authSlotDefinition(), verifySessionOwnerSlotDefinition(), writeMessageToTableSlotDefinition()],
+  dataSlot: invokeLambdaSlotDefinition(),
+  responseSlots: [],
+  field: (config) => ({ typeName: 'Mutation', fieldName: config.field.name.value }),
 };
 
-const authSlotDefinition: ResolverFunctionDefinition = {
-  slotName: 'auth',
-  fileName: 'auth-resolver-fn.template.js',
-  templateName: (config) => `Mutation.${config.field.name.value}.auth.js`,
-  dataSource: NONE_DATA_SOURCE,
-  substitutions: NO_SUBSTITUTIONS,
-};
+function initSlotDefinition(): ResolverFunctionDefinition {
+  return createResolverFunctionDefinition({
+    slotName: 'init',
+    fileName: 'init-resolver-fn.template.js',
+    templateName: generateTemplateName('init'),
+  });
+}
 
-const verifySessionOwnerSlotDefinition: ResolverFunctionDefinition = {
-  slotName: 'verifySessionOwner',
-  fileName: 'verify-session-owner-resolver-fn.template.js',
-  templateName: (config) => `Mutation.${config.field.name.value}.verify-session-owner.js`,
-  dataSource: (config) => config.dataSources.conversationTable,
-  substitutions: () => ({
-    CONVERSATION_ID_PARENT: 'ctx.args',
-  }),
-};
+function authSlotDefinition(): ResolverFunctionDefinition {
+  return createResolverFunctionDefinition({
+    slotName: 'auth',
+    fileName: 'auth-resolver-fn.template.js',
+    templateName: generateTemplateName('auth'),
+  });
+}
 
-const writeMessageToTableSlotDefinition: ResolverFunctionDefinition = {
-  slotName: 'writeMessageToTable',
-  fileName: 'write-message-to-table-resolver-fn.template.js',
-  templateName: (config) => `Mutation.${config.field.name.value}.write-message-to-table.js`,
-  dataSource: (config) => config.dataSources.messageTable,
-  substitutions: (config) => ({
-    CONVERSATION_MESSAGE_TYPE_NAME: `ConversationMessage${toUpper(config.field.name.value)}`,
-  }),
-};
+function verifySessionOwnerSlotDefinition(): ResolverFunctionDefinition {
+  return createResolverFunctionDefinition({
+    slotName: 'verifySessionOwner',
+    fileName: 'verify-session-owner-resolver-fn.template.js',
+    templateName: generateTemplateName('verify-session-owner'),
+    dataSource: (config) => config.dataSources.conversationTable,
+    substitutions: () => ({
+      CONVERSATION_ID_PARENT: 'ctx.args',
+    }),
+  });
+}
 
-const invokeLambdaResolverSubstitutions = (config: ConversationDirectiveConfiguration) => {
+function writeMessageToTableSlotDefinition(): ResolverFunctionDefinition {
+  return createResolverFunctionDefinition({
+    slotName: 'writeMessageToTable',
+    fileName: 'write-message-to-table-resolver-fn.template.js',
+    templateName: generateTemplateName('write-message-to-table'),
+    dataSource: (config) => config.dataSources.messageTable,
+    substitutions: (config) => ({
+      CONVERSATION_MESSAGE_TYPE_NAME: `ConversationMessage${toUpper(config.field.name.value)}`,
+    }),
+  });
+}
+
+function invokeLambdaSlotDefinition(): ResolverFunctionDefinition {
+  return createResolverFunctionDefinition({
+    slotName: 'data',
+    fileName: 'invoke-lambda-resolver-fn.template.js',
+    templateName: generateTemplateName('invoke-lambda'),
+    dataSource: (config) => config.dataSources.lambdaFunction,
+    substitutions: invokeLambdaResolverSubstitutions,
+  });
+}
+
+function invokeLambdaResolverSubstitutions(config: ConversationDirectiveConfiguration) {
   const { TOOL_DEFINITIONS_LINE, TOOLS_CONFIGURATION_LINE } = generateToolLines(config);
   return {
     TOOL_DEFINITIONS_LINE,
     TOOLS_CONFIGURATION_LINE,
     SELECTION_SET: selectionSet,
     MODEL_CONFIGURATION_LINE: generateModelConfigurationLine(config),
-    RESPONSE_MUTATION_NAME: config.responseMutationName,
-    RESPONSE_MUTATION_INPUT_TYPE_NAME: config.responseMutationInputTypeName,
+    RESPONSE_MUTATION_NAME: config.assistantResponseMutation.field.name.value,
+    RESPONSE_MUTATION_INPUT_TYPE_NAME: config.assistantResponseMutation.input.name.value,
     MESSAGE_MODEL_NAME: config.messageModel.messageModel.name.value,
     GET_QUERY_NAME: `getConversationMessage${toUpper(config.field.name.value)}`,
     GET_QUERY_INPUT_TYPE_NAME: 'ID',
@@ -56,9 +80,14 @@ const invokeLambdaResolverSubstitutions = (config: ConversationDirectiveConfigur
     LIST_QUERY_INPUT_TYPE_NAME: `ModelConversationMessage${toUpper(config.field.name.value)}FilterInput`,
     LIST_QUERY_LIMIT: 'undefined',
   };
-};
+}
 
-const generateModelConfigurationLine = (config: ConversationDirectiveConfiguration) => {
+function generateTemplateName(slotName: string) {
+  return (config: ConversationDirectiveConfiguration) => `Mutation.${config.field.name.value}.${slotName}.js`;
+}
+
+// #region configuration specific JS function code
+function generateModelConfigurationLine(config: ConversationDirectiveConfiguration) {
   const { aiModel, systemPrompt } = config;
 
   return dedent`const modelConfiguration = {
@@ -66,18 +95,18 @@ const generateModelConfigurationLine = (config: ConversationDirectiveConfigurati
     systemPrompt: ${JSON.stringify(systemPrompt)},
     ${generateModelInferenceConfigurationLine(config)}
   };`;
-};
+}
 
-const generateModelInferenceConfigurationLine = (config: ConversationDirectiveConfiguration) => {
+function generateModelInferenceConfigurationLine(config: ConversationDirectiveConfiguration) {
   const { inferenceConfiguration } = config;
   return inferenceConfiguration && Object.keys(inferenceConfiguration).length > 0
     ? dedent`inferenceConfiguration: ${JSON.stringify(config.inferenceConfiguration)},`
     : '';
-};
+}
 
 const selectionSet = `id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt`;
 
-const generateToolLines = (config: ConversationDirectiveConfiguration) => {
+function generateToolLines(config: ConversationDirectiveConfiguration) {
   const toolDefinitions = JSON.stringify(config.toolSpec);
   const TOOL_DEFINITIONS_LINE = toolDefinitions ? `const toolDefinitions = ${toolDefinitions};` : '';
 
@@ -92,19 +121,6 @@ const generateToolLines = (config: ConversationDirectiveConfiguration) => {
     };`;
 
   return { TOOL_DEFINITIONS_LINE, TOOLS_CONFIGURATION_LINE };
-};
+}
 
-const invokeLambdaSlotDefinition: ResolverFunctionDefinition = {
-  slotName: 'data',
-  fileName: 'invoke-lambda-resolver-fn.template.js',
-  templateName: (config) => `Mutation.${config.field.name.value}.invoke-lambda.js`,
-  dataSource: (config) => config.dataSources.lambdaFunction,
-  substitutions: invokeLambdaResolverSubstitutions,
-};
-
-export const sendMessagePipelineDefinition: PipelineDefinition = {
-  requestSlots: [initSlotDefinition, authSlotDefinition, verifySessionOwnerSlotDefinition, writeMessageToTableSlotDefinition],
-  dataSlot: invokeLambdaSlotDefinition,
-  responseSlots: [],
-  field: (config) => ({ typeName: 'Mutation', fieldName: config.field.name.value }),
-};
+// #endregion

@@ -6,12 +6,15 @@ import * as cdk from 'aws-cdk-lib';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { FunctionResourceIDs, ResourceConstants, toUpper } from 'graphql-transformer-common';
 import pluralize from 'pluralize';
-import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-transformer';
-import { assistantResponsePipelineDefinition } from '../resolvers/assistant-response-pipeline-definition';
-import { assistantResponseSubscriptionPipelineDefinition } from '../resolvers/assistant-response-subscription-pipeline-definition';
-import { generatePipelineResolver, generateResolverFunction } from '../resolvers/conversation-pipeline-resolver';
-import { listMessagesInitSlotDefinition } from '../resolvers/list-messages-init-resolver';
-import { sendMessagePipelineDefinition } from '../resolvers/send-message-pipeline-definition';
+import { ConversationDirectiveConfiguration } from '../conversation-directive-types';
+import {
+  ASSISTANT_RESPONSE_PIPELINE,
+  ASSISTANT_RESPONSE_SUBSCRIPTION_PIPELINE,
+  generateResolverPipeline,
+  generateResolverFunction,
+  LIST_MESSAGES_INIT_FUNCTION,
+  SEND_MESSAGE_PIPELINE,
+} from '../resolvers';
 import { processTools } from '../utils/tools';
 
 type KeyAttributeDefinition = {
@@ -25,16 +28,9 @@ export class ConversationResolverGenerator {
 
   generateResolvers(directives: ConversationDirectiveConfiguration[], ctx: TransformerContextProvider): void {
     for (const directive of directives) {
-      this.processToolsForDirective(directive, ctx);
+      directive.toolSpec = processTools(directive.tools, ctx);
       this.generateResolversForDirective(directive, ctx);
       this.addInitSlotToListMessagesPipeline(ctx, directive);
-    }
-  }
-
-  private processToolsForDirective(directive: ConversationDirectiveConfiguration, ctx: TransformerContextProvider): void {
-    const tools = processTools(directive.tools, ctx);
-    if (tools) {
-      directive.toolSpec = tools;
     }
   }
 
@@ -54,32 +50,26 @@ export class ConversationResolverGenerator {
     const sessionModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, `Conversation${capitalizedFieldName}`);
     const conversationSessionDDBDataSource = ctx.api.host.getDataSource(sessionModelDDBDataSourceName);
 
+    this.setupMessageTableIndex(ctx, directive);
+
     directive.dataSources = {
       lambdaFunction: functionDataSource,
       conversationTable: conversationSessionDDBDataSource as any,
       messageTable: conversationMessageDataSource as any,
     };
 
-    this.setupMessageTableIndex(ctx, directive);
-
-    const conversationPipelineResolver = generatePipelineResolver(
-      sendMessagePipelineDefinition,
-      directive,
-    )
+    const conversationPipelineResolver = generateResolverPipeline(SEND_MESSAGE_PIPELINE, directive);
     ctx.resolvers.addResolver(parentName, fieldName, conversationPipelineResolver);
 
-    const assistantResponsePipelineResolver = generatePipelineResolver(
-      assistantResponsePipelineDefinition,
-      directive,
-    );
-    ctx.resolvers.addResolver(parentName, directive.responseMutationName, assistantResponsePipelineResolver);
+    const assistantResponsePipelineResolver = generateResolverPipeline(ASSISTANT_RESPONSE_PIPELINE, directive);
+    ctx.resolvers.addResolver(parentName, directive.assistantResponseMutation.field.name.value, assistantResponsePipelineResolver);
 
-    const assistantResponseSubscriptionPipelineResolver = generatePipelineResolver(
-      assistantResponseSubscriptionPipelineDefinition,
-      directive,
+    const assistantResponseSubscriptionPipelineResolver = generateResolverPipeline(ASSISTANT_RESPONSE_SUBSCRIPTION_PIPELINE, directive);
+    ctx.resolvers.addResolver(
+      'Subscription',
+      directive.assistantResponseSubscriptionField.name.value,
+      assistantResponseSubscriptionPipelineResolver,
     );
-    const onAssistantResponseSubscriptionFieldName = directive.messageModel.messageSubscription.name.value;
-    ctx.resolvers.addResolver('Subscription', onAssistantResponseSubscriptionFieldName, assistantResponseSubscriptionPipelineResolver);
   }
 
   /**
@@ -184,7 +174,7 @@ export class ConversationResolverGenerator {
     const messageModelName = directive.messageModel.messageModel.name.value;
     const pluralized = pluralize(messageModelName);
     const listMessagesResolver = ctx.resolvers.getResolver('Query', `list${pluralized}`) as TransformerResolver;
-    const initResolverFn = generateResolverFunction(listMessagesInitSlotDefinition, directive);
+    const initResolverFn = generateResolverFunction(LIST_MESSAGES_INIT_FUNCTION, directive);
     listMessagesResolver.addJsFunctionToSlot('init', initResolverFn);
   }
 

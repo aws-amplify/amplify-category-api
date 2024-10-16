@@ -2,7 +2,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY, InvalidTransformerError } from '@aws-amplify/graphql-transformer-core';
 import { TransformerAuthProvider, TransformerPrepareStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ConversationDirectiveConfiguration } from '../grapqhl-conversation-transformer';
+import { ConversationDirectiveConfiguration } from '../conversation-directive-types';
 
 /**
  * @class ConversationPrepareHandler
@@ -76,25 +76,20 @@ export class ConversationPrepareHandler {
     } = directive.conversationModel;
 
     // Destructure message model configuration
-    const {
-      messageAuthDirective,
-      messageModelDirective,
-      messageBelongsToConversationDirective,
-      messageConversationField,
-      messageModel,
-      messageSubscription,
-      assistantMutationField,
-      assistantMutationInput,
-    } = directive.messageModel;
+    const { messageAuthDirective, messageModelDirective, messageBelongsToConversationDirective, messageConversationField, messageModel } =
+      directive.messageModel;
+
+    // Destructure assistant response mutation and subscription field
+    const { assistantResponseMutation, assistantResponseSubscriptionField } = directive;
 
     // Extract model names for later use
-    const sessionModelName = conversationModel.name.value;
+    const conversationModelName = conversationModel.name.value;
     const messageModelName = messageModel.name.value;
 
     // Add necessary inputs, fields, and objects to the output schema
-    ctx.output.addInput(assistantMutationInput);
-    ctx.output.addMutationFields([assistantMutationField]);
-    ctx.output.addSubscriptionFields([messageSubscription]);
+    ctx.output.addInput(assistantResponseMutation.input);
+    ctx.output.addMutationFields([assistantResponseMutation.field]);
+    ctx.output.addSubscriptionFields([assistantResponseSubscriptionField]);
     ctx.output.addObject(conversationModel);
     ctx.output.addObject(messageModel);
 
@@ -103,7 +98,7 @@ export class ConversationPrepareHandler {
     ctx.providerRegistry.registerDataSourceProvider(messageModel, this.modelTransformer);
 
     // Set data source strategies for both models
-    ctx.dataSourceStrategies[sessionModelName] = DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY;
+    ctx.dataSourceStrategies[conversationModelName] = DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY;
     ctx.dataSourceStrategies[messageModelName] = DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY;
 
     // Apply model transformations
