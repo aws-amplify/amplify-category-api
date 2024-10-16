@@ -65,45 +65,30 @@ export class ConversationPrepareHandler {
    */
   private prepareResourcesForDirective(directive: ConversationDirectiveConfiguration, ctx: TransformerPrepareStepContextProvider): void {
     // TODO: Add @aws_cognito_user_pools directive to send messages mutation
-
-    // Destructure conversation model configuration
-    const {
-      conversationAuthDirective,
-      conversationModelDirective,
-      conversationHasManyMessagesDirective,
-      conversationMessagesField,
-      conversationModel,
-    } = directive.conversationModel;
-
-    // Destructure message model configuration
-    const { messageAuthDirective, messageModelDirective, messageBelongsToConversationDirective, messageConversationField, messageModel } =
-      directive.messageModel;
-
-    // Destructure assistant response mutation and subscription field
-    const { assistantResponseMutation, assistantResponseSubscriptionField } = directive;
+    const { conversation, message, assistantResponseMutation, assistantResponseSubscriptionField } = directive;
 
     // Extract model names for later use
-    const conversationModelName = conversationModel.name.value;
-    const messageModelName = messageModel.name.value;
+    const conversationName = conversation.model.name.value;
+    const messageName = message.model.name.value;
 
     // Add necessary inputs, fields, and objects to the output schema
     ctx.output.addInput(assistantResponseMutation.input);
     ctx.output.addMutationFields([assistantResponseMutation.field]);
     ctx.output.addSubscriptionFields([assistantResponseSubscriptionField]);
-    ctx.output.addObject(conversationModel);
-    ctx.output.addObject(messageModel);
+    ctx.output.addObject(conversation.model);
+    ctx.output.addObject(message.model);
 
     // Register data source providers for both models
-    ctx.providerRegistry.registerDataSourceProvider(conversationModel, this.modelTransformer);
-    ctx.providerRegistry.registerDataSourceProvider(messageModel, this.modelTransformer);
+    ctx.providerRegistry.registerDataSourceProvider(conversation.model, this.modelTransformer);
+    ctx.providerRegistry.registerDataSourceProvider(message.model, this.modelTransformer);
 
     // Set data source strategies for both models
-    ctx.dataSourceStrategies[conversationModelName] = DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY;
-    ctx.dataSourceStrategies[messageModelName] = DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY;
+    ctx.dataSourceStrategies[conversationName] = DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY;
+    ctx.dataSourceStrategies[messageName] = DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY;
 
     // Apply model transformations
-    this.modelTransformer.object(conversationModel, conversationModelDirective, ctx);
-    this.modelTransformer.object(messageModel, messageModelDirective, ctx);
+    this.modelTransformer.object(conversation.model, conversation.modelDirective, ctx);
+    this.modelTransformer.object(message.model, message.modelDirective, ctx);
 
     // Execute the 'before' hook of the model transformer
     // This is crucial for adding the iterative_table_generator in the model transformer
@@ -111,14 +96,14 @@ export class ConversationPrepareHandler {
     this.modelTransformer.before(ctx);
 
     // Set up relationships between conversation and message models
-    this.belongsToTransformer.field(messageModel, messageConversationField, messageBelongsToConversationDirective, ctx);
-    this.hasManyTransformer.field(conversationModel, conversationMessagesField, conversationHasManyMessagesDirective, ctx);
+    this.belongsToTransformer.field(message.model, message.conversationField, message.belongsToConversationDirective, ctx);
+    this.hasManyTransformer.field(conversation.model, conversation.messagesField, conversation.hasManyMessagesDirective, ctx);
 
     // Ensure an authentication provider exists and apply it to both models
     if (!this.authProvider.object) {
       throw new InvalidTransformerError('No authentication provider found.');
     }
-    this.authProvider.object(conversationModel, conversationAuthDirective, ctx);
-    this.authProvider.object(messageModel, messageAuthDirective, ctx);
+    this.authProvider.object(conversation.model, conversation.authDirective, ctx);
+    this.authProvider.object(message.model, message.authDirective, ctx);
   }
 }

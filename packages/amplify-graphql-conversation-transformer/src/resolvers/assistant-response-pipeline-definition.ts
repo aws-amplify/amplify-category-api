@@ -1,4 +1,3 @@
-import { toUpper } from 'graphql-transformer-common';
 import { ConversationDirectiveConfiguration } from '../conversation-directive-types';
 import { createResolverFunctionDefinition, PipelineDefinition, ResolverFunctionDefinition } from './resolver-function-definition';
 
@@ -6,13 +5,13 @@ import { createResolverFunctionDefinition, PipelineDefinition, ResolverFunctionD
  * The pipeline definition for the assistant response mutation resolver.
  */
 export const assistantResponsePipelineDefinition: PipelineDefinition = {
-  requestSlots: [initSlotDefinition(), authSlotDefinition(), verifySessionOwnerSlotDefinition()],
-  dataSlot: dataSlotDefinition(),
+  requestSlots: [init(), auth(), verifySessionOwner()],
+  dataSlot: data(),
   responseSlots: [],
   field: (config) => ({ typeName: 'Mutation', fieldName: fieldName(config) }),
 };
 
-function initSlotDefinition(): ResolverFunctionDefinition {
+function init(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'init',
     fileName: 'init-resolver-fn.template.js',
@@ -20,7 +19,7 @@ function initSlotDefinition(): ResolverFunctionDefinition {
   });
 }
 
-function authSlotDefinition(): ResolverFunctionDefinition {
+function auth(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'auth',
     fileName: 'auth-resolver-fn.template.js',
@@ -28,7 +27,7 @@ function authSlotDefinition(): ResolverFunctionDefinition {
   });
 }
 
-function verifySessionOwnerSlotDefinition(): ResolverFunctionDefinition {
+function verifySessionOwner(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'verifySessionOwner',
     fileName: 'verify-session-owner-resolver-fn.template.js',
@@ -40,14 +39,14 @@ function verifySessionOwnerSlotDefinition(): ResolverFunctionDefinition {
   });
 }
 
-function dataSlotDefinition(): ResolverFunctionDefinition {
+function data(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'data',
     fileName: 'assistant-mutation-resolver-fn.template.js',
     templateName: generateTemplateName('assistant-response'),
     dataSource: (config) => config.dataSources.lambdaFunction,
     substitutions: (config) => ({
-      CONVERSATION_MESSAGE_TYPE_NAME: `ConversationMessage${toUpper(config.field.name.value)}`,
+      CONVERSATION_MESSAGE_TYPE_NAME: config.message.model.name.value,
     }),
   });
 }

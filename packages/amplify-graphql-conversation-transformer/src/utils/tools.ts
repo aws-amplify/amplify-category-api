@@ -99,7 +99,7 @@ const getObjectTypeFromName = (name: string, ctx: TransformerContextProvider): O
  * @returns {Tools | undefined} A Tools object if valid tool definitions are provided, undefined otherwise.
  * @throws {InvalidDirectiveError} If there are no queries or if a tool is defined without a matching Query field.
  */
-export const processTools = (toolDefinitions: ToolDefinition[], ctx: TransformerContextProvider): { tools: Tool[] } | undefined => {
+export const processTools = (toolDefinitions: ToolDefinition[], ctx: TransformerContextProvider): Tool[] | undefined => {
   // Early return if no tool definitions are provided
   if (!toolDefinitions || toolDefinitions.length === 0) {
     return undefined;
@@ -123,7 +123,7 @@ export const processTools = (toolDefinitions: ToolDefinition[], ctx: Transformer
     return createTool(toolName, description, queryField, ctx);
   });
 
-  return { tools };
+  return tools;
 };
 
 /**

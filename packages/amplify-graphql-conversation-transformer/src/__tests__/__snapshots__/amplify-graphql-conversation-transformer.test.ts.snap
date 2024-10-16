@@ -152,7 +152,6 @@ export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
 
-  
   const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
 
   const responseMutation = {
@@ -161,18 +160,18 @@ export function request(ctx) {
     selectionSet,
   };
   const currentMessageId = ctx.stash.defaultValues.id;
+
   const modelConfiguration = {
-  modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
-  systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
-  inferenceConfiguration: {"temperature":0.5,"topP":0.9,"maxTokens":100},
-};
+    modelId: '[[MODEL_ID]]',
+    systemPrompt: '[[SYSTEM_PROMPT]]',
+    inferenceConfiguration: {"temperature":0.5,"topP":0.9,"maxTokens":100},
+  };
 
   const clientTools = args.toolConfiguration?.tools?.map((tool) => {
     return { ...tool.toolSpec };
   });
-  const toolsConfiguration = {
-  clientTools
-};
+  const dataTools = undefined;
+  const toolsConfiguration = { dataTools, clientTools };
 
   const messageHistoryQuery = {
     getQueryName: 'getConversationMessagePirateChat',
@@ -373,7 +372,6 @@ export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
 
-  const toolDefinitions = {"tools":[{"name":"listTodos","description":"lists todos","inputSchema":{"json":{"type":"object","properties":{},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"items { content isDone id createdAt updatedAt owner } nextToken","propertyTypes":{},"queryName":"listTodos"}}]};
   const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
 
   const responseMutation = {
@@ -382,20 +380,18 @@ export function request(ctx) {
     selectionSet,
   };
   const currentMessageId = ctx.stash.defaultValues.id;
+
   const modelConfiguration = {
-  modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
-  systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
-  
-};
+    modelId: '[[MODEL_ID]]',
+    systemPrompt: '[[SYSTEM_PROMPT]]',
+    inferenceConfiguration: undefined,
+  };
 
   const clientTools = args.toolConfiguration?.tools?.map((tool) => {
     return { ...tool.toolSpec };
   });
-  const dataTools = toolDefinitions.tools;
- const toolsConfiguration = {
-  dataTools,
-  clientTools,
-};
+  const dataTools = [{"name":"listTodos","description":"lists todos","inputSchema":{"json":{"type":"object","properties":{},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"items { content isDone id createdAt updatedAt owner } nextToken","propertyTypes":{},"queryName":"listTodos"}}];
+  const toolsConfiguration = { dataTools, clientTools };
 
   const messageHistoryQuery = {
     getQueryName: 'getConversationMessagePirateChat',
@@ -596,7 +592,6 @@ export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
 
-  const toolDefinitions = {"tools":[{"name":"listCustomers","description":"Provides data about the customer sending a message","inputSchema":{"json":{"type":"object","properties":{},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"items { name email activeCart { products { name price } customerId id createdAt updatedAt owner } orderHistory { items { products { name price } customerId id createdAt updatedAt owner } nextToken } id createdAt updatedAt owner } nextToken","propertyTypes":{},"queryName":"listCustomers"}}]};
   const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
 
   const responseMutation = {
@@ -605,20 +600,18 @@ export function request(ctx) {
     selectionSet,
   };
   const currentMessageId = ctx.stash.defaultValues.id;
+
   const modelConfiguration = {
-  modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
-  systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
-  
-};
+    modelId: '[[MODEL_ID]]',
+    systemPrompt: '[[SYSTEM_PROMPT]]',
+    inferenceConfiguration: undefined,
+  };
 
   const clientTools = args.toolConfiguration?.tools?.map((tool) => {
     return { ...tool.toolSpec };
   });
-  const dataTools = toolDefinitions.tools;
- const toolsConfiguration = {
-  dataTools,
-  clientTools,
-};
+  const dataTools = [{"name":"listCustomers","description":"Provides data about the customer sending a message","inputSchema":{"json":{"type":"object","properties":{},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"items { name email activeCart { products { name price } customerId id createdAt updatedAt owner } orderHistory { items { products { name price } customerId id createdAt updatedAt owner } nextToken } id createdAt updatedAt owner } nextToken","propertyTypes":{},"queryName":"listCustomers"}}];
+  const toolsConfiguration = { dataTools, clientTools };
 
   const messageHistoryQuery = {
     getQueryName: 'getConversationMessagePirateChat',
@@ -819,7 +812,6 @@ export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
 
-  const toolDefinitions = {"tools":[{"name":"getTemperature","description":"does a thing","inputSchema":{"json":{"type":"object","properties":{"city":{"type":"string","description":"A UTF-8 character sequence."}},"required":["city"]}},"graphqlRequestInputDescriptor":{"selectionSet":"value unit","propertyTypes":{"city":"String!"},"queryName":"getTemperature"}},{"name":"plus","description":"does a different thing","inputSchema":{"json":{"type":"object","properties":{"a":{"type":"number","description":"A signed 32-bit integer value."},"b":{"type":"number","description":"A signed 32-bit integer value."}},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"","propertyTypes":{"a":"Int","b":"Int"},"queryName":"plus"}}]};
   const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
 
   const responseMutation = {
@@ -828,20 +820,18 @@ export function request(ctx) {
     selectionSet,
   };
   const currentMessageId = ctx.stash.defaultValues.id;
+
   const modelConfiguration = {
-  modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
-  systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
-  
-};
+    modelId: '[[MODEL_ID]]',
+    systemPrompt: '[[SYSTEM_PROMPT]]',
+    inferenceConfiguration: undefined,
+  };
 
   const clientTools = args.toolConfiguration?.tools?.map((tool) => {
     return { ...tool.toolSpec };
   });
-  const dataTools = toolDefinitions.tools;
- const toolsConfiguration = {
-  dataTools,
-  clientTools,
-};
+  const dataTools = [{"name":"getTemperature","description":"does a thing","inputSchema":{"json":{"type":"object","properties":{"city":{"type":"string","description":"A UTF-8 character sequence."}},"required":["city"]}},"graphqlRequestInputDescriptor":{"selectionSet":"value unit","propertyTypes":{"city":"String!"},"queryName":"getTemperature"}},{"name":"plus","description":"does a different thing","inputSchema":{"json":{"type":"object","properties":{"a":{"type":"number","description":"A signed 32-bit integer value."},"b":{"type":"number","description":"A signed 32-bit integer value."}},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"","propertyTypes":{"a":"Int","b":"Int"},"queryName":"plus"}}];
+  const toolsConfiguration = { dataTools, clientTools };
 
   const messageHistoryQuery = {
     getQueryName: 'getConversationMessagePirateChat',

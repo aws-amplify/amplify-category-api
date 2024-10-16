@@ -24,28 +24,29 @@ import {
 /**
  * Represents the structure of a conversation message model in the GraphQL schema.
  * @property {DirectiveNode} messageAuthDirective - The auth directive for the message model.
- * @property {DirectiveNode} messageModelDirective - The model directive for the message model.
+ * @property {DirectiveNode} messageDirective - The model directive for the message model.
  * @property {DirectiveNode} messageBelongsToConversationDirective - The belongs-to directive for the conversation relationship.
  * @property {FieldDefinitionNode} messageConversationField - The field definition for the conversation relationship.
- * @property {ObjectTypeDefinitionNode} messageModel - The complete message model object type definition.
+ * @property {ObjectTypeDefinitionNode} model - The complete message model object type definition.
  */
 export type MessageModel = {
-  messageAuthDirective: DirectiveNode;
-  messageModelDirective: DirectiveNode;
-  messageBelongsToConversationDirective: DirectiveNode;
-  messageConversationField: FieldDefinitionNode;
-  messageModel: ObjectTypeDefinitionNode;
+  authDirective: DirectiveNode;
+  modelDirective: DirectiveNode;
+  belongsToConversationDirective: DirectiveNode;
+  conversationField: FieldDefinitionNode;
+  model: ObjectTypeDefinitionNode;
+
 };
 
 /**
  * Creates a complete conversation message model structure for a GraphQL schema.
- * @param {string} messageModelName - The name of the message model.
- * @param {string} conversationModelName - The name of the conversation model.
+ * @param {string} messageName - The name of the message model.
+ * @param {string} conversationName - The name of the conversation model.
  * @param {string} referenceFieldName - The name of the field referencing the conversation.
  * @param {NamedTypeNode} conversationMessageInterface - The interface that the message model implements.
  * @returns {MessageModel} The complete conversation message model structure.
  * @example
- * const messageModel = createMessageModel(
+ * const message = createMessageModel(
  *   'Message',
  *   'Conversation',
  *   'conversationId',
@@ -65,29 +66,29 @@ export type MessageModel = {
  * // }
  */
 export const createMessageModel = (
-  conversationModelName: string,
-  messageModelName: string,
+  conversationName: string,
+  messageName: string,
   referenceFieldName: string,
   conversationMessageInterface: NamedTypeNode,
 ): MessageModel => {
-  const messageAuthDirective = constructMessageAuthDirective();
-  const messageModelDirective = constructMessageModelDirective();
-  const messageBelongsToConversationDirective = constructMessageSessionFieldBelongsToDirective(referenceFieldName);
-  const messageConversationField = constructMessageSessionField(messageBelongsToConversationDirective, conversationModelName);
-  const messageModel = constructConversationMessageModel(
-    messageModelName,
-    messageConversationField,
+  const authDirective = constructMessageAuthDirective();
+  const modelDirective = constructMessageModelDirective();
+  const belongsToConversationDirective = constructMessageSessionFieldBelongsToDirective(referenceFieldName);
+  const conversationField = constructMessageConversationField(belongsToConversationDirective, conversationName);
+  const model = constructConversationMessageModel(
+    messageName,
+    conversationField,
     referenceFieldName,
-    [messageModelDirective, messageAuthDirective],
+    [modelDirective, authDirective],
     conversationMessageInterface,
   );
 
   return {
-    messageAuthDirective,
-    messageModelDirective,
-    messageBelongsToConversationDirective,
-    messageConversationField,
-    messageModel,
+    authDirective,
+    modelDirective,
+    belongsToConversationDirective,
+    conversationField,
+    model,
   };
 };
 
@@ -108,15 +109,15 @@ export const createMessageSubscription = (
   return subscriptionField;
 };
 
-export const createAssistantMutationField = (fieldName: string, messageModelName: string, inputTypeName: string): FieldDefinitionNode => {
+export const createAssistantMutationField = (fieldName: string, messageName: string, inputTypeName: string): FieldDefinitionNode => {
   const args = [makeInputValueDefinition('input', makeNonNullType(makeNamedType(inputTypeName)))];
   const cognitoAuthDirective = makeDirective('aws_cognito_user_pools', []);
-  const createAssistantResponseMutation = makeField(fieldName, args, makeNamedType(messageModelName), [cognitoAuthDirective]);
+  const createAssistantResponseMutation = makeField(fieldName, args, makeNamedType(messageName), [cognitoAuthDirective]);
   return createAssistantResponseMutation;
 };
 
-export const createAssistantResponseMutationInput = (messageModelName: string): InputObjectTypeDefinitionNode => {
-  const inputName = `Create${messageModelName}AssistantInput`;
+export const createAssistantResponseMutationInput = (messageName: string): InputObjectTypeDefinitionNode => {
+  const inputName = `Create${messageName}AssistantInput`;
   return {
     kind: 'InputObjectTypeDefinition',
     name: { kind: 'Name', value: inputName },
@@ -200,22 +201,22 @@ const constructMessageSessionFieldBelongsToDirective = (referenceFieldName: stri
  * // This will generate a field definition like:
  * // conversation: Conversation `@belongsTo`(references: "conversationId")
  */
-const constructMessageSessionField = (belongsToDirective: DirectiveNode, typeName: string): FieldDefinitionNode => {
+const constructMessageConversationField = (belongsToDirective: DirectiveNode, typeName: string): FieldDefinitionNode => {
   return makeField('conversation', [], makeNamedType(typeName), [belongsToDirective]);
 };
 
 /**
  * Creates the complete message model object type definition.
  * @param {string} modelName - The name of the message model.
- * @param {FieldDefinitionNode} sessionField - The field definition for the conversation relationship.
+ * @param {FieldDefinitionNode} conversationField - The field definition for the conversation relationship.
  * @param {string} referenceFieldName - The name of the field referencing the conversation.
  * @param {DirectiveNode[]} typeDirectives - An array of directives to apply to the model.
  * @param {NamedTypeNode} conversationMessageInterface - The interface that the message model implements.
  * @returns {ObjectTypeDefinitionNode} The complete message model object type definition.
  * @example
- * const messageModel = makeConversationMessageModel(
+ * const message = makeConversationMessageModel(
  *   'Message',
- *   sessionField,
+ *   conversationField,
  *   'conversationId',
  *   [modelDirective, authDirective],
  *   { kind: 'NamedType', name: { kind: 'Name', value: 'ConversationMessage' } }
@@ -234,7 +235,7 @@ const constructMessageSessionField = (belongsToDirective: DirectiveNode, typeNam
  */
 const constructConversationMessageModel = (
   modelName: string,
-  sessionField: FieldDefinitionNode,
+  conversationField: FieldDefinitionNode,
   referenceFieldName: string,
   typeDirectives: DirectiveNode[],
   conversationMessageInterface: NamedTypeNode,
@@ -250,7 +251,7 @@ const constructConversationMessageModel = (
   const object = {
     ...blankObject(modelName),
     interfaces: [conversationMessageInterface],
-    fields: [id, conversationId, sessionField, role, content, context, uiComponents, associatedUserMessageId],
+    fields: [id, conversationId, conversationField, role, content, context, uiComponents, associatedUserMessageId],
     directives: typeDirectives,
   };
 

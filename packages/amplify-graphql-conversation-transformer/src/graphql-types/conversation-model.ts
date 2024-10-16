@@ -14,27 +14,27 @@ import {
 /**
  * Represents the structure of a conversation model in the GraphQL schema.
  * @property {DirectiveNode} conversationAuthDirective - The auth directive for the conversation model.
- * @property {DirectiveNode} conversationModelDirective - The model directive for the conversation model.
+ * @property {DirectiveNode} conversationDirective - The model directive for the conversation model.
  * @property {DirectiveNode} conversationHasManyMessagesDirective - The has-many directive for the messages relationship.
  * @property {FieldDefinitionNode} conversationMessagesField - The field definition for the messages relationship.
- * @property {ObjectTypeDefinitionNode} conversationModel - The complete conversation model object type definition.
+ * @property {ObjectTypeDefinitionNode} conversation - The complete conversation model object type definition.
  */
 export type ConversationModel = {
-  conversationAuthDirective: DirectiveNode;
-  conversationModelDirective: DirectiveNode;
-  conversationHasManyMessagesDirective: DirectiveNode;
-  conversationMessagesField: FieldDefinitionNode;
-  conversationModel: ObjectTypeDefinitionNode;
+  authDirective: DirectiveNode;
+  modelDirective: DirectiveNode;
+  hasManyMessagesDirective: DirectiveNode;
+  messagesField: FieldDefinitionNode;
+  model: ObjectTypeDefinitionNode;
 };
 
 /**
  * Creates a complete conversation model structure for a GraphQL schema.
- * @param {string} conversationModelName - The name of the conversation model.
- * @param {string} messageModelName - The name of the message model.
+ * @param {string} conversationName - The name of the conversation model.
+ * @param {string} messageName - The name of the message model.
  * @param {string} referenceFieldName - The name of the field referencing the conversation in the message model.
  * @returns {ConversationModel} The complete conversation model structure.
  * @example
- * const conversationModel = createConversationModel(
+ * const conversation = createConversationModel(
  *   'Conversation',
  *   'Message',
  *   'conversationId'
@@ -48,25 +48,25 @@ export type ConversationModel = {
  * // }
  */
 export const createConversationModel = (
-  conversationModelName: string,
-  messageModelName: string,
+  conversationName: string,
+  messageName: string,
   referenceFieldName: string,
 ): ConversationModel => {
-  const conversationAuthDirective = createSessionAuthDirective();
-  const conversationModelDirective = createSessionModelDirective();
-  const conversationHasManyMessagesDirective = createSessionModelMessagesFieldHasManyDirective(referenceFieldName);
-  const conversationMessagesField = createSessionModelMessagesField(conversationHasManyMessagesDirective, messageModelName);
-  const conversationModel = makeConversationSessionModel(conversationModelName, conversationMessagesField, [
-    conversationAuthDirective,
-    conversationModelDirective,
+  const authDirective = createConversationAuthDirective();
+  const modelDirective = createConversationModelDirective();
+  const hasManyMessagesDirective = createConversationModelMessagesFieldHasManyDirective(referenceFieldName);
+  const messagesField = createConversationModelMessagesField(hasManyMessagesDirective, messageName);
+  const model = makeConversationModel(conversationName, messagesField, [
+    authDirective,
+    modelDirective,
   ]);
 
   return {
-    conversationAuthDirective,
-    conversationModelDirective,
-    conversationHasManyMessagesDirective,
-    conversationMessagesField,
-    conversationModel,
+    authDirective,
+    modelDirective,
+    hasManyMessagesDirective,
+    messagesField,
+    model,
   };
 };
 
@@ -78,7 +78,7 @@ export const createConversationModel = (
  * // This will generate a directive like:
  * // @auth(rules: [{ allow: owner, ownerField: "owner" }])
  */
-const createSessionAuthDirective = (): DirectiveNode => {
+const createConversationAuthDirective = (): DirectiveNode => {
   const rules = makeArgument('rules', {
     kind: Kind.LIST,
     values: [
@@ -111,7 +111,7 @@ const createSessionAuthDirective = (): DirectiveNode => {
  * // This will generate a directive like:
  * // @model(subscriptions: { level: off }, mutations: { update: null })
  */
-const createSessionModelDirective = (): DirectiveNode => {
+const createConversationModelDirective = (): DirectiveNode => {
   const subscriptionsOffValue: ObjectValueNode = {
     kind: Kind.OBJECT,
     fields: [
@@ -137,7 +137,7 @@ const createSessionModelDirective = (): DirectiveNode => {
  * // This will generate a directive like:
  * // @hasMany(references: ["conversationId"])
  */
-const createSessionModelMessagesFieldHasManyDirective = (fieldName: string): DirectiveNode => {
+const createConversationModelMessagesFieldHasManyDirective = (fieldName: string): DirectiveNode => {
   const referencesArg = makeArgument('references', makeValueNode(fieldName));
   return makeDirective(HasManyDirective.name, [referencesArg]);
 };
@@ -152,7 +152,7 @@ const createSessionModelMessagesFieldHasManyDirective = (fieldName: string): Dir
  * // This will generate a field definition like:
  * // messages: [Message] @hasMany(references: ["id"])
  */
-const createSessionModelMessagesField = (hasManyDirective: DirectiveNode, typeName: string): FieldDefinitionNode => {
+const createConversationModelMessagesField = (hasManyDirective: DirectiveNode, typeName: string): FieldDefinitionNode => {
   return makeField('messages', [], makeListType(makeNamedType(typeName)), [hasManyDirective]);
 };
 
@@ -163,7 +163,7 @@ const createSessionModelMessagesField = (hasManyDirective: DirectiveNode, typeNa
  * @param {DirectiveNode[]} typeDirectives - An array of directives to apply to the model.
  * @returns {ObjectTypeDefinitionNode} The complete conversation model object type definition.
  * @example
- * const conversationModel = makeConversationSessionModel(
+ * const conversation = makeConversationModel(
  *   'Conversation',
  *   messagesField,
  *   [authDirective, modelDirective]
@@ -177,7 +177,7 @@ const createSessionModelMessagesField = (hasManyDirective: DirectiveNode, typeNa
  * //   owner: String
  * // }
  */
-const makeConversationSessionModel = (
+const makeConversationModel = (
   modelName: string,
   messagesField: FieldDefinitionNode,
   typeLevelDirectives: DirectiveNode[],

@@ -6,7 +6,7 @@ import * as cdk from 'aws-cdk-lib';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { FunctionResourceIDs, ResourceConstants, toUpper } from 'graphql-transformer-common';
 import pluralize from 'pluralize';
-import { ConversationDirectiveConfiguration } from '../conversation-directive-types';
+import { ConversationDirectiveConfiguration, LIST_MESSAGES_INDEX_NAME } from '../conversation-directive-types';
 import {
   ASSISTANT_RESPONSE_PIPELINE,
   ASSISTANT_RESPONSE_SUBSCRIPTION_PIPELINE,
@@ -44,11 +44,11 @@ export class ConversationResolverGenerator {
     const { functionDataSourceId, referencedFunction } = this.setupFunctionDataSource(directive, functionStack, capitalizedFieldName);
     const functionDataSource = this.addLambdaDataSource(ctx, functionDataSourceId, referencedFunction, capitalizedFieldName);
 
-    const conversationMessageDataSourceName = getModelDataSourceNameForTypeName(ctx, `ConversationMessage${capitalizedFieldName}`);
+    const conversationMessageDataSourceName = getModelDataSourceNameForTypeName(ctx, directive.message.model.name.value);
     const conversationMessageDataSource = ctx.api.host.getDataSource(conversationMessageDataSourceName);
 
-    const sessionModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, `Conversation${capitalizedFieldName}`);
-    const conversationSessionDDBDataSource = ctx.api.host.getDataSource(sessionModelDDBDataSourceName);
+    const conversationModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, directive.conversation.model.name.value);
+    const conversationSessionDDBDataSource = ctx.api.host.getDataSource(conversationModelDDBDataSourceName);
 
     this.setupMessageTableIndex(ctx, directive);
 
@@ -171,8 +171,8 @@ export class ConversationResolverGenerator {
   }
 
   private addInitSlotToListMessagesPipeline(ctx: TransformerContextProvider, directive: ConversationDirectiveConfiguration): void {
-    const messageModelName = directive.messageModel.messageModel.name.value;
-    const pluralized = pluralize(messageModelName);
+    const messageName = directive.message.model.name.value;
+    const pluralized = pluralize(messageName);
     const listMessagesResolver = ctx.resolvers.getResolver('Query', `list${pluralized}`) as TransformerResolver;
     const initResolverFn = generateResolverFunction(LIST_MESSAGES_INIT_FUNCTION, directive);
     listMessagesResolver.addJsFunctionToSlot('init', initResolverFn);
@@ -184,24 +184,23 @@ export class ConversationResolverGenerator {
    * @param directive - The conversation directive configuration
    */
   private setupMessageTableIndex(ctx: TransformerContextProvider, directive: ConversationDirectiveConfiguration): void {
-    const messageModelName = directive.messageModel.messageModel.name.value;
+    const messageName = directive.message.model.name.value;
     const referenceFieldName = 'conversationId';
-    const messageModel = directive.messageModel.messageModel;
+    const message = directive.message.model;
 
-    const conversationMessagesTable = getTable(ctx, messageModel);
+    const conversationMessagesTable = getTable(ctx, message);
     const gsiPartitionKeyName = referenceFieldName;
     const gsiPartitionKeyType = 'S';
     const gsiSortKeyName = 'createdAt';
     const gsiSortKeyType = 'S';
-    const indexName = 'gsi-ConversationMessage.conversationId.createdAt';
 
     this.addGlobalSecondaryIndex(
       conversationMessagesTable,
-      indexName,
+      LIST_MESSAGES_INDEX_NAME,
       { name: gsiPartitionKeyName, type: gsiPartitionKeyType },
       { name: gsiSortKeyName, type: gsiSortKeyType },
       ctx,
-      messageModelName,
+      messageName,
     );
   }
 

@@ -6,12 +6,12 @@ import { createResolverFunctionDefinition, PipelineDefinition, ResolverFunctionD
  */
 export const assistantResponseSubscriptionPipelineDefinition: PipelineDefinition = {
   requestSlots: [],
-  dataSlot: dataSlot(),
+  dataSlot: data(),
   responseSlots: [],
   field: (config) => ({ typeName: 'Subscription', fieldName: fieldName(config) }),
 };
 
-function dataSlot(): ResolverFunctionDefinition {
+function data(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'data',
     fileName: 'assistant-messages-subscription-resolver-fn.template.js',

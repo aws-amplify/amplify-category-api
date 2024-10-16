@@ -1,6 +1,5 @@
 import { toUpper } from 'graphql-transformer-common';
 import pluralize from 'pluralize';
-import dedent from 'ts-dedent';
 import { ConversationDirectiveConfiguration } from '../conversation-directive-types';
 import { createResolverFunctionDefinition, PipelineDefinition, ResolverFunctionDefinition } from './resolver-function-definition';
 
@@ -8,13 +7,13 @@ import { createResolverFunctionDefinition, PipelineDefinition, ResolverFunctionD
  * The pipeline definition for the send message mutation resolver.
  */
 export const sendMessagePipelineDefinition: PipelineDefinition = {
-  requestSlots: [initSlotDefinition(), authSlotDefinition(), verifySessionOwnerSlotDefinition(), writeMessageToTableSlotDefinition()],
-  dataSlot: invokeLambdaSlotDefinition(),
+  requestSlots: [init(), auth(), verifySessionOwner(), writeMessageToTable()],
+  dataSlot: invokeLambda(),
   responseSlots: [],
   field: (config) => ({ typeName: 'Mutation', fieldName: config.field.name.value }),
 };
 
-function initSlotDefinition(): ResolverFunctionDefinition {
+function init(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'init',
     fileName: 'init-resolver-fn.template.js',
@@ -22,7 +21,7 @@ function initSlotDefinition(): ResolverFunctionDefinition {
   });
 }
 
-function authSlotDefinition(): ResolverFunctionDefinition {
+function auth(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'auth',
     fileName: 'auth-resolver-fn.template.js',
@@ -30,7 +29,7 @@ function authSlotDefinition(): ResolverFunctionDefinition {
   });
 }
 
-function verifySessionOwnerSlotDefinition(): ResolverFunctionDefinition {
+function verifySessionOwner(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'verifySessionOwner',
     fileName: 'verify-session-owner-resolver-fn.template.js',
@@ -42,19 +41,19 @@ function verifySessionOwnerSlotDefinition(): ResolverFunctionDefinition {
   });
 }
 
-function writeMessageToTableSlotDefinition(): ResolverFunctionDefinition {
+function writeMessageToTable(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'writeMessageToTable',
     fileName: 'write-message-to-table-resolver-fn.template.js',
     templateName: generateTemplateName('write-message-to-table'),
     dataSource: (config) => config.dataSources.messageTable,
     substitutions: (config) => ({
-      CONVERSATION_MESSAGE_TYPE_NAME: `ConversationMessage${toUpper(config.field.name.value)}`,
+      CONVERSATION_MESSAGE_TYPE_NAME: config.message.model.name.value,
     }),
   });
 }
 
-function invokeLambdaSlotDefinition(): ResolverFunctionDefinition {
+function invokeLambda(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'data',
     fileName: 'invoke-lambda-resolver-fn.template.js',
@@ -65,15 +64,13 @@ function invokeLambdaSlotDefinition(): ResolverFunctionDefinition {
 }
 
 function invokeLambdaResolverSubstitutions(config: ConversationDirectiveConfiguration) {
-  const { TOOL_DEFINITIONS_LINE, TOOLS_CONFIGURATION_LINE } = generateToolLines(config);
   return {
-    TOOL_DEFINITIONS_LINE,
-    TOOLS_CONFIGURATION_LINE,
+    DATA_TOOLS: JSON.stringify(config.toolSpec),
     SELECTION_SET: selectionSet,
-    MODEL_CONFIGURATION_LINE: generateModelConfigurationLine(config),
+    INFERENCE_CONFIGURATION: JSON.stringify(config.inferenceConfiguration),
     RESPONSE_MUTATION_NAME: config.assistantResponseMutation.field.name.value,
     RESPONSE_MUTATION_INPUT_TYPE_NAME: config.assistantResponseMutation.input.name.value,
-    MESSAGE_MODEL_NAME: config.messageModel.messageModel.name.value,
+    MESSAGE_MODEL_NAME: config.message.model.name.value,
     GET_QUERY_NAME: `getConversationMessage${toUpper(config.field.name.value)}`,
     GET_QUERY_INPUT_TYPE_NAME: 'ID',
     LIST_QUERY_NAME: `listConversationMessage${toUpper(pluralize(config.field.name.value))}`,
@@ -86,41 +83,4 @@ function generateTemplateName(slotName: string) {
   return (config: ConversationDirectiveConfiguration) => `Mutation.${config.field.name.value}.${slotName}.js`;
 }
 
-// #region configuration specific JS function code
-function generateModelConfigurationLine(config: ConversationDirectiveConfiguration) {
-  const { aiModel, systemPrompt } = config;
-
-  return dedent`const modelConfiguration = {
-    modelId: '${aiModel}',
-    systemPrompt: ${JSON.stringify(systemPrompt)},
-    ${generateModelInferenceConfigurationLine(config)}
-  };`;
-}
-
-function generateModelInferenceConfigurationLine(config: ConversationDirectiveConfiguration) {
-  const { inferenceConfiguration } = config;
-  return inferenceConfiguration && Object.keys(inferenceConfiguration).length > 0
-    ? dedent`inferenceConfiguration: ${JSON.stringify(config.inferenceConfiguration)},`
-    : '';
-}
-
 const selectionSet = `id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt`;
-
-function generateToolLines(config: ConversationDirectiveConfiguration) {
-  const toolDefinitions = JSON.stringify(config.toolSpec);
-  const TOOL_DEFINITIONS_LINE = toolDefinitions ? `const toolDefinitions = ${toolDefinitions};` : '';
-
-  const TOOLS_CONFIGURATION_LINE = toolDefinitions
-    ? dedent`const dataTools = toolDefinitions.tools;
-     const toolsConfiguration = {
-      dataTools,
-      clientTools,
-    };`
-    : dedent`const toolsConfiguration = {
-      clientTools
-    };`;
-
-  return { TOOL_DEFINITIONS_LINE, TOOLS_CONFIGURATION_LINE };
-}
-
-// #endregion

@@ -55,8 +55,8 @@ describe('ConversationFieldHandler', () => {
       const config = handler.getDirectiveConfig(parent, field, directive, mockContext);
 
       expect(config).toBeDefined();
-      expect(config.messageModel).toBeDefined();
-      expect(config.conversationModel).toBeDefined();
+      expect(config.message).toBeDefined();
+      expect(config.conversation).toBeDefined();
     });
 
     it('should throw an error if field type is not ConversationMessage', () => {
@@ -74,12 +74,10 @@ describe('ConversationFieldHandler', () => {
       const field = createMockField('testField', 'ConversationMessage');
       const directive = createMockDirective();
 
-      const config = handler.getDirectiveConfig(parent, field, directive, mockContext);
-      const { messageModel } = config.messageModel;
-      const { conversationModel } = config.conversationModel;
+      const { message, conversation } = handler.getDirectiveConfig(parent, field, directive, mockContext);
 
-      expect(messageModel.name.value).toBe('ConversationMessageTestField');
-      expect(conversationModel.name.value).toBe('ConversationTestField');
+      expect(message.model.name.value).toBe('ConversationMessageTestField');
+      expect(conversation.model.name.value).toBe('ConversationTestField');
     });
   });
 });
