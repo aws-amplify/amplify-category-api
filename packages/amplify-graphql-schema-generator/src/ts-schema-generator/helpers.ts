@@ -38,8 +38,7 @@ const createProperty = (field: Field): ts.Node => {
  * @returns Typescript data schema type in TS Node format
  */
 const createDataType = (field: Field): ts.Node => {
-  const sequenceRegex = /^nextval\(.+::regclass\)$/;
-  if (field.default?.kind === 'DB_GENERATED' && sequenceRegex.test(field.default.value.toString())) {
+  if (isSequenceField(field)) {
     const baseTypeExpression =
       field.type.kind === 'NonNull'
         ? createDataType(new Field(field.name, field.type.type))
@@ -92,6 +91,11 @@ const createDataType = (field: Field): ts.Node => {
     undefined,
     undefined,
   );
+};
+
+const isSequenceField = (field: Field): boolean => {
+  const sequenceRegex = /^nextval\(.+::regclass\)$/;
+  return field.default?.kind === 'DB_GENERATED' && sequenceRegex.test(field.default.value.toString());
 };
 
 const getTypescriptDataSchemaType = (type: string): string => {
