@@ -1,15 +1,15 @@
 import generator from 'generate-password';
-import { getResourceNamesForStrategyName, ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
+import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { TestOptions } from '../utils/sql-test-config-helper';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
-import { testGraphQLAPI } from '../sql-tests-common/sql-models';
-import { sqlCreateStatements } from '../sql-tests-common/tests-sources/sql-models/provider';
+import { testGraphQLAPIWithUserPoolAccess } from '../sql-tests-common/sql-userpool-auth';
+import { sqlCreateStatements } from '../sql-tests-common/tests-sources/sql-dynamic-model-auth/sql-userpool-auth/provider';
 
 jest.setTimeout(DURATION_1_HOUR);
 
-describe('Canary using Postgres lambda model datasource strategy', () => {
-  const projFolderName = 'pgcanary';
+describe('CDK GraphQL Transformer deployments with Postgres SQL datasources - UserPool Auth', () => {
+  const projFolderName = 'pguserpoolaccess';
 
   // sufficient password length that meets the requirements for RDS cluster/instance
   const [username, password, identifier] = generator.generateMultiple(3, { length: 11 });
@@ -24,13 +24,8 @@ describe('Canary using Postgres lambda model datasource strategy', () => {
     region,
   });
 
-  const strategyName = `${engine}DBStrategy`;
-  const resourceNames = getResourceNamesForStrategyName(strategyName);
-
   beforeAll(async () => {
-    console.time('sql-pg-canary test setup');
     await databaseController.setupDatabase();
-    console.timeEnd('sql-pg-canary test setup');
   });
 
   afterAll(async () => {
@@ -42,8 +37,7 @@ describe('Canary using Postgres lambda model datasource strategy', () => {
     region,
     connectionConfigName,
     dbController: databaseController,
-    resourceNames,
   });
 
-  testGraphQLAPI(constructTestOptions('connectionUri'), 'Able to deploy simple schema', ImportedRDSType.POSTGRESQL);
+  testGraphQLAPIWithUserPoolAccess(constructTestOptions('ssm'), 'UserPool Auth Access', ImportedRDSType.POSTGRESQL);
 });
