@@ -40,18 +40,23 @@ export function response(ctx) {
     // this makes us return a message to the client. Maybe that's ok if / when we're streaming the text back as true
     // chunk representations (with index, etc).
     if (ctx.args.input.stopReason) {
-        return {
-            // differentiating with `<id>#response` for now. But this is no bueno.
-            // either the sentinel value needs to be included in the last chunk with content
-            // --- or ---
-            // we need to represent it in the client message type
-            // --- or ---
-            // we could potentially just throw an error here, but that's bad.
-            id: `${ctx.args.input.associatedUserMessageId}#response`,
-            createdAt: ctx.stash.defaultValues.createdAt,
-            updatedAt: ctx.stash.defaultValues.updatedAt,
-            conversationId: ctx.args.input.conversationId
-        };
+      const { createdAt } = ctx.stash.defaultValues;
+      const { conversationId } = ctx.result;
+      const { owner } = ctx.args;
+      return {
+        // differentiating with `<id>#response` for now. But this is no bueno.
+        // either the sentinel value needs to be included in the last chunk with content
+        // --- or ---
+        // we need to represent it in the client message type
+        // --- or ---
+        // we could potentially just throw an error here, but that's bad.
+        __typename: 'ConversationMessageStreamPart',
+        id: `${ctx.args.input.associatedUserMessageId}#stream`,
+        createdAt,
+        owner,
+        conversationId,
+        ...ctx.args.input,
+    };
     }
     return ctx.prev.result;
 }

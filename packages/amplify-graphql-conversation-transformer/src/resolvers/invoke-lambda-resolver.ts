@@ -16,7 +16,7 @@ import pluralize from 'pluralize';
  */
 export const invokeLambdaMappingTemplate = (config: ConversationDirectiveConfiguration): MappingTemplateProvider => {
   const { TOOL_DEFINITIONS_LINE, TOOLS_CONFIGURATION_LINE } = generateToolLines(config);
-  const SELECTION_SET = selectionSet;
+  const SELECTION_SET = streamingSelectionSet;
   const MODEL_CONFIGURATION_LINE = generateModelConfigurationLine(config);
   const RESPONSE_MUTATION_NAME = config.responseMutationName;
   const RESPONSE_MUTATION_INPUT_TYPE_NAME = config.responseMutationInputTypeName;
@@ -112,3 +112,4 @@ const generateModelInferenceConfigurationLine = (config: ConversationDirectiveCo
  * The selection set for the conversation message.
  */
 const selectionSet = `id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt`;
+const streamingSelectionSet = `associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse conversationId id stopReason`;
