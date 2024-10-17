@@ -151,7 +151,7 @@ exports[`generate graphqlSchemaFromSQLSchema creates graphql schema from "postgr
 }
 
 
-type SerialTable @refersTo(name: \\"      serial_table\\") @model {
+type SerialTable @refersTo(name: \\"serial_table\\") @model {
   id: Int! @primaryKey
   number: Int
 }
