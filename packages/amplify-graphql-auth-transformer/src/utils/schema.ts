@@ -19,6 +19,7 @@ import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode, NamedType
 import {
   blankObjectExtension,
   extendFieldWithDirectives,
+  extendObjectWithDirectives,
   extensionWithDirectives,
   graphqlName,
   isListType,
@@ -213,7 +214,7 @@ export const addDirectivesToField = (
   typeName: string,
   fieldName: string,
   directives: Array<DirectiveNode>,
-) => {
+): void => {
   const type = ctx.output.getType(typeName) as ObjectTypeDefinitionNode;
   if (type) {
     const field = type.fields?.find((f) => f.name.value === fieldName);
@@ -227,6 +228,17 @@ export const addDirectivesToField = (
 
       ctx.output.putType(newType);
     }
+  }
+};
+
+export const addDirectivesToObject = (
+  ctx: TransformerTransformSchemaStepContextProvider,
+  typeName: string,
+  directives: Array<DirectiveNode>,
+): void => {
+  const type = ctx.output.getType(typeName) as ObjectTypeDefinitionNode;
+  if (type) {
+    ctx.output.putType(extendObjectWithDirectives(type, directives));
   }
 };
 
