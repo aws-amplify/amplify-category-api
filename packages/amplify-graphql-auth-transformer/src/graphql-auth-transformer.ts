@@ -354,7 +354,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   /**
    * If needed, adds aws_iam auth directive to non-model types
    */
-  addIamAuthDirectiveToNonModelTypes = (ctx: TransformerTransformSchemaStepContextProvider): void => {
+  private addIamAuthDirectiveToNonModelTypes = (ctx: TransformerTransformSchemaStepContextProvider): void => {
     if (!ctx.transformParameters.sandboxModeEnabled && !ctx.synthParameters.enableIamAccess) {
       return;
     }
@@ -374,7 +374,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   /**
    * If needed, adds aws_iam auth directive to custom operations (Queries, Mutations, Subscriptions)
    */
-  addIamAuthDirectiveToCustomOperationFields = (ctx: TransformerTransformSchemaStepContextProvider): void => {
+  private addIamAuthDirectiveToCustomOperationFields = (ctx: TransformerTransformSchemaStepContextProvider): void => {
     if (!ctx.transformParameters.sandboxModeEnabled && !ctx.synthParameters.enableIamAccess) {
       return;
     }

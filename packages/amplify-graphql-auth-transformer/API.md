@@ -114,10 +114,6 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     // (undocumented)
     addFieldsToObject: (ctx: TransformerTransformSchemaStepContextProvider, modelName: string, ownerFields: Array<string>) => void;
     // (undocumented)
-    addIamAuthDirectiveToCustomOperationFields: (ctx: TransformerTransformSchemaStepContextProvider) => void;
-    // (undocumented)
-    addIamAuthDirectiveToNonModelTypes: (ctx: TransformerTransformSchemaStepContextProvider) => void;
-    // (undocumented)
     after: (context: TransformerContextProvider) => void;
     // (undocumented)
     before: (context: TransformerBeforeStepContextProvider) => void;
