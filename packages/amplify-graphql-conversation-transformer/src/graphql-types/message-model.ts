@@ -92,9 +92,7 @@ export const createMessageModel = (
     conversationMessageInterface,
   );
 
-  const messageSubscription = constructMessageSubscription(messageSubscriptionFieldName, [
-    assistantStreamingMutationFieldName,
-  ]);
+  const messageSubscription = constructMessageSubscription(messageSubscriptionFieldName, [assistantStreamingMutationFieldName]);
 
   const assistantMutationInput = constructAssistantResponseMutationInput(messageModelName);
   const assistantMutationField = constructAssistantMutationField(
@@ -252,10 +250,7 @@ const constructConversationMessageModel = (
   return object;
 };
 
-const constructMessageSubscription = (
-  subscriptionName: string,
-  onMutationNames: string[],
-): FieldDefinitionNode => {
+const constructMessageSubscription = (subscriptionName: string, onMutationNames: string[]): FieldDefinitionNode => {
   const awsSubscribeDirective = makeDirective('aws_subscribe', [makeArgument('mutations', makeValueNode(onMutationNames))]);
   const cognitoAuthDirective = makeDirective('aws_cognito_user_pools', []);
 
@@ -288,10 +283,7 @@ const constructAssistantResponseMutationInput = (messageModelName: string): Inpu
   };
 };
 
-const constructAssistantStreamingMutationField = (
-  fieldName: string,
-  inputTypeName: string,
-): FieldDefinitionNode => {
+const constructAssistantStreamingMutationField = (fieldName: string, inputTypeName: string): FieldDefinitionNode => {
   const args = [makeInputValueDefinition('input', makeNonNullType(makeNamedType(inputTypeName)))];
   const cognitoAuthDirective = makeDirective('aws_cognito_user_pools', []);
   const createAssistantResponseMutation = makeField(fieldName, args, makeNamedType(STREAM_RESPONSE_TYPE_NAME), [cognitoAuthDirective]);
