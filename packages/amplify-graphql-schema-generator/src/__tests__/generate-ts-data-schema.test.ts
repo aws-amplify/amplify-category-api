@@ -343,7 +343,7 @@ describe('Type name conversions', () => {
       },
     };
 
-    expect(() => generateTypescriptDataSchema(dbschema, config)).toThrowError(
+    expect(() => generateTypescriptDataSchema(dbschema, config)).toThrow(
       'No valid tables found. Make sure at least one table has a primary key.',
     );
   });
