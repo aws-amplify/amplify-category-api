@@ -131,6 +131,11 @@ describe('testPostgresStringDataSourceAdapter', () => {
     expect(adapter.getModels()).toMatchSnapshot();
   });
 
+  it('annotates the model field correctly from a schema with a SERIAL field', () => {
+    const adapter = new PostgresStringDataSourceAdapter(schemas.postgres.serial);
+    expect(adapter.getModels()).toMatchSnapshot();
+  });
+
   it('sets the correct models from a news schema', () => {
     const adapter = new PostgresStringDataSourceAdapter(schemas.postgres.news);
     expect(adapter.getModels()).toMatchSnapshot();
