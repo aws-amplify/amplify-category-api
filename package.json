@@ -420,6 +420,7 @@
     "semver": "^7.5.2",
     "axios": "^1.7.4",
     "braces": "^3.0.3",
-    "**/aws-amplify/**/fast-xml-parser": "^4.4.1"
+    "**/aws-amplify/**/fast-xml-parser": "^4.4.1",
+    "cookie": "^0.7.0"
   }
 }

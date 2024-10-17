@@ -91,7 +91,7 @@ describe('enum imports', () => {
     model.setPrimaryKey(['id']);
     dbschema.addModel(model);
 
-    expect(() => generateGraphQLSchema(dbschema)).toThrowError(
+    expect(() => generateGraphQLSchema(dbschema)).toThrow(
       'Enum "UserStatus" (values: ACTIVE-0,INACTIVE-1) contains one or more invalid values. Enum values must match the regex [_A-Za-z][_0-9A-Za-z]*.',
     );
   });
