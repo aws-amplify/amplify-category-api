@@ -103,7 +103,8 @@ export class ConversationPrepareHandler {
     ctx.output.addObject(conversationModel);
     ctx.output.addObject(messageModel);
 
-    ctx.output.addObject(constructStreamResponseType());
+    // Adding this type in data-schema until the single source of truth changes are complete
+    // ctx.output.addObject(constructStreamResponseType());
 
     // Register data source providers for both models
     ctx.providerRegistry.registerDataSourceProvider(conversationModel, this.modelTransformer);
