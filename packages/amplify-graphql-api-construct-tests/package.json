@@ -24,6 +24,7 @@
     "@aws-amplify/auth-construct": "^1.0.0",
     "@aws-amplify/core": "^2.1.0",
     "@aws-amplify/graphql-api-construct": "1.15.1",
+    "@aws-amplify/database-construct": "0.0.1",
     "@aws-cdk/aws-cognito-identitypool-alpha": "2.152.0-alpha.0",
     "@aws-sdk/client-cognito-identity-provider": "3.624.0",
     "@aws-sdk/client-lambda": "3.624.0",
