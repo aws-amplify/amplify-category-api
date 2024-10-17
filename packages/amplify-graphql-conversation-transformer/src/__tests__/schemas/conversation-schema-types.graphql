@@ -154,3 +154,16 @@ type ToolSpecification {
 type ToolInputSchema {
   json: AWSJSON
 }
+
+type ConversationMessageStreamPart {
+  id: ID!
+  owner: String
+  conversationId: ID!
+  associatedUserMessageId: ID!
+  contentBlockIndex: Int!
+  contentBlockText: String
+  contentBlockDeltaIndex: Int
+  contentBlockToolUse: AWSJSON
+  contentBlockDoneAtIndex: Int
+  stopReason: String
+}
