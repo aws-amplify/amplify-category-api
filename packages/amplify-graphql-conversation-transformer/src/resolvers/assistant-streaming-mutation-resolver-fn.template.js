@@ -82,26 +82,19 @@ export function response(ctx) {
     util.error(ctx.error.message, ctx.error.type);
   }
 
+  const { conversationId } = ctx.result;
+  const { owner } = ctx.args;
+
   if (ctx.args.input.contentBlockToolUse || ctx.args.input.contentBlockText) {
     console.log('>>> contentBlockToolUse <<<', ctx.args.input.contentBlockToolUse);
     console.log('>>> contentBlockText <<<', ctx.args.input.contentBlockText);
 
-    const { conversationId } = ctx.result;
-    const { owner } = ctx.args;
-    const { contentBlockToolUse: toolUse, contentBlockText: text } = ctx.args.input;
-    const { createdAt, updatedAt } = ctx.stash.defaultValues;
-
-    const content = ctx.args.input.contentBlockToolUse ? [JSON.parse(toolUse)] : [{ text }];
-
     return {
-      __typename: 'ConversationMessageCustomChat',
-      id: `${ctx.args.input.associatedUserMessageId}#response`,
-      conversationId: conversationId,
-      owner: owner,
-      role: 'assistant',
-      createdAt,
-      updatedAt,
-      content,
+      __typename: 'ConversationMessageStreamPart',
+      id: `${ctx.args.input.associatedUserMessageId}#stream`,
+      owner,
+      conversationId,
+      ...ctx.args.input,
     }
   }
 
@@ -109,10 +102,10 @@ export function response(ctx) {
     console.log('>>> contentBlockDoneAtIndex <<<', ctx.args.input.contentBlockDoneAtIndex);
     // Do we actually need this event? It's forcing us to return a value to the client here, which is awkward... maybe.
     return {
-      id: `${ctx.args.input.associatedUserMessageId}#response`,
-      createdAt: ctx.stash.defaultValues.createdAt,
-      updatedAt: ctx.stash.defaultValues.updatedAt,
-      conversationId: ctx.args.input.conversationId,
+      id: `${ctx.args.input.associatedUserMessageId}#stream`,
+      owner,
+      conversationId,
+      ...ctx.args.input,
     }
   }
 

@@ -326,14 +326,18 @@ export const constructStreamResponseType = (): ObjectTypeDefinitionNode => {
     kind: 'ObjectTypeDefinition',
     name: { kind: 'Name', value: STREAM_RESPONSE_TYPE_NAME },
     fields: [
+      makeField('id', [], makeNonNullType(makeNamedType('ID'))),
+      makeField('owner', [], makeNamedType('String')),
       makeField('conversationId', [], makeNonNullType(makeNamedType('ID'))),
       makeField('associatedUserMessageId', [], makeNonNullType(makeNamedType('ID'))),
+
       makeField('contentBlockIndex', [], makeNonNullType(makeNamedType('Int'))),
 
       makeField('contentBlockText', [], makeNamedType('String')),
       makeField('contentBlockDeltaIndex', [], makeNamedType('Int')),
 
       makeField('contentBlockToolUse', [], makeNamedType('AWSJSON')),
+
       makeField('contentBlockDoneAtIndex', [], makeNamedType('Int')),
 
       makeField('stopReason', [], makeNamedType('String')),
