@@ -802,15 +802,15 @@ batch:
           CLI_REGION: ap-south-1
       depend-on:
         - publish_to_local_registry
-    - identifier: 3_gsis_1k_records_3_gsis_10k_records
+    - identifier: 3_gsis_1k_records_3_gsis_10k_records_basic
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
           TEST_SUITE: >-
-            src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-10k-records.test.ts
-          CLI_REGION: ap-southeast-1
+            src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-10k-records.test.ts|src/__tests__/database-construct/basic.test.ts
+          CLI_REGION: eu-north-1
       depend-on:
         - publish_to_local_registry
     - identifier: sql_pg_userpool_auth

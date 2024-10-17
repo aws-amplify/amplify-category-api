@@ -6,7 +6,7 @@
     ]
   },
   "dependencies": {
-    "@aws-amplify/graphql-api-construct": "^1.15.0",
+    "@aws-amplify/graphql-api-construct": "^1.15.1",
     "aws-cdk-lib": "^2.158.0",
     "constructs": "^10.3.0"
   },
@@ -3915,7 +3915,7 @@
         },
         "locationInModule": {
           "filename": "src/amplify-database.ts",
-          "line": 30
+          "line": 31
         },
         "parameters": [
           {
@@ -3941,7 +3941,7 @@
       "kind": "class",
       "locationInModule": {
         "filename": "src/amplify-database.ts",
-        "line": 17
+        "line": 18
       },
       "name": "AmplifyDatabase",
       "properties": [
@@ -3952,7 +3952,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-database.ts",
-            "line": 28
+            "line": 29
           },
           "name": "dataSourceStrategy",
           "type": {
@@ -3967,7 +3967,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-database.ts",
-            "line": 26
+            "line": 27
           },
           "name": "resources",
           "type": {
@@ -3982,7 +3982,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-database.ts",
-            "line": 21
+            "line": 22
           },
           "name": "stack",
           "type": {
@@ -4109,5 +4109,5 @@
     }
   },
   "version": "0.0.1",
-  "fingerprint": "uONt6Y4OQgl5+RYE/L6ELdYT0B5HrmLoqB5b7xX+YIg="
+  "fingerprint": "IJqZ4broCOdZn0L7ErQwyydbH39y39sseNpV3PMtPl4="
 }

@@ -8,6 +8,7 @@ import {
   DatabaseClusterEngine,
   DatabaseSecret,
   IClusterEngine,
+  ParameterGroup,
 } from 'aws-cdk-lib/aws-rds';
 import type { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-api-construct';
 import type { AmplifyDatabaseProps, AmplifyDatabaseResources, DBType } from './types';
@@ -65,8 +66,6 @@ export class AmplifyDatabase extends Construct {
   }
 
   private createDatabaseSecret(username: string): DatabaseSecret {
-    // TODO: is this ok with BGDs?
-    // should it be with SecretsManager directly?
     return new DatabaseSecret(this, `AmplifyDatabaseSecret-${username}`, {
       username,
       dbname: DEFAULT_DATABASE_NAME,
@@ -74,12 +73,25 @@ export class AmplifyDatabase extends Construct {
   }
 
   private createDatabaseCluster(props: AmplifyDatabaseProps): DatabaseCluster {
+    const parameterGroup = new ParameterGroup(this, 'AmplifyParameterGroup', {
+      engine: this.getDatabaseClusterEngine(props.dbType),
+      // TODO: add id to name
+      description: 'Amplify parameter group',
+      parameters:
+        props.dbType === 'MYSQL'
+          ? {}
+          : {
+              // Enable logical replication for Postgres to allow for Blue/Green deployments
+              'rds.logical_replication': '1',
+            },
+    });
     return new DatabaseCluster(this, 'AmplifyDatabaseCluster', {
       engine: this.getDatabaseClusterEngine(props.dbType),
       writer: ClusterInstance.serverlessV2('writer'),
       enableDataApi: true,
       defaultDatabaseName: DEFAULT_DATABASE_NAME,
       vpc: props.vpc,
+      parameterGroup,
     });
   }
 
