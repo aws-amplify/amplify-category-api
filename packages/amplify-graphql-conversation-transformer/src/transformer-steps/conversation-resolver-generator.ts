@@ -305,47 +305,50 @@ export class ConversationResolverGenerator {
   }
 
   private createAssistantStreamingResponseResolver(
-      ctx: TransformerContextProvider,
-      directive: ConversationDirectiveConfiguration,
-      capitalizedFieldName: string,
-      initResolverFunction: MappingTemplateProvider,
-      authResolverFunction: MappingTemplateProvider,
-      verifySessionOwnerResolverFunction: MappingTemplateProvider,
-    ): void {
-      const assistantResponseResolverResourceId = ResolverResourceIDs.ResolverResourceID('Mutation', directive.messageModel.assistantStreamingMutationField.name.value);
-      const assistantResponseResolverFunction = assistantStreamingMutationResolver(directive);
-      const conversationMessageDataSourceName = getModelDataSourceNameForTypeName(ctx, `ConversationMessage${capitalizedFieldName}`);
-      const conversationMessageDataSource = ctx.api.host.getDataSource(conversationMessageDataSourceName);
+    ctx: TransformerContextProvider,
+    directive: ConversationDirectiveConfiguration,
+    capitalizedFieldName: string,
+    initResolverFunction: MappingTemplateProvider,
+    authResolverFunction: MappingTemplateProvider,
+    verifySessionOwnerResolverFunction: MappingTemplateProvider,
+  ): void {
+    const assistantResponseResolverResourceId = ResolverResourceIDs.ResolverResourceID(
+      'Mutation',
+      directive.messageModel.assistantStreamingMutationField.name.value,
+    );
+    const assistantResponseResolverFunction = assistantStreamingMutationResolver(directive);
+    const conversationMessageDataSourceName = getModelDataSourceNameForTypeName(ctx, `ConversationMessage${capitalizedFieldName}`);
+    const conversationMessageDataSource = ctx.api.host.getDataSource(conversationMessageDataSourceName);
 
-      const resolver = new TransformerResolver(
-        'Mutation',
-        directive.messageModel.assistantStreamingMutationField.name.value,
-        assistantResponseResolverResourceId,
-        { codeMappingTemplate: assistantResponseResolverFunction },
-        ['init', 'auth', 'verifySessionOwner'],
-        ['reduceChunks'],
-        conversationMessageDataSource as any,
-        APPSYNC_JS_RUNTIME,
-      );
+    const resolver = new TransformerResolver(
+      'Mutation',
+      directive.messageModel.assistantStreamingMutationField.name.value,
+      assistantResponseResolverResourceId,
+      { codeMappingTemplate: assistantResponseResolverFunction },
+      ['init', 'auth', 'verifySessionOwner'],
+      ['reduceChunks'],
+      conversationMessageDataSource as any,
+      APPSYNC_JS_RUNTIME,
+    );
 
-      // Add init function
-      resolver.addJsFunctionToSlot('init', initResolverFunction);
+    // Add init function
+    resolver.addJsFunctionToSlot('init', initResolverFunction);
 
-      // Add auth function
-      resolver.addJsFunctionToSlot('auth', authResolverFunction);
+    // Add auth function
+    resolver.addJsFunctionToSlot('auth', authResolverFunction);
 
-      // Add verifySessionOwner function
-      const sessionModelName = `Conversation${capitalizedFieldName}`;
-      const sessionModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, sessionModelName);
-      const conversationSessionDDBDataSource = ctx.api.host.getDataSource(sessionModelDDBDataSourceName);
-      resolver.addJsFunctionToSlot('verifySessionOwner', verifySessionOwnerResolverFunction, conversationSessionDDBDataSource as any);
+    // Add verifySessionOwner function
+    const sessionModelName = `Conversation${capitalizedFieldName}`;
+    const sessionModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, sessionModelName);
+    const conversationSessionDDBDataSource = ctx.api.host.getDataSource(sessionModelDDBDataSourceName);
+    resolver.addJsFunctionToSlot('verifySessionOwner', verifySessionOwnerResolverFunction, conversationSessionDDBDataSource as any);
 
-      // Add reduceChunks function
-      const reduceChunksFunction = assistantStreamingMutationReduceChunksResolver(directive);
-      resolver.addJsFunctionToSlot('reduceChunks', reduceChunksFunction, conversationMessageDataSource as any);
+    // Add reduceChunks function
+    const reduceChunksFunction = assistantStreamingMutationReduceChunksResolver(directive);
+    resolver.addJsFunctionToSlot('reduceChunks', reduceChunksFunction, conversationMessageDataSource as any);
 
-      ctx.resolvers.addResolver('Mutation', directive.messageModel.assistantStreamingMutationField.name.value, resolver);
-    }
+    ctx.resolvers.addResolver('Mutation', directive.messageModel.assistantStreamingMutationField.name.value, resolver);
+  }
 
   /**
    * Creates the assistant response subscription resolver
