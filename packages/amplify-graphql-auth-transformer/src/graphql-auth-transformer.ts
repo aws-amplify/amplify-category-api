@@ -25,14 +25,12 @@ import {
   TransformerAuthProvider,
   TransformerBeforeStepContextProvider,
   TransformerContextProvider,
-  TransformerPreProcessContextProvider,
   TransformerResolverProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   DirectiveNode,
-  DocumentNode,
   FieldDefinitionNode,
   InterfaceTypeDefinitionNode,
   Kind,
@@ -41,8 +39,6 @@ import {
   StringValueNode,
   TypeDefinitionNode,
 } from 'graphql';
-import produce from 'immer';
-import { WritableDraft } from 'immer/dist/types/types-external';
 import { merge } from 'lodash';
 import {
   SubscriptionLevel,
