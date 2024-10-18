@@ -9,12 +9,12 @@ export const getMetadataDataSources = (definition: IAmplifyGraphqlDefinition): s
 
 export const getMetadataAuthorizationModes = (authorizationModes: AuthorizationModes): string => {
   const configKeyToAuthMode: Record<string, string> = {
-    iamConfig: 'AWS_IAM',
-    oidcConfig: 'OPENID_CONNECT',
-    identityPoolConfig: 'AMAZON_COGNITO_IDENTITY_POOLS',
-    userPoolConfig: 'AMAZON_COGNITO_USER_POOLS',
-    apiKeyConfig: 'API_KEY',
-    lambdaConfig: 'AWS_LAMBDA',
+    iamConfig: 'aws_iam',
+    oidcConfig: 'openid_connect',
+    identityPoolConfig: 'amazon_cognito_identity_pools',
+    userPoolConfig: 'amazon_cognito_user_pools',
+    apiKeyConfig: 'api_key',
+    lambdaConfig: 'aws_lambda',
   };
   const authModes = Object.keys(authorizationModes)
     .map((mode) => configKeyToAuthMode[mode])

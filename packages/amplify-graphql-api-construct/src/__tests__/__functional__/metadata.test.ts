@@ -25,7 +25,7 @@ describe('metrics metadata', () => {
       const template = Template.fromStack(stack);
       expect(JSON.parse(template.toJSON().Description).metadata).toMatchInlineSnapshot(`
         Object {
-          "authorizationModes": "API_KEY",
+          "authorizationModes": "api_key",
           "customOperations": "",
           "dataSources": "dynamodb",
         }
@@ -53,7 +53,7 @@ describe('metrics metadata', () => {
       const template = Template.fromStack(stack);
       expect(JSON.parse(template.toJSON().Description).metadata).toMatchInlineSnapshot(`
         Object {
-          "authorizationModes": "API_KEY",
+          "authorizationModes": "api_key",
           "customOperations": "",
           "dataSources": "dynamodb",
         }
@@ -79,7 +79,7 @@ describe('metrics metadata', () => {
       const template = Template.fromStack(stack);
       expect(JSON.parse(template.toJSON().Description).metadata).toMatchInlineSnapshot(`
         Object {
-          "authorizationModes": "API_KEY",
+          "authorizationModes": "api_key",
           "customOperations": "",
           "dataSources": "mysql",
         }
@@ -105,7 +105,7 @@ describe('metrics metadata', () => {
       const template = Template.fromStack(stack);
       expect(JSON.parse(template.toJSON().Description).metadata).toMatchInlineSnapshot(`
         Object {
-          "authorizationModes": "API_KEY",
+          "authorizationModes": "api_key",
           "customOperations": "",
           "dataSources": "postgres",
         }
@@ -147,7 +147,7 @@ describe('metrics metadata', () => {
       const template = Template.fromStack(stack);
       expect(JSON.parse(template.toJSON().Description).metadata).toMatchInlineSnapshot(`
         Object {
-          "authorizationModes": "API_KEY",
+          "authorizationModes": "api_key",
           "customOperations": "",
           "dataSources": "dynamodb,mysql,postgres",
         }
@@ -179,7 +179,7 @@ describe('metrics metadata', () => {
       const template = Template.fromStack(stack);
       expect(JSON.parse(template.toJSON().Description).metadata).toMatchInlineSnapshot(`
         Object {
-          "authorizationModes": "AWS_IAM",
+          "authorizationModes": "aws_iam",
           "customOperations": "",
           "dataSources": "dynamodb",
         }
@@ -203,7 +203,7 @@ describe('metrics metadata', () => {
       const template = Template.fromStack(stack);
       expect(JSON.parse(template.toJSON().Description).metadata).toMatchInlineSnapshot(`
         Object {
-          "authorizationModes": "AMAZON_COGNITO_USER_POOLS",
+          "authorizationModes": "amazon_cognito_user_pools",
           "customOperations": "",
           "dataSources": "dynamodb",
         }
@@ -225,7 +225,7 @@ describe('metrics metadata', () => {
       const template = Template.fromStack(stack);
       expect(JSON.parse(template.toJSON().Description).metadata).toMatchInlineSnapshot(`
         Object {
-          "authorizationModes": "API_KEY",
+          "authorizationModes": "api_key",
           "customOperations": "",
           "dataSources": "dynamodb",
         }
@@ -250,7 +250,7 @@ describe('metrics metadata', () => {
       const template = Template.fromStack(stack);
       expect(JSON.parse(template.toJSON().Description).metadata).toMatchInlineSnapshot(`
         Object {
-          "authorizationModes": "AWS_LAMBDA",
+          "authorizationModes": "aws_lambda",
           "customOperations": "",
           "dataSources": "dynamodb",
         }
@@ -278,7 +278,7 @@ describe('metrics metadata', () => {
       const template = Template.fromStack(stack);
       expect(JSON.parse(template.toJSON().Description).metadata).toMatchInlineSnapshot(`
         Object {
-          "authorizationModes": "OPENID_CONNECT",
+          "authorizationModes": "openid_connect",
           "customOperations": "",
           "dataSources": "dynamodb",
         }
@@ -306,7 +306,7 @@ describe('metrics metadata', () => {
       const template = Template.fromStack(stack);
       expect(JSON.parse(template.toJSON().Description).metadata).toMatchInlineSnapshot(`
         Object {
-          "authorizationModes": "AMAZON_COGNITO_IDENTITY_POOLS",
+          "authorizationModes": "amazon_cognito_identity_pools",
           "customOperations": "",
           "dataSources": "dynamodb",
         }
@@ -351,7 +351,7 @@ describe('metrics metadata', () => {
       const template = Template.fromStack(stack);
       expect(JSON.parse(template.toJSON().Description).metadata).toMatchInlineSnapshot(`
         Object {
-          "authorizationModes": "API_KEY,AWS_IAM,AWS_LAMBDA",
+          "authorizationModes": "api_key,aws_iam,aws_lambda",
           "customOperations": "",
           "dataSources": "dynamodb",
         }
@@ -379,7 +379,7 @@ describe('metrics metadata', () => {
       const template = Template.fromStack(stack);
       expect(JSON.parse(template.toJSON().Description).metadata).toMatchInlineSnapshot(`
         Object {
-          "authorizationModes": "API_KEY",
+          "authorizationModes": "api_key",
           "customOperations": "queries",
           "dataSources": "dynamodb",
         }
@@ -405,7 +405,7 @@ describe('metrics metadata', () => {
       const template = Template.fromStack(stack);
       expect(JSON.parse(template.toJSON().Description).metadata).toMatchInlineSnapshot(`
         Object {
-          "authorizationModes": "API_KEY",
+          "authorizationModes": "api_key",
           "customOperations": "mutations",
           "dataSources": "dynamodb",
         }
@@ -435,7 +435,7 @@ describe('metrics metadata', () => {
       const template = Template.fromStack(stack);
       expect(JSON.parse(template.toJSON().Description).metadata).toMatchInlineSnapshot(`
         Object {
-          "authorizationModes": "API_KEY",
+          "authorizationModes": "api_key",
           "customOperations": "queries,mutations",
           "dataSources": "dynamodb",
         }
