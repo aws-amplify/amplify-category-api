@@ -31,6 +31,9 @@ export const getMetadataCustomOperations = (definition: IAmplifyGraphqlDefinitio
   if (definition.schema.includes('type Mutation')) {
     customOperations.push('mutations');
   }
+  if (definition.schema.includes('type Subscription')) {
+    customOperations.push('subscriptions');
+  }
 
   return customOperations.join(',');
 };

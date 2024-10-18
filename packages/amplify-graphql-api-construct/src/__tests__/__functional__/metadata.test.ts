@@ -412,7 +412,33 @@ describe('metrics metadata', () => {
       `);
     });
 
-    test('mutations and queries', () => {
+    test('subscriptions', () => {
+      const stack = new Stack();
+      new AmplifyGraphqlApi(stack, 'TestApi', {
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+          type Todo @model @auth(rules: [{ allow: public }]) {
+            description: String!
+          }
+
+          type Subscription {
+            onCreateCustomTodo: Todo
+          }
+        `),
+        authorizationModes: {
+          apiKeyConfig: { expires: Duration.days(7) },
+        },
+      });
+      const template = Template.fromStack(stack);
+      expect(JSON.parse(template.toJSON().Description).metadata).toMatchInlineSnapshot(`
+        Object {
+          "authorizationModes": "api_key",
+          "customOperations": "subscriptions",
+          "dataSources": "dynamodb",
+        }
+      `);
+    });
+
+    test('mutations, queries, and subscriptions', () => {
       const stack = new Stack();
       new AmplifyGraphqlApi(stack, 'TestApi', {
         definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
@@ -427,6 +453,10 @@ describe('metrics metadata', () => {
           type Query {
             getCustomTodos: [Todo]
           }
+
+          type Subscription {
+            onCreateCustomTodo: Todo
+          }
         `),
         authorizationModes: {
           apiKeyConfig: { expires: Duration.days(7) },
@@ -436,7 +466,7 @@ describe('metrics metadata', () => {
       expect(JSON.parse(template.toJSON().Description).metadata).toMatchInlineSnapshot(`
         Object {
           "authorizationModes": "api_key",
-          "customOperations": "queries,mutations",
+          "customOperations": "queries,mutations,subscriptions",
           "dataSources": "dynamodb",
         }
       `);
