@@ -85,27 +85,38 @@ export function response(ctx) {
   const { conversationId } = ctx.result;
   const { owner } = ctx.args;
 
-  if (ctx.args.input.contentBlockToolUse || ctx.args.input.contentBlockText) {
+  if (ctx.args.input.contentBlockToolUse && ctx.args.input.contentBlockToolUse.toolUse) {
     console.log('>>> contentBlockToolUse <<<', ctx.args.input.contentBlockToolUse);
-    console.log('>>> contentBlockText <<<', ctx.args.input.contentBlockText);
 
     return {
       __typename: 'ConversationMessageStreamPart',
+      ...ctx.args.input,
       id: `${ctx.args.input.associatedUserMessageId}#stream`,
       owner,
       conversationId,
-      ...ctx.args.input,
+      contentBlockToolUse: ctx.args.input.contentBlockToolUse.toolUse,
     }
+  }
+
+  if (ctx.args.input.contentBlockText) {
+    console.log('>>> contentBlockText <<<', ctx.args.input.contentBlockText);
+    return {
+      __typename: 'ConversationMessageStreamPart',
+      ...ctx.args.input,
+      id: `${ctx.args.input.associatedUserMessageId}#stream`,
+      owner,
+      conversationId,
+    };
   }
 
   if (ctx.args.input.contentBlockDoneAtIndex) {
     console.log('>>> contentBlockDoneAtIndex <<<', ctx.args.input.contentBlockDoneAtIndex);
     // Do we actually need this event? It's forcing us to return a value to the client here, which is awkward... maybe.
     return {
+      ...ctx.args.input,
       id: `${ctx.args.input.associatedUserMessageId}#stream`,
       owner,
       conversationId,
-      ...ctx.args.input,
     }
   }
 
