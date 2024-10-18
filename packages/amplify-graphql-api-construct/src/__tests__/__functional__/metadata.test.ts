@@ -332,6 +332,12 @@ describe('metrics metadata', () => {
         `),
         authorizationModes: {
           defaultAuthorizationMode: 'API_KEY',
+          // assert output authorizationModes is sorted correctly
+          // aws_lambda should be last in list
+          lambdaConfig: {
+            function: new NodejsFunction(stack, 'TestAuthorizer', { entry: path.join(__dirname, 'authorizer.ts') }),
+            ttl: Duration.days(7),
+          },
           apiKeyConfig: { expires: Duration.days(7) },
           iamConfig: {
             identityPoolId: 'abc',
@@ -341,10 +347,6 @@ describe('metrics metadata', () => {
             authenticatedUserRole: new Role(stack, 'testAuthRole', {
               assumedBy: new ArnPrincipal('aws:iam::1234:root'),
             }),
-          },
-          lambdaConfig: {
-            function: new NodejsFunction(stack, 'TestAuthorizer', { entry: path.join(__dirname, 'authorizer.ts') }),
-            ttl: Duration.days(7),
           },
         },
       });
