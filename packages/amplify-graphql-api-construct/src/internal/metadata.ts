@@ -18,6 +18,7 @@ export const getMetadataAuthorizationModes = (authorizationModes: AuthorizationM
   };
   const authModes = Object.keys(authorizationModes)
     .map((mode) => configKeyToAuthMode[mode])
+    // remove values not found in mapping
     .filter((mode) => !!mode);
   return authModes.join(',');
 };
