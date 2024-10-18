@@ -94,8 +94,8 @@ function reduceChunks(events) {
   const content = Object.keys(groupedEvents).map((index) => {
     const contentBlock = groupedEvents[index];
     // toolUse blocks are sent as a single event.
-    if (contentBlock.length === 1 && contentBlock[0].toolUseId) {
-      return { toolUse: contentBlock[0] };
+    if (contentBlock.length === 1 && contentBlock[0].toolUse) {
+      return { toolUse: contentBlock[0].toolUse };
     }
     // text blocks are chunked so we join them.
     return { text: contentBlock.join('') };
