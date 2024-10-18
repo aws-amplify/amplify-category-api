@@ -6,7 +6,7 @@ import {
   getBucketCorsPolicy,
 } from 'amplify-category-api-e2e-core';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
-import { graphql } from '../graphql-request';
+import { graphql } from '../utils/appsync-graphql/graphql-request';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
 
 jest.setTimeout(DURATION_1_HOUR);

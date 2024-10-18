@@ -1,4 +1,4 @@
-import { graphql } from './graphql-request';
+import { graphql } from './utils/appsync-graphql/graphql-request';
 import { initCDKProject, cdkDeploy, cdkDestroy } from './commands';
 
 export const setupBackend = async (projRoot: string, templatePath: string) => {

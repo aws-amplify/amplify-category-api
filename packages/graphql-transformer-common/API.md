@@ -58,13 +58,17 @@ export const DEFAULT_SCALARS: ScalarMap;
 export function defineUnionType(name: string, types?: NamedTypeNode[]): UnionTypeDefinitionNode;
 
 // @public (undocumented)
-export const directiveExists: (definition: ObjectTypeDefinitionNode, name: string) => DirectiveNode;
+export const directiveExists: (node: {
+    directives?: ReadonlyArray<DirectiveNode>;
+}, name: string) => boolean;
 
 // @public (undocumented)
-export function extendFieldWithDirectives(field: FieldDefinitionNode, directives: DirectiveNode[]): FieldDefinitionNode;
+export const extendFieldWithDirectives: (field: FieldDefinitionNode, directives: DirectiveNode[]) => FieldDefinitionNode;
 
 // @public (undocumented)
-export function extendObjectWithDirectives(object: ObjectTypeDefinitionNode, directives: DirectiveNode[]): ObjectTypeDefinitionNode;
+export function extendNodeWithDirectives<T extends {
+    directives?: ReadonlyArray<DirectiveNode>;
+}>(node: T, directives: DirectiveNode[]): T;
 
 // @public (undocumented)
 export function extensionWithDirectives(object: ObjectTypeExtensionNode, directives: DirectiveNode[]): ObjectTypeExtensionNode;

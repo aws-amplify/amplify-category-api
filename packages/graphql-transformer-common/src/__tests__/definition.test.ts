@@ -1,6 +1,6 @@
+import { ObjectTypeDefinitionNode, parse } from 'graphql';
 import { isObjectTypeDefinitionNode } from '@aws-amplify/graphql-transformer-core';
-import { extendObjectWithDirectives, getNonModelTypes, makeDirective } from '../definition';
-import { Kind, ObjectTypeDefinitionNode, parse } from 'graphql';
+import { extendNodeWithDirectives, getNonModelTypes, makeDirective } from '../definition';
 
 const testModel = `
     type Post @model {
@@ -33,7 +33,7 @@ describe('gets Non-Model Types', () => {
   });
 });
 
-describe('extendObjectWithDirectives', () => {
+describe('extendNodeWithDirectives', () => {
   it('should extend an object with one directive if the object does not already have directives', () => {
     const doc = parse(/* GraphQL */ `
       type Foo {
@@ -44,7 +44,7 @@ describe('extendObjectWithDirectives', () => {
     const object = doc.definitions.find(isObjectTypeDefinitionNode)!;
     expect(object?.directives?.length).toEqual(0);
 
-    const updatedObject = extendObjectWithDirectives(object, [makeDirective('dir0', [])]);
+    const updatedObject = extendNodeWithDirectives(object, [makeDirective('dir0', [])]);
 
     expect(updatedObject.directives?.length).toEqual(1);
     expect(updatedObject?.directives?.[0].name.value).toEqual('dir0');
@@ -60,7 +60,7 @@ describe('extendObjectWithDirectives', () => {
     const object = doc.definitions.find(isObjectTypeDefinitionNode)!;
     expect(object?.directives?.length).toEqual(2);
 
-    const updatedObject = extendObjectWithDirectives(object, [makeDirective('dir0', [])]);
+    const updatedObject = extendNodeWithDirectives(object, [makeDirective('dir0', [])]);
 
     expect(updatedObject.directives?.length).toEqual(3);
     expect(updatedObject?.directives?.[2].name.value).toEqual('dir0');
@@ -76,7 +76,7 @@ describe('extendObjectWithDirectives', () => {
     const object = doc.definitions.find(isObjectTypeDefinitionNode)!;
     expect(object?.directives?.length).toEqual(0);
 
-    const updatedObject = extendObjectWithDirectives(object, [makeDirective('dir0', []), makeDirective('dir1', [])]);
+    const updatedObject = extendNodeWithDirectives(object, [makeDirective('dir0', []), makeDirective('dir1', [])]);
 
     expect(updatedObject.directives?.length).toEqual(2);
     expect(updatedObject?.directives?.[0].name.value).toEqual('dir0');
@@ -93,7 +93,7 @@ describe('extendObjectWithDirectives', () => {
     const object = doc.definitions.find(isObjectTypeDefinitionNode)!;
     expect(object?.directives?.length).toEqual(2);
 
-    const updatedObject = extendObjectWithDirectives(object, [makeDirective('dir0', []), makeDirective('dir1', [])]);
+    const updatedObject = extendNodeWithDirectives(object, [makeDirective('dir0', []), makeDirective('dir1', [])]);
 
     expect(updatedObject.directives?.length).toEqual(4);
     expect(updatedObject?.directives?.[2].name.value).toEqual('dir0');
@@ -110,7 +110,7 @@ describe('extendObjectWithDirectives', () => {
     const object = doc.definitions.find(isObjectTypeDefinitionNode)!;
     expect(object?.directives?.length).toEqual(2);
 
-    const updatedObject = extendObjectWithDirectives(object, [makeDirective('existingDir0', []), makeDirective('dir1', [])]);
+    const updatedObject = extendNodeWithDirectives(object, [makeDirective('existingDir0', []), makeDirective('dir1', [])]);
 
     expect(updatedObject.directives?.length).toEqual(3);
     expect(updatedObject?.directives?.[0].name.value).toEqual('existingDir0');
@@ -128,7 +128,7 @@ describe('extendObjectWithDirectives', () => {
     const object = doc.definitions.find(isObjectTypeDefinitionNode)!;
     expect(object?.directives?.length).toEqual(2);
 
-    const updatedObject = extendObjectWithDirectives(object, []);
+    const updatedObject = extendNodeWithDirectives(object, []);
 
     expect(updatedObject).toBe(object);
   });
@@ -143,7 +143,7 @@ describe('extendObjectWithDirectives', () => {
     const object = doc.definitions.find(isObjectTypeDefinitionNode)!;
     expect(object?.directives?.length).toEqual(2);
 
-    const updatedObject = extendObjectWithDirectives(object, [makeDirective('existingDir0', []), makeDirective('existingDir1', [])]);
+    const updatedObject = extendNodeWithDirectives(object, [makeDirective('existingDir0', []), makeDirective('existingDir1', [])]);
 
     expect(updatedObject).toBe(object);
   });

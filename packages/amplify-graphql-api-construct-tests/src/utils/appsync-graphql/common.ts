@@ -1,4 +1,4 @@
-import { graphqlRequest } from '../../graphql-request';
+import { graphqlRequest } from './graphql-request';
 
 export interface AppSyncGraphqlResponse<T> {
   statusCode: number;
@@ -45,11 +45,13 @@ export const doAppSyncGraphqlOperation = async (input: any): Promise<any> => {
     payload.variables = variables;
   }
 
-  const result = await graphqlRequest(apiEndpoint, {
+  const request = new Request(apiEndpoint, {
     method: 'POST',
     headers,
     body: JSON.stringify(payload),
   });
+
+  const result = await graphqlRequest(request);
 
   return result;
 };
