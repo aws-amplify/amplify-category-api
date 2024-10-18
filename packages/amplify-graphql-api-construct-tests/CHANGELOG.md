@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.10.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.10.0...amplify-graphql-api-construct-tests@1.10.1) (2024-10-17)
+
+**Note:** Version bump only for package amplify-graphql-api-construct-tests
+
+# [1.10.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.9.2...amplify-graphql-api-construct-tests@1.10.0) (2024-10-10)
+
+### Bug Fixes
+
+- **generation:** gracefully handle stringified tool_use responses ([#2919](https://github.com/aws-amplify/amplify-category-api/issues/2919)) ([db34e42](https://github.com/aws-amplify/amplify-category-api/commit/db34e424069b9d2ebf2a51b3474d2f83644e3174))
+- **generation:** remove trailing comma in inferenceConfig resolver code ([#2933](https://github.com/aws-amplify/amplify-category-api/issues/2933)) ([9dde73c](https://github.com/aws-amplify/amplify-category-api/commit/9dde73c09dd4f42c666c256c8543a6b94dc4a084))
+- sql default value e2e failures ([#2932](https://github.com/aws-amplify/amplify-category-api/issues/2932)) ([22d197a](https://github.com/aws-amplify/amplify-category-api/commit/22d197a32be92d832243de07ce5ccd9b48e4e504))
+
+### Features
+
+- auto increment support ([#2883](https://github.com/aws-amplify/amplify-category-api/issues/2883)) ([4e66ac3](https://github.com/aws-amplify/amplify-category-api/commit/4e66ac3a9d276ca063c76a97aee791618b3c71ab))
+- **conversation:** per message items and lambda history retrieval pattern ([#2914](https://github.com/aws-amplify/amplify-category-api/issues/2914)) ([874a30a](https://github.com/aws-amplify/amplify-category-api/commit/874a30ace18885f63c6be3274f32e4331bca98ed))
+
 ## [1.9.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.9.1...amplify-graphql-api-construct-tests@1.9.2) (2024-10-01)
 
 **Note:** Version bump only for package amplify-graphql-api-construct-tests

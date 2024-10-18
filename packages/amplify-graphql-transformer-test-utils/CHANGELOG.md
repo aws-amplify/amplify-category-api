@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-test-utils@1.0.4...@aws-amplify/graphql-transformer-test-utils@1.0.5) (2024-10-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-test-utils
+
+## [1.0.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-test-utils@1.0.3...@aws-amplify/graphql-transformer-test-utils@1.0.4) (2024-10-10)
+
+### Bug Fixes
+
+- **conversation:** use functionMap for custom handler IFunction reference ([#2922](https://github.com/aws-amplify/amplify-category-api/issues/2922)) ([d8d9eef](https://github.com/aws-amplify/amplify-category-api/commit/d8d9eefedc5ac411c9dc358a62c2461cfbb6a98a))
+
 ## [1.0.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-test-utils@1.0.2...@aws-amplify/graphql-transformer-test-utils@1.0.3) (2024-10-01)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-test-utils
