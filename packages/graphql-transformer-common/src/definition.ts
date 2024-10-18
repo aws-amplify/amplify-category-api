@@ -1,27 +1,27 @@
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable func-style */
 import {
-  ObjectTypeDefinitionNode,
-  InputValueDefinitionNode,
-  FieldDefinitionNode,
-  TypeNode,
-  SchemaDefinitionNode,
-  OperationTypeNode,
-  OperationTypeDefinitionNode,
-  ObjectTypeExtensionNode,
-  NamedTypeNode,
-  Kind,
-  NonNullTypeNode,
-  ListTypeNode,
-  valueFromASTUntyped,
   ArgumentNode,
-  DirectiveNode,
-  EnumTypeDefinitionNode,
-  ValueNode,
-  InputObjectTypeDefinitionNode,
-  UnionTypeDefinitionNode,
-  DocumentNode,
   DefinitionNode,
+  DirectiveNode,
+  DocumentNode,
+  EnumTypeDefinitionNode,
+  FieldDefinitionNode,
+  InputObjectTypeDefinitionNode,
+  InputValueDefinitionNode,
+  Kind,
+  ListTypeNode,
+  NamedTypeNode,
+  NonNullTypeNode,
+  ObjectTypeDefinitionNode,
+  ObjectTypeExtensionNode,
+  OperationTypeDefinitionNode,
+  OperationTypeNode,
+  SchemaDefinitionNode,
+  TypeNode,
+  UnionTypeDefinitionNode,
+  valueFromASTUntyped,
+  ValueNode,
 } from 'graphql';
 
 type ScalarMap = {
@@ -253,47 +253,30 @@ export function extensionWithDirectives(object: ObjectTypeExtensionNode, directi
   return object;
 }
 
-export function extendFieldWithDirectives(field: FieldDefinitionNode, directives: DirectiveNode[]): FieldDefinitionNode {
-  if (directives && directives.length > 0) {
-    const newDirectives = [];
+/**
+ * Returns a new field with the specified directives added, if they don't already exist
+ * @deprecated Use {@link extendNodeWithDirectives} instead
+ */
+export const extendFieldWithDirectives = (field: FieldDefinitionNode, directives: DirectiveNode[]): FieldDefinitionNode =>
+  extendNodeWithDirectives(field, directives);
 
-    for (const directive of directives) {
-      if (!field.directives.find((d) => d.name.value === directive.name.value)) {
-        newDirectives.push(directive);
-      }
-    }
-
-    if (newDirectives.length > 0) {
-      return {
-        ...field,
-        directives: [...field.directives, ...newDirectives],
-      };
-    }
-  }
-
-  return field;
-}
-
-export function extendObjectWithDirectives(object: ObjectTypeDefinitionNode, directives: DirectiveNode[]): ObjectTypeDefinitionNode {
+/**
+ * Returns a new node with the specified directives added, if they don't already exist
+ */
+export function extendNodeWithDirectives<T extends { directives?: ReadonlyArray<DirectiveNode> }>(node: T, directives: DirectiveNode[]): T {
   if (!directives || directives.length === 0) {
-    return object;
+    return node;
   }
 
-  const newDirectives = [];
-
-  for (const directive of directives) {
-    if (!object.directives.some((d) => d.name.value === directive.name.value)) {
-      newDirectives.push(directive);
-    }
-  }
+  const newDirectives = directives.filter((directive) => !directiveExists(node, directive.name.value));
 
   if (newDirectives.length === 0) {
-    return object;
+    return node;
   }
 
   return {
-    ...object,
-    directives: [...object.directives, ...newDirectives],
+    ...node,
+    directives: [...node.directives, ...newDirectives],
   };
 }
 
@@ -454,12 +437,12 @@ export const getNonModelTypes = (document: DocumentNode): DefinitionNode[] => {
   return nonModels;
 };
 
-export const isNonModelType = (definition: DefinitionNode) => {
+export const isNonModelType = (definition: DefinitionNode): boolean => {
   return definition?.kind === 'ObjectTypeDefinition' && !directiveExists(definition, 'model');
 };
 
-export const directiveExists = (definition: ObjectTypeDefinitionNode, name: string) => {
-  return definition?.directives?.find((directive) => directive?.name?.value === name);
+export const directiveExists = (node: { directives?: ReadonlyArray<DirectiveNode> }, name: string): boolean => {
+  return node.directives?.some((directive) => directive.name.value === name);
 };
 
 export const isOfType = (type: TypeNode, name: string): boolean => {

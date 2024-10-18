@@ -12,7 +12,7 @@ import {
 import {
   blankObjectExtension,
   DEFAULT_SCALARS,
-  extendFieldWithDirectives,
+  extendNodeWithDirectives,
   extensionWithDirectives,
   getBaseType,
   makeArgument,
@@ -22,7 +22,6 @@ import {
   makeValueNode,
   ModelResourceIDs,
   STANDARD_SCALARS,
-  APPSYNC_DEFINED_SCALARS,
   toPascalCase,
 } from 'graphql-transformer-common';
 import {
@@ -425,7 +424,7 @@ export const addDirectivesToField = (
   if (type) {
     const field = type.fields?.find((f) => f.name.value === fieldName);
     if (field) {
-      const newFields = [...type.fields!.filter((f) => f.name.value !== field.name.value), extendFieldWithDirectives(field, directives)];
+      const newFields = [...type.fields!.filter((f) => f.name.value !== field.name.value), extendNodeWithDirectives(field, directives)];
 
       const newType = {
         ...type,

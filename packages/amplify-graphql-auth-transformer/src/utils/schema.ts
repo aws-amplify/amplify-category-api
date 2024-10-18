@@ -18,8 +18,7 @@ import type { TransformParameters } from '@aws-amplify/graphql-transformer-inter
 import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode, NamedTypeNode } from 'graphql';
 import {
   blankObjectExtension,
-  extendFieldWithDirectives,
-  extendObjectWithDirectives,
+  extendNodeWithDirectives,
   extensionWithDirectives,
   graphqlName,
   isListType,
@@ -163,8 +162,8 @@ export const getRelationalPrimaryMap = (
       generateGetArgumentsInput(ctx.transformParameters),
     );
     const relatedPrimaryFields = getKeyFields(ctx, relatedModel);
-    // the fields provided by the directive (implicit/explicit) need to match the total amount of fields used for the primary key in the related table
-    // otherwise the get request is incomplete
+    // the fields provided by the directive (implicit/explicit) need to match the total amount of fields used for the primary key in the
+    // related table otherwise the get request is incomplete
     if (args.fields.length !== relatedPrimaryFields.length) {
       throw new InvalidDirectiveError(
         `Invalid @${relationalDirective.name.value} on ${def.name.value}:${field.name.value}. ` +
@@ -181,9 +180,6 @@ export const getRelationalPrimaryMap = (
   return primaryFieldMap;
 };
 
-/**
- *
- */
 export const hasRelationalDirective = (field: FieldDefinitionNode): boolean =>
   field.directives && field.directives.some((dir) => RELATIONAL_DIRECTIVES.includes(dir.name.value));
 
@@ -219,7 +215,7 @@ export const addDirectivesToField = (
   if (type) {
     const field = type.fields?.find((f) => f.name.value === fieldName);
     if (field) {
-      const newFields = [...type.fields!.filter((f) => f.name.value !== field.name.value), extendFieldWithDirectives(field, directives)];
+      const newFields = [...type.fields!.filter((f) => f.name.value !== field.name.value), extendNodeWithDirectives(field, directives)];
 
       const newType = {
         ...type,
@@ -238,7 +234,7 @@ export const addDirectivesToObject = (
 ): void => {
   const type = ctx.output.getType(typeName) as ObjectTypeDefinitionNode;
   if (type) {
-    ctx.output.putType(extendObjectWithDirectives(type, directives));
+    ctx.output.putType(extendNodeWithDirectives(type, directives));
   }
 };
 

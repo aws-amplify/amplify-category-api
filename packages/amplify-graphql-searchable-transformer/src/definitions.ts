@@ -12,17 +12,17 @@ import {
   NamedTypeNode,
 } from 'graphql';
 import {
-  graphqlName,
-  makeNamedType,
-  isScalar,
-  isEnum,
-  makeListType,
-  makeNonNullType,
-  getBaseType,
-  SearchableResourceIDs,
   blankObjectExtension,
+  extendNodeWithDirectives,
   extensionWithDirectives,
-  extendFieldWithDirectives,
+  getBaseType,
+  graphqlName,
+  isEnum,
+  isScalar,
+  makeListType,
+  makeNamedType,
+  makeNonNullType,
+  SearchableResourceIDs,
 } from 'graphql-transformer-common';
 import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
@@ -377,7 +377,7 @@ export const addDirectivesToField = (
   if (type) {
     const field = type.fields?.find((f) => f.name.value === fieldName);
     if (field) {
-      const newFields = [...type.fields!.filter((f) => f.name.value !== field.name.value), extendFieldWithDirectives(field, directives)];
+      const newFields = [...type.fields!.filter((f) => f.name.value !== field.name.value), extendNodeWithDirectives(field, directives)];
 
       const newType = {
         ...type,

@@ -6,7 +6,6 @@ import {
   getModelDataSourceNameForTypeName,
   getSortKeyFieldNames,
   getSubscriptionFilterInputName,
-  hasDirectiveWithName,
   InvalidDirectiveError,
   isBuiltInGraphqlNode,
   isDynamoDbModel,
@@ -46,16 +45,17 @@ import {
   removeSubscriptionFilterInputAttribute,
 } from '@aws-amplify/graphql-model-transformer';
 import {
+  directiveExists,
   getBaseType,
+  isListType,
   makeDirective,
   makeField,
   makeInputValueDefinition,
   makeNamedType,
-  ResourceConstants,
   ModelResourceIDs,
   ResolverResourceIDs,
+  ResourceConstants,
   toUpper,
-  isListType,
 } from 'graphql-transformer-common';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
@@ -358,8 +358,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const nonModelObjects = ctx.inputDocument.definitions
       .filter(isObjectTypeDefinitionNode)
       .filter((objectDef) => !isBuiltInGraphqlNode(objectDef))
-      .filter((objectDef) => !hasDirectiveWithName(objectDef, 'model'))
-      .filter((objectDef) => !hasDirectiveWithName(objectDef, 'aws_iam'));
+      .filter((objectDef) => !directiveExists(objectDef, 'model'))
+      .filter((objectDef) => !directiveExists(objectDef, 'aws_iam'));
 
     nonModelObjects.forEach((object) => {
       const typeName = object.name.value;
@@ -378,7 +378,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const builtInObjects = ctx.inputDocument.definitions.filter(isBuiltInGraphqlNode);
     builtInObjects.forEach((object) => {
       const typeName = object.name.value;
-      const fieldsWithoutIamDirective = object.fields.filter((field) => !hasDirectiveWithName(field, 'aws_iam'));
+      const fieldsWithoutIamDirective = object.fields.filter((field) => !directiveExists(field, 'aws_iam'));
       fieldsWithoutIamDirective.forEach((field) => {
         addDirectivesToField(ctx, typeName, field.name.value, [makeDirective('aws_iam', [])]);
       });
@@ -769,7 +769,8 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   ): void => {
     let fieldAuthExpression: string;
     let relatedAuthExpression: string;
-    // Relational field redaction is default to `needsFieldResolver`, which stays consistent with current behavior of always redacting relational field when field resolver is needed
+    // Relational field redaction is default to `needsFieldResolver`, which stays consistent with current behavior of always redacting
+    // relational field when field resolver is needed
     let redactRelationalField: boolean = needsFieldResolver;
     const fieldIsRequired = field.type.kind === Kind.NON_NULL_TYPE;
     if (fieldIsRequired) {
@@ -824,7 +825,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
          * Once there is one role detected to have access on both side, the auth role definitions will be compared to determine whether
          * to redac the field or not
          */
-        for (let fieldRole of fieldReadRoleDefinitions) {
+        for (const fieldRole of fieldReadRoleDefinitions) {
           // When two role definitions have an overlap
           if (isFieldRoleHavingAccessToBothSide(fieldRole, filteredRelatedModelReadRoleDefinitions)) {
             // Check if two role definitions are identical without dynamic auth role or custom auth role
