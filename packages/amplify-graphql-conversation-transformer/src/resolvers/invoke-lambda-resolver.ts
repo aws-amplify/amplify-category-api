@@ -112,4 +112,4 @@ const generateModelInferenceConfigurationLine = (config: ConversationDirectiveCo
  * The selection set for the conversation message.
  */
 const selectionSet = `id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt`;
-const streamingSelectionSet = `associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse conversationId id stopReason`;
+const streamingSelectionSet = `associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason`;
