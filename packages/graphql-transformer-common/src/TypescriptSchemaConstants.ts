@@ -8,6 +8,7 @@ export const TYPESCRIPT_DATA_SCHEMA_CONSTANTS = {
   ARRAY_METHOD: 'array',
   REQUIRED_METHOD: 'required',
   STRING_METHOD: 'string',
+  REF_METHOD: 'ref',
   ENUM_METHOD: 'enum',
   REFERENCE_A: 'a',
   EXPORT_VARIABLE_NAME: 'schema',

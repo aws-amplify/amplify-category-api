@@ -1,5 +1,6 @@
 import { EnumType, Field, FieldDataType, FieldType, Index } from '../schema-representation';
 import { StringDataSourceAdapter, EmptySchemaError, InvalidSchemaError } from './string-datasource-adapter';
+import { toPascalCase } from 'graphql-transformer-common';
 
 export interface PostgresIndex {
   tableName: string;
@@ -156,7 +157,7 @@ export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
         const enumValues = row.enum_values.substring(1, row.enum_values.length - 1).split(',');
         const enumType: EnumType = {
           kind: 'Enum',
-          name: enumName,
+          name: toPascalCase([enumName]),
           values: enumValues,
         };
 

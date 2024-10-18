@@ -67,7 +67,7 @@ describe('testStringDataSourceAdapter', () => {
     });
     expect(adapter.mapDataType('enum', true, 'table', 'field', 'enum("OPEN","CLOSED")')).toEqual({
       kind: 'Enum',
-      name: 'table_field',
+      name: 'TableField',
       values: ['OPEN', 'CLOSED'],
     });
     expect(adapter.mapDataType('bool', true, 'table', 'field', 'varchar(50)')).toEqual({
