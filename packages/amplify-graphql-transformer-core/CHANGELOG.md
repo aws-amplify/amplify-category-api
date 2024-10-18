@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.2.0...@aws-amplify/graphql-transformer-core@3.2.1) (2024-10-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-core
+
+# [3.2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.1.2...@aws-amplify/graphql-transformer-core@3.2.0) (2024-10-10)
+
+### Bug Fixes
+
+- add aws_iam to custom operations when enableIamAuthorization is enabled; fix graphql type utils ([#2921](https://github.com/aws-amplify/amplify-category-api/issues/2921)) ([5cb5a2b](https://github.com/aws-amplify/amplify-category-api/commit/5cb5a2bcacf30ca9ff0f29fe32be57d1ffb6c1cf))
+
+### Features
+
+- auto increment support ([#2883](https://github.com/aws-amplify/amplify-category-api/issues/2883)) ([4e66ac3](https://github.com/aws-amplify/amplify-category-api/commit/4e66ac3a9d276ca063c76a97aee791618b3c71ab))
+
 ## [3.1.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.1.1...@aws-amplify/graphql-transformer-core@3.1.2) (2024-10-01)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-core
