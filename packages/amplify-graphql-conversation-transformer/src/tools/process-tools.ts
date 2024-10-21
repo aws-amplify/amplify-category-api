@@ -2,8 +2,8 @@ import { InvalidDirectiveError, JSONSchema } from '@aws-amplify/graphql-transfor
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FieldDefinitionNode, InputValueDefinitionNode, ObjectTypeDefinitionNode, TypeNode } from 'graphql';
 import { getBaseType, isNonNullType, isScalar } from 'graphql-transformer-common';
-import { generateJSONSchemaFromTypeNode } from './graphql-json-schema-type';
 import { ToolDefinition } from '../conversation-directive-configuration';
+import { generateJSONSchemaFromTypeNode } from './graphql-json-schema-type';
 
 export type Tool = {
   name: string;

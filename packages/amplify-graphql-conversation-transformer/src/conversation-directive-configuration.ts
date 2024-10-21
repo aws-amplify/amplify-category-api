@@ -1,8 +1,8 @@
-import { DirectiveNode, FieldDefinitionNode, InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
-import { MessageModel } from './graphql-types/message-model';
-import { ConversationModel } from './graphql-types/conversation-model';
-import { Tool } from './tools/process-tools';
 import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { DirectiveNode, FieldDefinitionNode, InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
+import { ConversationModel } from './graphql-types/conversation-model';
+import { MessageModel } from './graphql-types/message-model';
+import { Tool } from './tools/process-tools';
 
 /**
  * Configuration for the Conversation Directive
