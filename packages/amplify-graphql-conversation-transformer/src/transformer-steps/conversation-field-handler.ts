@@ -1,4 +1,4 @@
-import { DirectiveWrapper, InvalidDirectiveError, generateGetArgumentsInput } from '@aws-amplify/graphql-transformer-core';
+import { DirectiveWrapper, generateGetArgumentsInput, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   DirectiveNode,
@@ -7,13 +7,15 @@ import {
   InterfaceTypeDefinitionNode,
   ObjectTypeDefinitionNode,
 } from 'graphql';
+import * as semver from 'semver';
 import { ConversationDirectiveConfiguration } from '../conversation-directive-configuration';
-import { createConversationModel } from '../graphql-types/conversation-model';
+import { ConversationModel, createConversationModel } from '../graphql-types/conversation-model';
 import {
   createAssistantMutationField,
   createAssistantResponseMutationInput,
   createMessageModel,
   createMessageSubscription,
+  MessageModel,
 } from '../graphql-types/message-model';
 import {
   CONVERSATION_MESSAGES_REFERENCE_FIELD_NAME,
@@ -49,11 +51,11 @@ export class ConversationFieldHandler {
       throw new InvalidDirectiveError('@conversation directive must be used on Mutation field.');
     }
     const parsedConfig = this.getConversationConfig(directive, parent, definition, context);
-    const conversations = this.createModels(parsedConfig, definition);
+    const conversationModels = this.createModels(parsedConfig, definition);
     const supportingFields = this.createSupportingFields(parsedConfig);
     const config = {
       ...parsedConfig,
-      ...conversations,
+      ...conversationModels,
       ...supportingFields,
     };
     this.validate(config);
@@ -95,10 +97,13 @@ export class ConversationFieldHandler {
    * @description Creates message and conversation models based on the provided configuration.
    * @param {ConversationDirectiveConfiguration} config - The conversation directive configuration.
    * @param {FieldDefinitionNode} definition - The field definition node.
-   * @returns {{ message: any; conversation: any }} An object containing the created message and conversation models.
+   * @returns {{ message: MessageModel; conversation: ConversationModel }} An object containing the created message and conversation models.
    * @throws {InvalidDirectiveError} If the return type of the field is not 'ConversationMessage'.
    */
-  private createModels(config: ConversationDirectiveConfiguration, definition: FieldDefinitionNode): { message: any; conversation: any } {
+  private createModels(
+    config: ConversationDirectiveConfiguration,
+    definition: FieldDefinitionNode,
+  ): { message: MessageModel; conversation: ConversationModel } {
     if (definition.type.kind !== 'NamedType' || definition.type.name.value !== 'ConversationMessage') {
       throw new InvalidDirectiveError('@conversation return type must be ConversationMessage');
     }
@@ -155,6 +160,26 @@ export class ConversationFieldHandler {
   private validate(config: ConversationDirectiveConfiguration): void {
     this.validateReturnType(config);
     this.validateInferenceConfig(config);
+    this.validateHandler(config);
+  }
+
+  /**
+   * Validates the handler configuration for the conversation directive.
+   * @param {ConversationDirectiveConfiguration} config - The conversation directive configuration to validate.
+   * @throws {InvalidDirectiveError} If the configuration is invalid.
+   */
+  private validateHandler(config: ConversationDirectiveConfiguration): void {
+    if (config.handler && config.functionName) {
+      throw new InvalidDirectiveError("'functionName' and 'handler' are mutually exclusive");
+    }
+    if (config.handler) {
+      const eventVersion = semver.coerce(config.handler.eventVersion);
+      if (eventVersion?.major !== 1) {
+        throw new Error(
+          `Unsupported custom conversation handler. Expected eventVersion to match 1.x, received ${config.handler.eventVersion}`,
+        );
+      }
+    }
   }
 
   /**

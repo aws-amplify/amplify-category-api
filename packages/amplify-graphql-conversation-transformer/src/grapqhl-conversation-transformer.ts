@@ -10,7 +10,6 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { DirectiveNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
-import * as semver from 'semver';
 import { ConversationDirectiveConfiguration } from './conversation-directive-configuration';
 import { ConversationFieldHandler } from './transformer-steps/conversation-field-handler';
 import { ConversationPrepareHandler } from './transformer-steps/conversation-prepare-handler';
@@ -68,24 +67,5 @@ export class ConversationTransformer extends TransformerPluginBase {
    */
   prepare = (ctx: TransformerPrepareStepContextProvider): void => {
     this.prepareHandler.prepare(ctx, this.directives);
-  };
-
-  validate = (): void => {
-    for (const directive of this.directives) {
-      if (directive.field.type.kind !== 'NamedType' || directive.field.type.name.value !== 'ConversationMessage') {
-        throw new InvalidDirectiveError('@conversation return type must be ConversationMessage');
-      }
-      if (directive.handler && directive.functionName) {
-        throw new InvalidDirectiveError("'functionName' and 'handler' are mutually exclusive");
-      }
-      if (directive.handler) {
-        const eventVersion = semver.coerce(directive.handler.eventVersion);
-        if (eventVersion?.major !== 1) {
-          throw new Error(
-            `Unsupported custom conversation handler. Expected eventVersion to match 1.x, received ${directive.handler.eventVersion}`,
-          );
-        }
-      }
-    }
   };
 }
