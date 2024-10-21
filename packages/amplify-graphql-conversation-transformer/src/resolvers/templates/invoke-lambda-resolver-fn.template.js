@@ -14,8 +14,8 @@ export function request(ctx) {
   const currentMessageId = ctx.stash.defaultValues.id;
 
   const modelConfiguration = {
-    modelId: '[[MODEL_ID]]',
-    systemPrompt: '[[SYSTEM_PROMPT]]',
+    modelId: [[MODEL_ID]],
+    systemPrompt: [[SYSTEM_PROMPT]],
     inferenceConfiguration: [[INFERENCE_CONFIGURATION]],
   };
 

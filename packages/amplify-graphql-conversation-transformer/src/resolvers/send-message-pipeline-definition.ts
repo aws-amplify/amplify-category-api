@@ -65,6 +65,8 @@ function invokeLambda(): ResolverFunctionDefinition {
 
 function invokeLambdaResolverSubstitutions(config: ConversationDirectiveConfiguration) {
   return {
+    MODEL_ID: JSON.stringify(config.aiModel),
+    SYSTEM_PROMPT: JSON.stringify(config.systemPrompt),
     DATA_TOOLS: JSON.stringify(config.toolSpec),
     SELECTION_SET: selectionSet,
     INFERENCE_CONFIGURATION: JSON.stringify(config.inferenceConfiguration),

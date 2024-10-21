@@ -162,8 +162,8 @@ export function request(ctx) {
   const currentMessageId = ctx.stash.defaultValues.id;
 
   const modelConfiguration = {
-    modelId: '[[MODEL_ID]]',
-    systemPrompt: '[[SYSTEM_PROMPT]]',
+    modelId: "anthropic.claude-3-haiku-20240307-v1:0",
+    systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
     inferenceConfiguration: {"temperature":0.5,"topP":0.9,"maxTokens":100},
   };
 
@@ -382,8 +382,8 @@ export function request(ctx) {
   const currentMessageId = ctx.stash.defaultValues.id;
 
   const modelConfiguration = {
-    modelId: '[[MODEL_ID]]',
-    systemPrompt: '[[SYSTEM_PROMPT]]',
+    modelId: "anthropic.claude-3-haiku-20240307-v1:0",
+    systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
     inferenceConfiguration: undefined,
   };
 
@@ -602,8 +602,8 @@ export function request(ctx) {
   const currentMessageId = ctx.stash.defaultValues.id;
 
   const modelConfiguration = {
-    modelId: '[[MODEL_ID]]',
-    systemPrompt: '[[SYSTEM_PROMPT]]',
+    modelId: "anthropic.claude-3-haiku-20240307-v1:0",
+    systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
     inferenceConfiguration: undefined,
   };
 
@@ -822,8 +822,8 @@ export function request(ctx) {
   const currentMessageId = ctx.stash.defaultValues.id;
 
   const modelConfiguration = {
-    modelId: '[[MODEL_ID]]',
-    systemPrompt: '[[SYSTEM_PROMPT]]',
+    modelId: "anthropic.claude-3-haiku-20240307-v1:0",
+    systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
     inferenceConfiguration: undefined,
   };
 
