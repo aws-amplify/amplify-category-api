@@ -161,6 +161,22 @@ describe('Deprecate Gen 1 patterns', () => {
     );
   });
 
+  test('does not allow implicit fields on @hasMany', () => {
+    const stack = verifySchema(/* GraphQL */ `
+      type Post @model {
+        author: Author @belongsTo
+      }
+
+      type Author @model {
+        posts: [Post] @hasMany
+      }
+    `);
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/TestApi/GraphQLAPI',
+      'fields argument on @hasMany is deprecated. Modify Author.posts to use references instead. This functionality will be removed in the next major release.',
+    );
+  });
+
   test('does not print warning when fields is not used on @hasMany', () => {
     const stack = verifySchema(/* GraphQL */ `
       type Post @model {
