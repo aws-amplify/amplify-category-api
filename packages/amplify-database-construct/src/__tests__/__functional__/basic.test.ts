@@ -82,12 +82,12 @@ describe('basic functionality', () => {
     });
     template.hasResourceProperties('AWS::SecretsManager::Secret', {
       GenerateSecretString: {
-        SecretStringTemplate: '{"username":"dataapi"}',
+        SecretStringTemplate: '{"username":"console","dbname":"amplify"}',
       },
     });
     template.hasResourceProperties('AWS::SecretsManager::Secret', {
       GenerateSecretString: {
-        SecretStringTemplate: '{"username":"console"}',
+        SecretStringTemplate: '{"username":"dataapi","dbname":"amplify"}',
       },
     });
   });
