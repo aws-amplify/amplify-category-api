@@ -6,7 +6,12 @@ import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-
 import { cdkDeploy, cdkDestroy, initCDKProject } from '../../commands';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
 import { createCognitoUser, signInCognitoUser, TestDefinition, writeStackConfig, writeTestDefinitions } from '../../utils';
-import { doCreateConversationPirateChat, doListConversationMessagesPirateChat, doSendMessagePirateChat, doUpdateConversationPirateChat } from './test-implementations';
+import {
+  doCreateConversationPirateChat,
+  doListConversationMessagesPirateChat,
+  doSendMessagePirateChat,
+  doUpdateConversationPirateChat,
+} from './test-implementations';
 
 jest.setTimeout(DURATION_20_MINUTES);
 
