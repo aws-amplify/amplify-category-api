@@ -95,6 +95,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "lerna": "^5.1.6",
+    "moment-timezone": "^0.5.35",
     "npm-check-updates": "^16.1.0",
     "strip-ansi": "^6.0.0"
   },
@@ -402,25 +403,25 @@
     "typescript": "^4.5.5"
   },
   "resolutions": {
+    "**/aws-amplify/**/fast-xml-parser": "^4.4.1",
     "**/glob-parent": "^6.0.2",
     "**/istanbul/async": "^2.6.4",
     "**/jake/async": "^2.6.4",
     "**/nth-check": "^2.0.1",
     "aws-cdk-lib": "~2.158.0",
-    "lodash": "^4.17.21",
-    "node-fetch": "^2.6.7",
-    "cross-fetch": "^2.2.6",
-    "trim-newlines": "^3.0.1",
     "aws-sdk": "^2.1141.0",
-    "parse-path": "^5.0.0",
-    "parse-url": "^8.1.0",
-    "moment-timezone": "^0.5.35",
-    "ejs": "^3.1.7",
-    "json5": "^2.2.3",
-    "semver": "^7.5.2",
     "axios": "^1.7.4",
     "braces": "^3.0.3",
-    "**/aws-amplify/**/fast-xml-parser": "^4.4.1",
-    "cookie": "^0.7.0"
+    "cookie": "^0.7.0",
+    "cross-fetch": "^2.2.6",
+    "ejs": "^3.1.7",
+    "json5": "^2.2.3",
+    "lodash": "^4.17.21",
+    "moment-timezone": "^0.5.35",
+    "node-fetch": "^2.6.7",
+    "parse-path": "^5.0.0",
+    "parse-url": "^8.1.0",
+    "semver": "^7.5.2",
+    "trim-newlines": "^3.0.1"
   }
 }
