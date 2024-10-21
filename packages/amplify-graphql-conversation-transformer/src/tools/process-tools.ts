@@ -21,6 +21,41 @@ type GraphQLRequestInputDescriptor = {
 };
 
 /**
+ * Processes tool definitions and generates a Tools object.
+ *
+ * @param {ToolDefinition[]} toolDefinitions - An array of tool definitions.
+ * @param {TransformerContextProvider} ctx - The transformer context provider.
+ * @returns {Tools | undefined} A Tools object if valid tool definitions are provided, undefined otherwise.
+ * @throws {InvalidDirectiveError} If there are no queries or if a tool is defined without a matching Query field.
+ */
+export const processTools = (toolDefinitions: ToolDefinition[], ctx: TransformerContextProvider): Tool[] | undefined => {
+  // Early return if no tool definitions are provided
+  if (!toolDefinitions || toolDefinitions.length === 0) {
+    return undefined;
+  }
+
+  // Retrieve Query type fields
+  const queryType = ctx.output.getType('Query') as ObjectTypeDefinitionNode;
+  if (!queryType.fields || queryType.fields.length === 0) {
+    throw new InvalidDirectiveError('Tools must be queries - no queries found in the schema');
+  }
+
+  // Process each tool definition
+  const tools: Tool[] = toolDefinitions.map((toolDefinition) => {
+    const { name: toolName, description } = toolDefinition;
+    const queryField = queryType.fields?.find((field) => field.name.value === toolName);
+
+    if (!queryField) {
+      throw new InvalidDirectiveError(`Tool "${toolName}" defined in @conversation directive has no matching Query field definition`);
+    }
+
+    return createTool(toolName, description, queryField, ctx);
+  });
+
+  return tools;
+};
+
+/**
  * Generates a selection set for a GraphQL query based on the given type.
  * This function recursively traverses the type structure to create a complete selection set.
  *
@@ -89,41 +124,6 @@ const getObjectTypeFromName = (name: string, ctx: TransformerContextProvider): O
     throw new Error(`Could not find type definition for ${name}`);
   }
   return node;
-};
-
-/**
- * Processes tool definitions and generates a Tools object.
- *
- * @param {ToolDefinition[]} toolDefinitions - An array of tool definitions.
- * @param {TransformerContextProvider} ctx - The transformer context provider.
- * @returns {Tools | undefined} A Tools object if valid tool definitions are provided, undefined otherwise.
- * @throws {InvalidDirectiveError} If there are no queries or if a tool is defined without a matching Query field.
- */
-export const processTools = (toolDefinitions: ToolDefinition[], ctx: TransformerContextProvider): Tool[] | undefined => {
-  // Early return if no tool definitions are provided
-  if (!toolDefinitions || toolDefinitions.length === 0) {
-    return undefined;
-  }
-
-  // Retrieve Query type fields
-  const queryType = ctx.output.getType('Query') as ObjectTypeDefinitionNode;
-  if (!queryType.fields || queryType.fields.length === 0) {
-    throw new InvalidDirectiveError('Tools must be queries - no queries found in the schema');
-  }
-
-  // Process each tool definition
-  const tools: Tool[] = toolDefinitions.map((toolDefinition) => {
-    const { name: toolName, description } = toolDefinition;
-    const queryField = queryType.fields?.find((field) => field.name.value === toolName);
-
-    if (!queryField) {
-      throw new InvalidDirectiveError(`Tool "${toolName}" defined in @conversation directive has no matching Query field definition`);
-    }
-
-    return createTool(toolName, description, queryField, ctx);
-  });
-
-  return tools;
 };
 
 /**

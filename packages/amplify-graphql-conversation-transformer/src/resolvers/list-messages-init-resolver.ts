@@ -1,4 +1,4 @@
-import { LIST_MESSAGES_INDEX_NAME } from '../conversation-directive-configuration';
+import { LIST_MESSAGES_INDEX_NAME } from '../graphql-types/name-values';
 import { createResolverFunctionDefinition, ResolverFunctionDefinition } from './resolver-function-definition';
 
 /**

@@ -11,6 +11,9 @@ export const assistantResponsePipelineDefinition: PipelineDefinition = {
   field: (config) => ({ typeName: 'Mutation', fieldName: fieldName(config) }),
 };
 
+/**
+ * The init slot for the assistant response mutation resolver.
+ */
 function init(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'init',
@@ -19,6 +22,9 @@ function init(): ResolverFunctionDefinition {
   });
 }
 
+/**
+ * The auth slot for the assistant response mutation resolver.
+ */
 function auth(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'auth',
@@ -27,24 +33,30 @@ function auth(): ResolverFunctionDefinition {
   });
 }
 
+/**
+ * The verify session owner slot for the assistant response mutation resolver.
+ */
 function verifySessionOwner(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'verifySessionOwner',
     fileName: 'verify-session-owner-resolver-fn.template.js',
     templateName: generateTemplateName('verify-session-owner'),
-    dataSource: (config) => config.dataSources.conversationTable,
+    dataSource: (config) => config.dataSources.conversationTableDataSource,
     substitutions: () => ({
       CONVERSATION_ID_PARENT: 'ctx.args.input',
     }),
   });
 }
 
+/**
+ * The data slot for the assistant response mutation resolver.
+ */
 function data(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'data',
     fileName: 'assistant-mutation-resolver-fn.template.js',
     templateName: generateTemplateName('assistant-response'),
-    dataSource: (config) => config.dataSources.lambdaFunction,
+    dataSource: (config) => config.dataSources.lambdaFunctionDataSource,
     substitutions: (config) => ({
       CONVERSATION_MESSAGE_TYPE_NAME: config.message.model.name.value,
     }),

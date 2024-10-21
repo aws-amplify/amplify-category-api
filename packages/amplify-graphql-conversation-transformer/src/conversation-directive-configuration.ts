@@ -1,10 +1,8 @@
-import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveNode, FieldDefinitionNode, InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { MessageModel } from './graphql-types/message-model';
 import { ConversationModel } from './graphql-types/conversation-model';
-import { Tool } from './utils/tools';
-
-export const LIST_MESSAGES_INDEX_NAME = 'gsi-ConversationMessage.conversationId.createdAt';
+import { Tool } from './tools/process-tools';
+import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 /**
  * Configuration for the Conversation Directive
@@ -31,11 +29,7 @@ export type ConversationDirectiveConfiguration = {
   message: MessageModel;
   assistantResponseMutation: { field: FieldDefinitionNode; input: InputObjectTypeDefinitionNode };
   assistantResponseSubscriptionField: FieldDefinitionNode;
-  dataSources: {
-    conversationTable: DataSourceProvider;
-    messageTable: DataSourceProvider;
-    lambdaFunction: DataSourceProvider;
-  };
+  dataSources: ConversationDirectiveDataSources;
 };
 
 /**
@@ -61,4 +55,13 @@ export type ConversationInferenceConfiguration = {
 export type ToolDefinition = {
   name: string;
   description: string;
+};
+
+/**
+ * Conversation Directive Data Sources
+ */
+export type ConversationDirectiveDataSources = {
+  lambdaFunctionDataSource: DataSourceProvider;
+  messageTableDataSource: DataSourceProvider;
+  conversationTableDataSource: DataSourceProvider;
 };

@@ -11,6 +11,9 @@ export const assistantResponseSubscriptionPipelineDefinition: PipelineDefinition
   field: (config) => ({ typeName: 'Subscription', fieldName: fieldName(config) }),
 };
 
+/**
+ * The data slot for the assistant response subscription resolver.
+ */
 function data(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'data',

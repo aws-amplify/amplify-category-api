@@ -11,8 +11,8 @@ export function createResolverFunctionDefinition(
 ): ResolverFunctionDefinition {
   return {
     ...definition,
-    dataSource: definition.dataSource || NONE_DATA_SOURCE,
-    substitutions: definition.substitutions || EMPTY_SUBSTITUTIONS,
+    dataSource: definition.dataSource ?? NONE_DATA_SOURCE,
+    substitutions: definition.substitutions ?? EMPTY_SUBSTITUTIONS,
   };
 }
 

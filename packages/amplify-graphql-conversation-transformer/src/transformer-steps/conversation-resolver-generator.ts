@@ -1,63 +1,99 @@
 import { conversation } from '@aws-amplify/ai-constructs';
 import { overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
 import { getModelDataSourceNameForTypeName, getTable, TransformerResolver } from '@aws-amplify/graphql-transformer-core';
-import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { DataSourceProvider, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import * as cdk from 'aws-cdk-lib';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
-import { FunctionResourceIDs, ResourceConstants, toUpper } from 'graphql-transformer-common';
+import { FunctionResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import pluralize from 'pluralize';
-import { ConversationDirectiveConfiguration, LIST_MESSAGES_INDEX_NAME } from '../conversation-directive-configuration';
+import { ConversationDirectiveConfiguration, ConversationDirectiveDataSources } from '../conversation-directive-configuration';
+import {
+  CONVERSATION_MESSAGES_REFERENCE_FIELD_NAME,
+  getFunctionStackName,
+  LIST_MESSAGES_INDEX_NAME,
+  upperCaseConversationFieldName,
+} from '../graphql-types/name-values';
 import {
   ASSISTANT_RESPONSE_PIPELINE,
   ASSISTANT_RESPONSE_SUBSCRIPTION_PIPELINE,
-  generateResolverPipeline,
   generateResolverFunction,
+  generateResolverPipeline,
   LIST_MESSAGES_INIT_FUNCTION,
   SEND_MESSAGE_PIPELINE,
 } from '../resolvers';
-import { processTools } from '../utils/tools';
-
-type KeyAttributeDefinition = {
-  name: string;
-  type: 'S' | 'N';
-};
-
-// TODO: add explanation for the tool model queries
+import { processTools } from '../tools/process-tools';
 export class ConversationResolverGenerator {
   constructor(private readonly functionNameMap?: Record<string, IFunction>) {}
 
+  /**
+   * Generates resolvers for all conversation directives.
+   * Note: This function mutates `ConversationDirectiveConfiguration` objects by adding `dataSources` and `toolSpec` properties.
+   * @param directives - An array of ConversationDirectiveConfiguration objects.
+   * @param ctx - The transformer context provider.
+   */
   generateResolvers(directives: ConversationDirectiveConfiguration[], ctx: TransformerContextProvider): void {
     for (const directive of directives) {
+      // Process tools and generate tool specifications
+      // This step is done here to ensure that model-generated queries exist
+      // (they have been processed by the model transformer)
       directive.toolSpec = processTools(directive.tools, ctx);
+
+      // Generate data sources for the given conversation directive instance.
+      // These are used by the resolver function and pipeline definitions.
+      directive.dataSources = this.generateDataSources(directive, ctx);
+
+      // Set up the message table index
+      this.setupMessageTableIndex(ctx, directive);
+
+      // Generate resolvers for the given conversation directive instance.
       this.generateResolversForDirective(directive, ctx);
+
+      // Add an init slot to the model-transformer generated list messages pipeline
+      // This is done to ensure that the correct index is used for list queries.
       this.addInitSlotToListMessagesPipeline(ctx, directive);
     }
   }
 
-  private generateResolversForDirective(directive: ConversationDirectiveConfiguration, ctx: TransformerContextProvider): void {
-    const { parent, field } = directive;
-    const parentName = parent.name.value;
-    const capitalizedFieldName = toUpper(field.name.value);
-    const fieldName = field.name.value;
+  private generateDataSources(
+    directive: ConversationDirectiveConfiguration,
+    ctx: TransformerContextProvider,
+  ): ConversationDirectiveDataSources {
+    // Create a function stack for the conversation directive
+    const functionStackName = getFunctionStackName(directive);
+    const functionStack = ctx.stackManager.createStack(functionStackName);
 
-    const functionStack = this.createFunctionStack(ctx, capitalizedFieldName);
-    const { functionDataSourceId, referencedFunction } = this.setupFunctionDataSource(directive, functionStack, capitalizedFieldName);
-    const functionDataSource = this.addLambdaDataSource(ctx, functionDataSourceId, referencedFunction, capitalizedFieldName);
+    // Set up the function data source
+    const { functionDataSourceId, referencedFunction } = this.setupFunctionDataSource(
+      directive,
+      functionStack,
+      upperCaseConversationFieldName(directive),
+    );
+    const lambdaFunctionDataSource = this.addLambdaDataSource(ctx, functionDataSourceId, referencedFunction, functionStackName);
 
-    const conversationMessageDataSourceName = getModelDataSourceNameForTypeName(ctx, directive.message.model.name.value);
-    const conversationMessageDataSource = ctx.api.host.getDataSource(conversationMessageDataSourceName);
+    // Get data sources for conversation message and session
+    const conversationMessageTableDataSourceName = getModelDataSourceNameForTypeName(ctx, directive.message.model.name.value);
+    const messageTableDataSource = ctx.api.host.getDataSource(conversationMessageTableDataSourceName) as DataSourceProvider;
 
-    const conversationModelDDBDataSourceName = getModelDataSourceNameForTypeName(ctx, directive.conversation.model.name.value);
-    const conversationSessionDDBDataSource = ctx.api.host.getDataSource(conversationModelDDBDataSourceName);
+    const conversationTableDataSourceName = getModelDataSourceNameForTypeName(ctx, directive.conversation.model.name.value);
+    const conversationTableDataSource = ctx.api.host.getDataSource(conversationTableDataSourceName) as DataSourceProvider;
 
-    this.setupMessageTableIndex(ctx, directive);
-
-    directive.dataSources = {
-      lambdaFunction: functionDataSource,
-      conversationTable: conversationSessionDDBDataSource as any,
-      messageTable: conversationMessageDataSource as any,
+    return {
+      lambdaFunctionDataSource,
+      messageTableDataSource,
+      conversationTableDataSource,
     };
+  }
 
+  /**
+   * Generates resolvers for a given conversation directive.
+   * @param directive - The conversation directive configuration.
+   * @param ctx - The transformer context provider.
+   */
+  private generateResolversForDirective(directive: ConversationDirectiveConfiguration, ctx: TransformerContextProvider): void {
+    const parentName = directive.parent.name.value;
+    const fieldName = directive.field.name.value;
+
+    // Generate and add resolvers for send message, assistant response, and subscription
     const conversationPipelineResolver = generateResolverPipeline(SEND_MESSAGE_PIPELINE, directive);
     ctx.resolvers.addResolver(parentName, fieldName, conversationPipelineResolver);
 
@@ -70,16 +106,6 @@ export class ConversationResolverGenerator {
       directive.assistantResponseSubscriptionField.name.value,
       assistantResponseSubscriptionPipelineResolver,
     );
-  }
-
-  /**
-   * Creates a function stack for the conversation directive
-   * @param ctx - The transformer context provider
-   * @param capitalizedFieldName - The capitalized field name
-   * @returns The created stack
-   */
-  private createFunctionStack(ctx: TransformerContextProvider, capitalizedFieldName: string): cdk.Stack {
-    return ctx.stackManager.createStack(`${capitalizedFieldName}ConversationDirectiveLambdaStack`);
   }
 
   /**
@@ -131,7 +157,7 @@ export class ConversationResolverGenerator {
   private setupDefaultConversationHandler(
     functionStack: cdk.Stack,
     capitalizedFieldName: string,
-    aiModel: string,
+    modelId: string,
   ): { functionDataSourceId: string; referencedFunction: IFunction } {
     const defaultConversationHandler = new conversation.ConversationHandlerFunction(
       functionStack,
@@ -139,7 +165,7 @@ export class ConversationResolverGenerator {
       {
         models: [
           {
-            modelId: aiModel,
+            modelId,
           },
         ],
       },
@@ -154,24 +180,34 @@ export class ConversationResolverGenerator {
   /**
    * Adds a Lambda data source to the API
    * @param ctx - The transformer context provider
-   * @param functionDataSourceId - The function data source ID
-   * @param referencedFunction - The referenced Lambda function
-   * @param capitalizedFieldName - The capitalized field name
-   * @returns The created function data source
+   * @param functionDataSourceId - The unique identifier for the function data source
+   * @param referencedFunction - The Lambda function to be added as a data source
+   * @param stackName - The name of the stack where the data source will be added
+   * @returns The created Lambda data source
    */
   private addLambdaDataSource(
     ctx: TransformerContextProvider,
     functionDataSourceId: string,
     referencedFunction: IFunction,
-    capitalizedFieldName: string,
-  ): any {
-    const functionDataSourceScope = ctx.stackManager.getScopeFor(
-      functionDataSourceId,
-      `${capitalizedFieldName}ConversationDirectiveLambdaStack`,
-    );
+    functionStackName: string,
+  ): DataSourceProvider {
+    const functionDataSourceScope = ctx.stackManager.getScopeFor(functionDataSourceId, functionStackName);
     return ctx.api.host.addLambdaDataSource(functionDataSourceId, referencedFunction, {}, functionDataSourceScope);
   }
 
+  /**
+   * Adds an init slot to the list messages pipeline resolver.
+   *
+   * @param ctx - The transformer context provider.
+   * @param directive - The conversation directive configuration.
+   *
+   * This function performs the following steps:
+   * 1. Gets the name of the message model from the directive configuration.
+   * 2. Pluralizes the message name as used in the model-transformer generated list messages resolver.
+   * 3. Retrieves the existing model-transformer generated list messages resolver.
+   * 4. Generates the init resolver function.
+   * 5. Adds the generated init function to the 'init' slot of the list messages resolver.
+   */
   private addInitSlotToListMessagesPipeline(ctx: TransformerContextProvider, directive: ConversationDirectiveConfiguration): void {
     const messageName = directive.message.model.name.value;
     const pluralized = pluralize(messageName);
@@ -187,32 +223,47 @@ export class ConversationResolverGenerator {
    */
   private setupMessageTableIndex(ctx: TransformerContextProvider, directive: ConversationDirectiveConfiguration): void {
     const messageName = directive.message.model.name.value;
-    const referenceFieldName = 'conversationId';
     const message = directive.message.model;
 
     const conversationMessagesTable = getTable(ctx, message);
-    const gsiPartitionKeyName = referenceFieldName;
+    const gsiPartitionKeyName = CONVERSATION_MESSAGES_REFERENCE_FIELD_NAME;
     const gsiPartitionKeyType = 'S';
     const gsiSortKeyName = 'createdAt';
     const gsiSortKeyType = 'S';
 
     this.addGlobalSecondaryIndex(
       conversationMessagesTable,
+      ctx,
+      messageName,
       LIST_MESSAGES_INDEX_NAME,
       { name: gsiPartitionKeyName, type: gsiPartitionKeyType },
       { name: gsiSortKeyName, type: gsiSortKeyType },
-      ctx,
-      messageName,
     );
   }
 
+  /**
+   * Adds a Global Secondary Index (GSI) to a DynamoDB table and overrides it at the CloudFormation level.
+   *
+   * @param table - The DynamoDB table to which the GSI will be added.
+   * @param indexName - The name of the GSI.
+   * @param partitionKey - The partition key definition for the GSI.
+   * @param sortKey - The sort key definition for the GSI.
+   * @param ctx - The transformer context provider.
+   * @param typeName - The name of the GraphQL type associated with this table.
+   *
+   * This function performs the following steps:
+   * 1. Adds a GSI to the table using the provided parameters.
+   * 2. Retrieves the newly added GSI from the table's globalSecondaryIndexes.
+   * 3. Creates a new index configuration with conditional provisioned throughput.
+   * 4. Overrides the index at the CloudFormation level using the new configuration.
+   */
   private addGlobalSecondaryIndex(
     table: any,
+    ctx: TransformerContextProvider,
+    typeName: string,
     indexName: string,
     partitionKey: KeyAttributeDefinition,
     sortKey: KeyAttributeDefinition,
-    ctx: TransformerContextProvider,
-    typeName: string,
   ): void {
     table.addGlobalSecondaryIndex({
       indexName,
@@ -239,3 +290,8 @@ export class ConversationResolverGenerator {
     overrideIndexAtCfnLevel(ctx, typeName, table, newIndex);
   }
 }
+
+type KeyAttributeDefinition = {
+  name: string;
+  type: 'S' | 'N';
+};

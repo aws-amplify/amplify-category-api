@@ -7,7 +7,6 @@ import {
   InterfaceTypeDefinitionNode,
   ObjectTypeDefinitionNode,
 } from 'graphql';
-import { toUpper } from 'graphql-transformer-common';
 import { ConversationDirectiveConfiguration } from '../conversation-directive-configuration';
 import { createConversationModel } from '../graphql-types/conversation-model';
 import {
@@ -16,6 +15,13 @@ import {
   createMessageModel,
   createMessageSubscription,
 } from '../graphql-types/message-model';
+import {
+  CONVERSATION_MESSAGES_REFERENCE_FIELD_NAME,
+  getAssistantMutationFieldName,
+  getConversationMessageTypeName,
+  getConversationTypeName,
+  getMessageSubscriptionFieldName,
+} from '../graphql-types/name-values';
 
 /**
  * @class ConversationFieldHandler
@@ -100,8 +106,17 @@ export class ConversationFieldHandler {
     const conversationMessageTypeName = getConversationMessageTypeName(config);
     const conversationTypeName = getConversationTypeName(config);
 
-    const message = createMessageModel(conversationTypeName, conversationMessageTypeName, referenceFieldName, definition.type);
-    const conversation = createConversationModel(conversationTypeName, conversationMessageTypeName, referenceFieldName);
+    const message = createMessageModel(
+      conversationTypeName,
+      conversationMessageTypeName,
+      CONVERSATION_MESSAGES_REFERENCE_FIELD_NAME,
+      definition.type,
+    );
+    const conversation = createConversationModel(
+      conversationTypeName,
+      conversationMessageTypeName,
+      CONVERSATION_MESSAGES_REFERENCE_FIELD_NAME,
+    );
     return { message, conversation };
   }
 
@@ -182,16 +197,3 @@ export class ConversationFieldHandler {
     }
   }
 }
-
-const getConversationTypeName = (config: ConversationDirectiveConfiguration) => `Conversation${toUpper(config.field.name.value)}`;
-
-const getConversationMessageTypeName = (config: ConversationDirectiveConfiguration) =>
-  `ConversationMessage${toUpper(config.field.name.value)}`;
-
-const getMessageSubscriptionFieldName = (config: ConversationDirectiveConfiguration) =>
-  `onCreateAssistantResponse${toUpper(config.field.name.value)}`;
-
-const getAssistantMutationFieldName = (config: ConversationDirectiveConfiguration) =>
-  `createAssistantResponse${toUpper(config.field.name.value)}`;
-
-const referenceFieldName = 'conversationId';
