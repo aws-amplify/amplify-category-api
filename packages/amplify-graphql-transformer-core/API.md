@@ -364,6 +364,9 @@ export interface GraphQLTransformOptions {
 }
 
 // @public (undocumented)
+export const hasDirectiveWithName: (node: FieldDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeDefinitionNode, name: string) => boolean;
+
+// @public (undocumented)
 export type ImportAppSyncAPIInputs = {
     apiName: string;
     dataSourceConfig?: ImportedDataSourceConfig;
