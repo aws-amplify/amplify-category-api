@@ -21,6 +21,7 @@ export type ConversationDirectiveConfiguration = {
   inferenceConfiguration: ConversationInferenceConfiguration | undefined;
   tools: ToolDefinition[];
   functionName: string | undefined;
+  handler: ConversationHandlerFunctionConfiguration | undefined;
 
   // Generated within the Conversation Transformer
   toolSpec: Tool[] | undefined;
@@ -33,6 +34,14 @@ export type ConversationDirectiveConfiguration = {
     messageTable: DataSourceProvider;
     lambdaFunction: DataSourceProvider;
   };
+};
+
+/**
+ * Conversation Handler Function Configuration
+ */
+export type ConversationHandlerFunctionConfiguration = {
+  functionName: string;
+  eventVersion: string;
 };
 
 /**
