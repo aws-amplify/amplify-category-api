@@ -18,8 +18,11 @@ export type ConversationDirectiveConfiguration = {
   systemPrompt: string;
   inferenceConfiguration: ConversationInferenceConfiguration | undefined;
   tools: ToolDefinition[];
-  // Deprecated in favor of handler.
-  // TODO: Remove this field prior to v1 release.
+  /**
+   * Custom handler function name.
+   *
+   * @deprecated Replaced by 'handler'
+   */
   functionName: string | undefined;
   handler: ConversationHandlerFunctionConfiguration | undefined;
 
