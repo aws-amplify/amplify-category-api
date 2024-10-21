@@ -19,7 +19,7 @@
     "build": "tsc && yarn copy-js-resolver-templates",
     "watch": "tsc -w",
     "clean": "rimraf ./lib",
-    "copy-js-resolver-templates": "mkdir ./lib/resolvers/templates && cp ./src/resolvers/templates/*.template.js ./lib/resolvers/templates",
+    "copy-js-resolver-templates": "cd lib/resolvers && mkdir -p templates && cp ../../src/resolvers/templates/*.template.js templates",
     "test": "jest",
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
