@@ -94,7 +94,9 @@ export class ConversationResolverGenerator {
     functionStack: cdk.Stack,
     capitalizedFieldName: string,
   ): { functionDataSourceId: string; referencedFunction: IFunction } {
-    if (directive.functionName) {
+    if (directive.handler) {
+      return this.setupExistingFunctionDataSource(directive.handler.functionName);
+    } else if (directive.functionName) {
       return this.setupExistingFunctionDataSource(directive.functionName);
     } else {
       return this.setupDefaultConversationHandler(functionStack, capitalizedFieldName, directive.aiModel);

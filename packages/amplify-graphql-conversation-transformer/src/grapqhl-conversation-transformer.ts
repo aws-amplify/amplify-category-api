@@ -1,7 +1,7 @@
 import { ConversationDirective } from '@aws-amplify/graphql-directives';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
+import { InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerAuthProvider,
   TransformerContextProvider,
@@ -14,7 +14,7 @@ import { ConversationDirectiveConfiguration } from './conversation-directive-typ
 import { ConversationFieldHandler } from './transformer-steps/conversation-field-handler';
 import { ConversationPrepareHandler } from './transformer-steps/conversation-prepare-handler';
 import { ConversationResolverGenerator } from './transformer-steps/conversation-resolver-generator';
-
+import * as semver from 'semver';
 /**
  * Transformer for handling `@conversation` directives in GraphQL schemas
  */
@@ -68,5 +68,24 @@ export class ConversationTransformer extends TransformerPluginBase {
    */
   prepare = (ctx: TransformerPrepareStepContextProvider): void => {
     this.prepareHandler.prepare(ctx, this.directives);
+  };
+
+  validate = (): void => {
+    for (const directive of this.directives) {
+      if (directive.field.type.kind !== 'NamedType' || directive.field.type.name.value !== 'ConversationMessage') {
+        throw new InvalidDirectiveError('@conversation return type must be ConversationMessage');
+      }
+      if (directive.handler && directive.functionName) {
+        throw new InvalidDirectiveError("'functionName' and 'handler' are mutually exclusive");
+      }
+      if (directive.handler) {
+        const eventVersion = semver.coerce(directive.handler.eventVersion);
+        if (eventVersion?.major !== 1) {
+          throw new Error(
+            `Unsupported custom conversation handler. Expected eventVersion to match 1.x, received ${directive.handler.eventVersion}`,
+          );
+        }
+      }
+    }
   };
 }
