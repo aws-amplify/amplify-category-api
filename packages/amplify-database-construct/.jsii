@@ -3888,7 +3888,7 @@
   },
   "name": "@aws-amplify/database-construct",
   "readme": {
-    "markdown": ""
+    "markdown": "# Amplify Database Construct\n\n[![View on Construct Hub](https://constructs.dev/badge?package=%40aws-amplify%2Fdatabase-construct)](https://constructs.dev/packages/@aws-amplify/database-construct)\n\n\nThis package vends an L3 CDK Construct to create a Aurora DB cluster for the Amplify GraphQL API.\n\n## Examples\n\n### Basic Example\n\nTODO\n\n```ts\nimport { AmplifyDatabaseCluster } from '@aws-amplify/database-construct';\nimport { AmplifyGraphQLAPI } from '@aws-amplify/graphql-api-construct';\n\nconst databaseCluster = new AmplifyDatabaseCluster({\n  dbType: 'POSTGRES',\n});\n\nconst dbManager = AmplifyDatabaseManager({\n  databaseCluster,\n});\n\ndbManager.sqlStatment('create Todo table sql statement');\n\nconst schema = `\n  type Todo @model {\n    content: String\n  }\n`;\n\nnew AmplifyGraphQLAPI({\n  definition: AmplifyGraphqlDefinition.fromString(\n    // graphql schema needs to match databaseCluster sql schema\n    // gen 2 will provide compile time type checking\n    schema,\n    databaseCluster.dataSourceStrategy\n  ),\n});\n```\n"
   },
   "repository": {
     "directory": "packages/database-construct",
@@ -4109,5 +4109,5 @@
     }
   },
   "version": "0.0.1",
-  "fingerprint": "IJqZ4broCOdZn0L7ErQwyydbH39y39sseNpV3PMtPl4="
+  "fingerprint": "CaOq6QxEO+2yYgIUSmZqIaeAhN77zREj8WDcNuF7cGs="
 }
