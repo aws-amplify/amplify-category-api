@@ -20,6 +20,8 @@ export type ConversationDirectiveConfiguration = {
   systemPrompt: string;
   inferenceConfiguration: ConversationInferenceConfiguration | undefined;
   tools: ToolDefinition[];
+  // Deprecated in favor of handler.
+  // TODO: Remove this field prior to v1 release.
   functionName: string | undefined;
   handler: ConversationHandlerFunctionConfiguration | undefined;
 
@@ -37,7 +39,7 @@ export type ConversationDirectiveConfiguration = {
 };
 
 /**
- * Conversation Handler Function Configuration
+ * Conversation Directive Handler Function Configuration
  */
 export type ConversationHandlerFunctionConfiguration = {
   functionName: string;
@@ -45,7 +47,7 @@ export type ConversationHandlerFunctionConfiguration = {
 };
 
 /**
- * Conversation Inference Configuration
+ * Conversation Directive Inference Configuration
  */
 export type ConversationInferenceConfiguration = {
   maxTokens?: number;
@@ -53,6 +55,9 @@ export type ConversationInferenceConfiguration = {
   topP?: number;
 };
 
+/**
+ * Conversation Directive Tool Definition
+ */
 export type ToolDefinition = {
   name: string;
   description: string;

@@ -8,7 +8,7 @@ import {
   ObjectTypeDefinitionNode,
 } from 'graphql';
 import { toUpper } from 'graphql-transformer-common';
-import { ConversationDirectiveConfiguration } from '../conversation-directive-types';
+import { ConversationDirectiveConfiguration } from '../conversation-directive-configuration';
 import { createConversationModel } from '../graphql-types/conversation-model';
 import {
   createAssistantMutationField,

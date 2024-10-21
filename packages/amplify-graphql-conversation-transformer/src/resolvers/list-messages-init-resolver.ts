@@ -1,4 +1,4 @@
-import { LIST_MESSAGES_INDEX_NAME } from '../conversation-directive-types';
+import { LIST_MESSAGES_INDEX_NAME } from '../conversation-directive-configuration';
 import { createResolverFunctionDefinition, ResolverFunctionDefinition } from './resolver-function-definition';
 
 /**

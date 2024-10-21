@@ -3,7 +3,7 @@ import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-int
 import { FieldDefinitionNode, InputValueDefinitionNode, ObjectTypeDefinitionNode, TypeNode } from 'graphql';
 import { getBaseType, isNonNullType, isScalar } from 'graphql-transformer-common';
 import { generateJSONSchemaFromTypeNode } from './graphql-json-schema-type';
-import { ToolDefinition } from '../conversation-directive-types';
+import { ToolDefinition } from '../conversation-directive-configuration';
 
 export type Tool = {
   name: string;

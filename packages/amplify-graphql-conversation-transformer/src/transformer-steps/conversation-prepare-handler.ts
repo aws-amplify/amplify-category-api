@@ -2,7 +2,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY, InvalidTransformerError } from '@aws-amplify/graphql-transformer-core';
 import { TransformerAuthProvider, TransformerPrepareStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ConversationDirectiveConfiguration } from '../conversation-directive-types';
+import { ConversationDirectiveConfiguration } from '../conversation-directive-configuration';
 
 /**
  * @class ConversationPrepareHandler

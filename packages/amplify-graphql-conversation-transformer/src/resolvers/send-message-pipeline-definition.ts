@@ -1,6 +1,6 @@
 import { toUpper } from 'graphql-transformer-common';
 import pluralize from 'pluralize';
-import { ConversationDirectiveConfiguration } from '../conversation-directive-types';
+import { ConversationDirectiveConfiguration } from '../conversation-directive-configuration';
 import { createResolverFunctionDefinition, PipelineDefinition, ResolverFunctionDefinition } from './resolver-function-definition';
 
 /**

@@ -6,7 +6,7 @@ import * as cdk from 'aws-cdk-lib';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { FunctionResourceIDs, ResourceConstants, toUpper } from 'graphql-transformer-common';
 import pluralize from 'pluralize';
-import { ConversationDirectiveConfiguration, LIST_MESSAGES_INDEX_NAME } from '../conversation-directive-types';
+import { ConversationDirectiveConfiguration, LIST_MESSAGES_INDEX_NAME } from '../conversation-directive-configuration';
 import {
   ASSISTANT_RESPONSE_PIPELINE,
   ASSISTANT_RESPONSE_SUBSCRIPTION_PIPELINE,

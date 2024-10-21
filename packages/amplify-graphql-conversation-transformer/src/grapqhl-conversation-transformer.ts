@@ -10,7 +10,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { DirectiveNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
-import { ConversationDirectiveConfiguration } from './conversation-directive-types';
+import { ConversationDirectiveConfiguration } from './conversation-directive-configuration';
 import { ConversationFieldHandler } from './transformer-steps/conversation-field-handler';
 import { ConversationPrepareHandler } from './transformer-steps/conversation-prepare-handler';
 import { ConversationResolverGenerator } from './transformer-steps/conversation-resolver-generator';

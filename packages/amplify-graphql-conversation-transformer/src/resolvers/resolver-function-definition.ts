@@ -1,5 +1,5 @@
 import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ConversationDirectiveConfiguration } from '../conversation-directive-types';
+import { ConversationDirectiveConfiguration } from '../conversation-directive-configuration';
 
 /**
  * Creates a resolver function definition based on the provided definition, with NONE data source and empty substitutions if not provided.

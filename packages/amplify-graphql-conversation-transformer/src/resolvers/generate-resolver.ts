@@ -3,7 +3,7 @@ import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interf
 import fs from 'fs-extra';
 import { ResolverResourceIDs } from 'graphql-transformer-common';
 import path from 'path';
-import { ConversationDirectiveConfiguration } from '../conversation-directive-types';
+import { ConversationDirectiveConfiguration } from '../conversation-directive-configuration';
 import { PipelineDefinition, ResolverFunctionDefinition } from './resolver-function-definition';
 
 /**
