@@ -157,16 +157,6 @@ const getResolverResource = (mutationName: string, resources?: Record<string, an
   return resources?.[resolverName];
 };
 
-const getResolverFnResource = (mutationName: string, resources: DeploymentResources): string => {
-  const resolverFnCode =
-    resources.rootStack.Resources &&
-    Object.entries(resources.rootStack.Resources).find(([key, _]) => key.startsWith(`Mutation${toUpper(mutationName)}DataResolverFn`))?.[1][
-      'Properties'
-    ]['Code'];
-
-  return resolverFnCode;
-};
-
 const defaultAuthConfig: AppSyncAuthConfiguration = {
   defaultAuthentication: {
     authenticationType: 'AMAZON_COGNITO_USER_POOLS',
