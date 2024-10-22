@@ -14,12 +14,12 @@ import {
   upperCaseConversationFieldName,
 } from '../graphql-types/name-values';
 import {
-  ASSISTANT_RESPONSE_PIPELINE,
-  ASSISTANT_RESPONSE_SUBSCRIPTION_PIPELINE,
+  assistantResponsePipelineDefinition,
+  assistantResponseSubscriptionPipelineDefinition,
   generateResolverFunction,
   generateResolverPipeline,
-  LIST_MESSAGES_INIT_FUNCTION,
-  SEND_MESSAGE_PIPELINE,
+  listMessagesInitFunctionDefinition,
+  sendMessagePipelineDefinition,
 } from '../resolvers';
 import { processTools } from '../tools/process-tools';
 export class ConversationResolverGenerator {
@@ -94,13 +94,16 @@ export class ConversationResolverGenerator {
     const fieldName = directive.field.name.value;
 
     // Generate and add resolvers for send message, assistant response, and subscription
-    const conversationPipelineResolver = generateResolverPipeline(SEND_MESSAGE_PIPELINE, directive);
+    const conversationPipelineResolver = generateResolverPipeline(sendMessagePipelineDefinition, directive);
     ctx.resolvers.addResolver(parentName, fieldName, conversationPipelineResolver);
 
-    const assistantResponsePipelineResolver = generateResolverPipeline(ASSISTANT_RESPONSE_PIPELINE, directive);
+    const assistantResponsePipelineResolver = generateResolverPipeline(assistantResponsePipelineDefinition, directive);
     ctx.resolvers.addResolver(parentName, directive.assistantResponseMutation.field.name.value, assistantResponsePipelineResolver);
 
-    const assistantResponseSubscriptionPipelineResolver = generateResolverPipeline(ASSISTANT_RESPONSE_SUBSCRIPTION_PIPELINE, directive);
+    const assistantResponseSubscriptionPipelineResolver = generateResolverPipeline(
+      assistantResponseSubscriptionPipelineDefinition,
+      directive,
+    );
     ctx.resolvers.addResolver(
       'Subscription',
       directive.assistantResponseSubscriptionField.name.value,
@@ -212,7 +215,7 @@ export class ConversationResolverGenerator {
     const messageName = directive.message.model.name.value;
     const pluralized = pluralize(messageName);
     const listMessagesResolver = ctx.resolvers.getResolver('Query', `list${pluralized}`) as TransformerResolver;
-    const initResolverFn = generateResolverFunction(LIST_MESSAGES_INIT_FUNCTION, directive);
+    const initResolverFn = generateResolverFunction(listMessagesInitFunctionDefinition, directive);
     listMessagesResolver.addJsFunctionToSlot('init', initResolverFn);
   }
 
