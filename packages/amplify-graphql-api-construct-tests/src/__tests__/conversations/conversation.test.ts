@@ -6,7 +6,12 @@ import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-
 import { cdkDeploy, cdkDestroy, initCDKProject } from '../../commands';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
 import { createCognitoUser, signInCognitoUser, TestDefinition, writeStackConfig, writeTestDefinitions } from '../../utils';
-import { doCreateConversationPirateChat, doListConversationMessagesPirateChat, doSendMessagePirateChat } from './test-implementations';
+import {
+  doCreateConversationPirateChat,
+  doListConversationMessagesPirateChat,
+  doSendMessagePirateChat,
+  doUpdateConversationPirateChat,
+} from './test-implementations';
 
 jest.setTimeout(DURATION_20_MINUTES);
 
@@ -102,6 +107,20 @@ describe('conversation', () => {
 
       expect(messages.body.data.listConversationMessagePirateChats.items).toHaveLength(1);
       expect(messages.body.data.listConversationMessagePirateChats.items[0].conversationId).toBe(id);
+    });
+
+    test('update conversation', async () => {
+      const conversationResult = await doCreateConversationPirateChat(apiEndpoint, accessToken);
+
+      const { id } = conversationResult.body.data.createConversationPirateChat;
+      expect(id).toBeDefined();
+
+      const updateConversationResult = await doUpdateConversationPirateChat(apiEndpoint, accessToken, id, 'updated conversation name');
+
+      const updatedConversation = updateConversationResult.body.data.updateConversationPirateChat;
+      const { name, id: updatedId } = updatedConversation;
+      expect(name).toEqual('updated conversation name');
+      expect(updatedId).toEqual(id);
     });
 
     describe('conversation owner auth negative tests', () => {
