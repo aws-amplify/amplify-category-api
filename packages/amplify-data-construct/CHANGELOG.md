@@ -3,35 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [1.11.1-ai-streaming.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.11.1-ai-streaming.6...@aws-amplify/data-construct@1.11.1-ai-streaming.7) (2024-10-18)
-
-**Note:** Version bump only for package @aws-amplify/data-construct
-
-## [1.11.1-ai-streaming.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.11.1-ai-streaming.5...@aws-amplify/data-construct@1.11.1-ai-streaming.6) (2024-10-18)
-
-**Note:** Version bump only for package @aws-amplify/data-construct
-
-## [1.11.1-ai-streaming.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.11.1-ai-streaming.4...@aws-amplify/data-construct@1.11.1-ai-streaming.5) (2024-10-17)
-
-**Note:** Version bump only for package @aws-amplify/data-construct
-
-## [1.11.1-ai-streaming.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.11.1-ai-streaming.3...@aws-amplify/data-construct@1.11.1-ai-streaming.4) (2024-10-16)
-
-**Note:** Version bump only for package @aws-amplify/data-construct
-
-## [1.11.1-ai-streaming.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.11.1-ai-streaming.2...@aws-amplify/data-construct@1.11.1-ai-streaming.3) (2024-10-15)
-
-**Note:** Version bump only for package @aws-amplify/data-construct
-
-## [1.11.1-ai-streaming.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.11.1-ai-streaming.1...@aws-amplify/data-construct@1.11.1-ai-streaming.2) (2024-10-15)
-
-**Note:** Version bump only for package @aws-amplify/data-construct
-
-## [1.11.1-ai-streaming.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.11.1-ai-streaming.0...@aws-amplify/data-construct@1.11.1-ai-streaming.1) (2024-10-11)
-
-**Note:** Version bump only for package @aws-amplify/data-construct
-
-## [1.11.1-ai-streaming.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.11.0...@aws-amplify/data-construct@1.11.1-ai-streaming.0) (2024-10-11)
+## [1.11.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.11.0...@aws-amplify/data-construct@1.11.1) (2024-10-17)
 
 **Note:** Version bump only for package @aws-amplify/data-construct
 

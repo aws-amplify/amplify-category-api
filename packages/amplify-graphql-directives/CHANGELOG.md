@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.4.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-directives@2.3.0...@aws-amplify/graphql-directives@2.4.0) (2024-10-17)
+
+### Features
+
+- constrain custom conversation handler event version ([#2958](https://github.com/aws-amplify/amplify-category-api/issues/2958)) ([083fe17](https://github.com/aws-amplify/amplify-category-api/commit/083fe173e32a06976300b36c20d91e3c55d19f2a))
+
 # [2.3.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-directives@2.2.0...@aws-amplify/graphql-directives@2.3.0) (2024-10-10)
 
 ### Features
