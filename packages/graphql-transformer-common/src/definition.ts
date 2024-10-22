@@ -1,5 +1,3 @@
-/* eslint-disable prefer-arrow/prefer-arrow-functions */
-/* eslint-disable func-style */
 import {
   ObjectTypeDefinitionNode,
   InputValueDefinitionNode,
@@ -272,29 +270,6 @@ export function extendFieldWithDirectives(field: FieldDefinitionNode, directives
   }
 
   return field;
-}
-
-export function extendObjectWithDirectives(object: ObjectTypeDefinitionNode, directives: DirectiveNode[]): ObjectTypeDefinitionNode {
-  if (!directives || directives.length === 0) {
-    return object;
-  }
-
-  const newDirectives = [];
-
-  for (const directive of directives) {
-    if (!object.directives.some((d) => d.name.value === directive.name.value)) {
-      newDirectives.push(directive);
-    }
-  }
-
-  if (newDirectives.length === 0) {
-    return object;
-  }
-
-  return {
-    ...object,
-    directives: [...object.directives, ...newDirectives],
-  };
 }
 
 export function defineUnionType(name: string, types: NamedTypeNode[] = []): UnionTypeDefinitionNode {
