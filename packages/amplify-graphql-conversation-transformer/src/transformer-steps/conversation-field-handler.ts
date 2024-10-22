@@ -175,7 +175,7 @@ export class ConversationFieldHandler {
     if (config.handler) {
       const eventVersion = semver.coerce(config.handler.eventVersion);
       if (eventVersion?.major !== 1) {
-        throw new Error(
+        throw new InvalidDirectiveError(
           `Unsupported custom conversation handler. Expected eventVersion to match 1.x, received ${config.handler.eventVersion}`,
         );
       }
