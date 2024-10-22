@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.4-ai-streaming.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-function-transformer@3.1.3...@aws-amplify/graphql-function-transformer@3.1.4-ai-streaming.0) (2024-10-22)
+
+**Note:** Version bump only for package @aws-amplify/graphql-function-transformer
+
 ## [3.1.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-function-transformer@3.1.2...@aws-amplify/graphql-function-transformer@3.1.3) (2024-10-17)
 
 **Note:** Version bump only for package @aws-amplify/graphql-function-transformer

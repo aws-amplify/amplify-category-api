@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.2-ai-streaming.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.2.1...@aws-amplify/graphql-transformer-core@3.2.2-ai-streaming.0) (2024-10-22)
+
+### Bug Fixes
+
+- enable IAM auth for custom types ([#2961](https://github.com/aws-amplify/amplify-category-api/issues/2961)) ([#2971](https://github.com/aws-amplify/amplify-category-api/issues/2971)) ([0e003d2](https://github.com/aws-amplify/amplify-category-api/commit/0e003d2656c46171c7fa2e947c92d701ede94f22))
+
 ## [3.2.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.2.0...@aws-amplify/graphql-transformer-core@3.2.1) (2024-10-17)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-core

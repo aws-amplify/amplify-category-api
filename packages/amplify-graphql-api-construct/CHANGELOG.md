@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.16.0-ai-streaming.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.15.1-ai-streaming.7...@aws-amplify/graphql-api-construct@1.16.0-ai-streaming.0) (2024-10-22)
+
+### Bug Fixes
+
+- enable IAM auth for custom types ([#2961](https://github.com/aws-amplify/amplify-category-api/issues/2961)) ([8fc24f3](https://github.com/aws-amplify/amplify-category-api/commit/8fc24f300c5d65e6aa9a19d0525d95d6163a36b3))
+- enable IAM auth for custom types ([#2961](https://github.com/aws-amplify/amplify-category-api/issues/2961)) ([#2971](https://github.com/aws-amplify/amplify-category-api/issues/2971)) ([0e003d2](https://github.com/aws-amplify/amplify-category-api/commit/0e003d2656c46171c7fa2e947c92d701ede94f22))
+
+### Features
+
+- add metrics metadata for auth mode and custom operations ([#2966](https://github.com/aws-amplify/amplify-category-api/issues/2966)) ([5571a90](https://github.com/aws-amplify/amplify-category-api/commit/5571a902bd3a9f3f932bf531dab8b5c1fdb5709b))
+
+### Reverts
+
+- Revert "fix: enable IAM auth for custom types (#2961)" (#2964) ([bd7484f](https://github.com/aws-amplify/amplify-category-api/commit/bd7484f0b4795b438357323d8f7e7316d8988fcd)), closes [#2961](https://github.com/aws-amplify/amplify-category-api/issues/2961) [#2964](https://github.com/aws-amplify/amplify-category-api/issues/2964)
+
 ## [1.15.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.15.0...@aws-amplify/graphql-api-construct@1.15.1) (2024-10-17)
 
 ### Bug Fixes

@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.1-ai-streaming.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-directives@2.4.0...@aws-amplify/graphql-directives@2.4.1-ai-streaming.0) (2024-10-22)
+
+**Note:** Version bump only for package @aws-amplify/graphql-directives
+
 # [2.4.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-directives@2.3.0...@aws-amplify/graphql-directives@2.4.0) (2024-10-17)
 
 ### Features

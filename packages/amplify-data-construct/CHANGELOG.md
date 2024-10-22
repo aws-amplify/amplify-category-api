@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.11.2-ai-streaming.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.11.1-ai-streaming.7...@aws-amplify/data-construct@1.11.2-ai-streaming.0) (2024-10-22)
+
+**Note:** Version bump only for package @aws-amplify/data-construct
+
 ## [1.11.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.11.0...@aws-amplify/data-construct@1.11.1) (2024-10-17)
 
 **Note:** Version bump only for package @aws-amplify/data-construct
