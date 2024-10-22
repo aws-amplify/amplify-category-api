@@ -1,32 +1,28 @@
 import generator from 'generate-password';
 import { getResourceNamesForStrategyName, ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
-import { getRDSTableNamePrefix } from 'amplify-category-api-e2e-core';
 import { SqlDatatabaseController } from '../sql-datatabase-controller';
+import { TestOptions } from '../utils/sql-test-config-helper';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
-import { testGraphQLAPIAutoIncrement } from '../sql-tests-common/sql-models-auto-increment';
+import { testGraphQLAPIAutoIncrement } from '../sql-tests-common/sql-auto-increment';
+import { sqlCreateStatements } from '../sql-tests-common/tests-sources/sql-auto-increment/provider';
 
 jest.setTimeout(DURATION_1_HOUR);
 
 describe('CDK GraphQL Transformer deployments with Postgres SQL datasources', () => {
-  const projFolderName = 'pgmodels';
+  const projFolderName = 'pgautoincrement';
 
   // sufficient password length that meets the requirements for RDS cluster/instance
   const [username, password, identifier] = generator.generateMultiple(3, { length: 11 });
   const region = process.env.CLI_REGION ?? 'us-west-2';
   const engine = 'postgres';
 
-  const databaseController: SqlDatatabaseController = new SqlDatatabaseController(
-    [
-      `CREATE TABLE "${getRDSTableNamePrefix()}coffee_queue" ("orderNumber" SERIAL PRIMARY KEY, "order" VARCHAR(256) NOT NULL, "customer" VARCHAR(256))`,
-    ],
-    {
-      identifier,
-      engine,
-      username,
-      password,
-      region,
-    },
-  );
+  const databaseController: SqlDatatabaseController = new SqlDatatabaseController(sqlCreateStatements(ImportedRDSType.POSTGRESQL), {
+    identifier,
+    engine,
+    username,
+    password,
+    region,
+  });
 
   const strategyName = `${engine}DBStrategy`;
   const resourceNames = getResourceNamesForStrategyName(strategyName);
@@ -39,7 +35,7 @@ describe('CDK GraphQL Transformer deployments with Postgres SQL datasources', ()
     await databaseController.cleanupDatabase();
   });
 
-  const constructTestOptions = (connectionConfigName: string) => ({
+  const constructTestOptions = (connectionConfigName: string): TestOptions => ({
     projFolderName,
     region,
     connectionConfigName,

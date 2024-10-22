@@ -56,6 +56,7 @@ export {
   getSubscriptionFilterInputName,
   getTable,
   getType,
+  hasDirectiveWithName,
   isAmplifyDynamoDbModelDataSourceStrategy,
   isBuiltInGraphqlNode,
   isDefaultDynamoDbModelDataSourceStrategy,

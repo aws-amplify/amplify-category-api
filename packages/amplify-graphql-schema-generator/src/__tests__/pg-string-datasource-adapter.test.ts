@@ -1,8 +1,6 @@
 import { StringDataSourceAdapter, PostgresStringDataSourceAdapter } from '../datasource-adapter';
 import { Field, FieldType, Index } from '../schema-representation';
-import { generateGraphQLSchema, isComputeExpression } from '../schema-generator';
 import { schemas } from './__utils__/schemas';
-import { gql } from 'graphql-transformer-core';
 
 class TestStringDataSourceAdapter extends StringDataSourceAdapter {
   public getTablesList(): string[] {
@@ -47,10 +45,10 @@ describe('testPostgresStringDataSourceAdapter', () => {
     adapter.getPrimaryKey = jest.fn();
     adapter.getIndexes = jest.fn(() => []);
     adapter.getModels();
-    expect(adapter.getTablesList).toBeCalledTimes(1);
-    expect(adapter.getFields).toBeCalledTimes(1);
-    expect(adapter.getIndexes).toBeCalledTimes(1);
-    expect(adapter.getPrimaryKey).toBeCalledTimes(1);
+    expect(adapter.getTablesList).toHaveBeenCalledTimes(1);
+    expect(adapter.getFields).toHaveBeenCalledTimes(1);
+    expect(adapter.getIndexes).toHaveBeenCalledTimes(1);
+    expect(adapter.getPrimaryKey).toHaveBeenCalledTimes(1);
   });
 
   it('test postgres datatype mapping', () => {

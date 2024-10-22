@@ -64,6 +64,9 @@ export const directiveExists: (definition: ObjectTypeDefinitionNode, name: strin
 export function extendFieldWithDirectives(field: FieldDefinitionNode, directives: DirectiveNode[]): FieldDefinitionNode;
 
 // @public (undocumented)
+export function extendObjectWithDirectives(object: ObjectTypeDefinitionNode, directives: DirectiveNode[]): ObjectTypeDefinitionNode;
+
+// @public (undocumented)
 export function extensionWithDirectives(object: ObjectTypeExtensionNode, directives: DirectiveNode[]): ObjectTypeExtensionNode;
 
 // @public (undocumented)
