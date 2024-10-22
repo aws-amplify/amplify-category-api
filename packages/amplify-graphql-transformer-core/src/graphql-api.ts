@@ -153,10 +153,6 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
    */
   public readonly visibility: Visibility;
 
-  /**
-   * The CloudWatch Log Group for this API
-   */
-  public readonly logGroup?: ILogGroup;
 
   private schemaResource: CfnGraphQLSchema;
 
@@ -189,6 +185,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       lambdaAuthorizerConfig: this.setupLambdaConfig(defaultMode.lambdaAuthorizerConfig),
       additionalAuthenticationProviders: this.setupAdditionalAuthorizationModes(additionalModes),
       xrayEnabled: props.xrayEnabled,
+      logConfig: this.setupLogConfig(props.logging),
     });
 
     this.apiId = this.api.attrApiId;
@@ -222,23 +219,6 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       this.host = new DefaultTransformHost({
         api: this,
       });
-    }
-
-    // set up log retention and log group
-    if (props.logging) {
-      // Default retention is ONE_WEEK
-      const retention =
-        typeof props.logging === 'object' && 'retention' in props.logging
-          ? props.logging.retention ?? RetentionDays.ONE_WEEK
-          : RetentionDays.ONE_WEEK;
-
-      const logRetention = new LogRetention(this, 'LogRetention', {
-        logGroupName: `/aws/appsync/apis/${this.apiId}`,
-        retention: retention,
-      });
-      this.logGroup = LogGroup.fromLogGroupArn(this, 'LogGroup', logRetention.logGroupArn);
-
-      this.api.logConfig = this.setupLogConfig(props.logging);
     }
   }
 
@@ -336,41 +316,14 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
         ? defaultFieldLogLevel
         : logging.fieldLogLevel ?? defaultFieldLogLevel;
 
-    const region = Stack.of(this).region;
-    const accountId = Stack.of(this).account;
-    const logGroupResourceArn = `arn:aws:logs:${region}:${accountId}:log-group:/aws/appsync/apis/${this.apiId}:*`;
-
-    // Create the inline policy statements with the exact log group
-    const policyStatements = [
-      new PolicyStatement({
-        effect: Effect.ALLOW,
-        actions: ['logs:CreateLogGroup'],
-        resources: [`arn:aws:logs:${region}:${accountId}:*`],
-      }),
-      new PolicyStatement({
-        effect: Effect.ALLOW,
-        actions: ['logs:CreateLogStream', 'logs:PutLogEvents'],
-        resources: [logGroupResourceArn],
-      }),
-    ];
-
-    // Create a standalone policy. This allows us to break the circular reference due to some CFN magic.
-    const apiLogsPolicy = new Policy(this, 'ApiLogsPolicy', {
-      statements: policyStatements,
-    });
-  
-    // Create the role
-    const apiLogsRole = new Role(this, 'ApiLogsRole', {
+    const role = new Role(this, 'ApiLogsRole', {
       assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
+      managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs')],
     });
-
-    // Attach the policy to the role using this method to avoid circular dependency issue.
-    apiLogsPolicy.attachToRole(apiLogsRole);
-
-    setResourceName(apiLogsRole, { name: 'ApiLogsRole', setOnDefaultChild: true });
+    setResourceName(role, { name: 'ApiLogsRole', setOnDefaultChild: true });
 
     return {
-      cloudWatchLogsRoleArn: apiLogsRole.roleArn,
+      cloudWatchLogsRoleArn: role.roleArn,
       excludeVerboseContent,
       fieldLogLevel,
     };
