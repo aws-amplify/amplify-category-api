@@ -4,10 +4,10 @@ import 'source-map-support/register';
 import * as fs from 'fs';
 import * as path from 'path';
 import { App, CfnOutput, Duration, Stack } from 'aws-cdk-lib';
-import { AccountPrincipal, Effect, PolicyDocument, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
+import { AccountPrincipal, Effect, IPrincipal, IRole, PolicyDocument, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { AmplifyGraphqlApi, AmplifyGraphqlDefinition, AuthorizationModes } from '@aws-amplify/graphql-api-construct';
-import { BaseDataSource, Code, FunctionRuntime, NoneDataSource } from 'aws-cdk-lib/aws-appsync';
+import { Code, FunctionRuntime, NoneDataSource } from 'aws-cdk-lib/aws-appsync';
 
 // #region Utilities
 
@@ -47,10 +47,30 @@ interface StackConfig {
  */
 interface TestRoleProps {
   /**
-   * The AWS account that will be allowed to assume the role
+   * An array of principals that can assume the test role
    */
-  assumedByAccount: string;
+  assumeRolePrincipals: AssumeRolePrincipal[];
 }
+
+/**
+ * An AWS account ID that will be allowed to assume the test role
+ */
+interface AccountAssumeRolePrincipal {
+  account: string;
+}
+
+/**
+ * A Role ARNs that will be allowed to assume the test role
+ */
+interface RoleArnAssumeRolePrincipal {
+  /** The ARN of the role to be granted `sts:AssumeRole` permissions on the test role */
+  roleArn: string;
+
+  /** The ID to be assigned to the role when it is imported into the test stack */
+  id: string;
+}
+
+type AssumeRolePrincipal = AccountAssumeRolePrincipal | RoleArnAssumeRolePrincipal;
 
 const readStackConfig = (projRoot: string): StackConfig => {
   const configPath = path.join(projRoot, 'stack-config.json');
@@ -177,8 +197,12 @@ addTestResolver({
 
 class TestRole extends Role {
   constructor(scope: Construct, id: string, props: TestRoleProps & { api: AmplifyGraphqlApi }) {
-    const { assumedByAccount, api: graphqlApi } = props;
+    const { assumeRolePrincipals, api: graphqlApi } = props;
     const apiArn = graphqlApi.resources.graphqlApi.arn;
+
+    if (!assumeRolePrincipals || assumeRolePrincipals.length === 0) {
+      throw new Error('Must specify assumeRolePrincipals');
+    }
 
     const policyStatement = new PolicyStatement({
       sid: 'EnableGraphqlForRole',
@@ -194,18 +218,46 @@ class TestRole extends Role {
       ],
     });
     super(scope, id, {
-      assumedBy: new AccountPrincipal(assumedByAccount),
+      assumedBy: principalFromAssumeRolePrincipal(assumeRolePrincipals[0], scope),
       inlinePolicies: {
         allowGraphqlQuery: new PolicyDocument({
           statements: [policyStatement],
         }),
       },
     });
+
+    if (assumeRolePrincipals.length > 1) {
+      assumeRolePrincipals.slice(1).forEach((assumeRolePrincipal) => {
+        const principal = principalFromAssumeRolePrincipal(assumeRolePrincipal, scope);
+        this.grantAssumeRole(principal);
+      });
+    }
   }
 }
 
+const isAccountAssumeRolePrincipal = (obj: any): obj is AccountAssumeRolePrincipal => typeof obj.account === 'string';
+
+const isRoleArnAssumeRolePrincipal = (obj: any): obj is AccountAssumeRolePrincipal =>
+  typeof obj.roleArn === 'string' && typeof obj.id === 'string';
+
+const principalFromAssumeRolePrincipal = (assumeRolePrincipal: AssumeRolePrincipal, scope: Construct): IPrincipal => {
+  if (isAccountAssumeRolePrincipal(assumeRolePrincipal)) {
+    return principalFromAccountAssumeRolePrincipal(assumeRolePrincipal);
+  } else if (isRoleArnAssumeRolePrincipal(assumeRolePrincipal)) {
+    return principalFromRoleArnAssumeRolePrincipal(assumeRolePrincipal, scope);
+  } else {
+    throw new Error(`Unrecognized AssumeRolePrincipal: ${JSON.stringify(assumeRolePrincipal)}`);
+  }
+};
+
+const principalFromAccountAssumeRolePrincipal = (accountAssumeRolePrincipal: AccountAssumeRolePrincipal): IPrincipal =>
+  new AccountPrincipal(accountAssumeRolePrincipal.account);
+
+const principalFromRoleArnAssumeRolePrincipal = (roleArnAssumeRolePrincipal: RoleArnAssumeRolePrincipal, scope: Construct): IPrincipal =>
+  Role.fromRoleArn(scope, roleArnAssumeRolePrincipal.id, roleArnAssumeRolePrincipal.roleArn, {});
+
 const testRole = new TestRole(stack, `${stackConfig.prefix}TestRole`, {
   api,
-  assumedByAccount: stackConfig.testRoleProps.assumedByAccount,
+  assumeRolePrincipals: stackConfig.testRoleProps.assumeRolePrincipals,
 });
 new CfnOutput(stack, 'awsIamTestRoleArn', { value: testRole.roleArn });

@@ -8,7 +8,7 @@ import {
   sigV4SignedRequestToNodeFetchRequest,
 } from '../utils/appsync-graphql/graphql-request';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
-import { getAccountFromArn, writeStackConfig } from '../utils';
+import { AssumeRolePrincipal, getAccountFromArn, writeStackConfig } from '../utils';
 
 jest.setTimeout(DURATION_1_HOUR);
 
@@ -16,7 +16,7 @@ const region = process.env.CLI_REGION ?? 'us-west-2';
 const account = process.env.AWS_ACCOUNT ?? getAccountFromArn(process.env.TEST_ACCOUNT_ROLE);
 if (!account) {
   throw new Error(
-    'Must specify either AWS_ACCOUNT or TEST_ACCOUNT_ROLE environment variables. (CodeBuild sets TEST_ACCOUNT_ROLE automatically)',
+    'Must specify either AWS_ACCOUNT or TEST_ACCOUNT_ROLE environment variables. (Amplify CodeBuild scripts set TEST_ACCOUNT_ROLE automatically)',
   );
 }
 
@@ -46,6 +46,18 @@ describe('Implicit IAM support on custom operations', () => {
         const templatePath = path.resolve(path.join(__dirname, 'backends', 'custom-type-iam-access-stack'));
         const name = await initCDKProject(projRoot, templatePath);
 
+        const assumeRolePrincipals: AssumeRolePrincipal[] = [{ account }];
+
+        // Grant CodeBuild test account role permissions to assume the test role. When running tests locally, we assume that the current
+        // credentials have Admin permissions, and don't make any special grants. Local callers can of course manually set the
+        // TEST_ACCOUNT_ROLE env var if they wish.
+        if (process.env.TEST_ACCOUNT_ROLE) {
+          assumeRolePrincipals.push({
+            roleArn: process.env.TEST_ACCOUNT_ROLE,
+            id: 'CodeBuildTestAccountRole',
+          });
+        }
+
         // Note that we don't need to write a test definition -- we'll reuse a hardcoded definition in the stack itself
         writeStackConfig(projRoot, {
           prefix,
@@ -55,7 +67,7 @@ describe('Implicit IAM support on custom operations', () => {
             },
           },
           testRoleProps: {
-            assumedByAccount: account,
+            assumeRolePrincipals,
           },
         });
 

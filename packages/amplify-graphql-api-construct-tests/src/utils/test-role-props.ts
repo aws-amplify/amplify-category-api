@@ -3,7 +3,27 @@
  */
 export interface TestRoleProps {
   /**
-   * The AWS account that will be allowed to assume the role
+   * An array of principals that can assume the test role
    */
-  assumedByAccount: string;
+  assumeRolePrincipals: AssumeRolePrincipal[];
 }
+
+/**
+ * An AWS account ID that will be allowed to assume the test role
+ */
+export interface AccountAssumeRolePrincipal {
+  account: string;
+}
+
+/**
+ * A Role ARNs that will be allowed to assume the test role
+ */
+export interface RoleArnAssumeRolePrincipal {
+  /** The ARN of the role to be granted `sts:AssumeRole` permissions on the test role */
+  roleArn: string;
+
+  /** The ID to be assigned to the role when it is imported into the test stack */
+  id: string;
+}
+
+export type AssumeRolePrincipal = AccountAssumeRolePrincipal | RoleArnAssumeRolePrincipal;
