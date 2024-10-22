@@ -6,15 +6,15 @@ import { ConversationDirectiveConfiguration } from '../conversation-directive-co
  * @param definition - The base definition of the resolver function.
  * @returns A resolver function definition with default values for data source and substitutions if not provided.
  */
-export function createResolverFunctionDefinition(
+export const createResolverFunctionDefinition = (
   definition: Optional<ResolverFunctionDefinition, 'dataSource' | 'substitutions'>,
-): ResolverFunctionDefinition {
+): ResolverFunctionDefinition => {
   return {
     ...definition,
     dataSource: definition.dataSource ?? NONE_DATA_SOURCE,
     substitutions: definition.substitutions ?? EMPTY_SUBSTITUTIONS,
   };
-}
+};
 
 /**
  * The definition of a resolver function, including file name, template name, data source, and substitutions.
