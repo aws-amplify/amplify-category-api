@@ -13,11 +13,11 @@ import {
 
 /**
  * Represents the structure of a conversation model in the GraphQL schema.
- * @property {DirectiveNode} conversationAuthDirective - The auth directive for the conversation model.
- * @property {DirectiveNode} conversationDirective - The model directive for the conversation model.
- * @property {DirectiveNode} conversationHasManyMessagesDirective - The has-many directive for the messages relationship.
- * @property {FieldDefinitionNode} conversationMessagesField - The field definition for the messages relationship.
- * @property {ObjectTypeDefinitionNode} conversation - The complete conversation model object type definition.
+ * @property {DirectiveNode} authDirective - The auth directive for the conversation model.
+ * @property {DirectiveNode} modelDirective - The model directive for the conversation model.
+ * @property {DirectiveNode} hasManyMessagesDirective - The has-many directive for the messages relationship.
+ * @property {FieldDefinitionNode} messagesField - The field definition for the messages relationship.
+ * @property {ObjectTypeDefinitionNode} model - The complete conversation model object type definition.
  */
 export type ConversationModel = {
   authDirective: DirectiveNode;

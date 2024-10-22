@@ -23,10 +23,10 @@ import {
 
 /**
  * Represents the structure of a conversation message model in the GraphQL schema.
- * @property {DirectiveNode} messageAuthDirective - The auth directive for the message model.
- * @property {DirectiveNode} messageDirective - The model directive for the message model.
- * @property {DirectiveNode} messageBelongsToConversationDirective - The belongs-to directive for the conversation relationship.
- * @property {FieldDefinitionNode} messageConversationField - The field definition for the conversation relationship.
+ * @property {DirectiveNode} authDirective - The auth directive for the message model.
+ * @property {DirectiveNode} modelDirective - The model directive for the message model.
+ * @property {DirectiveNode} belongsToConversationDirective - The belongs-to directive for the conversation relationship.
+ * @property {FieldDefinitionNode} conversationField - The field definition for the conversation relationship.
  * @property {ObjectTypeDefinitionNode} model - The complete message model object type definition.
  */
 export type MessageModel = {
@@ -39,8 +39,8 @@ export type MessageModel = {
 
 /**
  * Creates a complete conversation message model structure for a GraphQL schema.
- * @param {string} messageName - The name of the message model.
  * @param {string} conversationName - The name of the conversation model.
+ * @param {string} messageName - The name of the message model.
  * @param {string} referenceFieldName - The name of the field referencing the conversation.
  * @param {NamedTypeNode} conversationMessageInterface - The interface that the message model implements.
  * @returns {MessageModel} The complete conversation message model structure.
