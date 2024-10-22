@@ -301,6 +301,8 @@ function _loadTestAccountCredentials {
         echo "Unable to assume parent e2e account role."
         return
     fi
+    # This is the role actually assumed during test execution. It may be overwritten if we assume a child account role
+    export TEST_EXECUTION_ROLE=$TEST_ACCOUNT_ROLE
     echo "Using account credentials for $(echo $creds | jq -c -r '.AssumedRoleUser.Arn')"
     export AWS_ACCESS_KEY_ID=$(echo $creds | jq -c -r ".Credentials.AccessKeyId")
     export AWS_SECRET_ACCESS_KEY=$(echo $creds | jq -c -r ".Credentials.SecretAccessKey")
@@ -409,11 +411,16 @@ function useChildAccountCredentials {
           echo "Unable to find a child account. Falling back to parent AWS account"
           return
         fi
-        creds=$(aws sts assume-role --role-arn arn:aws:iam::${pick_acct}:role/OrganizationAccountAccessRole --role-session-name testSession${session_id} --duration-seconds 3600)
+        child_role_arn="arn:aws:iam::${pick_acct}:role/OrganizationAccountAccessRole"
+        creds=$(aws sts assume-role --role-arn ${child_role_arn} --role-session-name testSession${session_id} --duration-seconds 3600)
         if [ -z $(echo $creds | jq -c -r '.AssumedRoleUser.Arn') ]; then
             echo "Unable to assume child account role. Falling back to parent AWS account"
             return
         fi
+
+        # This is the role actually assumed during test execution. It overwrites the value set during adoption of parent account creds
+        export TEST_EXECUTION_ROLE=$child_role_arn
+
         export ORGANIZATION_SIZE=$org_size
         export CREDS=$creds
         echo "Using account credentials for $(echo $creds | jq -c -r '.AssumedRoleUser.Arn')"

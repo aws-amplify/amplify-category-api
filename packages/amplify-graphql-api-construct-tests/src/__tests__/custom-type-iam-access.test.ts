@@ -13,10 +13,10 @@ import { AssumeRolePrincipal, getAccountFromArn, writeStackConfig } from '../uti
 jest.setTimeout(DURATION_1_HOUR);
 
 const region = process.env.CLI_REGION ?? 'us-west-2';
-const account = process.env.AWS_ACCOUNT ?? getAccountFromArn(process.env.TEST_ACCOUNT_ROLE);
+const account = process.env.AWS_ACCOUNT ?? getAccountFromArn(process.env.TEST_EXECUTION_ROLE);
 if (!account) {
   throw new Error(
-    'Must specify either AWS_ACCOUNT or TEST_ACCOUNT_ROLE environment variables. (Amplify CodeBuild scripts set TEST_ACCOUNT_ROLE automatically)',
+    'Must specify either AWS_ACCOUNT or TEST_EXECUTION_ROLE environment variables. (Amplify CodeBuild scripts set TEST_EXECUTION_ROLE automatically)',
   );
 }
 
@@ -50,10 +50,10 @@ describe('Implicit IAM support on custom operations', () => {
 
         // Grant CodeBuild test account role permissions to assume the test role. When running tests locally, we assume that the current
         // credentials have Admin permissions, and don't make any special grants. Local callers can of course manually set the
-        // TEST_ACCOUNT_ROLE env var if they wish.
-        if (process.env.TEST_ACCOUNT_ROLE) {
+        // TEST_EXECUTION_ROLE env var if they wish.
+        if (process.env.TEST_EXECUTION_ROLE) {
           assumeRolePrincipals.push({
-            roleArn: process.env.TEST_ACCOUNT_ROLE,
+            roleArn: process.env.TEST_EXECUTION_ROLE,
             id: 'CodeBuildTestAccountRole',
           });
         }
