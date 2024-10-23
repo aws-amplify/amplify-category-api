@@ -1,0 +1,17 @@
+type Mutation {
+  ROUTE_NAME(
+    conversationId: ID!,
+    content: [ContentBlockInput],
+    aiContext: AWSJSON,
+    toolConfiguration: ToolConfigurationInput
+  ): ConversationMessage
+  @conversation(
+    aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
+    functionName: "testFunctionName",
+    handler: {
+      functionName: "testFunctionName",
+      eventVersion: "1.0"
+    },
+    systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
+  )
+}

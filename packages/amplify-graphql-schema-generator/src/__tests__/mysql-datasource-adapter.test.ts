@@ -1,4 +1,4 @@
-import { DataSourceAdapter, MySQLDataSourceAdapter } from '../datasource-adapter';
+import { DataSourceAdapter } from '../datasource-adapter';
 import { getMySQLSchemaQuery } from '../datasource-adapter/mysql-datasource-adapter';
 import { Engine, Field, FieldType, Index, Model, Schema } from '../schema-representation';
 import { generateGraphQLSchema, isComputeExpression } from '../schema-generator';
@@ -51,11 +51,11 @@ describe('testMySQLDataSourceAdapter', () => {
     adapter.getFields = jest.fn(() => []);
     adapter.getPrimaryKey = jest.fn();
     adapter.getIndexes = jest.fn(() => []);
-    await adapter.getModels();
-    expect(adapter.getTablesList).toBeCalledTimes(1);
-    expect(adapter.getFields).toBeCalledTimes(1);
-    expect(adapter.getIndexes).toBeCalledTimes(1);
-    expect(adapter.getPrimaryKey).toBeCalledTimes(1);
+    adapter.getModels();
+    expect(adapter.getTablesList).toHaveBeenCalledTimes(1);
+    expect(adapter.getFields).toHaveBeenCalledTimes(1);
+    expect(adapter.getIndexes).toHaveBeenCalledTimes(1);
+    expect(adapter.getPrimaryKey).toHaveBeenCalledTimes(1);
   });
 
   it('test generate graphql schema from internal reprensentation', () => {
@@ -210,7 +210,7 @@ describe('testMySQLDataSourceAdapter', () => {
         exclude: [String] = ["Tasks"]
       }
     `;
-    expect(() => generateGraphQLSchema(dbschema, amplifyInputType)).toThrowError(
+    expect(() => generateGraphQLSchema(dbschema, amplifyInputType)).toThrow(
       'Cannot specify both include and exclude options. Please check your GraphQL schema.',
     );
   });
@@ -251,7 +251,7 @@ describe('testMySQLDataSourceAdapter', () => {
         include: String = "Tasks"
       }
     `;
-    expect(() => generateGraphQLSchema(dbschema, amplifyInputTypeInclude)).toThrowError(
+    expect(() => generateGraphQLSchema(dbschema, amplifyInputTypeInclude)).toThrow(
       'Invalid value for include option. Please check your GraphQL schema.',
     );
 
@@ -262,7 +262,7 @@ describe('testMySQLDataSourceAdapter', () => {
         exclude: String = "Tasks"
       }
     `;
-    expect(() => generateGraphQLSchema(dbschema, amplifyInputTypeExclude)).toThrowError(
+    expect(() => generateGraphQLSchema(dbschema, amplifyInputTypeExclude)).toThrow(
       'Invalid value for include option. Please check your GraphQL schema.',
     );
   });

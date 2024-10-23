@@ -1,11 +1,12 @@
-import { AppSyncGraphqlResponse, doAppSyncGraphqlMutation, doAppSyncGraphqlOperation, doAppSyncGraphqlQuery } from '../../utils';
+import { AppSyncGraphqlResponse, doAppSyncGraphqlOperation, doAppSyncGraphqlQuery } from '../../utils';
 import {
   CreateConversationPirateChatMutation,
   GetConversationPirateChatQuery,
   ListConversationMessagePirateChatsQuery,
   PirateChatMutation,
+  UpdateConversationPirateChatMutation,
 } from './API';
-import { createConversationPirateChat, pirateChat } from './graphql/mutations';
+import { createConversationPirateChat, pirateChat, updateConversationPirateChat } from './graphql/mutations';
 import { getConversationPirateChat, listConversationMessagePirateChats } from './graphql/queries';
 
 export const doCreateConversationPirateChat = async (
@@ -32,6 +33,20 @@ export const doGetConversationPirateChat = async (
     variables: {
       id: conversationId,
     },
+  });
+};
+
+export const doUpdateConversationPirateChat = async (
+  apiEndpoint: string,
+  accessToken: string,
+  conversationId: string,
+  name: string,
+): Promise<AppSyncGraphqlResponse<UpdateConversationPirateChatMutation>> => {
+  return doAppSyncGraphqlOperation({
+    apiEndpoint,
+    auth: { accessToken: accessToken },
+    query: updateConversationPirateChat,
+    variables: { input: { id: conversationId, name } },
   });
 };
 

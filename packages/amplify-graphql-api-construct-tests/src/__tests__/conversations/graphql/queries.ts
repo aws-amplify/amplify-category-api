@@ -11,6 +11,7 @@ type GeneratedQuery<InputType, OutputType> = string & {
 export const getConversationMessagePirateChat = /* GraphQL */ `query GetConversationMessagePirateChat($id: ID!) {
   getConversationMessagePirateChat(id: $id) {
     aiContext
+    associatedUserMessageId
     content {
       text
       __typename
@@ -65,6 +66,7 @@ export const listConversationMessagePirateChats = /* GraphQL */ `query ListConve
   ) {
     items {
       aiContext
+      associatedUserMessageId
       conversationId
       createdAt
       id

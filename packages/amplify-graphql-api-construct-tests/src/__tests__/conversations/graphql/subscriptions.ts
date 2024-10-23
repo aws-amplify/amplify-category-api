@@ -11,10 +11,7 @@ type GeneratedSubscription<InputType, OutputType> = string & {
 export const onCreateAssistantResponsePirateChat = /* GraphQL */ `subscription OnCreateAssistantResponsePirateChat($conversationId: ID) {
   onCreateAssistantResponsePirateChat(conversationId: $conversationId) {
     aiContext
-    assistantContent {
-      text
-      __typename
-    }
+    associatedUserMessageId
     content {
       text
       __typename
@@ -50,10 +47,7 @@ export const onCreateConversationMessagePirateChat = /* GraphQL */ `subscription
 ) {
   onCreateConversationMessagePirateChat(filter: $filter, owner: $owner) {
     aiContext
-    assistantContent {
-      text
-      __typename
-    }
+    associatedUserMessageId
     content {
       text
       __typename
