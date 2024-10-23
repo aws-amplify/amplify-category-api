@@ -13,7 +13,6 @@ import {
   ModelDataSourceStrategy,
 } from '@aws-amplify/graphql-api-construct';
 import { IConstruct } from 'constructs';
-import { applyOverrides } from './overrides';
 
 // This app defines a CDK stack that is configured with various command files written into the project root directory. To use it:
 // - Write test definition(s) to `projRoot/*-test-definition.json`
@@ -166,5 +165,3 @@ if (stackConfig.sqlLambdaLayerArn) {
     Aspects.of(fn).add(new LambdaLayerVersionOverride(stackConfig.sqlLambdaLayerArn));
   }
 }
-
-applyOverrides(api);
