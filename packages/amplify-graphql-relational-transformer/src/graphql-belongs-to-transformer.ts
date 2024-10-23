@@ -176,6 +176,12 @@ export class BelongsToTransformer extends TransformerPluginBase {
 
 const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field, object } = config;
+  if (config.overrideIndexName && !config.references) {
+    throw new InvalidDirectiveError(
+      `overrideIndexName cannot be used on @${BelongsToDirective.name} without references. Modify ${object.name.value}.${field.name.value} to use references or remove overrideIndexName.`,
+    );
+  }
+
   let dbType: ModelDataSourceStrategyDbType;
   try {
     // getStrategyDbTypeFromTypeNode throws if a datasource is not found for the model. We want to catch that condition
