@@ -7210,7 +7210,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 716
+            "line": 724
           },
           "name": "excludeVerboseContent",
           "optional": true,
@@ -7229,7 +7229,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 740
+            "line": 748
           },
           "name": "fieldLogLevel",
           "optional": true,
@@ -7248,7 +7248,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 748
+            "line": 707
           },
           "name": "retention",
           "optional": true,
@@ -9292,5 +9292,5 @@
     }
   },
   "version": "1.15.1",
-  "fingerprint": "yZQI0DjskJkFs7gAQZpcPhA1b1Ew4aBw2CEoTUdKF4k="
+  "fingerprint": "p2BsI/PL0dOZ3DIN9tBgw8K51Uqzp/4H1MF8YNrK8R4="
 }

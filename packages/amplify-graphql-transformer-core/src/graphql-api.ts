@@ -15,16 +15,16 @@ import {
   Visibility,
   IamResource,
 } from 'aws-cdk-lib/aws-appsync';
-import { 
-  Effect, 
-  Grant, 
-  IGrantable, 
-  ManagedPolicy, 
-  Policy, 
-  PolicyDocument, 
-  PolicyStatement, 
-  Role, 
-  ServicePrincipal 
+import {
+  Effect,
+  Grant,
+  IGrantable,
+  ManagedPolicy,
+  Policy,
+  PolicyDocument,
+  PolicyStatement,
+  Role,
+  ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import { ArnFormat, CfnResource, Duration, Stack } from 'aws-cdk-lib';
@@ -152,7 +152,6 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
    * The scope of the GraphQL API. public (GLOBAL) or private (PRIVATE)
    */
   public readonly visibility: Visibility;
-
 
   private schemaResource: CfnGraphQLSchema;
 

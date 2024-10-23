@@ -699,6 +699,14 @@ export { FieldLogLevel, RetentionDays };
  */
 export interface LogConfig {
   /**
+   * The number of days log events are kept in CloudWatch Logs.
+   *
+   * @default RetentionDays.ONE_WEEK
+   * @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_logs.RetentionDays.html
+   */
+  readonly retention?: RetentionDays;
+
+  /**
    * When set to `true`, excludes verbose information from the logs, such as:
    * - GraphQL Query
    * - Request Headers
@@ -738,14 +746,6 @@ export interface LogConfig {
    * @default FieldLogLevel.NONE
    */
   readonly fieldLogLevel?: FieldLogLevel;
-
-  /**
-   * The number of days log events are kept in CloudWatch Logs.
-   *
-   * @default RetentionDays.ONE_WEEK
-   * @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_logs.RetentionDays.html
-   */
-  readonly retention?: RetentionDays;
 }
 
 /**

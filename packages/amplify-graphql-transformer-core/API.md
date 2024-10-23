@@ -40,7 +40,6 @@ import { GraphQLError } from 'graphql';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { IamResource } from 'aws-cdk-lib/aws-appsync';
 import { IGrantable } from 'aws-cdk-lib/aws-iam';
-import { ILogGroup } from 'aws-cdk-lib/aws-logs';
 import { InlineMappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { InputObjectTypeDefinitionNode } from 'graphql';
 import { InputObjectTypeExtensionNode } from 'graphql';
