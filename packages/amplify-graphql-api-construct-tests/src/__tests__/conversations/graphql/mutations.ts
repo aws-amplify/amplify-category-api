@@ -13,6 +13,7 @@ export const createAssistantResponsePirateChat = /* GraphQL */ `mutation CreateA
 ) {
   createAssistantResponsePirateChat(input: $input) {
     aiContext
+    associatedUserMessageId
     content {
       text
       __typename
@@ -45,6 +46,7 @@ export const createConversationMessagePirateChat = /* GraphQL */ `mutation Creat
 ) {
   createConversationMessagePirateChat(condition: $condition, input: $input) {
     aiContext
+    associatedUserMessageId
     content {
       text
       __typename
@@ -96,6 +98,7 @@ export const deleteConversationMessagePirateChat = /* GraphQL */ `mutation Delet
 ) {
   deleteConversationMessagePirateChat(condition: $condition, input: $input) {
     aiContext
+    associatedUserMessageId
     content {
       text
       __typename
@@ -169,6 +172,7 @@ export const pirateChat = /* GraphQL */ `mutation PirateChat(
     updatedAt
 
     ... on ConversationMessagePirateChat {
+      associatedUserMessageId
       conversation {
         createdAt
         id
@@ -182,3 +186,22 @@ export const pirateChat = /* GraphQL */ `mutation PirateChat(
   }
 }
 ` as GeneratedMutation<APITypes.PirateChatMutationVariables, APITypes.PirateChatMutation>;
+export const updateConversationPirateChat = /* GraphQL */ `mutation UpdateConversationPirateChat(
+  $condition: ModelConversationPirateChatConditionInput
+  $input: UpdateConversationPirateChatInput!
+) {
+  updateConversationPirateChat(condition: $condition, input: $input) {
+    createdAt
+    id
+    messages {
+      nextToken
+      __typename
+    }
+    metadata
+    name
+    owner
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<APITypes.UpdateConversationPirateChatMutationVariables, APITypes.UpdateConversationPirateChatMutation>;
