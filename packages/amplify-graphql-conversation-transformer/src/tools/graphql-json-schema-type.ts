@@ -1,3 +1,9 @@
+import {
+  JSONSchema,
+  convertNamedTypeToJSONSchema,
+  isDisallowedScalarType,
+  supportedScalarTypes,
+} from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   EnumTypeDefinitionNode,
@@ -9,13 +15,7 @@ import {
   TypeNode,
   TypeSystemDefinitionNode,
 } from 'graphql';
-import { isScalar, getBaseType } from 'graphql-transformer-common';
-import {
-  JSONSchema,
-  convertNamedTypeToJSONSchema,
-  isDisallowedScalarType,
-  supportedScalarTypes,
-} from '@aws-amplify/graphql-transformer-core';
+import { getBaseType, isScalar } from 'graphql-transformer-common';
 
 /**
  * Generates a JSON Schema from a GraphQL TypeNode.
