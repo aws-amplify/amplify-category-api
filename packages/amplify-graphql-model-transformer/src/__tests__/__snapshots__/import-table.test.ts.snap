@@ -1,0 +1,64 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`import-table getExpectedTableProperties 1`] = `
+Object {
+  "AttributeDefinitions": Array [
+    Object {
+      "AttributeName": "todoId",
+      "AttributeType": "S",
+    },
+    Object {
+      "AttributeName": "name",
+      "AttributeType": "S",
+    },
+    Object {
+      "AttributeName": "name2",
+      "AttributeType": "S",
+    },
+  ],
+  "BillingModeSummary": Object {
+    "BillingMode": "PROVISIONED",
+  },
+  "DeletionProtectionEnabled": false,
+  "GlobalSecondaryIndexes": Array [
+    Object {
+      "IndexName": "byName2",
+      "KeySchema": Array [
+        Object {
+          "AttributeName": "name2",
+          "KeyType": "HASH",
+        },
+      ],
+      "Projection": Object {
+        "ProjectionType": "ALL",
+      },
+      "ProvisionedThroughput": Object {
+        "ReadCapacityUnits": 5,
+        "WriteCapacityUnits": 5,
+      },
+    },
+  ],
+  "KeySchema": Array [
+    Object {
+      "AttributeName": "todoId",
+      "KeyType": "HASH",
+    },
+    Object {
+      "AttributeName": "name",
+      "KeyType": "RANGE",
+    },
+  ],
+  "ProvisionedThroughput": Object {
+    "ReadCapacityUnits": 5,
+    "WriteCapacityUnits": 5,
+  },
+  "SSEDescription": Object {
+    "SSEType": "KMS",
+    "Status": "ENABLED",
+  },
+  "StreamSpecification": Object {
+    "StreamEnabled": true,
+    "StreamViewType": "NEW_AND_OLD_IMAGES",
+  },
+}
+`;

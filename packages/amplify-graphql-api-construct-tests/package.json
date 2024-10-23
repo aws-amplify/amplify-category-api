@@ -17,7 +17,8 @@
   ],
   "private": true,
   "scripts": {
-    "e2e": "jest --verbose --forceExit",
+    "e2e": "npm run setup-profile && jest --verbose --forceExit",
+    "setup-profile": "ts-node ../amplify-e2e-tests/src/configure_tests.ts",
     "build-tests": "tsc --build tsconfig.tests.json"
   },
   "dependencies": {
@@ -26,10 +27,12 @@
     "@aws-amplify/graphql-api-construct": "1.15.1",
     "@aws-cdk/aws-cognito-identitypool-alpha": "2.152.0-alpha.0",
     "@aws-sdk/client-cognito-identity-provider": "3.624.0",
+    "@aws-sdk/client-dynamodb": "3.624.0",
     "@aws-sdk/client-lambda": "3.624.0",
     "@aws-sdk/client-rds": "3.624.0",
     "@aws-sdk/client-ssm": "3.624.0",
     "@aws-sdk/client-sts": "3.624.0",
+    "@aws-sdk/client-cloudformation": "3.624.0",
     "@faker-js/faker": "^8.2.0",
     "amplify-category-api-e2e-core": "5.0.4",
     "aws-amplify": "^4.2.8",
