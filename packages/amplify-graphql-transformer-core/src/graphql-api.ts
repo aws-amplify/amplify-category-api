@@ -220,6 +220,21 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
         api: this,
       });
     }
+
+    // set up log retention
+    if (props.logging) {
+      const defaultRetentionDays = RetentionDays.ONE_WEEK;
+
+      const retention =
+        typeof props.logging === 'object' && 'retention' in props.logging
+          ? props.logging.retention ?? defaultRetentionDays
+          : defaultRetentionDays;
+
+      new LogRetention(this, 'LogRetention', {
+        logGroupName: `/aws/appsync/apis/${this.apiId}`,
+        retention: retention,
+      });
+    }
   }
 
   /**

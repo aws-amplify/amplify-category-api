@@ -184,5 +184,8 @@ describe('log config', () => {
 
     const createdLogConfig = api.resources.cfnResources.cfnGraphqlApi.logConfig as CfnGraphQLApi.LogConfigProperty;
     expect(createdLogConfig).toBeUndefined();
+
+    const template = Template.fromStack(stack);
+    template.resourcePropertiesCountIs('Custom::LogRetention', 'LogRetention', 0);
   });
 });
