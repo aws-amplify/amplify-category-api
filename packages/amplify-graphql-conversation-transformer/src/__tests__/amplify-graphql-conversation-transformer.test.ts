@@ -1,17 +1,17 @@
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
+import { GenerationTransformer } from '@aws-amplify/graphql-generation-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration, ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DeploymentResources, testTransform, TransformManager } from '@aws-amplify/graphql-transformer-test-utils';
-import { parse } from 'graphql';
-import { ConversationTransformer } from '..';
-import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
-import * as fs from 'fs-extra';
-import * as path from 'path';
 import { Code, Function, IFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { GenerationTransformer } from '@aws-amplify/graphql-generation-transformer';
+import * as fs from 'fs-extra';
+import { parse } from 'graphql';
 import { toUpper } from 'graphql-transformer-common';
+import * as path from 'path';
+import { ConversationTransformer } from '..';
 
 const conversationSchemaTypes = fs.readFileSync(path.join(__dirname, 'schemas/conversation-schema-types.graphql'), 'utf8');
 
@@ -155,16 +155,6 @@ const assertResolverSnapshot = (routeName: string, resources: DeploymentResource
 const getResolverResource = (mutationName: string, resources?: Record<string, any>): Record<string, any> => {
   const resolverName = `Mutation${mutationName}Resolver`;
   return resources?.[resolverName];
-};
-
-const getResolverFnResource = (mutationName: string, resources: DeploymentResources): string => {
-  const resolverFnCode =
-    resources.rootStack.Resources &&
-    Object.entries(resources.rootStack.Resources).find(([key, _]) => key.startsWith(`Mutation${toUpper(mutationName)}DataResolverFn`))?.[1][
-      'Properties'
-    ]['Code'];
-
-  return resolverFnCode;
 };
 
 const defaultAuthConfig: AppSyncAuthConfiguration = {

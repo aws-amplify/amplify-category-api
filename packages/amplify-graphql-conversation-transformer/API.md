@@ -27,8 +27,6 @@ export class ConversationTransformer extends TransformerPluginBase {
     generateResolvers: (ctx: TransformerContextProvider) => void;
     // (undocumented)
     prepare: (ctx: TransformerPrepareStepContextProvider) => void;
-    // (undocumented)
-    validate: () => void;
 }
 
 // (No @packageDocumentation comment for this package)
