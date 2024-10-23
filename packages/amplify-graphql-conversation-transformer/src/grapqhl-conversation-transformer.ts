@@ -8,58 +8,12 @@ import {
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { DirectiveNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
-import { ConversationModel } from './graphql-types/session-model';
-import { MessageModel } from './graphql-types/message-model';
-import { type ToolDefinition, type Tools } from './utils/tools';
+import { ConversationDirectiveConfiguration } from './conversation-directive-configuration';
+import { ConversationFieldHandler } from './transformer-steps/conversation-field-handler';
 import { ConversationPrepareHandler } from './transformer-steps/conversation-prepare-handler';
 import { ConversationResolverGenerator } from './transformer-steps/conversation-resolver-generator';
-import { ConversationFieldHandler } from './transformer-steps/conversation-field-handler';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as semver from 'semver';
-
-/**
- * Configuration for the Conversation Directive
- */
-export type ConversationDirectiveConfiguration = {
-  parent: ObjectTypeDefinitionNode;
-  directive: DirectiveNode;
-  aiModel: string;
-  /**
-   * Custom handler function name.
-   *
-   * @deprecated Replaced by 'handler'
-   */
-  functionName: string | undefined;
-  handler: ConversationHandlerFunctionConfiguration | undefined;
-  field: FieldDefinitionNode;
-  responseMutationInputTypeName: string;
-  responseMutationName: string;
-  systemPrompt: string;
-  tools: ToolDefinition[];
-  toolSpec: Tools;
-  conversationModel: ConversationModel;
-  messageModel: MessageModel;
-  inferenceConfiguration: ConversationInferenceConfiguration;
-};
-
-/**
- * Conversation Handler Function Configuration
- */
-export type ConversationHandlerFunctionConfiguration = {
-  functionName: string;
-  eventVersion: string;
-};
-
-/**
- * Conversation Inference Configuration
- */
-export type ConversationInferenceConfiguration = {
-  maxTokens?: number;
-  temperature?: number;
-  topP?: number;
-};
-
 /**
  * Transformer for handling `@conversation` directives in GraphQL schemas
  */
@@ -113,24 +67,5 @@ export class ConversationTransformer extends TransformerPluginBase {
    */
   prepare = (ctx: TransformerPrepareStepContextProvider): void => {
     this.prepareHandler.prepare(ctx, this.directives);
-  };
-
-  validate = (): void => {
-    for (const directive of this.directives) {
-      if (directive.field.type.kind !== 'NamedType' || directive.field.type.name.value !== 'ConversationMessage') {
-        throw new InvalidDirectiveError('@conversation return type must be ConversationMessage');
-      }
-      if (directive.handler && directive.functionName) {
-        throw new InvalidDirectiveError("'functionName' and 'handler' are mutually exclusive");
-      }
-      if (directive.handler) {
-        const eventVersion = semver.coerce(directive.handler.eventVersion);
-        if (eventVersion?.major !== 1) {
-          throw new Error(
-            `Unsupported custom conversation handler. Expected eventVersion to match 1.x, received ${directive.handler.eventVersion}`,
-          );
-        }
-      }
-    }
   };
 }
