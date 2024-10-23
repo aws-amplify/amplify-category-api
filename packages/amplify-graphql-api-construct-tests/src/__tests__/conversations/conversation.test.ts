@@ -109,6 +109,20 @@ describe('conversation', () => {
       expect(messages.body.data.listConversationMessagePirateChats.items[0].conversationId).toBe(id);
     });
 
+    // test('response flow', async () => {
+    //   const conversationResult = await doCreateConversationPirateChat(apiEndpoint, accessToken);
+    //   const { id } = conversationResult.body.data.createConversationPirateChat;
+
+    //   const subscriptionResult = await doSubscribeToConversationPirateChat(apiEndpoint, accessToken, id);
+
+    //   const sendMessageResult = await doSendMessagePirateChat(apiEndpoint, accessToken, id, [{ text: 'Hello, world!' }]);
+    //   const message = sendMessageResult.body.data.pirateChat;
+    //   expect(message).toBeDefined();
+    //   expect(message.content).toHaveLength(1);
+    //   expect(message.content[0].text).toEqual('Hello, world!');
+    //   expect(message.conversationId).toEqual(id);
+    // });
+
     test('update conversation', async () => {
       const conversationResult = await doCreateConversationPirateChat(apiEndpoint, accessToken);
 
