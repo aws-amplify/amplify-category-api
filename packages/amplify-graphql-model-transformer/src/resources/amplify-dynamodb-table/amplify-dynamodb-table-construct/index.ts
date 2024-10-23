@@ -23,13 +23,11 @@ const RANGE_KEY_TYPE = 'RANGE';
 const MAX_LOCAL_SECONDARY_INDEX_COUNT = 5;
 
 export const CUSTOM_DDB_CFN_TYPE = 'Custom::AmplifyDynamoDBTable';
-export const CUSTOM_IMPORTED_DDB_CFN_TYPE = 'Custom::ImportedAmplifyDynamoDBTable';
 
 export interface AmplifyDynamoDBTableProps extends TableProps {
   customResourceServiceToken: string;
   allowDestructiveGraphqlSchemaUpdates?: boolean;
   replaceTableUponGsiUpdate?: boolean;
-  isImported?: boolean;
 }
 export class AmplifyDynamoDBTable extends Resource {
   public readonly encryptionKey?: kms.IKey;
@@ -73,7 +71,7 @@ export class AmplifyDynamoDBTable extends Resource {
     // Refer https://docs.aws.amazon.com/cdk/api/v2/docs/constructs.Node.html#defaultchild
     this.table = new CustomResource(this, 'Default', {
       serviceToken: this.customResourceServiceToken,
-      resourceType: props.isImported ? CUSTOM_IMPORTED_DDB_CFN_TYPE : CUSTOM_DDB_CFN_TYPE,
+      resourceType: CUSTOM_DDB_CFN_TYPE,
       properties: {
         tableName: this.tableName,
         attributeDefinitions: this.attributeDefinitions,
@@ -97,7 +95,6 @@ export class AmplifyDynamoDBTable extends Resource {
         deletionProtectionEnabled: props.deletionProtection,
         allowDestructiveGraphqlSchemaUpdates: props.allowDestructiveGraphqlSchemaUpdates ?? false,
         replaceTableUponGsiUpdate: props.replaceTableUponGsiUpdate ?? false,
-        isImported: props.isImported,
       },
       removalPolicy: props.removalPolicy,
     });

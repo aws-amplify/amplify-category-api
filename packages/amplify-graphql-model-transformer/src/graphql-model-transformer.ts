@@ -80,7 +80,6 @@ import { DynamoModelResourceGenerator } from './resources/dynamo-model-resource-
 import { RdsModelResourceGenerator } from './resources/rds-model-resource-generator';
 import { ModelTransformerOptions } from './types';
 import { AmplifyDynamoModelResourceGenerator } from './resources/amplify-dynamodb-table/amplify-dynamo-model-resource-generator';
-import { isImportedAmplifyDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-core';
 
 /**
  * Nullable
@@ -115,8 +114,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     this.options = this.getOptions(options);
     this.resourceGeneratorMap.set(DDB_DB_TYPE, new DynamoModelResourceGenerator());
     this.resourceGeneratorMap.set(SQL_LAMBDA_GENERATOR, new RdsModelResourceGenerator());
-    const amplifyTableDynamoModelResourceGenerator = new AmplifyDynamoModelResourceGenerator();
-    this.resourceGeneratorMap.set(ITERATIVE_TABLE_GENERATOR, amplifyTableDynamoModelResourceGenerator);
+    this.resourceGeneratorMap.set(ITERATIVE_TABLE_GENERATOR, new AmplifyDynamoModelResourceGenerator());
   }
 
   before = (ctx: TransformerBeforeStepContextProvider): void => {
@@ -135,7 +133,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       this.resourceGeneratorMap.get(SQL_LAMBDA_GENERATOR)?.enableGenerator();
       this.resourceGeneratorMap.get(SQL_LAMBDA_GENERATOR)?.enableUnprovisioned();
     }
-    if (strategies.some(isAmplifyDynamoDbModelDataSourceStrategy) || strategies.some(isImportedAmplifyDynamoDbModelDataSourceStrategy)) {
+    if (strategies.some(isAmplifyDynamoDbModelDataSourceStrategy)) {
       this.resourceGeneratorMap.get(ITERATIVE_TABLE_GENERATOR)?.enableGenerator();
       this.resourceGeneratorMap.get(ITERATIVE_TABLE_GENERATOR)?.enableProvisioned();
     }
@@ -873,8 +871,6 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       generator = this.resourceGeneratorMap.get(ITERATIVE_TABLE_GENERATOR);
     } else if (isSqlStrategy(strategy)) {
       generator = this.resourceGeneratorMap.get(SQL_LAMBDA_GENERATOR);
-    } else if (isImportedAmplifyDynamoDbModelDataSourceStrategy(strategy)) {
-      generator = this.resourceGeneratorMap.get(ITERATIVE_TABLE_GENERATOR);
     }
 
     if (!generator) {

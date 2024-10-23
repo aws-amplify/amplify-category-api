@@ -25,8 +25,7 @@
     "build-rds-lambda": "cd rds-lambda && mkdir -p node_modules && rm -rf node_modules && npm install && tsc && cp -r node_modules lib && cd lib && bestzip --force node ../../lib/rds-lambda.zip ./* && cd ../..",
     "build-rds-patching-lambda": "cd rds-patching-lambda && mkdir -p node_modules && rm -rf node_modules && npm install && tsc && cp -r node_modules lib && cd lib && bestzip --force node ../../lib/rds-patching-lambda.zip ./* && cd ../..",
     "build-notification-lambda": "cd publish-notification-lambda && mkdir -p node_modules && rm -rf node_modules && npm install && tsc && cp -r node_modules lib && cd lib && bestzip --force node ../../lib/rds-notification-lambda.zip ./* && cd ../..",
-    "build-table-manager-lambda": "cp src/resources/amplify-dynamodb-table/amplify-table-manager-lambda/package.json lib/resources/amplify-dynamodb-table/amplify-table-manager-lambda/package.json && (cd lib/resources/amplify-dynamodb-table/amplify-table-manager-lambda/ && mkdir -p node_modules && rm -rf node_modules && npm install)",
-    "build": "tsc && yarn build-rds-lambda && yarn build-rds-patching-lambda && yarn build-notification-lambda && yarn build-table-manager-lambda",
+    "build": "tsc && yarn build-rds-lambda && yarn build-rds-patching-lambda && yarn build-notification-lambda",
     "watch": "tsc -w",
     "clean": "rimraf ./lib && rimraf ./rds-lambda/lib && rimraf ./rds-patching-lambda/lib && rimraf ./publish-notification-lambda/lib",
     "test": "jest",
@@ -51,8 +50,7 @@
     "@aws-sdk/client-lambda": "^3.624.0",
     "@aws-sdk/client-sfn": "^3.624.0",
     "@types/aws-lambda": "8.10.119",
-    "@types/lodash.isequal": "^4.5.8",
-    "@types/node": "^12.12.6"
+    "@types/node": "^18.0.0"
   },
   "jest": {
     "transform": {
