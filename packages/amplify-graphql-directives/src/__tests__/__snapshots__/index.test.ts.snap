@@ -201,7 +201,7 @@ exports[`Directive Definitions BelongsToDirective 1`] = `
 Object {
   "defaults": Object {},
   "definition": "
-  directive @belongsTo(fields: [String!], references: [String!], overrideIndexName: String) on FIELD_DEFINITION
+  directive @belongsTo(fields: [String!], references: [String!]) on FIELD_DEFINITION
 ",
   "name": "belongsTo",
 }
