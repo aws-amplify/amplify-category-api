@@ -29,6 +29,6 @@ describe('CDK Amplify Database', () => {
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'database-construct', 'basic-postgres'));
     await initCDKProject(projRoot, templatePath);
     await cdkDeploy(projRoot, '--all');
-    // TODO: add assertions
+    // TODO: assertions will come with data base manager construct
   });
 });
