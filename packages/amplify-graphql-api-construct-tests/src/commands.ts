@@ -9,11 +9,12 @@ import { getScriptRunnerPath, sleep, nspawn as spawn } from 'amplify-category-ap
  */
 const getNpxPath = (): string => (process.platform === 'win32' ? getScriptRunnerPath().replace('node.exe', 'npx.cmd') : 'npx');
 
-export type CdkConstruct = 'GraphqlApi' | 'Data';
+export type CdkConstruct = 'GraphqlApi' | 'Data' | 'Database';
 
 const cdkConstructToPackagedConstructDirectory: Record<CdkConstruct, string> = {
   GraphqlApi: path.join(__dirname, '..', '..', 'amplify-graphql-api-construct', 'dist', 'js'),
   Data: path.join(__dirname, '..', '..', 'amplify-data-construct', 'dist', 'js'),
+  Database: path.join(__dirname, '..', '..', 'amplify-database-construct', 'dist', 'js'),
 };
 
 /**
