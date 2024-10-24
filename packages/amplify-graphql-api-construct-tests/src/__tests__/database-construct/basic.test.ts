@@ -26,8 +26,8 @@ describe('CDK Amplify Database', () => {
   });
 
   test('create postgres database cluster', async () => {
-    const templatePath = path.resolve(path.join(__dirname, 'backends', 'database-construct', 'basic-postgres'));
-    await initCDKProject(projRoot, templatePath);
+    const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'database-construct', 'basic-postgres'));
+    await initCDKProject(projRoot, templatePath, { construct: 'Database' });
     await cdkDeploy(projRoot, '--all');
     // TODO: assertions will come with data base manager construct
   });
