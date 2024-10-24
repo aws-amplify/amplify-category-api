@@ -9,7 +9,7 @@ export type PreProvisionedClusterInfo = {
 };
 
 export const getPreProvisionedClusterInfo = async (region: string, engine: SqlEngine): Promise<PreProvisionedClusterInfo | undefined> => {
-  const s3Client = new S3Client({ region });
+  const s3Client = new S3Client({ region: 'us-east-1' });
   const stsClient = new STSClient({ region });
 
   try {
