@@ -131,9 +131,16 @@ describe('ConversationTransformer', () => {
 });
 
 const assertResolverSnapshot = (routeName: string, resources: DeploymentResources) => {
-  const resolverCode = getResolverResource(routeName, resources.rootStack.Resources)['Properties']['Code'];
+  const resolverName = `Mutation${routeName}Resolver`;
+  const resolverCode = resources.rootStack.Resources?.[resolverName].Properties.Code;
   expect(resolverCode).toBeDefined();
   expect(resolverCode).toMatchSnapshot();
+
+  // Need to do this song and dance because the init slot is an inline function.
+  // It's not accessible via `resources.resolvers`.
+  const initFn = getFunctionForPipelineSlot(resources, resolverName, 0);
+  expect(initFn).toBeDefined();
+  expect(initFn).toMatchSnapshot();
 
   const authFn = resources?.resolvers[`Mutation.${routeName}.auth.js`];
   expect(authFn).toBeDefined();
@@ -152,9 +159,10 @@ const assertResolverSnapshot = (routeName: string, resources: DeploymentResource
   expect(invokeLambdaFn).toMatchSnapshot();
 };
 
-const getResolverResource = (mutationName: string, resources?: Record<string, any>): Record<string, any> => {
-  const resolverName = `Mutation${mutationName}Resolver`;
-  return resources?.[resolverName];
+const getFunctionForPipelineSlot = (resources: Record<string, any>, resolverName: string, slot: number): string => {
+  const functionName = resources.rootStack.Resources?.[resolverName].Properties.PipelineConfig.Functions[slot]['Fn::GetAtt'][0];
+  const functionConfiguration = resources.rootStack.Resources[functionName];
+  return functionConfiguration.Properties.Code;
 };
 
 const defaultAuthConfig: AppSyncAuthConfiguration = {

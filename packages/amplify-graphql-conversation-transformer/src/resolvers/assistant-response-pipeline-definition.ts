@@ -1,5 +1,10 @@
 import { ConversationDirectiveConfiguration } from '../conversation-directive-configuration';
-import { createResolverFunctionDefinition, PipelineDefinition, ResolverFunctionDefinition } from './resolver-function-definition';
+import {
+  createResolverFunctionDefinition,
+  createS3AssetMappingTemplateGenerator,
+  PipelineDefinition,
+  ResolverFunctionDefinition,
+} from './resolver-function-definition';
 
 /**
  * The pipeline definition for the assistant response mutation resolver.
@@ -18,7 +23,7 @@ function init(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'init',
     fileName: 'init-resolver-fn.template.js',
-    templateName: generateTemplateName('init'),
+    generateTemplate: templateGenerator('init'),
   });
 }
 
@@ -29,7 +34,7 @@ function auth(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'auth',
     fileName: 'auth-resolver-fn.template.js',
-    templateName: generateTemplateName('auth'),
+    generateTemplate: templateGenerator('auth'),
   });
 }
 
@@ -40,7 +45,7 @@ function verifySessionOwner(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'verifySessionOwner',
     fileName: 'verify-session-owner-resolver-fn.template.js',
-    templateName: generateTemplateName('verify-session-owner'),
+    generateTemplate: templateGenerator('verify-session-owner'),
     dataSource: (config) => config.dataSources.conversationTableDataSource,
     substitutions: () => ({
       CONVERSATION_ID_PARENT: 'ctx.args.input',
@@ -55,7 +60,7 @@ function data(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'data',
     fileName: 'assistant-mutation-resolver-fn.template.js',
-    templateName: generateTemplateName('assistant-response'),
+    generateTemplate: templateGenerator('assistant-response'),
     dataSource: (config) => config.dataSources.lambdaFunctionDataSource,
     substitutions: (config) => ({
       CONVERSATION_MESSAGE_TYPE_NAME: config.message.model.name.value,
@@ -63,10 +68,16 @@ function data(): ResolverFunctionDefinition {
   });
 }
 
+/**
+ * Field name for the assistant response mutation.
+ */
 function fieldName(config: ConversationDirectiveConfiguration): string {
   return config.assistantResponseMutation.field.name.value;
 }
 
-function generateTemplateName(slotName: string): (config: ConversationDirectiveConfiguration) => string {
-  return (config: ConversationDirectiveConfiguration) => `Mutation.${fieldName(config)}.${slotName}.js`;
+/**
+ * Creates a template generator specific to the assistant response pipeline for a given slot name.
+ */
+function templateGenerator(slotName: string) {
+  return createS3AssetMappingTemplateGenerator('Mutation', slotName, fieldName);
 }

@@ -94,15 +94,16 @@ export class ConversationResolverGenerator {
     const fieldName = directive.field.name.value;
 
     // Generate and add resolvers for send message, assistant response, and subscription
-    const conversationPipelineResolver = generateResolverPipeline(sendMessagePipelineDefinition, directive);
+    const conversationPipelineResolver = generateResolverPipeline(sendMessagePipelineDefinition, directive, ctx);
     ctx.resolvers.addResolver(parentName, fieldName, conversationPipelineResolver);
 
-    const assistantResponsePipelineResolver = generateResolverPipeline(assistantResponsePipelineDefinition, directive);
+    const assistantResponsePipelineResolver = generateResolverPipeline(assistantResponsePipelineDefinition, directive, ctx);
     ctx.resolvers.addResolver(parentName, directive.assistantResponseMutation.field.name.value, assistantResponsePipelineResolver);
 
     const assistantResponseSubscriptionPipelineResolver = generateResolverPipeline(
       assistantResponseSubscriptionPipelineDefinition,
       directive,
+      ctx,
     );
     ctx.resolvers.addResolver(
       'Subscription',
@@ -215,7 +216,7 @@ export class ConversationResolverGenerator {
     const messageName = directive.message.model.name.value;
     const pluralized = pluralize(messageName);
     const listMessagesResolver = ctx.resolvers.getResolver('Query', `list${pluralized}`) as TransformerResolver;
-    const initResolverFn = generateResolverFunction(listMessagesInitFunctionDefinition, directive);
+    const initResolverFn = generateResolverFunction(listMessagesInitFunctionDefinition, directive, ctx);
     listMessagesResolver.addJsFunctionToSlot('init', initResolverFn);
   }
 
