@@ -1,5 +1,5 @@
 import { APPSYNC_JS_RUNTIME, MappingTemplate, TransformerResolver } from '@aws-amplify/graphql-transformer-core';
-import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { MappingTemplateProvider, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import fs from 'fs-extra';
 import { ResolverResourceIDs } from 'graphql-transformer-common';
 import path from 'path';
@@ -15,10 +15,11 @@ import { PipelineDefinition, ResolverFunctionDefinition } from './resolver-funct
 export const generateResolverPipeline = (
   pipelineDefinition: PipelineDefinition,
   directiveConfig: ConversationDirectiveConfiguration,
+  ctx: TransformerContextProvider,
 ): TransformerResolver => {
   const { typeName, fieldName } = pipelineDefinition.field(directiveConfig);
   const resolverResourceId = ResolverResourceIDs.ResolverResourceID(typeName, fieldName);
-  const codeMappingTemplate = generateResolverFunction(pipelineDefinition.dataSlot, directiveConfig);
+  const codeMappingTemplate = generateResolverFunction(pipelineDefinition.dataSlot, directiveConfig, ctx);
   const dataSourceProvider = pipelineDefinition.dataSlot.dataSource(directiveConfig);
   const requestSlots = pipelineDefinition.requestSlots.map((slot) => slot.slotName);
   const responseSlots = pipelineDefinition.responseSlots.map((slot) => slot.slotName);
@@ -36,7 +37,7 @@ export const generateResolverPipeline = (
 
   const resolverSlots = [...pipelineDefinition.requestSlots, ...pipelineDefinition.responseSlots];
   for (const slot of resolverSlots) {
-    const mappingTemplate = generateResolverFunction(slot, directiveConfig);
+    const mappingTemplate = generateResolverFunction(slot, directiveConfig, ctx);
     pipelineResolver.addJsFunctionToSlot(slot.slotName, mappingTemplate, slot.dataSource(directiveConfig));
   }
 
@@ -52,12 +53,12 @@ export const generateResolverPipeline = (
 export const generateResolverFunction = (
   definition: ResolverFunctionDefinition,
   config: ConversationDirectiveConfiguration,
+  ctx: TransformerContextProvider,
 ): MappingTemplateProvider => {
   const template = fs.readFileSync(path.join(__dirname, 'templates', definition.fileName), 'utf8');
-  const substitutions = definition.substitutions(config);
+  const substitutions = definition.substitutions(config, ctx);
   const resolver = substituteResolverTemplateValues(template, substitutions);
-  const templateName = definition.templateName(config);
-  return MappingTemplate.s3MappingFunctionCodeFromString(resolver, templateName);
+  return definition.generateTemplate(config, resolver);
 };
 
 /**
