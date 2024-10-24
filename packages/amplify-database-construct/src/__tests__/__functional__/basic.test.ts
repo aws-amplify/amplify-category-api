@@ -85,6 +85,7 @@ describe('basic functionality', () => {
     });
 
     expect(amplifyDatabase.dataSourceStrategy).toBeDefined();
-    // TODO: assert shape of dataSourceStrategy
+    expect(amplifyDatabase.dataSourceStrategy.name).toEqual('AmplifyDatabaseDataSourceStrategy');
+    expect(amplifyDatabase.dataSourceStrategy.dbType).toEqual('POSTGRES');
   });
 });
