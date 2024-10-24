@@ -8,7 +8,9 @@ This package vends an L3 CDK Construct to create a Aurora DB cluster for the Amp
 
 ### Basic Example
 
-TODO
+# TODO
+
+# Example is not final
 
 ```ts
 import { AmplifyDatabaseCluster } from '@aws-amplify/database-construct';
