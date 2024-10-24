@@ -44,6 +44,7 @@ export class AmplifyDatabase extends Construct {
       consoleSecret,
     };
 
+    // TOOD: change to new strategy
     this.dataSourceStrategy = {
       name: 'AmplifyDatabaseDataSourceStrategy',
       dbType: props.dbType,
