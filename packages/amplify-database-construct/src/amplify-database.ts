@@ -26,6 +26,9 @@ export class AmplifyDatabase extends Construct {
    */
   public readonly resources: AmplifyDatabaseResources;
 
+  /**
+   * Data source strategy for Amplify GraphQL API
+   */
   public readonly dataSourceStrategy: SQLLambdaModelDataSourceStrategy;
 
   constructor(scope: Construct, id: string, props: AmplifyDatabaseProps) {
