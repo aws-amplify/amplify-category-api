@@ -77,7 +77,6 @@ export class AmplifyDatabase extends Construct {
   private createDatabaseCluster(props: AmplifyDatabaseProps): DatabaseCluster {
     const parameterGroup = new ParameterGroup(this, 'AmplifyParameterGroup', {
       engine: this.getDatabaseClusterEngine(props.dbType),
-      // TODO: add id to name
       description: 'Amplify parameter group',
       parameters: {
         // Enable logical replication for Postgres to allow for Blue/Green deployments
