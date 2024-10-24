@@ -14,7 +14,6 @@ import { Stack } from 'aws-cdk-lib';
 // @public (undocumented)
 export class AmplifyDatabase extends Construct {
     constructor(scope: Construct, id: string, props: AmplifyDatabaseProps);
-    // (undocumented)
     readonly dataSourceStrategy: SQLLambdaModelDataSourceStrategy;
     readonly resources: AmplifyDatabaseResources;
     readonly stack: Stack;
