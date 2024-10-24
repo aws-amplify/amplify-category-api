@@ -1,7 +1,7 @@
 {
   "name": "@aws-amplify/database-construct",
   "version": "0.0.1",
-  "description": "Database cluster for Amplify GraphQL API",
+  "description": "Database cluster for the Amplify GraphQL API",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-category-api.git",
