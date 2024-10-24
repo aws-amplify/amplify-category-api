@@ -8,6 +8,7 @@ env:
 phases:
   build:
     commands:
+      - source ./shared-scripts.sh && _setupNodeVersion
       - yarn production-build
       - cd packages/amplify-e2e-tests && yarn clean-e2e-resources
 artifacts:
