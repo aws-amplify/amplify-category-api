@@ -6,6 +6,7 @@ import {
   TransformerLog,
   NestedStackProvider,
   SynthParameters,
+  LogConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type {
   AssetProvider,
@@ -95,6 +96,7 @@ export interface TransformOption extends DataSourceStrategiesProvider, RDSLayerM
   assetProvider: AssetProvider;
   synthParameters: SynthParameters;
   schema: string;
+  logging?: true | LogConfig;
 }
 
 export type StackMapping = { [resourceId: string]: string };
@@ -195,6 +197,7 @@ export class GraphQLTransform {
     scope,
     sqlDirectiveDataSourceStrategies,
     synthParameters,
+    logging,
   }: TransformOption): void {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
@@ -213,6 +216,7 @@ export class GraphQLTransform {
       stackMapping: this.stackMappingOverrides,
       synthParameters,
       transformParameters: this.transformParameters,
+      logging,
     });
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),
@@ -306,6 +310,7 @@ export class GraphQLTransform {
       context.synthParameters,
       output,
       context.transformParameters,
+      context.logging,
     );
 
     // generate resolvers
@@ -345,6 +350,7 @@ export class GraphQLTransform {
     synthParameters: SynthParameters,
     output: TransformerOutput,
     transformParameters: TransformParameters,
+    logging?: true | LogConfig,
   ): GraphQLApi {
     // Todo: Move this to its own transformer plugin to support modifying the API
     // Like setting the auth mode and enabling logging and such
@@ -365,6 +371,7 @@ export class GraphQLTransform {
       environmentName: env,
       disableResolverDeduping: this.transformParameters.disableResolverDeduping,
       assetProvider,
+      logging,
     });
     const authModes = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].map(
       (mode) => mode?.authorizationType,

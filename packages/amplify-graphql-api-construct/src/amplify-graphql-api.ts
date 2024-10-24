@@ -158,6 +158,7 @@ export class AmplifyGraphqlApi extends Construct {
       functionNameMap,
       outputStorageStrategy,
       dataStoreConfiguration,
+      logging,
     } = props;
 
     if (conflictResolution && dataStoreConfiguration) {
@@ -233,6 +234,7 @@ export class AmplifyGraphqlApi extends Construct {
       rdsLayerMapping: undefined,
       rdsSnsTopicMapping: undefined,
       ...getDataSourceStrategiesProvider(definition),
+      logging,
     };
 
     executeTransform(executeTransformConfig);
