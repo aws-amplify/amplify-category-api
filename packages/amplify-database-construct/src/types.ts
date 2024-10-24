@@ -27,4 +27,4 @@ export interface AmplifyDatabaseResources {
   readonly consoleSecret: ISecret;
 }
 
-export type DBType = 'MYSQL' | 'POSTGRES';
+export type DBType = 'POSTGRES';

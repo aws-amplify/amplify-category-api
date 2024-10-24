@@ -1,7 +1,6 @@
 import { Construct } from 'constructs';
 import { Stack } from 'aws-cdk-lib';
 import {
-  AuroraMysqlEngineVersion,
   AuroraPostgresEngineVersion,
   ClusterInstance,
   DatabaseCluster,
@@ -52,9 +51,8 @@ export class AmplifyDatabase extends Construct {
         // use admin secret for data source
         // admin secret will always be created because we are not overriding the credentials in DatabaseCluster
         secretArn: databaseCluster.secret!.secretArn,
-        // use default port for db type
-        // mysql: 3306, postgres: 5432
-        port: props.dbType === 'MYSQL' ? 3306 : 5432,
+        // use default port
+        port: 5432,
         databaseName: DEFAULT_DATABASE_NAME,
         hostname: databaseCluster.clusterEndpoint.hostname,
       },
@@ -80,13 +78,10 @@ export class AmplifyDatabase extends Construct {
       engine: this.getDatabaseClusterEngine(props.dbType),
       // TODO: add id to name
       description: 'Amplify parameter group',
-      parameters:
-        props.dbType === 'MYSQL'
-          ? {}
-          : {
-              // Enable logical replication for Postgres to allow for Blue/Green deployments
-              'rds.logical_replication': '1',
-            },
+      parameters: {
+        // Enable logical replication for Postgres to allow for Blue/Green deployments
+        'rds.logical_replication': '1',
+      },
     });
     return new DatabaseCluster(this, 'AmplifyDatabaseCluster', {
       engine: this.getDatabaseClusterEngine(props.dbType),
@@ -100,9 +95,7 @@ export class AmplifyDatabase extends Construct {
 
   private getDatabaseClusterEngine(dbType: DBType): IClusterEngine {
     switch (dbType) {
-      // TODO: what version to use
-      case 'MYSQL':
-        return DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 });
+      // TODO: expose version as prop
       case 'POSTGRES':
         return DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_16_3 });
       default:
