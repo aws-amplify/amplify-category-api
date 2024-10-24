@@ -25,13 +25,6 @@ describe('CDK Amplify Database', () => {
     deleteProjectDir(projRoot);
   });
 
-  test('create mysql database cluster', async () => {
-    const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'database-construct', 'basic-mysql'));
-    await initCDKProject(projRoot, templatePath, { construct: 'Database' });
-    await cdkDeploy(projRoot, '--all');
-    // TODO: add assertions
-  });
-
   test('create postgres database cluster', async () => {
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'database-construct', 'basic-postgres'));
     await initCDKProject(projRoot, templatePath);

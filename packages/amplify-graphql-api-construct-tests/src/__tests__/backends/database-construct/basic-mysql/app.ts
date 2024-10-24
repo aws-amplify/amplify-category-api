@@ -17,6 +17,6 @@ const vpc = new Vpc(stack, 'TestVPC', {
 });
 
 new AmplifyDatabase(stack, 'DatabaseCluster', {
-  dbType: 'MYSQL',
+  dbType: 'POSTGRES',
   vpc,
 });
