@@ -40,8 +40,9 @@ describe('ConversationTransformer', () => {
 
       const out = transform(inputSchema);
       expect(out).toBeDefined();
-      assertResolverSnapshot(routeName, out);
-
+      assertSendMessageMutationResources(routeName, out);
+      assertAssistantResponseMutationResources(routeName, out);
+      assertAssistantResponseSubscriptionResources(routeName, out);
       const schema = parse(out.schema);
       validateModelSchema(schema);
 
@@ -130,39 +131,118 @@ describe('ConversationTransformer', () => {
   });
 });
 
-const assertResolverSnapshot = (routeName: string, resources: DeploymentResources) => {
-  const resolverName = `Mutation${routeName}Resolver`;
+
+
+const assertAssistantResponseSubscriptionResources = (routeName: string, resources: DeploymentResources) => {
+  const resolverName = `SubscriptiononCreateAssistantResponse${toUpper(routeName)}Resolver`;
+
+  // ----- Function Code Assertions -----
   const resolverCode = resources.rootStack.Resources?.[resolverName].Properties.Code;
   expect(resolverCode).toBeDefined();
-  expect(resolverCode).toMatchSnapshot();
+  expect(resolverCode).toMatchSnapshot('AssistantResponseSubscription resolver code');
+
+  const dataFn = resources.resolvers[`Subscription.onCreateAssistantResponse${toUpper(routeName)}.assistant-message.js`];
+  expect(dataFn).toBeDefined();
+  expect(dataFn).toMatchSnapshot('AssistantResponseSubscription data slot function code');
+}
+
+const assertAssistantResponseMutationResources = (routeName: string, resources: DeploymentResources) => {
+  const resolverName = `MutationcreateAssistantResponse${toUpper(routeName)}Resolver`;
+
+  // ----- Function Code Assertions -----
+  const resolverCode = resources.rootStack.Resources?.[resolverName].Properties.Code;
+  expect(resolverCode).toBeDefined();
+  expect(resolverCode).toMatchSnapshot('AssistantResponseMutation resolver code');
+
+  const initFn = resources.resolvers[`Mutation.createAssistantResponse${toUpper(routeName)}.init.js`];
+  expect(initFn).toBeDefined();
+  expect(initFn).toMatchSnapshot('AssistantResponseMutation init slot function code');
+
+  const authFn = resources.resolvers[`Mutation.createAssistantResponse${toUpper(routeName)}.auth.js`];
+  expect(authFn).toBeDefined();
+  expect(authFn).toMatchSnapshot('AssistantResponseMutation auth slot function code');
+
+  const verifySessionOwnerFn = resources.resolvers[`Mutation.createAssistantResponse${toUpper(routeName)}.verify-session-owner.js`];
+  expect(verifySessionOwnerFn).toBeDefined();
+  expect(verifySessionOwnerFn).toMatchSnapshot('AssistantResponseMutation verify session owner slot function code');
+
+  // ----- Data Source Assertions -----
+  const verifySessionOwnerFnDataSourceName = getFunctionConfigurationForPipelineSlot(
+    resources, resolverName, 2
+  ).Properties.DataSourceName['Fn::GetAtt'][0];
+  expect(verifySessionOwnerFnDataSourceName).toBeDefined();
+  expect(verifySessionOwnerFnDataSourceName).toEqual(conversationTableDataSourceName(routeName));
+
+  const dataFnDataSourceName = getFunctionConfigurationForPipelineSlot(resources, resolverName, 3).Properties.DataSourceName['Fn::GetAtt'][0];
+  expect(dataFnDataSourceName).toBeDefined();
+  expect(dataFnDataSourceName).toEqual(messageTableDataSourceName(routeName));
+}
+
+const assertSendMessageMutationResources = (routeName: string, resources: DeploymentResources) => {
+  const resolverName = `Mutation${routeName}Resolver`;
+
+  // ----- Function Code Assertions -----
+  const resolverCode = resources.rootStack.Resources?.[resolverName].Properties.Code;
+  expect(resolverCode).toBeDefined();
+  expect(resolverCode).toMatchSnapshot('SendMessageMutation resolver code');
 
   // Need to do this song and dance because the init slot is an inline function.
   // It's not accessible via `resources.resolvers`.
-  const initFn = getFunctionForPipelineSlot(resources, resolverName, 0);
+  const initFn = getFunctionConfigurationForPipelineSlot(resources, resolverName, 0).Properties.Code;
   expect(initFn).toBeDefined();
-  expect(initFn).toMatchSnapshot();
+  expect(initFn).toMatchSnapshot('SendMessageMutation init slot function code');
 
   const authFn = resources?.resolvers[`Mutation.${routeName}.auth.js`];
   expect(authFn).toBeDefined();
-  expect(authFn).toMatchSnapshot();
+  expect(authFn).toMatchSnapshot('SendMessageMutation auth slot function code');
 
   const verifySessionOwnerFn = resources?.resolvers[`Mutation.${routeName}.verify-session-owner.js`];
   expect(verifySessionOwnerFn).toBeDefined();
-  expect(verifySessionOwnerFn).toMatchSnapshot();
+  expect(verifySessionOwnerFn).toMatchSnapshot('SendMessageMutation verify session owner slot function code');
 
   const writeMessageToTableFn = resources?.resolvers[`Mutation.${routeName}.write-message-to-table.js`];
   expect(writeMessageToTableFn).toBeDefined();
-  expect(writeMessageToTableFn).toMatchSnapshot();
+  expect(writeMessageToTableFn).toMatchSnapshot('SendMessageMutation write message to table slot function code');
 
   const invokeLambdaFn = resources?.resolvers[`Mutation.${routeName}.invoke-lambda.js`];
   expect(invokeLambdaFn).toBeDefined();
-  expect(invokeLambdaFn).toMatchSnapshot();
-};
+  expect(invokeLambdaFn).toMatchSnapshot('SendMessageMutation invoke lambda slot function code');
 
-const getFunctionForPipelineSlot = (resources: Record<string, any>, resolverName: string, slot: number): string => {
+  // ----- Data Source Assertions -----
+  const verifySessionOwnerFnDataSourceName = getFunctionConfigurationForPipelineSlot(
+    resources, resolverName, 2
+  ).Properties.DataSourceName['Fn::GetAtt'][0];
+  expect(verifySessionOwnerFnDataSourceName).toBeDefined();
+  expect(verifySessionOwnerFnDataSourceName).toEqual(conversationTableDataSourceName(routeName));
+
+  const writeMessageToTableFnDataSourceName = getFunctionConfigurationForPipelineSlot(
+    resources, resolverName, 3
+  ).Properties.DataSourceName['Fn::GetAtt'][0];
+  expect(writeMessageToTableFnDataSourceName).toBeDefined();
+  expect(writeMessageToTableFnDataSourceName).toEqual(messageTableDataSourceName(routeName));
+
+  // The lambda function is deployed in a separate stack, so we need to resolve the stack name.
+  const invokeLambdaFnDataSource = getFunctionConfigurationForPipelineSlot(
+    resources, resolverName, 4
+  ).Properties.DataSourceName['Fn::GetAtt'];
+  expect(invokeLambdaFnDataSource).toBeDefined();
+  const stackName = invokeLambdaFnDataSource[0];
+  expect(stackName).toEqual(lambdaFunctionStackName(routeName));
+
+  // Then we get the data source name from that stack.
+  const outputsKey = invokeLambdaFnDataSource[1].split('Outputs.')[1];
+  const lambdaDataSourceName = resources.stacks?.[stackName].Outputs?.[outputsKey].Value['Fn::GetAtt'][0];
+  expect(lambdaDataSourceName).toEqual(lambdaFunctionDataSourceName(routeName));
+}
+
+const conversationTableDataSourceName = (routeName: string) => `Conversation${toUpper(routeName)}`;
+const messageTableDataSourceName = (routeName: string) => `ConversationMessage${toUpper(routeName)}`;
+const lambdaFunctionStackName = (routeName: string) => `${toUpper(routeName)}ConversationDirectiveLambdaStack`;
+const lambdaFunctionDataSourceName = (routeName: string) => `${toUpper(routeName)}DefaultConversationHandlerLambdaDataSource`;
+
+const getFunctionConfigurationForPipelineSlot = (resources: Record<string, any>, resolverName: string, slot: number): any => {
   const functionName = resources.rootStack.Resources?.[resolverName].Properties.PipelineConfig.Functions[slot]['Fn::GetAtt'][0];
-  const functionConfiguration = resources.rootStack.Resources[functionName];
-  return functionConfiguration.Properties.Code;
+  return resources.rootStack.Resources[functionName];
 };
 
 const defaultAuthConfig: AppSyncAuthConfiguration = {

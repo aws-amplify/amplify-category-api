@@ -61,7 +61,7 @@ function data(): ResolverFunctionDefinition {
     slotName: 'data',
     fileName: 'assistant-mutation-resolver-fn.template.js',
     generateTemplate: templateGenerator('assistant-response'),
-    dataSource: (config) => config.dataSources.lambdaFunctionDataSource,
+    dataSource: (config) => config.dataSources.messageTableDataSource,
     substitutions: (config) => ({
       CONVERSATION_MESSAGE_TYPE_NAME: config.message.model.name.value,
     }),
