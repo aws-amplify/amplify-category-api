@@ -6,7 +6,12 @@ import {
   getConversationMessageListQueryInputTypeName,
   getConversationMessageListQueryName,
 } from '../graphql-types/name-values';
-import { createResolverFunctionDefinition, createS3AssetMappingTemplateGenerator, PipelineDefinition, ResolverFunctionDefinition } from './resolver-function-definition';
+import {
+  createResolverFunctionDefinition,
+  createS3AssetMappingTemplateGenerator,
+  PipelineDefinition,
+  ResolverFunctionDefinition,
+} from './resolver-function-definition';
 
 /**
  * The pipeline definition for the send message mutation resolver.

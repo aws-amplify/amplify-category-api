@@ -131,8 +131,6 @@ describe('ConversationTransformer', () => {
   });
 });
 
-
-
 const assertAssistantResponseSubscriptionResources = (routeName: string, resources: DeploymentResources) => {
   const resolverName = `SubscriptiononCreateAssistantResponse${toUpper(routeName)}Resolver`;
 
@@ -144,7 +142,7 @@ const assertAssistantResponseSubscriptionResources = (routeName: string, resourc
   const dataFn = resources.resolvers[`Subscription.onCreateAssistantResponse${toUpper(routeName)}.assistant-message.js`];
   expect(dataFn).toBeDefined();
   expect(dataFn).toMatchSnapshot('AssistantResponseSubscription data slot function code');
-}
+};
 
 const assertAssistantResponseMutationResources = (routeName: string, resources: DeploymentResources) => {
   const resolverName = `MutationcreateAssistantResponse${toUpper(routeName)}Resolver`;
@@ -167,16 +165,18 @@ const assertAssistantResponseMutationResources = (routeName: string, resources: 
   expect(verifySessionOwnerFn).toMatchSnapshot('AssistantResponseMutation verify session owner slot function code');
 
   // ----- Data Source Assertions -----
-  const verifySessionOwnerFnDataSourceName = getFunctionConfigurationForPipelineSlot(
-    resources, resolverName, 2
-  ).Properties.DataSourceName['Fn::GetAtt'][0];
+  const verifySessionOwnerFnDataSourceName = getFunctionConfigurationForPipelineSlot(resources, resolverName, 2).Properties.DataSourceName[
+    'Fn::GetAtt'
+  ][0];
   expect(verifySessionOwnerFnDataSourceName).toBeDefined();
   expect(verifySessionOwnerFnDataSourceName).toEqual(conversationTableDataSourceName(routeName));
 
-  const dataFnDataSourceName = getFunctionConfigurationForPipelineSlot(resources, resolverName, 3).Properties.DataSourceName['Fn::GetAtt'][0];
+  const dataFnDataSourceName = getFunctionConfigurationForPipelineSlot(resources, resolverName, 3).Properties.DataSourceName[
+    'Fn::GetAtt'
+  ][0];
   expect(dataFnDataSourceName).toBeDefined();
   expect(dataFnDataSourceName).toEqual(messageTableDataSourceName(routeName));
-}
+};
 
 const assertSendMessageMutationResources = (routeName: string, resources: DeploymentResources) => {
   const resolverName = `Mutation${routeName}Resolver`;
@@ -209,22 +209,22 @@ const assertSendMessageMutationResources = (routeName: string, resources: Deploy
   expect(invokeLambdaFn).toMatchSnapshot('SendMessageMutation invoke lambda slot function code');
 
   // ----- Data Source Assertions -----
-  const verifySessionOwnerFnDataSourceName = getFunctionConfigurationForPipelineSlot(
-    resources, resolverName, 2
-  ).Properties.DataSourceName['Fn::GetAtt'][0];
+  const verifySessionOwnerFnDataSourceName = getFunctionConfigurationForPipelineSlot(resources, resolverName, 2).Properties.DataSourceName[
+    'Fn::GetAtt'
+  ][0];
   expect(verifySessionOwnerFnDataSourceName).toBeDefined();
   expect(verifySessionOwnerFnDataSourceName).toEqual(conversationTableDataSourceName(routeName));
 
-  const writeMessageToTableFnDataSourceName = getFunctionConfigurationForPipelineSlot(
-    resources, resolverName, 3
-  ).Properties.DataSourceName['Fn::GetAtt'][0];
+  const writeMessageToTableFnDataSourceName = getFunctionConfigurationForPipelineSlot(resources, resolverName, 3).Properties.DataSourceName[
+    'Fn::GetAtt'
+  ][0];
   expect(writeMessageToTableFnDataSourceName).toBeDefined();
   expect(writeMessageToTableFnDataSourceName).toEqual(messageTableDataSourceName(routeName));
 
   // The lambda function is deployed in a separate stack, so we need to resolve the stack name.
-  const invokeLambdaFnDataSource = getFunctionConfigurationForPipelineSlot(
-    resources, resolverName, 4
-  ).Properties.DataSourceName['Fn::GetAtt'];
+  const invokeLambdaFnDataSource = getFunctionConfigurationForPipelineSlot(resources, resolverName, 4).Properties.DataSourceName[
+    'Fn::GetAtt'
+  ];
   expect(invokeLambdaFnDataSource).toBeDefined();
   const stackName = invokeLambdaFnDataSource[0];
   expect(stackName).toEqual(lambdaFunctionStackName(routeName));
@@ -233,7 +233,7 @@ const assertSendMessageMutationResources = (routeName: string, resources: Deploy
   const outputsKey = invokeLambdaFnDataSource[1].split('Outputs.')[1];
   const lambdaDataSourceName = resources.stacks?.[stackName].Outputs?.[outputsKey].Value['Fn::GetAtt'][0];
   expect(lambdaDataSourceName).toEqual(lambdaFunctionDataSourceName(routeName));
-}
+};
 
 const conversationTableDataSourceName = (routeName: string) => `Conversation${toUpper(routeName)}`;
 const messageTableDataSourceName = (routeName: string) => `ConversationMessage${toUpper(routeName)}`;
