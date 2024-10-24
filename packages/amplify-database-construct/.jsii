@@ -3915,7 +3915,7 @@
         },
         "locationInModule": {
           "filename": "src/amplify-database.ts",
-          "line": 34
+          "line": 33
         },
         "parameters": [
           {
@@ -3941,7 +3941,7 @@
       "kind": "class",
       "locationInModule": {
         "filename": "src/amplify-database.ts",
-        "line": 18
+        "line": 17
       },
       "name": "AmplifyDatabase",
       "properties": [
@@ -3953,7 +3953,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-database.ts",
-            "line": 32
+            "line": 31
           },
           "name": "dataSourceStrategy",
           "type": {
@@ -3968,7 +3968,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-database.ts",
-            "line": 27
+            "line": 26
           },
           "name": "resources",
           "type": {
@@ -3983,7 +3983,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-database.ts",
-            "line": 22
+            "line": 21
           },
           "name": "stack",
           "type": {
@@ -4110,5 +4110,5 @@
     }
   },
   "version": "0.0.1",
-  "fingerprint": "PJwVRiKFjTzfUlGZnHoWbQluDFqxs1qUNQiV+TzGua0="
+  "fingerprint": "xolhVF05iANpbXkxGIEGzzaUsojwY6pw3uJPbKKHLWg="
 }
