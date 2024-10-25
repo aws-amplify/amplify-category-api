@@ -28,15 +28,15 @@ const query = /* GraphQL */ `
 
 // Verify that logging is configured correctly
 const verifyLogConfig = async (
-  logGroupName: string, 
+  logGroupName: string,
   apiId: string,
   expectedRetentionInDays: number,
   expectedExcludeVerboseContent: boolean,
-  expectedFieldLogLevel: string
+  expectedFieldLogLevel: string,
 ): Promise<void> => {
   // Verify CloudWatch log group retentionInDays setting
   const cloudWatchParams = {
-    logGroupNamePrefix: logGroupName
+    logGroupNamePrefix: logGroupName,
   };
   const cloudWatchResponse = await cloudwatchLogs.describeLogGroups(cloudWatchParams).promise();
   const logGroup = cloudWatchResponse.logGroups.find((lg) => lg.logGroupName === logGroupName);
@@ -45,7 +45,7 @@ const verifyLogConfig = async (
 
   // Verify AppSync API log excludeVerboseContent and fieldLogLevel settings
   const appSyncParams = {
-    apiId: apiId
+    apiId: apiId,
   };
   const appSyncResponse = await appSyncClient.send(new GetGraphqlApiCommand(appSyncParams));
   const logConfig = appSyncResponse.graphqlApi?.logConfig;
@@ -61,13 +61,13 @@ const verifyLogsWithRequestId = async (logGroupName: string, expectedRequestId: 
 
   const params = {
     logGroupName: logGroupName,
-    filterPattern: `{ $.requestId = "${expectedRequestId}" }`
+    filterPattern: `{ $.requestId = "${expectedRequestId}" }`,
   };
-  
+
   const response = await cloudwatchLogs.filterLogEvents(params).promise();
   // From observation, each request has at least 2 logs that contains the request ID: ExecutionSummary log and RequestSummary log
   // This assertion could fail if anything changes in the logging format
-  expect(response.events.length).toBeGreaterThan(1); 
+  expect(response.events.length).toBeGreaterThan(1);
 
   // Verify that there is an "ExecutionSummary" log and a "RequestSummary" log
   const executionSummaryLog = response.events.find((event) => {
@@ -89,7 +89,7 @@ const verifyLogsWithRequestId = async (logGroupName: string, expectedRequestId: 
 // Verify that the log group does not exist
 const verifyLogGroupDoesNotExist = async (logGroupName: string): Promise<void> => {
   const cloudWatchParams = {
-    logGroupNamePrefix: logGroupName
+    logGroupNamePrefix: logGroupName,
   };
   const cloudWatchResponse = await cloudwatchLogs.describeLogGroups(cloudWatchParams).promise();
   const logGroup = cloudWatchResponse.logGroups.find((lg) => lg.logGroupName === logGroupName);
@@ -97,9 +97,9 @@ const verifyLogGroupDoesNotExist = async (logGroupName: string): Promise<void> =
 };
 
 /**
- * To pass logging config to the AmplifyGraphqlApi construct, the underlying values are used and later mapped to the corresponding 
+ * To pass logging config to the AmplifyGraphqlApi construct, the underlying values are used and later mapped to the corresponding
  * enum values in packages/amplify-graphql-api-construct-tests/src/__tests__/backends/log-config/app.ts.
- * 
+ *
  * For example:
  * - logging: '{"retention": 60}' is parsed to { retention: RetentionDays.TWO_MONTHS }
  * - logging: '{"fieldLogLevel": "ERROR"}' is parsed to { fieldLogLevel: FieldLogLevel.ERROR }

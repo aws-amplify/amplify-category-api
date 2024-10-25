@@ -29,7 +29,7 @@ if (loggingContext === 'true' || loggingContext === '{}') {
 } else if (loggingContext !== undefined) {
   let logConfig: LogConfig = {};
   const parsedLoggingContext = JSON.parse(loggingContext) as LogConfig;
-  
+
   if ('retention' in parsedLoggingContext) {
     const enumValue = parsedLoggingContext.retention as RetentionDays;
     logConfig = { ...logConfig, retention: enumValue };
@@ -41,7 +41,7 @@ if (loggingContext === 'true' || loggingContext === '{}') {
     const enumValue = parsedLoggingContext.fieldLogLevel as FieldLogLevel;
     logConfig = { ...logConfig, fieldLogLevel: enumValue };
   }
-  
+
   logging = logConfig;
 }
 
