@@ -60,7 +60,6 @@ const createDataType = (field: Field): ts.Node => {
     );
   }
 
-
   if (field.type.kind === 'Enum') {
     return ts.factory.createCallExpression(
       ts.factory.createIdentifier(`${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REFERENCE_A}.${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REF_METHOD}`),
