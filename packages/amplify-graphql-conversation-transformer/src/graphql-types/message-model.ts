@@ -91,23 +91,15 @@ export const createMessageModel = (
   };
 };
 
-/*
-  messageSubscription: FieldDefinitionNode;
-  assistantMutationInput: InputObjectTypeDefinitionNode;
-  assistantMutationField: FieldDefinitionNode;
-  assistantStreamingMutationInput: InputObjectTypeDefinitionNode;
-  assistantStreamingMutationField: FieldDefinitionNode;
-*/
 export const createMessageSubscription = (
   subscriptionName: string,
-  conversationMessageTypeName: string,
   onMutationName: string,
 ): FieldDefinitionNode => {
   const awsSubscribeDirective = makeDirective('aws_subscribe', [makeArgument('mutations', makeValueNode([onMutationName]))]);
   const cognitoAuthDirective = makeDirective('aws_cognito_user_pools', []);
 
   const args: InputValueDefinitionNode[] = [makeInputValueDefinition('conversationId', makeNamedType('ID'))];
-  const subscriptionField = makeField(subscriptionName, args, makeNamedType(conversationMessageTypeName), [
+  const subscriptionField = makeField(subscriptionName, args, makeNamedType(STREAM_RESPONSE_TYPE_NAME), [
     awsSubscribeDirective,
     cognitoAuthDirective,
   ]);
@@ -135,6 +127,39 @@ export const createAssistantResponseMutationInput = (messageName: string): Input
   };
 };
 
+export const createAssistantResponseStreamingMutationInput = (messageModelName: string): InputObjectTypeDefinitionNode => {
+  const inputName = `Create${messageModelName}AssistantStreamingInput`;
+  return {
+    kind: 'InputObjectTypeDefinition',
+    name: { kind: 'Name', value: inputName },
+    fields: [
+      makeInputValueDefinition('conversationId', makeNonNullType(makeNamedType('ID'))),
+      makeInputValueDefinition('associatedUserMessageId', makeNonNullType(makeNamedType('ID'))),
+      makeInputValueDefinition('contentBlockIndex', makeNonNullType(makeNamedType('Int'))),
+
+      makeInputValueDefinition('contentBlockText', makeNamedType('String')),
+      makeInputValueDefinition('contentBlockDeltaIndex', makeNamedType('Int')),
+
+      makeInputValueDefinition('contentBlockToolUse', makeNamedType('AWSJSON')),
+      makeInputValueDefinition('contentBlockDoneAtIndex', makeNamedType('Int')),
+
+      makeInputValueDefinition('stopReason', makeNamedType('String')),
+
+      makeInputValueDefinition('accumulatedTurnContent', makeListType(makeNamedType('ContentBlockInput'))),
+    ],
+  };
+};
+
+
+export const createAssistantStreamingMutationField = (fieldName: string, inputTypeName: string): FieldDefinitionNode => {
+  const args = [makeInputValueDefinition('input', makeNonNullType(makeNamedType(inputTypeName)))];
+  const cognitoAuthDirective = makeDirective('aws_cognito_user_pools', []);
+  const createAssistantResponseMutation = makeField(fieldName, args, makeNamedType(STREAM_RESPONSE_TYPE_NAME), [cognitoAuthDirective]);
+  return createAssistantResponseMutation;
+};
+
+
+/**
 /**
  * Creates a model directive for the message model.
  * @returns {DirectiveNode} The model directive node.
@@ -264,66 +289,6 @@ const constructConversationMessageModel = (
   return object;
 };
 
-const constructMessageSubscription = (subscriptionName: string, onMutationNames: string[]): FieldDefinitionNode => {
-  const awsSubscribeDirective = makeDirective('aws_subscribe', [makeArgument('mutations', makeValueNode(onMutationNames))]);
-  const cognitoAuthDirective = makeDirective('aws_cognito_user_pools', []);
-
-  const args: InputValueDefinitionNode[] = [makeInputValueDefinition('conversationId', makeNamedType('ID'))];
-  const subscriptionField = makeField(subscriptionName, args, makeNamedType(STREAM_RESPONSE_TYPE_NAME), [
-    awsSubscribeDirective,
-    cognitoAuthDirective,
-  ]);
-
-  return subscriptionField;
-};
-
-const constructAssistantMutationField = (fieldName: string, messageModelName: string, inputTypeName: string): FieldDefinitionNode => {
-  const args = [makeInputValueDefinition('input', makeNonNullType(makeNamedType(inputTypeName)))];
-  const cognitoAuthDirective = makeDirective('aws_cognito_user_pools', []);
-  const createAssistantResponseMutation = makeField(fieldName, args, makeNamedType(messageModelName), [cognitoAuthDirective]);
-  return createAssistantResponseMutation;
-};
-
-const constructAssistantResponseMutationInput = (messageModelName: string): InputObjectTypeDefinitionNode => {
-  const inputName = `Create${messageModelName}AssistantInput`;
-  return {
-    kind: 'InputObjectTypeDefinition',
-    name: { kind: 'Name', value: inputName },
-    fields: [
-      makeInputValueDefinition('conversationId', makeNamedType('ID')),
-      makeInputValueDefinition('content', makeListType(makeNamedType('ContentBlockInput'))),
-      makeInputValueDefinition('associatedUserMessageId', makeNamedType('ID')),
-    ],
-  };
-};
-
-const constructAssistantStreamingMutationField = (fieldName: string, inputTypeName: string): FieldDefinitionNode => {
-  const args = [makeInputValueDefinition('input', makeNonNullType(makeNamedType(inputTypeName)))];
-  const cognitoAuthDirective = makeDirective('aws_cognito_user_pools', []);
-  const createAssistantResponseMutation = makeField(fieldName, args, makeNamedType(STREAM_RESPONSE_TYPE_NAME), [cognitoAuthDirective]);
-  return createAssistantResponseMutation;
-};
-
-const constructAssistantResponseStreamingMutationInput = (messageModelName: string): InputObjectTypeDefinitionNode => {
-  const inputName = `Create${messageModelName}AssistantStreamingInput`;
-  return {
-    kind: 'InputObjectTypeDefinition',
-    name: { kind: 'Name', value: inputName },
-    fields: [
-      makeInputValueDefinition('conversationId', makeNonNullType(makeNamedType('ID'))),
-      makeInputValueDefinition('associatedUserMessageId', makeNonNullType(makeNamedType('ID'))),
-      makeInputValueDefinition('contentBlockIndex', makeNonNullType(makeNamedType('Int'))),
-
-      makeInputValueDefinition('contentBlockText', makeNamedType('String')),
-      makeInputValueDefinition('contentBlockDeltaIndex', makeNamedType('Int')),
-
-      makeInputValueDefinition('contentBlockToolUse', makeNamedType('AWSJSON')),
-      makeInputValueDefinition('contentBlockDoneAtIndex', makeNamedType('Int')),
-
-      makeInputValueDefinition('stopReason', makeNamedType('String')),
-    ],
-  };
-};
 
 const STREAM_RESPONSE_TYPE_NAME = 'ConversationMessageStreamPart';
 
