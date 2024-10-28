@@ -168,84 +168,87 @@ describe('conversation', () => {
         expect(messagesB.body.data.listConversationMessagePirateChats.items).toHaveLength(0);
       });
 
-      test('user does not receive events from another user\'s conversation', async () => {
-        // user1 creates a conversation
-        const user1ConversationResult = await doCreateConversationPirateChat(apiEndpoint, accessToken);
-        const { id: user1ConversationId } = user1ConversationResult.body.data.createConversationPirateChat;
+      test(
+        "user does not receive events from another user's conversation",
+        async () => {
+          // user1 creates a conversation
+          const user1ConversationResult = await doCreateConversationPirateChat(apiEndpoint, accessToken);
+          const { id: user1ConversationId } = user1ConversationResult.body.data.createConversationPirateChat;
 
-        // user2 creates a conversation
-        const user2ConversationResult = await doCreateConversationPirateChat(apiEndpoint, accessToken2);
-        const { id: user2ConversationId } = user2ConversationResult.body.data.createConversationPirateChat;
+          // user2 creates a conversation
+          const user2ConversationResult = await doCreateConversationPirateChat(apiEndpoint, accessToken2);
+          const { id: user2ConversationId } = user2ConversationResult.body.data.createConversationPirateChat;
 
-        // user1 opens a connection
-        const user1Connection = await new AppSyncSubscriptionClient(realtimeEndpoint, apiEndpoint).connect({ accessToken });
+          // user1 opens a connection
+          const user1Connection = await new AppSyncSubscriptionClient(realtimeEndpoint, apiEndpoint).connect({ accessToken });
 
-        // user2 opens a connection
-        const user2Connection = await new AppSyncSubscriptionClient(realtimeEndpoint, apiEndpoint).connect({ accessToken: accessToken2 });
+          // user2 opens a connection
+          const user2Connection = await new AppSyncSubscriptionClient(realtimeEndpoint, apiEndpoint).connect({ accessToken: accessToken2 });
 
-        // user1 subscribes to user1's conversation
-        const user1SubscriptionForUser1Conversation = user1Connection.subscribe({
-          query: onCreateAssistantResponsePirateChat,
-          variables: { conversationId: user1ConversationId },
-          auth: { accessToken },
-        });
+          // user1 subscribes to user1's conversation
+          const user1SubscriptionForUser1Conversation = user1Connection.subscribe({
+            query: onCreateAssistantResponsePirateChat,
+            variables: { conversationId: user1ConversationId },
+            auth: { accessToken },
+          });
 
-        // user1 subscribes to user2's conversation
-        const user1SubscriptionForUser2Conversation = user1Connection.subscribe({
-          query: onCreateAssistantResponsePirateChat,
-          variables: { conversationId: user2ConversationId },
-          auth: { accessToken },
-        });
+          // user1 subscribes to user2's conversation
+          const user1SubscriptionForUser2Conversation = user1Connection.subscribe({
+            query: onCreateAssistantResponsePirateChat,
+            variables: { conversationId: user2ConversationId },
+            auth: { accessToken },
+          });
 
-        // user2 subscribes to user2's conversation
-        const user2SubscriptionForUser2Conversation = user2Connection.subscribe({
-          query: onCreateAssistantResponsePirateChat,
-          variables: { conversationId: user2ConversationId },
-          auth: { accessToken: accessToken2 },
-        });
+          // user2 subscribes to user2's conversation
+          const user2SubscriptionForUser2Conversation = user2Connection.subscribe({
+            query: onCreateAssistantResponsePirateChat,
+            variables: { conversationId: user2ConversationId },
+            auth: { accessToken: accessToken2 },
+          });
 
-        // user2 subscribes to user1's conversation
-        const user2SubscriptionForUser1Conversation = user2Connection.subscribe({
-          query: onCreateAssistantResponsePirateChat,
-          variables: { conversationId: user1ConversationId },
-          auth: { accessToken: accessToken2 },
-        });
+          // user2 subscribes to user1's conversation
+          const user2SubscriptionForUser1Conversation = user2Connection.subscribe({
+            query: onCreateAssistantResponsePirateChat,
+            variables: { conversationId: user1ConversationId },
+            auth: { accessToken: accessToken2 },
+          });
 
-        // merge the subscription streams into a single stream
-        const mergedSubscriptionStream = mergeNamedAsyncIterators(
-          // these should not receive any events
-          ['user1-user2', user1SubscriptionForUser2Conversation],
-          ['user2-user1', user2SubscriptionForUser1Conversation],
-          // these should receive events
-          ['user1-user1', user1SubscriptionForUser1Conversation],
-          ['user2-user2', user2SubscriptionForUser2Conversation],
-        );
+          // merge the subscription streams into a single stream
+          const mergedSubscriptionStream = mergeNamedAsyncIterators(
+            // these should not receive any events
+            ['user1-user2', user1SubscriptionForUser2Conversation],
+            ['user2-user1', user2SubscriptionForUser1Conversation],
+            // these should receive events
+            ['user1-user1', user1SubscriptionForUser1Conversation],
+            ['user2-user2', user2SubscriptionForUser2Conversation],
+          );
 
-        // user1 sends message to user1's conversation
-        await doSendMessagePirateChat(apiEndpoint, accessToken, user1ConversationId, [{ text: 'Hello, world!' }]);
+          // user1 sends message to user1's conversation
+          await doSendMessagePirateChat(apiEndpoint, accessToken, user1ConversationId, [{ text: 'Hello, world!' }]);
 
-        // user2 sends message to user2's conversation
-        await doSendMessagePirateChat(apiEndpoint, accessToken2, user2ConversationId, [{ text: 'Hello, world!' }]);
+          // user2 sends message to user2's conversation
+          await doSendMessagePirateChat(apiEndpoint, accessToken2, user2ConversationId, [{ text: 'Hello, world!' }]);
 
-        // consume two events from the merged stream
-        const events = await consumeYields(mergedSubscriptionStream, 2);
+          // consume two events from the merged stream
+          const events = await consumeYields(mergedSubscriptionStream, 2);
 
-        events.forEach(([name, value]) => {
-          switch (name) {
-            case 'user1-user2':
-            case 'user2-user1':
-              throw new Error(`subscription event received by wrong user. Name: ${name}. Event: ${JSON.stringify(value, null, 2)}`);
-            case 'user1-user1':
-              expect(value.onCreateAssistantResponsePirateChat.conversationId).toEqual(user1ConversationId);
-              break;
-            case 'user2-user2':
-              expect(value.onCreateAssistantResponsePirateChat.conversationId).toEqual(user2ConversationId);
-              break;
-          }
-        });
-      },
-      ONE_MINUTE,
-    );
+          events.forEach(([name, value]) => {
+            switch (name) {
+              case 'user1-user2':
+              case 'user2-user1':
+                throw new Error(`subscription event received by wrong user. Name: ${name}. Event: ${JSON.stringify(value, null, 2)}`);
+              case 'user1-user1':
+                expect(value.onCreateAssistantResponsePirateChat.conversationId).toEqual(user1ConversationId);
+                break;
+              case 'user2-user2':
+                expect(value.onCreateAssistantResponsePirateChat.conversationId).toEqual(user2ConversationId);
+                break;
+            }
+          });
+        },
+        ONE_MINUTE,
+      );
+    });
   });
 });
 
