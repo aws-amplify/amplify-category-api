@@ -224,7 +224,7 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
       },
       "";
   ctx.stash.connectionAttributes = {};
-
+  
   ctx.stash.adminRoles = [];
   return {};
 }
@@ -320,13 +320,7 @@ export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
 
-  const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
-
-  const singleShotResponseMutation = {
-    name: 'createAssistantResponsePirateChat',
-    inputTypeName: 'CreateConversationMessagePirateChatAssistantInput',
-    selectionSet,
-  };
+  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason';
 
   const streamingResponseMutation = {
     name: 'createAssistantResponseStreamPirateChat',
@@ -356,22 +350,17 @@ export function request(ctx) {
     listQueryLimit: undefined,
   };
 
-  const disableStreaming = ctx.env['pirateChat_DISABLE_STREAMING'] === 'true';
-  const responseMutation = !!disableStreaming
-    ? singleShotResponseMutation
-    : streamingResponseMutation;
-
   const authHeader = request.headers['authorization'];
   const payload = {
     conversationId: args.conversationId,
     currentMessageId,
-    responseMutation,
+    responseMutation: streamingResponseMutation,
     graphqlApiEndpoint,
     modelConfiguration,
     request: { headers: { authorization: authHeader } },
     messageHistoryQuery,
     toolsConfiguration,
-    streamResponse: !disableStreaming,
+    streamResponse: true,
   };
 
   return {
@@ -728,7 +717,7 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
       },
       "";
   ctx.stash.connectionAttributes = {};
-
+  
   ctx.stash.adminRoles = [];
   return {};
 }
@@ -824,13 +813,7 @@ export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
 
-  const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
-
-  const singleShotResponseMutation = {
-    name: 'createAssistantResponsePirateChat',
-    inputTypeName: 'CreateConversationMessagePirateChatAssistantInput',
-    selectionSet,
-  };
+  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason';
 
   const streamingResponseMutation = {
     name: 'createAssistantResponseStreamPirateChat',
@@ -860,22 +843,17 @@ export function request(ctx) {
     listQueryLimit: undefined,
   };
 
-  const disableStreaming = ctx.env['pirateChat_DISABLE_STREAMING'] === 'true';
-  const responseMutation = !!disableStreaming
-    ? singleShotResponseMutation
-    : streamingResponseMutation;
-
   const authHeader = request.headers['authorization'];
   const payload = {
     conversationId: args.conversationId,
     currentMessageId,
-    responseMutation,
+    responseMutation: streamingResponseMutation,
     graphqlApiEndpoint,
     modelConfiguration,
     request: { headers: { authorization: authHeader } },
     messageHistoryQuery,
     toolsConfiguration,
-    streamResponse: !disableStreaming,
+    streamResponse: true,
   };
 
   return {
@@ -1232,7 +1210,7 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
       },
       "";
   ctx.stash.connectionAttributes = {};
-
+  
   ctx.stash.adminRoles = [];
   return {};
 }
@@ -1328,13 +1306,7 @@ export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
 
-  const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
-
-  const singleShotResponseMutation = {
-    name: 'createAssistantResponsePirateChat',
-    inputTypeName: 'CreateConversationMessagePirateChatAssistantInput',
-    selectionSet,
-  };
+  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason';
 
   const streamingResponseMutation = {
     name: 'createAssistantResponseStreamPirateChat',
@@ -1364,22 +1336,17 @@ export function request(ctx) {
     listQueryLimit: undefined,
   };
 
-  const disableStreaming = ctx.env['pirateChat_DISABLE_STREAMING'] === 'true';
-  const responseMutation = !!disableStreaming
-    ? singleShotResponseMutation
-    : streamingResponseMutation;
-
   const authHeader = request.headers['authorization'];
   const payload = {
     conversationId: args.conversationId,
     currentMessageId,
-    responseMutation,
+    responseMutation: streamingResponseMutation,
     graphqlApiEndpoint,
     modelConfiguration,
     request: { headers: { authorization: authHeader } },
     messageHistoryQuery,
     toolsConfiguration,
-    streamResponse: !disableStreaming,
+    streamResponse: true,
   };
 
   return {
@@ -1736,7 +1703,7 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
       },
       "";
   ctx.stash.connectionAttributes = {};
-
+  
   ctx.stash.adminRoles = [];
   return {};
 }
@@ -1832,13 +1799,7 @@ export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
 
-  const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
-
-  const singleShotResponseMutation = {
-    name: 'createAssistantResponsePirateChat',
-    inputTypeName: 'CreateConversationMessagePirateChatAssistantInput',
-    selectionSet,
-  };
+  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason';
 
   const streamingResponseMutation = {
     name: 'createAssistantResponseStreamPirateChat',
@@ -1868,22 +1829,17 @@ export function request(ctx) {
     listQueryLimit: undefined,
   };
 
-  const disableStreaming = ctx.env['pirateChat_DISABLE_STREAMING'] === 'true';
-  const responseMutation = !!disableStreaming
-    ? singleShotResponseMutation
-    : streamingResponseMutation;
-
   const authHeader = request.headers['authorization'];
   const payload = {
     conversationId: args.conversationId,
     currentMessageId,
-    responseMutation,
+    responseMutation: streamingResponseMutation,
     graphqlApiEndpoint,
     modelConfiguration,
     request: { headers: { authorization: authHeader } },
     messageHistoryQuery,
     toolsConfiguration,
-    streamResponse: !disableStreaming,
+    streamResponse: true,
   };
 
   return {
