@@ -97,13 +97,13 @@ export class AppSyncConnection {
 }
 
 /**
-  * A client for connecting to an AppSync realtime endpoint.
-  *
-  * @example
-  * const client = new AppSyncSubscriptionClient(realtimeEndpoint, graphqlEndpoint);
-  * const connection = await client.connect(auth);
-  * const subscription = connection.subscribe({ query, variables, auth });
-*/
+ * A client for connecting to an AppSync realtime endpoint.
+ *
+ * @example
+ * const client = new AppSyncSubscriptionClient(realtimeEndpoint, graphqlEndpoint);
+ * const connection = await client.connect(auth);
+ * const subscription = connection.subscribe({ query, variables, auth });
+ */
 export class AppSyncSubscriptionClient {
   ws: WebSocket;
 
@@ -266,7 +266,7 @@ export const mergeNamedAsyncIterators = async function* <T>(
     pending.add(promise);
 
     // When this promise resolves, remove it from pending and add result if valid
-    promise.then(result => {
+    promise.then((result) => {
       pending.delete(promise);
       if (result) {
         results.push(result);
@@ -301,7 +301,7 @@ export const mergeNamedAsyncIterators = async function* <T>(
   const values = await consumeYields(subscription, 3);
 */
 export async function consumeYields<T>(iterator: AsyncIterableIterator<T>, numYields: number): Promise<Array<T | undefined>> {
-  const yieldsPromises = Array.from({ length: numYields }, () => iterator.next().then(({ value, done }) => done ? undefined : value));
+  const yieldsPromises = Array.from({ length: numYields }, () => iterator.next().then(({ value, done }) => (done ? undefined : value)));
   const yields = await Promise.all(yieldsPromises);
   return yields;
 }
