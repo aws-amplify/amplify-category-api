@@ -15,6 +15,7 @@ import {
 } from '../graphql-types/name-values';
 import {
   assistantResponsePipelineDefinition,
+  assistantResponseStreamPipelineDefinition,
   assistantResponseSubscriptionPipelineDefinition,
   generateResolverFunction,
   generateResolverPipeline,
@@ -99,6 +100,13 @@ export class ConversationResolverGenerator {
 
     const assistantResponsePipelineResolver = generateResolverPipeline(assistantResponsePipelineDefinition, directive, ctx);
     ctx.resolvers.addResolver(parentName, directive.assistantResponseMutation.field.name.value, assistantResponsePipelineResolver);
+
+    const assistantResponseStreamingPipelineResolver = generateResolverPipeline(assistantResponseStreamPipelineDefinition, directive, ctx);
+    ctx.resolvers.addResolver(
+      parentName,
+      directive.assistantResponseStreamingMutation.field.name.value,
+      assistantResponseStreamingPipelineResolver,
+    );
 
     const assistantResponseSubscriptionPipelineResolver = generateResolverPipeline(
       assistantResponseSubscriptionPipelineDefinition,

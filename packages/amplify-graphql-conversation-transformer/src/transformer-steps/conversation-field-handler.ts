@@ -13,6 +13,8 @@ import { ConversationModel, createConversationModel } from '../graphql-types/con
 import {
   createAssistantMutationField,
   createAssistantResponseMutationInput,
+  createAssistantStreamingMutationField,
+  createAssistantResponseStreamingMutationInput,
   createMessageModel,
   createMessageSubscription,
   MessageModel,
@@ -20,6 +22,7 @@ import {
 import {
   CONVERSATION_MESSAGES_REFERENCE_FIELD_NAME,
   getAssistantMutationFieldName,
+  getAssistantStreamingMutationFieldName,
   getConversationMessageTypeName,
   getConversationTypeName,
   getMessageSubscriptionFieldName,
@@ -127,17 +130,15 @@ export class ConversationFieldHandler {
 
   private createSupportingFields(config: ConversationDirectiveConfiguration): {
     assistantResponseMutation: { field: FieldDefinitionNode; input: InputObjectTypeDefinitionNode };
+    assistantResponseStreamingMutation: { field: FieldDefinitionNode; input: InputObjectTypeDefinitionNode };
     assistantResponseSubscriptionField: FieldDefinitionNode;
   } {
     const conversationMessageTypeName = getConversationMessageTypeName(config);
     const messageSubscriptionFieldName = getMessageSubscriptionFieldName(config);
     const assistantMutationFieldName = getAssistantMutationFieldName(config);
+    const assistantStreamingMutationFieldName = getAssistantStreamingMutationFieldName(config);
 
-    const assistantResponseSubscriptionField = createMessageSubscription(
-      messageSubscriptionFieldName,
-      conversationMessageTypeName,
-      assistantMutationFieldName,
-    );
+    const assistantResponseSubscriptionField = createMessageSubscription(messageSubscriptionFieldName, conversationMessageTypeName);
 
     const assistantResponseMutationInput = createAssistantResponseMutationInput(conversationMessageTypeName);
     const assistantResponseMutationField = createAssistantMutationField(
@@ -146,8 +147,18 @@ export class ConversationFieldHandler {
       assistantResponseMutationInput.name.value,
     );
 
+    const assistantResponseStreamingMutationInput = createAssistantResponseStreamingMutationInput(conversationMessageTypeName);
+    const assistantResponseStreamingMutationField = createAssistantStreamingMutationField(
+      assistantStreamingMutationFieldName,
+      assistantResponseStreamingMutationInput.name.value,
+    );
+
     return {
       assistantResponseMutation: { field: assistantResponseMutationField, input: assistantResponseMutationInput },
+      assistantResponseStreamingMutation: {
+        field: assistantResponseStreamingMutationField,
+        input: assistantResponseStreamingMutationInput,
+      },
       assistantResponseSubscriptionField,
     };
   }
