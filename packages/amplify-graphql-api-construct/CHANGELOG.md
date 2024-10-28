@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.16.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.15.1...@aws-amplify/graphql-api-construct@1.16.0) (2024-10-28)
+
+### Bug Fixes
+
+- enable IAM auth for custom types ([#2961](https://github.com/aws-amplify/amplify-category-api/issues/2961)) ([#2971](https://github.com/aws-amplify/amplify-category-api/issues/2971)) ([0e003d2](https://github.com/aws-amplify/amplify-category-api/commit/0e003d2656c46171c7fa2e947c92d701ede94f22))
+
+### Features
+
+- add metrics metadata for auth mode and custom operations ([#2966](https://github.com/aws-amplify/amplify-category-api/issues/2966)) ([5571a90](https://github.com/aws-amplify/amplify-category-api/commit/5571a902bd3a9f3f932bf531dab8b5c1fdb5709b))
+- get datasource map for migration ([#2668](https://github.com/aws-amplify/amplify-category-api/issues/2668)) ([02c7da0](https://github.com/aws-amplify/amplify-category-api/commit/02c7da0da0d5837ca05a8e4ff1b1536cc20ae15b))
+- import existing table to amplify managed table ([#2634](https://github.com/aws-amplify/amplify-category-api/issues/2634)) ([b3fb28f](https://github.com/aws-amplify/amplify-category-api/commit/b3fb28f6a253cae523625c0b2e93ec9ce2c37bab))
+
+### Reverts
+
+- Revert "fix: enable IAM auth for custom types (#2961) (#2971)" (#2975) ([8da7802](https://github.com/aws-amplify/amplify-category-api/commit/8da7802b5a4e3518c1a2617269f31db8f5769c07)), closes [#2961](https://github.com/aws-amplify/amplify-category-api/issues/2961) [#2971](https://github.com/aws-amplify/amplify-category-api/issues/2971) [#2975](https://github.com/aws-amplify/amplify-category-api/issues/2975)
+- Revert "feat: get datasource map for migration (#2668)" (#2907) ([2b17871](https://github.com/aws-amplify/amplify-category-api/commit/2b17871b600dbfa6d911057c30498f7df6a7e8dc)), closes [#2668](https://github.com/aws-amplify/amplify-category-api/issues/2668) [#2907](https://github.com/aws-amplify/amplify-category-api/issues/2907)
+
 ## [1.15.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.15.0...@aws-amplify/graphql-api-construct@1.15.1) (2024-10-17)
 
 ### Bug Fixes
