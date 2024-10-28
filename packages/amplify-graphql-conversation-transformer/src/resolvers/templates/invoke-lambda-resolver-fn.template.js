@@ -6,12 +6,6 @@ export function request(ctx) {
 
   const selectionSet = '[[SELECTION_SET]]';
 
-  const singleShotResponseMutation = {
-    name: '[[RESPONSE_MUTATION_NAME]]',
-    inputTypeName: '[[RESPONSE_MUTATION_INPUT_TYPE_NAME]]',
-    selectionSet,
-  };
-
   const streamingResponseMutation = {
     name: '[[STREAMING_RESPONSE_MUTATION_NAME]]',
     inputTypeName: '[[STREAMING_RESPONSE_MUTATION_INPUT_TYPE_NAME]]',
@@ -40,22 +34,17 @@ export function request(ctx) {
     listQueryLimit: [[LIST_QUERY_LIMIT]],
   };
 
-  const disableStreaming = ctx.env['[[DISABLE_STREAMING_ENV_VAR]]'] === 'true';
-  const responseMutation = !!disableStreaming
-    ? singleShotResponseMutation
-    : streamingResponseMutation;
-
   const authHeader = request.headers['authorization'];
   const payload = {
     conversationId: args.conversationId,
     currentMessageId,
-    responseMutation,
+    responseMutation: streamingResponseMutation,
     graphqlApiEndpoint,
     modelConfiguration,
     request: { headers: { authorization: authHeader } },
     messageHistoryQuery,
     toolsConfiguration,
-    streamResponse: !disableStreaming,
+    streamResponse: true,
   };
 
   return {
