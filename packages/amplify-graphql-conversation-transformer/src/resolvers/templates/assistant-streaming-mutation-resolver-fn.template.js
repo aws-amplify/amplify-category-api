@@ -21,6 +21,8 @@ export function request(ctx) {
     contentBlockDoneAtIndex,
     // turn complete
     stopReason,
+    // well-formed content block representing accumulated text
+    accumulatedTurnContent
   } = ctx.args.input;
 
   const { owner } = ctx.args;
