@@ -1,46 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration 1`] = `
-{
-  "Fn::Join": [
-    "",
-    [
-      "export const request = (ctx) => {
-  ctx.stash.typeName = "Mutation";
-  ctx.stash.fieldName = "pirateChat";
-  ctx.stash.conditions = [];
-  ctx.stash.metadata = {};
-  ctx.stash.metadata.dataSourceType = "AWS_LAMBDA";
-  ctx.stash.metadata.apiId = "",
-      {
-        "Fn::GetAtt": [
-          "GraphQLAPI",
-          "ApiId",
-        ],
-      },
-      "";
-  ctx.stash.connectionAttributes = {};
-  ctx.stash.lambdaFunctionArn = "",
-      {
-        "Fn::GetAtt": [
-          "PirateChatConversationDirectiveLambdaStack",
-          "Outputs.transformerrootstackPirateChatConversationDirectiveLambdaStackPirateChatDefaultConversationHandlerconversationHandlerFunction2B526F1AArn",
-        ],
-      },
-      "";
-  ctx.stash.adminRoles = [];
-  return {};
-}
-
-export const response = (ctx) => {
-  return ctx.prev.result;
-};",
-    ],
-  ],
-}
-`;
-
-exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration 2`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration: AssistantResponseMutation auth slot function code 1`] = `
 "export function request(ctx) {
   ctx.stash.hasAuth = true;
   const isAuthorized = false;
@@ -82,10 +42,90 @@ export function response(ctx) {
 "
 `;
 
-exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration 3`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration: AssistantResponseMutation init slot function code 1`] = `
+"export function request(ctx) {
+  ctx.stash.graphqlApiEndpoint = '[[GRAPHQL_API_ENDPOINT]]';
+  ctx.stash.defaultValues = ctx.stash.defaultValues ?? {};
+  ctx.stash.defaultValues.id = util.autoId();
+  const createdAt = util.time.nowISO8601();
+  ctx.stash.defaultValues.createdAt = createdAt;
+  ctx.stash.defaultValues.updatedAt = createdAt;
+  return {
+    version: '2018-05-09',
+    payload: {},
+  };
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration: AssistantResponseMutation resolver code 1`] = `
+{
+  "Fn::Join": [
+    "",
+    [
+      "export const request = (ctx) => {
+  ctx.stash.typeName = "Mutation";
+  ctx.stash.fieldName = "createAssistantResponsePirateChat";
+  ctx.stash.conditions = [];
+  ctx.stash.metadata = {};
+  ctx.stash.metadata.dataSourceType = "AMAZON_DYNAMODB";
+  ctx.stash.metadata.apiId = "",
+      {
+        "Fn::GetAtt": [
+          "GraphQLAPI",
+          "ApiId",
+        ],
+      },
+      "";
+  ctx.stash.connectionAttributes = {};
+  ctx.stash.tableName = "",
+      {
+        "Fn::Select": [
+          1,
+          {
+            "Fn::Split": [
+              "/",
+              {
+                "Fn::Select": [
+                  5,
+                  {
+                    "Fn::Split": [
+                      ":",
+                      {
+                        "Fn::GetAtt": [
+                          "ConversationMessagePirateChat",
+                          "Outputs.transformerrootstackConversationMessagePirateChatConversationMessagePirateChatTableFC80206BTableArn",
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      "";
+  ctx.stash.adminRoles = [];
+  return {};
+}
+
+export const response = (ctx) => {
+  return ctx.prev.result;
+};",
+    ],
+  ],
+}
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration: AssistantResponseMutation verify session owner slot function code 1`] = `
 "export function request(ctx) {
   const { authFilter } = ctx.stash;
-  const { conversationId } = ctx.args;
+  const { conversationId } = ctx.args.input;
 
   const query = {
     expression: 'id = :id',
@@ -117,43 +157,170 @@ export function response(ctx) {
 "
 `;
 
-exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration 4`] = `
-"import { util } from '@aws-appsync/utils';
-import * as ddb from '@aws-appsync/utils/dynamodb';
+exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration: AssistantResponseSubscription data slot function code 1`] = `
+"import { util, extensions } from '@aws-appsync/utils';
 
 export function request(ctx) {
-  const args = ctx.stash.transformedArgs ?? ctx.args;
-  const defaultValues = ctx.stash.defaultValues ?? {};
-  const message = {
-    __typename: 'ConversationMessagePirateChat',
-    role: 'user',
-    ...args,
-    ...defaultValues,
-  };
-  const id = ctx.stash.defaultValues.id;
+  ctx.stash.hasAuth = true;
+  const isAuthorized = false;
 
-  return ddb.put({ key: { id }, item: message });
+  if (util.authType() === 'User Pool Authorization') {
+    if (!isAuthorized) {
+      const authFilter = [];
+      let ownerClaim0 = ctx.identity['claims']['sub'];
+      ctx.args.owner = ownerClaim0;
+      const currentClaim1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (ownerClaim0 && currentClaim1) {
+        ownerClaim0 = ownerClaim0 + '::' + currentClaim1;
+        authFilter.push({ owner: { eq: ownerClaim0 } });
+      }
+      const role0_0 = ctx.identity['claims']['sub'];
+      if (role0_0) {
+        authFilter.push({ owner: { eq: role0_0 } });
+      }
+      // we can just reuse currentClaim1 here, but doing this (for now) to mirror the existing
+      // vtl auth resolver.
+      const role0_1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (role0_1) {
+        authFilter.push({ owner: { eq: role0_1 } });
+      }
+      if (authFilter.length !== 0) {
+        ctx.stash.authFilter = { or: authFilter };
+      }
+    }
+  }
+  if (!isAuthorized && ctx.stash.authFilter.length === 0) {
+    util.unauthorized();
+  }
+  ctx.args.filter = { ...ctx.stash.authFilter, and: [{ conversationId: { eq: ctx.args.conversationId } }] };
+  return { version: '2018-05-29', payload: {} };
 }
 
 export function response(ctx) {
-  if (ctx.error) {
-    util.error(ctx.error.message, ctx.error.type);
-  } else {
-    return ctx.result;
-  }
+  const subscriptionFilter = util.transform.toSubscriptionFilter(ctx.args.filter);
+  extensions.setSubscriptionFilter(subscriptionFilter);
+  return null;
 }
 "
 `;
 
-exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration 5`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration: AssistantResponseSubscription resolver code 1`] = `
+{
+  "Fn::Join": [
+    "",
+    [
+      "export const request = (ctx) => {
+  ctx.stash.typeName = "Subscription";
+  ctx.stash.fieldName = "onCreateAssistantResponsePirateChat";
+  ctx.stash.conditions = [];
+  ctx.stash.metadata = {};
+  ctx.stash.metadata.dataSourceType = "NONE";
+  ctx.stash.metadata.apiId = "",
+      {
+        "Fn::GetAtt": [
+          "GraphQLAPI",
+          "ApiId",
+        ],
+      },
+      "";
+  ctx.stash.connectionAttributes = {};
+
+  ctx.stash.adminRoles = [];
+  return {};
+}
+
+export const response = (ctx) => {
+  return ctx.prev.result;
+};",
+    ],
+  ],
+}
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration: SendMessageMutation auth slot function code 1`] = `
+"export function request(ctx) {
+  ctx.stash.hasAuth = true;
+  const isAuthorized = false;
+
+  if (util.authType() === 'User Pool Authorization') {
+    if (!isAuthorized) {
+      const authFilter = [];
+      let ownerClaim0 = ctx.identity['claims']['sub'];
+      ctx.args.owner = ownerClaim0;
+      const currentClaim1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (ownerClaim0 && currentClaim1) {
+        ownerClaim0 = ownerClaim0 + '::' + currentClaim1;
+        authFilter.push({ owner: { eq: ownerClaim0 } });
+      }
+      const role0_0 = ctx.identity['claims']['sub'];
+      if (role0_0) {
+        authFilter.push({ owner: { eq: role0_0 } });
+      }
+      // we can just reuse currentClaim1 here, but doing this (for now) to mirror the existing
+      // vtl auth resolver.
+      const role0_1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (role0_1) {
+        authFilter.push({ owner: { eq: role0_1 } });
+      }
+      if (authFilter.length !== 0) {
+        ctx.stash.authFilter = { or: authFilter };
+      }
+    }
+  }
+  if (!isAuthorized && ctx.stash.authFilter.length === 0) {
+    util.unauthorized();
+  }
+  return { version: '2018-05-29', payload: {} };
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration: SendMessageMutation init slot function code 1`] = `
+{
+  "Fn::Join": [
+    "",
+    [
+      "export function request(ctx) {
+  ctx.stash.graphqlApiEndpoint = '",
+      {
+        "Fn::GetAtt": [
+          "GraphQLAPI",
+          "GraphQLUrl",
+        ],
+      },
+      "';
+  ctx.stash.defaultValues = ctx.stash.defaultValues ?? {};
+  ctx.stash.defaultValues.id = util.autoId();
+  const createdAt = util.time.nowISO8601();
+  ctx.stash.defaultValues.createdAt = createdAt;
+  ctx.stash.defaultValues.updatedAt = createdAt;
+  return {
+    version: '2018-05-09',
+    payload: {},
+  };
+}
+
+export function response(ctx) {
+  return {};
+}
+",
+    ],
+  ],
+}
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration: SendMessageMutation invoke lambda slot function code 1`] = `
 "import { util } from '@aws-appsync/utils';
 
 export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
 
-  
-  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason';
+  const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
 
   const singleShotResponseMutation = {
     name: 'createAssistantResponsePirateChat',
@@ -168,18 +335,18 @@ export function request(ctx) {
   };
 
   const currentMessageId = ctx.stash.defaultValues.id;
+
   const modelConfiguration = {
-  modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
-  systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
-  inferenceConfiguration: {"temperature":0.5,"topP":0.9,"maxTokens":100},
-};
+    modelId: "anthropic.claude-3-haiku-20240307-v1:0",
+    systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
+    inferenceConfiguration: {"temperature":0.5,"topP":0.9,"maxTokens":100},
+  };
 
   const clientTools = args.toolConfiguration?.tools?.map((tool) => {
     return { ...tool.toolSpec };
   });
-  const toolsConfiguration = {
-  clientTools
-};
+  const dataTools = undefined;
+  const toolsConfiguration = { dataTools, clientTools };
 
   const messageHistoryQuery = {
     getQueryName: 'getConversationMessagePirateChat',
@@ -234,7 +401,7 @@ export function response(ctx) {
 "
 `;
 
-exports[`ConversationTransformer valid schemas should transform conversation route with model query tool 1`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration: SendMessageMutation resolver code 1`] = `
 {
   "Fn::Join": [
     "",
@@ -274,7 +441,70 @@ export const response = (ctx) => {
 }
 `;
 
-exports[`ConversationTransformer valid schemas should transform conversation route with model query tool 2`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration: SendMessageMutation verify session owner slot function code 1`] = `
+"export function request(ctx) {
+  const { authFilter } = ctx.stash;
+  const { conversationId } = ctx.args;
+
+  const query = {
+    expression: 'id = :id',
+    expressionValues: util.dynamodb.toMapValues({
+      ':id': conversationId,
+    }),
+  };
+
+  const filter = JSON.parse(util.transform.toDynamoDBFilterExpression(authFilter));
+
+  return {
+    operation: 'Query',
+    query,
+    filter,
+  };
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  }
+
+  if (ctx.result.items.length !== 0) {
+    return ctx.result.items[0];
+  }
+
+  util.error('Conversation not found', 'ResourceNotFound');
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration: SendMessageMutation write message to table slot function code 1`] = `
+"import { util } from '@aws-appsync/utils';
+import * as ddb from '@aws-appsync/utils/dynamodb';
+
+export function request(ctx) {
+  const args = ctx.stash.transformedArgs ?? ctx.args;
+  const defaultValues = ctx.stash.defaultValues ?? {};
+  const message = {
+    __typename: 'ConversationMessagePirateChat',
+    role: 'user',
+    ...args,
+    ...defaultValues,
+  };
+  const id = ctx.stash.defaultValues.id;
+
+  return ddb.put({ key: { id }, item: message });
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  } else {
+    return ctx.result;
+  }
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships: AssistantResponseMutation auth slot function code 1`] = `
 "export function request(ctx) {
   ctx.stash.hasAuth = true;
   const isAuthorized = false;
@@ -316,10 +546,90 @@ export function response(ctx) {
 "
 `;
 
-exports[`ConversationTransformer valid schemas should transform conversation route with model query tool 3`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships: AssistantResponseMutation init slot function code 1`] = `
+"export function request(ctx) {
+  ctx.stash.graphqlApiEndpoint = '[[GRAPHQL_API_ENDPOINT]]';
+  ctx.stash.defaultValues = ctx.stash.defaultValues ?? {};
+  ctx.stash.defaultValues.id = util.autoId();
+  const createdAt = util.time.nowISO8601();
+  ctx.stash.defaultValues.createdAt = createdAt;
+  ctx.stash.defaultValues.updatedAt = createdAt;
+  return {
+    version: '2018-05-09',
+    payload: {},
+  };
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships: AssistantResponseMutation resolver code 1`] = `
+{
+  "Fn::Join": [
+    "",
+    [
+      "export const request = (ctx) => {
+  ctx.stash.typeName = "Mutation";
+  ctx.stash.fieldName = "createAssistantResponsePirateChat";
+  ctx.stash.conditions = [];
+  ctx.stash.metadata = {};
+  ctx.stash.metadata.dataSourceType = "AMAZON_DYNAMODB";
+  ctx.stash.metadata.apiId = "",
+      {
+        "Fn::GetAtt": [
+          "GraphQLAPI",
+          "ApiId",
+        ],
+      },
+      "";
+  ctx.stash.connectionAttributes = {};
+  ctx.stash.tableName = "",
+      {
+        "Fn::Select": [
+          1,
+          {
+            "Fn::Split": [
+              "/",
+              {
+                "Fn::Select": [
+                  5,
+                  {
+                    "Fn::Split": [
+                      ":",
+                      {
+                        "Fn::GetAtt": [
+                          "ConversationMessagePirateChat",
+                          "Outputs.transformerrootstackConversationMessagePirateChatConversationMessagePirateChatTableFC80206BTableArn",
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      "";
+  ctx.stash.adminRoles = [];
+  return {};
+}
+
+export const response = (ctx) => {
+  return ctx.prev.result;
+};",
+    ],
+  ],
+}
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships: AssistantResponseMutation verify session owner slot function code 1`] = `
 "export function request(ctx) {
   const { authFilter } = ctx.stash;
-  const { conversationId } = ctx.args;
+  const { conversationId } = ctx.args.input;
 
   const query = {
     expression: 'id = :id',
@@ -351,43 +661,170 @@ export function response(ctx) {
 "
 `;
 
-exports[`ConversationTransformer valid schemas should transform conversation route with model query tool 4`] = `
-"import { util } from '@aws-appsync/utils';
-import * as ddb from '@aws-appsync/utils/dynamodb';
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships: AssistantResponseSubscription data slot function code 1`] = `
+"import { util, extensions } from '@aws-appsync/utils';
 
 export function request(ctx) {
-  const args = ctx.stash.transformedArgs ?? ctx.args;
-  const defaultValues = ctx.stash.defaultValues ?? {};
-  const message = {
-    __typename: 'ConversationMessagePirateChat',
-    role: 'user',
-    ...args,
-    ...defaultValues,
-  };
-  const id = ctx.stash.defaultValues.id;
+  ctx.stash.hasAuth = true;
+  const isAuthorized = false;
 
-  return ddb.put({ key: { id }, item: message });
+  if (util.authType() === 'User Pool Authorization') {
+    if (!isAuthorized) {
+      const authFilter = [];
+      let ownerClaim0 = ctx.identity['claims']['sub'];
+      ctx.args.owner = ownerClaim0;
+      const currentClaim1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (ownerClaim0 && currentClaim1) {
+        ownerClaim0 = ownerClaim0 + '::' + currentClaim1;
+        authFilter.push({ owner: { eq: ownerClaim0 } });
+      }
+      const role0_0 = ctx.identity['claims']['sub'];
+      if (role0_0) {
+        authFilter.push({ owner: { eq: role0_0 } });
+      }
+      // we can just reuse currentClaim1 here, but doing this (for now) to mirror the existing
+      // vtl auth resolver.
+      const role0_1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (role0_1) {
+        authFilter.push({ owner: { eq: role0_1 } });
+      }
+      if (authFilter.length !== 0) {
+        ctx.stash.authFilter = { or: authFilter };
+      }
+    }
+  }
+  if (!isAuthorized && ctx.stash.authFilter.length === 0) {
+    util.unauthorized();
+  }
+  ctx.args.filter = { ...ctx.stash.authFilter, and: [{ conversationId: { eq: ctx.args.conversationId } }] };
+  return { version: '2018-05-29', payload: {} };
 }
 
 export function response(ctx) {
-  if (ctx.error) {
-    util.error(ctx.error.message, ctx.error.type);
-  } else {
-    return ctx.result;
-  }
+  const subscriptionFilter = util.transform.toSubscriptionFilter(ctx.args.filter);
+  extensions.setSubscriptionFilter(subscriptionFilter);
+  return null;
 }
 "
 `;
 
-exports[`ConversationTransformer valid schemas should transform conversation route with model query tool 5`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships: AssistantResponseSubscription resolver code 1`] = `
+{
+  "Fn::Join": [
+    "",
+    [
+      "export const request = (ctx) => {
+  ctx.stash.typeName = "Subscription";
+  ctx.stash.fieldName = "onCreateAssistantResponsePirateChat";
+  ctx.stash.conditions = [];
+  ctx.stash.metadata = {};
+  ctx.stash.metadata.dataSourceType = "NONE";
+  ctx.stash.metadata.apiId = "",
+      {
+        "Fn::GetAtt": [
+          "GraphQLAPI",
+          "ApiId",
+        ],
+      },
+      "";
+  ctx.stash.connectionAttributes = {};
+
+  ctx.stash.adminRoles = [];
+  return {};
+}
+
+export const response = (ctx) => {
+  return ctx.prev.result;
+};",
+    ],
+  ],
+}
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships: SendMessageMutation auth slot function code 1`] = `
+"export function request(ctx) {
+  ctx.stash.hasAuth = true;
+  const isAuthorized = false;
+
+  if (util.authType() === 'User Pool Authorization') {
+    if (!isAuthorized) {
+      const authFilter = [];
+      let ownerClaim0 = ctx.identity['claims']['sub'];
+      ctx.args.owner = ownerClaim0;
+      const currentClaim1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (ownerClaim0 && currentClaim1) {
+        ownerClaim0 = ownerClaim0 + '::' + currentClaim1;
+        authFilter.push({ owner: { eq: ownerClaim0 } });
+      }
+      const role0_0 = ctx.identity['claims']['sub'];
+      if (role0_0) {
+        authFilter.push({ owner: { eq: role0_0 } });
+      }
+      // we can just reuse currentClaim1 here, but doing this (for now) to mirror the existing
+      // vtl auth resolver.
+      const role0_1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (role0_1) {
+        authFilter.push({ owner: { eq: role0_1 } });
+      }
+      if (authFilter.length !== 0) {
+        ctx.stash.authFilter = { or: authFilter };
+      }
+    }
+  }
+  if (!isAuthorized && ctx.stash.authFilter.length === 0) {
+    util.unauthorized();
+  }
+  return { version: '2018-05-29', payload: {} };
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships: SendMessageMutation init slot function code 1`] = `
+{
+  "Fn::Join": [
+    "",
+    [
+      "export function request(ctx) {
+  ctx.stash.graphqlApiEndpoint = '",
+      {
+        "Fn::GetAtt": [
+          "GraphQLAPI",
+          "GraphQLUrl",
+        ],
+      },
+      "';
+  ctx.stash.defaultValues = ctx.stash.defaultValues ?? {};
+  ctx.stash.defaultValues.id = util.autoId();
+  const createdAt = util.time.nowISO8601();
+  ctx.stash.defaultValues.createdAt = createdAt;
+  ctx.stash.defaultValues.updatedAt = createdAt;
+  return {
+    version: '2018-05-09',
+    payload: {},
+  };
+}
+
+export function response(ctx) {
+  return {};
+}
+",
+    ],
+  ],
+}
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships: SendMessageMutation invoke lambda slot function code 1`] = `
 "import { util } from '@aws-appsync/utils';
 
 export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
 
-  const toolDefinitions = {"tools":[{"name":"listTodos","description":"lists todos","inputSchema":{"json":{"type":"object","properties":{},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"items { content isDone id createdAt updatedAt owner } nextToken","propertyTypes":{},"queryName":"listTodos"}}]};
-  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason';
+  const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
 
   const singleShotResponseMutation = {
     name: 'createAssistantResponsePirateChat',
@@ -402,20 +839,18 @@ export function request(ctx) {
   };
 
   const currentMessageId = ctx.stash.defaultValues.id;
+
   const modelConfiguration = {
-  modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
-  systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
-  
-};
+    modelId: "anthropic.claude-3-haiku-20240307-v1:0",
+    systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
+    inferenceConfiguration: undefined,
+  };
 
   const clientTools = args.toolConfiguration?.tools?.map((tool) => {
     return { ...tool.toolSpec };
   });
-  const dataTools = toolDefinitions.tools;
- const toolsConfiguration = {
-  dataTools,
-  clientTools,
-};
+  const dataTools = [{"name":"listCustomers","description":"Provides data about the customer sending a message","inputSchema":{"json":{"type":"object","properties":{},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"items { name email activeCart { products { name price } customerId id createdAt updatedAt owner } orderHistory { items { products { name price } customerId id createdAt updatedAt owner } nextToken } id createdAt updatedAt owner } nextToken","propertyTypes":{},"queryName":"listCustomers"}}];
+  const toolsConfiguration = { dataTools, clientTools };
 
   const messageHistoryQuery = {
     getQueryName: 'getConversationMessagePirateChat',
@@ -470,7 +905,7 @@ export function response(ctx) {
 "
 `;
 
-exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships 1`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships: SendMessageMutation resolver code 1`] = `
 {
   "Fn::Join": [
     "",
@@ -510,7 +945,70 @@ export const response = (ctx) => {
 }
 `;
 
-exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships 2`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships: SendMessageMutation verify session owner slot function code 1`] = `
+"export function request(ctx) {
+  const { authFilter } = ctx.stash;
+  const { conversationId } = ctx.args;
+
+  const query = {
+    expression: 'id = :id',
+    expressionValues: util.dynamodb.toMapValues({
+      ':id': conversationId,
+    }),
+  };
+
+  const filter = JSON.parse(util.transform.toDynamoDBFilterExpression(authFilter));
+
+  return {
+    operation: 'Query',
+    query,
+    filter,
+  };
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  }
+
+  if (ctx.result.items.length !== 0) {
+    return ctx.result.items[0];
+  }
+
+  util.error('Conversation not found', 'ResourceNotFound');
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships: SendMessageMutation write message to table slot function code 1`] = `
+"import { util } from '@aws-appsync/utils';
+import * as ddb from '@aws-appsync/utils/dynamodb';
+
+export function request(ctx) {
+  const args = ctx.stash.transformedArgs ?? ctx.args;
+  const defaultValues = ctx.stash.defaultValues ?? {};
+  const message = {
+    __typename: 'ConversationMessagePirateChat',
+    role: 'user',
+    ...args,
+    ...defaultValues,
+  };
+  const id = ctx.stash.defaultValues.id;
+
+  return ddb.put({ key: { id }, item: message });
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  } else {
+    return ctx.result;
+  }
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool: AssistantResponseMutation auth slot function code 1`] = `
 "export function request(ctx) {
   ctx.stash.hasAuth = true;
   const isAuthorized = false;
@@ -552,10 +1050,90 @@ export function response(ctx) {
 "
 `;
 
-exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships 3`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool: AssistantResponseMutation init slot function code 1`] = `
+"export function request(ctx) {
+  ctx.stash.graphqlApiEndpoint = '[[GRAPHQL_API_ENDPOINT]]';
+  ctx.stash.defaultValues = ctx.stash.defaultValues ?? {};
+  ctx.stash.defaultValues.id = util.autoId();
+  const createdAt = util.time.nowISO8601();
+  ctx.stash.defaultValues.createdAt = createdAt;
+  ctx.stash.defaultValues.updatedAt = createdAt;
+  return {
+    version: '2018-05-09',
+    payload: {},
+  };
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool: AssistantResponseMutation resolver code 1`] = `
+{
+  "Fn::Join": [
+    "",
+    [
+      "export const request = (ctx) => {
+  ctx.stash.typeName = "Mutation";
+  ctx.stash.fieldName = "createAssistantResponsePirateChat";
+  ctx.stash.conditions = [];
+  ctx.stash.metadata = {};
+  ctx.stash.metadata.dataSourceType = "AMAZON_DYNAMODB";
+  ctx.stash.metadata.apiId = "",
+      {
+        "Fn::GetAtt": [
+          "GraphQLAPI",
+          "ApiId",
+        ],
+      },
+      "";
+  ctx.stash.connectionAttributes = {};
+  ctx.stash.tableName = "",
+      {
+        "Fn::Select": [
+          1,
+          {
+            "Fn::Split": [
+              "/",
+              {
+                "Fn::Select": [
+                  5,
+                  {
+                    "Fn::Split": [
+                      ":",
+                      {
+                        "Fn::GetAtt": [
+                          "ConversationMessagePirateChat",
+                          "Outputs.transformerrootstackConversationMessagePirateChatConversationMessagePirateChatTableFC80206BTableArn",
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      "";
+  ctx.stash.adminRoles = [];
+  return {};
+}
+
+export const response = (ctx) => {
+  return ctx.prev.result;
+};",
+    ],
+  ],
+}
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool: AssistantResponseMutation verify session owner slot function code 1`] = `
 "export function request(ctx) {
   const { authFilter } = ctx.stash;
-  const { conversationId } = ctx.args;
+  const { conversationId } = ctx.args.input;
 
   const query = {
     expression: 'id = :id',
@@ -587,43 +1165,170 @@ export function response(ctx) {
 "
 `;
 
-exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships 4`] = `
-"import { util } from '@aws-appsync/utils';
-import * as ddb from '@aws-appsync/utils/dynamodb';
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool: AssistantResponseSubscription data slot function code 1`] = `
+"import { util, extensions } from '@aws-appsync/utils';
 
 export function request(ctx) {
-  const args = ctx.stash.transformedArgs ?? ctx.args;
-  const defaultValues = ctx.stash.defaultValues ?? {};
-  const message = {
-    __typename: 'ConversationMessagePirateChat',
-    role: 'user',
-    ...args,
-    ...defaultValues,
-  };
-  const id = ctx.stash.defaultValues.id;
+  ctx.stash.hasAuth = true;
+  const isAuthorized = false;
 
-  return ddb.put({ key: { id }, item: message });
+  if (util.authType() === 'User Pool Authorization') {
+    if (!isAuthorized) {
+      const authFilter = [];
+      let ownerClaim0 = ctx.identity['claims']['sub'];
+      ctx.args.owner = ownerClaim0;
+      const currentClaim1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (ownerClaim0 && currentClaim1) {
+        ownerClaim0 = ownerClaim0 + '::' + currentClaim1;
+        authFilter.push({ owner: { eq: ownerClaim0 } });
+      }
+      const role0_0 = ctx.identity['claims']['sub'];
+      if (role0_0) {
+        authFilter.push({ owner: { eq: role0_0 } });
+      }
+      // we can just reuse currentClaim1 here, but doing this (for now) to mirror the existing
+      // vtl auth resolver.
+      const role0_1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (role0_1) {
+        authFilter.push({ owner: { eq: role0_1 } });
+      }
+      if (authFilter.length !== 0) {
+        ctx.stash.authFilter = { or: authFilter };
+      }
+    }
+  }
+  if (!isAuthorized && ctx.stash.authFilter.length === 0) {
+    util.unauthorized();
+  }
+  ctx.args.filter = { ...ctx.stash.authFilter, and: [{ conversationId: { eq: ctx.args.conversationId } }] };
+  return { version: '2018-05-29', payload: {} };
 }
 
 export function response(ctx) {
-  if (ctx.error) {
-    util.error(ctx.error.message, ctx.error.type);
-  } else {
-    return ctx.result;
-  }
+  const subscriptionFilter = util.transform.toSubscriptionFilter(ctx.args.filter);
+  extensions.setSubscriptionFilter(subscriptionFilter);
+  return null;
 }
 "
 `;
 
-exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships 5`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool: AssistantResponseSubscription resolver code 1`] = `
+{
+  "Fn::Join": [
+    "",
+    [
+      "export const request = (ctx) => {
+  ctx.stash.typeName = "Subscription";
+  ctx.stash.fieldName = "onCreateAssistantResponsePirateChat";
+  ctx.stash.conditions = [];
+  ctx.stash.metadata = {};
+  ctx.stash.metadata.dataSourceType = "NONE";
+  ctx.stash.metadata.apiId = "",
+      {
+        "Fn::GetAtt": [
+          "GraphQLAPI",
+          "ApiId",
+        ],
+      },
+      "";
+  ctx.stash.connectionAttributes = {};
+
+  ctx.stash.adminRoles = [];
+  return {};
+}
+
+export const response = (ctx) => {
+  return ctx.prev.result;
+};",
+    ],
+  ],
+}
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool: SendMessageMutation auth slot function code 1`] = `
+"export function request(ctx) {
+  ctx.stash.hasAuth = true;
+  const isAuthorized = false;
+
+  if (util.authType() === 'User Pool Authorization') {
+    if (!isAuthorized) {
+      const authFilter = [];
+      let ownerClaim0 = ctx.identity['claims']['sub'];
+      ctx.args.owner = ownerClaim0;
+      const currentClaim1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (ownerClaim0 && currentClaim1) {
+        ownerClaim0 = ownerClaim0 + '::' + currentClaim1;
+        authFilter.push({ owner: { eq: ownerClaim0 } });
+      }
+      const role0_0 = ctx.identity['claims']['sub'];
+      if (role0_0) {
+        authFilter.push({ owner: { eq: role0_0 } });
+      }
+      // we can just reuse currentClaim1 here, but doing this (for now) to mirror the existing
+      // vtl auth resolver.
+      const role0_1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (role0_1) {
+        authFilter.push({ owner: { eq: role0_1 } });
+      }
+      if (authFilter.length !== 0) {
+        ctx.stash.authFilter = { or: authFilter };
+      }
+    }
+  }
+  if (!isAuthorized && ctx.stash.authFilter.length === 0) {
+    util.unauthorized();
+  }
+  return { version: '2018-05-29', payload: {} };
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool: SendMessageMutation init slot function code 1`] = `
+{
+  "Fn::Join": [
+    "",
+    [
+      "export function request(ctx) {
+  ctx.stash.graphqlApiEndpoint = '",
+      {
+        "Fn::GetAtt": [
+          "GraphQLAPI",
+          "GraphQLUrl",
+        ],
+      },
+      "';
+  ctx.stash.defaultValues = ctx.stash.defaultValues ?? {};
+  ctx.stash.defaultValues.id = util.autoId();
+  const createdAt = util.time.nowISO8601();
+  ctx.stash.defaultValues.createdAt = createdAt;
+  ctx.stash.defaultValues.updatedAt = createdAt;
+  return {
+    version: '2018-05-09',
+    payload: {},
+  };
+}
+
+export function response(ctx) {
+  return {};
+}
+",
+    ],
+  ],
+}
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool: SendMessageMutation invoke lambda slot function code 1`] = `
 "import { util } from '@aws-appsync/utils';
 
 export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
 
-  const toolDefinitions = {"tools":[{"name":"listCustomers","description":"Provides data about the customer sending a message","inputSchema":{"json":{"type":"object","properties":{},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"items { name email activeCart { products { name price } customerId id createdAt updatedAt owner } orderHistory { items { products { name price } customerId id createdAt updatedAt owner } nextToken } id createdAt updatedAt owner } nextToken","propertyTypes":{},"queryName":"listCustomers"}}]};
-  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason';
+  const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
 
   const singleShotResponseMutation = {
     name: 'createAssistantResponsePirateChat',
@@ -638,20 +1343,18 @@ export function request(ctx) {
   };
 
   const currentMessageId = ctx.stash.defaultValues.id;
+
   const modelConfiguration = {
-  modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
-  systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
-  
-};
+    modelId: "anthropic.claude-3-haiku-20240307-v1:0",
+    systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
+    inferenceConfiguration: undefined,
+  };
 
   const clientTools = args.toolConfiguration?.tools?.map((tool) => {
     return { ...tool.toolSpec };
   });
-  const dataTools = toolDefinitions.tools;
- const toolsConfiguration = {
-  dataTools,
-  clientTools,
-};
+  const dataTools = [{"name":"listTodos","description":"lists todos","inputSchema":{"json":{"type":"object","properties":{},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"items { content isDone id createdAt updatedAt owner } nextToken","propertyTypes":{},"queryName":"listTodos"}}];
+  const toolsConfiguration = { dataTools, clientTools };
 
   const messageHistoryQuery = {
     getQueryName: 'getConversationMessagePirateChat',
@@ -706,7 +1409,7 @@ export function response(ctx) {
 "
 `;
 
-exports[`ConversationTransformer valid schemas should transform conversation route with query tools 1`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool: SendMessageMutation resolver code 1`] = `
 {
   "Fn::Join": [
     "",
@@ -746,7 +1449,70 @@ export const response = (ctx) => {
 }
 `;
 
-exports[`ConversationTransformer valid schemas should transform conversation route with query tools 2`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool: SendMessageMutation verify session owner slot function code 1`] = `
+"export function request(ctx) {
+  const { authFilter } = ctx.stash;
+  const { conversationId } = ctx.args;
+
+  const query = {
+    expression: 'id = :id',
+    expressionValues: util.dynamodb.toMapValues({
+      ':id': conversationId,
+    }),
+  };
+
+  const filter = JSON.parse(util.transform.toDynamoDBFilterExpression(authFilter));
+
+  return {
+    operation: 'Query',
+    query,
+    filter,
+  };
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  }
+
+  if (ctx.result.items.length !== 0) {
+    return ctx.result.items[0];
+  }
+
+  util.error('Conversation not found', 'ResourceNotFound');
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool: SendMessageMutation write message to table slot function code 1`] = `
+"import { util } from '@aws-appsync/utils';
+import * as ddb from '@aws-appsync/utils/dynamodb';
+
+export function request(ctx) {
+  const args = ctx.stash.transformedArgs ?? ctx.args;
+  const defaultValues = ctx.stash.defaultValues ?? {};
+  const message = {
+    __typename: 'ConversationMessagePirateChat',
+    role: 'user',
+    ...args,
+    ...defaultValues,
+  };
+  const id = ctx.stash.defaultValues.id;
+
+  return ddb.put({ key: { id }, item: message });
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  } else {
+    return ctx.result;
+  }
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with query tools: AssistantResponseMutation auth slot function code 1`] = `
 "export function request(ctx) {
   ctx.stash.hasAuth = true;
   const isAuthorized = false;
@@ -788,10 +1554,90 @@ export function response(ctx) {
 "
 `;
 
-exports[`ConversationTransformer valid schemas should transform conversation route with query tools 3`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with query tools: AssistantResponseMutation init slot function code 1`] = `
+"export function request(ctx) {
+  ctx.stash.graphqlApiEndpoint = '[[GRAPHQL_API_ENDPOINT]]';
+  ctx.stash.defaultValues = ctx.stash.defaultValues ?? {};
+  ctx.stash.defaultValues.id = util.autoId();
+  const createdAt = util.time.nowISO8601();
+  ctx.stash.defaultValues.createdAt = createdAt;
+  ctx.stash.defaultValues.updatedAt = createdAt;
+  return {
+    version: '2018-05-09',
+    payload: {},
+  };
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with query tools: AssistantResponseMutation resolver code 1`] = `
+{
+  "Fn::Join": [
+    "",
+    [
+      "export const request = (ctx) => {
+  ctx.stash.typeName = "Mutation";
+  ctx.stash.fieldName = "createAssistantResponsePirateChat";
+  ctx.stash.conditions = [];
+  ctx.stash.metadata = {};
+  ctx.stash.metadata.dataSourceType = "AMAZON_DYNAMODB";
+  ctx.stash.metadata.apiId = "",
+      {
+        "Fn::GetAtt": [
+          "GraphQLAPI",
+          "ApiId",
+        ],
+      },
+      "";
+  ctx.stash.connectionAttributes = {};
+  ctx.stash.tableName = "",
+      {
+        "Fn::Select": [
+          1,
+          {
+            "Fn::Split": [
+              "/",
+              {
+                "Fn::Select": [
+                  5,
+                  {
+                    "Fn::Split": [
+                      ":",
+                      {
+                        "Fn::GetAtt": [
+                          "ConversationMessagePirateChat",
+                          "Outputs.transformerrootstackConversationMessagePirateChatConversationMessagePirateChatTableFC80206BTableArn",
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      "";
+  ctx.stash.adminRoles = [];
+  return {};
+}
+
+export const response = (ctx) => {
+  return ctx.prev.result;
+};",
+    ],
+  ],
+}
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with query tools: AssistantResponseMutation verify session owner slot function code 1`] = `
 "export function request(ctx) {
   const { authFilter } = ctx.stash;
-  const { conversationId } = ctx.args;
+  const { conversationId } = ctx.args.input;
 
   const query = {
     expression: 'id = :id',
@@ -823,43 +1669,170 @@ export function response(ctx) {
 "
 `;
 
-exports[`ConversationTransformer valid schemas should transform conversation route with query tools 4`] = `
-"import { util } from '@aws-appsync/utils';
-import * as ddb from '@aws-appsync/utils/dynamodb';
+exports[`ConversationTransformer valid schemas should transform conversation route with query tools: AssistantResponseSubscription data slot function code 1`] = `
+"import { util, extensions } from '@aws-appsync/utils';
 
 export function request(ctx) {
-  const args = ctx.stash.transformedArgs ?? ctx.args;
-  const defaultValues = ctx.stash.defaultValues ?? {};
-  const message = {
-    __typename: 'ConversationMessagePirateChat',
-    role: 'user',
-    ...args,
-    ...defaultValues,
-  };
-  const id = ctx.stash.defaultValues.id;
+  ctx.stash.hasAuth = true;
+  const isAuthorized = false;
 
-  return ddb.put({ key: { id }, item: message });
+  if (util.authType() === 'User Pool Authorization') {
+    if (!isAuthorized) {
+      const authFilter = [];
+      let ownerClaim0 = ctx.identity['claims']['sub'];
+      ctx.args.owner = ownerClaim0;
+      const currentClaim1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (ownerClaim0 && currentClaim1) {
+        ownerClaim0 = ownerClaim0 + '::' + currentClaim1;
+        authFilter.push({ owner: { eq: ownerClaim0 } });
+      }
+      const role0_0 = ctx.identity['claims']['sub'];
+      if (role0_0) {
+        authFilter.push({ owner: { eq: role0_0 } });
+      }
+      // we can just reuse currentClaim1 here, but doing this (for now) to mirror the existing
+      // vtl auth resolver.
+      const role0_1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (role0_1) {
+        authFilter.push({ owner: { eq: role0_1 } });
+      }
+      if (authFilter.length !== 0) {
+        ctx.stash.authFilter = { or: authFilter };
+      }
+    }
+  }
+  if (!isAuthorized && ctx.stash.authFilter.length === 0) {
+    util.unauthorized();
+  }
+  ctx.args.filter = { ...ctx.stash.authFilter, and: [{ conversationId: { eq: ctx.args.conversationId } }] };
+  return { version: '2018-05-29', payload: {} };
 }
 
 export function response(ctx) {
-  if (ctx.error) {
-    util.error(ctx.error.message, ctx.error.type);
-  } else {
-    return ctx.result;
-  }
+  const subscriptionFilter = util.transform.toSubscriptionFilter(ctx.args.filter);
+  extensions.setSubscriptionFilter(subscriptionFilter);
+  return null;
 }
 "
 `;
 
-exports[`ConversationTransformer valid schemas should transform conversation route with query tools 5`] = `
+exports[`ConversationTransformer valid schemas should transform conversation route with query tools: AssistantResponseSubscription resolver code 1`] = `
+{
+  "Fn::Join": [
+    "",
+    [
+      "export const request = (ctx) => {
+  ctx.stash.typeName = "Subscription";
+  ctx.stash.fieldName = "onCreateAssistantResponsePirateChat";
+  ctx.stash.conditions = [];
+  ctx.stash.metadata = {};
+  ctx.stash.metadata.dataSourceType = "NONE";
+  ctx.stash.metadata.apiId = "",
+      {
+        "Fn::GetAtt": [
+          "GraphQLAPI",
+          "ApiId",
+        ],
+      },
+      "";
+  ctx.stash.connectionAttributes = {};
+
+  ctx.stash.adminRoles = [];
+  return {};
+}
+
+export const response = (ctx) => {
+  return ctx.prev.result;
+};",
+    ],
+  ],
+}
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with query tools: SendMessageMutation auth slot function code 1`] = `
+"export function request(ctx) {
+  ctx.stash.hasAuth = true;
+  const isAuthorized = false;
+
+  if (util.authType() === 'User Pool Authorization') {
+    if (!isAuthorized) {
+      const authFilter = [];
+      let ownerClaim0 = ctx.identity['claims']['sub'];
+      ctx.args.owner = ownerClaim0;
+      const currentClaim1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (ownerClaim0 && currentClaim1) {
+        ownerClaim0 = ownerClaim0 + '::' + currentClaim1;
+        authFilter.push({ owner: { eq: ownerClaim0 } });
+      }
+      const role0_0 = ctx.identity['claims']['sub'];
+      if (role0_0) {
+        authFilter.push({ owner: { eq: role0_0 } });
+      }
+      // we can just reuse currentClaim1 here, but doing this (for now) to mirror the existing
+      // vtl auth resolver.
+      const role0_1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (role0_1) {
+        authFilter.push({ owner: { eq: role0_1 } });
+      }
+      if (authFilter.length !== 0) {
+        ctx.stash.authFilter = { or: authFilter };
+      }
+    }
+  }
+  if (!isAuthorized && ctx.stash.authFilter.length === 0) {
+    util.unauthorized();
+  }
+  return { version: '2018-05-29', payload: {} };
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with query tools: SendMessageMutation init slot function code 1`] = `
+{
+  "Fn::Join": [
+    "",
+    [
+      "export function request(ctx) {
+  ctx.stash.graphqlApiEndpoint = '",
+      {
+        "Fn::GetAtt": [
+          "GraphQLAPI",
+          "GraphQLUrl",
+        ],
+      },
+      "';
+  ctx.stash.defaultValues = ctx.stash.defaultValues ?? {};
+  ctx.stash.defaultValues.id = util.autoId();
+  const createdAt = util.time.nowISO8601();
+  ctx.stash.defaultValues.createdAt = createdAt;
+  ctx.stash.defaultValues.updatedAt = createdAt;
+  return {
+    version: '2018-05-09',
+    payload: {},
+  };
+}
+
+export function response(ctx) {
+  return {};
+}
+",
+    ],
+  ],
+}
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with query tools: SendMessageMutation invoke lambda slot function code 1`] = `
 "import { util } from '@aws-appsync/utils';
 
 export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
 
-  const toolDefinitions = {"tools":[{"name":"getTemperature","description":"does a thing","inputSchema":{"json":{"type":"object","properties":{"city":{"type":"string","description":"A UTF-8 character sequence."}},"required":["city"]}},"graphqlRequestInputDescriptor":{"selectionSet":"value unit","propertyTypes":{"city":"String!"},"queryName":"getTemperature"}},{"name":"plus","description":"does a different thing","inputSchema":{"json":{"type":"object","properties":{"a":{"type":"number","description":"A signed 32-bit integer value."},"b":{"type":"number","description":"A signed 32-bit integer value."}},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"","propertyTypes":{"a":"Int","b":"Int"},"queryName":"plus"}}]};
-  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason';
+  const selectionSet = 'id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt';
 
   const singleShotResponseMutation = {
     name: 'createAssistantResponsePirateChat',
@@ -874,20 +1847,18 @@ export function request(ctx) {
   };
 
   const currentMessageId = ctx.stash.defaultValues.id;
+
   const modelConfiguration = {
-  modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
-  systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
-  
-};
+    modelId: "anthropic.claude-3-haiku-20240307-v1:0",
+    systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
+    inferenceConfiguration: undefined,
+  };
 
   const clientTools = args.toolConfiguration?.tools?.map((tool) => {
     return { ...tool.toolSpec };
   });
-  const dataTools = toolDefinitions.tools;
- const toolsConfiguration = {
-  dataTools,
-  clientTools,
-};
+  const dataTools = [{"name":"getTemperature","description":"does a thing","inputSchema":{"json":{"type":"object","properties":{"city":{"type":"string","description":"A UTF-8 character sequence."}},"required":["city"]}},"graphqlRequestInputDescriptor":{"selectionSet":"value unit","propertyTypes":{"city":"String!"},"queryName":"getTemperature"}},{"name":"plus","description":"does a different thing","inputSchema":{"json":{"type":"object","properties":{"a":{"type":"number","description":"A signed 32-bit integer value."},"b":{"type":"number","description":"A signed 32-bit integer value."}},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"","propertyTypes":{"a":"Int","b":"Int"},"queryName":"plus"}}];
+  const toolsConfiguration = { dataTools, clientTools };
 
   const messageHistoryQuery = {
     getQueryName: 'getConversationMessagePirateChat',
@@ -938,6 +1909,109 @@ export function response(ctx) {
     updatedAt: ctx.stash.defaultValues.updatedAt,
   };
   return response;
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with query tools: SendMessageMutation resolver code 1`] = `
+{
+  "Fn::Join": [
+    "",
+    [
+      "export const request = (ctx) => {
+  ctx.stash.typeName = "Mutation";
+  ctx.stash.fieldName = "pirateChat";
+  ctx.stash.conditions = [];
+  ctx.stash.metadata = {};
+  ctx.stash.metadata.dataSourceType = "AWS_LAMBDA";
+  ctx.stash.metadata.apiId = "",
+      {
+        "Fn::GetAtt": [
+          "GraphQLAPI",
+          "ApiId",
+        ],
+      },
+      "";
+  ctx.stash.connectionAttributes = {};
+  ctx.stash.lambdaFunctionArn = "",
+      {
+        "Fn::GetAtt": [
+          "PirateChatConversationDirectiveLambdaStack",
+          "Outputs.transformerrootstackPirateChatConversationDirectiveLambdaStackPirateChatDefaultConversationHandlerconversationHandlerFunction2B526F1AArn",
+        ],
+      },
+      "";
+  ctx.stash.adminRoles = [];
+  return {};
+}
+
+export const response = (ctx) => {
+  return ctx.prev.result;
+};",
+    ],
+  ],
+}
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with query tools: SendMessageMutation verify session owner slot function code 1`] = `
+"export function request(ctx) {
+  const { authFilter } = ctx.stash;
+  const { conversationId } = ctx.args;
+
+  const query = {
+    expression: 'id = :id',
+    expressionValues: util.dynamodb.toMapValues({
+      ':id': conversationId,
+    }),
+  };
+
+  const filter = JSON.parse(util.transform.toDynamoDBFilterExpression(authFilter));
+
+  return {
+    operation: 'Query',
+    query,
+    filter,
+  };
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  }
+
+  if (ctx.result.items.length !== 0) {
+    return ctx.result.items[0];
+  }
+
+  util.error('Conversation not found', 'ResourceNotFound');
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with query tools: SendMessageMutation write message to table slot function code 1`] = `
+"import { util } from '@aws-appsync/utils';
+import * as ddb from '@aws-appsync/utils/dynamodb';
+
+export function request(ctx) {
+  const args = ctx.stash.transformedArgs ?? ctx.args;
+  const defaultValues = ctx.stash.defaultValues ?? {};
+  const message = {
+    __typename: 'ConversationMessagePirateChat',
+    role: 'user',
+    ...args,
+    ...defaultValues,
+  };
+  const id = ctx.stash.defaultValues.id;
+
+  return ddb.put({ key: { id }, item: message });
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  } else {
+    return ctx.result;
+  }
 }
 "
 `;

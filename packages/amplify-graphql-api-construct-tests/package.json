@@ -34,6 +34,7 @@
     "amplify-category-api-e2e-core": "5.0.4",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
+    "ws": "^8.18.0",
     "fs-extra": "^8.1.0",
     "generate-password": "~1.7.0",
     "node-fetch": "^2.6.7"

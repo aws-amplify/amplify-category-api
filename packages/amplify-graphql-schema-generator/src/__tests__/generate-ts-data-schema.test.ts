@@ -249,6 +249,108 @@ describe('Type name conversions', () => {
     expect(graphqlSchema).toMatchSnapshot();
   });
 
+  it.each([
+    {
+      case: 'string',
+      field: () => {
+        const f = new Field('field', { kind: 'Scalar', name: 'String' });
+        f.default = { kind: 'DB_GENERATED', value: 'A squat grey building of only thirty-four stouries' };
+        return f;
+      },
+    },
+    {
+      case: 'Float',
+      field: () => {
+        const f = new Field('field', { kind: 'Scalar', name: 'Float' });
+        f.default = { kind: 'DB_GENERATED', value: 3.14 };
+        return f;
+      },
+    },
+    {
+      case: 'List',
+      field: () => {
+        const f = new Field('field', { kind: 'List', type: { kind: 'Scalar', name: 'String' } });
+        f.default = { kind: 'DB_GENERATED', value: false };
+        return f;
+      },
+    },
+    {
+      case: 'CustomType',
+      field: () => {
+        const f = new Field('field', { kind: 'Custom', name: 'MyCustomType' });
+        f.default = { kind: 'DB_GENERATED', value: 'I could make of both names nothing longer or more explicit than Pip' };
+        return f;
+      },
+    },
+    {
+      case: 'Transformer Generated',
+      field: () => {
+        const f = new Field('field', { kind: 'Scalar', name: 'Int' });
+        f.default = { kind: 'TRANSFORMER_GENERATED', value: 42 };
+        return f;
+      },
+    },
+    {
+      case: 'Default Integer Constant',
+      field: () => {
+        const f = new Field('field', { kind: 'Scalar', name: 'Int' });
+        f.default = { kind: 'DB_GENERATED', value: 42 };
+        return f;
+      },
+    },
+    {
+      case: 'No default',
+      field: () => new Field('field', { kind: 'Scalar', name: 'Int' }),
+    },
+  ])('should not annotate fields with `.default()` where we do not support db generation (case: %case)', (test) => {
+    const dbschema = new Schema(new Engine('Postgres'));
+    const model = new Model('User');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.setPrimaryKey(['id']);
+
+    model.addField(test.field());
+
+    dbschema.addModel(model);
+    const config: DataSourceGenerateConfig = {
+      identifier: 'ID1234567890',
+      secretNames: {
+        connectionUri: 'CONN_STR',
+      },
+    };
+
+    const graphqlSchema = generateTypescriptDataSchema(dbschema, config);
+    const containsDefault = graphqlSchema.includes('default()');
+    expect(containsDefault).toBe(false);
+  });
+
+  it('should annotate scalar int fields with existing default with `.default()`', async () => {
+    const dbschema = new Schema(new Engine('Postgres'));
+
+    const model = new Model('CoffeeQueue');
+
+    const serialPKField = new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'Int' } });
+    serialPKField.default = { kind: 'DB_GENERATED', value: "nextval('coffeequeue_id_seq'::regclass)" };
+    model.addField(serialPKField);
+    model.setPrimaryKey(['id']);
+
+    model.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
+
+    const serialField = new Field('orderNumber', { kind: 'Scalar', name: 'Int' });
+    serialField.default = { kind: 'DB_GENERATED', value: "nextval('coffeequeue_ordernumber_seq'::regclass)" };
+    model.addField(serialField);
+
+    dbschema.addModel(model);
+    const config: DataSourceGenerateConfig = {
+      identifier: 'ID1234567890',
+      secretNames: {
+        connectionUri: 'CONN_STR',
+      },
+    };
+
+    const graphqlSchema = generateTypescriptDataSchema(dbschema, config);
+    expect(graphqlSchema).toMatchSnapshot();
+  });
+
   it('schema with database config without vpc should generate typescript data schema with configure', () => {
     const dbschema = new Schema(new Engine('MySQL'));
     let model = new Model('User');

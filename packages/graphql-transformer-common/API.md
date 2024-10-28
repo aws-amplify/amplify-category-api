@@ -64,9 +64,6 @@ export const directiveExists: (definition: ObjectTypeDefinitionNode, name: strin
 export function extendFieldWithDirectives(field: FieldDefinitionNode, directives: DirectiveNode[]): FieldDefinitionNode;
 
 // @public (undocumented)
-export function extendObjectWithDirectives(object: ObjectTypeDefinitionNode, directives: DirectiveNode[]): ObjectTypeDefinitionNode;
-
-// @public (undocumented)
 export function extensionWithDirectives(object: ObjectTypeExtensionNode, directives: DirectiveNode[]): ObjectTypeExtensionNode;
 
 // @public (undocumented)
@@ -512,6 +509,7 @@ export const TYPESCRIPT_DATA_SCHEMA_CONSTANTS: {
     IDENTIFIER_METHOD: string;
     ARRAY_METHOD: string;
     REQUIRED_METHOD: string;
+    DEFAULT_METHOD: string;
     STRING_METHOD: string;
     ENUM_METHOD: string;
     REFERENCE_A: string;
