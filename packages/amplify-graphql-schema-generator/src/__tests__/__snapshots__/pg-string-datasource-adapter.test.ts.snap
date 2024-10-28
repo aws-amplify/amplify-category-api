@@ -1,5 +1,52 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`testPostgresStringDataSourceAdapter annotates the model field correctly from a schema with a SERIAL field 1`] = `
+Array [
+  Model {
+    "fields": Array [
+      Object {
+        "default": Object {
+          "kind": "DB_GENERATED",
+          "value": "nextval('serial_table_id_seq'::regclass)",
+        },
+        "length": "Null",
+        "name": "id",
+        "type": Object {
+          "kind": "NonNull",
+          "type": Object {
+            "kind": "Scalar",
+            "name": "Int",
+          },
+        },
+      },
+      Object {
+        "default": Object {
+          "kind": "DB_GENERATED",
+          "value": "nextval('serial_table_number_seq'::regclass)",
+        },
+        "length": "Null",
+        "name": "number",
+        "type": Object {
+          "kind": "NonNull",
+          "type": Object {
+            "kind": "Scalar",
+            "name": "Int",
+          },
+        },
+      },
+    ],
+    "indexes": Array [],
+    "name": "serial_table",
+    "primaryKey": Index {
+      "fields": Array [
+        "id",
+      ],
+      "name": "PRIMARY_KEY",
+    },
+  },
+]
+`;
+
 exports[`testPostgresStringDataSourceAdapter sets the correct models from a news schema 1`] = `
 Array [
   Model {
