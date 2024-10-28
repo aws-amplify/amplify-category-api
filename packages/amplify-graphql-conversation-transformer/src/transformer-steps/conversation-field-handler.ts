@@ -138,7 +138,7 @@ export class ConversationFieldHandler {
     const assistantMutationFieldName = getAssistantMutationFieldName(config);
     const assistantStreamingMutationFieldName = getAssistantStreamingMutationFieldName(config);
 
-    const assistantResponseSubscriptionField = createMessageSubscription(messageSubscriptionFieldName, conversationMessageTypeName);
+    const assistantResponseSubscriptionField = createMessageSubscription(messageSubscriptionFieldName, assistantStreamingMutationFieldName);
 
     const assistantResponseMutationInput = createAssistantResponseMutationInput(conversationMessageTypeName);
     const assistantResponseMutationField = createAssistantMutationField(
