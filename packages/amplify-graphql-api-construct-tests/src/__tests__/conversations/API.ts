@@ -5,6 +5,7 @@
 export type ConversationMessagePirateChat = {
   __typename: 'ConversationMessagePirateChat';
   aiContext?: string | null;
+  associatedUserMessageId?: string | null;
   content?: Array<ContentBlock | null> | null;
   conversation?: ConversationPirateChat | null;
   conversationId: string;
@@ -130,6 +131,7 @@ export type ToolInputSchema = {
 export type ModelConversationMessagePirateChatFilterInput = {
   aiContext?: ModelStringInput | null;
   and?: Array<ModelConversationMessagePirateChatFilterInput | null> | null;
+  associatedUserMessageId?: ModelIDInput | null;
   conversationId?: ModelIDInput | null;
   createdAt?: ModelStringInput | null;
   id?: ModelIDInput | null;
@@ -273,6 +275,7 @@ export type ToolUseBlockInput = {
 export type ModelConversationMessagePirateChatConditionInput = {
   aiContext?: ModelStringInput | null;
   and?: Array<ModelConversationMessagePirateChatConditionInput | null> | null;
+  associatedUserMessageId?: ModelIDInput | null;
   conversationId?: ModelIDInput | null;
   createdAt?: ModelStringInput | null;
   not?: ModelConversationMessagePirateChatConditionInput | null;
@@ -284,6 +287,7 @@ export type ModelConversationMessagePirateChatConditionInput = {
 
 export type CreateConversationMessagePirateChatInput = {
   aiContext?: string | null;
+  associatedUserMessageId?: string | null;
   content?: Array<ContentBlockInput | null> | null;
   conversationId: string;
   id?: string | null;
@@ -334,9 +338,16 @@ export type DeleteConversationPirateChatInput = {
   id: string;
 };
 
+export type UpdateConversationPirateChatInput = {
+  id: string;
+  metadata?: string | null;
+  name?: string | null;
+};
+
 export type ModelSubscriptionConversationMessagePirateChatFilterInput = {
   aiContext?: ModelSubscriptionStringInput | null;
   and?: Array<ModelSubscriptionConversationMessagePirateChatFilterInput | null> | null;
+  associatedUserMessageId?: ModelSubscriptionIDInput | null;
   conversationId?: ModelSubscriptionIDInput | null;
   createdAt?: ModelSubscriptionStringInput | null;
   id?: ModelSubscriptionIDInput | null;
@@ -384,6 +395,7 @@ export type GetConversationMessagePirateChatQuery = {
   getConversationMessagePirateChat?: {
     __typename: 'ConversationMessagePirateChat';
     aiContext?: string | null;
+    associatedUserMessageId?: string | null;
     content?: Array<{
       __typename: 'ContentBlock';
       text?: string | null;
@@ -441,6 +453,7 @@ export type ListConversationMessagePirateChatsQuery = {
     items: Array<{
       __typename: 'ConversationMessagePirateChat';
       aiContext?: string | null;
+      associatedUserMessageId?: string | null;
       conversationId: string;
       createdAt: string;
       id: string;
@@ -482,6 +495,7 @@ export type CreateAssistantResponsePirateChatMutation = {
   createAssistantResponsePirateChat?: {
     __typename: 'ConversationMessagePirateChat';
     aiContext?: string | null;
+    associatedUserMessageId?: string | null;
     content?: Array<{
       __typename: 'ContentBlock';
       text?: string | null;
@@ -516,6 +530,7 @@ export type CreateConversationMessagePirateChatMutation = {
   createConversationMessagePirateChat?: {
     __typename: 'ConversationMessagePirateChat';
     aiContext?: string | null;
+    associatedUserMessageId?: string | null;
     content?: Array<{
       __typename: 'ContentBlock';
       text?: string | null;
@@ -571,6 +586,7 @@ export type DeleteConversationMessagePirateChatMutation = {
   deleteConversationMessagePirateChat?: {
     __typename: 'ConversationMessagePirateChat';
     aiContext?: string | null;
+    associatedUserMessageId?: string | null;
     content?: Array<{
       __typename: 'ContentBlock';
       text?: string | null;
@@ -641,6 +657,7 @@ export type PirateChatMutation = {
       __typename: 'ToolConfiguration';
     } | null;
     updatedAt?: string | null;
+    associatedUserMessageId?: string | null;
     conversation?: {
       __typename: 'ConversationPirateChat';
       createdAt: string;
@@ -653,6 +670,27 @@ export type PirateChatMutation = {
   } | null;
 };
 
+export type UpdateConversationPirateChatMutationVariables = {
+  condition?: ModelConversationPirateChatConditionInput | null;
+  input: UpdateConversationPirateChatInput;
+};
+
+export type UpdateConversationPirateChatMutation = {
+  updateConversationPirateChat?: {
+    __typename: 'ConversationPirateChat';
+    createdAt: string;
+    id: string;
+    messages?: {
+      __typename: 'ModelConversationMessagePirateChatConnection';
+      nextToken?: string | null;
+    } | null;
+    metadata?: string | null;
+    name?: string | null;
+    owner?: string | null;
+    updatedAt: string;
+  } | null;
+};
+
 export type OnCreateAssistantResponsePirateChatSubscriptionVariables = {
   conversationId?: string | null;
 };
@@ -661,6 +699,7 @@ export type OnCreateAssistantResponsePirateChatSubscription = {
   onCreateAssistantResponsePirateChat?: {
     __typename: 'ConversationMessagePirateChat';
     aiContext?: string | null;
+    associatedUserMessageId?: string | null;
     content?: Array<{
       __typename: 'ContentBlock';
       text?: string | null;
@@ -695,6 +734,7 @@ export type OnCreateConversationMessagePirateChatSubscription = {
   onCreateConversationMessagePirateChat?: {
     __typename: 'ConversationMessagePirateChat';
     aiContext?: string | null;
+    associatedUserMessageId?: string | null;
     content?: Array<{
       __typename: 'ContentBlock';
       text?: string | null;

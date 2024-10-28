@@ -35,7 +35,6 @@ import type {
   IBackendOutputStorageStrategy,
   AddFunctionProps,
   DataStoreConfiguration,
-  IAmplifyGraphqlDefinition,
 } from './types';
 import {
   convertAuthorizationModesToTransformerAuthConfig,
@@ -50,6 +49,7 @@ import {
 } from './internal';
 import { getStackForScope, walkAndProcessNodes } from './internal/construct-tree';
 import { getDataSourceStrategiesProvider } from './internal/data-source-config';
+import { getMetadataDataSources, getMetadataAuthorizationModes, getMetadataCustomOperations } from './internal/metadata';
 
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.
@@ -168,11 +168,18 @@ export class AmplifyGraphqlApi extends Construct {
 
     this.dataStoreConfiguration = dataStoreConfiguration || conflictResolution;
 
-    const dataSources = getMetadataDataSources(definition);
+    const attributionMetadata = {
+      dataSources: getMetadataDataSources(definition),
+      authorizationModes: getMetadataAuthorizationModes(authorizationModes),
+      customOperations: getMetadataCustomOperations(definition),
+    };
 
-    new AttributionMetadataStorage().storeAttributionMetadata(Stack.of(scope), this.stackType, path.join(__dirname, '..', 'package.json'), {
-      dataSources,
-    });
+    new AttributionMetadataStorage().storeAttributionMetadata(
+      Stack.of(scope),
+      this.stackType,
+      path.join(__dirname, '..', 'package.json'),
+      attributionMetadata,
+    );
 
     validateAuthorizationModes(authorizationModes);
     const { authConfig, authSynthParameters } = convertAuthorizationModesToTransformerAuthConfig(authorizationModes);
@@ -419,11 +426,4 @@ const validateNoOtherAmplifyGraphqlApiInStack = (scope: Construct): void => {
   if (wasOtherAmplifyGraphlApiFound) {
     throw new Error('Only one AmplifyGraphqlApi is expected in a stack. Place the AmplifyGraphqlApis in separate nested stacks.');
   }
-};
-
-const getMetadataDataSources = (definition: IAmplifyGraphqlDefinition): string => {
-  const dataSourceDbTypes = Object.values(definition.dataSourceStrategies).map((strategy) => strategy.dbType.toLocaleLowerCase());
-  const customSqlDbTypes = (definition.customSqlDataSourceStrategies ?? []).map((strategy) => strategy.strategy.dbType.toLocaleLowerCase());
-  const dataSources = [...new Set([...dataSourceDbTypes, ...customSqlDbTypes])].sort();
-  return dataSources.join(',');
 };

@@ -4,7 +4,6 @@ export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
 
-  [[TOOL_DEFINITIONS_LINE]]
   const selectionSet = '[[SELECTION_SET]]';
 
   const responseMutation = {
@@ -13,12 +12,18 @@ export function request(ctx) {
     selectionSet,
   };
   const currentMessageId = ctx.stash.defaultValues.id;
-  [[MODEL_CONFIGURATION_LINE]]
+
+  const modelConfiguration = {
+    modelId: [[MODEL_ID]],
+    systemPrompt: [[SYSTEM_PROMPT]],
+    inferenceConfiguration: [[INFERENCE_CONFIGURATION]],
+  };
 
   const clientTools = args.toolConfiguration?.tools?.map((tool) => {
     return { ...tool.toolSpec };
   });
-  [[TOOLS_CONFIGURATION_LINE]]
+  const dataTools = [[DATA_TOOLS]];
+  const toolsConfiguration = { dataTools, clientTools };
 
   const messageHistoryQuery = {
     getQueryName: '[[GET_QUERY_NAME]]',
