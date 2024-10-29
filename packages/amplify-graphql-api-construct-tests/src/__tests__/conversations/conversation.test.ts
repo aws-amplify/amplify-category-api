@@ -14,6 +14,7 @@ import {
   doSendMessagePirateChat,
   doUpdateConversationPirateChat,
 } from './test-implementations';
+import { ConversationMessageStreamPart, OnCreateAssistantResponsePirateChatSubscription } from './API';
 
 jest.setTimeout(DURATION_20_MINUTES);
 
@@ -97,14 +98,28 @@ describe('conversation', () => {
         expect(message.content[0].text).toEqual('Hello, world!');
         expect(message.conversationId).toEqual(conversationId);
 
+        const events: ConversationMessageStreamPart[] = [];
         // expect to receive the assistant response in the subscription
         for await (const event of subscription) {
-          expect(event.onCreateAssistantResponsePirateChat.conversationId).toEqual(conversationId);
-          expect(event.onCreateAssistantResponsePirateChat.content).toHaveLength(1);
-          expect(event.onCreateAssistantResponsePirateChat.content[0].text).toBeDefined();
-          expect(event.onCreateAssistantResponsePirateChat.role).toEqual('assistant');
-          break;
+          events.push(event.onCreateAssistantResponsePirateChat);
+          if (event.onCreateAssistantResponsePirateChat.stopReason) break;
         }
+
+        // reconstruct the message from the events
+        const sortedEvents = events
+          .filter((event) => event.contentBlockText)
+          .sort((a, b) => a.contentBlockDeltaIndex - b.contentBlockDeltaIndex);
+        const contentBlockText = sortedEvents.map((event) => event.contentBlockText).join('');
+
+        // list messages to get the full assistant message
+        const listMessagesResult = await doListConversationMessagesPirateChat(apiEndpoint, accessToken, conversationId);
+        const messages = listMessagesResult.body.data.listConversationMessagePirateChats.items;
+        expect(messages).toHaveLength(2);
+        // assert that the received assistant message matches the message reconstructed from the events.
+        const assistantMessage = messages.find((message) => message.role === 'assistant');
+        expect(assistantMessage).toBeDefined();
+        expect(assistantMessage.content).toHaveLength(1);
+        expect(assistantMessage.content[0].text).toEqual(contentBlockText);
       },
       ONE_MINUTE,
     );
@@ -230,21 +245,34 @@ describe('conversation', () => {
           await doSendMessagePirateChat(apiEndpoint, accessToken2, user2ConversationId, [{ text: 'Hello, world!' }]);
 
           // consume two events from the merged stream
-          const events = await consumeYields(mergedSubscriptionStream, 2);
+          let expectedStopReasonEvents = 2;
+          let namedEvents: [string, OnCreateAssistantResponsePirateChatSubscription][] = [];
+          for await (const namedEvent of mergedSubscriptionStream) {
+            namedEvents.push(namedEvent);
 
-          events.forEach(([name, value]) => {
-            switch (name) {
-              case 'user1-user2':
-              case 'user2-user1':
-                throw new Error(`subscription event received by wrong user. Name: ${name}. Event: ${JSON.stringify(value, null, 2)}`);
-              case 'user1-user1':
-                expect(value.onCreateAssistantResponsePirateChat.conversationId).toEqual(user1ConversationId);
-                break;
-              case 'user2-user2':
-                expect(value.onCreateAssistantResponsePirateChat.conversationId).toEqual(user2ConversationId);
-                break;
-            }
-          });
+            const [_, event] = namedEvent;
+            if (event.onCreateAssistantResponsePirateChat.stopReason) expectedStopReasonEvents--;
+            if (expectedStopReasonEvents === 0) break;
+          }
+
+
+          const unexpectedEvents = namedEvents.filter(([name]) => name === 'user1-user2' || name === 'user2-user1');
+          // user1-user2 and user2-user1 subscriptions should not receive any events.
+          expect(unexpectedEvents).toHaveLength(0);
+
+          const user1SubscriptionEvents = namedEvents
+            .filter(([name]) => name === 'user1-user1')
+            .map(([_, event]) => event.onCreateAssistantResponsePirateChat.conversationId);
+
+          const user2SubscriptionEvents = namedEvents
+            .filter(([name]) => name === 'user2-user2')
+            .map(([_, event]) => event.onCreateAssistantResponsePirateChat.conversationId);
+
+          expect(user1SubscriptionEvents.length).toBeGreaterThan(0);
+          expect(user2SubscriptionEvents.length).toBeGreaterThan(0);
+
+          user1SubscriptionEvents.forEach((receivedConversationId) => expect(receivedConversationId).toEqual(user1ConversationId));
+          user2SubscriptionEvents.forEach((receivedConversationId) => expect(receivedConversationId).toEqual(user2ConversationId));
         },
         ONE_MINUTE,
       );
