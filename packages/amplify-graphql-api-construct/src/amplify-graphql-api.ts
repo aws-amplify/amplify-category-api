@@ -124,6 +124,11 @@ export class AmplifyGraphqlApi extends Construct {
   public readonly apiId: string;
 
   /**
+   * Model introspection schema
+   */
+  public readonly modelIntrospectionSchema?: string;
+
+  /**
    * DataStore conflict resolution setting
    */
   private readonly dataStoreConfiguration: DataStoreConfiguration | undefined;
@@ -158,7 +163,10 @@ export class AmplifyGraphqlApi extends Construct {
       functionNameMap,
       outputStorageStrategy,
       dataStoreConfiguration,
+      modelIntrospectionSchema,
     } = props;
+
+    this.modelIntrospectionSchema = modelIntrospectionSchema;
 
     if (conflictResolution && dataStoreConfiguration) {
       throw new Error(
