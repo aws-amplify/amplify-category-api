@@ -10,12 +10,12 @@
     "@jridgewell/gen-mapping" "^0.3.5"
     "@jridgewell/trace-mapping" "^0.3.24"
 
-"@aws-amplify/ai-constructs@0.6.1":
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/ai-constructs/-/ai-constructs-0.6.1.tgz#af03f0ec18d124e2a5ab2f4c895e3048d4f5216b"
-  integrity sha512-LIMC2npEUunpqsOK34IsFN+q9IpEmwhIWhPnnj1mKW0148rqVXCMU83/oYOBfY4Hq0EOFu6RRKz2fcpOZqjg5Q==
+"@aws-amplify/ai-constructs@^0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/ai-constructs/-/ai-constructs-0.7.0.tgz#477750d62e2c564b0d156ab53d8845cbb38290ab"
+  integrity sha512-HfKvoafva68HulV223wBC6V6bA/ibM1UEAEjy+m//l+zhdTlfYauA4EUpHfyXg83eWxBhmT5rtAheqNmIlzNxQ==
   dependencies:
-    "@aws-amplify/backend-output-schemas" "^1.3.0"
+    "@aws-amplify/backend-output-schemas" "^1.4.0"
     "@aws-amplify/platform-core" "^1.1.0"
     "@aws-amplify/plugin-types" "^1.0.1"
     "@aws-sdk/client-bedrock-runtime" "^3.622.0"
@@ -291,10 +291,10 @@
   resolved "https://registry.npmjs.org/@aws-amplify/backend-output-schemas/-/backend-output-schemas-1.2.0.tgz#3894e558c3866b90003e4020014e61f4589a97a1"
   integrity sha512-UMQfPlfzyvYsV9A/MyoFm8T87MxsLZBzABSkmD5Y/sh8XTIJlqRHibzKStoN7xuK5S1Iz1okRVoxhFxSy0alrg==
 
-"@aws-amplify/backend-output-schemas@^1.3.0":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/backend-output-schemas/-/backend-output-schemas-1.3.0.tgz#7d6338c806314d22a486ba67d512c999af950fc8"
-  integrity sha512-uXzl0tnKY8zLpiLxdLd+hK5MtfABEKa0CxPuuDeiEh0ywQ+oGCtFwXXSkTP+fhnHehBuwOtjFmn/01vX+ufj6g==
+"@aws-amplify/backend-output-schemas@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/backend-output-schemas/-/backend-output-schemas-1.4.0.tgz#8abed00fe0ff67c2f3282c8e517db2df28c8fa0a"
+  integrity sha512-/p2t/wWV1CTObJnewmLKlx48AYGhhRKp2Ne51DNZ1gV4CAwZx9Jmtyjv65h3zQ6Gk6WTTcjeNORncgEa1Gq5CA==
 
 "@aws-amplify/backend-output-storage@^1.0.0", "@aws-amplify/backend-output-storage@^1.1.1":
   version "1.1.1"
