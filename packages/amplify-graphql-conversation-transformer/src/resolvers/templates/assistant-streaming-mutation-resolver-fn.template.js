@@ -65,7 +65,7 @@ export function response(ctx) {
   }
   const streamId = `${ctx.args.input.associatedUserMessageId}#stream`;
   const { owner } = ctx.args;
-  const { contentBlockToolUse, ...event } = ctx.args.input;
+  const event = ctx.args.input;
 
   const streamEvent = {
     ...event,
@@ -75,8 +75,8 @@ export function response(ctx) {
   };
 
   // TODO: The lambda event should provide the toolUse directly.
-  if (contentBlockToolUse && contentBlockToolUse.toolUse) {
-    streamEvent.contentBlockToolUse = contentBlockToolUse.toolUse;
+  if (event.contentBlockToolUse && event.contentBlockToolUse.toolUse) {
+    streamEvent.contentBlockToolUse = event.contentBlockToolUse.toolUse;
   }
 
   return streamEvent;
