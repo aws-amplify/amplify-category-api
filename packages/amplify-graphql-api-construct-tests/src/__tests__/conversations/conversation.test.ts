@@ -5,8 +5,9 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { cdkDeploy, cdkDestroy, initCDKProject } from '../../commands';
 import { createCognitoUser, signInCognitoUser, TestDefinition, writeStackConfig, writeTestDefinitions } from '../../utils';
-import { AppSyncSubscriptionClient, consumeYields, mergeNamedAsyncIterators } from '../../utils/appsync-graphql/subscription';
+import { AppSyncSubscriptionClient, mergeNamedAsyncIterators } from '../../utils/appsync-graphql/subscription';
 import { DURATION_20_MINUTES, ONE_MINUTE } from '../../utils/duration-constants';
+import { ConversationMessageStreamPart, OnCreateAssistantResponsePirateChatSubscription } from './API';
 import { onCreateAssistantResponsePirateChat } from './graphql/subscriptions';
 import {
   doCreateConversationPirateChat,
@@ -14,7 +15,6 @@ import {
   doSendMessagePirateChat,
   doUpdateConversationPirateChat,
 } from './test-implementations';
-import { ConversationMessageStreamPart, OnCreateAssistantResponsePirateChatSubscription } from './API';
 
 jest.setTimeout(DURATION_20_MINUTES);
 
@@ -244,7 +244,7 @@ describe('conversation', () => {
           // user2 sends message to user2's conversation
           await doSendMessagePirateChat(apiEndpoint, accessToken2, user2ConversationId, [{ text: 'Hello, world!' }]);
 
-          // consume two events from the merged stream
+          // consume two assistant response streams from the merged stream
           let expectedStopReasonEvents = 2;
           let namedEvents: [string, OnCreateAssistantResponsePirateChatSubscription][] = [];
           for await (const namedEvent of mergedSubscriptionStream) {
@@ -254,7 +254,6 @@ describe('conversation', () => {
             if (event.onCreateAssistantResponsePirateChat.stopReason) expectedStopReasonEvents--;
             if (expectedStopReasonEvents === 0) break;
           }
-
 
           const unexpectedEvents = namedEvents.filter(([name]) => name === 'user1-user2' || name === 'user2-user1');
           // user1-user2 and user2-user1 subscriptions should not receive any events.
@@ -268,9 +267,11 @@ describe('conversation', () => {
             .filter(([name]) => name === 'user2-user2')
             .map(([_, event]) => event.onCreateAssistantResponsePirateChat.conversationId);
 
+          // user1 and user2 should receive events for their own conversations
           expect(user1SubscriptionEvents.length).toBeGreaterThan(0);
           expect(user2SubscriptionEvents.length).toBeGreaterThan(0);
 
+          // assert that the received conversation ids from those events match the expected conversation ids
           user1SubscriptionEvents.forEach((receivedConversationId) => expect(receivedConversationId).toEqual(user1ConversationId));
           user2SubscriptionEvents.forEach((receivedConversationId) => expect(receivedConversationId).toEqual(user2ConversationId));
         },
