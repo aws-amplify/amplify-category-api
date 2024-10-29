@@ -65,7 +65,7 @@ function data(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'data',
     fileName: 'assistant-streaming-mutation-resolver-fn.template.js',
-    generateTemplate: templateGenerator('assistant-streaming-subscription'),
+    generateTemplate: templateGenerator('persist-message'),
     dataSource: (config) => config.dataSources.messageTableDataSource,
     substitutions: (config) => ({
       CONVERSATION_MESSAGE_TYPE_NAME: `ConversationMessage${toUpper(config.field.name.value)}`,
