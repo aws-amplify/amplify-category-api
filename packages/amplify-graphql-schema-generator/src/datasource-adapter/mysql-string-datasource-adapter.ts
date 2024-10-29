@@ -1,3 +1,4 @@
+import { toPascalCase } from 'graphql-transformer-common';
 import { EnumType, Field, FieldDataType, FieldType, Index } from '../schema-representation';
 import { StringDataSourceAdapter, EmptySchemaError, InvalidSchemaError } from './string-datasource-adapter';
 
@@ -279,14 +280,15 @@ export class MySQLStringDataSourceAdapter extends StringDataSourceAdapter {
     return value.match(regex).map((a) => a.slice(1, -1));
   }
 
-  private generateEnumName(tableName: string, fieldName: string) {
-    const enumNamePrefix = [tableName, fieldName].join('_');
+  private generateEnumName(tableName: string, fieldName: string): string {
+    const enumNamePrefix = toPascalCase([tableName, fieldName]);
     let enumName = enumNamePrefix;
     let counter = 0;
     while (this.enums.has(enumName)) {
-      enumName = [enumNamePrefix, counter.toString()].join('_');
+      enumName = toPascalCase([enumNamePrefix, counter.toString()]);
       counter++;
     }
     return enumName;
   }
+
 }
