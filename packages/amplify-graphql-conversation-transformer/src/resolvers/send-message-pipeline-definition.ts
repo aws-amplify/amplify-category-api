@@ -1,3 +1,4 @@
+import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { ConversationDirectiveConfiguration } from '../conversation-directive-configuration';
 import {
   CONVERSATION_MESSAGE_GET_QUERY_INPUT_TYPE_NAME,
@@ -5,7 +6,12 @@ import {
   getConversationMessageListQueryInputTypeName,
   getConversationMessageListQueryName,
 } from '../graphql-types/name-values';
-import { createResolverFunctionDefinition, PipelineDefinition, ResolverFunctionDefinition } from './resolver-function-definition';
+import {
+  createResolverFunctionDefinition,
+  createS3AssetMappingTemplateGenerator,
+  PipelineDefinition,
+  ResolverFunctionDefinition,
+} from './resolver-function-definition';
 
 /**
  * The pipeline definition for the send message mutation resolver.
@@ -19,12 +25,17 @@ export const sendMessagePipelineDefinition: PipelineDefinition = {
 
 /**
  * The init slot for the send message mutation resolver.
+ * Note: The init slot references the GraphQL API endpoint, which neccesitates the usage of an inline template
+ * because CDK cannot substitite the  Fn:GetAtt:GraphQLUrl in S3 Asset based resolver functions.
  */
 function init(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'init',
     fileName: 'init-resolver-fn.template.js',
-    templateName: generateTemplateName('init'),
+    generateTemplate: (_, code) => MappingTemplate.inlineTemplateFromString(code),
+    substitutions: (_, ctx) => ({
+      GRAPHQL_API_ENDPOINT: ctx.api.graphqlUrl,
+    }),
   });
 }
 
@@ -35,7 +46,7 @@ function auth(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'auth',
     fileName: 'auth-resolver-fn.template.js',
-    templateName: generateTemplateName('auth'),
+    generateTemplate: templateGenerator('auth'),
   });
 }
 
@@ -46,7 +57,7 @@ function verifySessionOwner(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'verifySessionOwner',
     fileName: 'verify-session-owner-resolver-fn.template.js',
-    templateName: generateTemplateName('verify-session-owner'),
+    generateTemplate: templateGenerator('verify-session-owner'),
     dataSource: (config) => config.dataSources.conversationTableDataSource,
     substitutions: () => ({
       CONVERSATION_ID_PARENT: 'ctx.args',
@@ -61,7 +72,7 @@ function writeMessageToTable(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'writeMessageToTable',
     fileName: 'write-message-to-table-resolver-fn.template.js',
-    templateName: generateTemplateName('write-message-to-table'),
+    generateTemplate: templateGenerator('write-message-to-table'),
     dataSource: (config) => config.dataSources.messageTableDataSource,
     substitutions: (config) => ({
       CONVERSATION_MESSAGE_TYPE_NAME: config.message.model.name.value,
@@ -76,7 +87,7 @@ function invokeLambda(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'data',
     fileName: 'invoke-lambda-resolver-fn.template.js',
-    templateName: generateTemplateName('invoke-lambda'),
+    generateTemplate: templateGenerator('invoke-lambda'),
     dataSource: (config) => config.dataSources.lambdaFunctionDataSource,
     substitutions: invokeLambdaResolverSubstitutions,
   });
@@ -104,10 +115,17 @@ function invokeLambdaResolverSubstitutions(config: ConversationDirectiveConfigur
 }
 
 /**
- * The function to generate the template name for the resolver function.
+ * Field name for the send message mutation.
  */
-function generateTemplateName(slotName: string) {
-  return (config: ConversationDirectiveConfiguration) => `Mutation.${config.field.name.value}.${slotName}.js`;
+function fieldName(config: ConversationDirectiveConfiguration): string {
+  return config.field.name.value;
+}
+
+/**
+ * Creates a template generator specific to the send message pipeline for a given slot name.
+ */
+function templateGenerator(slotName: string) {
+  return createS3AssetMappingTemplateGenerator('Mutation', slotName, fieldName);
 }
 
 const selectionSet = `id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt`;
