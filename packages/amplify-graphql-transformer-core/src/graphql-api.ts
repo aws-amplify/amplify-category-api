@@ -16,20 +16,16 @@ import {
   IamResource,
 } from 'aws-cdk-lib/aws-appsync';
 import {
-  Effect,
   Grant,
   IGrantable,
   ManagedPolicy,
-  Policy,
-  PolicyDocument,
-  PolicyStatement,
   Role,
   ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import { ArnFormat, CfnResource, Duration, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { ILogGroup, LogGroup, LogRetention, RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { LogRetention, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { TransformerSchema } from './cdk-compat/schema-asset';
 import { DefaultTransformHost } from './transform-host';
 import { setResourceName } from './utils';
