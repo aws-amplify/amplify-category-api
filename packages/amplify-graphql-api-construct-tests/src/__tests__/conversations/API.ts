@@ -272,6 +272,32 @@ export type ToolUseBlockInput = {
   toolUseId: string;
 };
 
+export type CreateConversationMessagePirateChatAssistantStreamingInput = {
+  accumulatedTurnContent?: Array<ContentBlockInput | null> | null;
+  associatedUserMessageId: string;
+  contentBlockDeltaIndex?: number | null;
+  contentBlockDoneAtIndex?: number | null;
+  contentBlockIndex: number;
+  contentBlockText?: string | null;
+  contentBlockToolUse?: string | null;
+  conversationId: string;
+  stopReason?: string | null;
+};
+
+export type ConversationMessageStreamPart = {
+  __typename: 'ConversationMessageStreamPart';
+  associatedUserMessageId: string;
+  contentBlockDeltaIndex?: number | null;
+  contentBlockDoneAtIndex?: number | null;
+  contentBlockIndex: number;
+  contentBlockText?: string | null;
+  contentBlockToolUse?: ToolUseBlock | null;
+  conversationId: string;
+  id: string;
+  owner?: string | null;
+  stopReason?: string | null;
+};
+
 export type ModelConversationMessagePirateChatConditionInput = {
   aiContext?: ModelStringInput | null;
   and?: Array<ModelConversationMessagePirateChatConditionInput | null> | null;
@@ -453,6 +479,10 @@ export type ListConversationMessagePirateChatsQuery = {
     items: Array<{
       __typename: 'ConversationMessagePirateChat';
       aiContext?: string | null;
+      content?: Array<{
+        __typename: 'ContentBlock';
+        text?: string | null;
+      } | null> | null;
       associatedUserMessageId?: string | null;
       conversationId: string;
       createdAt: string;
@@ -518,6 +548,31 @@ export type CreateAssistantResponsePirateChatMutation = {
       __typename: 'ToolConfiguration';
     } | null;
     updatedAt: string;
+  } | null;
+};
+
+export type CreateAssistantResponseStreamPirateChatMutationVariables = {
+  input: CreateConversationMessagePirateChatAssistantStreamingInput;
+};
+
+export type CreateAssistantResponseStreamPirateChatMutation = {
+  createAssistantResponseStreamPirateChat?: {
+    __typename: 'ConversationMessageStreamPart';
+    associatedUserMessageId: string;
+    contentBlockDeltaIndex?: number | null;
+    contentBlockDoneAtIndex?: number | null;
+    contentBlockIndex: number;
+    contentBlockText?: string | null;
+    contentBlockToolUse?: {
+      __typename: 'ToolUseBlock';
+      input: string;
+      name: string;
+      toolUseId: string;
+    } | null;
+    conversationId: string;
+    id: string;
+    owner?: string | null;
+    stopReason?: string | null;
   } | null;
 };
 
@@ -697,31 +752,22 @@ export type OnCreateAssistantResponsePirateChatSubscriptionVariables = {
 
 export type OnCreateAssistantResponsePirateChatSubscription = {
   onCreateAssistantResponsePirateChat?: {
-    __typename: 'ConversationMessagePirateChat';
-    aiContext?: string | null;
-    associatedUserMessageId?: string | null;
-    content?: Array<{
-      __typename: 'ContentBlock';
-      text?: string | null;
-    } | null> | null;
-    conversation?: {
-      __typename: 'ConversationPirateChat';
-      createdAt: string;
-      id: string;
-      metadata?: string | null;
-      name?: string | null;
-      owner?: string | null;
-      updatedAt: string;
+    __typename: 'ConversationMessageStreamPart';
+    associatedUserMessageId: string;
+    contentBlockDeltaIndex?: number | null;
+    contentBlockDoneAtIndex?: number | null;
+    contentBlockIndex: number;
+    contentBlockText?: string | null;
+    contentBlockToolUse?: {
+      __typename: 'ToolUseBlock';
+      input: string;
+      name: string;
+      toolUseId: string;
     } | null;
     conversationId: string;
-    createdAt: string;
     id: string;
     owner?: string | null;
-    role?: ConversationParticipantRole | null;
-    toolConfiguration?: {
-      __typename: 'ToolConfiguration';
-    } | null;
-    updatedAt: string;
+    stopReason?: string | null;
   } | null;
 };
 

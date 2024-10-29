@@ -40,6 +40,33 @@ export const createAssistantResponsePirateChat = /* GraphQL */ `mutation CreateA
   }
 }
 ` as GeneratedMutation<APITypes.CreateAssistantResponsePirateChatMutationVariables, APITypes.CreateAssistantResponsePirateChatMutation>;
+export const createAssistantResponseStreamPirateChat = /* GraphQL */ `mutation CreateAssistantResponseStreamPirateChat(
+  $input: CreateConversationMessagePirateChatAssistantStreamingInput!
+) {
+  createAssistantResponseStreamPirateChat(input: $input) {
+    associatedUserMessageId
+    contentBlockDeltaIndex
+    contentBlockDoneAtIndex
+    contentBlockIndex
+    contentBlockText
+    contentBlockToolUse {
+      input
+      name
+      toolUseId
+      __typename
+    }
+    conversationId
+    id
+    owner
+    stopReason
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.CreateAssistantResponseStreamPirateChatMutationVariables,
+  APITypes.CreateAssistantResponseStreamPirateChatMutation
+>;
+
 export const createConversationMessagePirateChat = /* GraphQL */ `mutation CreateConversationMessagePirateChat(
   $condition: ModelConversationMessagePirateChatConditionInput
   $input: CreateConversationMessagePirateChatInput!
@@ -73,6 +100,7 @@ export const createConversationMessagePirateChat = /* GraphQL */ `mutation Creat
   }
 }
 ` as GeneratedMutation<APITypes.CreateConversationMessagePirateChatMutationVariables, APITypes.CreateConversationMessagePirateChatMutation>;
+
 export const createConversationPirateChat = /* GraphQL */ `mutation CreateConversationPirateChat(
   $condition: ModelConversationPirateChatConditionInput
   $input: CreateConversationPirateChatInput!

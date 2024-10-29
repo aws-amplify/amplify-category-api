@@ -66,6 +66,10 @@ export const listConversationMessagePirateChats = /* GraphQL */ `query ListConve
   ) {
     items {
       aiContext
+      content {
+        __typename
+        text
+      }
       associatedUserMessageId
       conversationId
       createdAt

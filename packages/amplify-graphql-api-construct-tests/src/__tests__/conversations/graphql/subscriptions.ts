@@ -10,30 +10,21 @@ type GeneratedSubscription<InputType, OutputType> = string & {
 
 export const onCreateAssistantResponsePirateChat = /* GraphQL */ `subscription OnCreateAssistantResponsePirateChat($conversationId: ID) {
   onCreateAssistantResponsePirateChat(conversationId: $conversationId) {
-    aiContext
     associatedUserMessageId
-    content {
-      text
-      __typename
-    }
-    conversation {
-      createdAt
-      id
-      metadata
+    contentBlockDeltaIndex
+    contentBlockDoneAtIndex
+    contentBlockIndex
+    contentBlockText
+    contentBlockToolUse {
+      input
       name
-      owner
-      updatedAt
+      toolUseId
       __typename
     }
     conversationId
-    createdAt
     id
     owner
-    role
-    toolConfiguration {
-      __typename
-    }
-    updatedAt
+    stopReason
     __typename
   }
 }
