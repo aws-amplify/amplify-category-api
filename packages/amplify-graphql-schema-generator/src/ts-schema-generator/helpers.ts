@@ -1,7 +1,7 @@
 import ts from 'typescript';
-import { TYPESCRIPT_DATA_SCHEMA_CONSTANTS } from 'graphql-transformer-common';
+import { TYPESCRIPT_DATA_SCHEMA_CONSTANTS, toPascalCase } from 'graphql-transformer-common';
 import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
-import { DBEngineType, Field, Model, Schema } from '../schema-representation';
+import { DBEngineType, EnumType, Field, FieldType, Model, Schema } from '../schema-representation';
 
 const GQL_TYPESCRIPT_DATA_SCHEMA_TYPE_MAP = {
   string: 'string',
@@ -35,6 +35,7 @@ const createProperty = (field: Field): ts.Node => {
  * Creates a typescript data schema type from internal SQL schema representation
  * Example typescript data schema type output: `a.string().required()`
  * @param field SQL IR field
+ * @param field SQL IR field
  * @returns Typescript data schema type in TS Node format
  */
 const createDataType = (field: Field): ts.Node => {
@@ -61,14 +62,9 @@ const createDataType = (field: Field): ts.Node => {
 
   if (field.type.kind === 'Enum') {
     return ts.factory.createCallExpression(
-      ts.factory.createIdentifier(`${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REFERENCE_A}.${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.ENUM_METHOD}`),
+      ts.factory.createIdentifier(`${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REFERENCE_A}.${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REF_METHOD}`),
       undefined,
-      [
-        ts.factory.createArrayLiteralExpression(
-          field.type.values.map((value) => ts.factory.createStringLiteral(value)),
-          true,
-        ),
-      ],
+      [ts.factory.createStringLiteral(toPascalCase([field.type.name]))],
     );
   }
 
@@ -109,6 +105,26 @@ const createModelDefinition = (model: Model): ts.Node => {
     return createProperty(field);
   });
   return ts.factory.createObjectLiteralExpression(properties as ts.ObjectLiteralElementLike[], true);
+};
+
+/**
+ * Creates a typescript data schema type from internal SQL schema representation
+ * Example typescript data schema type output: `a.enum()`
+ * @param type SQL IR Enum type
+ * @returns Typescript data schema type in TS Node format
+ */
+const createEnums = (type: EnumType): ts.Node => {
+  const typeExpression = ts.factory.createCallExpression(
+    ts.factory.createIdentifier(`${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REFERENCE_A}.${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.ENUM_METHOD}`),
+    undefined,
+    [
+      ts.factory.createArrayLiteralExpression(
+        type.values.map((value) => ts.factory.createStringLiteral(value)),
+        true,
+      ),
+    ],
+  );
+  return ts.factory.createPropertyAssignment(ts.factory.createIdentifier(toPascalCase([type.name])), typeExpression);
 };
 
 const createModel = (model: Model): ts.Node => {
@@ -167,19 +183,61 @@ export const createSchema = (schema: Schema, config?: DataSourceGenerateConfig):
     throw new Error('No valid tables found. Make sure at least one table has a primary key.');
   }
 
+  const nullableEnumFields = schema.getModels().map((model) =>
+    model
+      .getFields()
+      .filter((field) => field.type.kind === 'Enum')
+      .map((field) => {
+        if (field.type.kind === 'Enum') {
+          return createEnums(field.type);
+        } else {
+          return undefined;
+        }
+      }),
+  );
+
+  const requiredEnumFields = schema.getModels().map((model) =>
+    model
+      .getFields()
+      .filter((field) => field.type.kind === 'NonNull' && field.type.type.kind === 'Enum')
+      .map((field) => {
+        if (field.type.kind === 'NonNull' && field.type.type.kind === 'Enum') {
+          return createEnums(field.type.type);
+        } else {
+          return undefined;
+        }
+      }),
+  );
+
   const models = schema
     .getModels()
     .filter((model) => model.getPrimaryKey())
     .map((model) => {
       return createModel(model);
     });
+
+  const combinedEnums = nullableEnumFields.concat(requiredEnumFields).flat(); // making 1 D array
+
+  // to eliminate duplicate definition of enums in case where same enum is referenced in 2 differed models
+  const seenEnums = new Set<string>();
+  const uniqueEnums = combinedEnums.filter((node) => {
+    if (seenEnums.has(node['name'].escapedText)) {
+      return false;
+    } else {
+      seenEnums.add(node['name'].escapedText);
+      return true;
+    }
+  });
+
+  const modelsWithEnums = models.concat(uniqueEnums);
+
   const tsSchema = ts.factory.createCallExpression(
     ts.factory.createPropertyAccessExpression(
       createConfigureExpression(schema, config),
       ts.factory.createIdentifier(TYPESCRIPT_DATA_SCHEMA_CONSTANTS.SCHEMA_METHOD),
     ),
     undefined,
-    [ts.factory.createObjectLiteralExpression(models as ts.ObjectLiteralElementLike[], true)],
+    [ts.factory.createObjectLiteralExpression(modelsWithEnums as ts.ObjectLiteralElementLike[], true)],
   );
   return ts.factory.createVariableStatement(
     [exportModifier],
