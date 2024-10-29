@@ -91,10 +91,7 @@ export const createMessageModel = (
   };
 };
 
-export const createMessageSubscription = (
-  subscriptionName: string,
-  onMutationName: string,
-): FieldDefinitionNode => {
+export const createMessageSubscription = (subscriptionName: string, onMutationName: string): FieldDefinitionNode => {
   const awsSubscribeDirective = makeDirective('aws_subscribe', [makeArgument('mutations', makeValueNode([onMutationName]))]);
   const cognitoAuthDirective = makeDirective('aws_cognito_user_pools', []);
 
@@ -150,14 +147,12 @@ export const createAssistantResponseStreamingMutationInput = (messageModelName: 
   };
 };
 
-
 export const createAssistantStreamingMutationField = (fieldName: string, inputTypeName: string): FieldDefinitionNode => {
   const args = [makeInputValueDefinition('input', makeNonNullType(makeNamedType(inputTypeName)))];
   const cognitoAuthDirective = makeDirective('aws_cognito_user_pools', []);
   const createAssistantResponseMutation = makeField(fieldName, args, makeNamedType(STREAM_RESPONSE_TYPE_NAME), [cognitoAuthDirective]);
   return createAssistantResponseMutation;
 };
-
 
 /**
 /**
@@ -288,7 +283,6 @@ const constructConversationMessageModel = (
 
   return object;
 };
-
 
 const STREAM_RESPONSE_TYPE_NAME = 'ConversationMessageStreamPart';
 
