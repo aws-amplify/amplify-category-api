@@ -8,67 +8,47 @@ import * as ddb from '@aws-appsync/utils/dynamodb';
  */
 export function request(ctx) {
   const {
-    // required
     conversationId,
     associatedUserMessageId,
-    contentBlockIndex,
-    // text chunk
-    contentBlockText,
-    contentBlockDeltaIndex,
-    // tool use
-    contentBlockToolUse,
-    // block complete
-    contentBlockDoneAtIndex,
-    // turn complete
-    stopReason,
-    // well-formed content block representing accumulated text
     accumulatedTurnContent
   } = ctx.args.input;
 
   const { owner } = ctx.args;
-  const streamId = `${associatedUserMessageId}#stream`;
+  const { createdAt, updatedAt } = ctx.stash.defaultValues;
 
-  if (stopReason) {
-    // should we be writing the turn complete chunk here?
-    // probably not. It's just the marker for us to reconcile the chunks.
-    return ddb.get({ key: { id: streamId } });
-  }
+  const assistantResponseId = `${associatedUserMessageId}#response`;
+  const expression = 'SET #typename = :typename, #conversationId = :conversationId, #associatedUserMessageId = :associatedUserMessageId, #role = :role, #content = :content, #owner = :owner, #createdAt = if_not_exists(#createdAt, :createdAt), #updatedAt = :updatedAt';
 
-  // not using this yet. we'll need to enable ttl on the table first.
-  const now = util.time.nowEpochSeconds()
-  const ttl = now + 60 * 60 * 24; // 1 day
+  const expressionValues = util.dynamodb.toMapValues({
+    ':typename': '[[CONVERSATION_MESSAGE_TYPE_NAME]]',
+    ':conversationId': conversationId,
+    ':associatedUserMessageId': associatedUserMessageId,
+    ':role': 'assistant',
+    ':content': accumulatedTurnContent,
+    ':owner': owner,
+    ':createdAt': createdAt,
+    ':updatedAt': updatedAt,
+  });
 
-  const event = {
-    contentBlockIndex,
-    contentBlockDeltaIndex,
-    contentBlockText,
-    contentBlockToolUse,
-    contentBlockDoneAtIndex,
+  // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ReservedWords.html
+  const expressionNames = {
+    '#typename': '__typename',
+    '#conversationId': 'conversationId',
+    '#associatedUserMessageId': 'associatedUserMessageId',
+    '#role': 'role',
+    '#content': 'content',
+    '#owner': 'owner',
+    '#createdAt': 'createdAt',
+    '#updatedAt': 'updatedAt',
   };
 
-  // AppSync JS runtime doesn't support Object.fromEntries
-  const chunk = Object.keys(event)
-  .filter((k) => event[k] != null)
-  .reduce((a, k) => ({ ...a, [k]: event[k] }), {});
-
-  // TODO: Use expression names for all attributes.
-  // reference: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ReservedWords.html
-  const setExpression = 'SET events = list_append(if_not_exists(events, :empty_list), :events), conversationId = :conversationId, #owner = :owner'
-  const id = streamId
   return {
     operation: 'UpdateItem',
-    key: util.dynamodb.toMapValues({ id }),
+    key: util.dynamodb.toMapValues({ id: assistantResponseId }),
     update: {
-      expression: setExpression,
-      expressionValues: util.dynamodb.toMapValues({
-        ':events': [chunk],
-        ':empty_list': [],
-        ':conversationId': conversationId,
-        ':owner': owner,
-      }),
-      expressionNames: {
-        '#owner': 'owner',
-      },
+      expression,
+      expressionValues,
+      expressionNames,
     },
   };
 }
@@ -83,45 +63,21 @@ export function response(ctx) {
   if (ctx.error) {
     util.error(ctx.error.message, ctx.error.type);
   }
-
-  const { conversationId } = ctx.result;
+  const streamId = `${ctx.args.input.associatedUserMessageId}#stream`;
   const { owner } = ctx.args;
+  const { contentBlockToolUse, ...event } = ctx.args.input;
 
-  if (ctx.args.input.contentBlockToolUse && ctx.args.input.contentBlockToolUse.toolUse) {
-    console.log('>>> contentBlockToolUse <<<', ctx.args.input.contentBlockToolUse);
+  const streamEvent = {
+    ...event,
+    __typename: 'ConversationMessageStreamPart',
+    id: streamId,
+    owner,
+  };
 
-    return {
-      __typename: 'ConversationMessageStreamPart',
-      ...ctx.args.input,
-      id: `${ctx.args.input.associatedUserMessageId}#stream`,
-      owner,
-      conversationId,
-      contentBlockToolUse: ctx.args.input.contentBlockToolUse.toolUse,
-    }
+  // TODO: The lambda event should provide the toolUse directly.
+  if (contentBlockToolUse && contentBlockToolUse.toolUse) {
+    streamEvent.contentBlockToolUse = contentBlockToolUse.toolUse;
   }
 
-  if (ctx.args.input.contentBlockText) {
-    console.log('>>> contentBlockText <<<', ctx.args.input.contentBlockText);
-    return {
-      __typename: 'ConversationMessageStreamPart',
-      ...ctx.args.input,
-      id: `${ctx.args.input.associatedUserMessageId}#stream`,
-      owner,
-      conversationId,
-    };
-  }
-
-  if (ctx.args.input.contentBlockDoneAtIndex) {
-    console.log('>>> contentBlockDoneAtIndex <<<', ctx.args.input.contentBlockDoneAtIndex);
-    // Do we actually need this event? It's forcing us to return a value to the client here, which is awkward... maybe.
-    return {
-      ...ctx.args.input,
-      id: `${ctx.args.input.associatedUserMessageId}#stream`,
-      owner,
-      conversationId,
-    }
-  }
-
-  console.log('>>> stopReason <<<', ctx.args.input.stopReason);
-  return ctx.result;
+  return streamEvent;
 }

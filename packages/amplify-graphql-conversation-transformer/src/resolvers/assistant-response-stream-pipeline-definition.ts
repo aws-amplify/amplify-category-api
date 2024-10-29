@@ -6,6 +6,7 @@ import {
   PipelineDefinition,
   ResolverFunctionDefinition,
 } from './resolver-function-definition';
+import { toUpper } from 'graphql-transformer-common';
 
 /**
  * The pipeline definition for the assistant response stream mutation resolver.
@@ -13,7 +14,7 @@ import {
 export const assistantResponseStreamPipelineDefinition: PipelineDefinition = {
   requestSlots: [init(), auth(), verifySessionOwner()],
   dataSlot: data(),
-  responseSlots: [reduceChunks()],
+  responseSlots: [],
   field: (config) => ({ typeName: 'Mutation', fieldName: fieldName(config) }),
 };
 
@@ -67,19 +68,7 @@ function data(): ResolverFunctionDefinition {
     generateTemplate: templateGenerator('assistant-streaming-subscription'),
     dataSource: (config) => config.dataSources.messageTableDataSource,
     substitutions: (config) => ({
-      CONVERSATION_MESSAGE_TYPE_NAME: `ConversationMessage${config.field.name.value}`,
-    }),
-  });
-}
-
-function reduceChunks(): ResolverFunctionDefinition {
-  return createResolverFunctionDefinition({
-    slotName: 'reduceChunks',
-    fileName: 'assistant-streaming-mutation-reduce-chunks-resolver-fn.template.js',
-    generateTemplate: templateGenerator('reduce-chunks'),
-    dataSource: (config) => config.dataSources.messageTableDataSource,
-    substitutions: (config) => ({
-      CONVERSATION_MESSAGE_TYPE_NAME: `ConversationMessage${config.field.name.value}`,
+      CONVERSATION_MESSAGE_TYPE_NAME: `ConversationMessage${toUpper(config.field.name.value)}`,
     }),
   });
 }
