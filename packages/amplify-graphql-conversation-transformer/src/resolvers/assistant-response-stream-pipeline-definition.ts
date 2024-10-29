@@ -1,3 +1,4 @@
+import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { ConversationDirectiveConfiguration } from '../conversation-directive-configuration';
 import {
   createResolverFunctionDefinition,
@@ -23,7 +24,10 @@ function init(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'init',
     fileName: 'init-resolver-fn.template.js',
-    generateTemplate: templateGenerator('init'),
+    generateTemplate: (_, code) => MappingTemplate.inlineTemplateFromString(code),
+    substitutions: (_, ctx) => ({
+      GRAPHQL_API_ENDPOINT: ctx.api.graphqlUrl,
+    }),
   });
 }
 
