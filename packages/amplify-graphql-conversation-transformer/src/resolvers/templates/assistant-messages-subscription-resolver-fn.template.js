@@ -32,7 +32,7 @@ export function request(ctx) {
   if (!isAuthorized && ctx.stash.authFilter.length === 0) {
     util.unauthorized();
   }
-  ctx.args.filter = { ...ctx.args.filter, and: [{ conversationId: { eq: ctx.args.conversationId } }] };
+  ctx.args.filter = { ...ctx.stash.authFilter, and: [{ conversationId: { eq: ctx.args.conversationId } }] };
   return { version: '2018-05-29', payload: {} };
 }
 
