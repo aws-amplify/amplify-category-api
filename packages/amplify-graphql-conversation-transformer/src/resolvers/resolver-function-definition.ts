@@ -1,5 +1,6 @@
-import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { DataSourceProvider, MappingTemplateProvider, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ConversationDirectiveConfiguration } from '../conversation-directive-configuration';
+import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 
 /**
  * Creates a resolver function definition based on the provided definition, with NONE data source and empty substitutions if not provided.
@@ -22,9 +23,9 @@ export const createResolverFunctionDefinition = (
 export type ResolverFunctionDefinition = {
   slotName: string;
   fileName: string;
-  templateName: (config: ConversationDirectiveConfiguration) => string;
+  generateTemplate: (config: ConversationDirectiveConfiguration, code: string) => MappingTemplateProvider;
   dataSource: (config: ConversationDirectiveConfiguration) => DataSourceProvider | undefined;
-  substitutions: (config: ConversationDirectiveConfiguration) => Record<string, string>;
+  substitutions: (config: ConversationDirectiveConfiguration, ctx: TransformerContextProvider) => Record<string, string>;
 };
 
 /**
@@ -36,6 +37,14 @@ export type PipelineDefinition = {
   responseSlots: ResolverFunctionDefinition[];
   field: (config: ConversationDirectiveConfiguration) => { typeName: string; fieldName: string };
 };
+
+/**
+ * Creates an S3 asset mapping template generator for the resolver function.
+ */
+export const createS3AssetMappingTemplateGenerator =
+  (parentName: string, slotName: string, fieldName: (config: ConversationDirectiveConfiguration) => string) =>
+  (config: ConversationDirectiveConfiguration, code: string) =>
+    MappingTemplate.s3MappingFunctionCodeFromString(code, `${parentName}.${fieldName(config)}.${slotName}.js`);
 
 type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 
