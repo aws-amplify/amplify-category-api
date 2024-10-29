@@ -15,13 +15,7 @@ import {
   Visibility,
   IamResource,
 } from 'aws-cdk-lib/aws-appsync';
-import {
-  Grant,
-  IGrantable,
-  ManagedPolicy,
-  Role,
-  ServicePrincipal,
-} from 'aws-cdk-lib/aws-iam';
+import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import { ArnFormat, CfnResource, Duration, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
