@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.12.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.11.1...@aws-amplify/data-construct@1.12.0) (2024-10-28)
+
+### Features
+
+- import existing table to amplify managed table ([#2634](https://github.com/aws-amplify/amplify-category-api/issues/2634)) ([b3fb28f](https://github.com/aws-amplify/amplify-category-api/commit/b3fb28f6a253cae523625c0b2e93ec9ce2c37bab))
+
 ## [1.11.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.11.0...@aws-amplify/data-construct@1.11.1) (2024-10-17)
 
 **Note:** Version bump only for package @aws-amplify/data-construct
