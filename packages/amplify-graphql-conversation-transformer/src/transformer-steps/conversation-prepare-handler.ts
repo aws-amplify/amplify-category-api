@@ -66,14 +66,21 @@ export class ConversationPrepareHandler {
    */
   private prepareResourcesForDirective(directive: ConversationDirectiveConfiguration, ctx: TransformerPrepareStepContextProvider): void {
     // TODO: Add @aws_cognito_user_pools directive to send messages mutation
-    const { conversation, message, assistantResponseMutation, assistantResponseStreamingMutation, assistantResponseSubscriptionField } =
-      directive;
+    const {
+      conversation,
+      message,
+      assistantResponseMutation,
+      assistantResponseStreamingMutation,
+      assistantResponseSubscriptionField,
+      conversationTurnErrorInput,
+    } = directive;
 
     // Extract model names for later use
     const conversationName = conversation.model.name.value;
     const messageName = message.model.name.value;
 
     // Add necessary inputs, fields, and objects to the output schema
+    ctx.output.addInput(conversationTurnErrorInput);
     ctx.output.addInput(assistantResponseMutation.input);
     ctx.output.addInput(assistantResponseStreamingMutation.input);
     ctx.output.addMutationFields([assistantResponseMutation.field, assistantResponseStreamingMutation.field]);
