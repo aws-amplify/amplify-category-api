@@ -188,4 +188,10 @@ type ConversationMessageStreamPart {
   contentBlockToolUse: ToolUseBlock
   contentBlockDoneAtIndex: Int
   stopReason: String
+  errors: [ConversationTurnError]
+}
+
+type ConversationTurnError {
+  message: String!
+  errorType: String!
 }
