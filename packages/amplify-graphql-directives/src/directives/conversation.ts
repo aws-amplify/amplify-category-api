@@ -6,9 +6,15 @@ const definition = /* GraphQL */ `
     aiModel: String!
     systemPrompt: String!
     functionName: String
+    handler: ConversationHandlerFunctionConfiguration
     tools: [ToolMap]
     inferenceConfiguration: ConversationInferenceConfiguration
   ) on FIELD_DEFINITION
+  
+  input ConversationHandlerFunctionConfiguration {
+    functionName: String!
+    eventVersion: String!
+  }
 
   input ToolMap {
     name: String

@@ -1,17 +1,17 @@
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
+import { GenerationTransformer } from '@aws-amplify/graphql-generation-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration, ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DeploymentResources, testTransform, TransformManager } from '@aws-amplify/graphql-transformer-test-utils';
-import { parse } from 'graphql';
-import { ConversationTransformer } from '..';
-import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
-import * as fs from 'fs-extra';
-import * as path from 'path';
 import { Code, Function, IFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { GenerationTransformer } from '@aws-amplify/graphql-generation-transformer';
+import * as fs from 'fs-extra';
+import { parse } from 'graphql';
 import { toUpper } from 'graphql-transformer-common';
+import * as path from 'path';
+import { ConversationTransformer } from '..';
 
 const conversationSchemaTypes = fs.readFileSync(path.join(__dirname, 'schemas/conversation-schema-types.graphql'), 'utf8');
 
@@ -40,8 +40,9 @@ describe('ConversationTransformer', () => {
 
       const out = transform(inputSchema);
       expect(out).toBeDefined();
-      assertResolverSnapshot(routeName, out);
-
+      assertSendMessageMutationResources(routeName, out);
+      assertAssistantResponseMutationResources(routeName, out);
+      assertAssistantResponseSubscriptionResources(routeName, out);
       const schema = parse(out.schema);
       validateModelSchema(schema);
 
@@ -51,9 +52,12 @@ describe('ConversationTransformer', () => {
       ).toHaveLength(4);
     });
 
-    it('uses functionMap for custom handler', () => {
+    it.each([
+      ['functionName', 'conversation-route-custom-handler-deprecated.graphql'],
+      ['handler ', 'conversation-route-custom-handler.graphql'],
+    ])('uses functionMap for custom handler - %s', (_, schemaFile) => {
       const routeName = 'pirateChat';
-      const inputSchema = getSchema('conversation-route-custom-handler.graphql', { ROUTE_NAME: routeName });
+      const inputSchema = getSchema(schemaFile, { ROUTE_NAME: routeName });
 
       const transformerManager = new TransformManager();
       const stack = transformerManager.getTransformScope();
@@ -110,44 +114,135 @@ describe('ConversationTransformer', () => {
         expect(() => transform(inputSchema)).toThrow(`@conversation directive ${param} valid range: ${errorMessage}. Provided: ${value}`);
       });
     });
+
+    describe('invalid custom handler configuration', () => {
+      it('should throw if both functionName and handler are provided', () => {
+        const inputSchema = getSchema('conversation-route-invalid-custom-handler-function-name-and-handler-provided.graphql');
+        expect(() => transform(inputSchema)).toThrow("'functionName' and 'handler' are mutually exclusive");
+      });
+
+      it.each([['0.5'], ['2.0']])('throws error for event version $s', (eventVersion) => {
+        const inputSchema = getSchema('conversation-route-invalid-custom-handler-event-version.graphql', { EVENT_VERSION: eventVersion });
+        expect(() => transform(inputSchema)).toThrow(
+          `Unsupported custom conversation handler. Expected eventVersion to match 1.x, received ${eventVersion}`,
+        );
+      });
+    });
   });
 });
 
-const assertResolverSnapshot = (routeName: string, resources: DeploymentResources) => {
-  const resolverCode = getResolverResource(routeName, resources.rootStack.Resources)['Properties']['Code'];
+const assertAssistantResponseSubscriptionResources = (routeName: string, resources: DeploymentResources) => {
+  const resolverName = `SubscriptiononCreateAssistantResponse${toUpper(routeName)}Resolver`;
+
+  // ----- Function Code Assertions -----
+  const resolverCode = resources.rootStack.Resources?.[resolverName].Properties.Code;
   expect(resolverCode).toBeDefined();
-  expect(resolverCode).toMatchSnapshot();
+  expect(resolverCode).toMatchSnapshot('AssistantResponseSubscription resolver code');
+
+  const dataFn = resources.resolvers[`Subscription.onCreateAssistantResponse${toUpper(routeName)}.assistant-message.js`];
+  expect(dataFn).toBeDefined();
+  expect(dataFn).toMatchSnapshot('AssistantResponseSubscription data slot function code');
+};
+
+const assertAssistantResponseMutationResources = (routeName: string, resources: DeploymentResources) => {
+  const resolverName = `MutationcreateAssistantResponse${toUpper(routeName)}Resolver`;
+
+  // ----- Function Code Assertions -----
+  const resolverCode = resources.rootStack.Resources?.[resolverName].Properties.Code;
+  expect(resolverCode).toBeDefined();
+  expect(resolverCode).toMatchSnapshot('AssistantResponseMutation resolver code');
+
+  const initFn = resources.resolvers[`Mutation.createAssistantResponse${toUpper(routeName)}.init.js`];
+  expect(initFn).toBeDefined();
+  expect(initFn).toMatchSnapshot('AssistantResponseMutation init slot function code');
+
+  const authFn = resources.resolvers[`Mutation.createAssistantResponse${toUpper(routeName)}.auth.js`];
+  expect(authFn).toBeDefined();
+  expect(authFn).toMatchSnapshot('AssistantResponseMutation auth slot function code');
+
+  const verifySessionOwnerFn = resources.resolvers[`Mutation.createAssistantResponse${toUpper(routeName)}.verify-session-owner.js`];
+  expect(verifySessionOwnerFn).toBeDefined();
+  expect(verifySessionOwnerFn).toMatchSnapshot('AssistantResponseMutation verify session owner slot function code');
+
+  // ----- Data Source Assertions -----
+  const verifySessionOwnerFnDataSourceName = getFunctionConfigurationForPipelineSlot(resources, resolverName, 2).Properties.DataSourceName[
+    'Fn::GetAtt'
+  ][0];
+  expect(verifySessionOwnerFnDataSourceName).toBeDefined();
+  expect(verifySessionOwnerFnDataSourceName).toEqual(conversationTableDataSourceName(routeName));
+
+  const dataFnDataSourceName = getFunctionConfigurationForPipelineSlot(resources, resolverName, 3).Properties.DataSourceName[
+    'Fn::GetAtt'
+  ][0];
+  expect(dataFnDataSourceName).toBeDefined();
+  expect(dataFnDataSourceName).toEqual(messageTableDataSourceName(routeName));
+};
+
+const assertSendMessageMutationResources = (routeName: string, resources: DeploymentResources) => {
+  const resolverName = `Mutation${routeName}Resolver`;
+
+  // ----- Function Code Assertions -----
+  const resolverCode = resources.rootStack.Resources?.[resolverName].Properties.Code;
+  expect(resolverCode).toBeDefined();
+  expect(resolverCode).toMatchSnapshot('SendMessageMutation resolver code');
+
+  // Need to do this song and dance because the init slot is an inline function.
+  // It's not accessible via `resources.resolvers`.
+  const initFn = getFunctionConfigurationForPipelineSlot(resources, resolverName, 0).Properties.Code;
+  expect(initFn).toBeDefined();
+  expect(initFn).toMatchSnapshot('SendMessageMutation init slot function code');
 
   const authFn = resources?.resolvers[`Mutation.${routeName}.auth.js`];
   expect(authFn).toBeDefined();
-  expect(authFn).toMatchSnapshot();
+  expect(authFn).toMatchSnapshot('SendMessageMutation auth slot function code');
 
   const verifySessionOwnerFn = resources?.resolvers[`Mutation.${routeName}.verify-session-owner.js`];
   expect(verifySessionOwnerFn).toBeDefined();
-  expect(verifySessionOwnerFn).toMatchSnapshot();
+  expect(verifySessionOwnerFn).toMatchSnapshot('SendMessageMutation verify session owner slot function code');
 
   const writeMessageToTableFn = resources?.resolvers[`Mutation.${routeName}.write-message-to-table.js`];
   expect(writeMessageToTableFn).toBeDefined();
-  expect(writeMessageToTableFn).toMatchSnapshot();
+  expect(writeMessageToTableFn).toMatchSnapshot('SendMessageMutation write message to table slot function code');
 
   const invokeLambdaFn = resources?.resolvers[`Mutation.${routeName}.invoke-lambda.js`];
   expect(invokeLambdaFn).toBeDefined();
-  expect(invokeLambdaFn).toMatchSnapshot();
+  expect(invokeLambdaFn).toMatchSnapshot('SendMessageMutation invoke lambda slot function code');
+
+  // ----- Data Source Assertions -----
+  const verifySessionOwnerFnDataSourceName = getFunctionConfigurationForPipelineSlot(resources, resolverName, 2).Properties.DataSourceName[
+    'Fn::GetAtt'
+  ][0];
+  expect(verifySessionOwnerFnDataSourceName).toBeDefined();
+  expect(verifySessionOwnerFnDataSourceName).toEqual(conversationTableDataSourceName(routeName));
+
+  const writeMessageToTableFnDataSourceName = getFunctionConfigurationForPipelineSlot(resources, resolverName, 3).Properties.DataSourceName[
+    'Fn::GetAtt'
+  ][0];
+  expect(writeMessageToTableFnDataSourceName).toBeDefined();
+  expect(writeMessageToTableFnDataSourceName).toEqual(messageTableDataSourceName(routeName));
+
+  // The lambda function is deployed in a separate stack, so we need to resolve the stack name.
+  const invokeLambdaFnDataSource = getFunctionConfigurationForPipelineSlot(resources, resolverName, 4).Properties.DataSourceName[
+    'Fn::GetAtt'
+  ];
+  expect(invokeLambdaFnDataSource).toBeDefined();
+  const stackName = invokeLambdaFnDataSource[0];
+  expect(stackName).toEqual(lambdaFunctionStackName(routeName));
+
+  // Then we get the data source name from that stack.
+  const outputsKey = invokeLambdaFnDataSource[1].split('Outputs.')[1];
+  const lambdaDataSourceName = resources.stacks?.[stackName].Outputs?.[outputsKey].Value['Fn::GetAtt'][0];
+  expect(lambdaDataSourceName).toEqual(lambdaFunctionDataSourceName(routeName));
 };
 
-const getResolverResource = (mutationName: string, resources?: Record<string, any>): Record<string, any> => {
-  const resolverName = `Mutation${mutationName}Resolver`;
-  return resources?.[resolverName];
-};
+const conversationTableDataSourceName = (routeName: string) => `Conversation${toUpper(routeName)}`;
+const messageTableDataSourceName = (routeName: string) => `ConversationMessage${toUpper(routeName)}`;
+const lambdaFunctionStackName = (routeName: string) => `${toUpper(routeName)}ConversationDirectiveLambdaStack`;
+const lambdaFunctionDataSourceName = (routeName: string) => `${toUpper(routeName)}DefaultConversationHandlerLambdaDataSource`;
 
-const getResolverFnResource = (mutationName: string, resources: DeploymentResources): string => {
-  const resolverFnCode =
-    resources.rootStack.Resources &&
-    Object.entries(resources.rootStack.Resources).find(([key, _]) => key.startsWith(`Mutation${toUpper(mutationName)}DataResolverFn`))?.[1][
-      'Properties'
-    ]['Code'];
-
-  return resolverFnCode;
+const getFunctionConfigurationForPipelineSlot = (resources: Record<string, any>, resolverName: string, slot: number): any => {
+  const functionName = resources.rootStack.Resources?.[resolverName].Properties.PipelineConfig.Functions[slot]['Fn::GetAtt'][0];
+  return resources.rootStack.Resources[functionName];
 };
 
 const defaultAuthConfig: AppSyncAuthConfiguration = {

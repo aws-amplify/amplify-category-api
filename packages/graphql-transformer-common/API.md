@@ -509,7 +509,9 @@ export const TYPESCRIPT_DATA_SCHEMA_CONSTANTS: {
     IDENTIFIER_METHOD: string;
     ARRAY_METHOD: string;
     REQUIRED_METHOD: string;
+    DEFAULT_METHOD: string;
     STRING_METHOD: string;
+    REF_METHOD: string;
     ENUM_METHOD: string;
     REFERENCE_A: string;
     EXPORT_VARIABLE_NAME: string;

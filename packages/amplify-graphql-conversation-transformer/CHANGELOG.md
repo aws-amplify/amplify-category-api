@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@0.4.0...@aws-amplify/graphql-conversation-transformer@0.5.0) (2024-10-28)
+
+### Bug Fixes
+
+- **conversation:** inline template for init slot and correct datasource in assistant response mutation ([#2980](https://github.com/aws-amplify/amplify-category-api/issues/2980)) ([5136377](https://github.com/aws-amplify/amplify-category-api/commit/513637700ab5f1b42a9e62de1b00e63d0b8f47c3))
+
+### Features
+
+- **conversation:** enable update mutations on conversation model ([#2948](https://github.com/aws-amplify/amplify-category-api/issues/2948)) ([c90ac7d](https://github.com/aws-amplify/amplify-category-api/commit/c90ac7d9aad6ac2a9b30d44e65211b689d2c7109))
+
+# [0.4.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@0.3.0...@aws-amplify/graphql-conversation-transformer@0.4.0) (2024-10-17)
+
+### Features
+
+- constrain custom conversation handler event version ([#2958](https://github.com/aws-amplify/amplify-category-api/issues/2958)) ([083fe17](https://github.com/aws-amplify/amplify-category-api/commit/083fe173e32a06976300b36c20d91e3c55d19f2a))
+
 # [0.3.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@0.2.2...@aws-amplify/graphql-conversation-transformer@0.3.0) (2024-10-10)
 
 ### Bug Fixes
