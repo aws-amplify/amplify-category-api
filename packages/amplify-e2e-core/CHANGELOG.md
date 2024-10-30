@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.6-ai-streaming.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@5.0.5...amplify-category-api-e2e-core@5.0.6-ai-streaming.0) (2024-10-30)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
 ## [5.0.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@5.0.4...amplify-category-api-e2e-core@5.0.5) (2024-10-28)
 
 **Note:** Version bump only for package amplify-category-api-e2e-core

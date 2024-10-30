@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.1-ai-streaming.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@0.5.0...@aws-amplify/graphql-conversation-transformer@0.5.1-ai-streaming.0) (2024-10-30)
+
+### Bug Fixes
+
+- resolver logic for determining streaming based on exp env var ([329e4ab](https://github.com/aws-amplify/amplify-category-api/commit/329e4ab4a6981424f273f56a31732f9cfad6b331))
+
 # [0.5.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@0.4.0...@aws-amplify/graphql-conversation-transformer@0.5.0) (2024-10-28)
 
 ### Bug Fixes
