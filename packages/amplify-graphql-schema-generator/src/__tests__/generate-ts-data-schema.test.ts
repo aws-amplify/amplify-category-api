@@ -177,6 +177,77 @@ describe('Type name conversions', () => {
     expect(graphqlSchema).toMatchSnapshot();
   });
 
+  it('generates required enums correctly', () => {
+    const dbschema = new Schema(new Engine('Postgres'));
+    const model = new Model('User');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
+    model.addField(new Field('status', { kind: 'NonNull', type: { kind: 'Enum', name: 'UserStatus', values: ['ACTIVE', 'INACTIVE'] } }));
+    model.setPrimaryKey(['id']);
+    dbschema.addModel(model);
+
+    const graphqlSchema = generateTypescriptDataSchema(dbschema);
+    expect(graphqlSchema).toMatchSnapshot();
+  });
+
+  it('generates required  and null enums correctly in the same model', () => {
+    const dbschema = new Schema(new Engine('Postgres'));
+    const model = new Model('User');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
+    model.addField(new Field('statsu1', { kind: 'Enum', name: 'UserStatus1', values: ['ACTIVE', 'INACTIVE'] }));
+    model.addField(new Field('status', { kind: 'NonNull', type: { kind: 'Enum', name: 'UserStatus', values: ['ACTIVE', 'INACTIVE'] } }));
+    model.setPrimaryKey(['id']);
+    dbschema.addModel(model);
+
+    const graphqlSchema = generateTypescriptDataSchema(dbschema);
+    expect(graphqlSchema).toMatchSnapshot();
+  });
+
+  it('generates single enum referenced for two different models', () => {
+    const dbschema = new Schema(new Engine('Postgres'));
+    const modelUser = new Model('User');
+    const modelTest = new Model('Test');
+    modelUser.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    modelUser.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
+    modelUser.addField(
+      new Field('status', { kind: 'NonNull', type: { kind: 'Enum', name: 'UserStatus', values: ['ACTIVE', 'INACTIVE'] } }),
+    );
+    modelUser.setPrimaryKey(['id']);
+    dbschema.addModel(modelUser);
+    modelTest.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    modelTest.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
+    modelTest.addField(
+      new Field('status', { kind: 'NonNull', type: { kind: 'Enum', name: 'UserStatus', values: ['ACTIVE', 'INACTIVE'] } }),
+    );
+    modelTest.setPrimaryKey(['id']);
+    dbschema.addModel(modelTest);
+
+    const graphqlSchema = generateTypescriptDataSchema(dbschema);
+    expect(graphqlSchema).toMatchSnapshot();
+  });
+
+  it('generates enums for models in mysql', () => {
+    const dbschema = new Schema(new Engine('MySQL'));
+    const modelUser = new Model('User');
+    const modelTest = new Model('Test');
+    modelUser.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    modelUser.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
+    modelUser.addField(
+      new Field('status', { kind: 'NonNull', type: { kind: 'Enum', name: 'userStatus', values: ['ACTIVE', 'INACTIVE'] } }),
+    );
+    modelUser.setPrimaryKey(['id']);
+    dbschema.addModel(modelUser);
+    modelTest.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    modelTest.addField(new Field('name', { kind: 'Scalar', name: 'String' }));
+    modelTest.addField(new Field('age', { kind: 'NonNull', type: { kind: 'Enum', name: 'TestAge', values: ['Above18', 'Below18'] } }));
+    modelTest.setPrimaryKey(['id']);
+    dbschema.addModel(modelTest);
+
+    const graphqlSchema = generateTypescriptDataSchema(dbschema);
+    expect(graphqlSchema).toMatchSnapshot();
+  });
+
   it('schema with database config secret and vpc should generate typescript data schema with configure', () => {
     const dbschema = new Schema(new Engine('MySQL'));
     let model = new Model('User');
