@@ -16,7 +16,45 @@ export const createAssistantResponsePirateChat = /* GraphQL */ `mutation CreateA
     associatedUserMessageId
     content {
       text
-      __typename
+      toolResult {
+        status
+        content {
+          document {
+            format
+            name
+            source {
+              bytes
+            }
+          }
+          image {
+            format
+            source {
+              bytes
+            }
+          }
+          json
+          text
+        }
+        toolUseId
+      }
+      toolUse {
+        input
+        name
+        toolUseId
+      }
+      image {
+        format
+        source {
+          bytes
+        }
+      }
+      document {
+        format
+        name
+        source {
+          bytes
+        }
+      }
     }
     conversation {
       createdAt
@@ -25,7 +63,6 @@ export const createAssistantResponsePirateChat = /* GraphQL */ `mutation CreateA
       name
       owner
       updatedAt
-      __typename
     }
     conversationId
     createdAt
@@ -33,10 +70,17 @@ export const createAssistantResponsePirateChat = /* GraphQL */ `mutation CreateA
     owner
     role
     toolConfiguration {
-      __typename
+      tools {
+        toolSpec {
+          description
+          inputSchema {
+            json
+          }
+          name
+        }
+      }
     }
     updatedAt
-    __typename
   }
 }
 ` as GeneratedMutation<APITypes.CreateAssistantResponsePirateChatMutationVariables, APITypes.CreateAssistantResponsePirateChatMutation>;
@@ -53,13 +97,11 @@ export const createAssistantResponseStreamPirateChat = /* GraphQL */ `mutation C
       input
       name
       toolUseId
-      __typename
     }
     conversationId
     id
     owner
     stopReason
-    __typename
   }
 }
 ` as GeneratedMutation<
@@ -76,7 +118,45 @@ export const createConversationMessagePirateChat = /* GraphQL */ `mutation Creat
     associatedUserMessageId
     content {
       text
-      __typename
+      toolResult {
+        status
+        content {
+          document {
+            format
+            name
+            source {
+              bytes
+            }
+          }
+          image {
+            format
+            source {
+              bytes
+            }
+          }
+          json
+          text
+        }
+        toolUseId
+      }
+      toolUse {
+        input
+        name
+        toolUseId
+      }
+      image {
+        format
+        source {
+          bytes
+        }
+      }
+      document {
+        format
+        name
+        source {
+          bytes
+        }
+      }
     }
     conversation {
       createdAt
@@ -85,7 +165,6 @@ export const createConversationMessagePirateChat = /* GraphQL */ `mutation Creat
       name
       owner
       updatedAt
-      __typename
     }
     conversationId
     createdAt
@@ -93,10 +172,17 @@ export const createConversationMessagePirateChat = /* GraphQL */ `mutation Creat
     owner
     role
     toolConfiguration {
-      __typename
+      tools {
+        toolSpec {
+          description
+          inputSchema {
+            json
+          }
+          name
+        }
+      }
     }
     updatedAt
-    __typename
   }
 }
 ` as GeneratedMutation<APITypes.CreateConversationMessagePirateChatMutationVariables, APITypes.CreateConversationMessagePirateChatMutation>;
@@ -110,13 +196,11 @@ export const createConversationPirateChat = /* GraphQL */ `mutation CreateConver
     id
     messages {
       nextToken
-      __typename
     }
     metadata
     name
     owner
     updatedAt
-    __typename
   }
 }
 ` as GeneratedMutation<APITypes.CreateConversationPirateChatMutationVariables, APITypes.CreateConversationPirateChatMutation>;
@@ -129,7 +213,45 @@ export const deleteConversationMessagePirateChat = /* GraphQL */ `mutation Delet
     associatedUserMessageId
     content {
       text
-      __typename
+      toolResult {
+        status
+        content {
+          document {
+            format
+            name
+            source {
+              bytes
+            }
+          }
+          image {
+            format
+            source {
+              bytes
+            }
+          }
+          json
+          text
+        }
+        toolUseId
+      }
+      toolUse {
+        input
+        name
+        toolUseId
+      }
+      image {
+        format
+        source {
+          bytes
+        }
+      }
+      document {
+        format
+        name
+        source {
+          bytes
+        }
+      }
     }
     conversation {
       createdAt
@@ -138,7 +260,6 @@ export const deleteConversationMessagePirateChat = /* GraphQL */ `mutation Delet
       name
       owner
       updatedAt
-      __typename
     }
     conversationId
     createdAt
@@ -146,10 +267,17 @@ export const deleteConversationMessagePirateChat = /* GraphQL */ `mutation Delet
     owner
     role
     toolConfiguration {
-      __typename
+      tools {
+        toolSpec {
+          description
+          inputSchema {
+            json
+          }
+          name
+        }
+      }
     }
     updatedAt
-    __typename
   }
 }
 ` as GeneratedMutation<APITypes.DeleteConversationMessagePirateChatMutationVariables, APITypes.DeleteConversationMessagePirateChatMutation>;
@@ -162,13 +290,13 @@ export const deleteConversationPirateChat = /* GraphQL */ `mutation DeleteConver
     id
     messages {
       nextToken
-      __typename
+
     }
     metadata
     name
     owner
     updatedAt
-    __typename
+
   }
 }
 ` as GeneratedMutation<APITypes.DeleteConversationPirateChatMutationVariables, APITypes.DeleteConversationPirateChatMutation>;
@@ -187,7 +315,45 @@ export const pirateChat = /* GraphQL */ `mutation PirateChat(
     aiContext
     content {
       text
-      __typename
+      toolResult {
+        status
+        content {
+          document {
+            format
+            name
+            source {
+              bytes
+            }
+          }
+          image {
+            format
+            source {
+              bytes
+            }
+          }
+          json
+          text
+        }
+        toolUseId
+      }
+      toolUse {
+        input
+        name
+        toolUseId
+      }
+      image {
+        format
+        source {
+          bytes
+        }
+      }
+      document {
+        format
+        name
+        source {
+          bytes
+        }
+      }
     }
     conversationId
     createdAt
@@ -195,7 +361,15 @@ export const pirateChat = /* GraphQL */ `mutation PirateChat(
     owner
     role
     toolConfiguration {
-      __typename
+      tools {
+        toolSpec {
+          description
+          inputSchema {
+            json
+          }
+          name
+        }
+      }
     }
     updatedAt
 
@@ -208,7 +382,7 @@ export const pirateChat = /* GraphQL */ `mutation PirateChat(
         name
         owner
         updatedAt
-        __typename
+
       }
     }
   }
@@ -223,13 +397,13 @@ export const updateConversationPirateChat = /* GraphQL */ `mutation UpdateConver
     id
     messages {
       nextToken
-      __typename
+
     }
     metadata
     name
     owner
     updatedAt
-    __typename
+
   }
 }
 ` as GeneratedMutation<APITypes.UpdateConversationPirateChatMutationVariables, APITypes.UpdateConversationPirateChatMutation>;

@@ -19,13 +19,11 @@ export const onCreateAssistantResponsePirateChat = /* GraphQL */ `subscription O
       input
       name
       toolUseId
-      __typename
     }
     conversationId
     id
     owner
     stopReason
-    __typename
   }
 }
 ` as GeneratedSubscription<
@@ -41,7 +39,45 @@ export const onCreateConversationMessagePirateChat = /* GraphQL */ `subscription
     associatedUserMessageId
     content {
       text
-      __typename
+      toolResult {
+        status
+        content {
+          document {
+            format
+            name
+            source {
+              bytes
+            }
+          }
+          image {
+            format
+            source {
+              bytes
+            }
+          }
+          json
+          text
+        }
+        toolUseId
+      }
+      toolUse {
+        input
+        name
+        toolUseId
+      }
+      image {
+        format
+        source {
+          bytes
+        }
+      }
+      document {
+        format
+        name
+        source {
+          bytes
+        }
+      }
     }
     conversation {
       createdAt
@@ -50,7 +86,6 @@ export const onCreateConversationMessagePirateChat = /* GraphQL */ `subscription
       name
       owner
       updatedAt
-      __typename
     }
     conversationId
     createdAt
@@ -58,10 +93,17 @@ export const onCreateConversationMessagePirateChat = /* GraphQL */ `subscription
     owner
     role
     toolConfiguration {
-      __typename
+      tools {
+        toolSpec {
+          description
+          inputSchema {
+            json
+          }
+          name
+        }
+      }
     }
     updatedAt
-    __typename
   }
 }
 ` as GeneratedSubscription<

@@ -14,7 +14,45 @@ export const getConversationMessagePirateChat = /* GraphQL */ `query GetConversa
     associatedUserMessageId
     content {
       text
-      __typename
+      toolResult {
+        status
+        content {
+          document {
+            format
+            name
+            source {
+              bytes
+            }
+          }
+          image {
+            format
+            source {
+              bytes
+            }
+          }
+          json
+          text
+        }
+        toolUseId
+      }
+      toolUse {
+        input
+        name
+        toolUseId
+      }
+      image {
+        format
+        source {
+          bytes
+        }
+      }
+      document {
+        format
+        name
+        source {
+          bytes
+        }
+      }
     }
     conversation {
       createdAt
@@ -23,7 +61,6 @@ export const getConversationMessagePirateChat = /* GraphQL */ `query GetConversa
       name
       owner
       updatedAt
-      __typename
     }
     conversationId
     createdAt
@@ -31,10 +68,18 @@ export const getConversationMessagePirateChat = /* GraphQL */ `query GetConversa
     owner
     role
     toolConfiguration {
-      __typename
+      tools {
+        toolSpec {
+          description
+          inputSchema {
+            json
+          }
+          name
+        }
+      }
     }
     updatedAt
-    __typename
+
   }
 }
 ` as GeneratedQuery<APITypes.GetConversationMessagePirateChatQueryVariables, APITypes.GetConversationMessagePirateChatQuery>;
@@ -44,13 +89,13 @@ export const getConversationPirateChat = /* GraphQL */ `query GetConversationPir
     id
     messages {
       nextToken
-      __typename
+
     }
     metadata
     name
     owner
     updatedAt
-    __typename
+
   }
 }
 ` as GeneratedQuery<APITypes.GetConversationPirateChatQueryVariables, APITypes.GetConversationPirateChatQuery>;
@@ -67,8 +112,46 @@ export const listConversationMessagePirateChats = /* GraphQL */ `query ListConve
     items {
       aiContext
       content {
-        __typename
         text
+        toolResult {
+          status
+          content {
+            document {
+              format
+              name
+              source {
+                bytes
+              }
+            }
+            image {
+              format
+              source {
+                bytes
+              }
+            }
+            json
+            text
+          }
+          toolUseId
+        }
+        toolUse {
+          input
+          name
+          toolUseId
+        }
+        image {
+          format
+          source {
+            bytes
+          }
+        }
+        document {
+          format
+          name
+          source {
+            bytes
+          }
+        }
       }
       associatedUserMessageId
       conversationId
@@ -77,10 +160,8 @@ export const listConversationMessagePirateChats = /* GraphQL */ `query ListConve
       owner
       role
       updatedAt
-      __typename
     }
     nextToken
-    __typename
   }
 }
 ` as GeneratedQuery<APITypes.ListConversationMessagePirateChatsQueryVariables, APITypes.ListConversationMessagePirateChatsQuery>;
@@ -101,10 +182,8 @@ export const listConversationPirateChats = /* GraphQL */ `query ListConversation
       name
       owner
       updatedAt
-      __typename
     }
     nextToken
-    __typename
   }
 }
 ` as GeneratedQuery<APITypes.ListConversationPirateChatsQueryVariables, APITypes.ListConversationPirateChatsQuery>;
