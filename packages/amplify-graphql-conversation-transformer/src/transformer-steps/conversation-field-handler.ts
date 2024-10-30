@@ -133,7 +133,6 @@ export class ConversationFieldHandler {
     assistantResponseMutation: { field: FieldDefinitionNode; input: InputObjectTypeDefinitionNode };
     assistantResponseStreamingMutation: { field: FieldDefinitionNode; input: InputObjectTypeDefinitionNode };
     assistantResponseSubscriptionField: FieldDefinitionNode;
-    conversationTurnErrorInput: InputObjectTypeDefinitionNode;
   } {
     const conversationMessageTypeName = getConversationMessageTypeName(config);
     const messageSubscriptionFieldName = getMessageSubscriptionFieldName(config);
@@ -155,8 +154,6 @@ export class ConversationFieldHandler {
       assistantResponseStreamingMutationInput.name.value,
     );
 
-    const conversationTurnErrorInput = createConversationTurnErrorInput();
-
     return {
       assistantResponseMutation: { field: assistantResponseMutationField, input: assistantResponseMutationInput },
       assistantResponseStreamingMutation: {
@@ -164,7 +161,6 @@ export class ConversationFieldHandler {
         input: assistantResponseStreamingMutationInput,
       },
       assistantResponseSubscriptionField,
-      conversationTurnErrorInput,
     };
   }
 

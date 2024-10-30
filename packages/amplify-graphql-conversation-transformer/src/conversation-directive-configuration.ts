@@ -33,7 +33,6 @@ export type ConversationDirectiveConfiguration = {
   assistantResponseMutation: { field: FieldDefinitionNode; input: InputObjectTypeDefinitionNode };
   assistantResponseStreamingMutation: { field: FieldDefinitionNode; input: InputObjectTypeDefinitionNode };
   assistantResponseSubscriptionField: FieldDefinitionNode;
-  conversationTurnErrorInput: InputObjectTypeDefinitionNode;
   dataSources: ConversationDirectiveDataSources;
 };
 

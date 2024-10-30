@@ -2,7 +2,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY, InvalidTransformerError } from '@aws-amplify/graphql-transformer-core';
 import { ConversationDirectiveConfiguration } from '../conversation-directive-configuration';
-import { constructStreamResponseType } from '../graphql-types/message-model';
+import { constructStreamResponseType, createConversationTurnErrorInput } from '../graphql-types/message-model';
 import { TransformerAuthProvider, TransformerPrepareStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 /**
@@ -47,6 +47,10 @@ export class ConversationPrepareHandler {
    * @throws {InvalidTransformerError} If there's an issue with the transformer configuration.
    */
   prepare(ctx: TransformerPrepareStepContextProvider, directives: ConversationDirectiveConfiguration[]): void {
+    // add once per schema
+    const conversationTurnErrorInput = createConversationTurnErrorInput();
+    ctx.output.addInput(conversationTurnErrorInput);
+
     for (const directive of directives) {
       this.prepareResourcesForDirective(directive, ctx);
     }
@@ -66,21 +70,14 @@ export class ConversationPrepareHandler {
    */
   private prepareResourcesForDirective(directive: ConversationDirectiveConfiguration, ctx: TransformerPrepareStepContextProvider): void {
     // TODO: Add @aws_cognito_user_pools directive to send messages mutation
-    const {
-      conversation,
-      message,
-      assistantResponseMutation,
-      assistantResponseStreamingMutation,
-      assistantResponseSubscriptionField,
-      conversationTurnErrorInput,
-    } = directive;
+    const { conversation, message, assistantResponseMutation, assistantResponseStreamingMutation, assistantResponseSubscriptionField } =
+      directive;
 
     // Extract model names for later use
     const conversationName = conversation.model.name.value;
     const messageName = message.model.name.value;
 
     // Add necessary inputs, fields, and objects to the output schema
-    ctx.output.addInput(conversationTurnErrorInput);
     ctx.output.addInput(assistantResponseMutation.input);
     ctx.output.addInput(assistantResponseStreamingMutation.input);
     ctx.output.addMutationFields([assistantResponseMutation.field, assistantResponseStreamingMutation.field]);
