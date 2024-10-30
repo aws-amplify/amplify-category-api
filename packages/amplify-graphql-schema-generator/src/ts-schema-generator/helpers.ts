@@ -209,7 +209,7 @@ export const createSchema = (schema: Schema, config?: DataSourceGenerateConfig):
       return createModel(model);
     });
 
-    const combinedEnums = nullableEnumFields.concat(requiredEnumFields).flat(); // making 1 D array
+  const combinedEnums = nullableEnumFields.concat(requiredEnumFields).flat(); // making 1 D array
 
   // to eliminate duplicate definition of enums in case where same enum is referenced in 2 differed models
   const seenEnums = new Set<string>();
