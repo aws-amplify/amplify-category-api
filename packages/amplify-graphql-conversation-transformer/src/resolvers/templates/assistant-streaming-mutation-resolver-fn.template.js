@@ -10,10 +10,23 @@ export function request(ctx) {
   const {
     conversationId,
     associatedUserMessageId,
-    accumulatedTurnContent
+    accumulatedTurnContent,
+    contentBlockIndex,
+    errors,
   } = ctx.args.input;
 
   const { owner } = ctx.args;
+
+  if (errors) {
+    runtime.earlyReturn({
+      id: `${associatedUserMessageId}#response`,
+      conversationId,
+      associatedUserMessageId,
+      contentBlockIndex,
+      errors,
+      owner,
+    });
+  }
   const { createdAt, updatedAt } = ctx.stash.defaultValues;
 
   const assistantResponseId = `${associatedUserMessageId}#response`;
