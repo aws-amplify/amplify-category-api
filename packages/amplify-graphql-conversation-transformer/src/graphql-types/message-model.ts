@@ -139,7 +139,7 @@ export const createAssistantResponseStreamingMutationInput = (messageModelName: 
       makeInputValueDefinition('contentBlockDoneAtIndex', makeNamedType('Int')),
       makeInputValueDefinition('stopReason', makeNamedType('String')),
       makeInputValueDefinition('accumulatedTurnContent', makeListType(makeNamedType('ContentBlockInput'))),
-      makeInputValueDefinition('errors', makeListType(makeNamedType('ConversationTurnErrorInput')))
+      makeInputValueDefinition('errors', makeListType(makeNamedType('ConversationTurnErrorInput'))),
     ],
   };
 };
