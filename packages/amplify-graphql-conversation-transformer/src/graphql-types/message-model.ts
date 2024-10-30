@@ -133,16 +133,24 @@ export const createAssistantResponseStreamingMutationInput = (messageModelName: 
       makeInputValueDefinition('conversationId', makeNonNullType(makeNamedType('ID'))),
       makeInputValueDefinition('associatedUserMessageId', makeNonNullType(makeNamedType('ID'))),
       makeInputValueDefinition('contentBlockIndex', makeNonNullType(makeNamedType('Int'))),
-
       makeInputValueDefinition('contentBlockText', makeNamedType('String')),
       makeInputValueDefinition('contentBlockDeltaIndex', makeNamedType('Int')),
-
       makeInputValueDefinition('contentBlockToolUse', makeNamedType('AWSJSON')),
       makeInputValueDefinition('contentBlockDoneAtIndex', makeNamedType('Int')),
-
       makeInputValueDefinition('stopReason', makeNamedType('String')),
-
       makeInputValueDefinition('accumulatedTurnContent', makeListType(makeNamedType('ContentBlockInput'))),
+      makeInputValueDefinition('errors', makeListType(makeNamedType('ConversationTurnErrorInput'))),
+    ],
+  };
+};
+
+export const createConversationTurnErrorInput = (): InputObjectTypeDefinitionNode => {
+  return {
+    kind: 'InputObjectTypeDefinition',
+    name: { kind: 'Name', value: 'ConversationTurnErrorInput' },
+    fields: [
+      makeInputValueDefinition('errorType', makeNonNullType(makeNamedType('String'))),
+      makeInputValueDefinition('message', makeNonNullType(makeNamedType('String'))),
     ],
   };
 };
