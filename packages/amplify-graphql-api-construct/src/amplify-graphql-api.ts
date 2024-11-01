@@ -161,6 +161,9 @@ export class AmplifyGraphqlApi extends Construct {
       dataStoreConfiguration,
     } = props;
 
+    // print warning when using experimental features.
+    // remove this code block when the feature is released.
+    // start block
     const usingExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy = Object.values(definition.dataSourceStrategies).some(
       (strategy) => {
         return isExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy(strategy);
@@ -171,6 +174,7 @@ export class AmplifyGraphqlApi extends Construct {
         'ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy is experimental and is not recommended for production use. This functionality may be changed or removed without warning.',
       );
     }
+    // end block
 
     if (conflictResolution && dataStoreConfiguration) {
       throw new Error(

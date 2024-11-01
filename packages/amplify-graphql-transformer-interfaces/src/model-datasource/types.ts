@@ -44,6 +44,8 @@ export interface AmplifyDynamoDbModelDataSourceStrategy extends ModelDataSourceS
 
 /**
  * Use custom resource type 'Custom::ImportedAmplifyDynamoDBTable' to provision table.
+ *
+ * @experimental Not recommended for production use. This functionality may be changed or removed without warning.
  */
 export interface ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy {
   readonly dbType: 'DYNAMODB';

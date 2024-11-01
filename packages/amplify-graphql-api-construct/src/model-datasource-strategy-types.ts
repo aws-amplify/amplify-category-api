@@ -53,6 +53,8 @@ export interface AmplifyDynamoDbModelDataSourceStrategy {
  * The imported tables will follow the auth rules defined in this construct.
  * The auth rules of the source Gen 1 project will not apply to the API created by this construct.
  * Ensure the correct auth rules have been set to prevent data exposure.
+ *
+ * @experimental Not recommended for production use. This functionality may be changed or removed without warning.
  */
 export interface ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy {
   readonly dbType: 'DYNAMODB';
