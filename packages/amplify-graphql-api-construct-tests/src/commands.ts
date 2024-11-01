@@ -4,16 +4,14 @@ import { copySync, moveSync, readFileSync, writeFileSync } from 'fs-extra';
 import {
   addApiWithoutSchema,
   amplifyPush,
-  amplifyPushForce,
   getProjectMeta,
   getScriptRunnerPath,
   initJSProjectWithProfile,
   nspawn as spawn,
   sleep,
   updateApiSchema,
-  addFeatureFlag,
 } from 'amplify-category-api-e2e-core';
-import { DynamoDBClient, DeleteTableCommand } from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient, DeleteTableCommand, ListTablesCommand } from '@aws-sdk/client-dynamodb';
 
 /**
  * Retrieve the path to the `npx` executable for interacting with the aws-cdk cli.
@@ -192,12 +190,41 @@ export const createGen1ProjectForMigration = async (
   await amplifyPush(projRoot);
 
   // The test should do a second push after enabling the feature flag to start the migration
+  // The Gen 1 CLI has not released this feature flag yet
+  // In the meantime, manually create the data source mapping
+  /*
   addFeatureFlag(projRoot, 'graphqltransformer', 'enablegen2migration', true);
   await amplifyPushForce(projRoot);
+  */
 
   const meta = getProjectMeta(projRoot);
   const { output } = meta.api[name];
-  const { GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput, DataSourceMappingOutput } = output;
+  const {
+    GraphQLAPIEndpointOutput,
+    GraphQLAPIKeyOutput,
+    GraphQLAPIIdOutput,
+    // get DataSourceMappingOutput from output when feature flag is released
+    // DataSourceMappingOutput,
+  } = output;
+
+  // Remove this block when the feature flag is released
+  // Start block
+  const client = new DynamoDBClient({ region: process.env.CLI_REGION || 'us-west-2' });
+  const tables = [];
+  let ExclusiveStartTableName;
+  do {
+    const command = new ListTablesCommand({ ExclusiveStartTableName });
+    const response = await client.send(command);
+    ExclusiveStartTableName = response.LastEvaluatedTableName;
+    tables.push(...response.TableNames);
+  } while (ExclusiveStartTableName);
+  const tableNameMapping = tables
+    // filter all tables by the API ID
+    .filter((tableName) => tableName.includes(GraphQLAPIIdOutput))
+    // extract the model name from the table name and create the mapping
+    .map((tableName) => [tableName.match(/(^.*?)-/)[1], tableName]);
+  const DataSourceMappingOutput = JSON.stringify(Object.fromEntries(tableNameMapping));
+  // End block
 
   return {
     GraphQLAPIEndpointOutput,

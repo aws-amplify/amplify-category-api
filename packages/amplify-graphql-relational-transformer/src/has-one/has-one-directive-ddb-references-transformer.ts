@@ -14,7 +14,7 @@ import {
 import { HasOneDirectiveConfiguration } from '../types';
 import {
   ensureReferencesArray,
-  getOverrideIndexName,
+  getexperimentalOverrideIndexName,
   getReferencesNodes,
   registerHasOneForeignKeyMappings,
   validateParentReferencesFields,
@@ -73,9 +73,9 @@ export class HasOneDirectiveDDBReferencesTransformer implements DataSourceBasedD
     const fieldName = config.field.name.value;
     config.referenceNodes = getReferencesNodes(config, context);
     validateReferencesBidirectionality(config);
-    const overrideIndexName = getOverrideIndexName(config);
-    if (overrideIndexName) {
-      config.indexName = overrideIndexName;
+    const experimentalOverrideIndexName = getexperimentalOverrideIndexName(config);
+    if (experimentalOverrideIndexName) {
+      config.indexName = experimentalOverrideIndexName;
     } else {
       config.indexName = `gsi-${objectName}.${fieldName}`;
     }

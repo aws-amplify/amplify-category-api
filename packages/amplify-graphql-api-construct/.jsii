@@ -4443,7 +4443,7 @@
         },
         "locationInModule": {
           "filename": "src/amplify-graphql-api.ts",
-          "line": 143
+          "line": 144
         },
         "parameters": [
           {
@@ -4478,7 +4478,7 @@
       "kind": "class",
       "locationInModule": {
         "filename": "src/amplify-graphql-api.ts",
-        "line": 84
+        "line": 85
       },
       "methods": [
         {
@@ -4490,7 +4490,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 299
+            "line": 311
           },
           "name": "addDynamoDbDataSource",
           "parameters": [
@@ -4539,7 +4539,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 311
+            "line": 323
           },
           "name": "addElasticsearchDataSource",
           "parameters": [
@@ -4586,7 +4586,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 321
+            "line": 333
           },
           "name": "addEventBridgeDataSource",
           "parameters": [
@@ -4633,7 +4633,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 403
+            "line": 415
           },
           "name": "addFunction",
           "parameters": [
@@ -4668,7 +4668,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 332
+            "line": 344
           },
           "name": "addHttpDataSource",
           "parameters": [
@@ -4716,7 +4716,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 343
+            "line": 355
           },
           "name": "addLambdaDataSource",
           "parameters": [
@@ -4764,7 +4764,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 354
+            "line": 366
           },
           "name": "addNoneDataSource",
           "parameters": [
@@ -4803,7 +4803,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 365
+            "line": 377
           },
           "name": "addOpenSearchDataSource",
           "parameters": [
@@ -4851,7 +4851,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 378
+            "line": 390
           },
           "name": "addRdsDataSource",
           "parameters": [
@@ -4918,7 +4918,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 394
+            "line": 406
           },
           "name": "addResolver",
           "parameters": [
@@ -4959,7 +4959,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 124
+            "line": 125
           },
           "name": "apiId",
           "type": {
@@ -4974,7 +4974,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 104
+            "line": 105
           },
           "name": "generatedFunctionSlots",
           "type": {
@@ -5007,7 +5007,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 109
+            "line": 110
           },
           "name": "graphqlUrl",
           "type": {
@@ -5023,7 +5023,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 114
+            "line": 115
           },
           "name": "realtimeUrl",
           "type": {
@@ -5038,7 +5038,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 88
+            "line": 89
           },
           "name": "resources",
           "type": {
@@ -5053,7 +5053,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 93
+            "line": 94
           },
           "name": "stack",
           "type": {
@@ -5069,7 +5069,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 119
+            "line": 120
           },
           "name": "apiKey",
           "optional": true,
@@ -5854,7 +5854,7 @@
                       "fqn": "@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy"
                     },
                     {
-                      "fqn": "@aws-amplify/graphql-api-construct.ImportedAmplifyDynamoDbModelDataSourceStrategy"
+                      "fqn": "@aws-amplify/graphql-api-construct.ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy"
                     },
                     {
                       "fqn": "@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy"
@@ -5909,7 +5909,7 @@
                       "fqn": "@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy"
                     },
                     {
-                      "fqn": "@aws-amplify/graphql-api-construct.ImportedAmplifyDynamoDbModelDataSourceStrategy"
+                      "fqn": "@aws-amplify/graphql-api-construct.ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy"
                     },
                     {
                       "fqn": "@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy"
@@ -6306,7 +6306,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy-types.ts",
-        "line": 256
+        "line": 255
       },
       "name": "CustomSqlDataSourceStrategy",
       "properties": [
@@ -6319,7 +6319,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 261
+            "line": 260
           },
           "name": "fieldName",
           "type": {
@@ -6335,7 +6335,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 264
+            "line": 263
           },
           "name": "strategy",
           "type": {
@@ -6351,7 +6351,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 258
+            "line": 257
           },
           "name": "typeName",
           "type": {
@@ -6490,6 +6490,70 @@
         }
       ],
       "symbolId": "src/model-datasource-strategy-types:DefaultDynamoDbModelDataSourceStrategy"
+    },
+    "@aws-amplify/graphql-api-construct.ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy": {
+      "assembly": "@aws-amplify/graphql-api-construct",
+      "datatype": true,
+      "docs": {
+        "remarks": "Tables can be imported only if they meet the following criteria.\n1. The imported table must have been created with through an Amplify Gen 1 project.\n2. The imported table must be in the same account and region as this construct.\n3. The imported table properties must match the corresponding table properties specified in this construct.\n   (AttributeDefinitions, KeySchema, GlobalSecondaryIndexes, BillingModeSummary, ProvisionedThroughput, StreamSpecification, SSEDescription, DeletionProtectionEnabled)\n\nThe imported tables will follow the auth rules defined in this construct.\nThe auth rules of the source Gen 1 project will not apply to the API created by this construct.\nEnsure the correct auth rules have been set to prevent data exposure.",
+        "stability": "stable",
+        "summary": "Use custom resource type 'Custom::ImportedAmplifyDynamoDBTable' to manage an imported table."
+      },
+      "fqn": "@aws-amplify/graphql-api-construct.ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "src/model-datasource-strategy-types.ts",
+        "line": 57
+      },
+      "name": "ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/model-datasource-strategy-types.ts",
+            "line": 58
+          },
+          "name": "dbType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/model-datasource-strategy-types.ts",
+            "line": 59
+          },
+          "name": "provisionStrategy",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/model-datasource-strategy-types.ts",
+            "line": 60
+          },
+          "name": "tableName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "src/model-datasource-strategy-types:ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy"
     },
     "@aws-amplify/graphql-api-construct.FunctionSlotBase": {
       "assembly": "@aws-amplify/graphql-api-construct",
@@ -6780,7 +6844,7 @@
                       "fqn": "@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy"
                     },
                     {
-                      "fqn": "@aws-amplify/graphql-api-construct.ImportedAmplifyDynamoDbModelDataSourceStrategy"
+                      "fqn": "@aws-amplify/graphql-api-construct.ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy"
                     },
                     {
                       "fqn": "@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy"
@@ -7062,70 +7126,6 @@
         }
       ],
       "symbolId": "src/types:IdentityPoolAuthorizationConfig"
-    },
-    "@aws-amplify/graphql-api-construct.ImportedAmplifyDynamoDbModelDataSourceStrategy": {
-      "assembly": "@aws-amplify/graphql-api-construct",
-      "datatype": true,
-      "docs": {
-        "remarks": "Tables can be imported only if they meet the following criteria.\n1. The imported table must have been created with through an Amplify Gen 1 project.\n2. The imported table must be in the same account and region as this construct.\n3. The imported table properties must match the corresponding table properties specified in this construct.\n   (AttributeDefinitions, KeySchema, GlobalSecondaryIndexes, BillingModeSummary, ProvisionedThroughput, StreamSpecification, SSEDescription, DeletionProtectionEnabled)\n\nThe imported tables will follow the auth rules defined in this construct.\nThe auth rules of the source Gen 1 project will not apply to the API created by this construct.\nEnsure the correct auth rules have been set to prevent data exposure.",
-        "stability": "stable",
-        "summary": "Use custom resource type 'Custom::ImportedAmplifyDynamoDBTable' to manage an imported table."
-      },
-      "fqn": "@aws-amplify/graphql-api-construct.ImportedAmplifyDynamoDbModelDataSourceStrategy",
-      "kind": "interface",
-      "locationInModule": {
-        "filename": "src/model-datasource-strategy-types.ts",
-        "line": 58
-      },
-      "name": "ImportedAmplifyDynamoDbModelDataSourceStrategy",
-      "properties": [
-        {
-          "abstract": true,
-          "docs": {
-            "stability": "stable"
-          },
-          "immutable": true,
-          "locationInModule": {
-            "filename": "src/model-datasource-strategy-types.ts",
-            "line": 59
-          },
-          "name": "dbType",
-          "type": {
-            "primitive": "string"
-          }
-        },
-        {
-          "abstract": true,
-          "docs": {
-            "stability": "stable"
-          },
-          "immutable": true,
-          "locationInModule": {
-            "filename": "src/model-datasource-strategy-types.ts",
-            "line": 60
-          },
-          "name": "provisionStrategy",
-          "type": {
-            "primitive": "string"
-          }
-        },
-        {
-          "abstract": true,
-          "docs": {
-            "stability": "stable"
-          },
-          "immutable": true,
-          "locationInModule": {
-            "filename": "src/model-datasource-strategy-types.ts",
-            "line": 61
-          },
-          "name": "tableName",
-          "type": {
-            "primitive": "string"
-          }
-        }
-      ],
-      "symbolId": "src/model-datasource-strategy-types:ImportedAmplifyDynamoDbModelDataSourceStrategy"
     },
     "@aws-amplify/graphql-api-construct.LambdaAuthorizationConfig": {
       "assembly": "@aws-amplify/graphql-api-construct",
@@ -7666,7 +7666,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy-types.ts",
-        "line": 122
+        "line": 121
       },
       "name": "ProvisionedConcurrencyConfig",
       "properties": [
@@ -7680,7 +7680,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 124
+            "line": 123
           },
           "name": "provisionedConcurrentExecutions",
           "type": {
@@ -7805,7 +7805,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy-types.ts",
-        "line": 67
+        "line": 66
       },
       "name": "SQLLambdaModelDataSourceStrategy",
       "properties": [
@@ -7818,7 +7818,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 82
+            "line": 81
           },
           "name": "dbConnectionConfig",
           "type": {
@@ -7846,7 +7846,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 77
+            "line": 76
           },
           "name": "dbType",
           "type": {
@@ -7863,7 +7863,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 72
+            "line": 71
           },
           "name": "name",
           "type": {
@@ -7880,7 +7880,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 93
+            "line": 92
           },
           "name": "customSqlStatements",
           "optional": true,
@@ -7902,7 +7902,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 98
+            "line": 97
           },
           "name": "sqlLambdaProvisionedConcurrencyConfig",
           "optional": true,
@@ -7919,7 +7919,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 87
+            "line": 86
           },
           "name": "vpcConfiguration",
           "optional": true,
@@ -8102,7 +8102,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy-types.ts",
-        "line": 197
+        "line": 196
       },
       "name": "SqlModelDataSourceSecretsManagerDbConnectionConfig",
       "properties": [
@@ -8115,7 +8115,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 211
+            "line": 210
           },
           "name": "databaseName",
           "type": {
@@ -8131,7 +8131,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 214
+            "line": 213
           },
           "name": "hostname",
           "type": {
@@ -8147,7 +8147,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 208
+            "line": 207
           },
           "name": "port",
           "type": {
@@ -8164,7 +8164,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 199
+            "line": 198
           },
           "name": "secretArn",
           "type": {
@@ -8181,7 +8181,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 205
+            "line": 204
           },
           "name": "keyArn",
           "optional": true,
@@ -8198,7 +8198,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 219
+            "line": 218
           },
           "name": "sslCertConfig",
           "optional": true,
@@ -8221,7 +8221,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy-types.ts",
-        "line": 227
+        "line": 226
       },
       "name": "SqlModelDataSourceSsmDbConnectionConfig",
       "properties": [
@@ -8234,7 +8234,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 243
+            "line": 242
           },
           "name": "databaseNameSsmPath",
           "type": {
@@ -8251,7 +8251,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 231
+            "line": 230
           },
           "name": "hostnameSsmPath",
           "type": {
@@ -8267,7 +8267,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 240
+            "line": 239
           },
           "name": "passwordSsmPath",
           "type": {
@@ -8283,7 +8283,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 234
+            "line": 233
           },
           "name": "portSsmPath",
           "type": {
@@ -8299,7 +8299,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 237
+            "line": 236
           },
           "name": "usernameSsmPath",
           "type": {
@@ -8315,7 +8315,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 248
+            "line": 247
           },
           "name": "sslCertConfig",
           "optional": true,
@@ -8337,7 +8337,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy-types.ts",
-        "line": 176
+        "line": 175
       },
       "name": "SqlModelDataSourceSsmDbConnectionStringConfig",
       "properties": [
@@ -8351,7 +8351,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 183
+            "line": 182
           },
           "name": "connectionUriSsmPath",
           "type": {
@@ -8381,7 +8381,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 188
+            "line": 187
           },
           "name": "sslCertConfig",
           "optional": true,
@@ -8404,7 +8404,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy-types.ts",
-        "line": 155
+        "line": 154
       },
       "name": "SslCertConfig",
       "symbolId": "src/model-datasource-strategy-types:SslCertConfig"
@@ -8422,7 +8422,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy-types.ts",
-        "line": 157
+        "line": 156
       },
       "name": "SslCertSsmPathConfig",
       "properties": [
@@ -8436,7 +8436,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 169
+            "line": 168
           },
           "name": "ssmPath",
           "type": {
@@ -8507,7 +8507,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy-types.ts",
-        "line": 132
+        "line": 131
       },
       "name": "SubnetAvailabilityZone",
       "properties": [
@@ -8520,7 +8520,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 137
+            "line": 136
           },
           "name": "availabilityZone",
           "type": {
@@ -8536,7 +8536,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 134
+            "line": 133
           },
           "name": "subnetId",
           "type": {
@@ -8965,7 +8965,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy-types.ts",
-        "line": 108
+        "line": 107
       },
       "name": "VpcConfig",
       "properties": [
@@ -8978,7 +8978,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 113
+            "line": 112
           },
           "name": "securityGroupIds",
           "type": {
@@ -8999,7 +8999,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 116
+            "line": 115
           },
           "name": "subnetAvailabilityZoneConfig",
           "type": {
@@ -9020,7 +9020,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/model-datasource-strategy-types.ts",
-            "line": 110
+            "line": 109
           },
           "name": "vpcId",
           "type": {
@@ -9032,5 +9032,5 @@
     }
   },
   "version": "1.16.0",
-  "fingerprint": "uOsoNw/sYai4NPT7oboTxSnhvVHa9Eo5t+n7bo0wZS4="
+  "fingerprint": "60oGfqUVP+J0w2zvR4O1XBIz3KdBEC69tlAbqlMU16M="
 }

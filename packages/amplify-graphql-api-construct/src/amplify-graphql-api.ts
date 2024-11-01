@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { Construct } from 'constructs';
 import { ExecuteTransformConfig, executeTransform } from '@aws-amplify/graphql-transformer';
-import { NestedStack, Stack } from 'aws-cdk-lib';
+import { NestedStack, Stack, Annotations } from 'aws-cdk-lib';
 import { AttributionMetadataStorage, StackMetadataBackendOutputStorageStrategy } from '@aws-amplify/backend-output-storage';
 import { graphqlOutputKey } from '@aws-amplify/backend-output-schemas';
 import type { GraphqlOutput, AwsAppsyncAuthenticationType } from '@aws-amplify/backend-output-schemas';
@@ -50,6 +50,7 @@ import {
 import { getStackForScope, walkAndProcessNodes } from './internal/construct-tree';
 import { getDataSourceStrategiesProvider } from './internal/data-source-config';
 import { getMetadataDataSources, getMetadataAuthorizationModes, getMetadataCustomOperations } from './internal/metadata';
+import { isExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-core';
 
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.
@@ -159,6 +160,17 @@ export class AmplifyGraphqlApi extends Construct {
       outputStorageStrategy,
       dataStoreConfiguration,
     } = props;
+
+    const usingExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy = Object.values(definition.dataSourceStrategies).some(
+      (strategy) => {
+        return isExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy(strategy);
+      },
+    );
+    if (usingExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy) {
+      Annotations.of(this).addWarning(
+        'ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy is experimental and is not recommended for production use. This functionality may be changed or removed without warning.',
+      );
+    }
 
     if (conflictResolution && dataStoreConfiguration) {
       throw new Error(

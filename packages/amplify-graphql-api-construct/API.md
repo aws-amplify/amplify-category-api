@@ -223,6 +223,16 @@ export interface DefaultDynamoDbModelDataSourceStrategy {
 }
 
 // @public
+export interface ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy {
+    // (undocumented)
+    readonly dbType: 'DYNAMODB';
+    // (undocumented)
+    readonly provisionStrategy: 'IMPORTED_AMPLIFY_TABLE';
+    // (undocumented)
+    readonly tableName: string;
+}
+
+// @public
 export type FunctionSlot = MutationFunctionSlot | QueryFunctionSlot | SubscriptionFunctionSlot;
 
 // @public
@@ -279,23 +289,13 @@ export interface IdentityPoolAuthorizationConfig {
 }
 
 // @public
-export interface ImportedAmplifyDynamoDbModelDataSourceStrategy {
-    // (undocumented)
-    readonly dbType: 'DYNAMODB';
-    // (undocumented)
-    readonly provisionStrategy: 'IMPORTED_AMPLIFY_TABLE';
-    // (undocumented)
-    readonly tableName: string;
-}
-
-// @public
 export interface LambdaAuthorizationConfig {
     readonly function: IFunction;
     readonly ttl: Duration;
 }
 
 // @public
-export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | ImportedAmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
+export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
 
 // @public
 export type ModelDataSourceStrategyDbType = 'DYNAMODB' | ModelDataSourceStrategySqlDbType;

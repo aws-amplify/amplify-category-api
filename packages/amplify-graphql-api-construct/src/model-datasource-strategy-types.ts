@@ -12,7 +12,7 @@
 export type ModelDataSourceStrategy =
   | DefaultDynamoDbModelDataSourceStrategy
   | AmplifyDynamoDbModelDataSourceStrategy
-  | ImportedAmplifyDynamoDbModelDataSourceStrategy
+  | ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy
   | SQLLambdaModelDataSourceStrategy;
 
 /**
@@ -41,7 +41,6 @@ export interface AmplifyDynamoDbModelDataSourceStrategy {
   readonly provisionStrategy: 'AMPLIFY_TABLE';
 }
 
-// TODO: decide final naming before merging to main
 /**
  * Use custom resource type 'Custom::ImportedAmplifyDynamoDBTable' to manage an imported table.
  *
@@ -55,7 +54,7 @@ export interface AmplifyDynamoDbModelDataSourceStrategy {
  * The auth rules of the source Gen 1 project will not apply to the API created by this construct.
  * Ensure the correct auth rules have been set to prevent data exposure.
  */
-export interface ImportedAmplifyDynamoDbModelDataSourceStrategy {
+export interface ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy {
   readonly dbType: 'DYNAMODB';
   readonly provisionStrategy: 'IMPORTED_AMPLIFY_TABLE';
   readonly tableName: string;

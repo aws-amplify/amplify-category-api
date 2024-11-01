@@ -12,7 +12,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-- add overrideIndexName to configure index name ([#2738](https://github.com/aws-amplify/amplify-category-api/issues/2738)) ([c4e59d3](https://github.com/aws-amplify/amplify-category-api/commit/c4e59d37d987254d102146a27267501d44fca263))
+- add experimentalOverrideIndexName to configure index name ([#2738](https://github.com/aws-amplify/amplify-category-api/issues/2738)) ([c4e59d3](https://github.com/aws-amplify/amplify-category-api/commit/c4e59d37d987254d102146a27267501d44fca263))
 - **conversation:** enable update mutations on conversation model ([#2948](https://github.com/aws-amplify/amplify-category-api/issues/2948)) ([c90ac7d](https://github.com/aws-amplify/amplify-category-api/commit/c90ac7d9aad6ac2a9b30d44e65211b689d2c7109))
 
 ## [1.10.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.10.0...amplify-graphql-api-construct-tests@1.10.1) (2024-10-17)
