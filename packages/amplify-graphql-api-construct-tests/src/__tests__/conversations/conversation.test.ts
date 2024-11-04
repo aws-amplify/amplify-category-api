@@ -16,7 +16,9 @@ import {
 import { onCreateAssistantResponsePirateChat } from './graphql/subscriptions';
 import {
   doCreateConversationPirateChat,
+  doGetConversationPirateChat,
   doListConversationMessagesPirateChat,
+  doListConversationsPirateChat,
   doSendMessagePirateChat,
   doUpdateConversationPirateChat,
 } from './test-implementations';
@@ -79,7 +81,7 @@ describe('conversation', () => {
     });
 
     test(
-      'happy path: user creates conversation, sends message, and receives response through subscription',
+      'happy path: user creates conversation, sends message, receives response through subscription, conversation updatedAt is updated',
       async () => {
         // create a conversation
         const conversationResult = await doCreateConversationPirateChat(apiEndpoint, accessToken);
@@ -131,6 +133,11 @@ describe('conversation', () => {
         expect(assistantMessage).toBeDefined();
         expect(assistantMessage.content).toHaveLength(1);
         expect(assistantMessage.content[0].text).toEqual(contentBlockText);
+
+        // assert that the conversation updatedAt field is updated to the user message createdAt field
+        const conversation = await doGetConversationPirateChat(apiEndpoint, accessToken, conversationId);
+        expect(conversation.body.data.getConversationPirateChat.updatedAt).toBeDefined();
+        expect(conversation.body.data.getConversationPirateChat.updatedAt).toEqual(message.createdAt);
       },
       ONE_MINUTE,
     );
@@ -151,6 +158,75 @@ describe('conversation', () => {
       expect(name).toEqual('updated conversation name');
       // expect the id to be the same
       expect(updatedId).toEqual(id);
+    });
+
+    test(
+      'list conversation messages ordered by createdAt',
+      async () => {
+        // create a conversation
+        const conversationResult = await doCreateConversationPirateChat(apiEndpoint, accessToken);
+        const { id: conversationId } = conversationResult.body.data.createConversationPirateChat;
+
+        // subscribe to the conversation
+        const client = new AppSyncSubscriptionClient(realtimeEndpoint, apiEndpoint);
+        const connection = await client.connect({ accessToken });
+        const subscription = connection.subscribe({
+          query: onCreateAssistantResponsePirateChat,
+          variables: { conversationId },
+          auth: { accessToken },
+        });
+
+        // send messages to the conversation
+        await doSendMessagePirateChat({
+          apiEndpoint,
+          accessToken,
+          conversationId,
+          content: [{ text: 'tell me something interesting about the ocean. keep it less than 100 characters.' }],
+        });
+
+        // wait for the assistant response
+        for await (const event of subscription) {
+          if (event.onCreateAssistantResponsePirateChat.stopReason) break;
+        }
+
+        await doSendMessagePirateChat({
+          apiEndpoint,
+          accessToken,
+          conversationId,
+          content: [{ text: 'tell me more. again less than 100 characters.' }],
+        });
+
+        // wait for the second assistant response
+        for await (const event of subscription) {
+          if (event.onCreateAssistantResponsePirateChat.stopReason) break;
+        }
+
+        // list messages to get the full assistant message
+        const listMessagesResult = await doListConversationMessagesPirateChat(apiEndpoint, accessToken, conversationId);
+        const messages = listMessagesResult.body.data.listConversationMessagePirateChats.items;
+        expect(messages.length).toBeGreaterThanOrEqual(4);
+        const createdAts = messages.map((message) => message.createdAt);
+        console.log(createdAts);
+        expect(createdAts).toEqual([...createdAts].sort((a, b) => new Date(a).getTime() - new Date(b).getTime()));
+      },
+      ONE_MINUTE,
+    );
+
+    test('list conversations ordered by updatedAt', async () => {
+      // create conversations
+      await doCreateConversationPirateChat(apiEndpoint, accessToken);
+      await doCreateConversationPirateChat(apiEndpoint, accessToken);
+      await doCreateConversationPirateChat(apiEndpoint, accessToken);
+      await doCreateConversationPirateChat(apiEndpoint, accessToken);
+      await doCreateConversationPirateChat(apiEndpoint, accessToken);
+
+      // list conversations
+      const listConversationsResult = await doListConversationsPirateChat(apiEndpoint, accessToken);
+      const conversations = listConversationsResult.body.data.listConversationPirateChats.items;
+      // there's likely already more conversations due to other tests running in parallel.
+      expect(conversations.length).toBeGreaterThanOrEqual(5);
+      const updatedAts = conversations.map((conversation) => conversation.updatedAt);
+      expect(updatedAts).toEqual([...updatedAts].sort((a, b) => new Date(b).getTime() - new Date(a).getTime()));
     });
 
     test(
@@ -285,6 +361,32 @@ describe('conversation', () => {
     );
 
     describe('conversation owner auth negative tests', () => {
+      test('user2 cannot list user1s conversations', async () => {
+        // user1 creates a conversation
+        const user1ConversationResult = await doCreateConversationPirateChat(apiEndpoint, accessToken);
+        const { id: user1ConversationId } = user1ConversationResult.body.data.createConversationPirateChat;
+
+        // user2 creates a conversation
+        const user2ConversationResult = await doCreateConversationPirateChat(apiEndpoint, accessToken2);
+        const { id: user2ConversationId } = user2ConversationResult.body.data.createConversationPirateChat;
+
+        // user1 should be able to list their conversations
+        const user1ListConversationsResult = await doListConversationsPirateChat(apiEndpoint, accessToken);
+        const user1ListedConversationIds = user1ListConversationsResult.body.data.listConversationPirateChats.items.map(
+          (conversation) => conversation.id,
+        );
+        expect(user1ListedConversationIds).toContain(user1ConversationId);
+        expect(user1ListedConversationIds).not.toContain(user2ConversationId);
+
+        // user2 attempts to list the conversations
+        const user2ListConversationsResult = await doListConversationsPirateChat(apiEndpoint, accessToken2);
+        const user2ListedConversationIds = user2ListConversationsResult.body.data.listConversationPirateChats.items.map(
+          (conversation) => conversation.id,
+        );
+        expect(user2ListedConversationIds).not.toContain(user1ConversationId);
+        expect(user2ListedConversationIds).toContain(user2ConversationId);
+      });
+
       test('user2 cannot send message to user1s conversation', async () => {
         // user1 creates a conversation
         const conversationResult = await doCreateConversationPirateChat(apiEndpoint, accessToken);
