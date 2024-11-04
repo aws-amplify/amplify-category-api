@@ -206,7 +206,6 @@ describe('conversation', () => {
         const messages = listMessagesResult.body.data.listConversationMessagePirateChats.items;
         expect(messages.length).toBeGreaterThanOrEqual(4);
         const createdAts = messages.map((message) => message.createdAt);
-        console.log(createdAts);
         expect(createdAts).toEqual([...createdAts].sort((a, b) => new Date(a).getTime() - new Date(b).getTime()));
       },
       ONE_MINUTE,
