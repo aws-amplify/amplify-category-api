@@ -212,10 +212,21 @@ export function request(ctx) {
   const {
     conversationId,
     associatedUserMessageId,
-    accumulatedTurnContent
+    accumulatedTurnContent,
+    errors,
   } = ctx.args.input;
 
   const { owner } = ctx.args;
+
+  if (errors) {
+    runtime.earlyReturn({
+      id: \`\${associatedUserMessageId}#response\`,
+      conversationId,
+      associatedUserMessageId,
+      errors,
+      owner,
+    });
+  }
   const { createdAt, updatedAt } = ctx.stash.defaultValues;
 
   const assistantResponseId = \`\${associatedUserMessageId}#response\`;
@@ -577,7 +588,7 @@ export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
 
-  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner';
+  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message }';
 
   const streamingResponseMutation = {
     name: 'createAssistantResponseStreamPirateChat',
@@ -962,10 +973,21 @@ export function request(ctx) {
   const {
     conversationId,
     associatedUserMessageId,
-    accumulatedTurnContent
+    accumulatedTurnContent,
+    errors,
   } = ctx.args.input;
 
   const { owner } = ctx.args;
+
+  if (errors) {
+    runtime.earlyReturn({
+      id: \`\${associatedUserMessageId}#response\`,
+      conversationId,
+      associatedUserMessageId,
+      errors,
+      owner,
+    });
+  }
   const { createdAt, updatedAt } = ctx.stash.defaultValues;
 
   const assistantResponseId = \`\${associatedUserMessageId}#response\`;
@@ -1327,7 +1349,7 @@ export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
 
-  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner';
+  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message }';
 
   const streamingResponseMutation = {
     name: 'createAssistantResponseStreamPirateChat',
@@ -1712,10 +1734,21 @@ export function request(ctx) {
   const {
     conversationId,
     associatedUserMessageId,
-    accumulatedTurnContent
+    accumulatedTurnContent,
+    errors,
   } = ctx.args.input;
 
   const { owner } = ctx.args;
+
+  if (errors) {
+    runtime.earlyReturn({
+      id: \`\${associatedUserMessageId}#response\`,
+      conversationId,
+      associatedUserMessageId,
+      errors,
+      owner,
+    });
+  }
   const { createdAt, updatedAt } = ctx.stash.defaultValues;
 
   const assistantResponseId = \`\${associatedUserMessageId}#response\`;
@@ -2077,7 +2110,7 @@ export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
 
-  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner';
+  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message }';
 
   const streamingResponseMutation = {
     name: 'createAssistantResponseStreamPirateChat',
@@ -2462,10 +2495,21 @@ export function request(ctx) {
   const {
     conversationId,
     associatedUserMessageId,
-    accumulatedTurnContent
+    accumulatedTurnContent,
+    errors,
   } = ctx.args.input;
 
   const { owner } = ctx.args;
+
+  if (errors) {
+    runtime.earlyReturn({
+      id: \`\${associatedUserMessageId}#response\`,
+      conversationId,
+      associatedUserMessageId,
+      errors,
+      owner,
+    });
+  }
   const { createdAt, updatedAt } = ctx.stash.defaultValues;
 
   const assistantResponseId = \`\${associatedUserMessageId}#response\`;
@@ -2827,7 +2871,7 @@ export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
 
-  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner';
+  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message }';
 
   const streamingResponseMutation = {
     name: 'createAssistantResponseStreamPirateChat',

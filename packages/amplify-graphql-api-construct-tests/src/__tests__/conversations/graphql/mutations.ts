@@ -187,6 +187,24 @@ export const createConversationMessagePirateChat = /* GraphQL */ `mutation Creat
 }
 ` as GeneratedMutation<APITypes.CreateConversationMessagePirateChatMutationVariables, APITypes.CreateConversationMessagePirateChatMutation>;
 
+export const createConversationDisabledModelChat = /* GraphQL */ `mutation CreateConversationDisabledModelChat(
+  $condition: ModelConversationDisabledModelChatConditionInput
+  $input: CreateConversationDisabledModelChatInput!
+) {
+  createConversationDisabledModelChat(condition: $condition, input: $input) {
+    createdAt
+    id
+    messages {
+      nextToken
+    }
+    metadata
+    name
+    owner
+    updatedAt
+  }
+}
+` as GeneratedMutation<APITypes.CreateConversationDisabledModelChatMutationVariables, APITypes.CreateConversationDisabledModelChatMutation>;
+
 export const createConversationPirateChat = /* GraphQL */ `mutation CreateConversationPirateChat(
   $condition: ModelConversationPirateChatConditionInput
   $input: CreateConversationPirateChatInput!
@@ -290,7 +308,6 @@ export const deleteConversationPirateChat = /* GraphQL */ `mutation DeleteConver
     id
     messages {
       nextToken
-
     }
     metadata
     name
@@ -300,6 +317,95 @@ export const deleteConversationPirateChat = /* GraphQL */ `mutation DeleteConver
   }
 }
 ` as GeneratedMutation<APITypes.DeleteConversationPirateChatMutationVariables, APITypes.DeleteConversationPirateChatMutation>;
+
+export const disabledModelChat = /* GraphQL */ `mutation DisabledModelChat(
+  $aiContext: AWSJSON
+  $content: [ContentBlockInput]
+  $conversationId: ID!
+  $toolConfiguration: ToolConfigurationInput
+) {
+  disabledModelChat(
+    aiContext: $aiContext
+    content: $content
+    conversationId: $conversationId
+    toolConfiguration: $toolConfiguration
+  ) {
+    aiContext
+    content {
+      text
+      toolResult {
+        status
+        content {
+          document {
+            format
+            name
+            source {
+              bytes
+            }
+          }
+          image {
+            format
+            source {
+              bytes
+            }
+          }
+          json
+          text
+        }
+        toolUseId
+      }
+      toolUse {
+        input
+        name
+        toolUseId
+      }
+      image {
+        format
+        source {
+          bytes
+        }
+      }
+      document {
+        format
+        name
+        source {
+          bytes
+        }
+      }
+    }
+    conversationId
+    createdAt
+    id
+    owner
+    role
+    toolConfiguration {
+      tools {
+        toolSpec {
+          description
+          inputSchema {
+            json
+          }
+          name
+        }
+      }
+    }
+    updatedAt
+
+    ... on ConversationMessageDisabledModelChat {
+      associatedUserMessageId
+      conversation {
+        createdAt
+        id
+        metadata
+        name
+        owner
+        updatedAt
+      }
+    }
+  }
+}
+` as GeneratedMutation<APITypes.DisabledModelChatMutationVariables, APITypes.DisabledModelChatMutation>;
+
 export const pirateChat = /* GraphQL */ `mutation PirateChat(
   $aiContext: AWSJSON
   $content: [ContentBlockInput]
@@ -397,13 +503,11 @@ export const updateConversationPirateChat = /* GraphQL */ `mutation UpdateConver
     id
     messages {
       nextToken
-
     }
     metadata
     name
     owner
     updatedAt
-
   }
 }
 ` as GeneratedMutation<APITypes.UpdateConversationPirateChatMutationVariables, APITypes.UpdateConversationPirateChatMutation>;
