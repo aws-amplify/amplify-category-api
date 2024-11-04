@@ -18,6 +18,9 @@ export const getMessageSubscriptionFieldName = (config: ConversationDirectiveCon
 export const getAssistantMutationFieldName = (config: ConversationDirectiveConfiguration) =>
   `createAssistantResponse${upperCaseConversationFieldName(config)}`;
 
+export const getAssistantStreamingMutationFieldName = (config: ConversationDirectiveConfiguration) =>
+  `createAssistantResponseStream${upperCaseConversationFieldName(config)}`;
+
 export const getFunctionStackName = (config: ConversationDirectiveConfiguration) =>
   `${upperCaseConversationFieldName(config)}ConversationDirectiveLambdaStack`;
 
