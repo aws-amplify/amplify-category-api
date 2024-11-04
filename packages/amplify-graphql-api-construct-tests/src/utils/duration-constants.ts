@@ -1,4 +1,5 @@
 export const ONE_MINUTE = 60 * 1000;
+export const DURATION_5_MINUTES = 5 * ONE_MINUTE;
 export const DURATION_10_MINUTES = 10 * ONE_MINUTE;
 export const DURATION_20_MINUTES = 20 * ONE_MINUTE;
 export const DURATION_30_MINUTES = 30 * ONE_MINUTE;
