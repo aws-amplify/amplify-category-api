@@ -492,7 +492,7 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
       },
       "";
   ctx.stash.connectionAttributes = {};
-
+  
   ctx.stash.adminRoles = [];
   return {};
 }
@@ -1253,7 +1253,7 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
       },
       "";
   ctx.stash.connectionAttributes = {};
-
+  
   ctx.stash.adminRoles = [];
   return {};
 }
@@ -2014,7 +2014,7 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
       },
       "";
   ctx.stash.connectionAttributes = {};
-
+  
   ctx.stash.adminRoles = [];
   return {};
 }
@@ -2775,7 +2775,7 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
       },
       "";
   ctx.stash.connectionAttributes = {};
-
+  
   ctx.stash.adminRoles = [];
   return {};
 }
