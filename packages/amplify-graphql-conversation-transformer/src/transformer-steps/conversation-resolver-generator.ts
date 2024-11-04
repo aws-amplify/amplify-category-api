@@ -10,6 +10,7 @@ import { ConversationDirectiveConfiguration, ConversationDirectiveDataSources } 
 import {
   CONVERSATION_MESSAGES_REFERENCE_FIELD_NAME,
   getFunctionStackName,
+  LIST_CONVERSATIONS_INDEX_NAME,
   LIST_MESSAGES_INDEX_NAME,
   upperCaseConversationFieldName,
 } from '../graphql-types/name-values';
@@ -42,6 +43,9 @@ export class ConversationResolverGenerator {
       // Generate data sources for the given conversation directive instance.
       // These are used by the resolver function and pipeline definitions.
       directive.dataSources = this.generateDataSources(directive, ctx);
+
+      // Set up the conversation table index
+      this.setUpConversationTableIndex(ctx, directive);
 
       // Set up the message table index
       this.setupMessageTableIndex(ctx, directive);
@@ -252,6 +256,31 @@ export class ConversationResolverGenerator {
       { name: gsiSortKeyName, type: gsiSortKeyType },
     );
   }
+
+    /**
+   * Sets up the conversation table index
+   * @param ctx - The transformer context provider
+   * @param directive - The conversation directive configuration
+   */
+    private setUpConversationTableIndex(ctx: TransformerContextProvider, directive: ConversationDirectiveConfiguration): void {
+      const conversationName = directive.conversation.model.name.value;
+      const conversation = directive.conversation.model;
+
+      const conversationTable = getTable(ctx, conversation);
+      const gsiPartitionKeyName = '__typename';
+      const gsiPartitionKeyType = 'S';
+      const gsiSortKeyName = 'updatedAt';
+      const gsiSortKeyType = 'S';
+
+      this.addGlobalSecondaryIndex(
+        conversationTable,
+        ctx,
+        conversationName,
+        LIST_CONVERSATIONS_INDEX_NAME,
+        { name: gsiPartitionKeyName, type: gsiPartitionKeyType },
+        { name: gsiSortKeyName, type: gsiSortKeyType },
+      );
+    }
 
   /**
    * Adds a Global Secondary Index (GSI) to a DynamoDB table and overrides it at the CloudFormation level.
