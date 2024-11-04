@@ -13,15 +13,13 @@ import { toUpper } from 'graphql-transformer-common';
 import * as path from 'path';
 import { ConversationTransformer } from '..';
 
-const conversationSchemaTypes = fs.readFileSync(path.join(__dirname, 'schemas/conversation-schema-types.graphql'), 'utf8');
-
 const getSchema = (fileName: string, substitutions: Record<string, string> = {}) => {
   let schema = fs.readFileSync(path.join(__dirname, '/schemas/', fileName), 'utf8');
   Object.entries(substitutions).forEach(([key, value]) => {
     const replaced = schema.replace(new RegExp(key, 'g'), value);
     schema = replaced;
   });
-  return schema + '\n' + conversationSchemaTypes;
+  return schema;
 };
 
 describe('ConversationTransformer', () => {
