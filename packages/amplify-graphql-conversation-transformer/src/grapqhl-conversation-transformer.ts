@@ -6,19 +6,22 @@ import {
   TransformerAuthProvider,
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
+  TransformerPreProcessContextProvider,
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { DirectiveNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
+import { DirectiveNode, DocumentNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { ConversationDirectiveConfiguration } from './conversation-directive-configuration';
 import { ConversationFieldHandler } from './transformer-steps/conversation-field-handler';
 import { ConversationPrepareHandler } from './transformer-steps/conversation-prepare-handler';
 import { ConversationResolverGenerator } from './transformer-steps/conversation-resolver-generator';
+import { ConversationSchemaMutator } from './transformer-steps/conversation-schema-mutator';
 /**
  * Transformer for handling `@conversation` directives in GraphQL schemas
  */
 export class ConversationTransformer extends TransformerPluginBase {
   private directives: ConversationDirectiveConfiguration[] = [];
+  private schemaMutator: ConversationSchemaMutator;
   private fieldHandler: ConversationFieldHandler;
   private prepareHandler: ConversationPrepareHandler;
   private resolverGenerator: ConversationResolverGenerator;
@@ -31,9 +34,14 @@ export class ConversationTransformer extends TransformerPluginBase {
     functionNameMap?: Record<string, lambda.IFunction>,
   ) {
     super('amplify-conversation-transformer', ConversationDirective.definition);
+    this.schemaMutator = new ConversationSchemaMutator();
     this.fieldHandler = new ConversationFieldHandler();
     this.prepareHandler = new ConversationPrepareHandler(modelTransformer, hasManyTransformer, belongsToTransformer, authProvider);
     this.resolverGenerator = new ConversationResolverGenerator(functionNameMap);
+  }
+
+  mutateSchema = (ctx: TransformerPreProcessContextProvider): DocumentNode => {
+    return this.schemaMutator.mutateSchema(ctx);
   }
 
   /**
