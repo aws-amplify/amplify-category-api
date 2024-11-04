@@ -6,11 +6,12 @@ export function request(ctx) {
 
   const selectionSet = '[[SELECTION_SET]]';
 
-  const responseMutation = {
-    name: '[[RESPONSE_MUTATION_NAME]]',
-    inputTypeName: '[[RESPONSE_MUTATION_INPUT_TYPE_NAME]]',
+  const streamingResponseMutation = {
+    name: '[[STREAMING_RESPONSE_MUTATION_NAME]]',
+    inputTypeName: '[[STREAMING_RESPONSE_MUTATION_INPUT_TYPE_NAME]]',
     selectionSet,
   };
+
   const currentMessageId = ctx.stash.defaultValues.id;
 
   const modelConfiguration = {
@@ -37,12 +38,13 @@ export function request(ctx) {
   const payload = {
     conversationId: args.conversationId,
     currentMessageId,
-    responseMutation,
+    responseMutation: streamingResponseMutation,
     graphqlApiEndpoint,
     modelConfiguration,
     request: { headers: { authorization: authHeader } },
     messageHistoryQuery,
     toolsConfiguration,
+    streamResponse: true,
   };
 
   return {
