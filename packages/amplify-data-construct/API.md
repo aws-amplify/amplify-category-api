@@ -23,7 +23,7 @@ import { CustomConflictResolutionStrategy } from '@aws-amplify/graphql-api-const
 import { CustomSqlDataSourceStrategy } from '@aws-amplify/graphql-api-construct';
 import { DataStoreConfiguration } from '@aws-amplify/graphql-api-construct';
 import { DefaultDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-api-construct';
-import { ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-api-construct';
+import { ImportedAmplifyDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-api-construct';
 import { FunctionSlot } from '@aws-amplify/graphql-api-construct';
 import { FunctionSlotBase } from '@aws-amplify/graphql-api-construct';
 import { FunctionSlotOverride } from '@aws-amplify/graphql-api-construct';
@@ -99,7 +99,7 @@ export { DataStoreConfiguration }
 
 export { DefaultDynamoDbModelDataSourceStrategy }
 
-export { ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy }
+export { ImportedAmplifyDynamoDbModelDataSourceStrategy }
 
 export { FunctionSlot }
 

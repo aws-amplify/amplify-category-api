@@ -50,7 +50,7 @@ import {
 import { getStackForScope, walkAndProcessNodes } from './internal/construct-tree';
 import { getDataSourceStrategiesProvider } from './internal/data-source-config';
 import { getMetadataDataSources, getMetadataAuthorizationModes, getMetadataCustomOperations } from './internal/metadata';
-import { isExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-core';
+import { isImportedAmplifyDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-core';
 
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.
@@ -164,14 +164,12 @@ export class AmplifyGraphqlApi extends Construct {
     // print warning when using experimental features.
     // remove this code block when the feature is released.
     // start block
-    const usingExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy = Object.values(definition.dataSourceStrategies).some(
-      (strategy) => {
-        return isExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy(strategy);
-      },
-    );
-    if (usingExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy) {
+    const usingImportedAmplifyDynamoDbModelDataSourceStrategy = Object.values(definition.dataSourceStrategies).some((strategy) => {
+      return isImportedAmplifyDynamoDbModelDataSourceStrategy(strategy);
+    });
+    if (usingImportedAmplifyDynamoDbModelDataSourceStrategy) {
       Annotations.of(this).addWarning(
-        'ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy is experimental and is not recommended for production use. This functionality may be changed or removed without warning.',
+        'ImportedAmplifyDynamoDbModelDataSourceStrategy is experimental and is not recommended for production use. This functionality may be changed or removed without warning.',
       );
     }
     // end block

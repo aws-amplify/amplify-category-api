@@ -223,7 +223,7 @@ export interface DefaultDynamoDbModelDataSourceStrategy {
 }
 
 // @public
-export interface ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy {
+export interface ImportedAmplifyDynamoDbModelDataSourceStrategy {
     // (undocumented)
     readonly dbType: 'DYNAMODB';
     // (undocumented)
@@ -295,7 +295,7 @@ export interface LambdaAuthorizationConfig {
 }
 
 // @public
-export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
+export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | ImportedAmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
 
 // @public
 export type ModelDataSourceStrategyDbType = 'DYNAMODB' | ModelDataSourceStrategySqlDbType;

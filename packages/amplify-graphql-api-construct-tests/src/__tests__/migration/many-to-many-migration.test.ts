@@ -89,8 +89,8 @@ describe('Many-to-many Migration', () => {
           type PostTags @model @auth(rules: [{ allow: public }]) {
             postId: ID
             tagId: ID
-            post: Post @belongsTo(references: ["postId"], experimentalOverrideIndexName: "byPost")
-            tag: Tag @belongsTo(references: ["tagId"], experimentalOverrideIndexName: "byTag")
+            post: Post @belongsTo(references: ["postId"], overrideIndexName: "byPost")
+            tag: Tag @belongsTo(references: ["tagId"], overrideIndexName: "byTag")
           }
         `,
         strategy: {

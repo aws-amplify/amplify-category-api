@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode } from 'graphql';
-import { setResourceName, isExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-core';
+import { setResourceName, isImportedAmplifyDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-core';
 import { AttributeType, StreamViewType, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 import { Duration, aws_iam, aws_lambda } from 'aws-cdk-lib';
@@ -54,7 +54,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
     );
 
     const importedTableNames = Object.values(context.dataSourceStrategies)
-      .filter(isExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy)
+      .filter(isImportedAmplifyDynamoDbModelDataSourceStrategy)
       .map((strategy) => strategy.tableName);
 
     // PolicyDocument that grants access to Create/Update/Delete relevant DynamoDB tables
@@ -169,7 +169,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
     const modelName = def!.name.value;
     const tableLogicalName = ModelResourceIDs.ModelTableResourceID(modelName);
     const strategy = context.dataSourceStrategies[modelName];
-    const isTableImported = isExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy(strategy);
+    const isTableImported = isImportedAmplifyDynamoDbModelDataSourceStrategy(strategy);
     const tableName = isTableImported ? strategy.tableName : context.resourceHelper.generateTableName(modelName);
 
     // Add parameters.

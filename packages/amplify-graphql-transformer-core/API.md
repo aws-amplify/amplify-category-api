@@ -29,7 +29,7 @@ import { DocumentNode } from 'graphql/language';
 import { DocumentNode as DocumentNode_2 } from 'graphql';
 import { EnumTypeDefinitionNode } from 'graphql';
 import { EnumTypeExtensionNode } from 'graphql';
-import { ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
+import { ImportedAmplifyDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { Expression } from 'graphql-mapping-template';
 import { FieldDefinitionNode } from 'graphql';
 import { FieldNode } from 'graphql';
@@ -473,7 +473,7 @@ export const isDynamoDbModel: (ctx: DataSourceStrategiesProvider, typename: stri
 export const isDynamoDbType: (dbType: ModelDataSourceStrategyDbType) => dbType is "DYNAMODB";
 
 // @public (undocumented)
-export const isExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy: (strategy: ModelDataSourceStrategy) => strategy is ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy;
+export const isImportedAmplifyDynamoDbModelDataSourceStrategy: (strategy: ModelDataSourceStrategy) => strategy is ImportedAmplifyDynamoDbModelDataSourceStrategy;
 
 // @public (undocumented)
 function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncConfigLambda;

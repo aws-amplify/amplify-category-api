@@ -9,7 +9,7 @@ import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
  */
 
 describe('Mark migration features as experimental', () => {
-  test('shows warning when using ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy', () => {
+  test('shows warning when using ImportedAmplifyDynamoDbModelDataSourceStrategy', () => {
     const stack = new cdk.Stack();
     new AmplifyGraphqlApi(stack, 'TestApi', {
       definition: AmplifyGraphqlDefinition.fromString(
@@ -31,11 +31,11 @@ describe('Mark migration features as experimental', () => {
 
     Annotations.fromStack(stack).hasWarning(
       '/Default/TestApi',
-      'ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy is experimental and is not recommended for production use. This functionality may be changed or removed without warning.',
+      'ImportedAmplifyDynamoDbModelDataSourceStrategy is experimental and is not recommended for production use. This functionality may be changed or removed without warning.',
     );
   });
 
-  test('does not show warning when not using ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy', () => {
+  test('does not show warning when not using ImportedAmplifyDynamoDbModelDataSourceStrategy', () => {
     const stack = new cdk.Stack();
     new AmplifyGraphqlApi(stack, 'TestApi', {
       definition: AmplifyGraphqlDefinition.fromString(
@@ -57,11 +57,11 @@ describe('Mark migration features as experimental', () => {
 
     Annotations.fromStack(stack).hasWarning(
       '/Default/TestApi',
-      'ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy is experimental and is not recommended for production use. This functionality may be changed or removed without warning.',
+      'ImportedAmplifyDynamoDbModelDataSourceStrategy is experimental and is not recommended for production use. This functionality may be changed or removed without warning.',
     );
   });
 
-  test('shows warning when using experimentalOverrideIndexName', () => {
+  test('shows warning when using overrideIndexName', () => {
     const stack = new cdk.Stack();
     new AmplifyGraphqlApi(stack, 'TestApi', {
       definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
@@ -71,7 +71,7 @@ describe('Mark migration features as experimental', () => {
 
         type Comment @model {
           blogId: ID
-          blog: Blog @belongsTo(references: ["blogId"], experimentalOverrideIndexName: "byBlog")
+          blog: Blog @belongsTo(references: ["blogId"], overrideIndexName: "byBlog")
         }
       `),
       authorizationModes: {
@@ -81,11 +81,11 @@ describe('Mark migration features as experimental', () => {
 
     Annotations.fromStack(stack).hasWarning(
       '/Default/TestApi/GraphQLAPI',
-      'experimentalOverrideIndexName argument on @belongsTo is experimental and is not recommended for production use. This functionality may be changed or removed without warning.',
+      'overrideIndexName argument on @belongsTo is experimental and is not recommended for production use. This functionality may be changed or removed without warning.',
     );
   });
 
-  test('does not show warning when not using experimentalOverrideIndexName', () => {
+  test('does not show warning when not using overrideIndexName', () => {
     const stack = new cdk.Stack();
     new AmplifyGraphqlApi(stack, 'TestApi', {
       definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
@@ -105,7 +105,7 @@ describe('Mark migration features as experimental', () => {
 
     Annotations.fromStack(stack).hasNoWarning(
       '/Default/TestApi/GraphQLAPI',
-      'experimentalOverrideIndexName argument on @belongsTo is experimental and is not recommended for production use. This functionality may be changed or removed without warning.',
+      'overrideIndexName argument on @belongsTo is experimental and is not recommended for production use. This functionality may be changed or removed without warning.',
     );
   });
 });

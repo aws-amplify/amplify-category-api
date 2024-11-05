@@ -5854,7 +5854,7 @@
                       "fqn": "@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy"
                     },
                     {
-                      "fqn": "@aws-amplify/graphql-api-construct.ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy"
+                      "fqn": "@aws-amplify/graphql-api-construct.ImportedAmplifyDynamoDbModelDataSourceStrategy"
                     },
                     {
                       "fqn": "@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy"
@@ -5909,7 +5909,7 @@
                       "fqn": "@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy"
                     },
                     {
-                      "fqn": "@aws-amplify/graphql-api-construct.ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy"
+                      "fqn": "@aws-amplify/graphql-api-construct.ImportedAmplifyDynamoDbModelDataSourceStrategy"
                     },
                     {
                       "fqn": "@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy"
@@ -6491,7 +6491,7 @@
       ],
       "symbolId": "src/model-datasource-strategy-types:DefaultDynamoDbModelDataSourceStrategy"
     },
-    "@aws-amplify/graphql-api-construct.ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy": {
+    "@aws-amplify/graphql-api-construct.ImportedAmplifyDynamoDbModelDataSourceStrategy": {
       "assembly": "@aws-amplify/graphql-api-construct",
       "datatype": true,
       "docs": {
@@ -6499,13 +6499,13 @@
         "stability": "experimental",
         "summary": "Use custom resource type 'Custom::ImportedAmplifyDynamoDBTable' to manage an imported table."
       },
-      "fqn": "@aws-amplify/graphql-api-construct.ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy",
+      "fqn": "@aws-amplify/graphql-api-construct.ImportedAmplifyDynamoDbModelDataSourceStrategy",
       "kind": "interface",
       "locationInModule": {
         "filename": "src/model-datasource-strategy-types.ts",
         "line": 59
       },
-      "name": "ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy",
+      "name": "ImportedAmplifyDynamoDbModelDataSourceStrategy",
       "properties": [
         {
           "abstract": true,
@@ -6553,7 +6553,7 @@
           }
         }
       ],
-      "symbolId": "src/model-datasource-strategy-types:ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy"
+      "symbolId": "src/model-datasource-strategy-types:ImportedAmplifyDynamoDbModelDataSourceStrategy"
     },
     "@aws-amplify/graphql-api-construct.FunctionSlotBase": {
       "assembly": "@aws-amplify/graphql-api-construct",
@@ -6844,7 +6844,7 @@
                       "fqn": "@aws-amplify/graphql-api-construct.AmplifyDynamoDbModelDataSourceStrategy"
                     },
                     {
-                      "fqn": "@aws-amplify/graphql-api-construct.ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy"
+                      "fqn": "@aws-amplify/graphql-api-construct.ImportedAmplifyDynamoDbModelDataSourceStrategy"
                     },
                     {
                       "fqn": "@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy"

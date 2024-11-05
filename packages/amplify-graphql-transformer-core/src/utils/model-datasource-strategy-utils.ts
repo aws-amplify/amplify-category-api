@@ -2,7 +2,7 @@ import {
   AmplifyDynamoDbModelDataSourceStrategy,
   DataSourceStrategiesProvider,
   DefaultDynamoDbModelDataSourceStrategy,
-  ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy,
+  ImportedAmplifyDynamoDbModelDataSourceStrategy,
   ModelDataSourceStrategy,
   ModelDataSourceStrategyDbType,
   ModelDataSourceStrategySqlDbType,
@@ -64,9 +64,9 @@ export const getModelDataSourceStrategy = (ctx: DataSourceStrategiesProvider, ty
 /**
  * Type predicate that returns true if `obj` is a AmplifyDynamoDbModelDataSourceStrategy
  */
-export const isExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy = (
+export const isImportedAmplifyDynamoDbModelDataSourceStrategy = (
   strategy: ModelDataSourceStrategy,
-): strategy is ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy => {
+): strategy is ImportedAmplifyDynamoDbModelDataSourceStrategy => {
   return (
     isDynamoDbType(strategy.dbType) &&
     typeof (strategy as any)['provisionStrategy'] === 'string' &&

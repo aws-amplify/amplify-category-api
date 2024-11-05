@@ -9,7 +9,7 @@
 export type ModelDataSourceStrategy =
   | DefaultDynamoDbModelDataSourceStrategy
   | AmplifyDynamoDbModelDataSourceStrategy
-  | ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy
+  | ImportedAmplifyDynamoDbModelDataSourceStrategy
   | SQLLambdaModelDataSourceStrategy;
 
 export interface ModelDataSourceStrategyBase {
@@ -47,7 +47,7 @@ export interface AmplifyDynamoDbModelDataSourceStrategy extends ModelDataSourceS
  *
  * @experimental Not recommended for production use. This functionality may be changed or removed without warning.
  */
-export interface ExperimentalImportedAmplifyDynamoDbModelDataSourceStrategy {
+export interface ImportedAmplifyDynamoDbModelDataSourceStrategy {
   readonly dbType: 'DYNAMODB';
   readonly provisionStrategy: 'IMPORTED_AMPLIFY_TABLE';
   readonly tableName: string;

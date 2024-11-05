@@ -811,7 +811,7 @@ describe('@belongsTo directive with RDS datasource', () => {
 
       type Comment @model {
         blogId: ID
-        blog: Blog @belongsTo(references: ["blogId"], experimentalOverrideIndexName: "byBlog")
+        blog: Blog @belongsTo(references: ["blogId"], overrideIndexName: "byBlog")
       }
     `;
 
@@ -830,7 +830,7 @@ describe('@belongsTo directive with RDS datasource', () => {
         comment: Comment @hasOne
       }
       type Comment @model {
-        blog: Blog @belongsTo(experimentalOverrideIndexName: "byBlog")
+        blog: Blog @belongsTo(overrideIndexName: "byBlog")
       }
     `;
     expect(() =>
@@ -839,7 +839,7 @@ describe('@belongsTo directive with RDS datasource', () => {
         transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
       }),
     ).toThrowError(
-      'experimentalOverrideIndexName cannot be used on @belongsTo without references. Modify Comment.blog to use references or remove experimentalOverrideIndexName.',
+      'overrideIndexName cannot be used on @belongsTo without references. Modify Comment.blog to use references or remove overrideIndexName.',
     );
   });
 
@@ -851,7 +851,7 @@ describe('@belongsTo directive with RDS datasource', () => {
 
       type Comment @model {
         blogId: ID
-        blog: Blog @belongsTo(references: ["blogId"], experimentalOverrideIndexName: "byBlog")
+        blog: Blog @belongsTo(references: ["blogId"], overrideIndexName: "byBlog")
       }
     `;
 
@@ -870,7 +870,7 @@ describe('@belongsTo directive with RDS datasource', () => {
         comments: [Comment] @hasMany
       }
       type Comment @model {
-        blog: Blog @belongsTo(experimentalOverrideIndexName: "byBlog")
+        blog: Blog @belongsTo(overrideIndexName: "byBlog")
       }
     `;
     expect(() =>
@@ -879,7 +879,7 @@ describe('@belongsTo directive with RDS datasource', () => {
         transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
       }),
     ).toThrowError(
-      'experimentalOverrideIndexName cannot be used on @belongsTo without references. Modify Comment.blog to use references or remove experimentalOverrideIndexName.',
+      'overrideIndexName cannot be used on @belongsTo without references. Modify Comment.blog to use references or remove overrideIndexName.',
     );
   });
 });

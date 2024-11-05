@@ -2,7 +2,7 @@ import { Directive } from './directive';
 
 const name = 'belongsTo';
 const definition = /* GraphQL */ `
-  directive @${name}(fields: [String!], references: [String!], experimentalOverrideIndexName: String) on FIELD_DEFINITION
+  directive @${name}(fields: [String!], references: [String!], overrideIndexName: String) on FIELD_DEFINITION
 `;
 const defaults = {};
 

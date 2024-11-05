@@ -153,9 +153,9 @@ export class BelongsToTransformer extends TransformerPluginBase {
     for (const config of this.directiveList) {
       // This validation can't occur in validate because the api has not been initialized until generateResolvers
 
-      if (config.experimentalOverrideIndexName) {
+      if (config.overrideIndexName) {
         Annotations.of(ctx.api).addWarning(
-          `experimentalOverrideIndexName argument on @${BelongsToDirective.name} is experimental and is not recommended for production use. This functionality may be changed or removed without warning.`,
+          `overrideIndexName argument on @${BelongsToDirective.name} is experimental and is not recommended for production use. This functionality may be changed or removed without warning.`,
         );
       }
       if (!ctx.transformParameters.allowGen1Patterns) {
@@ -182,9 +182,9 @@ export class BelongsToTransformer extends TransformerPluginBase {
 
 const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field, object } = config;
-  if (config.experimentalOverrideIndexName && !config.references) {
+  if (config.overrideIndexName && !config.references) {
     throw new InvalidDirectiveError(
-      `experimentalOverrideIndexName cannot be used on @${BelongsToDirective.name} without references. Modify ${object.name.value}.${field.name.value} to use references or remove experimentalOverrideIndexName.`,
+      `overrideIndexName cannot be used on @${BelongsToDirective.name} without references. Modify ${object.name.value}.${field.name.value} to use references or remove overrideIndexName.`,
     );
   }
 
