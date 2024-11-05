@@ -3,6 +3,8 @@ import { Annotations } from 'aws-cdk-lib/assertions';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 
+// TODO: GEN1_GEN2_MIGRATION
+// Remove this file
 /**
  * Ensure that the migration features are marked as experimental.
  * These tests should be removed when migrations are released.

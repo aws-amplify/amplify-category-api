@@ -190,12 +190,16 @@ export const createGen1ProjectForMigration = async (
   await amplifyPush(projRoot);
 
   // The test should do a second push after enabling the feature flag to start the migration
+  // TODO: GEN1_GEN2_MIGRATION
   // The Gen 1 CLI has not released this feature flag yet
   // In the meantime, manually create the data source mapping
+  // restore this block when the feature flag is released
+  // Start block
   /*
   addFeatureFlag(projRoot, 'graphqltransformer', 'enablegen2migration', true);
   await amplifyPushForce(projRoot);
   */
+  // End block
 
   const meta = getProjectMeta(projRoot);
   const { output } = meta.api[name];
@@ -203,10 +207,14 @@ export const createGen1ProjectForMigration = async (
     GraphQLAPIEndpointOutput,
     GraphQLAPIKeyOutput,
     GraphQLAPIIdOutput,
+    // TODO: GEN1_GEN2_MIGRATION
     // get DataSourceMappingOutput from output when feature flag is released
+    // uncomment the line below
     // DataSourceMappingOutput,
   } = output;
 
+  // TODO: GEN1_GEN2_MIGRATION
+  // Construct the DataSourceMappingOutput with the AWS SDK
   // Remove this block when the feature flag is released
   // Start block
   const client = new DynamoDBClient({ region: process.env.CLI_REGION || 'us-west-2' });

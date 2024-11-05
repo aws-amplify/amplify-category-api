@@ -162,8 +162,10 @@ describe('Migration with basic schema', () => {
 
     // assert tables have not been deleted after deleting the gen 1 project
 
-    // This will not work until the enablegen2migration feature flag is released
+    // TODO: GEN1_GEN2_MIGRATION
+    // The enablegen2migration feature flag is not released yet so the tables will be deleted when the gen 1 app is deleted
     // Restore this block when the feature flag is released
+    // start block
     // const listResult = await graphql(
     //   gen2APIEndpoint,
     //   gen2APIKey,
@@ -183,5 +185,6 @@ describe('Migration with basic schema', () => {
     // expect(listResult.body.data.listTodos.items.length).toEqual(2);
     // expect([gen1Todo.id, gen2Todo.id]).toContain(listResult.body.data.listTodos.items[0].id);
     // expect([gen1Todo.id, gen2Todo.id]).toContain(listResult.body.data.listTodos.items[1].id);
+    // end block
   });
 });

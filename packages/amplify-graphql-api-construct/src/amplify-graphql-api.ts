@@ -161,6 +161,7 @@ export class AmplifyGraphqlApi extends Construct {
       dataStoreConfiguration,
     } = props;
 
+    // TODO: GEN1_GEN2_MIGRATION
     // print warning when using experimental features.
     // remove this code block when the feature is released.
     // start block

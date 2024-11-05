@@ -153,11 +153,15 @@ export class BelongsToTransformer extends TransformerPluginBase {
     for (const config of this.directiveList) {
       // This validation can't occur in validate because the api has not been initialized until generateResolvers
 
+      // TODO: GEN1_GEN2_MIGRATION
+      // Remove this block when migration is released
+      // Start block
       if (config.overrideIndexName) {
         Annotations.of(ctx.api).addWarning(
           `overrideIndexName argument on @${BelongsToDirective.name} is experimental and is not recommended for production use. This functionality may be changed or removed without warning.`,
         );
       }
+      // end block
       if (!ctx.transformParameters.allowGen1Patterns) {
         const { field, object } = config;
         const modelName = object.name.value;

@@ -42,6 +42,9 @@ export interface AmplifyDynamoDbModelDataSourceStrategy extends ModelDataSourceS
   readonly provisionStrategy: 'AMPLIFY_TABLE';
 }
 
+// TODO: GEN1_GEN2_MIGRATION
+// remove @experimental tag
+// decide final naming
 /**
  * Use custom resource type 'Custom::ImportedAmplifyDynamoDBTable' to provision table.
  *

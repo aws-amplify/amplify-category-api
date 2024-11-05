@@ -41,6 +41,9 @@ export interface AmplifyDynamoDbModelDataSourceStrategy {
   readonly provisionStrategy: 'AMPLIFY_TABLE';
 }
 
+// TODO: GEN1_GEN2_MIGRATION
+// remove @experimental tag
+// Decide final naming of API
 /**
  * Use custom resource type 'Custom::ImportedAmplifyDynamoDBTable' to manage an imported table.
  *
