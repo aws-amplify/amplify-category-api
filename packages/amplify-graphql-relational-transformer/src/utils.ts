@@ -793,7 +793,7 @@ export const getObjectPrimaryKey = (object: ObjectTypeDefinitionNode): FieldDefi
   return primaryKey;
 };
 
-export const getoverrideIndexName = (config: HasOneDirectiveConfiguration | HasManyDirectiveConfiguration): string | undefined => {
+export const getOverrideIndexName = (config: HasOneDirectiveConfiguration | HasManyDirectiveConfiguration): string | undefined => {
   const { associatedRelationalDirective } = getReferencesAssociatedField(config);
   const overrideIndexArgument = (associatedRelationalDirective.arguments || []).find(
     (argument) => argument.name.value === 'overrideIndexName',

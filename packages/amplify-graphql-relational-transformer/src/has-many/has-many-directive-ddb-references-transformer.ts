@@ -14,7 +14,7 @@ import {
 import { HasManyDirectiveConfiguration } from '../types';
 import {
   ensureReferencesArray,
-  getoverrideIndexName,
+  getOverrideIndexName,
   getReferencesNodes,
   registerHasManyForeignKeyMappings,
   validateParentReferencesFields,
@@ -73,7 +73,7 @@ export class HasManyDirectiveDDBReferencesTransformer implements DataSourceBased
     const fieldName = config.field.name.value;
     config.referenceNodes = getReferencesNodes(config, context);
     validateReferencesBidirectionality(config);
-    const overrideIndexName = getoverrideIndexName(config);
+    const overrideIndexName = getOverrideIndexName(config);
     if (overrideIndexName) {
       config.indexName = overrideIndexName;
     } else {
