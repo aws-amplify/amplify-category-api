@@ -8,12 +8,24 @@ import { ConversationDirective } from '@aws-amplify/graphql-directives';
 
 const conversationSupportingSchemaTypes = fs.readFileSync(path.join(__dirname, '../conversation-schema-types.graphql'), 'utf8');
 
+/*
+Update: preProcessSchema was added as a hook for codegen to invoke, which modifies the customer defined model schema
+in the same way that the transformers do in code.
+See: https://github.com/aws-amplify/amplify-category-api/pull/20
+
+---
+  1. confirm whether invoking preProcess in transform.ts breaks relational and mapsTo(?) transformer.
+    - If it does, rip out the mutateSchema implementations for those transformers and use mutateSchema in conversation transformer.
+    - If it doesn't, create another transformer lifecycle method and use that.
+  2. Have data-schema provide an empty ConversationMessage interface and populate that interface's fields in transformer.
+  2 alternatve. Have data-schema generate the mutation with some scalar type and change the return type. This would let us drop the
+  interface all together by using the concrete model type.
+*/
+
 export class ConversationSchemaMutator {
   mutateSchema(ctx: TransformerPreProcessContextProvider): DocumentNode {
     // if the schema doesn't contain the conversation directive, return the original schema document
-    if (!this.containsConversationDirective(ctx)) {
-      return ctx.inputDocument;
-    }
+    if (!this.containsConversationDirective(ctx)) return ctx.inputDocument;
 
     // create the conversation supporting type document from the .graphql file
     const conversationSupportingTypesDocument = parse(conversationSupportingSchemaTypes);
