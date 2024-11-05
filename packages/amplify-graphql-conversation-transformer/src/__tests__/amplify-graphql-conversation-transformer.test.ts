@@ -3,12 +3,12 @@ import { GenerationTransformer } from '@aws-amplify/graphql-generation-transform
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration, ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DeploymentResources, testTransform, TransformManager } from '@aws-amplify/graphql-transformer-test-utils';
 import { Code, Function, IFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as fs from 'fs-extra';
-import { parse } from 'graphql';
+import { parse, print } from 'graphql';
 import { toUpper } from 'graphql-transformer-common';
 import * as path from 'path';
 import { ConversationTransformer } from '..';
@@ -22,7 +22,7 @@ const getSchema = (fileName: string, substitutions: Record<string, string> = {})
   return schema;
 };
 
-it.only('testme', () => {
+it('testme', () => {
   const routeName = 'pirateChat';
   const inputSchema = getSchema('conversation-route-custom-handler.graphql', { ROUTE_NAME: routeName });
 
@@ -38,13 +38,17 @@ it.only('testme', () => {
     [`Fn${routeName}`]: customHandler,
   };
 
-  const out = transform(inputSchema, {}, defaultAuthConfig, functionMap, transformerManager);
+  const transformer = createTransformer(inputSchema, {}, defaultAuthConfig, functionMap, transformerManager);
+  const preProcessed = transformer.preProcessSchema(inputSchema);
+
+  expect(preProcessed).toBeDefined();
+  expect(preProcessed).toMatchSnapshot('preprocessed schema');
+  const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
 
   expect(out.schema).toBeDefined();
-  expect(out.schema).toMatchSnapshot();
+  expect(out.schema).toMatchSnapshot('output schema');
 });
-
 
 describe('ConversationTransformer', () => {
   describe('valid schemas', () => {
@@ -360,4 +364,48 @@ function transform(
   });
 
   return out;
+}
+
+function createTransformer(
+  inputSchema: string,
+  dataSourceStrategies?: Record<string, ModelDataSourceStrategy>,
+  authConfig: AppSyncAuthConfiguration = defaultAuthConfig,
+  functionMap?: Record<string, IFunction>,
+  transformerManager?: TransformManager,
+): {
+  transform: (schema: string) => DeploymentResources & { logs: any[] };
+  preProcessSchema: (schema: string) => string;
+} {
+  const modelTransformer = new ModelTransformer();
+  const authTransformer = new AuthTransformer();
+  const indexTransformer = new IndexTransformer();
+  const hasOneTransformer = new HasOneTransformer();
+  const belongsToTransformer = new BelongsToTransformer();
+  const hasManyTransformer = new HasManyTransformer();
+
+  const transformers = [
+    modelTransformer,
+    new PrimaryKeyTransformer(),
+    indexTransformer,
+    hasManyTransformer,
+    hasOneTransformer,
+    belongsToTransformer,
+    new ConversationTransformer(modelTransformer, hasManyTransformer, belongsToTransformer, authTransformer, functionMap),
+    new GenerationTransformer(),
+    authTransformer,
+  ];
+
+  return {
+    transform: (schema: string) =>
+      testTransform({
+        schema: inputSchema,
+        authConfig,
+        transformers,
+        dataSourceStrategies,
+        transformerManager,
+      }),
+    preProcessSchema: (schema: string) => {
+      return print(new GraphQLTransform({ authConfig, transformers }).preProcessSchema(parse(schema)));
+    },
+  };
 }
