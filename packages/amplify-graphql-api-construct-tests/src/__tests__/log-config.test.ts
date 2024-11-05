@@ -158,7 +158,7 @@ describe('Log Config Tests', () => {
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'log-config'));
     const name = await initCDKProject(projRoot, templatePath, {
       cdkContext: {
-        logging: '{}', // TODO: will it take away the ''?
+        logging: '{}',
       },
     });
 
