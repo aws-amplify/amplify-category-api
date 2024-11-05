@@ -272,30 +272,35 @@ describe('Many-to-many Migration', () => {
 
     // assert tables have not been deleted after deleting the gen 1 project
 
-    const listResult = await graphql(
-      gen2APIEndpoint,
-      gen2APIKey,
-      /* GraphQL */ `
-        query LIST_POSTS {
-          listPosts {
-            items {
-              id
-              tags {
-                items {
-                  id
-                }
-              }
-            }
-          }
-        }
-      `,
-    );
+    // TODO: GEN1_GEN2_MIGRATION
+    // The enablegen2migration feature flag is not released yet so the tables will be deleted when the gen 1 app is deleted
+    // Restore this block when the feature flag is released
+    // start block
+    // const listResult = await graphql(
+    //   gen2APIEndpoint,
+    //   gen2APIKey,
+    //   /* GraphQL */ `
+    //     query LIST_POSTS {
+    //       listPosts {
+    //         items {
+    //           id
+    //           tags {
+    //             items {
+    //               id
+    //             }
+    //           }
+    //         }
+    //       }
+    //     }
+    //   `,
+    // );
 
-    expect(listResult.statusCode).toEqual(200);
-    expect(listResult.body.data.listPosts.items.length).toEqual(2);
-    expect([gen1Post.id, gen2Post.id]).toContain(listResult.body.data.listPosts.items[0].id);
-    expect([gen1Post.id, gen2Post.id]).toContain(listResult.body.data.listPosts.items[1].id);
-    expect(listResult.body.data.listPosts.items[0].tags.items.length).toEqual(1);
-    expect(listResult.body.data.listPosts.items[1].tags.items.length).toEqual(1);
+    // expect(listResult.statusCode).toEqual(200);
+    // expect(listResult.body.data.listPosts.items.length).toEqual(2);
+    // expect([gen1Post.id, gen2Post.id]).toContain(listResult.body.data.listPosts.items[0].id);
+    // expect([gen1Post.id, gen2Post.id]).toContain(listResult.body.data.listPosts.items[1].id);
+    // expect(listResult.body.data.listPosts.items[0].tags.items.length).toEqual(1);
+    // expect(listResult.body.data.listPosts.items[1].tags.items.length).toEqual(1);
+    // end block
   });
 });
