@@ -261,17 +261,21 @@ export const mergeNamedAsyncIterators = async function* <T>(
     }
   };
 
-  for (const [name, stream] of iterators) {
+  const startNewIteration = (name: string, stream: AsyncIterableIterator<T>) => {
     const promise = processIterator(name, stream);
     pending.add(promise);
 
-    // When this promise resolves, remove it from pending and add result if valid
     promise.then((result) => {
       pending.delete(promise);
       if (result) {
         results.push(result);
+        startNewIteration(name, stream);
       }
     });
+  };
+
+  for (const [name, stream] of iterators) {
+    startNewIteration(name, stream);
   }
 
   // Keep yielding while we have pending promises or results to return
