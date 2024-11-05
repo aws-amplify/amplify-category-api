@@ -183,16 +183,6 @@ export interface DynamoDbDataSourceOptions extends DataSourceOptions {
 }
 
 // @public (undocumented)
-export interface ImportedAmplifyDynamoDbModelDataSourceStrategy {
-    // (undocumented)
-    readonly dbType: 'DYNAMODB';
-    // (undocumented)
-    readonly provisionStrategy: 'IMPORTED_AMPLIFY_TABLE';
-    // (undocumented)
-    readonly tableName: string;
-}
-
-// @public (undocumented)
 export type FieldMapEntry = {
     originalFieldName: string;
     currentFieldName: string;
@@ -225,6 +215,16 @@ export interface GraphQLAPIProvider extends IConstruct {
     readonly host: TransformHostProvider;
     // (undocumented)
     readonly name: string;
+}
+
+// @public (undocumented)
+export interface ImportedAmplifyDynamoDbModelDataSourceStrategy {
+    // (undocumented)
+    readonly dbType: 'DYNAMODB';
+    // (undocumented)
+    readonly provisionStrategy: 'IMPORTED_AMPLIFY_TABLE';
+    // (undocumented)
+    readonly tableName: string;
 }
 
 // @public (undocumented)
