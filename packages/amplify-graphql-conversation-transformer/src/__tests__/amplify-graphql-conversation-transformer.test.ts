@@ -22,6 +22,30 @@ const getSchema = (fileName: string, substitutions: Record<string, string> = {})
   return schema;
 };
 
+it.only('testme', () => {
+  const routeName = 'pirateChat';
+  const inputSchema = getSchema('conversation-route-custom-handler.graphql', { ROUTE_NAME: routeName });
+
+  const transformerManager = new TransformManager();
+  const stack = transformerManager.getTransformScope();
+  const customHandler = new Function(stack, 'conversation-handler', {
+    runtime: Runtime.NODEJS_18_X,
+    code: Code.fromInline('exports.handler = async (event) => { return "Hello World"; }'),
+    handler: 'index.handler',
+  });
+
+  const functionMap = {
+    [`Fn${routeName}`]: customHandler,
+  };
+
+  const out = transform(inputSchema, {}, defaultAuthConfig, functionMap, transformerManager);
+  expect(out).toBeDefined();
+
+  expect(out.schema).toBeDefined();
+  expect(out.schema).toMatchSnapshot();
+});
+
+
 describe('ConversationTransformer', () => {
   describe('valid schemas', () => {
     it.each([
