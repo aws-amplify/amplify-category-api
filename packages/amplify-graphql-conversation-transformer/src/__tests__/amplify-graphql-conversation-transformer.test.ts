@@ -44,13 +44,9 @@ describe('ConversationTransformer', () => {
       assertAssistantResponseMutationResources(routeName, out);
       assertAssistantResponseSubscriptionResources(routeName, out);
       assertAssistantResponseStreamMutationResources(routeName, out);
+      assertSlotsForModelGeneratedOperations(routeName, out);
       const schema = parse(out.schema);
       validateModelSchema(schema);
-
-      expect(
-        out.stacks.ConversationMessagePirateChat.Resources![`ListConversationMessage${toUpper(routeName)}Resolver`].Properties
-          .PipelineConfig.Functions,
-      ).toHaveLength(4);
     });
 
     it.each([
@@ -131,6 +127,20 @@ describe('ConversationTransformer', () => {
     });
   });
 });
+
+const assertSlotsForModelGeneratedOperations = (routeName: string, resources: DeploymentResources) => {
+  const listMessagesInitFn = resources.resolvers[`Query.${routeName}.list-messages-init.js`];
+  expect(listMessagesInitFn).toBeDefined();
+  expect(listMessagesInitFn).toMatchSnapshot('ListMessagesInit resolver function code');
+
+  const listMessagesPostDataLoadFn = resources.resolvers[`Query.${routeName}.list-messages-post-processing.js`];
+  expect(listMessagesPostDataLoadFn).toBeDefined();
+  expect(listMessagesPostDataLoadFn).toMatchSnapshot('ListMessagesPostDataLoad resolver function code');
+
+  const listConversationsInitFn = resources.resolvers[`Query.${routeName}.list-conversations-init.js`];
+  expect(listConversationsInitFn).toBeDefined();
+  expect(listConversationsInitFn).toMatchSnapshot('ListConversationsInit resolver function code');
+};
 
 const assertAssistantResponseSubscriptionResources = (routeName: string, resources: DeploymentResources) => {
   const resolverName = `SubscriptiononCreateAssistantResponse${toUpper(routeName)}Resolver`;

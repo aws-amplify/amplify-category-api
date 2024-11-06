@@ -56,7 +56,7 @@ function auth(): ResolverFunctionDefinition {
 function verifySessionOwner(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'verifySessionOwner',
-    fileName: 'verify-session-owner-resolver-fn.template.js',
+    fileName: 'set-updated-at-conversation-table-fn.template.js',
     generateTemplate: templateGenerator('verify-session-owner'),
     dataSource: (config) => config.dataSources.conversationTableDataSource,
     substitutions: () => ({
