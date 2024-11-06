@@ -13,11 +13,13 @@ import {
   OnCreateAssistantResponsePirateChatSubscription,
   ToolConfigurationInput,
 } from './API';
-import { onCreateAssistantResponsePirateChat } from './graphql/subscriptions';
+import { onCreateAssistantResponseDisabledModelChat, onCreateAssistantResponsePirateChat } from './graphql/subscriptions';
 import {
+  doCreateConversationDisabledModelChat,
   doCreateConversationPirateChat,
   doGetConversationPirateChat,
   doListConversationMessagesPirateChat,
+  doSendMessageDisabledModelChat,
   doListConversationsPirateChat,
   doSendMessagePirateChat,
   doUpdateConversationPirateChat,
@@ -357,6 +359,44 @@ describe('conversation', () => {
         ).toEqual(assistantResponseFromReconciledStreamEventsMessage2);
       },
       DURATION_5_MINUTES,
+    );
+
+    // This test requires that the model with the specified id (mistral.mistral-large-2407-v1:0) is not enabled
+    // in the testing region. If the assertions fail, it is likely that the model has been enabled in the region.
+    // In that case, change the model id in `schema-conversation.graphql` or use a different region.
+    test(
+      'disabled model error propagated from lambda through subscription',
+      async () => {
+        // create a conversation
+        const conversationResult = await doCreateConversationDisabledModelChat(apiEndpoint, accessToken);
+        const { id: conversationId } = conversationResult.body.data.createConversationDisabledModelChat;
+        // subscribe to the conversation
+        const client = new AppSyncSubscriptionClient(realtimeEndpoint, apiEndpoint);
+        const connection = await client.connect({ accessToken });
+        const subscription = connection.subscribe({
+          query: onCreateAssistantResponseDisabledModelChat,
+          variables: { conversationId },
+          auth: { accessToken },
+        });
+
+        // send a message to the conversation
+        await doSendMessageDisabledModelChat({
+          apiEndpoint,
+          accessToken,
+          conversationId,
+          content: [{ text: 'Hello, world!' }],
+        });
+
+        for await (const event of subscription) {
+          expect(event.onCreateAssistantResponseDisabledModelChat.errors).toHaveLength(1);
+          expect(event.onCreateAssistantResponseDisabledModelChat.errors[0].errorType).toEqual('AccessDeniedException');
+          expect(event.onCreateAssistantResponseDisabledModelChat.errors[0].message).toEqual(
+            "You don't have access to the model with the specified model ID.",
+          );
+          break;
+        }
+      },
+      ONE_MINUTE,
     );
 
     describe('conversation owner auth negative tests', () => {

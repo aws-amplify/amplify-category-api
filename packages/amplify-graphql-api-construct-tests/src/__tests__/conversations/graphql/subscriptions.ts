@@ -8,6 +8,34 @@ type GeneratedSubscription<InputType, OutputType> = string & {
   __generatedSubscriptionOutput: OutputType;
 };
 
+export const onCreateAssistantResponseDisabledModelChat =
+  /* GraphQL */ `subscription OnCreateAssistantResponseDisabledModelChat($conversationId: ID) {
+  onCreateAssistantResponseDisabledModelChat(conversationId: $conversationId) {
+    associatedUserMessageId
+    contentBlockDeltaIndex
+    contentBlockDoneAtIndex
+    contentBlockIndex
+    contentBlockText
+    contentBlockToolUse {
+      input
+      name
+      toolUseId
+    }
+    conversationId
+    errors {
+      errorType
+      message
+    }
+    id
+    owner
+    stopReason
+  }
+}
+` as GeneratedSubscription<
+    APITypes.OnCreateAssistantResponseDisabledModelChatSubscriptionVariables,
+    APITypes.OnCreateAssistantResponseDisabledModelChatSubscription
+  >;
+
 export const onCreateAssistantResponsePirateChat = /* GraphQL */ `subscription OnCreateAssistantResponsePirateChat($conversationId: ID) {
   onCreateAssistantResponsePirateChat(conversationId: $conversationId) {
     associatedUserMessageId
@@ -21,6 +49,10 @@ export const onCreateAssistantResponsePirateChat = /* GraphQL */ `subscription O
       toolUseId
     }
     conversationId
+    errors {
+      errorType
+      message
+    }
     id
     owner
     stopReason

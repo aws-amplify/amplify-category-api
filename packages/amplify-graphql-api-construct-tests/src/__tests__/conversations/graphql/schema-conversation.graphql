@@ -10,6 +10,13 @@ type Mutation {
       systemPrompt: "You are a helpful chatbot that responds in the voice and tone of a pirate. Respond in 20 words or less."
     )
     @aws_cognito_user_pools
+
+  disabledModelChat(
+    conversationId: ID!
+    content: [ContentBlockInput]
+    aiContext: AWSJSON
+    toolConfiguration: ToolConfigurationInput
+  ): ConversationMessage @conversation(aiModel: "mistral.mistral-large-2407-v1:0", systemPrompt: "You are a helpful chatbot.")
 }
 
 enum ConversationParticipantRole {
@@ -182,10 +189,16 @@ type ConversationMessageStreamPart {
   owner: String
   conversationId: ID!
   associatedUserMessageId: ID!
-  contentBlockIndex: Int!
+  contentBlockIndex: Int
   contentBlockText: String
   contentBlockDeltaIndex: Int
   contentBlockToolUse: ToolUseBlock
   contentBlockDoneAtIndex: Int
   stopReason: String
+  errors: [ConversationTurnError]
+}
+
+type ConversationTurnError {
+  message: String!
+  errorType: String!
 }

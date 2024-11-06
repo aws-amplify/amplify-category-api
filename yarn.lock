@@ -10,14 +10,14 @@
     "@jridgewell/gen-mapping" "^0.3.5"
     "@jridgewell/trace-mapping" "^0.3.24"
 
-"@aws-amplify/ai-constructs@^0.7.0":
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/ai-constructs/-/ai-constructs-0.7.0.tgz#477750d62e2c564b0d156ab53d8845cbb38290ab"
-  integrity sha512-HfKvoafva68HulV223wBC6V6bA/ibM1UEAEjy+m//l+zhdTlfYauA4EUpHfyXg83eWxBhmT5rtAheqNmIlzNxQ==
+"@aws-amplify/ai-constructs@0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/ai-constructs/-/ai-constructs-0.8.0.tgz#c84e6c608684649ec9fb670af4c65921385b2f25"
+  integrity sha512-DP+M73Iy8Dbm/Rp8QosQlCDLuR9U2fOWg+q6uPAksuaVuCdnqNvTHsQ0XEQMmslEx32vEdvn0ttiMbzD++ukSw==
   dependencies:
     "@aws-amplify/backend-output-schemas" "^1.4.0"
     "@aws-amplify/platform-core" "^1.1.0"
-    "@aws-amplify/plugin-types" "^1.0.1"
+    "@aws-amplify/plugin-types" "^1.3.1"
     "@aws-sdk/client-bedrock-runtime" "^3.622.0"
     "@smithy/types" "^3.3.0"
     json-schema-to-ts "^3.1.1"
@@ -393,10 +393,15 @@
     uuid "^9.0.1"
     zod "^3.22.2"
 
-"@aws-amplify/plugin-types@^1.0.0", "@aws-amplify/plugin-types@^1.0.1", "@aws-amplify/plugin-types@^1.2.1":
+"@aws-amplify/plugin-types@^1.0.0", "@aws-amplify/plugin-types@^1.2.1":
   version "1.2.1"
   resolved "https://registry.npmjs.org/@aws-amplify/plugin-types/-/plugin-types-1.2.1.tgz#049fcf424c2c7e65fd5490c4ce7dc740748a2509"
   integrity sha512-rqsc9F05hO58oVCcdvbkE3zUaS4iKdhm4C3eReWd6NNLfBmfQuoy46CeyHw2GrbKtdxmCckAOU0k6L71sa8nNA==
+
+"@aws-amplify/plugin-types@^1.3.1":
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/plugin-types/-/plugin-types-1.3.1.tgz#8cb4986beb31f87c76e8cc63a7d791e0a8f18ddf"
+  integrity sha512-irgnW4f4wBWCSwPWbVpZjbsnOXgyhGptSAes6zOo1UZ6j74dpnjnz8SiPeBCsgDYuku8Vi1RwUGdWakd+Wd5Jw==
 
 "@aws-amplify/predictions@4.0.64":
   version "4.0.64"
