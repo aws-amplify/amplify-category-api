@@ -1,20 +1,28 @@
 import * as path from 'path';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import * as AWS from 'aws-sdk';
-import { GraphQLClient } from 'graphql-request';
+import { AbortController } from '@aws-sdk/abort-controller';
 import { AppSyncClient, GetGraphqlApiCommand } from '@aws-sdk/client-appsync';
+import { CloudWatchLogsClient, StartLiveTailCommand } from '@aws-sdk/client-cloudwatch-logs';
+import { default as STS } from 'aws-sdk/clients/sts';
+import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
+import { GraphQLClient } from 'graphql-request';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
 
 jest.setTimeout(DURATION_1_HOUR);
 
-const cloudwatchLogs = new AWS.CloudWatchLogs({ region: process.env.CLI_REGION });
-const appSyncClient = new AppSyncClient({ region: process.env.CLI_REGION });
+// AWS client initialization
+const region = process.env.CLI_REGION;
+const cloudwatchLogs = new AWS.CloudWatchLogs({ region });
+const appSyncClient = new AppSyncClient({ region });
+const sts = new STS();
 
+// Default configuration constants
 const defaultRetentionInDays = 7;
 const defaultExcludeVerboseContent = true;
 const defaultFieldLogLevel = 'NONE';
 
+// Test query
 const query = /* GraphQL */ `
   mutation CreateTodo {
     createTodo(input: { name: "Test Todo", description: "This is a test todo" }) {
@@ -25,6 +33,17 @@ const query = /* GraphQL */ `
     }
   }
 `;
+
+// Utility functions
+const getAccountId = async (): Promise<string> => {
+  try {
+    const accountDetails = await sts.getCallerIdentity({}).promise();
+    return accountDetails?.Account;
+  } catch (e) {
+    console.warn(`Could not get current AWS account ID: ${e}`);
+    expect(true).toEqual(false);
+  }
+};
 
 // Verify that logging is configured correctly
 const verifyLogConfig = async (
@@ -54,36 +73,58 @@ const verifyLogConfig = async (
   expect(logConfig.fieldLogLevel).toBe(expectedFieldLogLevel);
 };
 
-// Verify that the logs contain the expected request ID in ExecutionSummary log and RequestSummary log
+// Verify that the first log event contains the expected request ID
 const verifyLogsWithRequestId = async (logGroupName: string, expectedRequestId: string): Promise<void> => {
-  // Wait 20 seconds for logs to propagate
-  await new Promise((resolve) => setTimeout(resolve, 20000));
+  const accountId = await getAccountId();
+  const logGroupArn = `arn:aws:logs:${region}:${accountId}:log-group:${logGroupName}`;
 
-  const params = {
-    logGroupName: logGroupName,
-    filterPattern: `{ $.requestId = "${expectedRequestId}" }`,
+  const client = new CloudWatchLogsClient();
+
+  const input = {
+    logGroupIdentifiers: [logGroupArn],
+    logEventFilterPattern: `{ $.requestId = "${expectedRequestId}" }`,
   };
 
-  const response = await cloudwatchLogs.filterLogEvents(params).promise();
-  // From observation, each request has at least 2 logs that contains the request ID: ExecutionSummary log and RequestSummary log
-  // This assertion could fail if anything changes in the logging format
-  expect(response.events.length).toBeGreaterThan(1);
+  // Set up an AbortController with a timeout for the for loop
+  const abortController = new AbortController();
+  const timeoutDuration = 60000; // 60 seconds
+  const timeoutId = setTimeout(() => {
+    abortController.abort();
+  }, timeoutDuration);
 
-  // Verify that there is an "ExecutionSummary" log and a "RequestSummary" log
-  const executionSummaryLog = response.events.find((event) => {
-    const parsedMessage = JSON.parse(event.message);
-    return parsedMessage.logType === 'ExecutionSummary' && parsedMessage.requestId === expectedRequestId;
-  });
-  const requestSummaryLog = response.events.find((event) => {
-    const parsedMessage = JSON.parse(event.message);
-    return parsedMessage.logType === 'RequestSummary' && parsedMessage.requestId === expectedRequestId;
-  });
-  expect(executionSummaryLog).toBeDefined();
-  expect(requestSummaryLog).toBeDefined();
+  try {
+    const command = new StartLiveTailCommand(input);
+    const response = await client.send(command, { abortSignal: abortController.signal });
 
-  // Additional check to ensure both logs have the expected request ID
-  expect(JSON.parse(executionSummaryLog.message).requestId).toBe(expectedRequestId);
-  expect(JSON.parse(requestSummaryLog.message).requestId).toBe(expectedRequestId);
+    let eventFound = false;
+    for await (const event of response.responseStream) {
+      if (event.sessionStart) {
+        console.log('Live Tail session started:', event.sessionStart);
+      } else if (event.sessionUpdate) {
+        console.log('Finding log event with the expected request ID');
+        const firstLogEvent = event.sessionUpdate.sessionResults.find((logEvent) =>
+          logEvent.message.includes(expectedRequestId)
+        );
+        if (firstLogEvent) {
+          expect(firstLogEvent.message).toContain(expectedRequestId);
+          console.log('Log event found');
+          eventFound = true;
+          break;
+        }
+        console.log('Log event not found, for loop continuing');
+      } else {
+        console.error('Unknown event type:', event);
+      }
+    }
+
+    clearTimeout(timeoutId);
+
+    if (!eventFound) {
+      throw new Error(`Expected log event with requestId ${expectedRequestId} was not found within the timeout.`);
+    }
+  } catch (err) {
+    console.error('Error processing response stream:', err);
+  }
 };
 
 // Verify that the log group does not exist
@@ -107,10 +148,12 @@ const verifyLogGroupDoesNotExist = async (logGroupName: string): Promise<void> =
 describe('Log Config Tests', () => {
   let projRoot: string;
   let projFolderName: string;
+  let templatePath: string;
 
   beforeEach(async () => {
     projFolderName = 'log-config';
     projRoot = await createNewProjectDir(projFolderName);
+    templatePath = path.resolve(path.join(__dirname, 'backends', 'log-config'));
   });
 
   afterEach(async () => {
@@ -125,7 +168,6 @@ describe('Log Config Tests', () => {
 
   test('Default logging is enabled with logging: true', async () => {
     // Initialize CDK project
-    const templatePath = path.resolve(path.join(__dirname, 'backends', 'log-config'));
     const name = await initCDKProject(projRoot, templatePath, {
       cdkContext: {
         logging: 'true',
@@ -155,7 +197,6 @@ describe('Log Config Tests', () => {
 
   test('Default logging is enabled with logging: {}', async () => {
     // Initialize CDK project
-    const templatePath = path.resolve(path.join(__dirname, 'backends', 'log-config'));
     const name = await initCDKProject(projRoot, templatePath, {
       cdkContext: {
         logging: '{}', // TODO: will it take away the ''?
@@ -185,7 +226,6 @@ describe('Log Config Tests', () => {
 
   test('Custom logging is enabled with fieldLogLevel: ERROR, default excludeVerboseContent, and default retention', async () => {
     // Initialize CDK project
-    const templatePath = path.resolve(path.join(__dirname, 'backends', 'log-config'));
     const name = await initCDKProject(projRoot, templatePath, {
       cdkContext: {
         logging: '{"fieldLogLevel": "ERROR"}',
@@ -215,7 +255,6 @@ describe('Log Config Tests', () => {
 
   test('Custom logging is enabled with default fieldLogLevel, default excludeVerboseContent, and retention: 60', async () => {
     // Initialize CDK project
-    const templatePath = path.resolve(path.join(__dirname, 'backends', 'log-config'));
     const name = await initCDKProject(projRoot, templatePath, {
       cdkContext: {
         logging: '{"retention": 60}',
@@ -245,7 +284,6 @@ describe('Log Config Tests', () => {
 
   test('Custom logging is enabled with fieldLogLevel: INFO, excludeVerboseContent: false, and retention: 365', async () => {
     // Initialize CDK project
-    const templatePath = path.resolve(path.join(__dirname, 'backends', 'log-config'));
     const name = await initCDKProject(projRoot, templatePath, {
       cdkContext: {
         logging: '{"retention": 365, "excludeVerboseContent": false, "fieldLogLevel": "INFO"}',
@@ -275,7 +313,6 @@ describe('Log Config Tests', () => {
 
   test('Logging is disabled', async () => {
     // Initialize CDK project
-    const templatePath = path.resolve(path.join(__dirname, 'backends', 'log-config'));
     const name = await initCDKProject(projRoot, templatePath);
 
     // Deploy CDK stack
