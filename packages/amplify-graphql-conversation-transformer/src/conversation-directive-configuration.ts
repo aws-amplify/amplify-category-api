@@ -1,5 +1,14 @@
 import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { DirectiveNode, FieldDefinitionNode, InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
+import * as fs from 'fs-extra';
+import {
+  DirectiveNode,
+  FieldDefinitionNode,
+  InputObjectTypeDefinitionNode,
+  ObjectTypeDefinitionNode,
+  parse,
+  TypeDefinitionNode,
+} from 'graphql';
+import * as path from 'path';
 import { ConversationModel } from './graphql-types/conversation-model';
 import { MessageModel } from './graphql-types/message-model';
 import { Tool } from './tools/process-tools';
@@ -69,3 +78,18 @@ export type ConversationDirectiveDataSources = {
   messageTableDataSource: DataSourceProvider;
   conversationTableDataSource: DataSourceProvider;
 };
+
+const conversationSupportingSchemaTypes = fs.readFileSync(path.join(__dirname, './conversation-schema-types.graphql'), 'utf8');
+const conversationSupportingTypesDocument = parse(conversationSupportingSchemaTypes);
+const typeDefinitionKinds = [
+  'ScalarTypeDefinition',
+  'ObjectTypeDefinition',
+  'InterfaceTypeDefinition',
+  'UnionTypeDefinition',
+  'EnumTypeDefinition',
+  'InputObjectTypeDefinition',
+];
+
+export const conversationSupportTypes = conversationSupportingTypesDocument.definitions.filter((def): def is TypeDefinitionNode =>
+  typeDefinitionKinds.includes(def.kind),
+);

@@ -197,7 +197,7 @@ export class GraphQLTransform {
     synthParameters,
   }: TransformOption): void {
     this.seenTransformations = {};
-    const parsedDocument = this.preProcessSchema(parse(schema));
+    const parsedDocument = parse(schema);
     const context = new TransformerContext({
       assetProvider,
       authConfig: this.authConfig,

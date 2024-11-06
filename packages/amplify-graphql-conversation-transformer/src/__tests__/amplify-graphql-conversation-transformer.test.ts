@@ -39,10 +39,6 @@ it('testme', () => {
   };
 
   const transformer = createTransformer(inputSchema, {}, defaultAuthConfig, functionMap, transformerManager);
-  const preProcessed = transformer.preProcessSchema(inputSchema);
-
-  expect(preProcessed).toBeDefined();
-  expect(preProcessed).toMatchSnapshot('preprocessed schema');
   const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
 
