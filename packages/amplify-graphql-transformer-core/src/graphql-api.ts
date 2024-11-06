@@ -213,10 +213,8 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     // set up log retention
     if (props.logging) {
       const defaultRetention = RetentionDays.ONE_WEEK;
-      
-      const retention = props.logging === true
-        ? defaultRetention
-        : props.logging.retention ?? defaultRetention;
+
+      const retention = props.logging === true ? defaultRetention : props.logging.retention ?? defaultRetention;
 
       new LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/appsync/apis/${this.apiId}`,

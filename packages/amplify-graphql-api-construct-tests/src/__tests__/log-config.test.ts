@@ -102,9 +102,7 @@ const verifyLogsWithRequestId = async (logGroupName: string, expectedRequestId: 
         console.log('Live Tail session started:', event.sessionStart);
       } else if (event.sessionUpdate) {
         console.log('Finding log event with the expected request ID');
-        const firstLogEvent = event.sessionUpdate.sessionResults.find((logEvent) =>
-          logEvent.message.includes(expectedRequestId)
-        );
+        const firstLogEvent = event.sessionUpdate.sessionResults.find((logEvent) => logEvent.message.includes(expectedRequestId));
         if (firstLogEvent) {
           expect(firstLogEvent.message).toContain(expectedRequestId);
           console.log('Log event found');
