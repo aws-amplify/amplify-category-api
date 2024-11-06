@@ -4,6 +4,7 @@ import { ConversationDirectiveConfiguration } from '../conversation-directive-co
 
 export const CONVERSATION_MESSAGES_REFERENCE_FIELD_NAME = 'conversationId';
 export const LIST_MESSAGES_INDEX_NAME = 'gsi-ConversationMessage.conversationId.createdAt';
+export const LIST_CONVERSATIONS_INDEX_NAME = 'gsi-Conversation.typename.updatedAt';
 export const CONVERSATION_MESSAGE_GET_QUERY_INPUT_TYPE_NAME = 'ID';
 
 export const getConversationTypeName = (config: ConversationDirectiveConfiguration) =>
