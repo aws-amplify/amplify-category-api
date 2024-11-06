@@ -1,8 +1,7 @@
 import * as path from 'path';
-import * as AWS from 'aws-sdk';
 import { AbortController } from '@aws-sdk/abort-controller';
 import { AppSyncClient, GetGraphqlApiCommand } from '@aws-sdk/client-appsync';
-import { CloudWatchLogsClient, StartLiveTailCommand } from '@aws-sdk/client-cloudwatch-logs';
+import { CloudWatchLogsClient, DescribeLogGroupsCommand, StartLiveTailCommand } from '@aws-sdk/client-cloudwatch-logs';
 import { default as STS } from 'aws-sdk/clients/sts';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import { GraphQLClient } from 'graphql-request';
@@ -13,7 +12,7 @@ jest.setTimeout(DURATION_1_HOUR);
 
 // AWS client initialization
 const region = process.env.CLI_REGION;
-const cloudwatchLogs = new AWS.CloudWatchLogs({ region });
+const cloudWatchLogsClient = new CloudWatchLogsClient();
 const appSyncClient = new AppSyncClient({ region });
 const sts = new STS();
 
@@ -54,10 +53,11 @@ const verifyLogConfig = async (
   expectedFieldLogLevel: string,
 ): Promise<void> => {
   // Verify CloudWatch log group retentionInDays setting
-  const cloudWatchParams = {
+  const describeLogGroupsParams = {
     logGroupNamePrefix: logGroupName,
   };
-  const cloudWatchResponse = await cloudwatchLogs.describeLogGroups(cloudWatchParams).promise();
+  const describeLogGroupsCommand = new DescribeLogGroupsCommand(describeLogGroupsParams);
+  const cloudWatchResponse = await cloudWatchLogsClient.send(describeLogGroupsCommand);
   const logGroup = cloudWatchResponse.logGroups.find((lg) => lg.logGroupName === logGroupName);
   expect(logGroup).toBeDefined();
   expect(logGroup.retentionInDays).toBe(expectedRetentionInDays);
@@ -75,16 +75,6 @@ const verifyLogConfig = async (
 
 // Verify that the first log event contains the expected request ID
 const verifyLogsWithRequestId = async (logGroupName: string, expectedRequestId: string): Promise<void> => {
-  const accountId = await getAccountId();
-  const logGroupArn = `arn:aws:logs:${region}:${accountId}:log-group:${logGroupName}`;
-
-  const client = new CloudWatchLogsClient();
-
-  const input = {
-    logGroupIdentifiers: [logGroupArn],
-    logEventFilterPattern: `{ $.requestId = "${expectedRequestId}" }`,
-  };
-
   // Set up an AbortController with a timeout for the for loop
   const abortController = new AbortController();
   const timeoutDuration = 60000; // 60 seconds
@@ -92,12 +82,20 @@ const verifyLogsWithRequestId = async (logGroupName: string, expectedRequestId: 
     abortController.abort();
   }, timeoutDuration);
 
+  // Set up for StartLiveTailCommand
+  const accountId = await getAccountId();
+  const logGroupArn = `arn:aws:logs:${region}:${accountId}:log-group:${logGroupName}`;
+  const startLiveTailParams = {
+    logGroupIdentifiers: [logGroupArn],
+    logEventFilterPattern: `{ $.requestId = "${expectedRequestId}" }`,
+  };
+
   try {
-    const command = new StartLiveTailCommand(input);
-    const response = await client.send(command, { abortSignal: abortController.signal });
+    const startLiveTailCommand = new StartLiveTailCommand(startLiveTailParams);
+    const cloudWatchResponse = await cloudWatchLogsClient.send(startLiveTailCommand, { abortSignal: abortController.signal });
 
     let eventFound = false;
-    for await (const event of response.responseStream) {
+    for await (const event of cloudWatchResponse.responseStream) {
       if (event.sessionStart) {
         console.log('Live Tail session started:', event.sessionStart);
       } else if (event.sessionUpdate) {
@@ -105,7 +103,7 @@ const verifyLogsWithRequestId = async (logGroupName: string, expectedRequestId: 
         const firstLogEvent = event.sessionUpdate.sessionResults.find((logEvent) => logEvent.message.includes(expectedRequestId));
         if (firstLogEvent) {
           expect(firstLogEvent.message).toContain(expectedRequestId);
-          console.log('Log event found');
+          console.log(`Log event found: ${firstLogEvent.message}`);
           eventFound = true;
           break;
         }
@@ -127,10 +125,11 @@ const verifyLogsWithRequestId = async (logGroupName: string, expectedRequestId: 
 
 // Verify that the log group does not exist
 const verifyLogGroupDoesNotExist = async (logGroupName: string): Promise<void> => {
-  const cloudWatchParams = {
+  const describeLogGroupsParams = {
     logGroupNamePrefix: logGroupName,
   };
-  const cloudWatchResponse = await cloudwatchLogs.describeLogGroups(cloudWatchParams).promise();
+  const describeLogGroupsCommand = new DescribeLogGroupsCommand(describeLogGroupsParams);
+  const cloudWatchResponse = await cloudWatchLogsClient.send(describeLogGroupsCommand);
   const logGroup = cloudWatchResponse.logGroups.find((lg) => lg.logGroupName === logGroupName);
   expect(logGroup).toBeUndefined();
 };
