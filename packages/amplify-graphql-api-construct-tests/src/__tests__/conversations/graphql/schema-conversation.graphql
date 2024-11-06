@@ -8,6 +8,7 @@ type Mutation {
     @conversation(
       aiModel: "anthropic.claude-3-haiku-20240307-v1:0"
       systemPrompt: "You are a helpful chatbot that responds in the voice and tone of a pirate. Respond in 20 words or less."
+      auth: { strategy: owner, provider: userPools }
     )
     @aws_cognito_user_pools
 }
