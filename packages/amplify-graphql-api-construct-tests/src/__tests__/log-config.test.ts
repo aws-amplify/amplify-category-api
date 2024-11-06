@@ -199,7 +199,7 @@ describe('Log Config Tests', () => {
     // Initialize CDK project
     const name = await initCDKProject(projRoot, templatePath, {
       cdkContext: {
-        logging: '{}', // TODO: will it take away the ''?
+        logging: '{}',
       },
     });
 
