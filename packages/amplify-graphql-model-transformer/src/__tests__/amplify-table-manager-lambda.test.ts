@@ -1,4 +1,12 @@
 import {
+  TableDescription,
+  UpdateTableCommandInput,
+  UpdateTimeToLiveCommandInput,
+  TimeToLiveDescription,
+  UpdateContinuousBackupsCommandInput,
+  ContinuousBackupsDescription,
+} from '@aws-sdk/client-dynamodb';
+import {
   getNextAtomicUpdate,
   toCreateTableInput,
   getStreamUpdate,
@@ -11,14 +19,6 @@ import {
 } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
 import * as ddbTableManagerLambda from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
 import * as CustomDDB from '../resources/amplify-dynamodb-table/amplify-table-types';
-import {
-  TableDescription,
-  UpdateTableCommandInput,
-  UpdateTimeToLiveCommandInput,
-  TimeToLiveDescription,
-  UpdateContinuousBackupsCommandInput,
-  ContinuousBackupsDescription,
-} from '@aws-sdk/client-dynamodb';
 import { extractTableInputFromEvent } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
 import { RequestType } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda-types';
 

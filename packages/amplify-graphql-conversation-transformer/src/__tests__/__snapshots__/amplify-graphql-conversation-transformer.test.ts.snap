@@ -212,10 +212,21 @@ export function request(ctx) {
   const {
     conversationId,
     associatedUserMessageId,
-    accumulatedTurnContent
+    accumulatedTurnContent,
+    errors,
   } = ctx.args.input;
 
   const { owner } = ctx.args;
+
+  if (errors) {
+    runtime.earlyReturn({
+      id: \`\${associatedUserMessageId}#response\`,
+      conversationId,
+      associatedUserMessageId,
+      errors,
+      owner,
+    });
+  }
   const { createdAt, updatedAt } = ctx.stash.defaultValues;
 
   const assistantResponseId = \`\${associatedUserMessageId}#response\`;
@@ -494,6 +505,86 @@ export const response = (ctx) => {
 }
 `;
 
+exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration: ListConversationsInit resolver function code 1`] = `
+"import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
+  ctx.stash.metadata.index = 'gsi-Conversation.typename.updatedAt';
+  ctx.stash.modelQueryExpression = {
+      expression: '#typename = :typename',
+      expressionNames: {
+        '#typename': '__typename',
+      },
+      expressionValues: util.dynamodb.toMapValues({
+        ':typename': 'ConversationPirateChat',
+      }),
+    };
+  ctx.args.sortDirection = 'DESC';
+  return {};
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration: ListMessagesInit resolver function code 1`] = `
+"import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
+  ctx.stash.metadata.index = 'gsi-ConversationMessage.conversationId.createdAt';
+  const conversationId = ctx.args?.filter?.conversationId?.eq;
+  if (conversationId) {
+    // If a conversationId was provided, we're going to execute a query
+    // rather than a scan. The index (gsi) we're performing this query on has
+    // a partitionKey of conversationId.
+    // We need to remove conversationId from the filter to prevent a
+    // DynamoDB exception:
+    // \`Filter Expression can only contain non-primary key attributes\`
+    delete ctx.args.filter.conversationId;
+    // If conversationId was the only filter, remove the filter object
+    // to prevent errors when the \`{}\` filter is combined with
+    // the \`authFilter\` further downstream.
+    if (Object.keys(ctx.args.filter).length === 0) {
+        delete ctx.args.filter;
+    }
+    ctx.stash.modelQueryExpression = {
+      expression: '#conversationId = :conversationId',
+      expressionNames: {
+        '#conversationId': 'conversationId',
+      },
+      expressionValues: util.dynamodb.toMapValues({
+        ':conversationId': conversationId,
+      }),
+    };
+  }
+  ctx.args.sortDirection = 'DESC';
+  return {};
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration: ListMessagesPostDataLoad resolver function code 1`] = `
+"export function request(ctx) {
+  return {};
+}
+
+export function response(ctx) {
+  // Conversation messages are retrieved from DynamoDB in descending order by createdAt.
+  // We reverse them here because the most recent messages should be last in the list for clients:
+  // We can't use ascending order because we can miss the most recent messages due to limits / pagination.
+  const { items, ...rest } = ctx.prev.result;
+  const reversed = items.reverse();
+  return { items: reversed, ...rest };
+}
+"
+`;
+
 exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration: SendMessageMutation auth slot function code 1`] = `
 "export function request(ctx) {
   ctx.stash.hasAuth = true;
@@ -577,7 +668,7 @@ export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
 
-  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner';
+  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message }';
 
   const streamingResponseMutation = {
     name: 'createAssistantResponseStreamPirateChat',
@@ -688,36 +779,36 @@ export const response = (ctx) => {
 `;
 
 exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration: SendMessageMutation verify session owner slot function code 1`] = `
-"export function request(ctx) {
+"import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
   const { authFilter } = ctx.stash;
   const { conversationId } = ctx.args;
-
-  const query = {
-    expression: 'id = :id',
-    expressionValues: util.dynamodb.toMapValues({
-      ':id': conversationId,
-    }),
-  };
 
   const filter = JSON.parse(util.transform.toDynamoDBFilterExpression(authFilter));
 
   return {
-    operation: 'Query',
-    query,
-    filter,
+    operation: 'UpdateItem',
+    key: util.dynamodb.toMapValues({ id: conversationId }),
+    update: {
+      expression: 'SET #updatedAt = :updatedAt',
+      expressionValues: util.dynamodb.toMapValues({
+        ':updatedAt': ctx.stash.defaultValues.createdAt,
+      }),
+      expressionNames: {
+        '#updatedAt': 'updatedAt',
+      },
+    },
+    condition: filter
   };
 }
 
 export function response(ctx) {
   if (ctx.error) {
-    util.error(ctx.error.message, ctx.error.type);
+    util.error('Conversation not found', 'ResourceNotFound');
   }
 
-  if (ctx.result.items.length !== 0) {
-    return ctx.result.items[0];
-  }
-
-  util.error('Conversation not found', 'ResourceNotFound');
+  return ctx.result;
 }
 "
 `;
@@ -962,10 +1053,21 @@ export function request(ctx) {
   const {
     conversationId,
     associatedUserMessageId,
-    accumulatedTurnContent
+    accumulatedTurnContent,
+    errors,
   } = ctx.args.input;
 
   const { owner } = ctx.args;
+
+  if (errors) {
+    runtime.earlyReturn({
+      id: \`\${associatedUserMessageId}#response\`,
+      conversationId,
+      associatedUserMessageId,
+      errors,
+      owner,
+    });
+  }
   const { createdAt, updatedAt } = ctx.stash.defaultValues;
 
   const assistantResponseId = \`\${associatedUserMessageId}#response\`;
@@ -1244,6 +1346,86 @@ export const response = (ctx) => {
 }
 `;
 
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships: ListConversationsInit resolver function code 1`] = `
+"import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
+  ctx.stash.metadata.index = 'gsi-Conversation.typename.updatedAt';
+  ctx.stash.modelQueryExpression = {
+      expression: '#typename = :typename',
+      expressionNames: {
+        '#typename': '__typename',
+      },
+      expressionValues: util.dynamodb.toMapValues({
+        ':typename': 'ConversationPirateChat',
+      }),
+    };
+  ctx.args.sortDirection = 'DESC';
+  return {};
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships: ListMessagesInit resolver function code 1`] = `
+"import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
+  ctx.stash.metadata.index = 'gsi-ConversationMessage.conversationId.createdAt';
+  const conversationId = ctx.args?.filter?.conversationId?.eq;
+  if (conversationId) {
+    // If a conversationId was provided, we're going to execute a query
+    // rather than a scan. The index (gsi) we're performing this query on has
+    // a partitionKey of conversationId.
+    // We need to remove conversationId from the filter to prevent a
+    // DynamoDB exception:
+    // \`Filter Expression can only contain non-primary key attributes\`
+    delete ctx.args.filter.conversationId;
+    // If conversationId was the only filter, remove the filter object
+    // to prevent errors when the \`{}\` filter is combined with
+    // the \`authFilter\` further downstream.
+    if (Object.keys(ctx.args.filter).length === 0) {
+        delete ctx.args.filter;
+    }
+    ctx.stash.modelQueryExpression = {
+      expression: '#conversationId = :conversationId',
+      expressionNames: {
+        '#conversationId': 'conversationId',
+      },
+      expressionValues: util.dynamodb.toMapValues({
+        ':conversationId': conversationId,
+      }),
+    };
+  }
+  ctx.args.sortDirection = 'DESC';
+  return {};
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships: ListMessagesPostDataLoad resolver function code 1`] = `
+"export function request(ctx) {
+  return {};
+}
+
+export function response(ctx) {
+  // Conversation messages are retrieved from DynamoDB in descending order by createdAt.
+  // We reverse them here because the most recent messages should be last in the list for clients:
+  // We can't use ascending order because we can miss the most recent messages due to limits / pagination.
+  const { items, ...rest } = ctx.prev.result;
+  const reversed = items.reverse();
+  return { items: reversed, ...rest };
+}
+"
+`;
+
 exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships: SendMessageMutation auth slot function code 1`] = `
 "export function request(ctx) {
   ctx.stash.hasAuth = true;
@@ -1327,7 +1509,7 @@ export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
 
-  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner';
+  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message }';
 
   const streamingResponseMutation = {
     name: 'createAssistantResponseStreamPirateChat',
@@ -1438,36 +1620,36 @@ export const response = (ctx) => {
 `;
 
 exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships: SendMessageMutation verify session owner slot function code 1`] = `
-"export function request(ctx) {
+"import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
   const { authFilter } = ctx.stash;
   const { conversationId } = ctx.args;
-
-  const query = {
-    expression: 'id = :id',
-    expressionValues: util.dynamodb.toMapValues({
-      ':id': conversationId,
-    }),
-  };
 
   const filter = JSON.parse(util.transform.toDynamoDBFilterExpression(authFilter));
 
   return {
-    operation: 'Query',
-    query,
-    filter,
+    operation: 'UpdateItem',
+    key: util.dynamodb.toMapValues({ id: conversationId }),
+    update: {
+      expression: 'SET #updatedAt = :updatedAt',
+      expressionValues: util.dynamodb.toMapValues({
+        ':updatedAt': ctx.stash.defaultValues.createdAt,
+      }),
+      expressionNames: {
+        '#updatedAt': 'updatedAt',
+      },
+    },
+    condition: filter
   };
 }
 
 export function response(ctx) {
   if (ctx.error) {
-    util.error(ctx.error.message, ctx.error.type);
+    util.error('Conversation not found', 'ResourceNotFound');
   }
 
-  if (ctx.result.items.length !== 0) {
-    return ctx.result.items[0];
-  }
-
-  util.error('Conversation not found', 'ResourceNotFound');
+  return ctx.result;
 }
 "
 `;
@@ -1712,10 +1894,21 @@ export function request(ctx) {
   const {
     conversationId,
     associatedUserMessageId,
-    accumulatedTurnContent
+    accumulatedTurnContent,
+    errors,
   } = ctx.args.input;
 
   const { owner } = ctx.args;
+
+  if (errors) {
+    runtime.earlyReturn({
+      id: \`\${associatedUserMessageId}#response\`,
+      conversationId,
+      associatedUserMessageId,
+      errors,
+      owner,
+    });
+  }
   const { createdAt, updatedAt } = ctx.stash.defaultValues;
 
   const assistantResponseId = \`\${associatedUserMessageId}#response\`;
@@ -1994,6 +2187,86 @@ export const response = (ctx) => {
 }
 `;
 
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool: ListConversationsInit resolver function code 1`] = `
+"import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
+  ctx.stash.metadata.index = 'gsi-Conversation.typename.updatedAt';
+  ctx.stash.modelQueryExpression = {
+      expression: '#typename = :typename',
+      expressionNames: {
+        '#typename': '__typename',
+      },
+      expressionValues: util.dynamodb.toMapValues({
+        ':typename': 'ConversationPirateChat',
+      }),
+    };
+  ctx.args.sortDirection = 'DESC';
+  return {};
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool: ListMessagesInit resolver function code 1`] = `
+"import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
+  ctx.stash.metadata.index = 'gsi-ConversationMessage.conversationId.createdAt';
+  const conversationId = ctx.args?.filter?.conversationId?.eq;
+  if (conversationId) {
+    // If a conversationId was provided, we're going to execute a query
+    // rather than a scan. The index (gsi) we're performing this query on has
+    // a partitionKey of conversationId.
+    // We need to remove conversationId from the filter to prevent a
+    // DynamoDB exception:
+    // \`Filter Expression can only contain non-primary key attributes\`
+    delete ctx.args.filter.conversationId;
+    // If conversationId was the only filter, remove the filter object
+    // to prevent errors when the \`{}\` filter is combined with
+    // the \`authFilter\` further downstream.
+    if (Object.keys(ctx.args.filter).length === 0) {
+        delete ctx.args.filter;
+    }
+    ctx.stash.modelQueryExpression = {
+      expression: '#conversationId = :conversationId',
+      expressionNames: {
+        '#conversationId': 'conversationId',
+      },
+      expressionValues: util.dynamodb.toMapValues({
+        ':conversationId': conversationId,
+      }),
+    };
+  }
+  ctx.args.sortDirection = 'DESC';
+  return {};
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with model query tool: ListMessagesPostDataLoad resolver function code 1`] = `
+"export function request(ctx) {
+  return {};
+}
+
+export function response(ctx) {
+  // Conversation messages are retrieved from DynamoDB in descending order by createdAt.
+  // We reverse them here because the most recent messages should be last in the list for clients:
+  // We can't use ascending order because we can miss the most recent messages due to limits / pagination.
+  const { items, ...rest } = ctx.prev.result;
+  const reversed = items.reverse();
+  return { items: reversed, ...rest };
+}
+"
+`;
+
 exports[`ConversationTransformer valid schemas should transform conversation route with model query tool: SendMessageMutation auth slot function code 1`] = `
 "export function request(ctx) {
   ctx.stash.hasAuth = true;
@@ -2077,7 +2350,7 @@ export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
 
-  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner';
+  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message }';
 
   const streamingResponseMutation = {
     name: 'createAssistantResponseStreamPirateChat',
@@ -2188,36 +2461,36 @@ export const response = (ctx) => {
 `;
 
 exports[`ConversationTransformer valid schemas should transform conversation route with model query tool: SendMessageMutation verify session owner slot function code 1`] = `
-"export function request(ctx) {
+"import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
   const { authFilter } = ctx.stash;
   const { conversationId } = ctx.args;
-
-  const query = {
-    expression: 'id = :id',
-    expressionValues: util.dynamodb.toMapValues({
-      ':id': conversationId,
-    }),
-  };
 
   const filter = JSON.parse(util.transform.toDynamoDBFilterExpression(authFilter));
 
   return {
-    operation: 'Query',
-    query,
-    filter,
+    operation: 'UpdateItem',
+    key: util.dynamodb.toMapValues({ id: conversationId }),
+    update: {
+      expression: 'SET #updatedAt = :updatedAt',
+      expressionValues: util.dynamodb.toMapValues({
+        ':updatedAt': ctx.stash.defaultValues.createdAt,
+      }),
+      expressionNames: {
+        '#updatedAt': 'updatedAt',
+      },
+    },
+    condition: filter
   };
 }
 
 export function response(ctx) {
   if (ctx.error) {
-    util.error(ctx.error.message, ctx.error.type);
+    util.error('Conversation not found', 'ResourceNotFound');
   }
 
-  if (ctx.result.items.length !== 0) {
-    return ctx.result.items[0];
-  }
-
-  util.error('Conversation not found', 'ResourceNotFound');
+  return ctx.result;
 }
 "
 `;
@@ -2462,10 +2735,21 @@ export function request(ctx) {
   const {
     conversationId,
     associatedUserMessageId,
-    accumulatedTurnContent
+    accumulatedTurnContent,
+    errors,
   } = ctx.args.input;
 
   const { owner } = ctx.args;
+
+  if (errors) {
+    runtime.earlyReturn({
+      id: \`\${associatedUserMessageId}#response\`,
+      conversationId,
+      associatedUserMessageId,
+      errors,
+      owner,
+    });
+  }
   const { createdAt, updatedAt } = ctx.stash.defaultValues;
 
   const assistantResponseId = \`\${associatedUserMessageId}#response\`;
@@ -2744,6 +3028,86 @@ export const response = (ctx) => {
 }
 `;
 
+exports[`ConversationTransformer valid schemas should transform conversation route with query tools: ListConversationsInit resolver function code 1`] = `
+"import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
+  ctx.stash.metadata.index = 'gsi-Conversation.typename.updatedAt';
+  ctx.stash.modelQueryExpression = {
+      expression: '#typename = :typename',
+      expressionNames: {
+        '#typename': '__typename',
+      },
+      expressionValues: util.dynamodb.toMapValues({
+        ':typename': 'ConversationPirateChat',
+      }),
+    };
+  ctx.args.sortDirection = 'DESC';
+  return {};
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with query tools: ListMessagesInit resolver function code 1`] = `
+"import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
+  ctx.stash.metadata.index = 'gsi-ConversationMessage.conversationId.createdAt';
+  const conversationId = ctx.args?.filter?.conversationId?.eq;
+  if (conversationId) {
+    // If a conversationId was provided, we're going to execute a query
+    // rather than a scan. The index (gsi) we're performing this query on has
+    // a partitionKey of conversationId.
+    // We need to remove conversationId from the filter to prevent a
+    // DynamoDB exception:
+    // \`Filter Expression can only contain non-primary key attributes\`
+    delete ctx.args.filter.conversationId;
+    // If conversationId was the only filter, remove the filter object
+    // to prevent errors when the \`{}\` filter is combined with
+    // the \`authFilter\` further downstream.
+    if (Object.keys(ctx.args.filter).length === 0) {
+        delete ctx.args.filter;
+    }
+    ctx.stash.modelQueryExpression = {
+      expression: '#conversationId = :conversationId',
+      expressionNames: {
+        '#conversationId': 'conversationId',
+      },
+      expressionValues: util.dynamodb.toMapValues({
+        ':conversationId': conversationId,
+      }),
+    };
+  }
+  ctx.args.sortDirection = 'DESC';
+  return {};
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with query tools: ListMessagesPostDataLoad resolver function code 1`] = `
+"export function request(ctx) {
+  return {};
+}
+
+export function response(ctx) {
+  // Conversation messages are retrieved from DynamoDB in descending order by createdAt.
+  // We reverse them here because the most recent messages should be last in the list for clients:
+  // We can't use ascending order because we can miss the most recent messages due to limits / pagination.
+  const { items, ...rest } = ctx.prev.result;
+  const reversed = items.reverse();
+  return { items: reversed, ...rest };
+}
+"
+`;
+
 exports[`ConversationTransformer valid schemas should transform conversation route with query tools: SendMessageMutation auth slot function code 1`] = `
 "export function request(ctx) {
   ctx.stash.hasAuth = true;
@@ -2827,7 +3191,7 @@ export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
 
-  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner';
+  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message }';
 
   const streamingResponseMutation = {
     name: 'createAssistantResponseStreamPirateChat',
@@ -2938,36 +3302,36 @@ export const response = (ctx) => {
 `;
 
 exports[`ConversationTransformer valid schemas should transform conversation route with query tools: SendMessageMutation verify session owner slot function code 1`] = `
-"export function request(ctx) {
+"import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
   const { authFilter } = ctx.stash;
   const { conversationId } = ctx.args;
-
-  const query = {
-    expression: 'id = :id',
-    expressionValues: util.dynamodb.toMapValues({
-      ':id': conversationId,
-    }),
-  };
 
   const filter = JSON.parse(util.transform.toDynamoDBFilterExpression(authFilter));
 
   return {
-    operation: 'Query',
-    query,
-    filter,
+    operation: 'UpdateItem',
+    key: util.dynamodb.toMapValues({ id: conversationId }),
+    update: {
+      expression: 'SET #updatedAt = :updatedAt',
+      expressionValues: util.dynamodb.toMapValues({
+        ':updatedAt': ctx.stash.defaultValues.createdAt,
+      }),
+      expressionNames: {
+        '#updatedAt': 'updatedAt',
+      },
+    },
+    condition: filter
   };
 }
 
 export function response(ctx) {
   if (ctx.error) {
-    util.error(ctx.error.message, ctx.error.type);
+    util.error('Conversation not found', 'ResourceNotFound');
   }
 
-  if (ctx.result.items.length !== 0) {
-    return ctx.result.items[0];
-  }
-
-  util.error('Conversation not found', 'ResourceNotFound');
+  return ctx.result;
 }
 "
 `;

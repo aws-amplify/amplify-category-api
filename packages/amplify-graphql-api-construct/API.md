@@ -284,6 +284,16 @@ export interface IdentityPoolAuthorizationConfig {
 }
 
 // @public
+export interface ImportedAmplifyDynamoDbModelDataSourceStrategy {
+    // (undocumented)
+    readonly dbType: 'DYNAMODB';
+    // (undocumented)
+    readonly provisionStrategy: 'IMPORTED_AMPLIFY_TABLE';
+    // (undocumented)
+    readonly tableName: string;
+}
+
+// @public
 export interface LambdaAuthorizationConfig {
     readonly function: IFunction;
     readonly ttl: Duration;
@@ -300,7 +310,17 @@ export interface LogConfig {
 export type Logging = true | LogConfig;
 
 // @public
-export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
+export interface LogConfig {
+    readonly excludeVerboseContent?: boolean;
+    readonly fieldLogLevel?: FieldLogLevel;
+    readonly retention?: RetentionDays;
+}
+
+// @public
+export type Logging = true | LogConfig;
+
+// @public
+export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | ImportedAmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
 
 // @public
 export type ModelDataSourceStrategyDbType = 'DYNAMODB' | ModelDataSourceStrategySqlDbType;

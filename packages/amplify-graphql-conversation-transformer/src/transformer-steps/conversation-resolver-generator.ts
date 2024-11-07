@@ -10,6 +10,7 @@ import { ConversationDirectiveConfiguration, ConversationDirectiveDataSources } 
 import {
   CONVERSATION_MESSAGES_REFERENCE_FIELD_NAME,
   getFunctionStackName,
+  LIST_CONVERSATIONS_INDEX_NAME,
   LIST_MESSAGES_INDEX_NAME,
   upperCaseConversationFieldName,
 } from '../graphql-types/name-values';
@@ -19,7 +20,9 @@ import {
   assistantResponseSubscriptionPipelineDefinition,
   generateResolverFunction,
   generateResolverPipeline,
+  listConversationsInitFunctionDefinition,
   listMessagesInitFunctionDefinition,
+  listMessagesPostProcessingFunctionDefinition,
   sendMessagePipelineDefinition,
 } from '../resolvers';
 import { processTools } from '../tools/process-tools';
@@ -43,15 +46,21 @@ export class ConversationResolverGenerator {
       // These are used by the resolver function and pipeline definitions.
       directive.dataSources = this.generateDataSources(directive, ctx);
 
+      // Set up the conversation table index
+      this.setUpConversationTableIndex(ctx, directive);
+
       // Set up the message table index
       this.setupMessageTableIndex(ctx, directive);
 
       // Generate resolvers for the given conversation directive instance.
       this.generateResolversForDirective(directive, ctx);
 
-      // Add an init slot to the model-transformer generated list messages pipeline
+      // Add an init slot to the model-transformer generated list conversations pipeline
+      this.addInitSlotToListConversationsPipeline(ctx, directive);
+
+      // Add an init and postDataLoad slot to the model-transformer generated list messages pipeline
       // This is done to ensure that the correct index is used for list queries.
-      this.addInitSlotToListMessagesPipeline(ctx, directive);
+      this.addSlotsToListMessagesPipeline(ctx, directive);
     }
   }
 
@@ -208,24 +217,29 @@ export class ConversationResolverGenerator {
   }
 
   /**
-   * Adds an init slot to the list messages pipeline resolver.
+   * Adds an init and postDataLoad slot to the list messages pipeline resolver.
    *
    * @param ctx - The transformer context provider.
    * @param directive - The conversation directive configuration.
-   *
-   * This function performs the following steps:
-   * 1. Gets the name of the message model from the directive configuration.
-   * 2. Pluralizes the message name as used in the model-transformer generated list messages resolver.
-   * 3. Retrieves the existing model-transformer generated list messages resolver.
-   * 4. Generates the init resolver function.
-   * 5. Adds the generated init function to the 'init' slot of the list messages resolver.
    */
-  private addInitSlotToListMessagesPipeline(ctx: TransformerContextProvider, directive: ConversationDirectiveConfiguration): void {
+  private addSlotsToListMessagesPipeline(ctx: TransformerContextProvider, directive: ConversationDirectiveConfiguration): void {
     const messageName = directive.message.model.name.value;
     const pluralized = pluralize(messageName);
     const listMessagesResolver = ctx.resolvers.getResolver('Query', `list${pluralized}`) as TransformerResolver;
+
     const initResolverFn = generateResolverFunction(listMessagesInitFunctionDefinition, directive, ctx);
-    listMessagesResolver.addJsFunctionToSlot('init', initResolverFn);
+    listMessagesResolver.addJsFunctionToSlot(listMessagesInitFunctionDefinition.slotName, initResolverFn);
+
+    const postProcessingResolverFn = generateResolverFunction(listMessagesPostProcessingFunctionDefinition, directive, ctx);
+    listMessagesResolver.addJsFunctionToSlot(listMessagesPostProcessingFunctionDefinition.slotName, postProcessingResolverFn);
+  }
+
+  private addInitSlotToListConversationsPipeline(ctx: TransformerContextProvider, directive: ConversationDirectiveConfiguration): void {
+    const conversationName = directive.conversation.model.name.value;
+    const pluralized = pluralize(conversationName);
+    const listConversationsResolver = ctx.resolvers.getResolver('Query', `list${pluralized}`) as TransformerResolver;
+    const initResolverFn = generateResolverFunction(listConversationsInitFunctionDefinition, directive, ctx);
+    listConversationsResolver.addJsFunctionToSlot('init', initResolverFn);
   }
 
   /**
@@ -248,6 +262,31 @@ export class ConversationResolverGenerator {
       ctx,
       messageName,
       LIST_MESSAGES_INDEX_NAME,
+      { name: gsiPartitionKeyName, type: gsiPartitionKeyType },
+      { name: gsiSortKeyName, type: gsiSortKeyType },
+    );
+  }
+
+  /**
+   * Sets up the conversation table index
+   * @param ctx - The transformer context provider
+   * @param directive - The conversation directive configuration
+   */
+  private setUpConversationTableIndex(ctx: TransformerContextProvider, directive: ConversationDirectiveConfiguration): void {
+    const conversationName = directive.conversation.model.name.value;
+    const conversation = directive.conversation.model;
+
+    const conversationTable = getTable(ctx, conversation);
+    const gsiPartitionKeyName = '__typename';
+    const gsiPartitionKeyType = 'S';
+    const gsiSortKeyName = 'updatedAt';
+    const gsiSortKeyType = 'S';
+
+    this.addGlobalSecondaryIndex(
+      conversationTable,
+      ctx,
+      conversationName,
+      LIST_CONVERSATIONS_INDEX_NAME,
       { name: gsiPartitionKeyName, type: gsiPartitionKeyType },
       { name: gsiSortKeyName, type: gsiSortKeyType },
     );

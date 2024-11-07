@@ -56,7 +56,7 @@ function auth(): ResolverFunctionDefinition {
 function verifySessionOwner(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'verifySessionOwner',
-    fileName: 'verify-session-owner-resolver-fn.template.js',
+    fileName: 'set-updated-at-conversation-table-fn.template.js',
     generateTemplate: templateGenerator('verify-session-owner'),
     dataSource: (config) => config.dataSources.conversationTableDataSource,
     substitutions: () => ({
@@ -131,4 +131,4 @@ function templateGenerator(slotName: string) {
 }
 
 const selectionSet = `id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt`;
-const streamingSelectionSet = `associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner`;
+const streamingSelectionSet = `associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message }`;
