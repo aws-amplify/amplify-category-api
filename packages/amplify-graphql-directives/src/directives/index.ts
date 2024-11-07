@@ -18,5 +18,6 @@ export { ModelDirective } from './model';
 export { PredictionsDirective } from './predictions';
 export { PrimaryKeyDirective } from './primary-key';
 export { RefersToDirective } from './refers-to';
+export { ResolverDirective } from './resolver';
 export { SearchableDirective } from './searchable';
 export { SqlDirective } from './sql';
