@@ -175,10 +175,6 @@ describe('Log Config Tests', () => {
     const outputs = await cdkDeploy(projRoot, '--all');
     const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey, awsAppsyncApiId: apiId } = outputs[name];
 
-    // Verify logging configuration
-    const logGroupName = `/aws/appsync/apis/${apiId}`;
-    await verifyLogConfig(logGroupName, apiId, defaultRetentionInDays, defaultExcludeVerboseContent, defaultFieldLogLevel);
-
     // Create a GraphQL client
     const client = new GraphQLClient(apiEndpoint, {
       headers: {
@@ -186,10 +182,15 @@ describe('Log Config Tests', () => {
       },
     });
 
-    // Verify request ID in log
+    const logGroupName = `/aws/appsync/apis/${apiId}`;
     const { headers } = await client.rawRequest(query);
     const requestId = headers.get('x-amzn-requestid');
+
+    // Verify request ID in log
     await verifyLogsWithRequestId(logGroupName, requestId);
+
+    // Verify logging configuration
+    await verifyLogConfig(logGroupName, apiId, defaultRetentionInDays, defaultExcludeVerboseContent, defaultFieldLogLevel);
   });
 
   test('Default logging is enabled with logging: {}', async () => {
@@ -204,10 +205,6 @@ describe('Log Config Tests', () => {
     const outputs = await cdkDeploy(projRoot, '--all');
     const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey, awsAppsyncApiId: apiId } = outputs[name];
 
-    // Verify logging configuration
-    const logGroupName = `/aws/appsync/apis/${apiId}`;
-    await verifyLogConfig(logGroupName, apiId, defaultRetentionInDays, defaultExcludeVerboseContent, defaultFieldLogLevel);
-
     // Create a GraphQL client
     const client = new GraphQLClient(apiEndpoint, {
       headers: {
@@ -215,10 +212,15 @@ describe('Log Config Tests', () => {
       },
     });
 
-    // Verify request ID in log
+    const logGroupName = `/aws/appsync/apis/${apiId}`;
     const { headers } = await client.rawRequest(query);
     const requestId = headers.get('x-amzn-requestid');
+
+    // Verify request ID in log
     await verifyLogsWithRequestId(logGroupName, requestId);
+
+    // Verify logging configuration
+    await verifyLogConfig(logGroupName, apiId, defaultRetentionInDays, defaultExcludeVerboseContent, defaultFieldLogLevel);
   });
 
   test('Custom logging is enabled with fieldLogLevel: ERROR, default excludeVerboseContent, and default retention', async () => {
@@ -233,10 +235,6 @@ describe('Log Config Tests', () => {
     const outputs = await cdkDeploy(projRoot, '--all');
     const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey, awsAppsyncApiId: apiId } = outputs[name];
 
-    // Verify logging configuration
-    const logGroupName = `/aws/appsync/apis/${apiId}`;
-    await verifyLogConfig(logGroupName, apiId, defaultRetentionInDays, defaultExcludeVerboseContent, 'ERROR');
-
     // Create a GraphQL client
     const client = new GraphQLClient(apiEndpoint, {
       headers: {
@@ -244,10 +242,15 @@ describe('Log Config Tests', () => {
       },
     });
 
-    // Verify request ID in log
+    const logGroupName = `/aws/appsync/apis/${apiId}`;
     const { headers } = await client.rawRequest(query);
     const requestId = headers.get('x-amzn-requestid');
+
+    // Verify request ID in log
     await verifyLogsWithRequestId(logGroupName, requestId);
+  
+    // Verify logging configuration
+    await verifyLogConfig(logGroupName, apiId, defaultRetentionInDays, defaultExcludeVerboseContent, 'ERROR');
   });
 
   test('Custom logging is enabled with default fieldLogLevel, default excludeVerboseContent, and retention: 60', async () => {
@@ -262,10 +265,6 @@ describe('Log Config Tests', () => {
     const outputs = await cdkDeploy(projRoot, '--all');
     const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey, awsAppsyncApiId: apiId } = outputs[name];
 
-    // Verify logging configuration
-    const logGroupName = `/aws/appsync/apis/${apiId}`;
-    await verifyLogConfig(logGroupName, apiId, 60, defaultExcludeVerboseContent, defaultFieldLogLevel);
-
     // Create a GraphQL client
     const client = new GraphQLClient(apiEndpoint, {
       headers: {
@@ -273,10 +272,15 @@ describe('Log Config Tests', () => {
       },
     });
 
-    // Verify request ID in log
+    const logGroupName = `/aws/appsync/apis/${apiId}`;
     const { headers } = await client.rawRequest(query);
     const requestId = headers.get('x-amzn-requestid');
+
+    // Verify request ID in log
     await verifyLogsWithRequestId(logGroupName, requestId);
+
+    // Verify logging configuration
+    await verifyLogConfig(logGroupName, apiId, 60, defaultExcludeVerboseContent, defaultFieldLogLevel);
   });
 
   test('Custom logging is enabled with fieldLogLevel: INFO, excludeVerboseContent: false, and retention: 365', async () => {
@@ -291,10 +295,6 @@ describe('Log Config Tests', () => {
     const outputs = await cdkDeploy(projRoot, '--all');
     const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey, awsAppsyncApiId: apiId } = outputs[name];
 
-    // Verify logging configuration
-    const logGroupName = `/aws/appsync/apis/${apiId}`;
-    await verifyLogConfig(logGroupName, apiId, 365, false, 'INFO');
-
     // Create a GraphQL client
     const client = new GraphQLClient(apiEndpoint, {
       headers: {
@@ -302,10 +302,15 @@ describe('Log Config Tests', () => {
       },
     });
 
-    // Verify request ID in log
+    const logGroupName = `/aws/appsync/apis/${apiId}`;
     const { headers } = await client.rawRequest(query);
     const requestId = headers.get('x-amzn-requestid');
+
+    // Verify request ID in log
     await verifyLogsWithRequestId(logGroupName, requestId);
+
+    // Verify logging configuration
+    await verifyLogConfig(logGroupName, apiId, 365, false, 'INFO');
   });
 
   test('Logging is disabled', async () => {
