@@ -3845,7 +3845,7 @@ input ModelConversationMessagePirateChatConditionInput {
 input CreateConversationMessagePirateChatInput {
   id: ID
   conversationId: ID!
-  role: ConversationParticipantRoleInput
+  role: ConversationParticipantRole
   content: [ContentBlockInput]
   aiContext: AWSJSON
   toolConfiguration: ToolConfigurationInput
