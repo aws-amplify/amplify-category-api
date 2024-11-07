@@ -16,10 +16,11 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc && yarn copy-js-resolver-templates",
+    "build": "tsc && yarn copy-js-resolver-templates && yarn copy-graphql-supporting-types",
     "watch": "tsc -w",
     "clean": "rimraf ./lib",
     "copy-js-resolver-templates": "cd lib/resolvers && mkdir -p templates && cp ../../src/resolvers/templates/*.template.js templates",
+    "copy-graphql-supporting-types": "cd lib && cp ../src/conversation-schema-types.graphql conversation-schema-types.graphql",
     "test": "jest",
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
