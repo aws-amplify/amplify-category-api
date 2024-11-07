@@ -8,7 +8,7 @@ interface ConversationMessage {
   conversationId: ID!
   role: ConversationParticipantRole
   content: [ContentBlock]
-  context: AWSJSON
+  aiContext: AWSJSON
   toolConfiguration: ToolConfiguration
   associatedUserMessageId: ID
 }
