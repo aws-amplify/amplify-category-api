@@ -12,6 +12,7 @@ jest.setTimeout(DURATION_1_HOUR);
 
 // AWS client initialization
 const region = process.env.CLI_REGION;
+console.log('region from env: ', region);
 const cloudWatchLogsClient = new CloudWatchLogsClient();
 const appSyncClient = new AppSyncClient({ region });
 const sts = new STS();
@@ -85,6 +86,7 @@ const verifyLogsWithRequestId = async (logGroupName: string, expectedRequestId: 
   // Set up for StartLiveTailCommand
   const accountId = await getAccountId();
   const logGroupArn = `arn:aws:logs:${region}:${accountId}:log-group:${logGroupName}`;
+  console.log('logGroupArn: ', logGroupArn);
   const startLiveTailParams = {
     logGroupIdentifiers: [logGroupArn],
     logEventFilterPattern: `{ $.requestId = "${expectedRequestId}" }`,
