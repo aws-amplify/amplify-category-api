@@ -22,6 +22,7 @@ export const makeUpdateInputField = (
   knownModelTypes: Set<string>,
   document: DocumentNode,
   isSyncEnabled: boolean,
+  ctx: TransformerTransformSchemaStepContextProvider,
 ): InputObjectTypeDefinitionNode => {
   // sync related things
   const objectWrapped = new ObjectDefinitionWrapper(obj);
@@ -42,7 +43,7 @@ export const makeUpdateInputField = (
     fields: obj.fields?.filter((f) => !fieldsToRemove.includes(f.name.value)),
   };
 
-  const input = InputObjectDefinitionWrapper.fromObject(name, objectTypeDefinition, document);
+  const input = InputObjectDefinitionWrapper.fromObject(name, objectTypeDefinition, document, ctx);
 
   // make all the fields optional
   input.fields.forEach((f) => f.makeNullable());
@@ -103,6 +104,7 @@ export const makeCreateInputField = (
   knownModelTypes: Set<string>,
   document: DocumentNode,
   isSyncEnabled: boolean,
+  ctx: TransformerTransformSchemaStepContextProvider,
 ): InputObjectTypeDefinitionNode => {
   // sync related things
   const objectWrapped = new ObjectDefinitionWrapper(obj);
@@ -132,7 +134,7 @@ export const makeCreateInputField = (
     fields: obj.fields?.filter((f) => !fieldsToRemove.includes(f.name.value)),
   };
 
-  const input = InputObjectDefinitionWrapper.fromObject(name, objectTypeDefinition, document);
+  const input = InputObjectDefinitionWrapper.fromObject(name, objectTypeDefinition, document, ctx);
 
   // Add id field and make it optional
   if (!hasIdField) {

@@ -648,6 +648,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
           knownModels,
           ctx.inputDocument,
           isSyncEnabled,
+          ctx,
         );
         const createInputTypeName = createInputField.name.value;
         if (!ctx.output.getType(createInputField.name.value)) {
@@ -676,6 +677,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
           knownModels,
           ctx.inputDocument,
           isSyncEnabled,
+          ctx,
         );
         const updateInputTypeName = updateInputField.name.value;
         if (!ctx.output.getType(updateInputField.name.value)) {
@@ -758,7 +760,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         if (def && def.kind === 'ObjectTypeDefinition' && !this.isModelField(def.name.value)) {
           const name = this.getNonModelInputObjectName(def.name.value);
           if (!ctx.output.getType(name)) {
-            const inputObj = InputObjectDefinitionWrapper.fromObject(name, def, ctx.inputDocument);
+            const inputObj = InputObjectDefinitionWrapper.fromObject(name, def, ctx.inputDocument, ctx);
             ctx.output.addInput(inputObj.serialize());
             this.createNonModelInputs(ctx, def);
           }
