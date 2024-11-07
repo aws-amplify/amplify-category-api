@@ -7,7 +7,7 @@ describe('ResolverTransformer', () => {
     it('should transform a single function definition', () => {
       const inputSchema = /* GraphQL */ `
         type Query {
-          foo(bar: Int): String @resolver(functions: [{ dataSource: "NONE", entry: "export const request = () => { return {} }" }])
+          foo(bar: Int): String @resolver(functions: [{ dataSource: "NONE", entry: "src/__tests__/handler.js" }])
         }
       `;
 

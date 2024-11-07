@@ -64,6 +64,8 @@ export interface AddFunctionProps {
 // @public
 export interface AmplifyDynamoDbModelDataSourceStrategy {
     // (undocumented)
+    readonly customResolvers?: Record<string, string>;
+    // (undocumented)
     readonly dbType: 'DYNAMODB';
     // (undocumented)
     readonly provisionStrategy: 'AMPLIFY_TABLE';

@@ -39,6 +39,7 @@ export interface DefaultDynamoDbModelDataSourceStrategy {
 export interface AmplifyDynamoDbModelDataSourceStrategy {
   readonly dbType: 'DYNAMODB';
   readonly provisionStrategy: 'AMPLIFY_TABLE';
+  readonly customResolvers?: Record<string, string>;
 }
 
 // TODO: GEN1_GEN2_MIGRATION

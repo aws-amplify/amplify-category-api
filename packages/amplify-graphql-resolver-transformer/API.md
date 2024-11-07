@@ -13,6 +13,19 @@ import { TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import { TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
+export type ResolverDirectiveConfiguration = {
+    typeName: string;
+    fieldName: string;
+    functions: ResolverFunction[];
+};
+
+// @public (undocumented)
+export type ResolverFunction = {
+    dataSource: string;
+    entry: string;
+};
+
+// @public (undocumented)
 export class ResolverTransformer extends TransformerPluginBase {
     constructor();
     // (undocumented)

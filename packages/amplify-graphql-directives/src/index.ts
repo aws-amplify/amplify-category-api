@@ -32,6 +32,7 @@ import {
   PredictionsDirectiveV1,
   PrimaryKeyDirective,
   RefersToDirective,
+  ResolverDirective,
   SearchableDirective,
   SearchableDirectiveV1,
   SqlDirective,
@@ -67,6 +68,7 @@ export const V2Directives: readonly Directive[] = [
   PredictionsDirective,
   PrimaryKeyDirective,
   RefersToDirective,
+  ResolverDirective,
   SearchableDirective,
   SqlDirective,
 ];

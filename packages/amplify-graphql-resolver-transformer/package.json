@@ -23,6 +23,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "postbuild": "mkdir -p lib/assets && cp -r src/assets/** lib/assets/.",
     "watch": "tsc -w",
     "clean": "rimraf ./lib",
     "test": "jest",
