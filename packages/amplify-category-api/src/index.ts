@@ -361,10 +361,14 @@ export const transformCategoryStack = async (context: $TSContext, resource: Reco
       const backendDir = pathManager.getBackendDirPath();
       const overrideDir = path.join(backendDir, resource.category, resource.resourceName);
       const isBuild = await buildOverrideDir(backendDir, overrideDir).catch((error) => {
-        throw new AmplifyError('InvalidOverrideError', {
-          message: error.message,
-          link: 'https://docs.amplify.aws/cli/graphql/override/',
-        });
+        throw new AmplifyError(
+          'InvalidOverrideError',
+          {
+            message: error.message,
+            link: 'https://docs.amplify.aws/cli/graphql/override/',
+          },
+          error,
+        );
       });
       try {
         await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [
