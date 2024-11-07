@@ -13,9 +13,9 @@ jest.setTimeout(DURATION_1_HOUR);
 // AWS client initialization
 const region = process.env.CLI_REGION;
 console.log('region from env: ', region);
-const cloudWatchLogsClient = new CloudWatchLogsClient();
+const cloudWatchLogsClient = new CloudWatchLogsClient({ region });
 const appSyncClient = new AppSyncClient({ region });
-const sts = new STS();
+const sts = new STS({ region });
 
 // Default configuration constants
 const defaultRetentionInDays = 7;
