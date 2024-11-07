@@ -248,7 +248,7 @@ describe('Log Config Tests', () => {
 
     // Verify request ID in log
     await verifyLogsWithRequestId(logGroupName, requestId);
-  
+
     // Verify logging configuration
     await verifyLogConfig(logGroupName, apiId, defaultRetentionInDays, defaultExcludeVerboseContent, 'ERROR');
   });

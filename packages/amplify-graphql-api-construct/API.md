@@ -310,16 +310,6 @@ export interface LogConfig {
 export type Logging = true | LogConfig;
 
 // @public
-export interface LogConfig {
-    readonly excludeVerboseContent?: boolean;
-    readonly fieldLogLevel?: FieldLogLevel;
-    readonly retention?: RetentionDays;
-}
-
-// @public
-export type Logging = true | LogConfig;
-
-// @public
 export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | ImportedAmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
 
 // @public
