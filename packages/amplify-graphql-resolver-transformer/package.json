@@ -29,15 +29,15 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-directives": "2.4.0",
-    "@aws-amplify/graphql-transformer-core": "3.2.2",
-    "@aws-amplify/graphql-transformer-interfaces": "4.1.2",
+    "@aws-amplify/graphql-directives": "2.6.0",
+    "@aws-amplify/graphql-transformer-core": "3.3.1",
+    "@aws-amplify/graphql-transformer-interfaces": "4.2.0",
     "graphql": "^15.5.0",
     "graphql-mapping-template": "5.0.1",
-    "graphql-transformer-common": "5.1.0"
+    "graphql-transformer-common": "5.1.1"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-test-utils": "1.0.6"
+    "@aws-amplify/graphql-transformer-test-utils": "1.0.8"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.158.0",

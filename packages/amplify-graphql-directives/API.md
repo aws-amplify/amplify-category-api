@@ -141,6 +141,9 @@ export const PrimaryKeyDirective: Directive;
 export const RefersToDirective: Directive;
 
 // @public (undocumented)
+export const ResolverDirective: Directive;
+
+// @public (undocumented)
 export const SearchableDirective: Directive;
 
 // @public (undocumented)
