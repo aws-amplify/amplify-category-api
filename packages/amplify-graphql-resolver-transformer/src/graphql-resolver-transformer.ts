@@ -1,14 +1,12 @@
+import { resolve } from 'path';
 import { DirectiveWrapper, generateGetArgumentsInput, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResolverDirective } from '@aws-amplify/graphql-directives';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { DirectiveNode, ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
-import { resolveEntryPath } from './resolve-entry-path';
 import { CfnFunctionConfiguration, CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import { Construct } from 'constructs';
-import { resolve } from 'path';
-import { fileURLToPath } from 'node:url';
+import { resolveEntryPath } from './resolve-entry-path';
 
 const APPSYNC_PIPELINE_RESOLVER = 'PIPELINE';
 const APPSYNC_JS_RUNTIME_NAME = 'APPSYNC_JS';
@@ -53,9 +51,9 @@ export class ResolverTransformer extends TransformerPluginBase {
   };
 
   generateResolvers = (ctx: TransformerContextProvider): void => {
-    const scope = ctx.stackManager.scope
+    const scope = ctx.stackManager.scope;
 
-    for (const [field, config] of this.resolverGroups.entries()) {
+    for (const config of this.resolverGroups.values()) {
       const jsResolverTemplateAsset = defaultJsResolverAsset(scope);
 
       const { typeName, fieldName, functions: resolverEntries } = config;
@@ -63,11 +61,11 @@ export class ResolverTransformer extends TransformerPluginBase {
       const functions: string[] = resolverEntries.map((handler, idx) => {
         const fnName = `Fn_${typeName}_${fieldName}_${idx + 1}`;
         const s3AssetName = `${fnName}_asset`;
-  
+
         const asset = new Asset(scope, s3AssetName, {
           path: resolveEntryPath(handler.entry),
         });
-  
+
         const fn = new CfnFunctionConfiguration(scope, fnName, {
           apiId: ctx.api.apiId,
           dataSourceName: handler.dataSource,
@@ -81,7 +79,7 @@ export class ResolverTransformer extends TransformerPluginBase {
         fn.node.addDependency(ctx.api);
         return fn.attrFunctionId;
       });
-  
+
       const resolverName = `Resolver_${typeName}_${fieldName}`;
       new CfnResolver(scope, resolverName, {
         apiId: ctx.api.apiId,
@@ -98,22 +96,18 @@ export class ResolverTransformer extends TransformerPluginBase {
         },
       }).node.addDependency(ctx.api);
     }
-  }
+  };
 }
 
-const validateResolverConfig = (config: ResolverDirectiveConfiguration): void =>  {
+const validateResolverConfig = (config: ResolverDirectiveConfiguration): void => {
   const { typeName, fieldName, functions } = config;
   if (!typeName || !fieldName || !functions || functions.length === 0) {
     throw new Error('Invalid resolver configuration');
   }
-}
+};
 
 const defaultJsResolverAsset = (scope: Construct): Asset => {
-  const resolvedTemplatePath = resolve(
-    __dirname,
-    '../../lib',
-    JS_PIPELINE_RESOLVER_HANDLER
-  );
+  const resolvedTemplatePath = resolve(__dirname, '../../lib', JS_PIPELINE_RESOLVER_HANDLER);
 
   return new Asset(scope, 'default_js_resolver_handler_asset', {
     path: resolveEntryPath(resolvedTemplatePath),

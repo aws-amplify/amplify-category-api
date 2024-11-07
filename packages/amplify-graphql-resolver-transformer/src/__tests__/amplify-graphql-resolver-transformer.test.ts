@@ -3,51 +3,40 @@ import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transfo
 import { ResolverTransformer } from '../graphql-resolver-transformer';
 
 describe('ResolverTransformer', () => {
-    describe('valid shemas', () => {
-        it('should transform a single function defintion', () => {
-            const inputSchema = /* GraphQL */`
-                type Query { 
-                  foo(bar: Int): String 
-                  @resolver(
-                    functions: [ 
-                        { 
-                            dataSource: "NONE",
-                            entry: "export const request = () => { return {} }"
-                        }
-                    ]
-                  )
-                }
-            `;
+  describe('valid schemas', () => {
+    it('should transform a single function definition', () => {
+      const inputSchema = /* GraphQL */ `
+        type Query {
+          foo(bar: Int): String @resolver(functions: [{ dataSource: "NONE", entry: "export const request = () => { return {} }" }])
+        }
+      `;
 
-            const out = transform(inputSchema);
-            expect(out).toBeDefined();
-        });
+      const out = transform(inputSchema);
+      expect(out).toBeDefined();
     });
+  });
 });
 
 const defaultAuthConfig: AppSyncAuthConfiguration = {
-    defaultAuthentication: {
-        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-    },
-    additionalAuthenticationProviders: [],
+  defaultAuthentication: {
+    authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+  },
+  additionalAuthenticationProviders: [],
 };
 
 const transform = (
-    inputSchema: string,
-    dataSourceStrategies?: Record<string, ModelDataSourceStrategy>,
-    authConfig: AppSyncAuthConfiguration = defaultAuthConfig,
+  inputSchema: string,
+  dataSourceStrategies?: Record<string, ModelDataSourceStrategy>,
+  authConfig: AppSyncAuthConfiguration = defaultAuthConfig,
 ): DeploymentResources => {
+  const transformers: TransformerPluginProvider[] = [new ResolverTransformer()];
 
-    const transformers: TransformerPluginProvider[] = [
-        new ResolverTransformer(),
-    ];
+  const out = testTransform({
+    schema: inputSchema,
+    authConfig,
+    transformers,
+    dataSourceStrategies,
+  });
 
-    const out = testTransform({
-        schema: inputSchema,
-        authConfig,
-        transformers,
-        dataSourceStrategies,
-    });
-
-    return out;
-}
+  return out;
+};

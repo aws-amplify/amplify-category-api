@@ -17,10 +17,7 @@ import { fileURLToPath } from 'node:url';
  * Instead of combining both matches with single regex, we create two to keep it simple and manageable.
  *
  */
-const extractFilePathFromStackTraceLineRegexes = [
-  /\((?<filepath>(\w:)?[^:]*)[:\d]*\)/,
-  /at (?<filepath>.*\.\w[^:\d]*)[:\d]*/,
-];
+const extractFilePathFromStackTraceLineRegexes = [/\((?<filepath>(\w:)?[^:]*)[:\d]*\)/, /at (?<filepath>.*\.\w[^:\d]*)[:\d]*/];
 
 /**
  * Extracts a file path from a given stack trace line
