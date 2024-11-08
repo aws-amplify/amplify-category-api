@@ -26,7 +26,7 @@
     "@aws-amplify/core": "^2.1.0",
     "@aws-amplify/graphql-api-construct": "1.16.0",
     "@aws-cdk/aws-cognito-identitypool-alpha": "2.152.0-alpha.0",
-    "@aws-sdk/abort-controller": "3.624.0",
+    "@aws-sdk/abort-controller": "^3.374.0",
     "@aws-sdk/client-appsync": "3.624.0",
     "@aws-sdk/client-cloudwatch-logs": "3.624.0",
     "@aws-sdk/client-cognito-identity-provider": "3.624.0",
