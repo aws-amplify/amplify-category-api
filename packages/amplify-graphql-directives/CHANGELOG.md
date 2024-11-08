@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.5.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-directives@2.4.0...@aws-amplify/graphql-directives@2.5.0) (2024-11-08)
+
+### Features
+
+- add imported DDB tables for gen 2 migration in experimental state ([#2992](https://github.com/aws-amplify/amplify-category-api/issues/2992)) ([0c415b3](https://github.com/aws-amplify/amplify-category-api/commit/0c415b3eed70a567848fc661c3d4ce0ca5719e94))
+
 # [2.4.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-directives@2.3.0...@aws-amplify/graphql-directives@2.4.0) (2024-10-17)
 
 ### Features

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@0.5.0...@aws-amplify/graphql-conversation-transformer@0.6.0) (2024-11-08)
+
+### Features
+
+- **conversation:** propagate errors from lambda to client ([#3002](https://github.com/aws-amplify/amplify-category-api/issues/3002)) ([141512b](https://github.com/aws-amplify/amplify-category-api/commit/141512bf228a2afdbfc124023730ff76d1b65a04))
+- **conversation:** sorting and performant list queries ([#2997](https://github.com/aws-amplify/amplify-category-api/issues/2997)) ([73f2d6b](https://github.com/aws-amplify/amplify-category-api/commit/73f2d6b7026df34ba4b9b88722925bc7d853ab60))
+- **conversation:** support response streaming ([#2986](https://github.com/aws-amplify/amplify-category-api/issues/2986)) ([815d51f](https://github.com/aws-amplify/amplify-category-api/commit/815d51fcd6fd105614f879271f21a307affe8c9d))
+
 # [0.5.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@0.4.0...@aws-amplify/graphql-conversation-transformer@0.5.0) (2024-10-28)
 
 ### Bug Fixes
