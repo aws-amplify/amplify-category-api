@@ -15,7 +15,7 @@ describe('custom resolver', () => {
       // TODO: update entry
       definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
         type Query {
-          getFoo(bar: Int): String @resolver(functions: [{ dataSource: "NONE", entry: "src/__tests__/__functional__/handler.js" }])
+          getFoo(bar: Int): String @resolver(functions: [{ dataSource: "NONE_DS", entry: "src/__tests__/__functional__/handler.js" }])
         }
       `),
       authorizationModes: {
