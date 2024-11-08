@@ -1,3 +1,24 @@
+export const makeContext = (partialContext: Partial<AppSyncContext> = {}): AppSyncContext => {
+  return {
+    arguments: {},
+    args: {},
+    identity: undefined,
+    source: {},
+    stash: {},
+    result: {},
+    prev: {},
+    request: {},
+    info: {
+      fieldName: '',
+      parentTypeName: '',
+      variables: {},
+      selectionSetList: [],
+      selectionSetGraphQL: '',
+    },
+    ...partialContext,
+  };
+};
+
 export interface AppSyncContext {
   arguments: any;
   args: any;
@@ -10,11 +31,11 @@ export interface AppSyncContext {
   stash: any;
   result: any;
   prev: any;
-  request: Request;
+  request: any;
   info: Info;
 }
 
-export type Identity = ApiKeyIdentity | AppSyncIdentityLambda | AppSyncIdentityIAM | AppSyncIdentityCognito;
+export type Identity = ApiKeyIdentity | AppSyncIdentityLambda | AppSyncIdentityIAM | AppSyncIdentityCognitoUserPools;
 
 export type ApiKeyIdentity = undefined;
 
@@ -33,7 +54,7 @@ export type AppSyncIdentityIAM = {
   cognitoIdentityAuthProvider: string;
 };
 
-export type AppSyncIdentityCognito = {
+export type AppSyncIdentityCognitoUserPools = {
   sourceIp: string[];
   username: string;
   groups: string[] | null;
