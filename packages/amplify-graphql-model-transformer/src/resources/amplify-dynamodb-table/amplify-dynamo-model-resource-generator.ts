@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode } from 'graphql';
-import { setResourceName } from '@aws-amplify/graphql-transformer-core';
+import { setResourceName, isImportedAmplifyDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-core';
 import { AttributeType, StreamViewType, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 import { Duration, aws_iam, aws_lambda } from 'aws-cdk-lib';
@@ -50,8 +50,12 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
   protected createCustomProviderResource(scope: Construct, context: TransformerContextProvider): void {
     const lambdaCode = aws_lambda.Code.fromAsset(
       path.join(__dirname, '..', '..', '..', 'lib', 'resources', 'amplify-dynamodb-table', 'amplify-table-manager-lambda'),
-      { exclude: ['*.ts'] },
+      { exclude: ['*.ts', '*.json', 'LICENSE', 'README.md'] },
     );
+
+    const importedTableNames = Object.values(context.dataSourceStrategies)
+      .filter(isImportedAmplifyDynamoDbModelDataSourceStrategy)
+      .map((strategy) => strategy.tableName);
 
     // PolicyDocument that grants access to Create/Update/Delete relevant DynamoDB tables
     const lambdaPolicyDocument = new aws_iam.PolicyDocument({
@@ -76,6 +80,11 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
               apiId: context.api.apiId,
               envName: context.synthParameters.amplifyEnvironmentName,
             }),
+            ...importedTableNames.map((tableName) =>
+              cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}', {
+                tableName,
+              }),
+            ),
           ],
         }),
         new aws_iam.PolicyStatement({
@@ -159,7 +168,9 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
   protected createModelTable(scope: Construct, def: ObjectTypeDefinitionNode, context: TransformerContextProvider): void {
     const modelName = def!.name.value;
     const tableLogicalName = ModelResourceIDs.ModelTableResourceID(modelName);
-    const tableName = context.resourceHelper.generateTableName(modelName);
+    const strategy = context.dataSourceStrategies[modelName];
+    const isTableImported = isImportedAmplifyDynamoDbModelDataSourceStrategy(strategy);
+    const tableName = isTableImported ? strategy.tableName : context.resourceHelper.generateTableName(modelName);
 
     // Add parameters.
     const { readIops, writeIops, billingMode, pointInTimeRecovery, enableSSE } = this.createDynamoDBParameters(scope, true);
@@ -178,7 +189,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
       expression: cdk.Fn.conditionEquals(pointInTimeRecovery, 'true'),
     });
 
-    const removalPolicy = this.options.EnableDeletionProtection ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY;
+    const removalPolicy = isTableImported || this.options.EnableDeletionProtection ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY;
 
     // TODO: The attribute of encryption and TTL should be added
     const table = new AmplifyDynamoDBTable(scope, `${tableLogicalName}`, {
@@ -194,6 +205,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
       encryption: TableEncryption.DEFAULT,
       removalPolicy,
       ...(context.isProjectUsingDataStore() ? { timeToLiveAttribute: '_ttl' } : undefined),
+      ...(isTableImported ? { isImported: true } : undefined),
     });
     setResourceName(table, { name: modelName, setOnDefaultChild: false });
 

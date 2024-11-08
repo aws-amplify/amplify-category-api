@@ -11,7 +11,7 @@ import {
  */
 export const listMessagesInitFunctionDefinition: ResolverFunctionDefinition = createResolverFunctionDefinition({
   slotName: 'init',
-  fileName: 'list-messages-init-resolver-fn.template.js',
+  fileName: 'list-messages-init-set-index-resolver-fn.template.js',
   generateTemplate: createS3AssetMappingTemplateGenerator('Query', 'list-messages-init', (config) => config.field.name.value),
   substitutions: () => ({
     INDEX_NAME: LIST_MESSAGES_INDEX_NAME,

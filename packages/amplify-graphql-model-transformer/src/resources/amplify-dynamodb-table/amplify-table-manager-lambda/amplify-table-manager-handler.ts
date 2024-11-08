@@ -24,7 +24,7 @@ import { OnEventResponse } from '../amplify-table-manager-lambda-types';
 import * as cfnResponse from './cfn-response';
 import { startExecution } from './outbound';
 import { getEnv, log } from './util';
-import { CfnTag } from 'aws-cdk-lib';
+import { importTable } from './import-table';
 
 const ddbClient = new DynamoDB();
 const lambdaClient = new Lambda();
@@ -167,8 +167,11 @@ const processOnEvent = async (
   let result;
   switch (event.RequestType) {
     case 'Create':
-      console.log('Initiating CREATE event');
       const createTableInput = toCreateTableInput(tableDef);
+      if (tableDef.isImported) {
+        return importTable(createTableInput);
+      }
+      console.log('Initiating CREATE event');
       console.log('Create Table Params: ', createTableInput);
       const response = await createNewTable(createTableInput);
       result = {
@@ -1059,6 +1062,7 @@ const convertStringToBooleanOrNumber = (obj: Record<string, any>): Record<string
     'pointInTimeRecoveryEnabled',
     'allowDestructiveGraphqlSchemaUpdates',
     'replaceTableUponGsiUpdate',
+    'isImported',
   ];
   const fieldsToBeConvertedToNumber = ['readCapacityUnits', 'writeCapacityUnits'];
   for (const key in obj) {
@@ -1396,4 +1400,5 @@ const retry = async <T>(
  * @returns void
  */
 const sleep = async (milliseconds: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, milliseconds));
+
 // #endregion Helpers

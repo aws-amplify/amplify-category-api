@@ -5,12 +5,22 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { cdkDeploy, cdkDestroy, initCDKProject } from '../../commands';
 import { createCognitoUser, signInCognitoUser, TestDefinition, writeStackConfig, writeTestDefinitions } from '../../utils';
-import { AppSyncSubscriptionClient, consumeYields, mergeNamedAsyncIterators } from '../../utils/appsync-graphql/subscription';
-import { DURATION_20_MINUTES, ONE_MINUTE } from '../../utils/duration-constants';
-import { onCreateAssistantResponsePirateChat } from './graphql/subscriptions';
+import { AppSyncSubscriptionClient, mergeNamedAsyncIterators } from '../../utils/appsync-graphql/subscription';
+import { DURATION_20_MINUTES, DURATION_5_MINUTES, ONE_MINUTE } from '../../utils/duration-constants';
 import {
+  ContentBlock,
+  ConversationMessageStreamPart,
+  OnCreateAssistantResponsePirateChatSubscription,
+  ToolConfigurationInput,
+} from './API';
+import { onCreateAssistantResponseDisabledModelChat, onCreateAssistantResponsePirateChat } from './graphql/subscriptions';
+import {
+  doCreateConversationDisabledModelChat,
   doCreateConversationPirateChat,
+  doGetConversationPirateChat,
   doListConversationMessagesPirateChat,
+  doSendMessageDisabledModelChat,
+  doListConversationsPirateChat,
   doSendMessagePirateChat,
   doUpdateConversationPirateChat,
 } from './test-implementations';
@@ -73,7 +83,7 @@ describe('conversation', () => {
     });
 
     test(
-      'happy path: user creates conversation, sends message, and receives response through subscription',
+      'happy path: user creates conversation, sends message, receives response through subscription, conversation updatedAt is updated',
       async () => {
         // create a conversation
         const conversationResult = await doCreateConversationPirateChat(apiEndpoint, accessToken);
@@ -90,21 +100,46 @@ describe('conversation', () => {
         });
 
         // send a message to the conversation
-        const sendMessageResult = await doSendMessagePirateChat(apiEndpoint, accessToken, conversationId, [{ text: 'Hello, world!' }]);
+        const sendMessageResult = await doSendMessagePirateChat({
+          apiEndpoint,
+          accessToken,
+          conversationId,
+          content: [{ text: 'Hello, world!' }],
+        });
         const message = sendMessageResult.body.data?.pirateChat;
         expect(message).toBeDefined();
         expect(message.content).toHaveLength(1);
         expect(message.content[0].text).toEqual('Hello, world!');
         expect(message.conversationId).toEqual(conversationId);
 
+        const events: ConversationMessageStreamPart[] = [];
         // expect to receive the assistant response in the subscription
         for await (const event of subscription) {
-          expect(event.onCreateAssistantResponsePirateChat.conversationId).toEqual(conversationId);
-          expect(event.onCreateAssistantResponsePirateChat.content).toHaveLength(1);
-          expect(event.onCreateAssistantResponsePirateChat.content[0].text).toBeDefined();
-          expect(event.onCreateAssistantResponsePirateChat.role).toEqual('assistant');
-          break;
+          events.push(event.onCreateAssistantResponsePirateChat);
+          if (event.onCreateAssistantResponsePirateChat.stopReason) break;
         }
+
+        // reconstruct the message from the events
+        const sortedEvents = events
+          .filter((event) => event.contentBlockText)
+          .sort((a, b) => a.contentBlockDeltaIndex - b.contentBlockDeltaIndex);
+        const contentBlockText = sortedEvents.map((event) => event.contentBlockText).join('');
+
+        // list messages to get the full assistant message
+        const listMessagesResult = await doListConversationMessagesPirateChat(apiEndpoint, accessToken, conversationId);
+        const messages = listMessagesResult.body.data.listConversationMessagePirateChats.items;
+        expect(messages).toHaveLength(2);
+
+        // assert that the received assistant message matches the message reconstructed from the events.
+        const assistantMessage = messages.find((message) => message.role === 'assistant');
+        expect(assistantMessage).toBeDefined();
+        expect(assistantMessage.content).toHaveLength(1);
+        expect(assistantMessage.content[0].text).toEqual(contentBlockText);
+
+        // assert that the conversation updatedAt field is updated to the user message createdAt field
+        const conversation = await doGetConversationPirateChat(apiEndpoint, accessToken, conversationId);
+        expect(conversation.body.data.getConversationPirateChat.updatedAt).toBeDefined();
+        expect(conversation.body.data.getConversationPirateChat.updatedAt).toEqual(message.createdAt);
       },
       ONE_MINUTE,
     );
@@ -127,14 +162,282 @@ describe('conversation', () => {
       expect(updatedId).toEqual(id);
     });
 
+    test(
+      'list conversation messages ordered by createdAt',
+      async () => {
+        // create a conversation
+        const conversationResult = await doCreateConversationPirateChat(apiEndpoint, accessToken);
+        const { id: conversationId } = conversationResult.body.data.createConversationPirateChat;
+
+        // subscribe to the conversation
+        const client = new AppSyncSubscriptionClient(realtimeEndpoint, apiEndpoint);
+        const connection = await client.connect({ accessToken });
+        const subscription = connection.subscribe({
+          query: onCreateAssistantResponsePirateChat,
+          variables: { conversationId },
+          auth: { accessToken },
+        });
+
+        // send messages to the conversation
+        await doSendMessagePirateChat({
+          apiEndpoint,
+          accessToken,
+          conversationId,
+          content: [{ text: 'tell me something interesting about the ocean. keep it less than 100 characters.' }],
+        });
+
+        // wait for the assistant response
+        for await (const event of subscription) {
+          if (event.onCreateAssistantResponsePirateChat.stopReason) break;
+        }
+
+        await doSendMessagePirateChat({
+          apiEndpoint,
+          accessToken,
+          conversationId,
+          content: [{ text: 'tell me more. again less than 100 characters.' }],
+        });
+
+        // wait for the second assistant response
+        for await (const event of subscription) {
+          if (event.onCreateAssistantResponsePirateChat.stopReason) break;
+        }
+
+        // list messages to get the full assistant message
+        const listMessagesResult = await doListConversationMessagesPirateChat(apiEndpoint, accessToken, conversationId);
+        const messages = listMessagesResult.body.data.listConversationMessagePirateChats.items;
+        expect(messages.length).toBeGreaterThanOrEqual(4);
+        const createdAts = messages.map((message) => message.createdAt);
+        expect(createdAts).toEqual([...createdAts].sort((a, b) => new Date(a).getTime() - new Date(b).getTime()));
+      },
+      ONE_MINUTE,
+    );
+
+    test('list conversations ordered by updatedAt', async () => {
+      // create conversations
+      await doCreateConversationPirateChat(apiEndpoint, accessToken);
+      await doCreateConversationPirateChat(apiEndpoint, accessToken);
+      await doCreateConversationPirateChat(apiEndpoint, accessToken);
+      await doCreateConversationPirateChat(apiEndpoint, accessToken);
+      await doCreateConversationPirateChat(apiEndpoint, accessToken);
+
+      // list conversations
+      const listConversationsResult = await doListConversationsPirateChat(apiEndpoint, accessToken);
+      const conversations = listConversationsResult.body.data.listConversationPirateChats.items;
+      // there's likely already more conversations due to other tests running in parallel.
+      expect(conversations.length).toBeGreaterThanOrEqual(5);
+      const updatedAts = conversations.map((conversation) => conversation.updatedAt);
+      expect(updatedAts).toEqual([...updatedAts].sort((a, b) => new Date(b).getTime() - new Date(a).getTime()));
+    });
+
+    test(
+      'client tool usage',
+      async () => {
+        // create a conversation
+        const conversationResult = await doCreateConversationPirateChat(apiEndpoint, accessToken);
+        const { id: conversationId } = conversationResult.body.data.createConversationPirateChat;
+
+        // subscribe to the conversation
+        const client = new AppSyncSubscriptionClient(realtimeEndpoint, apiEndpoint);
+        const connection = await client.connect({ accessToken });
+        const subscription = connection.subscribe({
+          query: onCreateAssistantResponsePirateChat,
+          variables: { conversationId },
+          auth: { accessToken },
+        });
+
+        // define the client tool configuration
+        const toolConfiguration: ToolConfigurationInput = {
+          tools: [
+            {
+              toolSpec: {
+                name: 'GetWeather',
+                description: 'Get the temperature for a given location.',
+                inputSchema: {
+                  json: JSON.stringify({
+                    type: 'object',
+                    properties: {
+                      city: {
+                        type: 'string',
+                      },
+                    },
+                    required: ['city'],
+                  }),
+                },
+              },
+            },
+          ],
+        };
+
+        // send a message to with the tool configuration and a message that triggers to tool.
+        const sendMessageResult = await doSendMessagePirateChat({
+          apiEndpoint,
+          accessToken,
+          conversationId,
+          content: [{ text: 'What should I wear in Charleston, SC today?' }],
+          toolConfiguration,
+        });
+
+        // assert that the returned user message has the expected values.
+        const message1 = sendMessageResult.body.data.pirateChat;
+        expect(message1).toBeDefined();
+        expect(message1.content).toHaveLength(1);
+        expect(message1.content[0].text).toEqual('What should I wear in Charleston, SC today?');
+        expect(message1.conversationId).toEqual(conversationId);
+        expect(message1.toolConfiguration).toEqual(toolConfiguration);
+
+        // expect to receive the assistant response including a toolUse block in the subscription
+        const events: ConversationMessageStreamPart[] = [];
+        for await (const event of subscription) {
+          events.push(event.onCreateAssistantResponsePirateChat);
+          if (event.onCreateAssistantResponsePirateChat.stopReason) break;
+        }
+
+        // assert that the event has the expected toolUse block
+        const eventWithToolUse = events.find((event) => event.contentBlockToolUse);
+        expect(eventWithToolUse).toBeDefined();
+        expect(eventWithToolUse.contentBlockToolUse.name).toEqual('GetWeather');
+        expect(eventWithToolUse.contentBlockToolUse.toolUseId).toBeDefined();
+        const parsedInput = JSON.parse(eventWithToolUse.contentBlockToolUse.input);
+        expect(parsedInput.city).toMatch(/charleston/i);
+
+        // send a message with the tool result
+        const toolResultContent = { temperature: 82, unit: 'F' };
+        const sendMessageResult2 = await doSendMessagePirateChat({
+          apiEndpoint,
+          accessToken,
+          conversationId,
+          content: [
+            {
+              toolResult: {
+                content: [{ json: JSON.stringify(toolResultContent) }],
+                status: 'success',
+                toolUseId: eventWithToolUse.contentBlockToolUse.toolUseId,
+              },
+            },
+          ],
+          toolConfiguration,
+        });
+
+        // assert that the returned user message has the expected values.
+        const message2 = sendMessageResult2.body.data.pirateChat;
+        expect(message2).toBeDefined();
+        expect(message2.content).toHaveLength(1);
+        expect(message2.content[0].toolResult.toolUseId).toEqual(eventWithToolUse.contentBlockToolUse.toolUseId);
+        expect(message2.content[0].toolResult.content[0].json).toEqual(JSON.stringify(toolResultContent));
+
+        // expect to receive the assistant response in the subscription
+        for await (const event of subscription) {
+          events.push(event.onCreateAssistantResponsePirateChat);
+          if (event.onCreateAssistantResponsePirateChat.stopReason) break;
+        }
+
+        // list messages to get the full assistant message
+        const listMessagesResult = await doListConversationMessagesPirateChat(apiEndpoint, accessToken, conversationId);
+        const messages = listMessagesResult.body.data.listConversationMessagePirateChats.items;
+        expect(messages).toHaveLength(4);
+
+        // assert that the assistant responses from the list query match the message reconstructed from the events.
+        const assistantResponseFromListQueryMessage1 = messages.find((message) => message.associatedUserMessageId === message1.id);
+        const assistantResponseFromReconciledStreamEventsMessage1 = reconcileStreamEvents(
+          events.filter((event) => event.associatedUserMessageId === message1.id),
+        );
+        expect(
+          assistantResponseFromListQueryMessage1.content.map((contentBlock) =>
+            Object.fromEntries(Object.entries(contentBlock).filter(([_, value]) => !!value)),
+          ),
+        ).toEqual(assistantResponseFromReconciledStreamEventsMessage1);
+
+        const assistantResponseFromListQueryMessage2 = messages.find((message) => message.associatedUserMessageId === message2.id);
+        const assistantResponseFromReconciledStreamEventsMessage2 = reconcileStreamEvents(
+          events.filter((event) => event.associatedUserMessageId === message2.id),
+        );
+        expect(
+          assistantResponseFromListQueryMessage2.content.map((contentBlock) =>
+            Object.fromEntries(Object.entries(contentBlock).filter(([_, value]) => !!value)),
+          ),
+        ).toEqual(assistantResponseFromReconciledStreamEventsMessage2);
+      },
+      DURATION_5_MINUTES,
+    );
+
+    // This test requires that the model with the specified id (mistral.mistral-large-2407-v1:0) is not enabled
+    // in the testing region. If the assertions fail, it is likely that the model has been enabled in the region.
+    // In that case, change the model id in `schema-conversation.graphql` or use a different region.
+    test(
+      'disabled model error propagated from lambda through subscription',
+      async () => {
+        // create a conversation
+        const conversationResult = await doCreateConversationDisabledModelChat(apiEndpoint, accessToken);
+        const { id: conversationId } = conversationResult.body.data.createConversationDisabledModelChat;
+        // subscribe to the conversation
+        const client = new AppSyncSubscriptionClient(realtimeEndpoint, apiEndpoint);
+        const connection = await client.connect({ accessToken });
+        const subscription = connection.subscribe({
+          query: onCreateAssistantResponseDisabledModelChat,
+          variables: { conversationId },
+          auth: { accessToken },
+        });
+
+        // send a message to the conversation
+        await doSendMessageDisabledModelChat({
+          apiEndpoint,
+          accessToken,
+          conversationId,
+          content: [{ text: 'Hello, world!' }],
+        });
+
+        for await (const event of subscription) {
+          expect(event.onCreateAssistantResponseDisabledModelChat.errors).toHaveLength(1);
+          expect(event.onCreateAssistantResponseDisabledModelChat.errors[0].errorType).toEqual('AccessDeniedException');
+          expect(event.onCreateAssistantResponseDisabledModelChat.errors[0].message).toEqual(
+            "You don't have access to the model with the specified model ID.",
+          );
+          break;
+        }
+      },
+      ONE_MINUTE,
+    );
+
     describe('conversation owner auth negative tests', () => {
+      test('user2 cannot list user1s conversations', async () => {
+        // user1 creates a conversation
+        const user1ConversationResult = await doCreateConversationPirateChat(apiEndpoint, accessToken);
+        const { id: user1ConversationId } = user1ConversationResult.body.data.createConversationPirateChat;
+
+        // user2 creates a conversation
+        const user2ConversationResult = await doCreateConversationPirateChat(apiEndpoint, accessToken2);
+        const { id: user2ConversationId } = user2ConversationResult.body.data.createConversationPirateChat;
+
+        // user1 should be able to list their conversations
+        const user1ListConversationsResult = await doListConversationsPirateChat(apiEndpoint, accessToken);
+        const user1ListedConversationIds = user1ListConversationsResult.body.data.listConversationPirateChats.items.map(
+          (conversation) => conversation.id,
+        );
+        expect(user1ListedConversationIds).toContain(user1ConversationId);
+        expect(user1ListedConversationIds).not.toContain(user2ConversationId);
+
+        // user2 attempts to list the conversations
+        const user2ListConversationsResult = await doListConversationsPirateChat(apiEndpoint, accessToken2);
+        const user2ListedConversationIds = user2ListConversationsResult.body.data.listConversationPirateChats.items.map(
+          (conversation) => conversation.id,
+        );
+        expect(user2ListedConversationIds).not.toContain(user1ConversationId);
+        expect(user2ListedConversationIds).toContain(user2ConversationId);
+      });
+
       test('user2 cannot send message to user1s conversation', async () => {
         // user1 creates a conversation
         const conversationResult = await doCreateConversationPirateChat(apiEndpoint, accessToken);
         const { id } = conversationResult.body.data.createConversationPirateChat;
 
         // user2 attempts to send a message to the conversation
-        const sendMessageResult = await doSendMessagePirateChat(apiEndpoint, accessToken2, id, [{ text: 'Hello, world!' }]);
+        const sendMessageResult = await doSendMessagePirateChat({
+          apiEndpoint,
+          accessToken: accessToken2,
+          conversationId: id,
+          content: [{ text: 'Hello, world!' }],
+        });
 
         // expect the response data to be null
         expect(sendMessageResult.body.data.pirateChat).toBeNull();
@@ -151,7 +454,12 @@ describe('conversation', () => {
         const { id } = conversationResult.body.data.createConversationPirateChat;
 
         // user1 sends a message to the conversation
-        const sendMessageResult = await doSendMessagePirateChat(apiEndpoint, accessToken, id, [{ text: 'Hello, world!' }]);
+        const sendMessageResult = await doSendMessagePirateChat({
+          apiEndpoint,
+          accessToken,
+          conversationId: id,
+          content: [{ text: 'Hello, world!' }],
+        });
         const message = sendMessageResult.body.data.pirateChat;
         expect(message).toBeDefined();
         expect(message.content).toHaveLength(1);
@@ -224,27 +532,51 @@ describe('conversation', () => {
           );
 
           // user1 sends message to user1's conversation
-          await doSendMessagePirateChat(apiEndpoint, accessToken, user1ConversationId, [{ text: 'Hello, world!' }]);
+          await doSendMessagePirateChat({
+            apiEndpoint,
+            accessToken,
+            conversationId: user1ConversationId,
+            content: [{ text: 'Hello, world!' }],
+          });
 
           // user2 sends message to user2's conversation
-          await doSendMessagePirateChat(apiEndpoint, accessToken2, user2ConversationId, [{ text: 'Hello, world!' }]);
-
-          // consume two events from the merged stream
-          const events = await consumeYields(mergedSubscriptionStream, 2);
-
-          events.forEach(([name, value]) => {
-            switch (name) {
-              case 'user1-user2':
-              case 'user2-user1':
-                throw new Error(`subscription event received by wrong user. Name: ${name}. Event: ${JSON.stringify(value, null, 2)}`);
-              case 'user1-user1':
-                expect(value.onCreateAssistantResponsePirateChat.conversationId).toEqual(user1ConversationId);
-                break;
-              case 'user2-user2':
-                expect(value.onCreateAssistantResponsePirateChat.conversationId).toEqual(user2ConversationId);
-                break;
-            }
+          await doSendMessagePirateChat({
+            apiEndpoint,
+            accessToken: accessToken2,
+            conversationId: user2ConversationId,
+            content: [{ text: 'Hello, world!' }],
           });
+
+          // consume two assistant response streams from the merged stream
+          let expectedStopReasonEvents = 2;
+          let namedEvents: [string, OnCreateAssistantResponsePirateChatSubscription][] = [];
+          for await (const namedEvent of mergedSubscriptionStream) {
+            namedEvents.push(namedEvent);
+
+            const [_, event] = namedEvent;
+            if (event.onCreateAssistantResponsePirateChat.stopReason) expectedStopReasonEvents--;
+            if (expectedStopReasonEvents === 0) break;
+          }
+
+          const unexpectedEvents = namedEvents.filter(([name]) => name === 'user1-user2' || name === 'user2-user1');
+          // user1-user2 and user2-user1 subscriptions should not receive any events.
+          expect(unexpectedEvents).toHaveLength(0);
+
+          const user1SubscriptionEvents = namedEvents
+            .filter(([name]) => name === 'user1-user1')
+            .map(([_, event]) => event.onCreateAssistantResponsePirateChat.conversationId);
+
+          const user2SubscriptionEvents = namedEvents
+            .filter(([name]) => name === 'user2-user2')
+            .map(([_, event]) => event.onCreateAssistantResponsePirateChat.conversationId);
+
+          // user1 and user2 should receive events for their own conversations
+          expect(user1SubscriptionEvents.length).toBeGreaterThan(0);
+          expect(user2SubscriptionEvents.length).toBeGreaterThan(0);
+
+          // assert that the received conversation ids from those events match the expected conversation ids
+          user1SubscriptionEvents.forEach((receivedConversationId) => expect(receivedConversationId).toEqual(user1ConversationId));
+          user2SubscriptionEvents.forEach((receivedConversationId) => expect(receivedConversationId).toEqual(user2ConversationId));
         },
         ONE_MINUTE,
       );
@@ -274,4 +606,25 @@ const deployCdk = async (projRoot: string): Promise<{ apiEndpoint: string; userP
   const outputs = await cdkDeploy(projRoot, '--all');
   const { awsAppsyncApiEndpoint, UserPoolClientId, UserPoolId } = outputs[name];
   return { apiEndpoint: awsAppsyncApiEndpoint, userPoolClientId: UserPoolClientId, userPoolId: UserPoolId };
+};
+
+const reconcileStreamEvents = (events: ConversationMessageStreamPart[]): ContentBlock[] => {
+  return events
+    .sort((a, b) => {
+      let aValue = a.contentBlockIndex * 1000 + (a.contentBlockDeltaIndex || 0);
+      let bValue = b.contentBlockIndex * 1000 + (b.contentBlockDeltaIndex || 0);
+      return aValue - bValue;
+    })
+    .reduce((acc, event) => {
+      if (event.contentBlockText) {
+        if (acc[event.contentBlockIndex]) {
+          acc[event.contentBlockIndex].text += event.contentBlockText;
+        } else {
+          acc[event.contentBlockIndex] = { text: event.contentBlockText };
+        }
+      } else if (event.contentBlockToolUse) {
+        acc[event.contentBlockIndex] = { toolUse: event.contentBlockToolUse };
+      }
+      return acc;
+    }, [] as ContentBlock[]);
 };

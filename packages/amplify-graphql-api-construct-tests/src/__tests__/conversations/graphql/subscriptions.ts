@@ -8,33 +8,54 @@ type GeneratedSubscription<InputType, OutputType> = string & {
   __generatedSubscriptionOutput: OutputType;
 };
 
-export const onCreateAssistantResponsePirateChat = /* GraphQL */ `subscription OnCreateAssistantResponsePirateChat($conversationId: ID) {
-  onCreateAssistantResponsePirateChat(conversationId: $conversationId) {
-    aiContext
+export const onCreateAssistantResponseDisabledModelChat =
+  /* GraphQL */ `subscription OnCreateAssistantResponseDisabledModelChat($conversationId: ID) {
+  onCreateAssistantResponseDisabledModelChat(conversationId: $conversationId) {
     associatedUserMessageId
-    content {
-      text
-      __typename
-    }
-    conversation {
-      createdAt
-      id
-      metadata
+    contentBlockDeltaIndex
+    contentBlockDoneAtIndex
+    contentBlockIndex
+    contentBlockText
+    contentBlockToolUse {
+      input
       name
-      owner
-      updatedAt
-      __typename
+      toolUseId
     }
     conversationId
-    createdAt
+    errors {
+      errorType
+      message
+    }
     id
     owner
-    role
-    toolConfiguration {
-      __typename
+    stopReason
+  }
+}
+` as GeneratedSubscription<
+    APITypes.OnCreateAssistantResponseDisabledModelChatSubscriptionVariables,
+    APITypes.OnCreateAssistantResponseDisabledModelChatSubscription
+  >;
+
+export const onCreateAssistantResponsePirateChat = /* GraphQL */ `subscription OnCreateAssistantResponsePirateChat($conversationId: ID) {
+  onCreateAssistantResponsePirateChat(conversationId: $conversationId) {
+    associatedUserMessageId
+    contentBlockDeltaIndex
+    contentBlockDoneAtIndex
+    contentBlockIndex
+    contentBlockText
+    contentBlockToolUse {
+      input
+      name
+      toolUseId
     }
-    updatedAt
-    __typename
+    conversationId
+    errors {
+      errorType
+      message
+    }
+    id
+    owner
+    stopReason
   }
 }
 ` as GeneratedSubscription<
@@ -50,7 +71,45 @@ export const onCreateConversationMessagePirateChat = /* GraphQL */ `subscription
     associatedUserMessageId
     content {
       text
-      __typename
+      toolResult {
+        status
+        content {
+          document {
+            format
+            name
+            source {
+              bytes
+            }
+          }
+          image {
+            format
+            source {
+              bytes
+            }
+          }
+          json
+          text
+        }
+        toolUseId
+      }
+      toolUse {
+        input
+        name
+        toolUseId
+      }
+      image {
+        format
+        source {
+          bytes
+        }
+      }
+      document {
+        format
+        name
+        source {
+          bytes
+        }
+      }
     }
     conversation {
       createdAt
@@ -59,7 +118,6 @@ export const onCreateConversationMessagePirateChat = /* GraphQL */ `subscription
       name
       owner
       updatedAt
-      __typename
     }
     conversationId
     createdAt
@@ -67,10 +125,17 @@ export const onCreateConversationMessagePirateChat = /* GraphQL */ `subscription
     owner
     role
     toolConfiguration {
-      __typename
+      tools {
+        toolSpec {
+          description
+          inputSchema {
+            json
+          }
+          name
+        }
+      }
     }
     updatedAt
-    __typename
   }
 }
 ` as GeneratedSubscription<

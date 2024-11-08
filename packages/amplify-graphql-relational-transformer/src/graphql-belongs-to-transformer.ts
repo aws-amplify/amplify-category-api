@@ -152,6 +152,16 @@ export class BelongsToTransformer extends TransformerPluginBase {
 
     for (const config of this.directiveList) {
       // This validation can't occur in validate because the api has not been initialized until generateResolvers
+
+      // TODO: GEN1_GEN2_MIGRATION
+      // Remove this block when migration is released
+      // Start block
+      if (config.overrideIndexName) {
+        Annotations.of(ctx.api).addWarning(
+          `overrideIndexName argument on @${BelongsToDirective.name} is experimental and is not recommended for production use. This functionality may be changed or removed without warning.`,
+        );
+      }
+      // end block
       if (!ctx.transformParameters.allowGen1Patterns) {
         const { field, object } = config;
         const modelName = object.name.value;
@@ -176,6 +186,12 @@ export class BelongsToTransformer extends TransformerPluginBase {
 
 const validate = (config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void => {
   const { field, object } = config;
+  if (config.overrideIndexName && !config.references) {
+    throw new InvalidDirectiveError(
+      `overrideIndexName cannot be used on @${BelongsToDirective.name} without references. Modify ${object.name.value}.${field.name.value} to use references or remove overrideIndexName.`,
+    );
+  }
+
   let dbType: ModelDataSourceStrategyDbType;
   try {
     // getStrategyDbTypeFromTypeNode throws if a datasource is not found for the model. We want to catch that condition

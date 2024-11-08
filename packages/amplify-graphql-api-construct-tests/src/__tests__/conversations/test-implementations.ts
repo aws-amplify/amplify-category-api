@@ -1,13 +1,24 @@
 import { AppSyncGraphqlResponse, doAppSyncGraphqlOperation, doAppSyncGraphqlQuery } from '../../utils';
 import {
+  ContentBlockInput,
+  CreateConversationDisabledModelChatMutation,
   CreateConversationPirateChatMutation,
+  DisabledModelChatMutation,
   GetConversationPirateChatQuery,
   ListConversationMessagePirateChatsQuery,
+  ListConversationPirateChatsQuery,
   PirateChatMutation,
+  ToolConfigurationInput,
   UpdateConversationPirateChatMutation,
 } from './API';
-import { createConversationPirateChat, pirateChat, updateConversationPirateChat } from './graphql/mutations';
-import { getConversationPirateChat, listConversationMessagePirateChats } from './graphql/queries';
+import {
+  createConversationDisabledModelChat,
+  createConversationPirateChat,
+  disabledModelChat,
+  pirateChat,
+  updateConversationPirateChat,
+} from './graphql/mutations';
+import { getConversationPirateChat, listConversationMessagePirateChats, listConversationPirateChats } from './graphql/queries';
 
 export const doCreateConversationPirateChat = async (
   apiEndpoint: string,
@@ -17,6 +28,18 @@ export const doCreateConversationPirateChat = async (
     apiEndpoint,
     auth: { accessToken: accessToken },
     query: createConversationPirateChat,
+    variables: { input: { name: 'test conversation' } },
+  });
+};
+
+export const doCreateConversationDisabledModelChat = async (
+  apiEndpoint: string,
+  accessToken: string,
+): Promise<AppSyncGraphqlResponse<CreateConversationDisabledModelChatMutation>> => {
+  return doAppSyncGraphqlOperation({
+    apiEndpoint,
+    auth: { accessToken: accessToken },
+    query: createConversationDisabledModelChat,
     variables: { input: { name: 'test conversation' } },
   });
 };
@@ -36,6 +59,17 @@ export const doGetConversationPirateChat = async (
   });
 };
 
+export const doListConversationsPirateChat = async (
+  apiEndpoint: string,
+  accessToken: string,
+): Promise<AppSyncGraphqlResponse<ListConversationPirateChatsQuery>> => {
+  return doAppSyncGraphqlQuery({
+    apiEndpoint,
+    auth: { accessToken: accessToken },
+    query: listConversationPirateChats,
+  });
+};
+
 export const doUpdateConversationPirateChat = async (
   apiEndpoint: string,
   accessToken: string,
@@ -50,19 +84,42 @@ export const doUpdateConversationPirateChat = async (
   });
 };
 
-export const doSendMessagePirateChat = async (
-  apiEndpoint: string,
-  accessToken: string,
-  conversationId: string,
-  content: { text: string }[],
-): Promise<AppSyncGraphqlResponse<PirateChatMutation>> => {
+export const doSendMessagePirateChat = async (input: {
+  apiEndpoint: string;
+  accessToken: string;
+  conversationId: string;
+  content: ContentBlockInput[];
+  toolConfiguration?: ToolConfigurationInput;
+}): Promise<AppSyncGraphqlResponse<PirateChatMutation>> => {
+  const { apiEndpoint, accessToken, conversationId, content, toolConfiguration } = input;
   return doAppSyncGraphqlOperation({
     apiEndpoint,
-    auth: { accessToken: accessToken },
+    auth: { accessToken },
     query: pirateChat,
     variables: {
       conversationId,
       content,
+      toolConfiguration,
+    },
+  });
+};
+
+export const doSendMessageDisabledModelChat = async (input: {
+  apiEndpoint: string;
+  accessToken: string;
+  conversationId: string;
+  content: ContentBlockInput[];
+  toolConfiguration?: ToolConfigurationInput;
+}): Promise<AppSyncGraphqlResponse<DisabledModelChatMutation>> => {
+  const { apiEndpoint, accessToken, conversationId, content, toolConfiguration } = input;
+  return doAppSyncGraphqlOperation({
+    apiEndpoint,
+    auth: { accessToken },
+    query: disabledModelChat,
+    variables: {
+      conversationId,
+      content,
+      toolConfiguration,
     },
   });
 };

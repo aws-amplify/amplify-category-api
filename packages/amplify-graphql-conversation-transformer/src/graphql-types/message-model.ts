@@ -91,16 +91,12 @@ export const createMessageModel = (
   };
 };
 
-export const createMessageSubscription = (
-  subscriptionName: string,
-  conversationMessageTypeName: string,
-  onMutationName: string,
-): FieldDefinitionNode => {
+export const createMessageSubscription = (subscriptionName: string, onMutationName: string): FieldDefinitionNode => {
   const awsSubscribeDirective = makeDirective('aws_subscribe', [makeArgument('mutations', makeValueNode([onMutationName]))]);
   const cognitoAuthDirective = makeDirective('aws_cognito_user_pools', []);
 
   const args: InputValueDefinitionNode[] = [makeInputValueDefinition('conversationId', makeNamedType('ID'))];
-  const subscriptionField = makeField(subscriptionName, args, makeNamedType(conversationMessageTypeName), [
+  const subscriptionField = makeField(subscriptionName, args, makeNamedType(STREAM_RESPONSE_TYPE_NAME), [
     awsSubscribeDirective,
     cognitoAuthDirective,
   ]);
@@ -128,6 +124,45 @@ export const createAssistantResponseMutationInput = (messageName: string): Input
   };
 };
 
+export const createAssistantResponseStreamingMutationInput = (messageModelName: string): InputObjectTypeDefinitionNode => {
+  const inputName = `Create${messageModelName}AssistantStreamingInput`;
+  return {
+    kind: 'InputObjectTypeDefinition',
+    name: { kind: 'Name', value: inputName },
+    fields: [
+      makeInputValueDefinition('conversationId', makeNonNullType(makeNamedType('ID'))),
+      makeInputValueDefinition('associatedUserMessageId', makeNonNullType(makeNamedType('ID'))),
+      makeInputValueDefinition('contentBlockIndex', makeNamedType('Int')),
+      makeInputValueDefinition('contentBlockText', makeNamedType('String')),
+      makeInputValueDefinition('contentBlockDeltaIndex', makeNamedType('Int')),
+      makeInputValueDefinition('contentBlockToolUse', makeNamedType('AWSJSON')),
+      makeInputValueDefinition('contentBlockDoneAtIndex', makeNamedType('Int')),
+      makeInputValueDefinition('stopReason', makeNamedType('String')),
+      makeInputValueDefinition('accumulatedTurnContent', makeListType(makeNamedType('ContentBlockInput'))),
+      makeInputValueDefinition('errors', makeListType(makeNamedType('ConversationTurnErrorInput'))),
+    ],
+  };
+};
+
+export const createConversationTurnErrorInput = (): InputObjectTypeDefinitionNode => {
+  return {
+    kind: 'InputObjectTypeDefinition',
+    name: { kind: 'Name', value: 'ConversationTurnErrorInput' },
+    fields: [
+      makeInputValueDefinition('errorType', makeNonNullType(makeNamedType('String'))),
+      makeInputValueDefinition('message', makeNonNullType(makeNamedType('String'))),
+    ],
+  };
+};
+
+export const createAssistantStreamingMutationField = (fieldName: string, inputTypeName: string): FieldDefinitionNode => {
+  const args = [makeInputValueDefinition('input', makeNonNullType(makeNamedType(inputTypeName)))];
+  const cognitoAuthDirective = makeDirective('aws_cognito_user_pools', []);
+  const createAssistantResponseMutation = makeField(fieldName, args, makeNamedType(STREAM_RESPONSE_TYPE_NAME), [cognitoAuthDirective]);
+  return createAssistantResponseMutation;
+};
+
+/**
 /**
  * Creates a model directive for the message model.
  * @returns {DirectiveNode} The model directive node.
@@ -255,4 +290,30 @@ const constructConversationMessageModel = (
   };
 
   return object;
+};
+
+const STREAM_RESPONSE_TYPE_NAME = 'ConversationMessageStreamPart';
+
+export const constructStreamResponseType = (): ObjectTypeDefinitionNode => {
+  return {
+    kind: 'ObjectTypeDefinition',
+    name: { kind: 'Name', value: STREAM_RESPONSE_TYPE_NAME },
+    fields: [
+      makeField('id', [], makeNonNullType(makeNamedType('ID'))),
+      makeField('owner', [], makeNamedType('String')),
+      makeField('conversationId', [], makeNonNullType(makeNamedType('ID'))),
+      makeField('associatedUserMessageId', [], makeNonNullType(makeNamedType('ID'))),
+
+      makeField('contentBlockIndex', [], makeNonNullType(makeNamedType('Int'))),
+
+      makeField('contentBlockText', [], makeNamedType('String')),
+      makeField('contentBlockDeltaIndex', [], makeNamedType('Int')),
+
+      makeField('contentBlockToolUse', [], makeNamedType('AWSJSON')),
+
+      makeField('contentBlockDoneAtIndex', [], makeNamedType('Int')),
+
+      makeField('stopReason', [], makeNamedType('String')),
+    ],
+  };
 };
