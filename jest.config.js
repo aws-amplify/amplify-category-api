@@ -20,6 +20,7 @@ module.exports = {
   projects: [
     // '<rootDir>/packages/amplify-category-api',
     // '<rootDir>/packages/amplify-data-construct',
+    '<rootDir>/packages/amplify-auth-drt',
     '<rootDir>/packages/amplify-graphql-api-construct',
     '<rootDir>/packages/amplify-graphql-auth-transformer',
     '<rootDir>/packages/amplify-graphql-conversation-transformer',

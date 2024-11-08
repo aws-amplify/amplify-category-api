@@ -7,6 +7,7 @@ node_modules
 API.md
 CHANGELOG.md
 client-test-apps
+packages/amplify-auth-drt/amplify-e2e-reports
 packages/amplify-dynamodb-simulator/emulator/dynamodb-local-metadata.json
 packages/amplify-e2e-core/dist/index.html
 packages/amplify-e2e-tests/amplify-e2e-reports

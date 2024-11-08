@@ -1,0 +1,107 @@
+{
+  "name": "amplify-auth-drt",
+  "version": "0.1.0",
+  "description": "Differential random testing suite for Amplify auth",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-category-api.git",
+    "directory": "packages/amplify-auth-drt"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "index.js",
+  "keywords": [
+    "graphql",
+    "appsync",
+    "aws"
+  ],
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "build-tests": "yarn build && tsc --build tsconfig.tests.json",
+    "test": "jest",
+    "test-watch": "jest --watch"
+  },
+  "dependencies": {
+    "@aws-amplify/graphql-api-construct": "1.17.0",
+    "@aws-cdk/aws-cognito-identitypool-alpha": "2.152.0-alpha.0",
+    "@aws-sdk/client-appsync": "3.624.0",
+    "fast-check": "^3.23.1"
+  },
+  "devDependencies": {
+    "aws-cdk-lib": "2.158.0",
+    "constructs": "10.3.0",
+    "ts-jest": "^29.0.0",
+    "ts-node": "^8.10.1"
+  },
+  "jest": {
+    "verbose": false,
+    "preset": "ts-jest",
+    "testRunner": "amplify-category-api-e2e-core/runner",
+    "testEnvironment": "amplify-category-api-e2e-core/environment",
+    "transform": {
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "diagnostics": false
+        }
+      ]
+    },
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
+    "testRegex": "(src/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "lib"
+    ],
+    "collectCoverage": false,
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "reporters": [
+      "default",
+      "jest-junit",
+      [
+        "amplify-category-api-e2e-core/reporter",
+        {
+          "publicPath": "./amplify-e2e-reports",
+          "filename": "index.html",
+          "expand": true
+        }
+      ],
+      [
+        "amplify-category-api-e2e-core/failed-test-reporter",
+        {
+          "publicPath": "./amplify-e2e-reports",
+          "reportPath": "./amplify-e2e-reports/amplify-e2e-failed-test.txt"
+        }
+      ]
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "globals": {
+      "window": {}
+    },
+    "coveragePathIgnorePatterns": [
+      "/__tests__/",
+      "/node_modules/"
+    ],
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
+    }
+  },
+  "jest-junit": {
+    "outputDirectory": "reports/junit/",
+    "outputName": "js-test-results.xml",
+    "usePathForSuiteName": "true",
+    "addFileAttribute": "true"
+  }
+}
