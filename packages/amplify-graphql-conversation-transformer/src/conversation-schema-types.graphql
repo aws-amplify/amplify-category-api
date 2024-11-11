@@ -1,9 +1,4 @@
-enum ConversationParticipantRole {
-  user
-  assistant
-}
-
-interface ConversationMessage {
+extend interface ConversationMessage {
   id: ID!
   conversationId: ID!
   role: ConversationParticipantRole
@@ -11,6 +6,14 @@ interface ConversationMessage {
   aiContext: AWSJSON
   toolConfiguration: ToolConfiguration
   associatedUserMessageId: ID
+  owner: String
+	createdAt: AWSDateTime
+	updatedAt: AWSDateTime
+}
+
+enum ConversationParticipantRole {
+  user
+  assistant
 }
 
 input DocumentBlockSourceInput {
@@ -103,7 +106,7 @@ type ContentBlockToolResult {
   toolResult: ToolResultBlock
 }
 
-input ContentBlockInput {
+extend input ContentBlockInput {
   text: String
   document: DocumentBlockInput
   image: ImageBlockInput
@@ -118,8 +121,7 @@ type ContentBlock {
   toolUse: ToolUseBlock
 }
 
-## Tools
-input ToolConfigurationInput {
+extend input ToolConfigurationInput {
   tools: [ToolInput]
 }
 

@@ -10,7 +10,7 @@ const definition = /* GraphQL */ `
     tools: [ToolMap]
     inferenceConfiguration: ConversationInferenceConfiguration
   ) on FIELD_DEFINITION
-  
+
   input ConversationHandlerFunctionConfiguration {
     functionName: String!
     eventVersion: String!

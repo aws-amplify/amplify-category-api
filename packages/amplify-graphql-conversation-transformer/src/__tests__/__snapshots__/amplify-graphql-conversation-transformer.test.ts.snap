@@ -3376,19 +3376,33 @@ exports[`testme: output schema 1`] = `
   deleteConversationMessagePirateChat(input: DeleteConversationMessagePirateChatInput!, condition: ModelConversationMessagePirateChatConditionInput): ConversationMessagePirateChat
 }
 
-enum ConversationParticipantRole {
-  user
-  assistant
-}
-
 interface ConversationMessage {
   id: ID!
   conversationId: ID!
   role: ConversationParticipantRole
   content: [ContentBlock]
-  context: AWSJSON
+  aiContext: AWSJSON
   toolConfiguration: ToolConfiguration
   associatedUserMessageId: ID
+  owner: String
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
+
+input ToolConfigurationInput {
+  tools: [ToolInput]
+}
+
+input ContentBlockInput {
+  text: String
+  document: DocumentBlockInput
+  image: ImageBlockInput
+  toolResult: ToolResultBlockInput
+}
+
+enum ConversationParticipantRole {
+  user
+  assistant
 }
 
 input DocumentBlockSourceInput {
@@ -3481,23 +3495,12 @@ type ContentBlockToolResult {
   toolResult: ToolResultBlock
 }
 
-input ContentBlockInput {
-  text: String
-  document: DocumentBlockInput
-  image: ImageBlockInput
-  toolResult: ToolResultBlockInput
-}
-
 type ContentBlock {
   text: String
   document: DocumentBlock
   image: ImageBlock
   toolResult: ToolResultBlock
   toolUse: ToolUseBlock
-}
-
-input ToolConfigurationInput {
-  tools: [ToolInput]
 }
 
 input ToolInput {

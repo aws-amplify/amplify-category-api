@@ -7,6 +7,7 @@ import {
   ObjectTypeDefinitionNode,
   parse,
   TypeDefinitionNode,
+  TypeSystemExtensionNode,
 } from 'graphql';
 import * as path from 'path';
 import { ConversationModel } from './graphql-types/conversation-model';
@@ -90,6 +91,21 @@ const typeDefinitionKinds = [
   'InputObjectTypeDefinition',
 ];
 
-export const conversationSupportTypes = conversationSupportingTypesDocument.definitions.filter((def): def is TypeDefinitionNode =>
-  typeDefinitionKinds.includes(def.kind),
-);
+const typeSystemExtensionKinds = [
+  'SchemaExtension',
+  'ScalarTypeExtension',
+  'ObjectTypeExtension',
+  'InterfaceTypeExtension',
+  'UnionTypeExtension',
+  'EnumTypeExtension',
+  'InputObjectTypeExtension',
+];
+
+export const conversationSupportTypes = {
+  types: conversationSupportingTypesDocument.definitions.filter((def): def is TypeDefinitionNode =>
+    typeDefinitionKinds.includes(def.kind),
+  ),
+  extensions: conversationSupportingTypesDocument.definitions.filter((def): def is TypeSystemExtensionNode =>
+    typeSystemExtensionKinds.includes(def.kind),
+  ),
+};

@@ -25,7 +25,7 @@ import { ConversationResolverGenerator } from './transformer-steps/conversation-
  * Transformer for handling `@conversation` directives in GraphQL schemas
  */
 export class ConversationTransformer extends TransformerPluginBase {
-  typeDefinitions: TypeDefinitionNode[] = [];
+  // typeDefinitions: TypeDefinitionNode[] = [];
   private directives: ConversationDirectiveConfiguration[] = [];
   private fieldHandler: ConversationFieldHandler;
   private prepareHandler: ConversationPrepareHandler;
@@ -43,11 +43,11 @@ export class ConversationTransformer extends TransformerPluginBase {
     this.prepareHandler = new ConversationPrepareHandler(modelTransformer, hasManyTransformer, belongsToTransformer, authProvider);
     this.resolverGenerator = new ConversationResolverGenerator(functionNameMap);
 
-    const directiveInputTypes = parse(ConversationDirective.definition).definitions.filter(
-      (definition) => definition.kind !== Kind.DIRECTIVE_DEFINITION,
-    ) as TypeDefinitionNode[];
+    // const directiveInputTypes = parse(ConversationDirective.definition).definitions.filter(
+    //   (definition) => definition.kind !== Kind.DIRECTIVE_DEFINITION,
+    // ) as TypeDefinitionNode[];
 
-    this.typeDefinitions = [...conversationSupportTypes, ...directiveInputTypes];
+    // this.typeDefinitions = [...conversationSupportTypes.types, ...directiveInputTypes];
   }
 
   /**

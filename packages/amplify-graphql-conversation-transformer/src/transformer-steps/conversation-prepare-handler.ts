@@ -4,6 +4,7 @@ import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY, InvalidTransformerError } from
 import { ConversationDirectiveConfiguration, conversationSupportTypes } from '../conversation-directive-configuration';
 import { constructStreamResponseType, createConversationTurnErrorInput } from '../graphql-types/message-model';
 import { TransformerAuthProvider, TransformerPrepareStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { InputObjectTypeExtensionNode, InterfaceTypeExtensionNode } from 'graphql';
 
 /**
  * @class ConversationPrepareHandler
@@ -48,7 +49,12 @@ export class ConversationPrepareHandler {
    */
   prepare(ctx: TransformerPrepareStepContextProvider, directives: ConversationDirectiveConfiguration[]): void {
     // add once per schema
-    conversationSupportTypes.forEach((type) => ctx.output.addType(type));
+    const { types, extensions } = conversationSupportTypes;
+    types.forEach((type) => ctx.output.addType(type));
+    const interfaceExtensions = extensions.filter((extension): extension is InterfaceTypeExtensionNode => extension.kind === 'InterfaceTypeExtension');
+    interfaceExtensions.forEach((extension) => ctx.output.addInterfaceExtension(extension));
+    const inputExtensions = extensions.filter((extension): extension is InputObjectTypeExtensionNode => extension.kind === 'InputObjectTypeExtension');
+    inputExtensions.forEach((extension) => ctx.output.addInputExtension(extension));
     const conversationTurnErrorInput = createConversationTurnErrorInput();
     ctx.output.addInput(conversationTurnErrorInput);
 

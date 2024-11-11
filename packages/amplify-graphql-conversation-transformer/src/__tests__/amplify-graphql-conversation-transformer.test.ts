@@ -19,7 +19,7 @@ const getSchema = (fileName: string, substitutions: Record<string, string> = {})
     const replaced = schema.replace(new RegExp(key, 'g'), value);
     schema = replaced;
   });
-  return schema;
+  return schema + '\n' + 'interface ConversationMessage' + '\n' + 'input ToolConfigurationInput' + '\n' + 'input ContentBlockInput';
 };
 
 it('testme', () => {
