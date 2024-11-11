@@ -18,6 +18,7 @@ type Mutation {
   @conversation(
     aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
     systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
-    tools: [{ name: "getTemperature", description: "does a thing" }, { name: "plus", description: "does a different thing" }]
+    tools: [{ name: "getTemperature", description: "does a thing" }, { name: "plus", description: "does a different thing" }],
+    auth: { strategy: owner, provider: userPools },
   )
 }
