@@ -1,8 +1,9 @@
 import { InvalidDirectiveError, JSONSchema } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FieldDefinitionNode, InputValueDefinitionNode, ObjectTypeDefinitionNode, TypeNode } from 'graphql';
-import { getBaseType, isNonNullType, isScalar } from 'graphql-transformer-common';
-import { ToolDefinition } from '../conversation-directive-configuration';
+import { getBaseType, isNonNullType, isScalar, toUpper } from 'graphql-transformer-common';
+import pluralize from 'pluralize';
+import { CustomQueryTool, ModelOperationTool, ToolDefinition } from '../conversation-directive-configuration';
 import { generateJSONSchemaFromTypeNode } from './graphql-json-schema-type';
 
 export type Tool = {
@@ -13,6 +14,12 @@ export type Tool = {
   };
   graphqlRequestInputDescriptor?: GraphQLRequestInputDescriptor;
 };
+
+export const isModelOperationToolPredicate = (tool: ToolDefinition): tool is ModelOperationTool =>
+  tool.modelName !== undefined && tool.modelOperation !== undefined && tool.queryName === undefined;
+
+export const isCustomQueryToolPredicate = (tool: ToolDefinition): tool is CustomQueryTool =>
+  tool.queryName !== undefined && tool.modelName === undefined && tool.modelOperation === undefined;
 
 type GraphQLRequestInputDescriptor = {
   selectionSet: string;
@@ -43,13 +50,16 @@ export const processTools = (toolDefinitions: ToolDefinition[], ctx: Transformer
   // Process each tool definition
   const tools: Tool[] = toolDefinitions.map((toolDefinition) => {
     const { name: toolName, description } = toolDefinition;
-    const queryField = queryType.fields?.find((field) => field.name.value === toolName);
+    const queryName = isModelOperationToolPredicate(toolDefinition)
+      ? `list${pluralize(toUpper(toolDefinition.modelName))}`
+      : toolDefinition.queryName;
+    const queryField = queryType.fields?.find((field) => field.name.value === queryName);
 
     if (!queryField) {
       throw new InvalidDirectiveError(`Tool "${toolName}" defined in @conversation directive has no matching Query field definition`);
     }
 
-    return createTool(toolName, description, queryField, ctx);
+    return createTool({ toolName, description, queryField, ctx });
   });
 
   return tools;
@@ -135,7 +145,13 @@ const getObjectTypeFromName = (name: string, ctx: TransformerContextProvider): O
  * @param {TransformerContextProvider} ctx - The transformer context provider.
  * @returns {Tool} A Tool object.
  */
-const createTool = (toolName: string, description: string, queryField: FieldDefinitionNode, ctx: TransformerContextProvider): Tool => {
+const createTool = (input: {
+  toolName: string;
+  description: string;
+  queryField: FieldDefinitionNode;
+  ctx: TransformerContextProvider;
+}): Tool => {
+  const { toolName, description, queryField, ctx } = input;
   const { type: returnType, arguments: fieldArguments } = queryField;
 
   // Generate tool properties and required fields
@@ -151,7 +167,7 @@ const createTool = (toolName: string, description: string, queryField: FieldDefi
   const graphqlRequestInputDescriptor: GraphQLRequestInputDescriptor = {
     selectionSet,
     propertyTypes,
-    queryName: toolName,
+    queryName: queryField.name.value,
   };
 
   return {

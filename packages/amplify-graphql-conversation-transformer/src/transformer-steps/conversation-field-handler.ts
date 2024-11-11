@@ -13,8 +13,8 @@ import { ConversationModel, createConversationModel } from '../graphql-types/con
 import {
   createAssistantMutationField,
   createAssistantResponseMutationInput,
-  createAssistantStreamingMutationField,
   createAssistantResponseStreamingMutationInput,
+  createAssistantStreamingMutationField,
   createMessageModel,
   createMessageSubscription,
   MessageModel,
@@ -27,6 +27,7 @@ import {
   getConversationTypeName,
   getMessageSubscriptionFieldName,
 } from '../graphql-types/name-values';
+import { isCustomQueryToolPredicate, isModelOperationToolPredicate } from '../tools/process-tools';
 
 /**
  * @class ConversationFieldHandler
@@ -172,6 +173,18 @@ export class ConversationFieldHandler {
     this.validateReturnType(config);
     this.validateInferenceConfig(config);
     this.validateHandler(config);
+    this.validateToolDefinitions(config);
+  }
+
+  private validateToolDefinitions(config: ConversationDirectiveConfiguration): void {
+    const { tools } = config;
+    if (!tools) return;
+
+    const invalidTools = tools.filter((tool) => !isModelOperationToolPredicate(tool) && !isCustomQueryToolPredicate(tool));
+
+    if (invalidTools.length > 0) {
+      throw new InvalidDirectiveError(`Invalid tool definitions: ${invalidTools.map((tool) => tool.name).join(', ')}`);
+    }
   }
 
   /**
