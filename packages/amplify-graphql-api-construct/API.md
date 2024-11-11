@@ -71,7 +71,7 @@ export interface AmplifyDynamoDbModelDataSourceStrategy {
 
 // @public
 export class AmplifyDynamoDbTableWrapper {
-    constructor(resource: CfnResource);
+    constructor(resource: CfnResource, tableManagerStack?: NestedStack | undefined);
     applyRemovalPolicy(policy: RemovalPolicy): void;
     set billingMode(billingMode: BillingMode);
     set deletionProtectionEnabled(deletionProtectionEnabled: boolean);
@@ -81,6 +81,7 @@ export class AmplifyDynamoDbTableWrapper {
     setGlobalSecondaryIndexProvisionedThroughput(indexName: string, provisionedThroughput: ProvisionedThroughput): void;
     set sseSpecification(sseSpecification: SSESpecification);
     set streamSpecification(streamSpecification: StreamSpecification);
+    set tableName(tableName: string);
     set timeToLiveAttribute(timeToLiveSpecification: TimeToLiveSpecification);
 }
 

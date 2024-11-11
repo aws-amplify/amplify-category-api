@@ -1,5 +1,6 @@
-import { CfnResource, RemovalPolicy } from 'aws-cdk-lib';
+import { CfnResource, RemovalPolicy, NestedStack } from 'aws-cdk-lib';
 import { BillingMode, StreamViewType } from 'aws-cdk-lib/aws-dynamodb';
+import { Role, PolicyStatement, Effect } from 'aws-cdk-lib/aws-iam';
 
 const AMPLIFY_DYNAMODB_TABLE_RESOURCE_TYPE = 'Custom::AmplifyDynamoDBTable';
 
@@ -104,7 +105,7 @@ export class AmplifyDynamoDbTableWrapper {
    * Create the wrapper given an underlying CfnResource that is an instance of Custom::AmplifyDynamoDBTable.
    * @param resource the Cfn resource.
    */
-  constructor(private readonly resource: CfnResource) {
+  constructor(private readonly resource: CfnResource, private readonly tableManagerStack?: NestedStack) {
     if (resource.cfnResourceType !== AMPLIFY_DYNAMODB_TABLE_RESOURCE_TYPE) {
       throw new Error(`Only CfnResource with type ${AMPLIFY_DYNAMODB_TABLE_RESOURCE_TYPE} can be used in AmplifyDynamoDbTable`);
     }
@@ -181,5 +182,40 @@ export class AmplifyDynamoDbTableWrapper {
    */
   set deletionProtectionEnabled(deletionProtectionEnabled: boolean) {
     this.resource.addPropertyOverride('deletionProtectionEnabled', deletionProtectionEnabled);
+  }
+
+  /**
+   * Set the name of the table.
+   */
+  set tableName(tableName: string) {
+    if (!this.tableManagerStack) {
+      // If the table manager stack is not provided, we cannot update lambda execution role to allow the custom table name
+      // This should never happen because we shouldn't have an Amplify managed table without a table manager stack
+      throw new Error('Table manager stack is required to set a custom table name for an Amplify managed table.');
+    }
+    this.resource.addPropertyOverride('tableName', tableName);
+    const policy = new PolicyStatement({
+      effect: Effect.ALLOW,
+      actions: [
+        'dynamodb:CreateTable',
+        'dynamodb:UpdateTable',
+        'dynamodb:DeleteTable',
+        'dynamodb:DescribeTable',
+        'dynamodb:DescribeContinuousBackups',
+        'dynamodb:DescribeTimeToLive',
+        'dynamodb:UpdateContinuousBackups',
+        'dynamodb:UpdateTimeToLive',
+        'dynamodb:TagResource',
+        'dynamodb:UntagResource',
+        'dynamodb:ListTagsOfResource',
+      ],
+      resources: [tableName],
+    });
+
+    const onEventRole = this.tableManagerStack.node.findChild('AmplifyManagedTableOnEventRole') as Role;
+    const isCompleteRole = this.tableManagerStack.node.findChild('AmplifyManagedTableIsCompleteRole') as Role;
+
+    onEventRole.addToPolicy(policy);
+    isCompleteRole.addToPolicy(policy);
   }
 }

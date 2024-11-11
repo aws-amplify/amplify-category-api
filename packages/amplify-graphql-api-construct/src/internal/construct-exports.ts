@@ -95,7 +95,15 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
       return;
     }
     if (AmplifyDynamoDbTableWrapper.isAmplifyDynamoDbTableResource(currentScope)) {
-      amplifyDynamoDbTables[resourceName] = new AmplifyDynamoDbTableWrapper(currentScope);
+      let tableManagerStack: NestedStack | undefined;
+      try {
+        tableManagerStack = scope.node.findChild('AmplifyTableManager') as NestedStack;
+      } catch (e) {
+        // no-op
+        // This should never happen.
+        // If it does it would mean the GraphQL API has Amplify managed tables, but does not have the table manager lambda.
+      }
+      amplifyDynamoDbTables[resourceName] = new AmplifyDynamoDbTableWrapper(currentScope, tableManagerStack);
       return;
     }
     if (currentScope instanceof Role) {
