@@ -1,8 +1,3 @@
-type Todo @model @auth(rules: [{ allow: owner }]) {
-  content: String
-  isDone: Boolean
-}
-
 type Mutation {
   ROUTE_NAME(
     conversationId: ID!,
@@ -15,11 +10,9 @@ type Mutation {
     systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
     tools: [
       {
-        name: "list all the todos",
-        description: "lists todos",
-        modelName: "Todo",
-        modelOperation: list,
-      },
+        name: "calculator",
+        description: "does a different thing",
+      }
     ],
     auth: { strategy: owner, provider: userPools },
   )

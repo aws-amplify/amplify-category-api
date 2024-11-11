@@ -112,6 +112,18 @@ describe('ConversationTransformer', () => {
       });
     });
 
+    describe('invalid tool definition', () => {
+      it('should throw an error if model operation and custom tool fields are mixed', () => {
+        const inputSchema = getSchema('conversation-route-invalid-tool-definition-mixed-fields.graphql');
+        expect(() => transform(inputSchema)).toThrow('Invalid tool definitions: calculator');
+      });
+
+      it('should throw an error if required fields are missing', () => {
+        const inputSchema = getSchema('conversation-route-invalid-tool-definition-missing-fields.graphql');
+        expect(() => transform(inputSchema)).toThrow('Invalid tool definitions: calculator');
+      });
+    });
+
     describe('invalid custom handler configuration', () => {
       it('should throw if both functionName and handler are provided', () => {
         const inputSchema = getSchema('conversation-route-invalid-custom-handler-function-name-and-handler-provided.graphql');
