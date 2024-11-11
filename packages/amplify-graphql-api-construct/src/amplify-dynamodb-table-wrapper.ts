@@ -1,4 +1,4 @@
-import { CfnResource, RemovalPolicy, NestedStack } from 'aws-cdk-lib';
+import { CfnResource, RemovalPolicy, NestedStack, Fn } from 'aws-cdk-lib';
 import { BillingMode, StreamViewType } from 'aws-cdk-lib/aws-dynamodb';
 import { Role, PolicyStatement, Effect } from 'aws-cdk-lib/aws-iam';
 
@@ -209,7 +209,12 @@ export class AmplifyDynamoDbTableWrapper {
         'dynamodb:UntagResource',
         'dynamodb:ListTagsOfResource',
       ],
-      resources: [tableName],
+      // eslint-disable-next-line no-template-curly-in-string
+      resources: [
+        Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}', {
+          tableName,
+        }),
+      ],
     });
 
     const onEventRole = this.tableManagerStack.node.findChild('AmplifyManagedTableOnEventRole') as Role;

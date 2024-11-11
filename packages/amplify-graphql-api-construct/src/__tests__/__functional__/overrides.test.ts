@@ -84,7 +84,14 @@ describe('overrides', () => {
           {
             Action: action,
             Effect: 'Allow',
-            Resource: 'CustomTableName',
+            Resource: {
+              'Fn::Sub': [
+                // this is the template string within the CFN template
+                // eslint-disable-next-line no-template-curly-in-string
+                'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}',
+                { tableName: 'CustomTableName' },
+              ],
+            },
           },
         ],
       },
@@ -102,13 +109,20 @@ describe('overrides', () => {
             Action: 'states:StartExecution',
             Effect: 'Allow',
             Resource: {
-              Ref: 'AmplifyTableWaiterStateMachine060600BC',
+              Ref: Match.stringLikeRegexp('^AmplifyTableWaiterStateMachine.*'),
             },
           },
           {
             Action: action,
             Effect: 'Allow',
-            Resource: 'CustomTableName',
+            Resource: {
+              'Fn::Sub': [
+                // this is the template string within the CFN template
+                // eslint-disable-next-line no-template-curly-in-string
+                'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}',
+                { tableName: 'CustomTableName' },
+              ],
+            },
           },
         ],
         Version: '2012-10-17',
