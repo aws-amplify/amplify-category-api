@@ -6,6 +6,7 @@ type Mutation {
     toolConfiguration: ToolConfigurationInput
   ): ConversationMessage
   @conversation(
-    systemPrompt: "You are a helpful chatbot."
+    systemPrompt: "You are a helpful chatbot.",
+    auth: { strategy: owner, provider: userPools },
   )
 }

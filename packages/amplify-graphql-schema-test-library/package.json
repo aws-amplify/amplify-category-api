@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-schema-test-library",
-  "version": "3.0.7",
+  "version": "3.0.8",
   "description": "Library of valid and unsupported Amplify GraphQL Transformer schemas",
   "repository": {
     "type": "git",
@@ -29,18 +29,18 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-auth-transformer": "4.1.5",
-    "@aws-amplify/graphql-default-value-transformer": "3.1.2",
-    "@aws-amplify/graphql-function-transformer": "3.1.4",
-    "@aws-amplify/graphql-http-transformer": "3.0.7",
-    "@aws-amplify/graphql-index-transformer": "3.0.7",
-    "@aws-amplify/graphql-model-transformer": "3.0.7",
-    "@aws-amplify/graphql-predictions-transformer": "3.0.7",
-    "@aws-amplify/graphql-relational-transformer": "3.0.7",
-    "@aws-amplify/graphql-searchable-transformer": "3.0.7",
-    "@aws-amplify/graphql-transformer-core": "3.2.2",
-    "@aws-amplify/graphql-transformer-interfaces": "4.1.2",
-    "@aws-amplify/graphql-transformer-test-utils": "1.0.6"
+    "@aws-amplify/graphql-auth-transformer": "4.1.6",
+    "@aws-amplify/graphql-default-value-transformer": "3.1.3",
+    "@aws-amplify/graphql-function-transformer": "3.1.5",
+    "@aws-amplify/graphql-http-transformer": "3.0.8",
+    "@aws-amplify/graphql-index-transformer": "3.0.8",
+    "@aws-amplify/graphql-model-transformer": "3.1.0",
+    "@aws-amplify/graphql-predictions-transformer": "3.0.8",
+    "@aws-amplify/graphql-relational-transformer": "3.1.0",
+    "@aws-amplify/graphql-searchable-transformer": "3.0.8",
+    "@aws-amplify/graphql-transformer-core": "3.3.0",
+    "@aws-amplify/graphql-transformer-interfaces": "4.2.0",
+    "@aws-amplify/graphql-transformer-test-utils": "1.0.7"
   },
   "jest": {
     "transform": {

@@ -12,6 +12,7 @@ type Mutation {
         temperature: 0.5,
         topP: 0.9,
         maxTokens: 100,
-    }
+    },
+    auth: { strategy: owner, provider: userPools },
   )
 }
