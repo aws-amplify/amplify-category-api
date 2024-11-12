@@ -1,5 +1,5 @@
 export type JSONSchema = {
-  type: string;
+  type?: string;
   properties?: Record<string, JSONSchema>;
   required?: string[];
   items?: JSONSchema;
@@ -13,6 +13,9 @@ export type JSONSchema = {
   description?: string;
   default?: JSONLike;
   additionalProperties?: boolean | JSONSchema;
+  definitions?: Record<string, JSONSchema>;
+  $ref?: string;
+  $defs?: Record<string, JSONSchema>;
 };
 
 type JSONLike = string | number | boolean | null | { [key: string]: JSONLike } | JSONLike[];
