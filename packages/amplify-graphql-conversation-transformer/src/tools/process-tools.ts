@@ -1,6 +1,13 @@
 import { InvalidDirectiveError, JSONSchema } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { FieldDefinitionNode, InputValueDefinitionNode, ObjectTypeDefinitionNode, TypeNode } from 'graphql';
+import {
+  FieldDefinitionNode,
+  InputValueDefinitionNode,
+  ObjectTypeDefinitionNode,
+  ObjectValueNode,
+  StringValueNode,
+  TypeNode,
+} from 'graphql';
 import { getBaseType, isNonNullType, isScalar, toUpper } from 'graphql-transformer-common';
 import pluralize from 'pluralize';
 import { CustomQueryTool, ModelOperationTool, ToolDefinition } from '../conversation-directive-configuration';
@@ -51,7 +58,7 @@ export const processTools = (toolDefinitions: ToolDefinition[], ctx: Transformer
   const tools: Tool[] = toolDefinitions.map((toolDefinition) => {
     const { name: toolName, description } = toolDefinition;
     const queryName = isModelOperationToolPredicate(toolDefinition)
-      ? `list${pluralize(toUpper(toolDefinition.modelName))}`
+      ? modelListQueryName(toolDefinition, ctx)
       : toolDefinition.queryName;
     const queryField = queryType.fields?.find((field) => field.name.value === queryName);
 
@@ -249,4 +256,18 @@ const generatePropertyTypes = (
 
 const isModelListOperation = (toolName: string, responseType: TypeNode): boolean => {
   return getBaseType(responseType).startsWith('Model') && toolName.startsWith('list');
+};
+
+const modelListQueryName = (modelTool: ModelOperationTool, ctx: TransformerContextProvider): string => {
+  const { modelName } = modelTool;
+  const model = getObjectTypeFromName(modelName, ctx);
+
+  const modelDirective = model.directives?.find((directive) => directive.name.value === 'model');
+  const queriesArgument = modelDirective?.arguments?.find((arg) => arg.name.value === 'queries');
+  const queriesValue = queriesArgument?.value as ObjectValueNode | undefined;
+  const listField = queriesValue?.fields?.find((field) => field.name.value === 'list');
+  const listValue = listField?.value as StringValueNode | undefined;
+  const listQueryArgument = listValue?.value;
+
+  return listQueryArgument ?? `list${pluralize(toUpper(modelName))}`;
 };

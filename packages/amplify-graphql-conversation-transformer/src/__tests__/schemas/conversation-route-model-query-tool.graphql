@@ -1,4 +1,4 @@
-type Todo @model @auth(rules: [{ allow: owner }]) {
+type Todo @model(queries: { list: "listMyTodos" }) @auth(rules: [{ allow: owner }]) {
   content: String
   isDone: Boolean
 }
