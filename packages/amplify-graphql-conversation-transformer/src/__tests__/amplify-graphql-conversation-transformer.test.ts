@@ -324,7 +324,7 @@ function transform(
     hasManyTransformer,
     hasOneTransformer,
     belongsToTransformer,
-    new ConversationTransformer(modelTransformer, hasManyTransformer, belongsToTransformer, authTransformer, functionMap),
+    new ConversationTransformer(modelTransformer, hasManyTransformer, belongsToTransformer, authTransformer, undefined, functionMap),
     new GenerationTransformer(),
     authTransformer,
   ];
