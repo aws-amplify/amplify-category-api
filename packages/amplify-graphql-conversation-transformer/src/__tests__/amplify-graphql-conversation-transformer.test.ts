@@ -112,6 +112,29 @@ describe('ConversationTransformer', () => {
       });
     });
 
+    describe('invalid tool definition', () => {
+      it('should throw an error if model operation and custom tool fields are mixed', () => {
+        const inputSchema = getSchema('conversation-route-invalid-tool-definition-mixed-fields.graphql');
+        expect(() => transform(inputSchema)).toThrow(
+          'Tool definitions must contain a modelName and modelOperation, or queryName. Invalid tools: calculator',
+        );
+      });
+
+      it('should throw an error if required fields are missing', () => {
+        const inputSchema = getSchema('conversation-route-invalid-tool-definition-missing-fields.graphql');
+        expect(() => transform(inputSchema)).toThrow(
+          'Tool definitions must contain a modelName and modelOperation, or queryName. Invalid tools: calculator',
+        );
+      });
+
+      it('should throw an error if tool name is invalid', () => {
+        const inputSchema = getSchema('conversation-route-invalid-tool-name.graphql');
+        expect(() => transform(inputSchema)).toThrow(
+          'Tool name must be between 1 and 64 characters, start with a letter, and contain only letters, numbers, and underscores. Found: this is an invalid tool name',
+        );
+      });
+    });
+
     describe('invalid custom handler configuration', () => {
       it('should throw if both functionName and handler are provided', () => {
         const inputSchema = getSchema('conversation-route-invalid-custom-handler-function-name-and-handler-provided.graphql');

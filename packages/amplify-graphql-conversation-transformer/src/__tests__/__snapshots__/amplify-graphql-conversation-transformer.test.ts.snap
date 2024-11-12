@@ -1528,7 +1528,7 @@ export function request(ctx) {
   const clientTools = args.toolConfiguration?.tools?.map((tool) => {
     return { ...tool.toolSpec };
   });
-  const dataTools = [{"name":"listCustomers","description":"Provides data about the customer sending a message","inputSchema":{"json":{"type":"object","properties":{},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"items { name email activeCart { products { name price } customerId id createdAt updatedAt owner } orderHistory { items { products { name price } customerId id createdAt updatedAt owner } nextToken } id createdAt updatedAt owner } nextToken","propertyTypes":{},"queryName":"listCustomers"}}];
+  const dataTools = [{"name":"list_customers","description":"Provides data about the customer sending a message","inputSchema":{"json":{"type":"object","properties":{},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"items { name email activeCart { products { name price } customerId id createdAt updatedAt owner } orderHistory { items { products { name price } customerId id createdAt updatedAt owner } nextToken } id createdAt updatedAt owner } nextToken","propertyTypes":{},"queryName":"listCustomers"}}];
   const toolsConfiguration = { dataTools, clientTools };
 
   const messageHistoryQuery = {
@@ -2369,7 +2369,7 @@ export function request(ctx) {
   const clientTools = args.toolConfiguration?.tools?.map((tool) => {
     return { ...tool.toolSpec };
   });
-  const dataTools = [{"name":"listTodos","description":"lists todos","inputSchema":{"json":{"type":"object","properties":{},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"items { content isDone id createdAt updatedAt owner } nextToken","propertyTypes":{},"queryName":"listTodos"}}];
+  const dataTools = [{"name":"list_all_the_todos","description":"lists todos","inputSchema":{"json":{"type":"object","properties":{},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"items { content isDone id createdAt updatedAt owner } nextToken","propertyTypes":{},"queryName":"listMyTodos"}}];
   const toolsConfiguration = { dataTools, clientTools };
 
   const messageHistoryQuery = {
@@ -3210,7 +3210,7 @@ export function request(ctx) {
   const clientTools = args.toolConfiguration?.tools?.map((tool) => {
     return { ...tool.toolSpec };
   });
-  const dataTools = [{"name":"getTemperature","description":"does a thing","inputSchema":{"json":{"type":"object","properties":{"city":{"type":"string","description":"A UTF-8 character sequence."}},"required":["city"]}},"graphqlRequestInputDescriptor":{"selectionSet":"value unit","propertyTypes":{"city":"String!"},"queryName":"getTemperature"}},{"name":"plus","description":"does a different thing","inputSchema":{"json":{"type":"object","properties":{"a":{"type":"number","description":"A signed 32-bit integer value."},"b":{"type":"number","description":"A signed 32-bit integer value."}},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"","propertyTypes":{"a":"Int","b":"Int"},"queryName":"plus"}}];
+  const dataTools = [{"name":"thermometer","description":"does a thing","inputSchema":{"json":{"type":"object","properties":{"city":{"type":"string","description":"A UTF-8 character sequence."}},"required":["city"]}},"graphqlRequestInputDescriptor":{"selectionSet":"value unit","propertyTypes":{"city":"String!"},"queryName":"getTemperature"}},{"name":"calculator","description":"does a different thing","inputSchema":{"json":{"type":"object","properties":{"a":{"type":"number","description":"A signed 32-bit integer value."},"b":{"type":"number","description":"A signed 32-bit integer value."}},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"","propertyTypes":{"a":"Int","b":"Int"},"queryName":"plus"}}];
   const toolsConfiguration = { dataTools, clientTools };
 
   const messageHistoryQuery = {
