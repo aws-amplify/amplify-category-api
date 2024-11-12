@@ -2,6 +2,7 @@ import { conversation } from '@aws-amplify/ai-constructs';
 import { overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
 import { getModelDataSourceNameForTypeName, getTable, TransformerResolver } from '@aws-amplify/graphql-transformer-core';
 import { DataSourceProvider, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { BackendOutputEntry, BackendOutputStorageStrategy } from '@aws-amplify/plugin-types';
 import * as cdk from 'aws-cdk-lib';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { FunctionResourceIDs, ResourceConstants } from 'graphql-transformer-common';
@@ -27,7 +28,10 @@ import {
 } from '../resolvers';
 import { processTools } from '../tools/process-tools';
 export class ConversationResolverGenerator {
-  constructor(private readonly functionNameMap?: Record<string, IFunction>) {}
+  constructor(
+    private readonly functionNameMap?: Record<string, IFunction>,
+    private readonly outputStorageStrategy?: BackendOutputStorageStrategy<BackendOutputEntry>,
+  ) {}
 
   /**
    * Generates resolvers for all conversation directives.
@@ -189,6 +193,7 @@ export class ConversationResolverGenerator {
             modelId,
           },
         ],
+        outputStorageStrategy: this.outputStorageStrategy,
       },
     );
 

@@ -43,7 +43,8 @@
     "@aws-amplify/graphql-searchable-transformer": "3.0.8",
     "@aws-amplify/graphql-sql-transformer": "0.4.8",
     "@aws-amplify/graphql-transformer-core": "3.3.0",
-    "@aws-amplify/graphql-transformer-interfaces": "4.2.0"
+    "@aws-amplify/graphql-transformer-interfaces": "4.2.0",
+    "@aws-amplify/plugin-types": "^1.0.0"
   },
   "devDependencies": {
     "@aws-amplify/graphql-transformer-test-utils": "1.0.7",
