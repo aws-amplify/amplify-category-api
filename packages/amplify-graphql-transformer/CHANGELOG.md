@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.7-ai-next.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@2.1.6...@aws-amplify/graphql-transformer@2.1.7-ai-next.0) (2024-11-12)
+
+### Bug Fixes
+
+- plumb outputStorageStrategy through conversation transformer to handler ([68438c4](https://github.com/aws-amplify/amplify-category-api/commit/68438c4d524dd619990b3784dcb4888ee0b5d091))
+
 ## [2.1.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@2.1.5...@aws-amplify/graphql-transformer@2.1.6) (2024-11-08)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer

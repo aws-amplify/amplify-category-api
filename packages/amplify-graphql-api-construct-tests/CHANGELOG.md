@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.13.0-ai-next.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.12.0...amplify-graphql-api-construct-tests@1.13.0-ai-next.0) (2024-11-12)
+
+### Features
+
+- **conversation:** require auth input for conversation directive ([#3007](https://github.com/aws-amplify/amplify-category-api/issues/3007)) ([39cca3f](https://github.com/aws-amplify/amplify-category-api/commit/39cca3f18d02e9092828901ba799932f6e77f232))
+
 ## [1.12.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.12.0...amplify-graphql-api-construct-tests@1.12.1) (2024-11-12)
 
 **Note:** Version bump only for package amplify-graphql-api-construct-tests
