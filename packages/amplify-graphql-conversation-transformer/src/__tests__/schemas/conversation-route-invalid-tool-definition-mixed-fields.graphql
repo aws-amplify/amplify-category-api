@@ -17,7 +17,8 @@ type Mutation {
         name: "calculator",
         description: "does a different thing",
         queryName: "plus",
-        modelName: "Calculator"
+        modelName: "Calculator",
+        modelOperation: list,
       }
     ],
     auth: { strategy: owner, provider: userPools },

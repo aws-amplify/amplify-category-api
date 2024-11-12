@@ -34,7 +34,7 @@ type Mutation {
     systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
     tools: [
       {
-        name: "list customers",
+        name: "list_customers",
         description: "Provides data about the customer sending a message",
         modelName: "Customer",
         modelOperation: list,

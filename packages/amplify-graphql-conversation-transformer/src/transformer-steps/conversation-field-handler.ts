@@ -180,10 +180,27 @@ export class ConversationFieldHandler {
     const { tools } = config;
     if (!tools) return;
 
-    const invalidTools = tools.filter((tool) => !isModelOperationToolPredicate(tool) && !isCustomQueryToolPredicate(tool));
+    const isValidToolName = (name: string): boolean => /^[a-zA-Z][a-zA-Z0-9_]*$/.test(name) && name.length >= 1 && name.length <= 64;
 
-    if (invalidTools.length > 0) {
-      throw new InvalidDirectiveError(`Invalid tool definitions: ${invalidTools.map((tool) => tool.name).join(', ')}`);
+    for (const tool of tools) {
+      // https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_ToolSpecification.html
+      // Pattern: ^[a-zA-Z][a-zA-Z0-9_]*$
+      // Length Constraints: Minimum length of 1. Maximum length of 64.
+      if (!isValidToolName(tool.name)) {
+        throw new InvalidDirectiveError(
+          `Tool name must be between 1 and 64 characters, start with a letter, and contain only letters, numbers, and underscores. Found: ${tool.name}`,
+        );
+      }
+    }
+
+    const invalidToolNames = tools
+      .filter((tool) => !isModelOperationToolPredicate(tool) && !isCustomQueryToolPredicate(tool))
+      .map((tool) => tool.name);
+
+    if (invalidToolNames.length > 0) {
+      throw new InvalidDirectiveError(
+        `Tool definitions must contain a modelName and modelOperation, or queryName. Invalid tools: ${invalidToolNames.join(', ')}`,
+      );
     }
   }
 
