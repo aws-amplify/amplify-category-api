@@ -6,7 +6,7 @@
     ]
   },
   "bundled": {
-    "@aws-amplify/ai-constructs": "0.8.0",
+    "@aws-amplify/ai-constructs": "^0.8.1",
     "@aws-amplify/backend-output-schemas": "^1.0.0",
     "@aws-amplify/backend-output-storage": "^1.0.0",
     "@aws-amplify/graphql-auth-transformer": "4.1.6",
@@ -9032,5 +9032,5 @@
     }
   },
   "version": "1.17.0",
-  "fingerprint": "0ejr9BEQir1BFZjmpTJaywPg0Y9bAdc0FnIMkamI7FU="
+  "fingerprint": "vMrsRM5QtRUJHWxj4XZw8PdvYvthFhfQOzG5jhsO4SA="
 }
