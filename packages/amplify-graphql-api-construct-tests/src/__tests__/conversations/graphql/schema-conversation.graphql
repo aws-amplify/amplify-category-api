@@ -17,7 +17,13 @@ type Mutation {
     content: [ContentBlockInput]
     aiContext: AWSJSON
     toolConfiguration: ToolConfigurationInput
-  ): ConversationMessage @conversation(aiModel: "mistral.mistral-large-2407-v1:0", systemPrompt: "You are a helpful chatbot.")
+  ): ConversationMessage
+    @conversation(
+      aiModel: "mistral.mistral-large-2407-v1:0"
+      systemPrompt: "You are a helpful chatbot."
+      auth: { strategy: owner, provider: userPools }
+    )
+    @aws_cognito_user_pools
 }
 
 enum ConversationParticipantRole {
