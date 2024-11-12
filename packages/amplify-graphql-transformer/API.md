@@ -9,6 +9,7 @@ import { AssetProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Construct } from 'constructs';
 import type { DataSourceStrategiesProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { IBackendOutputStorageStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import type { RDSLayerMappingProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -56,6 +57,7 @@ export type TransformerFactoryArgs = {
     storageConfig?: any;
     customTransformers?: TransformerPluginProvider[];
     functionNameMap?: Record<string, IFunction>;
+    outputStorageStrategy?: IBackendOutputStorageStrategy;
 };
 
 // (No @packageDocumentation comment for this package)

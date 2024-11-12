@@ -218,6 +218,20 @@ export interface GraphQLAPIProvider extends IConstruct {
 }
 
 // @public (undocumented)
+export interface IBackendOutputEntry {
+    // (undocumented)
+    readonly payload: Record<string, string>;
+    // (undocumented)
+    readonly version: string;
+}
+
+// @public (undocumented)
+export interface IBackendOutputStorageStrategy {
+    // (undocumented)
+    addBackendOutputEntry(keyName: string, backendOutputEntry: IBackendOutputEntry): void;
+}
+
+// @public (undocumented)
 export interface ImportedAmplifyDynamoDbModelDataSourceStrategy {
     // (undocumented)
     readonly dbType: 'DYNAMODB';

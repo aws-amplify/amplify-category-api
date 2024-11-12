@@ -238,6 +238,7 @@ export class AmplifyGraphqlApi extends Construct {
           ...definition.referencedLambdaFunctions,
           ...functionNameMap,
         },
+        outputStorageStrategy,
       },
       authConfig,
       stackMapping: stackMappings ?? {},

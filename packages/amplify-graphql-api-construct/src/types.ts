@@ -653,6 +653,10 @@ export interface IAmplifyGraphqlDefinition {
   readonly customSqlDataSourceStrategies?: CustomSqlDataSourceStrategy[];
 }
 
+// NOTE: These types are duplicated from packages/amplify-graphql-transformer-interfaces/src/backend-output.ts
+// - IBackendOutputEntry
+// - IBackendOutputStorageStrategy
+// Before updating these types, ensure that that changes can be, and are, reflected in the other file.
 /**
  * Entry representing the required output from the backend for codegen generate commands to work.
  */

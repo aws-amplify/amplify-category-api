@@ -1,4 +1,5 @@
 // eslint-disable-next-line import/no-cycle
+export type { IBackendOutputStorageStrategy, IBackendOutputEntry } from './backend-output';
 export * from './transformer-context';
 export { TransformerPluginProvider, TransformerPluginType } from './transformer-plugin-provider';
 export {

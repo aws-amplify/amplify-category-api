@@ -8,6 +8,7 @@ import { BelongsToTransformer } from '@aws-amplify/graphql-relational-transforme
 import { DirectiveNode } from 'graphql';
 import { FieldDefinitionNode } from 'graphql';
 import { HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
+import { IBackendOutputStorageStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { InterfaceTypeDefinitionNode } from 'graphql';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
@@ -20,7 +21,7 @@ import { TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-
 
 // @public (undocumented)
 export class ConversationTransformer extends TransformerPluginBase {
-    constructor(modelTransformer: ModelTransformer, hasManyTransformer: HasManyTransformer, belongsToTransformer: BelongsToTransformer, authProvider: TransformerAuthProvider, functionNameMap?: Record<string, lambda.IFunction>);
+    constructor(modelTransformer: ModelTransformer, hasManyTransformer: HasManyTransformer, belongsToTransformer: BelongsToTransformer, authProvider: TransformerAuthProvider, outputStorageStrategy?: IBackendOutputStorageStrategy, functionNameMap?: Record<string, lambda.IFunction>);
     // (undocumented)
     field: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, definition: FieldDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
     // (undocumented)

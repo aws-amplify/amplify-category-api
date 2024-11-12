@@ -1,8 +1,9 @@
 import { ConversationDirective } from '@aws-amplify/graphql-directives';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
+import { TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import {
+  IBackendOutputStorageStrategy,
   TransformerAuthProvider,
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
@@ -28,12 +29,13 @@ export class ConversationTransformer extends TransformerPluginBase {
     hasManyTransformer: HasManyTransformer,
     belongsToTransformer: BelongsToTransformer,
     authProvider: TransformerAuthProvider,
+    outputStorageStrategy?: IBackendOutputStorageStrategy,
     functionNameMap?: Record<string, lambda.IFunction>,
   ) {
     super('amplify-conversation-transformer', ConversationDirective.definition);
     this.fieldHandler = new ConversationFieldHandler();
     this.prepareHandler = new ConversationPrepareHandler(modelTransformer, hasManyTransformer, belongsToTransformer, authProvider);
-    this.resolverGenerator = new ConversationResolverGenerator(functionNameMap);
+    this.resolverGenerator = new ConversationResolverGenerator(functionNameMap, outputStorageStrategy);
   }
 
   /**
