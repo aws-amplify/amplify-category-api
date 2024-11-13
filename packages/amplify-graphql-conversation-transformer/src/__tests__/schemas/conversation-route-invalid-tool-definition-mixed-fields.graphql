@@ -1,6 +1,5 @@
-type Todo @model(queries: { list: "listMyTodos" }) @auth(rules: [{ allow: owner }]) {
-  content: String
-  isDone: Boolean
+type Query {
+  plus(a: Int, b: Int): Int
 }
 
 type Mutation {
@@ -15,11 +14,12 @@ type Mutation {
     systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
     tools: [
       {
-        name: "list_all_the_todos",
-        description: "lists todos",
-        modelName: "Todo",
+        name: "calculator",
+        description: "does a different thing",
+        queryName: "plus",
+        modelName: "Calculator",
         modelOperation: list,
-      },
+      }
     ],
     auth: { strategy: owner, provider: userPools },
   )

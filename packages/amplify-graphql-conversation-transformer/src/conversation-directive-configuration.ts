@@ -59,6 +59,30 @@ export type ConversationInferenceConfiguration = {
 export type ToolDefinition = {
   name: string;
   description: string;
+  queryName?: string;
+  modelName?: string;
+  modelOperation?: ConversationToolModelOperation;
+};
+
+/**
+ * Conversation Directive Tool Model Operation
+ * Currently limited to `list` operations.
+ */
+export enum ConversationToolModelOperation {
+  list = 'list',
+}
+
+export type ModelOperationTool = {
+  name: string;
+  description: string;
+  modelName: string;
+  modelOperation: ConversationToolModelOperation;
+};
+
+export type CustomQueryTool = {
+  name: string;
+  description: string;
+  queryName: string;
 };
 
 /**
