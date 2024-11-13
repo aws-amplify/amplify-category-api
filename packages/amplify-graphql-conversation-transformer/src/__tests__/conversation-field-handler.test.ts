@@ -41,7 +41,7 @@ describe('ConversationFieldHandler', () => {
   describe('getDirectiveConfig', () => {
     it('should throw an error if parent is not Mutation', () => {
       const parent = createMockParent('Query');
-      const field = createMockField('testField', 'ConversationMessage');
+      const field = createMockField('testField', 'AmplifyAIConversationMessage');
       const directive = createMockDirective();
 
       expect(() => handler.getDirectiveConfig(parent, field, directive, mockContext)).toThrow(InvalidDirectiveError);
@@ -49,7 +49,7 @@ describe('ConversationFieldHandler', () => {
 
     it('should return a valid configuration for a correct setup', () => {
       const parent = createMockParent('Mutation');
-      const field = createMockField('testField', 'ConversationMessage');
+      const field = createMockField('testField', 'AmplifyAIConversationMessage');
       const directive = createMockDirective();
 
       const config = handler.getDirectiveConfig(parent, field, directive, mockContext);
@@ -71,7 +71,7 @@ describe('ConversationFieldHandler', () => {
   describe('createModels', () => {
     it('should create message and conversation models with correct names', () => {
       const parent = createMockParent('Mutation');
-      const field = createMockField('testField', 'ConversationMessage');
+      const field = createMockField('testField', 'AmplifyAIConversationMessage');
       const directive = createMockDirective();
 
       const { message, conversation } = handler.getDirectiveConfig(parent, field, directive, mockContext);
