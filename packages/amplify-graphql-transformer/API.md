@@ -6,6 +6,8 @@
 
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AssetProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { BackendOutputEntry } from '@aws-amplify/plugin-types';
+import { BackendOutputStorageStrategy } from '@aws-amplify/plugin-types';
 import { Construct } from 'constructs';
 import type { DataSourceStrategiesProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
@@ -58,6 +60,7 @@ export type TransformerFactoryArgs = {
     storageConfig?: any;
     customTransformers?: TransformerPluginProvider[];
     functionNameMap?: Record<string, IFunction>;
+    outputStorageStrategy?: BackendOutputStorageStrategy<BackendOutputEntry>;
 };
 
 // (No @packageDocumentation comment for this package)

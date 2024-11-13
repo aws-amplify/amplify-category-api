@@ -13,8 +13,8 @@ import { ConversationModel, createConversationModel } from '../graphql-types/con
 import {
   createAssistantMutationField,
   createAssistantResponseMutationInput,
-  createAssistantStreamingMutationField,
   createAssistantResponseStreamingMutationInput,
+  createAssistantStreamingMutationField,
   createMessageModel,
   createMessageSubscription,
   MessageModel,
@@ -27,6 +27,7 @@ import {
   getConversationTypeName,
   getMessageSubscriptionFieldName,
 } from '../graphql-types/name-values';
+import { isCustomQueryToolPredicate, isModelOperationToolPredicate } from '../tools/process-tools';
 
 /**
  * @class ConversationFieldHandler
@@ -172,6 +173,35 @@ export class ConversationFieldHandler {
     this.validateReturnType(config);
     this.validateInferenceConfig(config);
     this.validateHandler(config);
+    this.validateToolDefinitions(config);
+  }
+
+  private validateToolDefinitions(config: ConversationDirectiveConfiguration): void {
+    const { tools } = config;
+    if (!tools) return;
+
+    const isValidToolName = (name: string): boolean => /^[a-zA-Z][a-zA-Z0-9_]*$/.test(name) && name.length >= 1 && name.length <= 64;
+
+    for (const tool of tools) {
+      // https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_ToolSpecification.html
+      // Pattern: ^[a-zA-Z][a-zA-Z0-9_]*$
+      // Length Constraints: Minimum length of 1. Maximum length of 64.
+      if (!isValidToolName(tool.name)) {
+        throw new InvalidDirectiveError(
+          `Tool name must be between 1 and 64 characters, start with a letter, and contain only letters, numbers, and underscores. Found: ${tool.name}`,
+        );
+      }
+    }
+
+    const invalidToolNames = tools
+      .filter((tool) => !isModelOperationToolPredicate(tool) && !isCustomQueryToolPredicate(tool))
+      .map((tool) => tool.name);
+
+    if (invalidToolNames.length > 0) {
+      throw new InvalidDirectiveError(
+        `Tool definitions must contain a modelName and modelOperation, or queryName. Invalid tools: ${invalidToolNames.join(', ')}`,
+      );
+    }
   }
 
   /**

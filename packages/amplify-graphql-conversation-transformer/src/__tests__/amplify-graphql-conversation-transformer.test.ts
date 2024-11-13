@@ -80,6 +80,16 @@ describe('ConversationTransformer', () => {
         out.rootStack.Resources?.[conversationLambdaStackName].Properties?.Parameters?.[conversationLambdaDataSourceFunctionArnRef];
       expect(lambdaDataSourceFunctionArn).toEqual(expectedCustomHandlerArn);
     });
+
+    test('mixing query and model tools', () => {
+      const routeName = 'toolChat';
+      const inputSchema = getSchema('conversation-route-mixed-tools.graphql', { ROUTE_NAME: routeName });
+      const out = transform(inputSchema);
+      expect(out).toBeDefined();
+
+      const invokeLambdaFn = out.resolvers[`Mutation.${routeName}.invoke-lambda.js`];
+      expect(invokeLambdaFn).toBeDefined();
+    });
   });
 
   describe('invalid schemas', () => {
@@ -109,6 +119,29 @@ describe('ConversationTransformer', () => {
         const INFERENENCE_CONFIGURATION = `inferenceConfiguration: { ${param}: ${value} }`;
         const inputSchema = getSchema('conversation-route-inference-configuration-template.graphql', { INFERENENCE_CONFIGURATION });
         expect(() => transform(inputSchema)).toThrow(`@conversation directive ${param} valid range: ${errorMessage}. Provided: ${value}`);
+      });
+    });
+
+    describe('invalid tool definition', () => {
+      it('should throw an error if model operation and custom tool fields are mixed', () => {
+        const inputSchema = getSchema('conversation-route-invalid-tool-definition-mixed-fields.graphql');
+        expect(() => transform(inputSchema)).toThrow(
+          'Tool definitions must contain a modelName and modelOperation, or queryName. Invalid tools: calculator',
+        );
+      });
+
+      it('should throw an error if required fields are missing', () => {
+        const inputSchema = getSchema('conversation-route-invalid-tool-definition-missing-fields.graphql');
+        expect(() => transform(inputSchema)).toThrow(
+          'Tool definitions must contain a modelName and modelOperation, or queryName. Invalid tools: calculator',
+        );
+      });
+
+      it('should throw an error if tool name is invalid', () => {
+        const inputSchema = getSchema('conversation-route-invalid-tool-name.graphql');
+        expect(() => transform(inputSchema)).toThrow(
+          'Tool name must be between 1 and 64 characters, start with a letter, and contain only letters, numbers, and underscores. Found: this is an invalid tool name',
+        );
       });
     });
 
@@ -324,7 +357,7 @@ function transform(
     hasManyTransformer,
     hasOneTransformer,
     belongsToTransformer,
-    new ConversationTransformer(modelTransformer, hasManyTransformer, belongsToTransformer, authTransformer, functionMap),
+    new ConversationTransformer(modelTransformer, hasManyTransformer, belongsToTransformer, authTransformer, undefined, functionMap),
     new GenerationTransformer(),
     authTransformer,
   ];

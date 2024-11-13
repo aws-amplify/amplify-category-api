@@ -51,6 +51,7 @@ import { getStackForScope, walkAndProcessNodes } from './internal/construct-tree
 import { getDataSourceStrategiesProvider } from './internal/data-source-config';
 import { getMetadataDataSources, getMetadataAuthorizationModes, getMetadataCustomOperations } from './internal/metadata';
 import { isImportedAmplifyDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-core';
+import { BackendOutputStorageStrategy, BackendOutputEntry } from '@aws-amplify/plugin-types';
 
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.
@@ -239,6 +240,7 @@ export class AmplifyGraphqlApi extends Construct {
           ...definition.referencedLambdaFunctions,
           ...functionNameMap,
         },
+        outputStorageStrategy: outputStorageStrategy as BackendOutputStorageStrategy<BackendOutputEntry>,
       },
       authConfig,
       stackMapping: stackMappings ?? {},

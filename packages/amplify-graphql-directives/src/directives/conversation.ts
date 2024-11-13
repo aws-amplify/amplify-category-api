@@ -30,9 +30,30 @@ const definition = /* GraphQL */ `
     eventVersion: String!
   }
 
+  # The configuration for a tool.
+  # This is a fake union (GraphQL doesn't support unions in inputs). It is best thought of as:
+  # type ToolMap =
+  #  ({ queryName: string; } | { modelName: string; modelOperation: ConversationToolModelOperation; })
+  #  & { name: string; description: string; }
+  # The conversation transformer validates the input to ensure it conforms to the expected shape.
   input ToolMap {
-    name: String
-    description: String
+    # The name of the tool. This is included in the tool definition provided to the AI model.
+    name: String!
+    # The description of the tool. This is included in the tool definition provided to the AI model.
+    description: String!
+
+    # The name of the GraphQL query that is invoked when the tool is used.
+    queryName: String
+
+    # The name of the Amplify model used by the tool.
+    modelName: String
+    # The model generated operation for the provided Amplify model that is invoked when the tool is used.
+    modelOperation: ConversationToolModelOperation
+  }
+
+  # The model generated operation for the provided Amplify model.
+  enum ConversationToolModelOperation {
+    list
   }
 
   input ConversationInferenceConfiguration {
