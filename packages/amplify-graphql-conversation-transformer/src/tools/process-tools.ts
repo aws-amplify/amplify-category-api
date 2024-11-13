@@ -1,4 +1,4 @@
-import { InvalidDirectiveError, JSONSchema } from '@aws-amplify/graphql-transformer-core';
+import { getFieldNameFor, InvalidDirectiveError, JSONSchema } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   FieldDefinitionNode,
@@ -57,9 +57,7 @@ export const processTools = (toolDefinitions: ToolDefinition[], ctx: Transformer
   // Process each tool definition
   const tools: Tool[] = toolDefinitions.map((toolDefinition) => {
     const { name: toolName, description } = toolDefinition;
-    const queryName = isModelOperationToolPredicate(toolDefinition)
-      ? modelListQueryName(toolDefinition, ctx)
-      : toolDefinition.queryName;
+    const queryName = isModelOperationToolPredicate(toolDefinition) ? modelListQueryName(toolDefinition, ctx) : toolDefinition.queryName;
     const queryField = queryType.fields?.find((field) => field.name.value === queryName);
 
     if (!queryField) {
@@ -269,5 +267,5 @@ const modelListQueryName = (modelTool: ModelOperationTool, ctx: TransformerConte
   const listValue = listField?.value as StringValueNode | undefined;
   const listQueryArgument = listValue?.value;
 
-  return listQueryArgument ?? `list${pluralize(toUpper(modelName))}`;
+  return listQueryArgument ?? getFieldNameFor('list', modelName);
 };
