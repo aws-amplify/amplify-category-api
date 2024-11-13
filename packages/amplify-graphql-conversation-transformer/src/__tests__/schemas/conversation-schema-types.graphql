@@ -1,161 +1,170 @@
-enum ConversationParticipantRole {
+enum AmplifyAIConversationParticipantRole {
   user
   assistant
 }
 
-interface ConversationMessage {
+interface AmplifyAIConversationMessage {
   id: ID!
   conversationId: ID!
-  role: ConversationParticipantRole
-  content: [ContentBlock]
-  context: AWSJSON
-  toolConfiguration: ToolConfiguration
   associatedUserMessageId: ID
+  role: AmplifyAIConversationParticipantRole
+  content: [AmplifyAIContentBlock]
+  aiContext: AWSJSON
+  toolConfiguration: AmplifyAIToolConfiguration
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+  owner: String
 }
 
-input DocumentBlockSourceInput {
+input AmplifyAIDocumentBlockSourceInput {
   bytes: String
 }
 
-input DocumentBlockInput {
+input AmplifyAIDocumentBlockInput {
   format: String!
   name: String!
-  source: DocumentBlockSourceInput!
+  source: AmplifyAIDocumentBlockSourceInput!
 }
 
-input ImageBlockSourceInput {
+input AmplifyAIImageBlockSourceInput {
   bytes: String
 }
 
-input ImageBlockInput {
+input AmplifyAIImageBlockInput {
   format: String!
-  source: ImageBlockSourceInput!
+  source: AmplifyAIImageBlockSourceInput!
 }
 
-input ToolResultContentBlockInput {
-  document: DocumentBlockInput
-  image: ImageBlockInput
-  json: AWSJSON
-  text: String
-}
-
-input ToolResultBlockInput {
-  content: [ToolResultContentBlockInput!]!
-  toolUseId: String!
-  status: String
-}
-
-type DocumentBlockSource {
-  bytes: String
-}
-
-type DocumentBlock {
-  format: String!
-  name: String!
-  source: DocumentBlockSource!
-}
-
-type ImageBlock {
-  format: String!
-  source: ImageBlockSource!
-}
-
-type ImageBlockSource {
-  bytes: String
-}
-
-type ToolUseBlock {
+input AmplifyAIToolUseBlockInput {
   toolUseId: String!
   name: String!
   input: AWSJSON!
 }
 
-type ToolResultContentBlock {
-  document: DocumentBlock
-  image: ImageBlock
+input AmplifyAIToolResultContentBlockInput {
+  document: AmplifyAIDocumentBlockInput
+  image: AmplifyAIImageBlockInput
   json: AWSJSON
   text: String
 }
 
-type ToolResultBlock {
-  content: [ToolResultContentBlock!]!
+input AmplifyAIToolResultBlockInput {
+  content: [AmplifyAIToolResultContentBlockInput!]!
   toolUseId: String!
   status: String
 }
 
-type ContentBlockText {
+type AmplifyAIDocumentBlockSource {
+  bytes: String
+}
+
+type AmplifyAIDocumentBlock {
+  format: String!
+  name: String!
+  source: AmplifyAIDocumentBlockSource!
+}
+
+type AmplifyAIImageBlock {
+  format: String!
+  source: AmplifyAIImageBlockSource!
+}
+
+type AmplifyAIImageBlockSource {
+  bytes: String
+}
+
+type AmplifyAIToolUseBlock {
+  toolUseId: String!
+  name: String!
+  input: AWSJSON!
+}
+
+type AmplifyAIToolResultContentBlock {
+  document: AmplifyAIDocumentBlock
+  image: AmplifyAIImageBlock
+  json: AWSJSON
   text: String
 }
 
-type ContentBlockImage {
-  image: ImageBlock
+type AmplifyAIToolResultBlock {
+  content: [AmplifyAIToolResultContentBlock!]!
+  toolUseId: String!
+  status: String
 }
 
-type ContentBlockDocument {
-  document: DocumentBlock
-}
-
-type ContentBlockToolUse {
-  toolUse: ToolUseBlock
-}
-
-type ContentBlockToolResult {
-  toolResult: ToolResultBlock
-}
-
-input ContentBlockInput {
+type AmplifyAIContentBlockText {
   text: String
-  document: DocumentBlockInput
-  image: ImageBlockInput
-  toolResult: ToolResultBlockInput
 }
 
-type ContentBlock {
+type AmplifyAIContentBlockImage {
+  image: AmplifyAIImageBlock
+}
+
+type AmplifyAIContentBlockDocument {
+  document: AmplifyAIDocumentBlock
+}
+
+type AmplifyAIContentBlockToolUse {
+  toolUse: AmplifyAIToolUseBlock
+}
+
+type AmplifyAIContentBlockToolResult {
+  toolResult: AmplifyAIToolResultBlock
+}
+
+input AmplifyAIContentBlockInput {
   text: String
-  document: DocumentBlock
-  image: ImageBlock
-  toolResult: ToolResultBlock
-  toolUse: ToolUseBlock
+  document: AmplifyAIDocumentBlockInput
+  image: AmplifyAIImageBlockInput
+  toolResult: AmplifyAIToolResultBlockInput
+  toolUse: AmplifyAIToolUseBlockInput
 }
 
-## Tools
-input ToolConfigurationInput {
-  tools: [ToolInput]
+type AmplifyAIContentBlock {
+  text: String
+  document: AmplifyAIDocumentBlock
+  image: AmplifyAIImageBlock
+  toolResult: AmplifyAIToolResultBlock
+  toolUse: AmplifyAIToolUseBlock
 }
 
-input ToolInput {
-  toolSpec: ToolSpecificationInput
+input AmplifyAIToolConfigurationInput {
+  tools: [AmplifyAIToolInput]
 }
 
-input ToolSpecificationInput {
+input AmplifyAIToolInput {
+  toolSpec: AmplifyAIToolSpecificationInput
+}
+
+input AmplifyAIToolSpecificationInput {
   name: String!
   description: String
-  inputSchema: ToolInputSchemaInput!
+  inputSchema: AmplifyAIToolInputSchemaInput!
 }
 
-input ToolInputSchemaInput {
+input AmplifyAIToolInputSchemaInput {
   json: AWSJSON
 }
 
-type ToolConfiguration {
-  tools: [Tool]
+type AmplifyAIToolConfiguration {
+  tools: [AmplifyAITool]
 }
 
-type Tool {
-  toolSpec: ToolSpecification
+type AmplifyAITool {
+  toolSpec: AmplifyAIToolSpecification
 }
 
-type ToolSpecification {
+type AmplifyAIToolSpecification {
   name: String!
   description: String
-  inputSchema: ToolInputSchema!
+  inputSchema: AmplifyAIToolInputSchema!
 }
 
-type ToolInputSchema {
+type AmplifyAIToolInputSchema {
   json: AWSJSON
 }
 
-type ConversationMessageStreamPart {
+type AmplifyAIConversationMessageStreamPart @aws_cognito_user_pools {
   id: ID!
   owner: String
   conversationId: ID!
@@ -163,13 +172,13 @@ type ConversationMessageStreamPart {
   contentBlockIndex: Int
   contentBlockText: String
   contentBlockDeltaIndex: Int
-  contentBlockToolUse: ToolUseBlock
+  contentBlockToolUse: AmplifyAIToolUseBlock
   contentBlockDoneAtIndex: Int
   stopReason: String
-  errors: [ConversationTurnError]
+  errors: [AmplifyAIConversationTurnError]
 }
 
-type ConversationTurnError {
+type AmplifyAIConversationTurnError @aws_cognito_user_pools {
   message: String!
   errorType: String!
 }
