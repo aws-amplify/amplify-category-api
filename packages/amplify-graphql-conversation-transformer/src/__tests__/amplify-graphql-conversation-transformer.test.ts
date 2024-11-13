@@ -80,6 +80,16 @@ describe('ConversationTransformer', () => {
         out.rootStack.Resources?.[conversationLambdaStackName].Properties?.Parameters?.[conversationLambdaDataSourceFunctionArnRef];
       expect(lambdaDataSourceFunctionArn).toEqual(expectedCustomHandlerArn);
     });
+
+    test('mixing query and model tools', () => {
+      const routeName = 'toolChat';
+      const inputSchema = getSchema('conversation-route-mixed-tools.graphql', { ROUTE_NAME: routeName });
+      const out = transform(inputSchema);
+      expect(out).toBeDefined();
+
+      const invokeLambdaFn = out.resolvers[`Mutation.${routeName}.invoke-lambda.js`];
+      expect(invokeLambdaFn).toBeDefined();
+    });
   });
 
   describe('invalid schemas', () => {

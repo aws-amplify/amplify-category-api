@@ -1,0 +1,35 @@
+type Query {
+  plus(a: Int, b: Int): Int
+}
+
+type Todo @model @auth(rules: [{ allow: owner }]) {
+  content: String
+  isDone: Boolean
+}
+
+type Mutation {
+  ROUTE_NAME(
+    conversationId: ID!,
+    content: [ContentBlockInput],
+    aiContext: AWSJSON,
+    toolConfiguration: ToolConfigurationInput
+  ): ConversationMessage
+  @conversation(
+    aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
+    systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
+    tools: [
+      {
+        name: "calculator",
+        description: "does a different thing",
+        queryName: "plus",
+      },
+      {
+        name: "list_all_the_todos",
+        description: "lists todos",
+        modelName: "Todo",
+        modelOperation: list,
+      },
+    ],
+    auth: { strategy: owner, provider: userPools },
+  )
+}
