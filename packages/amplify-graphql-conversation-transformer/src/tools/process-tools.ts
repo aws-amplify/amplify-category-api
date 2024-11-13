@@ -1,4 +1,4 @@
-import { InvalidDirectiveError, JSONSchema } from '@aws-amplify/graphql-transformer-core';
+import { getFieldNameFor, InvalidDirectiveError, JSONSchema } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   FieldDefinitionNode,
@@ -267,5 +267,5 @@ const modelListQueryName = (modelTool: ModelOperationTool, ctx: TransformerConte
   const listValue = listField?.value as StringValueNode | undefined;
   const listQueryArgument = listValue?.value;
 
-  return listQueryArgument ?? `list${pluralize(toUpper(modelName))}`;
+  return listQueryArgument ?? getFieldNameFor('list', modelName);
 };
