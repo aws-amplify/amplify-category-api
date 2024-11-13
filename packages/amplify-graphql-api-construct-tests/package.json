@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphql-api-construct-tests",
-  "version": "1.13.0-ai-next.0",
+  "version": "1.13.0-ai-next.1",
   "description": "E2e test suite",
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
   "dependencies": {
     "@aws-amplify/auth-construct": "^1.0.0",
     "@aws-amplify/core": "^2.1.0",
-    "@aws-amplify/graphql-api-construct": "1.17.2-ai-next.0",
+    "@aws-amplify/graphql-api-construct": "1.17.2-ai-next.1",
     "@aws-cdk/aws-cognito-identitypool-alpha": "2.152.0-alpha.0",
     "@aws-sdk/client-cloudformation": "3.624.0",
     "@aws-sdk/client-cognito-identity-provider": "3.624.0",

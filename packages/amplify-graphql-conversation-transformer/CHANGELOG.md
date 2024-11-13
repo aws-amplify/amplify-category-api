@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0-ai-next.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@0.7.0-ai-next.0...@aws-amplify/graphql-conversation-transformer@0.7.0-ai-next.1) (2024-11-13)
+
+### Bug Fixes
+
+- **conversation:** prefix supporting types with AmplifyAI ([49423be](https://github.com/aws-amplify/amplify-category-api/commit/49423bedaef559038d921912d17df32fb541b2aa))
+- plumb outputStorageStrategy through conversation transformer to handler ([#3017](https://github.com/aws-amplify/amplify-category-api/issues/3017)) ([acc8140](https://github.com/aws-amplify/amplify-category-api/commit/acc8140c323988da595630ed9c047e03a825635f))
+
+### Features
+
+- **conversation:** update directive input for tool definition for model list queries ([#3013](https://github.com/aws-amplify/amplify-category-api/issues/3013)) ([ee976cc](https://github.com/aws-amplify/amplify-category-api/commit/ee976cc565efb54dd8e7e2fcfc4e116b312ab348))
+
 # [0.7.0-ai-next.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@0.6.0...@aws-amplify/graphql-conversation-transformer@0.7.0-ai-next.0) (2024-11-12)
 
 ### Bug Fixes
