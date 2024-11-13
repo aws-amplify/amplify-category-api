@@ -8,10 +8,10 @@ import { createCognitoUser, signInCognitoUser, TestDefinition, writeStackConfig,
 import { AppSyncSubscriptionClient, mergeNamedAsyncIterators } from '../../utils/appsync-graphql/subscription';
 import { DURATION_20_MINUTES, DURATION_5_MINUTES, ONE_MINUTE } from '../../utils/duration-constants';
 import {
-  ContentBlock,
-  ConversationMessageStreamPart,
+  AmplifyAIContentBlock,
+  AmplifyAIConversationMessageStreamPart,
   OnCreateAssistantResponsePirateChatSubscription,
-  ToolConfigurationInput,
+  AmplifyAIToolConfigurationInput,
 } from './API';
 import { onCreateAssistantResponseDisabledModelChat, onCreateAssistantResponsePirateChat } from './graphql/subscriptions';
 import {
@@ -112,7 +112,7 @@ describe('conversation', () => {
         expect(message.content[0].text).toEqual('Hello, world!');
         expect(message.conversationId).toEqual(conversationId);
 
-        const events: ConversationMessageStreamPart[] = [];
+        const events: AmplifyAIConversationMessageStreamPart[] = [];
         // expect to receive the assistant response in the subscription
         for await (const event of subscription) {
           events.push(event.onCreateAssistantResponsePirateChat);
@@ -247,7 +247,7 @@ describe('conversation', () => {
         });
 
         // define the client tool configuration
-        const toolConfiguration: ToolConfigurationInput = {
+        const toolConfiguration: AmplifyAIToolConfigurationInput = {
           tools: [
             {
               toolSpec: {
@@ -287,7 +287,7 @@ describe('conversation', () => {
         expect(message1.toolConfiguration).toEqual(toolConfiguration);
 
         // expect to receive the assistant response including a toolUse block in the subscription
-        const events: ConversationMessageStreamPart[] = [];
+        const events: AmplifyAIConversationMessageStreamPart[] = [];
         for await (const event of subscription) {
           events.push(event.onCreateAssistantResponsePirateChat);
           if (event.onCreateAssistantResponsePirateChat.stopReason) break;
@@ -608,7 +608,7 @@ const deployCdk = async (projRoot: string): Promise<{ apiEndpoint: string; userP
   return { apiEndpoint: awsAppsyncApiEndpoint, userPoolClientId: UserPoolClientId, userPoolId: UserPoolId };
 };
 
-const reconcileStreamEvents = (events: ConversationMessageStreamPart[]): ContentBlock[] => {
+const reconcileStreamEvents = (events: AmplifyAIConversationMessageStreamPart[]): AmplifyAIContentBlock[] => {
   return events
     .sort((a, b) => {
       let aValue = a.contentBlockIndex * 1000 + (a.contentBlockDeltaIndex || 0);
@@ -626,5 +626,5 @@ const reconcileStreamEvents = (events: ConversationMessageStreamPart[]): Content
         acc[event.contentBlockIndex] = { toolUse: event.contentBlockToolUse };
       }
       return acc;
-    }, [] as ContentBlock[]);
+    }, [] as AmplifyAIContentBlock[]);
 };

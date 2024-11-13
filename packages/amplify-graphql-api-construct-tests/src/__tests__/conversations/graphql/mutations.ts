@@ -320,9 +320,9 @@ export const deleteConversationPirateChat = /* GraphQL */ `mutation DeleteConver
 
 export const disabledModelChat = /* GraphQL */ `mutation DisabledModelChat(
   $aiContext: AWSJSON
-  $content: [ContentBlockInput]
+  $content: [AmplifyAIContentBlockInput]
   $conversationId: ID!
-  $toolConfiguration: ToolConfigurationInput
+  $toolConfiguration: AmplifyAIToolConfigurationInput
 ) {
   disabledModelChat(
     aiContext: $aiContext
@@ -408,9 +408,9 @@ export const disabledModelChat = /* GraphQL */ `mutation DisabledModelChat(
 
 export const pirateChat = /* GraphQL */ `mutation PirateChat(
   $aiContext: AWSJSON
-  $content: [ContentBlockInput]
+  $content: [AmplifyAIContentBlockInput]
   $conversationId: ID!
-  $toolConfiguration: ToolConfigurationInput
+  $toolConfiguration: AmplifyAIToolConfigurationInput
 ) {
   pirateChat(
     aiContext: $aiContext
