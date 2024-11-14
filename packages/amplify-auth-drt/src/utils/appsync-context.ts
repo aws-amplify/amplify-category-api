@@ -69,7 +69,7 @@ export const makeUserPoolsIdentity = (partialIdentity: Partial<AppSyncIdentityCo
     username: 'my-username',
     claims: {
       sub: 'uuid',
-      'cognito:username': 'my-username'
+      'cognito:username': 'my-username',
     },
     sourceIp: ['x.x.x.x'],
     defaultAuthStrategy: 'ALLOW',
@@ -115,5 +115,14 @@ export const makeUserPoolsContext = (partialContext: Partial<AppSyncContext> = {
     ...partialContext,
   });
 };
+
+// #endregion
+
+// #region Test utilities
+
+/**
+ * Makes an AppSyncContext {@link Arbitrary} for use in FastCheck tests.
+ */
+export const makeContextArbitrary = () => {};
 
 // #endregion

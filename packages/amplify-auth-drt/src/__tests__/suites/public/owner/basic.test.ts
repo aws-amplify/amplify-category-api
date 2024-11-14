@@ -34,220 +34,36 @@ describe('owner auth', () => {
       // { typeName: 'Query', fieldName: 'listTodos' },
       // { typeName: 'Mutation', fieldName: 'createTodo' },
     ])('$typeName/$fieldName', async ({ typeName, fieldName }) => {
-      fc.assert(
-        fc.property(fc.string(), fc.string(), fc.string(), async (a, b, c) => {
-          const mergedTemplate = mergeTemplate({ api, fieldName, typeName });
+      const mergedTemplate = mergeTemplate({ api, fieldName, typeName });
 
-          const context = makeUserPoolsContext();
-          const result = await evaluateMappingTemplate({ region, template: mergedTemplate, context });
-          expect(result.error).toBeUndefined();
-          expect(result.evaluationResult).toBeDefined();
+      const context = makeUserPoolsContext();
+      const result = await evaluateMappingTemplate({ region, template: mergedTemplate, context });
+      expect(result.error).toBeUndefined();
+      expect(result.evaluationResult).toBeDefined();
 
-          const appSyncContext = extractContextFromMappingResult(result.evaluationResult!);
-          expect(appSyncContext).toBeDefined();
-          const authFilter = appSyncContext.stash.authFilter;
-          expect(authFilter).toBeDefined();
-          expect(authFilter).toEqual({
-            or: [
-              {
-                owner: {
-                  eq: 'uuid::my-username',
-                },
-              },
-              {
-                owner: {
-                  eq: 'uuid',
-                },
-              },
-              {
-                owner: {
-                  eq: 'my-username',
-                },
-              },
-            ],
-          });
-        }),
-      );
+      const appSyncContext = extractContextFromMappingResult(result.evaluationResult!);
+      expect(appSyncContext).toBeDefined();
+      const authFilter = appSyncContext.stash.authFilter;
+      expect(authFilter).toBeDefined();
+      expect(authFilter).toEqual({
+        or: [
+          {
+            owner: {
+              eq: 'uuid::my-username',
+            },
+          },
+          {
+            owner: {
+              eq: 'uuid',
+            },
+          },
+          {
+            owner: {
+              eq: 'my-username',
+            },
+          },
+        ],
+      });
     });
   });
 });
-
-const ownerAuthCedarEval = {
-  effect: 'permit',
-  principal: {
-    op: 'All',
-  },
-  action: {
-    op: 'All',
-  },
-  resource: {
-    op: 'All',
-  },
-  conditions: [
-    {
-      kind: 'when',
-      body: {
-        '&&': {
-          left: {
-            Value: true,
-          },
-          right: {
-            '&&': {
-              left: {
-                '&&': {
-                  left: {
-                    has: {
-                      left: {
-                        unknown: [
-                          {
-                            Value: 'context',
-                          },
-                        ],
-                      },
-                      attr: 'result',
-                    },
-                  },
-                  right: {
-                    has: {
-                      left: {
-                        '.': {
-                          left: {
-                            Var: 'context',
-                          },
-                          attr: 'result',
-                        },
-                      },
-                      attr: 'owner',
-                    },
-                  },
-                },
-              },
-              right: {
-                '||': {
-                  left: {
-                    '||': {
-                      left: {
-                        '&&': {
-                          left: {
-                            has: {
-                              left: {
-                                Var: 'principal',
-                              },
-                              attr: 'subUsername',
-                            },
-                          },
-                          right: {
-                            '==': {
-                              left: {
-                                '.': {
-                                  left: {
-                                    Var: 'principal',
-                                  },
-                                  attr: 'subUsername',
-                                },
-                              },
-                              right: {
-                                '.': {
-                                  left: {
-                                    '.': {
-                                      left: {
-                                        Var: 'context',
-                                      },
-                                      attr: 'result',
-                                    },
-                                  },
-                                  attr: 'owner',
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                      right: {
-                        '&&': {
-                          left: {
-                            has: {
-                              left: {
-                                Var: 'principal',
-                              },
-                              attr: 'sub',
-                            },
-                          },
-                          right: {
-                            '==': {
-                              left: {
-                                '.': {
-                                  left: {
-                                    Var: 'principal',
-                                  },
-                                  attr: 'sub',
-                                },
-                              },
-                              right: {
-                                '.': {
-                                  left: {
-                                    '.': {
-                                      left: {
-                                        Var: 'context',
-                                      },
-                                      attr: 'result',
-                                    },
-                                  },
-                                  attr: 'owner',
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                  right: {
-                    '&&': {
-                      left: {
-                        has: {
-                          left: {
-                            Var: 'principal',
-                          },
-                          attr: 'username',
-                        },
-                      },
-                      right: {
-                        '==': {
-                          left: {
-                            '.': {
-                              left: {
-                                Var: 'principal',
-                              },
-                              attr: 'username',
-                            },
-                          },
-                          right: {
-                            '.': {
-                              left: {
-                                '.': {
-                                  left: {
-                                    Var: 'context',
-                                  },
-                                  attr: 'result',
-                                },
-                              },
-                              attr: 'owner',
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  ],
-  annotations: {
-    id: 'permit owners to get',
-  },
-};
