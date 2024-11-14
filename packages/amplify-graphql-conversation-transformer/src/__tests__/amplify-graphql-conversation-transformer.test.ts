@@ -43,13 +43,10 @@ describe('ConversationTransformer', () => {
       assertSendMessageMutationResources(routeName, out);
       assertAssistantResponseMutationResources(routeName, out);
       assertAssistantResponseSubscriptionResources(routeName, out);
+      assertAssistantResponseStreamMutationResources(routeName, out);
+      assertSlotsForModelGeneratedOperations(routeName, out);
       const schema = parse(out.schema);
       validateModelSchema(schema);
-
-      expect(
-        out.stacks.ConversationMessagePirateChat.Resources![`ListConversationMessage${toUpper(routeName)}Resolver`].Properties
-          .PipelineConfig.Functions,
-      ).toHaveLength(4);
     });
 
     it.each([
@@ -83,6 +80,16 @@ describe('ConversationTransformer', () => {
         out.rootStack.Resources?.[conversationLambdaStackName].Properties?.Parameters?.[conversationLambdaDataSourceFunctionArnRef];
       expect(lambdaDataSourceFunctionArn).toEqual(expectedCustomHandlerArn);
     });
+
+    test('mixing query and model tools', () => {
+      const routeName = 'toolChat';
+      const inputSchema = getSchema('conversation-route-mixed-tools.graphql', { ROUTE_NAME: routeName });
+      const out = transform(inputSchema);
+      expect(out).toBeDefined();
+
+      const invokeLambdaFn = out.resolvers[`Mutation.${routeName}.invoke-lambda.js`];
+      expect(invokeLambdaFn).toBeDefined();
+    });
   });
 
   describe('invalid schemas', () => {
@@ -115,6 +122,29 @@ describe('ConversationTransformer', () => {
       });
     });
 
+    describe('invalid tool definition', () => {
+      it('should throw an error if model operation and custom tool fields are mixed', () => {
+        const inputSchema = getSchema('conversation-route-invalid-tool-definition-mixed-fields.graphql');
+        expect(() => transform(inputSchema)).toThrow(
+          'Tool definitions must contain a modelName and modelOperation, or queryName. Invalid tools: calculator',
+        );
+      });
+
+      it('should throw an error if required fields are missing', () => {
+        const inputSchema = getSchema('conversation-route-invalid-tool-definition-missing-fields.graphql');
+        expect(() => transform(inputSchema)).toThrow(
+          'Tool definitions must contain a modelName and modelOperation, or queryName. Invalid tools: calculator',
+        );
+      });
+
+      it('should throw an error if tool name is invalid', () => {
+        const inputSchema = getSchema('conversation-route-invalid-tool-name.graphql');
+        expect(() => transform(inputSchema)).toThrow(
+          'Tool name must be between 1 and 64 characters, start with a letter, and contain only letters, numbers, and underscores. Found: this is an invalid tool name',
+        );
+      });
+    });
+
     describe('invalid custom handler configuration', () => {
       it('should throw if both functionName and handler are provided', () => {
         const inputSchema = getSchema('conversation-route-invalid-custom-handler-function-name-and-handler-provided.graphql');
@@ -131,6 +161,20 @@ describe('ConversationTransformer', () => {
   });
 });
 
+const assertSlotsForModelGeneratedOperations = (routeName: string, resources: DeploymentResources) => {
+  const listMessagesInitFn = resources.resolvers[`Query.${routeName}.list-messages-init.js`];
+  expect(listMessagesInitFn).toBeDefined();
+  expect(listMessagesInitFn).toMatchSnapshot('ListMessagesInit resolver function code');
+
+  const listMessagesPostDataLoadFn = resources.resolvers[`Query.${routeName}.list-messages-post-processing.js`];
+  expect(listMessagesPostDataLoadFn).toBeDefined();
+  expect(listMessagesPostDataLoadFn).toMatchSnapshot('ListMessagesPostDataLoad resolver function code');
+
+  const listConversationsInitFn = resources.resolvers[`Query.${routeName}.list-conversations-init.js`];
+  expect(listConversationsInitFn).toBeDefined();
+  expect(listConversationsInitFn).toMatchSnapshot('ListConversationsInit resolver function code');
+};
+
 const assertAssistantResponseSubscriptionResources = (routeName: string, resources: DeploymentResources) => {
   const resolverName = `SubscriptiononCreateAssistantResponse${toUpper(routeName)}Resolver`;
 
@@ -142,6 +186,46 @@ const assertAssistantResponseSubscriptionResources = (routeName: string, resourc
   const dataFn = resources.resolvers[`Subscription.onCreateAssistantResponse${toUpper(routeName)}.assistant-message.js`];
   expect(dataFn).toBeDefined();
   expect(dataFn).toMatchSnapshot('AssistantResponseSubscription data slot function code');
+};
+
+const assertAssistantResponseStreamMutationResources = (routeName: string, resources: DeploymentResources) => {
+  const resolverName = `MutationcreateAssistantResponseStream${toUpper(routeName)}Resolver`;
+
+  // ----- Function Code Assertions -----
+  const resolverCode = resources.rootStack.Resources?.[resolverName].Properties.Code;
+  expect(resolverCode).toBeDefined();
+  expect(resolverCode).toMatchSnapshot('AssistantResponseStreamMutation resolver code');
+
+  // Need to do this song and dance because the init slot is an inline function.
+  // It's not accessible via `resources.resolvers`.
+  const initFn = getFunctionConfigurationForPipelineSlot(resources, resolverName, 0).Properties.Code;
+  expect(initFn).toBeDefined();
+  expect(initFn).toMatchSnapshot('AssistantResponseStreamMutation init slot function code');
+
+  const authFn = resources.resolvers[`Mutation.createAssistantResponseStream${toUpper(routeName)}.auth.js`];
+  expect(authFn).toBeDefined();
+  expect(authFn).toMatchSnapshot('AssistantResponseStreamMutation auth slot function code');
+
+  const verifySessionOwnerFn = resources.resolvers[`Mutation.createAssistantResponseStream${toUpper(routeName)}.verify-session-owner.js`];
+  expect(verifySessionOwnerFn).toBeDefined();
+  expect(verifySessionOwnerFn).toMatchSnapshot('AssistantResponseStreamMutation verify session owner slot function code');
+
+  const dataFn = resources.resolvers[`Mutation.createAssistantResponseStream${toUpper(routeName)}.persist-message.js`];
+  expect(dataFn).toBeDefined();
+  expect(dataFn).toMatchSnapshot('AssistantResponseStreamMutation data slot function code');
+
+  // ----- Data Source Assertions -----
+  const verifySessionOwnerFnDataSourceName = getFunctionConfigurationForPipelineSlot(resources, resolverName, 2).Properties.DataSourceName[
+    'Fn::GetAtt'
+  ][0];
+  expect(verifySessionOwnerFnDataSourceName).toBeDefined();
+  expect(verifySessionOwnerFnDataSourceName).toEqual(conversationTableDataSourceName(routeName));
+
+  const dataResolverSlotFnDataSourceName = getFunctionConfigurationForPipelineSlot(resources, resolverName, 3).Properties.DataSourceName[
+    'Fn::GetAtt'
+  ][0];
+  expect(dataResolverSlotFnDataSourceName).toBeDefined();
+  expect(dataResolverSlotFnDataSourceName).toEqual(messageTableDataSourceName(routeName));
 };
 
 const assertAssistantResponseMutationResources = (routeName: string, resources: DeploymentResources) => {
@@ -273,7 +357,7 @@ function transform(
     hasManyTransformer,
     hasOneTransformer,
     belongsToTransformer,
-    new ConversationTransformer(modelTransformer, hasManyTransformer, belongsToTransformer, authTransformer, functionMap),
+    new ConversationTransformer(modelTransformer, hasManyTransformer, belongsToTransformer, authTransformer, undefined, functionMap),
     new GenerationTransformer(),
     authTransformer,
   ];

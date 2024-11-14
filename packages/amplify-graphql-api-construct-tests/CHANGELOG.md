@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.13.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.12.1...amplify-graphql-api-construct-tests@1.13.0) (2024-11-14)
+
+### Features
+
+- **conversation:** require auth input for conversation directive ([#3007](https://github.com/aws-amplify/amplify-category-api/issues/3007)) ([39cca3f](https://github.com/aws-amplify/amplify-category-api/commit/39cca3f18d02e9092828901ba799932f6e77f232))
+
+## [1.12.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.12.0...amplify-graphql-api-construct-tests@1.12.1) (2024-11-12)
+
+**Note:** Version bump only for package amplify-graphql-api-construct-tests
+
+# [1.12.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.11.0...amplify-graphql-api-construct-tests@1.12.0) (2024-11-08)
+
+### Features
+
+- add imported DDB tables for gen 2 migration in experimental state ([#2992](https://github.com/aws-amplify/amplify-category-api/issues/2992)) ([0c415b3](https://github.com/aws-amplify/amplify-category-api/commit/0c415b3eed70a567848fc661c3d4ce0ca5719e94))
+- **conversation:** propagate errors from lambda to client ([#3002](https://github.com/aws-amplify/amplify-category-api/issues/3002)) ([141512b](https://github.com/aws-amplify/amplify-category-api/commit/141512bf228a2afdbfc124023730ff76d1b65a04))
+- **conversation:** sorting and performant list queries ([#2997](https://github.com/aws-amplify/amplify-category-api/issues/2997)) ([73f2d6b](https://github.com/aws-amplify/amplify-category-api/commit/73f2d6b7026df34ba4b9b88722925bc7d853ab60))
+- **conversation:** support response streaming ([#2986](https://github.com/aws-amplify/amplify-category-api/issues/2986)) ([815d51f](https://github.com/aws-amplify/amplify-category-api/commit/815d51fcd6fd105614f879271f21a307affe8c9d))
+
+# [1.11.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.10.1...amplify-graphql-api-construct-tests@1.11.0) (2024-10-28)
+
+### Bug Fixes
+
+- allowlist comparison properties on imported table ([#2908](https://github.com/aws-amplify/amplify-category-api/issues/2908)) ([ae1f860](https://github.com/aws-amplify/amplify-category-api/commit/ae1f860a12dfd0cc4ae77675d6a6c9f6b45a920e))
+- use correct region setting for the pre-provisioned resource ([#2982](https://github.com/aws-amplify/amplify-category-api/issues/2982)) ([74e1727](https://github.com/aws-amplify/amplify-category-api/commit/74e1727267e58e3a26f49d3e21775492dc9c8bf4))
+
+### Features
+
+- add overrideIndexName to configure index name ([#2738](https://github.com/aws-amplify/amplify-category-api/issues/2738)) ([c4e59d3](https://github.com/aws-amplify/amplify-category-api/commit/c4e59d37d987254d102146a27267501d44fca263))
+- **conversation:** enable update mutations on conversation model ([#2948](https://github.com/aws-amplify/amplify-category-api/issues/2948)) ([c90ac7d](https://github.com/aws-amplify/amplify-category-api/commit/c90ac7d9aad6ac2a9b30d44e65211b689d2c7109))
+
 ## [1.10.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.10.0...amplify-graphql-api-construct-tests@1.10.1) (2024-10-17)
 
 **Note:** Version bump only for package amplify-graphql-api-construct-tests

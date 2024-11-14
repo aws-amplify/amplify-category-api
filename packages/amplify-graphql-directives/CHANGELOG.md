@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.6.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-directives@2.5.0...@aws-amplify/graphql-directives@2.6.0) (2024-11-14)
+
+### Features
+
+- **conversation:** require auth input for conversation directive ([#3007](https://github.com/aws-amplify/amplify-category-api/issues/3007)) ([39cca3f](https://github.com/aws-amplify/amplify-category-api/commit/39cca3f18d02e9092828901ba799932f6e77f232))
+- **conversation:** update directive input for tool definition for model list queries ([#3013](https://github.com/aws-amplify/amplify-category-api/issues/3013)) ([ee976cc](https://github.com/aws-amplify/amplify-category-api/commit/ee976cc565efb54dd8e7e2fcfc4e116b312ab348))
+
+# [2.5.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-directives@2.4.0...@aws-amplify/graphql-directives@2.5.0) (2024-11-08)
+
+### Features
+
+- add imported DDB tables for gen 2 migration in experimental state ([#2992](https://github.com/aws-amplify/amplify-category-api/issues/2992)) ([0c415b3](https://github.com/aws-amplify/amplify-category-api/commit/0c415b3eed70a567848fc661c3d4ce0ca5719e94))
+
 # [2.4.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-directives@2.3.0...@aws-amplify/graphql-directives@2.4.0) (2024-10-17)
 
 ### Features

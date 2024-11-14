@@ -218,6 +218,16 @@ export interface GraphQLAPIProvider extends IConstruct {
 }
 
 // @public (undocumented)
+export interface ImportedAmplifyDynamoDbModelDataSourceStrategy {
+    // (undocumented)
+    readonly dbType: 'DYNAMODB';
+    // (undocumented)
+    readonly provisionStrategy: 'IMPORTED_AMPLIFY_TABLE';
+    // (undocumented)
+    readonly tableName: string;
+}
+
+// @public (undocumented)
 export interface InlineMappingTemplateProvider {
     // (undocumented)
     bind: (scope: Construct) => string;
@@ -259,7 +269,7 @@ export enum MappingTemplateType {
 }
 
 // @public (undocumented)
-export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
+export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | ImportedAmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
 
 // @public (undocumented)
 export interface ModelDataSourceStrategyBase {

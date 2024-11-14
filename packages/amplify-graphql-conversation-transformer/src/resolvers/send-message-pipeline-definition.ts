@@ -56,7 +56,7 @@ function auth(): ResolverFunctionDefinition {
 function verifySessionOwner(): ResolverFunctionDefinition {
   return createResolverFunctionDefinition({
     slotName: 'verifySessionOwner',
-    fileName: 'verify-session-owner-resolver-fn.template.js',
+    fileName: 'set-updated-at-conversation-table-fn.template.js',
     generateTemplate: templateGenerator('verify-session-owner'),
     dataSource: (config) => config.dataSources.conversationTableDataSource,
     substitutions: () => ({
@@ -101,7 +101,7 @@ function invokeLambdaResolverSubstitutions(config: ConversationDirectiveConfigur
     MODEL_ID: JSON.stringify(config.aiModel),
     SYSTEM_PROMPT: JSON.stringify(config.systemPrompt),
     DATA_TOOLS: JSON.stringify(config.toolSpec),
-    SELECTION_SET: selectionSet,
+    SELECTION_SET: streamingSelectionSet,
     INFERENCE_CONFIGURATION: JSON.stringify(config.inferenceConfiguration),
     RESPONSE_MUTATION_NAME: config.assistantResponseMutation.field.name.value,
     RESPONSE_MUTATION_INPUT_TYPE_NAME: config.assistantResponseMutation.input.name.value,
@@ -111,6 +111,8 @@ function invokeLambdaResolverSubstitutions(config: ConversationDirectiveConfigur
     LIST_QUERY_NAME: getConversationMessageListQueryName(config),
     LIST_QUERY_INPUT_TYPE_NAME: getConversationMessageListQueryInputTypeName(config),
     LIST_QUERY_LIMIT: 'undefined',
+    STREAMING_RESPONSE_MUTATION_NAME: config.assistantResponseStreamingMutation.field.name.value,
+    STREAMING_RESPONSE_MUTATION_INPUT_TYPE_NAME: config.assistantResponseStreamingMutation.input.name.value,
   };
 }
 
@@ -129,3 +131,4 @@ function templateGenerator(slotName: string) {
 }
 
 const selectionSet = `id conversationId content { image { format source { bytes }} text toolUse { toolUseId name input } toolResult { status toolUseId content { json text image { format source { bytes }} document { format name source { bytes }} }}} role owner createdAt updatedAt`;
+const streamingSelectionSet = `associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message }`;

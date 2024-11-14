@@ -1,19 +1,21 @@
 import { ConversationDirective } from '@aws-amplify/graphql-directives';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
+import { TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerAuthProvider,
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { BackendOutputEntry, BackendOutputStorageStrategy } from '@aws-amplify/plugin-types';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { DirectiveNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { ConversationDirectiveConfiguration } from './conversation-directive-configuration';
 import { ConversationFieldHandler } from './transformer-steps/conversation-field-handler';
 import { ConversationPrepareHandler } from './transformer-steps/conversation-prepare-handler';
 import { ConversationResolverGenerator } from './transformer-steps/conversation-resolver-generator';
+
 /**
  * Transformer for handling `@conversation` directives in GraphQL schemas
  */
@@ -28,12 +30,13 @@ export class ConversationTransformer extends TransformerPluginBase {
     hasManyTransformer: HasManyTransformer,
     belongsToTransformer: BelongsToTransformer,
     authProvider: TransformerAuthProvider,
+    outputStorageStrategy?: BackendOutputStorageStrategy<BackendOutputEntry>,
     functionNameMap?: Record<string, lambda.IFunction>,
   ) {
     super('amplify-conversation-transformer', ConversationDirective.definition);
     this.fieldHandler = new ConversationFieldHandler();
     this.prepareHandler = new ConversationPrepareHandler(modelTransformer, hasManyTransformer, belongsToTransformer, authProvider);
-    this.resolverGenerator = new ConversationResolverGenerator(functionNameMap);
+    this.resolverGenerator = new ConversationResolverGenerator(functionNameMap, outputStorageStrategy);
   }
 
   /**

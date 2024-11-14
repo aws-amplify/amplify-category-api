@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@4.1.0...amplify-category-api-e2e-tests@4.1.1) (2024-11-14)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
+# [4.1.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@4.0.6...amplify-category-api-e2e-tests@4.1.0) (2024-11-08)
+
+### Features
+
+- add imported DDB tables for gen 2 migration in experimental state ([#2992](https://github.com/aws-amplify/amplify-category-api/issues/2992)) ([0c415b3](https://github.com/aws-amplify/amplify-category-api/commit/0c415b3eed70a567848fc661c3d4ce0ca5719e94))
+
+## [4.0.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@4.0.5...amplify-category-api-e2e-tests@4.0.6) (2024-10-28)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
 ## [4.0.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@4.0.4...amplify-category-api-e2e-tests@4.0.5) (2024-10-17)
 
 **Note:** Version bump only for package amplify-category-api-e2e-tests

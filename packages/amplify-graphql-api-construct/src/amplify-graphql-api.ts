@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { Construct } from 'constructs';
 import { ExecuteTransformConfig, executeTransform } from '@aws-amplify/graphql-transformer';
-import { NestedStack, Stack } from 'aws-cdk-lib';
+import { NestedStack, Stack, Annotations } from 'aws-cdk-lib';
 import { AttributionMetadataStorage, StackMetadataBackendOutputStorageStrategy } from '@aws-amplify/backend-output-storage';
 import { graphqlOutputKey } from '@aws-amplify/backend-output-schemas';
 import type { GraphqlOutput, AwsAppsyncAuthenticationType } from '@aws-amplify/backend-output-schemas';
@@ -50,6 +50,8 @@ import {
 import { getStackForScope, walkAndProcessNodes } from './internal/construct-tree';
 import { getDataSourceStrategiesProvider } from './internal/data-source-config';
 import { getMetadataDataSources, getMetadataAuthorizationModes, getMetadataCustomOperations } from './internal/metadata';
+import { isImportedAmplifyDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-core';
+import { BackendOutputStorageStrategy, BackendOutputEntry } from '@aws-amplify/plugin-types';
 
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.
@@ -160,6 +162,20 @@ export class AmplifyGraphqlApi extends Construct {
       dataStoreConfiguration,
     } = props;
 
+    // TODO: GEN1_GEN2_MIGRATION
+    // print warning when using experimental features.
+    // remove this code block when the feature is released.
+    // start block
+    const usingImportedAmplifyDynamoDbModelDataSourceStrategy = Object.values(definition.dataSourceStrategies).some((strategy) => {
+      return isImportedAmplifyDynamoDbModelDataSourceStrategy(strategy);
+    });
+    if (usingImportedAmplifyDynamoDbModelDataSourceStrategy) {
+      Annotations.of(this).addWarning(
+        'ImportedAmplifyDynamoDbModelDataSourceStrategy is experimental and is not recommended for production use. This functionality may be changed or removed without warning.',
+      );
+    }
+    // end block
+
     if (conflictResolution && dataStoreConfiguration) {
       throw new Error(
         'conflictResolution is deprecated. conflictResolution and dataStoreConfiguration cannot be used together. Please use dataStoreConfiguration.',
@@ -223,6 +239,7 @@ export class AmplifyGraphqlApi extends Construct {
           ...definition.referencedLambdaFunctions,
           ...functionNameMap,
         },
+        outputStorageStrategy: outputStorageStrategy as BackendOutputStorageStrategy<BackendOutputEntry>,
       },
       authConfig,
       stackMapping: stackMappings ?? {},

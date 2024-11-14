@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.11.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.11.1...@aws-amplify/graphql-schema-generator@0.11.2) (2024-11-14)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+## [0.11.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.11.0...@aws-amplify/graphql-schema-generator@0.11.1) (2024-11-08)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+# [0.11.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.10.6...@aws-amplify/graphql-schema-generator@0.11.0) (2024-10-28)
+
+### Features
+
+- generate ts schema from pg serial field ([#2952](https://github.com/aws-amplify/amplify-category-api/issues/2952)) ([6b87331](https://github.com/aws-amplify/amplify-category-api/commit/6b873316c0af991d9f884f4006857a246eda5533))
+
 ## [0.10.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.10.5...@aws-amplify/graphql-schema-generator@0.10.6) (2024-10-17)
 
 **Note:** Version bump only for package @aws-amplify/graphql-schema-generator

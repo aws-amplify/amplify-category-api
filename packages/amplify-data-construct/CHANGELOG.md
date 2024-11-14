@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.13.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.13.1...@aws-amplify/data-construct@1.13.2) (2024-11-14)
+
+**Note:** Version bump only for package @aws-amplify/data-construct
+
+## [1.13.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.13.0...@aws-amplify/data-construct@1.13.1) (2024-11-12)
+
+**Note:** Version bump only for package @aws-amplify/data-construct
+
+# [1.13.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.12.0...@aws-amplify/data-construct@1.13.0) (2024-11-08)
+
+### Features
+
+- add imported DDB tables for gen 2 migration in experimental state ([#2992](https://github.com/aws-amplify/amplify-category-api/issues/2992)) ([0c415b3](https://github.com/aws-amplify/amplify-category-api/commit/0c415b3eed70a567848fc661c3d4ce0ca5719e94))
+- **conversation:** propagate errors from lambda to client ([#3002](https://github.com/aws-amplify/amplify-category-api/issues/3002)) ([141512b](https://github.com/aws-amplify/amplify-category-api/commit/141512bf228a2afdbfc124023730ff76d1b65a04))
+- **conversation:** support response streaming ([#2986](https://github.com/aws-amplify/amplify-category-api/issues/2986)) ([815d51f](https://github.com/aws-amplify/amplify-category-api/commit/815d51fcd6fd105614f879271f21a307affe8c9d))
+
+# [1.12.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.11.1...@aws-amplify/data-construct@1.12.0) (2024-10-28)
+
+### Features
+
+- import existing table to amplify managed table ([#2634](https://github.com/aws-amplify/amplify-category-api/issues/2634)) ([b3fb28f](https://github.com/aws-amplify/amplify-category-api/commit/b3fb28f6a253cae523625c0b2e93ec9ce2c37bab))
+
 ## [1.11.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.11.0...@aws-amplify/data-construct@1.11.1) (2024-10-17)
 
 **Note:** Version bump only for package @aws-amplify/data-construct

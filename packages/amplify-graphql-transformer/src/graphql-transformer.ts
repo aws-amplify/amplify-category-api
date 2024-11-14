@@ -35,7 +35,7 @@ import { Construct } from 'constructs';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { GenerationTransformer } from '@aws-amplify/graphql-generation-transformer';
 import { ConversationTransformer } from '@aws-amplify/graphql-conversation-transformer';
-
+import { BackendOutputEntry, BackendOutputStorageStrategy } from '@aws-amplify/plugin-types';
 /**
  * Arguments passed into a TransformerFactory
  * Used to determine how to create a new GraphQLTransform
@@ -44,6 +44,7 @@ export type TransformerFactoryArgs = {
   storageConfig?: any;
   customTransformers?: TransformerPluginProvider[];
   functionNameMap?: Record<string, IFunction>;
+  outputStorageStrategy?: BackendOutputStorageStrategy<BackendOutputEntry>;
 };
 
 /**
@@ -78,7 +79,14 @@ export const constructTransformerChain = (options?: TransformerFactoryArgs): Tra
     hasOneTransformer,
     new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
     belongsToTransformer,
-    new ConversationTransformer(modelTransformer, hasManyTransformer, belongsToTransformer, authTransformer, options?.functionNameMap),
+    new ConversationTransformer(
+      modelTransformer,
+      hasManyTransformer,
+      belongsToTransformer,
+      authTransformer,
+      options?.outputStorageStrategy,
+      options?.functionNameMap,
+    ),
     new GenerationTransformer(),
     new DefaultValueTransformer(),
     authTransformer,
