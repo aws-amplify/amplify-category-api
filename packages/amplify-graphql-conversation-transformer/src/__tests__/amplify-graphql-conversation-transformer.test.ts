@@ -95,7 +95,7 @@ describe('ConversationTransformer', () => {
   describe('invalid schemas', () => {
     it('should throw an error if the return type is not ConversationMessage', () => {
       const inputSchema = getSchema('conversation-route-invalid-return-type.graphql');
-      expect(() => transform(inputSchema)).toThrow('@conversation return type must be ConversationMessage');
+      expect(() => transform(inputSchema)).toThrow('@conversation return type must be AmplifyAIConversationMessage');
     });
 
     it.each([
