@@ -4,6 +4,8 @@
 
 ```ts
 
+import { BackendOutputEntry } from '@aws-amplify/plugin-types';
+import { BackendOutputStorageStrategy } from '@aws-amplify/plugin-types';
 import { BelongsToTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { DirectiveNode } from 'graphql';
 import { FieldDefinitionNode } from 'graphql';
@@ -20,7 +22,7 @@ import { TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-
 
 // @public (undocumented)
 export class ConversationTransformer extends TransformerPluginBase {
-    constructor(modelTransformer: ModelTransformer, hasManyTransformer: HasManyTransformer, belongsToTransformer: BelongsToTransformer, authProvider: TransformerAuthProvider, functionNameMap?: Record<string, lambda.IFunction>);
+    constructor(modelTransformer: ModelTransformer, hasManyTransformer: HasManyTransformer, belongsToTransformer: BelongsToTransformer, authProvider: TransformerAuthProvider, outputStorageStrategy?: BackendOutputStorageStrategy<BackendOutputEntry>, functionNameMap?: Record<string, lambda.IFunction>);
     // (undocumented)
     field: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, definition: FieldDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
     // (undocumented)
