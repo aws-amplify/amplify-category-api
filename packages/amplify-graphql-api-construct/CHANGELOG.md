@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.17.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.17.1...@aws-amplify/graphql-api-construct@1.17.2) (2024-11-14)
+
+### Bug Fixes
+
+- plumb outputStorageStrategy through conversation transformer to handler ([#3017](https://github.com/aws-amplify/amplify-category-api/issues/3017)) ([acc8140](https://github.com/aws-amplify/amplify-category-api/commit/acc8140c323988da595630ed9c047e03a825635f))
+
 ## [1.17.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.17.0...@aws-amplify/graphql-api-construct@1.17.1) (2024-11-12)
 
 **Note:** Version bump only for package @aws-amplify/graphql-api-construct

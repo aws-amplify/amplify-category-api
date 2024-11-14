@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@0.6.0...@aws-amplify/graphql-conversation-transformer@0.7.0) (2024-11-14)
+
+### Bug Fixes
+
+- plumb outputStorageStrategy through conversation transformer to handler ([#3017](https://github.com/aws-amplify/amplify-category-api/issues/3017)) ([acc8140](https://github.com/aws-amplify/amplify-category-api/commit/acc8140c323988da595630ed9c047e03a825635f))
+
+### Features
+
+- **conversation:** require auth input for conversation directive ([#3007](https://github.com/aws-amplify/amplify-category-api/issues/3007)) ([39cca3f](https://github.com/aws-amplify/amplify-category-api/commit/39cca3f18d02e9092828901ba799932f6e77f232))
+- **conversation:** update directive input for tool definition for model list queries ([#3013](https://github.com/aws-amplify/amplify-category-api/issues/3013)) ([ee976cc](https://github.com/aws-amplify/amplify-category-api/commit/ee976cc565efb54dd8e7e2fcfc4e116b312ab348))
+
 # [0.6.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@0.5.0...@aws-amplify/graphql-conversation-transformer@0.6.0) (2024-11-08)
 
 ### Features
