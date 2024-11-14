@@ -1,10 +1,10 @@
 type Mutation {
   invalidChat(
     conversationId: ID!,
-    content: [ContentBlockInput],
+    content: [AmplifyAIContentBlockInput],
     aiContext: AWSJSON,
-    toolConfiguration: ToolConfigurationInput
-  ): ConversationMessage
+    toolConfiguration: AmplifyAIToolConfigurationInput
+  ): AmplifyAIConversationMessage
   @conversation(
     aiModel: "anthropic.claude-3-haiku-20240307-v1:0",
     auth: { strategy: owner, provider: userPools },
