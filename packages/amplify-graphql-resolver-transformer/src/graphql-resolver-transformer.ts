@@ -1,17 +1,12 @@
-import { resolve } from 'path';
 import { DirectiveWrapper, generateGetArgumentsInput, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResolverDirective } from '@aws-amplify/graphql-directives';
 import { DirectiveNode, ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
-import { Asset } from 'aws-cdk-lib/aws-s3-assets';
-import { CfnFunctionConfiguration, CfnResolver } from 'aws-cdk-lib/aws-appsync';
-import { Construct } from 'constructs';
+import { AppsyncFunction, Code, FunctionRuntime, IAppsyncFunction, Resolver } from 'aws-cdk-lib/aws-appsync';
 import { ResolverDirectiveConfiguration } from './types';
 
-const APPSYNC_PIPELINE_RESOLVER = 'PIPELINE';
-const APPSYNC_JS_RUNTIME_NAME = 'APPSYNC_JS';
-const APPSYNC_JS_RUNTIME_VERSION = '1.0.0';
-const JS_PIPELINE_RESOLVER_HANDLER = './assets/js-resolver-handler.js';
+// TODO: import
+const NONE_DS = 'NONE_DS';
 
 export class ResolverTransformer extends TransformerPluginBase {
   private resolverGroups: Map<FieldDefinitionNode, ResolverDirectiveConfiguration> = new Map();
@@ -40,52 +35,61 @@ export class ResolverTransformer extends TransformerPluginBase {
   };
 
   generateResolvers = (ctx: TransformerContextProvider): void => {
-    // TODO: add vtl resolver generation
     const scope = ctx.stackManager.scope;
 
     for (const config of this.resolverGroups.values()) {
-      const jsResolverTemplateAsset = defaultJsResolverAsset(scope);
-
       const { typeName, fieldName, functions: resolverEntries } = config;
 
-      const functions: string[] = resolverEntries.map((handler, index) => {
+      const functions: IAppsyncFunction[] = resolverEntries.map((handler, index) => {
         const fnName = `Fn_${typeName}_${fieldName}_${index + 1}`;
-        const s3AssetName = `${fnName}_asset`;
+        let dataSource;
+        if (handler.dataSource !== 'NONE_DS') {
+          // TODO: fix type error
+          dataSource = ctx.dataSources.get({ name: { value: handler.dataSource, kind: 'Name' }, kind: 'ObjectTypeDefinition' }) as any;
+        } else if (handler.dataSource === 'NONE_DS') {
+          // TODO: set to correct none ds
+          dataSource = ctx.api.host.getDataSource(NONE_DS);
+        } else {
+          // TODO: improve error message
+          throw new Error('Invalid data source');
+        }
 
-        const asset = new Asset(scope, s3AssetName, {
-          // todo: get reference from strategy
-          path: handler.entry,
-          // path: resolveEntryPath(handler.entry),
-        });
-
-        const fn = new CfnFunctionConfiguration(scope, fnName, {
-          apiId: ctx.api.apiId,
-          dataSourceName: handler.dataSource,
+        const fn = new AppsyncFunction(scope, fnName, {
           name: fnName,
-          codeS3Location: asset.s3ObjectUrl,
-          runtime: {
-            name: APPSYNC_JS_RUNTIME_NAME,
-            runtimeVersion: APPSYNC_JS_RUNTIME_VERSION,
-          },
+          // TODO: fix type error
+          api: ctx.api as any,
+          dataSource,
+          runtime: FunctionRuntime.JS_1_0_0,
+          // TODO: change to reference from entry
+          code: Code.fromAsset(handler.entry),
         });
-        fn.node.addDependency(ctx.api);
-        return fn.attrFunctionId;
+        return fn;
       });
-
       const resolverName = `Resolver_${typeName}_${fieldName}`;
-      const resolver = new CfnResolver(scope, resolverName, {
-        apiId: ctx.api.apiId,
+      const setApiIdInStash = `ctx.stash.apiId = '${ctx.api.apiId}';`;
+      const tableNames = Array.from(ctx.dataSources.collectDataSources().entries()).map(([modelName, dataSource]) => {
+        // TODO: fix type error
+        // @ts-ignore
+        return [modelName, dataSource.ds.dynamoDbConfig.tableName];
+      });
+      const setTableNamesInStash = tableNames.map(([modelName, tableName]) => `ctx.stash.${modelName} = '${tableName}';`);
+      const resolver = new Resolver(scope, resolverName, {
+        api: ctx.api as any,
         typeName,
         fieldName,
-        kind: APPSYNC_PIPELINE_RESOLVER,
-        codeS3Location: jsResolverTemplateAsset.s3ObjectUrl,
-        runtime: {
-          name: APPSYNC_JS_RUNTIME_NAME,
-          runtimeVersion: APPSYNC_JS_RUNTIME_VERSION,
-        },
-        pipelineConfig: {
-          functions,
-        },
+        pipelineConfig: functions,
+        code: Code.fromInline(`
+          export function request(ctx) {
+            ${setApiIdInStash}
+            ${setTableNamesInStash.join('\n')}
+            return {}
+          }
+
+          export function response(ctx) {
+            return ctx.prev.result
+          }
+        `),
+        runtime: FunctionRuntime.JS_1_0_0,
       });
       resolver.node.addDependency(ctx.api);
     }
@@ -97,15 +101,4 @@ const validateResolverConfig = (config: ResolverDirectiveConfiguration): void =>
   if (!typeName || !fieldName || !functions || functions.length === 0) {
     throw new Error('Invalid resolver configuration');
   }
-};
-
-const defaultJsResolverAsset = (scope: Construct): Asset => {
-  const resolvedTemplatePath = resolve(__dirname, JS_PIPELINE_RESOLVER_HANDLER);
-  // TODO: change back
-  // const resolvedTemplatePath = resolve(__dirname, '../../lib', JS_PIPELINE_RESOLVER_HANDLER);
-
-  return new Asset(scope, 'default_js_resolver_handler_asset', {
-    path: resolvedTemplatePath,
-    // path: resolveEntryPath(resolvedTemplatePath),
-  });
 };

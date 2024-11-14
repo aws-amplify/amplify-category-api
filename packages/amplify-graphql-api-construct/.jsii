@@ -21,6 +21,7 @@
     "@aws-amplify/graphql-model-transformer": "3.1.1",
     "@aws-amplify/graphql-predictions-transformer": "3.0.9",
     "@aws-amplify/graphql-relational-transformer": "3.1.1",
+    "@aws-amplify/graphql-resolver-transformer": "0.0.1",
     "@aws-amplify/graphql-searchable-transformer": "3.0.9",
     "@aws-amplify/graphql-sql-transformer": "0.4.9",
     "@aws-amplify/graphql-transformer": "2.1.7",
@@ -9053,5 +9054,5 @@
     }
   },
   "version": "1.17.2",
-  "fingerprint": "FbcVcOOa/42tR45/ae6xdo1HbeYXcuaix4VX3twxvGs="
+  "fingerprint": "xegOlGuIGX4eJnvtvnSyJ+VGaP9Q5qbspGb3Oodh0DY="
 }

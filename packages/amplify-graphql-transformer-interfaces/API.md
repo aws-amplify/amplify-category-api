@@ -637,6 +637,8 @@ export interface TransformerDataSourceManagerProvider {
     // (undocumented)
     add: (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, dataSourceInstance: DataSourceInstance) => void;
     // (undocumented)
+    collectDataSources: () => Readonly<Map<string, DataSourceInstance>>;
+    // (undocumented)
     get: (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode) => DataSourceInstance;
     // (undocumented)
     has: (name: string) => boolean;

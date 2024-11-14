@@ -23,6 +23,7 @@ export interface TransformerDataSourceManagerProvider {
   add: (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, dataSourceInstance: DataSourceInstance) => void;
   get: (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode) => DataSourceInstance;
   has: (name: string) => boolean;
+  collectDataSources: () => Readonly<Map<string, DataSourceInstance>>;
 }
 
 export interface DataSourceProvider extends BackedDataSource {}

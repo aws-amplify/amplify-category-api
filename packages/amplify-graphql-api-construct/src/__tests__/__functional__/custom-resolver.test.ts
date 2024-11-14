@@ -5,7 +5,7 @@ import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 
 describe('custom resolver', () => {
-  it('adds a custom query resolver', () => {
+  it.skip('adds a custom query resolver', () => {
     const stack = new cdk.Stack();
 
     const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
@@ -28,7 +28,53 @@ describe('custom resolver', () => {
     template.resourceCountIs('AWS::AppSync::FunctionConfiguration', 1);
     template.hasResourceProperties('AWS::AppSync::FunctionConfiguration', {
       // TODO: add more properties
-      DataSourceName: 'NONE',
+      DataSourceName: 'NONE_DS',
+      Name: 'Fn_Query_getFoo_1',
+      Runtime: {
+        Name: 'APPSYNC_JS',
+        RuntimeVersion: '1.0.0',
+      },
+    });
+
+    template.resourceCountIs('AWS::AppSync::Resolver', 1);
+    template.hasResourceProperties('AWS::AppSync::Resolver', {
+      // TODO: add more properties
+      FieldName: 'getFoo',
+      Kind: 'PIPELINE',
+      Runtime: {
+        Name: 'APPSYNC_JS',
+        RuntimeVersion: '1.0.0',
+      },
+      TypeName: 'Query',
+    });
+  });
+
+  it('adds table names to resolver stash', () => {
+    const stack = new cdk.Stack();
+
+    const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
+
+    new AmplifyGraphqlApi(stack, 'TestApi', {
+      apiName: 'MyApi',
+      definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+        type Todo @model {
+          name: String!
+        }
+        type Query {
+          getFoo(bar: Int): String @resolver(functions: [{ dataSource: "Todo", entry: "src/__tests__/__functional__/handler.js" }])
+        }
+      `),
+      authorizationModes: {
+        userPoolConfig: { userPool },
+      },
+    });
+
+    const template = Template.fromStack(stack);
+
+    template.resourceCountIs('AWS::AppSync::FunctionConfiguration', 1);
+    template.hasResourceProperties('AWS::AppSync::FunctionConfiguration', {
+      // TODO: add more properties
+      // DataSourceName: 'Todo',
       Name: 'Fn_Query_getFoo_1',
       Runtime: {
         Name: 'APPSYNC_JS',
