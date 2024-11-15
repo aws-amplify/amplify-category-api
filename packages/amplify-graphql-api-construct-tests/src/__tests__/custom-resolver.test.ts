@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { writeFileSync } from 'fs';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
@@ -23,11 +24,13 @@ describe('Custom resolver', () => {
     const testDefinitions: Record<string, TestDefinition> = {
       'custom-resolver': {
         schema: /* GraphQL */ `
-          type Todo @model {
+          type Todo @model @auth(rules: [{ allow: public }]) {
             name: String!
           }
-          type Query {
-            getFoo(bar: Int): String @resolver(functions: [{ dataSource: "Todo", entry: "src/__tests__/__functional__/handler.js" }])
+          type Mutation {
+            batchPutTodo(name: [String]!): String
+              @resolver(functions: [{ dataSource: "Todo", entry: "handler.js" }])
+              @auth(rules: [{ allow: public }])
           }
         `,
         strategy: DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
@@ -36,6 +39,35 @@ describe('Custom resolver', () => {
     const name = await initCDKProject(projRoot, templatePath);
     writeStackConfig(projRoot, { prefix: 'customresolver' });
     writeTestDefinitions(testDefinitions, projRoot);
+    writeFileSync(
+      path.join(projRoot, 'handler.js'),
+      `
+        export function request(ctx) {
+          var now = util.time.nowISO8601();
+        
+          return {
+            operation: 'BatchPutItem',
+            tables: {
+              [ctx.stash.TodoTable]: ctx.args.names.map((name) =>
+                util.dynamodb.toMapValues({
+                  name,
+                  id: util.autoId(),
+                  createdAt: now,
+                  updatedAt: now,
+                }),
+              ),
+            },
+          };
+        }
+        
+        export function response(ctx) {
+          if (ctx.error) {
+            util.error(ctx.error.message, ctx.error.type);
+          }
+          return ctx.result.data[ctx.stash.Todo];
+        }
+      `,
+    );
     const outputs = await cdkDeploy(projRoot, '--all');
     apiEndpoint = outputs[name].awsAppsyncApiEndpoint;
     apiKey = outputs[name].awsAppsyncApiKey;
@@ -54,20 +86,20 @@ describe('Custom resolver', () => {
     // deleteProjectDir(projRoot);
   });
 
-  test('function directive can be used to reverse a string on a custom query', async () => {
-    const reverseResult = await graphql(
+  test('custom resolvers can access tables', async () => {
+    const batchPutResult = await graphql(
       apiEndpoint,
       apiKey,
       /* GraphQL */ `
-        query REVERSE {
-          reverse(message: "Hello, World!")
+        query PutTodos {
+          batchPutTodos(names: ["Todo1", "Todo2", "Todo3"])
         }
       `,
     );
-    expect(reverseResult.statusCode).toEqual(200);
-    const reversedMessage = reverseResult.body.data.reverse;
+    expect(batchPutResult.statusCode).toEqual(200);
+    const message = batchPutResult.body.data.reverse;
 
-    expect(reversedMessage).toBeDefined();
-    expect(reversedMessage).toEqual('!dlroW ,olleH');
+    expect(message).toBeDefined();
+    expect(message).toEqual('!dlroW ,olleH');
   });
 });
