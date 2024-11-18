@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.17.4-ai-next.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.17.4-ai-next.0...@aws-amplify/graphql-api-construct@1.17.4-ai-next.1) (2024-11-18)
+
+**Note:** Version bump only for package @aws-amplify/graphql-api-construct
+
 ## [1.17.4-ai-next.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.17.3...@aws-amplify/graphql-api-construct@1.17.4-ai-next.0) (2024-11-15)
 
 **Note:** Version bump only for package @aws-amplify/graphql-api-construct
