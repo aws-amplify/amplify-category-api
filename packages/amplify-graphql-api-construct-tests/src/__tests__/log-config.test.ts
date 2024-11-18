@@ -54,11 +54,7 @@ const getAccountId = async (): Promise<string> => {
 };
 
 // Verify that logging is configured correctly
-const verifyLogConfig = async (
-  logGroupName: string,
-  apiId: string,
-  expectedLogConfig: LogConfigShape,
-): Promise<void> => {
+const verifyLogConfig = async (logGroupName: string, apiId: string, expectedLogConfig: LogConfigShape): Promise<void> => {
   // Verify CloudWatch log group retentionInDays setting
   const describeLogGroupsParams = {
     logGroupNamePrefix: logGroupName,
@@ -81,10 +77,7 @@ const verifyLogConfig = async (
 };
 
 // Get the log event with the expected request ID
-const getLogEventWithRequestId = async (
-  logGroupName: string,
-  expectedRequestId: string,
-): Promise<LiveTailSessionLogEvent> => {
+const getLogEventWithRequestId = async (logGroupName: string, expectedRequestId: string): Promise<LiveTailSessionLogEvent> => {
   // Set up for StartLiveTailCommand
   const accountId = await getAccountId();
   const logGroupArn = `arn:aws:logs:${region}:${accountId}:log-group:${logGroupName}`;
@@ -181,12 +174,10 @@ describe('Log Config Tests', () => {
     ],
   ];
 
-  test.concurrent.each(testCases)(
-    'Log Config is enabled with: %s',
-    async (_, { logging, expectedLogConfig }) => {
-      const projRoot = await createNewProjectDir('log-config');
-      projRoots.push(projRoot);
-      const templatePath = path.resolve(path.join(__dirname, 'backends', 'log-config'));
+  test.concurrent.each(testCases)('Log Config is enabled with: %s', async (_, { logging, expectedLogConfig }) => {
+    const projRoot = await createNewProjectDir('log-config');
+    projRoots.push(projRoot);
+    const templatePath = path.resolve(path.join(__dirname, 'backends', 'log-config'));
 
     // Initialize CDK project
     const name = await initCDKProject(projRoot, templatePath, {

@@ -75,11 +75,7 @@ const testCases = [
 ];
 
 // Helper function to create and test the AmplifyGraphqlApi
-const createAndTestApi = (
-  stack: Stack,
-  logging: any,
-  expectedLogConfig: any,
-): void => {
+const createAndTestApi = (stack: Stack, logging: any, expectedLogConfig: any): void => {
   const api = new AmplifyGraphqlApi(stack, 'api', {
     apiName: 'MyApi',
     definition: AmplifyGraphqlDefinition.fromString(`
