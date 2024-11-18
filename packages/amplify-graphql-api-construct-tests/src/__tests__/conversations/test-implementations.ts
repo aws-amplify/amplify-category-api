@@ -1,6 +1,6 @@
 import { AppSyncGraphqlResponse, doAppSyncGraphqlOperation, doAppSyncGraphqlQuery } from '../../utils';
 import {
-  ContentBlockInput,
+  AmplifyAIContentBlockInput,
   CreateConversationDisabledModelChatMutation,
   CreateConversationPirateChatMutation,
   DisabledModelChatMutation,
@@ -8,7 +8,7 @@ import {
   ListConversationMessagePirateChatsQuery,
   ListConversationPirateChatsQuery,
   PirateChatMutation,
-  ToolConfigurationInput,
+  AmplifyAIToolConfigurationInput,
   UpdateConversationPirateChatMutation,
 } from './API';
 import {
@@ -88,8 +88,8 @@ export const doSendMessagePirateChat = async (input: {
   apiEndpoint: string;
   accessToken: string;
   conversationId: string;
-  content: ContentBlockInput[];
-  toolConfiguration?: ToolConfigurationInput;
+  content: AmplifyAIContentBlockInput[];
+  toolConfiguration?: AmplifyAIToolConfigurationInput;
 }): Promise<AppSyncGraphqlResponse<PirateChatMutation>> => {
   const { apiEndpoint, accessToken, conversationId, content, toolConfiguration } = input;
   return doAppSyncGraphqlOperation({
@@ -108,8 +108,8 @@ export const doSendMessageDisabledModelChat = async (input: {
   apiEndpoint: string;
   accessToken: string;
   conversationId: string;
-  content: ContentBlockInput[];
-  toolConfiguration?: ToolConfigurationInput;
+  content: AmplifyAIContentBlockInput[];
+  toolConfiguration?: AmplifyAIToolConfigurationInput;
 }): Promise<AppSyncGraphqlResponse<DisabledModelChatMutation>> => {
   const { apiEndpoint, accessToken, conversationId, content, toolConfiguration } = input;
   return doAppSyncGraphqlOperation({

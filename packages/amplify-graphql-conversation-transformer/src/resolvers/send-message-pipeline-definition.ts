@@ -93,6 +93,9 @@ function invokeLambda(): ResolverFunctionDefinition {
   });
 }
 
+const packageName = 'amplify-graphql-conversation-transformer';
+const packageVersion = require('../../package.json').version;
+
 /**
  * The substitutions for the invoke lambda resolver function.
  */
@@ -113,6 +116,7 @@ function invokeLambdaResolverSubstitutions(config: ConversationDirectiveConfigur
     LIST_QUERY_LIMIT: 'undefined',
     STREAMING_RESPONSE_MUTATION_NAME: config.assistantResponseStreamingMutation.field.name.value,
     STREAMING_RESPONSE_MUTATION_INPUT_TYPE_NAME: config.assistantResponseStreamingMutation.input.name.value,
+    PACKAGE_METADATA: `'${packageName}#${packageVersion}'`,
   };
 }
 

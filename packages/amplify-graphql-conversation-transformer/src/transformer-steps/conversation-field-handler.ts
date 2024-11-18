@@ -108,8 +108,8 @@ export class ConversationFieldHandler {
     config: ConversationDirectiveConfiguration,
     definition: FieldDefinitionNode,
   ): { message: MessageModel; conversation: ConversationModel } {
-    if (definition.type.kind !== 'NamedType' || definition.type.name.value !== 'ConversationMessage') {
-      throw new InvalidDirectiveError('@conversation return type must be ConversationMessage');
+    if (definition.type.kind !== 'NamedType' || definition.type.name.value !== 'AmplifyAIConversationMessage') {
+      throw new InvalidDirectiveError('@conversation return type must be AmplifyAIConversationMessage');
     }
 
     const conversationMessageTypeName = getConversationMessageTypeName(config);
@@ -231,8 +231,8 @@ export class ConversationFieldHandler {
   private validateReturnType(config: ConversationDirectiveConfiguration): void {
     // TODO: validate that the other supporting types are present.
     const { field } = config;
-    if (field.type.kind !== 'NamedType' || field.type.name.value !== 'ConversationMessage') {
-      throw new InvalidDirectiveError('@conversation return type must be ConversationMessage');
+    if (field.type.kind !== 'NamedType' || field.type.name.value !== 'AmplifyAIConversationMessage') {
+      throw new InvalidDirectiveError('@conversation return type must be AmplifyAIConversationMessage');
     }
   }
 

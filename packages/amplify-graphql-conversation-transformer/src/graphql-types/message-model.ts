@@ -118,7 +118,7 @@ export const createAssistantResponseMutationInput = (messageName: string): Input
     name: { kind: 'Name', value: inputName },
     fields: [
       makeInputValueDefinition('conversationId', makeNamedType('ID')),
-      makeInputValueDefinition('content', makeListType(makeNamedType('ContentBlockInput'))),
+      makeInputValueDefinition('content', makeListType(makeNamedType('AmplifyAIContentBlockInput'))),
       makeInputValueDefinition('associatedUserMessageId', makeNamedType('ID')),
     ],
   };
@@ -138,8 +138,8 @@ export const createAssistantResponseStreamingMutationInput = (messageModelName: 
       makeInputValueDefinition('contentBlockToolUse', makeNamedType('AWSJSON')),
       makeInputValueDefinition('contentBlockDoneAtIndex', makeNamedType('Int')),
       makeInputValueDefinition('stopReason', makeNamedType('String')),
-      makeInputValueDefinition('accumulatedTurnContent', makeListType(makeNamedType('ContentBlockInput'))),
-      makeInputValueDefinition('errors', makeListType(makeNamedType('ConversationTurnErrorInput'))),
+      makeInputValueDefinition('accumulatedTurnContent', makeListType(makeNamedType('AmplifyAIContentBlockInput'))),
+      makeInputValueDefinition('errors', makeListType(makeNamedType('AmplifyAIConversationTurnErrorInput'))),
     ],
   };
 };
@@ -147,7 +147,7 @@ export const createAssistantResponseStreamingMutationInput = (messageModelName: 
 export const createConversationTurnErrorInput = (): InputObjectTypeDefinitionNode => {
   return {
     kind: 'InputObjectTypeDefinition',
-    name: { kind: 'Name', value: 'ConversationTurnErrorInput' },
+    name: { kind: 'Name', value: 'AmplifyAIConversationTurnErrorInput' },
     fields: [
       makeInputValueDefinition('errorType', makeNonNullType(makeNamedType('String'))),
       makeInputValueDefinition('message', makeNonNullType(makeNamedType('String'))),
@@ -276,10 +276,10 @@ const constructConversationMessageModel = (
 ): ObjectTypeDefinitionNode => {
   const id = makeField('id', [], wrapNonNull(makeNamedType('ID')));
   const conversationId = makeField(referenceFieldName, [], wrapNonNull(makeNamedType('ID')));
-  const role = makeField('role', [], makeNamedType('ConversationParticipantRole'));
-  const content = makeField('content', [], makeListType(makeNamedType('ContentBlock')));
+  const role = makeField('role', [], makeNamedType('AmplifyAIConversationParticipantRole'));
+  const content = makeField('content', [], makeListType(makeNamedType('AmplifyAIContentBlock')));
   const context = makeField('aiContext', [], makeNamedType('AWSJSON'));
-  const uiComponents = makeField('toolConfiguration', [], makeNamedType('ToolConfiguration'));
+  const uiComponents = makeField('toolConfiguration', [], makeNamedType('AmplifyAIToolConfiguration'));
   const associatedUserMessageId = makeField('associatedUserMessageId', [], makeNamedType('ID'));
 
   const object = {
@@ -292,7 +292,7 @@ const constructConversationMessageModel = (
   return object;
 };
 
-const STREAM_RESPONSE_TYPE_NAME = 'ConversationMessageStreamPart';
+const STREAM_RESPONSE_TYPE_NAME = 'AmplifyAIConversationMessageStreamPart';
 
 export const constructStreamResponseType = (): ObjectTypeDefinitionNode => {
   return {

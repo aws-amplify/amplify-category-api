@@ -13,6 +13,14 @@ import { toUpper } from 'graphql-transformer-common';
 import * as path from 'path';
 import { ConversationTransformer } from '..';
 
+jest.mock(
+  '../../package.json',
+  () => ({
+    version: '0.0.0',
+  }),
+  { virtual: true },
+);
+
 const conversationSchemaTypes = fs.readFileSync(path.join(__dirname, 'schemas/conversation-schema-types.graphql'), 'utf8');
 
 const getSchema = (fileName: string, substitutions: Record<string, string> = {}) => {
@@ -95,7 +103,7 @@ describe('ConversationTransformer', () => {
   describe('invalid schemas', () => {
     it('should throw an error if the return type is not ConversationMessage', () => {
       const inputSchema = getSchema('conversation-route-invalid-return-type.graphql');
-      expect(() => transform(inputSchema)).toThrow('@conversation return type must be ConversationMessage');
+      expect(() => transform(inputSchema)).toThrow('@conversation return type must be AmplifyAIConversationMessage');
     });
 
     it.each([

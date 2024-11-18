@@ -8,6 +8,14 @@ import { parse } from 'graphql';
 import { GenerationTransformer } from '..';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 
+jest.mock(
+  '../../package.json',
+  () => ({
+    version: '0.0.0',
+  }),
+  { virtual: true },
+);
+
 const todoModel = `
 type Todo @model {
   content: String
@@ -316,6 +324,7 @@ describe('generation route invalid inference configuration', () => {
     );
   });
 });
+// });
 
 const getResolverResource = (queryName: string, resources?: Record<string, any>): Record<string, any> => {
   const resolverName = `Query${queryName}Resolver`;
