@@ -64,12 +64,16 @@ export function request(ctx) {
   const prompt = "";
   const args = JSON.stringify(ctx.args);
   const inferenceConfig = undefined;
+  const userAgent = createUserAgent(ctx.request);
 
   return {
     resourcePath: '/model/anthropic.claude-3-haiku-20240307-v1:0/converse',
     method: 'POST',
     params: {
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-amz-user-agent': userAgent,
+      },
       body: {
         messages: [
           {
@@ -120,6 +124,17 @@ export function response(ctx) {
     return JSON.parse(value);
   }
   return value;
+}
+
+function createUserAgent(request) {
+  const packageMetadata = 'amplify-graphql-generation-transformer#0.2.7';
+  let userAgent = request.headers['x-amz-user-agent'];
+  if (userAgent) {
+    userAgent = \`\${userAgent} md/\${packageMetadata}\`;
+  } else {
+    userAgent = \`lib/\${packageMetadata}\`;
+  }
+  return userAgent;
 }
 ",
 }
@@ -189,12 +204,16 @@ export function request(ctx) {
   const prompt = "You are a helpful assistant that generates recipes.";
   const args = JSON.stringify(ctx.args);
   const inferenceConfig = undefined;
+  const userAgent = createUserAgent(ctx.request);
 
   return {
     resourcePath: '/model/anthropic.claude-3-haiku-20240307-v1:0/converse',
     method: 'POST',
     params: {
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-amz-user-agent': userAgent,
+      },
       body: {
         messages: [
           {
@@ -245,6 +264,17 @@ export function response(ctx) {
     return JSON.parse(value);
   }
   return value;
+}
+
+function createUserAgent(request) {
+  const packageMetadata = 'amplify-graphql-generation-transformer#0.2.7';
+  let userAgent = request.headers['x-amz-user-agent'];
+  if (userAgent) {
+    userAgent = \`\${userAgent} md/\${packageMetadata}\`;
+  } else {
+    userAgent = \`lib/\${packageMetadata}\`;
+  }
+  return userAgent;
 }
 ",
 }
@@ -313,12 +343,16 @@ export function request(ctx) {
   const prompt = "Make a string based on the description.";
   const args = JSON.stringify(ctx.args);
   const inferenceConfig = undefined;
+  const userAgent = createUserAgent(ctx.request);
 
   return {
     resourcePath: '/model/anthropic.claude-3-haiku-20240307-v1:0/converse',
     method: 'POST',
     params: {
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-amz-user-agent': userAgent,
+      },
       body: {
         messages: [
           {
@@ -369,6 +403,17 @@ export function response(ctx) {
     return JSON.parse(value);
   }
   return value;
+}
+
+function createUserAgent(request) {
+  const packageMetadata = 'amplify-graphql-generation-transformer#0.2.7';
+  let userAgent = request.headers['x-amz-user-agent'];
+  if (userAgent) {
+    userAgent = \`\${userAgent} md/\${packageMetadata}\`;
+  } else {
+    userAgent = \`lib/\${packageMetadata}\`;
+  }
+  return userAgent;
 }
 "
 `;
@@ -454,12 +499,16 @@ export function request(ctx) {
   const prompt = "Make a string based on the description.";
   const args = JSON.stringify(ctx.args);
   const inferenceConfig = undefined;
+  const userAgent = createUserAgent(ctx.request);
 
   return {
     resourcePath: '/model/anthropic.claude-3-haiku-20240307-v1:0/converse',
     method: 'POST',
     params: {
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-amz-user-agent': userAgent,
+      },
       body: {
         messages: [
           {
@@ -506,6 +555,17 @@ export function response(ctx) {
 
   
   return value;
+}
+
+function createUserAgent(request) {
+  const packageMetadata = 'amplify-graphql-generation-transformer#0.2.7';
+  let userAgent = request.headers['x-amz-user-agent'];
+  if (userAgent) {
+    userAgent = \`\${userAgent} md/\${packageMetadata}\`;
+  } else {
+    userAgent = \`lib/\${packageMetadata}\`;
+  }
+  return userAgent;
 }
 ",
 }
@@ -520,12 +580,16 @@ export function request(ctx) {
   const prompt = "Generate a string based on the description.";
   const args = JSON.stringify(ctx.args);
   const inferenceConfig = { inferenceConfig: {"maxTokens":100,"temperature":0.7,"topP":0.9} };
+  const userAgent = createUserAgent(ctx.request);
 
   return {
     resourcePath: '/model/anthropic.claude-3-haiku-20240307-v1:0/converse',
     method: 'POST',
     params: {
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-amz-user-agent': userAgent,
+      },
       body: {
         messages: [
           {
@@ -572,6 +636,17 @@ export function response(ctx) {
 
   
   return value;
+}
+
+function createUserAgent(request) {
+  const packageMetadata = 'amplify-graphql-generation-transformer#0.2.7';
+  let userAgent = request.headers['x-amz-user-agent'];
+  if (userAgent) {
+    userAgent = \`\${userAgent} md/\${packageMetadata}\`;
+  } else {
+    userAgent = \`lib/\${packageMetadata}\`;
+  }
+  return userAgent;
 }
 ",
 }

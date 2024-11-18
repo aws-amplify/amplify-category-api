@@ -667,6 +667,7 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
 export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
+  const userAgent = createUserAgent(request);
 
   const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message }';
 
@@ -705,7 +706,12 @@ export function request(ctx) {
     responseMutation: streamingResponseMutation,
     graphqlApiEndpoint,
     modelConfiguration,
-    request: { headers: { authorization: authHeader } },
+    request: {
+      headers: {
+        authorization: authHeader,
+        'x-amz-user-agent': userAgent,
+      }
+    },
     messageHistoryQuery,
     toolsConfiguration,
     streamResponse: true,
@@ -735,7 +741,17 @@ export function response(ctx) {
   };
   return response;
 }
-"
+
+function createUserAgent(request) {
+  const packageMetadata = 'amplify-graphql-conversation-transformer#0.7.1';
+  let userAgent = request.headers['x-amz-user-agent'];
+  if (userAgent) {
+    userAgent = \`\${userAgent} md/\${packageMetadata}\`;
+  } else {
+    userAgent = \`lib/\${packageMetadata}\`;
+  }
+  return userAgent;
+}"
 `;
 
 exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration: SendMessageMutation resolver code 1`] = `
@@ -1508,6 +1524,7 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
 export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
+  const userAgent = createUserAgent(request);
 
   const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message }';
 
@@ -1546,7 +1563,12 @@ export function request(ctx) {
     responseMutation: streamingResponseMutation,
     graphqlApiEndpoint,
     modelConfiguration,
-    request: { headers: { authorization: authHeader } },
+    request: {
+      headers: {
+        authorization: authHeader,
+        'x-amz-user-agent': userAgent,
+      }
+    },
     messageHistoryQuery,
     toolsConfiguration,
     streamResponse: true,
@@ -1576,7 +1598,17 @@ export function response(ctx) {
   };
   return response;
 }
-"
+
+function createUserAgent(request) {
+  const packageMetadata = 'amplify-graphql-conversation-transformer#0.7.1';
+  let userAgent = request.headers['x-amz-user-agent'];
+  if (userAgent) {
+    userAgent = \`\${userAgent} md/\${packageMetadata}\`;
+  } else {
+    userAgent = \`lib/\${packageMetadata}\`;
+  }
+  return userAgent;
+}"
 `;
 
 exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships: SendMessageMutation resolver code 1`] = `
@@ -2349,6 +2381,7 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
 export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
+  const userAgent = createUserAgent(request);
 
   const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message }';
 
@@ -2387,7 +2420,12 @@ export function request(ctx) {
     responseMutation: streamingResponseMutation,
     graphqlApiEndpoint,
     modelConfiguration,
-    request: { headers: { authorization: authHeader } },
+    request: {
+      headers: {
+        authorization: authHeader,
+        'x-amz-user-agent': userAgent,
+      }
+    },
     messageHistoryQuery,
     toolsConfiguration,
     streamResponse: true,
@@ -2417,7 +2455,17 @@ export function response(ctx) {
   };
   return response;
 }
-"
+
+function createUserAgent(request) {
+  const packageMetadata = 'amplify-graphql-conversation-transformer#0.7.1';
+  let userAgent = request.headers['x-amz-user-agent'];
+  if (userAgent) {
+    userAgent = \`\${userAgent} md/\${packageMetadata}\`;
+  } else {
+    userAgent = \`lib/\${packageMetadata}\`;
+  }
+  return userAgent;
+}"
 `;
 
 exports[`ConversationTransformer valid schemas should transform conversation route with model query tool: SendMessageMutation resolver code 1`] = `
@@ -3190,6 +3238,7 @@ exports[`ConversationTransformer valid schemas should transform conversation rou
 export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
+  const userAgent = createUserAgent(request);
 
   const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message }';
 
@@ -3228,7 +3277,12 @@ export function request(ctx) {
     responseMutation: streamingResponseMutation,
     graphqlApiEndpoint,
     modelConfiguration,
-    request: { headers: { authorization: authHeader } },
+    request: {
+      headers: {
+        authorization: authHeader,
+        'x-amz-user-agent': userAgent,
+      }
+    },
     messageHistoryQuery,
     toolsConfiguration,
     streamResponse: true,
@@ -3258,7 +3312,17 @@ export function response(ctx) {
   };
   return response;
 }
-"
+
+function createUserAgent(request) {
+  const packageMetadata = 'amplify-graphql-conversation-transformer#0.7.1';
+  let userAgent = request.headers['x-amz-user-agent'];
+  if (userAgent) {
+    userAgent = \`\${userAgent} md/\${packageMetadata}\`;
+  } else {
+    userAgent = \`lib/\${packageMetadata}\`;
+  }
+  return userAgent;
+}"
 `;
 
 exports[`ConversationTransformer valid schemas should transform conversation route with query tools: SendMessageMutation resolver code 1`] = `
