@@ -127,7 +127,7 @@ export function response(ctx) {
 }
 
 function createUserAgent(request) {
-  const packageMetadata = 'graphql-generation-transformer#0.2.7';
+  const packageMetadata = 'amplify-graphql-generation-transformer#0.2.7';
   let userAgent = request.headers['x-amz-user-agent'];
   if (userAgent) {
     userAgent = \`\${userAgent} md/\${packageMetadata}\`;
@@ -135,7 +135,8 @@ function createUserAgent(request) {
     userAgent = \`lib/\${packageMetadata}\`;
   }
   return userAgent;
-}",
+}
+",
 }
 `;
 
@@ -266,7 +267,7 @@ export function response(ctx) {
 }
 
 function createUserAgent(request) {
-  const packageMetadata = 'graphql-generation-transformer#0.2.7';
+  const packageMetadata = 'amplify-graphql-generation-transformer#0.2.7';
   let userAgent = request.headers['x-amz-user-agent'];
   if (userAgent) {
     userAgent = \`\${userAgent} md/\${packageMetadata}\`;
@@ -274,7 +275,8 @@ function createUserAgent(request) {
     userAgent = \`lib/\${packageMetadata}\`;
   }
   return userAgent;
-}",
+}
+",
 }
 `;
 
@@ -404,7 +406,7 @@ export function response(ctx) {
 }
 
 function createUserAgent(request) {
-  const packageMetadata = 'graphql-generation-transformer#0.2.7';
+  const packageMetadata = 'amplify-graphql-generation-transformer#0.2.7';
   let userAgent = request.headers['x-amz-user-agent'];
   if (userAgent) {
     userAgent = \`\${userAgent} md/\${packageMetadata}\`;
@@ -412,7 +414,8 @@ function createUserAgent(request) {
     userAgent = \`lib/\${packageMetadata}\`;
   }
   return userAgent;
-}"
+}
+"
 `;
 
 exports[`generation route scalar type 1`] = `
@@ -555,7 +558,7 @@ export function response(ctx) {
 }
 
 function createUserAgent(request) {
-  const packageMetadata = 'graphql-generation-transformer#0.2.7';
+  const packageMetadata = 'amplify-graphql-generation-transformer#0.2.7';
   let userAgent = request.headers['x-amz-user-agent'];
   if (userAgent) {
     userAgent = \`\${userAgent} md/\${packageMetadata}\`;
@@ -563,7 +566,8 @@ function createUserAgent(request) {
     userAgent = \`lib/\${packageMetadata}\`;
   }
   return userAgent;
-}",
+}
+",
 }
 `;
 
@@ -635,7 +639,7 @@ export function response(ctx) {
 }
 
 function createUserAgent(request) {
-  const packageMetadata = 'graphql-generation-transformer#0.2.7';
+  const packageMetadata = 'amplify-graphql-generation-transformer#0.2.7';
   let userAgent = request.headers['x-amz-user-agent'];
   if (userAgent) {
     userAgent = \`\${userAgent} md/\${packageMetadata}\`;
@@ -643,6 +647,7 @@ function createUserAgent(request) {
     userAgent = \`lib/\${packageMetadata}\`;
   }
   return userAgent;
-}",
+}
+",
 }
 `;

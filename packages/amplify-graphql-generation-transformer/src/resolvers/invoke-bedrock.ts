@@ -5,7 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import { getBaseType } from 'graphql-transformer-common';
 
-const packageName = 'graphql-generation-transformer';
+const packageName = 'amplify-graphql-generation-transformer';
 const packageVersion = require('../../package.json').version;
 
 /**

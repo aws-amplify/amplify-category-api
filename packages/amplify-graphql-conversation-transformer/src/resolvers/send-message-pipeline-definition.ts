@@ -93,7 +93,7 @@ function invokeLambda(): ResolverFunctionDefinition {
   });
 }
 
-const packageName = 'graphql-conversation-transformer';
+const packageName = 'amplify-graphql-conversation-transformer';
 const packageVersion = require('../../package.json').version;
 
 /**

@@ -743,7 +743,7 @@ export function response(ctx) {
 }
 
 function createUserAgent(request) {
-  const packageMetadata = 'graphql-conversation-transformer#0.7.1';
+  const packageMetadata = 'amplify-graphql-conversation-transformer#0.7.1';
   let userAgent = request.headers['x-amz-user-agent'];
   if (userAgent) {
     userAgent = \`\${userAgent} md/\${packageMetadata}\`;
@@ -1600,7 +1600,7 @@ export function response(ctx) {
 }
 
 function createUserAgent(request) {
-  const packageMetadata = 'graphql-conversation-transformer#0.7.1';
+  const packageMetadata = 'amplify-graphql-conversation-transformer#0.7.1';
   let userAgent = request.headers['x-amz-user-agent'];
   if (userAgent) {
     userAgent = \`\${userAgent} md/\${packageMetadata}\`;
@@ -2457,7 +2457,7 @@ export function response(ctx) {
 }
 
 function createUserAgent(request) {
-  const packageMetadata = 'graphql-conversation-transformer#0.7.1';
+  const packageMetadata = 'amplify-graphql-conversation-transformer#0.7.1';
   let userAgent = request.headers['x-amz-user-agent'];
   if (userAgent) {
     userAgent = \`\${userAgent} md/\${packageMetadata}\`;
@@ -3314,7 +3314,7 @@ export function response(ctx) {
 }
 
 function createUserAgent(request) {
-  const packageMetadata = 'graphql-conversation-transformer#0.7.1';
+  const packageMetadata = 'amplify-graphql-conversation-transformer#0.7.1';
   let userAgent = request.headers['x-amz-user-agent'];
   if (userAgent) {
     userAgent = \`\${userAgent} md/\${packageMetadata}\`;
