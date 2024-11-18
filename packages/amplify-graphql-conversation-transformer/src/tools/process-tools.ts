@@ -214,7 +214,7 @@ const generateToolProperties = (
   }
 
   const filterSchema = fieldArguments.reduce((acc, fieldArgument) => {
-    const fieldArgumentSchema = generateJSONSchemaFromTypeNode(fieldArgument.type, ctx);
+    const fieldArgumentSchema = generateJSONSchemaFromTypeNode(fieldArgument, ctx);
     if (!fieldArgumentSchema) return acc;
 
     // Move $defs to root level

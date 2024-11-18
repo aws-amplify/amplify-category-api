@@ -61,18 +61,7 @@ describe('processTools', () => {
         },
       },
       properties: {
-        input: {
-          properties: {
-            name: {
-              type: 'string'
-            },
-            limit: {
-              type: 'integer'
-            }
-          },
-          required: ['name'],
-          type: 'object',
-        },
+        input: { $ref: '#/$defs/NonNullInput' },
       },
       required: ['input'],
       type: 'object',
@@ -294,26 +283,7 @@ describe('processTools', () => {
         },
       },
       properties: {
-        filter: {
-          properties: {
-            and: {
-              items: { $ref: '#/$defs/ModelTodoFilterInput' },
-              type: 'array',
-            },
-            completed: { $ref: '#/$defs/ModelBooleanInput' },
-            createdAt: { $ref: '#/$defs/ModelStringInput' },
-            id: { $ref: '#/$defs/ModelIDInput' },
-            name: { $ref: '#/$defs/ModelStringInput' },
-            not: { $ref: '#/$defs/ModelTodoFilterInput' },
-            or: {
-              items: { $ref: '#/$defs/ModelTodoFilterInput' },
-              type: 'array',
-            },
-            owner: { $ref: '#/$defs/ModelStringInput' },
-            updatedAt: { $ref: '#/$defs/ModelStringInput' },
-          },
-          type: 'object',
-        },
+        filter: { $ref: '#/$defs/ModelTodoFilterInput' },
       },
       type: 'object',
     };
@@ -646,44 +616,7 @@ describe('processTools', () => {
         },
       },
       properties: {
-        filter: {
-          properties: {
-            and: {
-              items: {
-                $ref: '#/$defs/ModelCustomerFilterInput',
-              },
-              type: 'array',
-            },
-            createdAt: {
-              $ref: '#/$defs/ModelStringInput',
-            },
-            email: {
-              $ref: '#/$defs/ModelStringInput',
-            },
-            id: {
-              $ref: '#/$defs/ModelIDInput',
-            },
-            name: {
-              $ref: '#/$defs/ModelStringInput',
-            },
-            not: {
-              $ref: '#/$defs/ModelCustomerFilterInput',
-            },
-            or: {
-              items: {
-                $ref: '#/$defs/ModelCustomerFilterInput',
-              },
-              type: 'array',
-            },
-            owner: {
-              $ref: '#/$defs/ModelStringInput',
-            },
-            updatedAt: {
-              $ref: '#/$defs/ModelStringInput',
-            },
-          },
-          type: 'object',
-        },
+        filter: { $ref: '#/$defs/ModelCustomerFilterInput' },
       },
       type: 'object',
     };

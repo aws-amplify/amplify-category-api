@@ -3,7 +3,11 @@ import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-int
 import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, TypeNode } from 'graphql';
 import { getBaseType, isNonNullType, isScalar } from 'graphql-transformer-common';
 
-export const generateJSONSchemaFromTypeNode = (type: TypeNode, ctx: TransformerContextProvider): JSONSchema | undefined => {
+export const generateJSONSchemaFromTypeNode = (
+  inputValueDefinition: InputValueDefinitionNode,
+  ctx: TransformerContextProvider,
+): JSONSchema | undefined => {
+  const { type, name } = inputValueDefinition;
   const baseType = getBaseType(type);
 
   // Handle scalar types
@@ -14,7 +18,7 @@ export const generateJSONSchemaFromTypeNode = (type: TypeNode, ctx: TransformerC
   // Handle input types
   const inputType = ctx.output.getType(baseType) as InputObjectTypeDefinitionNode;
   if (inputType) {
-    return generateInputObjectSchema(inputType, ctx, baseType);
+    return generateInputObjectSchema(inputType, ctx, baseType, name.value);
   }
 
   return undefined;
@@ -95,6 +99,7 @@ const generateInputObjectSchema = (
   inputType: InputObjectTypeDefinitionNode,
   ctx: TransformerContextProvider,
   typeName: string,
+  fieldName: string,
 ): JSONSchema => {
   const properties: Record<string, JSONSchema> = {};
   const required: string[] = [];
@@ -104,15 +109,19 @@ const generateInputObjectSchema = (
   collectInputTypeDefinitions(typeName, ctx, $defs, new Set());
 
   // Generate properties for the current input type
-  inputType.fields?.forEach((field) => {
-    const fieldSchema = generateFieldSchema(field);
-    if (fieldSchema) {
-      properties[field.name.value] = fieldSchema;
-      if (isNonNullType(field.type)) {
-        required.push(field.name.value);
+  if ($defs[inputType.name.value]) {
+    properties[fieldName] = { $ref: `#/$defs/${inputType.name.value}` };
+  } else {
+    inputType.fields?.forEach((field) => {
+      const fieldSchema = generateFieldSchema(field);
+      if (fieldSchema) {
+        properties[field.name.value] = fieldSchema;
+        if (isNonNullType(field.type)) {
+          required.push(field.name.value);
+        }
       }
-    }
-  });
+    });
+  }
 
   return {
     type: 'object',
