@@ -5,6 +5,9 @@ import fs from 'fs';
 import path from 'path';
 import { getBaseType } from 'graphql-transformer-common';
 
+const packageName = 'graphql-generation-transformer';
+const packageVersion = require('../../package.json').version;
+
 /**
  * Creates the resolver functions for invoking Amazon Bedrock.
  *
@@ -26,12 +29,15 @@ export const createInvokeBedrockResolverFunction = (config: GenerationConfigurat
     return JSON.parse(value);
   }`;
 
+  const PACKAGE_METADATA = `'${packageName}#${packageVersion}'`;
+
   const resolver = generateResolver('invoke-bedrock-resolver-fn.template.js', {
     AI_MODEL,
     TOOL_CONFIG,
     SYSTEM_PROMPT,
     INFERENCE_CONFIG,
     NON_STRING_RESPONSE_HANDLING,
+    PACKAGE_METADATA,
   });
 
   const templateName = `${field.name.value}-invoke-bedrock-fn`;
