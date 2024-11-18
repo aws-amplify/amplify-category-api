@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.13.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.13.0...amplify-graphql-api-construct-tests@1.13.1) (2024-11-14)
+
+### Bug Fixes
+
+- **conversation:** prefix supporting types with AmplifyAI ([#3023](https://github.com/aws-amplify/amplify-category-api/issues/3023)) ([24198ac](https://github.com/aws-amplify/amplify-category-api/commit/24198ac98f12889945f10ad35c3554201562587f))
+
 # [1.13.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.12.1...amplify-graphql-api-construct-tests@1.13.0) (2024-11-14)
 
 ### Features
