@@ -5,187 +5,122 @@ import { Template } from 'aws-cdk-lib/assertions';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 
+// Define default configurations
 const defaultLogConfig = {
   fieldLogLevel: FieldLogLevel.NONE,
   excludeVerboseContent: true,
+  retention: RetentionDays.ONE_WEEK,
 };
 
-const defaultRetention = RetentionDays.ONE_WEEK;
+// Define test cases
+const testCases = [
+  {
+    description: 'Default - logging: true',
+    logging: true,
+    expectedLogConfig: {
+      fieldLogLevel: defaultLogConfig.fieldLogLevel,
+      excludeVerboseContent: defaultLogConfig.excludeVerboseContent,
+      expectedRetention: defaultLogConfig.retention,
+    },
+  },
+  {
+    description: 'Default - logging: {}',
+    logging: {},
+    expectedLogConfig: {
+      fieldLogLevel: defaultLogConfig.fieldLogLevel,
+      excludeVerboseContent: defaultLogConfig.excludeVerboseContent,
+      expectedRetention: defaultLogConfig.retention,
+    },
+  },
+  {
+    description: 'Custom - fieldLogLevel: ERROR',
+    logging: {
+      fieldLogLevel: FieldLogLevel.ERROR,
+    },
+    expectedLogConfig: {
+      fieldLogLevel: FieldLogLevel.ERROR,
+      excludeVerboseContent: defaultLogConfig.excludeVerboseContent,
+      expectedRetention: defaultLogConfig.retention,
+    },
+  },
+  {
+    description: 'Custom - retention: ONE_MONTH',
+    logging: {
+      retention: RetentionDays.ONE_MONTH,
+    },
+    expectedLogConfig: {
+      fieldLogLevel: defaultLogConfig.fieldLogLevel,
+      excludeVerboseContent: defaultLogConfig.excludeVerboseContent,
+      expectedRetention: RetentionDays.ONE_MONTH,
+    },
+  },
+  {
+    description: 'Custom - fieldLogLevel: ALL, excludeVerboseContent: false, retention: TWO_WEEKS',
+    logging: {
+      fieldLogLevel: FieldLogLevel.ALL,
+      excludeVerboseContent: false,
+      retention: RetentionDays.TWO_WEEKS,
+    },
+    expectedLogConfig: {
+      fieldLogLevel: FieldLogLevel.ALL,
+      excludeVerboseContent: false,
+      expectedRetention: RetentionDays.TWO_WEEKS,
+    },
+  },
+  {
+    description: 'No logging config',
+    logging: undefined,
+    expectedLogConfig: undefined,
+  },
+];
 
-describe('log config', () => {
-  it('should create a default log config if logging is set to true', () => {
-    const stack = new Stack();
+// Helper function to create and test the AmplifyGraphqlApi
+const createAndTestApi = (
+  stack: Stack,
+  logging: any,
+  expectedLogConfig: any,
+): void => {
+  const api = new AmplifyGraphqlApi(stack, 'api', {
+    apiName: 'MyApi',
+    definition: AmplifyGraphqlDefinition.fromString(`
+      type Query {
+        dummy: String
+      }
+    `),
+    authorizationModes: {
+      defaultAuthorizationMode: 'API_KEY',
+      apiKeyConfig: { expires: Duration.days(7) },
+    },
+    ...(logging !== undefined && { logging }),
+  });
 
-    const api = new AmplifyGraphqlApi(stack, 'api', {
-      apiName: 'MyApi',
-      definition: AmplifyGraphqlDefinition.fromString(`
-        type Query {
-          dummy: String
-        }
-      `),
-      authorizationModes: {
-        defaultAuthorizationMode: 'API_KEY',
-        apiKeyConfig: { expires: Duration.days(7) },
-      },
-      logging: true,
-    });
+  const template = Template.fromStack(stack);
 
+  if (expectedLogConfig) {
+    // Verify fieldLogLevel and excludeVerboseContent
     const createdLogConfig = api.resources.cfnResources.cfnGraphqlApi.logConfig as CfnGraphQLApi.LogConfigProperty;
     expect(createdLogConfig).toBeDefined();
     expect(createdLogConfig.cloudWatchLogsRoleArn).toBeDefined();
-    expect(createdLogConfig.fieldLogLevel).toEqual(defaultLogConfig.fieldLogLevel);
-    expect(createdLogConfig.excludeVerboseContent).toEqual(defaultLogConfig.excludeVerboseContent);
+    expect(createdLogConfig.fieldLogLevel).toEqual(expectedLogConfig.fieldLogLevel);
+    expect(createdLogConfig.excludeVerboseContent).toEqual(expectedLogConfig.excludeVerboseContent);
 
-    const template = Template.fromStack(stack);
+    // Verify retention
     template.hasResourceProperties('Custom::LogRetention', {
-      RetentionInDays: defaultRetention,
+      RetentionInDays: expectedLogConfig.expectedRetention,
     });
-  });
-
-  it('should create a default log config if logging is set to an empty object', () => {
-    const stack = new Stack();
-
-    const api = new AmplifyGraphqlApi(stack, 'api', {
-      apiName: 'MyApi',
-      definition: AmplifyGraphqlDefinition.fromString(`
-        type Query {
-          dummy: String
-        }
-      `),
-      authorizationModes: {
-        defaultAuthorizationMode: 'API_KEY',
-        apiKeyConfig: { expires: Duration.days(7) },
-      },
-      logging: {},
-    });
-
-    const createdLogConfig = api.resources.cfnResources.cfnGraphqlApi.logConfig as CfnGraphQLApi.LogConfigProperty;
-    expect(createdLogConfig).toBeDefined();
-    expect(createdLogConfig.cloudWatchLogsRoleArn).toBeDefined();
-    expect(createdLogConfig.fieldLogLevel).toEqual(defaultLogConfig.fieldLogLevel);
-    expect(createdLogConfig.excludeVerboseContent).toEqual(defaultLogConfig.excludeVerboseContent);
-
-    const template = Template.fromStack(stack);
-    template.hasResourceProperties('Custom::LogRetention', {
-      RetentionInDays: defaultRetention,
-    });
-  });
-
-  it('should create a log config with a specified fieldLogLevel, a default excludeVerboseContent, and a default retention', () => {
-    const stack = new Stack();
-
-    const api = new AmplifyGraphqlApi(stack, 'api', {
-      apiName: 'MyApi',
-      definition: AmplifyGraphqlDefinition.fromString(`
-        type Query {
-          dummy: String
-        }
-      `),
-      authorizationModes: {
-        defaultAuthorizationMode: 'API_KEY',
-        apiKeyConfig: { expires: Duration.days(7) },
-      },
-      logging: {
-        fieldLogLevel: FieldLogLevel.ERROR,
-      },
-    });
-
-    const createdLogConfig = api.resources.cfnResources.cfnGraphqlApi.logConfig as CfnGraphQLApi.LogConfigProperty;
-    expect(createdLogConfig).toBeDefined();
-    expect(createdLogConfig.cloudWatchLogsRoleArn).toBeDefined();
-    expect(createdLogConfig.fieldLogLevel).toEqual(FieldLogLevel.ERROR);
-    expect(createdLogConfig.excludeVerboseContent).toEqual(defaultLogConfig.excludeVerboseContent);
-
-    const template = Template.fromStack(stack);
-    template.hasResourceProperties('Custom::LogRetention', {
-      RetentionInDays: defaultRetention,
-    });
-  });
-
-  it('should create a log config with a default fieldLogLevel, a default excludeVerboseContent, and a specified retention', () => {
-    const stack = new Stack();
-
-    const api = new AmplifyGraphqlApi(stack, 'api', {
-      apiName: 'MyApi',
-      definition: AmplifyGraphqlDefinition.fromString(`
-        type Query {
-          dummy: String
-        }
-      `),
-      authorizationModes: {
-        defaultAuthorizationMode: 'API_KEY',
-        apiKeyConfig: { expires: Duration.days(7) },
-      },
-      logging: {
-        retention: RetentionDays.ONE_MONTH,
-      },
-    });
-
-    const createdLogConfig = api.resources.cfnResources.cfnGraphqlApi.logConfig as CfnGraphQLApi.LogConfigProperty;
-    expect(createdLogConfig).toBeDefined();
-    expect(createdLogConfig.cloudWatchLogsRoleArn).toBeDefined();
-    expect(createdLogConfig.fieldLogLevel).toEqual(defaultLogConfig.fieldLogLevel);
-    expect(createdLogConfig.excludeVerboseContent).toEqual(defaultLogConfig.excludeVerboseContent);
-
-    const template = Template.fromStack(stack);
-    template.hasResourceProperties('Custom::LogRetention', {
-      RetentionInDays: RetentionDays.ONE_MONTH,
-    });
-  });
-
-  it('should create a log config with all of fieldLogLevel, excludeVerboseContent, and retention specified', () => {
-    const stack = new Stack();
-
-    const api = new AmplifyGraphqlApi(stack, 'api', {
-      apiName: 'MyApi',
-      definition: AmplifyGraphqlDefinition.fromString(`
-        type Query {
-          dummy: String
-        }
-      `),
-      authorizationModes: {
-        defaultAuthorizationMode: 'API_KEY',
-        apiKeyConfig: { expires: Duration.days(7) },
-      },
-      logging: {
-        fieldLogLevel: FieldLogLevel.ALL,
-        excludeVerboseContent: false,
-        retention: RetentionDays.TWO_WEEKS,
-      },
-    });
-
-    const createdLogConfig = api.resources.cfnResources.cfnGraphqlApi.logConfig as CfnGraphQLApi.LogConfigProperty;
-    expect(createdLogConfig).toBeDefined();
-    expect(createdLogConfig.cloudWatchLogsRoleArn).toBeDefined();
-    expect(createdLogConfig.fieldLogLevel).toEqual(FieldLogLevel.ALL);
-    expect(createdLogConfig.excludeVerboseContent).toEqual(false);
-
-    const template = Template.fromStack(stack);
-    template.hasResourceProperties('Custom::LogRetention', {
-      RetentionInDays: RetentionDays.TWO_WEEKS,
-    });
-  });
-
-  it('should not create a log config when logging is not specified', () => {
-    const stack = new Stack();
-
-    const api = new AmplifyGraphqlApi(stack, 'api', {
-      apiName: 'MyApi',
-      definition: AmplifyGraphqlDefinition.fromString(`
-        type Query {
-          dummy: String
-        }
-      `),
-      authorizationModes: {
-        defaultAuthorizationMode: 'API_KEY',
-        apiKeyConfig: { expires: Duration.days(7) },
-      },
-    });
-
+  } else {
+    // Verify that no log config is created
     const createdLogConfig = api.resources.cfnResources.cfnGraphqlApi.logConfig as CfnGraphQLApi.LogConfigProperty;
     expect(createdLogConfig).toBeUndefined();
 
-    const template = Template.fromStack(stack);
+    // Verify that no log retention is created
     template.resourcePropertiesCountIs('Custom::LogRetention', 'LogRetention', 0);
+  }
+};
+
+describe('AmplifyGraphqlApi Log Config', () => {
+  test.each(testCases)('$description', ({ logging, expectedLogConfig }) => {
+    const stack = new Stack();
+    createAndTestApi(stack, logging, expectedLogConfig);
   });
 });

@@ -24,7 +24,6 @@ const loggingContext = stack.node.tryGetContext('logging');
 let logging: Logging | undefined;
 
 if (loggingContext === 'true' || loggingContext === '{}') {
-  console.log('loggingContext is true or empty object');
   logging = true;
 } else if (loggingContext !== undefined) {
   let logConfig: LogConfig = {};

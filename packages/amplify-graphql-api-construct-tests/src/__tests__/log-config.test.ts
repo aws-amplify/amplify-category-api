@@ -1,26 +1,34 @@
 import * as path from 'path';
-import { AbortController } from '@aws-sdk/abort-controller';
 import { AppSyncClient, GetGraphqlApiCommand } from '@aws-sdk/client-appsync';
-import { CloudWatchLogsClient, DescribeLogGroupsCommand, StartLiveTailCommand } from '@aws-sdk/client-cloudwatch-logs';
+import {
+  CloudWatchLogsClient,
+  DescribeLogGroupsCommand,
+  LiveTailSessionLogEvent,
+  StartLiveTailCommand,
+} from '@aws-sdk/client-cloudwatch-logs';
 import { default as STS } from 'aws-sdk/clients/sts';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import { GraphQLClient } from 'graphql-request';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
-import { DURATION_1_HOUR } from '../utils/duration-constants';
+import { DURATION_30_MINUTES } from '../utils/duration-constants';
 
-jest.setTimeout(DURATION_1_HOUR);
+jest.setTimeout(DURATION_30_MINUTES);
 
 // AWS client initialization
 const region = process.env.CLI_REGION;
-console.log('region from env: ', region);
 const cloudWatchLogsClient = new CloudWatchLogsClient({ region });
 const appSyncClient = new AppSyncClient({ region });
 const sts = new STS({ region });
 
+// Log config shape
+type LogConfigShape = { retention?: number; excludeVerboseContent?: boolean; fieldLogLevel?: string };
+
 // Default configuration constants
-const defaultRetentionInDays = 7;
-const defaultExcludeVerboseContent = true;
-const defaultFieldLogLevel = 'NONE';
+const defaultLogConfig = {
+  retention: 7,
+  excludeVerboseContent: true,
+  fieldLogLevel: 'NONE',
+};
 
 // Test query
 const query = /* GraphQL */ `
@@ -49,9 +57,7 @@ const getAccountId = async (): Promise<string> => {
 const verifyLogConfig = async (
   logGroupName: string,
   apiId: string,
-  expectedRetentionInDays: number,
-  expectedExcludeVerboseContent: boolean,
-  expectedFieldLogLevel: string,
+  expectedLogConfig: LogConfigShape,
 ): Promise<void> => {
   // Verify CloudWatch log group retentionInDays setting
   const describeLogGroupsParams = {
@@ -61,7 +67,7 @@ const verifyLogConfig = async (
   const cloudWatchResponse = await cloudWatchLogsClient.send(describeLogGroupsCommand);
   const logGroup = cloudWatchResponse.logGroups.find((lg) => lg.logGroupName === logGroupName);
   expect(logGroup).toBeDefined();
-  expect(logGroup.retentionInDays).toBe(expectedRetentionInDays);
+  expect(logGroup.retentionInDays).toBe(expectedLogConfig.retention);
 
   // Verify AppSync API log excludeVerboseContent and fieldLogLevel settings
   const appSyncParams = {
@@ -70,58 +76,33 @@ const verifyLogConfig = async (
   const appSyncResponse = await appSyncClient.send(new GetGraphqlApiCommand(appSyncParams));
   const logConfig = appSyncResponse.graphqlApi?.logConfig;
   expect(logConfig).toBeDefined();
-  expect(logConfig.excludeVerboseContent).toBe(expectedExcludeVerboseContent);
-  expect(logConfig.fieldLogLevel).toBe(expectedFieldLogLevel);
+  expect(logConfig.excludeVerboseContent).toBe(expectedLogConfig.excludeVerboseContent);
+  expect(logConfig.fieldLogLevel).toBe(expectedLogConfig.fieldLogLevel);
 };
 
-// Verify that the first log event contains the expected request ID
-const verifyLogsWithRequestId = async (logGroupName: string, expectedRequestId: string): Promise<void> => {
-  // Set up an AbortController with a timeout for the for loop
-  const abortController = new AbortController();
-  const timeoutDuration = 60000; // 60 seconds
-  const timeoutId = setTimeout(() => {
-    abortController.abort();
-  }, timeoutDuration);
-
+// Get the log event with the expected request ID
+const getLogEventWithRequestId = async (
+  logGroupName: string,
+  expectedRequestId: string,
+): Promise<LiveTailSessionLogEvent> => {
   // Set up for StartLiveTailCommand
   const accountId = await getAccountId();
   const logGroupArn = `arn:aws:logs:${region}:${accountId}:log-group:${logGroupName}`;
-  console.log('logGroupArn: ', logGroupArn);
   const startLiveTailParams = {
     logGroupIdentifiers: [logGroupArn],
     logEventFilterPattern: `{ $.requestId = "${expectedRequestId}" }`,
   };
 
-  try {
-    const startLiveTailCommand = new StartLiveTailCommand(startLiveTailParams);
-    const cloudWatchResponse = await cloudWatchLogsClient.send(startLiveTailCommand, { abortSignal: abortController.signal });
+  const startLiveTailCommand = new StartLiveTailCommand(startLiveTailParams);
+  const cloudWatchResponse = await cloudWatchLogsClient.send(startLiveTailCommand);
 
-    let eventFound = false;
-    for await (const event of cloudWatchResponse.responseStream) {
-      if (event.sessionStart) {
-        console.log('Live Tail session started:', event.sessionStart);
-      } else if (event.sessionUpdate) {
-        console.log('Finding log event with the expected request ID');
-        const firstLogEvent = event.sessionUpdate.sessionResults.find((logEvent) => logEvent.message.includes(expectedRequestId));
-        if (firstLogEvent) {
-          expect(firstLogEvent.message).toContain(expectedRequestId);
-          console.log(`Log event found: ${firstLogEvent.message}`);
-          eventFound = true;
-          break;
-        }
-        console.log('Log event not found, for loop continuing');
-      } else {
-        console.error('Unknown event type:', event);
-      }
+  for await (const event of cloudWatchResponse.responseStream) {
+    // Every second, a LiveTailSessionUpdate object is sent. Each of these objects contains an array of the actual log events.
+    // If no new log events were ingested in the past second, the LiveTailSessionUpdate object will contain an empty array.
+    // source: https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/cloudwatch-logs/command/StartLiveTailCommand/
+    if (event.sessionUpdate && event.sessionUpdate.sessionResults.length > 0) {
+      return event.sessionUpdate.sessionResults[0];
     }
-
-    clearTimeout(timeoutId);
-
-    if (!eventFound) {
-      throw new Error(`Expected log event with requestId ${expectedRequestId} was not found within the timeout.`);
-    }
-  } catch (err) {
-    console.error('Error processing response stream:', err);
   }
 };
 
@@ -145,37 +126,80 @@ const verifyLogGroupDoesNotExist = async (logGroupName: string): Promise<void> =
  * - logging: '{"fieldLogLevel": "ERROR"}' is parsed to { fieldLogLevel: FieldLogLevel.ERROR }
  */
 describe('Log Config Tests', () => {
-  let projRoot: string;
-  let projFolderName: string;
-  let templatePath: string;
+  const projRoots: string[] = [];
 
-  beforeEach(async () => {
-    projFolderName = 'log-config';
-    projRoot = await createNewProjectDir(projFolderName);
-    templatePath = path.resolve(path.join(__dirname, 'backends', 'log-config'));
-  });
-
-  afterEach(async () => {
-    try {
+  afterAll(async () => {
+    const destroyCDKProjectAndDeleteProjectDir = async (projRoot: string): Promise<void> => {
       await cdkDestroy(projRoot, '--all');
-    } catch (_) {
-      /* No-op */
-    }
-
-    deleteProjectDir(projRoot);
+      deleteProjectDir(projRoot);
+    };
+    const cleanupTasks = projRoots.map((projRoot) => destroyCDKProjectAndDeleteProjectDir(projRoot));
+    await Promise.all(cleanupTasks);
   });
 
-  test('Default logging is enabled with logging: true', async () => {
+  const testCases: [
+    string,
+    {
+      logging: true | LogConfigShape;
+      expectedLogConfig: LogConfigShape;
+    },
+  ][] = [
+    [
+      'Default - logging: true',
+      {
+        logging: true,
+        expectedLogConfig: defaultLogConfig,
+      },
+    ],
+    [
+      'Default - logging: {}',
+      {
+        logging: {},
+        expectedLogConfig: defaultLogConfig,
+      },
+    ],
+    [
+      'Custom - fieldLogLevel: ERROR',
+      {
+        logging: { fieldLogLevel: 'ERROR' },
+        expectedLogConfig: { ...defaultLogConfig, fieldLogLevel: 'ERROR' },
+      },
+    ],
+    [
+      'Custom - retention: 60',
+      {
+        logging: { retention: 60 },
+        expectedLogConfig: { ...defaultLogConfig, retention: 60 },
+      },
+    ],
+    [
+      'Custom - fieldLogLevel: INFO, excludeVerboseContent: false, retention: 365',
+      {
+        logging: { retention: 365, excludeVerboseContent: false, fieldLogLevel: 'INFO' },
+        expectedLogConfig: { retention: 365, excludeVerboseContent: false, fieldLogLevel: 'INFO' },
+      },
+    ],
+  ];
+
+  test.concurrent.each(testCases)(
+    'Log Config is enabled with: %s',
+    async (_, { logging, expectedLogConfig }) => {
+      const projRoot = await createNewProjectDir('log-config');
+      projRoots.push(projRoot);
+      const templatePath = path.resolve(path.join(__dirname, 'backends', 'log-config'));
+
     // Initialize CDK project
     const name = await initCDKProject(projRoot, templatePath, {
       cdkContext: {
-        logging: 'true',
+        logging: JSON.stringify(logging),
       },
     });
 
     // Deploy CDK stack
     const outputs = await cdkDeploy(projRoot, '--all');
     const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey, awsAppsyncApiId: apiId } = outputs[name];
+
+    const logGroupName = `/aws/appsync/apis/${apiId}`;
 
     // Create a GraphQL client
     const client = new GraphQLClient(apiEndpoint, {
@@ -184,148 +208,29 @@ describe('Log Config Tests', () => {
       },
     });
 
-    const logGroupName = `/aws/appsync/apis/${apiId}`;
+    // Run a query
     const { headers } = await client.rawRequest(query);
     const requestId = headers.get('x-amzn-requestid');
 
     // Verify request ID in log
-    await verifyLogsWithRequestId(logGroupName, requestId);
+    const logEvent = await getLogEventWithRequestId(logGroupName, requestId);
+    expect(logEvent).toBeDefined();
 
     // Verify logging configuration
-    await verifyLogConfig(logGroupName, apiId, defaultRetentionInDays, defaultExcludeVerboseContent, defaultFieldLogLevel);
-  });
-
-  test('Default logging is enabled with logging: {}', async () => {
-    // Initialize CDK project
-    const name = await initCDKProject(projRoot, templatePath, {
-      cdkContext: {
-        logging: '{}',
-      },
-    });
-
-    // Deploy CDK stack
-    const outputs = await cdkDeploy(projRoot, '--all');
-    const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey, awsAppsyncApiId: apiId } = outputs[name];
-
-    // Create a GraphQL client
-    const client = new GraphQLClient(apiEndpoint, {
-      headers: {
-        'x-api-key': apiKey,
-      },
-    });
-
-    const logGroupName = `/aws/appsync/apis/${apiId}`;
-    const { headers } = await client.rawRequest(query);
-    const requestId = headers.get('x-amzn-requestid');
-
-    // Verify request ID in log
-    await verifyLogsWithRequestId(logGroupName, requestId);
-
-    // Verify logging configuration
-    await verifyLogConfig(logGroupName, apiId, defaultRetentionInDays, defaultExcludeVerboseContent, defaultFieldLogLevel);
-  });
-
-  test('Custom logging is enabled with fieldLogLevel: ERROR, default excludeVerboseContent, and default retention', async () => {
-    // Initialize CDK project
-    const name = await initCDKProject(projRoot, templatePath, {
-      cdkContext: {
-        logging: '{"fieldLogLevel": "ERROR"}',
-      },
-    });
-
-    // Deploy CDK stack
-    const outputs = await cdkDeploy(projRoot, '--all');
-    const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey, awsAppsyncApiId: apiId } = outputs[name];
-
-    // Create a GraphQL client
-    const client = new GraphQLClient(apiEndpoint, {
-      headers: {
-        'x-api-key': apiKey,
-      },
-    });
-
-    const logGroupName = `/aws/appsync/apis/${apiId}`;
-    const { headers } = await client.rawRequest(query);
-    const requestId = headers.get('x-amzn-requestid');
-
-    // Verify request ID in log
-    await verifyLogsWithRequestId(logGroupName, requestId);
-
-    // Verify logging configuration
-    await verifyLogConfig(logGroupName, apiId, defaultRetentionInDays, defaultExcludeVerboseContent, 'ERROR');
-  });
-
-  test('Custom logging is enabled with default fieldLogLevel, default excludeVerboseContent, and retention: 60', async () => {
-    // Initialize CDK project
-    const name = await initCDKProject(projRoot, templatePath, {
-      cdkContext: {
-        logging: '{"retention": 60}',
-      },
-    });
-
-    // Deploy CDK stack
-    const outputs = await cdkDeploy(projRoot, '--all');
-    const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey, awsAppsyncApiId: apiId } = outputs[name];
-
-    // Create a GraphQL client
-    const client = new GraphQLClient(apiEndpoint, {
-      headers: {
-        'x-api-key': apiKey,
-      },
-    });
-
-    const logGroupName = `/aws/appsync/apis/${apiId}`;
-    const { headers } = await client.rawRequest(query);
-    const requestId = headers.get('x-amzn-requestid');
-
-    // Verify request ID in log
-    await verifyLogsWithRequestId(logGroupName, requestId);
-
-    // Verify logging configuration
-    await verifyLogConfig(logGroupName, apiId, 60, defaultExcludeVerboseContent, defaultFieldLogLevel);
-  });
-
-  test('Custom logging is enabled with fieldLogLevel: INFO, excludeVerboseContent: false, and retention: 365', async () => {
-    // Initialize CDK project
-    const name = await initCDKProject(projRoot, templatePath, {
-      cdkContext: {
-        logging: '{"retention": 365, "excludeVerboseContent": false, "fieldLogLevel": "INFO"}',
-      },
-    });
-
-    // Deploy CDK stack
-    const outputs = await cdkDeploy(projRoot, '--all');
-    const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey, awsAppsyncApiId: apiId } = outputs[name];
-
-    // Create a GraphQL client
-    const client = new GraphQLClient(apiEndpoint, {
-      headers: {
-        'x-api-key': apiKey,
-      },
-    });
-
-    const logGroupName = `/aws/appsync/apis/${apiId}`;
-    const { headers } = await client.rawRequest(query);
-    const requestId = headers.get('x-amzn-requestid');
-
-    // Verify request ID in log
-    await verifyLogsWithRequestId(logGroupName, requestId);
-
-    // Verify logging configuration
-    await verifyLogConfig(logGroupName, apiId, 365, false, 'INFO');
+    await verifyLogConfig(logGroupName, apiId, expectedLogConfig);
   });
 
   test('Logging is disabled', async () => {
+    const projRoot = await createNewProjectDir('log-config');
+    projRoots.push(projRoot);
+    const templatePath = path.resolve(path.join(__dirname, 'backends', 'log-config'));
+
     // Initialize CDK project
     const name = await initCDKProject(projRoot, templatePath);
 
     // Deploy CDK stack
     const outputs = await cdkDeploy(projRoot, '--all');
     const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey, awsAppsyncApiId: apiId } = outputs[name];
-
-    // Verify that logging is disabled
-    const logGroupName = `/aws/appsync/apis/${apiId}`;
-    await verifyLogGroupDoesNotExist(logGroupName);
 
     // Run a query
     const client = new GraphQLClient(apiEndpoint, {
@@ -335,7 +240,8 @@ describe('Log Config Tests', () => {
     });
     await client.rawRequest(query);
 
-    // Verify that the log group does not exist
+    // Verify that logging is disabled
+    const logGroupName = `/aws/appsync/apis/${apiId}`;
     await verifyLogGroupDoesNotExist(logGroupName);
   });
 });
