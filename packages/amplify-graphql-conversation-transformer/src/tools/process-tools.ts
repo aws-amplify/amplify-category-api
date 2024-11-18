@@ -54,18 +54,7 @@ export const processTools = (toolDefinitions: ToolDefinition[], ctx: Transformer
   }
 
   // Process each tool definition
-  const tools: Tool[] = toolDefinitions.map((toolDefinition) => {
-    const { name: toolName, description } = toolDefinition;
-    const queryName = isModelOperationToolPredicate(toolDefinition) ? modelListQueryName(toolDefinition, ctx) : toolDefinition.queryName;
-    const queryField = queryType.fields?.find((field) => field.name.value === queryName);
-
-    if (!queryField) {
-      throw new InvalidDirectiveError(`Tool "${toolName}" defined in @conversation directive has no matching Query field definition`);
-    }
-
-    return createTool({ toolName, description, queryField, ctx });
-  });
-
+  const tools: Tool[] = toolDefinitions.map((toolDefinition) => createTool({ toolDefinition, queryType, ctx }));
   return tools;
 };
 
@@ -150,13 +139,35 @@ const getObjectTypeFromName = (name: string, ctx: TransformerContextProvider): O
  * @returns {Tool} A Tool object.
  */
 const createTool = (input: {
-  toolName: string;
-  description: string;
-  queryField: FieldDefinitionNode;
+  toolDefinition: ToolDefinition;
+  queryType: ObjectTypeDefinitionNode;
   ctx: TransformerContextProvider;
 }): Tool => {
-  const { toolName, description, queryField, ctx } = input;
-  const { type: returnType, arguments: fieldArguments } = queryField;
+  const { toolDefinition, queryType, ctx } = input;
+
+  const queryName = isModelOperationToolPredicate(toolDefinition) ? modelListQueryName(toolDefinition, ctx) : toolDefinition.queryName;
+  const queryField = queryType.fields?.find((field) => field.name.value === queryName);
+
+  if (!queryField) {
+    throw new InvalidDirectiveError(
+      `Tool "${toolDefinition.name}" defined in @conversation directive has no matching Query field definition`,
+    );
+  }
+
+  const { name: toolName, description } = toolDefinition;
+  const { type: returnType, arguments: queryFieldArguments } = queryField;
+
+  // If the query field is a @model list operation, exclude the `nextToken` and `limit` field arguments.
+  // We do this because:
+  // - `nextToken` seems to confuse LLMs when generating tool input and we don't want the LLM paginating through
+  // several list queries.
+  // - `limit` is applied in DynamoDB queries before the filter expression.
+  // Given a user prompt: "What's the last task I completed?"
+  // With a `limit` argument, the LLM will (understandably) set the limit to `1`.
+  // However this will almost certainly result in that task being omitted from the response.
+  const fieldArguments = isModelOperationToolPredicate(toolDefinition)
+  ? queryFieldArguments?.filter((arg) => arg.name.value !== 'limit' && arg.name.value !== 'nextToken' )
+  : queryFieldArguments
 
   // Generate tool properties and required fields
   const toolSchema = generateToolProperties(fieldArguments, ctx);

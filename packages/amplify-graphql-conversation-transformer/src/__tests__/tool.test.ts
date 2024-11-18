@@ -19,6 +19,7 @@ describe('processTools', () => {
     const schema = parse(/* GraphQL */ `
       input NonNullInput {
         name: String!
+        limit: Int
       }
 
       type Query {
@@ -47,14 +48,28 @@ describe('processTools', () => {
     const expected = {
       $defs: {
         NonNullInput: {
-          properties: { name: { type: 'string' } },
+          properties: {
+            name: {
+              type: 'string'
+            },
+            limit: {
+              type: 'integer'
+            }
+          },
           required: ['name'],
           type: 'object',
         },
       },
       properties: {
         input: {
-          properties: { name: { type: 'string' } },
+          properties: {
+            name: {
+              type: 'string'
+            },
+            limit: {
+              type: 'integer'
+            }
+          },
           required: ['name'],
           type: 'object',
         },
@@ -180,8 +195,6 @@ describe('processTools', () => {
     expect(listCustomersTool.graphqlRequestInputDescriptor).toBeDefined();
     expect(listCustomersTool.graphqlRequestInputDescriptor?.propertyTypes).toEqual({
       filter: 'ModelTodoFilterInput',
-      limit: 'Int',
-      nextToken: 'String',
     });
     expect(listCustomersTool.graphqlRequestInputDescriptor?.selectionSet).toBe(
       'items { name completed id createdAt updatedAt owner } nextToken',
@@ -301,8 +314,6 @@ describe('processTools', () => {
           },
           type: 'object',
         },
-        limit: { type: 'integer' },
-        nextToken: { type: 'string' },
       },
       type: 'object',
     };
@@ -461,8 +472,6 @@ describe('processTools', () => {
     expect(listCustomersTool.graphqlRequestInputDescriptor).toBeDefined();
     expect(listCustomersTool.graphqlRequestInputDescriptor?.propertyTypes).toEqual({
       filter: 'ModelCustomerFilterInput',
-      limit: 'Int',
-      nextToken: 'String',
     });
     expect(listCustomersTool.graphqlRequestInputDescriptor?.selectionSet).toBe(
       'items { name email activeCart { items { name price } customerId id createdAt updatedAt owner } orderHistory { items { items { name price } customerId id createdAt updatedAt owner } nextToken } id createdAt updatedAt owner } nextToken',
@@ -675,21 +684,12 @@ describe('processTools', () => {
           },
           type: 'object',
         },
-        limit: {
-          type: 'integer',
-        },
-        nextToken: {
-          type: 'string',
-        },
       },
       type: 'object',
     };
     expect(listCustomersTool.inputSchema.json).toEqual(expected);
     expect(listCustomersTool.name).toBe('list-customers');
     expect(listCustomersTool.description).toBe('List all customers');
-
-    // Verify we don't go too deep in the relationships
-    // expect(listCustomersTool.graphqlRequestInputDescriptor?.selectionSet).not.toContain('items');
   });
 });
 
