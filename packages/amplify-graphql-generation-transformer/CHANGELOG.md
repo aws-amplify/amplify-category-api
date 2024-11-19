@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-generation-transformer@0.2.7...@aws-amplify/graphql-generation-transformer@1.1.0) (2024-11-19)
+
+### Bug Fixes
+
+- **ai:** forward user-agent with package metadata in generation and conversation requests ([#3029](https://github.com/aws-amplify/amplify-category-api/issues/3029)) ([9a0ac8b](https://github.com/aws-amplify/amplify-category-api/commit/9a0ac8bb1d6b554bc3f93a0450763a07b8d8f0dd))
+
+### Features
+
+- bump conversation and generation transformers to v1 ([#3030](https://github.com/aws-amplify/amplify-category-api/issues/3030)) ([1d9e59e](https://github.com/aws-amplify/amplify-category-api/commit/1d9e59ed5d2130780a5d75db4e48b2c86df9e8e3))
+
 ## [0.2.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-generation-transformer@0.2.6...@aws-amplify/graphql-generation-transformer@0.2.7) (2024-11-14)
 
 **Note:** Version bump only for package @aws-amplify/graphql-generation-transformer
