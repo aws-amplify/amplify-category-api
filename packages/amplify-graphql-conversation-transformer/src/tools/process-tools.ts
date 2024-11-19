@@ -56,15 +56,16 @@ export const processTools = (toolDefinitions: ToolDefinition[], ctx: Transformer
 
   // Process each tool definition
   const tools: Tool[] = toolDefinitions.map((toolDefinition) => {
-    const { name: toolName, description } = toolDefinition;
     const queryName = isModelOperationToolPredicate(toolDefinition) ? modelListQueryName(toolDefinition, ctx) : toolDefinition.queryName;
     const queryField = queryType.fields?.find((field) => field.name.value === queryName);
 
     if (!queryField) {
-      throw new InvalidDirectiveError(`Tool "${toolName}" defined in @conversation directive has no matching Query field definition`);
+      throw new InvalidDirectiveError(
+        `Tool "${toolDefinition.name}" defined in @conversation directive has no matching Query field definition`,
+      );
     }
 
-    return createTool({ toolName, description, queryField, ctx });
+    return createTool({ toolDefinition, queryField, ctx });
   });
 
   return tools;
@@ -150,23 +151,19 @@ const getObjectTypeFromName = (name: string, ctx: TransformerContextProvider): O
  * @param {TransformerContextProvider} ctx - The transformer context provider.
  * @returns {Tool} A Tool object.
  */
-const createTool = (input: {
-  toolName: string;
-  description: string;
-  queryField: FieldDefinitionNode;
-  ctx: TransformerContextProvider;
-}): Tool => {
-  const { toolName, description, queryField, ctx } = input;
+const createTool = (input: { toolDefinition: ToolDefinition; queryField: FieldDefinitionNode; ctx: TransformerContextProvider }): Tool => {
+  const { toolDefinition, queryField, ctx } = input;
+  const { name: toolName, description } = toolDefinition;
   const { type: returnType, arguments: fieldArguments } = queryField;
 
   // Generate tool properties and required fields
-  const { properties, required } = generateToolProperties(fieldArguments, ctx, queryField.name.value, returnType);
+  const { properties, required } = generateToolProperties(fieldArguments, ctx, toolDefinition);
 
   // Generate selection set for the return type
   const selectionSet = generateSelectionSet(returnType, ctx).trim();
 
   // Generate property types for GraphQL request input
-  const propertyTypes = generatePropertyTypes(fieldArguments, queryField.name.value, returnType);
+  const propertyTypes = generatePropertyTypes(fieldArguments, toolDefinition);
 
   // Create GraphQL request input descriptor
   const graphqlRequestInputDescriptor: GraphQLRequestInputDescriptor = {
@@ -199,14 +196,13 @@ const createTool = (input: {
 const generateToolProperties = (
   fieldArguments: readonly InputValueDefinitionNode[] | undefined,
   ctx: TransformerContextProvider,
-  queryName: string,
-  returnType: TypeNode,
+  toolDefinition: ToolDefinition,
 ): { properties: Record<string, JSONSchema>; required: string[] } => {
   if (!fieldArguments || fieldArguments.length === 0) {
     return { properties: {}, required: [] };
   }
 
-  if (isModelListOperation(queryName, returnType)) {
+  if (isModelOperationToolPredicate(toolDefinition)) {
     return { properties: {}, required: [] };
   }
 
@@ -233,14 +229,13 @@ const generateToolProperties = (
  */
 const generatePropertyTypes = (
   fieldArguments: readonly InputValueDefinitionNode[] | undefined,
-  queryName: string,
-  returnType: TypeNode,
+  toolDefinition: ToolDefinition,
 ): Record<string, string> => {
   if (!fieldArguments || fieldArguments.length === 0) {
     return {};
   }
 
-  if (isModelListOperation(queryName, returnType)) {
+  if (isModelOperationToolPredicate(toolDefinition)) {
     return {};
   }
 
@@ -250,10 +245,6 @@ const generatePropertyTypes = (
     acc[name] = getBaseType(fieldArgument.type) + suffix;
     return acc;
   }, {} as Record<string, string>);
-};
-
-const isModelListOperation = (queryName: string, responseType: TypeNode): boolean => {
-  return getBaseType(responseType).startsWith('Model') && queryName.startsWith('list');
 };
 
 const modelListQueryName = (modelTool: ModelOperationTool, ctx: TransformerContextProvider): string => {
