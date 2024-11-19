@@ -160,13 +160,13 @@ const createTool = (input: {
   const { type: returnType, arguments: fieldArguments } = queryField;
 
   // Generate tool properties and required fields
-  const { properties, required } = generateToolProperties(fieldArguments, ctx, toolName, returnType);
+  const { properties, required } = generateToolProperties(fieldArguments, ctx, queryField.name.value, returnType);
 
   // Generate selection set for the return type
   const selectionSet = generateSelectionSet(returnType, ctx).trim();
 
   // Generate property types for GraphQL request input
-  const propertyTypes = generatePropertyTypes(fieldArguments, toolName, returnType);
+  const propertyTypes = generatePropertyTypes(fieldArguments, queryField.name.value, returnType);
 
   // Create GraphQL request input descriptor
   const graphqlRequestInputDescriptor: GraphQLRequestInputDescriptor = {
@@ -199,14 +199,14 @@ const createTool = (input: {
 const generateToolProperties = (
   fieldArguments: readonly InputValueDefinitionNode[] | undefined,
   ctx: TransformerContextProvider,
-  toolName: string,
+  queryName: string,
   returnType: TypeNode,
 ): { properties: Record<string, JSONSchema>; required: string[] } => {
   if (!fieldArguments || fieldArguments.length === 0) {
     return { properties: {}, required: [] };
   }
 
-  if (isModelListOperation(toolName, returnType)) {
+  if (isModelListOperation(queryName, returnType)) {
     return { properties: {}, required: [] };
   }
 
@@ -233,14 +233,14 @@ const generateToolProperties = (
  */
 const generatePropertyTypes = (
   fieldArguments: readonly InputValueDefinitionNode[] | undefined,
-  toolName: string,
+  queryName: string,
   returnType: TypeNode,
 ): Record<string, string> => {
   if (!fieldArguments || fieldArguments.length === 0) {
     return {};
   }
 
-  if (isModelListOperation(toolName, returnType)) {
+  if (isModelListOperation(queryName, returnType)) {
     return {};
   }
 
@@ -252,8 +252,8 @@ const generatePropertyTypes = (
   }, {} as Record<string, string>);
 };
 
-const isModelListOperation = (toolName: string, responseType: TypeNode): boolean => {
-  return getBaseType(responseType).startsWith('Model') && toolName.startsWith('list');
+const isModelListOperation = (queryName: string, responseType: TypeNode): boolean => {
+  return getBaseType(responseType).startsWith('Model') && queryName.startsWith('list');
 };
 
 const modelListQueryName = (modelTool: ModelOperationTool, ctx: TransformerContextProvider): string => {
