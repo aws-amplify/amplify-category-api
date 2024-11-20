@@ -3,6 +3,7 @@ import { util } from '@aws-appsync/utils';
 export function request(ctx) {
   const { args, request } = ctx;
   const { graphqlApiEndpoint } = ctx.stash;
+  const userAgent = createUserAgent(request);
 
   const selectionSet = '[[SELECTION_SET]]';
 
@@ -41,7 +42,12 @@ export function request(ctx) {
     responseMutation: streamingResponseMutation,
     graphqlApiEndpoint,
     modelConfiguration,
-    request: { headers: { authorization: authHeader } },
+    request: {
+      headers: {
+        authorization: authHeader,
+        'x-amz-user-agent': userAgent,
+      }
+    },
     messageHistoryQuery,
     toolsConfiguration,
     streamResponse: true,
@@ -70,4 +76,15 @@ export function response(ctx) {
     updatedAt: ctx.stash.defaultValues.updatedAt,
   };
   return response;
+}
+
+function createUserAgent(request) {
+  const packageMetadata = [[PACKAGE_METADATA]];
+  let userAgent = request.headers['x-amz-user-agent'];
+  if (userAgent) {
+    userAgent = `${userAgent} md/${packageMetadata}`;
+  } else {
+    userAgent = `lib/${packageMetadata}`;
+  }
+  return userAgent;
 }

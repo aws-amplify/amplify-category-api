@@ -5,12 +5,16 @@ export function request(ctx) {
   const prompt = [[SYSTEM_PROMPT]];
   const args = JSON.stringify(ctx.args);
   const inferenceConfig = [[INFERENCE_CONFIG]];
+  const userAgent = createUserAgent(ctx.request);
 
   return {
     resourcePath: '/model/[[AI_MODEL]]/converse',
     method: 'POST',
     params: {
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-amz-user-agent': userAgent,
+      },
       body: {
         messages: [
           {
@@ -57,4 +61,15 @@ export function response(ctx) {
 
   [[NON_STRING_RESPONSE_HANDLING]]
   return value;
+}
+
+function createUserAgent(request) {
+  const packageMetadata = [[PACKAGE_METADATA]];
+  let userAgent = request.headers['x-amz-user-agent'];
+  if (userAgent) {
+    userAgent = `${userAgent} md/${packageMetadata}`;
+  } else {
+    userAgent = `lib/${packageMetadata}`;
+  }
+  return userAgent;
 }
