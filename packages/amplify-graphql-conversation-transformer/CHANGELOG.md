@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@1.1.0...@aws-amplify/graphql-conversation-transformer@1.1.1) (2024-11-20)
+
+### Bug Fixes
+
+- **conversation:** model list tool query name infinite recursion ([#3037](https://github.com/aws-amplify/amplify-category-api/issues/3037)) ([63aea80](https://github.com/aws-amplify/amplify-category-api/commit/63aea80cfe3c0b9f1d74b80af1eb38a6ac96a190))
+
 # [1.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@0.7.1...@aws-amplify/graphql-conversation-transformer@1.1.0) (2024-11-19)
 
 ### Bug Fixes
