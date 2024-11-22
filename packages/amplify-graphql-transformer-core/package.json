@@ -31,6 +31,7 @@
   "dependencies": {
     "@aws-amplify/graphql-directives": "2.6.0",
     "@aws-amplify/graphql-transformer-interfaces": "4.2.0",
+    "@aws-cdk/assert": "^2.68.0",
     "fs-extra": "^8.1.0",
     "graphql": "^15.5.0",
     "graphql-mapping-template": "5.0.1",

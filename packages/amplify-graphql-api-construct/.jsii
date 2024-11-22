@@ -4029,7 +4029,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 868
+        "line": 873
       },
       "name": "AddFunctionProps",
       "properties": [
@@ -4042,7 +4042,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 872
+            "line": 877
           },
           "name": "dataSource",
           "type": {
@@ -4058,7 +4058,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 877
+            "line": 882
           },
           "name": "name",
           "type": {
@@ -4075,7 +4075,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 912
+            "line": 917
           },
           "name": "code",
           "optional": true,
@@ -4093,7 +4093,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 884
+            "line": 889
           },
           "name": "description",
           "optional": true,
@@ -4111,7 +4111,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 891
+            "line": 896
           },
           "name": "requestMappingTemplate",
           "optional": true,
@@ -4129,7 +4129,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 898
+            "line": 903
           },
           "name": "responseMappingTemplate",
           "optional": true,
@@ -4147,7 +4147,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 905
+            "line": 910
           },
           "name": "runtime",
           "optional": true,
@@ -4490,7 +4490,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 316
+            "line": 318
           },
           "name": "addDynamoDbDataSource",
           "parameters": [
@@ -4539,7 +4539,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 328
+            "line": 330
           },
           "name": "addElasticsearchDataSource",
           "parameters": [
@@ -4586,7 +4586,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 338
+            "line": 340
           },
           "name": "addEventBridgeDataSource",
           "parameters": [
@@ -4633,7 +4633,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 420
+            "line": 422
           },
           "name": "addFunction",
           "parameters": [
@@ -4668,7 +4668,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 349
+            "line": 351
           },
           "name": "addHttpDataSource",
           "parameters": [
@@ -4716,7 +4716,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 360
+            "line": 362
           },
           "name": "addLambdaDataSource",
           "parameters": [
@@ -4764,7 +4764,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 371
+            "line": 373
           },
           "name": "addNoneDataSource",
           "parameters": [
@@ -4803,7 +4803,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 382
+            "line": 384
           },
           "name": "addOpenSearchDataSource",
           "parameters": [
@@ -4851,7 +4851,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 395
+            "line": 397
           },
           "name": "addRdsDataSource",
           "parameters": [
@@ -4918,7 +4918,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 411
+            "line": 413
           },
           "name": "addResolver",
           "parameters": [
@@ -5092,7 +5092,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 771
+        "line": 776
       },
       "name": "AmplifyGraphqlApiCfnResources",
       "properties": [
@@ -5105,7 +5105,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 825
+            "line": 830
           },
           "name": "additionalCfnResources",
           "type": {
@@ -5126,7 +5126,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 810
+            "line": 815
           },
           "name": "amplifyDynamoDbTables",
           "type": {
@@ -5147,7 +5147,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 800
+            "line": 805
           },
           "name": "cfnDataSources",
           "type": {
@@ -5168,7 +5168,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 795
+            "line": 800
           },
           "name": "cfnFunctionConfigurations",
           "type": {
@@ -5189,7 +5189,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 820
+            "line": 825
           },
           "name": "cfnFunctions",
           "type": {
@@ -5210,7 +5210,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 775
+            "line": 780
           },
           "name": "cfnGraphqlApi",
           "type": {
@@ -5226,7 +5226,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 780
+            "line": 785
           },
           "name": "cfnGraphqlSchema",
           "type": {
@@ -5242,7 +5242,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 790
+            "line": 795
           },
           "name": "cfnResolvers",
           "type": {
@@ -5263,7 +5263,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 815
+            "line": 820
           },
           "name": "cfnRoles",
           "type": {
@@ -5284,7 +5284,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 805
+            "line": 810
           },
           "name": "cfnTables",
           "type": {
@@ -5305,7 +5305,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 785
+            "line": 790
           },
           "name": "cfnApiKey",
           "optional": true,
@@ -5484,6 +5484,32 @@
         {
           "abstract": true,
           "docs": {
+            "stability": "stable",
+            "summary": "Specifies the logging configuration when writing GraphQL operations and tracing to Amazon CloudWatch for an AWS AppSync GraphQL API."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 769
+          },
+          "name": "logging",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-amplify/graphql-api-construct.LogConfig"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
             "remarks": "If no outputStorageStrategy is provided a default strategy will be used.",
             "stability": "stable",
             "summary": "Strategy to store construct outputs."
@@ -5597,7 +5623,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 832
+        "line": 837
       },
       "name": "AmplifyGraphqlApiResources",
       "properties": [
@@ -5610,7 +5636,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 856
+            "line": 861
           },
           "name": "cfnResources",
           "type": {
@@ -5626,7 +5652,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 851
+            "line": 856
           },
           "name": "functions",
           "type": {
@@ -5647,7 +5673,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 836
+            "line": 841
           },
           "name": "graphqlApi",
           "type": {
@@ -5663,7 +5689,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 861
+            "line": 866
           },
           "name": "nestedStacks",
           "type": {
@@ -5684,7 +5710,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 846
+            "line": 851
           },
           "name": "roles",
           "type": {
@@ -5705,7 +5731,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 841
+            "line": 846
           },
           "name": "tables",
           "type": {
@@ -6491,6 +6517,58 @@
       ],
       "symbolId": "src/model-datasource-strategy-types:DefaultDynamoDbModelDataSourceStrategy"
     },
+    "@aws-amplify/graphql-api-construct.FieldLogLevel": {
+      "assembly": "@aws-amplify/graphql-api-construct",
+      "docs": {
+        "stability": "stable",
+        "summary": "log-level for fields in AppSync."
+      },
+      "fqn": "@aws-amplify/graphql-api-construct.FieldLogLevel",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "../../node_modules/aws-cdk-lib/aws-appsync/lib/graphqlapi.d.ts",
+        "line": 173
+      },
+      "members": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Resolver logging is disabled."
+          },
+          "name": "NONE"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Only Error messages appear in logs."
+          },
+          "name": "ERROR"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Info and Error messages appear in logs."
+          },
+          "name": "INFO"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Debug, Info, and Error messages, appear in logs."
+          },
+          "name": "DEBUG"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "All messages (Debug, Error, Info, and Trace) appear in logs."
+          },
+          "name": "ALL"
+        }
+      ],
+      "name": "FieldLogLevel",
+      "symbolId": "aws-appsync/lib/graphqlapi:FieldLogLevel"
+    },
     "@aws-amplify/graphql-api-construct.FunctionSlotBase": {
       "assembly": "@aws-amplify/graphql-api-construct",
       "datatype": true,
@@ -7177,6 +7255,83 @@
       ],
       "symbolId": "src/types:LambdaAuthorizationConfig"
     },
+    "@aws-amplify/graphql-api-construct.LogConfig": {
+      "assembly": "@aws-amplify/graphql-api-construct",
+      "datatype": true,
+      "docs": {
+        "default": "excludeVerboseContent: true, fieldLogLevel: FieldLogLevel.NONE, retention: RetentionDays.ONE_WEEK",
+        "remarks": "**WARNING**: Verbose logging will log the full incoming query including user parameters.\nSensitive information may be exposed in CloudWatch logs. Ensure that your IAM policies only grant access to authorized users.\n\nFor information on LogConfig, refer to https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-graphqlapi-logconfig.html.\nFor information on RetentionDays, refer to https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_logs.RetentionDays.html.",
+        "stability": "stable",
+        "summary": "Customizable logging configuration when writing GraphQL operations and tracing to Amazon CloudWatch for an AWS AppSync GraphQL API."
+      },
+      "fqn": "@aws-amplify/graphql-api-construct.LogConfig",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "src/log-config-types.ts",
+        "line": 18
+      },
+      "name": "LogConfig",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "remarks": "**WARNING**: Verbose logging will log the full incoming query including user parameters.\nSensitive information may be exposed in CloudWatch logs. Ensure that your IAM policies only grant access to authorized users.",
+            "stability": "stable",
+            "summary": "When set to `true`, excludes verbose information from the logs, such as: - GraphQL Query - Request Headers - Response Headers - Context - Evaluated Mapping Templates  This setting applies regardless of the specified logging level."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/log-config-types.ts",
+            "line": 42
+          },
+          "name": "excludeVerboseContent",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "FieldLogLevel.NONE",
+            "remarks": "- **NONE**: No field-level logs are captured.\n- **ERROR**: Logs the following information only for the fields that are in the error category:\n  - The error section in the server response.\n  - Field-level errors.\n  - The generated request/response functions that got resolved for error fields.\n- **INFO**: Logs the following information only for the fields that are in the info and error categories:\n  - Info-level messages.\n  - The user messages sent through `$util.log.info` and `console.log`.\n  - Field-level tracing and mapping logs are not shown.\n- **DEBUG**: Logs the following information only for the fields that are in the debug, info, and error categories:\n  - Debug-level messages.\n  - The user messages sent through `$util.log.info`, `$util.log.debug`, `console.log`, and `console.debug`.\n  - Field-level tracing and mapping logs are not shown.\n- **ALL**: The following information is logged for all fields in the query:\n  - Field-level tracing information.\n  - The generated request/response functions that were resolved for each field.",
+            "stability": "stable",
+            "summary": "The field logging level. Values can be `NONE`, `ERROR`, `INFO`, `DEBUG`, or `ALL`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/log-config-types.ts",
+            "line": 66
+          },
+          "name": "fieldLogLevel",
+          "optional": true,
+          "type": {
+            "fqn": "aws-cdk-lib.aws_appsync.FieldLogLevel"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "RetentionDays.ONE_WEEK",
+            "see": "https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_logs.RetentionDays.html",
+            "stability": "stable",
+            "summary": "The number of days log events are kept in CloudWatch Logs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/log-config-types.ts",
+            "line": 25
+          },
+          "name": "retention",
+          "optional": true,
+          "type": {
+            "fqn": "aws-cdk-lib.aws_logs.RetentionDays"
+          }
+        }
+      ],
+      "symbolId": "src/log-config-types:LogConfig"
+    },
     "@aws-amplify/graphql-api-construct.MutationFunctionSlot": {
       "assembly": "@aws-amplify/graphql-api-construct",
       "datatype": true,
@@ -7793,6 +7948,184 @@
         }
       ],
       "symbolId": "src/types:QueryFunctionSlot"
+    },
+    "@aws-amplify/graphql-api-construct.RetentionDays": {
+      "assembly": "@aws-amplify/graphql-api-construct",
+      "docs": {
+        "stability": "stable",
+        "summary": "How long, in days, the log contents will be retained."
+      },
+      "fqn": "@aws-amplify/graphql-api-construct.RetentionDays",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "../../node_modules/aws-cdk-lib/aws-logs/lib/log-group.d.ts",
+        "line": 157
+      },
+      "members": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "1 day."
+          },
+          "name": "ONE_DAY"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "3 days."
+          },
+          "name": "THREE_DAYS"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "5 days."
+          },
+          "name": "FIVE_DAYS"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "1 week."
+          },
+          "name": "ONE_WEEK"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "2 weeks."
+          },
+          "name": "TWO_WEEKS"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "1 month."
+          },
+          "name": "ONE_MONTH"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "2 months."
+          },
+          "name": "TWO_MONTHS"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "3 months."
+          },
+          "name": "THREE_MONTHS"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "4 months."
+          },
+          "name": "FOUR_MONTHS"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "5 months."
+          },
+          "name": "FIVE_MONTHS"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "6 months."
+          },
+          "name": "SIX_MONTHS"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "1 year."
+          },
+          "name": "ONE_YEAR"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "13 months."
+          },
+          "name": "THIRTEEN_MONTHS"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "18 months."
+          },
+          "name": "EIGHTEEN_MONTHS"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "2 years."
+          },
+          "name": "TWO_YEARS"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "3 years."
+          },
+          "name": "THREE_YEARS"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "5 years."
+          },
+          "name": "FIVE_YEARS"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "6 years."
+          },
+          "name": "SIX_YEARS"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "7 years."
+          },
+          "name": "SEVEN_YEARS"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "8 years."
+          },
+          "name": "EIGHT_YEARS"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "9 years."
+          },
+          "name": "NINE_YEARS"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "10 years."
+          },
+          "name": "TEN_YEARS"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Retain logs forever."
+          },
+          "name": "INFINITE"
+        }
+      ],
+      "name": "RetentionDays",
+      "symbolId": "aws-logs/lib/log-group:RetentionDays"
     },
     "@aws-amplify/graphql-api-construct.SQLLambdaModelDataSourceStrategy": {
       "assembly": "@aws-amplify/graphql-api-construct",
@@ -9032,5 +9365,5 @@
     }
   },
   "version": "1.18.2",
-  "fingerprint": "IglGZ1S3jsRrEE16FqBN9DnGem5QENdMUX/JQ4eYLBE="
+  "fingerprint": "PxEfcLN9GcN1S9F1NuvbnyeYbjcMgr/1ntOTo+UJh5c="
 }

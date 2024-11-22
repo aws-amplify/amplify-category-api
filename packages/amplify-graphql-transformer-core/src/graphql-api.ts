@@ -1,11 +1,11 @@
-import { AssetProvider, GraphQLAPIProvider, TransformHostProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { AssetProvider, GraphQLAPIProvider, TransformHostProvider, LogConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   ApiKeyConfig,
   AuthorizationConfig,
   AuthorizationMode,
   AuthorizationType,
   GraphqlApiBase,
-  LogConfig,
+  FieldLogLevel,
   OpenIdConnectConfig,
   UserPoolConfig,
   UserPoolDefaultAction,
@@ -19,6 +19,7 @@ import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from 'aws-cd
 import * as cdk from 'aws-cdk-lib';
 import { ArnFormat, CfnResource, Duration, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import { LogRetention, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { TransformerSchema } from './cdk-compat/schema-asset';
 import { DefaultTransformHost } from './transform-host';
 import { setResourceName } from './utils';
@@ -40,7 +41,7 @@ export interface GraphqlApiProps {
    *
    * @default - None
    */
-  readonly logConfig?: LogConfig;
+  readonly logging?: true | LogConfig;
   /**
    *  GraphQL schema definition. Specify how you want to define your schema.
    *
@@ -168,12 +169,12 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     this.api = new CfnGraphQLApi(this, 'Resource', {
       name: props.name,
       authenticationType: defaultMode.authorizationType,
-      logConfig: this.setupLogConfig(props.logConfig),
       openIdConnectConfig: this.setupOpenIdConnectConfig(defaultMode.openIdConnectConfig),
       userPoolConfig: this.setupUserPoolConfig(defaultMode.userPoolConfig),
       lambdaAuthorizerConfig: this.setupLambdaConfig(defaultMode.lambdaAuthorizerConfig),
       additionalAuthenticationProviders: this.setupAdditionalAuthorizationModes(additionalModes),
       xrayEnabled: props.xrayEnabled,
+      logConfig: this.setupLogConfig(props.logging),
     });
 
     this.apiId = this.api.attrApiId;
@@ -206,6 +207,18 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     } else {
       this.host = new DefaultTransformHost({
         api: this,
+      });
+    }
+
+    // set up log retention
+    if (props.logging) {
+      const defaultRetention = RetentionDays.ONE_WEEK;
+
+      const retention = props.logging === true ? defaultRetention : props.logging.retention ?? defaultRetention;
+
+      new LogRetention(this, 'LogRetention', {
+        logGroupName: `/aws/appsync/apis/${this.apiId}`,
+        retention: retention,
       });
     }
   }
@@ -288,10 +301,22 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     return true;
   }
 
-  private setupLogConfig(config?: LogConfig) {
-    if (!config) {
-      return undefined;
-    }
+  private setupLogConfig(logging?: true | LogConfig): CfnGraphQLApi.LogConfigProperty | undefined {
+    if (!logging) return undefined;
+
+    const defaultExcludeVerboseContent = true;
+    const defaultFieldLogLevel = FieldLogLevel.NONE;
+
+    const excludeVerboseContent =
+      logging === true || (typeof logging === 'object' && Object.keys(logging).length === 0)
+        ? defaultExcludeVerboseContent
+        : logging.excludeVerboseContent ?? defaultExcludeVerboseContent;
+
+    const fieldLogLevel =
+      logging === true || (typeof logging === 'object' && Object.keys(logging).length === 0)
+        ? defaultFieldLogLevel
+        : logging.fieldLogLevel ?? defaultFieldLogLevel;
+
     const role = new Role(this, 'ApiLogsRole', {
       assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
       managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs')],
@@ -300,8 +325,8 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
 
     return {
       cloudWatchLogsRoleArn: role.roleArn,
-      excludeVerboseContent: config.excludeVerboseContent,
-      fieldLogLevel: config.fieldLogLevel,
+      excludeVerboseContent,
+      fieldLogLevel,
     };
   }
 

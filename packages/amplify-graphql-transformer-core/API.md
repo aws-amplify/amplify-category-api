@@ -49,7 +49,7 @@ import { InterfaceTypeDefinitionNode } from 'graphql';
 import { InterfaceTypeExtensionNode } from 'graphql';
 import { JSRuntimeTemplate } from '@aws-amplify/graphql-transformer-interfaces';
 import { Location as Location_2 } from 'graphql';
-import { LogConfig } from 'aws-cdk-lib/aws-appsync';
+import { LogConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelDataSourceStrategyDbType } from '@aws-amplify/graphql-transformer-interfaces';
@@ -332,7 +332,7 @@ export class GraphQLTransform {
     // Warning: (ae-forgotten-export) The symbol "GraphQLApi" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    protected generateGraphQlApi(stackManager: StackManagerProvider, assetProvider: AssetProvider, synthParameters: SynthParameters, output: TransformerOutput, transformParameters: TransformParameters): GraphQLApi;
+    protected generateGraphQlApi(stackManager: StackManagerProvider, assetProvider: AssetProvider, synthParameters: SynthParameters, output: TransformerOutput, transformParameters: TransformParameters, logging?: true | LogConfig): GraphQLApi;
     // (undocumented)
     getLogs(): TransformerLog[];
     // (undocumented)
@@ -340,7 +340,7 @@ export class GraphQLTransform {
     // Warning: (ae-forgotten-export) The symbol "TransformOption" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    transform({ assetProvider, dataSourceStrategies, nestedStackProvider, parameterProvider, rdsLayerMapping, rdsSnsTopicMapping, schema, scope, sqlDirectiveDataSourceStrategies, synthParameters, }: TransformOption): void;
+    transform({ assetProvider, dataSourceStrategies, nestedStackProvider, parameterProvider, rdsLayerMapping, rdsSnsTopicMapping, schema, scope, sqlDirectiveDataSourceStrategies, synthParameters, logging, }: TransformOption): void;
 }
 
 // @public (undocumented)

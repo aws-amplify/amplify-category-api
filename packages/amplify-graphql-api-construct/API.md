@@ -25,6 +25,7 @@ import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { ElasticsearchDataSource } from 'aws-cdk-lib/aws-appsync';
 import { EventBridgeDataSource } from 'aws-cdk-lib/aws-appsync';
 import { ExtendedResolverProps } from 'aws-cdk-lib/aws-appsync';
+import { FieldLogLevel } from 'aws-cdk-lib/aws-appsync';
 import { FunctionRuntime } from 'aws-cdk-lib/aws-appsync';
 import { HttpDataSource } from 'aws-cdk-lib/aws-appsync';
 import { HttpDataSourceOptions } from 'aws-cdk-lib/aws-appsync';
@@ -47,6 +48,7 @@ import { OpenSearchDataSource } from 'aws-cdk-lib/aws-appsync';
 import { RdsDataSource } from 'aws-cdk-lib/aws-appsync';
 import { RemovalPolicy } from 'aws-cdk-lib';
 import { Resolver } from 'aws-cdk-lib/aws-appsync';
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Stack } from 'aws-cdk-lib';
 import { StreamViewType } from 'aws-cdk-lib/aws-dynamodb';
 
@@ -132,6 +134,7 @@ export interface AmplifyGraphqlApiProps {
     readonly definition: IAmplifyGraphqlDefinition;
     readonly functionNameMap?: Record<string, IFunction>;
     readonly functionSlots?: FunctionSlot[];
+    readonly logging?: Logging;
     readonly outputStorageStrategy?: IBackendOutputStorageStrategy;
     readonly predictionsBucket?: IBucket;
     readonly stackMappings?: Record<string, string>;
@@ -222,6 +225,8 @@ export interface DefaultDynamoDbModelDataSourceStrategy {
     readonly provisionStrategy: 'DEFAULT';
 }
 
+export { FieldLogLevel }
+
 // @public
 export type FunctionSlot = MutationFunctionSlot | QueryFunctionSlot | SubscriptionFunctionSlot;
 
@@ -295,6 +300,16 @@ export interface LambdaAuthorizationConfig {
 }
 
 // @public
+export interface LogConfig {
+    readonly excludeVerboseContent?: boolean;
+    readonly fieldLogLevel?: FieldLogLevel;
+    readonly retention?: RetentionDays;
+}
+
+// @public
+export type Logging = true | LogConfig;
+
+// @public
 export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | ImportedAmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
 
 // @public
@@ -359,6 +374,8 @@ export interface QueryFunctionSlot extends FunctionSlotBase {
     readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preDataLoad' | 'postDataLoad' | 'finish';
     readonly typeName: 'Query';
 }
+
+export { RetentionDays }
 
 // @public
 export interface SQLLambdaModelDataSourceStrategy {
