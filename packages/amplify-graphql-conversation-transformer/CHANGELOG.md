@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.3-ai-next.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@1.1.2...@aws-amplify/graphql-conversation-transformer@1.1.3-ai-next.0) (2024-11-22)
+
+### Bug Fixes
+
+- **conversation:** handle enums in data tool selection sets ([db4d81c](https://github.com/aws-amplify/amplify-category-api/commit/db4d81c2e663e1abd23fe06ca1b492fbfab151b2))
+
 ## [1.1.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@1.1.1...@aws-amplify/graphql-conversation-transformer@1.1.2) (2024-11-20)
 
 ### Bug Fixes
