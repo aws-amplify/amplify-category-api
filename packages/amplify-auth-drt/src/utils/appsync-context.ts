@@ -45,13 +45,13 @@ export type AppSyncIdentityIAM = {
 };
 
 export type AppSyncIdentityCognitoUserPools = {
-  sourceIp: string[];
-  username: string;
-  groups: string[] | null;
-  sub: string;
-  issuer: string;
   claims: any;
   defaultAuthStrategy: string;
+  groups: string[] | null;
+  issuer: string;
+  sourceIp: string[];
+  sub: string;
+  username: string;
 };
 
 // #endregion

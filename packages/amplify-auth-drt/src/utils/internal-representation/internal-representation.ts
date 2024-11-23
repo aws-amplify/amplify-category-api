@@ -1,3 +1,6 @@
+import { hasKey } from '../type-utils';
+import { JsonExpr } from './json-expr';
+
 /**
  * A common representation shared between Cedar and Amplify VTL-based auth.
  */
@@ -6,11 +9,23 @@ export interface InternalRepresentation {
   residuals?: Residual[];
 }
 
-export enum Decision {
-  ALLOW,
-  DENY,
-  NONE,
+export type Decision = AllowDecision | DenyDecision | PartialDecision;
+
+export interface AllowDecision {
+  decision: 'ALLOW';
 }
+export const isAllowDecision = (obj: any): obj is AllowDecision => hasKey(obj, 'decision') && obj.decision === 'ALLOW';
+
+export interface DenyDecision {
+  decision: 'DENY';
+}
+export const isDenyDecision = (obj: any): obj is DenyDecision => hasKey(obj, 'decision') && obj.decision === 'DENY';
+
+export interface PartialDecision {
+  decision: 'NONE';
+  residuals: Residual[];
+}
+export const isPartialDecision = (obj: any): obj is PartialDecision => hasKey(obj, 'decision') && obj.decision === 'NONE';
 
 /* eslint-disable max-len */
 
@@ -78,104 +93,10 @@ export enum Decision {
  * ```
  *
  * Where the expression is evaluated as a way to retrieve a result. Long term, we want to convert Cedar partials into a filter expression
- * and do a direct comparison. But since we don't have a way yet to convert Cedar partials to filter expressions, we're going to simplify by
- * reducing to something based on the Amplify filter expression:
- *
- * ```
- * {
- *   "or": [
- *     {
- *       "owner": {
- *         "eq": "uuid::my-username",
- *       },
- *     },
- *     {
- *       "owner": {
- *         "eq": "uuid",
- *       },
- *     },
- *     {
- *       "owner": {
- *         "eq": "my-username",
- *       },
- *     },
- *   ],
- * }
- * ```
+ * and do a direct comparison.
  */
+
 /* eslint-enable max-len */
 export interface Residual {
   conditions: JsonExpr[];
-}
-
-/**
- * Marker interface that concrete expressions can conform to. See https://docs.cedarpolicy.com/policies/json-format.html#JsonExpr-Value
- *
- * NOTE: For the POC, we're only implementing a small subset of supported expressions:
- * - Literal values
- * - Binary operators:
- *   - `eq`
- *   - `and`
- *   - `or`
- * - `.`
- */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface JsonExpr {}
-
-/**
- * Allows converters to return an empty object for unsupported expressions
- */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface JsonExprEmpty {}
-
-export interface JsonExprValue extends JsonExpr {
-  value: JsonExprLiteral;
-}
-
-export type JsonExprLiteral = boolean | number | string;
-
-export interface JsonExprAnd extends JsonExpr {
-  key: 'and';
-  left: JsonExpr;
-  right: JsonExpr;
-}
-
-/**
- * The JsonExpr representing attribute access via the `.` operator.
- */
-export interface JsonExprAttrAccess extends JsonExpr {
-  key: 'attr';
-  left: JsonExpr;
-  attr: string;
-}
-
-export interface JsonExprEq extends JsonExpr {
-  key: 'eq';
-  left: JsonExpr;
-  right: JsonExpr;
-}
-
-/**
- * The JsonExpr representing the 'has' operator
- */
-export interface JsonExprHas extends JsonExpr {
-  key: 'has';
-  left: JsonExpr;
-  attr: string;
-}
-
-export interface JsonExprOr extends JsonExpr {
-  key: 'or';
-  left: JsonExpr;
-  right: JsonExpr;
-}
-
-export interface JsonExprRecord extends JsonExpr {
-  [key: string]: JsonExpr;
-}
-
-export interface JsonExprUnknown extends JsonExpr {
-  key: 'unknown';
-  left: JsonExpr;
-  attr: string;
 }

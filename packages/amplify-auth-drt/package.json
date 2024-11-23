@@ -35,49 +35,13 @@
     "ts-node": "^8.10.1"
   },
   "jest": {
-    "verbose": false,
-    "preset": "ts-jest",
-    "testRunner": "amplify-category-api-e2e-core/runner",
-    "testEnvironment": "amplify-category-api-e2e-core/environment",
-    "transform": {
-      "^.+\\.tsx?$": [
-        "ts-jest",
-        {
-          "diagnostics": false
-        }
-      ]
-    },
     "testEnvironmentOptions": {
       "url": "http://localhost"
     },
-    "testRegex": "(src/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      "lib"
-    ],
-    "collectCoverage": false,
-    "collectCoverageFrom": [
-      "src/**/*.ts"
-    ],
-    "reporters": [
-      "default",
-      "jest-junit",
-      [
-        "amplify-category-api-e2e-core/reporter",
-        {
-          "publicPath": "./amplify-e2e-reports",
-          "filename": "index.html",
-          "expand": true
-        }
-      ],
-      [
-        "amplify-category-api-e2e-core/failed-test-reporter",
-        {
-          "publicPath": "./amplify-e2e-reports",
-          "reportPath": "./amplify-e2e-reports/amplify-e2e-failed-test.txt"
-        }
-      ]
-    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(src/__tests__/.*.test.ts)$",
     "moduleFileExtensions": [
       "ts",
       "tsx",
@@ -86,12 +50,24 @@
       "json",
       "node"
     ],
-    "globals": {
-      "window": {}
+    "collectCoverage": true,
+    "coverageProvider": "v8",
+    "coverageThreshold": {
+      "global": {
+        "branches": 88,
+        "functions": 90,
+        "lines": 90
+      }
     },
+    "coverageReporters": [
+      "clover",
+      "text"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
     "coveragePathIgnorePatterns": [
-      "/__tests__/",
-      "/node_modules/"
+      "/__tests__/"
     ],
     "snapshotFormat": {
       "escapeString": true,
