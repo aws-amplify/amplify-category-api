@@ -277,9 +277,9 @@ export class AmplifyGraphqlApi extends Construct {
       /**
        * Pipeline resolver request handler
        */
-      ctx.stash.apiId = '${this.apiId}';
-      ctx.stash.environmentName = '${amplifyEnvironmentName}';
-      export const request = () => {
+      export const request = (ctx) => {
+        ctx.stash.apiId = '${this.apiId}';
+        ctx.stash.environmentName = '${amplifyEnvironmentName}';
         return {};
       };
       /**
