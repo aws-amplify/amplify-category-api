@@ -182,4 +182,8 @@ export class AmplifyDynamoDbTableWrapper {
   set deletionProtectionEnabled(deletionProtectionEnabled: boolean) {
     this.resource.addPropertyOverride('deletionProtectionEnabled', deletionProtectionEnabled);
   }
+
+  get tableName(): string {
+    return this.resource.getAtt('tableName').toString();
+  }
 }

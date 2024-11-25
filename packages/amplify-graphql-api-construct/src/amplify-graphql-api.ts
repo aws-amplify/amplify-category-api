@@ -272,6 +272,9 @@ export class AmplifyGraphqlApi extends Construct {
     this.realtimeUrl = this.resources.cfnResources.cfnGraphqlApi.attrRealtimeUrl;
     this.apiKey = this.resources.cfnResources.cfnApiKey?.attrApiKey;
 
+    const tableNames: [string, string][] = Object.entries(this.resources.cfnResources.amplifyDynamoDbTables).map(([modelName, table]) => {
+      return [modelName, table.tableName];
+    });
     // add custom js resolver template
     this.customJsResolverTemplate = `
       /**
@@ -280,6 +283,7 @@ export class AmplifyGraphqlApi extends Construct {
       export const request = (ctx) => {
         ctx.stash.apiId = '${this.apiId}';
         ctx.stash.environmentName = '${amplifyEnvironmentName}';
+        ${tableNames.map(([modelName, tableName]) => `ctx.stash['${modelName}'] = '${tableName}';`).join('\n')}
         return {};
       };
       /**

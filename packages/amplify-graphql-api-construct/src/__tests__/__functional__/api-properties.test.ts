@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
+import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
 
 describe('exposed api properties', () => {
   it('allows access to the graphql and realtime urls', () => {
@@ -69,5 +70,29 @@ describe('exposed api properties', () => {
     });
 
     expect(api.apiId).toBeDefined();
+  });
+
+  it('exposes custom js resolver code', () => {
+    const stack = new cdk.Stack();
+
+    const api = new AmplifyGraphqlApi(stack, 'TestApi', {
+      definition: AmplifyGraphqlDefinition.fromString(
+        /* GraphQL */ `
+          type Todo @model @auth(rules: [{ allow: public }]) {
+            description: String!
+          }
+        `,
+        DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
+      ),
+      authorizationModes: {
+        apiKeyConfig: { expires: cdk.Duration.days(7) },
+      },
+    });
+
+    expect(api.customJsResolverTemplate).toBeDefined();
+    // expect(api.customJsResolverTemplate).toMatchSnapshot();
+    // TODO: fix matcher
+    expect(api.customJsResolverTemplate).toContain("ctx.stash.apiId = '\${Token[TOKEN");
+    expect(api.customJsResolverTemplate).toContain("ctx.stash.environmentName = 'NONE'");
   });
 });

@@ -83,6 +83,8 @@ export class AmplifyDynamoDbTableWrapper {
     setGlobalSecondaryIndexProvisionedThroughput(indexName: string, provisionedThroughput: ProvisionedThroughput): void;
     set sseSpecification(sseSpecification: SSESpecification);
     set streamSpecification(streamSpecification: StreamSpecification);
+    // (undocumented)
+    get tableName(): string;
     set timeToLiveAttribute(timeToLiveSpecification: TimeToLiveSpecification);
 }
 
@@ -102,6 +104,7 @@ export class AmplifyGraphqlApi extends Construct {
     addResolver(id: string, props: ExtendedResolverProps): Resolver;
     readonly apiId: string;
     readonly apiKey: string | undefined;
+    readonly customJsResolverTemplate: string;
     readonly generatedFunctionSlots: FunctionSlot[];
     readonly graphqlUrl: string;
     readonly realtimeUrl: string;
