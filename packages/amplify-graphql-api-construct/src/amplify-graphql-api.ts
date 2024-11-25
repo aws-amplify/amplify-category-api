@@ -287,7 +287,7 @@ export class AmplifyGraphqlApi extends Construct {
         /**
          * Pipeline resolver response handler
          */
-        export const response = (ctx: Record<string, Record<string, string>>) => {
+        export const response = (ctx) => {
           return ctx.prev.result;
         };
       `,
