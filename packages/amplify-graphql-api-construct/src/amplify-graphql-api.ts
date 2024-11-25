@@ -273,27 +273,22 @@ export class AmplifyGraphqlApi extends Construct {
     this.apiKey = this.resources.cfnResources.cfnApiKey?.attrApiKey;
 
     // add custom js resolver template
-    const customJsResolverTemplate = assetProvider.provide(this, 'CustomJsResolverTemplate', {
-      fileName: 'CustomJsResolverTemplate.js',
-      fileContent: `
-        /**
-         * Pipeline resolver request handler
-         */
-        ctx.stash.apiId = '${this.apiId}';
-        ctx.stash.environmentName = '${amplifyEnvironmentName}';
-        export const request = () => {
-          return {};
-        };
-        /**
-         * Pipeline resolver response handler
-         */
-        export const response = (ctx) => {
-          return ctx.prev.result;
-        };
-      `,
-    });
-
-    this.customJsResolverTemplate = customJsResolverTemplate.s3ObjectUrl;
+    this.customJsResolverTemplate = `
+      /**
+       * Pipeline resolver request handler
+       */
+      ctx.stash.apiId = '${this.apiId}';
+      ctx.stash.environmentName = '${amplifyEnvironmentName}';
+      export const request = () => {
+        return {};
+      };
+      /**
+       * Pipeline resolver response handler
+       */
+      export const response = (ctx) => {
+        return ctx.prev.result;
+      };
+    `;
   }
 
   /**
