@@ -184,6 +184,9 @@ export class AmplifyDynamoDbTableWrapper {
   }
 
   get tableName(): string {
-    return this.resource.getAtt('tableName').toString();
+    console.log(this.resource);
+    // TODO: fix this ts error
+    // @ts-expect-error access properties
+    return this.resource._cfnProperties.tableName;
   }
 }

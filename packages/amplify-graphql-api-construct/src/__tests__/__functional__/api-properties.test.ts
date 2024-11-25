@@ -94,5 +94,6 @@ describe('exposed api properties', () => {
     // TODO: fix matcher
     expect(api.customJsResolverTemplate).toContain("ctx.stash.apiId = '\${Token[TOKEN");
     expect(api.customJsResolverTemplate).toContain("ctx.stash.environmentName = 'NONE'");
+    console.log(api.customJsResolverTemplate)
   });
 });
