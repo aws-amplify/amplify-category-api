@@ -126,6 +126,11 @@ export class AmplifyGraphqlApi extends Construct {
   public readonly apiId: string;
 
   /**
+   * Custom JS resolver template containing API ID.
+   */
+  public readonly customJsResolverTemplate: string;
+
+  /**
    * DataStore conflict resolution setting
    */
   private readonly dataStoreConfiguration: DataStoreConfiguration | undefined;
@@ -266,6 +271,29 @@ export class AmplifyGraphqlApi extends Construct {
     this.graphqlUrl = this.resources.cfnResources.cfnGraphqlApi.attrGraphQlUrl;
     this.realtimeUrl = this.resources.cfnResources.cfnGraphqlApi.attrRealtimeUrl;
     this.apiKey = this.resources.cfnResources.cfnApiKey?.attrApiKey;
+
+    // add custom js resolver template
+    const customJsResolverTemplate = assetProvider.provide(this, 'CustomJsResolverTemplate', {
+      fileName: 'CustomJsResolverTemplate.js',
+      fileContent: `
+        /**
+         * Pipeline resolver request handler
+         */
+        ctx.stash.apiId = '${this.apiId}';
+        ctx.stash.environmentName = '${amplifyEnvironmentName}';
+        export const request = () => {
+          return {};
+        };
+        /**
+         * Pipeline resolver response handler
+         */
+        export const response = (ctx: Record<string, Record<string, string>>) => {
+          return ctx.prev.result;
+        };
+      `,
+    });
+
+    this.customJsResolverTemplate = customJsResolverTemplate.s3ObjectUrl;
   }
 
   /**
