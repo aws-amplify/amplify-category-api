@@ -217,7 +217,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       const retention = props.logging === true ? defaultRetention : props.logging.retention ?? defaultRetention;
 
       new LogRetention(this, 'LogRetention', {
-        logGroupName: `/aws/appsync/apis/${this.apiId}`,
+        logGroupName: this.getAppSyncLogGroupName(),
         retention: retention,
       });
     }
@@ -383,5 +383,18 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       ],
       [],
     );
+  }
+
+  /**
+   * Creates the log group name for an AppSync API following AppSync's log group naming convention
+   *
+   * According to AppSync documentation, the log group name for AppSync APIs follows the convention: `/aws/appsync/apis/{apiId}`
+   *
+   * @see https://docs.aws.amazon.com/appsync/latest/devguide/monitoring.html#cwl
+   * @param apiId - The AppSync API identifier
+   * @returns The formatted log group name
+   */
+  private getAppSyncLogGroupName(): string {
+    return `/aws/appsync/apis/${this.apiId}`;
   }
 }
