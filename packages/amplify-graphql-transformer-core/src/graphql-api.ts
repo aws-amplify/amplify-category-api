@@ -217,7 +217,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       const retention = props.logging === true ? defaultRetention : props.logging.retention ?? defaultRetention;
 
       new LogRetention(this, 'LogRetention', {
-        logGroupName: this.getAppSyncLogGroupName(this.apiId),
+        logGroupName: this.getAppSyncLogGroupName(),
         retention: retention,
       });
     }
@@ -394,7 +394,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
    * @param apiId - The AppSync API identifier
    * @returns The formatted log group name
    */
-  private getAppSyncLogGroupName(apiId: string): string {
-    return `/aws/appsync/apis/${apiId}`;
+  private getAppSyncLogGroupName(): string {
+    return `/aws/appsync/apis/${this.apiId}`;
   }
 }
