@@ -391,7 +391,6 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
    * According to AppSync documentation, the log group name for AppSync APIs follows the convention: `/aws/appsync/apis/{apiId}`
    *
    * @see https://docs.aws.amazon.com/appsync/latest/devguide/monitoring.html#cwl
-   * @param apiId - The AppSync API identifier
    * @returns The formatted log group name
    */
   private getAppSyncLogGroupName(): string {
