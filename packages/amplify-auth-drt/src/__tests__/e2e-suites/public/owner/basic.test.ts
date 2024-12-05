@@ -35,11 +35,7 @@ describe('owner auth', () => {
 
     // For each field, concatenate all functions into a single mapping template for evaluation
     // eslint-disable-next-line jest/no-focused-tests
-    test.each([
-      { typeName: 'Query', fieldName: 'getTodo' },
-      // { typeName: 'Query', fieldName: 'listTodos' },
-      // { typeName: 'Mutation', fieldName: 'createTodo' },
-    ])('$typeName/$fieldName', async ({ typeName, fieldName }) => {
+    test.each([{ typeName: 'Query', fieldName: 'getTodo' }])('$typeName/$fieldName', async ({ typeName, fieldName }) => {
       const mergedTemplate = mergeTemplate({ api, fieldName, typeName });
 
       const context = makeUserPoolsContext();
@@ -82,7 +78,12 @@ describe('owner auth', () => {
       };
 
       const cedarJsonExpr = cedarExprToJsonExpr(cedarPartialEvaluation.residuals![0].conditions[0].body, { principal });
-      expect(cedarJsonExpr['and'][2]).toEqual(authFilterJsonExpr);
+
+      // A Cedar policy includes front matter that defines a static 'true' condition and the entity being processed. We can ignore it in
+      // favor of just the unfulfilled policy conditions.
+      const partial = (cedarJsonExpr as any)['and'][2];
+      expect(partial).toEqual(authFilterJsonExpr);
+      console.log(`### Partial: ${JSON.stringify(partial)}`);
     });
   });
 });

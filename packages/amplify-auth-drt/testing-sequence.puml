@@ -1,0 +1,39 @@
+@startuml Testing Sequence
+
+autonumber "<b> [ 0 ]"
+
+participant dev as "Amplify team\ndeveloper"
+participant runner as "Test runner\n(TypeScript)"
+participant test as "Test utilities\n(TypeScript)"
+participant appsync as "AppSync local library\n(JAR)"
+participant amplify as "Amplify Data\ntransformers\n(VTL)"
+participant gql as "Amplify annotated\nschema\n(GraphQL)"
+participant spec as "Cedar spec\n(Cedar) &\nfixture data (JSON)"
+participant cedar as "Cedar engine\n(Rust or WASM)"
+
+dev -> spec: Write Cedar spec & fixture data
+runner -> runner: Load spec & data
+
+== Generate Amplify result ==
+
+runner -> amplify: Transform schema
+amplify -> gql: Ingest schema
+amplify -> amplify: Transform
+amplify --> runner: Transformed app, including mapping template
+runner -> appsync: Evaluate mapping template\nwith fixture data
+appsync --> runner: Result with auth filters
+runner -> test: Convert resolver\nauth filters\nto IR
+
+== Generate Cedar result ==
+
+test -> gql: Ingest schema
+test -> test: Generate Cedar\npolicies from schema
+runner -> cedar: Partially authorize with fixture data & Cedar policies
+cedar --> runner: Residual
+runner -> test: Convert residual\nto IR
+
+== Compare results ==
+
+runner -> runner: Assert\nAmplify IR==\nCedar IR
+
+@enduml

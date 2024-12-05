@@ -22,7 +22,7 @@ export const amplifyAuthFilter: AmplifyAuthFilterExpr = {
       },
     },
   ],
-} as const;
+};
 
 export const cedarPartialEvaluation: CedarPartialEvaluation = {
   decision: null,
@@ -139,7 +139,7 @@ export const cedarPartialEvaluation: CedarPartialEvaluation = {
       },
     },
   ],
-} as const;
+};
 
 export const intermediateRep: JsonExpr = {
   and: [
@@ -219,4 +219,4 @@ export const intermediateRep: JsonExpr = {
       ],
     },
   ],
-} as const;
+};

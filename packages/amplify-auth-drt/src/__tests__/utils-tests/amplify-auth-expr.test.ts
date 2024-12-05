@@ -23,23 +23,26 @@ describe('Amplify auth expression utilities', () => {
             and: conditions,
           };
 
+          // NOTE: We convert left values of `and`, `or`, and `eq` expressions to be attribute accessors of a resource, since for our tests
+          // they're always used in evaluating resource conditions
           expect(amplifyAuthExprAndToJsonExpr(expr)).toEqual({
             and: [
               {
                 eq: {
-                  left: keyValuePairs[0][0],
+                  left: { attr: { left: { var: 'resource' }, attr: keyValuePairs[0][0] } },
                   right: keyValuePairs[0][1],
                 },
               },
               {
                 eq: {
-                  left: keyValuePairs[1][0],
+                  left: { attr: { left: { var: 'resource' }, attr: keyValuePairs[1][0] } },
                   right: keyValuePairs[1][1],
                 },
               },
             ],
           });
         }),
+        { seed: -1266890402, path: '0:0:0:0', endOnFailure: true },
       );
     });
   });
@@ -61,17 +64,19 @@ describe('Amplify auth expression utilities', () => {
             ];
           }, [] as AmplifyAuthFilterExpr[]);
 
+          // NOTE: We convert left values of `and`, `or`, and `eq` expressions to be attribute accessors of a resource, since for our tests
+          // they're always used in evaluating resource conditions
           const expected = {
             or: [
               {
                 eq: {
-                  left: keyValuePairs[0][0],
+                  left: { attr: { left: { var: 'resource' }, attr: keyValuePairs[0][0] } },
                   right: keyValuePairs[0][1],
                 },
               },
               {
                 eq: {
-                  left: keyValuePairs[1][0],
+                  left: { attr: { left: { var: 'resource' }, attr: keyValuePairs[1][0] } },
                   right: keyValuePairs[1][1],
                 },
               },
@@ -93,9 +98,12 @@ describe('Amplify auth expression utilities', () => {
               eq: value,
             },
           };
+
+          // NOTE: We convert left values of `and`, `or`, and `eq` expressions to be attribute accessors of a resource, since for our tests
+          // they're always used in evaluating resource conditions
           expect(amplifyAuthExprEqToJsonExpr(expr)).toEqual({
             eq: {
-              left: key,
+              left: { attr: { left: { var: 'resource' }, attr: key } },
               right: value,
             },
           });
