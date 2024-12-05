@@ -1,0 +1,209 @@
+// GOAL: Be able to assert properties like:
+// - A type field is accessible via permissions assigned to the parent type
+// - Explicit permissions applied to a type field override permissions inherited from the parent type
+// - Permissions do not inherit across types
+// - Restricted fields are inaccessible during a mutation selection set resolution even if principal has permissions to view
+
+namespace AmplifyApi {
+  // ################################################################
+  // Principals
+  // ################################################################
+
+  // API Key requests have no associated identity information. There will be
+  // exactly one instance of this entity:
+  // AmplifyApi::AmplifyApiKeyUser::"PUBLIC"
+  entity AmplifyApiKeyUser {};
+
+// Identity information available for requests authorized by Cognito User
+// Pools
+entity AmplifyCognitoUserPoolsUser {
+  // The user's username. For Cognito, this may or may not be human readable.
+  username: String,
+
+  // Hoists the `sub` claim from the token
+  sub: String,
+
+  // Precomputed value of `{sub}::{username}` for policy comparisons. Cedar
+  // does not support string concatenation in policies.
+  subUsername: String,
+
+  // Hoists the `iss` claim from the token
+  issuer: String,
+
+  // Static groups the user belongs to, if any
+  groups?: Set<String>,
+
+  // Cognito JWTs contain more claims than this, but we really only need
+  // these two
+  claims?: {
+    sub: String,
+    "cognito:username": String,
+  },
+
+  // Always "ALLOW" or "DENY"
+  defaultAuthStrategy: String,
+};
+
+  // ################################################################
+  // Resources
+  // ################################################################
+  // type Todo
+  //   @model
+  //   @auth(rules: [{ allow: owner }, { allow: public, operations: [read] }]) {
+  //   id: ID!
+  //   content: String
+  // }
+  entity Todo {
+    id: String,
+    content: String,
+    owner: String,
+  }; 
+
+  // ################################################################
+  // Actions
+  // ################################################################
+
+  // # Todo
+  action "SelectionSetResolve.Todo" appliesTo {
+    principal: [AmplifyApiKeyUser, AmplifyCognitoUserPoolsUser],
+    resource: Todo,
+    context: {
+      subscriptionsEnabled: Bool,
+      isMutation: Bool
+    }
+  };
+
+  action "SelectionSetResolve.Todo.id" appliesTo {
+    principal: [AmplifyApiKeyUser, AmplifyCognitoUserPoolsUser],
+    resource: Todo,
+    context: {
+      subscriptionsEnabled: Bool,
+      isMutation: Bool
+    }
+  };
+
+  action "SelectionSetResolve.Todo.content" appliesTo {
+    principal: [AmplifyApiKeyUser, AmplifyCognitoUserPoolsUser],
+    resource: Todo,
+    context: {
+      subscriptionsEnabled: Bool,
+      isMutation: Bool
+    }
+  };
+
+  action "SelectionSetResolve.Todo.owner" appliesTo {
+    principal: [AmplifyApiKeyUser, AmplifyCognitoUserPoolsUser],
+    resource: Todo,
+    context: {
+      subscriptionsEnabled: Bool,
+      isMutation: Bool
+    }
+  };
+
+  // # get
+  action "Query.getTodo" appliesTo {
+    principal: [AmplifyApiKeyUser, AmplifyCognitoUserPoolsUser],
+    resource: Todo,
+  };
+
+  action "Query.getTodo.id" appliesTo {
+    principal: [AmplifyApiKeyUser, AmplifyCognitoUserPoolsUser],
+    resource: Todo,
+  };
+
+  action "Query.getTodo.content" appliesTo {
+    principal: [AmplifyApiKeyUser, AmplifyCognitoUserPoolsUser],
+    resource: Todo,
+  };
+
+  action "Query.getTodo.owner" appliesTo {
+    principal: [AmplifyApiKeyUser, AmplifyCognitoUserPoolsUser],
+    resource: Todo,
+  };
+
+  // # list
+  action "Query.listTodo" appliesTo {
+    principal: [AmplifyApiKeyUser, AmplifyCognitoUserPoolsUser],
+    resource: Todo,
+  };
+
+  action "Query.listTodo.id" appliesTo {
+    principal: [AmplifyApiKeyUser, AmplifyCognitoUserPoolsUser],
+    resource: Todo,
+  };
+
+  action "Query.listTodo.content" appliesTo {
+    principal: [AmplifyApiKeyUser, AmplifyCognitoUserPoolsUser],
+    resource: Todo,
+  };
+
+  action "Query.listTodo.owner" appliesTo {
+    principal: [AmplifyApiKeyUser, AmplifyCognitoUserPoolsUser],
+    resource: Todo,
+  };
+
+  // # create
+  action "Mutation.createTodo" appliesTo {
+    principal: [AmplifyCognitoUserPoolsUser],
+    resource: Todo,
+  };
+
+  action "Mutation.createTodo.id" appliesTo {
+    principal: [AmplifyCognitoUserPoolsUser],
+    resource: Todo,
+  };
+
+  action "Mutation.createTodo.content" appliesTo {
+    principal: [AmplifyCognitoUserPoolsUser],
+    resource: Todo,
+  };
+
+  action "Mutation.createTodo.owner" appliesTo {
+    principal: [AmplifyCognitoUserPoolsUser],
+    resource: Todo,
+  };
+
+  // # update
+  action "Mutation.updateTodo" appliesTo {
+    principal: [AmplifyCognitoUserPoolsUser],
+    resource: Todo,
+  };
+
+  action "Mutation.updateTodo.id" appliesTo {
+    principal: [AmplifyCognitoUserPoolsUser],
+    resource: Todo,
+  };
+
+  action "Mutation.updateTodo.content" appliesTo {
+    principal: [AmplifyCognitoUserPoolsUser],
+    resource: Todo,
+  };
+
+  action "Mutation.updateTodo.owner" appliesTo {
+    principal: [AmplifyCognitoUserPoolsUser],
+    resource: Todo,
+  };
+
+  // # delete
+  action "Mutation.deleteTodo" appliesTo {
+    principal: [AmplifyCognitoUserPoolsUser],
+    resource: Todo,
+  };
+
+  action "Mutation.deleteTodo.id" appliesTo {
+    principal: [AmplifyCognitoUserPoolsUser],
+    resource: Todo,
+  };
+
+  action "Mutation.deleteTodo.content" appliesTo {
+    principal: [AmplifyCognitoUserPoolsUser],
+    resource: Todo,
+  };
+
+  action "Mutation.deleteTodo.owner" appliesTo {
+    principal: [AmplifyCognitoUserPoolsUser],
+    resource: Todo,
+  };
+
+  // TODO: Add subscription support
+}

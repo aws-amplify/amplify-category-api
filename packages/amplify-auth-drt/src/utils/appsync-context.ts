@@ -64,11 +64,11 @@ export const makeApiKeyIdentity = (): ApiKeyIdentity => {
 
 export const makeUserPoolsIdentity = (partialIdentity: Partial<AppSyncIdentityCognitoUserPools> = {}): AppSyncIdentityCognitoUserPools => {
   return {
-    sub: 'uuid',
+    sub: '1234-5678-90abcdef',
     issuer: 'https://cognito-idp.{region}.amazonaws.com/{userPoolId}',
     username: 'my-username',
     claims: {
-      sub: 'uuid',
+      sub: '1234-5678-90abcdef',
       'cognito:username': 'my-username',
     },
     sourceIp: ['x.x.x.x'],

@@ -1,0 +1,25 @@
+[
+  {
+    "uid": {
+      "type": "AmplifyApi::Action",
+      "id": "Query.getTodo"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "AmplifyApi::AmplifyCognitoUserPoolsUser",
+      "id": "1234-5678-90abcdef"
+    },
+    "attrs": {
+      "groups": ["group1"],
+      "sub": "1234-12345678-1234-12345678",
+      "username": "my-username",
+      "subUsername": "1234-12345678-1234-12345678::username",
+      "issuer": "https://example.com",
+      "defaultAuthStrategy": "ALLOW"
+    },
+    "parents": []
+  }
+]

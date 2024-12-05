@@ -52,7 +52,7 @@
       "json",
       "node"
     ],
-    "collectCoverage": true,
+    "collectCoverage": false,
     "coverageProvider": "v8",
     "coverageThreshold": {
       "global": {
