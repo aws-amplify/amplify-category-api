@@ -1,5 +1,5 @@
 import { ObjectValueNode, ObjectFieldNode, NameNode, StringValueNode } from 'graphql';
-import { isStringValueNode } from '../graphql-utils';
+import { isEnumValueNode } from '../graphql-utils';
 
 export type AuthDirectiveRuleValueOwner = AuthDirectiveRuleValueOwnerDefault | AuthDirectiveRuleValueOwnerUserPools;
 
@@ -15,7 +15,7 @@ export interface AuthDirectiveRuleValueOwnerDefault extends ObjectValueNode {
 }
 
 export const isAuthDirectiveRuleValueOwnerDefault = (obj: ObjectValueNode): obj is AuthDirectiveRuleValueOwnerDefault =>
-  obj.fields[0].name.value === 'allow' && isStringValueNode(obj.fields[0].value) && obj.fields[0].value.value === 'owner';
+  obj.fields[0].name.value === 'allow' && isEnumValueNode(obj.fields[0].value) && obj.fields[0].value.value === 'owner';
 
 export interface AuthDirectiveRuleValueOwnerUserPools extends ObjectValueNode {
   readonly fields: [
@@ -36,8 +36,8 @@ export interface AuthDirectiveRuleValueOwnerUserPools extends ObjectValueNode {
 
 export const isAuthDirectiveRuleValueOwnerUserPools = (obj: ObjectValueNode): obj is AuthDirectiveRuleValueOwnerUserPools =>
   obj.fields[0].name.value === 'allow' &&
-  isStringValueNode(obj.fields[0].value) &&
+  isEnumValueNode(obj.fields[0].value) &&
   obj.fields[0].value.value === 'owner' &&
   obj.fields[1].name.value === 'provider' &&
-  isStringValueNode(obj.fields[1].value) &&
+  isEnumValueNode(obj.fields[1].value) &&
   obj.fields[1].value.value === 'userPools';

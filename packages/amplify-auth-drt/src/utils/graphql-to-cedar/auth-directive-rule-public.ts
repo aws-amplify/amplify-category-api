@@ -18,31 +18,31 @@ export const getEnumValueFromRuleField = (obj: AuthDirectiveRuleValue, fieldName
   return field.value.value;
 };
 
-export const getListValueFromRuleField = (obj: AuthDirectiveRuleValue, fieldName: string): readonly ValueNode[] | undefined => {
-  const field = obj.fields.find((f) => f.name.value === fieldName);
-  if (!field) {
-    return undefined;
-  }
+// export const getListValueFromRuleField = (obj: AuthDirectiveRuleValue, fieldName: string): readonly ValueNode[] | undefined => {
+//   const field = obj.fields.find((f) => f.name.value === fieldName);
+//   if (!field) {
+//     return undefined;
+//   }
 
-  if (!isListValueNode(field.value)) {
-    return undefined;
-  }
+//   if (!isListValueNode(field.value)) {
+//     return undefined;
+//   }
 
-  return field.value.values;
-};
+//   return field.value.values;
+// };
 
-export const getStringValueFromRuleField = (obj: AuthDirectiveRuleValue, fieldName: string): string | undefined => {
-  const field = obj.fields.find((f) => f.name.value === fieldName);
-  if (!field) {
-    return undefined;
-  }
+// export const getStringValueFromRuleField = (obj: AuthDirectiveRuleValue, fieldName: string): string | undefined => {
+//   const field = obj.fields.find((f) => f.name.value === fieldName);
+//   if (!field) {
+//     return undefined;
+//   }
 
-  if (!isStringValueNode(field.value)) {
-    return undefined;
-  }
+//   if (!isStringValueNode(field.value)) {
+//     return undefined;
+//   }
 
-  return field.value.value;
-};
+//   return field.value.value;
+// };
 
 /**
  * Type predicate that is true if the incoming rule matches '{allow: public}'. It does not assert the existence or non-existence of any
