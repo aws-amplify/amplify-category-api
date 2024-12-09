@@ -1,6 +1,12 @@
+enum Status {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
 type Todo @model(queries: { list: "listMyTodos" }) @auth(rules: [{ allow: owner }]) {
   content: String
-  isDone: Boolean
+  status: Status
 }
 
 type Mutation {
