@@ -1,16 +1,8 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { BelongsToTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { AuthTransformer } from '../../graphql-auth-transformer';
-import {
-  TestTable,
-  convertToTestArgumentArray,
-  ddbDataSourceStrategies,
-  makeTransformationExpectation,
-  sqlDataSourceStrategies,
-  testRules,
-} from './snapshot-utils';
+import { TestTable, convertToTestArgumentArray, ddbDataSourceStrategies, makeTransformationExpectation, testRules } from './snapshot-utils';
 
 const ddbSchemaTemplate = /* GraphQL */ `
   type Person @model @auth(rules: [<MODEL_AUTH_RULE>]) {
@@ -23,20 +15,6 @@ const ddbSchemaTemplate = /* GraphQL */ `
     id: ID! @auth(rules: [ <MODEL_AUTH_RULE>, <FIELD_AUTH_RULE> ])
     personId: ID! @auth(rules: [ <MODEL_AUTH_RULE>, <FIELD_AUTH_RULE> ])
     person: Person @belongsTo @auth(rules: [ <FIELD_AUTH_RULE> ])
-  }
-`;
-
-const sqlSchemaTemplate = /* GraphQL */ `
-  type Person @model @auth(rules: [<MODEL_AUTH_RULE>]) {
-    id: ID! @auth(rules: [ <MODEL_AUTH_RULE>, <FIELD_AUTH_RULE> ]) @primaryKey
-    name: String
-    passport: Passport @hasOne(references: "personId") @auth(rules: [ <FIELD_AUTH_RULE> ])
-  }
-
-  type Passport @model @auth(rules: [<MODEL_AUTH_RULE>]) {
-    id: ID! @auth(rules: [ <MODEL_AUTH_RULE>, <FIELD_AUTH_RULE> ]) @primaryKey
-    personId: ID! @auth(rules: [ <MODEL_AUTH_RULE>, <FIELD_AUTH_RULE> ])
-    person: Person @belongsTo(references: "personId") @auth(rules: [ <FIELD_AUTH_RULE> ])
   }
 `;
 
@@ -79,35 +57,5 @@ describe('Auth field-level auth combinations: hasOne/belongsTo', () => {
     }
 
     test.each(testTable)('%s - %s should pass', expectation);
-  });
-
-  describe('SQL data sources', () => {
-    const makeTransformers: () => TransformerPluginProvider[] = () => [
-      new ModelTransformer(),
-      new AuthTransformer(),
-      new HasOneTransformer(),
-      new BelongsToTransformer(),
-      new PrimaryKeyTransformer(),
-    ];
-    const expectation = makeTransformationExpectation(sqlDataSourceStrategies, sqlSchemaTemplate, makeTransformers);
-
-    const testTable: TestTable = [];
-    for (const strategyName of Object.keys(sqlDataSourceStrategies)) {
-      for (const fieldRuleName of Object.keys(testRules)) {
-        const modelRuleName =
-          fieldRuleName === 'owner, userPools, implicit owner field' ? 'owner, oidc, implicit owner field' : fieldRuleName;
-        testTable.push(
-          convertToTestArgumentArray({
-            strategyName,
-            fieldRuleName,
-            fieldRuleExt: undefined,
-            modelRuleName,
-            modelRuleExt: undefined,
-          }),
-        );
-      }
-    }
-
-    test.each(testTable)('%s - %s - %s should fail', expectation);
   });
 });

@@ -1,18 +1,12 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { DeploymentResources, mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { BelongsToTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { DDB_DEFAULT_DATASOURCE_STRATEGY, constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
 import { ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { RefersToTransformer } from '../../graphql-refers-to-transformer';
 import { MapsToTransformer } from '../../graphql-maps-to-transformer';
-import {
-  expectedResolversForModelWithRenamedField,
-  testRelationalArrayFieldsMapping,
-  testRelationalFieldMapping,
-  testRelationalNonScalarFieldsMapping,
-  testTableNameMapping,
-} from './common';
+import { expectedResolversForModelWithRenamedField } from './common';
 
 const mappedHasMany = /* GraphQL */ `
   type Employee @model @mapsTo(name: "Person") {
@@ -25,22 +19,6 @@ const mappedHasMany = /* GraphQL */ `
     id: ID!
     tags: [String]
     title: String
-  }
-`;
-
-const refersToHasMany = /* GraphQL */ `
-  type Employee @model @refersTo(name: "Person") {
-    id: ID! @primaryKey
-    tags: [String]
-    tasks: [Task] @hasMany(references: ["employeeId"])
-  }
-
-  type Task @model @refersTo(name: "Todo") {
-    id: ID! @primaryKey
-    title: String
-    tags: [String]
-    employeeId: String!
-    employee: Employee @belongsTo(references: ["employeeId"])
   }
 `;
 
@@ -74,20 +52,5 @@ describe('@mapsTo with @hasMany', () => {
     expectedResolvers.forEach((resolver) => {
       expect(out.resolvers[resolver]).toMatchSnapshot();
     });
-  });
-});
-
-describe('@refersTo with @hasMany for RDS Models', () => {
-  it('model table names are mapped', () => {
-    const mysqlStrategy = mockSqlDataSourceStrategy();
-    const out = transformSchema(refersToHasMany, mysqlStrategy);
-    testTableNameMapping('Employee', 'Person', out);
-    testTableNameMapping('Task', 'Todo', out);
-    testRelationalFieldMapping('Employee.tasks.req.vtl', 'Todo', out);
-    testRelationalFieldMapping('Task.employee.req.vtl', 'Person', out);
-    testRelationalNonScalarFieldsMapping('Employee.tasks.req.vtl', '["tags", "employee"]', out);
-    testRelationalNonScalarFieldsMapping('Task.employee.req.vtl', '["tags", "tasks"]', out);
-    testRelationalArrayFieldsMapping('Employee.tasks.req.vtl', '["tags"]', out);
-    testRelationalArrayFieldsMapping('Task.employee.req.vtl', '["tags"]', out);
   });
 });

@@ -1,11 +1,11 @@
 import { parse } from 'graphql';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { PrimaryKeyTransformer, IndexTransformer } from '@aws-amplify/graphql-index-transformer';
-import { validateModelSchema, constructDataSourceStrategies, MYSQL_DB_TYPE } from '@aws-amplify/graphql-transformer-core';
+import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
-import { testTransform, mockSqlDataSourceStrategy } from '@aws-amplify/graphql-transformer-test-utils';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AuthTransformer } from '../graphql-auth-transformer';
 import { getField, getObjectType } from './test-helpers';
 
@@ -499,33 +499,6 @@ describe('owner based @auth', () => {
       schema: validSchema,
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
-    });
-    expect(out).toBeDefined();
-
-    validateModelSchema(parse(out.schema));
-    parse(out.schema);
-    expect(out.schema).toMatchSnapshot();
-  });
-
-  it('should successfully transform simple valid schema with implicit fields', async () => {
-    const authConfig: AppSyncAuthConfiguration = {
-      defaultAuthentication: {
-        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-      },
-      additionalAuthenticationProviders: [],
-    };
-    const validSchema = `
-      type Todo @model @auth(rules: [{ allow: owner }]) {
-        id: ID! @primaryKey
-        content: String
-      }
-    `;
-
-    const out = testTransform({
-      schema: validSchema,
-      authConfig,
-      transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
-      dataSourceStrategies: constructDataSourceStrategies(validSchema, mockSqlDataSourceStrategy()),
     });
     expect(out).toBeDefined();
 

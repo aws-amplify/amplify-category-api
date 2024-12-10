@@ -9,27 +9,12 @@
 
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { AuthTransformer } from '../../graphql-auth-transformer';
-import {
-  TestTable,
-  convertToTestArgumentArray,
-  ddbDataSourceStrategies,
-  makeTransformationExpectation,
-  sqlDataSourceStrategies,
-  testRules,
-} from './snapshot-utils';
+import { TestTable, convertToTestArgumentArray, ddbDataSourceStrategies, makeTransformationExpectation, testRules } from './snapshot-utils';
 
 const ddbSchemaTemplate = /* GraphQL */ `
   type Post @model @auth(rules: [ <MODEL_AUTH_RULE> ]) {
     id: ID!
-    description: String
-  }
-`;
-
-const sqlSchemaTemplate = /* GraphQL */ `
-  type Post @model @auth(rules: [ <MODEL_AUTH_RULE> ]) {
-    id: ID! @primaryKey
     description: String
   }
 `;
@@ -70,51 +55,5 @@ describe('Auth operation combinations: model', () => {
     }
 
     test.each(testTable)('%s - %s%s - %s%s should pass', expectation);
-  });
-
-  describe('SQL data sources', () => {
-    const unsupportedOperations = ['sync', 'search'];
-
-    const makeTransformers: () => TransformerPluginProvider[] = () => [
-      new ModelTransformer(),
-      new AuthTransformer(),
-      new PrimaryKeyTransformer(),
-    ];
-
-    const expectation = makeTransformationExpectation(sqlDataSourceStrategies, sqlSchemaTemplate, makeTransformers);
-
-    const supportedOperationsTestTable: TestTable = [];
-    const unsupportedOperationsTestTable: TestTable = [];
-    for (const strategyName of Object.keys(sqlDataSourceStrategies)) {
-      for (const modelRuleName of Object.keys(testRules)) {
-        for (const operation of operations.filter((o) => !unsupportedOperations.includes(o))) {
-          supportedOperationsTestTable.push(
-            convertToTestArgumentArray({
-              strategyName,
-              fieldRuleName: undefined,
-              fieldRuleExt: undefined,
-              modelRuleName,
-              modelRuleExt: `, operations: [${operation}]`,
-            }),
-          );
-        }
-        for (const operation of unsupportedOperations) {
-          const expectedErrorMessage = `@auth on Post cannot specify '${operation}' operation as it is not supported for SQL data sources`;
-          unsupportedOperationsTestTable.push(
-            convertToTestArgumentArray({
-              strategyName,
-              fieldRuleName: undefined,
-              fieldRuleExt: undefined,
-              modelRuleName,
-              modelRuleExt: `, operations: [${operation}]`,
-              expectedErrorMessage,
-            }),
-          );
-        }
-      }
-    }
-
-    test.each(supportedOperationsTestTable)('%s - %s%s - %s%s should pass', expectation);
-    test.each(unsupportedOperationsTestTable)('%s - %s%s - %s%s should fail', expectation);
   });
 });

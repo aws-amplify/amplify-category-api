@@ -10,7 +10,7 @@ import {
 } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration, ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, ObjectTypeDefinitionNode, parse } from 'graphql';
-import { DeploymentResources, mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { HasOneTransformer, ManyToManyTransformer } from '..';
 import { hasGeneratedDirective, hasGeneratedField } from './test-helpers';
 
@@ -159,25 +159,6 @@ test('fails if second half of relation uses the wrong type', () => {
   const transformer = createTransformer();
 
   expect(() => transformer.transform(inputSchema)).toThrowError(`@manyToMany relation 'FooBar' expects 'Baz' but got 'Foo'.`);
-});
-
-test('fails if used on a SQL model', () => {
-  const inputSchema = `
-    type Foo @model {
-      id: ID! @primaryKey
-      bars: [Bar] @manyToMany(relationName: "FooBar")
-    }
-
-    type Bar @model {
-      id: ID! @primaryKey
-      foos: [Foo] @manyToMany(relationName: "FooBar")
-    }`;
-
-  const mySqlStrategy = mockSqlDataSourceStrategy();
-
-  const dataSourceStrategies = constructDataSourceStrategies(inputSchema, mySqlStrategy);
-  const transformer = createTransformer(undefined, dataSourceStrategies);
-  expect(() => transformer.transform(inputSchema)).toThrowError('@manyToMany directive cannot be used on a SQL model.');
 });
 
 test('valid schema', () => {

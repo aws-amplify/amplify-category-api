@@ -1,11 +1,10 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { DeploymentResources, mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { DeploymentResources, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { DDB_DEFAULT_DATASOURCE_STRATEGY, constructDataSourceStrategies } from '@aws-amplify/graphql-transformer-core';
 import { ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { RefersToTransformer } from '../../graphql-refers-to-transformer';
-import { testTableNameMapping, testColumnNameMapping } from './common';
 
 const transformSchema = (
   schema: string,
@@ -70,31 +69,5 @@ describe('@mapsTo directive on model type', () => {
         },
       }
     `);
-  });
-});
-
-describe('@refersTo with SQL Models', () => {
-  const mySqlStrategy = mockSqlDataSourceStrategy();
-
-  it('model table names are mapped', () => {
-    const basicSchema = /* GraphQL */ `
-      type Todo @model @refersTo(name: "Task") {
-        id: ID! @primaryKey
-        title: String!
-      }
-    `;
-    const out = transformSchema(basicSchema, mySqlStrategy);
-    testTableNameMapping('Todo', 'Task', out);
-  });
-
-  it('model field names are mapped', () => {
-    const basicSchema = /* GraphQL */ `
-      type Todo @model {
-        id: ID! @primaryKey
-        title: String! @refersTo(name: "description")
-      }
-    `;
-    const out = transformSchema(basicSchema, mySqlStrategy);
-    testColumnNameMapping('Todo', out);
   });
 });

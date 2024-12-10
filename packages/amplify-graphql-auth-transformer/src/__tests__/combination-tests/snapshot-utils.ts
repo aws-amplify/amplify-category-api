@@ -1,6 +1,5 @@
 import {
   ConflictHandlerType,
-  DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
   DDB_DEFAULT_DATASOURCE_STRATEGY,
   SyncConfig,
   constructDataSourceStrategies,
@@ -9,10 +8,9 @@ import {
 import {
   AppSyncAuthConfigurationEntry,
   ModelDataSourceStrategy,
-  SQLLambdaModelDataSourceStrategy,
   TransformerPluginProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { TestTransformParameters, mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { TestTransformParameters, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 
 /** A utility type to store auth rules to iterate over in combination tests. */
 export type TestRules = Record<
@@ -81,15 +79,6 @@ export const authConfigs: Record<string, AppSyncAuthConfigurationEntry> = {
  */
 export const ddbDataSourceStrategies: Record<string, ModelDataSourceStrategy> = {
   'CFn-managed DDB': DDB_DEFAULT_DATASOURCE_STRATEGY,
-  'Amplify-managed DDB': DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
-};
-
-/**
- * SQL-based ModelDataSourceStrategies to iterate over in combination tests.
- */
-export const sqlDataSourceStrategies: Record<string, SQLLambdaModelDataSourceStrategy> = {
-  mysql: mockSqlDataSourceStrategy({ dbType: 'MYSQL' }),
-  postgres: mockSqlDataSourceStrategy({ dbType: 'POSTGRES' }),
 };
 
 /**

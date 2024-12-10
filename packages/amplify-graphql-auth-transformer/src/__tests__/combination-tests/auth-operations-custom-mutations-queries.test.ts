@@ -10,17 +10,8 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
-import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { SqlTransformer } from '@aws-amplify/graphql-sql-transformer';
 import { AuthTransformer } from '../../graphql-auth-transformer';
-import {
-  TestTable,
-  convertToTestArgumentArray,
-  ddbDataSourceStrategies,
-  makeTransformationExpectation,
-  sqlDataSourceStrategies,
-  testRules,
-} from './snapshot-utils';
+import { TestTable, convertToTestArgumentArray, ddbDataSourceStrategies, makeTransformationExpectation, testRules } from './snapshot-utils';
 
 const schemas = {
   customMutations: {
@@ -74,42 +65,6 @@ describe('Auth operation combinations: custom mutations', () => {
 
     const testTable: TestTable = [];
     for (const strategyName of Object.keys(ddbDataSourceStrategies)) {
-      for (const fieldRuleName of Object.keys(testRules)) {
-        for (const operation of operations) {
-          const expectedErrorMessage = ['get', 'list', 'sync', 'listen', 'search'].includes(operation)
-            ? `'${operation}' operation is not allowed at the field level.`
-            : "@auth rules on fields within Query, Mutation, Subscription cannot specify 'operations' argument as these rules are already on an operation already.";
-          testTable.push(
-            convertToTestArgumentArray({
-              strategyName,
-              fieldRuleName,
-              fieldRuleExt: `, operations: [${operation}]`,
-              modelRuleName: undefined,
-              modelRuleExt: undefined,
-              expectedErrorMessage,
-            }),
-          );
-        }
-      }
-    }
-
-    test.each(testTable)('custom mutation - %s - %s%s - %s%s should fail', mutationExpectation);
-    test.each(testTable)('custom query - %s - %s%s - %s%s should fail', queryExpectation);
-  });
-
-  describe('SQL data sources', () => {
-    const makeTransformers: () => TransformerPluginProvider[] = () => [
-      new ModelTransformer(),
-      new AuthTransformer(),
-      new PrimaryKeyTransformer(),
-      new SqlTransformer(),
-    ];
-
-    const mutationExpectation = makeTransformationExpectation(sqlDataSourceStrategies, schemas.customMutations.sql, makeTransformers);
-    const queryExpectation = makeTransformationExpectation(sqlDataSourceStrategies, schemas.customQueries.sql, makeTransformers);
-
-    const testTable: TestTable = [];
-    for (const strategyName of Object.keys(sqlDataSourceStrategies)) {
       for (const fieldRuleName of Object.keys(testRules)) {
         for (const operation of operations) {
           const expectedErrorMessage = ['get', 'list', 'sync', 'listen', 'search'].includes(operation)

@@ -1,10 +1,8 @@
 import {
-  DDB_DEFAULT_DATASOURCE_STRATEGY,
   DirectiveWrapper,
   InvalidDirectiveError,
   TransformerPluginBase,
   generateGetArgumentsInput,
-  getModelDataSourceNameForTypeName,
   getModelDataSourceStrategy,
   isAmplifyDynamoDbModelDataSourceStrategy,
   isDefaultDynamoDbModelDataSourceStrategy,
@@ -20,7 +18,6 @@ import {
   TransformerValidationStepContextProvider,
   TransformerPreProcessContextProvider,
   DataSourceStrategiesProvider,
-  ModelDataSourceStrategy,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { ManyToManyDirective } from '@aws-amplify/graphql-directives';
 import {
@@ -294,10 +291,6 @@ export class ManyToManyTransformer extends TransformerPluginBase {
 
       const d1ExpectedType = getBaseType(directive1.field.type);
       const d2ExpectedType = getBaseType(directive2.field.type);
-
-      if (isSqlModel(ctx, d1ExpectedType) || isSqlModel(ctx, d2ExpectedType)) {
-        throw new InvalidDirectiveError(`@${ManyToManyDirective.name} directive cannot be used on a SQL model.`);
-      }
 
       const d1Strategy = getModelDataSourceStrategy(ctx, d1ExpectedType);
       const d2Strategy = getModelDataSourceStrategy(ctx, d2ExpectedType);

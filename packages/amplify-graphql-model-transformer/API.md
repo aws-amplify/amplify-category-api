@@ -7,7 +7,6 @@
 import { AppSyncDataSourceType } from '@aws-amplify/graphql-transformer-interfaces';
 import * as cdk from 'aws-cdk-lib';
 import { DataSourceInstance } from '@aws-amplify/graphql-transformer-interfaces';
-import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveNode } from 'graphql';
 import { DocumentNode } from 'graphql';
 import { EnumTypeDefinitionNode } from 'graphql';
@@ -22,7 +21,6 @@ import { MutationFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { QueryFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { QuietReferenceNode } from 'graphql-mapping-template';
-import { SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { SubscriptionFieldType } from '@aws-amplify/graphql-transformer-interfaces';
 import { SyncConfig } from '@aws-amplify/graphql-transformer-core';
 import { TransformerBeforeStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -318,48 +316,6 @@ export const OPERATION_KEY = "__operation";
 
 // @public (undocumented)
 export const propagateDirectivesToNestedTypes: (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode, seenNonModelTypes: Set<string>, serviceDirectives: DirectiveNode[]) => void;
-
-// Warning: (ae-forgotten-export) The symbol "ModelResourceGenerator" needs to be exported by the entry point index.d.ts
-//
-// @public (undocumented)
-export class RdsModelResourceGenerator extends ModelResourceGenerator {
-    // (undocumented)
-    generateResources(context: TransformerContextProvider, strategyOverride?: SQLLambdaModelDataSourceStrategy): void;
-    // (undocumented)
-    protected readonly generatorType = "RdsModelResourceGenerator";
-    // (undocumented)
-    getVTLGenerator(): ModelVTLGenerator;
-    // (undocumented)
-    setFieldMappingResolverReferences(context: TransformerContextProvider): void;
-}
-
-// @public (undocumented)
-export class RDSModelVTLGenerator implements ModelVTLGenerator {
-    // (undocumented)
-    generateCreateInitSlotTemplate(config: ModelCreateInitSlotConfig, initializeIdField: boolean): string;
-    // (undocumented)
-    generateCreateRequestTemplate(config: ModelCreateRequestConfig, ctx: TransformerContextProvider): string;
-    // (undocumented)
-    generateDefaultResponseMappingTemplate(config: ModelDefaultResponseConfig): string;
-    // (undocumented)
-    generateDeleteRequestTemplate(config: ModelUpdateRequestConfig, ctx: TransformerContextProvider): string;
-    // (undocumented)
-    generateGetRequestTemplate(config: ModelRequestConfig, ctx: TransformerContextProvider): string;
-    // (undocumented)
-    generateGetResponseTemplate(config: ModelUpdateRequestConfig): string;
-    // (undocumented)
-    generateListRequestTemplate(config: ModelRequestConfig, ctx: TransformerContextProvider): string;
-    // (undocumented)
-    generateSubscriptionRequestTemplate(): string;
-    // (undocumented)
-    generateSubscriptionResponseTemplate(): string;
-    // (undocumented)
-    generateSyncRequestTemplate(config: ModelRequestConfig): string;
-    // (undocumented)
-    generateUpdateInitSlotTemplate(config: ModelCreateInitSlotConfig): string;
-    // (undocumented)
-    generateUpdateRequestTemplate(config: ModelUpdateRequestConfig, ctx: TransformerContextProvider): string;
-}
 
 // @public (undocumented)
 export const removeSubscriptionFilterInputAttribute: (ctx: TransformerTransformSchemaStepContextProvider, typeName: string, fieldName: string) => void;

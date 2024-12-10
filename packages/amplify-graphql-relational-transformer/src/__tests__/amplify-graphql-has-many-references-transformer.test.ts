@@ -1,8 +1,8 @@
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { ConflictHandlerType, DDB_DEFAULT_DATASOURCE_STRATEGY, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { ConflictHandlerType, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { Kind, parse } from 'graphql';
-import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
 
 test('has many query', () => {
@@ -413,59 +413,6 @@ test('fails with inconsistent nullability of reference fields', () => {
       "\nNullable fields: 'teamMantra'" +
       "\nUpdate reference fields on type 'Member' to have consistent nullability -- either all required or all nullable.",
   );
-});
-
-test('hasMany / hasOne - belongsTo across data source type boundary', () => {
-  const mockSqlStrategy = mockSqlDataSourceStrategy();
-
-  const inputDdbSchema = `
-    type Member @model {
-      name: String
-      team: Team @belongsTo(references: "teamId")
-      teamId: String
-    }
-
-    type Project @model {
-      name: String
-      teamId: String
-      team: Team @belongsTo(references: "teamId")
-    }
-
-    type Team @model {
-      id: String! @primaryKey
-      mantra: String
-      members: [Member] @hasMany(references: "teamId")
-      project: Project @hasOne(references: "teamId")
-    }
-  `;
-
-  const out = testTransform({
-    schema: inputDdbSchema,
-    transformers: [
-      new ModelTransformer(),
-      new PrimaryKeyTransformer(),
-      new HasOneTransformer(),
-      new HasManyTransformer(),
-      new BelongsToTransformer(),
-    ],
-    dataSourceStrategies: {
-      Member: DDB_DEFAULT_DATASOURCE_STRATEGY,
-      Project: DDB_DEFAULT_DATASOURCE_STRATEGY,
-      Team: mockSqlStrategy,
-    },
-  });
-
-  expect(out).toBeDefined();
-  const schema = parse(out.schema);
-  validateModelSchema(schema);
-  expect(out.resolvers['Team.project.req.vtl']).toBeDefined();
-  expect(out.resolvers['Team.project.req.vtl']).toMatchSnapshot();
-  expect(out.resolvers['Team.members.req.vtl']).toBeDefined();
-  expect(out.resolvers['Team.members.req.vtl']).toMatchSnapshot();
-  expect(out.resolvers['Project.team.req.vtl']).toBeDefined();
-  expect(out.resolvers['Project.team.req.vtl']).toMatchSnapshot();
-  expect(out.resolvers['Member.team.req.vtl']).toBeDefined();
-  expect(out.resolvers['Member.team.req.vtl']).toMatchSnapshot();
 });
 
 test('many to many query', () => {

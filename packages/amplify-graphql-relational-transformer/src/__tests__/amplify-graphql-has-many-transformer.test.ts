@@ -4,11 +4,10 @@ import {
   ConflictHandlerType,
   DDB_DEFAULT_DATASOURCE_STRATEGY,
   GraphQLTransform,
-  constructDataSourceStrategies,
   validateModelSchema,
 } from '@aws-amplify/graphql-transformer-core';
 import { Kind, parse } from 'graphql';
-import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
 import { hasGeneratedField } from './test-helpers';
 
@@ -937,71 +936,5 @@ describe('@hasMany connection field nullability tests', () => {
     expect(updateInputConnectedField2).toBeDefined();
     expect(updateInputConnectedField2.type.kind).toBe(Kind.NAMED_TYPE);
     expect(updateInputConnectedField2.type.name.value).toBe('String');
-  });
-});
-
-describe('@hasMany directive with RDS datasource', () => {
-  const mySqlStrategy = mockSqlDataSourceStrategy();
-
-  test('happy case should generate correct resolvers', () => {
-    const inputSchema = `
-      type Blog @model {
-        id: String! @primaryKey
-        content: String
-        posts: [Post] @hasMany(references: ["blogId"])
-      }
-      type Post @model {
-        id: String! @primaryKey
-        content: String
-        blogId: String
-        blog: Blog @belongsTo(references: ["blogId"])
-      }
-    `;
-
-    const out = testTransform({
-      schema: inputSchema,
-      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
-      dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
-    });
-    expect(out).toBeDefined();
-    const schema = parse(out.schema);
-    validateModelSchema(schema);
-    expect(out.schema).toMatchSnapshot();
-    expect(out.resolvers['Blog.posts.req.vtl']).toBeDefined();
-    expect(out.resolvers['Blog.posts.req.vtl']).toMatchSnapshot();
-    expect(out.resolvers['Blog.posts.res.vtl']).toBeDefined();
-    expect(out.resolvers['Blog.posts.res.vtl']).toMatchSnapshot();
-  });
-
-  test('composite key should generate correct resolvers', () => {
-    const inputSchema = `
-      type System @model {
-        systemId: String! @primaryKey(sortKeyFields: ["systemName"])
-        systemName: String!
-        details: String
-        parts: [Part] @hasMany(references: ["systemId", "systemName"])
-      }
-      type Part @model {
-        partId: String! @primaryKey
-        partName: String
-        systemId: String!
-        systemName: String!
-        system: System @belongsTo(references: ["systemId", "systemName"])
-      }
-    `;
-
-    const out = testTransform({
-      schema: inputSchema,
-      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
-      dataSourceStrategies: constructDataSourceStrategies(inputSchema, mySqlStrategy),
-    });
-    expect(out).toBeDefined();
-    const schema = parse(out.schema);
-    validateModelSchema(schema);
-    expect(out.schema).toMatchSnapshot();
-    expect(out.resolvers['System.parts.req.vtl']).toBeDefined();
-    expect(out.resolvers['System.parts.req.vtl']).toMatchSnapshot();
-    expect(out.resolvers['System.parts.res.vtl']).toBeDefined();
-    expect(out.resolvers['System.parts.res.vtl']).toMatchSnapshot();
   });
 });

@@ -1,8 +1,7 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { constructDataSourceStrategies, getResourceNamesForStrategy, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
-import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { DefaultValueTransformer } from '..';
 
 describe('DefaultValueModelTransformer:', () => {
@@ -311,31 +310,5 @@ describe('DefaultValueModelTransformer:', () => {
     expect(out.resolvers['Mutation.createPost.init.2.req.vtl']).toMatchSnapshot();
     const schema = parse(out.schema);
     validateModelSchema(schema);
-  });
-
-  it('default value type should not be validated for sql datasource', async () => {
-    const validSchema = `
-      type Note @model {
-          id: ID! @primaryKey
-          content: String!
-          createdAt: AWSDateTime @default(value: "CURRENT_TIMESTAMP")
-      }
-    `;
-
-    const mySqlStrategy = mockSqlDataSourceStrategy();
-    const resourceNames = getResourceNamesForStrategy(mySqlStrategy);
-    const out = testTransform({
-      schema: validSchema,
-      transformers: [new ModelTransformer(), new DefaultValueTransformer(), new PrimaryKeyTransformer()],
-      dataSourceStrategies: constructDataSourceStrategies(validSchema, mySqlStrategy),
-    });
-    expect(out).toBeDefined();
-
-    validateModelSchema(parse(out.schema));
-    expect(out.stacks).toBeDefined();
-    expect(out.stacks[resourceNames.sqlStack]).toBeDefined();
-    expect(out.stacks[resourceNames.sqlStack].Resources).toBeDefined();
-    expect(out.resolvers['Mutation.createNote.init.1.req.vtl']).toBeDefined();
-    expect(out.resolvers['Mutation.createNote.init.2.req.vtl']).toBeUndefined();
   });
 });

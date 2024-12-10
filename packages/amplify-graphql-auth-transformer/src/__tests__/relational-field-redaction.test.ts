@@ -5,7 +5,7 @@ import { AppSyncAuthConfiguration, ModelDataSourceStrategy, TransformerPluginPro
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { getModelTypeNames } from '@aws-amplify/graphql-transformer-core';
 import { AuthTransformer } from '../graphql-auth-transformer';
-import { ddbDataSourceStrategies, sqlDataSourceStrategies } from './combination-tests/snapshot-utils';
+import { ddbDataSourceStrategies } from './combination-tests/snapshot-utils';
 
 const SUBSCRIPTION_PROTECTION = `## [Start] Check if subscriptions is protected. **
 #if( $util.defaultIfNull($ctx.source.get("__operation"), null) == "Mutation" )
@@ -380,47 +380,6 @@ const buildHomogeneousTestCases = (
   test.each(nonRedactionTestTable)('%s -> %s - Primary %s - Related %s should not redact relational field - %s', nonRedactionExpectation);
 };
 
-const buildHeterogeneousTestCases = (
-  primaryDataSourceStrategies: Record<string, ModelDataSourceStrategy>,
-  relatedDataSourceStrategies: Record<string, ModelDataSourceStrategy>,
-  schema: string,
-  testTemplate = testCases,
-): void => {
-  const redactionExpectation = makeTransformationRedactionExpectation(
-    {
-      ...primaryDataSourceStrategies,
-      ...relatedDataSourceStrategies,
-    },
-    schema,
-  );
-  const nonRedactionExpectation = makeTransformationNonRedactionExpectation(
-    {
-      ...primaryDataSourceStrategies,
-      ...relatedDataSourceStrategies,
-    },
-    schema,
-  );
-  const testTable: TestTableRow[] = [];
-  for (const primaryStrategyName of Object.keys(primaryDataSourceStrategies)) {
-    for (const relatedStrategyName of Object.keys(relatedDataSourceStrategies)) {
-      testTemplate.forEach((testCase) => {
-        testTable.push([primaryStrategyName, relatedStrategyName, ...testCase] as TestTableRow);
-      });
-    }
-  }
-  test.each(testTable)('%s -> %s - Primary %s - Related %s should redact relational field - %s', redactionExpectation);
-
-  const nonRedactionTestTable: TestTableRow[] = [];
-  for (const primaryStrategyName of Object.keys(primaryDataSourceStrategies)) {
-    for (const relatedStrategyName of Object.keys(relatedDataSourceStrategies)) {
-      testTemplate.forEach((testCase) => {
-        nonRedactionTestTable.push([primaryStrategyName, relatedStrategyName, ...testCase.slice(0, 2), false] as TestTableRow);
-      });
-    }
-  }
-  test.each(nonRedactionTestTable)('%s -> %s - Primary %s - Related %s should not redact relational field - %s', nonRedactionExpectation);
-};
-
 describe('Relational field redaction tests', () => {
   describe('non-required relational field', () => {
     describe('DDB datasources - field relation', () => {
@@ -428,15 +387,6 @@ describe('Relational field redaction tests', () => {
     });
     describe('DDB datasources - reference relation', () => {
       buildHomogeneousTestCases(ddbDataSourceStrategies, referenceSchemaTemplate);
-    });
-    describe('RDS datasources - reference relation', () => {
-      buildHomogeneousTestCases(sqlDataSourceStrategies, referenceSchemaTemplate);
-    });
-    describe('DDB Primary, SQL Related - reference relation', () => {
-      buildHeterogeneousTestCases(ddbDataSourceStrategies, sqlDataSourceStrategies, referenceSchemaTemplate);
-    });
-    describe('SQL Primary, DDB Related - reference relation', () => {
-      buildHeterogeneousTestCases(sqlDataSourceStrategies, ddbDataSourceStrategies, referenceSchemaTemplate);
     });
   });
 

@@ -2,8 +2,7 @@ import { ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { parse } from 'graphql';
-import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { SearchableModelTransformer } from '..';
 import { ALLOWABLE_SEARCHABLE_INSTANCE_TYPES } from '../constants';
 import { describe } from 'jest-circus';
@@ -24,26 +23,6 @@ test('SearchableModelTransformer validation happy case', () => {
   expect(out).toBeDefined();
   parse(out.schema);
   expect(out.schema).toMatchSnapshot();
-});
-
-test('Throws error for Searchable RDS Models', () => {
-  const validSchema = `
-    type Post @model @searchable {
-        id: ID! @primaryKey
-        title: String!
-        createdAt: String
-        updatedAt: String
-    }
-  `;
-  expect(() =>
-    testTransform({
-      schema: validSchema,
-      transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new SearchableModelTransformer()],
-      dataSourceStrategies: {
-        Post: mockSqlDataSourceStrategy(),
-      },
-    }),
-  ).toThrowErrorMatchingInlineSnapshot(`"@searchable is not supported on \\"Post\\" model as it uses RDS datasource."`);
 });
 
 test('SearchableModelTransformer vtl', () => {
