@@ -8,12 +8,12 @@ type DepsClosure = {
   registryDeps: Array<string>;
 };
 
-type ConstructPackageConfiguration = {
+type PackageConfiguration = {
   packageName: string;
   packageDir: string;
 };
 
-const CONSTRUCT_PACKAGE_CONFIGURATIONS: ConstructPackageConfiguration[] = [
+const CONSTRUCT_PACKAGE_CONFIGURATIONS: PackageConfiguration[] = [
   {
     packageName: '@aws-amplify/graphql-api-construct',
     packageDir: 'amplify-graphql-api-construct',
@@ -21,6 +21,13 @@ const CONSTRUCT_PACKAGE_CONFIGURATIONS: ConstructPackageConfiguration[] = [
   {
     packageName: '@aws-amplify/data-construct',
     packageDir: 'amplify-data-construct',
+  },
+];
+
+const SKIP_TRANSITIVE_REPO_PACKAGES: PackageConfiguration[] = [
+  {
+    packageName: '@aws-amplify/graphql-conversation-transformer',
+    packageDir: 'amplify-graphql-conversation-transformer',
   },
 ];
 
@@ -63,6 +70,49 @@ const getRepoPackages = (): Record<string, Array<string>> =>
   Object.fromEntries(fs.readdirSync(PACKAGES_DIR).filter(isPackageDirectory).map(getPackageDependencies));
 
 /**
+ * Return a set of package names which transitive dependencies should not be included in dependency tree.
+ * @returns a set of package names.
+ */
+const getSkipTransitivePackage = (): Set<string> => {
+  return new Set(
+    SKIP_TRANSITIVE_REPO_PACKAGES.map((config: PackageConfiguration) => {
+      const packageJsonContents = fs.readFileSync(path.join(PACKAGES_DIR, config.packageDir, PACKAGE_JSON_FILENAME), 'utf-8');
+      const packageJson = JSON.parse(packageJsonContents);
+      return `${packageJson.name}@${packageJson.version}`;
+    }),
+  );
+};
+
+/**
+ * Return the source package in the dependency chain (repo package).
+ * @param dep The dependency to trace
+ * @param depParents Map of dependencies to their parents
+ * @param repoPackages Set of repository packages to stop at
+ * @returns the source package name.
+ */
+const getSourcePackage = (dep: string, depParents: Map<string, string>, repoPackages: Set<string>): string => {
+  let current = dep;
+
+  // If the starting dep is already a repo package, return it
+  if (repoPackages.has(current)) {
+    return current;
+  }
+
+  let parent = depParents.get(current);
+
+  while (parent) {
+    current = parent;
+    // Stop if reached a repo package
+    if (repoPackages.has(current)) {
+      break;
+    }
+    parent = depParents.get(current);
+  }
+
+  return current;
+};
+
+/**
  * Given a set of input deps, compute the full closure of local and remote deps.
  *
  * Assumption: repoDeps will depend on registryDeps, but the inverse should not hold true.
@@ -73,6 +123,7 @@ const getRepoPackages = (): Record<string, Array<string>> =>
  */
 const computeDepsClosure = (deps: string[]): DepsClosure => {
   const repoPackageClosures = getRepoPackages();
+  const skipTransitiveDepsFor = getSkipTransitivePackage();
   const repoPackages = new Set(Object.keys(repoPackageClosures));
 
   const lockfileContents = lockfile.parse(fs.readFileSync('yarn.lock', 'utf8')).object;
@@ -80,6 +131,10 @@ const computeDepsClosure = (deps: string[]): DepsClosure => {
   const repoDepClosure = new Set<string>();
   const registryDepClosure = new Set<string>();
   const seenDeps = new Set<string>();
+
+  // Track where dependencies came from
+  const depParents = new Map<string, string>();
+
   let currDeps: string[] = [...deps];
   do {
     const stageDeps: string[] = [];
@@ -88,12 +143,20 @@ const computeDepsClosure = (deps: string[]): DepsClosure => {
       seenDeps.add(currDep);
       if (repoPackages.has(currDep)) {
         repoDepClosure.add(currDep);
-        stageDeps.push(...repoPackageClosures[currDep]);
+
+        const nextDeps = repoPackageClosures[currDep];
+        nextDeps.forEach((dep) => depParents.set(dep, currDep));
+        stageDeps.push(...nextDeps);
       } else {
         registryDepClosure.add(currDep);
         const lockfileDeps = lockfileContents[currDep].dependencies ?? {};
         const lockfileDepsList = Object.entries(lockfileDeps).map(([packageName, semverPattern]) => `${packageName}@${semverPattern}`);
-        stageDeps.push(...lockfileDepsList);
+
+        const sourcePackage = getSourcePackage(currDep, depParents, repoPackages);
+        if (!skipTransitiveDepsFor.has(sourcePackage)) {
+          lockfileDepsList.forEach((dep) => depParents.set(dep, sourcePackage));
+          stageDeps.push(...lockfileDepsList);
+        }
       }
     });
     currDeps = stageDeps;
