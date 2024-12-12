@@ -8633,7 +8633,7 @@ aws-appsync@^4.1.1:
     url "^0.11.0"
     uuid "3.x"
 
-aws-cdk-lib@2.158.0, aws-cdk-lib@^2.168.0, aws-cdk-lib@~2.129.0:
+aws-cdk-lib@2.168.0, aws-cdk-lib@^2.168.0, aws-cdk-lib@~2.129.0:
   version "2.173.0"
   resolved "https://registry.npmjs.org/aws-cdk-lib/-/aws-cdk-lib-2.173.0.tgz#5dddde721cc1218eb38366b84bc105ebab39b58f"
   integrity sha512-Da1JUwG8eL+chRSB+c2I4dRf54DWe/wmWKj9CBthNdsE9XCB8odyEcMpmgBC+R160o7ioYY2DBsAaKIIRa9XQw==

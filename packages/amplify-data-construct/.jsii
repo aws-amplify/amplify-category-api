@@ -156,7 +156,7 @@
   },
   "dependencies": {
     "@aws-amplify/graphql-api-construct": "1.18.2",
-    "aws-cdk-lib": "^2.158.0",
+    "aws-cdk-lib": "^2.168.0",
     "constructs": "^10.3.0"
   },
   "dependencyClosure": {
@@ -4091,5 +4091,5 @@
   },
   "types": {},
   "version": "1.14.2",
-  "fingerprint": "itI0JYBEeH+3qs8edODOmiLC/v514mFvYvaD4OhF7BY="
+  "fingerprint": "APjytkZM54Hm1aMlPGMXzuoTZBDCo4V2Abg4rDYBE1A="
 }
