@@ -304,6 +304,85 @@ $util.toJson({})",
       },
       "Type": "AWS::AppSync::Resolver",
     },
+    "DynamoDBAccess71ABE5AE": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "dynamodb:BatchGetItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:Query",
+                "dynamodb:UpdateItem",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:DescribeTable",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::Sub": Array [
+                    "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}",
+                    Object {
+                      "tablename": Object {
+                        "Fn::Join": Array [
+                          "",
+                          Array [
+                            "Post-",
+                            Object {
+                              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+                            },
+                            "-",
+                            Object {
+                              "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                            },
+                          ],
+                        ],
+                      },
+                    },
+                  ],
+                },
+                Object {
+                  "Fn::Sub": Array [
+                    "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}/*",
+                    Object {
+                      "tablename": Object {
+                        "Fn::Join": Array [
+                          "",
+                          Array [
+                            "Post-",
+                            Object {
+                              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+                            },
+                            "-",
+                            Object {
+                              "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                            },
+                          ],
+                        ],
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DynamoDBAccess71ABE5AE",
+        "Roles": Array [
+          Object {
+            "Ref": "PostIAMRole83BF708F",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "GetPostResolver": Object {
       "Properties": Object {
         "ApiId": Object {
@@ -664,79 +743,6 @@ $util.toJson({})",
           ],
           "Version": "2012-10-17",
         },
-        "Policies": Array [
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
-                  "Action": Array [
-                    "dynamodb:BatchGetItem",
-                    "dynamodb:BatchWriteItem",
-                    "dynamodb:PutItem",
-                    "dynamodb:DeleteItem",
-                    "dynamodb:GetItem",
-                    "dynamodb:Scan",
-                    "dynamodb:Query",
-                    "dynamodb:UpdateItem",
-                    "dynamodb:ConditionCheckItem",
-                    "dynamodb:DescribeTable",
-                    "dynamodb:GetRecords",
-                    "dynamodb:GetShardIterator",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": Array [
-                    Object {
-                      "Fn::Sub": Array [
-                        "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}",
-                        Object {
-                          "tablename": Object {
-                            "Fn::Join": Array [
-                              "",
-                              Array [
-                                "Post-",
-                                Object {
-                                  "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-                                },
-                                "-",
-                                Object {
-                                  "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-                                },
-                              ],
-                            ],
-                          },
-                        },
-                      ],
-                    },
-                    Object {
-                      "Fn::Sub": Array [
-                        "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}/*",
-                        Object {
-                          "tablename": Object {
-                            "Fn::Join": Array [
-                              "",
-                              Array [
-                                "Post-",
-                                Object {
-                                  "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-                                },
-                                "-",
-                                Object {
-                                  "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-                                },
-                              ],
-                            ],
-                          },
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-              "Version": "2012-10-17",
-            },
-            "PolicyName": "DynamoDBAccess",
-          },
-        ],
         "RoleName": Object {
           "Fn::Join": Array [
             "",
@@ -754,6 +760,50 @@ $util.toJson({})",
         },
       },
       "Type": "AWS::IAM::Role",
+    },
+    "PostIAMRoleDefaultPolicy04190CA0": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "PostTable",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "PostIAMRoleDefaultPolicy04190CA0",
+        "Roles": Array [
+          Object {
+            "Ref": "PostIAMRole83BF708F",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "PostTable": Object {
       "DeletionPolicy": "Delete",
@@ -1434,79 +1484,6 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "Policies": Array [
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
-                  "Action": Array [
-                    "dynamodb:BatchGetItem",
-                    "dynamodb:BatchWriteItem",
-                    "dynamodb:PutItem",
-                    "dynamodb:DeleteItem",
-                    "dynamodb:GetItem",
-                    "dynamodb:Scan",
-                    "dynamodb:Query",
-                    "dynamodb:UpdateItem",
-                    "dynamodb:ConditionCheckItem",
-                    "dynamodb:DescribeTable",
-                    "dynamodb:GetRecords",
-                    "dynamodb:GetShardIterator",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": Array [
-                    Object {
-                      "Fn::Sub": Array [
-                        "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}",
-                        Object {
-                          "tablename": Object {
-                            "Fn::Join": Array [
-                              "",
-                              Array [
-                                "Comment-",
-                                Object {
-                                  "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-                                },
-                                "-",
-                                Object {
-                                  "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-                                },
-                              ],
-                            ],
-                          },
-                        },
-                      ],
-                    },
-                    Object {
-                      "Fn::Sub": Array [
-                        "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}/*",
-                        Object {
-                          "tablename": Object {
-                            "Fn::Join": Array [
-                              "",
-                              Array [
-                                "Comment-",
-                                Object {
-                                  "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-                                },
-                                "-",
-                                Object {
-                                  "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-                                },
-                              ],
-                            ],
-                          },
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-              "Version": "2012-10-17",
-            },
-            "PolicyName": "DynamoDBAccess",
-          },
-        ],
         "RoleName": Object {
           "Fn::Join": Array [
             "",
@@ -1524,6 +1501,50 @@ Object {
         },
       },
       "Type": "AWS::IAM::Role",
+    },
+    "CommentIAMRoleDefaultPolicyA8D6F6B5": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "CommentTable",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "CommentIAMRoleDefaultPolicyA8D6F6B5",
+        "Roles": Array [
+          Object {
+            "Ref": "CommentIAMRoleD5EC5F51",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "CommentTable": Object {
       "DeletionPolicy": "Delete",
@@ -1709,6 +1730,85 @@ $util.toJson({})",
         "TypeName": "Mutation",
       },
       "Type": "AWS::AppSync::Resolver",
+    },
+    "DynamoDBAccess71ABE5AE": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "dynamodb:BatchGetItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:Query",
+                "dynamodb:UpdateItem",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:DescribeTable",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::Sub": Array [
+                    "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}",
+                    Object {
+                      "tablename": Object {
+                        "Fn::Join": Array [
+                          "",
+                          Array [
+                            "Comment-",
+                            Object {
+                              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+                            },
+                            "-",
+                            Object {
+                              "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                            },
+                          ],
+                        ],
+                      },
+                    },
+                  ],
+                },
+                Object {
+                  "Fn::Sub": Array [
+                    "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}/*",
+                    Object {
+                      "tablename": Object {
+                        "Fn::Join": Array [
+                          "",
+                          Array [
+                            "Comment-",
+                            Object {
+                              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+                            },
+                            "-",
+                            Object {
+                              "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                            },
+                          ],
+                        ],
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DynamoDBAccess71ABE5AE",
+        "Roles": Array [
+          Object {
+            "Ref": "CommentIAMRoleD5EC5F51",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "GetCommentResolver": Object {
       "Properties": Object {
@@ -2555,6 +2655,85 @@ $util.toJson({})",
       },
       "Type": "AWS::AppSync::Resolver",
     },
+    "DynamoDBAccess71ABE5AE": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "dynamodb:BatchGetItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:Query",
+                "dynamodb:UpdateItem",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:DescribeTable",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::Sub": Array [
+                    "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}",
+                    Object {
+                      "tablename": Object {
+                        "Fn::Join": Array [
+                          "",
+                          Array [
+                            "Post-",
+                            Object {
+                              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+                            },
+                            "-",
+                            Object {
+                              "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                            },
+                          ],
+                        ],
+                      },
+                    },
+                  ],
+                },
+                Object {
+                  "Fn::Sub": Array [
+                    "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}/*",
+                    Object {
+                      "tablename": Object {
+                        "Fn::Join": Array [
+                          "",
+                          Array [
+                            "Post-",
+                            Object {
+                              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+                            },
+                            "-",
+                            Object {
+                              "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                            },
+                          ],
+                        ],
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DynamoDBAccess71ABE5AE",
+        "Roles": Array [
+          Object {
+            "Ref": "PostIAMRole83BF708F",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "GetPostResolver": Object {
       "Properties": Object {
         "ApiId": Object {
@@ -2915,79 +3094,6 @@ $util.toJson({})",
           ],
           "Version": "2012-10-17",
         },
-        "Policies": Array [
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
-                  "Action": Array [
-                    "dynamodb:BatchGetItem",
-                    "dynamodb:BatchWriteItem",
-                    "dynamodb:PutItem",
-                    "dynamodb:DeleteItem",
-                    "dynamodb:GetItem",
-                    "dynamodb:Scan",
-                    "dynamodb:Query",
-                    "dynamodb:UpdateItem",
-                    "dynamodb:ConditionCheckItem",
-                    "dynamodb:DescribeTable",
-                    "dynamodb:GetRecords",
-                    "dynamodb:GetShardIterator",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": Array [
-                    Object {
-                      "Fn::Sub": Array [
-                        "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}",
-                        Object {
-                          "tablename": Object {
-                            "Fn::Join": Array [
-                              "",
-                              Array [
-                                "Post-",
-                                Object {
-                                  "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-                                },
-                                "-",
-                                Object {
-                                  "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-                                },
-                              ],
-                            ],
-                          },
-                        },
-                      ],
-                    },
-                    Object {
-                      "Fn::Sub": Array [
-                        "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}/*",
-                        Object {
-                          "tablename": Object {
-                            "Fn::Join": Array [
-                              "",
-                              Array [
-                                "Post-",
-                                Object {
-                                  "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-                                },
-                                "-",
-                                Object {
-                                  "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-                                },
-                              ],
-                            ],
-                          },
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-              "Version": "2012-10-17",
-            },
-            "PolicyName": "DynamoDBAccess",
-          },
-        ],
         "RoleName": Object {
           "Fn::Join": Array [
             "",
@@ -3005,6 +3111,50 @@ $util.toJson({})",
         },
       },
       "Type": "AWS::IAM::Role",
+    },
+    "PostIAMRoleDefaultPolicy04190CA0": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "PostTable",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "PostIAMRoleDefaultPolicy04190CA0",
+        "Roles": Array [
+          Object {
+            "Ref": "PostIAMRole83BF708F",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "PostTable": Object {
       "DeletionPolicy": "Delete",
@@ -3657,79 +3807,6 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "Policies": Array [
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
-                  "Action": Array [
-                    "dynamodb:BatchGetItem",
-                    "dynamodb:BatchWriteItem",
-                    "dynamodb:PutItem",
-                    "dynamodb:DeleteItem",
-                    "dynamodb:GetItem",
-                    "dynamodb:Scan",
-                    "dynamodb:Query",
-                    "dynamodb:UpdateItem",
-                    "dynamodb:ConditionCheckItem",
-                    "dynamodb:DescribeTable",
-                    "dynamodb:GetRecords",
-                    "dynamodb:GetShardIterator",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": Array [
-                    Object {
-                      "Fn::Sub": Array [
-                        "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}",
-                        Object {
-                          "tablename": Object {
-                            "Fn::Join": Array [
-                              "",
-                              Array [
-                                "Comment-",
-                                Object {
-                                  "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-                                },
-                                "-",
-                                Object {
-                                  "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-                                },
-                              ],
-                            ],
-                          },
-                        },
-                      ],
-                    },
-                    Object {
-                      "Fn::Sub": Array [
-                        "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}/*",
-                        Object {
-                          "tablename": Object {
-                            "Fn::Join": Array [
-                              "",
-                              Array [
-                                "Comment-",
-                                Object {
-                                  "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-                                },
-                                "-",
-                                Object {
-                                  "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-                                },
-                              ],
-                            ],
-                          },
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-              "Version": "2012-10-17",
-            },
-            "PolicyName": "DynamoDBAccess",
-          },
-        ],
         "RoleName": Object {
           "Fn::Join": Array [
             "",
@@ -3747,6 +3824,50 @@ Object {
         },
       },
       "Type": "AWS::IAM::Role",
+    },
+    "CommentIAMRoleDefaultPolicyA8D6F6B5": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "CommentTable",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "CommentIAMRoleDefaultPolicyA8D6F6B5",
+        "Roles": Array [
+          Object {
+            "Ref": "CommentIAMRoleD5EC5F51",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "CommentTable": Object {
       "DeletionPolicy": "Delete",
@@ -3924,6 +4045,85 @@ $util.toJson({})",
         "TypeName": "Mutation",
       },
       "Type": "AWS::AppSync::Resolver",
+    },
+    "DynamoDBAccess71ABE5AE": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "dynamodb:BatchGetItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:Query",
+                "dynamodb:UpdateItem",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:DescribeTable",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::Sub": Array [
+                    "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}",
+                    Object {
+                      "tablename": Object {
+                        "Fn::Join": Array [
+                          "",
+                          Array [
+                            "Comment-",
+                            Object {
+                              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+                            },
+                            "-",
+                            Object {
+                              "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                            },
+                          ],
+                        ],
+                      },
+                    },
+                  ],
+                },
+                Object {
+                  "Fn::Sub": Array [
+                    "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tablename}/*",
+                    Object {
+                      "tablename": Object {
+                        "Fn::Join": Array [
+                          "",
+                          Array [
+                            "Comment-",
+                            Object {
+                              "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+                            },
+                            "-",
+                            Object {
+                              "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                            },
+                          ],
+                        ],
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DynamoDBAccess71ABE5AE",
+        "Roles": Array [
+          Object {
+            "Ref": "CommentIAMRoleD5EC5F51",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "GetCommentResolver": Object {
       "Properties": Object {
