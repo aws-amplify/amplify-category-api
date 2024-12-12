@@ -59,7 +59,6 @@
     "@aws-sdk/util-locate-window": "^3.0.0",
     "@aws-sdk/util-user-agent-browser": "3.609.0",
     "@aws-sdk/util-user-agent-node": "3.614.0",
-    "@babel/runtime": "^7.18.3",
     "@smithy/abort-controller": "^3.1.1",
     "@smithy/config-resolver": "^3.0.5",
     "@smithy/core": "^2.4.0",
@@ -132,7 +131,6 @@
     "is-buffer": "~1.1.6",
     "is-ci": "^3.0.1",
     "is-fullwidth-code-point": "^3.0.0",
-    "json-schema-to-ts": "^3.1.1",
     "json-schema-traverse": "^1.0.0",
     "jsonfile": "^4.0.0",
     "libphonenumber-js": "1.9.47",
@@ -142,7 +140,6 @@
     "md5": "^2.2.1",
     "object-hash": "^3.0.0",
     "pluralize": "8.0.0",
-    "regenerator-runtime": "^0.14.0",
     "require-from-string": "^2.0.2",
     "semver": "^7.6.3",
     "slice-ansi": "^4.0.0",
@@ -151,7 +148,6 @@
     "strnum": "^1.0.5",
     "supports-color": "^7.1.0",
     "table": "^6.8.1",
-    "ts-algebra": "^2.0.0",
     "ts-dedent": "^2.0.0",
     "tslib": "^2.6.2",
     "universalify": "^0.1.0",
@@ -1179,6 +1175,19 @@
             }
           }
         },
+        "aws-cdk-lib.aws_connectcampaignsv2": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.ConnectCampaignsV2"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.connectcampaignsv2"
+            },
+            "python": {
+              "module": "aws_cdk.aws_connectcampaignsv2"
+            }
+          }
+        },
         "aws-cdk-lib.aws_controltower": {
           "targets": {
             "dotnet": {
@@ -1995,6 +2004,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_internetmonitor"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_invoicing": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.Invoicing"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.invoicing"
+            },
+            "python": {
+              "module": "aws_cdk.aws_invoicing"
             }
           }
         },
@@ -2983,6 +3005,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_ram"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_rbin": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.Rbin"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.rbin"
+            },
+            "python": {
+              "module": "aws_cdk.aws_rbin"
             }
           }
         },
@@ -4056,5 +4091,5 @@
   },
   "types": {},
   "version": "1.14.2",
-  "fingerprint": "RTfNcFrHD4q0mWFUXzMPgp9jaKN0jqAhFM2pyV5xZnA="
+  "fingerprint": "itI0JYBEeH+3qs8edODOmiLC/v514mFvYvaD4OhF7BY="
 }
