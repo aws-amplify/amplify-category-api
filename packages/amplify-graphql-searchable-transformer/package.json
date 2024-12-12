@@ -44,48 +44,5 @@
   "devDependencies": {
     "@aws-amplify/graphql-transformer-test-utils": "1.0.8",
     "@types/node": "^18.0.0"
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testEnvironmentOptions": {
-      "url": "http://localhost"
-    },
-    "testRegex": "(src/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "collectCoverage": true,
-    "coverageProvider": "v8",
-    "coverageThreshold": {
-      "global": {
-        "branches": 74,
-        "functions": 90,
-        "lines": 90
-      }
-    },
-    "coverageReporters": [
-      "clover",
-      "text"
-    ],
-    "modulePathIgnorePatterns": [
-      "overrides"
-    ],
-    "collectCoverageFrom": [
-      "src/**/*.ts"
-    ],
-    "coveragePathIgnorePatterns": [
-      "/__tests__/"
-    ],
-    "snapshotFormat": {
-      "escapeString": true,
-      "printBasicPrototype": true
-    }
   }
 }

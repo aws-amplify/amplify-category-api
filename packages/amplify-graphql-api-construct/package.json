@@ -292,7 +292,6 @@
     "jsii-pacmak": "^1.84.0",
     "jsii-rosetta": "^5.4.23",
     "rimraf": "^3.0.0",
-    "ts-jest": "^29.0.0",
     "ts-node": "^8.10.1"
   },
   "peerDependencies": {
@@ -311,46 +310,6 @@
     "tsc": {
       "rootDir": "src",
       "outDir": "lib"
-    }
-  },
-  "jest": {
-    "testEnvironmentOptions": {
-      "url": "http://localhost"
-    },
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "collectCoverage": true,
-    "coverageProvider": "v8",
-    "coverageThreshold": {
-      "global": {
-        "branches": 89,
-        "functions": 89.5,
-        "lines": 58
-      }
-    },
-    "coverageReporters": [
-      "clover",
-      "text"
-    ],
-    "collectCoverageFrom": [
-      "src/**/*.ts"
-    ],
-    "coveragePathIgnorePatterns": [
-      "/__tests__/"
-    ],
-    "snapshotFormat": {
-      "escapeString": true,
-      "printBasicPrototype": true
     }
   }
 }
