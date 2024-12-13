@@ -28,4 +28,5 @@ module.exports = {
   testEnvironmentOptions: {
     url: 'http://localhost',
   },
+  setupFilesAfterEnv: ['<rootDir>/../../setup-jest.js'],
 };
