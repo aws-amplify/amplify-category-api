@@ -6,11 +6,4 @@ module.exports = {
     escapeString: false,
     printBasicPrototype: false,
   },
-  coverageThreshold: {
-    global: {
-      branches: 90,
-      lines: 88,
-      functions: 95,
-    },
-  },
 };

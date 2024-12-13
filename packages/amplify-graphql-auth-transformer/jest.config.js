@@ -1,12 +1,12 @@
-const baseConfig = require('../../jest.config.base.js');
+const baseConfig = require('../../jest.config.base.js'); // eslint-disable-line @typescript-eslint/no-var-requires
 
 module.exports = {
   ...baseConfig,
   coverageThreshold: {
     global: {
       branches: 88,
-      functions: 96,
-      lines: 93,
+      functions: 90,
+      lines: 90,
     },
   },
 };

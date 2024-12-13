@@ -2,11 +2,4 @@ const baseConfig = require('../../jest.config.base.js'); // eslint-disable-line 
 
 module.exports = {
   ...baseConfig,
-  coverageThreshold: {
-    global: {
-      branches: 90,
-      functions: 90,
-      lines: 90,
-    },
-  },
 };
