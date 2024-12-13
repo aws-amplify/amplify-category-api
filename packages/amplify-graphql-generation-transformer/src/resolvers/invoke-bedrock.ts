@@ -20,15 +20,7 @@ export const createInvokeBedrockResolverFunction = (config: GenerationConfigurat
   const TOOL_CONFIG = JSON.stringify(toolConfig);
   const SYSTEM_PROMPT = JSON.stringify(config.systemPrompt);
   const INFERENCE_CONFIG = getInferenceConfigResolverDefinition(inferenceConfiguration);
-
-  const NON_STRING_RESPONSE_HANDLING = stringTypedScalarTypes.includes(getBaseType(config.field.type))
-    ? ''
-    : `// Added for non-string scalar response types
-  // This catches the occasional stringified JSON response.
-  if (typeof value === 'string') {
-    return JSON.parse(value);
-  }`;
-
+  const NON_STRING_RESPONSE_TYPE = (!stringTypedScalarTypes.includes(getBaseType(config.field.type))).toString()
   const PACKAGE_METADATA = `'${packageName}#${packageVersion}'`;
 
   const resolver = generateResolver('invoke-bedrock-resolver-fn.template.js', {
@@ -36,7 +28,7 @@ export const createInvokeBedrockResolverFunction = (config: GenerationConfigurat
     TOOL_CONFIG,
     SYSTEM_PROMPT,
     INFERENCE_CONFIG,
-    NON_STRING_RESPONSE_HANDLING,
+    NON_STRING_RESPONSE_TYPE,
     PACKAGE_METADATA,
   });
 

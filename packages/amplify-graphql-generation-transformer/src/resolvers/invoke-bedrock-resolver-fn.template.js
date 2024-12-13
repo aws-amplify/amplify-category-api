@@ -53,13 +53,21 @@ export function response(ctx) {
   }
 
   const body = JSON.parse(ctx.result.body);
-  const value = body?.output?.message?.content?.[0]?.toolUse?.input?.value;
+  let value = body?.output?.message?.content?.find((content) => !!content.toolUse)?.toolUse?.input?.value;
 
   if (!value) {
-    util.error('Invalid Bedrock response', 'InvalidResponseException');
+    util.error('Invalid foundation model response', 'InvalidResponseException');
   }
 
-  [[NON_STRING_RESPONSE_HANDLING]]
+  // The first condition (the boolean literal) in this if statement represents whether the
+  // return type of the generation route is a raw string or not.
+  // If the return type is `String` / `String!`, the value is `false` and we don't attempt any fallback parsing.
+  // If the return type isn't `String` / `String!`, the valie is `true` and the toolUse input is a `string`,
+  // the foundation model has returned stringified JSON, so we attempt to parse it into a valid object.
+  if ([[NON_STRING_RESPONSE_TYPE]] && typeof value === 'string') {
+    return parseIncorrectlyStringifiedJSON(value);
+  }
+
   return value;
 }
 
@@ -72,4 +80,39 @@ function createUserAgent(request) {
     userAgent = `lib/${packageMetadata}`;
   }
   return userAgent;
+}
+
+function parseIncorrectlyStringifiedJSON(input) {
+  // Try statements are not supported:
+  // `@aws-appsync/no-try: Try statements are not supported`
+
+  // This initial attempt covers the case where the tool input is valid stringified JSON
+  let value = JSON.parse(input);
+  // A failed parse attempt doesn't throw an error in resolver functions.
+  // It returns an empty string, so a truthiness check suffices.
+  if (value) return value;
+
+  // Since the tool input wasn't valid stringified JSON, we're assuming that
+  // it contains `'` where it should contain `\"`. Some foundation models like to do this.
+  // This is our last fallback attempt and covers the cases observed in the wild.
+
+  // Regular expression is not supported in resolver functions:
+  // `error @aws-appsync/no-regex: Regex literals are not supported`
+  // However, raw string inputs are processed by the underlying Java runtime.
+  // So the patterns used are valid Java patterns, and not necessarily valid JavaScript patterns
+
+  // Replaces single quotes with double quotes, handling escaped single quotes.
+  value = input
+    // Replace any escaped single quotes with a marker.
+    .replaceAll("\\\\'", "___ESCAPED_QUOTE___")
+    // Replace all remaining single quotes with double quotes
+    .replaceAll("'", "\"")
+    // Restore escaped single quotes
+    .replaceAll("___ESCAPED_QUOTE___", "'");
+
+  value = JSON.parse(value);
+  if (value) return value;
+
+  // Nothing more to do, time to bail.
+  util.error('Unable to parse foundation model response', 'InvalidResponseException')
 }
