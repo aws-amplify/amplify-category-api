@@ -20,7 +20,7 @@ export const createInvokeBedrockResolverFunction = (config: GenerationConfigurat
   const TOOL_CONFIG = JSON.stringify(toolConfig);
   const SYSTEM_PROMPT = JSON.stringify(config.systemPrompt);
   const INFERENCE_CONFIG = getInferenceConfigResolverDefinition(inferenceConfiguration);
-  const NON_STRING_RESPONSE_TYPE = (!stringTypedScalarTypes.includes(getBaseType(config.field.type))).toString()
+  const NON_STRING_RESPONSE_TYPE = (!stringTypedScalarTypes.includes(getBaseType(config.field.type))).toString();
   const PACKAGE_METADATA = `'${packageName}#${packageVersion}'`;
 
   const resolver = generateResolver('invoke-bedrock-resolver-fn.template.js', {
