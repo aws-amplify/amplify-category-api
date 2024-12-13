@@ -78,7 +78,7 @@ export class GenerationTransformer extends TransformerPluginBase {
 
       const directiveWithToolConfig: GenerationConfigurationWithToolConfig = {
         ...directive,
-        toolConfig: createResponseTypeTool(field, ctx),
+        toolConfig: createResponseTypeTool(directive, ctx),
       };
 
       const stackName = this.bedrockDataSourceName(fieldName) + 'Stack';

@@ -1,7 +1,7 @@
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { FieldDefinitionNode } from 'graphql';
 import { generateJSONSchemaFromTypeNode } from './graphql-json-schema-type';
 import { JSONSchema } from '@aws-amplify/graphql-transformer-core';
+import { GenerationDirectiveConfiguration } from '../grapqhl-generation-transformer';
 
 export type Tool = {
   toolSpec: ToolSpec;
@@ -13,12 +13,20 @@ export type Tools = {
 
 export type ToolConfig = {
   tools: Tool[];
-  toolChoice: {
-    tool: {
-      name: string;
-    };
+  toolChoice?: ToolChoice;
+};
+
+type SpecificToolChoice = {
+  tool: {
+    name: string;
   };
 };
+
+type AnyToolChoice = {
+  any: {};
+};
+
+type ToolChoice = SpecificToolChoice | AnyToolChoice | undefined;
 
 type ToolSpec = {
   name: string;
@@ -43,8 +51,8 @@ type ToolSpec = {
  * The returned tool configuration can be used with AI models that support tool-based interactions,
  * ensuring that generated responses match the expected structure of the GraphQL field.
  */
-export const createResponseTypeTool = (field: FieldDefinitionNode, ctx: TransformerContextProvider): ToolConfig => {
-  const { type } = field;
+export const createResponseTypeTool = (config: GenerationDirectiveConfiguration, ctx: TransformerContextProvider): ToolConfig => {
+  const { type } = config.field;
   const schema = generateJSONSchemaFromTypeNode(type, ctx);
 
   // We box the schema to support scalar return types.
@@ -69,8 +77,26 @@ export const createResponseTypeTool = (field: FieldDefinitionNode, ctx: Transfor
       },
     },
   ];
-  const toolChoice = { tool: { name: 'responseType' } };
+
+  const toolChoice = getToolChoice(config);
   const toolConfig = { tools, toolChoice };
 
   return toolConfig;
+};
+
+const getToolChoice = (config: GenerationDirectiveConfiguration): ToolChoice => {
+  switch (config.aiModel) {
+    case 'anthropic.claude-3-opus-20240229-v1:0':
+    case 'anthropic.claude-3-haiku-20240307-v1:0':
+    case 'anthropic.claude-3-sonnet-20240229-v1:0':
+    case 'anthropic.claude-3-5-haiku-20241022-v1:0':
+    case 'anthropic.claude-3-5-sonnet-20240620-v1:0':
+    case 'anthropic.claude-3-5-sonnet-20241022-v2:0':
+      return { tool: { name: 'responseType' } };
+    case 'mistral.mistral-large-2402-v1:0':
+    case 'mistral.mistral-large-2407-v1:0':
+      return { any: {} };
+    default:
+      return undefined;
+  }
 };
