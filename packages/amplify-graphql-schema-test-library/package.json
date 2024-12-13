@@ -41,42 +41,5 @@
     "@aws-amplify/graphql-transformer-core": "3.3.1",
     "@aws-amplify/graphql-transformer-interfaces": "4.2.0",
     "@aws-amplify/graphql-transformer-test-utils": "1.0.8"
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.(ts|tsx)?$": "ts-jest"
-    },
-    "testRegex": "(src/__tests__/.*.test.ts)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "collectCoverage": true,
-    "coverageProvider": "v8",
-    "coverageThreshold": {
-      "global": {
-        "branches": 90,
-        "functions": 90,
-        "lines": 90
-      }
-    },
-    "coverageReporters": [
-      "clover",
-      "text"
-    ],
-    "collectCoverageFrom": [
-      "src/**/*.ts"
-    ],
-    "coveragePathIgnorePatterns": [
-      "/__tests__/"
-    ],
-    "snapshotFormat": {
-      "escapeString": true,
-      "printBasicPrototype": true
-    }
   }
 }
