@@ -251,6 +251,8 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     const role = new iam.Role(scope, ModelResourceIDs.ModelTableIAMRoleID(def!.name.value), {
       roleName,
       assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
+      // Use an inline policy here to prevent unnecessary policy CloudFormation resources from being generated. Note that CDK will still
+      // create a CFN resource for `<modelName>IAMRoleDefaultPolicy`
       inlinePolicies: {
         DynamoDBAccess: new iam.PolicyDocument({
           statements: [
