@@ -160,6 +160,7 @@ export class AmplifyGraphqlApi extends Construct {
       functionNameMap,
       outputStorageStrategy,
       dataStoreConfiguration,
+      logging,
     } = props;
 
     // TODO: GEN1_GEN2_MIGRATION
@@ -250,6 +251,7 @@ export class AmplifyGraphqlApi extends Construct {
       rdsLayerMapping: undefined,
       rdsSnsTopicMapping: undefined,
       ...getDataSourceStrategiesProvider(definition),
+      logging,
     };
 
     executeTransform(executeTransformConfig);

@@ -19,7 +19,7 @@ import { IFunction, CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
 import { AmplifyDynamoDbTableWrapper } from './amplify-dynamodb-table-wrapper';
 import { CustomSqlDataSourceStrategy, ModelDataSourceStrategy } from './model-datasource-strategy-types';
-
+import { Logging } from './log-config-types';
 /**
  * Configuration for IAM Authorization on the Graphql Api.
  * @struct - required since this interface begins with an 'I'
@@ -762,6 +762,11 @@ export interface AmplifyGraphqlApiProps {
    * For more information, refer to https://docs.amplify.aws/lib/datastore/getting-started/q/platform/js/
    */
   readonly dataStoreConfiguration?: DataStoreConfiguration;
+
+  /**
+   * Specifies the logging configuration when writing GraphQL operations and tracing to Amazon CloudWatch for an AWS AppSync GraphQL API.
+   */
+  readonly logging?: Logging;
 }
 
 /**

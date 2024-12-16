@@ -26,46 +26,5 @@
     "clean": "rimraf ./lib",
     "test": "jest",
     "extract-api": "ts-node ../../scripts/extract-api.ts"
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testEnvironmentOptions": {
-      "url": "http://localhost"
-    },
-    "testRegex": "(src/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "collectCoverage": true,
-    "coverageProvider": "v8",
-    "coverageThreshold": {
-      "global": {
-        "branches": 100,
-        "functions": 100,
-        "lines": 100
-      }
-    },
-    "coverageReporters": [
-      "clover",
-      "text"
-    ],
-    "collectCoverageFrom": [
-      "src/**/*.ts"
-    ],
-    "coveragePathIgnorePatterns": [
-      "/__tests__/",
-      "src/directives/directive.ts"
-    ],
-    "snapshotFormat": {
-      "escapeString": true,
-      "printBasicPrototype": true
-    }
   }
 }

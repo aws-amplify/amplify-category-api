@@ -2,7 +2,7 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "never"
   },
-  "editor.formatOnSave": false,
+  "editor.formatOnSave": true,
   "editor.rulers": [140],
   "eslint.format.enable": true,
   "eslint.lintTask.enable": true,

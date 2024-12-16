@@ -32,45 +32,5 @@
   },
   "devDependencies": {
     "@types/md5": "^2.3.1"
-  },
-  "jest": {
-    "collectCoverage": true,
-    "coverageProvider": "v8",
-    "coverageThreshold": {
-      "global": {
-        "branches": 35,
-        "functions": 8,
-        "lines": 8
-      }
-    },
-    "coverageReporters": [
-      "clover",
-      "text"
-    ],
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testEnvironmentOptions": {
-      "url": "http://localhost"
-    },
-    "testRegex": "(src/__tests__/.*.test.*)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "collectCoverageFrom": [
-      "src/**/*.ts"
-    ],
-    "coveragePathIgnorePatterns": [
-      "/__tests__/"
-    ],
-    "snapshotFormat": {
-      "escapeString": true,
-      "printBasicPrototype": true
-    }
   }
 }

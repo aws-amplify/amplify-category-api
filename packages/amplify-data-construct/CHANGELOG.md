@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.14.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.14.1...@aws-amplify/data-construct@1.14.2) (2024-11-20)
+
+### Bug Fixes
+
+- bump ai-constructs to ^1.0.0 ([#3040](https://github.com/aws-amplify/amplify-category-api/issues/3040)) ([0e9e195](https://github.com/aws-amplify/amplify-category-api/commit/0e9e195b05e7d40e41c29b82b8f3fb3a8961d80b))
+
+## [1.14.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.14.0...@aws-amplify/data-construct@1.14.1) (2024-11-20)
+
+**Note:** Version bump only for package @aws-amplify/data-construct
+
 # [1.14.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.13.3...@aws-amplify/data-construct@1.14.0) (2024-11-19)
 
 ### Features

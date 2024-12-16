@@ -50,47 +50,7 @@
     "@types/node": "^18.0.0"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.158.0",
+    "aws-cdk-lib": "^2.168.0",
     "constructs": "^10.3.0"
-  },
-  "jest": {
-    "testEnvironmentOptions": {
-      "url": "http://localhost"
-    },
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testRegex": "(src/__tests__/.*.test.ts)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "collectCoverage": true,
-    "coverageProvider": "v8",
-    "coverageThreshold": {
-      "global": {
-        "branches": 88,
-        "functions": 90,
-        "lines": 90
-      }
-    },
-    "coverageReporters": [
-      "clover",
-      "text"
-    ],
-    "collectCoverageFrom": [
-      "src/**/*.ts"
-    ],
-    "coveragePathIgnorePatterns": [
-      "/__tests__/"
-    ],
-    "snapshotFormat": {
-      "escapeString": true,
-      "printBasicPrototype": true
-    }
   }
 }

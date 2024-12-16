@@ -2402,7 +2402,7 @@ export function request(ctx) {
   const clientTools = args.toolConfiguration?.tools?.map((tool) => {
     return { ...tool.toolSpec };
   });
-  const dataTools = [{"name":"list_all_the_todos","description":"lists todos","inputSchema":{"json":{"type":"object","properties":{},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"items { content isDone id createdAt updatedAt owner } nextToken","propertyTypes":{},"queryName":"listMyTodos"}}];
+  const dataTools = [{"name":"list_all_the_todos","description":"lists todos","inputSchema":{"json":{"type":"object","properties":{},"required":[]}},"graphqlRequestInputDescriptor":{"selectionSet":"items { content status id createdAt updatedAt owner } nextToken","propertyTypes":{},"queryName":"listMyTodos"}}];
   const toolsConfiguration = { dataTools, clientTools };
 
   const messageHistoryQuery = {
