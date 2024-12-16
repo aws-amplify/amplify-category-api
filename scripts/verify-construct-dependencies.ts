@@ -24,9 +24,28 @@ const CONSTRUCT_PACKAGE_CONFIGURATIONS: ConstructPackageConfiguration[] = [
   },
 ];
 
+const EXCLUSION_PATHS: string[][] = [['@aws-amplify/graphql-conversation-transformer', '@aws-amplify/ai-constructs', 'json-schema-to-ts']];
+
 const PACKAGES_DIR = 'packages';
 const NON_JSII_DEPENDENCIES_FILENAME = 'nonJsiiDependencies.json';
 const PACKAGE_JSON_FILENAME = 'package.json';
+
+/**
+ * Check if a dependency should be excluded based on path match in dependency tree.
+ * @param depPath the current dependency path in dependency tree BFS
+ * @returns true if the given depPath should be excluded
+ */
+const shouldExcludeDependency = (depPath: string[]): boolean => {
+  if (!depPath.length) {
+    return false;
+  }
+
+  return EXCLUSION_PATHS.some((exclusionPath) => {
+    const exclusionPathString = exclusionPath.join(',');
+    const depPathString = depPath.join(',');
+    return depPathString.includes(exclusionPathString);
+  });
+};
 
 /**
  * Return whether or not a given package directory name is a code package in the monorepo, we check if it's a directory, and has
@@ -73,40 +92,44 @@ const getRepoPackages = (): Record<string, Array<string>> =>
  */
 const computeDepsClosure = (deps: string[]): DepsClosure => {
   const repoPackageClosures = getRepoPackages();
-  const repoPackages = new Set(Object.keys(repoPackageClosures));
-
   const lockfileContents = lockfile.parse(fs.readFileSync('yarn.lock', 'utf8')).object;
-
-  const repoDepClosure = new Set<string>();
-  const registryDepClosure = new Set<string>();
   const seenDeps = new Set<string>();
-  let currDeps: string[] = [...deps];
-  do {
-    const stageDeps: string[] = [];
-    currDeps.forEach((currDep: string) => {
-      if (seenDeps.has(currDep)) return;
-      seenDeps.add(currDep);
-      if (repoPackages.has(currDep)) {
-        repoDepClosure.add(currDep);
-        stageDeps.push(...repoPackageClosures[currDep]);
-      } else {
-        registryDepClosure.add(currDep);
-        const lockfileDeps = lockfileContents[currDep].dependencies ?? {};
-        const lockfileDepsList = Object.entries(lockfileDeps).map(([packageName, semverPattern]) => `${packageName}@${semverPattern}`);
-        stageDeps.push(...lockfileDepsList);
-      }
-    });
-    currDeps = stageDeps;
-  } while (currDeps.length > 0);
+  const closure: DepsClosure = { repoDeps: [], registryDeps: [] };
 
-  return {
-    repoDeps: Array.from(repoDepClosure),
-    registryDeps: Array.from(registryDepClosure),
+  const traverse = (path: string[], currDep: string): void => {
+    if (shouldExcludeDependency([...path, stripSemver(currDep)]) || seenDeps.has(currDep)) {
+      return;
+    }
+
+    seenDeps.add(currDep);
+    const newPath = [...path, stripSemver(currDep)];
+
+    if (repoPackageClosures[currDep]) {
+      closure.repoDeps.push(currDep);
+      repoPackageClosures[currDep].forEach((nextDep) => traverse(newPath, nextDep));
+    } else {
+      closure.registryDeps.push(currDep);
+      const dependencies = lockfileContents[currDep].dependencies ?? {};
+      Object.entries(dependencies)
+        .map(([name, version]) => `${name}@${version}`)
+        .forEach((nextDep) => traverse(newPath, nextDep));
+    }
   };
+
+  deps.forEach((dep) => traverse([], dep));
+  return closure;
 };
 
 /**
  * Remove semver portion from package descriptor
+ * e.g. zod@^3.1.12 => zod, or @aws-amplify/graphql-transformer@1.1.2 => @aws-amplify/graphql-transformer.
+ * @param val value which we're going to remove semver string segment
+ * @returns the value without semver string segment
+ */
+const stripSemver = (val: string): string => val.split('@').slice(0, -1).join('@');
+
+/**
+ * Remove semver portion from package descriptors
  * e.g. zod@^3.1.12 => zod, or @aws-amplify/graphql-transformer@1.1.2 => @aws-amplify/graphql-transformer.
  * @param vals values which we're going to remove semver string segments
  * @returns the values without semver string segments
@@ -143,6 +166,7 @@ const attachCurrentVersions = (constructPackageDir: string, deps: string[]): str
 const validateNohoistsAreConfigured = (constructPackageName: string, deps: string[]): string[] => {
   const nohoistValues = new Set(getRootPackageJson().workspaces.nohoist);
   return deps
+    .filter((dep) => !shouldExcludeDependency([constructPackageName, dep]))
     .map((depName) => `${constructPackageName}/${depName}`)
     .filter((depPath) => !nohoistValues.has(depPath))
     .map((depPath) => `${depPath} not found in root package.json nohoist config`);
