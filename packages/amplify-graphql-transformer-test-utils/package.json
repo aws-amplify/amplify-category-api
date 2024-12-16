@@ -38,7 +38,7 @@
     "rimraf": "^3.0.0"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.158.0",
+    "aws-cdk-lib": "^2.168.0",
     "constructs": "^10.3.0"
   }
 }
