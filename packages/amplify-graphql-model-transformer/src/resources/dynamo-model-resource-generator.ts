@@ -251,53 +251,52 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     const role = new iam.Role(scope, ModelResourceIDs.ModelTableIAMRoleID(def!.name.value), {
       roleName,
       assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
+      inlinePolicies: {
+        DynamoDBAccess: new iam.PolicyDocument({
+          statements: [
+            new iam.PolicyStatement({
+              effect: iam.Effect.ALLOW,
+              actions: [
+                'dynamodb:BatchGetItem',
+                'dynamodb:BatchWriteItem',
+                'dynamodb:PutItem',
+                'dynamodb:DeleteItem',
+                'dynamodb:GetItem',
+                'dynamodb:Scan',
+                'dynamodb:Query',
+                'dynamodb:UpdateItem',
+                'dynamodb:ConditionCheckItem',
+                'dynamodb:DescribeTable',
+                'dynamodb:GetRecords',
+                'dynamodb:GetShardIterator',
+              ],
+              resources: [
+                // eslint-disable-next-line no-template-curly-in-string
+                cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
+                  tablename: tableName,
+                }),
+                // eslint-disable-next-line no-template-curly-in-string
+                cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
+                  tablename: tableName,
+                }),
+                ...(context.isProjectUsingDataStore()
+                  ? [
+                      // eslint-disable-next-line no-template-curly-in-string
+                      cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
+                        tablename: amplifyDataStoreTableName,
+                      }),
+                      // eslint-disable-next-line no-template-curly-in-string
+                      cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
+                        tablename: amplifyDataStoreTableName,
+                      }),
+                    ]
+                  : []),
+              ],
+            }),
+          ],
+        }),
+      },
     });
-
-    role.attachInlinePolicy(
-      new iam.Policy(scope, 'DynamoDBAccess', {
-        statements: [
-          new iam.PolicyStatement({
-            effect: iam.Effect.ALLOW,
-            actions: [
-              'dynamodb:BatchGetItem',
-              'dynamodb:BatchWriteItem',
-              'dynamodb:PutItem',
-              'dynamodb:DeleteItem',
-              'dynamodb:GetItem',
-              'dynamodb:Scan',
-              'dynamodb:Query',
-              'dynamodb:UpdateItem',
-              'dynamodb:ConditionCheckItem',
-              'dynamodb:DescribeTable',
-              'dynamodb:GetRecords',
-              'dynamodb:GetShardIterator',
-            ],
-            resources: [
-              // eslint-disable-next-line no-template-curly-in-string
-              cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
-                tablename: tableName,
-              }),
-              // eslint-disable-next-line no-template-curly-in-string
-              cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
-                tablename: tableName,
-              }),
-              ...(context.isProjectUsingDataStore()
-                ? [
-                    // eslint-disable-next-line no-template-curly-in-string
-                    cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
-                      tablename: amplifyDataStoreTableName,
-                    }),
-                    // eslint-disable-next-line no-template-curly-in-string
-                    cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
-                      tablename: amplifyDataStoreTableName,
-                    }),
-                  ]
-                : []),
-            ],
-          }),
-        ],
-      }),
-    );
     setResourceName(role, { name: ModelResourceIDs.ModelTableIAMRoleID(def!.name.value), setOnDefaultChild: true });
 
     const syncConfig = SyncUtils.getSyncConfig(context, def!.name.value);
