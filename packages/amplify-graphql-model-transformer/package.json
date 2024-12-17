@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-model-transformer",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "description": "Amplify graphql @model transformer",
   "repository": {
     "type": "git",
@@ -34,19 +34,19 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-directives": "2.6.0",
-    "@aws-amplify/graphql-transformer-core": "3.3.1",
-    "@aws-amplify/graphql-transformer-interfaces": "4.2.0",
+    "@aws-amplify/graphql-directives": "2.6.1",
+    "@aws-amplify/graphql-transformer-core": "3.3.2",
+    "@aws-amplify/graphql-transformer-interfaces": "4.2.1",
     "graphql": "^15.5.0",
-    "graphql-mapping-template": "5.0.1",
-    "graphql-transformer-common": "5.1.1"
+    "graphql-mapping-template": "5.0.2",
+    "graphql-transformer-common": "5.1.2"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.168.0",
     "constructs": "^10.3.0"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-test-utils": "1.0.8",
+    "@aws-amplify/graphql-transformer-test-utils": "1.0.9",
     "@aws-sdk/client-dynamodb": "^3.624.0",
     "@aws-sdk/client-lambda": "^3.624.0",
     "@aws-sdk/client-sfn": "^3.624.0",
