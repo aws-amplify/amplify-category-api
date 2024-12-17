@@ -1,15 +1,16 @@
 import { getFieldNameFor, InvalidDirectiveError, JSONSchema } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
+  EnumTypeDefinitionNode,
   FieldDefinitionNode,
   InputValueDefinitionNode,
+  Kind,
   ObjectTypeDefinitionNode,
   ObjectValueNode,
   StringValueNode,
   TypeNode,
 } from 'graphql';
-import { getBaseType, isNonNullType, isScalar, toUpper } from 'graphql-transformer-common';
-import pluralize from 'pluralize';
+import { getBaseType, isNonNullType, isScalarOrEnum } from 'graphql-transformer-common';
 import { CustomQueryTool, ModelOperationTool, ToolDefinition } from '../conversation-directive-configuration';
 import { generateJSONSchemaFromTypeNode } from './graphql-json-schema-type';
 
@@ -89,7 +90,8 @@ const generateSelectionSet = (
   fieldName: string = '',
 ): string => {
   // Base case: if the current type is a scalar, return the field name
-  if (isScalar(currentType)) {
+  const enums = ctx.output.getTypeDefinitionsOfKind(Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[];
+  if (isScalarOrEnum(currentType, enums)) {
     return fieldName;
   }
 
@@ -112,7 +114,7 @@ const generateSelectionSet = (
   // Build the selection set for this type
   const fieldSelections = type.fields
     .map((field) => {
-      if (isScalar(field.type)) {
+      if (isScalarOrEnum(field.type, enums)) {
         // For scalar fields, just include the field name
         return field.name.value;
       } else {

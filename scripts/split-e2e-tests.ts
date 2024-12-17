@@ -154,6 +154,8 @@ const RUN_SOLO: (string | RegExp)[] = [
   'src/__tests__/generations/generation.test.ts',
   // Conversation tests
   'src/__tests__/conversations/conversation.test.ts',
+  // Predictions tests
+  'src/__tests__/PredictionsTransformerV2Tests.e2e.test.ts',
 ];
 
 const RUN_IN_ALL_REGIONS = [
@@ -183,6 +185,11 @@ const RUN_IN_COGNITO_REGIONS: (string | RegExp)[] = [
   /src\/__tests__\/AuthV2ExhaustiveT3D.test.ts/,
   /src\/__tests__\/AuthV2ExhaustiveT3C.test.ts/,
 ];
+
+const TEST_REGION_EXCLUSIONS: Record<string, string[]> = {
+  // Rekognition is not supported in ap-northeast-3
+  'src/__tests__/PredictionsTransformerV2Tests.e2e.test.ts': ['ap-northeast-3'],
+};
 
 const RUN_IN_V1_TRANSFORMER_REGIONS = ['src/__tests__/schema-searchable.test.ts'];
 
@@ -349,6 +356,11 @@ const setJobRegion = (test: string, job: CandidateJob, jobIdx: number, useBetaLa
 
 const filterCandidateRegions = (test: string, candidateRegions: string[], useBetaLayer: boolean): string[] => {
   let resolvedRegions = [...candidateRegions];
+
+  const excludedRegions = TEST_REGION_EXCLUSIONS[test];
+  if (excludedRegions) {
+    resolvedRegions = resolvedRegions.filter((region) => !excludedRegions.includes(region));
+  }
 
   // Parent E2E account does not have opt-in regions. Choose non-opt-in region.
   const shouldUseParentAccount = USE_PARENT_ACCOUNT.some((usesParent) => test.startsWith(usesParent));

@@ -38,7 +38,7 @@
     "graphql-transformer-common": "5.1.1"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.158.0",
+    "aws-cdk-lib": "^2.168.0",
     "constructs": "^10.3.0"
   },
   "devDependencies": {
@@ -48,42 +48,5 @@
     "@aws-amplify/graphql-searchable-transformer": "3.0.9",
     "@aws-amplify/graphql-transformer-test-utils": "1.0.8",
     "graphql": "^15.5.0"
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testRegex": "(src/__tests__/.*\\.(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "collectCoverage": true,
-    "coverageProvider": "v8",
-    "collectCoverageFrom": [
-      "src/**/*.ts"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 66,
-        "functions": 90,
-        "lines": 90
-      }
-    },
-    "coverageReporters": [
-      "clover",
-      "text"
-    ],
-    "coveragePathIgnorePatterns": [
-      "/__tests__/"
-    ],
-    "snapshotFormat": {
-      "escapeString": true,
-      "printBasicPrototype": true
-    }
   }
 }

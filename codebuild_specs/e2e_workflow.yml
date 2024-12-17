@@ -755,73 +755,73 @@ batch:
           CLI_REGION: ap-northeast-2
       depend-on:
         - publish_to_local_registry
-    - identifier: utils_ddb_iam_access_data_construct_custom_logic_amplify_table_5
+    - identifier: utils_log_config_ddb_iam_access_data_construct_custom_logic
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
           TEST_SUITE: >-
-            src/__tests__/utils.test.ts|src/__tests__/ddb-iam-access.test.ts|src/__tests__/data-construct.test.ts|src/__tests__/custom-logic.test.ts|src/__tests__/amplify-table-5.test.ts
+            src/__tests__/utils.test.ts|src/__tests__/log-config.test.ts|src/__tests__/ddb-iam-access.test.ts|src/__tests__/data-construct.test.ts|src/__tests__/custom-logic.test.ts
           CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        add_resources_references_migration_migration_validation_many_to_many_migration_base_migration
+        amplify_table_5_add_resources_references_migration_migration_validation_many_to_many_migration
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
           TEST_SUITE: >-
-            src/__tests__/add-resources.test.ts|src/__tests__/migration/references-migration.test.ts|src/__tests__/migration/migration-validation.test.ts|src/__tests__/migration/many-to-many-migration.test.ts|src/__tests__/migration/base-migration.test.ts
+            src/__tests__/amplify-table-5.test.ts|src/__tests__/add-resources.test.ts|src/__tests__/migration/references-migration.test.ts|src/__tests__/migration/migration-validation.test.ts|src/__tests__/migration/many-to-many-migration.test.ts
           CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        single_gsi_single_record_single_gsi_empty_table_single_gsi_1k_records_single_gsi_10k_records_replace_2_gsis_update_attr_single_
+        base_migration_single_gsi_single_record_single_gsi_empty_table_single_gsi_1k_records_single_gsi_10k_records
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
           TEST_SUITE: >-
-            src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-empty-table.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-10k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-single-record.test.ts
+            src/__tests__/migration/base-migration.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-empty-table.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-10k-records.test.ts
           CLI_REGION: ap-northeast-3
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        replace_2_gsis_update_attr_empty_table_replace_2_gsis_update_attr_1k_records_replace_2_gsis_update_attr_10k_records_replace_2_g
+        replace_2_gsis_update_attr_single_record_replace_2_gsis_update_attr_empty_table_replace_2_gsis_update_attr_1k_records_replace_2
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
           TEST_SUITE: >-
-            src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-empty-table.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-10k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-empty-table.test.ts
+            src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-empty-table.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-10k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-single-record.test.ts
           CLI_REGION: ap-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        replace_2_gsis_1k_records_replace_2_gsis_10k_records_3_gsis_single_record_3_gsis_empty_table_3_gsis_1k_records
+        replace_2_gsis_empty_table_replace_2_gsis_1k_records_replace_2_gsis_10k_records_3_gsis_single_record_3_gsis_empty_table
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
           TEST_SUITE: >-
-            src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-10k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-empty-table.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-1k-records.test.ts
+            src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-empty-table.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-10k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-empty-table.test.ts
           CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
-    - identifier: 3_gsis_10k_records
+    - identifier: 3_gsis_1k_records_3_gsis_10k_records
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
           TEST_SUITE: >-
-            src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-10k-records.test.ts
+            src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-10k-records.test.ts
           CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
@@ -1718,99 +1718,108 @@ batch:
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        NonModelAuthV2Function_TransformerOptionsV2_PredictionsTransformerV2Tests_DefaultValueTransformer_PerFieldAuthV2TransformerWith
+        NonModelAuthV2Function_TransformerOptionsV2_DefaultValueTransformer_PerFieldAuthV2TransformerWithFF_PerFieldAuthV2Transformer
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
           TEST_SUITE: >-
-            src/__tests__/NonModelAuthV2Function.e2e.test.ts|src/__tests__/TransformerOptionsV2.e2e.test.ts|src/__tests__/PredictionsTransformerV2Tests.e2e.test.ts|src/__tests__/DefaultValueTransformer.e2e.test.ts|src/__tests__/PerFieldAuthV2TransformerWithFF.e2e.test.ts
-          CLI_REGION: ap-northeast-3
-      depend-on:
-        - publish_to_local_registry
-    - identifier: >-
-        PerFieldAuthV2Transformer_BelongsToTransformerV2_RelationalWithAuthV2WithFF_IndexWithAuthV2_IndexWithAuthV2WithFF
-      buildspec: codebuild_specs/graphql_e2e_tests.yml
-      env:
-        compute-type: BUILD_GENERAL1_LARGE
-        variables:
-          NODE_OPTIONS: '--max-old-space-size=14848'
-          TEST_SUITE: >-
-            src/__tests__/PerFieldAuthV2Transformer.e2e.test.ts|src/__tests__/BelongsToTransformerV2.e2e.test.ts|src/__tests__/RelationalWithAuthV2WithFF.e2e.test.ts|src/__tests__/IndexWithAuthV2.e2e.test.ts|src/__tests__/IndexWithAuthV2WithFF.e2e.test.ts
+            src/__tests__/NonModelAuthV2Function.e2e.test.ts|src/__tests__/TransformerOptionsV2.e2e.test.ts|src/__tests__/DefaultValueTransformer.e2e.test.ts|src/__tests__/PerFieldAuthV2TransformerWithFF.e2e.test.ts|src/__tests__/PerFieldAuthV2Transformer.e2e.test.ts
           CLI_REGION: ap-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        SubscriptionsWithAuthV2WithFF_MultiAuthV2Transformer_ModelTransformer_SubscriptionsWithAuthV2_RelationalWithAuthV2
+        BelongsToTransformerV2_RelationalWithAuthV2WithFF_IndexWithAuthV2_IndexWithAuthV2WithFF_SubscriptionsWithAuthV2WithFF
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
           TEST_SUITE: >-
-            src/__tests__/SubscriptionsWithAuthV2WithFF.e2e.test.ts|src/__tests__/MultiAuthV2Transformer.e2e.test.ts|src/__tests__/ModelTransformer.e2e.test.ts|src/__tests__/SubscriptionsWithAuthV2.e2e.test.ts|src/__tests__/RelationalWithAuthV2.e2e.test.ts
+            src/__tests__/BelongsToTransformerV2.e2e.test.ts|src/__tests__/RelationalWithAuthV2WithFF.e2e.test.ts|src/__tests__/IndexWithAuthV2.e2e.test.ts|src/__tests__/IndexWithAuthV2WithFF.e2e.test.ts|src/__tests__/SubscriptionsWithAuthV2WithFF.e2e.test.ts
           CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        MapsToTransformer_MultiAuthV2TransformerWithFF_AuthV2Transformer_AuthV2ExhaustiveT1B_AuthV2ExhaustiveT1A
+        MultiAuthV2Transformer_ModelTransformer_SubscriptionsWithAuthV2_RelationalWithAuthV2_MapsToTransformer
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
           TEST_SUITE: >-
-            src/__tests__/MapsToTransformer.e2e.test.ts|src/__tests__/MultiAuthV2TransformerWithFF.e2e.test.ts|src/__tests__/AuthV2Transformer.e2e.test.ts|src/__tests__/AuthV2ExhaustiveT1B.test.ts|src/__tests__/AuthV2ExhaustiveT1A.test.ts
+            src/__tests__/MultiAuthV2Transformer.e2e.test.ts|src/__tests__/ModelTransformer.e2e.test.ts|src/__tests__/SubscriptionsWithAuthV2.e2e.test.ts|src/__tests__/RelationalWithAuthV2.e2e.test.ts|src/__tests__/MapsToTransformer.e2e.test.ts
           CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        AuthV2TransformerWithFF_SubscriptionsRuntimeFiltering_AuthV2ExhaustiveT2A_AuthV2ExhaustiveT1C_AuthV2ExhaustiveT1D
+        MultiAuthV2TransformerWithFF_AuthV2Transformer_AuthV2ExhaustiveT1B_AuthV2ExhaustiveT1A_AuthV2TransformerWithFF
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
           TEST_SUITE: >-
-            src/__tests__/AuthV2TransformerWithFF.e2e.test.ts|src/__tests__/SubscriptionsRuntimeFiltering.e2e.test.ts|src/__tests__/AuthV2ExhaustiveT2A.test.ts|src/__tests__/AuthV2ExhaustiveT1C.test.ts|src/__tests__/AuthV2ExhaustiveT1D.test.ts
+            src/__tests__/MultiAuthV2TransformerWithFF.e2e.test.ts|src/__tests__/AuthV2Transformer.e2e.test.ts|src/__tests__/AuthV2ExhaustiveT1B.test.ts|src/__tests__/AuthV2ExhaustiveT1A.test.ts|src/__tests__/AuthV2TransformerWithFF.e2e.test.ts
           CLI_REGION: ca-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        AuthV2ExhaustiveT2B_AuthV2ExhaustiveT2D_AuthV2ExhaustiveT2C_RelationalWithAuthV2Redacted_RelationalWithAuthV2NonRedacted
+        SubscriptionsRuntimeFiltering_AuthV2ExhaustiveT2A_AuthV2ExhaustiveT1C_AuthV2ExhaustiveT1D_AuthV2ExhaustiveT2B
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
           TEST_SUITE: >-
-            src/__tests__/AuthV2ExhaustiveT2B.test.ts|src/__tests__/AuthV2ExhaustiveT2D.test.ts|src/__tests__/AuthV2ExhaustiveT2C.test.ts|src/__tests__/RelationalWithAuthV2Redacted.e2e.test.ts|src/__tests__/RelationalWithAuthV2NonRedacted.e2e.test.ts
+            src/__tests__/SubscriptionsRuntimeFiltering.e2e.test.ts|src/__tests__/AuthV2ExhaustiveT2A.test.ts|src/__tests__/AuthV2ExhaustiveT1C.test.ts|src/__tests__/AuthV2ExhaustiveT1D.test.ts|src/__tests__/AuthV2ExhaustiveT2B.test.ts
           CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        AuthV2TransformerIAM_AuthV2ExhaustiveT3D_AuthV2ExhaustiveT3C_AuthV2ExhaustiveT3B_AuthV2ExhaustiveT3A
+        AuthV2ExhaustiveT2D_AuthV2ExhaustiveT2C_RelationalWithAuthV2Redacted_RelationalWithAuthV2NonRedacted_AuthV2TransformerIAM
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
           TEST_SUITE: >-
-            src/__tests__/AuthV2TransformerIAM.test.ts|src/__tests__/AuthV2ExhaustiveT3D.test.ts|src/__tests__/AuthV2ExhaustiveT3C.test.ts|src/__tests__/AuthV2ExhaustiveT3B.test.ts|src/__tests__/AuthV2ExhaustiveT3A.test.ts
+            src/__tests__/AuthV2ExhaustiveT2D.test.ts|src/__tests__/AuthV2ExhaustiveT2C.test.ts|src/__tests__/RelationalWithAuthV2Redacted.e2e.test.ts|src/__tests__/RelationalWithAuthV2NonRedacted.e2e.test.ts|src/__tests__/AuthV2TransformerIAM.test.ts
           CLI_REGION: eu-north-1
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        SearchableModelTransformerV2_SearchableWithAuthV2WithFF_SearchableWithAuthV2
+        AuthV2ExhaustiveT3D_AuthV2ExhaustiveT3C_AuthV2ExhaustiveT3B_AuthV2ExhaustiveT3A_SearchableModelTransformerV2
       buildspec: codebuild_specs/graphql_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
           TEST_SUITE: >-
-            src/__tests__/SearchableModelTransformerV2.e2e.test.ts|src/__tests__/SearchableWithAuthV2WithFF.e2e.test.ts|src/__tests__/SearchableWithAuthV2.e2e.test.ts
+            src/__tests__/AuthV2ExhaustiveT3D.test.ts|src/__tests__/AuthV2ExhaustiveT3C.test.ts|src/__tests__/AuthV2ExhaustiveT3B.test.ts|src/__tests__/AuthV2ExhaustiveT3A.test.ts|src/__tests__/SearchableModelTransformerV2.e2e.test.ts
           CLI_REGION: eu-west-2
+      depend-on:
+        - publish_to_local_registry
+    - identifier: SearchableWithAuthV2WithFF_SearchableWithAuthV2
+      buildspec: codebuild_specs/graphql_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        variables:
+          NODE_OPTIONS: '--max-old-space-size=14848'
+          TEST_SUITE: >-
+            src/__tests__/SearchableWithAuthV2WithFF.e2e.test.ts|src/__tests__/SearchableWithAuthV2.e2e.test.ts
+          CLI_REGION: eu-west-3
+      depend-on:
+        - publish_to_local_registry
+    - identifier: PredictionsTransformerV2Tests
+      buildspec: codebuild_specs/graphql_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          NODE_OPTIONS: '--max-old-space-size=6656'
+          TEST_SUITE: src/__tests__/PredictionsTransformerV2Tests.e2e.test.ts
+          CLI_REGION: ap-northeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: FunctionTransformerTestsV2
@@ -1820,7 +1829,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/FunctionTransformerTestsV2.e2e.test.ts
-          CLI_REGION: ap-northeast-3
+          CLI_REGION: ap-south-1
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
@@ -1831,7 +1840,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/HttpTransformerV2.e2e.test.ts
-          CLI_REGION: ap-northeast-3
+          CLI_REGION: ap-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: cleanup_e2e_resources

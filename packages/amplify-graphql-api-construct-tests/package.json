@@ -27,6 +27,8 @@
     "@aws-amplify/graphql-api-construct": "1.18.2",
     "@aws-cdk/aws-cognito-identitypool-alpha": "2.152.0-alpha.0",
     "@aws-sdk/client-cloudformation": "3.624.0",
+    "@aws-sdk/client-appsync": "3.624.0",
+    "@aws-sdk/client-cloudwatch-logs": "3.624.0",
     "@aws-sdk/client-cognito-identity-provider": "3.624.0",
     "@aws-sdk/client-dynamodb": "3.624.0",
     "@aws-sdk/client-lambda": "3.624.0",
@@ -49,7 +51,7 @@
     "@aws-amplify/graphql-transformer-core": "3.3.1",
     "@aws-amplify/graphql-transformer-interfaces": "4.2.0",
     "@types/node": "^18.0.0",
-    "aws-cdk-lib": "2.158.0",
+    "aws-cdk-lib": "2.168.0",
     "constructs": "10.3.0",
     "ts-node": "^8.10.2"
   },

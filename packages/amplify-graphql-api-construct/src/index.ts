@@ -46,3 +46,5 @@ export {
 } from './amplify-dynamodb-table-wrapper';
 export { SQLLambdaModelDataSourceStrategyFactory } from './sql-model-datasource-strategy';
 export * from './model-datasource-strategy-types';
+export type { LogConfig, Logging } from './log-config-types';
+export { FieldLogLevel, RetentionDays } from './log-config-types';

@@ -118,6 +118,11 @@ function _verifyYarnLock {
   loadCacheFromBuildJob
   yarn verify-yarn-lock
 }
+function _verifyConstructDependencies {
+  echo "Verify Construct Dependencies"
+  loadCacheFromBuildJob
+  yarn verify-construct-dependencies
+}
 function _verifyDependencyLicensesExtract {
   echo "Verify Dependency Licenses Extract"
   loadCacheFromBuildJob

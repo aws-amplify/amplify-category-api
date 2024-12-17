@@ -31,6 +31,7 @@
   "dependencies": {
     "@aws-amplify/graphql-directives": "2.6.0",
     "@aws-amplify/graphql-transformer-interfaces": "4.2.0",
+    "@aws-cdk/assert": "^2.68.0",
     "fs-extra": "^8.1.0",
     "graphql": "^15.5.0",
     "graphql-mapping-template": "5.0.1",
@@ -42,7 +43,7 @@
     "ts-dedent": "^2.0.0"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.158.0",
+    "aws-cdk-lib": "^2.168.0",
     "constructs": "^10.3.0"
   },
   "devDependencies": {
@@ -52,45 +53,5 @@
     "@types/node": "^18.0.0",
     "@types/object-hash": "^2.2.1",
     "@types/uuid": "^9.0.1"
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testEnvironmentOptions": {
-      "url": "http://localhost"
-    },
-    "testRegex": "(src/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "collectCoverage": true,
-    "coverageProvider": "v8",
-    "coverageThreshold": {
-      "global": {
-        "branches": 67,
-        "functions": 30,
-        "lines": 49
-      }
-    },
-    "coverageReporters": [
-      "clover",
-      "text"
-    ],
-    "collectCoverageFrom": [
-      "src/**/*.ts"
-    ],
-    "coveragePathIgnorePatterns": [
-      "/__tests__/"
-    ],
-    "snapshotFormat": {
-      "escapeString": true,
-      "printBasicPrototype": true
-    }
   }
 }
