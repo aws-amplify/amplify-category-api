@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.12.0-gen1-migration-1218.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.11.5...@aws-amplify/graphql-model-transformer@2.12.0-gen1-migration-1218.0) (2024-12-18)
+
+### Bug Fixes
+
+- only print warning on failure to resolve table ([83c3ced](https://github.com/aws-amplify/amplify-category-api/commit/83c3ceda69ed8f73f5049b7b31cfa419cea0ab5f))
+
+### Features
+
+- get datasource map for migration ([#2668](https://github.com/aws-amplify/amplify-category-api/issues/2668)) ([3354eb1](https://github.com/aws-amplify/amplify-category-api/commit/3354eb158cb8b515a2888c2e3941dd4fa648c818))
+
 ## [2.11.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.11.4...@aws-amplify/graphql-model-transformer@2.11.5) (2024-09-09)
 
 **Note:** Version bump only for package @aws-amplify/graphql-model-transformer
