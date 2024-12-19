@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.6.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.6.6...@aws-amplify/graphql-auth-transformer@3.6.7) (2024-12-19)
+
+### Bug Fixes
+
+- fix policies with overridden table names ([#3075](https://github.com/aws-amplify/amplify-category-api/issues/3075)) ([fdcb760](https://github.com/aws-amplify/amplify-category-api/commit/fdcb76055c87d65b71f50fb980b84f10c7f2a297))
+
 ## [3.6.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.6.5...@aws-amplify/graphql-auth-transformer@3.6.6) (2024-09-09)
 
 **Note:** Version bump only for package @aws-amplify/graphql-auth-transformer

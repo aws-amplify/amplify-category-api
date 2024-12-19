@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-searchable-transformer",
-  "version": "2.7.10",
+  "version": "2.7.11",
   "description": "Amplfy GraphQL @searchable transformer",
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@aws-amplify/graphql-directives": "1.1.0",
-    "@aws-amplify/graphql-model-transformer": "2.11.5",
+    "@aws-amplify/graphql-model-transformer": "2.11.6",
     "@aws-amplify/graphql-transformer-core": "2.9.3",
     "@aws-amplify/graphql-transformer-interfaces": "3.10.1",
     "graphql": "^15.5.0",

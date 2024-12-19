@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.22.14](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.13...amplify-category-api-e2e-tests@3.22.14) (2024-12-19)
+
+### Bug Fixes
+
+- fix policies with overridden table names ([#3075](https://github.com/aws-amplify/amplify-category-api/issues/3075)) ([fdcb760](https://github.com/aws-amplify/amplify-category-api/commit/fdcb76055c87d65b71f50fb980b84f10c7f2a297))
+
 ## [3.22.13](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.12...amplify-category-api-e2e-tests@3.22.13) (2024-11-12)
 
 **Note:** Version bump only for package amplify-category-api-e2e-tests
