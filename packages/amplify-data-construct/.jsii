@@ -28,7 +28,6 @@
     "@aws-amplify/graphql-transformer-interfaces": "4.2.1",
     "@aws-amplify/platform-core": "^1.0.0",
     "@aws-amplify/plugin-types": "^1.0.0",
-    "@aws-cdk/assert": "^2.68.0",
     "@aws-cdk/cfnspec": "2.68.0",
     "@aws-cdk/cloudformation-diff": "2.68.0",
     "@aws-crypto/crc32": "5.2.0",
@@ -4091,5 +4090,5 @@
   },
   "types": {},
   "version": "1.14.3",
-  "fingerprint": "DFav5N5LAl6fLo+P+61ZlTd/bqkVmSHHedF5aAwM1xc="
+  "fingerprint": "PUetlxHLsvRKImL1CBv76hMaXqygnzyUf7RskYAIv9U="
 }
