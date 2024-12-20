@@ -201,35 +201,7 @@ export const getAmplifyBackendJobStatus = async (jobId: string, appId: string, e
     .promise();
 };
 
-export const listRoleNamesContaining = async (searchString: string, region: string): Promise<string[]> => {
-  const service = new IAM({ region });
-
-  const roles: string[] = [];
-  let isTruncated = true;
-  let marker: string | undefined;
-
-  while (isTruncated) {
-    const params = marker ? { Marker: marker } : {};
-    const response = await service.listRoles(params).promise();
-
-    const matchingRoles = response.Roles.filter((role) => role.RoleName.includes(searchString));
-    roles.push(...matchingRoles.map((r) => r.RoleName));
-
-    isTruncated = response.IsTruncated;
-    marker = response.Marker;
-  }
-
-  return roles;
-};
-
-export const getRolePolicy = async (roleName: string, policyName: string, region: string): Promise<any> => {
-  const service = new IAM({ region });
-  const rawDocument = (await service.getRolePolicy({ PolicyName: policyName, RoleName: roleName }).promise()).PolicyDocument;
-  const decodedDocument = decodeURIComponent(rawDocument);
-  return JSON.parse(decodedDocument);
-};
-
-export const listRolePolicies = async (roleName: string, region: string): Promise<string[]> => {
+export const listRolePolicies = async (roleName: string, region: string) => {
   const service = new IAM({ region });
   return (await service.listRolePolicies({ RoleName: roleName }).promise()).PolicyNames;
 };
