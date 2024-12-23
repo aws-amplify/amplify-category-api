@@ -410,13 +410,6 @@
   dependencies:
     "@aws-amplify/core" "4.7.15"
 
-"@aws-cdk/assert@^2.68.0":
-  version "2.68.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/assert/-/assert-2.68.0.tgz#d83b44ba278d3e3a32c13f372c697f26c6061b64"
-  integrity sha512-bEztvoYdVp17I/ClYRGZa4wlEP/qNNq4Q+Z7EKwRL0cLDmvq4EI1m1N8LhUPAH7B6YXp5d1164gC6Nr0lV8bbA==
-  dependencies:
-    "@aws-cdk/cloudformation-diff" "2.68.0"
-
 "@aws-cdk/asset-awscli-v1@^2.2.208":
   version "2.2.214"
   resolved "https://registry.npmjs.org/@aws-cdk/asset-awscli-v1/-/asset-awscli-v1-2.2.214.tgz#7d3554aae08f5b51fc1373bb39e5b4549b4c25c7"
@@ -437,14 +430,6 @@
   resolved "https://registry.npmjs.org/@aws-cdk/aws-cognito-identitypool-alpha/-/aws-cognito-identitypool-alpha-2.152.0-alpha.0.tgz#5d29345675171afd1eaa594da59561b38ff0ea9d"
   integrity sha512-6KbF4jog139kAARMBNDbbGQYSon+ggG4peQgv3hDFH49l6r6w+SbrW+jFzgfTGhQLDrlQEB4rPh7EW64xxtfVg==
 
-"@aws-cdk/cfnspec@2.68.0":
-  version "2.68.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/cfnspec/-/cfnspec-2.68.0.tgz#e678c62d92ca76f8513a23c3c78f00ae49a7ab2e"
-  integrity sha512-g062ljKOvMaeEgp2GR2ewoF3BzeGYpu+AA7UvN/SN+2S0detSwU+qHlxSFeTe0DLyCFaMttNEh81VmYCfiHtpg==
-  dependencies:
-    fs-extra "^9.1.0"
-    md5 "^2.3.0"
-
 "@aws-cdk/cloud-assembly-schema@^38.0.1":
   version "38.0.1"
   resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-38.0.1.tgz#cdf4684ae8778459e039cd44082ea644a3504ca9"
@@ -452,18 +437,6 @@
   dependencies:
     jsonschema "^1.4.1"
     semver "^7.6.3"
-
-"@aws-cdk/cloudformation-diff@2.68.0":
-  version "2.68.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/cloudformation-diff/-/cloudformation-diff-2.68.0.tgz#e5c69c9419472e3dd56bde418b3fabbca85d4005"
-  integrity sha512-JnX0sygxNHWU3aKdzSus25B1TuKYWDwnNL2tw3svZvfHcw3Nwz857JTOn/yNOJxT7cZbCbOqNPrOT6Xv+LrxTQ==
-  dependencies:
-    "@aws-cdk/cfnspec" "2.68.0"
-    chalk "^4"
-    diff "^5.1.0"
-    fast-deep-equal "^3.1.3"
-    string-width "^4.2.3"
-    table "^6.8.1"
 
 "@aws-crypto/crc32@2.0.0":
   version "2.0.0"
@@ -5676,10 +5649,18 @@
     chalk "^4.1.2"
     semver "^7.6.3"
 
-"@jsii/spec@^1.104.0", "@jsii/spec@^1.105.0", "@jsii/spec@^1.85.0":
-  version "1.105.0"
-  resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.105.0.tgz#500dcffc0e2258932c5b71b4a342ce4a8dfab641"
-  integrity sha512-pLy8JyPT9Vv5UTxtM4ZHm/iisWzU62m3/dn9TPW2oANI5TLiBpjLlJw/iF+KRjYAeQnFASUfXtWTXgbN4xp9Rw==
+"@jsii/check-node@1.106.0":
+  version "1.106.0"
+  resolved "https://registry.yarnpkg.com/@jsii/check-node/-/check-node-1.106.0.tgz#5deb20b0bbe0a506c4bd9edf60b17b0a93f83834"
+  integrity sha512-/T/TUsbHdEbZRFR4Rem9+UXVvgMYncEkrIeC52oIHJ8BDSgqlDsIARio/Eu5DOftF4avSLV/sshR6n19mpK1oA==
+  dependencies:
+    chalk "^4.1.2"
+    semver "^7.6.3"
+
+"@jsii/spec@^1.104.0", "@jsii/spec@^1.105.0", "@jsii/spec@^1.106.0", "@jsii/spec@^1.85.0":
+  version "1.106.0"
+  resolved "https://registry.yarnpkg.com/@jsii/spec/-/spec-1.106.0.tgz#f40010ec8cde14b7a003dd5b6a46480d9d7e222f"
+  integrity sha512-pAIvqEGf0YLmtzFtUKWNEGkCmXMHENy7k+rzCD147wnM4jHhvEL1mEvxi99aA2VcmvLYaAYNOs/XozT+s+kLqQ==
   dependencies:
     ajv "^8.17.1"
 
@@ -8547,7 +8528,7 @@ astral-regex@^2.0.0:
 
 async@^2.6.4:
   version "2.6.4"
-  resolved "https://registry.npmjs.org/async/-/async-2.6.4.tgz#706b7ff6084664cd7eae713f6f965433b5504221"
+  resolved "https://registry.yarnpkg.com/async/-/async-2.6.4.tgz#706b7ff6084664cd7eae713f6f965433b5504221"
   integrity sha512-mzo5dfJYwAn29PeiJ0zvwTo04zj8HDJj0Mn8TD7sno7q12prdbnasKJHhkm2c1LgrhlJ0teaea8860oxi51mGA==
   dependencies:
     lodash "^4.17.14"
@@ -8644,9 +8625,9 @@ aws-appsync@^4.1.1:
     uuid "3.x"
 
 aws-cdk-lib@2.168.0, aws-cdk-lib@^2.168.0, aws-cdk-lib@~2.129.0:
-  version "2.173.0"
-  resolved "https://registry.npmjs.org/aws-cdk-lib/-/aws-cdk-lib-2.173.0.tgz#5dddde721cc1218eb38366b84bc105ebab39b58f"
-  integrity sha512-Da1JUwG8eL+chRSB+c2I4dRf54DWe/wmWKj9CBthNdsE9XCB8odyEcMpmgBC+R160o7ioYY2DBsAaKIIRa9XQw==
+  version "2.173.2"
+  resolved "https://registry.yarnpkg.com/aws-cdk-lib/-/aws-cdk-lib-2.173.2.tgz#9e51332973163eb0d0a89cb67973a89b75c5f0b1"
+  integrity sha512-cL9+z8Pl3VZGoO7BwdsrFAOeud/vSl3at7OvmhihbNprMN15XuFUx/rViAU5OI1m92NbV4NBzYSLbSeCwYLNyw==
   dependencies:
     "@aws-cdk/asset-awscli-v1" "^2.2.208"
     "@aws-cdk/asset-kubectl-v20" "^2.1.3"
@@ -8665,9 +8646,9 @@ aws-cdk-lib@2.168.0, aws-cdk-lib@^2.168.0, aws-cdk-lib@~2.129.0:
     yaml "1.10.2"
 
 aws-sdk@2.518.0, aws-sdk@^2.1113.0, aws-sdk@^2.1141.0, aws-sdk@^2.1464.0:
-  version "2.1691.0"
-  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1691.0.tgz#9d6ccdcbae03c806fc62667b76eb3e33e5294dcc"
-  integrity sha512-/F2YC+DlsY3UBM2Bdnh5RLHOPNibS/+IcjUuhP8XuctyrN+MlL+fWDAiela32LTDk7hMy4rx8MTgvbJ+0blO5g==
+  version "2.1692.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1692.0.tgz#9dac5f7bfcc5ab45825cc8591b12753aa7d2902c"
+  integrity sha512-x511uiJ/57FIsbgUe5csJ13k3uzu25uWQE+XqfBis/sB0SFoiElJWXRkgEAUh0U6n40eT3ay5Ue4oPkRMu1LYw==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -8686,9 +8667,9 @@ axe-core@^4.10.0:
   integrity sha512-RE3mdQ7P3FRSe7eqCWoeQ/Z9QXrtniSjp1wUjt5nRC3WIpz5rSCve6o3fsZ2aCpJtrZjSZgjwXAoTO5k4tEI0w==
 
 axios@0.26.0, axios@^0.21.1, axios@^1.0.0, axios@^1.6.0, axios@^1.7.4:
-  version "1.7.7"
-  resolved "https://registry.npmjs.org/axios/-/axios-1.7.7.tgz#2f554296f9892a72ac8d8e4c5b79c14a91d0a47f"
-  integrity sha512-S4kL7XrjgBmvdGut0sN3yJxqYzrDOnivkBiN0OFs6hLiUam3UPvswUo0kqGyhqUZGEOytHyumEdXsAkgCOUf3Q==
+  version "1.7.9"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.7.9.tgz#d7d071380c132a24accda1b2cfc1535b79ec650a"
+  integrity sha512-LhLcE7Hbiryz8oMDdDptSrWowmB4Bl6RCt6sIJKpRB4XtVf0iEgewX3au/pJqm+Py1kCASkb/FFKjxQaLtxJvw==
   dependencies:
     follow-redirects "^1.15.6"
     form-data "^4.0.0"
@@ -8883,7 +8864,7 @@ body-parser@1.20.3:
 
 boolbase@^1.0.0:
   version "1.0.0"
-  resolved "https://registry.npmjs.org/boolbase/-/boolbase-1.0.0.tgz#68dff5fbe60c51eb37725ea9e3ed310dcc1e776e"
+  resolved "https://registry.yarnpkg.com/boolbase/-/boolbase-1.0.0.tgz#68dff5fbe60c51eb37725ea9e3ed310dcc1e776e"
   integrity sha512-JZOSA7Mo9sNGB8+UjSgzdLtokWAky1zbztM3WRLCbZ70/3cTANmQmOdR7y2g+J0e2WXywy1yS468tY+IruqEww==
 
 bowser@^2.11.0:
@@ -9694,7 +9675,7 @@ cookie-signature@1.0.6:
 
 cookie@0.7.1, cookie@^0.4.0, cookie@^0.7.0:
   version "0.7.2"
-  resolved "https://registry.npmjs.org/cookie/-/cookie-0.7.2.tgz#556369c472a2ba910f2979891b526b3436237ed7"
+  resolved "https://registry.yarnpkg.com/cookie/-/cookie-0.7.2.tgz#556369c472a2ba910f2979891b526b3436237ed7"
   integrity sha512-yki5XnKuf750l50uGTllt6kKILY4nQ1eNIQatoXEByZ5dWgnKqbnqmTrBE5B4N7lrMJKQ2ytWMiTO2o0v6Ew/w==
 
 copyfiles@^2.2.0:
@@ -9775,7 +9756,7 @@ create-require@^1.1.0:
 
 cross-fetch@2.2.2, cross-fetch@^2.2.6:
   version "2.2.6"
-  resolved "https://registry.npmjs.org/cross-fetch/-/cross-fetch-2.2.6.tgz#2ef0bb39a24ac034787965c457368a28730e220a"
+  resolved "https://registry.yarnpkg.com/cross-fetch/-/cross-fetch-2.2.6.tgz#2ef0bb39a24ac034787965c457368a28730e220a"
   integrity sha512-9JZz+vXCmfKUZ68zAptS7k4Nu8e2qcibe7WVZYps7sAgk5R8GYTc+T1WR0v1rlP9HxgARmOX1UTIJZFytajpNA==
   dependencies:
     node-fetch "^2.6.7"
@@ -10080,11 +10061,6 @@ diff@^4.0.1:
   version "4.0.2"
   resolved "https://registry.npmjs.org/diff/-/diff-4.0.2.tgz#60f3aecb89d5fae520c11aa19efc2bb982aade7d"
   integrity sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==
-
-diff@^5.1.0:
-  version "5.2.0"
-  resolved "https://registry.npmjs.org/diff/-/diff-5.2.0.tgz#26ded047cd1179b78b9537d5ef725503ce1ae531"
-  integrity sha512-uIFDxqpRZGZ6ThOk84hEfqWoHx2devRFvpTZcTHur85vImfaxUbTW9Ryh4CpCuDnToOP1CEtXKIgytHBPVff5A==
 
 dir-glob@^3.0.1:
   version "3.0.1"
@@ -10916,9 +10892,9 @@ fast-url-parser@^1.1.3:
     punycode "^1.3.2"
 
 fast-xml-parser@3.19.0, fast-xml-parser@^3.16.0, fast-xml-parser@^4.4.1:
-  version "4.5.0"
-  resolved "https://registry.npmjs.org/fast-xml-parser/-/fast-xml-parser-4.5.0.tgz#2882b7d01a6825dfdf909638f2de0256351def37"
-  integrity sha512-/PlTQCI96+fZMAOLMZK4CWG1ItCbfZ/0jx7UIJFChPNrx7tcEgerUgWbeieCM9MfHInUDyK8DWYZ+YrywDJuTg==
+  version "4.5.1"
+  resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-4.5.1.tgz#a7e665ff79b7919100a5202f23984b6150f9b31e"
+  integrity sha512-y655CeyUQ+jj7KBbYMc4FG01V8ZQqjN+gDYGJ50RtfsUB8iG9AmwmwoAgeKLJdmueKKMrH1RJ7yXHTSoczdv5w==
   dependencies:
     strnum "^1.0.5"
 
@@ -13057,12 +13033,12 @@ jsii-rosetta@^5.4.23:
     yargs "^17.7.2"
 
 jsii@^5.4.23, jsii@~5.6.0:
-  version "5.6.0"
-  resolved "https://registry.npmjs.org/jsii/-/jsii-5.6.0.tgz#f41b5f57f9637bebd3e274c672b270f5332a9074"
-  integrity sha512-XBXAF9a4UF2HE+LMSa+WDuYRNpmZlBxHrXaTVIFumo0oAuKb9eauPd4slwgQnCftyP5iyk8zX/Z2y4I3yQVcfA==
+  version "5.6.4"
+  resolved "https://registry.yarnpkg.com/jsii/-/jsii-5.6.4.tgz#105774013380a51469528aad127bc3508df41e9c"
+  integrity sha512-ZfrnPJeuIQJscs3NN8jAYy246DByFcgTIRomoAOM0PY9nfRx/8qXLkWI2LZ49Zmh7WNzqVt8dBCJ6+z1CUqdpQ==
   dependencies:
-    "@jsii/check-node" "1.104.0"
-    "@jsii/spec" "^1.104.0"
+    "@jsii/check-node" "1.106.0"
+    "@jsii/spec" "^1.106.0"
     case "^1.6.3"
     chalk "^4"
     fast-deep-equal "^3.1.3"
@@ -13990,14 +13966,14 @@ moment-jdateformatparser@^1.2.1:
 
 moment-timezone@0.5.35, moment-timezone@^0.5.35:
   version "0.5.46"
-  resolved "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.46.tgz#a21aa6392b3c6b3ed916cd5e95858a28d893704a"
+  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.46.tgz#a21aa6392b3c6b3ed916cd5e95858a28d893704a"
   integrity sha512-ZXm9b36esbe7OmdABqIWJuBBiLLwAjrN7CE+7sYdCCx82Nabt1wHDj8TVseS59QIlfFPbOoiBPm6ca9BioG4hw==
   dependencies:
     moment "^2.29.4"
 
 moment@^2.24.0, moment@^2.29.1, moment@^2.29.4:
   version "2.30.1"
-  resolved "https://registry.npmjs.org/moment/-/moment-2.30.1.tgz#f8c91c07b7a786e30c59926df530b4eac96974ae"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.30.1.tgz#f8c91c07b7a786e30c59926df530b4eac96974ae"
   integrity sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==
 
 ms@2.0.0:
@@ -14449,7 +14425,7 @@ npmlog@^6.0.0, npmlog@^6.0.2:
 
 nth-check@^2.0.1:
   version "2.1.1"
-  resolved "https://registry.npmjs.org/nth-check/-/nth-check-2.1.1.tgz#c9eab428effce36cd6b92c924bdb000ef1f1ed1d"
+  resolved "https://registry.yarnpkg.com/nth-check/-/nth-check-2.1.1.tgz#c9eab428effce36cd6b92c924bdb000ef1f1ed1d"
   integrity sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==
   dependencies:
     boolbase "^1.0.0"
@@ -14961,7 +14937,7 @@ parse-json@^5.0.0, parse-json@^5.2.0:
 
 parse-path@^5.0.0, parse-path@^7.0.0:
   version "5.0.0"
-  resolved "https://registry.npmjs.org/parse-path/-/parse-path-5.0.0.tgz#f933152f3c6d34f4cf36cfc3d07b138ac113649d"
+  resolved "https://registry.yarnpkg.com/parse-path/-/parse-path-5.0.0.tgz#f933152f3c6d34f4cf36cfc3d07b138ac113649d"
   integrity sha512-qOpH55/+ZJ4jUu/oLO+ifUKjFPNZGfnPJtzvGzKN/4oLMil5m9OH4VpOj6++9/ytJcfks4kzH2hhi87GL/OU9A==
   dependencies:
     protocols "^2.0.0"
@@ -16703,7 +16679,7 @@ synckit@^0.9.1:
     "@pkgr/core" "^0.1.0"
     tslib "^2.6.2"
 
-table@^6.8.1, table@^6.8.2:
+table@^6.8.2:
   version "6.8.2"
   resolved "https://registry.npmjs.org/table/-/table-6.8.2.tgz#c5504ccf201213fa227248bdc8c5569716ac6c58"
   integrity sha512-w2sfv80nrAh2VCbqR5AK27wswXhqcck2AhfnNW76beQXskGZ1V12GwS//yYVa3d3fcvAip2OUnbDAjW2k3v9fA==
@@ -16868,7 +16844,7 @@ treeverse@^2.0.0:
 
 trim-newlines@^3.0.0, trim-newlines@^3.0.1:
   version "3.0.1"
-  resolved "https://registry.npmjs.org/trim-newlines/-/trim-newlines-3.0.1.tgz#260a5d962d8b752425b32f3a7db0dcacd176c144"
+  resolved "https://registry.yarnpkg.com/trim-newlines/-/trim-newlines-3.0.1.tgz#260a5d962d8b752425b32f3a7db0dcacd176c144"
   integrity sha512-c1PTsA3tYrIsLGkJkzHF+w9F2EyxfXGo4UyJc4pFL++FMjnq0HJS69T3M7d//gKrFKwy429bouPescbjecU+Zw==
 
 triple-beam@^1.3.0:
@@ -17433,7 +17409,7 @@ webidl-conversions@^3.0.0:
 
 whatwg-fetch@^2.0.4:
   version "2.0.4"
-  resolved "https://registry.npmjs.org/whatwg-fetch/-/whatwg-fetch-2.0.4.tgz#dde6a5df315f9d39991aa17621853d720b85566f"
+  resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-2.0.4.tgz#dde6a5df315f9d39991aa17621853d720b85566f"
   integrity sha512-dcQ1GWpOD/eEQ97k66aiEVpNnapVj90/+R+SXTPYGHpYBBypfKJEQjLrvMZ7YXbKm21gXd4NcuxUTjiv1YtLng==
 
 whatwg-fetch@^3.4.1:
