@@ -209,6 +209,7 @@ function _setupNodeVersion {
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
   
   # Install and use the specified Node.js version
+  nvm unalias default
   nvm install "$version"
   nvm use "$version"
   
@@ -355,11 +356,10 @@ function _runCanaryTest {
     echo RUN Canary Test
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+    _setupNodeVersion $CLIENT_CANARY_NODE_VERSION
     _installCLIFromLocalRegistry  
     _loadTestAccountCredentials
     _setShell
-    nvm install "$CLIENT_CANARY_NODE_VERSION"
-    nvm use "$CLIENT_CANARY_NODE_VERSION"
     cd client-test-apps/js/api-model-relationship-app
     yarn --network-timeout 180000
     retry yarn test:ci
