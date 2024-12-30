@@ -1,6 +1,7 @@
 #!/bin/bash
 
 AMPLIFY_NODE_VERSION=18.20.4
+CLIENT_CANARY_NODE_VERSION=20.18.0
 
 # set exit on error to true
 set -e
@@ -357,6 +358,7 @@ function _runCanaryTest {
     _installCLIFromLocalRegistry  
     _loadTestAccountCredentials
     _setShell
+    _setupNodeVersion $CLIENT_CANARY_NODE_VERSION
     cd client-test-apps/js/api-model-relationship-app
     yarn --network-timeout 180000
     retry yarn test:ci
