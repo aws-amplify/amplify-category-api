@@ -358,7 +358,8 @@ function _runCanaryTest {
     _installCLIFromLocalRegistry  
     _loadTestAccountCredentials
     _setShell
-    _setupNodeVersion $CLIENT_CANARY_NODE_VERSION
+    nvm install "$CLIENT_CANARY_NODE_VERSION"
+    nvm use "$CLIENT_CANARY_NODE_VERSION"
     cd client-test-apps/js/api-model-relationship-app
     yarn --network-timeout 180000
     retry yarn test:ci
