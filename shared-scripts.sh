@@ -1,7 +1,6 @@
 #!/bin/bash
 
 AMPLIFY_NODE_VERSION=18.20.4
-CLIENT_CANARY_NODE_VERSION=20.18.0
 
 # set exit on error to true
 set -e
@@ -355,7 +354,6 @@ function _runCanaryTest {
     echo RUN Canary Test
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
-    _setupNodeVersion $CLIENT_CANARY_NODE_VERSION
     _installCLIFromLocalRegistry  
     _loadTestAccountCredentials
     _setShell
