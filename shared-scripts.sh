@@ -209,7 +209,6 @@ function _setupNodeVersion {
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
   
   # Install and use the specified Node.js version
-  nvm unalias default
   nvm install "$version"
   nvm use "$version"
   
