@@ -354,6 +354,8 @@ function _runCanaryTest {
     echo RUN Canary Test
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+    # Set Node.js version to $AMPLIFY_NODE_VERSION as one of the package requires version ">= 18.18.0"
+    _setupNodeVersion $AMPLIFY_NODE_VERSION
     _installCLIFromLocalRegistry  
     _loadTestAccountCredentials
     _setShell
