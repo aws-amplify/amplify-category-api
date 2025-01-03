@@ -36,6 +36,7 @@ import {
   SearchableDirectiveV1,
   SqlDirective,
   VersionedDirectiveV1,
+  ValidateDirective,
 } from './directives';
 
 export const AppSyncDirectives: readonly Directive[] = [
@@ -69,6 +70,7 @@ export const V2Directives: readonly Directive[] = [
   RefersToDirective,
   SearchableDirective,
   SqlDirective,
+  ValidateDirective,
 ];
 
 /**
