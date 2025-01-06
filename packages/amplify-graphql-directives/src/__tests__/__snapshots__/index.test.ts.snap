@@ -636,6 +636,32 @@ Object {
 }
 `;
 
+exports[`Directive Definitions ValidateDirective 1`] = `
+Object {
+  "defaults": Object {},
+  "definition": "
+  directive @validate(
+    type: ValidationType!
+    value: [String!]!
+    errorMessage: String
+  ) on FIELD_DEFINITION
+
+  enum ValidationType {
+    gt
+    lt
+    gte
+    lte
+    minLength
+    maxLength
+    startsWith
+    endsWith
+    matches
+  }
+",
+  "name": "validate",
+}
+`;
+
 exports[`Directive Definitions VersionedDirectiveV1 1`] = `
 Object {
   "defaults": Object {
@@ -696,6 +722,7 @@ Array [
   "refersTo",
   "searchable",
   "sql",
+  "validate",
 ]
 `;
 
@@ -727,5 +754,6 @@ Array [
   "refersTo",
   "searchable",
   "sql",
+  "validate",
 ]
 `;
