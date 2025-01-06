@@ -755,6 +755,50 @@ $util.toJson({})",
       },
       "Type": "AWS::IAM::Role",
     },
+    "PostIAMRoleDefaultPolicy04190CA0": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "PostTable",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "PostIAMRoleDefaultPolicy04190CA0",
+        "Roles": Array [
+          Object {
+            "Ref": "PostIAMRole83BF708F",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "PostTable": Object {
       "DeletionPolicy": "Delete",
       "Properties": Object {
@@ -1524,6 +1568,50 @@ Object {
         },
       },
       "Type": "AWS::IAM::Role",
+    },
+    "CommentIAMRoleDefaultPolicyA8D6F6B5": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "CommentTable",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "CommentIAMRoleDefaultPolicyA8D6F6B5",
+        "Roles": Array [
+          Object {
+            "Ref": "CommentIAMRoleD5EC5F51",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "CommentTable": Object {
       "DeletionPolicy": "Delete",
@@ -3006,6 +3094,50 @@ $util.toJson({})",
       },
       "Type": "AWS::IAM::Role",
     },
+    "PostIAMRoleDefaultPolicy04190CA0": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "PostTable",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "PostIAMRoleDefaultPolicy04190CA0",
+        "Roles": Array [
+          Object {
+            "Ref": "PostIAMRole83BF708F",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "PostTable": Object {
       "DeletionPolicy": "Delete",
       "Properties": Object {
@@ -3747,6 +3879,50 @@ Object {
         },
       },
       "Type": "AWS::IAM::Role",
+    },
+    "CommentIAMRoleDefaultPolicyA8D6F6B5": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "CommentTable",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "CommentIAMRoleDefaultPolicyA8D6F6B5",
+        "Roles": Array [
+          Object {
+            "Ref": "CommentIAMRoleD5EC5F51",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "CommentTable": Object {
       "DeletionPolicy": "Delete",
