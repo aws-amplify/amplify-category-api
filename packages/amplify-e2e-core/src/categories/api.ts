@@ -1,3 +1,5 @@
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
+/* eslint-disable func-style */
 import * as path from 'path';
 import { ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
 import * as fs from 'fs-extra';
@@ -729,7 +731,7 @@ export function updateRestApi(cwd: string, settings: Partial<typeof updateRestAp
 
 const allAuthTypes = ['API key', 'Amazon Cognito User Pool', 'IAM', 'OpenID Connect'];
 
-export function addApi(projectDir: string, settings?: any) {
+export function addApi(projectDir: string, settings?: any): Promise<void> {
   const transformerVersion = settings?.transformerVersion ?? 2;
   delete settings?.transformerVersion;
   const authTypesToSkipSetup = settings?.authTypesToSkipSetup ?? [];
@@ -737,7 +739,7 @@ export function addApi(projectDir: string, settings?: any) {
 
   let authTypesToSelectFrom = allAuthTypes.slice();
   return new Promise<void>((resolve, reject) => {
-    let chain = spawn(getCLIPath(defaultOptions.testingWithLatestCodebase), ['add', 'api'], { cwd: projectDir, stripColors: true })
+    const chain = spawn(getCLIPath(defaultOptions.testingWithLatestCodebase), ['add', 'api'], { cwd: projectDir, stripColors: true })
       .wait('Select from one of the below mentioned services:')
       .sendCarriageReturn();
 
