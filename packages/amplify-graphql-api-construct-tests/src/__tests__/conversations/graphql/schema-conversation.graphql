@@ -204,6 +204,7 @@ type AmplifyAIConversationMessageStreamPart @aws_cognito_user_pools {
   contentBlockDoneAtIndex: Int
   stopReason: String
   errors: [AmplifyAIConversationTurnError]
+  p: String
 }
 
 type AmplifyAIConversationTurnError @aws_cognito_user_pools {
