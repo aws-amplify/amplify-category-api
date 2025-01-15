@@ -469,7 +469,7 @@ export const createRdsLambdaRole = (
     new PolicyStatement({
       effect: Effect.ALLOW,
       resources: ['*'],
-      actions: ['ec2:CreateNetworkInterface', 'ec2:DescribeNetworkInterfaces', 'ec2:DeleteNetworkInterface'],
+      actions: ['ec2:CreateNetworkInterface', 'ec2:DescribeNetworkInterfaces', 'ec2:DeleteNetworkInterface', 'dsql:DbConnectAdmin'],
     }),
   );
 
