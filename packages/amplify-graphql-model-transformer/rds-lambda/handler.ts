@@ -210,7 +210,7 @@ const getDBConfig = async (): DBConfig => {
         database: 'postgres',
       }
       if (isDSQLHostname(config.host)) {
-        config = { ...defaultDSQLConfig };
+        config = { ...defaultDSQLConfig, ...config };
         config.password = await generateDSQLAuthToken(config.host);
         return config;
       }
