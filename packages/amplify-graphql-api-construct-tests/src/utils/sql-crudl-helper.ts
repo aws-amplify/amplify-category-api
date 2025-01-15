@@ -142,7 +142,7 @@ export class CRUDLHelper {
     return deleteResult.data[`delete${this.modelName}`];
   };
 
-  public list = async (limit: number = 100, nextToken: string | null = null, filter: any = null): Promise<Record<string, any>> => {
+  public list = async (limit = 100, nextToken: string | null = null, filter: any = null): Promise<Record<string, any>> => {
     const listQuery = `
       query List${this.modelListName}($limit: Int, $nextToken: String, $filter: Model${this.modelName}FilterInput) {
         list${this.modelListName}(limit: $limit, nextToken: $nextToken, filter: $filter) {
@@ -212,7 +212,7 @@ export class CRUDLHelper {
       .join(', ');
   };
 
-  public checkOperationResult = (result: any, expected: any, isList: boolean = false, errors?: string[]): void => {
+  public checkOperationResult = (result: any, expected: any, isList = false, errors?: string[]): void => {
     delete result['__typename'];
     expect(result).toBeDefined();
 
@@ -240,7 +240,7 @@ export class CRUDLHelper {
     }
   };
 
-  public checkListItemExistence = (result: any, primaryKeyValue: string, shouldExist = false, primaryKeyName = 'id') => {
+  public checkListItemExistence = (result: any, primaryKeyValue: string, shouldExist = false, primaryKeyName = 'id'): void => {
     expect(result).toBeDefined();
     expect(result.items).toBeDefined();
     expect(result.items?.filter((item: any) => item[primaryKeyName] === primaryKeyValue)?.length).toEqual(shouldExist ? 1 : 0);

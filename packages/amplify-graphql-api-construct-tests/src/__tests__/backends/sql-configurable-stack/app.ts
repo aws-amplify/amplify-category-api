@@ -10,6 +10,8 @@ import {
   SqlModelDataSourceDbConnectionConfig,
   ModelDataSourceStrategySqlDbType,
   PartialTranslationBehavior,
+  FieldLogLevel,
+  ProvisionedConcurrencyConfig,
 } from '@aws-amplify/graphql-api-construct';
 import { AccountPrincipal, Effect, PolicyDocument, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
 import { CfnUserPoolGroup, UserPool, UserPoolClient, UserPoolTriggers } from 'aws-cdk-lib/aws-cognito';
@@ -73,7 +75,8 @@ interface StackConfig {
   /**
    * The OIDC options/config when using OIDC AuthorizationMode for AmplifyGraphqlApi Construct.
    *
-   * @property {Record<string, string>} [triggers] - UserPoolTriggers for Cognito User Pool when provisioning the User Pool as OIDC provider.
+   * @property {Record<string, string>} [triggers] - UserPoolTriggers for Cognito User Pool when provisioning the User Pool as OIDC
+   * provider.
    * - key: trigger name e.g. 'preTokenGeneration'
    * - value: the lambda function code inlined as a string
    *
@@ -86,9 +89,20 @@ interface StackConfig {
   oidcOptions?: {
     triggers: Record<string, string>;
   };
+
+  /**
+   * The SQL Lambda Provisioned Concurrency config for AmplifyGraphqlApi Construct. Defaults to `{ provisionedConcurrentExecutions: 2 }`. To
+   * suppress provisioned concurrency, specify `false`. If `true`, uses the default value.
+   */
+  sqlLambdaProvisionedConcurrencyConfig?: boolean | ProvisionedConcurrencyConfig;
 }
 
 const createApiDefinition = (): IAmplifyGraphqlDefinition => {
+  const sqlLambdaProvisionedConcurrencyConfig = stackConfig.sqlLambdaProvisionedConcurrencyConfig
+    ? typeof stackConfig.sqlLambdaProvisionedConcurrencyConfig === 'object'
+      ? stackConfig.sqlLambdaProvisionedConcurrencyConfig
+      : { provisionedConcurrentExecutions: 2 }
+    : {};
   return AmplifyGraphqlDefinition.fromString(stackConfig.schema, {
     name: dbDetails.dbConfig.strategyName,
     dbType: dbDetails.dbConfig.dbType,
@@ -100,9 +114,7 @@ const createApiDefinition = (): IAmplifyGraphqlDefinition => {
     dbConnectionConfig: {
       ...dbDetails.dbConnectionConfig,
     },
-    sqlLambdaProvisionedConcurrencyConfig: {
-      provisionedConcurrentExecutions: 2,
-    },
+    ...sqlLambdaProvisionedConcurrencyConfig,
   });
 };
 
@@ -119,8 +131,9 @@ const createAuthorizationModes = (): AuthorizationModes => {
 
       break;
     }
+
     case AUTH_MODE.AMAZON_COGNITO_USER_POOLS: {
-      const { userPool, userPoolClient } = createUserPool(dbDetails.dbConfig.dbName);
+      const { userPool } = createUserPool(dbDetails.dbConfig.dbName);
 
       authorizationModes = {
         defaultAuthorizationMode: 'AMAZON_COGNITO_USER_POOLS',
@@ -132,6 +145,7 @@ const createAuthorizationModes = (): AuthorizationModes => {
 
       break;
     }
+
     case AUTH_MODE.OPENID_CONNECT: {
       const { userPool, userPoolClient } = createUserPool(dbDetails.dbConfig.dbName, stackConfig.oidcOptions?.triggers);
 
@@ -144,10 +158,12 @@ const createAuthorizationModes = (): AuthorizationModes => {
           tokenExpiryFromAuth: Duration.hours(1),
           tokenExpiryFromIssue: Duration.hours(1),
         },
+        apiKeyConfig: { expires: Duration.days(2) },
       };
 
       break;
     }
+
     default: {
       throw new Error(`Unsupported auth mode: ${stackConfig.authMode}`);
     }
@@ -197,6 +213,9 @@ const createUserPool = (prefix: string, triggers?: Record<string, string>): { us
 
   new CfnOutput(stack, 'userPoolId', { value: userPool.userPoolId });
   new CfnOutput(stack, 'webClientId', { value: userPoolClient.userPoolClientId });
+
+  const userPoolGroups = stackConfig.userGroups?.length ?? 0 > 0 ? stackConfig.userGroups! : [];
+  new CfnOutput(stack, 'userPoolGroups', { value: JSON.stringify(userPoolGroups) });
 
   return { userPool, userPoolClient };
 };
@@ -286,11 +305,15 @@ const definition = createApiDefinition();
 const authorizationModes = createAuthorizationModes();
 const translationBehavior = createTranslationBehavior();
 
-const api = new AmplifyGraphqlApi(stack, `SqlBoundApi`, {
+const api = new AmplifyGraphqlApi(stack, 'SqlBoundApi', {
   apiName: `${dbDetails.dbConfig.dbType}${Date.now()}`,
   definition,
   authorizationModes,
   translationBehavior,
+  logging: {
+    excludeVerboseContent: false,
+    fieldLogLevel: FieldLogLevel.ALL,
+  },
 });
 
 createBasicRole();

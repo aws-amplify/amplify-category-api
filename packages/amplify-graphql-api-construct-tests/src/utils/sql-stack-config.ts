@@ -1,3 +1,4 @@
+import { ProvisionedConcurrencyConfig } from '@aws-amplify/graphql-api-construct';
 import { AUTH_TYPE } from 'aws-appsync';
 
 export interface StackConfig {
@@ -27,7 +28,8 @@ export interface StackConfig {
   /**
    * The OIDC options/config when using OIDC AuthorizationMode for AmplifyGraphqlApi Construct.
    *
-   * @property {Record<string, string>} [triggers] - UserPoolTriggers for Cognito User Pool when provisioning the User Pool as OIDC provider.
+   * @property {Record<string, string>} [triggers] - UserPoolTriggers for Cognito User Pool when provisioning the User Pool as OIDC
+   * provider.
    * - key: trigger name e.g. 'preTokenGeneration'
    * - value: the lambda function code inlined as a string
    *
@@ -40,4 +42,10 @@ export interface StackConfig {
   oidcOptions?: {
     triggers?: Record<string, string>;
   };
+
+  /**
+   * The SQL Lambda Provisioned Concurrency config for AmplifyGraphqlApi Construct. Defaults to `{ provisionedConcurrentExecutions: 2 }`. To
+   * suppress provisioned concurrency, specify `false`. If `true`, uses the default value.
+   */
+  sqlLambdaProvisionedConcurrencyConfig?: boolean | ProvisionedConcurrencyConfig;
 }

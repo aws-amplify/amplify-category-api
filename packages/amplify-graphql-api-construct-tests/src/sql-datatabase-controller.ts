@@ -238,7 +238,7 @@ export class SqlDatatabaseController {
 
     await Promise.all(
       Object.values(connectionConfigs).map((dbConnectionConfig) => {
-        if (isSqlModelDataSourceSecretsManagerDbConnectionConfig(dbConnectionConfig)) {
+        if (!this.usePreProvisionedCluster && isSqlModelDataSourceSecretsManagerDbConnectionConfig(dbConnectionConfig)) {
           return deleteDbConnectionConfigWithSecretsManager({
             region: this.options.region,
             secretArn: dbConnectionConfig.secretArn,
@@ -267,8 +267,8 @@ export class SqlDatatabaseController {
   };
 
   /**
-   * Writes the specified DB details and CDK stack config to files named `db-details.json` and `stack-config.json` in the specified directory.
-   * Used to pass db and cdk config configs from setup code to the CDK app under test.
+   * Writes the specified DB details and CDK stack config to files named `db-details.json` and `stack-config.json` in the specified
+   * directory. Used to pass db and cdk config configs from setup code to the CDK app under test.
    *
    * **NOTE** Do not call this until the CDK project is initialized: `cdk init` fails if the working directory is not empty.
    *

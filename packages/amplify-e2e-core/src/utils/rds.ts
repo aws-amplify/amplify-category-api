@@ -245,7 +245,8 @@ export const createRDSCluster = async (config: RDSConfig): Promise<ClusterInfo> 
 };
 
 /**
- * Setup the test database and data in the pre-existing RDS Aurora serverless V2 cluster with one writer DB instance. Get the necessary configuration settings of the cluster and instance.
+ * Setup the test database and data in the pre-existing RDS Aurora serverless V2 cluster with one writer DB instance. Get the necessary
+ * configuration settings of the cluster and instance.
  * @param identifier Cluster idenfitier.
  * @param config Configuration of the database cluster.
  * @param queries Initial queries to be executed.
@@ -389,8 +390,8 @@ export const setupRDSInstanceAndData = async (
 };
 
 /**
- * Creates a new RDS Aurora serverless V2 cluster with one DB instance using the given input configuration, runs the given queries and returns the details of the created RDS
- * instance.
+ * Creates a new RDS Aurora serverless V2 cluster with one DB instance using the given input configuration, runs the given queries and
+ * returns the details of the created RDS instance.
  * @param config Configuration of the database cluster
  * @param queries Initial queries to be executed
  * @returns Endpoint address, port and database name of the created RDS cluster.
@@ -652,7 +653,6 @@ export const generateDBName = (): string =>
 
 /**
  * Adds the given inbound rule to the security group.
- * @param config Inbound rule configuration
  */
 export const addRDSPortInboundRule = async (config: {
   region: string;
@@ -713,7 +713,6 @@ export const addRDSPortInboundRuleToGroupId = async (config: {
 
 /**
  * Removes the given Inbound rule to the security group
- * @param config Inbound rule configuration
  */
 export const removeRDSPortInboundRule = async (config: {
   region: string;
@@ -905,12 +904,16 @@ export const storeDbConnectionStringConfig = async (options: {
   }
 };
 
-export const storeSSMParameters = async (options: { region: string; pathPrefix: string; parameters: Record<string, string> }) => {
+export const storeSSMParameters = async (options: {
+  region: string;
+  pathPrefix: string;
+  parameters: Record<string, string>;
+}): Promise<void> => {
   const ssmClient = new SSMClient({ region: options.region });
   const pathPrefix = options.pathPrefix;
   const promises: Promise<PutParameterCommandOutput>[] = [];
 
-  for (const parameterName in options.parameters) {
+  Object.keys(options.parameters).forEach((parameterName) => {
     const ssmPath = `${pathPrefix}/${parameterName}`;
     const value = options.parameters[parameterName];
 
@@ -922,7 +925,7 @@ export const storeSSMParameters = async (options: { region: string; pathPrefix: 
     };
 
     promises.push(ssmClient.send(new PutParameterCommand(input)));
-  }
+  });
 
   await Promise.all(promises);
 };
@@ -989,11 +992,11 @@ export const extractVpcConfigFromDbInstance = (
   };
 };
 
-export const getRDSTableNamePrefix = () => {
+export const getRDSTableNamePrefix = (): string => {
   return 'e2e_test_';
 };
 
-export function verifyRDSTableName(tableName: string): boolean {
+export const verifyRDSTableName = (tableName: string): boolean => {
   const prefix = getRDSTableNamePrefix();
 
   // Check if the table name starts with the correct prefix
@@ -1010,4 +1013,4 @@ export function verifyRDSTableName(tableName: string): boolean {
   const validNameRegex = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
 
   return validNameRegex.test(nameWithoutPrefix);
-}
+};

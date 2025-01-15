@@ -3,7 +3,7 @@ import { convertToDBSpecificGraphQLString, generateDDL, userGroupNames } from '.
 
 export const schema = (engine: ImportedRDSType): string => `
   input AMPLIFY {
-    engine: String = "postgres",
+    engine: String = "${engine}",
     globalAuthRule: AuthRule = {allow: public}
   }
 
