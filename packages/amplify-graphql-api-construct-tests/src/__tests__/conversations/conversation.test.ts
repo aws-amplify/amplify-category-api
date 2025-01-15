@@ -116,6 +116,10 @@ describe('conversation', () => {
         // expect to receive the assistant response in the subscription
         for await (const event of subscription) {
           events.push(event.onCreateAssistantResponsePirateChat);
+          // expect event to contain `p`
+          expect(event.onCreateAssistantResponsePirateChat.p).toBeDefined();
+          expect(event.onCreateAssistantResponsePirateChat.p.length).toBeGreaterThanOrEqual(0);
+          expect(event.onCreateAssistantResponsePirateChat.p.length).toBeLessThanOrEqual(35);
           if (event.onCreateAssistantResponsePirateChat.stopReason) break;
         }
 
