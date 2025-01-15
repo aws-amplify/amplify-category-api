@@ -2,6 +2,7 @@ import { SSMClient, GetParameterCommand, GetParameterCommandOutput } from '@aws-
 import { GetSecretValueCommand, SecretsManagerClient, GetSecretValueCommandOutput } from '@aws-sdk/client-secrets-manager';
 // @ts-ignore
 import { DBAdapter, DBConfig, getDBAdapter } from 'rds-query-processor';
+import { generateDSQLAuthToken, isDSQLHostname } from './dsql-helpers';
 
 let adapter: DBAdapter;
 let ssmClient: SSMClient;
@@ -52,7 +53,9 @@ const isRetryableError = (error: Error & {code?: string, errno?: string}): boole
   // https://dev.mysql.com/doc/mysql-errors/8.0/en/server-error-reference.html
   const mysqlRetryableError = error.errno === '1045';
 
-  return postgresRetryableError || mysqlRetryableError;
+  const dsqlRetryableError = error.code === '08006' && error.message?.includes('access denied');
+
+  return postgresRetryableError || mysqlRetryableError || dsqlRetryableError;
 }
 
 const createSSMClient = (): void => {
@@ -195,7 +198,23 @@ const getDBConfig = async (): DBConfig => {
 
     const jsonConnectionString = process.env.connectionString;
     if (jsonConnectionString) {
-      config.connectionString = await retrieveSsmValueFromEnvPaths(jsonConnectionString);
+      const connectionString = await retrieveSsmValueFromEnvPaths(jsonConnectionString);
+
+      // If the host is a DSQL hostname, generate an auth token
+      const { hostname } = new URL(connectionString);
+      config.host = decodeURIComponent(hostname);
+      if (isDSQLHostname(config.host)) {
+        config.username = 'admin';
+        config.password = await generateDSQLAuthToken(config.host);
+        config.engine = 'postgres';
+        config.port = 5432;
+        config.database = 'postgres';
+        return config;
+      }
+
+      // Fall back to the connection string if the host is not a DSQL hostname
+      delete config.host;
+      config.connectionString = connectionString;
       return config;
     }
 
