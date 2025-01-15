@@ -1,21 +1,22 @@
+import path from 'path';
 import {
   addApi,
+  addAuthWithPreTokenGenerationTrigger,
   amplifyPush,
   createNewProjectDir,
   deleteDBInstance,
   deleteProject,
   deleteProjectDir,
+  getProjectMeta,
   importRDSDatabase,
   initJSProjectWithProfile,
   setupRDSInstanceAndData,
   sleep,
   updateAuthAddUserGroups,
-  getProjectMeta,
-  addAuthWithPreTokenGenerationTrigger,
 } from 'amplify-category-api-e2e-core';
 import { existsSync, writeFileSync, removeSync } from 'fs-extra';
 import generator from 'generate-password';
-import path from 'path';
+import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
 import { schema, sqlCreateStatements } from '../__tests__/auth-test-schemas/oidc-provider-fields';
 import {
   createModelOperationHelpers,
@@ -32,17 +33,16 @@ import {
   updatePreAuthTrigger,
 } from '../rds-v2-test-utils';
 import {
-  setupUser,
-  getUserPoolId,
-  signInUser,
   configureAmplify,
-  getUserPoolIssUrl,
   getAppClientIDWeb,
   getConfiguredAppsyncClientOIDCAuth,
+  getUserPoolId,
+  getUserPoolIssUrl,
+  setupUser,
+  signInUser,
 } from '../schema-api-directives';
-import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
-import { SQL_TESTS_USE_BETA } from './sql-e2e-config';
 import { GQLQueryHelper } from '../query-utils/gql-helper';
+import { SQL_TESTS_USE_BETA } from './sql-e2e-config';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
