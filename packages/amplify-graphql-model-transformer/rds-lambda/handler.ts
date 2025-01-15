@@ -183,7 +183,7 @@ const retrieveSsmValueFromEnvPaths = async (path: string): Promise<string> => {
 };
 
 const getDBConfig = async (): DBConfig => {
-  const config: DBConfig = {};
+  let config: DBConfig = {};
 
   const sslCertificate = await getCustomSslCert();
   if (sslCertificate) {
@@ -203,12 +203,15 @@ const getDBConfig = async (): DBConfig => {
       // If the host is a DSQL hostname, generate an auth token
       const { hostname } = new URL(connectionString);
       config.host = decodeURIComponent(hostname);
+      const defaultDSQLConfig = {
+        username: 'admin',
+        engine: 'postgres',
+        port: 5432,
+        database: 'postgres',
+      }
       if (isDSQLHostname(config.host)) {
-        config.username = 'admin';
+        config = { ...defaultDSQLConfig };
         config.password = await generateDSQLAuthToken(config.host);
-        config.engine = 'postgres';
-        config.port = 5432;
-        config.database = 'postgres';
         return config;
       }
 

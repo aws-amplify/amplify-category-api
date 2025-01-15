@@ -8,7 +8,7 @@ export const generateDSQLAuthToken = async (endpoint: string): Promise<string> =
     const token = await signer.getDbConnectAdminAuthToken();
     return token;
   } catch (error) {
-      throw error;
+    throw error;
   }
 }
 
