@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.13.8](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.13.5...amplify-graphql-api-construct-tests@1.13.8) (2025-01-16)
+
+### Bug Fixes
+
+- **conversation:** add padding to stream chunks ([#3115](https://github.com/aws-amplify/amplify-category-api/issues/3115)) ([8ab2284](https://github.com/aws-amplify/amplify-category-api/commit/8ab2284eedc7f5e29d0e21acf3124d60ed058a93))
+
 ## [1.13.7](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.13.6...amplify-graphql-api-construct-tests@1.13.7) (2024-12-23)
 
 **Note:** Version bump only for package amplify-graphql-api-construct-tests
