@@ -2571,6 +2571,7 @@ export type OnCreateAssistantResponsePirateChatSubscription = {
     id: string;
     owner?: string | null;
     stopReason?: string | null;
+    p?: string | null;
   } | null;
 };
 

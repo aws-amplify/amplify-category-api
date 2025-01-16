@@ -278,8 +278,10 @@ export function response(ctx) {
   const streamId = \`\${ctx.args.input.associatedUserMessageId}#stream\`;
   const { owner } = ctx.args;
   const event = ctx.args.input;
+  const padding = generateRandomPadding();
 
   const streamEvent = {
+    p: padding,
     ...event,
     __typename: 'ConversationMessageStreamPart',
     id: streamId,
@@ -293,7 +295,12 @@ export function response(ctx) {
 
   return streamEvent;
 }
-"
+
+function generateRandomPadding() {
+  const base = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  const rand = Math.floor(Math.random() * 36);
+  return base.slice(0, rand);
+}"
 `;
 
 exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration: AssistantResponseStreamMutation init slot function code 1`] = `
@@ -669,7 +676,7 @@ export function request(ctx) {
   const { graphqlApiEndpoint } = ctx.stash;
   const userAgent = createUserAgent(request);
 
-  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message }';
+  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message } p';
 
   const streamingResponseMutation = {
     name: 'createAssistantResponseStreamPirateChat',
@@ -1135,8 +1142,10 @@ export function response(ctx) {
   const streamId = \`\${ctx.args.input.associatedUserMessageId}#stream\`;
   const { owner } = ctx.args;
   const event = ctx.args.input;
+  const padding = generateRandomPadding();
 
   const streamEvent = {
+    p: padding,
     ...event,
     __typename: 'ConversationMessageStreamPart',
     id: streamId,
@@ -1150,7 +1159,12 @@ export function response(ctx) {
 
   return streamEvent;
 }
-"
+
+function generateRandomPadding() {
+  const base = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  const rand = Math.floor(Math.random() * 36);
+  return base.slice(0, rand);
+}"
 `;
 
 exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships: AssistantResponseStreamMutation init slot function code 1`] = `
@@ -1526,7 +1540,7 @@ export function request(ctx) {
   const { graphqlApiEndpoint } = ctx.stash;
   const userAgent = createUserAgent(request);
 
-  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message }';
+  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message } p';
 
   const streamingResponseMutation = {
     name: 'createAssistantResponseStreamPirateChat',
@@ -1992,8 +2006,10 @@ export function response(ctx) {
   const streamId = \`\${ctx.args.input.associatedUserMessageId}#stream\`;
   const { owner } = ctx.args;
   const event = ctx.args.input;
+  const padding = generateRandomPadding();
 
   const streamEvent = {
+    p: padding,
     ...event,
     __typename: 'ConversationMessageStreamPart',
     id: streamId,
@@ -2007,7 +2023,12 @@ export function response(ctx) {
 
   return streamEvent;
 }
-"
+
+function generateRandomPadding() {
+  const base = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  const rand = Math.floor(Math.random() * 36);
+  return base.slice(0, rand);
+}"
 `;
 
 exports[`ConversationTransformer valid schemas should transform conversation route with model query tool: AssistantResponseStreamMutation init slot function code 1`] = `
@@ -2383,7 +2404,7 @@ export function request(ctx) {
   const { graphqlApiEndpoint } = ctx.stash;
   const userAgent = createUserAgent(request);
 
-  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message }';
+  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message } p';
 
   const streamingResponseMutation = {
     name: 'createAssistantResponseStreamPirateChat',
@@ -2849,8 +2870,10 @@ export function response(ctx) {
   const streamId = \`\${ctx.args.input.associatedUserMessageId}#stream\`;
   const { owner } = ctx.args;
   const event = ctx.args.input;
+  const padding = generateRandomPadding();
 
   const streamEvent = {
+    p: padding,
     ...event,
     __typename: 'ConversationMessageStreamPart',
     id: streamId,
@@ -2864,7 +2887,12 @@ export function response(ctx) {
 
   return streamEvent;
 }
-"
+
+function generateRandomPadding() {
+  const base = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  const rand = Math.floor(Math.random() * 36);
+  return base.slice(0, rand);
+}"
 `;
 
 exports[`ConversationTransformer valid schemas should transform conversation route with query tools: AssistantResponseStreamMutation init slot function code 1`] = `
@@ -3240,7 +3268,7 @@ export function request(ctx) {
   const { graphqlApiEndpoint } = ctx.stash;
   const userAgent = createUserAgent(request);
 
-  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message }';
+  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message } p';
 
   const streamingResponseMutation = {
     name: 'createAssistantResponseStreamPirateChat',
