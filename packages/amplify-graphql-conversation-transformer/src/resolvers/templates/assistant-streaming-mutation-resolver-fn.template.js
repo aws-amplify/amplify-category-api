@@ -76,8 +76,10 @@ export function response(ctx) {
   const streamId = `${ctx.args.input.associatedUserMessageId}#stream`;
   const { owner } = ctx.args;
   const event = ctx.args.input;
+  const padding = generateRandomPadding();
 
   const streamEvent = {
+    p: padding,
     ...event,
     __typename: 'ConversationMessageStreamPart',
     id: streamId,
@@ -90,4 +92,10 @@ export function response(ctx) {
   }
 
   return streamEvent;
+}
+
+function generateRandomPadding() {
+  const base = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  const rand = Math.floor(Math.random() * 36);
+  return base.slice(0, rand);
 }

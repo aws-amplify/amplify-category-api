@@ -8,15 +8,15 @@ import { sqlCreateStatements } from '../sql-tests-common/tests-sources/sql-dynam
 
 jest.setTimeout(DURATION_1_HOUR);
 
-describe('CDK GraphQL Transformer deployments with Postgres SQL datasources - OIDC Auth', () => {
-  const projFolderName = 'pgoidcaccess';
+describe('CDK GraphQL Transformer deployments with MySQL SQL datasources - OIDC Auth', () => {
+  const projFolderName = 'mysqloidcaccess';
 
   // sufficient password length that meets the requirements for RDS cluster/instance
   const [username, password, identifier] = generator.generateMultiple(3, { length: 11 });
   const region = process.env.CLI_REGION ?? 'us-west-2';
-  const engine = 'postgres';
+  const engine = 'mysql';
 
-  const databaseController: SqlDatatabaseController = new SqlDatatabaseController(sqlCreateStatements(ImportedRDSType.POSTGRESQL), {
+  const databaseController: SqlDatatabaseController = new SqlDatatabaseController(sqlCreateStatements(ImportedRDSType.MYSQL), {
     identifier,
     engine,
     username,
@@ -39,5 +39,5 @@ describe('CDK GraphQL Transformer deployments with Postgres SQL datasources - OI
     dbController: databaseController,
   });
 
-  testGraphQLAPIWithOIDCAccess(constructTestOptions('ssm'), 'OIDC Auth Access', ImportedRDSType.POSTGRESQL);
+  testGraphQLAPIWithOIDCAccess(constructTestOptions('ssm'), 'OIDC Auth Access', ImportedRDSType.MYSQL);
 });
