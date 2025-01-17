@@ -324,7 +324,72 @@ describe('generation route invalid inference configuration', () => {
     );
   });
 });
-// });
+
+describe('generation route model support', () => {
+  test.each([
+    // standard models
+    'anthropic.claude-3-haiku-20240307-v1:0',
+    'anthropic.claude-3-5-haiku-20241022-v1:0',
+    'anthropic.claude-3-sonnet-20240229-v1:0',
+    'anthropic.claude-3-5-sonnet-20240620-v1:0',
+    'anthropic.claude-3-5-sonnet-20241022-v2:0',
+    'mistral.mistral-large-2402-v1:0',
+    'mistral.mistral-large-2407-v1:0',
+    'amazon.nova-pro-v1:0',
+    'amazon.nova-lite-v1:0',
+    'meta.llama3-1-405b-instruct-v1:0',
+    'ai21.jamba-1-5-mini-v1:0',
+    // cross-region inference model identifiers
+    'us.anthropic.claude-3-haiku-20240307-v1:0',
+    'eu.mistral.mistral-large-2402-v1:0',
+    'ap.amazon.nova-pro-v1:0',
+  ])('supported model: %s', (model) => {
+    const inputSchema = `
+      type Todo {
+        content: String
+        isDone: Boolean
+      }
+
+      type Query {
+          makeTodo(description: String!): Todo
+          @generation(
+            aiModel: "${model}",
+            systemPrompt: "Make a string based on the description.",
+          )
+      }
+    `;
+
+    const out = transform(inputSchema);
+    expect(out).toBeDefined();
+  });
+
+  test.each([
+    'amazon.nova-micro-v1:0',
+    'cohere.command-r-v1:0',
+    'cohere.command-r-plus-v1:0',
+    'meta.llama3-1-70b-instruct-v1:0',
+    'meta.llama3-1-8b-instruct-v1:0',
+    'mistral.mistral-small-2402-v1:0',
+    'some-random-model-v1:0',
+  ])('unsupported model: %s', (model) => {
+    const inputSchema = `
+      type Todo {
+        content: String
+        isDone: Boolean
+      }
+
+      type Query {
+          makeTodo(description: String!): Todo
+          @generation(
+            aiModel: "${model}",
+            systemPrompt: "Make a string based on the description.",
+          )
+      }
+    `;
+
+    expect(() => transform(inputSchema)).toThrow(`Model ${model} is not supported for Generation routes.`);
+  });
+});
 
 const getResolverResource = (queryName: string, resources?: Record<string, any>): Record<string, any> => {
   const resolverName = `Query${queryName}Resolver`;

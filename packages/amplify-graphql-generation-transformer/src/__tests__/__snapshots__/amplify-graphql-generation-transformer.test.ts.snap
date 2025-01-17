@@ -118,12 +118,13 @@ export function response(ctx) {
     util.error('Invalid foundation model response', 'InvalidResponseException');
   }
 
-  // The first condition (the boolean literal) in this if statement represents whether the
-  // return type of the generation route is a raw string or not.
-  // If the return type is \`String\` / \`String!\`, the value is \`false\` and we don't attempt any fallback parsing.
-  // If the return type isn't \`String\` / \`String!\`, the valie is \`true\` and the toolUse input is a \`string\`,
+  // Represents whether the return type of the generation route is a raw string or not.
+  // If the return type is \`String\`, \`ID\`, or \`AWSJSON\` (including required \`!\` ), the value is \`false\` and we don't attempt any fallback parsing.
+  // If the return type isn't on the the string based scalars above, the value is \`true\`.
+  const isScalarStringResponseType = false;
+  // When \`isScalarStringResponseType\` is \`false\` and the toolUse input is a \`string\`,
   // the foundation model has returned stringified JSON, so we attempt to parse it into a valid object.
-  if (true && typeof value === 'string') {
+  if (!isScalarStringResponseType && typeof value === 'string') {
     return parseIncorrectlyStringifiedJSON(value);
   }
 
@@ -296,12 +297,13 @@ export function response(ctx) {
     util.error('Invalid foundation model response', 'InvalidResponseException');
   }
 
-  // The first condition (the boolean literal) in this if statement represents whether the
-  // return type of the generation route is a raw string or not.
-  // If the return type is \`String\` / \`String!\`, the value is \`false\` and we don't attempt any fallback parsing.
-  // If the return type isn't \`String\` / \`String!\`, the valie is \`true\` and the toolUse input is a \`string\`,
+  // Represents whether the return type of the generation route is a raw string or not.
+  // If the return type is \`String\`, \`ID\`, or \`AWSJSON\` (including required \`!\` ), the value is \`false\` and we don't attempt any fallback parsing.
+  // If the return type isn't on the the string based scalars above, the value is \`true\`.
+  const isScalarStringResponseType = false;
+  // When \`isScalarStringResponseType\` is \`false\` and the toolUse input is a \`string\`,
   // the foundation model has returned stringified JSON, so we attempt to parse it into a valid object.
-  if (true && typeof value === 'string') {
+  if (!isScalarStringResponseType && typeof value === 'string') {
     return parseIncorrectlyStringifiedJSON(value);
   }
 
@@ -473,12 +475,13 @@ export function response(ctx) {
     util.error('Invalid foundation model response', 'InvalidResponseException');
   }
 
-  // The first condition (the boolean literal) in this if statement represents whether the
-  // return type of the generation route is a raw string or not.
-  // If the return type is \`String\` / \`String!\`, the value is \`false\` and we don't attempt any fallback parsing.
-  // If the return type isn't \`String\` / \`String!\`, the valie is \`true\` and the toolUse input is a \`string\`,
+  // Represents whether the return type of the generation route is a raw string or not.
+  // If the return type is \`String\`, \`ID\`, or \`AWSJSON\` (including required \`!\` ), the value is \`false\` and we don't attempt any fallback parsing.
+  // If the return type isn't on the the string based scalars above, the value is \`true\`.
+  const isScalarStringResponseType = false;
+  // When \`isScalarStringResponseType\` is \`false\` and the toolUse input is a \`string\`,
   // the foundation model has returned stringified JSON, so we attempt to parse it into a valid object.
-  if (true && typeof value === 'string') {
+  if (!isScalarStringResponseType && typeof value === 'string') {
     return parseIncorrectlyStringifiedJSON(value);
   }
 
@@ -667,12 +670,13 @@ export function response(ctx) {
     util.error('Invalid foundation model response', 'InvalidResponseException');
   }
 
-  // The first condition (the boolean literal) in this if statement represents whether the
-  // return type of the generation route is a raw string or not.
-  // If the return type is \`String\` / \`String!\`, the value is \`false\` and we don't attempt any fallback parsing.
-  // If the return type isn't \`String\` / \`String!\`, the valie is \`true\` and the toolUse input is a \`string\`,
+  // Represents whether the return type of the generation route is a raw string or not.
+  // If the return type is \`String\`, \`ID\`, or \`AWSJSON\` (including required \`!\` ), the value is \`false\` and we don't attempt any fallback parsing.
+  // If the return type isn't on the the string based scalars above, the value is \`true\`.
+  const isScalarStringResponseType = true;
+  // When \`isScalarStringResponseType\` is \`false\` and the toolUse input is a \`string\`,
   // the foundation model has returned stringified JSON, so we attempt to parse it into a valid object.
-  if (false && typeof value === 'string') {
+  if (!isScalarStringResponseType && typeof value === 'string') {
     return parseIncorrectlyStringifiedJSON(value);
   }
 
@@ -790,12 +794,13 @@ export function response(ctx) {
     util.error('Invalid foundation model response', 'InvalidResponseException');
   }
 
-  // The first condition (the boolean literal) in this if statement represents whether the
-  // return type of the generation route is a raw string or not.
-  // If the return type is \`String\` / \`String!\`, the value is \`false\` and we don't attempt any fallback parsing.
-  // If the return type isn't \`String\` / \`String!\`, the valie is \`true\` and the toolUse input is a \`string\`,
+  // Represents whether the return type of the generation route is a raw string or not.
+  // If the return type is \`String\`, \`ID\`, or \`AWSJSON\` (including required \`!\` ), the value is \`false\` and we don't attempt any fallback parsing.
+  // If the return type isn't on the the string based scalars above, the value is \`true\`.
+  const isScalarStringResponseType = true;
+  // When \`isScalarStringResponseType\` is \`false\` and the toolUse input is a \`string\`,
   // the foundation model has returned stringified JSON, so we attempt to parse it into a valid object.
-  if (false && typeof value === 'string') {
+  if (!isScalarStringResponseType && typeof value === 'string') {
     return parseIncorrectlyStringifiedJSON(value);
   }
 

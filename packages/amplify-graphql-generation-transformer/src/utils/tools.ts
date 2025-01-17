@@ -85,18 +85,42 @@ export const createResponseTypeTool = (config: GenerationDirectiveConfiguration,
 };
 
 const getToolChoice = (config: GenerationDirectiveConfiguration): ToolChoice => {
-  switch (config.aiModel) {
-    case 'anthropic.claude-3-opus-20240229-v1:0':
-    case 'anthropic.claude-3-haiku-20240307-v1:0':
-    case 'anthropic.claude-3-sonnet-20240229-v1:0':
-    case 'anthropic.claude-3-5-haiku-20241022-v1:0':
-    case 'anthropic.claude-3-5-sonnet-20240620-v1:0':
-    case 'anthropic.claude-3-5-sonnet-20241022-v2:0':
-      return { tool: { name: 'responseType' } };
-    case 'mistral.mistral-large-2402-v1:0':
-    case 'mistral.mistral-large-2407-v1:0':
-      return { any: {} };
-    default:
-      return undefined;
+  // Note: We're checking `includes()` below to avoid throwing a false positive
+  // for cross-region inference model identifiers, e.g. `us.anthropic.claude-3-5-sonnet-20241022-v2:0`.
+  const model = config.aiModel;
+
+  // https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_SpecificToolChoice.html
+  // This field is only supported by Anthropic Claude 3 models.
+  const claude3Models = [
+    'anthropic.claude-3-opus-20240229-v1:0',
+    'anthropic.claude-3-haiku-20240307-v1:0',
+    'anthropic.claude-3-sonnet-20240229-v1:0',
+    'anthropic.claude-3-5-haiku-20241022-v1:0',
+    'anthropic.claude-3-5-sonnet-20240620-v1:0',
+    'anthropic.claude-3-5-sonnet-20241022-v2:0',
+  ];
+  if (claude3Models.some((supportedModel) => model.includes(supportedModel))) {
+    return { tool: { name: 'responseType' } };
   }
+
+  // https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_ToolChoice.html
+  // ToolChoice is only supported by Anthropic Claude 3 models and by Mistral AI Mistral Large.
+  const mistralModels = ['mistral.mistral-large-2402-v1:0', 'mistral.mistral-large-2407-v1:0'];
+  if (mistralModels.some((supportedModel) => model.includes(supportedModel))) {
+    return { any: {} };
+  }
+
+  // These models do not support toolChoice but are known to work from testing.
+  const sansToolChoiceKnownWorkingModels = [
+    'amazon.nova-pro-v1:0',
+    'amazon.nova-lite-v1:0',
+    'meta.llama3-1-405b-instruct-v1:0',
+    'ai21.jamba-1-5-mini-v1:0',
+  ];
+
+  if (sansToolChoiceKnownWorkingModels.some((supportedModel) => model.includes(supportedModel))) {
+    return undefined;
+  }
+
+  throw new Error(`Model ${model} is not supported for Generation routes.`);
 };
