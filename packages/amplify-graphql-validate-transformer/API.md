@@ -4,11 +4,14 @@
 
 ```ts
 
+import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 
 // @public (undocumented)
 export class ValidateTransformer extends TransformerPluginBase {
     constructor();
+    // (undocumented)
+    generateResolvers: (ctx: TransformerContextProvider) => void;
 }
 
 // (No @packageDocumentation comment for this package)
