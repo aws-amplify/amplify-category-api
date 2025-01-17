@@ -34,7 +34,9 @@
     "web-vitals": "^2.1.4"
   },
   "resolutions": {
-    "joi": "17.7.0"
+    "joi": "17.7.0",
+    "glob": "10.4.5",
+    "rimraf": "5.0.10"
   },
   "scripts": {
     "start": "react-scripts start",
