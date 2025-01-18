@@ -78,6 +78,7 @@ export interface LambdaConfig {
 
 export interface AppSyncFunctionConfigurationProvider extends IConstruct {
   readonly arn: string;
+  readonly name: string;
   readonly functionId: string;
 }
 

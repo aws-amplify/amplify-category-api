@@ -9,6 +9,9 @@ import {
   VpcConfig,
   VTLRuntimeTemplate,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import * as util from 'util';
+import * as fs from 'fs';
+import * as path from 'path';
 import {
   BaseDataSource,
   CfnDataSource,
@@ -22,9 +25,10 @@ import {
   CfnFunctionConfiguration,
 } from 'aws-cdk-lib/aws-appsync';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
-import { IRole } from 'aws-cdk-lib/aws-iam';
+import { IRole, Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { CfnFunction, Code, Function, IFunction, ILayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Duration, Token } from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib';
 import { ResolverResourceIDs, resourceName, toCamelCase } from 'graphql-transformer-common';
 import hash from 'object-hash';
 import { Construct } from 'constructs';
@@ -35,6 +39,7 @@ import { GraphQLApi } from './graphql-api';
 import { setResourceName } from './utils';
 import { getRuntimeSpecificFunctionProps, isJsResolverFnRuntime } from './utils/function-runtime';
 import { APPSYNC_JS_RUNTIME, VTL_RUNTIME } from './types';
+import { Provider } from 'aws-cdk-lib/custom-resources';
 
 type Slot = {
   requestMappingTemplate?: string;
@@ -53,6 +58,8 @@ export class DefaultTransformHost implements TransformHostProvider {
   private resolvers: Map<string, CfnResolver> = new Map();
 
   private appsyncFunctions: Map<string, AppSyncFunctionConfiguration> = new Map();
+
+  private resources: Record<string, any> = {};
 
   private api: GraphQLApi;
 
@@ -77,6 +84,43 @@ export class DefaultTransformHost implements TransformHostProvider {
   public getResolver = (typeName: string, fieldName: string): CfnResolver | void => {
     const resolverRef = `${typeName}:${fieldName}`;
     return this.resolvers.has(resolverRef) ? this.resolvers.get(resolverRef) : undefined;
+  };
+
+  createResourceManagerResource = (context: any): void => {
+    fs.writeFileSync(path.join(__dirname, 'resolver-manager', 'computed-resources.json'), JSON.stringify(this.resources, null, 4));
+
+    const lambdaCodePath = path.join(__dirname, '..', 'lib', 'resolver-manager');
+    console.log(path.normalize(lambdaCodePath));
+
+    const customResourceStack = context.stackManager.getScopeFor('ResolverManagerStack', 'ResolverManagerStack');
+    const serviceTokenHandler = new Provider(customResourceStack, 'AmplifyResolverManagerLogicalId', {
+      onEventHandler: new Function(this.api, 'AmplifyResolverManagerOnEvent', {
+        code: Code.fromAsset(lambdaCodePath),
+        handler: 'index.handler',
+        runtime: Runtime.NODEJS_18_X,
+        environment: {
+          API_ID: this.api.apiId,
+        },
+        timeout: Duration.minutes(10),
+        initialPolicy: [
+          new PolicyStatement({
+            effect: Effect.ALLOW,
+            actions: ['appsync:*'],
+            resources: ['*'],
+          }),
+        ],
+      }),
+    });
+
+    const customResolverManager = new cdk.CustomResource(customResourceStack, 'ResolverManager', {
+      resourceType: 'Custom::AmplifyResolverManager',
+      serviceToken: serviceTokenHandler.serviceToken,
+    });
+
+    this.dataSources.forEach((ds) => {
+      customResolverManager.node.addDependency(ds);
+      serviceTokenHandler.node.addDependency(ds);
+    });
   };
 
   addSearchableDataSource(
@@ -189,10 +233,18 @@ export class DefaultTransformHost implements TransformHostProvider {
 
     const fn = new AppSyncFunctionConfiguration(scope || this.api, name, {
       api: this.api,
+      name,
       dataSource: dataSource || dataSourceName,
       mappingTemplate,
       runtime,
     });
+    this.resources[name] = {
+      type: 'AppSyncFunction',
+      functionId: fn.functionId,
+      dataSource: dataSource?.name || dataSourceName,
+      requestMappingTemplate: ((mappingTemplate as VTLRuntimeTemplate).requestMappingTemplate as any).content,
+      responseMappingTemplate: ((mappingTemplate as VTLRuntimeTemplate).responseMappingTemplate as any).content,
+    };
     this.appsyncFunctions.set(slotHash, fn);
     return fn;
   };
@@ -249,7 +301,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     pipelineConfig?: string[],
     scope?: Construct,
     runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty,
-  ): CfnResolver => {
+  ): any => {
     if (dataSourceName && !Token.isUnresolved(dataSourceName) && !this.dataSources.has(dataSourceName)) {
       throw new Error(`DataSource ${dataSourceName} is missing in the API`);
     }
@@ -278,22 +330,42 @@ export class DefaultTransformHost implements TransformHostProvider {
       return resolver;
     }
     if (pipelineConfig) {
-      const resolver = new CfnResolver(scope || this.api, resolverName, {
-        apiId: this.api.apiId,
+      // const resolver = new CfnResolver(scope || this.api, resolverName, {
+      //   apiId: this.api.apiId,
+      //   fieldName,
+      //   typeName,
+      //   kind: 'PIPELINE',
+      //   ...(requestMappingTemplate instanceof InlineTemplate
+      //     ? { requestMappingTemplate: requestTemplateLocation }
+      //     : { requestMappingTemplateS3Location: requestTemplateLocation }),
+      //   ...(responseMappingTemplate instanceof InlineTemplate
+      //     ? { responseMappingTemplate: responseTemplateLocation }
+      //     : { responseMappingTemplateS3Location: responseTemplateLocation }),
+      //   pipelineConfig: {
+      //     functions: pipelineConfig,
+      //   },
+      // });
+
+      const resolverResource = {
+        type: 'Resolver',
         fieldName,
         typeName,
         kind: 'PIPELINE',
+        requestMappingTemplate: ((mappingTemplate as VTLRuntimeTemplate).requestMappingTemplate as any).content,
+        responseMappingTemplate: ((mappingTemplate as VTLRuntimeTemplate).responseMappingTemplate as any).content,
         pipelineConfig: {
           functions: pipelineConfig,
         },
-        ...runtimeSpecificProps,
-      });
+      };
 
-      resolver.overrideLogicalId(resourceId);
-      setResourceName(resolver, { name: `${typeName}.${fieldName}` });
-      this.api.addSchemaDependency(resolver);
-      this.resolvers.set(`${typeName}:${fieldName}`, resolver);
-      return resolver;
+      this.resources[`${typeName}.${fieldName}`] = resolverResource;
+      return resolverResource;
+
+      // resolver.overrideLogicalId(resourceId);
+      // setResourceName(resolver, { name: `${typeName}.${fieldName}` });
+      // this.api.addSchemaDependency(resolver);
+      // this.resolvers.set(`${typeName}:${fieldName}`, resolver);
+      // return resolver;
     }
     throw new Error('Resolver needs either dataSourceName or pipelineConfig to be passed');
   };

@@ -34,6 +34,7 @@ export interface TransformHostProvider {
   setAPI(api: GraphqlApiBase): void;
 
   addHttpDataSource(name: string, endpoint: string, options?: HttpDataSourceOptions, scope?: Construct): HttpDataSource;
+  createResourceManagerResource(context: any): void;
   addDynamoDbDataSource(name: string, table: ITable, options?: DynamoDbDataSourceOptions, scope?: Construct): DynamoDbDataSource;
   addNoneDataSource(name: string, options?: DataSourceOptions, scope?: Construct): NoneDataSource;
   addLambdaDataSource(name: string, lambdaFunction: IFunction, options?: DataSourceOptions, scope?: Construct): LambdaDataSource;
@@ -88,7 +89,7 @@ export interface TransformHostProvider {
     dataSourceName?: string,
     pipelineConfig?: string[],
     scope?: Construct,
-  ) => CfnResolver;
+  ) => any;
 
   addJsRuntimeResolver: (
     typeName: string,
