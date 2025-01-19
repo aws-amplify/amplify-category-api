@@ -349,6 +349,7 @@ export class ResourceConstants {
         AuthCognitoUserPoolIdOutput: string;
         AuthCognitoUserPoolNativeClientOutput: string;
         AuthCognitoUserPoolJSClientOutput: string;
+        DataSourceMappingOutput: string;
     };
     // (undocumented)
     static PARAMETERS: {
