@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@aws-amplify/graphql-directives": "2.6.1",
-    "@aws-amplify/graphql-transformer-core": "3.3.3",
+    "@aws-amplify/graphql-transformer-core": "3.3.4",
     "@aws-amplify/graphql-transformer-interfaces": "4.2.1",
     "graphql": "^15.5.0",
     "graphql-transformer-common": "5.1.2"
