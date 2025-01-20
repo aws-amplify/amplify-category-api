@@ -320,7 +320,7 @@ export type ModelDataSourceStrategySqlDbType = 'MYSQL' | 'POSTGRES';
 
 // @public
 export interface MutationFunctionSlot extends FunctionSlotBase {
-    readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preUpdate' | 'postUpdate' | 'finish';
+    readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'validate' | 'preUpdate' | 'postUpdate' | 'finish';
     readonly typeName: 'Mutation';
 }
 

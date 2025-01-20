@@ -4,7 +4,7 @@ const name = 'validate';
 const definition = /* GraphQL */ `
   directive @${name}(
     type: ValidationType!
-    value: [String!]!
+    value: String!
     errorMessage: String
   ) on FIELD_DEFINITION
 

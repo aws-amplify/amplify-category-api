@@ -642,7 +642,7 @@ Object {
   "definition": "
   directive @validate(
     type: ValidationType!
-    value: [String!]!
+    value: String!
     errorMessage: String
   ) on FIELD_DEFINITION
 
