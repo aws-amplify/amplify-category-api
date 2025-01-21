@@ -6,7 +6,7 @@ const definition = /* GraphQL */ `
     type: ValidationType!
     value: String!
     errorMessage: String
-  ) on FIELD_DEFINITION
+  ) repeatable on FIELD_DEFINITION
 
   enum ValidationType {
     gt
