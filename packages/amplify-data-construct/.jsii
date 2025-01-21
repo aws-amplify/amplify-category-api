@@ -26,6 +26,7 @@
     "@aws-amplify/graphql-transformer": "2.2.5",
     "@aws-amplify/graphql-transformer-core": "3.3.4",
     "@aws-amplify/graphql-transformer-interfaces": "4.2.1",
+    "@aws-amplify/graphql-validate-transformer": "1.0.0",
     "@aws-amplify/platform-core": "^1.0.0",
     "@aws-amplify/plugin-types": "^1.0.0",
     "@aws-crypto/crc32": "5.2.0",
@@ -4066,5 +4067,5 @@
   },
   "types": {},
   "version": "1.14.6",
-  "fingerprint": "C00m//Kh7rxY5kn+1X3sokNk3ZUI8wbWmb8/Wv1D2Hs="
+  "fingerprint": "QDQynvdLBPhlJ30EOwF4NgCCA7bk3ysjqet5f7Hm/X8="
 }

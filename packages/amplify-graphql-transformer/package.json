@@ -44,6 +44,7 @@
     "@aws-amplify/graphql-sql-transformer": "0.4.12",
     "@aws-amplify/graphql-transformer-core": "3.3.4",
     "@aws-amplify/graphql-transformer-interfaces": "4.2.1",
+    "@aws-amplify/graphql-validate-transformer": "1.0.0",
     "@aws-amplify/plugin-types": "^1.0.0"
   },
   "devDependencies": {
