@@ -150,8 +150,8 @@ describe('Type Compatibility', () => {
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
-            tags: [Int]! 
-              @validate(type: gt, value: "0") 
+            tags: [Int]!
+              @validate(type: gt, value: "0")
               @validate(type: lt, value: "100")
               @validate(type: gte, value: "1")
               @validate(type: lte, value: "99")
@@ -176,8 +176,8 @@ describe('Type Compatibility', () => {
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
-            tags: [Float]! 
-              @validate(type: gt, value: "0.0") 
+            tags: [Float]!
+              @validate(type: gt, value: "0.0")
               @validate(type: lt, value: "5.0")
               @validate(type: gte, value: "0.1")
               @validate(type: lte, value: "4.9")
@@ -203,9 +203,7 @@ describe('Type Compatibility', () => {
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
-            tags: [String]! 
-              @validate(type: minLength, value: "5") 
-              @validate(type: maxLength, value: "10")
+            tags: [String]! @validate(type: minLength, value: "5") @validate(type: maxLength, value: "10")
           }
         `,
       },

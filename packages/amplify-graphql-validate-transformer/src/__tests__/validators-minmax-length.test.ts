@@ -10,9 +10,7 @@ describe('min/maxLength Validators', () => {
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
-            title: String! 
-              @validate(type: minLength, value: "3") 
-              @validate(type: maxLength, value: "10")
+            title: String! @validate(type: minLength, value: "3") @validate(type: maxLength, value: "10")
           }
         `,
       },
@@ -31,9 +29,7 @@ describe('min/maxLength Validators', () => {
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
-            title: String! 
-              @validate(type: minLength, value: "0") 
-              @validate(type: maxLength, value: "0")
+            title: String! @validate(type: minLength, value: "0") @validate(type: maxLength, value: "0")
           }
         `,
       },
@@ -42,7 +38,7 @@ describe('min/maxLength Validators', () => {
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
-            title: String! 
+            title: String!
               @validate(type: minLength, value: "34000004135000000")
               @validate(type: maxLength, value: "43000034000004135000000")
           }
@@ -53,8 +49,8 @@ describe('min/maxLength Validators', () => {
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
-            title: String! 
-              @validate(type: minLength, value: "9999999999999999999999999999") 
+            title: String!
+              @validate(type: minLength, value: "9999999999999999999999999999")
               @validate(type: maxLength, value: "999999999999999999999999999999")
           }
         `,
@@ -158,4 +154,3 @@ describe('min/maxLength Validators', () => {
     });
   });
 });
-

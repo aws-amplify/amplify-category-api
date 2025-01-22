@@ -10,9 +10,7 @@ describe('Duplicate Validation Types', () => {
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
-            rating: Float! 
-              @validate(type: gt, value: "0") 
-              @validate(type: gt, value: "1")
+            rating: Float! @validate(type: gt, value: "0") @validate(type: gt, value: "1")
           }
         `,
         error: "Duplicate @validate directive with type 'gt' on field 'rating'. Each validation type can only be used once per field.",
@@ -22,9 +20,7 @@ describe('Duplicate Validation Types', () => {
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
-            rating: Float! 
-              @validate(type: lt, value: "0") 
-              @validate(type: lt, value: "1")
+            rating: Float! @validate(type: lt, value: "0") @validate(type: lt, value: "1")
           }
         `,
         error: "Duplicate @validate directive with type 'lt' on field 'rating'. Each validation type can only be used once per field.",
@@ -34,35 +30,27 @@ describe('Duplicate Validation Types', () => {
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
-            score: Int! 
-              @validate(type: gte, value: "5") 
-              @validate(type: gte, value: "10")
+            score: Int! @validate(type: gte, value: "5") @validate(type: gte, value: "10")
           }
         `,
-        error:
-          "Duplicate @validate directive with type 'gte' on field 'score'. Each validation type can only be used once per field.",
+        error: "Duplicate @validate directive with type 'gte' on field 'score'. Each validation type can only be used once per field.",
       },
       {
         name: 'rejects duplicate `lte` validation on same field',
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
-            score: Int! 
-              @validate(type: lte, value: "100") 
-              @validate(type: lte, value: "200")
+            score: Int! @validate(type: lte, value: "100") @validate(type: lte, value: "200")
           }
         `,
-        error:
-          "Duplicate @validate directive with type 'lte' on field 'score'. Each validation type can only be used once per field.",
+        error: "Duplicate @validate directive with type 'lte' on field 'score'. Each validation type can only be used once per field.",
       },
       {
         name: 'rejects duplicate `minLength` validation on same field',
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
-            title: String! 
-              @validate(type: minLength, value: "5") 
-              @validate(type: minLength, value: "10")
+            title: String! @validate(type: minLength, value: "5") @validate(type: minLength, value: "10")
           }
         `,
         error:
@@ -73,9 +61,7 @@ describe('Duplicate Validation Types', () => {
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
-            title: String! 
-              @validate(type: maxLength, value: "5") 
-              @validate(type: maxLength, value: "10")
+            title: String! @validate(type: maxLength, value: "5") @validate(type: maxLength, value: "10")
           }
         `,
         error:
@@ -86,9 +72,7 @@ describe('Duplicate Validation Types', () => {
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
-            title: String! 
-              @validate(type: startsWith, value: "5") 
-              @validate(type: startsWith, value: "10")
+            title: String! @validate(type: startsWith, value: "5") @validate(type: startsWith, value: "10")
           }
         `,
         error:
@@ -99,26 +83,20 @@ describe('Duplicate Validation Types', () => {
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
-            title: String! 
-              @validate(type: endsWith, value: "5") 
-              @validate(type: endsWith, value: "10")
+            title: String! @validate(type: endsWith, value: "5") @validate(type: endsWith, value: "10")
           }
         `,
-        error:
-          "Duplicate @validate directive with type 'endsWith' on field 'title'. Each validation type can only be used once per field.",
+        error: "Duplicate @validate directive with type 'endsWith' on field 'title'. Each validation type can only be used once per field.",
       },
       {
         name: 'rejects duplicate `matches` validation on same field',
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
-            title: String! 
-              @validate(type: matches, value: "5") 
-              @validate(type: matches, value: "10")
+            title: String! @validate(type: matches, value: "5") @validate(type: matches, value: "10")
           }
         `,
-        error:
-          "Duplicate @validate directive with type 'matches' on field 'title'. Each validation type can only be used once per field.",
+        error: "Duplicate @validate directive with type 'matches' on field 'title'. Each validation type can only be used once per field.",
       },
     ])('$name', ({ schema, error }) => {
       const transformer = new ValidateTransformer();
@@ -138,17 +116,11 @@ describe('Duplicate Validation Types', () => {
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
-            title: String! 
-              @validate(type: minLength, value: "5") 
-              @validate(type: maxLength, value: "10")
-            rating: Float! 
-              @validate(type: gt, value: "0") 
-              @validate(type: lt, value: "6")
-            score: Int! 
-              @validate(type: gte, value: "10") 
-              @validate(type: lte, value: "20")
-            description: String! 
-              @validate(type: startsWith, value: "prefix") 
+            title: String! @validate(type: minLength, value: "5") @validate(type: maxLength, value: "10")
+            rating: Float! @validate(type: gt, value: "0") @validate(type: lt, value: "6")
+            score: Int! @validate(type: gte, value: "10") @validate(type: lte, value: "20")
+            description: String!
+              @validate(type: startsWith, value: "prefix")
               @validate(type: endsWith, value: "suffix")
               @validate(type: matches, value: "regex")
           }
