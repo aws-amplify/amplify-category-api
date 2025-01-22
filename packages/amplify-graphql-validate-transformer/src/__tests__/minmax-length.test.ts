@@ -67,6 +67,49 @@ describe('min/maxLength Validators', () => {
   });
 
   describe('Invalid usage', () => {
+    describe('Special values', () => {
+      test.each([
+        {
+          name: 'rejects NaN maxLength value',
+          schema: /* GraphQL */ `
+            type Post @model {
+              id: ID!
+              title: String! @validate(type: maxLength, value: "NaN")
+            }
+          `,
+          error: "maxLength value must be a non-negative integer. Received 'NaN' for field 'title'",
+        },
+        {
+          name: 'rejects undefined maxLength value',
+          schema: /* GraphQL */ `
+            type Post @model {
+              id: ID!
+              title: String! @validate(type: maxLength, value: "undefined")
+            }
+          `,
+          error: "maxLength value must be a non-negative integer. Received 'undefined' for field 'title'",
+        },
+        {
+          name: 'rejects null maxLength value',
+          schema: /* GraphQL */ `
+            type Post @model {
+              id: ID!
+              title: String! @validate(type: maxLength, value: "null")
+            }
+          `,
+          error: "maxLength value must be a non-negative integer. Received 'null' for field 'title'",
+        },
+      ])('$name', ({ schema, error }) => {
+        const transformer = new ValidateTransformer();
+        expect(() => {
+          testTransform({
+            schema,
+            transformers: [new ModelTransformer(), transformer],
+          });
+        }).toThrow(error);
+      });
+    });
+
     describe('Non-numeric length values', () => {
       test.each([
         {
