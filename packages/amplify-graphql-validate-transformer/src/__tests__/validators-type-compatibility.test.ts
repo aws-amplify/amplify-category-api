@@ -146,12 +146,38 @@ describe('Type Compatibility', () => {
         `,
       },
       {
+        name: 'accepts numeric validations on list of Int field',
+        schema: /* GraphQL */ `
+          type Post @model {
+            id: ID!
+            tags: [Int]! 
+              @validate(type: gt, value: "0") 
+              @validate(type: lt, value: "100")
+              @validate(type: gte, value: "1")
+              @validate(type: lte, value: "99")
+          }
+        `,
+      },
+      {
         name: 'accepts numeric validations on Float field',
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
             rating: Float!
               @validate(type: gt, value: "0.0")
+              @validate(type: lt, value: "5.0")
+              @validate(type: gte, value: "0.1")
+              @validate(type: lte, value: "4.9")
+          }
+        `,
+      },
+      {
+        name: 'accepts numeric validations on list of Float field',
+        schema: /* GraphQL */ `
+          type Post @model {
+            id: ID!
+            tags: [Float]! 
+              @validate(type: gt, value: "0.0") 
               @validate(type: lt, value: "5.0")
               @validate(type: gte, value: "0.1")
               @validate(type: lte, value: "4.9")
@@ -169,6 +195,17 @@ describe('Type Compatibility', () => {
               @validate(type: startsWith, value: "prefix")
               @validate(type: endsWith, value: "suffix")
               @validate(type: matches, value: "regex")
+          }
+        `,
+      },
+      {
+        name: 'accepts string validations on list of String field',
+        schema: /* GraphQL */ `
+          type Post @model {
+            id: ID!
+            tags: [String]! 
+              @validate(type: minLength, value: "5") 
+              @validate(type: maxLength, value: "10")
           }
         `,
       },

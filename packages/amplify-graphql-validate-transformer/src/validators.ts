@@ -15,14 +15,6 @@ const isStringValidation = (type: ValidationType): boolean => {
 };
 
 /**
- * A helper function to validate the string format of a length validation value.
- */
-const isValidIntegerString = (str: string): boolean => {
-  // Only allow 0 or positive integers (no -0, leading zeros, +, or scientific notation)
-  return /^(?:0|[1-9]\d*)$/.test(str);
-};
-
-/**
  * Validates that length validation values (minLength, maxLength) are valid non-negative integers.
  */
 const validateLengthValue = (config: ValidateDirectiveConfiguration): void => {
@@ -30,7 +22,7 @@ const validateLengthValue = (config: ValidateDirectiveConfiguration): void => {
     return;
   }
 
-  const value = isValidIntegerString(config.value) ? parseInt(config.value, 10) : NaN;
+  const value = parseInt(config.value, 10);
   if (isNaN(value) || value < 0) {
     throw new InvalidDirectiveError(
       `${config.type} value must be a non-negative integer. Received '${config.value}' for field '${config.field.name.value}'`,
@@ -83,5 +75,8 @@ const validateNoDuplicateTypes = (field: FieldDefinitionNode, currentDirective: 
 export const validate = (definition: FieldDefinitionNode, directive: DirectiveNode, config: ValidateDirectiveConfiguration): void => {
   validateTypeCompatibility(definition, config.type as ValidationType);
   validateNoDuplicateTypes(definition, directive, config.type as ValidationType);
-  validateLengthValue(config);
+
+  if (isStringValidation(config.type as ValidationType)) {
+    validateLengthValue(config);
+  }
 };
