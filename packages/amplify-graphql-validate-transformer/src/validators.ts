@@ -1,5 +1,5 @@
 import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
-import { DirectiveNode, FieldDefinitionNode, StringValueNode } from 'graphql';
+import { ArgumentNode, DirectiveNode, FieldDefinitionNode, StringValueNode } from 'graphql';
 import { getBaseType } from 'graphql-transformer-common';
 import { ValidateDirectiveConfiguration, ValidationType } from './types';
 
@@ -15,6 +15,14 @@ const isStringValidation = (type: ValidationType): boolean => {
 };
 
 /**
+ * A helper function to validate the string format of a length validation value.
+ */
+const isValidIntegerString = (str: string): boolean => {
+  // Only allow 0 or positive integers (no -0, leading zeros, +, or scientific notation)
+  return /^(?:0|[1-9]\d*)$/.test(str);
+};
+
+/**
  * Validates that length validation values (minLength, maxLength) are valid non-negative integers.
  */
 const validateLengthValue = (config: ValidateDirectiveConfiguration): void => {
@@ -22,10 +30,10 @@ const validateLengthValue = (config: ValidateDirectiveConfiguration): void => {
     return;
   }
 
-  const value = parseFloat(config.value);
-  if (isNaN(value) || !Number.isInteger(value) || value < 0) {
+  const value = isValidIntegerString(config.value) ? parseInt(config.value, 10) : NaN;
+  if (isNaN(value) || value < 0) {
     throw new InvalidDirectiveError(
-      `${config.type} value must be a positive integer. Received '${config.value}' for field '${config.field.name.value}'`,
+      `${config.type} value must be a non-negative integer. Received '${config.value}' for field '${config.field.name.value}'`,
     );
   }
 };
@@ -59,7 +67,7 @@ const validateNoDuplicateTypes = (field: FieldDefinitionNode, currentDirective: 
     }
 
     if (peerDirective.name.value === 'validate') {
-      const peerType = (peerDirective.arguments!.find((arg) => arg.name.value === 'type')!.value as StringValueNode).value;
+      const peerType = (peerDirective.arguments!.find((arg: ArgumentNode) => arg.name.value === 'type')!.value as StringValueNode).value;
       if (peerType === currentType) {
         throw new InvalidDirectiveError(
           `Duplicate @validate directive with type '${currentType}' on field '${field.name.value}'. Each validation type can only be used once per field.`,
