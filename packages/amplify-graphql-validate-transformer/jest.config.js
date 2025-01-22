@@ -2,4 +2,5 @@ const baseConfig = require('../../jest.config.base.js'); // eslint-disable-line 
 
 module.exports = {
   ...baseConfig,
+  coveragePathIgnorePatterns: ['src/types.ts'],
 };
