@@ -2,21 +2,16 @@ import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ValidateTransformer } from '..';
 
-describe('ValidateTransformer', () => {
+describe('Validators', () => {
   /* ================================ */
-  /*  Valid schema tests              */
+  /*  Valid validation tests          */
   /* ================================ */
-  // Note: this is just a test to pass coverage, it will be updated to test more thoroughly
-  it('allows valid validation directives', () => {
+  it('accepts valid validation configurations', () => {
     const validSchema = /* GraphQL */ `
       type Post @model {
         id: ID!
-        title: String! 
-          @validate(type: minLength, value: "3") 
-          @validate(type: maxLength, value: "10")
-        rating: Float! 
-          @validate(type: gt, value: "0") 
-          @validate(type: lt, value: "6")
+        title: String! @validate(type: minLength, value: "3") @validate(type: maxLength, value: "10")
+        rating: Float! @validate(type: gt, value: "0") @validate(type: lt, value: "6")
         tags: [String]! @validate(type: maxLength, value: "20")
       }
     `;
@@ -31,30 +26,9 @@ describe('ValidateTransformer', () => {
   });
 
   /* ================================ */
-  /*  Invalid directive usage tests   */
+  /*  Type compatibility tests        */
   /* ================================ */
-  it('throws error if duplicate validation type is used on the same field', () => {
-    const invalidSchema = /* GraphQL */ `
-      type Post @model {
-        id: ID!
-        title: String! 
-          @validate(type: minLength, value: "5") 
-          @validate(type: minLength, value: "10")
-      }
-    `;
-
-    const transformer = new ValidateTransformer();
-    expect(() => {
-      testTransform({
-        schema: invalidSchema,
-        transformers: [new ModelTransformer(), transformer],
-      });
-    }).toThrow(
-      "Duplicate @validate directive with type 'minLength' on field 'title'. Each validation type can only be used once per field.",
-    );
-  });
-
-  it('throws error if numeric validation type is used on non-numeric field', () => {
+  it('rejects numeric validation on non-numeric field', () => {
     const invalidSchema = /* GraphQL */ `
       type Post @model {
         id: ID!
@@ -71,7 +45,7 @@ describe('ValidateTransformer', () => {
     }).toThrow("Validation type 'gt' can only be used with numeric fields (Int, Float). Field 'title' is of type 'String'");
   });
 
-  it('throws error if string validation type is used on non-string field', () => {
+  it('rejects string validation on non-string field', () => {
     const invalidSchema = /* GraphQL */ `
       type Post @model {
         id: ID!
@@ -88,7 +62,32 @@ describe('ValidateTransformer', () => {
     }).toThrow("Validation type 'minLength' can only be used with String fields. Field 'count' is of type 'Int'");
   });
 
-  it('throws error if minLength value is negative integer', () => {
+  /* ================================ */
+  /*  Duplicate validation tests      */
+  /* ================================ */
+  it('rejects duplicate validation types on the same field', () => {
+    const invalidSchema = /* GraphQL */ `
+      type Post @model {
+        id: ID!
+        title: String! @validate(type: minLength, value: "5") @validate(type: minLength, value: "10")
+      }
+    `;
+
+    const transformer = new ValidateTransformer();
+    expect(() => {
+      testTransform({
+        schema: invalidSchema,
+        transformers: [new ModelTransformer(), transformer],
+      });
+    }).toThrow(
+      "Duplicate @validate directive with type 'minLength' on field 'title'. Each validation type can only be used once per field.",
+    );
+  });
+
+  /* ================================ */
+  /*  Length validation value tests   */
+  /* ================================ */
+  it('rejects negative minLength value', () => {
     const invalidSchema = /* GraphQL */ `
       type Post @model {
         id: ID!
@@ -105,7 +104,7 @@ describe('ValidateTransformer', () => {
     }).toThrow("minLength value must be a positive integer. Received '-10' for field 'title'");
   });
 
-  it('throws error if maxLength value is a negative integer', () => {
+  it('rejects negative maxLength value', () => {
     const invalidSchema = /* GraphQL */ `
       type Post @model {
         id: ID!
@@ -122,7 +121,7 @@ describe('ValidateTransformer', () => {
     }).toThrow("maxLength value must be a positive integer. Received '-5' for field 'title'");
   });
 
-  it('throws error if length validation value is not a number', () => {
+  it('rejects non-numeric length validation value', () => {
     const invalidSchema = /* GraphQL */ `
       type Post @model {
         id: ID!
@@ -139,7 +138,7 @@ describe('ValidateTransformer', () => {
     }).toThrow("minLength value must be a positive integer. Received 'abc' for field 'title'");
   });
 
-  it('throws error if length validation value is a decimal', () => {
+  it('rejects decimal length validation value', () => {
     const invalidSchema = /* GraphQL */ `
       type Post @model {
         id: ID!
