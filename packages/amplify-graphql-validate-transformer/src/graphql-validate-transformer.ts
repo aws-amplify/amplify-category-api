@@ -14,10 +14,10 @@ import {
   StringValueNode,
 } from 'graphql';
 import { getBaseType } from 'graphql-transformer-common';
-import { NUMERIC_VALIDATION_TYPES, STRING_VALIDATION_TYPES, ValidateArguments, ValidateDirectiveConfiguration } from './types';
+import { ValidateArguments, ValidateDirectiveConfiguration, ValidationType } from './types';
 
 /**
- * Validates that length validation values (minLength, maxLength) are valid positive integers.
+ * Validates that length validation values (minLength, maxLength) are valid non-negative numbers.
  */
 const validateLengthValue = (config: ValidateDirectiveConfiguration): void => {
   if (config.type !== 'minLength' && config.type !== 'maxLength') {
@@ -25,8 +25,7 @@ const validateLengthValue = (config: ValidateDirectiveConfiguration): void => {
   }
 
   const value = parseFloat(config.value);
-  if (isNaN(value) || !Number.isInteger(value) || value <= 0) {
-    // TODO: decide if we want to allow 0
+  if (isNaN(value) || !Number.isInteger(value) || value < 0) {
     throw new InvalidDirectiveError(
       `${config.type} value must be a positive integer. Received '${config.value}' for field '${config.field.name.value}'`,
     );
@@ -34,20 +33,29 @@ const validateLengthValue = (config: ValidateDirectiveConfiguration): void => {
 };
 
 /**
+ * Type guards for validation types
+ */
+const isNumericValidation = (type: ValidationType): boolean => {
+  return ['gt', 'lt', 'gte', 'lte'].includes(type);
+};
+
+const isStringValidation = (type: ValidationType): boolean => {
+  return ['minLength', 'maxLength', 'startsWith', 'endsWith', 'matches'].includes(type);
+};
+
+/**
  * Validates that the validation type is compatible with the field type.
  */
-const validateTypeCompatibility = (field: FieldDefinitionNode, validationType: string): void => {
+const validateTypeCompatibility = (field: FieldDefinitionNode, validationType: ValidationType): void => {
   const baseTypeName = getBaseType(field.type);
-  const isNumericValidation = NUMERIC_VALIDATION_TYPES.includes(validationType as any);
-  const isStringValidation = STRING_VALIDATION_TYPES.includes(validationType as any);
 
-  if (isNumericValidation && baseTypeName !== 'Int' && baseTypeName !== 'Float') {
+  if (isNumericValidation(validationType) && baseTypeName !== 'Int' && baseTypeName !== 'Float') {
     throw new InvalidDirectiveError(
       `Validation type '${validationType}' can only be used with numeric fields (Int, Float). Field '${field.name.value}' is of type '${baseTypeName}'`,
     );
   }
 
-  if (isStringValidation && baseTypeName !== 'String') {
+  if (isStringValidation(validationType) && baseTypeName !== 'String') {
     throw new InvalidDirectiveError(
       `Validation type '${validationType}' can only be used with String fields. Field '${field.name.value}' is of type '${baseTypeName}'`,
     );
@@ -57,7 +65,7 @@ const validateTypeCompatibility = (field: FieldDefinitionNode, validationType: s
 /**
  * Validates that there are no duplicate validation types on the same field.
  */
-const validateNoDuplicateTypes = (field: FieldDefinitionNode, currentDirective: DirectiveNode, currentType: string): void => {
+const validateNoDuplicateTypes = (field: FieldDefinitionNode, currentDirective: DirectiveNode, currentType: ValidationType): void => {
   for (const peerDirective of field.directives!) {
     if (peerDirective === currentDirective) {
       continue;
@@ -72,6 +80,15 @@ const validateNoDuplicateTypes = (field: FieldDefinitionNode, currentDirective: 
       }
     }
   }
+};
+
+/**
+ * Validates all aspects of the @validate directive configuration.
+ */
+const validate = (definition: FieldDefinitionNode, directive: DirectiveNode, config: ValidateDirectiveConfiguration): void => {
+  validateTypeCompatibility(definition, config.type as ValidationType);
+  validateNoDuplicateTypes(definition, directive, config.type as ValidationType);
+  validateLengthValue(config);
 };
 
 export class ValidateTransformer extends TransformerPluginBase implements TransformerPluginProvider {
@@ -90,9 +107,7 @@ export class ValidateTransformer extends TransformerPluginBase implements Transf
     const directiveWrapped = new DirectiveWrapper(directive);
     const config = this.getValidateDirectiveConfiguration(directiveWrapped, parent as ObjectTypeDefinitionNode, definition);
 
-    validateTypeCompatibility(definition, config.type);
-    validateNoDuplicateTypes(definition, directive, config.type);
-    validateLengthValue(config);
+    validate(definition, directive, config);
 
     if (!this.directiveMap.has(parent.name.value)) {
       this.directiveMap.set(parent.name.value, []);
