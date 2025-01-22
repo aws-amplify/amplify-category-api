@@ -12,7 +12,6 @@ import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-int
 import { TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { TransformerValidationStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
 export class ValidateTransformer extends TransformerPluginBase implements TransformerPluginProvider {
@@ -21,8 +20,6 @@ export class ValidateTransformer extends TransformerPluginBase implements Transf
     field: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, definition: FieldDefinitionNode, directive: DirectiveNode, _: TransformerSchemaVisitStepContextProvider) => void;
     // (undocumented)
     generateResolvers: (_: TransformerContextProvider) => void;
-    // (undocumented)
-    validate: (_: TransformerValidationStepContextProvider) => void;
 }
 
 // (No @packageDocumentation comment for this package)

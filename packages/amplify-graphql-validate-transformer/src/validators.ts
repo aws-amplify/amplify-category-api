@@ -15,7 +15,7 @@ const isStringValidation = (type: ValidationType): boolean => {
 };
 
 /**
- * Validates that length validation values (minLength, maxLength) are valid non-negative numbers.
+ * Validates that length validation values (minLength, maxLength) are valid non-negative integers.
  */
 const validateLengthValue = (config: ValidateDirectiveConfiguration): void => {
   if (config.type !== 'minLength' && config.type !== 'maxLength') {
