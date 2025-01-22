@@ -2,7 +2,7 @@ import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ValidateTransformer } from '..';
 
-describe('minLength/maxLength Validators', () => {
+describe('min/maxLength Validators', () => {
   describe('Valid usage', () => {
     test.each([
       {
@@ -10,8 +10,11 @@ describe('minLength/maxLength Validators', () => {
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
-            title: String! @validate(type: minLength, value: "3") @validate(type: maxLength, value: "10")
-            tags: [String]! @validate(type: maxLength, value: "20")
+            title: String! 
+              @validate(type: minLength, value: "3") 
+              @validate(type: maxLength, value: "10")
+            tags: [String]! 
+              @validate(type: maxLength, value: "20")
           }
         `,
       },
@@ -20,7 +23,9 @@ describe('minLength/maxLength Validators', () => {
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
-            title: String! @validate(type: minLength, value: "0") @validate(type: maxLength, value: "0")
+            title: String! 
+              @validate(type: minLength, value: "0") 
+              @validate(type: maxLength, value: "0")
           }
         `,
       },
@@ -29,7 +34,9 @@ describe('minLength/maxLength Validators', () => {
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
-            title: String! @validate(type: minLength, value: "34000004135000000") @validate(type: maxLength, value: "43000034000004135000000")
+            title: String! 
+              @validate(type: minLength, value: "34000004135000000")
+              @validate(type: maxLength, value: "43000034000004135000000")
           }
         `,
       },
@@ -38,7 +45,9 @@ describe('minLength/maxLength Validators', () => {
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
-            title: String! @validate(type: minLength, value: "9999999999999999999999999999") @validate(type: maxLength, value: "999999999999999999999999999999")
+            title: String! 
+              @validate(type: minLength, value: "9999999999999999999999999999") 
+              @validate(type: maxLength, value: "999999999999999999999999999999")
           }
         `,
       },

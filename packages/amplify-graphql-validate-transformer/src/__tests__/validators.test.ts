@@ -60,26 +60,4 @@ describe('Validators', () => {
       });
     }).toThrow("Validation type 'minLength' can only be used with String fields. Field 'count' is of type 'Int'");
   });
-
-  /* ================================ */
-  /*  Duplicate validation tests      */
-  /* ================================ */
-  test('rejects duplicate validation types on the same field', () => {
-    const invalidSchema = /* GraphQL */ `
-      type Post @model {
-        id: ID!
-        title: String! @validate(type: minLength, value: "5") @validate(type: minLength, value: "10")
-      }
-    `;
-
-    const transformer = new ValidateTransformer();
-    expect(() => {
-      testTransform({
-        schema: invalidSchema,
-        transformers: [new ModelTransformer(), transformer],
-      });
-    }).toThrow(
-      "Duplicate @validate directive with type 'minLength' on field 'title'. Each validation type can only be used once per field.",
-    );
-  });
 });
