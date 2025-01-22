@@ -6,6 +6,7 @@ describe('ValidateTransformer', () => {
   /* ================================ */
   /*  Valid schema tests              */
   /* ================================ */
+  // Note: this is just a test to pass coverage, it will be updated to test more thoroughly
   it('allows valid validation directives', () => {
     const validSchema = /* GraphQL */ `
       type Post @model {
@@ -53,7 +54,7 @@ describe('ValidateTransformer', () => {
     );
   });
 
-  it('throws error if numeric validation is used on non-numeric field', () => {
+  it('throws error if numeric validation type is used on non-numeric field', () => {
     const invalidSchema = /* GraphQL */ `
       type Post @model {
         id: ID!
@@ -70,7 +71,7 @@ describe('ValidateTransformer', () => {
     }).toThrow("Validation type 'gt' can only be used with numeric fields (Int, Float). Field 'title' is of type 'String'");
   });
 
-  it('throws error if string validation is used on non-string field', () => {
+  it('throws error if string validation type is used on non-string field', () => {
     const invalidSchema = /* GraphQL */ `
       type Post @model {
         id: ID!
@@ -87,22 +88,22 @@ describe('ValidateTransformer', () => {
     }).toThrow("Validation type 'minLength' can only be used with String fields. Field 'count' is of type 'Int'");
   });
 
-  // it('throws error if minLength value is not a positive integer', () => {
-  //   const invalidSchema = /* GraphQL */ `
-  //     type Post @model {
-  //       id: ID!
-  //       title: String! @validate(type: minLength, value: "0")
-  //     }
-  //   `;
+  it('throws error if minLength value is negative integer', () => {
+    const invalidSchema = /* GraphQL */ `
+      type Post @model {
+        id: ID!
+        title: String! @validate(type: minLength, value: "-10")
+      }
+    `;
 
-  //   const transformer = new ValidateTransformer();
-  //   expect(() => {
-  //     testTransform({
-  //       schema: invalidSchema,
-  //       transformers: [new ModelTransformer(), transformer],
-  //     });
-  //   }).toThrow("minLength value must be a positive integer. Received '0' for field 'title'");
-  // });
+    const transformer = new ValidateTransformer();
+    expect(() => {
+      testTransform({
+        schema: invalidSchema,
+        transformers: [new ModelTransformer(), transformer],
+      });
+    }).toThrow("minLength value must be a positive integer. Received '-10' for field 'title'");
+  });
 
   it('throws error if maxLength value is a negative integer', () => {
     const invalidSchema = /* GraphQL */ `
