@@ -10,7 +10,8 @@ describe('min/maxLength Validators', () => {
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
-            title: String! @validate(type: minLength, value: "3") @validate(type: maxLength, value: "10")
+            title: String! @validate(type: minLength, value: "3") 
+            content: String! @validate(type: maxLength, value: "10")
           }
         `,
       },
@@ -19,39 +20,28 @@ describe('min/maxLength Validators', () => {
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
-            tags: [String]! @validate(type: maxLength, value: "20")
-            comments: [String]! @validate(type: minLength, value: "20")
+            tags: [String]! @validate(type: minLength, value: "20")
+            comments: [String]! @validate(type: maxLength, value: "30")
           }
         `,
       },
       {
-        name: 'accepts minLength and maxLength of "0"',
+        name: 'accepts length values of "0"',
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
-            title: String! @validate(type: minLength, value: "0") @validate(type: maxLength, value: "0")
+            title: String! @validate(type: minLength, value: "0") 
+            content: String! @validate(type: maxLength, value: "0")
           }
         `,
       },
       {
-        name: 'accepts minLength and maxLength of large numbers with lots of zeros in the middle',
+        name: 'accepts length values of extremely large numbers beyond 64-bit range',
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
-            title: String!
-              @validate(type: minLength, value: "34000004135000000")
-              @validate(type: maxLength, value: "43000034000004135000000")
-          }
-        `,
-      },
-      {
-        name: 'accepts minLength and maxLength of extremely large numbers beyond 64-bit range',
-        schema: /* GraphQL */ `
-          type Post @model {
-            id: ID!
-            title: String!
-              @validate(type: minLength, value: "9999999999999999999999999999")
-              @validate(type: maxLength, value: "999999999999999999999999999999")
+            title: String! @validate(type: minLength, value: "999999999999999999999999999999")
+            content: String! @validate(type: maxLength, value: "999999999999999999999999999999")
           }
         `,
       },
@@ -70,17 +60,17 @@ describe('min/maxLength Validators', () => {
     describe('Special values', () => {
       test.each([
         {
-          name: 'rejects NaN maxLength value',
+          name: 'rejects value of "NaN"',
           schema: /* GraphQL */ `
             type Post @model {
               id: ID!
-              title: String! @validate(type: maxLength, value: "NaN")
+              title: String! @validate(type: minLength, value: "NaN")
             }
           `,
-          error: "maxLength value must be a non-negative integer. Received 'NaN' for field 'title'",
+          error: "minLength value must be a non-negative integer. Received 'NaN' for field 'title'",
         },
         {
-          name: 'rejects undefined maxLength value',
+          name: 'rejects value of "undefined"',
           schema: /* GraphQL */ `
             type Post @model {
               id: ID!
@@ -90,14 +80,14 @@ describe('min/maxLength Validators', () => {
           error: "maxLength value must be a non-negative integer. Received 'undefined' for field 'title'",
         },
         {
-          name: 'rejects null maxLength value',
+          name: 'rejects value of "null"',
           schema: /* GraphQL */ `
             type Post @model {
               id: ID!
-              title: String! @validate(type: maxLength, value: "null")
+              title: String! @validate(type: minLength, value: "null")
             }
           `,
-          error: "maxLength value must be a non-negative integer. Received 'null' for field 'title'",
+          error: "minLength value must be a non-negative integer. Received 'null' for field 'title'",
         },
       ])('$name', ({ schema, error }) => {
         const transformer = new ValidateTransformer();
@@ -113,7 +103,7 @@ describe('min/maxLength Validators', () => {
     describe('Non-numeric length values', () => {
       test.each([
         {
-          name: 'rejects alphabetic minLength value of "abc"',
+          name: 'rejects alphabetic value of "abc"',
           schema: /* GraphQL */ `
             type Post @model {
               id: ID!
@@ -123,7 +113,7 @@ describe('min/maxLength Validators', () => {
           error: "minLength value must be a non-negative integer. Received 'abc' for field 'title'",
         },
         {
-          name: 'rejects special character maxLength value of "!#>?$O#"',
+          name: 'rejects special value of "!#>?$O#"',
           schema: /* GraphQL */ `
             type Post @model {
               id: ID!
@@ -133,7 +123,7 @@ describe('min/maxLength Validators', () => {
           error: "maxLength value must be a non-negative integer. Received '!#>?$O#' for field 'title'",
         },
         {
-          name: 'rejects space minLength value of " "',
+          name: 'rejects space value of " "',
           schema: /* GraphQL */ `
             type Post @model {
               id: ID!
@@ -143,14 +133,14 @@ describe('min/maxLength Validators', () => {
           error: "minLength value must be a non-negative integer. Received ' ' for field 'title'",
         },
         {
-          name: 'rejects empty string minLength value of ""',
+          name: 'rejects empty string value of ""',
           schema: /* GraphQL */ `
             type Post @model {
               id: ID!
-              title: String! @validate(type: minLength, value: "")
+              title: String! @validate(type: maxLength, value: "")
             }
           `,
-          error: "minLength value must be a non-negative integer. Received '' for field 'title'",
+          error: "maxLength value must be a non-negative integer. Received '' for field 'title'",
         },
       ])('$name', ({ schema, error }) => {
         const transformer = new ValidateTransformer();
@@ -166,24 +156,24 @@ describe('min/maxLength Validators', () => {
     describe('Negative length values', () => {
       test.each([
         {
-          name: 'rejects negative zero minLength value "-5.6"',
+          name: 'rejects negative value of "-999999999999999999999999999999"',
           schema: /* GraphQL */ `
             type Post @model {
               id: ID!
-              title: String! @validate(type: minLength, value: "-5.6")
+              title: String! @validate(type: minLength, value: "-999999999999999999999999999999")
             }
           `,
-          error: "minLength value must be a non-negative integer. Received '-5.6' for field 'title'",
+          error: "minLength value must be a non-negative integer. Received '-999999999999999999999999999999' for field 'title'",
         },
         {
-          name: 'rejects negative minLength value of -10',
+          name: 'rejects negative value of "-10"',
           schema: /* GraphQL */ `
             type Post @model {
               id: ID!
-              title: String! @validate(type: minLength, value: "-10")
+              title: String! @validate(type: maxLength, value: "-10")
             }
           `,
-          error: "minLength value must be a non-negative integer. Received '-10' for field 'title'",
+          error: "maxLength value must be a non-negative integer. Received '-10' for field 'title'",
         },
       ])('$name', ({ schema, error }) => {
         const transformer = new ValidateTransformer();

@@ -14,14 +14,14 @@ const isStringValidation = (type: ValidationType): boolean => {
   return ['minLength', 'maxLength', 'startsWith', 'endsWith', 'matches'].includes(type);
 };
 
+const isLengthValidation = (type: ValidationType): boolean => {
+  return ['minLength', 'maxLength'].includes(type);
+};
+
 /**
  * Validates that length validation values (minLength, maxLength) are valid non-negative integers.
  */
 const validateLengthValue = (config: ValidateDirectiveConfiguration): void => {
-  if (config.type !== 'minLength' && config.type !== 'maxLength') {
-    return;
-  }
-
   const value = parseInt(config.value, 10);
   if (isNaN(value) || value < 0) {
     throw new InvalidDirectiveError(
@@ -70,13 +70,27 @@ const validateNoDuplicateTypes = (field: FieldDefinitionNode, currentDirective: 
 };
 
 /**
+ * Validates that the numeric validation type value is a valid number.
+ */
+const validateNumericValue = (config: ValidateDirectiveConfiguration): void => {
+  const value = parseFloat(config.value);
+  if (isNaN(value)) {
+    throw new InvalidDirectiveError(`${config.type} value must be a number. Received '${config.value}' for field '${config.field.name.value}'`);
+  }
+};
+
+/**
  * Validates all aspects of the @validate directive configuration.
  */
 export const validate = (definition: FieldDefinitionNode, directive: DirectiveNode, config: ValidateDirectiveConfiguration): void => {
   validateTypeCompatibility(definition, config.type as ValidationType);
   validateNoDuplicateTypes(definition, directive, config.type as ValidationType);
 
-  if (isStringValidation(config.type as ValidationType)) {
+  if (isLengthValidation(config.type as ValidationType)) {
     validateLengthValue(config);
+  }
+
+  if (isNumericValidation(config.type as ValidationType)) {
+    validateNumericValue(config);
   }
 };

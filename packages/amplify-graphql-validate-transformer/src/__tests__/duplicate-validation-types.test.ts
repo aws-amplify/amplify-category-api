@@ -6,7 +6,7 @@ describe('Duplicate Validation Types', () => {
   describe('Invalid usage', () => {
     test.each([
       {
-        name: 'rejects duplicate `gt` validation on same field',
+        name: 'rejects duplicate gt validation on same field',
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
@@ -16,7 +16,7 @@ describe('Duplicate Validation Types', () => {
         error: "Duplicate @validate directive with type 'gt' on field 'rating'. Each validation type can only be used once per field.",
       },
       {
-        name: 'rejects duplicate `lt` validation on same field',
+        name: 'rejects duplicate lt validation on same field',
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
@@ -26,7 +26,7 @@ describe('Duplicate Validation Types', () => {
         error: "Duplicate @validate directive with type 'lt' on field 'rating'. Each validation type can only be used once per field.",
       },
       {
-        name: 'rejects duplicate `gte` validation on same field',
+        name: 'rejects duplicate gte validation on same field',
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
@@ -36,7 +36,7 @@ describe('Duplicate Validation Types', () => {
         error: "Duplicate @validate directive with type 'gte' on field 'score'. Each validation type can only be used once per field.",
       },
       {
-        name: 'rejects duplicate `lte` validation on same field',
+        name: 'rejects duplicate lte validation on same field',
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
@@ -46,7 +46,7 @@ describe('Duplicate Validation Types', () => {
         error: "Duplicate @validate directive with type 'lte' on field 'score'. Each validation type can only be used once per field.",
       },
       {
-        name: 'rejects duplicate `minLength` validation on same field',
+        name: 'rejects duplicate minLength validation on same field',
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
@@ -57,7 +57,7 @@ describe('Duplicate Validation Types', () => {
           "Duplicate @validate directive with type 'minLength' on field 'title'. Each validation type can only be used once per field.",
       },
       {
-        name: 'rejects duplicate `maxLength` validation on same field',
+        name: 'rejects duplicate maxLength validation on same field',
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
@@ -68,7 +68,7 @@ describe('Duplicate Validation Types', () => {
           "Duplicate @validate directive with type 'maxLength' on field 'title'. Each validation type can only be used once per field.",
       },
       {
-        name: 'rejects duplicate `startsWith` validation on same field',
+        name: 'rejects duplicate startsWith validation on same field',
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
@@ -79,7 +79,7 @@ describe('Duplicate Validation Types', () => {
           "Duplicate @validate directive with type 'startsWith' on field 'title'. Each validation type can only be used once per field.",
       },
       {
-        name: 'rejects duplicate `endsWith` validation on same field',
+        name: 'rejects duplicate endsWith validation on same field',
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
@@ -89,7 +89,7 @@ describe('Duplicate Validation Types', () => {
         error: "Duplicate @validate directive with type 'endsWith' on field 'title'. Each validation type can only be used once per field.",
       },
       {
-        name: 'rejects duplicate `matches` validation on same field',
+        name: 'rejects duplicate matches validation on same field',
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
