@@ -22,7 +22,7 @@ const isLengthValidation = (type: ValidationType): boolean => {
  * Validates that length validation values (minLength, maxLength) are valid non-negative integers.
  */
 const validateLengthValue = (config: ValidateDirectiveConfiguration): void => {
-  const value = parseInt(config.value, 10);
+  const value = Number(config.value);
   if (isNaN(value) || value < 0) {
     throw new InvalidDirectiveError(
       `${config.type} value must be a non-negative integer. Received '${config.value}' for field '${config.field.name.value}'`,
