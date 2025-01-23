@@ -2,13 +2,23 @@
 import { ObjectTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
 /* c8 ignore end */
 
-// All supported validation types
+/**
+ * All supported validation types in an array
+ */
 /* c8 ignore start */
 export const VALIDATION_TYPES = ['gt', 'lt', 'gte', 'lte', 'minLength', 'maxLength', 'startsWith', 'endsWith', 'matches'] as const;
+/* c8 ignore end */
+
+/**
+ * All supported validation types in a string union
+ */
+/* c8 ignore start */
 export type ValidationType = (typeof VALIDATION_TYPES)[number];
 /* c8 ignore end */
 
-// Interface for directive arguments
+/**
+ * Interface for directive arguments
+ */
 /* c8 ignore start */
 export interface ValidateArguments {
   type: ValidationType | '';
@@ -17,7 +27,9 @@ export interface ValidateArguments {
 }
 /* c8 ignore end */
 
-// Interface to store validate directive configurations
+/**
+ * Interface to store validate directive configurations
+ */
 /* c8 ignore start */
 export interface ValidateDirectiveConfiguration extends ValidateArguments {
   object: ObjectTypeDefinitionNode;
