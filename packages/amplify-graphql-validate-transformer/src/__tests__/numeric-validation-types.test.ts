@@ -69,6 +69,66 @@ describe('Numeric Validation Types', () => {
   describe('Valid usage', () => {
     test.each([
       {
+        name: 'accepts 0',
+        schema: /* GraphQL */ `
+          type Post @model {
+            id: ID!
+            rating: Float! @validate(type: gt, value: "0")
+            score: Int! @validate(type: lt, value: "0")
+            counts: [Float]! @validate(type: gte, value: "0")
+            numbers: [Int]! @validate(type: lte, value: "0")
+          }
+        `,
+      },
+      {
+        name: 'accepts positive integers',
+        schema: /* GraphQL */ `
+          type Post @model {
+            id: ID!
+            rating: Float! @validate(type: gt, value: "1")
+            score: Int! @validate(type: lt, value: "20")
+            counts: [Float]! @validate(type: gte, value: "432")
+            numbers: [Int]! @validate(type: lte, value: "6")
+          }
+        `,
+      },
+      {
+        name: 'accepts positive floats',
+        schema: /* GraphQL */ `
+          type Post @model {
+            id: ID!
+            rating: Float! @validate(type: gt, value: "1.325")
+            score: Int! @validate(type: lt, value: "20.5")
+            counts: [Float]! @validate(type: gte, value: "432.123")
+            numbers: [Int]! @validate(type: lte, value: "6.731628")
+          }
+        `,
+      },
+      {
+        name: 'accepts negative integers',
+        schema: /* GraphQL */ `
+          type Post @model {
+            id: ID!
+            rating: Float! @validate(type: gt, value: "-1")
+            score: Int! @validate(type: lt, value: "-20")
+            counts: [Float]! @validate(type: gte, value: "-432")
+            numbers: [Int]! @validate(type: lte, value: "-6")
+          }
+        `,
+      },
+      {
+        name: 'accepts negative floats',
+        schema: /* GraphQL */ `
+          type Post @model {
+            id: ID!
+            rating: Float! @validate(type: gt, value: "-1.325")
+            score: Int! @validate(type: lt, value: "-20.5")
+            counts: [Float]! @validate(type: gte, value: "-432.123")
+            numbers: [Int]! @validate(type: lte, value: "-6.731628")
+          }
+        `,
+      },
+      {
         name: 'accepts -Infinity value',
         schema: /* GraphQL */ `
           type Post @model {
