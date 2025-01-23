@@ -60,7 +60,7 @@ describe('min/maxLength Validators', () => {
           error: "minLength value must be a non-negative integer. Received 'abc' for field 'title'",
         },
         {
-          name: 'rejects special value of "!#>?$O#"',
+          name: 'rejects special character value of "!#>?$O#"',
           schema: /* GraphQL */ `
             type Post @model {
               id: ID!
