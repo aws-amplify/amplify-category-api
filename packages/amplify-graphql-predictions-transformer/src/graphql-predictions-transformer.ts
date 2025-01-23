@@ -26,6 +26,7 @@ import {
   InterfaceTypeDefinitionNode,
   Kind,
   ObjectTypeDefinitionNode,
+  ObjectTypeExtensionNode,
 } from 'graphql';
 import {
   comment,
@@ -79,7 +80,7 @@ export class PredictionsTransformer extends TransformerPluginBase {
   }
 
   field = (
-    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode,
     definition: FieldDefinitionNode,
     directive: DirectiveNode,
     context: TransformerSchemaVisitStepContextProvider,

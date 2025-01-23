@@ -13,20 +13,20 @@ import {
   getFilterInputName,
   getConditionInputName,
   getSubscriptionFilterInputName,
-  getConnectionName,
-  InputFieldWrapper,
   isDynamoDbModel,
+  isBuiltInGraphqlNode,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
   MutationFieldType,
   QueryFieldType,
-  TransformerTransformSchemaStepContextProvider,
+  TransformerAuthProvider,
+  TransformerBeforeStepContextProvider,
   TransformerContextProvider,
   TransformerResolverProvider,
   TransformerSchemaVisitStepContextProvider,
-  TransformerAuthProvider,
-  TransformerBeforeStepContextProvider,
+  TransformerTransformSchemaStepContextProvider,
+  TransformerValidationStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   DirectiveNode,
@@ -37,6 +37,7 @@ import {
   TypeDefinitionNode,
   ListValueNode,
   StringValueNode,
+  ObjectTypeExtensionNode,
 } from 'graphql';
 import { merge } from 'lodash';
 import {
@@ -268,9 +269,27 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   ): void => {
     if (parent.kind === Kind.INTERFACE_TYPE_DEFINITION) {
       throw new InvalidDirectiveError(
-        `The @auth directive cannot be placed on an interface's field. See ${parent.name.value}${field.name.value}`,
+        `The @auth directive cannot be placed on an interface's field. See ${parent.name.value}.${field.name.value}`,
       );
     }
+    this.transformField(parent, field, directive, context);
+  };
+
+  fieldOfExtendedType = (
+    parent: ObjectTypeExtensionNode,
+    field: FieldDefinitionNode,
+    directive: DirectiveNode,
+    context: TransformerSchemaVisitStepContextProvider,
+  ): void => {
+    this.transformField(parent, field, directive, context);
+  };
+
+  private transformField = (
+    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode,
+    field: FieldDefinitionNode,
+    directive: DirectiveNode,
+    context: TransformerSchemaVisitStepContextProvider,
+  ): void => {
     const isParentTypeBuiltinType =
       parent.name.value === context.output.getQueryTypeName() ||
       parent.name.value === context.output.getMutationTypeName() ||
@@ -720,11 +739,12 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     typeName: string,
     field: FieldDefinitionNode,
     fieldRoles: Array<string>,
-    needsFieldResolver: boolean = false,
+    needsFieldResolver = false,
   ): void => {
     let fieldAuthExpression: string;
     let relatedAuthExpression: string;
-    // Relational field redaction is default to `needsFieldResolver`, which stays consistent with current behavior of always redacting relational field when field resolver is needed
+    // Relational field redaction is default to `needsFieldResolver`, which stays consistent with current behavior of always redacting
+    // relational field when field resolver is needed
     let redactRelationalField: boolean = needsFieldResolver;
     const fieldIsRequired = field.type.kind === Kind.NON_NULL_TYPE;
     if (fieldIsRequired) {
@@ -779,7 +799,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
          * Once there is one role detected to have access on both side, the auth role definitions will be compared to determine whether
          * to redac the field or not
          */
-        for (let fieldRole of fieldReadRoleDefinitions) {
+        for (const fieldRole of fieldReadRoleDefinitions) {
           // When two role definitions have an overlap
           if (isFieldRoleHavingAccessToBothSide(fieldRole, filteredRelatedModelReadRoleDefinitions)) {
             // Check if two role definitions are identical without dynamic auth role or custom auth role

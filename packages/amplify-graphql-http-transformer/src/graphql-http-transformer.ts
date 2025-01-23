@@ -17,6 +17,7 @@ import {
   InterfaceTypeDefinitionNode,
   Kind,
   ObjectTypeDefinitionNode,
+  ObjectTypeExtensionNode,
 } from 'graphql';
 import {
   HttpResourceIDs,
@@ -25,7 +26,6 @@ import {
   makeNamedType,
   makeNonNullType,
   ModelResourceIDs,
-  ResourceConstants,
   unwrapNonNull,
 } from 'graphql-transformer-common';
 import {
@@ -79,7 +79,7 @@ export class HttpTransformer extends TransformerPluginBase {
   }
 
   field = (
-    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode,
     definition: FieldDefinitionNode,
     directive: DirectiveNode,
     context: TransformerSchemaVisitStepContextProvider,

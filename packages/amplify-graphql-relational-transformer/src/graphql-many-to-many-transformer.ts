@@ -1,10 +1,8 @@
 import {
-  DDB_DEFAULT_DATASOURCE_STRATEGY,
   DirectiveWrapper,
   InvalidDirectiveError,
   TransformerPluginBase,
   generateGetArgumentsInput,
-  getModelDataSourceNameForTypeName,
   getModelDataSourceStrategy,
   isAmplifyDynamoDbModelDataSourceStrategy,
   isDefaultDynamoDbModelDataSourceStrategy,
@@ -20,7 +18,6 @@ import {
   TransformerValidationStepContextProvider,
   TransformerPreProcessContextProvider,
   DataSourceStrategiesProvider,
-  ModelDataSourceStrategy,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { ManyToManyDirective } from '@aws-amplify/graphql-directives';
 import {
@@ -102,7 +99,7 @@ export class ManyToManyTransformer extends TransformerPluginBase {
   }
 
   field = (
-    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode,
     definition: FieldDefinitionNode,
     directive: DirectiveNode,
     context: TransformerSchemaVisitStepContextProvider,

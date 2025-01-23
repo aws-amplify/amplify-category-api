@@ -7,12 +7,12 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { RefersToDirective } from '@aws-amplify/graphql-directives';
 import {
-  ObjectTypeDefinitionNode,
   DirectiveNode,
   FieldDefinitionNode,
-  ObjectTypeExtensionNode,
   InterfaceTypeDefinitionNode,
   Kind,
+  ObjectTypeDefinitionNode,
+  ObjectTypeExtensionNode,
 } from 'graphql';
 import {
   shouldBeAppliedToModel,
@@ -45,7 +45,7 @@ export class RefersToTransformer extends TransformerPluginBase {
    * Register any renamed model fields with the ctx.resourceHelper.
    */
   field = (
-    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode,
     definition: FieldDefinitionNode,
     directive: DirectiveNode,
     ctx: TransformerSchemaVisitStepContextProvider,
