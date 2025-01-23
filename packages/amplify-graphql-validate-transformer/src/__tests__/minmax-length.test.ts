@@ -3,59 +3,6 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ValidateTransformer } from '..';
 
 describe('min/maxLength Validators', () => {
-  describe('Valid usage', () => {
-    test.each([
-      {
-        name: 'accepts valid length validation configurations',
-        schema: /* GraphQL */ `
-          type Post @model {
-            id: ID!
-            title: String! @validate(type: minLength, value: "3") 
-            content: String! @validate(type: maxLength, value: "10")
-          }
-        `,
-      },
-      {
-        name: 'accepts length validation on List field',
-        schema: /* GraphQL */ `
-          type Post @model {
-            id: ID!
-            tags: [String]! @validate(type: minLength, value: "20")
-            comments: [String]! @validate(type: maxLength, value: "30")
-          }
-        `,
-      },
-      {
-        name: 'accepts length values of "0"',
-        schema: /* GraphQL */ `
-          type Post @model {
-            id: ID!
-            title: String! @validate(type: minLength, value: "0") 
-            content: String! @validate(type: maxLength, value: "0")
-          }
-        `,
-      },
-      {
-        name: 'accepts length values of extremely large numbers beyond 64-bit range',
-        schema: /* GraphQL */ `
-          type Post @model {
-            id: ID!
-            title: String! @validate(type: minLength, value: "999999999999999999999999999999")
-            content: String! @validate(type: maxLength, value: "999999999999999999999999999999")
-          }
-        `,
-      },
-    ])('$name', ({ schema }) => {
-      const transformer = new ValidateTransformer();
-      expect(() => {
-        testTransform({
-          schema,
-          transformers: [new ModelTransformer(), transformer],
-        });
-      }).not.toThrow();
-    });
-  });
-
   describe('Invalid usage', () => {
     describe('Special values', () => {
       test.each([
@@ -184,6 +131,59 @@ describe('min/maxLength Validators', () => {
           });
         }).toThrow(error);
       });
+    });
+  });
+
+  describe('Valid usage', () => {
+    test.each([
+      {
+        name: 'accepts valid length validation configurations',
+        schema: /* GraphQL */ `
+          type Post @model {
+            id: ID!
+            title: String! @validate(type: minLength, value: "3") 
+            content: String! @validate(type: maxLength, value: "10")
+          }
+        `,
+      },
+      {
+        name: 'accepts length validation on List field',
+        schema: /* GraphQL */ `
+          type Post @model {
+            id: ID!
+            tags: [String]! @validate(type: minLength, value: "20")
+            comments: [String]! @validate(type: maxLength, value: "30")
+          }
+        `,
+      },
+      {
+        name: 'accepts length values of "0"',
+        schema: /* GraphQL */ `
+          type Post @model {
+            id: ID!
+            title: String! @validate(type: minLength, value: "0") 
+            content: String! @validate(type: maxLength, value: "0")
+          }
+        `,
+      },
+      {
+        name: 'accepts length values of extremely large numbers beyond 64-bit range',
+        schema: /* GraphQL */ `
+          type Post @model {
+            id: ID!
+            title: String! @validate(type: minLength, value: "999999999999999999999999999999")
+            content: String! @validate(type: maxLength, value: "999999999999999999999999999999")
+          }
+        `,
+      },
+    ])('$name', ({ schema }) => {
+      const transformer = new ValidateTransformer();
+      expect(() => {
+        testTransform({
+          schema,
+          transformers: [new ModelTransformer(), transformer],
+        });
+      }).not.toThrow();
     });
   });
 });
