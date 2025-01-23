@@ -127,13 +127,12 @@ describe('Duplicate Validation Types', () => {
         `,
       },
     ])('$name', ({ schema }) => {
-      const transformer = new ValidateTransformer();
-      expect(() => {
-        testTransform({
-          schema,
-          transformers: [new ModelTransformer(), transformer],
-        });
-      }).not.toThrow();
+      const out = testTransform({
+        schema,
+        transformers: [new ModelTransformer(), new ValidateTransformer()],
+      });
+      expect(out).toBeDefined();
+      expect(out.schema).toMatchSnapshot();
     });
   });
 });
