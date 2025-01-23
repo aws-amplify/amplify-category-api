@@ -75,7 +75,9 @@ const validateNoDuplicateTypes = (field: FieldDefinitionNode, currentDirective: 
 const validateNumericValue = (config: ValidateDirectiveConfiguration): void => {
   const value = parseFloat(config.value);
   if (isNaN(value)) {
-    throw new InvalidDirectiveError(`${config.type} value must be a number. Received '${config.value}' for field '${config.field.name.value}'`);
+    throw new InvalidDirectiveError(
+      `${config.type} value must be a number. Received '${config.value}' for field '${config.field.name.value}'`,
+    );
   }
 };
 

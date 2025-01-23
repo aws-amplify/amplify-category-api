@@ -141,7 +141,7 @@ describe('min/maxLength Validators', () => {
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
-            title: String! @validate(type: minLength, value: "3") 
+            title: String! @validate(type: minLength, value: "3")
             content: String! @validate(type: maxLength, value: "10")
           }
         `,
@@ -161,7 +161,7 @@ describe('min/maxLength Validators', () => {
         schema: /* GraphQL */ `
           type Post @model {
             id: ID!
-            title: String! @validate(type: minLength, value: "0") 
+            title: String! @validate(type: minLength, value: "0")
             content: String! @validate(type: maxLength, value: "0")
           }
         `,
