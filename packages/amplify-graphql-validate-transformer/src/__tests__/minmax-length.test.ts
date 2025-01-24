@@ -4,185 +4,78 @@ import { ValidateTransformer } from '..';
 
 describe('min/maxLength Validators', () => {
   describe('Invalid usage', () => {
-    describe('Special values', () => {
-      test.each([
-        {
-          name: 'rejects value of "NaN"',
-          schema: /* GraphQL */ `
-            type Post @model {
-              id: ID!
-              title: String! @validate(type: minLength, value: "NaN")
-            }
-          `,
-          error: "minLength value must be a non-negative integer. Received 'NaN' for field 'title'",
-        },
-        {
-          name: 'rejects value of "undefined"',
-          schema: /* GraphQL */ `
-            type Post @model {
-              id: ID!
-              title: String! @validate(type: maxLength, value: "undefined")
-            }
-          `,
-          error: "maxLength value must be a non-negative integer. Received 'undefined' for field 'title'",
-        },
-        {
-          name: 'rejects value of "null"',
-          schema: /* GraphQL */ `
-            type Post @model {
-              id: ID!
-              title: String! @validate(type: minLength, value: "null")
-            }
-          `,
-          error: "minLength value must be a non-negative integer. Received 'null' for field 'title'",
-        },
-      ])('$name', ({ schema, error }) => {
-        const transformer = new ValidateTransformer();
-        expect(() => {
-          testTransform({
-            schema,
-            transformers: [new ModelTransformer(), transformer],
-          });
-        }).toThrow(error);
-      });
-    });
+    const types = ['minLength', 'maxLength'];
 
-    describe('Non-numeric length values', () => {
-      test.each([
-        {
-          name: 'rejects alphabetic value of "abc"',
-          schema: /* GraphQL */ `
+    const testInvalidValues = (description: string, values: string[]): void => {
+      describe(`${description}`, () => {
+        test.each(
+          types.flatMap((type) =>
+            values.map((value) => ({
+              type,
+              value,
+            })),
+          ),
+        )('rejects $type value of "$value"', ({ type, value }) => {
+          const schema = /* GraphQL */ `
             type Post @model {
               id: ID!
-              title: String! @validate(type: minLength, value: "abc")
+              title: String! @validate(type: ${type}, value: "${value}")
             }
-          `,
-          error: "minLength value must be a non-negative integer. Received 'abc' for field 'title'",
-        },
-        {
-          name: 'rejects special character value of "!#>?$O#"',
-          schema: /* GraphQL */ `
-            type Post @model {
-              id: ID!
-              title: String! @validate(type: maxLength, value: "!#>?$O#")
-            }
-          `,
-          error: "maxLength value must be a non-negative integer. Received '!#>?$O#' for field 'title'",
-        },
-        {
-          name: 'rejects space value of " "',
-          schema: /* GraphQL */ `
-            type Post @model {
-              id: ID!
-              title: String! @validate(type: minLength, value: " ")
-            }
-          `,
-          error: "minLength value must be a non-negative integer. Received ' ' for field 'title'",
-        },
-        {
-          name: 'rejects empty string value of ""',
-          schema: /* GraphQL */ `
-            type Post @model {
-              id: ID!
-              title: String! @validate(type: maxLength, value: "")
-            }
-          `,
-          error: "maxLength value must be a non-negative integer. Received '' for field 'title'",
-        },
-      ])('$name', ({ schema, error }) => {
-        const transformer = new ValidateTransformer();
-        expect(() => {
-          testTransform({
-            schema,
-            transformers: [new ModelTransformer(), transformer],
-          });
-        }).toThrow(error);
-      });
-    });
+          `;
+          const error = `${type} value must be a non-negative integer. Received '${value}' for field 'title'`;
 
-    describe('Negative length values', () => {
-      test.each([
-        {
-          name: 'rejects negative value of "-999999999999999999999999999999"',
-          schema: /* GraphQL */ `
-            type Post @model {
-              id: ID!
-              title: String! @validate(type: minLength, value: "-999999999999999999999999999999")
-            }
-          `,
-          error: "minLength value must be a non-negative integer. Received '-999999999999999999999999999999' for field 'title'",
-        },
-        {
-          name: 'rejects negative value of "-10"',
-          schema: /* GraphQL */ `
-            type Post @model {
-              id: ID!
-              title: String! @validate(type: maxLength, value: "-10")
-            }
-          `,
-          error: "maxLength value must be a non-negative integer. Received '-10' for field 'title'",
-        },
-      ])('$name', ({ schema, error }) => {
-        const transformer = new ValidateTransformer();
-        expect(() => {
-          testTransform({
-            schema,
-            transformers: [new ModelTransformer(), transformer],
-          });
-        }).toThrow(error);
+          const transformer = new ValidateTransformer();
+          expect(() => {
+            testTransform({
+              schema,
+              transformers: [new ModelTransformer(), transformer],
+            });
+          }).toThrow(error);
+        });
       });
-    });
+    };
+
+    testInvalidValues('Special values', ['NaN', 'undefined', 'null']);
+    testInvalidValues('Non-numeric length values', ['abc', '!#>?$O#']);
+    testInvalidValues('Negative length values', ['-999999999999999999999999999999', '-10']);
   });
 
   describe('Valid usage', () => {
-    test.each([
-      {
-        name: 'accepts valid length validation configurations',
-        schema: /* GraphQL */ `
-          type Post @model {
-            id: ID!
-            title: String! @validate(type: minLength, value: "3")
-            content: String! @validate(type: maxLength, value: "10")
-          }
-        `,
-      },
-      {
-        name: 'accepts length validation on List field',
-        schema: /* GraphQL */ `
-          type Post @model {
-            id: ID!
-            tags: [String]! @validate(type: minLength, value: "20")
-            comments: [String]! @validate(type: maxLength, value: "30")
-          }
-        `,
-      },
-      {
-        name: 'accepts length values of "0"',
-        schema: /* GraphQL */ `
-          type Post @model {
-            id: ID!
-            title: String! @validate(type: minLength, value: "0")
-            content: String! @validate(type: maxLength, value: "0")
-          }
-        `,
-      },
-      {
-        name: 'accepts length values of extremely large numbers beyond 64-bit range',
-        schema: /* GraphQL */ `
-          type Post @model {
-            id: ID!
-            title: String! @validate(type: minLength, value: "999999999999999999999999999999")
-            content: String! @validate(type: maxLength, value: "999999999999999999999999999999")
-          }
-        `,
-      },
-    ])('$name', ({ schema }) => {
-      const out = testTransform({
-        schema,
-        transformers: [new ModelTransformer(), new ValidateTransformer()],
+    const types = ['minLength', 'maxLength'];
+
+    const testValidValues = (description: string, testCases: Array<{ value: string; fieldType?: string }>): void => {
+      test.each(
+        testCases.flatMap((testCase) =>
+          types.map((type) => ({
+            name: `accepts ${description} of '${testCase.value}'`,
+            schema: /* GraphQL */ `
+              type Post @model {
+                id: ID!
+                ${
+                  testCase.fieldType ? `${type === 'minLength' ? 'tags' : 'comments'}: [${testCase.fieldType}]!` : 'title: String!'
+                } @validate(type: ${type}, value: "${testCase.value}")
+              }
+            `,
+          })),
+        ),
+      )('$name', ({ schema }) => {
+        const out = testTransform({
+          schema,
+          transformers: [new ModelTransformer(), new ValidateTransformer()],
+        });
+        expect(out).toBeDefined();
+        expect(out.schema).toMatchSnapshot();
       });
-      expect(out).toBeDefined();
-      expect(out.schema).toMatchSnapshot();
-    });
+    };
+
+    testValidValues('basic values', [{ value: '3' }, { value: '10' }]);
+    testValidValues('List field values', [{ value: '20', fieldType: 'String' }]);
+    testValidValues('zero values', [{ value: '0' }]);
+    testValidValues('large numbers', [{ value: '999999999999999999999999999999' }]);
+    testValidValues('space values', [{ value: '     ' }]);
+    testValidValues('empty string', [{ value: '' }]);
+    testValidValues('whitespace with newlines', [{ value: '   \\n   ' }]);
+    testValidValues('whitespace with tabs', [{ value: '   \\t   ' }]);
+    testValidValues('escape characters', [{ value: '    \    ' }]);
   });
 });
