@@ -1,0 +1,7 @@
+type Query {
+  myQuery1: String @function(name: "myQuery1-${env}") @auth(rules: [{ allow: custom }])
+}
+
+extend type Query {
+  myQuery2: String @function(name: "myQuery2-${env}") @auth(rules: [{ allow: custom }])
+}

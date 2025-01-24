@@ -139,23 +139,23 @@ batch:
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        api_canary_ap_south_1_api_override_ddb_table_name_resolvers_sync_query_datastore
+        api_canary_ap_northeast_1_api_override_ddb_table_name_custom_query_mutation_extension_resolvers
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_canary.test.ts|src/__tests__/api-override-ddb-table-name.test.ts|src/__tests__/resolvers.test.ts|src/__tests__/graphql-v2/sync_query_datastore.test.ts
-          CLI_REGION: ap-south-1
+            src/__tests__/api_canary.test.ts|src/__tests__/api-override-ddb-table-name.test.ts|src/__tests__/graphql-v2/custom-query-mutation-extension.test.ts|src/__tests__/resolvers.test.ts
+          CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
-    - identifier: api_6_api_lambda_auth_api_9
+    - identifier: sync_query_datastore_api_6_api_lambda_auth_api_9
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_6.test.ts|src/__tests__/graphql-v2/api_lambda_auth.test.ts|src/__tests__/api_9.test.ts
+            src/__tests__/graphql-v2/sync_query_datastore.test.ts|src/__tests__/api_6.test.ts|src/__tests__/graphql-v2/api_lambda_auth.test.ts|src/__tests__/api_9.test.ts
           CLI_REGION: eu-west-2
       depend-on:
         - publish_to_local_registry
@@ -439,7 +439,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/api_1.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: ap-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_5
@@ -448,7 +448,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/schema-auth-5.test.ts
-          CLI_REGION: ap-south-1
+          CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_searchable
@@ -524,7 +524,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/api_2.test.ts
-          CLI_REGION: eu-west-3
+          CLI_REGION: me-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: searchable_migration
@@ -533,7 +533,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/transformer-migrations/searchable-migration.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: ap-southeast-2
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
