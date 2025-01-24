@@ -3,174 +3,109 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ValidateTransformer } from '..';
 
 describe('Numeric Validation Types', () => {
+  const numericValidationTypes = ['gt', 'lt', 'gte', 'lte'];
+  const fieldTypes = ['Int', 'Float'];
+
   describe('Invalid usage', () => {
-    test.each([
-      {
-        name: 'rejects empty value',
-        schema: /* GraphQL */ `
-          type Post @model {
-            id: ID!
-            rating: Float! @validate(type: gt, value: "")
-          }
-        `,
-        error: "gt value must be a number. Received '' for field 'rating'",
-      },
-      {
-        name: 'rejects space value',
-        schema: /* GraphQL */ `
-          type Post @model {
-            id: ID!
-            score: Int! @validate(type: lt, value: " ")
-          }
-        `,
-        error: "lt value must be a number. Received ' ' for field 'score'",
-      },
-      {
-        name: 'rejects NaN value',
-        schema: /* GraphQL */ `
-          type Post @model {
-            id: ID!
-            counts: [Float]! @validate(type: gte, value: "NaN")
-          }
-        `,
-        error: "gte value must be a number. Received 'NaN' for field 'counts'",
-      },
-      {
-        name: 'rejects null value',
-        schema: /* GraphQL */ `
-          type Post @model {
-            id: ID!
-            numbers: [Int]! @validate(type: lte, value: "null")
-          }
-        `,
-        error: "lte value must be a number. Received 'null' for field 'numbers'",
-      },
-      {
-        name: 'rejects undefined value',
-        schema: /* GraphQL */ `
-          type Post @model {
-            id: ID!
-            rating: Float! @validate(type: gt, value: "undefined")
-          }
-        `,
-        error: "gt value must be a number. Received 'undefined' for field 'rating'",
-      },
-    ])('$name', ({ schema, error }) => {
-      const transformer = new ValidateTransformer();
-      expect(() => {
-        testTransform({
-          schema,
-          transformers: [new ModelTransformer(), transformer],
+    const testInvalidValues = (description: string, testCases: Array<{ value: string; description: string }>): void => {
+      describe(`${description}`, () => {
+        test.each(
+          testCases.flatMap((testCase) =>
+            numericValidationTypes.flatMap((validationType) =>
+              fieldTypes.map((fieldType) => ({
+                validationType,
+                fieldType,
+                value: testCase.value,
+                description: testCase.description,
+              })),
+            ),
+          ),
+        )('rejects `$validationType` validation with $description on `$fieldType` field', ({ validationType, fieldType, value }) => {
+          const schema = /* GraphQL */ `
+            type Post @model {
+              id: ID!
+              field: ${fieldType}! @validate(type: ${validationType}, value: "${value}")
+            }
+          `;
+          const error = `${validationType} value must be a number. Received '${value}' for field 'field'`;
+
+          const transformer = new ValidateTransformer();
+          expect(() => {
+            testTransform({
+              schema,
+              transformers: [new ModelTransformer(), transformer],
+            });
+          }).toThrow(error);
         });
-      }).toThrow(error);
-    });
+      });
+    };
+
+    testInvalidValues('Empty and special values', [
+      { value: '', description: 'empty string' },
+      { value: ' ', description: 'string with single space' },
+      { value: 'NaN', description: 'Not a Number (NaN)' },
+      { value: 'null', description: 'null string' },
+      { value: 'undefined', description: 'undefined string' },
+    ]);
   });
 
   describe('Valid usage', () => {
-    test.each([
-      {
-        name: 'accepts 0',
-        schema: /* GraphQL */ `
-          type Post @model {
-            id: ID!
-            rating: Float! @validate(type: gt, value: "0")
-            score: Int! @validate(type: lt, value: "0")
-            counts: [Float]! @validate(type: gte, value: "0")
-            numbers: [Int]! @validate(type: lte, value: "0")
-          }
-        `,
-      },
-      {
-        name: 'accepts positive integers',
-        schema: /* GraphQL */ `
-          type Post @model {
-            id: ID!
-            rating: Float! @validate(type: gt, value: "1")
-            score: Int! @validate(type: lt, value: "20")
-            counts: [Float]! @validate(type: gte, value: "432")
-            numbers: [Int]! @validate(type: lte, value: "6")
-          }
-        `,
-      },
-      {
-        name: 'accepts positive floats',
-        schema: /* GraphQL */ `
-          type Post @model {
-            id: ID!
-            rating: Float! @validate(type: gt, value: "1.325")
-            score: Int! @validate(type: lt, value: "20.5")
-            counts: [Float]! @validate(type: gte, value: "432.123")
-            numbers: [Int]! @validate(type: lte, value: "6.731628")
-          }
-        `,
-      },
-      {
-        name: 'accepts negative integers',
-        schema: /* GraphQL */ `
-          type Post @model {
-            id: ID!
-            rating: Float! @validate(type: gt, value: "-1")
-            score: Int! @validate(type: lt, value: "-20")
-            counts: [Float]! @validate(type: gte, value: "-432")
-            numbers: [Int]! @validate(type: lte, value: "-6")
-          }
-        `,
-      },
-      {
-        name: 'accepts negative floats',
-        schema: /* GraphQL */ `
-          type Post @model {
-            id: ID!
-            rating: Float! @validate(type: gt, value: "-1.325")
-            score: Int! @validate(type: lt, value: "-20.5")
-            counts: [Float]! @validate(type: gte, value: "-432.123")
-            numbers: [Int]! @validate(type: lte, value: "-6.731628")
-          }
-        `,
-      },
-      {
-        name: 'accepts -Infinity value',
-        schema: /* GraphQL */ `
-          type Post @model {
-            id: ID!
-            rating: Float! @validate(type: gt, value: "-Infinity")
-            score: Int! @validate(type: lt, value: "-Infinity")
-            counts: [Float]! @validate(type: gte, value: "-Infinity")
-            numbers: [Int]! @validate(type: lte, value: "-Infinity")
-          }
-        `,
-      },
-      {
-        name: 'accepts Infinity value',
-        schema: /* GraphQL */ `
-          type Post @model {
-            id: ID!
-            rating: Float! @validate(type: lt, value: "Infinity")
-            score: Int! @validate(type: gt, value: "Infinity")
-            counts: [Float]! @validate(type: lte, value: "Infinity")
-            numbers: [Int]! @validate(type: gte, value: "Infinity")
-          }
-        `,
-      },
-      {
-        name: 'accepts extremely large value beyond 64-bit range',
-        schema: /* GraphQL */ `
-          type Post @model {
-            id: ID!
-            rating: Float! @validate(type: lte, value: "999999999999999999999999999999")
-            score: Int! @validate(type: gte, value: "999999999999999999999999999999")
-            counts: [Float]! @validate(type: lte, value: "999999999999999999999999999999")
-            numbers: [Int]! @validate(type: gte, value: "999999999999999999999999999999")
-          }
-        `,
-      },
-    ])('$name', ({ schema }) => {
-      const out = testTransform({
-        schema,
-        transformers: [new ModelTransformer(), new ValidateTransformer()],
+    const testValidValues = (description: string, testCases: Array<{ value: string; isList?: boolean }>): void => {
+      test.each(
+        testCases.flatMap((testCase) =>
+          numericValidationTypes.flatMap((validationType) =>
+            fieldTypes.map((fieldType) => ({
+              name: `accepts ${validationType} validation with ${description} ${testCase.value} on ${
+                testCase.isList ? 'list of ' : ''
+              }${fieldType} field`,
+              schema: /* GraphQL */ `
+                type Post @model {
+                  id: ID!
+                  field: ${testCase.isList ? `[${fieldType}]` : fieldType}! @validate(type: ${validationType}, value: "${testCase.value}")
+                }
+              `,
+            })),
+          ),
+        ),
+      )('$name', ({ schema }) => {
+        const out = testTransform({
+          schema,
+          transformers: [new ModelTransformer(), new ValidateTransformer()],
+        });
+        expect(out).toBeDefined();
+        expect(out.schema).toMatchSnapshot();
       });
-      expect(out).toBeDefined();
-      expect(out.schema).toMatchSnapshot();
-    });
+    };
+
+    testValidValues('zero', [{ value: '0' }]);
+    testValidValues('positive integer', [{ value: '1' }, { value: '20' }, { value: '432' }]);
+    testValidValues('positive float', [{ value: '1.325' }, { value: '20.5' }, { value: '432.123' }]);
+    testValidValues('negative integer', [{ value: '-1' }, { value: '-20' }, { value: '-432' }]);
+    testValidValues('negative float', [{ value: '-1.325' }, { value: '-20.5' }, { value: '-432.123' }]);
+    testValidValues('infinity', [{ value: 'Infinity' }, { value: '-Infinity' }]);
+    testValidValues('extremely large number', [{ value: '999999999999999999999999999999' }]);
+
+    testValidValues('zero on list field', [{ value: '0', isList: true }]);
+    testValidValues('positive integer on list field', [
+      { value: '1', isList: true },
+      { value: '20', isList: true },
+    ]);
+    testValidValues('positive float on list field', [
+      { value: '1.325', isList: true },
+      { value: '20.5', isList: true },
+    ]);
+    testValidValues('negative integer on list field', [
+      { value: '-1', isList: true },
+      { value: '-20', isList: true },
+    ]);
+    testValidValues('negative float on list field', [
+      { value: '-1.325', isList: true },
+      { value: '-20.5', isList: true },
+    ]);
+    testValidValues('infinity on list field', [
+      { value: 'Infinity', isList: true },
+      { value: '-Infinity', isList: true },
+    ]);
+    testValidValues('extremely large number on list field', [{ value: '999999999999999999999999999999', isList: true }]);
   });
 });

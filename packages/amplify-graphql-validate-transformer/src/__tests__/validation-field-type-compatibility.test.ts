@@ -16,7 +16,7 @@ describe('Type Compatibility', () => {
 
     const fieldTypes: FieldType[] = [
       { type: 'String', fieldName: 'title', value: 'test' },
-      { type: 'ID', fieldName: 'id', value: 'test-id' },
+      { type: 'ID', fieldName: 'anotherId', value: 'test-id' },
       { type: 'Boolean', fieldName: 'isPublished', value: 'true' },
       { type: 'Int', fieldName: 'count', value: '5' },
       { type: 'Float', fieldName: 'rating', value: '5.0' },
@@ -59,7 +59,7 @@ describe('Type Compatibility', () => {
               fieldType,
             })),
         ),
-      )('rejects `$validationType` validation on $fieldType.type field', ({ validationType, fieldType }) => {
+      )('rejects `$validationType` validation on `$fieldType.type` field', ({ validationType, fieldType }) => {
         const schema = createTestSchema(fieldType, validationType, fieldType.value);
         const transformer = new ValidateTransformer();
         expect(() => {
@@ -91,9 +91,12 @@ describe('Type Compatibility', () => {
   });
 
   describe('Valid usage', () => {
-    const testValidFieldTypes = (_: string, testCases: Array<{ validationType: string; fieldType: string; value: string }>): void => {
+    const testValidFieldTypes = (
+      _: string,
+      testCases: Array<{ validationType: string; fieldType: string; value: string }>,
+    ): void => {
       test.each(testCases)(
-        'accepts $validationType validation on $fieldType field with value $value',
+        'accepts `$validationType` validation on `$fieldType` field with value `$value`',
         ({ validationType, fieldType, value }) => {
           const schema = /* GraphQL */ `
             type Post @model {

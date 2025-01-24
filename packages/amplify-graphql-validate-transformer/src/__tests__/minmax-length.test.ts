@@ -15,7 +15,7 @@ describe('min/maxLength Validators', () => {
               value,
             })),
           ),
-        )('rejects $type value of "$value"', ({ type, value }) => {
+        )('rejects `$type` value of `$value`', ({ type, value }) => {
           const schema = /* GraphQL */ `
             type Post @model {
               id: ID!
@@ -47,7 +47,7 @@ describe('min/maxLength Validators', () => {
       test.each(
         testCases.flatMap((testCase) =>
           types.map((type) => ({
-            name: `accepts ${description} of '${testCase.value}'`,
+            name: `accepts ${type} ${description} of '${testCase.value}'`,
             schema: /* GraphQL */ `
               type Post @model {
                 id: ID!
@@ -76,6 +76,6 @@ describe('min/maxLength Validators', () => {
     testValidValues('empty string', [{ value: '' }]);
     testValidValues('whitespace with newlines', [{ value: '   \\n   ' }]);
     testValidValues('whitespace with tabs', [{ value: '   \\t   ' }]);
-    testValidValues('escape characters', [{ value: '    \    ' }]);
+    testValidValues('escape characters', [{ value: '        ' }]);
   });
 });

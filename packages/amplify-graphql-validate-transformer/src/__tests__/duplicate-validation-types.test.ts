@@ -15,7 +15,7 @@ describe('Duplicate Validation Types', () => {
             fieldType,
           })),
         ),
-      )('rejects duplicate $type validation', ({ type, fieldType }) => {
+      )('rejects duplicate `$type` validation on `$fieldType` field', ({ type, fieldType }) => {
         const schema = /* GraphQL */ `
           type Post @model {
             id: ID!
@@ -56,7 +56,7 @@ describe('Duplicate Validation Types', () => {
           type: 'matches',
           values: ['regex1', 'regex2'],
         },
-      ])('rejects duplicate $type validation on same field', ({ type, values }) => {
+      ])('rejects duplicate `$type` validation on `String` field', ({ type, values }) => {
         const schema = /* GraphQL */ `
           type Post @model {
             id: ID!
