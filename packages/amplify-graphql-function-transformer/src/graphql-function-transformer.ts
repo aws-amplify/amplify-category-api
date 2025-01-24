@@ -55,6 +55,15 @@ export class FunctionTransformer extends TransformerPluginBase {
     resolver.push(args);
   };
 
+  fieldOfExtendedType = (
+    parent: ObjectTypeExtensionNode,
+    field: FieldDefinitionNode,
+    directive: DirectiveNode,
+    context: TransformerSchemaVisitStepContextProvider,
+  ): void => {
+    this.field(parent, field, directive, context);
+  };
+
   generateResolvers = (context: TransformerContextProvider): void => {
     if (this.resolverGroups.size === 0) {
       return;

@@ -8,6 +8,7 @@ import { DirectiveNode } from 'graphql';
 import { FieldDefinitionNode } from 'graphql';
 import { InterfaceTypeDefinitionNode } from 'graphql';
 import { ObjectTypeDefinitionNode } from 'graphql';
+import { ObjectTypeExtensionNode } from 'graphql';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import { TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -17,7 +18,7 @@ import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/grap
 export class DefaultValueTransformer extends TransformerPluginBase {
     constructor();
     // (undocumented)
-    field: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, definition: FieldDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider) => void;
+    field: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode, definition: FieldDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider) => void;
     // (undocumented)
     generateResolvers: (ctx: TransformerContextProvider) => void;
     // (undocumented)

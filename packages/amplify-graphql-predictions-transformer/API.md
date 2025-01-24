@@ -8,6 +8,7 @@ import { DirectiveNode } from 'graphql';
 import { FieldDefinitionNode } from 'graphql';
 import { InterfaceTypeDefinitionNode } from 'graphql';
 import { ObjectTypeDefinitionNode } from 'graphql';
+import { ObjectTypeExtensionNode } from 'graphql';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import { TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -18,7 +19,7 @@ export class PredictionsTransformer extends TransformerPluginBase {
     // Warning: (ae-forgotten-export) The symbol "PredictionsConfig" needs to be exported by the entry point index.d.ts
     constructor(predictionsConfig?: PredictionsConfig);
     // (undocumented)
-    field: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, definition: FieldDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
+    field: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode, definition: FieldDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
     // (undocumented)
     generateResolvers: (context: TransformerContextProvider) => void;
     // (undocumented)
