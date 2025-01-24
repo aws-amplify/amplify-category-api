@@ -20,6 +20,8 @@ export class FunctionTransformer extends TransformerPluginBase {
     // (undocumented)
     field: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode, definition: FieldDefinitionNode, directive: DirectiveNode, acc: TransformerSchemaVisitStepContextProvider) => void;
     // (undocumented)
+    fieldOfExtendedType: (parent: ObjectTypeExtensionNode, field: FieldDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
+    // (undocumented)
     generateResolvers: (context: TransformerContextProvider) => void;
 }
 

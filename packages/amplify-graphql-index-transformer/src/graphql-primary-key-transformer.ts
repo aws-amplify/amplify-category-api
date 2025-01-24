@@ -20,7 +20,6 @@ import {
   InterfaceTypeDefinitionNode,
   Kind,
   ObjectTypeDefinitionNode,
-  ObjectTypeExtensionNode,
 } from 'graphql';
 import { isListType, isNonNullType, isScalarOrEnum, makeInputValueDefinition, makeNamedType } from 'graphql-transformer-common';
 import { constructSyncVTL, getVTLGenerator } from './resolvers/resolvers';
@@ -47,7 +46,7 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
   }
 
   field = (
-    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode,
+    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
     definition: FieldDefinitionNode,
     directive: DirectiveNode,
     context: TransformerSchemaVisitStepContextProvider,

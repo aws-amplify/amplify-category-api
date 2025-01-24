@@ -45,7 +45,7 @@ export class RefersToTransformer extends TransformerPluginBase {
    * Register any renamed model fields with the ctx.resourceHelper.
    */
   field = (
-    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode,
+    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
     definition: FieldDefinitionNode,
     directive: DirectiveNode,
     ctx: TransformerSchemaVisitStepContextProvider,

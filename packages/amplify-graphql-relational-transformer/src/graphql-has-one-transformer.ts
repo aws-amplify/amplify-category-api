@@ -25,7 +25,6 @@ import {
   Kind,
   NamedTypeNode,
   ObjectTypeDefinitionNode,
-  ObjectTypeExtensionNode,
 } from 'graphql';
 import {
   getBaseType,
@@ -68,7 +67,7 @@ export class HasOneTransformer extends TransformerPluginBase {
   }
 
   field = (
-    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode,
+    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
     definition: FieldDefinitionNode,
     directive: DirectiveNode,
     context: TransformerSchemaVisitStepContextProvider,
