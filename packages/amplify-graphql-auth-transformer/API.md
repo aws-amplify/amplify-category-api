@@ -10,6 +10,7 @@ import { FieldDefinitionNode } from 'graphql';
 import { GetArgumentsOptions } from '@aws-amplify/graphql-transformer-core';
 import { InterfaceTypeDefinitionNode } from 'graphql';
 import { ObjectTypeDefinitionNode } from 'graphql';
+import { ObjectTypeExtensionNode } from 'graphql';
 import { TransformerAuthBase } from '@aws-amplify/graphql-transformer-core';
 import { TransformerAuthProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerBeforeStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -120,7 +121,9 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     // (undocumented)
     before: (context: TransformerBeforeStepContextProvider) => void;
     // (undocumented)
-    field: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, field: FieldDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
+    field: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode, field: FieldDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
+    // (undocumented)
+    fieldOfExtendedType: (parent: ObjectTypeExtensionNode, field: FieldDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
     // (undocumented)
     generateResolvers: (context: TransformerContextProvider) => void;
     // (undocumented)

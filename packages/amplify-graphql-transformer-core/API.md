@@ -197,7 +197,7 @@ export class EnumWrapper {
 }
 
 // @public (undocumented)
-export const fieldsWithSqlDirective: (obj: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode) => FieldDefinitionNode[];
+export const fieldsWithSqlDirective: (obj: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode) => FieldDefinitionNode[];
 
 // Warning: (ae-forgotten-export) The symbol "GenericFieldWrapper" needs to be exported by the entry point index.d.ts
 //
@@ -489,7 +489,7 @@ export const isMutationNode: (obj: DefinitionNode) => obj is (ObjectTypeDefiniti
 };
 
 // @public (undocumented)
-export const isObjectTypeDefinitionNode: (obj: DefinitionNode) => obj is ObjectTypeDefinitionNode;
+export const isObjectTypeDefinitionNode: (obj: DefinitionNode) => obj is ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode;
 
 // @public (undocumented)
 export const isPostgresDbType: (dbType: ModelDataSourceStrategyDbType) => dbType is "POSTGRES";

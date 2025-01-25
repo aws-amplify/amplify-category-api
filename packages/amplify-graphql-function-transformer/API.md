@@ -9,6 +9,7 @@ import { FieldDefinitionNode } from 'graphql';
 import { InterfaceTypeDefinitionNode } from 'graphql';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { ObjectTypeDefinitionNode } from 'graphql';
+import { ObjectTypeExtensionNode } from 'graphql';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import { TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -17,7 +18,9 @@ import { TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-
 export class FunctionTransformer extends TransformerPluginBase {
     constructor(functionNameMap?: Record<string, lambda.IFunction> | undefined);
     // (undocumented)
-    field: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, definition: FieldDefinitionNode, directive: DirectiveNode, acc: TransformerSchemaVisitStepContextProvider) => void;
+    field: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode, definition: FieldDefinitionNode, directive: DirectiveNode, acc: TransformerSchemaVisitStepContextProvider) => void;
+    // (undocumented)
+    fieldOfExtendedType: (parent: ObjectTypeExtensionNode, field: FieldDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
     // (undocumented)
     generateResolvers: (context: TransformerContextProvider) => void;
 }
