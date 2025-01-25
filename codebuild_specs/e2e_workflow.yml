@@ -139,24 +139,24 @@ batch:
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        api_canary_ap_northeast_1_api_override_ddb_table_name_custom_query_mutation_extension_resolvers
+        api_canary_ap_southeast_1_api_override_ddb_table_name_resolvers_sync_query_datastore
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/api_canary.test.ts|src/__tests__/api-override-ddb-table-name.test.ts|src/__tests__/graphql-v2/custom-query-mutation-extension.test.ts|src/__tests__/resolvers.test.ts
-          CLI_REGION: ap-northeast-1
+            src/__tests__/api_canary.test.ts|src/__tests__/api-override-ddb-table-name.test.ts|src/__tests__/resolvers.test.ts|src/__tests__/graphql-v2/sync_query_datastore.test.ts
+          CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
-    - identifier: sync_query_datastore_api_6_api_lambda_auth_api_9
+    - identifier: api_6_api_lambda_auth_api_9
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
           TEST_SUITE: >-
-            src/__tests__/graphql-v2/sync_query_datastore.test.ts|src/__tests__/api_6.test.ts|src/__tests__/graphql-v2/api_lambda_auth.test.ts|src/__tests__/api_9.test.ts
-          CLI_REGION: eu-west-2
+            src/__tests__/api_6.test.ts|src/__tests__/graphql-v2/api_lambda_auth.test.ts|src/__tests__/api_9.test.ts
+          CLI_REGION: eu-west-3
       depend-on:
         - publish_to_local_registry
     - identifier: api_10
@@ -388,13 +388,22 @@ batch:
           CLI_REGION: us-east-1
       depend-on:
         - publish_to_local_registry
+    - identifier: custom_query_mutation_extension
+      buildspec: codebuild_specs/run_e2e_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          TEST_SUITE: src/__tests__/graphql-v2/custom-query-mutation-extension.test.ts
+          CLI_REGION: us-east-2
+      depend-on:
+        - publish_to_local_registry
     - identifier: apigw
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/apigw.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: us-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_9
@@ -403,7 +412,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/schema-auth-9.test.ts
-          CLI_REGION: us-west-1
+          CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_7
@@ -412,7 +421,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/schema-auth-7.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: ap-east-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_14
@@ -421,7 +430,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/schema-auth-14.test.ts
-          CLI_REGION: ap-east-1
+          CLI_REGION: ap-northeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: containers_api_2
@@ -457,7 +466,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/schema-searchable.test.ts
-          CLI_REGION: eu-west-1
+          CLI_REGION: eu-west-2
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
@@ -467,7 +476,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/schema-iterative-update-4.test.ts
-          CLI_REGION: ca-central-1
+          CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: searchable_datastore
@@ -476,7 +485,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/graphql-v2/searchable-datastore.test.ts
-          CLI_REGION: us-east-2
+          CLI_REGION: us-west-1
           USE_PARENT_ACCOUNT: 1
       depend-on:
         - publish_to_local_registry
@@ -486,7 +495,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/schema-connection.test.ts
-          CLI_REGION: eu-north-1
+          CLI_REGION: eu-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_6
@@ -495,7 +504,7 @@ batch:
         compute-type: BUILD_GENERAL1_SMALL
         variables:
           TEST_SUITE: src/__tests__/schema-auth-6.test.ts
-          CLI_REGION: eu-south-1
+          CLI_REGION: eu-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: searchable_previous_deployment_had_node_to_node
@@ -505,7 +514,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-had-node-to-node.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: ap-northeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: searchable_previous_deployment_no_node_to_node
@@ -515,7 +524,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-no-node-to-node.test.ts
-          CLI_REGION: ap-northeast-2
+          CLI_REGION: ap-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: api_2
