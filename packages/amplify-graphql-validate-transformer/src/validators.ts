@@ -1,51 +1,31 @@
 import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { ArgumentNode, DirectiveNode, FieldDefinitionNode, StringValueNode } from 'graphql';
-import { getBaseType } from 'graphql-transformer-common';
-import { ValidateDirectiveConfiguration, ValidationType } from './types';
+import { getBaseType, isListType } from 'graphql-transformer-common';
+import { NUMERIC_VALIDATION_TYPES, STRING_VALIDATION_TYPES, ValidateDirectiveConfiguration, ValidationType } from './types';
 
 /**
- * Type guards for validation types
+ * Validates all aspects of the @validate directive configuration.
  */
-const isNumericValidation = (type: ValidationType): boolean => {
-  return ['gt', 'lt', 'gte', 'lte'].includes(type);
-};
+export const validate = (definition: FieldDefinitionNode, directive: DirectiveNode, config: ValidateDirectiveConfiguration): void => {
+  validateNoListFieldValidation(definition);
+  validateNoDuplicateTypes(definition, directive, config.type as ValidationType);
+  validateTypeCompatibility(definition, config.type as ValidationType);
 
-const isStringValidation = (type: ValidationType): boolean => {
-  return ['minLength', 'maxLength', 'startsWith', 'endsWith', 'matches'].includes(type);
-};
+  if (isLengthValidation(config.type as ValidationType)) {
+    validateLengthValue(config);
+  }
 
-const isLengthValidation = (type: ValidationType): boolean => {
-  return ['minLength', 'maxLength'].includes(type);
-};
-
-/**
- * Validates that length validation values (minLength, maxLength) are valid non-negative integers.
- */
-const validateLengthValue = (config: ValidateDirectiveConfiguration): void => {
-  const value = Number(config.value);
-  if (isNaN(value) || value < 0) {
-    throw new InvalidDirectiveError(
-      `${config.type} value must be a non-negative integer. Received '${config.value}' for field '${config.field.name.value}'`,
-    );
+  if (isNumericValidation(config.type as ValidationType)) {
+    validateNumericValue(config);
   }
 };
 
 /**
- * Validates that the validation type is compatible with the field type.
+ * Validates that the field is not a list field.
  */
-const validateTypeCompatibility = (field: FieldDefinitionNode, validationType: ValidationType): void => {
-  const baseTypeName = getBaseType(field.type);
-
-  if (isNumericValidation(validationType) && baseTypeName !== 'Int' && baseTypeName !== 'Float') {
-    throw new InvalidDirectiveError(
-      `Validation type '${validationType}' can only be used with numeric fields (Int, Float). Field '${field.name.value}' is of type '${baseTypeName}'`,
-    );
-  }
-
-  if (isStringValidation(validationType) && baseTypeName !== 'String') {
-    throw new InvalidDirectiveError(
-      `Validation type '${validationType}' can only be used with String fields. Field '${field.name.value}' is of type '${baseTypeName}'`,
-    );
+const validateNoListFieldValidation = (field: FieldDefinitionNode): void => {
+  if (isListType(field.type)) {
+    throw new InvalidDirectiveError(`Validation directive cannot be used on list field '${field.name.value}'`);
   }
 };
 
@@ -70,6 +50,37 @@ const validateNoDuplicateTypes = (field: FieldDefinitionNode, currentDirective: 
 };
 
 /**
+ * Validates that the validation type is compatible with the field type.
+ */
+const validateTypeCompatibility = (field: FieldDefinitionNode, validationType: ValidationType): void => {
+  const baseTypeName = getBaseType(field.type);
+
+  if (isNumericValidation(validationType) && baseTypeName !== 'Int' && baseTypeName !== 'Float') {
+    throw new InvalidDirectiveError(
+      `Validation type '${validationType}' can only be used with numeric fields (Int, Float). Field '${field.name.value}' is of type '${baseTypeName}'`,
+    );
+  }
+
+  if (isStringValidation(validationType) && baseTypeName !== 'String') {
+    throw new InvalidDirectiveError(
+      `Validation type '${validationType}' can only be used with String fields. Field '${field.name.value}' is of type '${baseTypeName}'`,
+    );
+  }
+};
+
+/**
+ * Validates that length validation values (minLength, maxLength) are valid non-negative integers.
+ */
+const validateLengthValue = (config: ValidateDirectiveConfiguration): void => {
+  const value = parseInt(config.value);
+  if (isNaN(value) || value < 0) {
+    throw new InvalidDirectiveError(
+      `${config.type} value must be a non-negative integer. Received '${config.value}' for field '${config.field.name.value}'`,
+    );
+  }
+};
+
+/**
  * Validates that the numeric validation type value is a valid number.
  */
 const validateNumericValue = (config: ValidateDirectiveConfiguration): void => {
@@ -81,18 +92,14 @@ const validateNumericValue = (config: ValidateDirectiveConfiguration): void => {
   }
 };
 
-/**
- * Validates all aspects of the @validate directive configuration.
- */
-export const validate = (definition: FieldDefinitionNode, directive: DirectiveNode, config: ValidateDirectiveConfiguration): void => {
-  validateTypeCompatibility(definition, config.type as ValidationType);
-  validateNoDuplicateTypes(definition, directive, config.type as ValidationType);
+const isNumericValidation = (type: ValidationType): boolean => {
+  return (NUMERIC_VALIDATION_TYPES as readonly ValidationType[]).includes(type);
+};
 
-  if (isLengthValidation(config.type as ValidationType)) {
-    validateLengthValue(config);
-  }
+const isStringValidation = (type: ValidationType): boolean => {
+  return (STRING_VALIDATION_TYPES as readonly ValidationType[]).includes(type);
+};
 
-  if (isNumericValidation(config.type as ValidationType)) {
-    validateNumericValue(config);
-  }
+const isLengthValidation = (type: ValidationType): boolean => {
+  return ['minLength', 'maxLength'].includes(type);
 };
