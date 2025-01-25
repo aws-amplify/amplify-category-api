@@ -11,7 +11,6 @@ import { IndexTransformer } from '@aws-amplify/graphql-index-transformer';
 import { InterfaceTypeDefinitionNode } from 'graphql';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ObjectTypeDefinitionNode } from 'graphql';
-import { ObjectTypeExtensionNode } from 'graphql';
 import { TransformerAuthProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
@@ -26,7 +25,7 @@ import type { TransformParameters } from '@aws-amplify/graphql-transformer-inter
 export class BelongsToTransformer extends TransformerPluginBase {
     constructor();
     // (undocumented)
-    field: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode, definition: FieldDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
+    field: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, definition: FieldDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
     // (undocumented)
     generateResolvers: (ctx: TransformerContextProvider) => void;
     // (undocumented)
@@ -50,7 +49,7 @@ export const getSortKeyConnectionAttributeName: (type: string, field: string, re
 export class HasManyTransformer extends TransformerPluginBase {
     constructor();
     // (undocumented)
-    field: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode, definition: FieldDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
+    field: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, definition: FieldDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
     // (undocumented)
     generateResolvers: (ctx: TransformerContextProvider) => void;
     // (undocumented)
@@ -65,7 +64,7 @@ export class HasManyTransformer extends TransformerPluginBase {
 export class HasOneTransformer extends TransformerPluginBase {
     constructor();
     // (undocumented)
-    field: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode, definition: FieldDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
+    field: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, definition: FieldDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
     // (undocumented)
     generateResolvers: (ctx: TransformerContextProvider) => void;
     // (undocumented)
@@ -80,7 +79,7 @@ export class HasOneTransformer extends TransformerPluginBase {
 export class ManyToManyTransformer extends TransformerPluginBase {
     constructor(modelTransformer: ModelTransformer, indexTransformer: IndexTransformer, hasOneTransformer: HasOneTransformer, authProvider: TransformerAuthProvider);
     // (undocumented)
-    field: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode, definition: FieldDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
+    field: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, definition: FieldDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
     // (undocumented)
     generateResolvers: (ctx: TransformerContextProvider) => void;
     // (undocumented)

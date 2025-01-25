@@ -21,7 +21,6 @@ import {
   InterfaceTypeDefinitionNode,
   Kind,
   ObjectTypeDefinitionNode,
-  ObjectTypeExtensionNode,
   StringValueNode,
   TypeNode,
 } from 'graphql';
@@ -94,7 +93,7 @@ export class DefaultValueTransformer extends TransformerPluginBase {
   }
 
   field = (
-    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode,
+    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
     definition: FieldDefinitionNode,
     directive: DirectiveNode,
     ctx: TransformerSchemaVisitStepContextProvider,
