@@ -9,8 +9,8 @@ import {
 } from './test-utils';
 
 describe('Validation on Model vs Non-Model Types', () => {
-  describe('Invalid: Validation on non-model type', () => {
-    describe('Numeric validations', () => {
+  describe('Disallow validation on non-model type', () => {
+    describe('Disallow numeric validations on non-model type', () => {
       const testCases = createValidationTestCases([...NUMERIC_VALIDATION_TYPES], [...NUMERIC_FIELD_TYPES], ['5']);
       test.each(testCases)('rejects `$validationType` validation on `$fieldType` field of non-model type', (testCase) => {
         const schema = /* GraphQL */ `
@@ -28,7 +28,7 @@ describe('Validation on Model vs Non-Model Types', () => {
       });
     });
 
-    describe('String validations', () => {
+    describe('Disallow string validations on non-model type', () => {
       test.each([...STRING_VALIDATION_TYPES])('rejects `%s` validation on `String` field of non-model type', (validationType) => {
         const schema = /* GraphQL */ `
             type Post @model {
@@ -46,8 +46,8 @@ describe('Validation on Model vs Non-Model Types', () => {
     });
   });
 
-  describe('Valid: Validation on model type', () => {
-    describe('Numeric validations', () => {
+  describe('Allow validation on model type', () => {
+    describe('Allow numeric validations on model type', () => {
       const testCases = createValidationTestCases([...NUMERIC_VALIDATION_TYPES], [...NUMERIC_FIELD_TYPES], ['5']);
       test.each(testCases)('accepts `$validationType` validation on `$fieldType` field of model type', (testCase) => {
         const schema = createValidationSchema(testCase);
@@ -55,7 +55,7 @@ describe('Validation on Model vs Non-Model Types', () => {
       });
     });
 
-    describe('String validations', () => {
+    describe('Allow string validations on model type', () => {
       const testCases = createValidationTestCases([...STRING_VALIDATION_TYPES], [...STRING_FIELD_TYPES], ['5']);
       test.each(testCases)('accepts `$validationType` validation on `String` field of model type', (testCase) => {
         const schema = createValidationSchema(testCase);
@@ -65,9 +65,20 @@ describe('Validation on Model vs Non-Model Types', () => {
   });
 });
 
+describe('Disallow validation on list fields', () => {
+  const testCases = createValidationTestCases([...VALIDATION_TYPES], [...ALL_FIELD_TYPES], ['test', '0']);
+  test.each(testCases)('rejects `$validationType` validation on list of `$fieldType` field', (testCase) => {
+    const schema = createValidationSchema({
+      ...testCase,
+      fieldType: `[${testCase.fieldType}]`,
+    });
+    runTransformTest(schema, "@validate directive cannot be used on list field 'field'");
+  });
+});
+
 describe('Duplicate Validation Types on the same field', () => {
-  describe('Invalid usage', () => {
-    describe('Numeric validations', () => {
+  describe('Disallow duplicate validation types on the same field', () => {
+    describe('Disallow duplicate numeric validations on the same field', () => {
       const testCases = createValidationTestCases([...NUMERIC_VALIDATION_TYPES], [...NUMERIC_FIELD_TYPES], ['0'], { fieldName: 'rating' });
       test.each(testCases)('rejects duplicate `$validationType` validation on `$fieldType` field', (testCase) => {
         const schema = /* GraphQL */ `
@@ -82,7 +93,7 @@ describe('Duplicate Validation Types on the same field', () => {
       });
     });
 
-    describe('String validations', () => {
+    describe('Disallow duplicate string validations on the same field', () => {
       const testValues = {
         minLength: ['5', '10'],
         maxLength: ['5', '10'],
@@ -110,7 +121,7 @@ describe('Duplicate Validation Types on the same field', () => {
     });
   });
 
-  describe('Valid usage', () => {
+  describe('Allow non-duplicate validation types on the same field', () => {
     test.each([
       {
         name: 'accepts different validation types on same field',
@@ -134,7 +145,7 @@ describe('Duplicate Validation Types on the same field', () => {
 });
 
 describe('Validation Type Compatibility with Field Type', () => {
-  describe('Invalid usage', () => {
+  describe('Disallow validation on incompatible fields', () => {
     type FieldType = {
       type: string;
       value: string;
@@ -180,7 +191,7 @@ describe('Validation Type Compatibility with Field Type', () => {
       });
     };
 
-    describe('Numeric validations incompatible with non-numeric fields', () => {
+    describe('Disallow numeric validations on non-numeric fields', () => {
       testInvalidFieldTypes(
         [...NUMERIC_VALIDATION_TYPES],
         [...NUMERIC_FIELD_TYPES],
@@ -189,7 +200,7 @@ describe('Validation Type Compatibility with Field Type', () => {
       );
     });
 
-    describe('String validations incompatible with non-string fields', () => {
+    describe('Disallow string validations on non-string fields', () => {
       testInvalidFieldTypes(
         [...STRING_VALIDATION_TYPES],
         [...STRING_FIELD_TYPES],
@@ -199,8 +210,8 @@ describe('Validation Type Compatibility with Field Type', () => {
     });
   });
 
-  describe('Valid usage', () => {
-    describe('Numeric validations', () => {
+  describe('Allow validations on compatible fields', () => {
+    describe('Allow numeric validations on numeric fields', () => {
       const testCases = createValidationTestCases([...NUMERIC_VALIDATION_TYPES], [...NUMERIC_FIELD_TYPES], ['100']);
       test.each(testCases)('accepts `$validationType` validation on `$fieldType` field with value `$value`', (testCase) => {
         const schema = createValidationSchema(testCase);
@@ -208,23 +219,12 @@ describe('Validation Type Compatibility with Field Type', () => {
       });
     });
 
-    describe('String validations', () => {
+    describe('Allow string validations on string fields', () => {
       const testCases = createValidationTestCases([...STRING_VALIDATION_TYPES], [...STRING_FIELD_TYPES], ['5']);
       test.each(testCases)('accepts `$validationType` validation on `$fieldType` field with value `$value`', (testCase) => {
         const schema = createValidationSchema(testCase);
         runTransformTest(schema);
       });
     });
-  });
-});
-
-describe('Disallow validation on list fields', () => {
-  const testCases = createValidationTestCases([...VALIDATION_TYPES], [...ALL_FIELD_TYPES], ['test', '0']);
-  test.each(testCases)('rejects `$validationType` validation on list of `$fieldType` field', (testCase) => {
-    const schema = createValidationSchema({
-      ...testCase,
-      fieldType: `[${testCase.fieldType}]`,
-    });
-    runTransformTest(schema, "@validate directive cannot be used on list field 'field'");
   });
 });

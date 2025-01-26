@@ -8,7 +8,7 @@ import {
 } from './test-utils';
 
 describe('Input parsing for min/maxLength validations', () => {
-  describe('Invalid usage', () => {
+  describe('Invalid values for min/maxLength validations', () => {
     const testInvalidValues = (description: string, values: string[]): void => {
       describe(`${description}`, () => {
         const testCases = createValidationTestCases([...MIN_MAX_LENGTH_VALIDATION_TYPES], ['String'], values, { fieldName: 'title' });
@@ -27,7 +27,7 @@ describe('Input parsing for min/maxLength validations', () => {
     testInvalidValues('Whitespace values', ['', ' ', '          ']);
   });
 
-  describe('Valid usage', () => {
+  describe('Valid values for min/maxLength validations', () => {
     const testValidValues = (description: string, values: string[]): void => {
       describe(`${description}`, () => {
         const testCases = createValidationTestCases([...MIN_MAX_LENGTH_VALIDATION_TYPES], ['String'], values, { fieldName: 'title' });
@@ -45,7 +45,7 @@ describe('Input parsing for min/maxLength validations', () => {
 });
 
 describe('Input parsing for numeric validations', () => {
-  describe('Invalid usage', () => {
+  describe('Invalid values for numeric validations', () => {
     const testInvalidValues = (description: string, values: string[]): void => {
       describe(`${description}`, () => {
         const testCases = createValidationTestCases([...NUMERIC_VALIDATION_TYPES], [...NUMERIC_FIELD_TYPES], values);
@@ -61,7 +61,7 @@ describe('Input parsing for numeric validations', () => {
     testInvalidValues('Special values', ['NaN', 'null', 'undefined']);
   });
 
-  describe('Valid usage', () => {
+  describe('Valid values for numeric validations', () => {
     const testValidValues = (description: string, values: string[]): void => {
       describe(`${description}`, () => {
         const testCases = createValidationTestCases([...NUMERIC_VALIDATION_TYPES], [...NUMERIC_FIELD_TYPES], values);
