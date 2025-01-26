@@ -60,7 +60,7 @@ export interface ValidateArguments {
  */
 /* c8 ignore start */
 export interface ValidateDirectiveConfiguration extends ValidateArguments {
-  object: ObjectTypeDefinitionNode;
-  field: FieldDefinitionNode;
+  parentNode: ObjectTypeDefinitionNode;
+  fieldNode: FieldDefinitionNode;
 }
 /* c8 ignore end */

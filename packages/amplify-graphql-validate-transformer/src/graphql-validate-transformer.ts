@@ -16,6 +16,14 @@ export class ValidateTransformer extends TransformerPluginBase implements Transf
     super('amplify-graphql-validate-transformer', ValidateDirective.definition);
   }
 
+  /**
+   * Processes `@validate` directives and validates their usage and inputs.
+   *
+   * @param parent - The parent object or interface type definition node containing the field
+   * @param definition - The field definition node being processed
+   * @param directive - The `@validate` directive node applied to the field
+   * @param _ - The transformer schema visit step context provider (unused)
+   */
   field = (
     parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
     definition: FieldDefinitionNode,
@@ -25,7 +33,7 @@ export class ValidateTransformer extends TransformerPluginBase implements Transf
     const directiveWrapped = new DirectiveWrapper(directive);
     const config = this.getValidateDirectiveConfiguration(directiveWrapped, parent as ObjectTypeDefinitionNode, definition);
 
-    validate(definition, parent as ObjectTypeDefinitionNode, directive, config);
+    validate(parent as ObjectTypeDefinitionNode, definition, directive, config);
 
     const parentName = parent.name.value;
     if (!this.directiveMap.has(parentName)) {
@@ -40,10 +48,19 @@ export class ValidateTransformer extends TransformerPluginBase implements Transf
     // 2. Return appropriate error messages for validation failures
   };
 
+  /**
+   * Extracts and formats the validation directive configuration from a `@validate` directive.
+   *
+   * @param directive - The wrapped directive containing validation arguments
+   * @param parentNode - The object type definition node that contains the field
+   * @param fieldNode - The field definition node that the directive is applied to
+   * @returns A configuration object containing the validation rules and metadata
+   * @private
+   */
   private getValidateDirectiveConfiguration(
     directive: DirectiveWrapper,
-    object: ObjectTypeDefinitionNode,
-    field: FieldDefinitionNode,
+    parentNode: ObjectTypeDefinitionNode,
+    fieldNode: FieldDefinitionNode,
   ): ValidateDirectiveConfiguration {
     const defaultArgs: ValidateArguments = {
       type: '',
@@ -53,8 +70,8 @@ export class ValidateTransformer extends TransformerPluginBase implements Transf
     const args = directive.getArguments<ValidateArguments>(defaultArgs);
 
     return {
-      object,
-      field,
+      parentNode,
+      fieldNode,
       type: args.type,
       value: args.value,
       errorMessage: args.errorMessage,
