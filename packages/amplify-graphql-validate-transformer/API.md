@@ -4,14 +4,22 @@
 
 ```ts
 
+import { DirectiveNode } from 'graphql';
+import { FieldDefinitionNode } from 'graphql';
+import { InterfaceTypeDefinitionNode } from 'graphql';
+import { ObjectTypeDefinitionNode } from 'graphql';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
+import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
-export class ValidateTransformer extends TransformerPluginBase {
+export class ValidateTransformer extends TransformerPluginBase implements TransformerPluginProvider {
     constructor();
     // (undocumented)
-    generateResolvers: (ctx: TransformerContextProvider) => void;
+    field: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, definition: FieldDefinitionNode, directive: DirectiveNode, _: TransformerSchemaVisitStepContextProvider) => void;
+    // (undocumented)
+    generateResolvers: (_: TransformerContextProvider) => void;
 }
 
 // (No @packageDocumentation comment for this package)
