@@ -1,38 +1,84 @@
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { ValidateTransformer } from '..';
 import { NUMERIC_VALIDATION_TYPES, STRING_VALIDATION_TYPES, VALIDATION_TYPES } from '../types';
+import {
+  NUMERIC_FIELD_TYPES,
+  STRING_FIELD_TYPES,
+  ALL_FIELD_TYPES,
+  runTransformTest,
+  createValidationTestCases,
+  createValidationSchema,
+} from './test-utils';
 
-const NUMERIC_FIELD_TYPES = ['Int', 'Float'] as const;
-const STRING_FIELD_TYPES = ['String'] as const;
-const ALL_FIELD_TYPES = [...NUMERIC_FIELD_TYPES, ...STRING_FIELD_TYPES] as const;
+describe('Validation on Model vs Non-Model Types', () => {
+  describe('Invalid: Validation on non-model type', () => {
+    describe('Numeric validations', () => {
+      const testCases = createValidationTestCases([...NUMERIC_VALIDATION_TYPES], [...NUMERIC_FIELD_TYPES], ['5']);
+      test.each(testCases)('rejects `$validationType` validation on `$fieldType` field of non-model type', (testCase) => {
+        const schema = /* GraphQL */ `
+            type Post @model {
+              id: ID!
+              input: NonModelInput!
+            }
+
+            type NonModelInput {
+              field: ${testCase.fieldType}! @validate(type: ${testCase.validationType}, value: "${testCase.value}")
+            }
+          `;
+
+        runTransformTest(schema, '@validate directive can only be used on fields within @model types');
+      });
+    });
+
+    describe('String validations', () => {
+      test.each([...STRING_VALIDATION_TYPES])('rejects `%s` validation on `String` field of non-model type', (validationType) => {
+        const schema = /* GraphQL */ `
+            type Post @model {
+              id: ID!
+              input: NonModelInput!
+            }
+
+            type NonModelInput {
+              field: String! @validate(type: ${validationType}, value: "test")
+            }
+          `;
+
+        runTransformTest(schema, '@validate directive can only be used on fields within @model types');
+      });
+    });
+  });
+
+  describe('Valid: Validation on model type', () => {
+    describe('Numeric validations', () => {
+      const testCases = createValidationTestCases([...NUMERIC_VALIDATION_TYPES], [...NUMERIC_FIELD_TYPES], ['5']);
+      test.each(testCases)('accepts `$validationType` validation on `$fieldType` field of model type', (testCase) => {
+        const schema = createValidationSchema(testCase);
+        runTransformTest(schema);
+      });
+    });
+
+    describe('String validations', () => {
+      const testCases = createValidationTestCases([...STRING_VALIDATION_TYPES], [...STRING_FIELD_TYPES], ['5']);
+      test.each(testCases)('accepts `$validationType` validation on `String` field of model type', (testCase) => {
+        const schema = createValidationSchema(testCase);
+        runTransformTest(schema);
+      });
+    });
+  });
+});
 
 describe('Duplicate Validation Types on the same field', () => {
   describe('Invalid usage', () => {
     describe('Numeric validations', () => {
-      test.each(
-        NUMERIC_VALIDATION_TYPES.flatMap((type) =>
-          NUMERIC_FIELD_TYPES.map((fieldType) => ({
-            type,
-            fieldType,
-          })),
-        ),
-      )('rejects duplicate `$type` validation on `$fieldType` field', ({ type, fieldType }) => {
+      const testCases = createValidationTestCases([...NUMERIC_VALIDATION_TYPES], [...NUMERIC_FIELD_TYPES], ['0'], { fieldName: 'rating' });
+      test.each(testCases)('rejects duplicate `$validationType` validation on `$fieldType` field', (testCase) => {
         const schema = /* GraphQL */ `
-          type Post @model {
-            id: ID!
-            rating: ${fieldType}! @validate(type: ${type}, value: "0") @validate(type: ${type}, value: "1")
-          }
-        `;
-        const error = `Duplicate @validate directive with type '${type}' on field 'rating'. Each validation type can only be used once per field.`;
+            type Post @model {
+              id: ID!
+              rating: ${testCase.fieldType}! @validate(type: ${testCase.validationType}, value: "0") @validate(type: ${testCase.validationType}, value: "1")
+            }
+          `;
+        const error = `Duplicate @validate directive with type '${testCase.validationType}' on field 'rating'. Each validation type can only be used once per field.`;
 
-        const transformer = new ValidateTransformer();
-        expect(() => {
-          testTransform({
-            schema,
-            transformers: [new ModelTransformer(), transformer],
-          });
-        }).toThrow(error);
+        runTransformTest(schema, error);
       });
     });
 
@@ -45,27 +91,21 @@ describe('Duplicate Validation Types on the same field', () => {
         matches: ['regex1', 'regex2'],
       };
 
-      test.each(
-        STRING_VALIDATION_TYPES.map((type) => ({
-          type,
-          values: testValues[type],
-        })),
-      )('rejects duplicate `$type` validation on `String` field', ({ type, values }) => {
+      const testCases = [...STRING_VALIDATION_TYPES].map((type) => ({
+        type,
+        values: testValues[type],
+      }));
+
+      test.each(testCases)('rejects duplicate `$type` validation on `String` field', ({ type, values }) => {
         const schema = /* GraphQL */ `
-          type Post @model {
-            id: ID!
-            title: String! @validate(type: ${type}, value: "${values[0]}") @validate(type: ${type}, value: "${values[1]}")
-          }
-        `;
+            type Post @model {
+              id: ID!
+              title: String! @validate(type: ${type}, value: "${values[0]}") @validate(type: ${type}, value: "${values[1]}")
+            }
+          `;
         const error = `Duplicate @validate directive with type '${type}' on field 'title'. Each validation type can only be used once per field.`;
 
-        const transformer = new ValidateTransformer();
-        expect(() => {
-          testTransform({
-            schema,
-            transformers: [new ModelTransformer(), transformer],
-          });
-        }).toThrow(error);
+        runTransformTest(schema, error);
       });
     });
   });
@@ -88,12 +128,7 @@ describe('Duplicate Validation Types on the same field', () => {
         `,
       },
     ])('$name', ({ schema }) => {
-      expect(() => {
-        testTransform({
-          schema,
-          transformers: [new ModelTransformer(), new ValidateTransformer()],
-        });
-      }).not.toThrow();
+      runTransformTest(schema);
     });
   });
 });
@@ -102,41 +137,18 @@ describe('Validation Type Compatibility with Field Type', () => {
   describe('Invalid usage', () => {
     type FieldType = {
       type: string;
-      fieldName: string;
       value: string;
       isObject?: boolean;
     };
 
     const fieldTypes: FieldType[] = [
-      { type: 'String', fieldName: 'title', value: 'test' },
-      { type: 'ID', fieldName: 'anotherId', value: 'test-id' },
-      { type: 'Boolean', fieldName: 'isPublished', value: 'true' },
-      { type: 'Int', fieldName: 'count', value: '5' },
-      { type: 'Float', fieldName: 'rating', value: '5.0' },
-      { type: 'Author', fieldName: 'author', value: '5', isObject: true },
+      { type: 'String', value: 'test' },
+      { type: 'ID', value: 'test-id' },
+      { type: 'Boolean', value: 'true' },
+      { type: 'Int', value: '5' },
+      { type: 'Float', value: '5.0' },
+      { type: 'Author', value: 'author-123', isObject: true },
     ];
-
-    const createTestSchema = (fieldType: FieldType, validationType: string, validationValue: string): string => {
-      const baseSchema = /* GraphQL */ `
-        type Post @model {
-          id: ID!
-          ${fieldType.fieldName}: ${fieldType.type}! @validate(type: ${validationType}, value: "${validationValue}")
-        }
-      `;
-
-      if (fieldType.isObject) {
-        return (
-          baseSchema +
-          /* GraphQL */ `
-            type Author @model {
-              id: ID!
-              name: String!
-            }
-          `
-        );
-      }
-      return baseSchema;
-    };
 
     const testInvalidFieldTypes = (
       validationTypes: string[],
@@ -153,14 +165,18 @@ describe('Validation Type Compatibility with Field Type', () => {
             })),
         ),
       )('rejects `$validationType` validation on `$fieldType.type` field', ({ validationType, fieldType }) => {
-        const schema = createTestSchema(fieldType, validationType, fieldType.value);
-        const transformer = new ValidateTransformer();
-        expect(() => {
-          testTransform({
-            schema,
-            transformers: [new ModelTransformer(), transformer],
-          });
-        }).toThrow(errorMessageFn(validationType, fieldType));
+        const schema = createValidationSchema(
+          { validationType, fieldType: fieldType.type, value: fieldType.value },
+          fieldType.isObject
+            ? /* GraphQL */ `
+                type Author @model {
+                  id: ID!
+                  name: String!
+                }
+              `
+            : undefined,
+        );
+        runTransformTest(schema, errorMessageFn(validationType, fieldType));
       });
     };
 
@@ -169,7 +185,7 @@ describe('Validation Type Compatibility with Field Type', () => {
         [...NUMERIC_VALIDATION_TYPES],
         [...NUMERIC_FIELD_TYPES],
         (validationType, fieldType) =>
-          `Validation type '${validationType}' can only be used with numeric fields (Int, Float). Field '${fieldType.fieldName}' is of type '${fieldType.type}'`,
+          `Validation type '${validationType}' can only be used with numeric fields (Int, Float). Field 'field' is of type '${fieldType.type}'`,
       );
     });
 
@@ -178,74 +194,37 @@ describe('Validation Type Compatibility with Field Type', () => {
         [...STRING_VALIDATION_TYPES],
         [...STRING_FIELD_TYPES],
         (validationType, fieldType) =>
-          `Validation type '${validationType}' can only be used with String fields. Field '${fieldType.fieldName}' is of type '${fieldType.type}'`,
+          `Validation type '${validationType}' can only be used with String fields. Field 'field' is of type '${fieldType.type}'`,
       );
     });
   });
 
   describe('Valid usage', () => {
-    const testValidFieldTypes = (_: string, testCases: Array<{ validationType: string; fieldType: string; value: string }>): void => {
-      test.each(testCases)(
-        'accepts `$validationType` validation on `$fieldType` field with value `$value`',
-        ({ validationType, fieldType, value }) => {
-          const schema = /* GraphQL */ `
-            type Post @model {
-              id: ID!
-              field: ${fieldType}! @validate(type: ${validationType}, value: "${value}")
-            }
-          `;
-          expect(() => {
-            testTransform({
-              schema,
-              transformers: [new ModelTransformer(), new ValidateTransformer()],
-            });
-          }).not.toThrow();
-        },
-      );
-    };
+    describe('Numeric validations', () => {
+      const testCases = createValidationTestCases([...NUMERIC_VALIDATION_TYPES], [...NUMERIC_FIELD_TYPES], ['100']);
+      test.each(testCases)('accepts `$validationType` validation on `$fieldType` field with value `$value`', (testCase) => {
+        const schema = createValidationSchema(testCase);
+        runTransformTest(schema);
+      });
+    });
 
-    testValidFieldTypes('numeric validations', [
-      { validationType: 'gt', fieldType: 'Int', value: '0' },
-      { validationType: 'gt', fieldType: 'Float', value: '0.1' },
-      { validationType: 'lt', fieldType: 'Int', value: '100' },
-      { validationType: 'lt', fieldType: 'Float', value: '4.9' },
-      { validationType: 'gte', fieldType: 'Int', value: '30' },
-      { validationType: 'gte', fieldType: 'Float', value: '30.1' },
-      { validationType: 'lte', fieldType: 'Int', value: '40' },
-      { validationType: 'lte', fieldType: 'Float', value: '40.9' },
-    ]);
-
-    testValidFieldTypes('string validations', [
-      { validationType: 'minLength', fieldType: 'String', value: '5' },
-      { validationType: 'maxLength', fieldType: 'String', value: '10' },
-      { validationType: 'startsWith', fieldType: 'String', value: 'prefix' },
-      { validationType: 'endsWith', fieldType: 'String', value: 'suffix' },
-      { validationType: 'matches', fieldType: 'String', value: 'regex' },
-    ]);
+    describe('String validations', () => {
+      const testCases = createValidationTestCases([...STRING_VALIDATION_TYPES], [...STRING_FIELD_TYPES], ['5']);
+      test.each(testCases)('accepts `$validationType` validation on `$fieldType` field with value `$value`', (testCase) => {
+        const schema = createValidationSchema(testCase);
+        runTransformTest(schema);
+      });
+    });
   });
 });
 
 describe('Disallow validation on list fields', () => {
-  test.each(
-    VALIDATION_TYPES.flatMap((validationType) =>
-      ALL_FIELD_TYPES.map((fieldType) => ({
-        validationType,
-        fieldType,
-        value: fieldType === 'String' ? 'test' : '0',
-      })),
-    ),
-  )('rejects `$validationType` validation on list of `$fieldType` field', ({ validationType, fieldType, value }) => {
-    const schema = /* GraphQL */ `
-      type Post @model {
-        id: ID!
-        field: [${fieldType}]! @validate(type: ${validationType}, value: "${value}")
-      }
-    `;
-    expect(() => {
-      testTransform({
-        schema,
-        transformers: [new ModelTransformer(), new ValidateTransformer()],
-      });
-    }).toThrow("Validation directive cannot be used on list field 'field'");
+  const testCases = createValidationTestCases([...VALIDATION_TYPES], [...ALL_FIELD_TYPES], ['test', '0']);
+  test.each(testCases)('rejects `$validationType` validation on list of `$fieldType` field', (testCase) => {
+    const schema = createValidationSchema({
+      ...testCase,
+      fieldType: `[${testCase.fieldType}]`,
+    });
+    runTransformTest(schema, "@validate directive cannot be used on list field 'field'");
   });
 });

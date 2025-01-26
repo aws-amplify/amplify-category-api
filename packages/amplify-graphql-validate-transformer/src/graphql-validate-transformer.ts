@@ -25,7 +25,7 @@ export class ValidateTransformer extends TransformerPluginBase implements Transf
     const directiveWrapped = new DirectiveWrapper(directive);
     const config = this.getValidateDirectiveConfiguration(directiveWrapped, parent as ObjectTypeDefinitionNode, definition);
 
-    validate(definition, directive, config);
+    validate(definition, parent as ObjectTypeDefinitionNode, directive, config);
 
     if (!this.directiveMap.has(parent.name.value)) {
       this.directiveMap.set(parent.name.value, []);
