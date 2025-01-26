@@ -27,10 +27,11 @@ export class ValidateTransformer extends TransformerPluginBase implements Transf
 
     validate(definition, parent as ObjectTypeDefinitionNode, directive, config);
 
-    if (!this.directiveMap.has(parent.name.value)) {
-      this.directiveMap.set(parent.name.value, []);
+    const parentName = parent.name.value;
+    if (!this.directiveMap.has(parentName)) {
+      this.directiveMap.set(parentName, []);
     }
-    this.directiveMap.get(parent.name.value)!.push(config);
+    this.directiveMap.get(parentName)!.push(config);
   };
 
   generateResolvers = (_: TransformerContextProvider): void => {
