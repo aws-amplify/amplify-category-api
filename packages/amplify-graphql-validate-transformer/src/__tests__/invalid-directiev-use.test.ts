@@ -205,7 +205,7 @@ describe('Validation Type Compatibility with Field Type', () => {
         [...STRING_VALIDATION_TYPES],
         [...STRING_FIELD_TYPES],
         (validationType, fieldType) =>
-          `Validation type '${validationType}' can only be used with String fields. Field 'field' is of type '${fieldType.type}'`,
+          `Validation type '${validationType}' can only be used with 'String' fields. Field 'field' is of type '${fieldType.type}'`,
       );
     });
   });

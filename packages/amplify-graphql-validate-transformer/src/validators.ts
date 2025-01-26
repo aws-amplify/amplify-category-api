@@ -4,7 +4,13 @@ import { getBaseType, isListType } from 'graphql-transformer-common';
 import { NUMERIC_VALIDATION_TYPES, STRING_VALIDATION_TYPES, ValidateDirectiveConfiguration, ValidationType } from './types';
 
 /**
- * Validates all aspects of the @validate directive configuration.
+ * Validates all aspects of the `@validate` directive configuration, including:
+ * - The field is inside a model type.
+ * - The field is not a list field.
+ * - There are no duplicate validation types on the same field.
+ * - The field type is compatible with the validation type.
+ * - For length validation, the value is a valid non-negative integer.
+ * - For numeric validation, the value is a valid number.
  */
 export const validate = (
   definition: FieldDefinitionNode,
@@ -78,7 +84,7 @@ const validateTypeCompatibility = (field: FieldDefinitionNode, validationType: V
 
   if (isStringValidation(validationType) && baseType !== 'String') {
     throw new InvalidDirectiveError(
-      `Validation type '${validationType}' can only be used with String fields. Field '${field.name.value}' is of type '${baseType}'`,
+      `Validation type '${validationType}' can only be used with 'String' fields. Field '${field.name.value}' is of type '${baseType}'`,
     );
   }
 };
