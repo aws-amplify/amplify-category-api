@@ -76,7 +76,7 @@ export class ResolverManager implements TransformerResolversManagerProvider {
       fieldName,
       resolverLogicalId,
       { requestMappingTemplate, responseMappingTemplate },
-      ['init', 'preAuth', 'auth', 'postAuth', 'preUpdate'],
+      ['init', 'preAuth', 'auth', 'postAuth', 'validate', 'preUpdate'],
       ['postUpdate', 'finish'],
       dataSource,
     );
