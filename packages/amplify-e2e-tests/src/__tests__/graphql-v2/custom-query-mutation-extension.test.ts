@@ -27,10 +27,10 @@ describe('custom queries and mutations in type extensions', () => {
     projRoot = await createNewProjectDir('ext-fields');
   });
 
-  afterEach(async () => {
-    await deleteProject(projRoot);
-    deleteProjectDir(projRoot);
-  });
+  // afterEach(async () => {
+  //   await deleteProject(projRoot);
+  //   deleteProjectDir(projRoot);
+  // });
 
   it('supports custom queries and mutations on type extensions', async () => {
     const envName = 'devtest';
