@@ -131,6 +131,7 @@ const RUN_SOLO: (string | RegExp)[] = [
   'src/__tests__/transformer-migrations/function-migration.test.ts',
   'src/__tests__/transformer-migrations/searchable-migration.test.ts',
   'src/__tests__/transformer-migrations/model-migration.test.ts',
+  'src/__tests__/graphql-v2/custom-query-mutation-extension.test.ts',
   'src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-no-node-to-node.test.ts',
   'src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-had-node-to-node.test.ts',
   /src\/__tests__\/api_1.*\.test\.ts/,

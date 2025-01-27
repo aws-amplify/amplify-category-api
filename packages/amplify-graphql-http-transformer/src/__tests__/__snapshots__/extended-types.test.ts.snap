@@ -1,0 +1,172 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`@http directive on extended types supports @http directive on fields of Mutation type extensions 1`] = `
+Object {
+  "Mutation.customOperation1.DataResolver.req.vtl": "## [Start] Create request. **
+#set( $headers = $utils.http.copyHeaders($ctx.request.headers) )
+$util.qr($headers.put(\\"accept-encoding\\", \\"application/json\\"))
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"method\\": \\"GET\\",
+  \\"resourcePath\\": \\"/foo1\\",
+  \\"params\\": {
+      \\"headers\\": $util.toJson($headers),
+      \\"query\\": $util.toJson($ctx.args.query)
+  }
+}
+## [End] Create request. **",
+  "Mutation.customOperation1.DataResolver.res.vtl": "## [Start] Process response. **
+#if( $ctx.result.statusCode == 200 )
+  #if( $ctx.result.headers.get(\\"Content-Type\\").toLowerCase().contains(\\"xml\\") )
+$utils.xml.toJsonString($ctx.result.body)
+  #else
+$ctx.result.body
+  #end
+#else
+$util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))
+#end
+## [End] Process response. **",
+  "Mutation.customOperation1.res.vtl": "$util.toJson($ctx.prev.result)",
+  "Mutation.customOperation2.DataResolver.req.vtl": "## [Start] Create request. **
+#set( $headers = $utils.http.copyHeaders($ctx.request.headers) )
+$util.qr($headers.put(\\"accept-encoding\\", \\"application/json\\"))
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"method\\": \\"GET\\",
+  \\"resourcePath\\": \\"/foo2\\",
+  \\"params\\": {
+      \\"headers\\": $util.toJson($headers),
+      \\"query\\": $util.toJson($ctx.args.query)
+  }
+}
+## [End] Create request. **",
+  "Mutation.customOperation2.DataResolver.res.vtl": "## [Start] Process response. **
+#if( $ctx.result.statusCode == 200 )
+  #if( $ctx.result.headers.get(\\"Content-Type\\").toLowerCase().contains(\\"xml\\") )
+$utils.xml.toJsonString($ctx.result.body)
+  #else
+$ctx.result.body
+  #end
+#else
+$util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))
+#end
+## [End] Process response. **",
+  "Mutation.customOperation2.res.vtl": "$util.toJson($ctx.prev.result)",
+}
+`;
+
+exports[`@http directive on extended types supports @http directive on fields of Mutation type extensions 2`] = `Object {}`;
+
+exports[`@http directive on extended types supports @http directive on fields of Query type extensions 1`] = `
+Object {
+  "Query.customOperation1.DataResolver.req.vtl": "## [Start] Create request. **
+#set( $headers = $utils.http.copyHeaders($ctx.request.headers) )
+$util.qr($headers.put(\\"accept-encoding\\", \\"application/json\\"))
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"method\\": \\"GET\\",
+  \\"resourcePath\\": \\"/foo1\\",
+  \\"params\\": {
+      \\"headers\\": $util.toJson($headers),
+      \\"query\\": $util.toJson($ctx.args.query)
+  }
+}
+## [End] Create request. **",
+  "Query.customOperation1.DataResolver.res.vtl": "## [Start] Process response. **
+#if( $ctx.result.statusCode == 200 )
+  #if( $ctx.result.headers.get(\\"Content-Type\\").toLowerCase().contains(\\"xml\\") )
+$utils.xml.toJsonString($ctx.result.body)
+  #else
+$ctx.result.body
+  #end
+#else
+$util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))
+#end
+## [End] Process response. **",
+  "Query.customOperation1.res.vtl": "$util.toJson($ctx.prev.result)",
+  "Query.customOperation2.DataResolver.req.vtl": "## [Start] Create request. **
+#set( $headers = $utils.http.copyHeaders($ctx.request.headers) )
+$util.qr($headers.put(\\"accept-encoding\\", \\"application/json\\"))
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"method\\": \\"GET\\",
+  \\"resourcePath\\": \\"/foo2\\",
+  \\"params\\": {
+      \\"headers\\": $util.toJson($headers),
+      \\"query\\": $util.toJson($ctx.args.query)
+  }
+}
+## [End] Create request. **",
+  "Query.customOperation2.DataResolver.res.vtl": "## [Start] Process response. **
+#if( $ctx.result.statusCode == 200 )
+  #if( $ctx.result.headers.get(\\"Content-Type\\").toLowerCase().contains(\\"xml\\") )
+$utils.xml.toJsonString($ctx.result.body)
+  #else
+$ctx.result.body
+  #end
+#else
+$util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))
+#end
+## [End] Process response. **",
+  "Query.customOperation2.res.vtl": "$util.toJson($ctx.prev.result)",
+}
+`;
+
+exports[`@http directive on extended types supports @http directive on fields of Query type extensions 2`] = `Object {}`;
+
+exports[`@http directive on extended types supports @http directive on fields of Subscription type extensions 1`] = `
+Object {
+  "Subscription.customOperation1.DataResolver.req.vtl": "## [Start] Create request. **
+#set( $headers = $utils.http.copyHeaders($ctx.request.headers) )
+$util.qr($headers.put(\\"accept-encoding\\", \\"application/json\\"))
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"method\\": \\"GET\\",
+  \\"resourcePath\\": \\"/foo1\\",
+  \\"params\\": {
+      \\"headers\\": $util.toJson($headers),
+      \\"query\\": $util.toJson($ctx.args.query)
+  }
+}
+## [End] Create request. **",
+  "Subscription.customOperation1.DataResolver.res.vtl": "## [Start] Process response. **
+#if( $ctx.result.statusCode == 200 )
+  #if( $ctx.result.headers.get(\\"Content-Type\\").toLowerCase().contains(\\"xml\\") )
+$utils.xml.toJsonString($ctx.result.body)
+  #else
+$ctx.result.body
+  #end
+#else
+$util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))
+#end
+## [End] Process response. **",
+  "Subscription.customOperation1.res.vtl": "$util.toJson($ctx.prev.result)",
+  "Subscription.customOperation2.DataResolver.req.vtl": "## [Start] Create request. **
+#set( $headers = $utils.http.copyHeaders($ctx.request.headers) )
+$util.qr($headers.put(\\"accept-encoding\\", \\"application/json\\"))
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"method\\": \\"GET\\",
+  \\"resourcePath\\": \\"/foo2\\",
+  \\"params\\": {
+      \\"headers\\": $util.toJson($headers),
+      \\"query\\": $util.toJson($ctx.args.query)
+  }
+}
+## [End] Create request. **",
+  "Subscription.customOperation2.DataResolver.res.vtl": "## [Start] Process response. **
+#if( $ctx.result.statusCode == 200 )
+  #if( $ctx.result.headers.get(\\"Content-Type\\").toLowerCase().contains(\\"xml\\") )
+$utils.xml.toJsonString($ctx.result.body)
+  #else
+$ctx.result.body
+  #end
+#else
+$util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))
+#end
+## [End] Process response. **",
+  "Subscription.customOperation2.res.vtl": "$util.toJson($ctx.prev.result)",
+}
+`;
+
+exports[`@http directive on extended types supports @http directive on fields of Subscription type extensions 2`] = `Object {}`;

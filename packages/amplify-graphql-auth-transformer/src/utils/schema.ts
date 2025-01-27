@@ -15,7 +15,14 @@ import {
   TransformerContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
-import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode, NamedTypeNode } from 'graphql';
+import {
+  DirectiveNode,
+  FieldDefinitionNode,
+  InterfaceTypeDefinitionNode,
+  NamedTypeNode,
+  ObjectTypeDefinitionNode,
+  ObjectTypeExtensionNode,
+} from 'graphql';
 import {
   blankObjectExtension,
   extendFieldWithDirectives,
@@ -34,19 +41,20 @@ import { RelationalPrimaryMapConfig, SearchableConfig } from './definitions';
 import { RoleDefinition } from './role-definition';
 
 /**
- * collectFieldNames
+ * Return an array of the field names in `object`
  */
-export const collectFieldNames = (object: ObjectTypeDefinitionNode): Array<string> =>
-  object.fields!.map((field: FieldDefinitionNode) => field.name.value);
+export const collectFieldNames = (
+  object: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode,
+): Array<string> => object.fields!.map((field: FieldDefinitionNode) => field.name.value);
 
 /**
- * fieldIsList
+ * Return true if the `fieldName` element of `fields` is a list type.
  */
-export const fieldIsList = (fields: ReadonlyArray<FieldDefinitionNode>, fieldName: string) =>
+export const fieldIsList = (fields: ReadonlyArray<FieldDefinitionNode>, fieldName: string): boolean =>
   fields.some((field) => field.name.value === fieldName && isListType(field.type));
 
 /**
- * getModelConfig
+ * Construct a {@link ModelDirectiveConfiguration} for the specified typeName.
  */
 export const getModelConfig = (
   directive: DirectiveNode,
@@ -102,6 +110,7 @@ export const getSearchableConfig = (
   );
   return options;
 };
+
 /*
  This handles the scenario where a @auth field is also included in the key schema of a related @model
  since a filter expression cannot contain partition key or sort key attributes. We need to run auth on the query expression
@@ -133,6 +142,7 @@ export const getRelationalPrimaryMap = (
       },
       generateGetArgumentsInput(ctx.transformParameters),
     );
+
     // we only generate a primary map if a index name or field is specified
     // if both are undefined then @hasMany will create a new gsi with a new readonly field
     // we don't need a primary map since this readonly field is not a auth field
@@ -162,16 +172,18 @@ export const getRelationalPrimaryMap = (
       generateGetArgumentsInput(ctx.transformParameters),
     );
     const relatedPrimaryFields = getKeyFields(ctx, relatedModel);
-    // the fields provided by the directive (implicit/explicit) need to match the total amount of fields used for the primary key in the related table
-    // otherwise the get request is incomplete
+
+    // the fields provided by the directive (implicit/explicit) need to match the total amount of fields used for the primary key in the
+    // related table otherwise the get request is incomplete
     if (args.fields.length !== relatedPrimaryFields.length) {
       throw new InvalidDirectiveError(
         `Invalid @${relationalDirective.name.value} on ${def.name.value}:${field.name.value}. ` +
           `Provided fields do not match the size of primary key(s) for ${relatedModel.name.value}`,
       );
     }
-    relatedPrimaryFields.forEach((field, idx) => {
-      primaryFieldMap.set(field, {
+
+    relatedPrimaryFields.forEach((relatedPrimaryField, idx) => {
+      primaryFieldMap.set(relatedPrimaryField, {
         claim: 'source',
         field: args.fields[idx],
       });
@@ -181,19 +193,18 @@ export const getRelationalPrimaryMap = (
 };
 
 /**
- *
+ * Return true if the specified field has any relational directive (hasOne, hasMany, belongsTo, manyToMany)
  */
 export const hasRelationalDirective = (field: FieldDefinitionNode): boolean =>
   field.directives && field.directives.some((dir) => RELATIONAL_DIRECTIVES.includes(dir.name.value));
 
 /**
- *
- * given the keySchema from a DynamoDBDataSource it will return the partitionKey
+ * Given the keySchema from a DynamoDBDataSource, return the partitionKey
  */
 export const getPartitionKey = (ks: any): string => ks.find((att: any) => att.keyType === 'HASH')!.attributeName;
 
 /**
- * extendTypeWithDirectives
+ * Creates a new extension type for `typeName`, and adds the specified directives to it. Mutates the relevant output objects of `ctx`.
  */
 export const extendTypeWithDirectives = (
   ctx: TransformerTransformSchemaStepContextProvider,
@@ -206,14 +217,14 @@ export const extendTypeWithDirectives = (
 };
 
 /**
- * addDirectivesToField
+ * Adds the specified directives to `{typeName}.{fieldName}`. Mutates the relevant output objects of `ctx`.
  */
 export const addDirectivesToField = (
   ctx: TransformerTransformSchemaStepContextProvider,
   typeName: string,
   fieldName: string,
   directives: Array<DirectiveNode>,
-) => {
+): void => {
   const type = ctx.output.getType(typeName) as ObjectTypeDefinitionNode;
   if (type) {
     const field = type.fields?.find((f) => f.name.value === fieldName);
@@ -231,14 +242,15 @@ export const addDirectivesToField = (
 };
 
 /**
- * addSubscriptionArguments
+ * Adds subscription filter arguments to `Subscription.{operationName}` based on the supplied `subscriptionRoles`. For example, if
+ * `subscriptionRoles` contains an owner rule, this method adds an input definition for the specified owner field. Mutates the relevant
+ * output objects of `ctx`.
  */
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const addSubscriptionArguments = (
   ctx: TransformerTransformSchemaStepContextProvider,
   operationName: string,
   subscriptionRoles: Array<RoleDefinition>,
-) => {
+): void => {
   let subscription = ctx.output.getSubscription()!;
   let createField: FieldDefinitionNode = subscription!.fields!.find((field) => field.name.value === operationName) as FieldDefinitionNode;
   const subscriptionArgumentList = subscriptionRoles.map((role) => makeInputValueDefinition(role.entity!, makeNamedType('String')));
@@ -254,14 +266,15 @@ export const addSubscriptionArguments = (
 };
 
 /**
- * addDirectivesToOperation
+ * Adds specified directives to both the field `{typeName}.{operationName}`, and the result type of that field. Mutates the relevant output
+ * objects of `ctx`.
  */
 export const addDirectivesToOperation = (
   ctx: TransformerTransformSchemaStepContextProvider,
   typeName: string,
   operationName: string,
   directives: Array<DirectiveNode>,
-) => {
+): void => {
   // add directives to the given operation
   addDirectivesToField(ctx, typeName, operationName, directives);
 
@@ -283,7 +296,7 @@ export const addDirectivesToOperation = (
 };
 
 /**
- * getQueryFieldNames
+ * Return all fields of the `Query` type for the specified model
  */
 export const getQueryFieldNames = (
   modelDirectiveConfig: ModelDirectiveConfiguration,
@@ -316,7 +329,7 @@ export const getQueryFieldNames = (
 };
 
 /**
- * getMutationFieldNames
+ * Return all fields of the `Mutation` type for the specified model
  */
 export const getMutationFieldNames = (
   modelDirectiveConfig: ModelDirectiveConfiguration,
@@ -350,7 +363,7 @@ export const getMutationFieldNames = (
 };
 
 /**
- * getSubscriptionFieldNames
+ * Return all fields of the `Subscription` type for the specified model
  */
 export const getSubscriptionFieldNames = (
   modelDirectiveConfig: ModelDirectiveConfiguration,

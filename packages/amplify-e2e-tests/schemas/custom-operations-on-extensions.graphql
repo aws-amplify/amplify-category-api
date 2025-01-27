@@ -1,0 +1,19 @@
+type Query {
+  myFunctionQueryBase: String @function(name: "myFunctionQueryBase-${env}") @auth(rules: [{ allow: custom }])
+  myHttpQueryBase: String @http(url: "<REST_URL>") @auth(rules: [{ allow: custom }])
+}
+
+extend type Query {
+  myFunctionQueryExtended: String @function(name: "myFunctionQueryExtended-${env}") @auth(rules: [{ allow: custom }])
+  myHttpQueryExtended: String @http(url: "<REST_URL>") @auth(rules: [{ allow: custom }])
+}
+
+type Mutation {
+  myFunctionMutationBase: String @function(name: "myFunctionQueryBase-${env}") @auth(rules: [{ allow: custom }])
+  myHttpMutationBase: String @http(url: "<REST_URL>") @auth(rules: [{ allow: custom }])
+}
+
+extend type Mutation {
+  myFunctionMutationExtended: String @function(name: "myFunctionQueryExtended-${env}") @auth(rules: [{ allow: custom }])
+  myHttpMutationExtended: String @http(url: "<REST_URL>") @auth(rules: [{ allow: custom }])
+}
