@@ -235,7 +235,7 @@ describe('Directive order enforcement for @validate and @default', () => {
     directives: string[];
     shouldPass: boolean;
   };
-  
+
   const createDirectiveOrderSchema = (directives: string[]): string => {
     const directiveString = directives.join(' ');
     return /* GraphQL */ `

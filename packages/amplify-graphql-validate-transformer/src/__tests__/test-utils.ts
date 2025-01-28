@@ -79,7 +79,7 @@ export const runTransformTest = (schema: string, expectError?: string): void => 
   const modelTransformer = new ModelTransformer();
   const validateTransformer = new ValidateTransformer();
   const defaultTransformer = new DefaultValueTransformer();
-  
+
   if (expectError) {
     expect(() => {
       testTransform({
