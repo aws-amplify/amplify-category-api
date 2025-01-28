@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.28-gen1-type-ext.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@2.1.27...@aws-amplify/graphql-predictions-transformer@2.1.28-gen1-type-ext.0) (2025-01-28)
+
+### Bug Fixes
+
+- transform auth on fields of supported extended types ([4efd97e](https://github.com/aws-amplify/amplify-category-api/commit/4efd97ed355309fb22ef5671a0298f0cac9796bd))
+
 ## [2.1.27](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@2.1.26...@aws-amplify/graphql-predictions-transformer@2.1.27) (2024-09-09)
 
 **Note:** Version bump only for package @aws-amplify/graphql-predictions-transformer

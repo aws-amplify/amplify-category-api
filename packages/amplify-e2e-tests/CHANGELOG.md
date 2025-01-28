@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.22.16-gen1-type-ext.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.15...amplify-category-api-e2e-tests@3.22.16-gen1-type-ext.0) (2025-01-28)
+
+### Reverts
+
+- Revert "DO NOT MERGE: run only extensions test; don't cleanup project to aid in troubleshooting" ([7a40426](https://github.com/aws-amplify/amplify-category-api/commit/7a4042643f2d7704ff4f8d57d0a55c5a51b47f59))
+
 ## [3.22.15](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.14...amplify-category-api-e2e-tests@3.22.15) (2025-01-16)
 
 ### Bug Fixes
