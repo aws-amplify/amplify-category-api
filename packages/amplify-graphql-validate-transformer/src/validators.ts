@@ -25,6 +25,7 @@ export const validate = (
 ): void => {
   validateModelType(parentNode);
   validateNoListFieldValidation(fieldNode);
+  validateOrderingWithDefaultDirective(fieldNode, directive);
   validateNoDuplicateTypes(fieldNode, directive, config.type as ValidationType);
   validateTypeCompatibility(fieldNode, config.type as ValidationType);
 
@@ -54,6 +55,24 @@ const validateModelType = (parentNode: ObjectTypeDefinitionNode): void => {
 const validateNoListFieldValidation = (fieldNode: FieldDefinitionNode): void => {
   if (isListType(fieldNode.type)) {
     throw new InvalidDirectiveError(`@validate directive cannot be used on list field '${fieldNode.name.value}'`);
+  }
+};
+
+/**
+ * Validates that `@validate` directive is not placed before a `@default` directive.
+ * @param fieldNode - The field definition node that the directive is applied to
+ * @param currentDirective - The current `@validate` directive node
+ */
+const validateOrderingWithDefaultDirective = (fieldNode: FieldDefinitionNode, currentDirective: DirectiveNode): void => {
+  const directives = fieldNode.directives!;
+  const validateIndex = directives.indexOf(currentDirective);
+  const defaultDirective = directives.find((d) => d.name.value === 'default');
+
+  if (defaultDirective) {
+    const defaultIndex = directives.indexOf(defaultDirective);
+    if (validateIndex < defaultIndex) {
+      throw new InvalidDirectiveError('@validate directive must be specified after @default directive');
+    }
   }
 };
 
