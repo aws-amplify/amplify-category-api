@@ -229,23 +229,23 @@ describe('Validation Type Compatibility with Field Type', () => {
   });
 });
 
-type DirectiveOrderTestCase = {
-  name: string;
-  directives: string[];
-  shouldPass: boolean;
-};
-
-const createDirectiveOrderSchema = (directives: string[]): string => {
-  const directiveString = directives.join(' ');
-  return /* GraphQL */ `
-    type Post @model {
-      id: ID!
-      title: String! ${directiveString}
-    }
-  `;
-};
-
 describe('Directive order enforcement for @validate and @default', () => {
+  type DirectiveOrderTestCase = {
+    name: string;
+    directives: string[];
+    shouldPass: boolean;
+  };
+  
+  const createDirectiveOrderSchema = (directives: string[]): string => {
+    const directiveString = directives.join(' ');
+    return /* GraphQL */ `
+      type Post @model {
+        id: ID!
+        title: String! ${directiveString}
+      }
+    `;
+  };
+
   const testCases: DirectiveOrderTestCase[] = [
     {
       name: 'rejects "@validate @default" ordering',
@@ -263,6 +263,18 @@ describe('Directive order enforcement for @validate and @default', () => {
       shouldPass: false,
     },
     {
+      name: 'rejects "@validate @validate @validate @validate @validate @default" ordering',
+      directives: [
+        '@validate(type: minLength, value: "5")',
+        '@validate(type: maxLength, value: "10")',
+        '@validate(type: startsWith, value: "prefix")',
+        '@validate(type: endsWith, value: "suffix")',
+        '@validate(type: matches, value: "regex")',
+        '@default(value: "default")',
+      ],
+      shouldPass: false,
+    },
+    {
       name: 'accepts "@default @validate" ordering',
       directives: ['@default(value: "default")', '@validate(type: minLength, value: "5")'],
       shouldPass: true,
@@ -270,6 +282,18 @@ describe('Directive order enforcement for @validate and @default', () => {
     {
       name: 'accepts "@default @validate @validate" ordering',
       directives: ['@default(value: "default")', '@validate(type: minLength, value: "5")', '@validate(type: maxLength, value: "10")'],
+      shouldPass: true,
+    },
+    {
+      name: 'accepts "@default @validate @validate @validate @validate @validate" ordering',
+      directives: [
+        '@default(value: "default")',
+        '@validate(type: minLength, value: "5")',
+        '@validate(type: maxLength, value: "10")',
+        '@validate(type: startsWith, value: "prefix")',
+        '@validate(type: endsWith, value: "suffix")',
+        '@validate(type: matches, value: "regex")',
+      ],
       shouldPass: true,
     },
   ];
