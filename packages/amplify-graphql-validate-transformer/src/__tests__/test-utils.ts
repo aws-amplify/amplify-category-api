@@ -1,6 +1,7 @@
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ValidateTransformer } from '..';
+import { DefaultValueTransformer } from '../../../amplify-graphql-default-value-transformer/src';
 
 export const NUMERIC_FIELD_TYPES = ['Int', 'Float'] as const;
 export const STRING_FIELD_TYPES = ['String'] as const;
@@ -75,19 +76,22 @@ export const createValidationTestCases = (
  * @param expectError Optional error message to expect (if testing for failure)
  */
 export const runTransformTest = (schema: string, expectError?: string): void => {
-  const transformer = new ValidateTransformer();
+  const modelTransformer = new ModelTransformer();
+  const validateTransformer = new ValidateTransformer();
+  const defaultTransformer = new DefaultValueTransformer();
+
   if (expectError) {
     expect(() => {
       testTransform({
         schema,
-        transformers: [new ModelTransformer(), transformer],
+        transformers: [modelTransformer, validateTransformer, defaultTransformer],
       });
     }).toThrow(expectError);
   } else {
     expect(() => {
       testTransform({
         schema,
-        transformers: [new ModelTransformer(), transformer],
+        transformers: [modelTransformer, validateTransformer, defaultTransformer],
       });
     }).not.toThrow();
   }
