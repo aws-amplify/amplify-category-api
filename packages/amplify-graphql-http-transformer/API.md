@@ -19,7 +19,7 @@ export class HttpTransformer extends TransformerPluginBase {
     // (undocumented)
     field: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode, definition: FieldDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
     // (undocumented)
-    fieldOfExtendedType: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode, definition: FieldDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
+    fieldOfExtendedType: (parent: ObjectTypeExtensionNode, definition: FieldDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider) => void;
     // (undocumented)
     generateResolvers: (context: TransformerContextProvider) => void;
 }
