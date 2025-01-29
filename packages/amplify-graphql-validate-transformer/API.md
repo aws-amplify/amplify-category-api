@@ -19,7 +19,7 @@ export class ValidateTransformer extends TransformerPluginBase implements Transf
     // (undocumented)
     field: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, definition: FieldDefinitionNode, directive: DirectiveNode, _: TransformerSchemaVisitStepContextProvider) => void;
     // (undocumented)
-    generateResolvers: (_: TransformerContextProvider) => void;
+    generateResolvers: (ctx: TransformerContextProvider) => void;
 }
 
 // (No @packageDocumentation comment for this package)
