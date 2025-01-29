@@ -1,10 +1,20 @@
-import { DefinitionNode, DocumentNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
+import {
+  DefinitionNode,
+  DocumentNode,
+  FieldDefinitionNode,
+  InterfaceTypeDefinitionNode,
+  Kind,
+  ObjectTypeDefinitionNode,
+  ObjectTypeExtensionNode,
+} from 'graphql';
 
 const SQL_DIRECTIVE_NAME = 'sql';
 
-export const isObjectTypeDefinitionNode = (obj: DefinitionNode): obj is ObjectTypeDefinitionNode => {
+export const isObjectTypeDefinitionNode = (obj: DefinitionNode): obj is ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode => {
   return obj.kind === Kind.OBJECT_TYPE_DEFINITION || obj.kind === Kind.INTERFACE_TYPE_DEFINITION;
 };
+
+export const isObjectTypeExtensionNode = (obj: DefinitionNode): obj is ObjectTypeExtensionNode => obj.kind === Kind.OBJECT_TYPE_EXTENSION;
 
 export const isMutationType = (typeName: string): typeName is 'Mutation' => typeName === 'Mutation';
 
@@ -18,19 +28,19 @@ export const isBuiltInGraphqlType = (typeName: string): typeName is 'Mutation' |
 export const isMutationNode = (
   obj: DefinitionNode,
 ): obj is (ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode) & { name: { value: 'Mutation' } } => {
-  return isObjectTypeDefinitionNode(obj) && isMutationType(obj.name.value);
+  return (isObjectTypeDefinitionNode(obj) || isObjectTypeExtensionNode(obj)) && isMutationType(obj.name.value);
 };
 
 export const isQueryNode = (
   obj: DefinitionNode,
 ): obj is (ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode) & { name: { value: 'Query' } } => {
-  return isObjectTypeDefinitionNode(obj) && isQueryType(obj.name.value);
+  return (isObjectTypeDefinitionNode(obj) || isObjectTypeExtensionNode(obj)) && isQueryType(obj.name.value);
 };
 
 export const isSubscriptionNode = (
   obj: DefinitionNode,
 ): obj is (ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode) & { name: { value: 'Subscription' } } => {
-  return isObjectTypeDefinitionNode(obj) && isSubscriptionType(obj.name.value);
+  return (isObjectTypeDefinitionNode(obj) || isObjectTypeExtensionNode(obj)) && isSubscriptionType(obj.name.value);
 };
 
 export const isBuiltInGraphqlNode = (
@@ -39,7 +49,9 @@ export const isBuiltInGraphqlNode = (
   return isMutationNode(obj) || isQueryNode(obj) || isSubscriptionNode(obj);
 };
 
-export const fieldsWithSqlDirective = (obj: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode): FieldDefinitionNode[] => {
+export const fieldsWithSqlDirective = (
+  obj: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode,
+): FieldDefinitionNode[] => {
   return obj.fields?.filter((field) => field.directives?.some((directive) => directive.name.value === SQL_DIRECTIVE_NAME)) ?? [];
 };
 
