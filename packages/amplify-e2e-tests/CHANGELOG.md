@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.22.16](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.15...amplify-category-api-e2e-tests@3.22.16) (2025-01-29)
+
+### Bug Fixes
+
+- **gen1:** transform directives on fields of supported extended types ([#3126](https://github.com/aws-amplify/amplify-category-api/issues/3126)) ([845612f](https://github.com/aws-amplify/amplify-category-api/commit/845612f4f9ff0aa7959cea631d7446cc482663c4))
+
 ## [3.22.15](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.14...amplify-category-api-e2e-tests@3.22.15) (2025-01-16)
 
 ### Bug Fixes

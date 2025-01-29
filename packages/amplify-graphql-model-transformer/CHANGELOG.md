@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.11.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.11.6...@aws-amplify/graphql-model-transformer@2.11.7) (2025-01-29)
+
+### Bug Fixes
+
+- restore IAM policy changes for overridden table names ([#3109](https://github.com/aws-amplify/amplify-category-api/issues/3109)) ([ac278a1](https://github.com/aws-amplify/amplify-category-api/commit/ac278a1842669058fe66fa498753212abaa94843)), closes [#3075](https://github.com/aws-amplify/amplify-category-api/issues/3075) [#3088](https://github.com/aws-amplify/amplify-category-api/issues/3088)
+
+### Reverts
+
+- Revert "fix: fix policies with overridden table names (#3075)" (#3088) ([e592dba](https://github.com/aws-amplify/amplify-category-api/commit/e592dbaeb1ccb5d46f3b723f89ec073c430d08cf)), closes [#3075](https://github.com/aws-amplify/amplify-category-api/issues/3075) [#3088](https://github.com/aws-amplify/amplify-category-api/issues/3088)
+
 ## [2.11.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.11.5...@aws-amplify/graphql-model-transformer@2.11.6) (2024-12-19)
 
 ### Bug Fixes

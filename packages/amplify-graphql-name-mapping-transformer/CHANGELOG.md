@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.26](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.25...@aws-amplify/graphql-maps-to-transformer@3.4.26) (2025-01-29)
+
+### Bug Fixes
+
+- **gen1:** transform directives on fields of supported extended types ([#3126](https://github.com/aws-amplify/amplify-category-api/issues/3126)) ([845612f](https://github.com/aws-amplify/amplify-category-api/commit/845612f4f9ff0aa7959cea631d7446cc482663c4))
+
 ## [3.4.25](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.24...@aws-amplify/graphql-maps-to-transformer@3.4.25) (2024-12-19)
 
 **Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer

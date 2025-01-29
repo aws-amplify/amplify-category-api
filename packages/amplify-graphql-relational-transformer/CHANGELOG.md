@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.14](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.5.13...@aws-amplify/graphql-relational-transformer@2.5.14) (2025-01-29)
+
+### Bug Fixes
+
+- **gen1:** transform directives on fields of supported extended types ([#3126](https://github.com/aws-amplify/amplify-category-api/issues/3126)) ([845612f](https://github.com/aws-amplify/amplify-category-api/commit/845612f4f9ff0aa7959cea631d7446cc482663c4))
+
 ## [2.5.13](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.5.12...@aws-amplify/graphql-relational-transformer@2.5.13) (2024-12-19)
 
 **Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
