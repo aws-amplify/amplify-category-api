@@ -68,7 +68,10 @@ export class ValidateTransformer extends TransformerPluginBase implements Transf
         if (createResolver) {
           createResolver.addVtlFunctionToSlot(
             'validate',
-            MappingTemplate.s3MappingTemplateFromString(validationSnippet, `${mutationTypeName}.${createFieldName}.{slotName}.{slotIndex}.req.vtl`),
+            MappingTemplate.s3MappingTemplateFromString(
+              validationSnippet,
+              `${mutationTypeName}.${createFieldName}.{slotName}.{slotIndex}.req.vtl`,
+            ),
           );
         }
 
@@ -78,7 +81,10 @@ export class ValidateTransformer extends TransformerPluginBase implements Transf
         if (updateResolver) {
           updateResolver.addVtlFunctionToSlot(
             'validate',
-            MappingTemplate.s3MappingTemplateFromString(validationSnippet, `${mutationTypeName}.${updateFieldName}.{slotName}.{slotIndex}.req.vtl`),
+            MappingTemplate.s3MappingTemplateFromString(
+              validationSnippet,
+              `${mutationTypeName}.${updateFieldName}.{slotName}.{slotIndex}.req.vtl`,
+            ),
           );
         }
       }
