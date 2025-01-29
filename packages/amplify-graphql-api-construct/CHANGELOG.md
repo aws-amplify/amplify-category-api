@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.18.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.18.3...@aws-amplify/graphql-api-construct@1.18.6) (2025-01-16)
+
+### Bug Fixes
+
+- remove transitive dev dependencies from bundled jsii constructs ([#3092](https://github.com/aws-amplify/amplify-category-api/issues/3092)) ([f1243e2](https://github.com/aws-amplify/amplify-category-api/commit/f1243e232d6b54bc2fe2b6b7c27ad454b7063edc))
+
 ## [1.18.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.18.4...@aws-amplify/graphql-api-construct@1.18.5) (2024-12-23)
 
 **Note:** Version bump only for package @aws-amplify/graphql-api-construct
