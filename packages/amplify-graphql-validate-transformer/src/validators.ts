@@ -1,6 +1,7 @@
 import { ArgumentNode, DirectiveNode, FieldDefinitionNode, ObjectTypeDefinitionNode, StringValueNode } from 'graphql';
 import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { getBaseType, isListType } from 'graphql-transformer-common';
+import { DefaultDirective } from '@aws-amplify/graphql-directives';
 import { NUMERIC_VALIDATION_TYPES, STRING_VALIDATION_TYPES, ValidateDirectiveConfiguration, ValidationType } from './types';
 
 /**
@@ -66,7 +67,7 @@ const validateNoListFieldValidation = (fieldNode: FieldDefinitionNode): void => 
 const validateOrderingWithDefaultDirective = (fieldNode: FieldDefinitionNode, currentDirective: DirectiveNode): void => {
   const directives = fieldNode.directives!;
   const validateDirectiveIndex = directives.indexOf(currentDirective);
-  const defaultDirectiveIndex = directives.findIndex((d) => d.name.value === 'default');
+  const defaultDirectiveIndex = directives.findIndex((d) => d.name.value === DefaultDirective.name);
 
   if (defaultDirectiveIndex !== -1 && validateDirectiveIndex < defaultDirectiveIndex) {
     throw new InvalidDirectiveError('@validate directive must be specified after @default directive');
