@@ -6,7 +6,13 @@ import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import * as cdk from 'aws-cdk-lib';
 import { obj, str, ref, printBlock, compoundExpression, qref, raw, iff, Expression } from 'graphql-mapping-template';
 import { FunctionResourceIDs, ResolverResourceIDs, ResourceConstants } from 'graphql-transformer-common';
-import { DirectiveNode, ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
+import {
+  DirectiveNode,
+  ObjectTypeDefinitionNode,
+  InterfaceTypeDefinitionNode,
+  FieldDefinitionNode,
+  ObjectTypeExtensionNode,
+} from 'graphql';
 
 type FunctionDirectiveConfiguration = {
   name: string;
@@ -26,7 +32,7 @@ export class FunctionTransformer extends TransformerPluginBase {
   }
 
   field = (
-    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode,
     definition: FieldDefinitionNode,
     directive: DirectiveNode,
     acc: TransformerSchemaVisitStepContextProvider,
@@ -47,6 +53,15 @@ export class FunctionTransformer extends TransformerPluginBase {
     }
 
     resolver.push(args);
+  };
+
+  fieldOfExtendedType = (
+    parent: ObjectTypeExtensionNode,
+    field: FieldDefinitionNode,
+    directive: DirectiveNode,
+    context: TransformerSchemaVisitStepContextProvider,
+  ): void => {
+    this.field(parent, field, directive, context);
   };
 
   generateResolvers = (context: TransformerContextProvider): void => {

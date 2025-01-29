@@ -184,7 +184,7 @@ export class EnumWrapper {
 }
 
 // @public (undocumented)
-export const fieldsWithSqlDirective: (obj: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode) => FieldDefinitionNode[];
+export const fieldsWithSqlDirective: (obj: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode) => FieldDefinitionNode[];
 
 // Warning: (ae-forgotten-export) The symbol "GenericFieldWrapper" needs to be exported by the entry point index.d.ts
 //
@@ -423,11 +423,11 @@ export class InvalidTransformerError extends Error {
 export const isAmplifyDynamoDbModelDataSourceStrategy: (strategy: ModelDataSourceStrategy) => strategy is AmplifyDynamoDbModelDataSourceStrategy;
 
 // @public (undocumented)
-export const isBuiltInGraphqlNode: (obj: DefinitionNode) => obj is ObjectTypeDefinitionNode | (InterfaceTypeDefinitionNode & {
+export const isBuiltInGraphqlNode: (obj: DefinitionNode) => obj is (ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode) & {
     name: {
-        value: 'Mutation' | 'Query';
+        value: 'Mutation' | 'Query' | 'Subscription';
     };
-});
+};
 
 // @public (undocumented)
 export const isDefaultDynamoDbModelDataSourceStrategy: (strategy: ModelDataSourceStrategy) => strategy is DefaultDynamoDbModelDataSourceStrategy;
@@ -445,21 +445,21 @@ function isLambdaSyncConfig(syncConfig: SyncConfig): syncConfig is SyncConfigLam
 export const isModelType: (ctx: DataSourceStrategiesProvider, typename: string) => boolean;
 
 // @public (undocumented)
-export const isMutationNode: (obj: DefinitionNode) => obj is ObjectTypeDefinitionNode | (InterfaceTypeDefinitionNode & {
+export const isMutationNode: (obj: DefinitionNode) => obj is (ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode) & {
     name: {
         value: 'Mutation';
     };
-});
+};
 
 // @public (undocumented)
-export const isObjectTypeDefinitionNode: (obj: DefinitionNode) => obj is ObjectTypeDefinitionNode;
+export const isObjectTypeDefinitionNode: (obj: DefinitionNode) => obj is ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode;
 
 // @public (undocumented)
-export const isQueryNode: (obj: DefinitionNode) => obj is ObjectTypeDefinitionNode | (InterfaceTypeDefinitionNode & {
+export const isQueryNode: (obj: DefinitionNode) => obj is (ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode) & {
     name: {
         value: 'Query';
     };
-});
+};
 
 // @public (undocumented)
 export const isSqlDbType: (dbType: ModelDataSourceStrategyDbType) => dbType is ModelDataSourceStrategySqlDbType;

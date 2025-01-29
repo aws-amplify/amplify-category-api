@@ -339,6 +339,63 @@ export function addApiWithAllAuthModes(cwd: string, opts: Partial<AddApiOptions 
   });
 }
 
+/**
+ * Note: Lambda Authorizer is enabled only for Transformer V2
+ */
+export function addApiWithApiKeyAndLambda(cwd: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
+  const options = _.assign(defaultOptions, opts);
+  return new Promise<void>((resolve, reject) => {
+    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
+      .wait('Select from one of the below mentioned services:')
+      .sendCarriageReturn()
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
+      .sendKeyUp(3)
+      .sendCarriageReturn()
+      .wait('Provide API name:')
+      .sendLine(options.apiName)
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
+      .sendKeyUp(2)
+      .sendCarriageReturn()
+      .wait(/.*Choose the default authorization type for the API.*/)
+      .sendCarriageReturn()
+      // API Key
+      .wait(/.*Enter a description for the API key.*/)
+      .sendLine('description')
+      .wait(/.*After how many days from now the API key should expire.*/)
+      .sendLine('300')
+      .wait(/.*Configure additional auth types.*/)
+      .sendConfirmYes()
+      .wait(/.*Choose the additional authorization types you want to configure for the API.*/)
+      .sendKeyDown(3)
+      .sendLine(' ')
+      // Lambda
+      .wait(/.*Choose a Lambda authorization function*/)
+      .sendCarriageReturn()
+      .wait(/.*Do you want to edit the local lambda function now*/)
+      .sendConfirmNo()
+      .wait(/.*How long should the authorization response be cached in seconds.*/)
+      .sendLine('600')
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
+      .sendCarriageReturn()
+      // Schema selection
+      .wait('Choose a schema template:')
+      .sendKeyDown(2)
+      .sendCarriageReturn()
+      .wait('Do you want to edit the schema now?')
+      .sendConfirmNo()
+      .wait('"amplify publish" will build all your local backend and frontend resources')
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+
+    setTransformerVersionFlag(cwd, options.transformerVersion);
+  });
+}
+
 export function updateApiSchema(cwd: string, projectName: string, schemaName: string, forceUpdate: boolean = false) {
   const testSchemaPath = getSchemaPath(schemaName);
   let schemaText = fs.readFileSync(testSchemaPath).toString();

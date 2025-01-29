@@ -12,7 +12,9 @@ import {
   DirectiveDefinitionNode,
   TypeDefinitionNode,
   DocumentNode,
+  ObjectTypeExtensionNode,
 } from 'graphql';
+// eslint-disable-next-line import/no-cycle
 import {
   TransformerBeforeStepContextProvider,
   TransformerContextProvider,
@@ -66,15 +68,13 @@ export interface TransformerPluginProvider {
 
   /**
    * A transformer implements a single function per location that its directive can be applied.
-   * This method handles transforming directives on objects type definitions. This includes type
-   * extensions.
+   * This method handles transforming directives on objects type definitions.
    */
   object?: (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, acc: TransformerSchemaVisitStepContextProvider) => void;
 
   /**
    * A transformer implements a single function per location that its directive can be applied.
-   * This method handles transforming directives on objects type definitions. This includes type
-   * extensions.
+   * This method handles transforming directives on interface type definitions.
    */
   interface?: (definition: InterfaceTypeDefinitionNode, directive: DirectiveNode, acc: TransformerSchemaVisitStepContextProvider) => void;
 
@@ -84,6 +84,17 @@ export interface TransformerPluginProvider {
    */
   field?: (
     parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+    definition: FieldDefinitionNode,
+    directive: DirectiveNode,
+    acc: TransformerSchemaVisitStepContextProvider,
+  ) => void;
+
+  /**
+   * A transformer implements a single function per location that its directive can be applied. This method handles transforming directives
+   * on fields of extended types.
+   */
+  fieldOfExtendedType?: (
+    parent: ObjectTypeExtensionNode,
     definition: FieldDefinitionNode,
     directive: DirectiveNode,
     acc: TransformerSchemaVisitStepContextProvider,

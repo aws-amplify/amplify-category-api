@@ -22,9 +22,9 @@ import {
   DocumentNode,
   FieldDefinitionNode,
   InterfaceTypeDefinitionNode,
+  Kind,
   NamedTypeNode,
   ObjectTypeDefinitionNode,
-  Kind,
 } from 'graphql';
 import { getBaseType, isListType, isNonNullType, makeField, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
 import produce from 'immer';

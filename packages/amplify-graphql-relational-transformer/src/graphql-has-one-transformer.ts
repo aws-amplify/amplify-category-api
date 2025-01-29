@@ -22,9 +22,9 @@ import {
   DocumentNode,
   FieldDefinitionNode,
   InterfaceTypeDefinitionNode,
+  Kind,
   NamedTypeNode,
   ObjectTypeDefinitionNode,
-  Kind,
 } from 'graphql';
 import {
   getBaseType,
