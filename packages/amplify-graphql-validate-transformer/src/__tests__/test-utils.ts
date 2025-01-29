@@ -80,19 +80,16 @@ export const runTransformTest = (schema: string, expectError?: string): void => 
   const validateTransformer = new ValidateTransformer();
   const defaultTransformer = new DefaultValueTransformer();
 
+  const transform = (): void => {
+    testTransform({
+      schema,
+      transformers: [modelTransformer, validateTransformer, defaultTransformer],
+    });
+  };
+
   if (expectError) {
-    expect(() => {
-      testTransform({
-        schema,
-        transformers: [modelTransformer, validateTransformer, defaultTransformer],
-      });
-    }).toThrow(expectError);
+    expect(() => transform()).toThrow(expectError);
   } else {
-    expect(() => {
-      testTransform({
-        schema,
-        transformers: [modelTransformer, validateTransformer, defaultTransformer],
-      });
-    }).not.toThrow();
+    expect(() => transform()).not.toThrow();
   }
 };
