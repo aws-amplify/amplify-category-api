@@ -23,9 +23,11 @@ describe('ValidateTransformer', () => {
   const verifyValidations = (out: any, type: string, validations: ValidationCheck[]): void => {
     validations.forEach((validation, index) => {
       const createMutation = out.resolvers[`Mutation.create${type}.validate.${index + 1}.req.vtl`];
+      expect(createMutation).toBeDefined();
       expect(createMutation).toContain(validation.message);
 
       const updateMutation = out.resolvers[`Mutation.update${type}.validate.${index + 1}.req.vtl`];
+      expect(updateMutation).toBeDefined();
       expect(updateMutation).toContain(validation.message);
     });
   };
