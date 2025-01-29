@@ -65,14 +65,11 @@ const validateNoListFieldValidation = (fieldNode: FieldDefinitionNode): void => 
  */
 const validateOrderingWithDefaultDirective = (fieldNode: FieldDefinitionNode, currentDirective: DirectiveNode): void => {
   const directives = fieldNode.directives!;
-  const validateIndex = directives.indexOf(currentDirective);
-  const defaultDirective = directives.find((d) => d.name.value === 'default');
+  const validateDirectiveIndex = directives.indexOf(currentDirective);
+  const defaultDirectiveIndex = directives.findIndex((d) => d.name.value === 'default');
 
-  if (defaultDirective) {
-    const defaultIndex = directives.indexOf(defaultDirective);
-    if (validateIndex < defaultIndex) {
-      throw new InvalidDirectiveError('@validate directive must be specified after @default directive');
-    }
+  if (defaultDirectiveIndex !== -1 && validateDirectiveIndex < defaultDirectiveIndex) {
+    throw new InvalidDirectiveError('@validate directive must be specified after @default directive');
   }
 };
 
