@@ -120,7 +120,7 @@ describe('vtl-generator', () => {
 
     it('includes the validation details in the block comment', () => {
       const result = makeValidationSnippet('age', 'gt', '18', 'error');
-      expect(result).toContain('Validating "age" with gt');
+      expect(result).toContain('Validating "age" with type "gt" and value "18"');
     });
   });
 });
