@@ -188,4 +188,97 @@ describe('@auth directive on extended types', () => {
       "The '@auth' directive cannot be used on fields of type extensions other than 'Query', 'Mutation', and 'Subscription'. See Foo.customField2",
     );
   });
+
+  test('supports @aws_ directives on model types', () => {
+    const schema = /* GraphQL */ `
+      type Todo @model @auth(rules: [{ allow: public, provider: iam }]) {
+        id: ID!
+        description: String
+      }
+
+      extend type Todo {
+        extendedField: String! @aws_cognito_user_pools
+      }
+    `;
+
+    const testTransformParams = {
+      schema: schema,
+      authConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer()],
+    };
+
+    const out = testTransform(testTransformParams);
+    expect(out).toBeDefined();
+
+    const transformedSchema = out.schema;
+    const doc = parse(transformedSchema);
+
+    const todoType = getObjectType(doc, 'Todo');
+    expect(todoType).toBeDefined();
+
+    const extendedField = todoType?.fields?.find((f) => f.name.value === 'extendedField');
+    expectDirectiveWithName(extendedField, 'aws_cognito_user_pools');
+  });
+
+  test('does not support duplicate field names on Query extensions', () => {
+    const schema = /* GraphQL */ `
+      type Query {
+        customField1: String! @auth(rules: [{ allow: public, provider: iam }])
+      }
+
+      extend type Query {
+        customField1: Int @auth(rules: [{ allow: public, provider: iam }])
+      }
+    `;
+
+    const testTransformParams = {
+      schema: schema,
+      authConfig,
+      transformers: [new AuthTransformer()],
+    };
+
+    expect(() => testTransform(testTransformParams)).toThrow("Object type extension 'Query' cannot redeclare field customField1");
+  });
+
+  test('does not support duplicate field names on @model type extensions', () => {
+    const schema = /* GraphQL */ `
+      type Todo @model @auth(rules: [{ allow: public, provider: iam }]) {
+        id: ID!
+        description: String
+      }
+
+      extend type Todo {
+        description: Int
+      }
+    `;
+
+    const testTransformParams = {
+      schema: schema,
+      authConfig,
+      transformers: [new AuthTransformer()],
+    };
+
+    expect(() => testTransform(testTransformParams)).toThrow("Object type extension 'Todo' cannot redeclare field description");
+  });
+
+  test('does not support duplicate field names on non-model type extensions', () => {
+    const schema = /* GraphQL */ `
+      type Foo {
+        id: ID!
+        description: String
+      }
+
+      extend type Foo {
+        description: Int
+      }
+    `;
+
+    const testTransformParams = {
+      schema: schema,
+      authConfig,
+      transformers: [new AuthTransformer()],
+    };
+
+    expect(() => testTransform(testTransformParams)).toThrow("Object type extension 'Foo' cannot redeclare field description");
+  });
 });
