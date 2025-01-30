@@ -34,8 +34,11 @@
     "access": "public"
   },
   "devDependencies": {
+    "@aws-sdk/client-dsql": "^3.738.0",
+    "@types/aws-lambda": "8.10.119",
     "aws-cdk-lib": "2.158.0",
     "constructs": "10.3.0",
+    "esbuild": "^0.24.0",
     "jsii": "^5.4.23",
     "jsii-docgen": "9.1.2",
     "jsii-pacmak": "^1.84.0",

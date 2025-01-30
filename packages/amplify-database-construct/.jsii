@@ -3937,7 +3937,8 @@
       "assembly": "@aws-amplify/database-construct",
       "base": "constructs.Construct",
       "docs": {
-        "stability": "stable"
+        "stability": "stable",
+        "summary": "A construct that uses an AwsCustomResource framework to create and manage a DSQL cluster."
       },
       "fqn": "@aws-amplify/database-construct.AmplifyDatabase",
       "initializer": {
@@ -3946,7 +3947,7 @@
         },
         "locationInModule": {
           "filename": "src/amplify-database.ts",
-          "line": 11
+          "line": 23
         },
         "parameters": [
           {
@@ -3972,10 +3973,25 @@
       "kind": "class",
       "locationInModule": {
         "filename": "src/amplify-database.ts",
-        "line": 5
+        "line": 12
       },
       "name": "AmplifyDatabase",
       "properties": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Generated L1 and L2 CDK resources."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/amplify-database.ts",
+            "line": 16
+          },
+          "name": "resources",
+          "type": {
+            "fqn": "@aws-amplify/database-construct.AmplifyDatabaseResources"
+          }
+        },
         {
           "docs": {
             "stability": "stable",
@@ -3984,7 +4000,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-database.ts",
-            "line": 9
+            "line": 21
           },
           "name": "stack",
           "type": {
@@ -4005,29 +4021,240 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/types.ts",
-        "line": 4
+        "line": 53
       },
       "name": "AmplifyDatabaseProps",
       "properties": [
         {
           "abstract": true,
           "docs": {
-            "stability": "stable"
+            "remarks": "This will be propagated to a `Name` tag.",
+            "stability": "stable",
+            "summary": "The name of the cluster as reported in the console."
           },
           "immutable": true,
           "locationInModule": {
             "filename": "src/types.ts",
-            "line": 5
+            "line": 62
           },
-          "name": "definition",
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "You must first disable this property before you can delete your cluster. Defaults to `false`",
+            "stability": "stable",
+            "summary": "If enabled, you can't delete your cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 57
+          },
+          "name": "deletionProtectionEnabled",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Maximum 175 items. Amplify will add some tags by default, including a `Name` tag\nfilled with the value of the {@link name} property.",
+            "stability": "stable",
+            "summary": "A map of key/value pairs to use to tag your cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 68
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "src/types:AmplifyDatabaseProps"
+    },
+    "@aws-amplify/database-construct.AmplifyDatabaseResources": {
+      "assembly": "@aws-amplify/database-construct",
+      "datatype": true,
+      "docs": {
+        "stability": "stable"
+      },
+      "fqn": "@aws-amplify/database-construct.AmplifyDatabaseResources",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "src/types.ts",
+        "line": 73
+      },
+      "name": "AmplifyDatabaseResources",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The database cluster created by the construct."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 77
+          },
+          "name": "databaseCluster",
+          "type": {
+            "fqn": "@aws-amplify/database-construct.IAmplifyDsqlDatabaseCluster"
+          }
+        }
+      ],
+      "symbolId": "src/types:AmplifyDatabaseResources"
+    },
+    "@aws-amplify/database-construct.IAmplifyDsqlDatabaseCluster": {
+      "assembly": "@aws-amplify/database-construct",
+      "docs": {
+        "stability": "stable",
+        "summary": "Response elements of https://docs.aws.amazon.com/aurora-dsql/latest/APIReference/API_GetCluster.html, encapsulated for inclusion in a `resources` element."
+      },
+      "fqn": "@aws-amplify/database-construct.IAmplifyDsqlDatabaseCluster",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "src/types.ts",
+        "line": 11
+      },
+      "name": "IAmplifyDsqlDatabaseCluster",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The ARN of the database cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 15
+          },
+          "name": "arn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The time when the cluster was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 20
+          },
+          "name": "creationTime",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Whether deletion protection is enabled in this cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 25
+          },
+          "name": "deletionProtectionEnabled",
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The ID of the retrieved cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 30
+          },
+          "name": "identifier",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The ARNs of the clusters linked to the retrieved cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 35
+          },
+          "name": "linkedClusterArns",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The status of the retrieved cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 40
+          },
+          "name": "status",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Applicable only for multi-Region clusters",
+            "stability": "stable",
+            "summary": "The witness Region of the cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/types.ts",
+            "line": 45
+          },
+          "name": "witnessRegion",
           "type": {
             "primitive": "string"
           }
         }
       ],
-      "symbolId": "src/types:AmplifyDatabaseProps"
+      "symbolId": "src/types:IAmplifyDsqlDatabaseCluster"
     }
   },
   "version": "0.0.1",
-  "fingerprint": "lbhiiyzaI6U6DqlyU4rWV3BBrz3Hc/vXsnn1SwhsEJE="
+  "fingerprint": "liitlCOzioFmfKjCVzwJ65QLaeBCTFS5Wa7EmAlDYmA="
 }

@@ -7,16 +7,37 @@
 import { Construct } from 'constructs';
 import { Stack } from 'aws-cdk-lib';
 
-// @public (undocumented)
+// @public
 export class AmplifyDatabase extends Construct {
     constructor(scope: Construct, id: string, props: AmplifyDatabaseProps);
+    readonly resources: AmplifyDatabaseResources;
     readonly stack: Stack;
 }
 
 // @public
 export interface AmplifyDatabaseProps {
-    // (undocumented)
-    readonly definition: string;
+    readonly deletionProtectionEnabled?: boolean;
+    readonly name: string;
+    readonly tags?: Record<string, string>;
+}
+
+// @public (undocumented)
+export interface AmplifyDatabaseResources {
+    readonly databaseCluster: IAmplifyDsqlDatabaseCluster;
+}
+
+// @public (undocumented)
+export type AmplifyDsqlClusterStatus = 'CREATING' | 'ACTIVE' | 'UPDATING' | 'DELETING' | 'DELETED' | 'FAILED';
+
+// @public
+export interface IAmplifyDsqlDatabaseCluster {
+    readonly arn: string;
+    readonly creationTime: number;
+    readonly deletionProtectionEnabled: boolean;
+    readonly identifier: string;
+    readonly linkedClusterArns: string[];
+    readonly status: AmplifyDsqlClusterStatus;
+    readonly witnessRegion: string;
 }
 
 // (No @packageDocumentation comment for this package)
