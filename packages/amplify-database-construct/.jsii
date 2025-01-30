@@ -1018,6 +1018,19 @@
             }
           }
         },
+        "aws-cdk-lib.aws_connectcampaignsv2": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.ConnectCampaignsV2"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.connectcampaignsv2"
+            },
+            "python": {
+              "module": "aws_cdk.aws_connectcampaignsv2"
+            }
+          }
+        },
         "aws-cdk-lib.aws_controltower": {
           "targets": {
             "dotnet": {
@@ -1834,6 +1847,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_internetmonitor"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_invoicing": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.Invoicing"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.invoicing"
+            },
+            "python": {
+              "module": "aws_cdk.aws_invoicing"
             }
           }
         },
@@ -2822,6 +2848,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_ram"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_rbin": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.Rbin"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.rbin"
+            },
+            "python": {
+              "module": "aws_cdk.aws_rbin"
             }
           }
         },
@@ -3859,7 +3898,7 @@
     "stability": "stable"
   },
   "homepage": "https://github.com/aws-amplify/amplify-category-api.git",
-  "jsiiVersion": "5.5.4 (build 1378d94)",
+  "jsiiVersion": "5.6.4 (build a446c6c)",
   "keywords": [
     "awscdk",
     "aws-cdk",
@@ -3990,5 +4029,5 @@
     }
   },
   "version": "0.0.1",
-  "fingerprint": "KP7H/t1dNTwdiSBEpt+tWdZSDtyN60bbn6wMnSz2nww="
+  "fingerprint": "lbhiiyzaI6U6DqlyU4rWV3BBrz3Hc/vXsnn1SwhsEJE="
 }
