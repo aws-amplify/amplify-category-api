@@ -36,6 +36,7 @@ import {
   TypeDefinitionNode,
   ListValueNode,
   StringValueNode,
+  ObjectTypeExtensionNode,
 } from 'graphql';
 import { merge } from 'lodash';
 import {
@@ -260,14 +261,14 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   };
 
   field = (
-    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode,
     field: FieldDefinitionNode,
     directive: DirectiveNode,
     context: TransformerSchemaVisitStepContextProvider,
   ): void => {
     if (parent.kind === Kind.INTERFACE_TYPE_DEFINITION) {
       throw new InvalidDirectiveError(
-        `The @auth directive cannot be placed on an interface's field. See ${parent.name.value}${field.name.value}`,
+        `The @auth directive cannot be placed on an interface's field. See ${parent.name.value}.${field.name.value}`,
       );
     }
     const isParentTypeBuiltinType =
@@ -342,6 +343,15 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       this.convertRulesToRoles(acm, staticRules, false, typeFieldName, ['list', 'get', 'search', 'listen', 'sync']);
       this.authNonModelConfig.set(typeFieldName, acm);
     }
+  };
+
+  fieldOfExtendedType = (
+    parent: ObjectTypeExtensionNode,
+    field: FieldDefinitionNode,
+    directive: DirectiveNode,
+    context: TransformerSchemaVisitStepContextProvider,
+  ): void => {
+    this.field(parent, field, directive, context);
   };
 
   /**
@@ -746,11 +756,12 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     typeName: string,
     field: FieldDefinitionNode,
     fieldRoles: Array<string>,
-    needsFieldResolver: boolean = false,
+    needsFieldResolver = false,
   ): void => {
     let fieldAuthExpression: string;
     let relatedAuthExpression: string;
-    // Relational field redaction is default to `needsFieldResolver`, which stays consistent with current behavior of always redacting relational field when field resolver is needed
+    // Relational field redaction is default to `needsFieldResolver`, which stays consistent with current behavior of always redacting
+    // relational field when field resolver is needed
     let redactRelationalField: boolean = needsFieldResolver;
     const fieldIsRequired = field.type.kind === Kind.NON_NULL_TYPE;
     if (fieldIsRequired) {
@@ -805,7 +816,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
          * Once there is one role detected to have access on both side, the auth role definitions will be compared to determine whether
          * to redac the field or not
          */
-        for (let fieldRole of fieldReadRoleDefinitions) {
+        for (const fieldRole of fieldReadRoleDefinitions) {
           // When two role definitions have an overlap
           if (isFieldRoleHavingAccessToBothSide(fieldRole, filteredRelatedModelReadRoleDefinitions)) {
             // Check if two role definitions are identical without dynamic auth role or custom auth role
