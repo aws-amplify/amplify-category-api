@@ -4,11 +4,6 @@ import { parse } from 'graphql';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ValidateTransformer } from '../graphql-validate-transformer';
 
-type ValidationCheck = {
-  field: string;
-  message: string;
-};
-
 describe('ValidateTransformer', () => {
   const transformSchema = (schema: string): any => {
     const out = testTransform({
@@ -20,19 +15,25 @@ describe('ValidateTransformer', () => {
     return out;
   };
 
-  const verifyValidations = (out: any, type: string, validations: ValidationCheck[]): void => {
-    validations.forEach((validation, index) => {
-      const createMutation = out.resolvers[`Mutation.create${type}.validate.${index + 1}.req.vtl`];
-      expect(createMutation).toBeDefined();
-      expect(createMutation).toContain(validation.message);
-
-      const updateMutation = out.resolvers[`Mutation.update${type}.validate.${index + 1}.req.vtl`];
-      expect(updateMutation).toBeDefined();
-      expect(updateMutation).toContain(validation.message);
-    });
+  const testValidation = (
+    out: any,
+    type: string,
+    field: string,
+    validationType: string,
+    index: number,
+    operation: 'create' | 'update',
+  ): void => {
+    expect(out.resolvers[`Mutation.${operation}${type}.validate.${index}.req.vtl`]).toMatchSnapshot(
+      `${operation} ${type.toLowerCase()} ${field} ${validationType} validation`,
+    );
   };
 
-  it('should successfully transform schema with numeric validations', () => {
+  const testValidationPair = (out: any, type: string, field: string, validationType: string, index: number): void => {
+    testValidation(out, type, field, validationType, index, 'create');
+    testValidation(out, type, field, validationType, index, 'update');
+  };
+
+  it('should generate correct validation resolvers for numeric validations', () => {
     const schema = `
       type Product @model {
         id: ID!
@@ -44,15 +45,16 @@ describe('ValidateTransformer', () => {
 
     const out = transformSchema(schema);
 
-    verifyValidations(out, 'Product', [
-      { field: 'price', message: 'Price must be positive' },
-      { field: 'price', message: 'Price must be less than 1,000,000' },
-      { field: 'quantity', message: 'Quantity cannot be negative' },
-      { field: 'quantity', message: 'Quantity cannot exceed 100' },
-    ]);
+    // Test price validations
+    testValidationPair(out, 'Product', 'price', 'gt', 1);
+    testValidationPair(out, 'Product', 'price', 'lt', 2);
+
+    // Test quantity validations
+    testValidationPair(out, 'Product', 'quantity', 'gte', 3);
+    testValidationPair(out, 'Product', 'quantity', 'lte', 4);
   });
 
-  it('should successfully transform schema with string validations', () => {
+  it('should generate correct validation resolvers for string validations', () => {
     const schema = `
       type User @model {
         id: ID!
@@ -65,16 +67,19 @@ describe('ValidateTransformer', () => {
 
     const out = transformSchema(schema);
 
-    verifyValidations(out, 'User', [
-      { field: 'email', message: 'Invalid email format' },
-      { field: 'username', message: 'Username too short' },
-      { field: 'username', message: 'Username too long' },
-      { field: 'url', message: 'URL must start with https://' },
-      { field: 'url', message: 'URL must end with .com' },
-    ]);
+    // Test email validation
+    testValidationPair(out, 'User', 'email', 'matches', 1);
+
+    // Test username validations
+    testValidationPair(out, 'User', 'username', 'minLength', 2);
+    testValidationPair(out, 'User', 'username', 'maxLength', 3);
+
+    // Test url validations
+    testValidationPair(out, 'User', 'url', 'startsWith', 4);
+    testValidationPair(out, 'User', 'url', 'endsWith', 5);
   });
 
-  it('should allow multiple validations on the same field', () => {
+  it('should generate correct validation resolvers for multiple validations on the same field', () => {
     const schema = `
       type Post @model {
         id: ID!
@@ -87,16 +92,15 @@ describe('ValidateTransformer', () => {
 
     const out = transformSchema(schema);
 
-    verifyValidations(out, 'Post', [
-      { field: 'title', message: 'Title too short' },
-      { field: 'title', message: 'Title too long' },
-      { field: 'title', message: 'Title must start with prefix' },
-      { field: 'title', message: 'Title must end with suffix' },
-      { field: 'title', message: 'Title can only contain letters, numbers and spaces' },
-    ]);
+    // Test all title validations
+    testValidationPair(out, 'Post', 'title', 'minLength', 1);
+    testValidationPair(out, 'Post', 'title', 'maxLength', 2);
+    testValidationPair(out, 'Post', 'title', 'startsWith', 3);
+    testValidationPair(out, 'Post', 'title', 'endsWith', 4);
+    testValidationPair(out, 'Post', 'title', 'matches', 5);
   });
 
-  it('should successfully transform schema with validations on multiple fields', () => {
+  it('should generate correct validation resolvers for multiple fields', () => {
     const schema = `
       type Comment @model {
         id: ID!
@@ -110,13 +114,16 @@ describe('ValidateTransformer', () => {
 
     const out = transformSchema(schema);
 
-    verifyValidations(out, 'Comment', [
-      { field: 'content', message: 'Content cannot be empty' },
-      { field: 'content', message: 'Content too long' },
-      { field: 'author', message: 'Author too short' },
-      { field: 'author', message: 'Author too long' },
-      { field: 'rating', message: 'Rating cannot be negative' },
-      { field: 'rating', message: 'Rating cannot exceed 5' },
-    ]);
+    // Test content validations
+    testValidationPair(out, 'Comment', 'content', 'minLength', 1);
+    testValidationPair(out, 'Comment', 'content', 'maxLength', 2);
+
+    // Test author validations
+    testValidationPair(out, 'Comment', 'author', 'minLength', 3);
+    testValidationPair(out, 'Comment', 'author', 'maxLength', 4);
+
+    // Test rating validations
+    testValidationPair(out, 'Comment', 'rating', 'gte', 5);
+    testValidationPair(out, 'Comment', 'rating', 'lte', 6);
   });
 });
