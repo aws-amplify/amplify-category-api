@@ -14,7 +14,7 @@ export const makeValidationSnippet = (fieldName: string, validationType: string,
   return printBlock(`Validating "${fieldName}" with type "${validationType}" and value "${validationValue}"`)(
     raw(`#if( !$util.isNull($ctx.args.input.${fieldName}) )
       ${validationCheck}
-      #if($validationFailed)
+      #if(!$validationPassed)
         $util.error("${errorMessage}")
       #end
     #end`),
@@ -26,23 +26,23 @@ const getValidationCheck = (fieldName: string, validationType: string, value: st
 
   switch (validationType.toLowerCase()) {
     case 'gt':
-      return `#set($validationFailed = $${fieldRef} <= ${value})`;
+      return `#set($validationPassed = $${fieldRef} > ${value})`;
     case 'lt':
-      return `#set($validationFailed = $${fieldRef} >= ${value})`;
+      return `#set($validationPassed = $${fieldRef} < ${value})`;
     case 'gte':
-      return `#set($validationFailed = $${fieldRef} < ${value})`;
+      return `#set($validationPassed = $${fieldRef} >= ${value})`;
     case 'lte':
-      return `#set($validationFailed = $${fieldRef} > ${value})`;
+      return `#set($validationPassed = $${fieldRef} <= ${value})`;
     case 'minlength':
-      return `#set($validationFailed = $${fieldRef}.length() < ${value})`;
+      return `#set($validationPassed = $${fieldRef}.length() >= ${value})`;
     case 'maxlength':
-      return `#set($validationFailed = $${fieldRef}.length() > ${value})`;
+      return `#set($validationPassed = $${fieldRef}.length() <= ${value})`;
     case 'startswith':
-      return `#set($validationFailed = !$${fieldRef}.startsWith("${value}"))`;
+      return `#set($validationPassed = $${fieldRef}.startsWith("${value}"))`;
     case 'endswith':
-      return `#set($validationFailed = !$${fieldRef}.endsWith("${value}"))`;
+      return `#set($validationPassed = $${fieldRef}.endsWith("${value}"))`;
     case 'matches':
-      return `#set($validationFailed = !$util.matches($${fieldRef}, "${value}"))`;
+      return `#set($validationPassed = $util.matches($${fieldRef}, "${value}"))`;
     default:
       throw new Error(`Unsupported validation type: ${validationType}`);
   }
