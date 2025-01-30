@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.13.9](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.13.8...amplify-graphql-api-construct-tests@1.13.9) (2025-01-30)
+
+### Bug Fixes
+
+- **gen2:** transform directives on fields of supported extended types ([#3127](https://github.com/aws-amplify/amplify-category-api/issues/3127)) ([3aca7b8](https://github.com/aws-amplify/amplify-category-api/commit/3aca7b89f530c536c28a53b7290fdab877b2260b))
+
 ## [1.13.8](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.13.5...amplify-graphql-api-construct-tests@1.13.8) (2025-01-16)
 
 ### Bug Fixes
