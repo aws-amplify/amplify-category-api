@@ -26,6 +26,7 @@ export const handler = async (event: CloudFormationCustomResourceEvent): Promise
       }
       return { IsComplete: clusterStatus === 'ACTIVE' };
     }
+
     case 'Delete': {
       try {
         // If we catch the status request at just the right time, it might
@@ -42,6 +43,10 @@ export const handler = async (event: CloudFormationCustomResourceEvent): Promise
         }
         throw error;
       }
+    }
+
+    default: {
+      throw new Error(`Unsupported request type ${(event as any).RequestType}`);
     }
   }
 };

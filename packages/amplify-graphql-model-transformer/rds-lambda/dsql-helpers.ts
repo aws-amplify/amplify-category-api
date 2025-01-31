@@ -1,11 +1,11 @@
 import { DsqlSigner } from "@aws-sdk/dsql-signer";
 
-export const generateDSQLAuthToken = async (endpoint: string): Promise<string> => {
+export const generateDSQLAuthToken = async (endpoint: string, admin = false): Promise<string> => {
   const signer = new DsqlSigner({
     hostname: endpoint,
   });
   try {
-    const token = await signer.getDbConnectAdminAuthToken();
+    const token = admin ? await signer.getDbConnectAdminAuthToken() : await signer.getDbConnectAuthToken();
     return token;
   } catch (error) {
     throw error;

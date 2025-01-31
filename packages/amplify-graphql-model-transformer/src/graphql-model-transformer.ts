@@ -10,7 +10,6 @@ import {
   isAmplifyDynamoDbModelDataSourceStrategy,
   isDefaultDynamoDbModelDataSourceStrategy,
   isDynamoDbModel,
-  isSqlStrategy,
   ObjectDefinitionWrapper,
   SyncUtils,
   TransformerModelBase,
@@ -18,6 +17,8 @@ import {
   getConditionInputName,
   getSubscriptionFilterInputName,
   getConnectionName,
+  isExistingSQLDbModelDataSourceStrategy,
+  isAuroraDsqlModelDataSourceStrategy,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncDataSourceType,
@@ -58,6 +59,7 @@ import {
   makeValueNode,
   toUpper,
 } from 'graphql-transformer-common';
+import { isImportedAmplifyDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-core';
 import {
   addDirectivesToOperation,
   addModelConditionInputs,
@@ -76,11 +78,11 @@ import {
 import { API_KEY_DIRECTIVE, AWS_IAM_DIRECTIVE } from './definitions';
 import { ModelDirectiveConfiguration, SubscriptionLevel } from './directive';
 import { ModelResourceGenerator } from './resources/model-resource-generator';
+import { DsqlModelResourceGenerator } from './resources/dsql-model-resource-generator';
 import { DynamoModelResourceGenerator } from './resources/dynamo-model-resource-generator';
 import { RdsModelResourceGenerator } from './resources/rds-model-resource-generator';
 import { ModelTransformerOptions } from './types';
 import { AmplifyDynamoModelResourceGenerator } from './resources/amplify-dynamodb-table/amplify-dynamo-model-resource-generator';
-import { isImportedAmplifyDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-core';
 
 /**
  * Nullable
@@ -88,6 +90,7 @@ import { isImportedAmplifyDynamoDbModelDataSourceStrategy } from '@aws-amplify/g
 export type Nullable<T> = T | null;
 
 // Keys for the resource generator map to reference the generator for various ModelDataSourceStrategies
+const AURORA_SQL_LAMBDA_GENERATOR = 'AURORA_SQL';
 const ITERATIVE_TABLE_GENERATOR = 'AmplifyDDB';
 const SQL_LAMBDA_GENERATOR = 'SQL';
 
@@ -113,6 +116,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   constructor(options: ModelTransformerOptions = {}) {
     super('amplify-model-transformer', ModelDirective.definition);
     this.options = this.getOptions(options);
+    this.resourceGeneratorMap.set(AURORA_SQL_LAMBDA_GENERATOR, new DsqlModelResourceGenerator());
     this.resourceGeneratorMap.set(DDB_DB_TYPE, new DynamoModelResourceGenerator());
     this.resourceGeneratorMap.set(SQL_LAMBDA_GENERATOR, new RdsModelResourceGenerator());
     const amplifyTableDynamoModelResourceGenerator = new AmplifyDynamoModelResourceGenerator();
@@ -131,9 +135,13 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       this.resourceGeneratorMap.get(DDB_DB_TYPE)?.enableGenerator();
       this.resourceGeneratorMap.get(DDB_DB_TYPE)?.enableProvisioned();
     }
-    if (strategies.some(isSqlStrategy) || customSqlDataSources.length > 0) {
+    if (strategies.some(isExistingSQLDbModelDataSourceStrategy) || customSqlDataSources.some(isExistingSQLDbModelDataSourceStrategy)) {
       this.resourceGeneratorMap.get(SQL_LAMBDA_GENERATOR)?.enableGenerator();
       this.resourceGeneratorMap.get(SQL_LAMBDA_GENERATOR)?.enableUnprovisioned();
+    }
+    if (strategies.some(isAuroraDsqlModelDataSourceStrategy) || customSqlDataSources.some(isAuroraDsqlModelDataSourceStrategy)) {
+      this.resourceGeneratorMap.get(AURORA_SQL_LAMBDA_GENERATOR)?.enableGenerator();
+      this.resourceGeneratorMap.get(AURORA_SQL_LAMBDA_GENERATOR)?.enableUnprovisioned();
     }
     if (strategies.some(isAmplifyDynamoDbModelDataSourceStrategy) || strategies.some(isImportedAmplifyDynamoDbModelDataSourceStrategy)) {
       this.resourceGeneratorMap.get(ITERATIVE_TABLE_GENERATOR)?.enableGenerator();
@@ -871,8 +879,10 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       generator = this.resourceGeneratorMap.get(DDB_DB_TYPE);
     } else if (isAmplifyDynamoDbModelDataSourceStrategy(strategy)) {
       generator = this.resourceGeneratorMap.get(ITERATIVE_TABLE_GENERATOR);
-    } else if (isSqlStrategy(strategy)) {
+    } else if (isExistingSQLDbModelDataSourceStrategy(strategy)) {
       generator = this.resourceGeneratorMap.get(SQL_LAMBDA_GENERATOR);
+    } else if (isAuroraDsqlModelDataSourceStrategy(strategy)) {
+      generator = this.resourceGeneratorMap.get(AURORA_SQL_LAMBDA_GENERATOR);
     } else if (isImportedAmplifyDynamoDbModelDataSourceStrategy(strategy)) {
       generator = this.resourceGeneratorMap.get(ITERATIVE_TABLE_GENERATOR);
     }

@@ -1,3 +1,4 @@
+import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelResourceIDs, ResourceConstants } from 'graphql-transformer-common';
@@ -7,7 +8,6 @@ import { AttributeType, StreamViewType, TableEncryption } from 'aws-cdk-lib/aws-
 import { Construct } from 'constructs';
 import { Duration, aws_iam, aws_lambda } from 'aws-cdk-lib';
 import { DynamoModelResourceGenerator } from '../dynamo-model-resource-generator';
-import * as path from 'path';
 import { AmplifyDynamoDBTable } from './amplify-dynamodb-table-construct';
 import { WaiterStateMachine } from './waiter-state-machine';
 import { Provider } from './provider';

@@ -17,6 +17,7 @@ const WAIT_COMPLETE = 'WAIT_COMPLETE';
 enum CredentialStorageMethod {
   SSM = 'SSM',
   SECRETS_MANAGER = 'SECRETS_MANAGER',
+  AURORA_DSQL = 'AURORA_DSQL',
 }
 
 export const run = async (event: any): Promise<any> => {
@@ -191,6 +192,7 @@ const getDBConfig = async (): DBConfig => {
   }
 
   const credentialStorageMethod = process.env.CREDENTIAL_STORAGE_METHOD;
+
   if (credentialStorageMethod === CredentialStorageMethod.SSM) {
     if (!ssmClient) {
       createSSMClient();
@@ -211,7 +213,7 @@ const getDBConfig = async (): DBConfig => {
       }
       if (isDSQLHostname(config.host)) {
         config = { ...defaultDSQLConfig, ...config };
-        config.password = await generateDSQLAuthToken(config.host);
+        config.password = await generateDSQLAuthToken(config.host, true);
         return config;
       }
 
@@ -237,10 +239,42 @@ const getDBConfig = async (): DBConfig => {
     config.database = process.env.database;
     config.host = process.env.host;
 
-
     const secrets = await getSecretManagerValue(process.env.secretArn);
     config.username = secrets.username;
     config.password = secrets.password;
+  } else if (credentialStorageMethod === CredentialStorageMethod.AURORA_DSQL) {
+    const clusterIdentifier = process.env.CLUSTER_IDENTIFIER;
+    if (!clusterIdentifier) {
+      throw new Error('CLUSTER_IDENTIFIER environment variable not set');
+    }
+    
+    const region = process.env.AWS_REGION;
+    if (!region) {
+      throw new Error('AWS_REGION environment variable is not set');
+    }
+
+    const defaultDSQLConfig = {
+      // TODO: Make username an environment variable based on AppSync App ID
+      username: 'amplify-data',
+
+      // TODO: Confirm that Postgres expressions supported by DSQL are sufficient for our uses
+      engine: 'postgres',
+
+      // DSQL only supports connections on port 5432
+      port: 5432,
+
+      // DSQL only supports one database per cluster, named 'postgres'
+      database: 'postgres',
+
+      // DSQL endpoints are formed with the specified convention
+      host: `${clusterIdentifier}.dsql.${region}.on.aws`,
+
+    }
+
+    config = { ...defaultDSQLConfig, ...config };
+    config.password = await generateDSQLAuthToken(config.host);
+
+    return config;
   } else {
     throw new Error('Unable to determine credentials storage method (SSM or SECRETS_MANAGER).');
   }

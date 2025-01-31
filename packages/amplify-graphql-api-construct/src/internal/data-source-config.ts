@@ -5,6 +5,7 @@ import {
   isQueryNode,
   isMutationNode,
   fieldsWithSqlDirective,
+  isExistingSQLDbModelDataSourceStrategy,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceStrategiesProvider,
@@ -191,7 +192,7 @@ export const schemaByMergingDefinitions = (definitions: IAmplifyGraphqlDefinitio
  * @returns validates and throws an error if the strategy is invalid
  */
 export const validateDataSourceStrategy = (strategy: ConstructModelDataSourceStrategy): void => {
-  if (!isSqlStrategy(strategy)) {
+  if (!isExistingSQLDbModelDataSourceStrategy(strategy)) {
     return;
   }
 

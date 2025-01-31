@@ -13,7 +13,8 @@ export type ModelDataSourceStrategy =
   | DefaultDynamoDbModelDataSourceStrategy
   | AmplifyDynamoDbModelDataSourceStrategy
   | ImportedAmplifyDynamoDbModelDataSourceStrategy
-  | SQLLambdaModelDataSourceStrategy;
+  | ExistingSQLDbModelDataSourceStrategy
+  | AuroraDsqlModelDataSourceStrategy;
 
 /**
  * All supported database types that can be used to resolve models.
@@ -50,12 +51,12 @@ export interface AmplifyDynamoDbModelDataSourceStrategy {
  * Tables can be imported only if they meet the following criteria.
  * 1. The imported table must have been created with through an Amplify Gen 1 project.
  * 2. The imported table must be in the same account and region as this construct.
- * 3. The imported table properties must match the corresponding table properties specified in this construct.
- *    (AttributeDefinitions, KeySchema, GlobalSecondaryIndexes, BillingModeSummary, ProvisionedThroughput, StreamSpecification, SSEDescription, DeletionProtectionEnabled)
+ * 3. The imported table properties must match the corresponding table properties specified in this construct. (AttributeDefinitions,
+ *    KeySchema, GlobalSecondaryIndexes, BillingModeSummary, ProvisionedThroughput, StreamSpecification, SSEDescription,
+ *    DeletionProtectionEnabled)
  *
- * The imported tables will follow the auth rules defined in this construct.
- * The auth rules of the source Gen 1 project will not apply to the API created by this construct.
- * Ensure the correct auth rules have been set to prevent data exposure.
+ * The imported tables will follow the auth rules defined in this construct. The auth rules of the source Gen 1 project will not apply to
+ * the API created by this construct. Ensure the correct auth rules have been set to prevent data exposure.
  *
  * @experimental Not recommended for production use. This functionality may be changed or removed without warning.
  */
@@ -65,10 +66,12 @@ export interface ImportedAmplifyDynamoDbModelDataSourceStrategy {
   readonly tableName: string;
 }
 
+export type SQLLambdaModelDataSourceStrategy = ExistingSQLDbModelDataSourceStrategy | AuroraDsqlModelDataSourceStrategy;
+
 /**
  * A strategy that creates a Lambda to connect to a pre-existing SQL table to resolve model data.
  */
-export interface SQLLambdaModelDataSourceStrategy {
+export interface ExistingSQLDbModelDataSourceStrategy {
   /**
    * The name of the strategy. This will be used to name the AppSync DataSource itself, plus any associated resources like resolver Lambdas.
    * This name must be unique across all schema definitions in a GraphQL API.
@@ -266,4 +269,37 @@ export interface CustomSqlDataSourceStrategy {
 
   /** The strategy used to create the datasource that will resolve the custom SQL statement. */
   readonly strategy: SQLLambdaModelDataSourceStrategy;
+}
+
+/**
+ * A strategy that creates a new Aurora DSQL cluster with the specified name, and provisions a SQL Lambda to connect to it to resolve model
+ * data.
+ */
+export interface AuroraDsqlModelDataSourceStrategy {
+  /**
+   * The name of the strategy. This will be used to name the Aurora DSQL cluster, the AppSync DataSource, and any associated resources like
+   * resolver Lambdas. This name must be unique across all schema definitions in a GraphQL API.
+   */
+  readonly name: string;
+
+  /**
+   * The type of the SQL database used to process model operations for this definition. Currently only POSTGRES is supported.
+   */
+  readonly dbType: 'POSTGRES';
+
+  /**
+   * The region of the cluster.
+   */
+  readonly region?: string;
+
+  /**
+   * Custom SQL statements. The key is the value of the `references` attribute of the `@sql` directive in the `schema`; the value is the SQL
+   * to be executed.
+   */
+  readonly customSqlStatements?: Record<string, string>;
+
+  /**
+   * The configuration for the provisioned concurrency of the Lambda.
+   */
+  readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
 }

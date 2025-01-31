@@ -1080,14 +1080,14 @@
     uuid "^3.0.0"
 
 "@aws-sdk/client-dsql@^3.738.0":
-  version "3.738.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/client-dsql/-/client-dsql-3.738.0.tgz#97a96d6251810bac937b311b70d721ccf51a6a10"
-  integrity sha512-5hiWjGahmKWU0wrUG20G8YF+z6dUJVikJi2JSnV7gUGSLA+3NtOmZ8FYQXvuLGR20jIKReskb65CDRST17ICmw==
+  version "3.741.0"
+  resolved "https://registry.npmjs.org/@aws-sdk/client-dsql/-/client-dsql-3.741.0.tgz#ca8550d00f691abb5210bc556f5859e7f461c3ff"
+  integrity sha512-Eb54efs87WPwCIIIlBvqG13iT5Jm4wk+dLCRH2JWfxlNRXyO6rWfbECypqowl2YsiBDqBTwY2Cq2TUq40P5PMw==
   dependencies:
     "@aws-crypto/sha256-browser" "5.2.0"
     "@aws-crypto/sha256-js" "5.2.0"
     "@aws-sdk/core" "3.734.0"
-    "@aws-sdk/credential-provider-node" "3.738.0"
+    "@aws-sdk/credential-provider-node" "3.741.0"
     "@aws-sdk/middleware-host-header" "3.734.0"
     "@aws-sdk/middleware-logger" "3.734.0"
     "@aws-sdk/middleware-recursion-detection" "3.734.0"
@@ -3058,10 +3058,10 @@
     "@smithy/types" "^3.7.0"
     tslib "^2.6.2"
 
-"@aws-sdk/credential-provider-ini@3.734.0":
-  version "3.734.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/credential-provider-ini/-/credential-provider-ini-3.734.0.tgz#5769ae28cd255d4fc946799c0273b4af6f2f12bb"
-  integrity sha512-HEyaM/hWI7dNmb4NhdlcDLcgJvrilk8G4DQX6qz0i4pBZGC2l4iffuqP8K6ZQjUfz5/6894PzeFuhTORAMd+cg==
+"@aws-sdk/credential-provider-ini@3.741.0":
+  version "3.741.0"
+  resolved "https://registry.npmjs.org/@aws-sdk/credential-provider-ini/-/credential-provider-ini-3.741.0.tgz#cfe37d5028dc636e49f044f825b05de087f208c4"
+  integrity sha512-/XvnVp6zZXsyUlP1FtmspcWnd+Z1u2WK0wwzTE/x277M0oIhAezCW79VmcY4jcDQbYH+qMbtnBexfwgFDARxQg==
   dependencies:
     "@aws-sdk/core" "3.734.0"
     "@aws-sdk/credential-provider-env" "3.734.0"
@@ -3161,14 +3161,14 @@
     "@smithy/types" "^3.7.0"
     tslib "^2.6.2"
 
-"@aws-sdk/credential-provider-node@3.738.0":
-  version "3.738.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/credential-provider-node/-/credential-provider-node-3.738.0.tgz#0a470fc4d2e791c26da57261b8b14f07de43cd74"
-  integrity sha512-3MuREsazwBxghKb2sQQHvie+uuK4dX4/ckFYiSoffzJQd0YHxaGxf8cr4NOSCQCUesWu8D3Y0SzlnHGboVSkpA==
+"@aws-sdk/credential-provider-node@3.741.0":
+  version "3.741.0"
+  resolved "https://registry.npmjs.org/@aws-sdk/credential-provider-node/-/credential-provider-node-3.741.0.tgz#29e42e9c4f1be5c3bfa05a10998d6431a432f936"
+  integrity sha512-iz/puK9CZZkZjrKXX2W+PaiewHtlcD7RKUIsw4YHFyb8lrOt7yTYpM6VjeI+T//1sozjymmAnnp1SST9TXApLQ==
   dependencies:
     "@aws-sdk/credential-provider-env" "3.734.0"
     "@aws-sdk/credential-provider-http" "3.734.0"
-    "@aws-sdk/credential-provider-ini" "3.734.0"
+    "@aws-sdk/credential-provider-ini" "3.741.0"
     "@aws-sdk/credential-provider-process" "3.734.0"
     "@aws-sdk/credential-provider-sso" "3.734.0"
     "@aws-sdk/credential-provider-web-identity" "3.734.0"
@@ -9363,7 +9363,7 @@ aws-appsync@^4.1.1:
     url "^0.11.0"
     uuid "3.x"
 
-aws-cdk-lib@2.158.0, aws-cdk-lib@2.168.0, aws-cdk-lib@^2.168.0, aws-cdk-lib@~2.129.0:
+aws-cdk-lib@2.168.0, aws-cdk-lib@^2.168.0, aws-cdk-lib@~2.129.0:
   version "2.173.2"
   resolved "https://registry.yarnpkg.com/aws-cdk-lib/-/aws-cdk-lib-2.173.2.tgz#9e51332973163eb0d0a89cb67973a89b75c5f0b1"
   integrity sha512-cL9+z8Pl3VZGoO7BwdsrFAOeud/vSl3at7OvmhihbNprMN15XuFUx/rViAU5OI1m92NbV4NBzYSLbSeCwYLNyw==

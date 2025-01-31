@@ -6,75 +6,78 @@ import {
   SQLLambdaResourceNames,
   getImportedRDSTypeFromStrategyDbType,
   getResourceNamesForStrategy,
-  isExistingSQLDbModelDataSourceStrategy,
+  isAuroraDsqlModelDataSourceStrategy,
 } from '@aws-amplify/graphql-transformer-core';
 import {
-  ExistingSQLDbModelDataSourceStrategy,
-  isSqlModelDataSourceSecretsManagerDbConnectionConfig,
-  isSqlModelDataSourceSsmDbConnectionConfig,
-  isSqlModelDataSourceSsmDbConnectionStringConfig,
-  isSslCertSsmPathConfig,
   QueryFieldType,
+  SQLLambdaModelDataSourceStrategy,
   TransformerContextProvider,
+  AuroraDsqlModelDataSourceStrategy,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { LambdaDataSource } from 'aws-cdk-lib/aws-appsync';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { ModelVTLGenerator, RDSModelVTLGenerator } from '../resolvers';
 import {
+  createDsqlRole,
   createLayerVersionCustomResource,
   createRdsLambda,
-  createRdsLambdaRole,
   createRdsPatchingLambda,
   createRdsPatchingLambdaRole,
+  createSNSTopicARNCustomResource,
+  CredentialStorageMethod,
   setRDSLayerMappings,
   setRDSSNSTopicMappings,
-  CredentialStorageMethod,
-  createSNSTopicARNCustomResource,
-  getSsmEndpoint,
 } from '../resolvers/rds';
+import { AmplifyDatabase } from './amplify-database-construct';
 import { ModelResourceGenerator } from './model-resource-generator';
+
+// TODO: Refactor common pieces between this and the RdsModelResourceGenerator into a common base class
 
 /**
  * An implementation of ModelResourceGenerator responsible for generated CloudFormation resources
- * for models backed by an RDS data source
+ * for models backed by an Aurora DSQL data source
  */
-export class RdsModelResourceGenerator extends ModelResourceGenerator {
-  protected readonly generatorType = 'RdsModelResourceGenerator';
+export class DsqlModelResourceGenerator extends ModelResourceGenerator {
+  protected generatorType = 'DsqlModelResourceGenerator';
 
   /**
-   * Generates the AWS resources required for the data source. By default, this will generate resources for SQL data source(s) in the
-   * context's `dataSourceStrategies` and `customSqlDataSourceStrategies`, but the generator can be invoked independently to support schemas
-   * with custom SQL directives but no models.
+   * Generates the AWS resources required for the data source. By default, this will generate:
+   * - An Aurora DSQL cluster
+   * - A SQL Lambda to allow AppSync to resolve GraphQL operations against the cluster using a request/response pattern
+   * - Resources for SQL data source(s) in the context's `dataSourceStrategies` and `customSqlDataSourceStrategies`
+   *
+   * The generator can also be invoked independently to support schemas with custom SQL directives but no models.
+   *
    * @param context the TransformerContextProvider
    * @param strategyOverride an optional override for the SQL database strategy to generate resources for.
    */
-  generateResources(context: TransformerContextProvider, strategyOverride?: ExistingSQLDbModelDataSourceStrategy): void {
+  generateResources(context: TransformerContextProvider, strategyOverride?: AuroraDsqlModelDataSourceStrategy): void {
     if (!this.isEnabled()) {
       this.generateResolvers(context);
       this.setFieldMappingResolverReferences(context);
       return;
     }
 
-    const strategies: Record<string, ExistingSQLDbModelDataSourceStrategy> = {};
+    const strategies: Record<string, AuroraDsqlModelDataSourceStrategy> = {};
     if (strategyOverride) {
       strategies[strategyOverride.name] = strategyOverride;
     } else {
-      const dataSourceStrategies = Object.values(context.dataSourceStrategies).filter(isExistingSQLDbModelDataSourceStrategy);
+      const dataSourceStrategies = Object.values(context.dataSourceStrategies).filter(isAuroraDsqlModelDataSourceStrategy);
       dataSourceStrategies.forEach((strategy) => (strategies[strategy.name] = strategy));
       const sqlDirectiveDataSourceStrategies =
-        context.sqlDirectiveDataSourceStrategies?.map((dss) => dss.strategy).filter(isExistingSQLDbModelDataSourceStrategy) ?? [];
+        context.sqlDirectiveDataSourceStrategies?.map((dss) => dss.strategy).filter(isAuroraDsqlModelDataSourceStrategy) ?? [];
       sqlDirectiveDataSourceStrategies.forEach((strategy) => (strategies[strategy.name] = strategy));
     }
 
     // Unexpected, since we invoke the generateResources in response to generators that are initialized during a scan of models and custom
     // SQL, but we'll be defensive here.
     if (Object.keys(strategies).length === 0) {
-      throw new Error('No Existing SQL datasource types are detected. This is an unexpected error.');
+      throw new Error('No Aurora SQL datasource types are detected. This is an unexpected error.');
     }
 
     const modelStrategyMatches = (model: ObjectTypeDefinitionNode, strategyName: string): boolean => {
       const strategyFromContext = context.dataSourceStrategies[model.name.value];
-      if (isExistingSQLDbModelDataSourceStrategy(strategyFromContext)) {
+      if (isAuroraDsqlModelDataSourceStrategy(strategyFromContext)) {
         return strategyFromContext.name === strategyName;
       } else {
         return false;
@@ -96,67 +99,46 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
     this.setFieldMappingResolverReferences(context);
   }
 
-  private generateDataSourceAndResourcesForStrategy = (
+  protected generateDsqlCluster = (context: TransformerContextProvider, strategy: SQLLambdaModelDataSourceStrategy): AmplifyDatabase => {
+    const resourceNames = getResourceNamesForStrategy(strategy);
+    const databaseScope = context.stackManager.getScopeFor(resourceNames.auroraDsqlCluster);
+    return new AmplifyDatabase(databaseScope, resourceNames.auroraDsqlCluster, {
+      name: strategy.name,
+    });
+  };
+
+  protected generateDataSourceAndResourcesForStrategy = (
     context: TransformerContextProvider,
-    strategy: ExistingSQLDbModelDataSourceStrategy,
+    strategy: SQLLambdaModelDataSourceStrategy,
   ): LambdaDataSource => {
     const resourceNames = getResourceNamesForStrategy(strategy);
 
-    const dbType = strategy.dbType;
-    const engine = getImportedRDSTypeFromStrategyDbType(dbType);
-    const dbConnectionConfig = strategy.dbConnectionConfig;
-    const secretEntry = strategy.dbConnectionConfig;
+    const dsqlCluster = this.generateDsqlCluster(context, strategy);
+
     const lambdaRoleScope = context.stackManager.getScopeFor(resourceNames.sqlLambdaExecutionRole, resourceNames.sqlStack);
     const lambdaScope = context.stackManager.getScopeFor(resourceNames.sqlLambdaFunction, resourceNames.sqlStack);
 
-    const sslCertConfig = strategy.dbConnectionConfig.sslCertConfig;
-    const sslCertSsmPath = isSslCertSsmPathConfig(sslCertConfig) ? sslCertConfig.ssmPath : undefined;
-
-    const layerVersionArn = resolveLayerVersion(lambdaScope, context, resourceNames);
-
-    const role = createRdsLambdaRole(
+    const clusterIdentifier = dsqlCluster.resources.databaseCluster.identifier;
+    const clusterArn = dsqlCluster.resources.databaseCluster.arn;
+    const role = createDsqlRole(
       context.resourceHelper.generateIAMRoleName(resourceNames.sqlLambdaExecutionRole),
       lambdaRoleScope,
-      dbConnectionConfig,
+      clusterArn,
       resourceNames,
-      sslCertSsmPath,
     );
+
+    const dbType = strategy.dbType;
+    const engine = getImportedRDSTypeFromStrategyDbType(dbType);
+
+    const layerVersionArn = resolveLayerVersion(lambdaScope, context, resourceNames);
 
     const environment: { [key: string]: string } = {
       engine,
     };
-    let credentialStorageMethod;
-    if (isSqlModelDataSourceSsmDbConnectionConfig(secretEntry)) {
-      environment.CREDENTIAL_STORAGE_METHOD = 'SSM';
-      environment.username = secretEntry.usernameSsmPath;
-      environment.password = secretEntry.passwordSsmPath;
-      environment.host = secretEntry.hostnameSsmPath;
-      environment.port = secretEntry.portSsmPath;
-      environment.database = secretEntry.databaseNameSsmPath;
-      credentialStorageMethod = CredentialStorageMethod.SSM;
-    } else if (isSqlModelDataSourceSecretsManagerDbConnectionConfig(secretEntry)) {
-      environment.CREDENTIAL_STORAGE_METHOD = 'SECRETS_MANAGER';
-      environment.secretArn = secretEntry.secretArn;
-      environment.port = secretEntry.port.toString();
-      environment.database = secretEntry.databaseName;
-      environment.host = secretEntry.hostname;
-      credentialStorageMethod = CredentialStorageMethod.SECRETS_MANAGER;
-    } else if (isSqlModelDataSourceSsmDbConnectionStringConfig(secretEntry)) {
-      environment.CREDENTIAL_STORAGE_METHOD = 'SSM';
-      environment.connectionString = JSON.stringify(secretEntry.connectionUriSsmPath);
-      credentialStorageMethod = CredentialStorageMethod.SSM;
-    }
 
-    // Note that the JSON.stringify operation will turn a single string value into a JSON string inside double-quotes:
-    // - sslCertSsmPath = 'foo'; // env.SSL_CERT_SSM_PATH = '"foo"';
-    // - sslCertSsmPath = ['foo', 'bar']; // env.SSL_CERT_SSM_PATH = '["foo","bar"]';
-    //
-    // Note also that we set the SSM endpoint in the Lambda environment since it is required to allow the Lambda to retrieve the custom SSL
-    // cert, even if the rest of the DB configuration is stored in Secrets Manager.
-    if (sslCertSsmPath) {
-      environment.SSL_CERT_SSM_PATH = JSON.stringify(sslCertSsmPath);
-      environment.SSM_ENDPOINT = getSsmEndpoint(lambdaScope, resourceNames, strategy.vpcConfiguration);
-    }
+    environment.CREDENTIAL_STORAGE_METHOD = 'AURORA_DSQL';
+    environment.CLUSTER_IDENTIFIER = clusterIdentifier;
+    const credentialStorageMethod = CredentialStorageMethod.AURORA_DSQL;
 
     const lambda = createRdsLambda(
       lambdaScope,
@@ -166,7 +148,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       resourceNames,
       credentialStorageMethod,
       environment,
-      strategy.vpcConfiguration,
+      undefined,
       strategy.sqlLambdaProvisionedConcurrencyConfig,
     );
 

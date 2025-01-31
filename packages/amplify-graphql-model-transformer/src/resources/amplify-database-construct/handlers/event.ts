@@ -74,6 +74,10 @@ export const handler = async (event: CloudFormationCustomResourceEvent): Promise
         },
       };
     }
+
+    default: {
+      throw new Error(`Unsupported request type ${(event as any).RequestType}`);
+    }
   }
 };
 

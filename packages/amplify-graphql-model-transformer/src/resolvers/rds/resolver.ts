@@ -41,7 +41,7 @@ import {
   isSqlModelDataSourceSsmDbConnectionStringConfig,
   RDSSNSTopicMapping,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Effect, IRole, ManagedPolicy, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IFunction, LayerVersion, Runtime, Alias, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { CfnVPCEndpoint } from 'aws-cdk-lib/aws-ec2';
@@ -59,6 +59,7 @@ export type OPERATIONS = 'CREATE' | 'UPDATE' | 'DELETE' | 'GET' | 'LIST' | 'SYNC
 export enum CredentialStorageMethod {
   SSM = 'SSM',
   SECRETS_MANAGER = 'SECRETS_MANAGER',
+  AURORA_DSQL = 'AURORA_DSQL',
 }
 
 const OPERATION_KEY = '__operation';
@@ -150,6 +151,8 @@ export const createRdsLambda = (
     }
     lambdaEnvironment.SECRETS_MANAGER_ENDPOINT = secretsManagerEndpoint;
     lambdaEnvironment.CREDENTIAL_STORAGE_METHOD = CredentialStorageMethod.SECRETS_MANAGER;
+  } else if (credentialStorageMethod === CredentialStorageMethod.AURORA_DSQL) {
+    lambdaEnvironment.CREDENTIAL_STORAGE_METHOD = CredentialStorageMethod.AURORA_DSQL;
   } else {
     throw new Error('Unable to determine if SSM or Secrets Manager should be used for credentials.');
   }
@@ -372,6 +375,35 @@ export const createRdsPatchingLambda = (
     scope,
     sqlLambdaVpcConfig,
   );
+};
+
+/**
+ * Create a LambdaExecutionRole suitable for querying a DSQL data source. The role will be used by the Lambda to create a signed token for
+ * connecting to the cluster at runtime. The cluster identifier is stored in the Lambda environment variable.
+ */
+export const createDsqlRole = (roleName: string, scope: Construct, clusterArn: string, resourceNames: SQLLambdaResourceNames): IRole => {
+  const role = new Role(scope, resourceNames.sqlLambdaExecutionRole, {
+    assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+    roleName,
+    managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
+  });
+
+  const policyStatements = [
+    new PolicyStatement({
+      actions: ['dsql:DbConnect'],
+      effect: Effect.ALLOW,
+      resources: [clusterArn],
+    }),
+  ];
+
+  role.attachInlinePolicy(
+    new Policy(scope, resourceNames.sqlLambdaExecutionRolePolicy, {
+      statements: policyStatements,
+      policyName: `${roleName}Policy`,
+    }),
+  );
+
+  return role;
 };
 
 /**

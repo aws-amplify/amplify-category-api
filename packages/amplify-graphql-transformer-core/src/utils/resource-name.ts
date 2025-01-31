@@ -52,6 +52,9 @@ export const getResourceName = (scope: Construct): string | undefined => {
  * Names for the resources created for a SQL-based ModelDataSourceStrategy.
  */
 export interface SQLLambdaResourceNames {
+  /** The Logical ID of the Aurora DSQL cluster created for {@link AuroraDsqlModelDataSourceStrategy} data sources */
+  auroraDsqlCluster: string;
+
   /** The Logical ID of the alias created if a customer specifies a provisioned concurrency configuration */
   sqlLambdaAliasLogicalId: string;
 
@@ -87,8 +90,8 @@ export interface SQLLambdaResourceNames {
   sqlLayerVersionMapping: string;
 
   /**
-   * A mapping that stores Patching SNS Topic ARNs by region. The Gen1 resource generator updates this map at deployment time by retrieving the
-   * latest manifests from an S3 bucket.
+   * A mapping that stores Patching SNS Topic ARNs by region. The Gen1 resource generator updates this map at deployment time by retrieving
+   * the latest manifests from an S3 bucket.
    */
   sqlSNSTopicArnMapping: string;
 
@@ -146,6 +149,7 @@ export const getResourceNamesForStrategy = (strategy: SQLLambdaModelDataSourceSt
 export const getResourceNamesForStrategyName = (strategyName: string): SQLLambdaResourceNames => {
   const sqlLambdaFunction = `SQLFunction${strategyName}`;
   const resourceNames: SQLLambdaResourceNames = {
+    auroraDsqlCluster: `DsqlCluster${strategyName}`,
     sqlLambdaAliasLogicalId: `${sqlLambdaFunction}ProvConcurAlias`,
     sqlLambdaAliasName: 'PCAlias',
     sqlLambdaDataSource: `SQLLambdaDataSource${strategyName}`,

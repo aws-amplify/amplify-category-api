@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 import { CfnOutput, CustomResource, Duration, Stack } from 'aws-cdk-lib';
 import { Provider } from 'aws-cdk-lib/custom-resources';
 import { ManagedPolicy, PolicyDocument, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { AmplifyDatabaseProps, AmplifyDatabaseResources } from './types';
 
@@ -49,16 +50,28 @@ export class AmplifyDatabase extends Construct {
       },
     });
 
+    const dsqlLayerVersion = LayerVersion.fromLayerVersionArn(
+      this,
+      'DsqlLayerVersion',
+      'arn:aws:lambda:us-east-1:779656175277:layer:nodejs-aws-sdk-layer:1',
+    );
+
     const provider = new Provider(this, 'AmplifyDatabaseProvider', {
-      onEventHandler: new NodejsFunction(this, 'AmplifyDatabaseProviderHandler', {
-        entry: path.resolve(__dirname, 'handlers', 'event.ts'),
+      onEventHandler: new NodejsFunction(this, 'AmplifyDatabaseProviderEventHandler', {
+        entry: path.join(__dirname, 'handlers', 'event.js'),
+        handler: 'handler',
         role: eventHandlerRole,
-        timeout: Duration.seconds(30),
+        runtime: Runtime.NODEJS_20_X,
+        timeout: Duration.minutes(1),
+        layers: [dsqlLayerVersion],
       }),
-      isCompleteHandler: new NodejsFunction(this, 'AmplifyDatabaseProviderCompleteHandler', {
-        entry: path.resolve(__dirname, 'handlers', 'is-complete.ts'),
+      isCompleteHandler: new NodejsFunction(this, 'AmplifyDatabaseProviderIsCompleteHandler', {
+        entry: path.join(__dirname, 'handlers', 'is-complete.js'),
+        handler: 'handler',
         role: isCompleteHandlerRole,
-        timeout: Duration.seconds(30),
+        runtime: Runtime.NODEJS_20_X,
+        timeout: Duration.minutes(1),
+        layers: [dsqlLayerVersion],
       }),
     });
 
@@ -69,6 +82,7 @@ export class AmplifyDatabase extends Construct {
         name: props.name,
         tags: props.tags,
       },
+      resourceType: 'Custom::AmplifyDatabase',
     });
 
     this.resources = {

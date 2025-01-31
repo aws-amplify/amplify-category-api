@@ -10,7 +10,8 @@ export type ModelDataSourceStrategy =
   | DefaultDynamoDbModelDataSourceStrategy
   | AmplifyDynamoDbModelDataSourceStrategy
   | ImportedAmplifyDynamoDbModelDataSourceStrategy
-  | SQLLambdaModelDataSourceStrategy;
+  | ExistingSQLDbModelDataSourceStrategy
+  | AuroraDsqlModelDataSourceStrategy;
 
 export interface ModelDataSourceStrategyBase {
   dbType: ModelDataSourceStrategyDbType;
@@ -56,13 +57,15 @@ export interface ImportedAmplifyDynamoDbModelDataSourceStrategy {
   readonly tableName: string;
 }
 
+export type SQLLambdaModelDataSourceStrategy = ExistingSQLDbModelDataSourceStrategy | AuroraDsqlModelDataSourceStrategy;
+
 /**
  * A strategy that creates a Lambda to connect to a pre-existing SQL table to resolve model data.
  *
  * Note: The implementation type is different from the interface type: the interface type contains the custom SQL statements that are
  * reference by the `@sql` `reference` attribute, while the implementation moves those into the SqlDirectiveDataSourceStrategy type.
  */
-export interface SQLLambdaModelDataSourceStrategy extends ModelDataSourceStrategyBase {
+export interface ExistingSQLDbModelDataSourceStrategy extends ModelDataSourceStrategyBase {
   /**
    * The name of the strategy. This will be used to name the AppSync DataSource itself, plus any associated resources like resolver Lambdas.
    * This name must be unique across all schema definitions in a GraphQL API.
@@ -263,6 +266,33 @@ export interface SqlDirectiveDataSourceStrategy {
 }
 
 /**
+ * A strategy that creates a new Aurora DSQL cluster with the specified name, and provisions a SQL Lambda to connect to it to resolve model
+ * data.
+ */
+export interface AuroraDsqlModelDataSourceStrategy {
+  /**
+   * The name of the strategy. This will be used to name the Aurora DSQL cluster, the AppSync DataSource, and any associated resources like
+   * resolver Lambdas. This name must be unique across all schema definitions in a GraphQL API.
+   */
+  readonly name: string;
+
+  /**
+   * The type of the SQL database used to process model operations for this definition. Currently only POSTGRES is supported.
+   */
+  readonly dbType: 'POSTGRES';
+
+  /**
+   * The region of the cluster.
+   */
+  readonly region?: string;
+
+  /**
+   * The configuration for the provisioned concurrency of the Lambda.
+   */
+  readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
+}
+
+/**
  * Defines types that vend a dataSourceStrategies and optional customSqlDataSourceStrategies field. Primarily used for transformer context.
  */
 export interface DataSourceStrategiesProvider {
@@ -304,8 +334,8 @@ export interface RDSLayerMappingProvider {
 }
 
 /**
- * Defines types that vend an rdsSnsTopicMapping field. This is used solely for the Gen1 CLI import API flow, since wiring the custom resource
- * provider used by the CDK isn't worth the cost. TODO: Remove this once we remove SQL imports from Gen1 CLI.
+ * Defines types that vend an rdsSnsTopicMapping field. This is used solely for the Gen1 CLI import API flow, since wiring the custom
+ * resource provider used by the CDK isn't worth the cost. TODO: Remove this once we remove SQL imports from Gen1 CLI.
  */
 export interface RDSSNSTopicMappingProvider {
   rdsSnsTopicMapping?: RDSSNSTopicMapping;

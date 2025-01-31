@@ -1,7 +1,9 @@
 import {
   AmplifyDynamoDbModelDataSourceStrategy,
+  AuroraDsqlModelDataSourceStrategy,
   DataSourceStrategiesProvider,
   DefaultDynamoDbModelDataSourceStrategy,
+  ExistingSQLDbModelDataSourceStrategy,
   ImportedAmplifyDynamoDbModelDataSourceStrategy,
   ModelDataSourceStrategy,
   ModelDataSourceStrategyDbType,
@@ -179,16 +181,33 @@ export const isPostgresDbType = (dbType: ModelDataSourceStrategyDbType): dbType 
 };
 
 /**
- * Type predicate that returns true if `obj` is a SQLLambdaModelDataSourceStrategy
+ * Type predicate that returns true if `strategy` is a SQLLambdaModelDataSourceStrategy
  */
 export const isSqlStrategy = (strategy: ModelDataSourceStrategy): strategy is SQLLambdaModelDataSourceStrategy => {
+  return isExistingSQLDbModelDataSourceStrategy(strategy) || isAuroraDsqlModelDataSourceStrategy(strategy);
+};
+
+/**
+ * Type predicate that returns true if `strategy` is an ExistingSQLDbModelDataSourceStrategy
+ */
+export const isExistingSQLDbModelDataSourceStrategy = (
+  strategy: ModelDataSourceStrategy,
+): strategy is ExistingSQLDbModelDataSourceStrategy => {
   return (
     isSqlDbType(strategy.dbType) && typeof (strategy as any).name === 'string' && typeof (strategy as any).dbConnectionConfig === 'object'
   );
 };
 
 /**
- * Provides the data source strategy for a given model
+ * Type predicate that returns true if `strategy` is an AuroraDsqlModelDataSourceStrategy
+ */
+export const isAuroraDsqlModelDataSourceStrategy = (strategy: ModelDataSourceStrategy): strategy is AuroraDsqlModelDataSourceStrategy => {
+  return isSqlDbType(strategy.dbType) && typeof (strategy as any).name === 'string' && typeof (strategy as any).region === 'string';
+};
+
+/**
+ * Return the data source strategy for a given model. If the specified typename is a builtin type (Query, Mutation, Subscription), then
+ * return the default DDB_DB_TYPE.
  * @param ctx Transformer Context
  * @param typename Model name
  * @returns ModelDataSourceStrategyDbType
