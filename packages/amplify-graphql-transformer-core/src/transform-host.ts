@@ -12,6 +12,7 @@ import {
 import * as util from 'util';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as assets from 'aws-cdk-lib/aws-s3-assets';
 import {
   BaseDataSource,
   CfnDataSource,
@@ -87,12 +88,16 @@ export class DefaultTransformHost implements TransformHostProvider {
   };
 
   createResourceManagerResource = (context: any): void => {
-    fs.writeFileSync(path.join(__dirname, 'resolver-manager', 'computed-resources.json'), JSON.stringify(this.resources, null, 4));
+    const customResourceStack = context.stackManager.getScopeFor('ResolverManagerStack', 'ResolverManagerStack');
+    const resolverCodeAssetFilePath = path.join(__dirname, 'resolver-manager', 'computed-resources.json');
+    fs.writeFileSync(resolverCodeAssetFilePath, JSON.stringify(this.resources, null, 4));
+    const resolverCodeAsset = new assets.Asset(customResourceStack, 'ResolverCodeAsset', {
+      path: resolverCodeAssetFilePath,
+    });
 
     const lambdaCodePath = path.join(__dirname, '..', 'lib', 'resolver-manager');
     console.log(path.normalize(lambdaCodePath));
 
-    const customResourceStack = context.stackManager.getScopeFor('ResolverManagerStack', 'ResolverManagerStack');
     const serviceTokenHandler = new Provider(customResourceStack, 'AmplifyResolverManagerLogicalId', {
       onEventHandler: new Function(this.api, 'AmplifyResolverManagerOnEvent', {
         code: Code.fromAsset(lambdaCodePath),
@@ -100,6 +105,7 @@ export class DefaultTransformHost implements TransformHostProvider {
         runtime: Runtime.NODEJS_18_X,
         environment: {
           API_ID: this.api.apiId,
+          resolverCodeAsset: resolverCodeAsset.s3ObjectUrl,
         },
         timeout: Duration.minutes(10),
         initialPolicy: [
@@ -108,9 +114,15 @@ export class DefaultTransformHost implements TransformHostProvider {
             actions: ['appsync:*'],
             resources: ['*'],
           }),
+          new PolicyStatement({
+            effect: Effect.ALLOW,
+            actions: ['s3:GetObject'],
+            resources: ['*'],
+          }),
         ],
       }),
     });
+    serviceTokenHandler.node.addDependency(resolverCodeAsset);
 
     const customResolverManager = new cdk.CustomResource(customResourceStack, 'ResolverManager', {
       resourceType: 'Custom::AmplifyResolverManager',

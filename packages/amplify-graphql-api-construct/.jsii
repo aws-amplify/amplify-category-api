@@ -50,7 +50,7 @@
     "@aws-sdk/middleware-logger": "3.609.0",
     "@aws-sdk/middleware-recursion-detection": "3.620.0",
     "@aws-sdk/middleware-user-agent": "3.637.0",
-    "@aws-sdk/nested-clients": "3.637.0",
+    "@aws-sdk/nested-clients": "3.731.0",
     "@aws-sdk/region-config-resolver": "3.614.0",
     "@aws-sdk/token-providers": "3.614.0",
     "@aws-sdk/types": "3.609.0",
@@ -9406,5 +9406,5 @@
     }
   },
   "version": "1.18.5",
-  "fingerprint": "QGrtSvgr5eiysquhmkfsT9TC2qbuqZHekoBj458kE7A="
+  "fingerprint": "fWdAafw2qc8FpvyJa5kbsUev1s85yidHHfX8IO4BHp8="
 }

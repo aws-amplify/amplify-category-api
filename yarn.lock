@@ -4104,7 +4104,7 @@
     "@smithy/types" "^4.0.0"
     tslib "^2.6.2"
 
-"@aws-sdk/nested-clients@3.637.0", "@aws-sdk/nested-clients@3.731.0":
+"@aws-sdk/nested-clients@3.731.0":
   version "3.731.0"
   resolved "https://registry.npmjs.org/@aws-sdk/nested-clients/-/nested-clients-3.731.0.tgz#7658390ac1e51c1a934192f01d728db09c1d16d0"
   integrity sha512-ePn94LgdOZpyZhOVAcYP6F7xgxvPHsoj8LiSuIcrrnxpeArOCt+cZeCdqtaLpoTjufvCPtj6536jY6OzynG56g==

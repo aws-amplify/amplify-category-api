@@ -8,11 +8,12 @@ import {
   CreateResolverCommand,
   CreateFunctionCommand,
 } from '@aws-sdk/client-appsync';
+import { S3Client, GetObjectCommand, NoSuchKey } from '@aws-sdk/client-s3';
 
 const functionIdValueMap: Record<string, string> = {};
 
 export const handler = async (event: any): Promise<any> => {
-  const metadata: any = JSON.parse(fs.readFileSync('./computed-resources.json', 'utf8'));
+  const metadata: any = await getComputedResources();
   // for (const [k, v] of Object.entries(metadata)) {
   //   if ((v as any).type !== 'Function') {
   //     continue;
@@ -125,3 +126,94 @@ const createResolvers = async (metadata: any): Promise<void> => {
     await client.send(createResolverCommand);
   }
 };
+
+function parseS3Url(s3Url: string): { bucket: string; key: string; versionId?: string } {
+  try {
+    const url = new URL(s3Url);
+
+    // Check if it's a valid s3:// URL
+    if (url.protocol !== 's3:') {
+      throw new Error(`Invalid S3 URL: ${s3Url}`);
+    }
+
+    // Get version ID if present
+    const versionId = url.searchParams.get('versionId') ?? undefined;
+
+    return {
+      bucket: url.hostname,
+      key: url.pathname.slice(1), // Remove leading slash
+      ...(versionId && { versionId }),
+    };
+  } catch (err) {
+    throw new Error(`Invalid S3 URL: ${s3Url}`);
+  }
+}
+
+// async function getJsonFromS3<T>(bucket: string, key: string): Promise<T> {
+//   const s3 = new S3();
+
+//   try {
+//     const object = await s3.getObject({
+//       Bucket: bucket,
+//       Key: key,
+//     });
+
+//     if (!object.Body) {
+//       throw new Error('Empty response body');
+//     }
+
+//     try {
+//       return JSON.parse(object.Body.toString()) as T;
+//     } catch (parseError) {
+//       console.log('Failed to parse JSON');
+//       console.log(object.Body);
+//       console.log(object.Body.toString());
+//       return {} as T;
+//       // throw new Error(`Failed to parse JSON: ${parseError.message}`);
+//     }
+//   } catch (error) {
+//     if (error instanceof NoSuchKey) {
+//       throw new Error(`File not found in bucket ${bucket} with key ${key}`);
+//     }
+//     throw error;
+//   }
+// }
+
+async function getJsonFromS3<T>(bucket: string, key: string): Promise<T> {
+  const client = new S3Client({});
+
+  try {
+    const response = await client.send(
+      new GetObjectCommand({
+        Bucket: bucket,
+        Key: key,
+      }),
+    );
+
+    if (!response.Body) {
+      throw new Error('Empty response body');
+    }
+
+    const bodyContents = await response.Body.transformToString();
+
+    try {
+      return JSON.parse(bodyContents) as T;
+    } catch (parseError) {
+      console.log('Failed to parse JSON');
+      console.log(parseError);
+      return {} as T;
+      // throw new Error(`Failed to parse JSON: ${parseError.message}`);
+    }
+  } catch (error) {
+    if (error instanceof NoSuchKey) {
+      throw new Error(`File not found in bucket ${bucket} with key ${key}`);
+    }
+    throw error;
+  }
+}
+
+async function getComputedResources(): Promise<any> {
+  const { bucket, key } = parseS3Url(process.env.resolverCodeAsset!);
+  const computedResources = await getJsonFromS3<any>(bucket, key);
+  return computedResources;
+}
