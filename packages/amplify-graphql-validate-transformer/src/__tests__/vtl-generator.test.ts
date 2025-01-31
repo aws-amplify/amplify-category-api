@@ -67,7 +67,9 @@ describe('vtl-generator', () => {
     });
 
     it('throws error for unknown validation types', () => {
-      expect(() => makeValidationSnippet('field', 'unknownValidationType', 'validationValue', 'error')).toThrow('Unsupported validation type: unknownValidationType');
+      expect(() => makeValidationSnippet('field', 'unknownValidationType', 'validationValue', 'error')).toThrow(
+        'Unsupported validation type: unknownValidationType',
+      );
     });
 
     it('includes validation details in block comment', () => {
