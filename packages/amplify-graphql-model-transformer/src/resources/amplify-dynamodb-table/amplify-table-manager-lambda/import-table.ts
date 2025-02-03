@@ -50,7 +50,9 @@ export const validateImportedTableProperties = (
   ): void => {
     if (!isEqual(imported, expected)) {
       errors.push(
-        `${propertyName} does not match the expected value.\nActual: ${JSON.stringify(imported)}\nExpected: ${JSON.stringify(expected)}`,
+        `${propertyName} does not match the expected value.\nImported Value: ${JSON.stringify(imported)}\nExpected: ${JSON.stringify(
+          expected,
+        )}`,
       );
     }
   };

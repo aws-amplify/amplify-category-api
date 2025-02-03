@@ -358,7 +358,7 @@ describe('import-table', () => {
           .toThrowErrorMatchingInlineSnapshot(`
           "Imported table properties did not match the expected table properties.
           AttributeDefinitions does not match the expected value.
-          Actual: [{\\"AttributeName\\":\\"todoId\\",\\"AttributeType\\":\\"S\\"},{\\"AttributeName\\":\\"name\\",\\"AttributeType\\":\\"S\\"},{\\"AttributeName\\":\\"name2\\",\\"AttributeType\\":\\"S\\"}]
+          Imported Value: [{\\"AttributeName\\":\\"todoId\\",\\"AttributeType\\":\\"S\\"},{\\"AttributeName\\":\\"name\\",\\"AttributeType\\":\\"S\\"},{\\"AttributeName\\":\\"name2\\",\\"AttributeType\\":\\"S\\"}]
           Expected: [{\\"AttributeName\\":\\"todoId\\",\\"AttributeType\\":\\"S\\"},{\\"AttributeName\\":\\"differentName\\",\\"AttributeType\\":\\"S\\"},{\\"AttributeName\\":\\"name2\\",\\"AttributeType\\":\\"S\\"}]"
         `);
       });
@@ -396,7 +396,7 @@ describe('import-table', () => {
           .toThrowErrorMatchingInlineSnapshot(`
           "Imported table properties did not match the expected table properties.
           KeySchema does not match the expected value.
-          Actual: [{\\"AttributeName\\":\\"todoId\\",\\"KeyType\\":\\"HASH\\"},{\\"AttributeName\\":\\"name\\",\\"KeyType\\":\\"RANGE\\"}]
+          Imported Value: [{\\"AttributeName\\":\\"todoId\\",\\"KeyType\\":\\"HASH\\"},{\\"AttributeName\\":\\"name\\",\\"KeyType\\":\\"RANGE\\"}]
           Expected: [{\\"AttributeName\\":\\"todoId\\",\\"KeyType\\":\\"HASH\\"},{\\"AttributeName\\":\\"differentName\\",\\"KeyType\\":\\"RANGE\\"}]"
         `);
       });
@@ -450,7 +450,7 @@ describe('import-table', () => {
           .toThrowErrorMatchingInlineSnapshot(`
           "Imported table properties did not match the expected table properties.
           GlobalSecondaryIndexes does not match the expected value.
-          Actual: [{\\"IndexName\\":\\"byName2\\",\\"KeySchema\\":[{\\"AttributeName\\":\\"name2\\",\\"KeyType\\":\\"HASH\\"}],\\"Projection\\":{\\"ProjectionType\\":\\"ALL\\"},\\"ProvisionedThroughput\\":{\\"ReadCapacityUnits\\":5,\\"WriteCapacityUnits\\":5}}]
+          Imported Value: [{\\"IndexName\\":\\"byName2\\",\\"KeySchema\\":[{\\"AttributeName\\":\\"name2\\",\\"KeyType\\":\\"HASH\\"}],\\"Projection\\":{\\"ProjectionType\\":\\"ALL\\"},\\"ProvisionedThroughput\\":{\\"ReadCapacityUnits\\":5,\\"WriteCapacityUnits\\":5}}]
           Expected: [{\\"IndexName\\":\\"byName2\\",\\"KeySchema\\":[{\\"AttributeName\\":\\"name2\\",\\"KeyType\\":\\"HASH\\"}],\\"Projection\\":{\\"ProjectionType\\":\\"ALL\\"},\\"ProvisionedThroughput\\":{\\"ReadCapacityUnits\\":5,\\"WriteCapacityUnits\\":10}}]"
         `);
       });
@@ -476,7 +476,7 @@ describe('import-table', () => {
           .toThrowErrorMatchingInlineSnapshot(`
           "Imported table properties did not match the expected table properties.
           BillingModeSummary does not match the expected value.
-          Actual: {\\"BillingMode\\":\\"PROVISIONED\\"}
+          Imported Value: {\\"BillingMode\\":\\"PROVISIONED\\"}
           Expected: {\\"BillingMode\\":\\"PAY_PER_REQUEST\\"}"
         `);
       });
@@ -506,7 +506,7 @@ describe('import-table', () => {
           .toThrowErrorMatchingInlineSnapshot(`
           "Imported table properties did not match the expected table properties.
           ProvisionedThroughput does not match the expected value.
-          Actual: {\\"ReadCapacityUnits\\":5,\\"WriteCapacityUnits\\":5}
+          Imported Value: {\\"ReadCapacityUnits\\":5,\\"WriteCapacityUnits\\":5}
           Expected: {\\"ReadCapacityUnits\\":5,\\"WriteCapacityUnits\\":10}"
         `);
       });
@@ -532,7 +532,7 @@ describe('import-table', () => {
           .toThrowErrorMatchingInlineSnapshot(`
           "Imported table properties did not match the expected table properties.
           StreamSpecification does not match the expected value.
-          Actual: {\\"StreamEnabled\\":true,\\"StreamViewType\\":\\"NEW_AND_OLD_IMAGES\\"}
+          Imported Value: {\\"StreamEnabled\\":true,\\"StreamViewType\\":\\"NEW_AND_OLD_IMAGES\\"}
           Expected: {\\"StreamEnabled\\":false,\\"StreamViewType\\":\\"NEW_AND_OLD_IMAGES\\"}"
         `);
       });
@@ -551,7 +551,7 @@ describe('import-table', () => {
           .toThrowErrorMatchingInlineSnapshot(`
           "Imported table properties did not match the expected table properties.
           SSEDescription does not match the expected value.
-          Actual: undefined
+          Imported Value: undefined
           Expected: {\\"SSEType\\":\\"KMS\\"}"
         `);
       });
@@ -568,7 +568,7 @@ describe('import-table', () => {
           .toThrowErrorMatchingInlineSnapshot(`
           "Imported table properties did not match the expected table properties.
           DeletionProtectionEnabled does not match the expected value.
-          Actual: true
+          Imported Value: true
           Expected: false"
         `);
       });
@@ -589,10 +589,10 @@ describe('import-table', () => {
           .toThrowErrorMatchingInlineSnapshot(`
           "Imported table properties did not match the expected table properties.
           SSEDescription does not match the expected value.
-          Actual: undefined
+          Imported Value: undefined
           Expected: {\\"SSEType\\":\\"KMS\\"}
           DeletionProtectionEnabled does not match the expected value.
-          Actual: true
+          Imported Value: true
           Expected: false"
         `);
       });
