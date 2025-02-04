@@ -1,13 +1,13 @@
-import { unlinkSync, readdirSync } from 'fs';
+import { exec } from 'child_process';
+import { unlinkSync, readdirSync, existsSync, mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { promisify } from 'util';
-import { exec } from 'child_process';
-import { writeFileSync } from 'fs';
 
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { DefaultValueTransformer } from '@aws-amplify/graphql-default-value-transformer';
+
 import { ValidateTransformer } from '..';
-import { DefaultValueTransformer } from '../../../amplify-graphql-default-value-transformer/src';
 import { makeValidationSnippet } from '../vtl-generator';
 
 export const NUMERIC_FIELD_TYPES = ['Int', 'Float'] as const;
@@ -193,16 +193,65 @@ export const setupEvaluateTemplateTest = <T extends string | number, O extends s
   const templateName = `template_${operator}_${testId}.vtl`;
   const contextName = `context_${operator}_${testId}.json`;
 
+  console.log(`Setting up test in directory: ${directory}`);
+
+  // Check if directory exists and log the result
+  if (!existsSync(directory)) {
+    console.log(`Directory does not exist, attempting to create it: ${directory}`);
+    try {
+      mkdirSync(directory, { recursive: true });
+      console.log(`Successfully created directory: ${directory}`);
+    } catch (err) {
+      console.error(`Error creating directory: ${directory}`, err);
+      throw new Error(`Unable to create directory: ${directory}`);
+    }
+  } else {
+    console.log(`Directory exists: ${directory}`);
+  }
+
   // Write template.vtl
   const validationSnippet = makeValidationSnippet('field', operator, threshold, messages[operator]);
-  writeFileSync(join(directory, templateName), validationSnippet);
+  try {
+    writeFileSync(join(directory, templateName), validationSnippet);
+    console.log(`Successfully wrote template: ${templateName}`);
+  } catch (err) {
+    console.error(`Error writing template file: ${templateName}`, err);
+    throw new Error(`Unable to write template: ${templateName}`);
+  }
 
   // Write context.json
   const context = createContext(input);
-  writeFileSync(join(directory, contextName), JSON.stringify(context, null, 2));
+  try {
+    writeFileSync(join(directory, contextName), JSON.stringify(context, null, 2));
+    console.log(`Successfully wrote context: ${contextName}`);
+  } catch (err) {
+    console.error(`Error writing context file: ${contextName}`, err);
+    throw new Error(`Unable to write context: ${contextName}`);
+  }
 
   return { templateName, contextName };
 };
+// export const setupEvaluateTemplateTest = <T extends string | number, O extends string>(
+//   input: T,
+//   operator: O,
+//   threshold: string,
+//   testId: string,
+//   messages: Record<O, string>,
+//   directory: string,
+// ): { templateName: string; contextName: string } => {
+//   const templateName = `template_${operator}_${testId}.vtl`;
+//   const contextName = `context_${operator}_${testId}.json`;
+
+//   // Write template.vtl
+//   const validationSnippet = makeValidationSnippet('field', operator, threshold, messages[operator]);
+//   writeFileSync(join(directory, templateName), validationSnippet);
+
+//   // Write context.json
+//   const context = createContext(input);
+//   writeFileSync(join(directory, contextName), JSON.stringify(context, null, 2));
+
+//   return { templateName, contextName };
+// };
 
 /**
  * Evaluates a mapping template with the given context
