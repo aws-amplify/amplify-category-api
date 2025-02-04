@@ -303,7 +303,7 @@ const getDeletionProtectionEnabledForComparison = (
  * @param tableProperties table properties to sanitize
  * @returns sanitized table properties with array properties sorted
  */
-const sanitizeTableProperties = (tableProperties: TableComparisonProperties): TableComparisonProperties => {
+export const sanitizeTableProperties = (tableProperties: TableComparisonProperties): TableComparisonProperties => {
   const tablePropertiesUndefinedRemoved: TableComparisonProperties = JSON.parse(JSON.stringify(tableProperties));
   if (tablePropertiesUndefinedRemoved.AttributeDefinitions) {
     // The typescript type allows for fields on AttributeDefinition, KeySchemaElement, and GlobalSecondaryIndex to be undefined.

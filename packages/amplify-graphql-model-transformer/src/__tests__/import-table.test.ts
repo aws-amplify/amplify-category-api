@@ -1,9 +1,10 @@
-import { TableDescription } from '@aws-sdk/client-dynamodb';
+import { TableDescription, AttributeDefinition, KeySchemaElement, GlobalSecondaryIndex } from '@aws-sdk/client-dynamodb';
 import {
   getExpectedTableProperties,
   getImportedTableComparisonProperties,
   validateImportedTableProperties,
   TableComparisonProperties,
+  sanitizeTableProperties,
 } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/import-table';
 import {
   extractTableInputFromEvent,
@@ -915,6 +916,93 @@ describe('import-table', () => {
           Imported Value: true
           Expected: false"
         `);
+      });
+    });
+  });
+
+  describe('sanitizeTableProperties', () => {
+    // when adding table properties to the allow-list for comparison, ensure that any array property is sorted
+    test('sorts all array properties', () => {
+      // make all fields on TableComparisonProperties required so that when new properties are added, the test will fail.
+      // This will ensure if a new array property is added, it is also added to this test
+      const tableDescription: Required<TableComparisonProperties> = {
+        AttributeDefinitions: [
+          {
+            AttributeName: 'todoId',
+            AttributeType: 'S',
+          },
+          {
+            AttributeName: 'name',
+            AttributeType: 'S',
+          },
+        ],
+        KeySchema: [
+          {
+            AttributeName: 'todoId',
+            KeyType: 'HASH',
+          },
+        ],
+        GlobalSecondaryIndexes: [
+          {
+            IndexName: 'byName2',
+            KeySchema: [
+              {
+                AttributeName: 'name2',
+                KeyType: 'HASH',
+              },
+              {
+                AttributeName: 'name3',
+                KeyType: 'RANGE',
+              },
+            ],
+            Projection: {
+              ProjectionType: 'ALL',
+            },
+            ProvisionedThroughput: {
+              ReadCapacityUnits: 10,
+              WriteCapacityUnits: 5,
+            },
+          },
+          {
+            IndexName: 'byName',
+            KeySchema: [
+              {
+                AttributeName: 'name',
+                KeyType: 'HASH',
+              },
+            ],
+            Projection: {
+              ProjectionType: 'ALL',
+            },
+            ProvisionedThroughput: {
+              ReadCapacityUnits: 5,
+              WriteCapacityUnits: 5,
+            },
+          },
+        ],
+        BillingModeSummary: {
+          BillingMode: 'PROVISIONED',
+        },
+        ProvisionedThroughput: {
+          ReadCapacityUnits: 5,
+          WriteCapacityUnits: 5,
+        },
+        StreamSpecification: {
+          StreamEnabled: true,
+          StreamViewType: 'NEW_AND_OLD_IMAGES',
+        },
+        SSEDescription: {
+          SSEType: 'KMS',
+        },
+        DeletionProtectionEnabled: false,
+      };
+
+      Array.prototype.sort = jest.fn();
+      sanitizeTableProperties(tableDescription);
+      const arrayProperties: any[] = Object.values(tableDescription).filter((property) => Array.isArray(property));
+
+      arrayProperties.forEach((property) => {
+        expect(property.sort).toHaveBeenCalled();
       });
     });
   });
