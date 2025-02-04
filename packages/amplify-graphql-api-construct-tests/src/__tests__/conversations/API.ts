@@ -352,6 +352,7 @@ export type AmplifyAIConversationMessageStreamPart = {
   id: string;
   owner?: string | null;
   stopReason?: string | null;
+  p?: string | null;
 };
 
 export type AmplifyAIConversationTurnError = {
