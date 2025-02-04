@@ -3,109 +3,109 @@
 exports[`vtl-generator Test \`makeValidationSnippet\` with different validation types generates correct VTL for endswith validation: filename endswith validation 1`] = `
 "## [Start] Validating \\"filename\\" with type \\"endswith\\" and value \\".pdf\\". **
 #if( !$util.isNull($ctx.args.input.filename) )
-      #set($validationPassed = $$ctx.args.input.filename.endsWith(\\".pdf\\"))
-      #if(!$validationPassed)
-        $util.error(\\"File must be a PDF\\")
-      #end
-    #end
+  #set($validationPassed = $ctx.args.input.filename.endsWith(\\".pdf\\"))
+  #if(!$validationPassed)
+    $util.error('File must be a PDF')
+  #end
+#end
 ## [End] Validating \\"filename\\" with type \\"endswith\\" and value \\".pdf\\". **"
 `;
 
 exports[`vtl-generator Test \`makeValidationSnippet\` with different validation types generates correct VTL for gt validation: age gt validation 1`] = `
 "## [Start] Validating \\"age\\" with type \\"gt\\" and value \\"18\\". **
 #if( !$util.isNull($ctx.args.input.age) )
-      #set($validationPassed = $$ctx.args.input.age > 18)
-      #if(!$validationPassed)
-        $util.error(\\"Age must be greater than 18\\")
-      #end
-    #end
+  #set($validationPassed = $ctx.args.input.age > 18)
+  #if(!$validationPassed)
+    $util.error('Age must be greater than 18')
+  #end
+#end
 ## [End] Validating \\"age\\" with type \\"gt\\" and value \\"18\\". **"
 `;
 
 exports[`vtl-generator Test \`makeValidationSnippet\` with different validation types generates correct VTL for gte validation: quantity gte validation 1`] = `
 "## [Start] Validating \\"quantity\\" with type \\"gte\\" and value \\"0\\". **
 #if( !$util.isNull($ctx.args.input.quantity) )
-      #set($validationPassed = $$ctx.args.input.quantity >= 0)
-      #if(!$validationPassed)
-        $util.error(\\"Quantity must be non-negative\\")
-      #end
-    #end
+  #set($validationPassed = $ctx.args.input.quantity >= 0)
+  #if(!$validationPassed)
+    $util.error('Quantity must be non-negative')
+  #end
+#end
 ## [End] Validating \\"quantity\\" with type \\"gte\\" and value \\"0\\". **"
 `;
 
 exports[`vtl-generator Test \`makeValidationSnippet\` with different validation types generates correct VTL for lt validation: price lt validation 1`] = `
 "## [Start] Validating \\"price\\" with type \\"lt\\" and value \\"1000\\". **
 #if( !$util.isNull($ctx.args.input.price) )
-      #set($validationPassed = $$ctx.args.input.price < 1000)
-      #if(!$validationPassed)
-        $util.error(\\"Price must be less than 1000\\")
-      #end
-    #end
+  #set($validationPassed = $ctx.args.input.price < 1000)
+  #if(!$validationPassed)
+    $util.error('Price must be less than 1000')
+  #end
+#end
 ## [End] Validating \\"price\\" with type \\"lt\\" and value \\"1000\\". **"
 `;
 
 exports[`vtl-generator Test \`makeValidationSnippet\` with different validation types generates correct VTL for lte validation: rating lte validation 1`] = `
 "## [Start] Validating \\"rating\\" with type \\"lte\\" and value \\"5\\". **
 #if( !$util.isNull($ctx.args.input.rating) )
-      #set($validationPassed = $$ctx.args.input.rating <= 5)
-      #if(!$validationPassed)
-        $util.error(\\"Rating must be at most 5\\")
-      #end
-    #end
+  #set($validationPassed = $ctx.args.input.rating <= 5)
+  #if(!$validationPassed)
+    $util.error('Rating must be at most 5')
+  #end
+#end
 ## [End] Validating \\"rating\\" with type \\"lte\\" and value \\"5\\". **"
 `;
 
 exports[`vtl-generator Test \`makeValidationSnippet\` with different validation types generates correct VTL for matches validation: email matches validation 1`] = `
 "## [Start] Validating \\"email\\" with type \\"matches\\" and value \\"^[A-Za-z0-9+_.-]+@(.+)$\\". **
 #if( !$util.isNull($ctx.args.input.email) )
-      #set($validationPassed = $util.matches($$ctx.args.input.email, \\"^[A-Za-z0-9+_.-]+@(.+)$\\"))
-      #if(!$validationPassed)
-        $util.error(\\"Invalid email format\\")
-      #end
-    #end
+  #set($validationPassed = $util.matches(\\"^[A-Za-z0-9+_.-]+@(.+)$\\", $ctx.args.input.email))
+  #if(!$validationPassed)
+    $util.error('Invalid email format')
+  #end
+#end
 ## [End] Validating \\"email\\" with type \\"matches\\" and value \\"^[A-Za-z0-9+_.-]+@(.+)$\\". **"
 `;
 
 exports[`vtl-generator Test \`makeValidationSnippet\` with different validation types generates correct VTL for maxlength validation: bio maxlength validation 1`] = `
 "## [Start] Validating \\"bio\\" with type \\"maxlength\\" and value \\"500\\". **
 #if( !$util.isNull($ctx.args.input.bio) )
-      #set($validationPassed = $$ctx.args.input.bio.length() <= 500)
-      #if(!$validationPassed)
-        $util.error(\\"Bio must not exceed 500 characters\\")
-      #end
-    #end
+  #set($validationPassed = $ctx.args.input.bio.length() <= 500)
+  #if(!$validationPassed)
+    $util.error('Bio must not exceed 500 characters')
+  #end
+#end
 ## [End] Validating \\"bio\\" with type \\"maxlength\\" and value \\"500\\". **"
 `;
 
 exports[`vtl-generator Test \`makeValidationSnippet\` with different validation types generates correct VTL for minlength validation: name minlength validation 1`] = `
 "## [Start] Validating \\"name\\" with type \\"minlength\\" and value \\"3\\". **
 #if( !$util.isNull($ctx.args.input.name) )
-      #set($validationPassed = $$ctx.args.input.name.length() >= 3)
-      #if(!$validationPassed)
-        $util.error(\\"Name must be at least 3 characters\\")
-      #end
-    #end
+  #set($validationPassed = $ctx.args.input.name.length() >= 3)
+  #if(!$validationPassed)
+    $util.error('Name must be at least 3 characters')
+  #end
+#end
 ## [End] Validating \\"name\\" with type \\"minlength\\" and value \\"3\\". **"
 `;
 
 exports[`vtl-generator Test \`makeValidationSnippet\` with different validation types generates correct VTL for startswith validation: url startswith validation 1`] = `
 "## [Start] Validating \\"url\\" with type \\"startswith\\" and value \\"https://\\". **
 #if( !$util.isNull($ctx.args.input.url) )
-      #set($validationPassed = $$ctx.args.input.url.startsWith(\\"https://\\"))
-      #if(!$validationPassed)
-        $util.error(\\"URL must start with https://\\")
-      #end
-    #end
+  #set($validationPassed = $ctx.args.input.url.startsWith(\\"https://\\"))
+  #if(!$validationPassed)
+    $util.error('URL must start with https://')
+  #end
+#end
 ## [End] Validating \\"url\\" with type \\"startswith\\" and value \\"https://\\". **"
 `;
 
 exports[`vtl-generator Test \`makeValidationSnippet\` with different validation types includes validation details in block comment: validation details in block comment 1`] = `
 "## [Start] Validating \\"age\\" with type \\"gt\\" and value \\"18\\". **
 #if( !$util.isNull($ctx.args.input.age) )
-      #set($validationPassed = $$ctx.args.input.age > 18)
-      #if(!$validationPassed)
-        $util.error(\\"error\\")
-      #end
-    #end
+  #set($validationPassed = $ctx.args.input.age > 18)
+  #if(!$validationPassed)
+    $util.error('error')
+  #end
+#end
 ## [End] Validating \\"age\\" with type \\"gt\\" and value \\"18\\". **"
 `;
