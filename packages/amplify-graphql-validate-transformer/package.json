@@ -34,6 +34,7 @@
     "@aws-amplify/graphql-transformer-core": "3.3.5",
     "@aws-amplify/graphql-transformer-interfaces": "4.2.2",
     "graphql": "^15.5.0",
+    "graphql-mapping-template": "5.0.2",
     "graphql-transformer-common": "5.1.2"
   },
   "devDependencies": {
