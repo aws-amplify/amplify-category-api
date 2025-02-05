@@ -266,6 +266,8 @@ export class AmplifyGraphqlApi extends Construct {
     this.graphqlUrl = this.resources.cfnResources.cfnGraphqlApi.attrGraphQlUrl;
     this.realtimeUrl = this.resources.cfnResources.cfnGraphqlApi.attrRealtimeUrl;
     this.apiKey = this.resources.cfnResources.cfnApiKey?.attrApiKey;
+
+    this.node.setContext('@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections', true);
   }
 
   /**
