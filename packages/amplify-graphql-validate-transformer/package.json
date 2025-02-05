@@ -38,7 +38,8 @@
     "graphql-transformer-common": "5.1.2"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-test-utils": "1.0.12",
-    "@aws-amplify/graphql-model-transformer": "3.1.5"
+    "@aws-amplify/graphql-default-value-transformer": "3.1.8",
+    "@aws-amplify/graphql-model-transformer": "3.1.5",
+    "@aws-amplify/graphql-transformer-test-utils": "1.0.12"
   }
 }
