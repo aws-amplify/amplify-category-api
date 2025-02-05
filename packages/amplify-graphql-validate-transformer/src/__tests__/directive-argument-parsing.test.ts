@@ -7,6 +7,16 @@ import {
   createValidationSchema,
 } from './test-utils';
 
+/**
+ * This test suite ensures that the directive properly validates its input arguments
+ * before attempting to generate validation templates.
+ *
+ * These tests ensure that the directive properly rejects:
+ * - Negative numbers
+ * - Zero values
+ * - Non-integer values
+ * - Non-numeric strings
+ */
 describe('Input parsing for min/maxLength validations', () => {
   describe('Invalid values for min/maxLength validations', () => {
     const testInvalidValues = (description: string, values: string[]): void => {
@@ -44,6 +54,14 @@ describe('Input parsing for min/maxLength validations', () => {
   });
 });
 
+/**
+ * This test suite ensures that the directive properly validates numeric arguments
+ * before attempting to generate validation templates.
+ *
+ * These tests ensure that the directive properly rejects:
+ * - Empty strings and whitespace
+ * - Special values like NaN, null, undefined
+ */
 describe('Input parsing for numeric validations', () => {
   describe('Invalid values for numeric validations', () => {
     const testInvalidValues = (description: string, values: string[]): void => {

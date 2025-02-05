@@ -4,7 +4,15 @@ import { parse } from 'graphql';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ValidateTransformer } from '../graphql-validate-transformer';
 
-describe('ValidateTransformer', () => {
+/**
+ * Tests for the ValidateTransformer's resolver generation functionality.
+ *
+ * This test suite verifies that the transformer:
+ * - Correctly generates VTL templates for validation rules
+ * - Maintains consistent snapshot output for different validation scenarios
+ * - Handles all supported validation types (numeric, string) correctly
+ */
+describe('Resolver generation', () => {
   const transformSchema = (schema: string): any => {
     const out = testTransform({
       schema,
