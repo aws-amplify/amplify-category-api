@@ -130,7 +130,7 @@
     "zod": "^3.22.2"
   },
   "dependencies": {
-    "aws-cdk-lib": "^2.168.0",
+    "aws-cdk-lib": "^2.177.0",
     "constructs": "^10.3.0"
   },
   "dependencyClosure": {
@@ -2000,19 +2000,6 @@
             }
           }
         },
-        "aws-cdk-lib.aws_iot1click": {
-          "targets": {
-            "dotnet": {
-              "namespace": "Amazon.CDK.AWS.IoT1Click"
-            },
-            "java": {
-              "package": "software.amazon.awscdk.services.iot1click"
-            },
-            "python": {
-              "module": "aws_cdk.aws_iot1click"
-            }
-          }
-        },
         "aws-cdk-lib.aws_iotanalytics": {
           "targets": {
             "dotnet": {
@@ -2702,6 +2689,32 @@
             }
           }
         },
+        "aws-cdk-lib.aws_notifications": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.Notifications"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.notifications"
+            },
+            "python": {
+              "module": "aws_cdk.aws_notifications"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_notificationscontacts": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.NotificationsContacts"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.notificationscontacts"
+            },
+            "python": {
+              "module": "aws_cdk.aws_notificationscontacts"
+            }
+          }
+        },
         "aws-cdk-lib.aws_oam": {
           "targets": {
             "dotnet": {
@@ -2855,6 +2868,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_pcaconnectorscep"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_pcs": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.PCS"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.pcs"
+            },
+            "python": {
+              "module": "aws_cdk.aws_pcs"
             }
           }
         },
@@ -3310,6 +3336,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_s3outposts"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_s3tables": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.S3Tables"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.s3tables"
+            },
+            "python": {
+              "module": "aws_cdk.aws_s3tables"
             }
           }
         },
@@ -9404,5 +9443,5 @@
     }
   },
   "version": "1.18.7",
-  "fingerprint": "tD0sXbwu94bkf1Gr4ba3zQeQU7BQPh89YJdssCzLZ/E="
+  "fingerprint": "Q5JCUjIF2eTjzH+LRc/g65DJUbow2EtNjeJAeViYrXw="
 }
