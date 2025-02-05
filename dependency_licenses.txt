@@ -19636,7 +19636,7 @@ terms above.
 
 -----
 
-The following software may be included in this product: lodash.defaults, lodash.difference, lodash.flatten, lodash.ismatch, lodash.isplainobject, lodash.memoize, lodash.truncate, lodash.union. A copy of the source code may be downloaded from https://github.com/lodash/lodash.git (lodash.defaults), https://github.com/lodash/lodash.git (lodash.difference), https://github.com/lodash/lodash.git (lodash.flatten), https://github.com/lodash/lodash.git (lodash.ismatch), https://github.com/lodash/lodash.git (lodash.isplainobject), https://github.com/lodash/lodash.git (lodash.memoize), https://github.com/lodash/lodash.git (lodash.truncate), https://github.com/lodash/lodash.git (lodash.union). This software contains the following license and notice below:
+The following software may be included in this product: lodash.defaults, lodash.difference, lodash.flatten, lodash.ismatch, lodash.isplainobject, lodash.memoize, lodash.snakecase, lodash.truncate, lodash.union. A copy of the source code may be downloaded from https://github.com/lodash/lodash.git (lodash.defaults), https://github.com/lodash/lodash.git (lodash.difference), https://github.com/lodash/lodash.git (lodash.flatten), https://github.com/lodash/lodash.git (lodash.ismatch), https://github.com/lodash/lodash.git (lodash.isplainobject), https://github.com/lodash/lodash.git (lodash.memoize), https://github.com/lodash/lodash.git (lodash.snakecase), https://github.com/lodash/lodash.git (lodash.truncate), https://github.com/lodash/lodash.git (lodash.union). This software contains the following license and notice below:
 
 Copyright jQuery Foundation and other contributors <https://jquery.org/>
 
