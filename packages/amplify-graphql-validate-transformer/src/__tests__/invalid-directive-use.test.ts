@@ -8,6 +8,13 @@ import {
   createValidationSchema,
 } from './test-utils';
 
+/**
+ * Tests for validating proper usage of `@validate` directive on model vs non-model types.
+ *
+ * This test suite ensures that validation directives:
+ * - Are only allowed on fields within `@model` types
+ * - Are rejected on fields within non-model types
+ */
 describe('Validation on Model vs Non-Model Types', () => {
   describe('Disallow validation on non-model type', () => {
     describe('Disallow numeric validations on non-model type', () => {
@@ -65,6 +72,12 @@ describe('Validation on Model vs Non-Model Types', () => {
   });
 });
 
+/**
+ * Tests for validating `@validate` directive usage on list fields.
+ *
+ * This test suite ensures that validation directives:
+ * - Cannot be used on list fields (arrays)
+ */
 describe('Disallow validation on list fields', () => {
   const testCases = createValidationTestCases([...VALIDATION_TYPES], [...ALL_FIELD_TYPES], ['test', '0']);
   test.each(testCases)('rejects `$validationType` validation on list of `$fieldType` field', (testCase) => {
@@ -76,6 +89,13 @@ describe('Disallow validation on list fields', () => {
   });
 });
 
+/**
+ * Tests for validating multiple `@validate` directives on the same field.
+ *
+ * This test suite ensures that:
+ * - Each validation type can only be used once per field
+ * - Different validation types can be combined on the same field
+ */
 describe('Duplicate Validation Types on the same field', () => {
   describe('Disallow duplicate validation types on the same field', () => {
     describe('Disallow duplicate numeric validations on the same field', () => {
@@ -144,6 +164,14 @@ describe('Duplicate Validation Types on the same field', () => {
   });
 });
 
+/**
+ * Tests for validating type compatibility between fields and validation types.
+ *
+ * This test suite ensures that:
+ * - Numeric validations are only used on numeric fields (Int, Float)
+ * - String validations are only used on String fields
+ * - Validations are rejected on incompatible field types
+ */
 describe('Validation Type Compatibility with Field Type', () => {
   describe('Disallow validation on incompatible fields', () => {
     type FieldType = {
@@ -229,6 +257,14 @@ describe('Validation Type Compatibility with Field Type', () => {
   });
 });
 
+/**
+ * Tests for validating proper directive ordering between `@validate` and `@default`.
+ *
+ * This test suite ensures that:
+ * - `@validate` directives must come after `@default` directives
+ * - Multiple `@validate` directives can be used after a `@default` directive
+ * - Invalid ordering combinations are rejected
+ */
 describe('Directive order enforcement for @validate and @default', () => {
   type DirectiveOrderTestCase = {
     name: string;

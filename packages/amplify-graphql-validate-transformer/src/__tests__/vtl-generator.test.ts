@@ -1,5 +1,13 @@
 import { makeValidationSnippet } from '../vtl-generator';
 
+/**
+ * Tests for the VTL template generator functionality.
+ *
+ * This test suite verifies that the VTL generator:
+ * - Creates correct validation snippets for all validation types
+ * - Throws errors for unsupported validation types
+ * - Includes validation details in block comments
+ */
 describe('vtl-generator', () => {
   describe('Test `makeValidationSnippet` with different validation types', () => {
     const testCases = [
