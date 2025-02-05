@@ -146,9 +146,11 @@ export class AmplifyGraphqlApi extends Construct {
     super(scope, id);
     this.stack = Stack.of(scope);
 
-    if (!FeatureFlags.of(this).isEnabled('@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections')) {
-      this.node.setContext('@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections', true);
-    }
+    // Fall back to default true if no feature flag is provided, otherwise honor the feature flag value provided
+    this.node.setContext(
+      '@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections',
+      FeatureFlags.of(this).isEnabled('@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections') ?? true,
+    );
 
     validateNoOtherAmplifyGraphqlApiInStack(this);
 
