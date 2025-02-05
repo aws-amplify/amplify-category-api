@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { Construct } from 'constructs';
 import { ExecuteTransformConfig, executeTransform } from '@aws-amplify/graphql-transformer';
-import { NestedStack, Stack, Annotations } from 'aws-cdk-lib';
+import { NestedStack, Stack, Annotations, FeatureFlags } from 'aws-cdk-lib';
 import { AttributionMetadataStorage, StackMetadataBackendOutputStorageStrategy } from '@aws-amplify/backend-output-storage';
 import { graphqlOutputKey } from '@aws-amplify/backend-output-schemas';
 import type { GraphqlOutput, AwsAppsyncAuthenticationType } from '@aws-amplify/backend-output-schemas';
@@ -146,6 +146,10 @@ export class AmplifyGraphqlApi extends Construct {
     super(scope, id);
     this.stack = Stack.of(scope);
 
+    if (!FeatureFlags.of(this).isEnabled('@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections')) {
+      this.node.setContext('@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections', true);
+    }
+
     validateNoOtherAmplifyGraphqlApiInStack(this);
 
     const {
@@ -266,8 +270,6 @@ export class AmplifyGraphqlApi extends Construct {
     this.graphqlUrl = this.resources.cfnResources.cfnGraphqlApi.attrGraphQlUrl;
     this.realtimeUrl = this.resources.cfnResources.cfnGraphqlApi.attrRealtimeUrl;
     this.apiKey = this.resources.cfnResources.cfnApiKey?.attrApiKey;
-
-    this.node.setContext('@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections', true);
   }
 
   /**
