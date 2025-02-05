@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.18.8-gen2-migration-0205.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.18.7...@aws-amplify/graphql-api-construct@1.18.8-gen2-migration-0205.0) (2025-02-05)
+
+**Note:** Version bump only for package @aws-amplify/graphql-api-construct
+
 ## [1.18.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.18.6...@aws-amplify/graphql-api-construct@1.18.7) (2025-01-30)
 
 **Note:** Version bump only for package @aws-amplify/graphql-api-construct

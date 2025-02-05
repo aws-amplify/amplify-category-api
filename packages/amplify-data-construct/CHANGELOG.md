@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.14.8-gen2-migration-0205.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.14.7...@aws-amplify/data-construct@1.14.8-gen2-migration-0205.0) (2025-02-05)
+
+**Note:** Version bump only for package @aws-amplify/data-construct
+
 ## [1.14.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.14.6...@aws-amplify/data-construct@1.14.7) (2025-01-30)
 
 **Note:** Version bump only for package @aws-amplify/data-construct

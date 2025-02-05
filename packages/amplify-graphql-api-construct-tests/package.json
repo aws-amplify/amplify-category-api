@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphql-api-construct-tests",
-  "version": "1.13.9",
+  "version": "1.13.10-gen2-migration-0205.0",
   "description": "E2e test suite",
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
   "dependencies": {
     "@aws-amplify/auth-construct": "^1.0.0",
     "@aws-amplify/core": "^2.1.0",
-    "@aws-amplify/graphql-api-construct": "1.18.7",
+    "@aws-amplify/graphql-api-construct": "1.18.8-gen2-migration-0205.0",
     "@aws-cdk/aws-cognito-identitypool-alpha": "2.152.0-alpha.0",
     "@aws-sdk/client-appsync": "3.624.0",
     "@aws-sdk/client-cloudformation": "3.624.0",

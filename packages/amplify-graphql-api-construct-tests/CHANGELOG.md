@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.13.10-gen2-migration-0205.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.13.9...amplify-graphql-api-construct-tests@1.13.10-gen2-migration-0205.0) (2025-02-05)
+
+### Bug Fixes
+
+- improve migration import error message ([#3140](https://github.com/aws-amplify/amplify-category-api/issues/3140)) ([e0f0b60](https://github.com/aws-amplify/amplify-category-api/commit/e0f0b6034dc4132f5f2ef41445e88a631bbd3b0f))
+
 ## [1.13.9](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.13.8...amplify-graphql-api-construct-tests@1.13.9) (2025-01-30)
 
 ### Bug Fixes
