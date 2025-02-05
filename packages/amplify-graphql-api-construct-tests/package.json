@@ -52,7 +52,7 @@
     "@aws-amplify/graphql-transformer-core": "3.3.5",
     "@aws-amplify/graphql-transformer-interfaces": "4.2.2",
     "@types/node": "^18.0.0",
-    "aws-cdk-lib": "2.168.0",
+    "aws-cdk-lib": "2.177.0",
     "constructs": "10.3.0",
     "ts-node": "^8.10.2"
   },
