@@ -10,9 +10,9 @@ import { default as STS } from 'aws-sdk/clients/sts';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import { GraphQLClient } from 'graphql-request';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
-import { DURATION_30_MINUTES } from '../utils/duration-constants';
+import { ONE_MINUTE } from '../utils/duration-constants';
 
-jest.setTimeout(DURATION_30_MINUTES);
+jest.setTimeout(ONE_MINUTE);
 
 // AWS client initialization
 const region = process.env.CLI_REGION;

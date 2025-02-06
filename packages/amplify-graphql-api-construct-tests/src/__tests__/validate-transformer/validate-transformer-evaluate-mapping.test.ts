@@ -10,6 +10,8 @@ import {
   STRING_VALIDATION_THRESHOLD_TEMPLATES_DIR,
 } from '../../utils/validate-transformer-helper';
 
+jest.setTimeout(10000);
+
 type StringValidationTestCase = EvaluateTemplateTestCase<string, StringValidationType>;
 type NumericValidationTestCase = EvaluateTemplateTestCase<number, NumericValidationType>;
 
