@@ -135,7 +135,7 @@ exports[`Resolver generation should generate correct validation resolvers for mu
 exports[`Resolver generation should generate correct validation resolvers for multiple validations on the same field: create post title endsWith validation 1`] = `
 "## [Start] Validating \\"title\\" with type \\"endsWith\\" and value \\"suffix\\". **
 #if( !$util.isNull($ctx.args.input.title) )
-  #set($validationPassed = $ctx.args.input.title.endsWith(\\"suffix\\"))
+  #set($validationPassed = $ctx.args.input.title.endsWith('suffix'))
   #if(!$validationPassed)
     $util.error('Title must end with suffix')
   #end
@@ -146,7 +146,7 @@ exports[`Resolver generation should generate correct validation resolvers for mu
 exports[`Resolver generation should generate correct validation resolvers for multiple validations on the same field: create post title matches validation 1`] = `
 "## [Start] Validating \\"title\\" with type \\"matches\\" and value \\"^[A-Za-z0-9 ]+$\\". **
 #if( !$util.isNull($ctx.args.input.title) )
-  #set($validationPassed = $util.matches(\\"^[A-Za-z0-9 ]+$\\", $ctx.args.input.title))
+  #set($validationPassed = $util.matches('^[A-Za-z0-9 ]+$', $ctx.args.input.title))
   #if(!$validationPassed)
     $util.error('Title can only contain letters, numbers and spaces')
   #end
@@ -179,7 +179,7 @@ exports[`Resolver generation should generate correct validation resolvers for mu
 exports[`Resolver generation should generate correct validation resolvers for multiple validations on the same field: create post title startsWith validation 1`] = `
 "## [Start] Validating \\"title\\" with type \\"startsWith\\" and value \\"prefix\\". **
 #if( !$util.isNull($ctx.args.input.title) )
-  #set($validationPassed = $ctx.args.input.title.startsWith(\\"prefix\\"))
+  #set($validationPassed = $ctx.args.input.title.startsWith('prefix'))
   #if(!$validationPassed)
     $util.error('Title must start with prefix')
   #end
@@ -190,7 +190,7 @@ exports[`Resolver generation should generate correct validation resolvers for mu
 exports[`Resolver generation should generate correct validation resolvers for multiple validations on the same field: update post title endsWith validation 1`] = `
 "## [Start] Validating \\"title\\" with type \\"endsWith\\" and value \\"suffix\\". **
 #if( !$util.isNull($ctx.args.input.title) )
-  #set($validationPassed = $ctx.args.input.title.endsWith(\\"suffix\\"))
+  #set($validationPassed = $ctx.args.input.title.endsWith('suffix'))
   #if(!$validationPassed)
     $util.error('Title must end with suffix')
   #end
@@ -201,7 +201,7 @@ exports[`Resolver generation should generate correct validation resolvers for mu
 exports[`Resolver generation should generate correct validation resolvers for multiple validations on the same field: update post title matches validation 1`] = `
 "## [Start] Validating \\"title\\" with type \\"matches\\" and value \\"^[A-Za-z0-9 ]+$\\". **
 #if( !$util.isNull($ctx.args.input.title) )
-  #set($validationPassed = $util.matches(\\"^[A-Za-z0-9 ]+$\\", $ctx.args.input.title))
+  #set($validationPassed = $util.matches('^[A-Za-z0-9 ]+$', $ctx.args.input.title))
   #if(!$validationPassed)
     $util.error('Title can only contain letters, numbers and spaces')
   #end
@@ -234,7 +234,7 @@ exports[`Resolver generation should generate correct validation resolvers for mu
 exports[`Resolver generation should generate correct validation resolvers for multiple validations on the same field: update post title startsWith validation 1`] = `
 "## [Start] Validating \\"title\\" with type \\"startsWith\\" and value \\"prefix\\". **
 #if( !$util.isNull($ctx.args.input.title) )
-  #set($validationPassed = $ctx.args.input.title.startsWith(\\"prefix\\"))
+  #set($validationPassed = $ctx.args.input.title.startsWith('prefix'))
   #if(!$validationPassed)
     $util.error('Title must start with prefix')
   #end
@@ -333,7 +333,7 @@ exports[`Resolver generation should generate correct validation resolvers for nu
 exports[`Resolver generation should generate correct validation resolvers for string validations: create user email matches validation 1`] = `
 "## [Start] Validating \\"email\\" with type \\"matches\\" and value \\"^[A-Za-z0-9+_.-]+@(.+)$\\". **
 #if( !$util.isNull($ctx.args.input.email) )
-  #set($validationPassed = $util.matches(\\"^[A-Za-z0-9+_.-]+@(.+)$\\", $ctx.args.input.email))
+  #set($validationPassed = $util.matches('^[A-Za-z0-9+_.-]+@(.+)$', $ctx.args.input.email))
   #if(!$validationPassed)
     $util.error('Invalid email format')
   #end
@@ -344,7 +344,7 @@ exports[`Resolver generation should generate correct validation resolvers for st
 exports[`Resolver generation should generate correct validation resolvers for string validations: create user url endsWith validation 1`] = `
 "## [Start] Validating \\"url\\" with type \\"endsWith\\" and value \\".com\\". **
 #if( !$util.isNull($ctx.args.input.url) )
-  #set($validationPassed = $ctx.args.input.url.endsWith(\\".com\\"))
+  #set($validationPassed = $ctx.args.input.url.endsWith('.com'))
   #if(!$validationPassed)
     $util.error('URL must end with .com')
   #end
@@ -355,7 +355,7 @@ exports[`Resolver generation should generate correct validation resolvers for st
 exports[`Resolver generation should generate correct validation resolvers for string validations: create user url startsWith validation 1`] = `
 "## [Start] Validating \\"url\\" with type \\"startsWith\\" and value \\"https://\\". **
 #if( !$util.isNull($ctx.args.input.url) )
-  #set($validationPassed = $ctx.args.input.url.startsWith(\\"https://\\"))
+  #set($validationPassed = $ctx.args.input.url.startsWith('https://'))
   #if(!$validationPassed)
     $util.error('URL must start with https://')
   #end
@@ -388,7 +388,7 @@ exports[`Resolver generation should generate correct validation resolvers for st
 exports[`Resolver generation should generate correct validation resolvers for string validations: update user email matches validation 1`] = `
 "## [Start] Validating \\"email\\" with type \\"matches\\" and value \\"^[A-Za-z0-9+_.-]+@(.+)$\\". **
 #if( !$util.isNull($ctx.args.input.email) )
-  #set($validationPassed = $util.matches(\\"^[A-Za-z0-9+_.-]+@(.+)$\\", $ctx.args.input.email))
+  #set($validationPassed = $util.matches('^[A-Za-z0-9+_.-]+@(.+)$', $ctx.args.input.email))
   #if(!$validationPassed)
     $util.error('Invalid email format')
   #end
@@ -399,7 +399,7 @@ exports[`Resolver generation should generate correct validation resolvers for st
 exports[`Resolver generation should generate correct validation resolvers for string validations: update user url endsWith validation 1`] = `
 "## [Start] Validating \\"url\\" with type \\"endsWith\\" and value \\".com\\". **
 #if( !$util.isNull($ctx.args.input.url) )
-  #set($validationPassed = $ctx.args.input.url.endsWith(\\".com\\"))
+  #set($validationPassed = $ctx.args.input.url.endsWith('.com'))
   #if(!$validationPassed)
     $util.error('URL must end with .com')
   #end
@@ -410,7 +410,7 @@ exports[`Resolver generation should generate correct validation resolvers for st
 exports[`Resolver generation should generate correct validation resolvers for string validations: update user url startsWith validation 1`] = `
 "## [Start] Validating \\"url\\" with type \\"startsWith\\" and value \\"https://\\". **
 #if( !$util.isNull($ctx.args.input.url) )
-  #set($validationPassed = $ctx.args.input.url.startsWith(\\"https://\\"))
+  #set($validationPassed = $ctx.args.input.url.startsWith('https://'))
   #if(!$validationPassed)
     $util.error('URL must start with https://')
   #end

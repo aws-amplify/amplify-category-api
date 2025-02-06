@@ -3,7 +3,7 @@
 exports[`vtl-generator Test \`makeValidationSnippet\` with different validation types generates correct VTL for endswith validation: filename endswith validation 1`] = `
 "## [Start] Validating \\"filename\\" with type \\"endswith\\" and value \\".pdf\\". **
 #if( !$util.isNull($ctx.args.input.filename) )
-  #set($validationPassed = $ctx.args.input.filename.endsWith(\\".pdf\\"))
+  #set($validationPassed = $ctx.args.input.filename.endsWith('.pdf'))
   #if(!$validationPassed)
     $util.error('File must be a PDF')
   #end
@@ -58,7 +58,7 @@ exports[`vtl-generator Test \`makeValidationSnippet\` with different validation 
 exports[`vtl-generator Test \`makeValidationSnippet\` with different validation types generates correct VTL for matches validation: email matches validation 1`] = `
 "## [Start] Validating \\"email\\" with type \\"matches\\" and value \\"^[A-Za-z0-9+_.-]+@(.+)$\\". **
 #if( !$util.isNull($ctx.args.input.email) )
-  #set($validationPassed = $util.matches(\\"^[A-Za-z0-9+_.-]+@(.+)$\\", $ctx.args.input.email))
+  #set($validationPassed = $util.matches('^[A-Za-z0-9+_.-]+@(.+)$', $ctx.args.input.email))
   #if(!$validationPassed)
     $util.error('Invalid email format')
   #end
@@ -91,7 +91,7 @@ exports[`vtl-generator Test \`makeValidationSnippet\` with different validation 
 exports[`vtl-generator Test \`makeValidationSnippet\` with different validation types generates correct VTL for startswith validation: url startswith validation 1`] = `
 "## [Start] Validating \\"url\\" with type \\"startswith\\" and value \\"https://\\". **
 #if( !$util.isNull($ctx.args.input.url) )
-  #set($validationPassed = $ctx.args.input.url.startsWith(\\"https://\\"))
+  #set($validationPassed = $ctx.args.input.url.startsWith('https://'))
   #if(!$validationPassed)
     $util.error('URL must start with https://')
   #end

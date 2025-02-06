@@ -14,6 +14,9 @@ import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-inte
 import { TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
+export const makeValidationSnippet: (fieldName: string, validationType: string, validationValue: string, errorMessage: string) => string;
+
+// @public (undocumented)
 export class ValidateTransformer extends TransformerPluginBase implements TransformerPluginProvider {
     constructor();
     // (undocumented)
