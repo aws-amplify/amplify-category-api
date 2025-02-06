@@ -1,8 +1,11 @@
 # Test Templates Directory
 
-This directory is used by `numeric-validation-rules.test.ts` and `string-validation-rules.test.ts` to store temporary VTL templates and context files during test execution.
+This directory is used by `validate-transformer.test.ts` to store temporary VTL templates and context files during test execution.
 
 ## Directory Structure
+
+> **Note**: The subdirectories mentioned below may not be visible in Git as they are empty directories.
+> These directories are automatically created and cleaned up during test execution.
 
 ```
 __templates__/
