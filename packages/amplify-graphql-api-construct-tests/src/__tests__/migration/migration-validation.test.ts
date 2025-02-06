@@ -74,7 +74,7 @@ describe('Migration table import validation', () => {
       'extraGSIOnGen2',
       '',
       [
-        'AttributeDefinitions does not match the expected value.\nImported Value: [{"AttributeName":"id","AttributeType":"S"}]\nExpected: [{"AttributeType":"S","AttributeName":"id"},{"AttributeType":"S","AttributeName":"content"}]',
+        'AttributeDefinitions does not match the expected value.\nImported Value: [{"AttributeName":"id","AttributeType":"S"}]\nExpected: [{"AttributeType":"S","AttributeName":"content"},{"AttributeType":"S","AttributeName":"id"}]',
         'GlobalSecondaryIndexes does not match the expected value.\nImported Value: undefined\nExpected: [{"IndexName":"todosByContent","KeySchema":[{"AttributeName":"content","KeyType":"HASH"}],"Projection":{"ProjectionType":"ALL"},"ProvisionedThroughput":{"ReadCapacityUnits":0,"WriteCapacityUnits":0}}]',
       ],
     ],
