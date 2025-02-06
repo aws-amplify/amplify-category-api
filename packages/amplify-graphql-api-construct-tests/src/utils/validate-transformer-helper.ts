@@ -1,8 +1,6 @@
-import { readdirSync, unlinkSync, writeFileSync, accessSync, constants, existsSync, mkdirSync } from 'fs';
+import { readdirSync, unlinkSync, writeFileSync, accessSync, constants, existsSync, mkdirSync, readFileSync } from 'fs';
 import { join } from 'path';
-import { promisify } from 'util';
-import { exec } from 'child_process';
-
+import { AppSyncClient, EvaluateMappingTemplateCommand } from '@aws-sdk/client-appsync';
 import { makeValidationSnippet } from '@aws-amplify/graphql-validate-transformer';
 
 export const TEMPLATES_DIR = join(__dirname, '..', '__tests__', 'validate-transformer', '__templates__');
@@ -89,11 +87,6 @@ export const createContext = (input: string | number): any => {
 };
 
 /**
- * Promisified version of the exec function
- */
-const execAsync = promisify(exec);
-
-/**
  * Ensures directory exists and checks write permissions
  * @param directory The directory to check/create
  * @returns true if directory exists and is writable, false otherwise
@@ -158,16 +151,27 @@ export const setupEvaluateTemplateTest = <T extends string | number, O extends s
  * @returns The result of the evaluation
  */
 export const evaluateTemplate = async (templateName: string, contextName: string, directory: string): Promise<any> => {
-  const { stdout, stderr } = await execAsync(
-    `aws appsync evaluate-mapping-template --template file://${templateName} --context file://${contextName}`,
-    { cwd: directory },
-  );
+  try {
+    // Initialize the AppSync client
+    const client = new AppSyncClient({ region: process.env.AWS_REGION });
 
-  if (stderr) {
-    console.error('Error output:', stderr);
+    // Read the template and context files
+    const template = readFileSync(join(directory, templateName), 'utf8');
+    const context = readFileSync(join(directory, contextName), 'utf8');
+
+    // Create the evaluate template command
+    const command = new EvaluateMappingTemplateCommand({
+      template,
+      context,
+    });
+
+    // Execute the command
+    const response = await client.send(command);
+    return JSON.parse(response.evaluationResult || '{}');
+  } catch (error) {
+    console.error('Error evaluating template:', error);
+    throw error;
   }
-
-  return JSON.parse(stdout);
 };
 
 /**
