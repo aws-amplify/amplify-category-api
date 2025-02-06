@@ -1,4 +1,4 @@
-import { readdirSync, unlinkSync, writeFileSync } from 'fs';
+import { readdirSync, unlinkSync, writeFileSync, accessSync, constants } from 'fs';
 import { join } from 'path';
 import { promisify } from 'util';
 import { exec } from 'child_process';
@@ -94,6 +94,22 @@ export const createContext = (input: string | number): any => {
 const execAsync = promisify(exec);
 
 /**
+ * Checks if we have write permission to a directory
+ * @param directory The directory to check
+ * @returns true if we have write permission, false otherwise
+ */
+const checkWritePermission = (directory: string): boolean => {
+  try {
+    accessSync(directory, constants.W_OK);
+    console.log(`Write permission check passed for directory: ${directory}`);
+    return true;
+  } catch (error) {
+    console.error(`Write permission check failed for directory: ${directory}`, error);
+    return false;
+  }
+};
+
+/**
  * Sets up a template test by creating the necessary VTL and context files
  * @param input The input value to test
  * @param operator The operator type for the validation
@@ -113,6 +129,11 @@ export const setupEvaluateTemplateTest = <T extends string | number, O extends s
 ): { templateName: string; contextName: string } => {
   const templateName = `template_${operator}_${testId}.vtl`;
   const contextName = `context_${operator}_${testId}.json`;
+
+  // Check write permissions before attempting to write
+  if (!checkWritePermission(directory)) {
+    throw new Error(`No write permission for directory: ${directory}`);
+  }
 
   // Write template.vtl
   const validationSnippet = makeValidationSnippet('field', operator, threshold, messages[operator]);
