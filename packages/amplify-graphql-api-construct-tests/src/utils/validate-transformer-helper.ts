@@ -167,7 +167,7 @@ export const evaluateTemplate = async (templateName: string, contextName: string
 
     // Execute the command
     const response = await client.send(command);
-    return JSON.parse(response.evaluationResult || '{}');
+    return response;
   } catch (error) {
     console.error('Error evaluating template:', error);
     throw error;
@@ -202,6 +202,7 @@ export const runEvaluateTemplateTest = async <T extends string | number, O exten
     expect(result.error).toBeUndefined();
   } else {
     expect(result.error).toBeDefined();
+    expect(result.error.message).toBeDefined();
     if (testCase.expectedErrorMessage) {
       expect(result.error.message).toBe(testCase.expectedErrorMessage);
     }
