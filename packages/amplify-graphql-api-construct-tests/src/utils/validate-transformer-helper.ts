@@ -100,18 +100,15 @@ const execAsync = promisify(exec);
  */
 const ensureDirectoryExists = (directory: string): boolean => {
   try {
-    // Create directory and any parent directories if they don't exist
+    // Create directory if it doesn't exist
     if (!existsSync(directory)) {
-      console.log(`Creating directory: ${directory}`);
       mkdirSync(directory, { recursive: true });
     }
 
     // Check write permissions
     accessSync(directory, constants.W_OK);
-    console.log(`Directory exists and is writable: ${directory}`);
     return true;
   } catch (error) {
-    console.error(`Failed to create or access directory: ${directory}`, error);
     return false;
   }
 };
