@@ -131,7 +131,7 @@
     "zod": "^3.22.2"
   },
   "dependencies": {
-    "aws-cdk-lib": "^2.168.0",
+    "aws-cdk-lib": "^2.177.0",
     "constructs": "^10.3.0"
   },
   "dependencyClosure": {
@@ -2001,19 +2001,6 @@
             }
           }
         },
-        "aws-cdk-lib.aws_iot1click": {
-          "targets": {
-            "dotnet": {
-              "namespace": "Amazon.CDK.AWS.IoT1Click"
-            },
-            "java": {
-              "package": "software.amazon.awscdk.services.iot1click"
-            },
-            "python": {
-              "module": "aws_cdk.aws_iot1click"
-            }
-          }
-        },
         "aws-cdk-lib.aws_iotanalytics": {
           "targets": {
             "dotnet": {
@@ -2703,6 +2690,32 @@
             }
           }
         },
+        "aws-cdk-lib.aws_notifications": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.Notifications"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.notifications"
+            },
+            "python": {
+              "module": "aws_cdk.aws_notifications"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_notificationscontacts": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.NotificationsContacts"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.notificationscontacts"
+            },
+            "python": {
+              "module": "aws_cdk.aws_notificationscontacts"
+            }
+          }
+        },
         "aws-cdk-lib.aws_oam": {
           "targets": {
             "dotnet": {
@@ -2856,6 +2869,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_pcaconnectorscep"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_pcs": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.PCS"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.pcs"
+            },
+            "python": {
+              "module": "aws_cdk.aws_pcs"
             }
           }
         },
@@ -3311,6 +3337,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_s3outposts"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_s3tables": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.S3Tables"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.s3tables"
+            },
+            "python": {
+              "module": "aws_cdk.aws_s3tables"
             }
           }
         },
@@ -4530,7 +4569,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 318
+            "line": 324
           },
           "name": "addDynamoDbDataSource",
           "parameters": [
@@ -4579,7 +4618,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 330
+            "line": 336
           },
           "name": "addElasticsearchDataSource",
           "parameters": [
@@ -4626,7 +4665,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 340
+            "line": 346
           },
           "name": "addEventBridgeDataSource",
           "parameters": [
@@ -4673,7 +4712,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 422
+            "line": 428
           },
           "name": "addFunction",
           "parameters": [
@@ -4708,7 +4747,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 351
+            "line": 357
           },
           "name": "addHttpDataSource",
           "parameters": [
@@ -4756,7 +4795,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 362
+            "line": 368
           },
           "name": "addLambdaDataSource",
           "parameters": [
@@ -4804,7 +4843,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 373
+            "line": 379
           },
           "name": "addNoneDataSource",
           "parameters": [
@@ -4843,7 +4882,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 384
+            "line": 390
           },
           "name": "addOpenSearchDataSource",
           "parameters": [
@@ -4891,7 +4930,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 397
+            "line": 403
           },
           "name": "addRdsDataSource",
           "parameters": [
@@ -4958,7 +4997,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 413
+            "line": 419
           },
           "name": "addResolver",
           "parameters": [
@@ -9405,5 +9444,5 @@
     }
   },
   "version": "1.18.7",
-  "fingerprint": "ymE+aKGXtL9R+EfmVT8uWRe0Ltc8cE9SMEHJFIwN9E8="
+  "fingerprint": "xPjnoyXqs87i2cdLBtv8kKXZcQo5FjmA51Lxe9OXnWE="
 }
