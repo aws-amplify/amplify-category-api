@@ -1,4 +1,4 @@
-import { readdirSync, unlinkSync, writeFileSync, accessSync, constants } from 'fs';
+import { readdirSync, unlinkSync, writeFileSync, accessSync, constants, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { promisify } from 'util';
 import { exec } from 'child_process';
@@ -94,17 +94,24 @@ export const createContext = (input: string | number): any => {
 const execAsync = promisify(exec);
 
 /**
- * Checks if we have write permission to a directory
- * @param directory The directory to check
- * @returns true if we have write permission, false otherwise
+ * Ensures directory exists and checks write permissions
+ * @param directory The directory to check/create
+ * @returns true if directory exists and is writable, false otherwise
  */
-const checkWritePermission = (directory: string): boolean => {
+const ensureDirectoryExists = (directory: string): boolean => {
   try {
+    // Create directory and any parent directories if they don't exist
+    if (!existsSync(directory)) {
+      console.log(`Creating directory: ${directory}`);
+      mkdirSync(directory, { recursive: true });
+    }
+
+    // Check write permissions
     accessSync(directory, constants.W_OK);
-    console.log(`Write permission check passed for directory: ${directory}`);
+    console.log(`Directory exists and is writable: ${directory}`);
     return true;
   } catch (error) {
-    console.error(`Write permission check failed for directory: ${directory}`, error);
+    console.error(`Failed to create or access directory: ${directory}`, error);
     return false;
   }
 };
@@ -130,9 +137,9 @@ export const setupEvaluateTemplateTest = <T extends string | number, O extends s
   const templateName = `template_${operator}_${testId}.vtl`;
   const contextName = `context_${operator}_${testId}.json`;
 
-  // Check write permissions before attempting to write
-  if (!checkWritePermission(directory)) {
-    throw new Error(`No write permission for directory: ${directory}`);
+  // Ensure directory exists and is writable
+  if (!ensureDirectoryExists(directory)) {
+    throw new Error(`Cannot create or write to directory: ${directory}`);
   }
 
   // Write template.vtl
