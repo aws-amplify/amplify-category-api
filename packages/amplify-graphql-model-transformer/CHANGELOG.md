@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@3.1.5...@aws-amplify/graphql-model-transformer@3.1.6) (2025-02-07)
+
+### Bug Fixes
+
+- improve migration import error message ([#3140](https://github.com/aws-amplify/amplify-category-api/issues/3140)) ([e0f0b60](https://github.com/aws-amplify/amplify-category-api/commit/e0f0b6034dc4132f5f2ef41445e88a631bbd3b0f))
+- sort table description properties before comparing ([#3144](https://github.com/aws-amplify/amplify-category-api/issues/3144)) ([513e649](https://github.com/aws-amplify/amplify-category-api/commit/513e649daf39672f0f6fbae3e6ecd51359701896))
+
 ## [3.1.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@3.1.4...@aws-amplify/graphql-model-transformer@3.1.5) (2025-01-30)
 
 **Note:** Version bump only for package @aws-amplify/graphql-model-transformer
