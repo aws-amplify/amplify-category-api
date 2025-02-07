@@ -74,8 +74,8 @@ describe('Migration table import validation', () => {
       'extraGSIOnGen2',
       '',
       [
-        'AttributeDefinitions does not match the expected value.\nActual: [{"AttributeName":"id","AttributeType":"S"}]\nExpected: [{"AttributeType":"S","AttributeName":"id"},{"AttributeType":"S","AttributeName":"content"}]',
-        'GlobalSecondaryIndexes does not match the expected value.\nActual: undefined\nExpected: [{"IndexName":"todosByContent","KeySchema":[{"AttributeName":"content","KeyType":"HASH"}],"Projection":{"ProjectionType":"ALL"},"ProvisionedThroughput":{"ReadCapacityUnits":0,"WriteCapacityUnits":0}}]',
+        'AttributeDefinitions does not match the expected value.\nImported Value: [{"AttributeName":"id","AttributeType":"S"}]\nExpected: [{"AttributeType":"S","AttributeName":"content"},{"AttributeType":"S","AttributeName":"id"}]',
+        'GlobalSecondaryIndexes does not match the expected value.\nImported Value: undefined\nExpected: [{"IndexName":"todosByContent","KeySchema":[{"AttributeName":"content","KeyType":"HASH"}],"Projection":{"ProjectionType":"ALL"},"ProvisionedThroughput":{"ReadCapacityUnits":0,"WriteCapacityUnits":0}}]',
       ],
     ],
     [
@@ -90,7 +90,7 @@ describe('Migration table import validation', () => {
         };
       `,
       [
-        'BillingModeSummary does not match the expected value.\nActual: {"BillingMode":"PAY_PER_REQUEST"}\nExpected: {"BillingMode":"PROVISIONED"}',
+        'BillingModeSummary does not match the expected value.\nImported Value: {"BillingMode":"PAY_PER_REQUEST"}\nExpected: {"BillingMode":"PROVISIONED"}',
       ],
     ],
     [
@@ -105,7 +105,7 @@ describe('Migration table import validation', () => {
         };
       `,
       [
-        'KeySchema does not match the expected value.\nActual: [{"AttributeName":"id","KeyType":"HASH"}]\nExpected: [{"AttributeName":"fakekey","KeyType":"HASH"}]',
+        'KeySchema does not match the expected value.\nImported Value: [{"AttributeName":"id","KeyType":"HASH"}]\nExpected: [{"AttributeName":"fakekey","KeyType":"HASH"}]',
       ],
     ],
     [
@@ -123,7 +123,7 @@ describe('Migration table import validation', () => {
         };
       `,
       [
-        'ProvisionedThroughput does not match the expected value.\nActual: {"ReadCapacityUnits":0,"WriteCapacityUnits":0}\nExpected: {"WriteCapacityUnits":5,"ReadCapacityUnits":5}',
+        'ProvisionedThroughput does not match the expected value.\nImported Value: {"ReadCapacityUnits":0,"WriteCapacityUnits":0}\nExpected: {"WriteCapacityUnits":5,"ReadCapacityUnits":5}',
       ],
     ],
     [
@@ -140,13 +140,13 @@ describe('Migration table import validation', () => {
         };
       `,
       [
-        'StreamSpecification does not match the expected value.\nActual: {"StreamEnabled":true,"StreamViewType":"NEW_AND_OLD_IMAGES"}\nExpected: {"StreamEnabled":true,"StreamViewType":"KEYS_ONLY"}',
+        'StreamSpecification does not match the expected value.\nImported Value: {"StreamEnabled":true,"StreamViewType":"NEW_AND_OLD_IMAGES"}\nExpected: {"StreamEnabled":true,"StreamViewType":"KEYS_ONLY"}',
       ],
     ],
     [
       'sseDescription',
       '',
-      ['SSEDescription does not match the expected value.\nActual: undefined\nExpected: {"SSEType":"KMS","Status":"ENABLED"}'],
+      ['SSEDescription does not match the expected value.\nImported Value: undefined\nExpected: {"SSEType":"KMS","Status":"ENABLED"}'],
     ],
     [
       'deletionProtectionEnabled',
@@ -159,7 +159,7 @@ describe('Migration table import validation', () => {
           todoTable.addOverride('Properties.deletionProtectionEnabled', true);
         };
       `,
-      ['DeletionProtectionEnabled does not match the expected value.\nActual: false\nExpected: true'],
+      ['DeletionProtectionEnabled does not match the expected value.\nImported Value: false\nExpected: true'],
     ],
   ];
   test.each(testCases)('%s', async (testCaseName, overrides, expectedErrors) => {
