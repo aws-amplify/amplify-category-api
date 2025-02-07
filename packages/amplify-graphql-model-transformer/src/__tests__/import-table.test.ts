@@ -1,9 +1,10 @@
-import { TableDescription } from '@aws-sdk/client-dynamodb';
+import { TableDescription, AttributeDefinition, KeySchemaElement, GlobalSecondaryIndex } from '@aws-sdk/client-dynamodb';
 import {
   getExpectedTableProperties,
   getImportedTableComparisonProperties,
   validateImportedTableProperties,
   TableComparisonProperties,
+  sanitizeTableProperties,
 } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/import-table';
 import {
   extractTableInputFromEvent,
@@ -140,6 +141,43 @@ describe('import-table', () => {
         expect(() => validateImportedTableProperties(getImportedTableComparisonProperties(actual), expected)).not.toThrow();
       });
 
+      test('AttributeDefinitions with different order', () => {
+        const actual: TableDescription = {
+          AttributeDefinitions: [
+            {
+              AttributeName: 'name',
+              AttributeType: 'S',
+            },
+            {
+              AttributeName: 'todoId',
+              AttributeType: 'S',
+            },
+            {
+              AttributeName: 'name2',
+              AttributeType: 'S',
+            },
+          ],
+        };
+        const expected: TableComparisonProperties = {
+          AttributeDefinitions: [
+            {
+              AttributeName: 'todoId',
+              AttributeType: 'S',
+            },
+            {
+              AttributeName: 'name',
+              AttributeType: 'S',
+            },
+            {
+              AttributeName: 'name2',
+              AttributeType: 'S',
+            },
+          ],
+        };
+
+        expect(() => validateImportedTableProperties(getImportedTableComparisonProperties(actual), expected)).not.toThrow();
+      });
+
       test('KeySchema', () => {
         const actual: TableDescription = {
           KeySchema: [
@@ -153,6 +191,35 @@ describe('import-table', () => {
               // @ts-expect-error Attribute should be ignored in comparison. AWS SDK may add additional fields in the future
               foo: 'bar',
               baz: undefined,
+            },
+          ],
+        };
+        const expected: TableComparisonProperties = {
+          KeySchema: [
+            {
+              AttributeName: 'todoId',
+              KeyType: 'HASH',
+            },
+            {
+              AttributeName: 'name',
+              KeyType: 'RANGE',
+            },
+          ],
+        };
+
+        expect(() => validateImportedTableProperties(getImportedTableComparisonProperties(actual), expected)).not.toThrow();
+      });
+
+      test('KeySchema with different order', () => {
+        const actual: TableDescription = {
+          KeySchema: [
+            {
+              AttributeName: 'name',
+              KeyType: 'RANGE',
+            },
+            {
+              AttributeName: 'todoId',
+              KeyType: 'HASH',
             },
           ],
         };
@@ -201,6 +268,91 @@ describe('import-table', () => {
             {
               IndexName: 'byName2',
               KeySchema: [
+                {
+                  AttributeName: 'name2',
+                  KeyType: 'HASH',
+                },
+              ],
+              Projection: {
+                ProjectionType: 'ALL',
+              },
+              ProvisionedThroughput: {
+                ReadCapacityUnits: 5,
+                WriteCapacityUnits: 5,
+              },
+            },
+          ],
+        };
+
+        expect(() => validateImportedTableProperties(getImportedTableComparisonProperties(actual), expected)).not.toThrow();
+      });
+
+      test('GlobalSecondaryIndexes with different order', () => {
+        const actual: TableDescription = {
+          GlobalSecondaryIndexes: [
+            {
+              IndexName: 'byName2',
+              KeySchema: [
+                {
+                  AttributeName: 'name2',
+                  KeyType: 'HASH',
+                },
+                {
+                  AttributeName: 'name3',
+                  KeyType: 'RANGE',
+                },
+              ],
+              Projection: {
+                ProjectionType: 'ALL',
+              },
+              ProvisionedThroughput: {
+                ReadCapacityUnits: 5,
+                WriteCapacityUnits: 5,
+              },
+            },
+            {
+              IndexName: 'byName',
+              KeySchema: [
+                {
+                  AttributeName: 'name',
+                  KeyType: 'HASH',
+                },
+              ],
+              Projection: {
+                ProjectionType: 'ALL',
+              },
+              ProvisionedThroughput: {
+                ReadCapacityUnits: 5,
+                WriteCapacityUnits: 5,
+              },
+            },
+          ],
+        };
+        const expected: TableComparisonProperties = {
+          GlobalSecondaryIndexes: [
+            {
+              IndexName: 'byName',
+              KeySchema: [
+                {
+                  AttributeName: 'name',
+                  KeyType: 'HASH',
+                },
+              ],
+              Projection: {
+                ProjectionType: 'ALL',
+              },
+              ProvisionedThroughput: {
+                ReadCapacityUnits: 5,
+                WriteCapacityUnits: 5,
+              },
+            },
+            {
+              IndexName: 'byName2',
+              KeySchema: [
+                {
+                  AttributeName: 'name3',
+                  KeyType: 'RANGE',
+                },
                 {
                   AttributeName: 'name2',
                   KeyType: 'HASH',
@@ -358,8 +510,51 @@ describe('import-table', () => {
           .toThrowErrorMatchingInlineSnapshot(`
           "Imported table properties did not match the expected table properties.
           AttributeDefinitions does not match the expected value.
-          Actual: [{\\"AttributeName\\":\\"todoId\\",\\"AttributeType\\":\\"S\\"},{\\"AttributeName\\":\\"name\\",\\"AttributeType\\":\\"S\\"},{\\"AttributeName\\":\\"name2\\",\\"AttributeType\\":\\"S\\"}]
-          Expected: [{\\"AttributeName\\":\\"todoId\\",\\"AttributeType\\":\\"S\\"},{\\"AttributeName\\":\\"differentName\\",\\"AttributeType\\":\\"S\\"},{\\"AttributeName\\":\\"name2\\",\\"AttributeType\\":\\"S\\"}]"
+          Imported Value: [{\\"AttributeName\\":\\"name\\",\\"AttributeType\\":\\"S\\"},{\\"AttributeName\\":\\"name2\\",\\"AttributeType\\":\\"S\\"},{\\"AttributeName\\":\\"todoId\\",\\"AttributeType\\":\\"S\\"}]
+          Expected: [{\\"AttributeName\\":\\"differentName\\",\\"AttributeType\\":\\"S\\"},{\\"AttributeName\\":\\"name2\\",\\"AttributeType\\":\\"S\\"},{\\"AttributeName\\":\\"todoId\\",\\"AttributeType\\":\\"S\\"}]"
+        `);
+      });
+
+      test('AttributeDefinitions with different order', () => {
+        const actual: TableDescription = {
+          AttributeDefinitions: [
+            {
+              AttributeName: 'name',
+              AttributeType: 'S',
+            },
+            {
+              AttributeName: 'todoId',
+              AttributeType: 'S',
+            },
+            {
+              AttributeName: 'name2',
+              AttributeType: 'S',
+            },
+          ],
+        };
+        const expected: TableComparisonProperties = {
+          AttributeDefinitions: [
+            {
+              AttributeName: 'todoId',
+              AttributeType: 'S',
+            },
+            {
+              AttributeName: 'name',
+              AttributeType: 'S',
+            },
+            {
+              AttributeName: 'differentName',
+              AttributeType: 'S',
+            },
+          ],
+        };
+
+        expect(() => validateImportedTableProperties(getImportedTableComparisonProperties(actual), expected))
+          .toThrowErrorMatchingInlineSnapshot(`
+          "Imported table properties did not match the expected table properties.
+          AttributeDefinitions does not match the expected value.
+          Imported Value: [{\\"AttributeName\\":\\"name\\",\\"AttributeType\\":\\"S\\"},{\\"AttributeName\\":\\"name2\\",\\"AttributeType\\":\\"S\\"},{\\"AttributeName\\":\\"todoId\\",\\"AttributeType\\":\\"S\\"}]
+          Expected: [{\\"AttributeName\\":\\"differentName\\",\\"AttributeType\\":\\"S\\"},{\\"AttributeName\\":\\"name\\",\\"AttributeType\\":\\"S\\"},{\\"AttributeName\\":\\"todoId\\",\\"AttributeType\\":\\"S\\"}]"
         `);
       });
 
@@ -396,8 +591,43 @@ describe('import-table', () => {
           .toThrowErrorMatchingInlineSnapshot(`
           "Imported table properties did not match the expected table properties.
           KeySchema does not match the expected value.
-          Actual: [{\\"AttributeName\\":\\"todoId\\",\\"KeyType\\":\\"HASH\\"},{\\"AttributeName\\":\\"name\\",\\"KeyType\\":\\"RANGE\\"}]
-          Expected: [{\\"AttributeName\\":\\"todoId\\",\\"KeyType\\":\\"HASH\\"},{\\"AttributeName\\":\\"differentName\\",\\"KeyType\\":\\"RANGE\\"}]"
+          Imported Value: [{\\"AttributeName\\":\\"name\\",\\"KeyType\\":\\"RANGE\\"},{\\"AttributeName\\":\\"todoId\\",\\"KeyType\\":\\"HASH\\"}]
+          Expected: [{\\"AttributeName\\":\\"differentName\\",\\"KeyType\\":\\"RANGE\\"},{\\"AttributeName\\":\\"todoId\\",\\"KeyType\\":\\"HASH\\"}]"
+        `);
+      });
+
+      test('KeySchema with different order', () => {
+        const actual: TableDescription = {
+          KeySchema: [
+            {
+              AttributeName: 'name',
+              KeyType: 'RANGE',
+            },
+            {
+              AttributeName: 'todoId',
+              KeyType: 'HASH',
+            },
+          ],
+        };
+        const expected: TableComparisonProperties = {
+          KeySchema: [
+            {
+              AttributeName: 'todoId',
+              KeyType: 'HASH',
+            },
+            {
+              AttributeName: 'differentName',
+              KeyType: 'RANGE',
+            },
+          ],
+        };
+
+        expect(() => validateImportedTableProperties(getImportedTableComparisonProperties(actual), expected))
+          .toThrowErrorMatchingInlineSnapshot(`
+          "Imported table properties did not match the expected table properties.
+          KeySchema does not match the expected value.
+          Imported Value: [{\\"AttributeName\\":\\"name\\",\\"KeyType\\":\\"RANGE\\"},{\\"AttributeName\\":\\"todoId\\",\\"KeyType\\":\\"HASH\\"}]
+          Expected: [{\\"AttributeName\\":\\"differentName\\",\\"KeyType\\":\\"RANGE\\"},{\\"AttributeName\\":\\"todoId\\",\\"KeyType\\":\\"HASH\\"}]"
         `);
       });
 
@@ -450,8 +680,99 @@ describe('import-table', () => {
           .toThrowErrorMatchingInlineSnapshot(`
           "Imported table properties did not match the expected table properties.
           GlobalSecondaryIndexes does not match the expected value.
-          Actual: [{\\"IndexName\\":\\"byName2\\",\\"KeySchema\\":[{\\"AttributeName\\":\\"name2\\",\\"KeyType\\":\\"HASH\\"}],\\"Projection\\":{\\"ProjectionType\\":\\"ALL\\"},\\"ProvisionedThroughput\\":{\\"ReadCapacityUnits\\":5,\\"WriteCapacityUnits\\":5}}]
+          Imported Value: [{\\"IndexName\\":\\"byName2\\",\\"KeySchema\\":[{\\"AttributeName\\":\\"name2\\",\\"KeyType\\":\\"HASH\\"}],\\"Projection\\":{\\"ProjectionType\\":\\"ALL\\"},\\"ProvisionedThroughput\\":{\\"ReadCapacityUnits\\":5,\\"WriteCapacityUnits\\":5}}]
           Expected: [{\\"IndexName\\":\\"byName2\\",\\"KeySchema\\":[{\\"AttributeName\\":\\"name2\\",\\"KeyType\\":\\"HASH\\"}],\\"Projection\\":{\\"ProjectionType\\":\\"ALL\\"},\\"ProvisionedThroughput\\":{\\"ReadCapacityUnits\\":5,\\"WriteCapacityUnits\\":10}}]"
+        `);
+      });
+
+      test('GlobalSecondaryIndexes with different order', () => {
+        const actual: TableDescription = {
+          GlobalSecondaryIndexes: [
+            {
+              IndexName: 'byName2',
+              KeySchema: [
+                {
+                  AttributeName: 'name2',
+                  KeyType: 'HASH',
+                },
+                {
+                  AttributeName: 'name3',
+                  KeyType: 'RANGE',
+                },
+              ],
+              Projection: {
+                ProjectionType: 'ALL',
+              },
+              ProvisionedThroughput: {
+                ReadCapacityUnits: 10,
+                WriteCapacityUnits: 5,
+              },
+            },
+            {
+              IndexName: 'byName',
+              KeySchema: [
+                {
+                  AttributeName: 'name',
+                  KeyType: 'HASH',
+                },
+              ],
+              Projection: {
+                ProjectionType: 'ALL',
+              },
+              ProvisionedThroughput: {
+                ReadCapacityUnits: 5,
+                WriteCapacityUnits: 5,
+              },
+            },
+          ],
+        };
+        const expected: TableComparisonProperties = {
+          GlobalSecondaryIndexes: [
+            {
+              IndexName: 'byName',
+              KeySchema: [
+                {
+                  AttributeName: 'name',
+                  KeyType: 'HASH',
+                },
+              ],
+              Projection: {
+                ProjectionType: 'ALL',
+              },
+              ProvisionedThroughput: {
+                ReadCapacityUnits: 5,
+                WriteCapacityUnits: 5,
+              },
+            },
+            {
+              IndexName: 'byName2',
+              KeySchema: [
+                {
+                  AttributeName: 'name3',
+                  KeyType: 'RANGE',
+                },
+                {
+                  AttributeName: 'name2',
+                  KeyType: 'HASH',
+                },
+              ],
+              Projection: {
+                ProjectionType: 'ALL',
+              },
+              ProvisionedThroughput: {
+                ReadCapacityUnits: 5,
+                WriteCapacityUnits: 5,
+              },
+            },
+          ],
+        };
+
+        expect(() => validateImportedTableProperties(getImportedTableComparisonProperties(actual), expected))
+          .toThrowErrorMatchingInlineSnapshot(`
+          "Imported table properties did not match the expected table properties.
+          GlobalSecondaryIndexes does not match the expected value.
+          Imported Value: [{\\"IndexName\\":\\"byName\\",\\"KeySchema\\":[{\\"AttributeName\\":\\"name\\",\\"KeyType\\":\\"HASH\\"}],\\"Projection\\":{\\"ProjectionType\\":\\"ALL\\"},\\"ProvisionedThroughput\\":{\\"ReadCapacityUnits\\":5,\\"WriteCapacityUnits\\":5}},{\\"IndexName\\":\\"byName2\\",\\"KeySchema\\":[{\\"AttributeName\\":\\"name2\\",\\"KeyType\\":\\"HASH\\"},{\\"AttributeName\\":\\"name3\\",\\"KeyType\\":\\"RANGE\\"}],\\"Projection\\":{\\"ProjectionType\\":\\"ALL\\"},\\"ProvisionedThroughput\\":{\\"ReadCapacityUnits\\":10,\\"WriteCapacityUnits\\":5}}]
+          Expected: [{\\"IndexName\\":\\"byName\\",\\"KeySchema\\":[{\\"AttributeName\\":\\"name\\",\\"KeyType\\":\\"HASH\\"}],\\"Projection\\":{\\"ProjectionType\\":\\"ALL\\"},\\"ProvisionedThroughput\\":{\\"ReadCapacityUnits\\":5,\\"WriteCapacityUnits\\":5}},{\\"IndexName\\":\\"byName2\\",\\"KeySchema\\":[{\\"AttributeName\\":\\"name2\\",\\"KeyType\\":\\"HASH\\"},{\\"AttributeName\\":\\"name3\\",\\"KeyType\\":\\"RANGE\\"}],\\"Projection\\":{\\"ProjectionType\\":\\"ALL\\"},\\"ProvisionedThroughput\\":{\\"ReadCapacityUnits\\":5,\\"WriteCapacityUnits\\":5}}]"
         `);
       });
 
@@ -476,7 +797,7 @@ describe('import-table', () => {
           .toThrowErrorMatchingInlineSnapshot(`
           "Imported table properties did not match the expected table properties.
           BillingModeSummary does not match the expected value.
-          Actual: {\\"BillingMode\\":\\"PROVISIONED\\"}
+          Imported Value: {\\"BillingMode\\":\\"PROVISIONED\\"}
           Expected: {\\"BillingMode\\":\\"PAY_PER_REQUEST\\"}"
         `);
       });
@@ -506,7 +827,7 @@ describe('import-table', () => {
           .toThrowErrorMatchingInlineSnapshot(`
           "Imported table properties did not match the expected table properties.
           ProvisionedThroughput does not match the expected value.
-          Actual: {\\"ReadCapacityUnits\\":5,\\"WriteCapacityUnits\\":5}
+          Imported Value: {\\"ReadCapacityUnits\\":5,\\"WriteCapacityUnits\\":5}
           Expected: {\\"ReadCapacityUnits\\":5,\\"WriteCapacityUnits\\":10}"
         `);
       });
@@ -532,7 +853,7 @@ describe('import-table', () => {
           .toThrowErrorMatchingInlineSnapshot(`
           "Imported table properties did not match the expected table properties.
           StreamSpecification does not match the expected value.
-          Actual: {\\"StreamEnabled\\":true,\\"StreamViewType\\":\\"NEW_AND_OLD_IMAGES\\"}
+          Imported Value: {\\"StreamEnabled\\":true,\\"StreamViewType\\":\\"NEW_AND_OLD_IMAGES\\"}
           Expected: {\\"StreamEnabled\\":false,\\"StreamViewType\\":\\"NEW_AND_OLD_IMAGES\\"}"
         `);
       });
@@ -551,7 +872,7 @@ describe('import-table', () => {
           .toThrowErrorMatchingInlineSnapshot(`
           "Imported table properties did not match the expected table properties.
           SSEDescription does not match the expected value.
-          Actual: undefined
+          Imported Value: undefined
           Expected: {\\"SSEType\\":\\"KMS\\"}"
         `);
       });
@@ -568,7 +889,7 @@ describe('import-table', () => {
           .toThrowErrorMatchingInlineSnapshot(`
           "Imported table properties did not match the expected table properties.
           DeletionProtectionEnabled does not match the expected value.
-          Actual: true
+          Imported Value: true
           Expected: false"
         `);
       });
@@ -589,12 +910,99 @@ describe('import-table', () => {
           .toThrowErrorMatchingInlineSnapshot(`
           "Imported table properties did not match the expected table properties.
           SSEDescription does not match the expected value.
-          Actual: undefined
+          Imported Value: undefined
           Expected: {\\"SSEType\\":\\"KMS\\"}
           DeletionProtectionEnabled does not match the expected value.
-          Actual: true
+          Imported Value: true
           Expected: false"
         `);
+      });
+    });
+  });
+
+  describe('sanitizeTableProperties', () => {
+    // when adding table properties to the allow-list for comparison, ensure that any array property is sorted
+    test('sorts all array properties', () => {
+      // make all fields on TableComparisonProperties required so that when new properties are added, the test will fail.
+      // This will ensure if a new array property is added, it is also added to this test
+      const tableDescription: Required<TableComparisonProperties> = {
+        AttributeDefinitions: [
+          {
+            AttributeName: 'todoId',
+            AttributeType: 'S',
+          },
+          {
+            AttributeName: 'name',
+            AttributeType: 'S',
+          },
+        ],
+        KeySchema: [
+          {
+            AttributeName: 'todoId',
+            KeyType: 'HASH',
+          },
+        ],
+        GlobalSecondaryIndexes: [
+          {
+            IndexName: 'byName2',
+            KeySchema: [
+              {
+                AttributeName: 'name2',
+                KeyType: 'HASH',
+              },
+              {
+                AttributeName: 'name3',
+                KeyType: 'RANGE',
+              },
+            ],
+            Projection: {
+              ProjectionType: 'ALL',
+            },
+            ProvisionedThroughput: {
+              ReadCapacityUnits: 10,
+              WriteCapacityUnits: 5,
+            },
+          },
+          {
+            IndexName: 'byName',
+            KeySchema: [
+              {
+                AttributeName: 'name',
+                KeyType: 'HASH',
+              },
+            ],
+            Projection: {
+              ProjectionType: 'ALL',
+            },
+            ProvisionedThroughput: {
+              ReadCapacityUnits: 5,
+              WriteCapacityUnits: 5,
+            },
+          },
+        ],
+        BillingModeSummary: {
+          BillingMode: 'PROVISIONED',
+        },
+        ProvisionedThroughput: {
+          ReadCapacityUnits: 5,
+          WriteCapacityUnits: 5,
+        },
+        StreamSpecification: {
+          StreamEnabled: true,
+          StreamViewType: 'NEW_AND_OLD_IMAGES',
+        },
+        SSEDescription: {
+          SSEType: 'KMS',
+        },
+        DeletionProtectionEnabled: false,
+      };
+
+      Array.prototype.sort = jest.fn();
+      sanitizeTableProperties(tableDescription);
+      const arrayProperties: any[] = Object.values(tableDescription).filter((property) => Array.isArray(property));
+
+      arrayProperties.forEach((property) => {
+        expect(property.sort).toHaveBeenCalled();
       });
     });
   });
