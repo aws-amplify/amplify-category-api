@@ -1,5 +1,5 @@
 import isEqual from 'lodash.isequal';
-import { DynamoDB, TableDescription, CreateTableCommandInput } from '@aws-sdk/client-dynamodb';
+import { DynamoDB, TableDescription, CreateTableCommandInput, AttributeDefinition, KeySchemaElement } from '@aws-sdk/client-dynamodb';
 
 /**
  * Imports an existing DDB table.
@@ -50,17 +50,17 @@ export const validateImportedTableProperties = (
   ): void => {
     if (!isEqual(imported, expected)) {
       errors.push(
-        `${propertyName} does not match the expected value.\nActual: ${JSON.stringify(imported)}\nExpected: ${JSON.stringify(expected)}`,
+        `${propertyName} does not match the expected value.\nImported Value: ${JSON.stringify(imported)}\nExpected: ${JSON.stringify(
+          expected,
+        )}`,
       );
     }
   };
 
-  // remove undefined attributes from the objects
-  // lodash isEqual treats undefined as a value when comparing objects
-  // example isEqual({ a: undefined }, {}) returns false
-  const sanitizedImportedTableProperties = JSON.parse(JSON.stringify(importedTableProperties));
-  const sanitizedExpectedTableProperties = JSON.parse(JSON.stringify(expectedTableProperties));
+  const sanitizedImportedTableProperties = sanitizeTableProperties(importedTableProperties);
+  const sanitizedExpectedTableProperties = sanitizeTableProperties(expectedTableProperties);
 
+  // TODO: need to sort some properties
   assertEqual(
     'AttributeDefinitions',
     sanitizedImportedTableProperties.AttributeDefinitions,
@@ -290,4 +290,55 @@ const getDeletionProtectionEnabledForComparison = (
   importedTable: TableDescription,
 ): TableComparisonProperties['DeletionProtectionEnabled'] => {
   return importedTable.DeletionProtectionEnabled;
+};
+
+/**
+ * Remove undefined attributes from the objects.
+ * lodash isEqual treats undefined as a value when comparing objects
+ * Example: isEqual({ a: undefined }, {}) returns false
+ *
+ * Any property that is an array will need to be sorted so that the order of the elements does not affect the comparison
+ * The sorted Fields are: AttributeDefinitions, KeySchema, and GlobalSecondaryIndexes
+ *
+ * @param tableProperties table properties to sanitize
+ * @returns sanitized table properties with array properties sorted
+ */
+export const sanitizeTableProperties = (tableProperties: TableComparisonProperties): TableComparisonProperties => {
+  const tablePropertiesUndefinedRemoved: TableComparisonProperties = JSON.parse(JSON.stringify(tableProperties));
+  if (tablePropertiesUndefinedRemoved.AttributeDefinitions) {
+    // The typescript type allows for fields on AttributeDefinition, KeySchemaElement, and GlobalSecondaryIndex to be undefined.
+    // But the docs state these fields as required so we can safely assume they will not be undefined
+
+    // https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_AttributeDefinition.html
+    tablePropertiesUndefinedRemoved.AttributeDefinitions.sort((a, b) =>
+      // AttributeName will never be the same
+      (a.AttributeName ?? '').localeCompare(b.AttributeName ?? ''),
+    );
+  }
+
+  // https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_KeySchemaElement.html
+  const sortKeySchema = (a: KeySchemaElement, b: KeySchemaElement): number =>
+    // AttributeName will never be the same
+    (a.AttributeName ?? '').localeCompare(b.AttributeName ?? '');
+
+  if (tablePropertiesUndefinedRemoved.KeySchema) {
+    tablePropertiesUndefinedRemoved.KeySchema.sort(sortKeySchema);
+  }
+
+  // https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_GlobalSecondaryIndex.html
+  if (tablePropertiesUndefinedRemoved.GlobalSecondaryIndexes) {
+    tablePropertiesUndefinedRemoved.GlobalSecondaryIndexes.sort((a, b) =>
+      // IndexName will never be the same
+      (a.IndexName ?? '').localeCompare(b.IndexName ?? ''),
+    );
+
+    // sort the KeySchema in each GSI
+    tablePropertiesUndefinedRemoved.GlobalSecondaryIndexes.forEach((gsi) => {
+      if (gsi.KeySchema) {
+        gsi.KeySchema.sort(sortKeySchema);
+      }
+    });
+  }
+
+  return tablePropertiesUndefinedRemoved;
 };
