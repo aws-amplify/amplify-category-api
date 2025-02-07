@@ -18,8 +18,9 @@ const escapeSingleQuotes = (str: string): string => {
  * @returns A VTL code block that performs the validation check and throws an error if validation fails
  */
 export const makeValidationSnippet = (fieldName: string, validationType: string, validationValue: string, errorMessage: string): string => {
-  const validationCheck = getValidationCheck(fieldName, validationType, validationValue);
+  const escapedValidationValue = escapeSingleQuotes(validationValue);
   const escapedErrorMessage = escapeSingleQuotes(errorMessage);
+  const validationCheck = getValidationCheck(fieldName, validationType, escapedValidationValue);
 
   const template = [
     '#if( !$util.isNull($ctx.args.input.' + fieldName + ') )',
@@ -50,11 +51,11 @@ const getValidationCheck = (fieldName: string, validationType: string, value: st
     case 'maxlength':
       return `#set($validationPassed = ${fieldRef}.length() <= ${value})`;
     case 'startswith':
-      return `#set($validationPassed = ${fieldRef}.startsWith("${value}"))`;
+      return `#set($validationPassed = ${fieldRef}.startsWith('${value}'))`;
     case 'endswith':
-      return `#set($validationPassed = ${fieldRef}.endsWith("${value}"))`;
+      return `#set($validationPassed = ${fieldRef}.endsWith('${value}'))`;
     case 'matches':
-      return `#set($validationPassed = $util.matches("${value}", ${fieldRef}))`;
+      return `#set($validationPassed = $util.matches('${value}', ${fieldRef}))`;
     default:
       throw new Error(`Unsupported validation type: ${validationType}`);
   }
