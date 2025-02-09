@@ -27,14 +27,14 @@ export const validate = (
   validateModelType(parentNode);
   validateNoListFieldValidation(fieldNode);
   validateOrderingWithDefaultDirective(fieldNode, directive);
-  validateNoDuplicateTypes(fieldNode, directive, config.type as ValidationType);
-  validateTypeCompatibility(fieldNode, config.type as ValidationType);
+  validateNoDuplicateTypes(fieldNode, directive, config.validationType as ValidationType);
+  validateTypeCompatibility(fieldNode, config.validationType as ValidationType);
 
-  if (isLengthValidation(config.type as ValidationType)) {
+  if (isLengthValidation(config.validationType as ValidationType)) {
     validateLengthValue(config);
   }
 
-  if (isNumericValidation(config.type as ValidationType)) {
+  if (isNumericValidation(config.validationType as ValidationType)) {
     validateNumericValue(config);
   }
 };
@@ -123,10 +123,10 @@ const validateTypeCompatibility = (fieldNode: FieldDefinitionNode, validationTyp
  * @param config - The configuration object containing the validation rules and metadata
  */
 const validateLengthValue = (config: ValidateDirectiveConfiguration): void => {
-  const value = parseInt(config.value);
+  const value = parseInt(config.validationValue);
   if (isNaN(value) || value < 0) {
     throw new InvalidDirectiveError(
-      `${config.type} value must be a non-negative integer. Received '${config.value}' for field '${config.fieldNode.name.value}'`,
+      `${config.validationType} value must be a non-negative integer. Received '${config.validationValue}' for field '${config.fieldNode.name.value}'`,
     );
   }
 };
@@ -136,10 +136,10 @@ const validateLengthValue = (config: ValidateDirectiveConfiguration): void => {
  * @param config - The configuration object containing the validation rules and metadata
  */
 const validateNumericValue = (config: ValidateDirectiveConfiguration): void => {
-  const value = parseFloat(config.value);
+  const value = parseFloat(config.validationValue);
   if (isNaN(value)) {
     throw new InvalidDirectiveError(
-      `${config.type} value must be a number. Received '${config.value}' for field '${config.fieldNode.name.value}'`,
+      `${config.validationType} value must be a number. Received '${config.validationValue}' for field '${config.fieldNode.name.value}'`,
     );
   }
 };

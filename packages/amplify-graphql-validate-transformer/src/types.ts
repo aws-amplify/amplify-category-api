@@ -45,22 +45,40 @@ export type ValidationType = NumericValidationType | StringValidationType;
 /* c8 ignore end */
 
 /**
- * Interface for directive arguments
+ * Interface for GraphQL schema `@validate` directive arguments
  */
 /* c8 ignore start */
-export interface ValidateArguments {
-  type: ValidationType | '';
+export interface ValidateDirectiveArgs {
+  type: ValidationType;
   value: string;
   errorMessage: string;
 }
 /* c8 ignore end */
 
 /**
+ * Interface for internal validation rule configuration
+ */
+export interface ValidationRuleConfig {
+  validationType: ValidationType;
+  validationValue: string;
+  errorMessage: string;
+}
+
+/**
  * Interface to store validate directive configurations
  */
 /* c8 ignore start */
-export interface ValidateDirectiveConfiguration extends ValidateArguments {
+export interface ValidateDirectiveConfiguration extends ValidationRuleConfig {
   parentNode: ObjectTypeDefinitionNode;
   fieldNode: FieldDefinitionNode;
 }
+/* c8 ignore end */
+
+/**
+ * Map of field names to their validation configurations
+ */
+/* c8 ignore start */
+export type ValidationsByField = {
+  [fieldName: string]: ValidationRuleConfig[];
+};
 /* c8 ignore end */

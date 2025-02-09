@@ -17,14 +17,14 @@ import {
  * - Non-integer values
  * - Non-numeric strings
  */
-describe('Input parsing for min/maxLength validations', () => {
+describe('Directive argument parsing for min/maxLength validations', () => {
   describe('Invalid values for min/maxLength validations', () => {
     const testInvalidValues = (description: string, values: string[]): void => {
       describe(`${description}`, () => {
         const testCases = createValidationTestCases([...MIN_MAX_LENGTH_VALIDATION_TYPES], ['String'], values, { fieldName: 'title' });
         test.each(testCases)('rejects $validationType value of "$value"', (testCase) => {
           const schema = createValidationSchema(testCase);
-          const error = `${testCase.validationType} value must be a non-negative integer. Received '${testCase.value}' for field 'title'`;
+          const error = `${testCase.validationType} value must be a non-negative integer. Received '${testCase.validationValue}' for field 'title'`;
           runTransformTest(schema, error);
         });
       });
@@ -62,14 +62,14 @@ describe('Input parsing for min/maxLength validations', () => {
  * - Empty strings and whitespace
  * - Special values like NaN, null, undefined
  */
-describe('Input parsing for numeric validations', () => {
+describe('Directive argument parsing for numeric validations', () => {
   describe('Invalid values for numeric validations', () => {
     const testInvalidValues = (description: string, values: string[]): void => {
       describe(`${description}`, () => {
         const testCases = createValidationTestCases([...NUMERIC_VALIDATION_TYPES], [...NUMERIC_FIELD_TYPES], values);
         test.each(testCases)('rejects `$validationType` validation with value "$value" on `$fieldType` field', (testCase) => {
           const schema = createValidationSchema(testCase);
-          const error = `${testCase.validationType} value must be a number. Received '${testCase.value}' for field 'field'`;
+          const error = `${testCase.validationType} value must be a number. Received '${testCase.validationValue}' for field 'field'`;
           runTransformTest(schema, error);
         });
       });

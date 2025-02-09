@@ -1,15 +1,15 @@
-import { makeValidationSnippet } from '../vtl-generator';
+import { ValidationsByField, ValidationType } from '../types';
+import { generateFieldValidationSnippet, generateTypeValidationSnippet } from '../vtl-generator';
 
 /**
- * Tests for the VTL template generator functionality.
+ * Tests for field and type-level VTL validation generators.
  *
- * This test suite verifies that the VTL generator:
- * - Creates correct validation snippets for all validation types
- * - Throws errors for unsupported validation types
- * - Includes validation details in block comments
+ * Verifies:
+ * - Single field validations
+ * - Multiple validations per field and multiple fields per type
  */
 describe('vtl-generator', () => {
-  describe('Test `makeValidationSnippet` with different validation types', () => {
+  describe('Test `generateFieldValidationSnippet`', () => {
     const testCases = [
       {
         fieldName: 'age',
@@ -69,20 +69,78 @@ describe('vtl-generator', () => {
 
     testCases.forEach(({ fieldName, validationType, validationValue, errorMessage }) => {
       it(`generates correct VTL for ${validationType} validation`, () => {
-        const result = makeValidationSnippet(fieldName, validationType, validationValue, errorMessage);
+        const result = generateFieldValidationSnippet(fieldName, [
+          {
+            validationType: validationType as ValidationType,
+            validationValue,
+            errorMessage,
+          },
+        ]);
         expect(result).toMatchSnapshot(`${fieldName} ${validationType} validation`);
       });
     });
 
     it('throws error for unknown validation types', () => {
-      expect(() => makeValidationSnippet('field', 'unknownValidationType', 'validationValue', 'error')).toThrow(
-        'Unsupported validation type: unknownValidationType',
-      );
+      expect(() =>
+        generateFieldValidationSnippet('field', [
+          {
+            validationType: 'unknownValidationType' as ValidationType,
+            validationValue: 'validationValue',
+            errorMessage: 'error',
+          },
+        ]),
+      ).toThrow('Unsupported validation type: unknownValidationType');
     });
+  });
 
-    it('includes validation details in block comment', () => {
-      const result = makeValidationSnippet('age', 'gt', '18', 'error');
-      expect(result).toMatchSnapshot('validation details in block comment');
+  describe('Test `generateTypeValidationSnippet`', () => {
+    const testCases: Array<{ typeName: string; validationsByField: ValidationsByField }> = [
+      {
+        typeName: 'Product',
+        validationsByField: {
+          count: [{ validationType: 'gt', validationValue: '18', errorMessage: 'error' }],
+          price: [{ validationType: 'lt', validationValue: '1000', errorMessage: 'Price must be less than 1000' }],
+          quantity: [{ validationType: 'gte', validationValue: '0', errorMessage: 'Quantity must be non-negative' }],
+          rating: [{ validationType: 'lte', validationValue: '5', errorMessage: 'Rating must be at most 5' }],
+        },
+      },
+      {
+        typeName: 'Post',
+        validationsByField: {
+          title: [{ validationType: 'minLength', validationValue: '3', errorMessage: 'Title must be at least 3 characters' }],
+          content: [{ validationType: 'maxLength', validationValue: '500', errorMessage: 'Content must not exceed 500 characters' }],
+          url: [{ validationType: 'startsWith', validationValue: 'https://', errorMessage: 'URL must start with https://' }],
+          filename: [{ validationType: 'endsWith', validationValue: '.pdf', errorMessage: 'File must be a PDF' }],
+          email: [{ validationType: 'matches', validationValue: '^[A-Za-z0-9+_.-]+@(.+)$', errorMessage: 'Invalid email format' }],
+        },
+      },
+      {
+        typeName: 'User',
+        validationsByField: {
+          age: [
+            { validationType: 'gt', validationValue: '13', errorMessage: 'Must be over 13' },
+            { validationType: 'lt', validationValue: '150', errorMessage: 'Must be under 150' },
+          ],
+          score: [
+            { validationType: 'gte', validationValue: '0', errorMessage: 'Cannot be negative' },
+            { validationType: 'lte', validationValue: '100', errorMessage: 'Cannot exceed 100' },
+          ],
+          email: [
+            { validationType: 'minLength', validationValue: '10', errorMessage: 'Email too short' },
+            { validationType: 'maxLength', validationValue: '50', errorMessage: 'Email too long' },
+            { validationType: 'startsWith', validationValue: 'user_', errorMessage: 'Must start with user_' },
+            { validationType: 'endsWith', validationValue: '.com', errorMessage: 'Must end with .com' },
+            { validationType: 'matches', validationValue: '^user_[a-z]+.com$', errorMessage: 'Invalid format' },
+          ],
+        },
+      },
+    ];
+
+    testCases.forEach(({ typeName, validationsByField }) => {
+      it(`generates correct VTL for all validations in a type ${typeName}`, () => {
+        const result = generateTypeValidationSnippet(typeName, validationsByField);
+        expect(result).toMatchSnapshot(`all validations in a type ${typeName}`);
+      });
     });
   });
 });

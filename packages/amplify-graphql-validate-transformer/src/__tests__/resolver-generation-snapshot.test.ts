@@ -8,11 +8,11 @@ import { ValidateTransformer } from '../graphql-validate-transformer';
  * Tests for the ValidateTransformer's resolver generation functionality.
  *
  * This test suite verifies that the transformer:
- * - Correctly generates VTL templates for validation rules
+ * - Correctly generates combined VTL templates for all validations in a type
  * - Maintains consistent snapshot output for different validation scenarios
- * - Handles all supported validation types (numeric, string) correctly
+ * - Handles all supported validation types (numeric, string) correctly in a single template
  */
-describe('Resolver generation', () => {
+describe('Resolver Generation Snapshot', () => {
   const transformSchema = (schema: string): any => {
     const out = testTransform({
       schema,
@@ -23,25 +23,18 @@ describe('Resolver generation', () => {
     return out;
   };
 
-  const testValidation = (
-    out: any,
-    type: string,
-    field: string,
-    validationType: string,
-    index: number,
-    operation: 'create' | 'update',
-  ): void => {
-    expect(out.resolvers[`Mutation.${operation}${type}.validate.${index}.req.vtl`]).toMatchSnapshot(
-      `${operation} ${type.toLowerCase()} ${field} ${validationType} validation`,
+  const testValidations = (out: any, type: string, operation: 'create' | 'update'): void => {
+    expect(out.resolvers[`Mutation.${operation}${type}.validate.1.req.vtl`]).toMatchSnapshot(
+      `${operation} ${type.toLowerCase()} combined validations`,
     );
   };
 
-  const testValidationPair = (out: any, type: string, field: string, validationType: string, index: number): void => {
-    testValidation(out, type, field, validationType, index, 'create');
-    testValidation(out, type, field, validationType, index, 'update');
+  const testTypeValidationPair = (out: any, type: string): void => {
+    testValidations(out, type, 'create');
+    testValidations(out, type, 'update');
   };
 
-  it('should generate correct validation resolvers for numeric validations', () => {
+  it('should generate correct combined validation resolver for numeric validations', () => {
     const schema = `
       type Product @model {
         id: ID!
@@ -52,17 +45,10 @@ describe('Resolver generation', () => {
       }`;
 
     const out = transformSchema(schema);
-
-    // Test price validations
-    testValidationPair(out, 'Product', 'price', 'gt', 1);
-    testValidationPair(out, 'Product', 'price', 'lt', 2);
-
-    // Test quantity validations
-    testValidationPair(out, 'Product', 'quantity', 'gte', 3);
-    testValidationPair(out, 'Product', 'quantity', 'lte', 4);
+    testTypeValidationPair(out, 'Product');
   });
 
-  it('should generate correct validation resolvers for string validations', () => {
+  it('should generate correct combined validation resolver for string validations', () => {
     const schema = `
       type User @model {
         id: ID!
@@ -74,20 +60,10 @@ describe('Resolver generation', () => {
       }`;
 
     const out = transformSchema(schema);
-
-    // Test email validation
-    testValidationPair(out, 'User', 'email', 'matches', 1);
-
-    // Test username validations
-    testValidationPair(out, 'User', 'username', 'minLength', 2);
-    testValidationPair(out, 'User', 'username', 'maxLength', 3);
-
-    // Test url validations
-    testValidationPair(out, 'User', 'url', 'startsWith', 4);
-    testValidationPair(out, 'User', 'url', 'endsWith', 5);
+    testTypeValidationPair(out, 'User');
   });
 
-  it('should generate correct validation resolvers for multiple validations on the same field', () => {
+  it('should generate correct combined validation resolver for multiple validations on the same field', () => {
     const schema = `
       type Post @model {
         id: ID!
@@ -99,16 +75,10 @@ describe('Resolver generation', () => {
       }`;
 
     const out = transformSchema(schema);
-
-    // Test all title validations
-    testValidationPair(out, 'Post', 'title', 'minLength', 1);
-    testValidationPair(out, 'Post', 'title', 'maxLength', 2);
-    testValidationPair(out, 'Post', 'title', 'startsWith', 3);
-    testValidationPair(out, 'Post', 'title', 'endsWith', 4);
-    testValidationPair(out, 'Post', 'title', 'matches', 5);
+    testTypeValidationPair(out, 'Post');
   });
 
-  it('should generate correct validation resolvers for multiple fields', () => {
+  it('should generate correct combined validation resolver for multiple fields', () => {
     const schema = `
       type Comment @model {
         id: ID!
@@ -121,17 +91,6 @@ describe('Resolver generation', () => {
       }`;
 
     const out = transformSchema(schema);
-
-    // Test content validations
-    testValidationPair(out, 'Comment', 'content', 'minLength', 1);
-    testValidationPair(out, 'Comment', 'content', 'maxLength', 2);
-
-    // Test author validations
-    testValidationPair(out, 'Comment', 'author', 'minLength', 3);
-    testValidationPair(out, 'Comment', 'author', 'maxLength', 4);
-
-    // Test rating validations
-    testValidationPair(out, 'Comment', 'rating', 'gte', 5);
-    testValidationPair(out, 'Comment', 'rating', 'lte', 6);
+    testTypeValidationPair(out, 'Comment');
   });
 });

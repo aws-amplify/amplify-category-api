@@ -16,10 +16,10 @@ export const MIN_MAX_LENGTH_VALIDATION_TYPES = ['minLength', 'maxLength'] as con
  * @property {string} fieldName - The name of the field to test (optional)
  */
 type ValidationTestCase = {
-  validationType: string;
   fieldType: string;
-  value: string;
   fieldName?: string;
+  validationType: string;
+  validationValue: string;
 };
 
 /**
@@ -31,7 +31,7 @@ export const createValidationSchema = (testCase: ValidationTestCase, extraTypes?
   const baseSchema = /* GraphQL */ `
     type Post @model {
       id: ID!
-      ${testCase.fieldName || 'field'}: ${testCase.fieldType}! @validate(type: ${testCase.validationType}, value: "${testCase.value}")
+      ${testCase.fieldName || 'field'}: ${testCase.fieldType}! @validate(type: ${testCase.validationType}, value: "${testCase.validationValue}")
     }
   `;
   return extraTypes ? `${baseSchema}\n${extraTypes}` : baseSchema;
@@ -58,13 +58,13 @@ export const createValidationTestCases = (
   const filterTypes = options?.filterTypes ?? [];
   const types = filterTypes.length > 0 ? fieldTypes.filter((type) => !filterTypes.includes(type)) : fieldTypes;
 
-  return values.flatMap((value) =>
+  return values.flatMap((validationValue) =>
     validationTypes.flatMap((validationType) =>
       types.map((fieldType) => ({
-        validationType,
         fieldType,
-        value,
         ...(options?.fieldName ? { fieldName: options.fieldName } : {}),
+        validationType,
+        validationValue,
       })),
     ),
   );

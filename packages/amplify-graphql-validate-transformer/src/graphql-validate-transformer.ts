@@ -6,9 +6,9 @@ import {
   TransformerPluginProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveNode, FieldDefinitionNode, InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
-import { ValidateArguments, ValidateDirectiveConfiguration } from './types';
+import { ValidateDirectiveArgs, ValidateDirectiveConfiguration, ValidationsByField, ValidationType } from './types';
 import { validate } from './validators';
-import { makeValidationSnippet } from './vtl-generator';
+import { generateTypeValidationSnippet } from './vtl-generator';
 
 export class ValidateTransformer extends TransformerPluginBase implements TransformerPluginProvider {
   private directiveMap = new Map<string, ValidateDirectiveConfiguration[]>();
@@ -54,39 +54,49 @@ export class ValidateTransformer extends TransformerPluginBase implements Transf
       return;
     }
 
-    for (const typeName of this.directiveMap.keys()) {
-      for (const config of this.directiveMap.get(typeName)!) {
+    // Generate a single validation snippet for each type
+    for (const [typeName, configs] of this.directiveMap.entries()) {
+      // Group validations by field
+      const validationsByField: ValidationsByField = {};
+      for (const config of configs) {
         const fieldName = config.fieldNode.name.value;
-        const validationType = config.type;
-        const validationValue = config.value;
-        const errorMessage = config.errorMessage || `Validation failed for ${fieldName}`; // TODO: default error message
-        const validationSnippet = makeValidationSnippet(fieldName, validationType, validationValue, errorMessage);
-
-        // Add validation to create mutation
-        const createFieldName = `create${typeName}`;
-        const createResolver = ctx.resolvers.getResolver(mutationTypeName, createFieldName);
-        if (createResolver) {
-          createResolver.addVtlFunctionToSlot(
-            'validate',
-            MappingTemplate.s3MappingTemplateFromString(
-              validationSnippet,
-              `${mutationTypeName}.${createFieldName}.{slotName}.{slotIndex}.req.vtl`,
-            ),
-          );
+        if (!validationsByField[fieldName]) {
+          validationsByField[fieldName] = [];
         }
+        validationsByField[fieldName].push({
+          validationType: config.validationType,
+          validationValue: config.validationValue,
+          errorMessage: config.errorMessage || `Validation failed for ${fieldName}`, // TODO: default error message
+        });
+      }
 
-        // Add validation to update mutation
-        const updateFieldName = `update${typeName}`;
-        const updateResolver = ctx.resolvers.getResolver(mutationTypeName, updateFieldName);
-        if (updateResolver) {
-          updateResolver.addVtlFunctionToSlot(
-            'validate',
-            MappingTemplate.s3MappingTemplateFromString(
-              validationSnippet,
-              `${mutationTypeName}.${updateFieldName}.{slotName}.{slotIndex}.req.vtl`,
-            ),
-          );
-        }
+      // Generate a single combined VTL snippet for all validations in this type
+      const combinedTypeSnippet = generateTypeValidationSnippet(typeName, validationsByField);
+
+      // Add the combined validation to create mutation
+      const createFieldName = `create${typeName}`;
+      const createResolver = ctx.resolvers.getResolver(mutationTypeName, createFieldName);
+      if (createResolver) {
+        createResolver.addVtlFunctionToSlot(
+          'validate',
+          MappingTemplate.s3MappingTemplateFromString(
+            combinedTypeSnippet,
+            `${mutationTypeName}.${createFieldName}.{slotName}.{slotIndex}.req.vtl`,
+          ),
+        );
+      }
+
+      // Add the combined validation to update mutation
+      const updateFieldName = `update${typeName}`;
+      const updateResolver = ctx.resolvers.getResolver(mutationTypeName, updateFieldName);
+      if (updateResolver) {
+        updateResolver.addVtlFunctionToSlot(
+          'validate',
+          MappingTemplate.s3MappingTemplateFromString(
+            combinedTypeSnippet,
+            `${mutationTypeName}.${updateFieldName}.{slotName}.{slotIndex}.req.vtl`,
+          ),
+        );
       }
     }
   };
@@ -105,18 +115,18 @@ export class ValidateTransformer extends TransformerPluginBase implements Transf
     parentNode: ObjectTypeDefinitionNode,
     fieldNode: FieldDefinitionNode,
   ): ValidateDirectiveConfiguration {
-    const defaultArgs: ValidateArguments = {
-      type: '',
+    const defaultArgs: ValidateDirectiveArgs = {
+      type: '' as ValidationType,
       value: '',
       errorMessage: '',
     };
-    const args = directive.getArguments<ValidateArguments>(defaultArgs);
+    const args = directive.getArguments<ValidateDirectiveArgs>(defaultArgs);
 
     return {
       parentNode,
       fieldNode,
-      type: args.type,
-      value: args.value,
+      validationType: args.type,
+      validationValue: args.value,
       errorMessage: args.errorMessage,
     };
   }
