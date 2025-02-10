@@ -204,6 +204,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
       stream: StreamViewType.NEW_AND_OLD_IMAGES,
       encryption: TableEncryption.DEFAULT,
       removalPolicy,
+      deletionProtection: isTableImported,
       ...(context.isProjectUsingDataStore() ? { timeToLiveAttribute: '_ttl' } : undefined),
       ...(isTableImported ? { isImported: true } : undefined),
     });
