@@ -83,6 +83,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
       stream: StreamViewType.NEW_AND_OLD_IMAGES,
       encryption: TableEncryption.DEFAULT,
       removalPolicy,
+      deletionProtection: context.transformParameters.enableGen2Migration,
       ...(context.isProjectUsingDataStore() ? { timeToLiveAttribute: '_ttl' } : undefined),
     });
     const cfnTable = table.node.defaultChild as CfnTable;
