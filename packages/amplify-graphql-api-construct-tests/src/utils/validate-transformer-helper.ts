@@ -46,6 +46,10 @@ export interface EvaluateTemplateTestCase<T, O> {
 
 /**
  * Test case for complex field validations
+ * @property {string} description - Description of the test case
+ * @property {Record<string, any>} input - The input value to test
+ * @property {ValidationsByField} validationsByField - The validations to test
+ * @property {boolean} shouldPass - Whether the test should pass validation
  */
 export interface ComplexValidationTestCase {
   description: string;
@@ -72,30 +76,79 @@ export const cleanupTemplateFiles = (directory: string): void => {
 };
 
 /**
+ * Interface for test files
+ * @property {string} templateName - The name of the template file
+ * @property {string} contextName - The name of the context file
+ */
+interface TestFiles {
+  templateName: string;
+  contextName: string;
+}
+
+/**
+ * Base context object structure shared across all tests
+ */
+const BASE_CONTEXT = {
+  identity: { username: 'testUser' },
+  request: { headers: { 'x-forwarded-for': '127.0.0.1' } },
+  info: { fieldName: 'createField', parentTypeName: 'Mutation', variables: {} },
+};
+
+/**
+ * Creates test file names based on test parameters
+ * @param testId - The ID of the test
+ * @param operator - The operator to use for the test
+ * @returns The test file names
+ */
+const createTestFileNames = (testId: string, operator?: string): TestFiles => ({
+  templateName: operator ? `template_${operator}_${testId}.vtl` : `template_${testId}.vtl`,
+  contextName: operator ? `context_${operator}_${testId}.json` : `context_${testId}.json`,
+});
+
+/**
+ * Writes template and context files for a test
+ * @param directory - The directory to write the files to
+ * @param files - The test file names
+ * @param template - The template content
+ * @param context - The context content
+ */
+const writeTestFiles = (directory: string, files: TestFiles, template: string, context: any): void => {
+  if (!ensureDirectoryExists(directory)) {
+    throw new Error(`Cannot create or write to directory: ${directory}`);
+  }
+  writeFileSync(join(directory, files.templateName), template);
+  writeFileSync(join(directory, files.contextName), JSON.stringify(context, null, 2));
+};
+
+/**
+ * Validates test results based on shouldPass flag
+ * @param result - The result of the test
+ * @param shouldPass - Whether the test should pass
+ * @param expectedErrorMessage - Optional expected error message for validation failure
+ */
+const validateTestResult = (result: any, shouldPass: boolean, expectedErrorMessage?: string): void => {
+  if (shouldPass) {
+    expect(result.error).toBeUndefined();
+  } else {
+    expect(result.error).toBeDefined();
+    expect(result.error.message).toBeDefined();
+    if (expectedErrorMessage) {
+      expect(result.error.message).toBe(expectedErrorMessage);
+    }
+  }
+};
+
+/**
  * Creates a context object for testing validation templates
  * @param input The input value to use in the context
  * @returns The context object
  */
-export const createContext = (input: string | number): any => {
+export const createContext = (input: string | number | Record<string, any>): any => {
+  const inputField = typeof input === 'object' ? input : { field: input };
+
   return {
-    arguments: {
-      input: {
-        field: input,
-      },
-    },
-    identity: {
-      username: 'testUser',
-    },
-    request: {
-      headers: {
-        'x-forwarded-for': '127.0.0.1',
-      },
-    },
-    info: {
-      fieldName: 'createField',
-      parentTypeName: 'Mutation',
-      variables: {},
-    },
+    ...BASE_CONTEXT,
+    arguments: { input: inputField },
   };
 };
 
@@ -116,16 +169,9 @@ export const setupEvaluateTemplateTest = <T extends string | number, O extends s
   testId: string,
   messages: Record<O, string>,
   directory: string,
-): { templateName: string; contextName: string } => {
-  const templateName = `template_${operator}_${testId}.vtl`;
-  const contextName = `context_${operator}_${testId}.json`;
+): TestFiles => {
+  const files = createTestFileNames(testId, operator);
 
-  // Ensure directory exists and is writable
-  if (!ensureDirectoryExists(directory)) {
-    throw new Error(`Cannot create or write to directory: ${directory}`);
-  }
-
-  // Write template.vtl
   const validationsByField = {
     field: [
       {
@@ -135,14 +181,31 @@ export const setupEvaluateTemplateTest = <T extends string | number, O extends s
       },
     ],
   };
+
   const validationSnippet = generateTypeValidationSnippet('testType', validationsByField);
-  writeFileSync(join(directory, templateName), validationSnippet);
-
-  // Write context.json
   const context = createContext(input);
-  writeFileSync(join(directory, contextName), JSON.stringify(context, null, 2));
 
-  return { templateName, contextName };
+  writeTestFiles(directory, files, validationSnippet, context);
+
+  return files;
+};
+
+/**
+ * Sets up a complex validation test by creating the necessary VTL and context files
+ * @param testCase - The test case to setup
+ * @param testId - The ID of the test
+ * @param directory - The directory to write the files to
+ * @returns The test file names
+ */
+const setupComplexValidationTest = (testCase: ComplexValidationTestCase, testId: string, directory: string): TestFiles => {
+  const files = createTestFileNames(testId);
+  const validationsByField = testCase.validationsByField ?? {};
+  const validationSnippet = generateTypeValidationSnippet('TestType', validationsByField);
+  const context = createContext(testCase.input);
+
+  writeTestFiles(directory, files, validationSnippet, context);
+
+  return files;
 };
 
 /**
@@ -154,22 +217,12 @@ export const setupEvaluateTemplateTest = <T extends string | number, O extends s
  */
 export const evaluateTemplate = async (templateName: string, contextName: string, directory: string): Promise<any> => {
   try {
-    // Initialize the AppSync client
     const client = new AppSyncClient({ region: process.env.AWS_REGION });
-
-    // Read the template and context files
     const template = readFileSync(join(directory, templateName), 'utf8');
     const context = readFileSync(join(directory, contextName), 'utf8');
 
-    // Create the evaluate template command
-    const command = new EvaluateMappingTemplateCommand({
-      template,
-      context,
-    });
-
-    // Execute the command
-    const response = await client.send(command);
-    return response;
+    const command = new EvaluateMappingTemplateCommand({ template, context });
+    return await client.send(command);
   } catch (error) {
     console.error('Error evaluating template:', error);
     throw error;
@@ -189,60 +242,33 @@ export const runEvaluateTemplateTest = async <T extends string | number, O exten
   messages: Record<O, string>,
   directory: string,
 ): Promise<void> => {
-  const testId = `${index}`;
   const { templateName, contextName } = setupEvaluateTemplateTest(
     testCase.input,
     testCase.operator,
     testCase.threshold,
-    testId,
+    `${index}`,
     messages,
     directory,
   );
-  const result = await evaluateTemplate(templateName, contextName, directory);
 
-  if (testCase.shouldPass) {
-    expect(result.error).toBeUndefined();
-  } else {
-    expect(result.error).toBeDefined();
-    expect(result.error.message).toBeDefined();
-    if (testCase.expectedErrorMessage) {
-      expect(result.error.message).toBe(testCase.expectedErrorMessage);
-    }
-  }
+  const result = await evaluateTemplate(templateName, contextName, directory);
+  validateTestResult(result, testCase.shouldPass, testCase.expectedErrorMessage);
 };
 
 /**
  * Runs a complex validation test with multiple fields and validations
+ * @param testCase - The test case to run
+ * @param testId - The ID of the test
+ * @param directory - The directory to read the files from
  */
-export const runComplexValidationTest = async (testCase: ComplexValidationTestCase, testId: string, directory: string): Promise<void> => {
-  const templateName = `template_${testId}.vtl`;
-  const contextName = `context_${testId}.json`;
-
-  // Use default validations if not provided
-  const validationsByField = testCase.validationsByField ?? {};
-  const shouldPass = testCase.shouldPass ?? true;
-
-  // Generate validation snippet
-  const validationSnippet = generateTypeValidationSnippet('TestType', validationsByField);
-  writeFileSync(join(directory, templateName), validationSnippet);
-
-  // Create context with multiple fields
-  const context = {
-    arguments: { input: testCase.input },
-    identity: { username: 'testUser' },
-    request: { headers: { 'x-forwarded-for': '127.0.0.1' } },
-    info: { fieldName: 'createField', parentTypeName: 'Mutation', variables: {} },
-  };
-  writeFileSync(join(directory, contextName), JSON.stringify(context, null, 2));
-
+export const runComplexValidationTest = async (
+  testCase: ComplexValidationTestCase,
+  testId: string,
+  directory: string,
+): Promise<void> => {
+  const { templateName, contextName } = setupComplexValidationTest(testCase, testId, directory);
   const result = await evaluateTemplate(templateName, contextName, directory);
-
-  if (shouldPass) {
-    expect(result.error).toBeUndefined();
-  } else {
-    expect(result.error).toBeDefined();
-    expect(result.error.message).toBeDefined();
-  }
+  validateTestResult(result, testCase.shouldPass ?? true);
 };
 
 /**
