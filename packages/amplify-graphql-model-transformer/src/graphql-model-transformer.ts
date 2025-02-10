@@ -334,7 +334,6 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         if (datasource.ds.dynamoDbConfig && !cdk.isResolvableObject(datasource.ds.dynamoDbConfig)) {
           dataSourceMapping[modelName] = datasource.ds.dynamoDbConfig.tableName;
         } else {
-          // TODO: probably need a link to docs for this
           console.warn(
             `Could not resolve table name for ${modelName}. DataSourceMappingOutput is incomplete. Please manually add ${modelName} to the mapping for your migration.`,
           );
