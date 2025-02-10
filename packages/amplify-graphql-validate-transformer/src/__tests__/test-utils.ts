@@ -31,7 +31,9 @@ export const createValidationSchema = (testCase: ValidationTestCase, extraTypes?
   const baseSchema = /* GraphQL */ `
     type Post @model {
       id: ID!
-      ${testCase.fieldName || 'field'}: ${testCase.fieldType}! @validate(type: ${testCase.validationType}, value: "${testCase.validationValue}")
+      ${testCase.fieldName || 'field'}: ${testCase.fieldType}! @validate(type: ${testCase.validationType}, value: "${
+    testCase.validationValue
+  }")
     }
   `;
   return extraTypes ? `${baseSchema}\n${extraTypes}` : baseSchema;

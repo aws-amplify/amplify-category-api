@@ -27,7 +27,9 @@ describe('Validation on Model vs Non-Model Types', () => {
             }
 
             type NonModelInput {
-              ${testCase.fieldName || 'field'}: ${testCase.fieldType}! @validate(type: ${testCase.validationType}, value: "${testCase.validationValue}")
+              ${testCase.fieldName || 'field'}: ${testCase.fieldType}! @validate(type: ${testCase.validationType}, value: "${
+          testCase.validationValue
+        }")
             }
           `;
 

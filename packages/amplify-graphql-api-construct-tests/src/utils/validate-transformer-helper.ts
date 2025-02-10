@@ -261,11 +261,7 @@ export const runEvaluateTemplateTest = async <T extends string | number, O exten
  * @param testId - The ID of the test
  * @param directory - The directory to read the files from
  */
-export const runComplexValidationTest = async (
-  testCase: ComplexValidationTestCase,
-  testId: string,
-  directory: string,
-): Promise<void> => {
+export const runComplexValidationTest = async (testCase: ComplexValidationTestCase, testId: string, directory: string): Promise<void> => {
   const { templateName, contextName } = setupComplexValidationTest(testCase, testId, directory);
   const result = await evaluateTemplate(templateName, contextName, directory);
   validateTestResult(result, testCase.shouldPass ?? true);

@@ -65,7 +65,7 @@ export class ValidateTransformer extends TransformerPluginBase implements Transf
         }
 
         const defaultErrorMessage = `${config.validationType} ${config.validationValue} validation failed for ${fieldName}`;
-        
+
         validationsByField[fieldName].push({
           validationType: config.validationType,
           validationValue: config.validationValue,
