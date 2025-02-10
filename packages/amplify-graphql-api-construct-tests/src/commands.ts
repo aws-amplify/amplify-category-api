@@ -11,7 +11,7 @@ import {
   sleep,
   updateApiSchema,
 } from 'amplify-category-api-e2e-core';
-import { DynamoDBClient, DeleteTableCommand, ListTablesCommand } from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient, DeleteTableCommand, ListTablesCommand, UpdateTableCommand } from '@aws-sdk/client-dynamodb';
 
 /**
  * Retrieve the path to the `npx` executable for interacting with the aws-cdk cli.
@@ -248,5 +248,9 @@ export const createGen1ProjectForMigration = async (
  */
 export const deleteDDBTables = async (tableNames: string[]): Promise<void> => {
   const client = new DynamoDBClient({ region: process.env.CLI_REGION || 'us-west-2' });
+  // disable deletion protection before deleting the tables
+  await Promise.allSettled(
+    tableNames.map((tableName) => client.send(new UpdateTableCommand({ TableName: tableName, DeletionProtectionEnabled: false }))),
+  );
   await Promise.allSettled(tableNames.map((tableName) => client.send(new DeleteTableCommand({ TableName: tableName }))));
 };
