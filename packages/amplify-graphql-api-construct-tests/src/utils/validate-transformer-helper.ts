@@ -1,13 +1,16 @@
 import { readdirSync, unlinkSync, writeFileSync, accessSync, constants, existsSync, mkdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { AppSyncClient, EvaluateMappingTemplateCommand } from '@aws-sdk/client-appsync';
-import { makeValidationSnippet } from '@aws-amplify/graphql-validate-transformer';
+import { generateTypeValidationSnippet } from '@aws-amplify/graphql-validate-transformer/src/vtl-generator';
+import { ValidationType } from '@aws-amplify/graphql-validate-transformer/src/types';
+import { ValidationsByField } from '@aws-amplify/graphql-validate-transformer/src/types';
 
 export const TEMPLATES_DIR = join(__dirname, '..', '__tests__', 'validate-transformer', '__templates__');
 export const STRING_TEMPLATES_DIR = join(TEMPLATES_DIR, 'string-validation');
 export const NUMERIC_TEMPLATES_DIR = join(TEMPLATES_DIR, 'numeric-validation');
 export const ERROR_MESSAGE_TEMPLATES_DIR = join(TEMPLATES_DIR, 'error-message-parsing');
 export const STRING_VALIDATION_THRESHOLD_TEMPLATES_DIR = join(TEMPLATES_DIR, 'string-validation-threshold-parsing');
+export const COMPLEX_VALIDATION_TEMPLATES_DIR = join(TEMPLATES_DIR, 'complex-validation');
 
 /**
  * String validations types in a string union
@@ -39,6 +42,16 @@ export interface EvaluateTemplateTestCase<T, O> {
   threshold: string;
   shouldPass: boolean;
   expectedErrorMessage?: string;
+}
+
+/**
+ * Test case for complex field validations
+ */
+export interface ComplexValidationTestCase {
+  description: string;
+  input: Record<string, any>;
+  validationsByField?: ValidationsByField;
+  shouldPass?: boolean;
 }
 
 /**
@@ -87,26 +100,6 @@ export const createContext = (input: string | number): any => {
 };
 
 /**
- * Ensures directory exists and checks write permissions
- * @param directory The directory to check/create
- * @returns true if directory exists and is writable, false otherwise
- */
-const ensureDirectoryExists = (directory: string): boolean => {
-  try {
-    // Create directory if it doesn't exist
-    if (!existsSync(directory)) {
-      mkdirSync(directory, { recursive: true });
-    }
-
-    // Check write permissions
-    accessSync(directory, constants.W_OK);
-    return true;
-  } catch (error) {
-    return false;
-  }
-};
-
-/**
  * Sets up a template test by creating the necessary VTL and context files
  * @param input The input value to test
  * @param operator The operator type for the validation
@@ -133,7 +126,16 @@ export const setupEvaluateTemplateTest = <T extends string | number, O extends s
   }
 
   // Write template.vtl
-  const validationSnippet = makeValidationSnippet('field', operator, threshold, messages[operator]);
+  const validationsByField = {
+    field: [
+      {
+        validationType: operator as ValidationType,
+        validationValue: threshold,
+        errorMessage: messages[operator],
+      },
+    ],
+  };
+  const validationSnippet = generateTypeValidationSnippet('testType', validationsByField);
   writeFileSync(join(directory, templateName), validationSnippet);
 
   // Write context.json
@@ -206,5 +208,59 @@ export const runEvaluateTemplateTest = async <T extends string | number, O exten
     if (testCase.expectedErrorMessage) {
       expect(result.error.message).toBe(testCase.expectedErrorMessage);
     }
+  }
+};
+
+/**
+ * Runs a complex validation test with multiple fields and validations
+ */
+export const runComplexValidationTest = async (testCase: ComplexValidationTestCase, testId: string, directory: string): Promise<void> => {
+  const templateName = `template_${testId}.vtl`;
+  const contextName = `context_${testId}.json`;
+
+  // Use default validations if not provided
+  const validationsByField = testCase.validationsByField ?? {};
+  const shouldPass = testCase.shouldPass ?? true;
+
+  // Generate validation snippet
+  const validationSnippet = generateTypeValidationSnippet('TestType', validationsByField);
+  writeFileSync(join(directory, templateName), validationSnippet);
+
+  // Create context with multiple fields
+  const context = {
+    arguments: { input: testCase.input },
+    identity: { username: 'testUser' },
+    request: { headers: { 'x-forwarded-for': '127.0.0.1' } },
+    info: { fieldName: 'createField', parentTypeName: 'Mutation', variables: {} },
+  };
+  writeFileSync(join(directory, contextName), JSON.stringify(context, null, 2));
+
+  const result = await evaluateTemplate(templateName, contextName, directory);
+
+  if (shouldPass) {
+    expect(result.error).toBeUndefined();
+  } else {
+    expect(result.error).toBeDefined();
+    expect(result.error.message).toBeDefined();
+  }
+};
+
+/**
+ * Ensures directory exists and checks write permissions
+ * @param directory The directory to check/create
+ * @returns true if directory exists and is writable, false otherwise
+ */
+const ensureDirectoryExists = (directory: string): boolean => {
+  try {
+    // Create directory if it doesn't exist
+    if (!existsSync(directory)) {
+      mkdirSync(directory, { recursive: true });
+    }
+
+    // Check write permissions
+    accessSync(directory, constants.W_OK);
+    return true;
+  } catch (error) {
+    return false;
   }
 };
