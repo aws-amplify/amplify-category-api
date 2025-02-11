@@ -1,9 +1,9 @@
-import { readdirSync, unlinkSync, writeFileSync, accessSync, constants, existsSync, mkdirSync, readFileSync } from 'fs';
+import { accessSync, constants, existsSync, mkdirSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from 'fs';
 import { join } from 'path';
+
 import { AppSyncClient, EvaluateMappingTemplateCommand } from '@aws-sdk/client-appsync';
+import { ValidationType, ValidationsByField } from '@aws-amplify/graphql-validate-transformer/src/types';
 import { generateTypeValidationSnippet } from '@aws-amplify/graphql-validate-transformer/src/vtl-generator';
-import { ValidationType } from '@aws-amplify/graphql-validate-transformer/src/types';
-import { ValidationsByField } from '@aws-amplify/graphql-validate-transformer/src/types';
 
 export const TEMPLATES_DIR = join(__dirname, '..', '__tests__', 'validate-transformer', '__templates__');
 export const STRING_TEMPLATES_DIR = join(TEMPLATES_DIR, 'string-validation');

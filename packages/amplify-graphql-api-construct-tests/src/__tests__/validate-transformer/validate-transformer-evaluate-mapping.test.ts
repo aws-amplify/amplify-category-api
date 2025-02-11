@@ -1,19 +1,20 @@
 import { ValidationType } from '@aws-amplify/graphql-validate-transformer/src/types';
+
+import { ONE_MINUTE } from '../../utils/duration-constants';
 import {
   cleanupTemplateFiles,
+  ComplexValidationTestCase,
+  COMPLEX_VALIDATION_TEMPLATES_DIR,
   ERROR_MESSAGE_TEMPLATES_DIR,
   EvaluateTemplateTestCase,
-  runEvaluateTemplateTest,
-  StringValidationType,
   NumericValidationType,
   NUMERIC_TEMPLATES_DIR,
+  runComplexValidationTest,
+  runEvaluateTemplateTest,
+  StringValidationType,
   STRING_TEMPLATES_DIR,
   STRING_VALIDATION_THRESHOLD_TEMPLATES_DIR,
-  ComplexValidationTestCase,
-  runComplexValidationTest,
-  COMPLEX_VALIDATION_TEMPLATES_DIR,
 } from '../../utils/validate-transformer-helper';
-import { ONE_MINUTE } from '../../utils/duration-constants';
 
 jest.setTimeout(ONE_MINUTE);
 
