@@ -5,6 +5,7 @@ import { AppSyncClient, EvaluateMappingTemplateCommand } from '@aws-sdk/client-a
 import { ValidationType, ValidationsByField } from '@aws-amplify/graphql-validate-transformer/src/types';
 import { generateTypeValidationSnippet } from '@aws-amplify/graphql-validate-transformer/src/vtl-generator';
 
+// Directory paths for storing temporary test files (VTL templates and JSON contexts) during validation tests
 export const TEMPLATES_DIR = join(__dirname, '..', '__tests__', 'validate-transformer', '__templates__');
 export const STRING_TEMPLATES_DIR = join(TEMPLATES_DIR, 'string-validation');
 export const NUMERIC_TEMPLATES_DIR = join(TEMPLATES_DIR, 'numeric-validation');
