@@ -100,7 +100,7 @@ const BASE_CONTEXT = {
  * @param operator - The operator to use for the test
  * @returns The test file names
  */
-const createTestFileNames = (testId: string, operator?: string): TestFiles => ({
+const constructTestFileNames = (testId: string, operator?: string): TestFiles => ({
   templateName: operator ? `template_${operator}_${testId}.vtl` : `template_${testId}.vtl`,
   contextName: operator ? `context_${operator}_${testId}.json` : `context_${testId}.json`,
 });
@@ -170,7 +170,7 @@ export const setupEvaluateTemplateTest = <T extends string | number, O extends s
   messages: Record<O, string>,
   directory: string,
 ): TestFiles => {
-  const files = createTestFileNames(testId, operator);
+  const files = constructTestFileNames(testId, operator);
 
   const validationsByField = {
     field: [
@@ -198,7 +198,7 @@ export const setupEvaluateTemplateTest = <T extends string | number, O extends s
  * @returns The test file names
  */
 const setupComplexValidationTest = (testCase: ComplexValidationTestCase, testId: string, directory: string): TestFiles => {
-  const files = createTestFileNames(testId);
+  const files = constructTestFileNames(testId);
   const validationsByField = testCase.validationsByField ?? {};
   const validationSnippet = generateTypeValidationSnippet('TestType', validationsByField);
   const context = createContext(testCase.input);
