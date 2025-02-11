@@ -32,10 +32,9 @@ export const generateFieldValidationSnippet = (fieldName: string, validations: V
   // Add each validation with its error check
   for (const validation of validations) {
     const { validationType, validationValue, errorMessage } = validation;
-    const escapedValue = escapeSingleQuotes(validationValue);
     const escapedErrorMessage = escapeSingleQuotes(errorMessage);
     const validationVar = `${validationType}ValidationPassed`;
-    const validationCheck = getValidationCheck(fieldName, validationVar, validationType, escapedValue);
+    const validationCheck = getValidationCheck(fieldName, validationVar, validationType, validationValue);
 
     validationLines.push(`  ${validationCheck}`, `  #if(!$${validationVar})`, `    $util.error('${escapedErrorMessage}')`, '  #end');
   }
@@ -50,31 +49,32 @@ export const generateFieldValidationSnippet = (fieldName: string, validations: V
  * @param fieldName - The name of the field to validate
  * @param validationVar - The name of the validation variable
  * @param validationType - The type of validation to perform
- * @param value - The value to compare against
+ * @param validationValue - The unescaped value to compare against (will be escaped internally as needed)
  * @returns A VTL code block that performs the validation check
  */
-const getValidationCheck = (fieldName: string, validationVar: string, validationType: string, value: string): string => {
+const getValidationCheck = (fieldName: string, validationVar: string, validationType: string, validationValue: string): string => {
   const fieldRef = `$ctx.args.input.${fieldName}`;
+  const escapedValue = escapeSingleQuotes(validationValue);
 
   switch (validationType.toLowerCase()) {
     case 'gt':
-      return `#set($${validationVar} = ${fieldRef} > ${value})`;
+      return `#set($${validationVar} = ${fieldRef} > ${escapedValue})`;
     case 'lt':
-      return `#set($${validationVar} = ${fieldRef} < ${value})`;
+      return `#set($${validationVar} = ${fieldRef} < ${escapedValue})`;
     case 'gte':
-      return `#set($${validationVar} = ${fieldRef} >= ${value})`;
+      return `#set($${validationVar} = ${fieldRef} >= ${escapedValue})`;
     case 'lte':
-      return `#set($${validationVar} = ${fieldRef} <= ${value})`;
+      return `#set($${validationVar} = ${fieldRef} <= ${escapedValue})`;
     case 'minlength':
-      return `#set($${validationVar} = ${fieldRef}.length() >= ${value})`;
+      return `#set($${validationVar} = ${fieldRef}.length() >= ${escapedValue})`;
     case 'maxlength':
-      return `#set($${validationVar} = ${fieldRef}.length() <= ${value})`;
+      return `#set($${validationVar} = ${fieldRef}.length() <= ${escapedValue})`;
     case 'startswith':
-      return `#set($${validationVar} = ${fieldRef}.startsWith('${value}'))`;
+      return `#set($${validationVar} = ${fieldRef}.startsWith('${escapedValue}'))`;
     case 'endswith':
-      return `#set($${validationVar} = ${fieldRef}.endsWith('${value}'))`;
+      return `#set($${validationVar} = ${fieldRef}.endsWith('${escapedValue}'))`;
     case 'matches':
-      return `#set($${validationVar} = $util.matches('${value}', ${fieldRef}))`;
+      return `#set($${validationVar} = $util.matches('${escapedValue}', ${fieldRef}))`;
     default:
       throw new Error(`Unsupported validation type: ${validationType}`);
   }
