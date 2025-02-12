@@ -1,27 +1,27 @@
-import * as fs from 'fs';
 import {
   AppSyncClient,
-  DeleteFunctionCommand,
-  DeleteResolverCommand,
-  ListFunctionsCommand,
-  ListResolversCommand,
-  CreateResolverCommand,
   CreateFunctionCommand,
+  CreateResolverCommand,
+  DeleteFunctionCommand,
+  DeleteFunctionCommandInput,
+  DeleteResolverCommand,
+  DeleteResolverCommandInput,
+  ListFunctionsCommand,
+  ListFunctionsCommandInput,
+  ListResolversCommand,
+  ListResolversCommandInput,
+  ListTypesCommand,
+  ListTypesCommandInput,
 } from '@aws-sdk/client-appsync';
 import { S3Client, GetObjectCommand, NoSuchKey } from '@aws-sdk/client-s3';
 
 const functionIdValueMap: Record<string, string> = {};
 
 export const handler = async (event: any): Promise<any> => {
+  console.log('event', JSON.stringify(event));
   const metadata: any = await getComputedResources();
-  // for (const [k, v] of Object.entries(metadata)) {
-  //   if ((v as any).type !== 'Function') {
-  //     continue;
-  //   }
-  //   functionIdNameMap[(v as any).functionId] = k;
-  // }
   console.log('Delete all resolvers');
-  await deleteAllResolvers(metadata);
+  await deleteAllResolvers();
   console.log('Delete all functions');
   await deleteAllFunctions();
 
@@ -38,47 +38,97 @@ export const handler = async (event: any): Promise<any> => {
   }
 };
 
-const deleteAllResolvers = async (metadata: any): Promise<void> => {
+const getAllTypeNames = async (): Promise<string[]> => {
   const client = new AppSyncClient({});
-  const typeNames = Object.values(metadata)
-    .filter((x: any) => x.type === 'Resolver')
-    .map((x: any) => x.typeName);
-  for (const typeName of typeNames) {
-    // Get the resolvers
-    const listResolversCommand = new ListResolversCommand({
-      apiId: process.env.API_ID,
-      typeName: typeName,
-    });
-    const result = await client.send(listResolversCommand);
 
-    // Delete the resolvers
-    for (const resolver of result.resolvers ?? []) {
-      const deleteResolverCommand = new DeleteResolverCommand({
+  let nextToken: string | undefined = undefined;
+  const typeNames: string[] = [];
+  do {
+    const input: ListTypesCommandInput = {
+      apiId: process.env.API_ID,
+      format: 'JSON',
+      nextToken,
+    };
+    const command = new ListTypesCommand(input);
+    const result = await client.send(command);
+    nextToken = result.nextToken;
+
+    if (!result.types || result.types.length === 0) {
+      continue;
+    }
+    const localNames = result.types.map((type) => type.name).filter((name) => name !== undefined) as string[];
+    typeNames.push(...localNames);
+  } while (nextToken);
+
+  return typeNames;
+};
+
+const deleteAllResolvers = async (): Promise<void> => {
+  const client = new AppSyncClient({});
+  const typeNames = await getAllTypeNames();
+
+  let nextToken: string | undefined = undefined;
+  const deleteResolverInputs: DeleteResolverCommandInput[] = [];
+  do {
+    const input: ListResolversCommandInput = {
+      apiId: process.env.API_ID,
+      typeName: typeNames.pop(),
+      nextToken,
+    };
+    const command = new ListResolversCommand(input);
+    const result = await client.send(command);
+    nextToken = result.nextToken;
+    if (!result.resolvers || result.resolvers.length === 0) {
+      continue;
+    }
+
+    const localInputs = result.resolvers.map(
+      (resolver): DeleteResolverCommandInput => ({
         apiId: process.env.API_ID,
         fieldName: resolver.fieldName,
         typeName: resolver.typeName,
-      });
-      await client.send(deleteResolverCommand);
-    }
+      }),
+    );
+
+    deleteResolverInputs.push(...localInputs);
+  } while (nextToken);
+
+  for (const input of deleteResolverInputs) {
+    const command = new DeleteResolverCommand(input);
+    await client.send(command);
   }
 };
 
 const deleteAllFunctions = async (): Promise<void> => {
   const client = new AppSyncClient({});
 
-  // Get the functions
-  const listFunctionsCommand = new ListFunctionsCommand({
-    apiId: process.env.API_ID,
-  });
-  const result = await client.send(listFunctionsCommand);
+  let nextToken: string | undefined = undefined;
+  const functionIds: string[] = [];
 
-  // Delete the functions
-  for (const func of result.functions ?? []) {
-    const deleteFunctionCommand = new DeleteFunctionCommand({
+  do {
+    const input: ListFunctionsCommandInput = {
       apiId: process.env.API_ID,
-      functionId: func.functionId,
-    });
-    await client.send(deleteFunctionCommand);
+      nextToken,
+    };
+    const command = new ListFunctionsCommand(input);
+
+    const result = await client.send(command);
+    nextToken = result.nextToken;
+
+    if (!result.functions || result.functions.length === 0) {
+      continue;
+    }
+    const localIds = result.functions.map((func) => func.functionId).filter((id) => id !== undefined) as string[];
+    functionIds.push(...localIds);
+  } while (nextToken);
+
+  for (const functionId of functionIds) {
+    const input: DeleteFunctionCommandInput = {
+      apiId: process.env.API_ID,
+      functionId,
+    };
+    const command = new DeleteFunctionCommand(input);
+    await client.send(command);
   }
 };
 
@@ -127,7 +177,7 @@ const createResolvers = async (metadata: any): Promise<void> => {
   }
 };
 
-function parseS3Url(s3Url: string): { bucket: string; key: string; versionId?: string } {
+const parseS3Url = (s3Url: string): { bucket: string; key: string; versionId?: string } => {
   try {
     const url = new URL(s3Url);
 
@@ -147,39 +197,9 @@ function parseS3Url(s3Url: string): { bucket: string; key: string; versionId?: s
   } catch (err) {
     throw new Error(`Invalid S3 URL: ${s3Url}`);
   }
-}
+};
 
-// async function getJsonFromS3<T>(bucket: string, key: string): Promise<T> {
-//   const s3 = new S3();
-
-//   try {
-//     const object = await s3.getObject({
-//       Bucket: bucket,
-//       Key: key,
-//     });
-
-//     if (!object.Body) {
-//       throw new Error('Empty response body');
-//     }
-
-//     try {
-//       return JSON.parse(object.Body.toString()) as T;
-//     } catch (parseError) {
-//       console.log('Failed to parse JSON');
-//       console.log(object.Body);
-//       console.log(object.Body.toString());
-//       return {} as T;
-//       // throw new Error(`Failed to parse JSON: ${parseError.message}`);
-//     }
-//   } catch (error) {
-//     if (error instanceof NoSuchKey) {
-//       throw new Error(`File not found in bucket ${bucket} with key ${key}`);
-//     }
-//     throw error;
-//   }
-// }
-
-async function getJsonFromS3<T>(bucket: string, key: string): Promise<T> {
+const getJsonFromS3 = async <T>(bucket: string, key: string): Promise<T> => {
   const client = new S3Client({});
 
   try {
@@ -210,10 +230,10 @@ async function getJsonFromS3<T>(bucket: string, key: string): Promise<T> {
     }
     throw error;
   }
-}
+};
 
-async function getComputedResources(): Promise<any> {
+const getComputedResources = async (): Promise<any> => {
   const { bucket, key } = parseS3Url(process.env.resolverCodeAsset!);
   const computedResources = await getJsonFromS3<any>(bucket, key);
   return computedResources;
-}
+};
