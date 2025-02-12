@@ -1,6 +1,6 @@
 # Test Templates Directory
 
-This directory is used by `validate-transformer.test.ts` to store temporary VTL templates and context files during test execution.
+This directory is used by `validate-transformer-evaluate-mapping.test.ts` to store temporary VTL templates and context files during test execution.
 
 ## Directory Structure
 
