@@ -334,8 +334,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         if (datasource.ds.dynamoDbConfig && !cdk.isResolvableObject(datasource.ds.dynamoDbConfig)) {
           dataSourceMapping[modelName] = datasource.ds.dynamoDbConfig.tableName;
         } else {
-          console.warn(
-            `Could not resolve table name for ${modelName}. DataSourceMappingOutput is incomplete. Please manually add ${modelName} to the mapping for your migration.`,
+          throw new Error(
+            `Could not resolve table name for ${modelName}. This error should not be possible. Please report this issue at https://github.com/aws-amplify/amplify-category-api/issues.`,
           );
         }
       });
