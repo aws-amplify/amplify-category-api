@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-gen1-migration-0211.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.10.2...@aws-amplify/graphql-transformer-interfaces@3.11.0-gen1-migration-0211.0) (2025-02-12)
+
+### Bug Fixes
+
+- set to optional ([bc9854c](https://github.com/aws-amplify/amplify-category-api/commit/bc9854c08ef5d607f73b44c3b824aede1fd8731f))
+
+### Features
+
+- get datasource map for migration ([#2668](https://github.com/aws-amplify/amplify-category-api/issues/2668)) ([6cbfa35](https://github.com/aws-amplify/amplify-category-api/commit/6cbfa3544eff82bdbd9a82f8fdbe33929079fd0b))
+
 ## [3.10.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.10.1...@aws-amplify/graphql-transformer-interfaces@3.10.2) (2025-01-29)
 
 ### Bug Fixes

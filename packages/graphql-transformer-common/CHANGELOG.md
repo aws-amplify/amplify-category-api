@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.32.0-gen1-migration-0211.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.31.1...graphql-transformer-common@4.32.0-gen1-migration-0211.0) (2025-02-12)
+
+### Features
+
+- get datasource map for migration ([#2668](https://github.com/aws-amplify/amplify-category-api/issues/2668)) ([6cbfa35](https://github.com/aws-amplify/amplify-category-api/commit/6cbfa3544eff82bdbd9a82f8fdbe33929079fd0b))
+
 ## [4.31.1](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.31.0...graphql-transformer-common@4.31.1) (2024-07-02)
 
 ### Bug Fixes

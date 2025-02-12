@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.15-gen1-migration-0211.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.5.14...@aws-amplify/graphql-relational-transformer@2.5.15-gen1-migration-0211.0) (2025-02-12)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
 ## [2.5.14](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.5.13...@aws-amplify/graphql-relational-transformer@2.5.14) (2025-01-29)
 
 ### Bug Fixes
