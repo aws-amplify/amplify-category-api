@@ -29,7 +29,7 @@ export const generateTypeValidationSnippet = (typeName: string, validationsByFie
  * @returns A VTL code block that performs all validations for the field
  */
 export const generateFieldValidationSnippet = (fieldName: string, validations: ValidationRuleConfig[]): string => {
-  const validationLines = [`#if(!$util.isNull($ctx.args.input.${fieldName}) )`];
+  const validationLines = [`#if(!$util.isNull($ctx.args.input.${fieldName}))`];
 
   // Add each validation with its error check
   for (const validation of validations) {
