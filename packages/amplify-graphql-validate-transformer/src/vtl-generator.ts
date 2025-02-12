@@ -38,12 +38,7 @@ export const generateFieldValidationSnippet = (fieldName: string, validations: V
     const validationVar = `${validationType}ValidationPassed`;
     const validationCheck = getValidationCheck(fieldName, validationVar, validationType, validationValue);
 
-    validationLines.push(
-      `  ${validationCheck}`,
-      `  #if(!$${validationVar})`,
-      `    $util.error('${escapedErrorMessage}')`,
-      '  #end',
-    );
+    validationLines.push(`  ${validationCheck}`, `  #if(!$${validationVar})`, `    $util.error('${escapedErrorMessage}')`, '  #end');
   }
 
   validationLines.push('#end');
