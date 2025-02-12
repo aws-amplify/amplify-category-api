@@ -2348,7 +2348,9 @@ describe('ModelTransformer:', () => {
             ],
           ],
         }),
-        Description: 'Mapping of model name to data source table name.',
+        Description: Match.objectLike({
+          'Fn::Join': ['', ['Mapping of model name to data source table name for the ', { Ref: 'env' }, ' environment.']],
+        }),
       });
     });
 
