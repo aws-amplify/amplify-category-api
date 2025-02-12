@@ -1,9 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Resolver Generation Snapshot should generate correct combined validation resolver for multiple fields: create comment combined validations 1`] = `
-"## [Start] Validations for type Comment **. **
+"## [Start] Validations for type Comment. **
+
 ## [Start] Validations for field content. **
-#if( !$util.isNull($ctx.args.input.content) )
+#if(!$util.isNull($ctx.args.input.content) )
   #set($minLengthValidationPassed = $ctx.args.input.content.length() >= 1)
   #if(!$minLengthValidationPassed)
     $util.error('Content cannot be empty')
@@ -14,8 +15,9 @@ exports[`Resolver Generation Snapshot should generate correct combined validatio
   #end
 #end
 ## [End] Validations for field content. **
+
 ## [Start] Validations for field author. **
-#if( !$util.isNull($ctx.args.input.author) )
+#if(!$util.isNull($ctx.args.input.author) )
   #set($minLengthValidationPassed = $ctx.args.input.author.length() >= 3)
   #if(!$minLengthValidationPassed)
     $util.error('Author too short')
@@ -26,8 +28,9 @@ exports[`Resolver Generation Snapshot should generate correct combined validatio
   #end
 #end
 ## [End] Validations for field author. **
+
 ## [Start] Validations for field rating. **
-#if( !$util.isNull($ctx.args.input.rating) )
+#if(!$util.isNull($ctx.args.input.rating) )
   #set($gteValidationPassed = $ctx.args.input.rating >= 0)
   #if(!$gteValidationPassed)
     $util.error('Rating cannot be negative')
@@ -38,13 +41,17 @@ exports[`Resolver Generation Snapshot should generate correct combined validatio
   #end
 #end
 ## [End] Validations for field rating. **
-## [End] Validations for type Comment **. **"
+
+## [End] Validations for type Comment. **
+
+$util.toJson({})"
 `;
 
 exports[`Resolver Generation Snapshot should generate correct combined validation resolver for multiple fields: update comment combined validations 1`] = `
-"## [Start] Validations for type Comment **. **
+"## [Start] Validations for type Comment. **
+
 ## [Start] Validations for field content. **
-#if( !$util.isNull($ctx.args.input.content) )
+#if(!$util.isNull($ctx.args.input.content) )
   #set($minLengthValidationPassed = $ctx.args.input.content.length() >= 1)
   #if(!$minLengthValidationPassed)
     $util.error('Content cannot be empty')
@@ -55,8 +62,9 @@ exports[`Resolver Generation Snapshot should generate correct combined validatio
   #end
 #end
 ## [End] Validations for field content. **
+
 ## [Start] Validations for field author. **
-#if( !$util.isNull($ctx.args.input.author) )
+#if(!$util.isNull($ctx.args.input.author) )
   #set($minLengthValidationPassed = $ctx.args.input.author.length() >= 3)
   #if(!$minLengthValidationPassed)
     $util.error('Author too short')
@@ -67,8 +75,9 @@ exports[`Resolver Generation Snapshot should generate correct combined validatio
   #end
 #end
 ## [End] Validations for field author. **
+
 ## [Start] Validations for field rating. **
-#if( !$util.isNull($ctx.args.input.rating) )
+#if(!$util.isNull($ctx.args.input.rating) )
   #set($gteValidationPassed = $ctx.args.input.rating >= 0)
   #if(!$gteValidationPassed)
     $util.error('Rating cannot be negative')
@@ -79,13 +88,17 @@ exports[`Resolver Generation Snapshot should generate correct combined validatio
   #end
 #end
 ## [End] Validations for field rating. **
-## [End] Validations for type Comment **. **"
+
+## [End] Validations for type Comment. **
+
+$util.toJson({})"
 `;
 
 exports[`Resolver Generation Snapshot should generate correct combined validation resolver for multiple validations on the same field: create post combined validations 1`] = `
-"## [Start] Validations for type Post **. **
+"## [Start] Validations for type Post. **
+
 ## [Start] Validations for field title. **
-#if( !$util.isNull($ctx.args.input.title) )
+#if(!$util.isNull($ctx.args.input.title) )
   #set($minLengthValidationPassed = $ctx.args.input.title.length() >= 5)
   #if(!$minLengthValidationPassed)
     $util.error('Title too short')
@@ -108,13 +121,17 @@ exports[`Resolver Generation Snapshot should generate correct combined validatio
   #end
 #end
 ## [End] Validations for field title. **
-## [End] Validations for type Post **. **"
+
+## [End] Validations for type Post. **
+
+$util.toJson({})"
 `;
 
 exports[`Resolver Generation Snapshot should generate correct combined validation resolver for multiple validations on the same field: update post combined validations 1`] = `
-"## [Start] Validations for type Post **. **
+"## [Start] Validations for type Post. **
+
 ## [Start] Validations for field title. **
-#if( !$util.isNull($ctx.args.input.title) )
+#if(!$util.isNull($ctx.args.input.title) )
   #set($minLengthValidationPassed = $ctx.args.input.title.length() >= 5)
   #if(!$minLengthValidationPassed)
     $util.error('Title too short')
@@ -137,13 +154,17 @@ exports[`Resolver Generation Snapshot should generate correct combined validatio
   #end
 #end
 ## [End] Validations for field title. **
-## [End] Validations for type Post **. **"
+
+## [End] Validations for type Post. **
+
+$util.toJson({})"
 `;
 
 exports[`Resolver Generation Snapshot should generate correct combined validation resolver for numeric validations: create product combined validations 1`] = `
-"## [Start] Validations for type Product **. **
+"## [Start] Validations for type Product. **
+
 ## [Start] Validations for field price. **
-#if( !$util.isNull($ctx.args.input.price) )
+#if(!$util.isNull($ctx.args.input.price) )
   #set($gtValidationPassed = $ctx.args.input.price > 0)
   #if(!$gtValidationPassed)
     $util.error('Price must be positive')
@@ -154,8 +175,9 @@ exports[`Resolver Generation Snapshot should generate correct combined validatio
   #end
 #end
 ## [End] Validations for field price. **
+
 ## [Start] Validations for field quantity. **
-#if( !$util.isNull($ctx.args.input.quantity) )
+#if(!$util.isNull($ctx.args.input.quantity) )
   #set($gteValidationPassed = $ctx.args.input.quantity >= 0)
   #if(!$gteValidationPassed)
     $util.error('Quantity cannot be negative')
@@ -166,13 +188,17 @@ exports[`Resolver Generation Snapshot should generate correct combined validatio
   #end
 #end
 ## [End] Validations for field quantity. **
-## [End] Validations for type Product **. **"
+
+## [End] Validations for type Product. **
+
+$util.toJson({})"
 `;
 
 exports[`Resolver Generation Snapshot should generate correct combined validation resolver for numeric validations: update product combined validations 1`] = `
-"## [Start] Validations for type Product **. **
+"## [Start] Validations for type Product. **
+
 ## [Start] Validations for field price. **
-#if( !$util.isNull($ctx.args.input.price) )
+#if(!$util.isNull($ctx.args.input.price) )
   #set($gtValidationPassed = $ctx.args.input.price > 0)
   #if(!$gtValidationPassed)
     $util.error('Price must be positive')
@@ -183,8 +209,9 @@ exports[`Resolver Generation Snapshot should generate correct combined validatio
   #end
 #end
 ## [End] Validations for field price. **
+
 ## [Start] Validations for field quantity. **
-#if( !$util.isNull($ctx.args.input.quantity) )
+#if(!$util.isNull($ctx.args.input.quantity) )
   #set($gteValidationPassed = $ctx.args.input.quantity >= 0)
   #if(!$gteValidationPassed)
     $util.error('Quantity cannot be negative')
@@ -195,21 +222,26 @@ exports[`Resolver Generation Snapshot should generate correct combined validatio
   #end
 #end
 ## [End] Validations for field quantity. **
-## [End] Validations for type Product **. **"
+
+## [End] Validations for type Product. **
+
+$util.toJson({})"
 `;
 
 exports[`Resolver Generation Snapshot should generate correct combined validation resolver for string validations: create user combined validations 1`] = `
-"## [Start] Validations for type User **. **
+"## [Start] Validations for type User. **
+
 ## [Start] Validations for field email. **
-#if( !$util.isNull($ctx.args.input.email) )
+#if(!$util.isNull($ctx.args.input.email) )
   #set($matchesValidationPassed = $util.matches('^[A-Za-z0-9+_.-]+@(.+)$', $ctx.args.input.email))
   #if(!$matchesValidationPassed)
     $util.error('Invalid email format')
   #end
 #end
 ## [End] Validations for field email. **
+
 ## [Start] Validations for field username. **
-#if( !$util.isNull($ctx.args.input.username) )
+#if(!$util.isNull($ctx.args.input.username) )
   #set($minLengthValidationPassed = $ctx.args.input.username.length() >= 3)
   #if(!$minLengthValidationPassed)
     $util.error('Username too short')
@@ -220,8 +252,9 @@ exports[`Resolver Generation Snapshot should generate correct combined validatio
   #end
 #end
 ## [End] Validations for field username. **
+
 ## [Start] Validations for field url. **
-#if( !$util.isNull($ctx.args.input.url) )
+#if(!$util.isNull($ctx.args.input.url) )
   #set($startsWithValidationPassed = $ctx.args.input.url.startsWith('https://'))
   #if(!$startsWithValidationPassed)
     $util.error('URL must start with https://')
@@ -232,21 +265,26 @@ exports[`Resolver Generation Snapshot should generate correct combined validatio
   #end
 #end
 ## [End] Validations for field url. **
-## [End] Validations for type User **. **"
+
+## [End] Validations for type User. **
+
+$util.toJson({})"
 `;
 
 exports[`Resolver Generation Snapshot should generate correct combined validation resolver for string validations: update user combined validations 1`] = `
-"## [Start] Validations for type User **. **
+"## [Start] Validations for type User. **
+
 ## [Start] Validations for field email. **
-#if( !$util.isNull($ctx.args.input.email) )
+#if(!$util.isNull($ctx.args.input.email) )
   #set($matchesValidationPassed = $util.matches('^[A-Za-z0-9+_.-]+@(.+)$', $ctx.args.input.email))
   #if(!$matchesValidationPassed)
     $util.error('Invalid email format')
   #end
 #end
 ## [End] Validations for field email. **
+
 ## [Start] Validations for field username. **
-#if( !$util.isNull($ctx.args.input.username) )
+#if(!$util.isNull($ctx.args.input.username) )
   #set($minLengthValidationPassed = $ctx.args.input.username.length() >= 3)
   #if(!$minLengthValidationPassed)
     $util.error('Username too short')
@@ -257,8 +295,9 @@ exports[`Resolver Generation Snapshot should generate correct combined validatio
   #end
 #end
 ## [End] Validations for field username. **
+
 ## [Start] Validations for field url. **
-#if( !$util.isNull($ctx.args.input.url) )
+#if(!$util.isNull($ctx.args.input.url) )
   #set($startsWithValidationPassed = $ctx.args.input.url.startsWith('https://'))
   #if(!$startsWithValidationPassed)
     $util.error('URL must start with https://')
@@ -269,5 +308,8 @@ exports[`Resolver Generation Snapshot should generate correct combined validatio
   #end
 #end
 ## [End] Validations for field url. **
-## [End] Validations for type User **. **"
+
+## [End] Validations for type User. **
+
+$util.toJson({})"
 `;

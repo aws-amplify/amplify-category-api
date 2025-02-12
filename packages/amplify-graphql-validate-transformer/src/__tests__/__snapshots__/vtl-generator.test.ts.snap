@@ -2,7 +2,7 @@
 
 exports[`vtl-generator Test \`generateFieldValidationSnippet\` generates correct VTL for endswith validation: filename endswith validation 1`] = `
 "## [Start] Validations for field filename. **
-#if( !$util.isNull($ctx.args.input.filename) )
+#if(!$util.isNull($ctx.args.input.filename) )
   #set($endswithValidationPassed = $ctx.args.input.filename.endsWith('.pdf'))
   #if(!$endswithValidationPassed)
     $util.error('File must be a PDF')
@@ -13,7 +13,7 @@ exports[`vtl-generator Test \`generateFieldValidationSnippet\` generates correct
 
 exports[`vtl-generator Test \`generateFieldValidationSnippet\` generates correct VTL for gt validation: age gt validation 1`] = `
 "## [Start] Validations for field age. **
-#if( !$util.isNull($ctx.args.input.age) )
+#if(!$util.isNull($ctx.args.input.age) )
   #set($gtValidationPassed = $ctx.args.input.age > 18)
   #if(!$gtValidationPassed)
     $util.error('Age must be greater than 18')
@@ -24,7 +24,7 @@ exports[`vtl-generator Test \`generateFieldValidationSnippet\` generates correct
 
 exports[`vtl-generator Test \`generateFieldValidationSnippet\` generates correct VTL for gte validation: quantity gte validation 1`] = `
 "## [Start] Validations for field quantity. **
-#if( !$util.isNull($ctx.args.input.quantity) )
+#if(!$util.isNull($ctx.args.input.quantity) )
   #set($gteValidationPassed = $ctx.args.input.quantity >= 0)
   #if(!$gteValidationPassed)
     $util.error('Quantity must be non-negative')
@@ -35,7 +35,7 @@ exports[`vtl-generator Test \`generateFieldValidationSnippet\` generates correct
 
 exports[`vtl-generator Test \`generateFieldValidationSnippet\` generates correct VTL for lt validation: price lt validation 1`] = `
 "## [Start] Validations for field price. **
-#if( !$util.isNull($ctx.args.input.price) )
+#if(!$util.isNull($ctx.args.input.price) )
   #set($ltValidationPassed = $ctx.args.input.price < 1000)
   #if(!$ltValidationPassed)
     $util.error('Price must be less than 1000')
@@ -46,7 +46,7 @@ exports[`vtl-generator Test \`generateFieldValidationSnippet\` generates correct
 
 exports[`vtl-generator Test \`generateFieldValidationSnippet\` generates correct VTL for lte validation: rating lte validation 1`] = `
 "## [Start] Validations for field rating. **
-#if( !$util.isNull($ctx.args.input.rating) )
+#if(!$util.isNull($ctx.args.input.rating) )
   #set($lteValidationPassed = $ctx.args.input.rating <= 5)
   #if(!$lteValidationPassed)
     $util.error('Rating must be at most 5')
@@ -57,7 +57,7 @@ exports[`vtl-generator Test \`generateFieldValidationSnippet\` generates correct
 
 exports[`vtl-generator Test \`generateFieldValidationSnippet\` generates correct VTL for matches validation: email matches validation 1`] = `
 "## [Start] Validations for field email. **
-#if( !$util.isNull($ctx.args.input.email) )
+#if(!$util.isNull($ctx.args.input.email) )
   #set($matchesValidationPassed = $util.matches('^[A-Za-z0-9+_.-]+@(.+)$', $ctx.args.input.email))
   #if(!$matchesValidationPassed)
     $util.error('Invalid email format')
@@ -68,7 +68,7 @@ exports[`vtl-generator Test \`generateFieldValidationSnippet\` generates correct
 
 exports[`vtl-generator Test \`generateFieldValidationSnippet\` generates correct VTL for maxlength validation: bio maxlength validation 1`] = `
 "## [Start] Validations for field bio. **
-#if( !$util.isNull($ctx.args.input.bio) )
+#if(!$util.isNull($ctx.args.input.bio) )
   #set($maxlengthValidationPassed = $ctx.args.input.bio.length() <= 500)
   #if(!$maxlengthValidationPassed)
     $util.error('Bio must not exceed 500 characters')
@@ -79,7 +79,7 @@ exports[`vtl-generator Test \`generateFieldValidationSnippet\` generates correct
 
 exports[`vtl-generator Test \`generateFieldValidationSnippet\` generates correct VTL for minlength validation: name minlength validation 1`] = `
 "## [Start] Validations for field name. **
-#if( !$util.isNull($ctx.args.input.name) )
+#if(!$util.isNull($ctx.args.input.name) )
   #set($minlengthValidationPassed = $ctx.args.input.name.length() >= 3)
   #if(!$minlengthValidationPassed)
     $util.error('Name must be at least 3 characters')
@@ -90,7 +90,7 @@ exports[`vtl-generator Test \`generateFieldValidationSnippet\` generates correct
 
 exports[`vtl-generator Test \`generateFieldValidationSnippet\` generates correct VTL for startswith validation: url startswith validation 1`] = `
 "## [Start] Validations for field url. **
-#if( !$util.isNull($ctx.args.input.url) )
+#if(!$util.isNull($ctx.args.input.url) )
   #set($startswithValidationPassed = $ctx.args.input.url.startsWith('https://'))
   #if(!$startswithValidationPassed)
     $util.error('URL must start with https://')
@@ -100,91 +100,107 @@ exports[`vtl-generator Test \`generateFieldValidationSnippet\` generates correct
 `;
 
 exports[`vtl-generator Test \`generateTypeValidationSnippet\` generates correct VTL for all validations in a type Post: all validations in a type Post 1`] = `
-"## [Start] Validations for type Post **. **
+"## [Start] Validations for type Post. **
+
 ## [Start] Validations for field title. **
-#if( !$util.isNull($ctx.args.input.title) )
+#if(!$util.isNull($ctx.args.input.title) )
   #set($minLengthValidationPassed = $ctx.args.input.title.length() >= 3)
   #if(!$minLengthValidationPassed)
     $util.error('Title must be at least 3 characters')
   #end
 #end
 ## [End] Validations for field title. **
+
 ## [Start] Validations for field content. **
-#if( !$util.isNull($ctx.args.input.content) )
+#if(!$util.isNull($ctx.args.input.content) )
   #set($maxLengthValidationPassed = $ctx.args.input.content.length() <= 500)
   #if(!$maxLengthValidationPassed)
     $util.error('Content must not exceed 500 characters')
   #end
 #end
 ## [End] Validations for field content. **
+
 ## [Start] Validations for field url. **
-#if( !$util.isNull($ctx.args.input.url) )
+#if(!$util.isNull($ctx.args.input.url) )
   #set($startsWithValidationPassed = $ctx.args.input.url.startsWith('https://'))
   #if(!$startsWithValidationPassed)
     $util.error('URL must start with https://')
   #end
 #end
 ## [End] Validations for field url. **
+
 ## [Start] Validations for field filename. **
-#if( !$util.isNull($ctx.args.input.filename) )
+#if(!$util.isNull($ctx.args.input.filename) )
   #set($endsWithValidationPassed = $ctx.args.input.filename.endsWith('.pdf'))
   #if(!$endsWithValidationPassed)
     $util.error('File must be a PDF')
   #end
 #end
 ## [End] Validations for field filename. **
+
 ## [Start] Validations for field email. **
-#if( !$util.isNull($ctx.args.input.email) )
+#if(!$util.isNull($ctx.args.input.email) )
   #set($matchesValidationPassed = $util.matches('^[A-Za-z0-9+_.-]+@(.+)$', $ctx.args.input.email))
   #if(!$matchesValidationPassed)
     $util.error('Invalid email format')
   #end
 #end
 ## [End] Validations for field email. **
-## [End] Validations for type Post **. **"
+
+## [End] Validations for type Post. **
+
+$util.toJson({})"
 `;
 
 exports[`vtl-generator Test \`generateTypeValidationSnippet\` generates correct VTL for all validations in a type Product: all validations in a type Product 1`] = `
-"## [Start] Validations for type Product **. **
+"## [Start] Validations for type Product. **
+
 ## [Start] Validations for field count. **
-#if( !$util.isNull($ctx.args.input.count) )
+#if(!$util.isNull($ctx.args.input.count) )
   #set($gtValidationPassed = $ctx.args.input.count > 18)
   #if(!$gtValidationPassed)
     $util.error('error')
   #end
 #end
 ## [End] Validations for field count. **
+
 ## [Start] Validations for field price. **
-#if( !$util.isNull($ctx.args.input.price) )
+#if(!$util.isNull($ctx.args.input.price) )
   #set($ltValidationPassed = $ctx.args.input.price < 1000)
   #if(!$ltValidationPassed)
     $util.error('Price must be less than 1000')
   #end
 #end
 ## [End] Validations for field price. **
+
 ## [Start] Validations for field quantity. **
-#if( !$util.isNull($ctx.args.input.quantity) )
+#if(!$util.isNull($ctx.args.input.quantity) )
   #set($gteValidationPassed = $ctx.args.input.quantity >= 0)
   #if(!$gteValidationPassed)
     $util.error('Quantity must be non-negative')
   #end
 #end
 ## [End] Validations for field quantity. **
+
 ## [Start] Validations for field rating. **
-#if( !$util.isNull($ctx.args.input.rating) )
+#if(!$util.isNull($ctx.args.input.rating) )
   #set($lteValidationPassed = $ctx.args.input.rating <= 5)
   #if(!$lteValidationPassed)
     $util.error('Rating must be at most 5')
   #end
 #end
 ## [End] Validations for field rating. **
-## [End] Validations for type Product **. **"
+
+## [End] Validations for type Product. **
+
+$util.toJson({})"
 `;
 
 exports[`vtl-generator Test \`generateTypeValidationSnippet\` generates correct VTL for all validations in a type User: all validations in a type User 1`] = `
-"## [Start] Validations for type User **. **
+"## [Start] Validations for type User. **
+
 ## [Start] Validations for field age. **
-#if( !$util.isNull($ctx.args.input.age) )
+#if(!$util.isNull($ctx.args.input.age) )
   #set($gtValidationPassed = $ctx.args.input.age > 13)
   #if(!$gtValidationPassed)
     $util.error('Must be over 13')
@@ -195,8 +211,9 @@ exports[`vtl-generator Test \`generateTypeValidationSnippet\` generates correct 
   #end
 #end
 ## [End] Validations for field age. **
+
 ## [Start] Validations for field score. **
-#if( !$util.isNull($ctx.args.input.score) )
+#if(!$util.isNull($ctx.args.input.score) )
   #set($gteValidationPassed = $ctx.args.input.score >= 0)
   #if(!$gteValidationPassed)
     $util.error('Cannot be negative')
@@ -207,8 +224,9 @@ exports[`vtl-generator Test \`generateTypeValidationSnippet\` generates correct 
   #end
 #end
 ## [End] Validations for field score. **
+
 ## [Start] Validations for field email. **
-#if( !$util.isNull($ctx.args.input.email) )
+#if(!$util.isNull($ctx.args.input.email) )
   #set($minLengthValidationPassed = $ctx.args.input.email.length() >= 10)
   #if(!$minLengthValidationPassed)
     $util.error('Email too short')
@@ -231,5 +249,8 @@ exports[`vtl-generator Test \`generateTypeValidationSnippet\` generates correct 
   #end
 #end
 ## [End] Validations for field email. **
-## [End] Validations for type User **. **"
+
+## [End] Validations for type User. **
+
+$util.toJson({})"
 `;

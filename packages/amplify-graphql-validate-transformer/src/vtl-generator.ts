@@ -12,12 +12,14 @@ export const generateTypeValidationSnippet = (typeName: string, validationsByFie
 
   for (const [fieldName, validations] of Object.entries(validationsByField)) {
     const fieldBlock = generateFieldValidationSnippet(fieldName, validations);
-    fieldValidationBlocks.push(fieldBlock);
+    fieldValidationBlocks.push(fieldBlock, ''); // Add empty line after each field block
   }
 
   // Combine all field validations into a single VTL snippet
-  const combinedSnippet = printBlock(`Validations for type ${typeName} **`)(raw(fieldValidationBlocks.join('\n')));
-  return combinedSnippet;
+  const combinedSnippet = printBlock(`Validations for type ${typeName}`)(raw('\n' + fieldValidationBlocks.join('\n')));
+
+  // Add toJson at the end
+  return combinedSnippet + '\n\n$util.toJson({})';
 };
 
 /**
@@ -27,7 +29,7 @@ export const generateTypeValidationSnippet = (typeName: string, validationsByFie
  * @returns A VTL code block that performs all validations for the field
  */
 export const generateFieldValidationSnippet = (fieldName: string, validations: ValidationRuleConfig[]): string => {
-  const validationLines = [`#if( !$util.isNull($ctx.args.input.${fieldName}) )`];
+  const validationLines = [`#if(!$util.isNull($ctx.args.input.${fieldName}) )`];
 
   // Add each validation with its error check
   for (const validation of validations) {
@@ -36,7 +38,12 @@ export const generateFieldValidationSnippet = (fieldName: string, validations: V
     const validationVar = `${validationType}ValidationPassed`;
     const validationCheck = getValidationCheck(fieldName, validationVar, validationType, validationValue);
 
-    validationLines.push(`  ${validationCheck}`, `  #if(!$${validationVar})`, `    $util.error('${escapedErrorMessage}')`, '  #end');
+    validationLines.push(
+      `  ${validationCheck}`,
+      `  #if(!$${validationVar})`,
+      `    $util.error('${escapedErrorMessage}')`,
+      '  #end',
+    );
   }
 
   validationLines.push('#end');
