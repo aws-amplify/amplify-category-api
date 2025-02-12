@@ -1,441 +1,315 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Resolver generation should generate correct validation resolvers for multiple fields: create comment author maxLength validation 1`] = `
-"## [Start] Validating \\"author\\" with type \\"maxLength\\" and value \\"20\\". **
-#if( !$util.isNull($ctx.args.input.author) )
-  #set($validationPassed = $ctx.args.input.author.length() <= 20)
-  #if(!$validationPassed)
-    $util.error('Author too long')
-  #end
-#end
-## [End] Validating \\"author\\" with type \\"maxLength\\" and value \\"20\\". **"
-`;
+exports[`Resolver Generation Snapshot should generate correct combined validation resolver for multiple fields: create comment combined validations 1`] = `
+"## [Start] Validations for type Comment. **
 
-exports[`Resolver generation should generate correct validation resolvers for multiple fields: create comment author minLength validation 1`] = `
-"## [Start] Validating \\"author\\" with type \\"minLength\\" and value \\"3\\". **
-#if( !$util.isNull($ctx.args.input.author) )
-  #set($validationPassed = $ctx.args.input.author.length() >= 3)
-  #if(!$validationPassed)
-    $util.error('Author too short')
+## [Start] Validations for field content. **
+#if(!$util.isNull($ctx.args.input.content))
+  #set($minLengthValidationPassed = $ctx.args.input.content.length() >= 1)
+  #if(!$minLengthValidationPassed)
+    $util.error('Content cannot be empty')
   #end
-#end
-## [End] Validating \\"author\\" with type \\"minLength\\" and value \\"3\\". **"
-`;
-
-exports[`Resolver generation should generate correct validation resolvers for multiple fields: create comment content maxLength validation 1`] = `
-"## [Start] Validating \\"content\\" with type \\"maxLength\\" and value \\"1000\\". **
-#if( !$util.isNull($ctx.args.input.content) )
-  #set($validationPassed = $ctx.args.input.content.length() <= 1000)
-  #if(!$validationPassed)
+  #set($maxLengthValidationPassed = $ctx.args.input.content.length() <= 1000)
+  #if(!$maxLengthValidationPassed)
     $util.error('Content too long')
   #end
 #end
-## [End] Validating \\"content\\" with type \\"maxLength\\" and value \\"1000\\". **"
-`;
+## [End] Validations for field content. **
 
-exports[`Resolver generation should generate correct validation resolvers for multiple fields: create comment content minLength validation 1`] = `
-"## [Start] Validating \\"content\\" with type \\"minLength\\" and value \\"1\\". **
-#if( !$util.isNull($ctx.args.input.content) )
-  #set($validationPassed = $ctx.args.input.content.length() >= 1)
-  #if(!$validationPassed)
-    $util.error('Content cannot be empty')
+## [Start] Validations for field author. **
+#if(!$util.isNull($ctx.args.input.author))
+  #set($minLengthValidationPassed = $ctx.args.input.author.length() >= 3)
+  #if(!$minLengthValidationPassed)
+    $util.error('Author too short')
   #end
-#end
-## [End] Validating \\"content\\" with type \\"minLength\\" and value \\"1\\". **"
-`;
-
-exports[`Resolver generation should generate correct validation resolvers for multiple fields: create comment rating gte validation 1`] = `
-"## [Start] Validating \\"rating\\" with type \\"gte\\" and value \\"0\\". **
-#if( !$util.isNull($ctx.args.input.rating) )
-  #set($validationPassed = $ctx.args.input.rating >= 0)
-  #if(!$validationPassed)
-    $util.error('Rating cannot be negative')
-  #end
-#end
-## [End] Validating \\"rating\\" with type \\"gte\\" and value \\"0\\". **"
-`;
-
-exports[`Resolver generation should generate correct validation resolvers for multiple fields: create comment rating lte validation 1`] = `
-"## [Start] Validating \\"rating\\" with type \\"lte\\" and value \\"5\\". **
-#if( !$util.isNull($ctx.args.input.rating) )
-  #set($validationPassed = $ctx.args.input.rating <= 5)
-  #if(!$validationPassed)
-    $util.error('Rating cannot exceed 5')
-  #end
-#end
-## [End] Validating \\"rating\\" with type \\"lte\\" and value \\"5\\". **"
-`;
-
-exports[`Resolver generation should generate correct validation resolvers for multiple fields: update comment author maxLength validation 1`] = `
-"## [Start] Validating \\"author\\" with type \\"maxLength\\" and value \\"20\\". **
-#if( !$util.isNull($ctx.args.input.author) )
-  #set($validationPassed = $ctx.args.input.author.length() <= 20)
-  #if(!$validationPassed)
+  #set($maxLengthValidationPassed = $ctx.args.input.author.length() <= 20)
+  #if(!$maxLengthValidationPassed)
     $util.error('Author too long')
   #end
 #end
-## [End] Validating \\"author\\" with type \\"maxLength\\" and value \\"20\\". **"
-`;
+## [End] Validations for field author. **
 
-exports[`Resolver generation should generate correct validation resolvers for multiple fields: update comment author minLength validation 1`] = `
-"## [Start] Validating \\"author\\" with type \\"minLength\\" and value \\"3\\". **
-#if( !$util.isNull($ctx.args.input.author) )
-  #set($validationPassed = $ctx.args.input.author.length() >= 3)
-  #if(!$validationPassed)
-    $util.error('Author too short')
-  #end
-#end
-## [End] Validating \\"author\\" with type \\"minLength\\" and value \\"3\\". **"
-`;
-
-exports[`Resolver generation should generate correct validation resolvers for multiple fields: update comment content maxLength validation 1`] = `
-"## [Start] Validating \\"content\\" with type \\"maxLength\\" and value \\"1000\\". **
-#if( !$util.isNull($ctx.args.input.content) )
-  #set($validationPassed = $ctx.args.input.content.length() <= 1000)
-  #if(!$validationPassed)
-    $util.error('Content too long')
-  #end
-#end
-## [End] Validating \\"content\\" with type \\"maxLength\\" and value \\"1000\\". **"
-`;
-
-exports[`Resolver generation should generate correct validation resolvers for multiple fields: update comment content minLength validation 1`] = `
-"## [Start] Validating \\"content\\" with type \\"minLength\\" and value \\"1\\". **
-#if( !$util.isNull($ctx.args.input.content) )
-  #set($validationPassed = $ctx.args.input.content.length() >= 1)
-  #if(!$validationPassed)
-    $util.error('Content cannot be empty')
-  #end
-#end
-## [End] Validating \\"content\\" with type \\"minLength\\" and value \\"1\\". **"
-`;
-
-exports[`Resolver generation should generate correct validation resolvers for multiple fields: update comment rating gte validation 1`] = `
-"## [Start] Validating \\"rating\\" with type \\"gte\\" and value \\"0\\". **
-#if( !$util.isNull($ctx.args.input.rating) )
-  #set($validationPassed = $ctx.args.input.rating >= 0)
-  #if(!$validationPassed)
+## [Start] Validations for field rating. **
+#if(!$util.isNull($ctx.args.input.rating))
+  #set($gteValidationPassed = $ctx.args.input.rating >= 0)
+  #if(!$gteValidationPassed)
     $util.error('Rating cannot be negative')
   #end
-#end
-## [End] Validating \\"rating\\" with type \\"gte\\" and value \\"0\\". **"
-`;
-
-exports[`Resolver generation should generate correct validation resolvers for multiple fields: update comment rating lte validation 1`] = `
-"## [Start] Validating \\"rating\\" with type \\"lte\\" and value \\"5\\". **
-#if( !$util.isNull($ctx.args.input.rating) )
-  #set($validationPassed = $ctx.args.input.rating <= 5)
-  #if(!$validationPassed)
+  #set($lteValidationPassed = $ctx.args.input.rating <= 5)
+  #if(!$lteValidationPassed)
     $util.error('Rating cannot exceed 5')
   #end
 #end
-## [End] Validating \\"rating\\" with type \\"lte\\" and value \\"5\\". **"
+## [End] Validations for field rating. **
+
+## [End] Validations for type Comment. **
+
+$util.toJson({})"
 `;
 
-exports[`Resolver generation should generate correct validation resolvers for multiple validations on the same field: create post title endsWith validation 1`] = `
-"## [Start] Validating \\"title\\" with type \\"endsWith\\" and value \\"suffix\\". **
-#if( !$util.isNull($ctx.args.input.title) )
-  #set($validationPassed = $ctx.args.input.title.endsWith('suffix'))
-  #if(!$validationPassed)
-    $util.error('Title must end with suffix')
+exports[`Resolver Generation Snapshot should generate correct combined validation resolver for multiple fields: update comment combined validations 1`] = `
+"## [Start] Validations for type Comment. **
+
+## [Start] Validations for field content. **
+#if(!$util.isNull($ctx.args.input.content))
+  #set($minLengthValidationPassed = $ctx.args.input.content.length() >= 1)
+  #if(!$minLengthValidationPassed)
+    $util.error('Content cannot be empty')
+  #end
+  #set($maxLengthValidationPassed = $ctx.args.input.content.length() <= 1000)
+  #if(!$maxLengthValidationPassed)
+    $util.error('Content too long')
   #end
 #end
-## [End] Validating \\"title\\" with type \\"endsWith\\" and value \\"suffix\\". **"
+## [End] Validations for field content. **
+
+## [Start] Validations for field author. **
+#if(!$util.isNull($ctx.args.input.author))
+  #set($minLengthValidationPassed = $ctx.args.input.author.length() >= 3)
+  #if(!$minLengthValidationPassed)
+    $util.error('Author too short')
+  #end
+  #set($maxLengthValidationPassed = $ctx.args.input.author.length() <= 20)
+  #if(!$maxLengthValidationPassed)
+    $util.error('Author too long')
+  #end
+#end
+## [End] Validations for field author. **
+
+## [Start] Validations for field rating. **
+#if(!$util.isNull($ctx.args.input.rating))
+  #set($gteValidationPassed = $ctx.args.input.rating >= 0)
+  #if(!$gteValidationPassed)
+    $util.error('Rating cannot be negative')
+  #end
+  #set($lteValidationPassed = $ctx.args.input.rating <= 5)
+  #if(!$lteValidationPassed)
+    $util.error('Rating cannot exceed 5')
+  #end
+#end
+## [End] Validations for field rating. **
+
+## [End] Validations for type Comment. **
+
+$util.toJson({})"
 `;
 
-exports[`Resolver generation should generate correct validation resolvers for multiple validations on the same field: create post title matches validation 1`] = `
-"## [Start] Validating \\"title\\" with type \\"matches\\" and value \\"^[A-Za-z0-9 ]+$\\". **
-#if( !$util.isNull($ctx.args.input.title) )
-  #set($validationPassed = $util.matches('^[A-Za-z0-9 ]+$', $ctx.args.input.title))
-  #if(!$validationPassed)
+exports[`Resolver Generation Snapshot should generate correct combined validation resolver for multiple validations on the same field: create post combined validations 1`] = `
+"## [Start] Validations for type Post. **
+
+## [Start] Validations for field title. **
+#if(!$util.isNull($ctx.args.input.title))
+  #set($minLengthValidationPassed = $ctx.args.input.title.length() >= 5)
+  #if(!$minLengthValidationPassed)
+    $util.error('Title too short')
+  #end
+  #set($maxLengthValidationPassed = $ctx.args.input.title.length() <= 100)
+  #if(!$maxLengthValidationPassed)
+    $util.error('Title too long')
+  #end
+  #set($startsWithValidationPassed = $ctx.args.input.title.startsWith('prefix'))
+  #if(!$startsWithValidationPassed)
+    $util.error('Title must start with prefix')
+  #end
+  #set($endsWithValidationPassed = $ctx.args.input.title.endsWith('suffix'))
+  #if(!$endsWithValidationPassed)
+    $util.error('Title must end with suffix')
+  #end
+  #set($matchesValidationPassed = $util.matches('^[A-Za-z0-9 ]+$', $ctx.args.input.title))
+  #if(!$matchesValidationPassed)
     $util.error('Title can only contain letters, numbers and spaces')
   #end
 #end
-## [End] Validating \\"title\\" with type \\"matches\\" and value \\"^[A-Za-z0-9 ]+$\\". **"
+## [End] Validations for field title. **
+
+## [End] Validations for type Post. **
+
+$util.toJson({})"
 `;
 
-exports[`Resolver generation should generate correct validation resolvers for multiple validations on the same field: create post title maxLength validation 1`] = `
-"## [Start] Validating \\"title\\" with type \\"maxLength\\" and value \\"100\\". **
-#if( !$util.isNull($ctx.args.input.title) )
-  #set($validationPassed = $ctx.args.input.title.length() <= 100)
-  #if(!$validationPassed)
-    $util.error('Title too long')
-  #end
-#end
-## [End] Validating \\"title\\" with type \\"maxLength\\" and value \\"100\\". **"
-`;
+exports[`Resolver Generation Snapshot should generate correct combined validation resolver for multiple validations on the same field: update post combined validations 1`] = `
+"## [Start] Validations for type Post. **
 
-exports[`Resolver generation should generate correct validation resolvers for multiple validations on the same field: create post title minLength validation 1`] = `
-"## [Start] Validating \\"title\\" with type \\"minLength\\" and value \\"5\\". **
-#if( !$util.isNull($ctx.args.input.title) )
-  #set($validationPassed = $ctx.args.input.title.length() >= 5)
-  #if(!$validationPassed)
+## [Start] Validations for field title. **
+#if(!$util.isNull($ctx.args.input.title))
+  #set($minLengthValidationPassed = $ctx.args.input.title.length() >= 5)
+  #if(!$minLengthValidationPassed)
     $util.error('Title too short')
   #end
-#end
-## [End] Validating \\"title\\" with type \\"minLength\\" and value \\"5\\". **"
-`;
-
-exports[`Resolver generation should generate correct validation resolvers for multiple validations on the same field: create post title startsWith validation 1`] = `
-"## [Start] Validating \\"title\\" with type \\"startsWith\\" and value \\"prefix\\". **
-#if( !$util.isNull($ctx.args.input.title) )
-  #set($validationPassed = $ctx.args.input.title.startsWith('prefix'))
-  #if(!$validationPassed)
+  #set($maxLengthValidationPassed = $ctx.args.input.title.length() <= 100)
+  #if(!$maxLengthValidationPassed)
+    $util.error('Title too long')
+  #end
+  #set($startsWithValidationPassed = $ctx.args.input.title.startsWith('prefix'))
+  #if(!$startsWithValidationPassed)
     $util.error('Title must start with prefix')
   #end
-#end
-## [End] Validating \\"title\\" with type \\"startsWith\\" and value \\"prefix\\". **"
-`;
-
-exports[`Resolver generation should generate correct validation resolvers for multiple validations on the same field: update post title endsWith validation 1`] = `
-"## [Start] Validating \\"title\\" with type \\"endsWith\\" and value \\"suffix\\". **
-#if( !$util.isNull($ctx.args.input.title) )
-  #set($validationPassed = $ctx.args.input.title.endsWith('suffix'))
-  #if(!$validationPassed)
+  #set($endsWithValidationPassed = $ctx.args.input.title.endsWith('suffix'))
+  #if(!$endsWithValidationPassed)
     $util.error('Title must end with suffix')
   #end
-#end
-## [End] Validating \\"title\\" with type \\"endsWith\\" and value \\"suffix\\". **"
-`;
-
-exports[`Resolver generation should generate correct validation resolvers for multiple validations on the same field: update post title matches validation 1`] = `
-"## [Start] Validating \\"title\\" with type \\"matches\\" and value \\"^[A-Za-z0-9 ]+$\\". **
-#if( !$util.isNull($ctx.args.input.title) )
-  #set($validationPassed = $util.matches('^[A-Za-z0-9 ]+$', $ctx.args.input.title))
-  #if(!$validationPassed)
+  #set($matchesValidationPassed = $util.matches('^[A-Za-z0-9 ]+$', $ctx.args.input.title))
+  #if(!$matchesValidationPassed)
     $util.error('Title can only contain letters, numbers and spaces')
   #end
 #end
-## [End] Validating \\"title\\" with type \\"matches\\" and value \\"^[A-Za-z0-9 ]+$\\". **"
+## [End] Validations for field title. **
+
+## [End] Validations for type Post. **
+
+$util.toJson({})"
 `;
 
-exports[`Resolver generation should generate correct validation resolvers for multiple validations on the same field: update post title maxLength validation 1`] = `
-"## [Start] Validating \\"title\\" with type \\"maxLength\\" and value \\"100\\". **
-#if( !$util.isNull($ctx.args.input.title) )
-  #set($validationPassed = $ctx.args.input.title.length() <= 100)
-  #if(!$validationPassed)
-    $util.error('Title too long')
-  #end
-#end
-## [End] Validating \\"title\\" with type \\"maxLength\\" and value \\"100\\". **"
-`;
+exports[`Resolver Generation Snapshot should generate correct combined validation resolver for numeric validations: create product combined validations 1`] = `
+"## [Start] Validations for type Product. **
 
-exports[`Resolver generation should generate correct validation resolvers for multiple validations on the same field: update post title minLength validation 1`] = `
-"## [Start] Validating \\"title\\" with type \\"minLength\\" and value \\"5\\". **
-#if( !$util.isNull($ctx.args.input.title) )
-  #set($validationPassed = $ctx.args.input.title.length() >= 5)
-  #if(!$validationPassed)
-    $util.error('Title too short')
-  #end
-#end
-## [End] Validating \\"title\\" with type \\"minLength\\" and value \\"5\\". **"
-`;
-
-exports[`Resolver generation should generate correct validation resolvers for multiple validations on the same field: update post title startsWith validation 1`] = `
-"## [Start] Validating \\"title\\" with type \\"startsWith\\" and value \\"prefix\\". **
-#if( !$util.isNull($ctx.args.input.title) )
-  #set($validationPassed = $ctx.args.input.title.startsWith('prefix'))
-  #if(!$validationPassed)
-    $util.error('Title must start with prefix')
-  #end
-#end
-## [End] Validating \\"title\\" with type \\"startsWith\\" and value \\"prefix\\". **"
-`;
-
-exports[`Resolver generation should generate correct validation resolvers for numeric validations: create product price gt validation 1`] = `
-"## [Start] Validating \\"price\\" with type \\"gt\\" and value \\"0\\". **
-#if( !$util.isNull($ctx.args.input.price) )
-  #set($validationPassed = $ctx.args.input.price > 0)
-  #if(!$validationPassed)
+## [Start] Validations for field price. **
+#if(!$util.isNull($ctx.args.input.price))
+  #set($gtValidationPassed = $ctx.args.input.price > 0)
+  #if(!$gtValidationPassed)
     $util.error('Price must be positive')
   #end
-#end
-## [End] Validating \\"price\\" with type \\"gt\\" and value \\"0\\". **"
-`;
-
-exports[`Resolver generation should generate correct validation resolvers for numeric validations: create product price lt validation 1`] = `
-"## [Start] Validating \\"price\\" with type \\"lt\\" and value \\"1000000\\". **
-#if( !$util.isNull($ctx.args.input.price) )
-  #set($validationPassed = $ctx.args.input.price < 1000000)
-  #if(!$validationPassed)
+  #set($ltValidationPassed = $ctx.args.input.price < 1000000)
+  #if(!$ltValidationPassed)
     $util.error('Price must be less than 1,000,000')
   #end
 #end
-## [End] Validating \\"price\\" with type \\"lt\\" and value \\"1000000\\". **"
-`;
+## [End] Validations for field price. **
 
-exports[`Resolver generation should generate correct validation resolvers for numeric validations: create product quantity gte validation 1`] = `
-"## [Start] Validating \\"quantity\\" with type \\"gte\\" and value \\"0\\". **
-#if( !$util.isNull($ctx.args.input.quantity) )
-  #set($validationPassed = $ctx.args.input.quantity >= 0)
-  #if(!$validationPassed)
+## [Start] Validations for field quantity. **
+#if(!$util.isNull($ctx.args.input.quantity))
+  #set($gteValidationPassed = $ctx.args.input.quantity >= 0)
+  #if(!$gteValidationPassed)
     $util.error('Quantity cannot be negative')
   #end
-#end
-## [End] Validating \\"quantity\\" with type \\"gte\\" and value \\"0\\". **"
-`;
-
-exports[`Resolver generation should generate correct validation resolvers for numeric validations: create product quantity lte validation 1`] = `
-"## [Start] Validating \\"quantity\\" with type \\"lte\\" and value \\"100\\". **
-#if( !$util.isNull($ctx.args.input.quantity) )
-  #set($validationPassed = $ctx.args.input.quantity <= 100)
-  #if(!$validationPassed)
+  #set($lteValidationPassed = $ctx.args.input.quantity <= 100)
+  #if(!$lteValidationPassed)
     $util.error('Quantity cannot exceed 100')
   #end
 #end
-## [End] Validating \\"quantity\\" with type \\"lte\\" and value \\"100\\". **"
+## [End] Validations for field quantity. **
+
+## [End] Validations for type Product. **
+
+$util.toJson({})"
 `;
 
-exports[`Resolver generation should generate correct validation resolvers for numeric validations: update product price gt validation 1`] = `
-"## [Start] Validating \\"price\\" with type \\"gt\\" and value \\"0\\". **
-#if( !$util.isNull($ctx.args.input.price) )
-  #set($validationPassed = $ctx.args.input.price > 0)
-  #if(!$validationPassed)
+exports[`Resolver Generation Snapshot should generate correct combined validation resolver for numeric validations: update product combined validations 1`] = `
+"## [Start] Validations for type Product. **
+
+## [Start] Validations for field price. **
+#if(!$util.isNull($ctx.args.input.price))
+  #set($gtValidationPassed = $ctx.args.input.price > 0)
+  #if(!$gtValidationPassed)
     $util.error('Price must be positive')
   #end
-#end
-## [End] Validating \\"price\\" with type \\"gt\\" and value \\"0\\". **"
-`;
-
-exports[`Resolver generation should generate correct validation resolvers for numeric validations: update product price lt validation 1`] = `
-"## [Start] Validating \\"price\\" with type \\"lt\\" and value \\"1000000\\". **
-#if( !$util.isNull($ctx.args.input.price) )
-  #set($validationPassed = $ctx.args.input.price < 1000000)
-  #if(!$validationPassed)
+  #set($ltValidationPassed = $ctx.args.input.price < 1000000)
+  #if(!$ltValidationPassed)
     $util.error('Price must be less than 1,000,000')
   #end
 #end
-## [End] Validating \\"price\\" with type \\"lt\\" and value \\"1000000\\". **"
-`;
+## [End] Validations for field price. **
 
-exports[`Resolver generation should generate correct validation resolvers for numeric validations: update product quantity gte validation 1`] = `
-"## [Start] Validating \\"quantity\\" with type \\"gte\\" and value \\"0\\". **
-#if( !$util.isNull($ctx.args.input.quantity) )
-  #set($validationPassed = $ctx.args.input.quantity >= 0)
-  #if(!$validationPassed)
+## [Start] Validations for field quantity. **
+#if(!$util.isNull($ctx.args.input.quantity))
+  #set($gteValidationPassed = $ctx.args.input.quantity >= 0)
+  #if(!$gteValidationPassed)
     $util.error('Quantity cannot be negative')
   #end
-#end
-## [End] Validating \\"quantity\\" with type \\"gte\\" and value \\"0\\". **"
-`;
-
-exports[`Resolver generation should generate correct validation resolvers for numeric validations: update product quantity lte validation 1`] = `
-"## [Start] Validating \\"quantity\\" with type \\"lte\\" and value \\"100\\". **
-#if( !$util.isNull($ctx.args.input.quantity) )
-  #set($validationPassed = $ctx.args.input.quantity <= 100)
-  #if(!$validationPassed)
+  #set($lteValidationPassed = $ctx.args.input.quantity <= 100)
+  #if(!$lteValidationPassed)
     $util.error('Quantity cannot exceed 100')
   #end
 #end
-## [End] Validating \\"quantity\\" with type \\"lte\\" and value \\"100\\". **"
+## [End] Validations for field quantity. **
+
+## [End] Validations for type Product. **
+
+$util.toJson({})"
 `;
 
-exports[`Resolver generation should generate correct validation resolvers for string validations: create user email matches validation 1`] = `
-"## [Start] Validating \\"email\\" with type \\"matches\\" and value \\"^[A-Za-z0-9+_.-]+@(.+)$\\". **
-#if( !$util.isNull($ctx.args.input.email) )
-  #set($validationPassed = $util.matches('^[A-Za-z0-9+_.-]+@(.+)$', $ctx.args.input.email))
-  #if(!$validationPassed)
+exports[`Resolver Generation Snapshot should generate correct combined validation resolver for string validations: create user combined validations 1`] = `
+"## [Start] Validations for type User. **
+
+## [Start] Validations for field email. **
+#if(!$util.isNull($ctx.args.input.email))
+  #set($matchesValidationPassed = $util.matches('^[A-Za-z0-9+_.-]+@(.+)$', $ctx.args.input.email))
+  #if(!$matchesValidationPassed)
     $util.error('Invalid email format')
   #end
 #end
-## [End] Validating \\"email\\" with type \\"matches\\" and value \\"^[A-Za-z0-9+_.-]+@(.+)$\\". **"
-`;
+## [End] Validations for field email. **
 
-exports[`Resolver generation should generate correct validation resolvers for string validations: create user url endsWith validation 1`] = `
-"## [Start] Validating \\"url\\" with type \\"endsWith\\" and value \\".com\\". **
-#if( !$util.isNull($ctx.args.input.url) )
-  #set($validationPassed = $ctx.args.input.url.endsWith('.com'))
-  #if(!$validationPassed)
-    $util.error('URL must end with .com')
+## [Start] Validations for field username. **
+#if(!$util.isNull($ctx.args.input.username))
+  #set($minLengthValidationPassed = $ctx.args.input.username.length() >= 3)
+  #if(!$minLengthValidationPassed)
+    $util.error('Username too short')
   #end
-#end
-## [End] Validating \\"url\\" with type \\"endsWith\\" and value \\".com\\". **"
-`;
-
-exports[`Resolver generation should generate correct validation resolvers for string validations: create user url startsWith validation 1`] = `
-"## [Start] Validating \\"url\\" with type \\"startsWith\\" and value \\"https://\\". **
-#if( !$util.isNull($ctx.args.input.url) )
-  #set($validationPassed = $ctx.args.input.url.startsWith('https://'))
-  #if(!$validationPassed)
-    $util.error('URL must start with https://')
-  #end
-#end
-## [End] Validating \\"url\\" with type \\"startsWith\\" and value \\"https://\\". **"
-`;
-
-exports[`Resolver generation should generate correct validation resolvers for string validations: create user username maxLength validation 1`] = `
-"## [Start] Validating \\"username\\" with type \\"maxLength\\" and value \\"20\\". **
-#if( !$util.isNull($ctx.args.input.username) )
-  #set($validationPassed = $ctx.args.input.username.length() <= 20)
-  #if(!$validationPassed)
+  #set($maxLengthValidationPassed = $ctx.args.input.username.length() <= 20)
+  #if(!$maxLengthValidationPassed)
     $util.error('Username too long')
   #end
 #end
-## [End] Validating \\"username\\" with type \\"maxLength\\" and value \\"20\\". **"
-`;
+## [End] Validations for field username. **
 
-exports[`Resolver generation should generate correct validation resolvers for string validations: create user username minLength validation 1`] = `
-"## [Start] Validating \\"username\\" with type \\"minLength\\" and value \\"3\\". **
-#if( !$util.isNull($ctx.args.input.username) )
-  #set($validationPassed = $ctx.args.input.username.length() >= 3)
-  #if(!$validationPassed)
-    $util.error('Username too short')
+## [Start] Validations for field url. **
+#if(!$util.isNull($ctx.args.input.url))
+  #set($startsWithValidationPassed = $ctx.args.input.url.startsWith('https://'))
+  #if(!$startsWithValidationPassed)
+    $util.error('URL must start with https://')
+  #end
+  #set($endsWithValidationPassed = $ctx.args.input.url.endsWith('.com'))
+  #if(!$endsWithValidationPassed)
+    $util.error('URL must end with .com')
   #end
 #end
-## [End] Validating \\"username\\" with type \\"minLength\\" and value \\"3\\". **"
+## [End] Validations for field url. **
+
+## [End] Validations for type User. **
+
+$util.toJson({})"
 `;
 
-exports[`Resolver generation should generate correct validation resolvers for string validations: update user email matches validation 1`] = `
-"## [Start] Validating \\"email\\" with type \\"matches\\" and value \\"^[A-Za-z0-9+_.-]+@(.+)$\\". **
-#if( !$util.isNull($ctx.args.input.email) )
-  #set($validationPassed = $util.matches('^[A-Za-z0-9+_.-]+@(.+)$', $ctx.args.input.email))
-  #if(!$validationPassed)
+exports[`Resolver Generation Snapshot should generate correct combined validation resolver for string validations: update user combined validations 1`] = `
+"## [Start] Validations for type User. **
+
+## [Start] Validations for field email. **
+#if(!$util.isNull($ctx.args.input.email))
+  #set($matchesValidationPassed = $util.matches('^[A-Za-z0-9+_.-]+@(.+)$', $ctx.args.input.email))
+  #if(!$matchesValidationPassed)
     $util.error('Invalid email format')
   #end
 #end
-## [End] Validating \\"email\\" with type \\"matches\\" and value \\"^[A-Za-z0-9+_.-]+@(.+)$\\". **"
-`;
+## [End] Validations for field email. **
 
-exports[`Resolver generation should generate correct validation resolvers for string validations: update user url endsWith validation 1`] = `
-"## [Start] Validating \\"url\\" with type \\"endsWith\\" and value \\".com\\". **
-#if( !$util.isNull($ctx.args.input.url) )
-  #set($validationPassed = $ctx.args.input.url.endsWith('.com'))
-  #if(!$validationPassed)
-    $util.error('URL must end with .com')
+## [Start] Validations for field username. **
+#if(!$util.isNull($ctx.args.input.username))
+  #set($minLengthValidationPassed = $ctx.args.input.username.length() >= 3)
+  #if(!$minLengthValidationPassed)
+    $util.error('Username too short')
   #end
-#end
-## [End] Validating \\"url\\" with type \\"endsWith\\" and value \\".com\\". **"
-`;
-
-exports[`Resolver generation should generate correct validation resolvers for string validations: update user url startsWith validation 1`] = `
-"## [Start] Validating \\"url\\" with type \\"startsWith\\" and value \\"https://\\". **
-#if( !$util.isNull($ctx.args.input.url) )
-  #set($validationPassed = $ctx.args.input.url.startsWith('https://'))
-  #if(!$validationPassed)
-    $util.error('URL must start with https://')
-  #end
-#end
-## [End] Validating \\"url\\" with type \\"startsWith\\" and value \\"https://\\". **"
-`;
-
-exports[`Resolver generation should generate correct validation resolvers for string validations: update user username maxLength validation 1`] = `
-"## [Start] Validating \\"username\\" with type \\"maxLength\\" and value \\"20\\". **
-#if( !$util.isNull($ctx.args.input.username) )
-  #set($validationPassed = $ctx.args.input.username.length() <= 20)
-  #if(!$validationPassed)
+  #set($maxLengthValidationPassed = $ctx.args.input.username.length() <= 20)
+  #if(!$maxLengthValidationPassed)
     $util.error('Username too long')
   #end
 #end
-## [End] Validating \\"username\\" with type \\"maxLength\\" and value \\"20\\". **"
-`;
+## [End] Validations for field username. **
 
-exports[`Resolver generation should generate correct validation resolvers for string validations: update user username minLength validation 1`] = `
-"## [Start] Validating \\"username\\" with type \\"minLength\\" and value \\"3\\". **
-#if( !$util.isNull($ctx.args.input.username) )
-  #set($validationPassed = $ctx.args.input.username.length() >= 3)
-  #if(!$validationPassed)
-    $util.error('Username too short')
+## [Start] Validations for field url. **
+#if(!$util.isNull($ctx.args.input.url))
+  #set($startsWithValidationPassed = $ctx.args.input.url.startsWith('https://'))
+  #if(!$startsWithValidationPassed)
+    $util.error('URL must start with https://')
+  #end
+  #set($endsWithValidationPassed = $ctx.args.input.url.endsWith('.com'))
+  #if(!$endsWithValidationPassed)
+    $util.error('URL must end with .com')
   #end
 #end
-## [End] Validating \\"username\\" with type \\"minLength\\" and value \\"3\\". **"
+## [End] Validations for field url. **
+
+## [End] Validations for type User. **
+
+$util.toJson({})"
 `;

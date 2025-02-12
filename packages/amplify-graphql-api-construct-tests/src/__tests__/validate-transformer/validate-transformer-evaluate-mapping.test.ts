@@ -1,15 +1,20 @@
+import { ValidationType } from '@aws-amplify/graphql-validate-transformer/src/types';
+
+import { ONE_MINUTE } from '../../utils/duration-constants';
 import {
   cleanupTemplateFiles,
+  ComplexValidationTestCase,
+  COMPLEX_VALIDATION_TEMPLATES_DIR,
   ERROR_MESSAGE_TEMPLATES_DIR,
   EvaluateTemplateTestCase,
-  runEvaluateTemplateTest,
-  StringValidationType,
   NumericValidationType,
   NUMERIC_TEMPLATES_DIR,
+  runComplexValidationTest,
+  runEvaluateTemplateTest,
+  StringValidationType,
   STRING_TEMPLATES_DIR,
   STRING_VALIDATION_THRESHOLD_TEMPLATES_DIR,
 } from '../../utils/validate-transformer-helper';
-import { ONE_MINUTE } from '../../utils/duration-constants';
 
 jest.setTimeout(ONE_MINUTE);
 
@@ -336,7 +341,7 @@ describe('Numeric Validation', () => {
     ];
   };
 
-  const generateSafeIntegerTests: NumericValidationTestCaseGenerator = (operator) => {
+  const generateSafeIntegerTests: NumericValidationTestCaseGenerator = (operator, _) => {
     const isGreaterType = operator.startsWith('gt');
     const tests: NumericValidationTestCase[] = [];
 
@@ -755,6 +760,250 @@ describe('String Validation', () => {
         it(`${testCase.description}`, async () => {
           await runValidationTest(testCase, index);
         });
+      });
+    });
+  });
+});
+
+/**
+ * Tests for multiple validations per field and multiple fields per type
+ */
+describe('Complex Field Validations', () => {
+  beforeAll(() => cleanupTemplateFiles(COMPLEX_VALIDATION_TEMPLATES_DIR));
+  afterAll(() => cleanupTemplateFiles(COMPLEX_VALIDATION_TEMPLATES_DIR));
+
+  const AGE_VALIDATIONS = [
+    { validationType: 'gt' as ValidationType, validationValue: '13', errorMessage: 'Must be over 13' },
+    { validationType: 'lt' as ValidationType, validationValue: '150', errorMessage: 'Must be under 150' },
+  ];
+
+  const EMAIL_VALIDATIONS = [
+    { validationType: 'minLength' as ValidationType, validationValue: '10', errorMessage: 'Email too short' },
+    { validationType: 'maxLength' as ValidationType, validationValue: '50', errorMessage: 'Email too long' },
+    { validationType: 'startsWith' as ValidationType, validationValue: 'user_', errorMessage: 'Must start with user_' },
+    { validationType: 'endsWith' as ValidationType, validationValue: '.com', errorMessage: 'Must end with .com' },
+    { validationType: 'matches' as ValidationType, validationValue: '^user_[a-z_]+@[a-z]+\\.com$', errorMessage: 'Invalid email format' },
+  ];
+
+  const USERNAME_VALIDATIONS = [
+    { validationType: 'minLength' as ValidationType, validationValue: '3', errorMessage: 'Username too short' },
+    { validationType: 'maxLength' as ValidationType, validationValue: '20', errorMessage: 'Username too long' },
+    {
+      validationType: 'matches' as ValidationType,
+      validationValue: '^[a-zA-Z][a-zA-Z0-9_]*$',
+      errorMessage: 'Username must start with a letter and contain only letters, numbers, and underscores',
+    },
+  ];
+
+  const PASSWORD_VALIDATIONS = [
+    { validationType: 'minLength' as ValidationType, validationValue: '8', errorMessage: 'Password too short' },
+    { validationType: 'maxLength' as ValidationType, validationValue: '100', errorMessage: 'Password too long' },
+    {
+      validationType: 'matches' as ValidationType,
+      validationValue: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&#]+$',
+      errorMessage: 'Password must contain at least one uppercase letter, one lowercase letter, one number and one special character',
+    },
+  ];
+
+  const SCORE_VALIDATIONS = [
+    { validationType: 'gte' as ValidationType, validationValue: '0', errorMessage: 'Score cannot be negative' },
+    { validationType: 'lte' as ValidationType, validationValue: '100', errorMessage: 'Score cannot exceed 100' },
+  ];
+
+  const ALL_FIELD_VALIDATIONS = {
+    age: AGE_VALIDATIONS,
+    email: EMAIL_VALIDATIONS,
+    username: USERNAME_VALIDATIONS,
+    password: PASSWORD_VALIDATIONS,
+    score: SCORE_VALIDATIONS,
+  };
+
+  // Valid test cases - all should pass validation
+  const validTestCases: ComplexValidationTestCase[] = [
+    {
+      description: 'validates all fields with valid values',
+      input: {
+        age: 25,
+        email: 'user_test@example.com',
+        username: 'john_doe123',
+        password: 'Test123!@#',
+        score: 85,
+      },
+    },
+    {
+      description: 'validates with missing optional fields (age and email)',
+      input: {
+        username: 'alice_smith',
+        password: 'Secure123!@#',
+        score: 90,
+      },
+    },
+    {
+      description: 'validates with boundary values (min age, max score)',
+      input: {
+        age: 14,
+        email: 'user_boundary@example.com',
+        username: 'boundary_test',
+        password: 'Boundary123!@',
+        score: 100,
+      },
+    },
+    {
+      description: 'validates with username and password only',
+      input: {
+        username: 'complex_user',
+        password: 'P@ssw0rd!#$%',
+      },
+    },
+    {
+      description: 'validates with maximum length values',
+      input: {
+        email: 'user_very_long_email_address@example.com',
+        username: 'very_long_username_1',
+        password: 'VeryLongP@ssw0rd!WithSpecialChars#$%',
+      },
+    },
+  ];
+
+  // Invalid test cases - all should fail validation
+  const invalidTestCases: ComplexValidationTestCase[] = [
+    {
+      description: 'fails when age is below minimum',
+      input: {
+        age: 10,
+        email: 'user_test@example.com',
+        username: 'john_doe123',
+        password: 'Test123!@#',
+        score: 85,
+      },
+      shouldPass: false,
+    },
+    {
+      description: 'fails when age is above maximum',
+      input: {
+        age: 151,
+        email: 'user_test@example.com',
+        username: 'john_doe123',
+        password: 'Test123!@#',
+        score: 85,
+      },
+      shouldPass: false,
+    },
+    {
+      description: 'fails when email format is invalid',
+      input: {
+        age: 25,
+        email: 'invalid@test',
+        username: 'valid_user',
+        password: 'Test123!@#',
+        score: 75,
+      },
+      shouldPass: false,
+    },
+    {
+      description: 'fails when email does not start with user_',
+      input: {
+        email: 'invalid_user@example.com',
+        username: 'valid_user',
+        password: 'Test123!@#',
+      },
+      shouldPass: false,
+    },
+    {
+      description: 'fails when username starts with number',
+      input: {
+        username: '1invalid_username',
+        password: 'Test123!@#',
+        score: 50,
+      },
+      shouldPass: false,
+    },
+    {
+      description: 'fails when username is too short',
+      input: {
+        username: 'ab',
+        password: 'Test123!@#',
+        score: 50,
+      },
+      shouldPass: false,
+    },
+    {
+      description: 'fails when password lacks uppercase letter',
+      input: {
+        username: 'valid_user',
+        password: 'test123!@#',
+        score: 50,
+      },
+      shouldPass: false,
+    },
+    {
+      description: 'fails when password lacks special character',
+      input: {
+        username: 'valid_user',
+        password: 'Test123456',
+        score: 50,
+      },
+      shouldPass: false,
+    },
+    {
+      description: 'fails when score is negative',
+      input: {
+        age: 25,
+        username: 'valid_user',
+        password: 'Test123!@#',
+        score: -1,
+      },
+      shouldPass: false,
+    },
+    {
+      description: 'fails when score exceeds maximum',
+      input: {
+        age: 25,
+        username: 'valid_user',
+        password: 'Test123!@#',
+        score: 101,
+      },
+      shouldPass: false,
+    },
+    {
+      description: 'fails with multiple validation errors',
+      input: {
+        age: 200,
+        email: 'not_user@test.org',
+        username: 'a',
+        password: 'weak',
+        score: -10,
+      },
+      shouldPass: false,
+    },
+  ];
+
+  describe('Valid Cases', () => {
+    validTestCases.forEach((testCase, index) => {
+      it(`${testCase.description}`, async () => {
+        await runComplexValidationTest(
+          {
+            ...testCase,
+            validationsByField: ALL_FIELD_VALIDATIONS,
+          },
+          `valid_${index}`,
+          COMPLEX_VALIDATION_TEMPLATES_DIR,
+        );
+      });
+    });
+  });
+
+  describe('Invalid Cases', () => {
+    invalidTestCases.forEach((testCase, index) => {
+      it(`${testCase.description}`, async () => {
+        await runComplexValidationTest(
+          {
+            ...testCase,
+            validationsByField: ALL_FIELD_VALIDATIONS,
+          },
+          `invalid_${index}`,
+          COMPLEX_VALIDATION_TEMPLATES_DIR,
+        );
       });
     });
   });

@@ -27,7 +27,9 @@ describe('Validation on Model vs Non-Model Types', () => {
             }
 
             type NonModelInput {
-              field: ${testCase.fieldType}! @validate(type: ${testCase.validationType}, value: "${testCase.value}")
+              ${testCase.fieldName || 'field'}: ${testCase.fieldType}! @validate(type: ${testCase.validationType}, value: "${
+          testCase.validationValue
+        }")
             }
           `;
 
@@ -205,7 +207,7 @@ describe('Validation Type Compatibility with Field Type', () => {
         ),
       )('rejects `$validationType` validation on `$fieldType.type` field', ({ validationType, fieldType }) => {
         const schema = createValidationSchema(
-          { validationType, fieldType: fieldType.type, value: fieldType.value },
+          { validationType, fieldType: fieldType.type, validationValue: fieldType.value },
           fieldType.isObject
             ? /* GraphQL */ `
                 type Author @model {
