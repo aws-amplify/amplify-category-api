@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.13.10](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.13.9...amplify-graphql-api-construct-tests@1.13.10) (2025-02-07)
+
+### Bug Fixes
+
+- bump ai-constructs to ^1.2.2 ([#3141](https://github.com/aws-amplify/amplify-category-api/issues/3141)) ([23519e3](https://github.com/aws-amplify/amplify-category-api/commit/23519e3a682175ea6e02c41b5fecac5c51ce04bf))
+- improve migration import error message ([#3140](https://github.com/aws-amplify/amplify-category-api/issues/3140)) ([e0f0b60](https://github.com/aws-amplify/amplify-category-api/commit/e0f0b6034dc4132f5f2ef41445e88a631bbd3b0f))
+
+## [1.13.9](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.13.8...amplify-graphql-api-construct-tests@1.13.9) (2025-01-30)
+
+### Bug Fixes
+
+- **gen2:** transform directives on fields of supported extended types ([#3127](https://github.com/aws-amplify/amplify-category-api/issues/3127)) ([3aca7b8](https://github.com/aws-amplify/amplify-category-api/commit/3aca7b89f530c536c28a53b7290fdab877b2260b))
+
+## [1.13.8](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.13.5...amplify-graphql-api-construct-tests@1.13.8) (2025-01-16)
+
+### Bug Fixes
+
+- **conversation:** add padding to stream chunks ([#3115](https://github.com/aws-amplify/amplify-category-api/issues/3115)) ([8ab2284](https://github.com/aws-amplify/amplify-category-api/commit/8ab2284eedc7f5e29d0e21acf3124d60ed058a93))
+
 ## [1.13.7](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.13.6...amplify-graphql-api-construct-tests@1.13.7) (2024-12-23)
 
 **Note:** Version bump only for package amplify-graphql-api-construct-tests

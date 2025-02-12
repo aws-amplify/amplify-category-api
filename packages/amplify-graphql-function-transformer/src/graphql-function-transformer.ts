@@ -14,16 +14,17 @@ import * as cdk from 'aws-cdk-lib';
 import { obj, str, ref, printBlock, compoundExpression, qref, raw, iff, Expression, set, bool } from 'graphql-mapping-template';
 import { FunctionResourceIDs, ResolverResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import {
+  ArgumentNode,
   DirectiveNode,
-  ObjectTypeDefinitionNode,
-  InterfaceTypeDefinitionNode,
-  FieldDefinitionNode,
-  Kind,
   DocumentNode,
+  FieldDefinitionNode,
+  InputValueDefinitionNode,
+  InterfaceTypeDefinitionNode,
+  Kind,
+  ObjectTypeDefinitionNode,
+  ObjectTypeExtensionNode,
   TypeNode,
   valueFromASTUntyped,
-  ArgumentNode,
-  InputValueDefinitionNode,
 } from 'graphql';
 
 type FunctionDirectiveConfiguration = {
@@ -45,7 +46,7 @@ export class FunctionTransformer extends TransformerPluginBase {
   }
 
   field = (
-    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode,
     definition: FieldDefinitionNode,
     directive: DirectiveNode,
     acc: TransformerSchemaVisitStepContextProvider,
@@ -69,6 +70,15 @@ export class FunctionTransformer extends TransformerPluginBase {
     }
 
     resolver.push(args);
+  };
+
+  fieldOfExtendedType = (
+    parent: ObjectTypeExtensionNode,
+    field: FieldDefinitionNode,
+    directive: DirectiveNode,
+    context: TransformerSchemaVisitStepContextProvider,
+  ): void => {
+    this.field(parent, field, directive, context);
   };
 
   generateResolvers = (context: TransformerContextProvider): void => {

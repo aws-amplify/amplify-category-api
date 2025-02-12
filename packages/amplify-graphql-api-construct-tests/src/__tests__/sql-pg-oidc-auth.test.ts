@@ -9,7 +9,7 @@ import { sqlCreateStatements } from '../sql-tests-common/tests-sources/sql-dynam
 jest.setTimeout(DURATION_1_HOUR);
 
 describe('CDK GraphQL Transformer deployments with Postgres SQL datasources - OIDC Auth', () => {
-  const projFolderName = 'sqlmodelsoidcaccess';
+  const projFolderName = 'pgoidcaccess';
 
   // sufficient password length that meets the requirements for RDS cluster/instance
   const [username, password, identifier] = generator.generateMultiple(3, { length: 11 });

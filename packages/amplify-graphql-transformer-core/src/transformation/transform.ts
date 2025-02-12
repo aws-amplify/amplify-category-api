@@ -35,10 +35,10 @@ import {
   UnionTypeDefinitionNode,
 } from 'graphql';
 import _ from 'lodash';
-import { DocumentNode } from 'graphql/language';
+import { DocumentNode, ObjectTypeExtensionNode } from 'graphql/language';
 import { Construct } from 'constructs';
 import { ResolverConfig } from '../config/transformer-config';
-import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
+import { InvalidDirectiveError, InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
 import { TransformerContext, NONE_DATA_SOURCE_NAME } from '../transformer-context';
 import { TransformerOutput } from '../transformer-context/output';
@@ -46,6 +46,7 @@ import { adoptAuthModes } from '../utils/authType';
 import { MappingTemplate } from '../cdk-compat';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
 import { defaultTransformParameters } from '../transformer-context/transform-parameters';
+import { isBuiltInGraphqlNode } from '../utils';
 import * as SyncUtils from './sync-utils';
 import { UserDefinedSlot } from './types';
 import {
@@ -260,6 +261,10 @@ export class GraphQLTransform {
             this.transformObject(transformer, def, validDirectiveNameMap, context);
             // Walk the fields and call field transformers.
             break;
+          case 'ObjectTypeExtension':
+            // Invokes `transformer.extendedObject` if present, and walks the fields of the extended types to call field transformers.
+            this.transformObject(transformer, def, validDirectiveNameMap, context);
+            break;
           case 'InterfaceTypeDefinition':
             this.transformInterface(transformer, def, validDirectiveNameMap, context);
             // Walk the fields and call field transformers.
@@ -449,9 +454,14 @@ export class GraphQLTransform {
     }
   }
 
+  /**
+   * For each directive on the object or extended type, invoke the appropriate transformer. The transformer must implement `object` (for
+   * {@link ObjectTypeDefinitionNode}s) or `extendedObject` (for {@link ObjectTypeExtensionNode}s). Then, invoke the field transformer for
+   * each field in the object.
+   */
   private transformObject(
     transformer: TransformerPluginProvider,
-    def: ObjectTypeDefinitionNode,
+    def: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
     validDirectiveNameMap: { [k: string]: boolean },
     context: TransformerContext,
   ): void {
@@ -462,19 +472,38 @@ export class GraphQLTransform {
           `Unknown directive '${dir.name.value}'. Either remove the directive from the schema or add a transformer to handle it.`,
         );
       }
-      if (matchDirective(transformer.directive, dir, def)) {
-        if (isFunction(transformer.object)) {
-          const transformKey = makeSeenTransformationKey(dir, def, undefined, undefined, index);
-          if (!this.seenTransformations[transformKey]) {
-            transformer.object(def, dir, context);
-            this.seenTransformations[transformKey] = true;
-          }
-        } else {
+
+      // Wrapping all this in a try/finally so we can reliably remember to increment `index` in all of our early exit conditions. That lets
+      // us use early-exit guards and flattens the control flow. (TS doesn't have the equivalent of a Golang/swift `defer` clause, so this
+      // is a workaround for that pattern.)
+      try {
+        if (!matchDirective(transformer.directive, dir, def)) {
+          continue;
+        }
+
+        const transformKey = makeSeenTransformationKey(dir, def, undefined, undefined, index);
+        if (this.seenTransformations[transformKey]) {
+          continue;
+        }
+
+        if (def.kind === Kind.OBJECT_TYPE_EXTENSION) {
+          // This should be caught by `matchDirective`, but we'll leave it here for safety.
+          throw new InvalidTransformerError(
+            `Directives are not supported on object or interface extensions. See the '@${dir.name.value}' directive on '${def.name.value}'`,
+          );
+        }
+
+        if (!isFunction(transformer.object)) {
           throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'object()' method`);
         }
+
+        transformer.object(def, dir, context);
+        this.seenTransformations[transformKey] = true;
+      } finally {
+        index++;
       }
-      index++;
     }
+
     for (const field of def.fields ?? []) {
       this.transformField(transformer, def, field, validDirectiveNameMap, context);
     }
@@ -482,7 +511,7 @@ export class GraphQLTransform {
 
   private transformField(
     transformer: TransformerPluginProvider,
-    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode,
     def: FieldDefinitionNode,
     validDirectiveNameMap: { [k: string]: boolean },
     context: TransformerContext,
@@ -494,19 +523,44 @@ export class GraphQLTransform {
           `Unknown directive '${dir.name.value}'. Either remove the directive from the schema or add a transformer to handle it.`,
         );
       }
-      if (matchFieldDirective(transformer.directive, dir, def)) {
-        if (isFunction(transformer.field)) {
-          const transformKey = makeSeenTransformationKey(dir, parent, def, undefined, index);
-          if (!this.seenTransformations[transformKey]) {
-            transformer.field(parent, def, dir, context);
-            this.seenTransformations[transformKey] = true;
-          }
-        } else {
-          throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'field()' method`);
+
+      // Wrapping all this in a try/finally so we can reliably remember to increment `index` in all of our early exit conditions. That lets
+      // us use early-exit guards and flattens the control flow. (TS doesn't have the equivalent of a Golang/swift `defer` clause, so this
+      // is a workaround for that pattern.)
+      try {
+        if (!matchFieldDirective(transformer.directive, dir, def)) {
+          continue;
         }
+
+        const transformKey = makeSeenTransformationKey(dir, parent, def, undefined, index);
+        if (this.seenTransformations[transformKey]) {
+          continue;
+        }
+
+        if (parent.kind === Kind.OBJECT_TYPE_EXTENSION) {
+          if (!isFunction(transformer.fieldOfExtendedType)) {
+            throw new InvalidTransformerError(`The '@${dir.name.value}' directive is not supported on fields of extended types`);
+          }
+
+          // We only support directives on fields of Query, Mutation, and Subscription type extensions
+          if (!isBuiltInGraphqlNode(parent)) {
+            throw new InvalidDirectiveError(
+              `The '@${dir.name.value}' directive cannot be used on fields of type extensions other than 'Query', 'Mutation', and 'Subscription'. See ${parent.name.value}.${def.name.value}`,
+            );
+          }
+          transformer.fieldOfExtendedType(parent, def, dir, context);
+        } else {
+          if (!isFunction(transformer.field)) {
+            throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'field()' method`);
+          }
+          transformer.field(parent, def, dir, context);
+        }
+        this.seenTransformations[transformKey] = true;
+      } finally {
+        index++;
       }
-      index++;
     }
+
     for (const arg of def.arguments ?? []) {
       this.transformArgument(transformer, parent, def, arg, validDirectiveNameMap, context);
     }
@@ -514,7 +568,7 @@ export class GraphQLTransform {
 
   private transformArgument(
     transformer: TransformerPluginProvider,
-    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode,
     field: FieldDefinitionNode,
     arg: InputValueDefinitionNode,
     validDirectiveNameMap: { [k: string]: boolean },

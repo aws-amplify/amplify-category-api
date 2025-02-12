@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.14.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.14.7...@aws-amplify/data-construct@1.14.8) (2025-02-07)
+
+### Bug Fixes
+
+- bump ai-constructs to ^1.2.2 ([#3141](https://github.com/aws-amplify/amplify-category-api/issues/3141)) ([23519e3](https://github.com/aws-amplify/amplify-category-api/commit/23519e3a682175ea6e02c41b5fecac5c51ce04bf))
+
+## [1.14.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.14.6...@aws-amplify/data-construct@1.14.7) (2025-01-30)
+
+**Note:** Version bump only for package @aws-amplify/data-construct
+
+## [1.14.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.14.3...@aws-amplify/data-construct@1.14.6) (2025-01-16)
+
+### Bug Fixes
+
+- remove transitive dev dependencies from bundled jsii constructs ([#3092](https://github.com/aws-amplify/amplify-category-api/issues/3092)) ([f1243e2](https://github.com/aws-amplify/amplify-category-api/commit/f1243e232d6b54bc2fe2b6b7c27ad454b7063edc))
+
 ## [1.14.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.14.4...@aws-amplify/data-construct@1.14.5) (2024-12-23)
 
 **Note:** Version bump only for package @aws-amplify/data-construct

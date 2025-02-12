@@ -1,8 +1,8 @@
 import { ImportedRDSType } from '@aws-amplify/graphql-transformer-core';
-import { DynamicModelAuthTester } from './tests-sources/sql-dynamic-model-auth/tester';
 import { TestConfigOutput, TestOptions, setupTest, cleanupTest } from '../utils/sql-test-config-helper';
-import { stackConfig as generateStackConfig } from './tests-sources//sql-dynamic-model-auth/sql-oidc-auth/stack-config';
 import { authConstructDependency } from '../__tests__/additional-dependencies';
+import { DynamicModelAuthTester } from './tests-sources/sql-dynamic-model-auth/tester';
+import { stackConfig as generateStackConfig } from './tests-sources/sql-dynamic-model-auth/sql-oidc-auth/stack-config';
 
 export const testGraphQLAPIWithOIDCAccess = (options: TestOptions, testBlockDescription: string, engine: ImportedRDSType): void => {
   describe(`${testBlockDescription} - ${engine}`, () => {

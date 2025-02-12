@@ -56,6 +56,7 @@ export const onCreateAssistantResponsePirateChat = /* GraphQL */ `subscription O
     id
     owner
     stopReason
+    p
   }
 }
 ` as GeneratedSubscription<

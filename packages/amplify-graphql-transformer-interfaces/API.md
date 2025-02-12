@@ -131,6 +131,8 @@ export interface AppSyncFunctionConfigurationProvider extends IConstruct {
     readonly arn: string;
     // (undocumented)
     readonly functionId: string;
+    // (undocumented)
+    readonly name: string;
 }
 
 // @public (undocumented)
@@ -748,6 +750,8 @@ export interface TransformerPluginProvider {
     // (undocumented)
     field?: (parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, definition: FieldDefinitionNode, directive: DirectiveNode, acc: TransformerSchemaVisitStepContextProvider) => void;
     // (undocumented)
+    fieldOfExtendedType?: (parent: ObjectTypeExtensionNode, definition: FieldDefinitionNode, directive: DirectiveNode, acc: TransformerSchemaVisitStepContextProvider) => void;
+    // (undocumented)
     generateResolvers?: (context: TransformerContextProvider) => void;
     // (undocumented)
     getLogs?: () => TransformerLog[];
@@ -927,7 +931,9 @@ export interface TransformHostProvider {
     // (undocumented)
     addSearchableDataSource(name: string, endpoint: string, region: string, options?: SearchableDataSourceOptions, scope?: Construct): BaseDataSource;
     // (undocumented)
-    addVtlRuntimeResolver: (typeName: string, fieldName: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, resolverLogicalId?: string, dataSourceName?: string, pipelineConfig?: string[], scope?: Construct) => CfnResolver;
+    addVtlRuntimeResolver: (typeName: string, fieldName: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, resolverLogicalId?: string, dataSourceName?: string, pipelineConfig?: string[], scope?: Construct) => any;
+    // (undocumented)
+    createResourceManagerResource(context: any): void;
     // (undocumented)
     getDataSource: (name: string) => BaseDataSource | void;
     // (undocumented)

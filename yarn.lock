@@ -10,14 +10,14 @@
     "@jridgewell/gen-mapping" "^0.3.5"
     "@jridgewell/trace-mapping" "^0.3.24"
 
-"@aws-amplify/ai-constructs@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/@aws-amplify/ai-constructs/-/ai-constructs-1.0.0.tgz#3cf60199bf4550e5e4ab7a43e2590d6e0179cbd7"
-  integrity sha512-gLOKpt3/Qq89/7wMPVu1anpmptFNxgV2K6DJe+6uYfuL+GW8T3XYgMNq5Wyty07MGel0F95zaHrfysuwx43Q6w==
+"@aws-amplify/ai-constructs@^1.2.2":
+  version "1.2.2"
+  resolved "https://registry.npmjs.org/@aws-amplify/ai-constructs/-/ai-constructs-1.2.2.tgz#86533bca037d58805e1576a0d068c4481bffc91f"
+  integrity sha512-tv5/HbLfnYRKMD5TvbvFHzoWQVBbonOliwl+RBzn6Zeqiyj0cyQMFpTn7KhA+grS8/eg0TXbQi7gE8QgtiCSWw==
   dependencies:
     "@aws-amplify/backend-output-schemas" "^1.4.0"
-    "@aws-amplify/platform-core" "^1.2.0"
-    "@aws-amplify/plugin-types" "^1.3.1"
+    "@aws-amplify/platform-core" "^1.5.1"
+    "@aws-amplify/plugin-types" "^1.6.0"
     "@aws-sdk/client-bedrock-runtime" "^3.622.0"
     "@smithy/types" "^3.3.0"
     json-schema-to-ts "^3.1.1"
@@ -338,7 +338,7 @@
     fflate "0.7.3"
     pako "2.0.4"
 
-"@aws-amplify/platform-core@^1.0.0", "@aws-amplify/platform-core@^1.0.6", "@aws-amplify/platform-core@^1.2.0":
+"@aws-amplify/platform-core@^1.0.0", "@aws-amplify/platform-core@^1.0.6":
   version "1.2.0"
   resolved "https://registry.npmjs.org/@aws-amplify/platform-core/-/platform-core-1.2.0.tgz#329c7a0fd87b04c9cbfd8dc489ba4516508eea42"
   integrity sha512-/bRCU8NxcsSH0BlY/iDFFdmhqdZcPmHg0LCek/swL4XczNmwOMXYqP3wqqA+75PqamRmDSTC5Dj67iZUjw68bw==
@@ -351,10 +351,29 @@
     uuid "^9.0.1"
     zod "^3.22.2"
 
+"@aws-amplify/platform-core@^1.5.1":
+  version "1.6.1"
+  resolved "https://registry.npmjs.org/@aws-amplify/platform-core/-/platform-core-1.6.1.tgz#44fb00bfdcfd7a16d223a81ec3eb7991e1cb1da3"
+  integrity sha512-dn0jzv8n6zNlJrfkh42IayW6SnHnPWASt7EYaZ3LPgJb7pSrnFWgL5ldcDt+8QbZYZTVPXXLYNCHzu4oMdGUfg==
+  dependencies:
+    "@aws-amplify/plugin-types" "^1.8.0"
+    "@aws-sdk/client-sts" "^3.624.0"
+    is-ci "^3.0.1"
+    lodash.mergewith "^4.6.2"
+    lodash.snakecase "^4.1.1"
+    semver "^7.6.3"
+    uuid "^9.0.1"
+    zod "^3.22.2"
+
 "@aws-amplify/plugin-types@^1.0.0", "@aws-amplify/plugin-types@^1.2.1", "@aws-amplify/plugin-types@^1.3.1", "@aws-amplify/plugin-types@^1.4.0":
   version "1.4.0"
   resolved "https://registry.npmjs.org/@aws-amplify/plugin-types/-/plugin-types-1.4.0.tgz#8cbe0b307989c20f4d38be73cf6dcfd81ce923a6"
   integrity sha512-S3ygJcTOAhfZIwYFCM0yazC+0jjv45ynR3OTifgpHt0PminA8l+LcYNQ2fCbsfPXrYGHidLtjzHg4hrB/PBLmA==
+
+"@aws-amplify/plugin-types@^1.6.0", "@aws-amplify/plugin-types@^1.8.0":
+  version "1.8.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/plugin-types/-/plugin-types-1.8.0.tgz#23210c48fa641d01bad1cb0283be1b13809672ea"
+  integrity sha512-g6/gx76/GK3KJj5EkGrdMlWSU04GTI9mppRzqx3rkzt0betk1ChNx4xjHhmp60W0labhHLvnNMLwZFPh27zArw==
 
 "@aws-amplify/predictions@4.0.64":
   version "4.0.64"
@@ -430,13 +449,13 @@
   resolved "https://registry.npmjs.org/@aws-cdk/aws-cognito-identitypool-alpha/-/aws-cognito-identitypool-alpha-2.152.0-alpha.0.tgz#5d29345675171afd1eaa594da59561b38ff0ea9d"
   integrity sha512-6KbF4jog139kAARMBNDbbGQYSon+ggG4peQgv3hDFH49l6r6w+SbrW+jFzgfTGhQLDrlQEB4rPh7EW64xxtfVg==
 
-"@aws-cdk/cloud-assembly-schema@^38.0.1":
-  version "38.0.1"
-  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-38.0.1.tgz#cdf4684ae8778459e039cd44082ea644a3504ca9"
-  integrity sha512-KvPe+NMWAulfNVwY7jenFhzhuLhLqJ/OPy5jx7wUstbjnYnjRVLpUHPU3yCjXFE0J8cuJVdx95BJ4rOs66Pi9w==
+"@aws-cdk/cloud-assembly-schema@^39.2.0":
+  version "39.2.14"
+  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-39.2.14.tgz#bcb0f9634e1388e558df5279794ef09f55ed78ef"
+  integrity sha512-G6hudyROAI95rdsKjhOkt3pPC54yx2rqkadeqk5e/xnSX+4NgixK36HJ8giVYNUVFtP12GUeFsQ8NC4ME3GgYg==
   dependencies:
-    jsonschema "^1.4.1"
-    semver "^7.6.3"
+    jsonschema "~1.4.1"
+    semver "^7.7.1"
 
 "@aws-crypto/crc32@2.0.0":
   version "2.0.0"
@@ -9352,15 +9371,15 @@ aws-appsync@^4.1.1:
     url "^0.11.0"
     uuid "3.x"
 
-aws-cdk-lib@2.168.0, aws-cdk-lib@^2.168.0, aws-cdk-lib@~2.129.0:
-  version "2.173.2"
-  resolved "https://registry.yarnpkg.com/aws-cdk-lib/-/aws-cdk-lib-2.173.2.tgz#9e51332973163eb0d0a89cb67973a89b75c5f0b1"
-  integrity sha512-cL9+z8Pl3VZGoO7BwdsrFAOeud/vSl3at7OvmhihbNprMN15XuFUx/rViAU5OI1m92NbV4NBzYSLbSeCwYLNyw==
+aws-cdk-lib@2.177.0, aws-cdk-lib@^2.177.0, aws-cdk-lib@~2.129.0:
+  version "2.177.0"
+  resolved "https://registry.npmjs.org/aws-cdk-lib/-/aws-cdk-lib-2.177.0.tgz#dd161eb9b3fca56d0677c903ff758780a3eeb974"
+  integrity sha512-nTnHAwjZaPJ5gfJjtzE/MyK6q0a66nWthoJl7l8srucRb+I30dczhbbXor6QCdVpJaTRAEliMOMq23aglsAQbg==
   dependencies:
     "@aws-cdk/asset-awscli-v1" "^2.2.208"
     "@aws-cdk/asset-kubectl-v20" "^2.1.3"
     "@aws-cdk/asset-node-proxy-agent-v6" "^2.1.0"
-    "@aws-cdk/cloud-assembly-schema" "^38.0.1"
+    "@aws-cdk/cloud-assembly-schema" "^39.2.0"
     "@balena/dockerignore" "^1.0.2"
     case "1.6.3"
     fs-extra "^11.2.0"
@@ -13874,7 +13893,7 @@ jsonparse@^1.2.0, jsonparse@^1.3.1:
   resolved "https://registry.npmjs.org/jsonparse/-/jsonparse-1.3.1.tgz#3f4dae4a91fac315f71062f8521cc239f1366280"
   integrity sha512-POQXvpdL69+CluYsillJ7SUhKvytYjW9vG/GKpnf+xP8UWgYEM/RaMzHHofbALDiKbbP1W8UEYmgGl39WkPZsg==
 
-jsonschema@^1.4.1:
+jsonschema@^1.4.1, jsonschema@~1.4.1:
   version "1.4.1"
   resolved "https://registry.npmjs.org/jsonschema/-/jsonschema-1.4.1.tgz#cc4c3f0077fb4542982973d8a083b6b34f482dab"
   integrity sha512-S6cATIPVv1z0IlxdN+zUk5EPjkGCdnhN4wVSBlvoUO1tOLJootbo9CquNJmbIh4yikWHiUedhRYrNPn1arpEmQ==
@@ -14198,6 +14217,11 @@ lodash.mergewith@^4.6.2:
   version "4.6.2"
   resolved "https://registry.npmjs.org/lodash.mergewith/-/lodash.mergewith-4.6.2.tgz#617121f89ac55f59047c7aec1ccd6654c6590f55"
   integrity sha512-GK3g5RPZWTRSeLSpgP8Xhra+pnjBC56q9FZYe1d5RN3TJ35dbkGy3YqBSMbyCrlbi+CM9Z3Jk5yTL7RCsqboyQ==
+
+lodash.snakecase@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.npmjs.org/lodash.snakecase/-/lodash.snakecase-4.1.1.tgz#39d714a35357147837aefd64b5dcbb16becd8f8d"
+  integrity sha512-QZ1d4xoBHYUeuouhEq3lk3Uq7ldgyFXGBhg04+oRLnIz8o9T65Eh+8YdroUwn846zchkA9yDsDl5CVVaV2nqYw==
 
 lodash.truncate@^4.4.2:
   version "4.4.2"
@@ -16714,7 +16738,7 @@ semver-utils@^1.1.4:
   resolved "https://registry.npmjs.org/semver-utils/-/semver-utils-1.1.4.tgz#cf0405e669a57488913909fc1c3f29bf2a4871e2"
   integrity sha512-EjnoLE5OGmDAVV/8YDoN5KiajNadjzIp9BAHOhYeQHt7j0UWxjmgsx4YD48wp4Ue1Qogq38F1GNUJNqF1kKKxA==
 
-"semver@2 || 3 || 4 || 5", semver@7.3.7, semver@7.5.4, semver@^5.6.0, semver@^6.0.0, semver@^6.3.0, semver@^6.3.1, semver@^7.0.0, semver@^7.1.1, semver@^7.3.4, semver@^7.3.5, semver@^7.3.7, semver@^7.5.2, semver@^7.5.3, semver@^7.5.4, semver@^7.6.3, semver@~7.5.4:
+"semver@2 || 3 || 4 || 5", semver@7.3.7, semver@7.5.4, semver@^5.6.0, semver@^6.0.0, semver@^6.3.0, semver@^6.3.1, semver@^7.0.0, semver@^7.1.1, semver@^7.3.4, semver@^7.3.5, semver@^7.3.7, semver@^7.5.2, semver@^7.5.3, semver@^7.5.4, semver@^7.6.3, semver@^7.7.1, semver@~7.5.4:
   version "7.6.3"
   resolved "https://registry.npmjs.org/semver/-/semver-7.6.3.tgz#980f7b5550bc175fb4dc09403085627f9eb33143"
   integrity sha512-oVekP1cKtI+CTDvHWYFUcMtsK/00wmAEfyqKfNdARm8u1wNVhSgaX7A8d4UuIlUI5e84iEwOhs7ZPYRmzU9U6A==

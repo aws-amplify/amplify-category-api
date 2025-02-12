@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { Construct } from 'constructs';
 import { ExecuteTransformConfig, executeTransform } from '@aws-amplify/graphql-transformer';
-import { NestedStack, Stack, Annotations } from 'aws-cdk-lib';
+import { NestedStack, Stack, Annotations, FeatureFlags } from 'aws-cdk-lib';
 import { AttributionMetadataStorage, StackMetadataBackendOutputStorageStrategy } from '@aws-amplify/backend-output-storage';
 import { graphqlOutputKey } from '@aws-amplify/backend-output-schemas';
 import type { GraphqlOutput, AwsAppsyncAuthenticationType } from '@aws-amplify/backend-output-schemas';
@@ -145,6 +145,12 @@ export class AmplifyGraphqlApi extends Construct {
   constructor(scope: Construct, id: string, props: AmplifyGraphqlApiProps) {
     super(scope, id);
     this.stack = Stack.of(scope);
+
+    // Fall back to default true if no feature flag is provided, otherwise honor the feature flag value provided
+    this.node.setContext(
+      '@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections',
+      FeatureFlags.of(this).isEnabled('@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections') ?? true,
+    );
 
     validateNoOtherAmplifyGraphqlApiInStack(this);
 
