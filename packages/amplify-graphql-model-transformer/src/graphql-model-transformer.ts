@@ -342,10 +342,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     });
     if (context.transformParameters.enableGen2Migration && context.transformParameters.enableTransformerCfnOutputs) {
       const { scope } = context.stackManager;
-      const env = context.synthParameters.amplifyEnvironmentName;
       new cdk.CfnOutput(cdk.Stack.of(scope), 'DataSourceMappingOutput', {
         value: cdk.Stack.of(scope).toJsonString(dataSourceMapping),
-        description: `Mapping of model name to data source table name for the ${env} environment.`,
+        description: 'Mapping of model name to data source table name.',
         exportName: cdk.Fn.join(':', [cdk.Aws.STACK_NAME, 'DataSourceMappingOutput']),
       });
     }
