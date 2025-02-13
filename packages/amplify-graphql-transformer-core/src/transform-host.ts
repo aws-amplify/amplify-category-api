@@ -56,6 +56,12 @@ export interface DefaultTransformHostOptions {
   readonly api: GraphQLApi;
 }
 
+interface ResolverManagerCustomResourceProperties {
+  apiId: string;
+  computedResourcesAssetUrl: string;
+  resourceHash: string;
+}
+
 export class DefaultTransformHost implements TransformHostProvider {
   private dataSources: Map<string, BaseDataSource> = new Map();
 
@@ -137,14 +143,16 @@ export class DefaultTransformHost implements TransformHostProvider {
     });
     customResourceProvider.node.addDependency(computedResourcesAsset);
 
+    const properties: ResolverManagerCustomResourceProperties = {
+      apiId: this.api.apiId,
+      computedResourcesAssetUrl: computedResourcesAsset.s3ObjectUrl,
+      resourceHash: hash(this.resources),
+    };
+
     const customResource = new CustomResource(customResourceStack, 'ResolverManagerCustomResource', {
       resourceType: 'Custom::AmplifyResolverManager',
       serviceToken: customResourceProvider.serviceToken,
-      properties: {
-        apiId: this.api.apiId,
-        computedResourcesAssetUrl: computedResourcesAsset.s3ObjectUrl,
-        resourceHash: hash(this.resources),
-      },
+      properties,
     });
 
     this.dataSources.forEach((ds) => {

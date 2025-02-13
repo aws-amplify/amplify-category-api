@@ -21,12 +21,15 @@ interface ResolverSpec {
   fieldName: string | undefined;
 }
 
-interface ResourceProperties {
+interface InitialResourceProperties {
   ServiceToken: string;
   apiId: string;
   computedResourcesAssetUrl: string;
   resourceHash: string;
-  resources?: any;
+}
+
+interface ResourceProperties extends InitialResourceProperties {
+  resources: any;
 }
 
 const functionIdValueMap: Record<string, string> = {};
@@ -37,11 +40,14 @@ export const handler = async (event: CloudFormationCustomResourceEvent): Promise
   console.log('event', JSON.stringify(event));
 
   // Initial resource properties come from the CFN event
-  const resourceProperties = event.ResourceProperties as ResourceProperties;
+  const initialResourceProperties = event.ResourceProperties as InitialResourceProperties;
 
   // Enrich the initial properties with the actual resource shape from S3
-  const resources = await getComputedResources(resourceProperties);
-  resourceProperties.resources = resources;
+  const resources = await getComputedResources(initialResourceProperties);
+  const resourceProperties: ResourceProperties = {
+    ...initialResourceProperties,
+    resources,
+  };
 
   // TODO: Figure out a diff strategy for the resources so we don't have to delete/recreate every time
   console.log('Delete all resolvers');
@@ -49,8 +55,6 @@ export const handler = async (event: CloudFormationCustomResourceEvent): Promise
 
   console.log('Delete all functions');
   await deleteAllFunctions(resourceProperties);
-
-  const physicalResourceId = `resource-manager-${resourceProperties.apiId}`;
 
   switch (event.RequestType) {
     case 'Create':
@@ -64,12 +68,13 @@ export const handler = async (event: CloudFormationCustomResourceEvent): Promise
       break;
   }
 
+  // Delete events may come after an unsuccessful create, so we shouldn't rely on the overridden physical resource ID being valid yet
+  const physicalResourceId = event.RequestType === 'Delete' ? event.PhysicalResourceId : `resource-manager-${resourceProperties.apiId}`;
+
   const response: CloudFormationCustomResourceResponse = {
     PhysicalResourceId: physicalResourceId,
     Status: 'SUCCESS',
-    Data: {
-      ...resourceProperties,
-    },
+    Data: { ...initialResourceProperties },
     LogicalResourceId: event.LogicalResourceId,
     RequestId: event.RequestId,
     StackId: event.StackId,
@@ -250,7 +255,7 @@ const createResolvers = async (resourceProperties: ResourceProperties): Promise<
   }
 };
 
-const getComputedResources = async (resourceProperties: ResourceProperties): Promise<any> => {
+const getComputedResources = async (resourceProperties: InitialResourceProperties): Promise<any> => {
   const { computedResourcesAssetUrl } = resourceProperties;
   const { bucket, key } = parseS3Url(computedResourcesAssetUrl);
   console.log(`getComputedResources: ${bucket}/${key}`);
