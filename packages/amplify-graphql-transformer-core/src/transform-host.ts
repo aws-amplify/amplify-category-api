@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import * as path from 'path';
 import hash from 'object-hash';
 
@@ -20,7 +19,8 @@ import {
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IRole, Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { CfnFunction, Code, Function, IFunction, ILayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+import { BlockPublicAccess, Bucket, BucketEncryption } from 'aws-cdk-lib/aws-s3';
+import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 
 import {
   AssetProvider,
@@ -28,7 +28,9 @@ import {
   FunctionRuntimeTemplate,
   JSRuntimeTemplate,
   MappingTemplateProvider,
+  MappingTemplateType,
   SearchableDataSourceOptions,
+  TransformerContextProvider,
   TransformHostProvider,
   VpcConfig,
   VTLRuntimeTemplate,
@@ -58,8 +60,40 @@ export interface DefaultTransformHostOptions {
 
 interface ResolverManagerCustomResourceProperties {
   apiId: string;
-  computedResourcesAssetUrl: string;
+  computedResourcesAssetBucket: string;
+  computedResourcesAssetKey: string;
   resourceHash: string;
+}
+
+type AppSyncResource = AppSyncPipelineResolverResource | AppSyncFunctionResource;
+
+interface AppSyncPipelineResolverResource {
+  type: 'PipelineResolver';
+  fieldName: string;
+  typeName: string;
+  kind: 'PIPELINE';
+  requestMappingTemplate: string;
+  responseMappingTemplate: string;
+  pipelineConfig: {
+    functions: string[];
+  };
+}
+
+type AppSyncFunctionResource = AppSyncJsFunctionResource | AppSyncVtlFunctionResource;
+
+interface AppSyncJsFunctionResource {
+  type: 'AppSyncJsFunction';
+  functionId: string;
+  dataSource: string;
+  codeMappingTemplate: string;
+}
+
+interface AppSyncVtlFunctionResource {
+  type: 'AppSyncVtlFunction';
+  functionId: string;
+  dataSource: string;
+  requestMappingTemplate: string;
+  responseMappingTemplate: string;
 }
 
 export class DefaultTransformHost implements TransformHostProvider {
@@ -69,7 +103,7 @@ export class DefaultTransformHost implements TransformHostProvider {
 
   private appsyncFunctions: Map<string, AppSyncFunctionConfiguration> = new Map();
 
-  private resources: Record<string, any> = {};
+  private resources: Record<string, AppSyncResource> = {};
 
   private api: GraphQLApi;
 
@@ -96,28 +130,57 @@ export class DefaultTransformHost implements TransformHostProvider {
     return this.resolvers.has(resolverRef) ? this.resolvers.get(resolverRef) : undefined;
   };
 
-  createResourceManagerResource = (context: any): void => {
+  /**
+   * Create an AWS Custom Resource to manage AppSync resolvers and functions. This structure abstracts the multiple CFN resources created
+   * for all models into a single resource, working around CFN limits like the 500 resources/stack and the 2500 operations per stack update.
+   *
+   * Internally, this method uses the {@link TemplateValueMapper} of the context to create a JSON representation of the resources.
+   */
+  createResourceManagerResource = (context: TransformerContextProvider): void => {
     const customResourceStack = context.stackManager.getScopeFor('ResolverManagerStack', 'ResolverManagerStack');
-    const computedResourcesLocalPath = path.join(__dirname, 'resolver-manager', 'computed-resources.json');
-    fs.writeFileSync(computedResourcesLocalPath, JSON.stringify(this.resources, null, 4));
-    const computedResourcesAsset = new Asset(customResourceStack, 'ResolverCodeAsset', {
-      path: computedResourcesLocalPath,
+
+    const resourceBucket = new Bucket(customResourceStack, 'ResourcesBucket', {
+      enforceSSL: true,
+      blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+      encryption: BucketEncryption.S3_MANAGED,
     });
+
+    const tvp = context.templateValueMapper;
+    tvp.bind(customResourceStack, 'ResolverManagerStackValueMapper');
+
+    const valueMappedResources: any = {};
+    Object.entries(this.resources).forEach(([name, resource]) => {
+      if (resource.type === 'PipelineResolver') {
+        resource.requestMappingTemplate = tvp.resolve(resource.requestMappingTemplate);
+        resource.responseMappingTemplate = tvp.resolve(resource.responseMappingTemplate);
+      } else if (resource.type === 'AppSyncJsFunction') {
+        resource.codeMappingTemplate = tvp.resolve(resource.codeMappingTemplate);
+      } else if (resource.type === 'AppSyncVtlFunction') {
+        resource.requestMappingTemplate = tvp.resolve(resource.requestMappingTemplate);
+        resource.responseMappingTemplate = tvp.resolve(resource.responseMappingTemplate);
+      }
+      valueMappedResources[name] = resource;
+    });
+
+    const computedResourcesObjectKey = 'computed-resources.json';
+    const deployment = new BucketDeployment(customResourceStack, 'ResourcesBucketDeployment', {
+      destinationBucket: resourceBucket,
+      sources: [Source.jsonData(computedResourcesObjectKey, valueMappedResources)],
+    });
+    deployment.node.addDependency(this.api);
 
     const lambdaCodePath = path.join(__dirname, '..', 'lib', 'resolver-manager');
     console.log(path.normalize(lambdaCodePath));
 
-    // NB: Provider policies need to have access to "*" resources since they may be reused across instances.
+    // TODO: Generally, provider policies need to have access to "*" resources since they may be reused across instances. But do we actually
+    // create multiple instances?
     const customResourceProvider = new Provider(customResourceStack, 'AmplifyResolverManagerProvider', {
-      providerFunctionName: 'AmplifyResolverManagerOnEvent',
-      onEventHandler: new Function(this.api, 'AmplifyResolverManagerOnEventFn', {
+      providerFunctionName: 'AmplifyResolverManagerProviderFn',
+      onEventHandler: new Function(customResourceStack, 'AmplifyResolverManagerOnEventFn', {
+        functionName: 'AmplifyResolverManagerOnEventFn',
         code: Code.fromAsset(lambdaCodePath),
         handler: 'index.handler',
         runtime: Runtime.NODEJS_18_X,
-        environment: {
-          API_ID: this.api.apiId,
-          computedResourcesAssetUrl: computedResourcesAsset.s3ObjectUrl,
-        },
         timeout: Duration.minutes(10),
         initialPolicy: [
           new PolicyStatement({
@@ -141,11 +204,11 @@ export class DefaultTransformHost implements TransformHostProvider {
         ],
       }),
     });
-    customResourceProvider.node.addDependency(computedResourcesAsset);
 
     const properties: ResolverManagerCustomResourceProperties = {
       apiId: this.api.apiId,
-      computedResourcesAssetUrl: computedResourcesAsset.s3ObjectUrl,
+      computedResourcesAssetBucket: deployment.deployedBucket.bucketName,
+      computedResourcesAssetKey: computedResourcesObjectKey,
       resourceHash: hash(this.resources),
     };
 
@@ -154,11 +217,12 @@ export class DefaultTransformHost implements TransformHostProvider {
       serviceToken: customResourceProvider.serviceToken,
       properties,
     });
+    customResource.node.addDependency(deployment);
 
     this.dataSources.forEach((ds) => {
       customResource.node.addDependency(ds);
       customResourceProvider.node.addDependency(ds);
-      computedResourcesAsset.node.addDependency(ds);
+      deployment.node.addDependency(ds);
     });
   };
 
@@ -279,13 +343,22 @@ export class DefaultTransformHost implements TransformHostProvider {
       mappingTemplate,
       runtime,
     });
-    this.resources[name] = {
-      type: 'AppSyncFunction',
-      functionId: fn.functionId,
-      dataSource: dataSource?.name || dataSourceName,
-      requestMappingTemplate: ((mappingTemplate as VTLRuntimeTemplate).requestMappingTemplate as any).content,
-      responseMappingTemplate: ((mappingTemplate as VTLRuntimeTemplate).responseMappingTemplate as any).content,
-    };
+
+    // TODO: Extend this to work with S3 VTL templates and JS templates
+    if (
+      isVtlRuntimeTemplate(mappingTemplate) &&
+      mappingTemplate.requestMappingTemplate.type === MappingTemplateType.INLINE &&
+      mappingTemplate.responseMappingTemplate.type === MappingTemplateType.INLINE
+    ) {
+      this.resources[name] = {
+        type: 'AppSyncVtlFunction',
+        functionId: fn.functionId,
+        dataSource: dataSource?.name || dataSourceName,
+        requestMappingTemplate: mappingTemplate.requestMappingTemplate.bind(scope ?? this.api),
+        responseMappingTemplate: mappingTemplate.responseMappingTemplate.bind(scope ?? this.api),
+      };
+    }
+
     this.appsyncFunctions.set(slotHash, fn);
     return fn;
   };
@@ -370,45 +443,45 @@ export class DefaultTransformHost implements TransformHostProvider {
       this.api.addSchemaDependency(resolver);
       return resolver;
     }
-    if (pipelineConfig) {
-      // const resolver = new CfnResolver(scope || this.api, resolverName, {
-      //   apiId: this.api.apiId,
-      //   fieldName,
-      //   typeName,
-      //   kind: 'PIPELINE',
-      //   ...(requestMappingTemplate instanceof InlineTemplate
-      //     ? { requestMappingTemplate: requestTemplateLocation }
-      //     : { requestMappingTemplateS3Location: requestTemplateLocation }),
-      //   ...(responseMappingTemplate instanceof InlineTemplate
-      //     ? { responseMappingTemplate: responseTemplateLocation }
-      //     : { responseMappingTemplateS3Location: responseTemplateLocation }),
-      //   pipelineConfig: {
-      //     functions: pipelineConfig,
-      //   },
-      // });
 
+    if (!pipelineConfig) {
+      throw new Error('Resolver needs either dataSourceName or pipelineConfig to be passed');
+    }
+
+    if (
+      isVtlRuntimeTemplate(mappingTemplate) &&
+      mappingTemplate.requestMappingTemplate.type === MappingTemplateType.INLINE &&
+      mappingTemplate.responseMappingTemplate.type === MappingTemplateType.INLINE
+    ) {
       const resolverResource = {
-        type: 'Resolver',
+        type: 'PipelineResolver',
         fieldName,
         typeName,
         kind: 'PIPELINE',
-        requestMappingTemplate: ((mappingTemplate as VTLRuntimeTemplate).requestMappingTemplate as any).content,
-        responseMappingTemplate: ((mappingTemplate as VTLRuntimeTemplate).responseMappingTemplate as any).content,
+        requestMappingTemplate: mappingTemplate.requestMappingTemplate.bind(scope ?? this.api),
+        responseMappingTemplate: mappingTemplate.responseMappingTemplate.bind(scope ?? this.api),
         pipelineConfig: {
           functions: pipelineConfig,
         },
-      };
-
+      } as const;
       this.resources[`${typeName}.${fieldName}`] = resolverResource;
       return resolverResource;
-
-      // resolver.overrideLogicalId(resourceId);
-      // setResourceName(resolver, { name: `${typeName}.${fieldName}` });
-      // this.api.addSchemaDependency(resolver);
-      // this.resolvers.set(`${typeName}:${fieldName}`, resolver);
-      // return resolver;
+    } else {
+      const resolver = new CfnResolver(scope || this.api, resolverName, {
+        apiId: this.api.apiId,
+        fieldName,
+        typeName,
+        kind: 'PIPELINE',
+        ...runtimeSpecificProps,
+        pipelineConfig: {
+          functions: pipelineConfig,
+        },
+      });
+      resolver.overrideLogicalId(resourceId);
+      setResourceName(resolver, { name: `${typeName}.${fieldName}` });
+      this.api.addSchemaDependency(resolver);
+      return resolver;
     }
-    throw new Error('Resolver needs either dataSourceName or pipelineConfig to be passed');
   };
 
   addLambdaFunction = (
@@ -572,10 +645,6 @@ export class DefaultTransformHost implements TransformHostProvider {
   }
 
   private getMappingTemplateHash(mappingTemplate: FunctionRuntimeTemplate): Omit<Slot, 'dataSource'> {
-    const isJsRuntimeTemplate = (mappingTemplate: FunctionRuntimeTemplate): mappingTemplate is JSRuntimeTemplate => {
-      return (mappingTemplate as JSRuntimeTemplate).codeMappingTemplate !== undefined;
-    };
-
     return isJsRuntimeTemplate(mappingTemplate)
       ? { codeMappingTemplate: mappingTemplate.codeMappingTemplate.getTemplateHash() }
       : {
@@ -600,3 +669,14 @@ export class DefaultTransformHost implements TransformHostProvider {
     }
   }
 }
+
+const isJsRuntimeTemplate = (mappingTemplate: FunctionRuntimeTemplate): mappingTemplate is JSRuntimeTemplate => {
+  return (mappingTemplate as JSRuntimeTemplate).codeMappingTemplate !== undefined;
+};
+
+const isVtlRuntimeTemplate = (mappingTemplate: FunctionRuntimeTemplate): mappingTemplate is VTLRuntimeTemplate => {
+  return (
+    (mappingTemplate as VTLRuntimeTemplate).requestMappingTemplate !== undefined &&
+    (mappingTemplate as VTLRuntimeTemplate).responseMappingTemplate !== undefined
+  );
+};

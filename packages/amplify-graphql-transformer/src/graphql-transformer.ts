@@ -30,6 +30,7 @@ import type {
   RDSSNSTopicMappingProvider,
   TransformParameters,
   LogConfig,
+  TemplateValueMapper,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLTransform, ResolverConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 import { Construct } from 'constructs';
@@ -131,6 +132,7 @@ export type ExecuteTransformConfig = TransformConfig &
     assetProvider: AssetProvider;
     synthParameters: SynthParameters;
     logging?: true | LogConfig;
+    templateValueMapper?: TemplateValueMapper;
   };
 
 /**
@@ -175,6 +177,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
     sqlDirectiveDataSourceStrategies,
     synthParameters,
     logging,
+    templateValueMapper,
   } = config;
 
   const printLog = printTransformerLog ?? defaultPrintTransformerLog;
@@ -192,6 +195,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
       sqlDirectiveDataSourceStrategies,
       synthParameters,
       logging,
+      templateValueMapper,
     });
   } finally {
     transform.getLogs().forEach(printLog);

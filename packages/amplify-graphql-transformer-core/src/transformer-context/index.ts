@@ -2,24 +2,25 @@
 import {
   AppSyncAuthConfiguration,
   AssetProvider,
-  SqlDirectiveDataSourceStrategy,
   DataSourceStrategiesProvider,
   GraphQLAPIProvider,
+  LogConfig,
   ModelDataSourceStrategy,
   NestedStackProvider,
   RDSLayerMapping,
   RDSLayerMappingProvider,
+  RDSSNSTopicMapping,
   RDSSNSTopicMappingProvider,
+  SqlDirectiveDataSourceStrategy,
   StackManagerProvider,
   SynthParameters,
+  TemplateValueMapper,
   TransformerContextMetadataProvider,
   TransformerContextOutputProvider,
   TransformerContextProvider,
   TransformerDataSourceManagerProvider,
   TransformParameterProvider,
   TransformParameters,
-  RDSSNSTopicMapping,
-  LogConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode } from 'graphql';
 import { Construct } from 'constructs';
@@ -30,7 +31,9 @@ import { TransformerContextProviderRegistry } from './provider-registry';
 import { ResolverManager } from './resolver';
 import { TransformerResourceHelper } from './resource-helper';
 import { StackManager } from './stack-manager';
+import { PassthroughTemplateValueMapper, StringParameterTemplateValueMapper } from './template-value-mapper';
 
+export { PassthroughTemplateValueMapper, StringParameterTemplateValueMapper };
 export { TransformerResolver, NONE_DATA_SOURCE_NAME } from './resolver';
 export { StackManager } from './stack-manager';
 export class TransformerContextMetadata implements TransformerContextMetadataProvider {
@@ -67,6 +70,7 @@ export interface TransformerContextConstructorOptions
   synthParameters: SynthParameters;
   transformParameters: TransformParameters;
   logging?: true | LogConfig;
+  templateValueMapper?: TemplateValueMapper;
 }
 
 export class TransformerContext implements TransformerContextProvider {
@@ -108,6 +112,8 @@ export class TransformerContext implements TransformerContextProvider {
 
   public readonly logging?: true | LogConfig;
 
+  public readonly templateValueMapper: TemplateValueMapper;
+
   constructor(options: TransformerContextConstructorOptions) {
     const {
       assetProvider,
@@ -125,6 +131,7 @@ export class TransformerContext implements TransformerContextProvider {
       synthParameters,
       transformParameters,
       logging,
+      templateValueMapper,
     } = options;
     this.authConfig = authConfig;
     this.sqlDirectiveDataSourceStrategies = sqlDirectiveDataSourceStrategies ?? [];
@@ -144,6 +151,7 @@ export class TransformerContext implements TransformerContextProvider {
     this.synthParameters = synthParameters;
     this.transformParameters = transformParameters;
     this.logging = logging;
+    this.templateValueMapper = templateValueMapper ?? new PassthroughTemplateValueMapper();
   }
 
   /**

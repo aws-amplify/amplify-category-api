@@ -1,13 +1,14 @@
 import { DocumentNode } from 'graphql';
 import { AppSyncAuthConfiguration, GraphQLAPIProvider } from '../graphql-api-provider';
 import { DataSourceStrategiesProvider, RDSLayerMappingProvider, RDSSNSTopicMappingProvider } from '../model-datasource';
+import { TemplateValueMapper } from './template-value-mapper';
 import { TransformerDataSourceManagerProvider } from './transformer-datasource-provider';
 import { TransformerProviderRegistry } from './transformer-provider-registry';
 import { TransformerContextOutputProvider } from './transformer-context-output-provider';
-import { StackManagerProvider } from './stack-manager-provider';
 import { TransformerResourceHelperProvider } from './resource-resource-provider';
 import { TransformParameters } from './transform-parameters';
 import { TransformerResolversManagerProvider } from './transformer-resolver-provider';
+import { StackManagerProvider } from './stack-manager-provider';
 import { SynthParameters } from './synth-parameters';
 
 export interface TransformerContextMetadataProvider {
@@ -22,6 +23,7 @@ export interface TransformerContextProvider extends DataSourceStrategiesProvider
   metadata: TransformerContextMetadataProvider;
   resolvers: TransformerResolversManagerProvider;
   dataSources: TransformerDataSourceManagerProvider;
+  templateValueMapper: TemplateValueMapper;
   providerRegistry: TransformerProviderRegistry;
 
   inputDocument: DocumentNode;

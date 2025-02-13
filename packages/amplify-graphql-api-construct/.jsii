@@ -4524,7 +4524,7 @@
         },
         "locationInModule": {
           "filename": "src/amplify-graphql-api.ts",
-          "line": 145
+          "line": 148
         },
         "parameters": [
           {
@@ -4559,7 +4559,7 @@
       "kind": "class",
       "locationInModule": {
         "filename": "src/amplify-graphql-api.ts",
-        "line": 86
+        "line": 89
       },
       "methods": [
         {
@@ -4571,7 +4571,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 324
+            "line": 328
           },
           "name": "addDynamoDbDataSource",
           "parameters": [
@@ -4620,7 +4620,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 336
+            "line": 340
           },
           "name": "addElasticsearchDataSource",
           "parameters": [
@@ -4667,7 +4667,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 346
+            "line": 350
           },
           "name": "addEventBridgeDataSource",
           "parameters": [
@@ -4714,7 +4714,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 428
+            "line": 432
           },
           "name": "addFunction",
           "parameters": [
@@ -4749,7 +4749,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 357
+            "line": 361
           },
           "name": "addHttpDataSource",
           "parameters": [
@@ -4797,7 +4797,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 368
+            "line": 372
           },
           "name": "addLambdaDataSource",
           "parameters": [
@@ -4845,7 +4845,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 379
+            "line": 383
           },
           "name": "addNoneDataSource",
           "parameters": [
@@ -4884,7 +4884,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 390
+            "line": 394
           },
           "name": "addOpenSearchDataSource",
           "parameters": [
@@ -4932,7 +4932,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 403
+            "line": 407
           },
           "name": "addRdsDataSource",
           "parameters": [
@@ -4999,7 +4999,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 419
+            "line": 423
           },
           "name": "addResolver",
           "parameters": [
@@ -5040,7 +5040,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 126
+            "line": 129
           },
           "name": "apiId",
           "type": {
@@ -5055,7 +5055,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 106
+            "line": 109
           },
           "name": "generatedFunctionSlots",
           "type": {
@@ -5088,7 +5088,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 111
+            "line": 114
           },
           "name": "graphqlUrl",
           "type": {
@@ -5104,7 +5104,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 116
+            "line": 119
           },
           "name": "realtimeUrl",
           "type": {
@@ -5119,7 +5119,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 90
+            "line": 93
           },
           "name": "resources",
           "type": {
@@ -5134,7 +5134,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 95
+            "line": 98
           },
           "name": "stack",
           "type": {
@@ -5150,7 +5150,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-graphql-api.ts",
-            "line": 121
+            "line": 124
           },
           "name": "apiKey",
           "optional": true,
@@ -9446,5 +9446,5 @@
     }
   },
   "version": "1.18.8",
-  "fingerprint": "NsPAKSA6mpS0mCG/oNsa8ylLgce4YnbqICLk3eBZucA="
+  "fingerprint": "m37EiQ0xO/wKmLmliZ+HwT4l+8JG8HWe5ufSOLKDQUk="
 }

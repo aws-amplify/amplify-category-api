@@ -92,7 +92,12 @@ export {
   TransformerPluginBase,
   TransformerAuthBase,
 } from './transformation/transformer-plugin-base';
-export { TransformerResolver, StackManager } from './transformer-context';
+export {
+  PassthroughTemplateValueMapper,
+  StackManager,
+  StringParameterTemplateValueMapper,
+  TransformerResolver,
+} from './transformer-context';
 export {
   DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
   DDB_DB_TYPE,

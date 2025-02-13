@@ -27,6 +27,11 @@ import { IEventBus } from 'aws-cdk-lib/aws-events';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { IServerlessCluster } from 'aws-cdk-lib/aws-rds';
 import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
+import {
+  isImportedAmplifyDynamoDbModelDataSourceStrategy,
+  StringParameterTemplateValueMapper,
+} from '@aws-amplify/graphql-transformer-core';
+import { BackendOutputStorageStrategy, BackendOutputEntry } from '@aws-amplify/plugin-types';
 import { parseUserDefinedSlots, validateFunctionSlots, separateSlots } from './internal/user-defined-slots';
 import type {
   AmplifyGraphqlApiResources,
@@ -50,8 +55,6 @@ import {
 import { getStackForScope, walkAndProcessNodes } from './internal/construct-tree';
 import { getDataSourceStrategiesProvider } from './internal/data-source-config';
 import { getMetadataDataSources, getMetadataAuthorizationModes, getMetadataCustomOperations } from './internal/metadata';
-import { isImportedAmplifyDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-core';
-import { BackendOutputStorageStrategy, BackendOutputEntry } from '@aws-amplify/plugin-types';
 
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.
@@ -258,6 +261,7 @@ export class AmplifyGraphqlApi extends Construct {
       rdsSnsTopicMapping: undefined,
       ...getDataSourceStrategiesProvider(definition),
       logging,
+      templateValueMapper: new StringParameterTemplateValueMapper(),
     };
 
     executeTransform(executeTransformConfig);

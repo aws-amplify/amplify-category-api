@@ -24,7 +24,8 @@ interface ResolverSpec {
 interface InitialResourceProperties {
   ServiceToken: string;
   apiId: string;
-  computedResourcesAssetUrl: string;
+  computedResourcesAssetBucket: string;
+  computedResourcesAssetKey: string;
   resourceHash: string;
 }
 
@@ -98,14 +99,10 @@ const getAllTypeNames = async (resourceProperties: ResourceProperties): Promise<
     const result = await appSyncClient.send(command);
     nextToken = result.nextToken;
 
-    console.log('getAllTypeNames result:', JSON.stringify(result));
-
     if (!result.types || result.types.length === 0) {
       continue;
     }
     const localNames = result.types.map((type) => type.name).filter((name) => name !== undefined) as string[];
-
-    console.log('getAllTypeNames localNames:', JSON.stringify(localNames));
 
     typeNames.push(...localNames);
   } while (nextToken);
@@ -256,33 +253,10 @@ const createResolvers = async (resourceProperties: ResourceProperties): Promise<
 };
 
 const getComputedResources = async (resourceProperties: InitialResourceProperties): Promise<any> => {
-  const { computedResourcesAssetUrl } = resourceProperties;
-  const { bucket, key } = parseS3Url(computedResourcesAssetUrl);
-  console.log(`getComputedResources: ${bucket}/${key}`);
-  const computedResources = await getJsonFromS3<any>(bucket, key);
+  const { computedResourcesAssetBucket, computedResourcesAssetKey } = resourceProperties;
+  console.log(`getComputedResources: ${computedResourcesAssetBucket}/${computedResourcesAssetKey}`);
+  const computedResources = await getJsonFromS3<any>(computedResourcesAssetBucket, computedResourcesAssetKey);
   return computedResources;
-};
-
-const parseS3Url = (s3Url: string): { bucket: string; key: string; versionId?: string } => {
-  try {
-    const url = new URL(s3Url);
-
-    // Check if it's a valid s3:// URL
-    if (url.protocol !== 's3:') {
-      throw new Error(`Invalid S3 URL: ${s3Url}`);
-    }
-
-    // Get version ID if present
-    const versionId = url.searchParams.get('versionId') ?? undefined;
-
-    return {
-      bucket: url.hostname,
-      key: url.pathname.slice(1), // Remove leading slash
-      ...(versionId && { versionId }),
-    };
-  } catch (err) {
-    throw new Error(`Invalid S3 URL: ${s3Url}`);
-  }
 };
 
 const getJsonFromS3 = async <T>(bucket: string, key: string): Promise<T> => {

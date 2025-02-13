@@ -336,7 +336,7 @@ export class TransformerResolver implements TransformerResolverProvider {
         case 'AMAZON_DYNAMODB':
           if (this.datasource.ds.dynamoDbConfig && !isResolvableObject(this.datasource.ds.dynamoDbConfig)) {
             const tableName = this.datasource.ds.dynamoDbConfig?.tableName;
-            dataSource = stashString({ name: 'tableName', value: tableName });
+            dataSource = stashString({ name: 'tableName', value: context.templateValueMapper.add(tableName, tableName) });
             if (
               this.datasource.ds.dynamoDbConfig?.deltaSyncConfig &&
               !isResolvableObject(this.datasource.ds.dynamoDbConfig?.deltaSyncConfig)
@@ -388,19 +388,22 @@ export class TransformerResolver implements TransformerResolverProvider {
         case 'AMAZON_ELASTICSEARCH':
           if (this.datasource.ds.elasticsearchConfig && !isResolvableObject(this.datasource.ds.elasticsearchConfig)) {
             const endpoint = this.datasource.ds.elasticsearchConfig?.endpoint;
-            dataSource = stashString({ name: 'endpoint', value: endpoint });
+            dataSource = stashString({ name: 'endpoint', value: context.templateValueMapper.add(endpoint, endpoint) });
           }
           break;
         case 'AWS_LAMBDA':
           if (this.datasource.ds.lambdaConfig && !isResolvableObject(this.datasource.ds.lambdaConfig)) {
             const lambdaFunctionArn = this.datasource.ds.lambdaConfig?.lambdaFunctionArn;
-            dataSource = stashString({ name: 'lambdaFunctionArn', value: lambdaFunctionArn });
+            dataSource = stashString({
+              name: 'lambdaFunctionArn',
+              value: context.templateValueMapper.add(lambdaFunctionArn, lambdaFunctionArn),
+            });
           }
           break;
         case 'HTTP':
           if (this.datasource.ds.httpConfig && !isResolvableObject(this.datasource.ds.httpConfig)) {
             const endpoint = this.datasource.ds.httpConfig?.endpoint;
-            dataSource = stashString({ name: 'endpoint', value: endpoint });
+            dataSource = stashString({ name: 'endpoint', value: context.templateValueMapper.add(endpoint, endpoint) });
           }
           break;
         case 'RELATIONAL_DATABASE':
@@ -410,7 +413,7 @@ export class TransformerResolver implements TransformerResolverProvider {
             !isResolvableObject(this.datasource.ds.relationalDatabaseConfig?.rdsHttpEndpointConfig)
           ) {
             const databaseName = this.datasource.ds.relationalDatabaseConfig?.rdsHttpEndpointConfig!.databaseName;
-            dataSource = stashString({ name: 'databaseName', value: databaseName });
+            dataSource = stashString({ name: 'databaseName', value: context.templateValueMapper.add(databaseName!, databaseName!) });
           }
           break;
         default:
@@ -423,7 +426,7 @@ export class TransformerResolver implements TransformerResolverProvider {
       ${stashExpression({ name: 'conditions', value: '[]' })}
       ${stashExpression({ name: 'metadata', value: '{}' })}
       ${stashString({ name: 'dataSourceType', value: dataSourceType, object: 'metadata' })}
-      ${stashString({ name: 'apiId', value: api.apiId, object: 'metadata' })}
+      ${stashString({ name: 'apiId', value: context.templateValueMapper.add(api.apiId, api.apiId), object: 'metadata' })}
       ${stashExpression({ name: 'connectionAttributes', value: '{}' })}
       ${dataSource}
     `;

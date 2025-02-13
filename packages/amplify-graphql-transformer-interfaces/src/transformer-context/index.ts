@@ -1,3 +1,4 @@
+export { TemplateValueMapper } from './template-value-mapper';
 export {
   DataSourceProvider,
   TransformerDataSourceManagerProvider,

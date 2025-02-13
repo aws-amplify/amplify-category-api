@@ -16,6 +16,7 @@ import type {
   DataSourceStrategiesProvider,
   RDSLayerMappingProvider,
   RDSSNSTopicMappingProvider,
+  TemplateValueMapper,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { Aws, CfnOutput, Fn, Stack } from 'aws-cdk-lib';
@@ -59,8 +60,6 @@ import {
   sortTransformerPlugins,
 } from './utils';
 import { validateAuthModes, validateModelSchema } from './validation';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 
 /**
  * Returns whether typeof the provided object is function.
@@ -100,6 +99,7 @@ export interface TransformOption extends DataSourceStrategiesProvider, RDSLayerM
   synthParameters: SynthParameters;
   schema: string;
   logging?: true | LogConfig;
+  templateValueMapper?: TemplateValueMapper;
 }
 
 export type StackMapping = { [resourceId: string]: string };
@@ -201,6 +201,7 @@ export class GraphQLTransform {
     sqlDirectiveDataSourceStrategies,
     synthParameters,
     logging,
+    templateValueMapper,
   }: TransformOption): void {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
@@ -220,6 +221,7 @@ export class GraphQLTransform {
       synthParameters,
       transformParameters: this.transformParameters,
       logging,
+      templateValueMapper,
     });
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),
