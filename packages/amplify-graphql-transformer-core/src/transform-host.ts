@@ -141,7 +141,7 @@ export class DefaultTransformHost implements TransformHostProvider {
       resourceType: 'Custom::AmplifyResolverManager',
       serviceToken: customResourceProvider.serviceToken,
       properties: {
-        API_ID: this.api.apiId,
+        apiId: this.api.apiId,
         computedResourcesAssetUrl: computedResourcesAsset.s3ObjectUrl,
         resourceHash: hash(this.resources),
       },

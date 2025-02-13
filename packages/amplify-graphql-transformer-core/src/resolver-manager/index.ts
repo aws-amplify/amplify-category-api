@@ -1,3 +1,4 @@
+import { CloudFormationCustomResourceEvent, CloudFormationCustomResourceResponse } from 'aws-lambda';
 import {
   AppSyncClient,
   CreateFunctionCommand,
@@ -20,39 +21,71 @@ interface ResolverSpec {
   fieldName: string | undefined;
 }
 
+interface ResourceProperties {
+  ServiceToken: string;
+  apiId: string;
+  computedResourcesAssetUrl: string;
+  resourceHash: string;
+  resources?: any;
+}
+
 const functionIdValueMap: Record<string, string> = {};
 
 const appSyncClient = new AppSyncClient({});
 
-export const handler = async (event: any): Promise<any> => {
+export const handler = async (event: CloudFormationCustomResourceEvent): Promise<CloudFormationCustomResourceResponse> => {
   console.log('event', JSON.stringify(event));
-  const metadata: any = await getComputedResources();
 
+  // Initial resource properties come from the CFN event
+  const resourceProperties = event.ResourceProperties as ResourceProperties;
+
+  // Enrich the initial properties with the actual resource shape from S3
+  const resources = await getComputedResources(resourceProperties);
+  resourceProperties.resources = resources;
+
+  // TODO: Figure out a diff strategy for the resources so we don't have to delete/recreate every time
   console.log('Delete all resolvers');
-  await deleteAllResolvers();
+  await deleteAllResolvers(resourceProperties);
 
   console.log('Delete all functions');
-  await deleteAllFunctions();
+  await deleteAllFunctions(resourceProperties);
+
+  const physicalResourceId = `resource-manager-${resourceProperties.apiId}`;
 
   switch (event.RequestType) {
     case 'Create':
     case 'Update':
       console.log('Create/Update event');
-      await createFunctions(metadata);
-      await createResolvers(metadata);
+      await createFunctions(resourceProperties);
+      await createResolvers(resourceProperties);
       break;
     case 'Delete':
       console.log('Delete event');
       break;
   }
+
+  const response: CloudFormationCustomResourceResponse = {
+    PhysicalResourceId: physicalResourceId,
+    Status: 'SUCCESS',
+    Data: {
+      ...resourceProperties,
+    },
+    LogicalResourceId: event.LogicalResourceId,
+    RequestId: event.RequestId,
+    StackId: event.StackId,
+  };
+
+  return response;
 };
 
-const getAllTypeNames = async (): Promise<string[]> => {
+const getAllTypeNames = async (resourceProperties: ResourceProperties): Promise<string[]> => {
+  const { apiId } = resourceProperties;
+
   let nextToken: string | undefined = undefined;
   const typeNames: string[] = [];
   do {
     const input: ListTypesCommandInput = {
-      apiId: process.env.API_ID,
+      apiId,
       format: 'JSON',
       nextToken,
     };
@@ -77,12 +110,14 @@ const getAllTypeNames = async (): Promise<string[]> => {
   return typeNames;
 };
 
-const getAllResolverSpecForType = async (typeName: string): Promise<ResolverSpec[]> => {
+const getAllResolverSpecForType = async (typeName: string, resourceProperties: ResourceProperties): Promise<ResolverSpec[]> => {
+  const { apiId } = resourceProperties;
+
   let nextToken: string | undefined = undefined;
   const resolverSpecs: ResolverSpec[] = [];
   do {
     const input: ListResolversCommandInput = {
-      apiId: process.env.API_ID,
+      apiId,
       typeName: typeName,
       nextToken,
     };
@@ -102,12 +137,14 @@ const getAllResolverSpecForType = async (typeName: string): Promise<ResolverSpec
   return resolverSpecs;
 };
 
-const deleteAllResolvers = async (): Promise<void> => {
-  const typeNames = await getAllTypeNames();
+const deleteAllResolvers = async (resourceProperties: ResourceProperties): Promise<void> => {
+  const { apiId } = resourceProperties;
+
+  const typeNames = await getAllTypeNames(resourceProperties);
 
   const allResolverSpecs: ResolverSpec[] = [];
   for (const typeName of typeNames) {
-    const resolvers = await getAllResolverSpecForType(typeName);
+    const resolvers = await getAllResolverSpecForType(typeName, resourceProperties);
     allResolverSpecs.push(...resolvers);
   }
 
@@ -116,7 +153,7 @@ const deleteAllResolvers = async (): Promise<void> => {
   const allPromises = [];
   for (const resolverSpec of allResolverSpecs) {
     const input: DeleteResolverCommandInput = {
-      apiId: process.env.API_ID,
+      apiId,
       typeName: resolverSpec.typeName,
       fieldName: resolverSpec.fieldName,
     };
@@ -128,13 +165,14 @@ const deleteAllResolvers = async (): Promise<void> => {
   console.log('Done deleting all resolvers');
 };
 
-const deleteAllFunctions = async (): Promise<void> => {
+const deleteAllFunctions = async (resourceProperties: ResourceProperties): Promise<void> => {
+  const { apiId } = resourceProperties;
   let nextToken: string | undefined = undefined;
   const functionIds: string[] = [];
 
   do {
     const input: ListFunctionsCommandInput = {
-      apiId: process.env.API_ID,
+      apiId,
       nextToken,
     };
     const command = new ListFunctionsCommand(input);
@@ -154,7 +192,7 @@ const deleteAllFunctions = async (): Promise<void> => {
   const allPromises = [];
   for (const functionId of functionIds) {
     const input: DeleteFunctionCommandInput = {
-      apiId: process.env.API_ID,
+      apiId,
       functionId,
     };
     const command = new DeleteFunctionCommand(input);
@@ -165,47 +203,59 @@ const deleteAllFunctions = async (): Promise<void> => {
   console.log('Done deleting all functions');
 };
 
-const createFunctions = async (metadata: any): Promise<void> => {
-  for (const func of Object.keys(metadata)) {
-    if (metadata[func].type !== 'AppSyncFunction') {
+const createFunctions = async (resourceProperties: ResourceProperties): Promise<void> => {
+  const { apiId, resources } = resourceProperties;
+
+  for (const func of Object.keys(resources)) {
+    if (resources[func].type !== 'AppSyncFunction') {
       continue;
     }
     console.log(`Creating function ${func}`);
     const createFunctionCommand = new CreateFunctionCommand({
-      apiId: process.env.API_ID,
-      dataSourceName: metadata[func].dataSource,
+      apiId,
+      dataSourceName: resources[func].dataSource,
       name: func,
-      requestMappingTemplate: metadata[func].requestMappingTemplate,
-      responseMappingTemplate: metadata[func].responseMappingTemplate,
+      requestMappingTemplate: resources[func].requestMappingTemplate,
+      responseMappingTemplate: resources[func].responseMappingTemplate,
       functionVersion: '2018-05-29',
     });
     const appSyncFunction = await appSyncClient.send(createFunctionCommand);
-    functionIdValueMap[metadata[func].functionId] = appSyncFunction.functionConfiguration!.functionId!;
+    functionIdValueMap[resources[func].functionId] = appSyncFunction.functionConfiguration!.functionId!;
   }
 };
 
-const createResolvers = async (metadata: any): Promise<void> => {
+const createResolvers = async (resourceProperties: ResourceProperties): Promise<void> => {
+  const { apiId, resources } = resourceProperties;
+
   console.log('Create resolvers');
   console.log(JSON.stringify(functionIdValueMap, null, 2));
-  for (const resolver of Object.keys(metadata)) {
-    if (metadata[resolver].type !== 'Resolver') {
+  for (const resolver of Object.keys(resources)) {
+    if (resources[resolver].type !== 'Resolver') {
       continue;
     }
-    console.log(`Creating resolver for field ${metadata[resolver].fieldName} on type ${metadata[resolver].typeName}`);
+    console.log(`Creating resolver for field ${resources[resolver].fieldName} on type ${resources[resolver].typeName}`);
     const createResolverCommand = new CreateResolverCommand({
-      apiId: process.env.API_ID,
-      fieldName: metadata[resolver].fieldName,
-      typeName: metadata[resolver].typeName,
+      apiId,
+      fieldName: resources[resolver].fieldName,
+      typeName: resources[resolver].typeName,
       kind: 'PIPELINE',
-      dataSourceName: metadata[resolver].dataSource,
-      requestMappingTemplate: metadata[resolver].requestMappingTemplate,
-      responseMappingTemplate: metadata[resolver].responseMappingTemplate,
+      dataSourceName: resources[resolver].dataSource,
+      requestMappingTemplate: resources[resolver].requestMappingTemplate,
+      responseMappingTemplate: resources[resolver].responseMappingTemplate,
       pipelineConfig: {
-        functions: metadata[resolver].pipelineConfig.functions?.map((x: string) => functionIdValueMap[x]),
+        functions: resources[resolver].pipelineConfig.functions?.map((x: string) => functionIdValueMap[x]),
       },
     });
     await appSyncClient.send(createResolverCommand);
   }
+};
+
+const getComputedResources = async (resourceProperties: ResourceProperties): Promise<any> => {
+  const { computedResourcesAssetUrl } = resourceProperties;
+  const { bucket, key } = parseS3Url(computedResourcesAssetUrl);
+  console.log(`getComputedResources: ${bucket}/${key}`);
+  const computedResources = await getJsonFromS3<any>(bucket, key);
+  return computedResources;
 };
 
 const parseS3Url = (s3Url: string): { bucket: string; key: string; versionId?: string } => {
@@ -260,11 +310,4 @@ const getJsonFromS3 = async <T>(bucket: string, key: string): Promise<T> => {
     }
     throw error;
   }
-};
-
-const getComputedResources = async (): Promise<any> => {
-  const { bucket, key } = parseS3Url(process.env.resolverCodeAsset!);
-  console.log(`getComputedResources: ${bucket}/${key}`);
-  const computedResources = await getJsonFromS3<any>(bucket, key);
-  return computedResources;
 };
