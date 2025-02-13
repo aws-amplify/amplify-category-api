@@ -1,18 +1,10 @@
-import {
-  AssetProvider,
-  DynamoDbDataSourceOptions,
-  FunctionRuntimeTemplate,
-  JSRuntimeTemplate,
-  MappingTemplateProvider,
-  SearchableDataSourceOptions,
-  TransformHostProvider,
-  VpcConfig,
-  VTLRuntimeTemplate,
-} from '@aws-amplify/graphql-transformer-interfaces';
-import * as util from 'util';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as assets from 'aws-cdk-lib/aws-s3-assets';
+import hash from 'object-hash';
+
+import { CustomResource, Duration, Token } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
+import { Provider } from 'aws-cdk-lib/custom-resources';
 import {
   BaseDataSource,
   CfnDataSource,
@@ -28,11 +20,23 @@ import {
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { IRole, Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { CfnFunction, Code, Function, IFunction, ILayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { Duration, Token } from 'aws-cdk-lib';
-import * as cdk from 'aws-cdk-lib';
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+
+import {
+  AssetProvider,
+  DynamoDbDataSourceOptions,
+  FunctionRuntimeTemplate,
+  JSRuntimeTemplate,
+  MappingTemplateProvider,
+  SearchableDataSourceOptions,
+  TransformHostProvider,
+  VpcConfig,
+  VTLRuntimeTemplate,
+} from '@aws-amplify/graphql-transformer-interfaces';
+
 import { ResolverResourceIDs, resourceName, toCamelCase } from 'graphql-transformer-common';
-import hash from 'object-hash';
-import { Construct } from 'constructs';
+
+// eslint-disable-next-line import/no-cycle
 import { AppSyncFunctionConfiguration } from './appsync-function';
 import { SearchableDataSource } from './cdk-compat/searchable-datasource';
 import { S3MappingFunctionCode } from './cdk-compat/template-asset';
@@ -40,7 +44,6 @@ import { GraphQLApi } from './graphql-api';
 import { setResourceName } from './utils';
 import { getRuntimeSpecificFunctionProps, isJsResolverFnRuntime } from './utils/function-runtime';
 import { APPSYNC_JS_RUNTIME, VTL_RUNTIME } from './types';
-import { Provider } from 'aws-cdk-lib/custom-resources';
 
 type Slot = {
   requestMappingTemplate?: string;
@@ -89,29 +92,39 @@ export class DefaultTransformHost implements TransformHostProvider {
 
   createResourceManagerResource = (context: any): void => {
     const customResourceStack = context.stackManager.getScopeFor('ResolverManagerStack', 'ResolverManagerStack');
-    const resolverCodeAssetFilePath = path.join(__dirname, 'resolver-manager', 'computed-resources.json');
-    fs.writeFileSync(resolverCodeAssetFilePath, JSON.stringify(this.resources, null, 4));
-    const resolverCodeAsset = new assets.Asset(customResourceStack, 'ResolverCodeAsset', {
-      path: resolverCodeAssetFilePath,
+    const computedResourcesLocalPath = path.join(__dirname, 'resolver-manager', 'computed-resources.json');
+    fs.writeFileSync(computedResourcesLocalPath, JSON.stringify(this.resources, null, 4));
+    const computedResourcesAsset = new Asset(customResourceStack, 'ResolverCodeAsset', {
+      path: computedResourcesLocalPath,
     });
 
     const lambdaCodePath = path.join(__dirname, '..', 'lib', 'resolver-manager');
     console.log(path.normalize(lambdaCodePath));
 
-    const serviceTokenHandler = new Provider(customResourceStack, 'AmplifyResolverManagerLogicalId', {
-      onEventHandler: new Function(this.api, 'AmplifyResolverManagerOnEvent', {
+    // NB: Provider policies need to have access to "*" resources since they may be reused across instances.
+    const customResourceProvider = new Provider(customResourceStack, 'AmplifyResolverManagerProvider', {
+      providerFunctionName: 'AmplifyResolverManagerOnEvent',
+      onEventHandler: new Function(this.api, 'AmplifyResolverManagerOnEventFn', {
         code: Code.fromAsset(lambdaCodePath),
         handler: 'index.handler',
         runtime: Runtime.NODEJS_18_X,
         environment: {
           API_ID: this.api.apiId,
-          resolverCodeAsset: resolverCodeAsset.s3ObjectUrl,
+          computedResourcesAssetUrl: computedResourcesAsset.s3ObjectUrl,
         },
         timeout: Duration.minutes(10),
         initialPolicy: [
           new PolicyStatement({
             effect: Effect.ALLOW,
-            actions: ['appsync:*'],
+            actions: [
+              'appsync:CreateFunction',
+              'appsync:CreateResolver',
+              'appsync:DeleteFunction',
+              'appsync:DeleteResolver',
+              'appsync:ListFunctions',
+              'appsync:ListResolvers',
+              'appsync:ListTypes',
+            ],
             resources: ['*'],
           }),
           new PolicyStatement({
@@ -122,16 +135,22 @@ export class DefaultTransformHost implements TransformHostProvider {
         ],
       }),
     });
-    serviceTokenHandler.node.addDependency(resolverCodeAsset);
+    customResourceProvider.node.addDependency(computedResourcesAsset);
 
-    const customResolverManager = new cdk.CustomResource(customResourceStack, 'ResolverManager', {
+    const customResource = new CustomResource(customResourceStack, 'ResolverManagerCustomResource', {
       resourceType: 'Custom::AmplifyResolverManager',
-      serviceToken: serviceTokenHandler.serviceToken,
+      serviceToken: customResourceProvider.serviceToken,
+      properties: {
+        API_ID: this.api.apiId,
+        computedResourcesAssetUrl: computedResourcesAsset.s3ObjectUrl,
+        resourceHash: hash(this.resources),
+      },
     });
 
     this.dataSources.forEach((ds) => {
-      customResolverManager.node.addDependency(ds);
-      serviceTokenHandler.node.addDependency(ds);
+      customResource.node.addDependency(ds);
+      customResourceProvider.node.addDependency(ds);
+      computedResourcesAsset.node.addDependency(ds);
     });
   };
 
@@ -243,6 +262,8 @@ export class DefaultTransformHost implements TransformHostProvider {
       return appsyncFunction;
     }
 
+    // AppSyncFunctionConfiguration is a construct, but no longer creates stack resources. Instead, it only holds the name value in the
+    // `name` and `functionId` properties.
     const fn = new AppSyncFunctionConfiguration(scope || this.api, name, {
       api: this.api,
       name,

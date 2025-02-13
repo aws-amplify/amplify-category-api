@@ -15,13 +15,22 @@ import {
 } from '@aws-sdk/client-appsync';
 import { S3Client, GetObjectCommand, NoSuchKey } from '@aws-sdk/client-s3';
 
+interface ResolverSpec {
+  typeName: string;
+  fieldName: string | undefined;
+}
+
 const functionIdValueMap: Record<string, string> = {};
+
+const appSyncClient = new AppSyncClient({});
 
 export const handler = async (event: any): Promise<any> => {
   console.log('event', JSON.stringify(event));
   const metadata: any = await getComputedResources();
+
   console.log('Delete all resolvers');
   await deleteAllResolvers();
+
   console.log('Delete all functions');
   await deleteAllFunctions();
 
@@ -39,8 +48,6 @@ export const handler = async (event: any): Promise<any> => {
 };
 
 const getAllTypeNames = async (): Promise<string[]> => {
-  const client = new AppSyncClient({});
-
   let nextToken: string | undefined = undefined;
   const typeNames: string[] = [];
   do {
@@ -50,58 +57,78 @@ const getAllTypeNames = async (): Promise<string[]> => {
       nextToken,
     };
     const command = new ListTypesCommand(input);
-    const result = await client.send(command);
+    const result = await appSyncClient.send(command);
     nextToken = result.nextToken;
+
+    console.log('getAllTypeNames result:', JSON.stringify(result));
 
     if (!result.types || result.types.length === 0) {
       continue;
     }
     const localNames = result.types.map((type) => type.name).filter((name) => name !== undefined) as string[];
+
+    console.log('getAllTypeNames localNames:', JSON.stringify(localNames));
+
     typeNames.push(...localNames);
   } while (nextToken);
+
+  console.log('getAllTypeNames all typeNames:', JSON.stringify(typeNames));
 
   return typeNames;
 };
 
-const deleteAllResolvers = async (): Promise<void> => {
-  const client = new AppSyncClient({});
-  const typeNames = await getAllTypeNames();
-
+const getAllResolverSpecForType = async (typeName: string): Promise<ResolverSpec[]> => {
   let nextToken: string | undefined = undefined;
-  const deleteResolverInputs: DeleteResolverCommandInput[] = [];
+  const resolverSpecs: ResolverSpec[] = [];
   do {
     const input: ListResolversCommandInput = {
       apiId: process.env.API_ID,
-      typeName: typeNames.pop(),
+      typeName: typeName,
       nextToken,
     };
     const command = new ListResolversCommand(input);
-    const result = await client.send(command);
+    const result = await appSyncClient.send(command);
     nextToken = result.nextToken;
-    if (!result.resolvers || result.resolvers.length === 0) {
+    const localResolvers = result.resolvers ?? [];
+    if (localResolvers.length === 0) {
       continue;
     }
 
-    const localInputs = result.resolvers.map(
-      (resolver): DeleteResolverCommandInput => ({
-        apiId: process.env.API_ID,
-        fieldName: resolver.fieldName,
-        typeName: resolver.typeName,
-      }),
-    );
-
-    deleteResolverInputs.push(...localInputs);
+    localResolvers.forEach((resolver) => {
+      resolverSpecs.push({ typeName, fieldName: resolver.fieldName });
+    });
   } while (nextToken);
 
-  for (const input of deleteResolverInputs) {
-    const command = new DeleteResolverCommand(input);
-    await client.send(command);
+  return resolverSpecs;
+};
+
+const deleteAllResolvers = async (): Promise<void> => {
+  const typeNames = await getAllTypeNames();
+
+  const allResolverSpecs: ResolverSpec[] = [];
+  for (const typeName of typeNames) {
+    const resolvers = await getAllResolverSpecForType(typeName);
+    allResolverSpecs.push(...resolvers);
   }
+
+  console.log('deleteAllResolvers allResolverSpecs:', JSON.stringify(allResolverSpecs));
+
+  const allPromises = [];
+  for (const resolverSpec of allResolverSpecs) {
+    const input: DeleteResolverCommandInput = {
+      apiId: process.env.API_ID,
+      typeName: resolverSpec.typeName,
+      fieldName: resolverSpec.fieldName,
+    };
+    const command = new DeleteResolverCommand(input);
+    allPromises.push(appSyncClient.send(command));
+  }
+
+  await Promise.all(allPromises);
+  console.log('Done deleting all resolvers');
 };
 
 const deleteAllFunctions = async (): Promise<void> => {
-  const client = new AppSyncClient({});
-
   let nextToken: string | undefined = undefined;
   const functionIds: string[] = [];
 
@@ -112,7 +139,7 @@ const deleteAllFunctions = async (): Promise<void> => {
     };
     const command = new ListFunctionsCommand(input);
 
-    const result = await client.send(command);
+    const result = await appSyncClient.send(command);
     nextToken = result.nextToken;
 
     if (!result.functions || result.functions.length === 0) {
@@ -122,18 +149,23 @@ const deleteAllFunctions = async (): Promise<void> => {
     functionIds.push(...localIds);
   } while (nextToken);
 
+  console.log('deleteAllFunctions functionIds:', JSON.stringify(functionIds));
+
+  const allPromises = [];
   for (const functionId of functionIds) {
     const input: DeleteFunctionCommandInput = {
       apiId: process.env.API_ID,
       functionId,
     };
     const command = new DeleteFunctionCommand(input);
-    await client.send(command);
+    allPromises.push(appSyncClient.send(command));
   }
+
+  await Promise.all(allPromises);
+  console.log('Done deleting all functions');
 };
 
 const createFunctions = async (metadata: any): Promise<void> => {
-  const client = new AppSyncClient({});
   for (const func of Object.keys(metadata)) {
     if (metadata[func].type !== 'AppSyncFunction') {
       continue;
@@ -147,13 +179,12 @@ const createFunctions = async (metadata: any): Promise<void> => {
       responseMappingTemplate: metadata[func].responseMappingTemplate,
       functionVersion: '2018-05-29',
     });
-    const appSyncFunction = await client.send(createFunctionCommand);
+    const appSyncFunction = await appSyncClient.send(createFunctionCommand);
     functionIdValueMap[metadata[func].functionId] = appSyncFunction.functionConfiguration!.functionId!;
   }
 };
 
 const createResolvers = async (metadata: any): Promise<void> => {
-  const client = new AppSyncClient({});
   console.log('Create resolvers');
   console.log(JSON.stringify(functionIdValueMap, null, 2));
   for (const resolver of Object.keys(metadata)) {
@@ -173,7 +204,7 @@ const createResolvers = async (metadata: any): Promise<void> => {
         functions: metadata[resolver].pipelineConfig.functions?.map((x: string) => functionIdValueMap[x]),
       },
     });
-    await client.send(createResolverCommand);
+    await appSyncClient.send(createResolverCommand);
   }
 };
 
@@ -200,10 +231,9 @@ const parseS3Url = (s3Url: string): { bucket: string; key: string; versionId?: s
 };
 
 const getJsonFromS3 = async <T>(bucket: string, key: string): Promise<T> => {
-  const client = new S3Client({});
-
+  const s3Client = new S3Client({});
   try {
-    const response = await client.send(
+    const response = await s3Client.send(
       new GetObjectCommand({
         Bucket: bucket,
         Key: key,
@@ -234,6 +264,7 @@ const getJsonFromS3 = async <T>(bucket: string, key: string): Promise<T> => {
 
 const getComputedResources = async (): Promise<any> => {
   const { bucket, key } = parseS3Url(process.env.resolverCodeAsset!);
+  console.log(`getComputedResources: ${bucket}/${key}`);
   const computedResources = await getJsonFromS3<any>(bucket, key);
   return computedResources;
 };
