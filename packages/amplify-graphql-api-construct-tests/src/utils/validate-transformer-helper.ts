@@ -4,6 +4,7 @@ import { join } from 'path';
 import { AppSyncClient, EvaluateMappingTemplateCommand } from '@aws-sdk/client-appsync';
 import { ValidationType, ValidationsByField } from '@aws-amplify/graphql-validate-transformer/src/types';
 import { generateTypeValidationSnippet } from '@aws-amplify/graphql-validate-transformer/src/vtl-generator';
+import { graphqlRequest } from '../graphql-request';
 
 // Directory paths for storing temporary test files (VTL templates and JSON contexts) during validation tests
 export const TEMPLATES_DIR = join(__dirname, '..', '__tests__', 'validate-transformer', '__templates__');
@@ -285,5 +286,93 @@ const ensureDirectoryExists = (directory: string): boolean => {
     return true;
   } catch (error) {
     return false;
+  }
+};
+
+/**
+ * Interface for end-to-end test cases
+ * @property {string} description - Description of the test case
+ * @property {Record<string, any>} input - The input value to test
+ * @property {number} [expectedStatus] - Optional expected status code (added by helper functions)
+ */
+export interface E2ETestCase {
+  description: string;
+  input: Record<string, any>;
+  expectedStatus?: number;
+}
+
+/**
+ * Creates test cases with the appropriate expected status
+ * @param e2eTestCases Single test case or array of test cases without status
+ * @param isValid Whether these are valid test cases (200) or invalid (400)
+ * @returns Single test case or array of test cases with status
+ */
+export const createE2ETestCases = <T extends E2ETestCase | E2ETestCase[]>(e2eTestCases: T, isValid: boolean): T => {
+  const addStatus = (e2eTestCase: E2ETestCase): E2ETestCase => ({
+    ...e2eTestCase,
+    expectedStatus: isValid ? 200 : 400,
+  });
+
+  return Array.isArray(e2eTestCases) ? (e2eTestCases.map(addStatus) as T) : (addStatus(e2eTestCases) as T);
+};
+
+/**
+ * Type of entity being tested
+ */
+export type EntityType = 'User' | 'Product';
+
+/**
+ * Type of operation being tested
+ */
+export type OperationType = 'Create' | 'Update';
+
+/**
+ * Runs an end-to-end test case against the API
+ * @param apiEndpoint - The API endpoint to test against
+ * @param apiKey - The API key for authentication
+ * @param e2eTestCase - The test case to run
+ * @param entityType - The type of entity being tested (User/Product)
+ * @param operationType - The type of operation being tested (Create/Update)
+ */
+export const runE2eTest = async (
+  apiEndpoint: string,
+  apiKey: string,
+  e2eTestCase: E2ETestCase,
+  entityType: EntityType,
+  operationType: OperationType,
+): Promise<void> => {
+  if (!e2eTestCase.expectedStatus) {
+    throw new Error('Test case must have an expectedStatus. Use createE2ETestCases to add it.');
+  }
+
+  const mutationName = `${operationType.toLowerCase()}${entityType}`; // e.g. createProduct
+  const capitalizedMutationName = `${operationType}${entityType}`; // e.g. CreateProduct
+
+  const result = await graphqlRequest(apiEndpoint, {
+    method: 'POST',
+    headers: {
+      'x-api-key': apiKey,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      query: /* GraphQL */ `
+          mutation ${capitalizedMutationName}($input: ${capitalizedMutationName}Input!) {
+            ${mutationName}(input: $input) {
+              id
+              ${Object.keys(e2eTestCase.input).join('\n')}
+            }
+          }
+        `,
+      variables: { input: e2eTestCase.input },
+    }),
+  });
+
+  expect(result.statusCode).toEqual(e2eTestCase.expectedStatus);
+  if (e2eTestCase.expectedStatus === 200) {
+    // Verify that each field in the input matches exactly with the mutation response
+    const data = result.body.data[mutationName];
+    Object.entries(e2eTestCase.input).forEach(([key, value]) => {
+      expect(data[key]).toEqual(value);
+    });
   }
 };
