@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.13-gen1-migration-0214.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@2.7.12...@aws-amplify/graphql-searchable-transformer@2.7.13-gen1-migration-0214.0) (2025-02-14)
+
+**Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer
+
 ## [2.7.12](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@2.7.11...@aws-amplify/graphql-searchable-transformer@2.7.12) (2025-01-29)
 
 **Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer

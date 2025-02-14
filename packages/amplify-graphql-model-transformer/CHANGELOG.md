@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.12.0-gen1-migration-0214.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.11.7...@aws-amplify/graphql-model-transformer@2.12.0-gen1-migration-0214.0) (2025-02-14)
+
+### Bug Fixes
+
+- only print warning on failure to resolve table ([517bfae](https://github.com/aws-amplify/amplify-category-api/commit/517bfae9f02fcee9a666708ad00e1ce2afaf3c8d))
+- replace warning with error message to report bug ([bae88e1](https://github.com/aws-amplify/amplify-category-api/commit/bae88e1da087bb2684f61d62fadd92255437d8e6))
+- use undefined if false to not trigger CFN change ([82fd148](https://github.com/aws-amplify/amplify-category-api/commit/82fd1481edfb1a9f77ca92757ed99e8c9a0580bd))
+
+### Features
+
+- add deletion protection when migrating ([184503b](https://github.com/aws-amplify/amplify-category-api/commit/184503bb0a0dc629961910ecd21a59a9b45d324e))
+- get datasource map for migration ([#2668](https://github.com/aws-amplify/amplify-category-api/issues/2668)) ([6cbfa35](https://github.com/aws-amplify/amplify-category-api/commit/6cbfa3544eff82bdbd9a82f8fdbe33929079fd0b))
+
 ## [2.11.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@2.11.6...@aws-amplify/graphql-model-transformer@2.11.7) (2025-01-29)
 
 ### Bug Fixes

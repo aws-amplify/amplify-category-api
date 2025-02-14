@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.13.0-gen1-migration-0214.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.12.10...@aws-amplify/amplify-category-api@5.13.0-gen1-migration-0214.0) (2025-02-14)
+
+### Bug Fixes
+
+- prevent gen 2 migration on v1 transformer ([9574ff3](https://github.com/aws-amplify/amplify-category-api/commit/9574ff398a9bdec15648e1a83241f85b65f54040))
+
+### Features
+
+- get datasource map for migration ([#2668](https://github.com/aws-amplify/amplify-category-api/issues/2668)) ([6cbfa35](https://github.com/aws-amplify/amplify-category-api/commit/6cbfa3544eff82bdbd9a82f8fdbe33929079fd0b))
+
 ## [5.12.10](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.12.9...@aws-amplify/amplify-category-api@5.12.10) (2025-01-29)
 
 ### Bug Fixes
