@@ -256,9 +256,12 @@ export const createGen1ProjectForMigration = async (
  */
 export const deleteDDBTables = async (tableNames: string[]): Promise<void> => {
   const client = new DynamoDBClient({ region: process.env.CLI_REGION || 'us-west-2' });
+  // TODO: GEN1_GEN2_MIGRATION
   // disable deletion protection before deleting the tables
+  // start block
   await Promise.allSettled(
     tableNames.map((tableName) => client.send(new UpdateTableCommand({ TableName: tableName, DeletionProtectionEnabled: false }))),
   );
+  // end block
   await Promise.allSettled(tableNames.map((tableName) => client.send(new DeleteTableCommand({ TableName: tableName }))));
 };
