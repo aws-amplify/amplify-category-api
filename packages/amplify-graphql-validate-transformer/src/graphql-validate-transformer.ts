@@ -62,7 +62,7 @@ export class ValidateTransformer extends TransformerPluginBase implements Transf
           validationsByField[fieldName] = [];
         }
 
-        const defaultErrorMessage = `${config.validationType} ${config.validationValue} validation failed for ${fieldName}`;
+        const defaultErrorMessage = constructDefaultErrorMessage(typeName, fieldName, config.validationType, config.validationValue);
 
         validationsByField[fieldName].push({
           validationType: config.validationType,
@@ -131,3 +131,41 @@ export class ValidateTransformer extends TransformerPluginBase implements Transf
     };
   }
 }
+
+/**
+ * Constructs a default error message based on the validation type and value.
+ * @param typeName - The name of the type containing the field
+ * @param fieldName - The name of the field being validated
+ * @param validationType - The type of validation (e.g., gt, lt, minLength, etc.)
+ * @param validationValue - The value used for validation
+ * @returns A default error message string
+ */
+const constructDefaultErrorMessage = (
+  typeName: string,
+  fieldName: string,
+  validationType: ValidationType,
+  validationValue: string,
+): string => {
+  switch (validationType) {
+    case 'gt':
+      return `Field ${fieldName} of type ${typeName} must be greater than ${validationValue}`;
+    case 'lt':
+      return `Field ${fieldName} of type ${typeName} must be less than ${validationValue}`;
+    case 'gte':
+      return `Field ${fieldName} of type ${typeName} must be greater than or equal to ${validationValue}`;
+    case 'lte':
+      return `Field ${fieldName} of type ${typeName} must be less than or equal to ${validationValue}`;
+    case 'minLength':
+      return `Field ${fieldName} of type ${typeName} must have a minimum length of ${validationValue}`;
+    case 'maxLength':
+      return `Field ${fieldName} of type ${typeName} must have a maximum length of ${validationValue}`;
+    case 'startsWith':
+      return `Field ${fieldName} of type ${typeName} must start with ${validationValue}`;
+    case 'endsWith':
+      return `Field ${fieldName} of type ${typeName} must end with ${validationValue}`;
+    case 'matches':
+      return `Field ${fieldName} of type ${typeName} must match ${validationValue}`;
+    default:
+      throw new Error(`Unsupported validation type: ${validationType}`);
+  }
+};
