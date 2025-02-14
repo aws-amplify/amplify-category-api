@@ -10,6 +10,8 @@ import {
   nspawn as spawn,
   sleep,
   updateApiSchema,
+  addFeatureFlag,
+  amplifyPushForce,
 } from 'amplify-category-api-e2e-core';
 import { DynamoDBClient, DeleteTableCommand, ListTablesCommand } from '@aws-sdk/client-dynamodb';
 
@@ -189,50 +191,12 @@ export const createGen1ProjectForMigration = async (
   await updateApiSchema(projRoot, name, schema);
   await amplifyPush(projRoot);
 
-  // The test should do a second push after enabling the feature flag to start the migration
-  // TODO: GEN1_GEN2_MIGRATION
-  // The Gen 1 CLI has not released this feature flag yet
-  // In the meantime, manually create the data source mapping
-  // restore this block when the feature flag is released
-  // Start block
-  /*
   addFeatureFlag(projRoot, 'graphqltransformer', 'enablegen2migration', true);
   await amplifyPushForce(projRoot);
-  */
-  // End block
 
   const meta = getProjectMeta(projRoot);
   const { output } = meta.api[name];
-  const {
-    GraphQLAPIEndpointOutput,
-    GraphQLAPIKeyOutput,
-    GraphQLAPIIdOutput,
-    // TODO: GEN1_GEN2_MIGRATION
-    // get DataSourceMappingOutput from output when feature flag is released
-    // uncomment the line below
-    // DataSourceMappingOutput,
-  } = output;
-
-  // TODO: GEN1_GEN2_MIGRATION
-  // Construct the DataSourceMappingOutput with the AWS SDK
-  // Remove this block when the feature flag is released
-  // Start block
-  const client = new DynamoDBClient({ region: process.env.CLI_REGION || 'us-west-2' });
-  const tables = [];
-  let ExclusiveStartTableName;
-  do {
-    const command = new ListTablesCommand({ ExclusiveStartTableName });
-    const response = await client.send(command);
-    ExclusiveStartTableName = response.LastEvaluatedTableName;
-    tables.push(...response.TableNames);
-  } while (ExclusiveStartTableName);
-  const tableNameMapping = tables
-    // filter all tables by the API ID
-    .filter((tableName) => tableName.includes(GraphQLAPIIdOutput))
-    // extract the model name from the table name and create the mapping
-    .map((tableName) => [tableName.match(/(^.*?)-/)[1], tableName]);
-  const DataSourceMappingOutput = JSON.stringify(Object.fromEntries(tableNameMapping));
-  // End block
+  const { GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput, DataSourceMappingOutput } = output;
 
   return {
     GraphQLAPIEndpointOutput,
