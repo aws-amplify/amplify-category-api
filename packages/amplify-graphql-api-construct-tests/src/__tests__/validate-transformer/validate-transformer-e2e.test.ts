@@ -6,7 +6,35 @@ import { E2ETestCase, createE2ETestCases, runE2eTest } from '../../utils/validat
 
 jest.setTimeout(DURATION_30_MINUTES);
 
-describe('Validate Transformer', () => {
+/**
+ * End-to-end tests for the Validate Transformer functionality.
+ *
+ * This test suite deploys a CDK app containing two types (User and Product) and runs
+ * a comprehensive set of validation tests against their CREATE and UPDATE operations.
+ *
+ * Test Structure:
+ * 
+ *   User Type Tests
+ *   ├── Valid Cases
+ *   │   ├── CREATE Operations
+ *   │   └── UPDATE Operations
+ *   └── Invalid Cases
+ *       ├── CREATE Operations
+ *       └── UPDATE Operations
+ *
+ *   Product Type Tests
+ *   ├── Valid Cases
+ *   │   ├── CREATE Operations
+ *   │   └── UPDATE Operations
+ *   └── Invalid Cases
+ *       ├── CREATE Operations
+ *       └── UPDATE Operations
+ *
+ * Note: For both User and Product types, the last test case in the valid CREATE operations
+ * creates an item with id 'test-id'. This item is essential for all subsequent UPDATE
+ * test cases as they depend on its existence.
+ */
+describe('Validate Transformer E2E', () => {
   let projRoot: string;
   let apiEndpoint: string;
   let apiKey: string;
