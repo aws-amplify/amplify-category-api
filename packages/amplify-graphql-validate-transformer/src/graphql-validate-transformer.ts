@@ -19,7 +19,6 @@ export class ValidateTransformer extends TransformerPluginBase implements Transf
 
   /**
    * Processes `@validate` directives and validates their usage and inputs.
-   *
    * @param parent - The parent object or interface type definition node containing the field
    * @param definition - The field definition node being processed
    * @param directive - The `@validate` directive node applied to the field
@@ -45,7 +44,6 @@ export class ValidateTransformer extends TransformerPluginBase implements Transf
 
   /**
    * Generates resolvers for validation directives.
-   *
    * @param ctx - The transformer context provider
    */
   generateResolvers = (ctx: TransformerContextProvider): void => {
@@ -64,7 +62,7 @@ export class ValidateTransformer extends TransformerPluginBase implements Transf
           validationsByField[fieldName] = [];
         }
 
-        const defaultErrorMessage = `${config.validationType} ${config.validationValue} validation failed for ${fieldName}`;
+        const defaultErrorMessage = constructDefaultErrorMessage(typeName, fieldName, config.validationType, config.validationValue);
 
         validationsByField[fieldName].push({
           validationType: config.validationType,
@@ -106,7 +104,6 @@ export class ValidateTransformer extends TransformerPluginBase implements Transf
 
   /**
    * Extracts and formats the validation directive configuration from a `@validate` directive.
-   *
    * @param directive - The wrapped directive containing validation arguments
    * @param parentNode - The object type definition node that contains the field
    * @param fieldNode - The field definition node that the directive is applied to
@@ -134,3 +131,41 @@ export class ValidateTransformer extends TransformerPluginBase implements Transf
     };
   }
 }
+
+/**
+ * Constructs a default error message based on the validation type and value.
+ * @param typeName - The name of the type containing the field
+ * @param fieldName - The name of the field being validated
+ * @param validationType - The type of validation (e.g., gt, lt, minLength, etc.)
+ * @param validationValue - The value used for validation
+ * @returns A default error message string
+ */
+const constructDefaultErrorMessage = (
+  typeName: string,
+  fieldName: string,
+  validationType: ValidationType,
+  validationValue: string,
+): string => {
+  switch (validationType) {
+    case 'gt':
+      return `Field ${fieldName} of type ${typeName} must be greater than ${validationValue}`;
+    case 'lt':
+      return `Field ${fieldName} of type ${typeName} must be less than ${validationValue}`;
+    case 'gte':
+      return `Field ${fieldName} of type ${typeName} must be greater than or equal to ${validationValue}`;
+    case 'lte':
+      return `Field ${fieldName} of type ${typeName} must be less than or equal to ${validationValue}`;
+    case 'minLength':
+      return `Field ${fieldName} of type ${typeName} must have a minimum length of ${validationValue}`;
+    case 'maxLength':
+      return `Field ${fieldName} of type ${typeName} must have a maximum length of ${validationValue}`;
+    case 'startsWith':
+      return `Field ${fieldName} of type ${typeName} must start with ${validationValue}`;
+    case 'endsWith':
+      return `Field ${fieldName} of type ${typeName} must end with ${validationValue}`;
+    case 'matches':
+      return `Field ${fieldName} of type ${typeName} must match ${validationValue}`;
+    default:
+      throw new Error(`Unsupported validation type: ${validationType}`);
+  }
+};

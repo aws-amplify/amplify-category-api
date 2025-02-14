@@ -1,6 +1,6 @@
 # Test Templates Directory
 
-This directory is used by `validate-transformer-evaluate-mapping.test.ts` to store temporary VTL templates and context files during test execution.
+This directory is used by `validate-transformer-evaluate-mapping-template.test.ts` to store temporary VTL templates and context files during test execution.
 
 ## Directory Structure
 
@@ -34,7 +34,7 @@ __templates__/
 
    - Template files are generated with unique names (e.g., `template_gt_0.vtl`)
    - Context files are created with test data (e.g., `context_gt_0.json`)
-   - AWS AppSync's `evaluate-mapping-template` command evaluates these files
+   - AWS AppSync's `EvaluateMappingTemplateCommand` evaluates these files
 
 3. After tests complete, all generated files are cleaned up from their respective directories.
 

@@ -6,6 +6,12 @@ import { ValidationType, ValidationsByField } from '@aws-amplify/graphql-validat
 import { generateTypeValidationSnippet } from '@aws-amplify/graphql-validate-transformer/src/vtl-generator';
 import { graphqlRequest } from '../graphql-request';
 
+// ========================================================
+// EVALUATE MAPPING TEMPLATE HELPERS
+// ========================================================
+
+// ==== CONSTANTS ====
+
 // Directory paths for storing temporary test files (VTL templates and JSON contexts) during validation tests
 export const TEMPLATES_DIR = join(__dirname, '..', '__tests__', 'validate-transformer', '__templates__');
 export const STRING_TEMPLATES_DIR = join(TEMPLATES_DIR, 'string-validation');
@@ -13,6 +19,17 @@ export const NUMERIC_TEMPLATES_DIR = join(TEMPLATES_DIR, 'numeric-validation');
 export const ERROR_MESSAGE_TEMPLATES_DIR = join(TEMPLATES_DIR, 'error-message-parsing');
 export const STRING_VALIDATION_THRESHOLD_TEMPLATES_DIR = join(TEMPLATES_DIR, 'string-validation-threshold-parsing');
 export const COMPLEX_VALIDATION_TEMPLATES_DIR = join(TEMPLATES_DIR, 'complex-validation');
+
+/**
+ * Base context object structure shared across all tests
+ */
+const BASE_CONTEXT = {
+  identity: { username: 'testUser' },
+  request: { headers: { 'x-forwarded-for': '127.0.0.1' } },
+  info: { fieldName: 'createField', parentTypeName: 'Mutation', variables: {} },
+};
+
+// ===== TYPES & INTERFACES =====
 
 /**
  * String validations types in a string union
@@ -61,6 +78,18 @@ export interface ComplexValidationTestCase {
 }
 
 /**
+ * Interface for test files
+ * @property {string} templateName - The name of the template file
+ * @property {string} contextName - The name of the context file
+ */
+interface TestFiles {
+  templateName: string;
+  contextName: string;
+}
+
+// ===== Evaluate Template Helper Functions =====
+
+/**
  * Cleans up template files in the specified directory
  * @param directory The directory to clean up template files from
  */
@@ -75,25 +104,6 @@ export const cleanupTemplateFiles = (directory: string): void => {
   } catch (error) {
     // Directory might not exist yet
   }
-};
-
-/**
- * Interface for test files
- * @property {string} templateName - The name of the template file
- * @property {string} contextName - The name of the context file
- */
-interface TestFiles {
-  templateName: string;
-  contextName: string;
-}
-
-/**
- * Base context object structure shared across all tests
- */
-const BASE_CONTEXT = {
-  identity: { username: 'testUser' },
-  request: { headers: { 'x-forwarded-for': '127.0.0.1' } },
-  info: { fieldName: 'createField', parentTypeName: 'Mutation', variables: {} },
 };
 
 /**
@@ -147,7 +157,6 @@ const validateTestResult = (result: any, shouldPass: boolean, expectedErrorMessa
  */
 export const createContext = (input: string | number | Record<string, any>): any => {
   const inputField = typeof input === 'object' ? input : { field: input };
-
   return {
     ...BASE_CONTEXT,
     arguments: { input: inputField },
@@ -289,6 +298,12 @@ const ensureDirectoryExists = (directory: string): boolean => {
   }
 };
 
+// ========================================================
+// E2E TEST HELPERS
+// ========================================================
+
+// ===== TYPES & INTERFACES =====.
+
 /**
  * Interface for end-to-end test cases
  * @property {string} description - Description of the test case
@@ -300,6 +315,18 @@ export interface E2ETestCase {
   input: Record<string, any>;
   expectedStatus?: number;
 }
+
+/**
+ * Type of entity being tested
+ */
+export type EntityType = 'User' | 'Product';
+
+/**
+ * Type of operation being tested
+ */
+export type OperationType = 'Create' | 'Update';
+
+// ===== E2E Helper Functions =====
 
 /**
  * Creates test cases with the appropriate expected status
@@ -315,16 +342,6 @@ export const createE2ETestCases = <T extends E2ETestCase | E2ETestCase[]>(e2eTes
 
   return Array.isArray(e2eTestCases) ? (e2eTestCases.map(addStatus) as T) : (addStatus(e2eTestCases) as T);
 };
-
-/**
- * Type of entity being tested
- */
-export type EntityType = 'User' | 'Product';
-
-/**
- * Type of operation being tested
- */
-export type OperationType = 'Create' | 'Update';
 
 /**
  * Runs an end-to-end test case against the API
