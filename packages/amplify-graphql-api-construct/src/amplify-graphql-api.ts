@@ -169,20 +169,6 @@ export class AmplifyGraphqlApi extends Construct {
       logging,
     } = props;
 
-    // TODO: GEN1_GEN2_MIGRATION
-    // print warning when using experimental features.
-    // remove this code block when the feature is released.
-    // start block
-    const usingImportedAmplifyDynamoDbModelDataSourceStrategy = Object.values(definition.dataSourceStrategies).some((strategy) => {
-      return isImportedAmplifyDynamoDbModelDataSourceStrategy(strategy);
-    });
-    if (usingImportedAmplifyDynamoDbModelDataSourceStrategy) {
-      Annotations.of(this).addWarning(
-        'ImportedAmplifyDynamoDbModelDataSourceStrategy is experimental and is not recommended for production use. This functionality may be changed or removed without warning.',
-      );
-    }
-    // end block
-
     if (conflictResolution && dataStoreConfiguration) {
       throw new Error(
         'conflictResolution is deprecated. conflictResolution and dataStoreConfiguration cannot be used together. Please use dataStoreConfiguration.',
