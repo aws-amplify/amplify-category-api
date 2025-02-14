@@ -9,6 +9,7 @@
  * - *.vtl files: VTL templates for each test case
  * - *.json files: Context files containing test inputs
  * These files are automatically cleaned up before and after each test suite runs.
+ * See README.md for detailed explanation of the __templates__/ directories
  */
 import { ValidationType } from '@aws-amplify/graphql-validate-transformer/src/types';
 
