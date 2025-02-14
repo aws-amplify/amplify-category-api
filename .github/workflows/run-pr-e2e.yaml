@@ -12,4 +12,4 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
       - name: cloud-e2e
         run: |
-          . scripts/cloud-utils.sh && cloudE2E
+          yarn cloud-e2e
