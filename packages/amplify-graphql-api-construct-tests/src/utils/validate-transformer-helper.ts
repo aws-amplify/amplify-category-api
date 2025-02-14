@@ -6,6 +6,7 @@ import { ValidationType, ValidationsByField } from '@aws-amplify/graphql-validat
 import { generateTypeValidationSnippet } from '@aws-amplify/graphql-validate-transformer/src/vtl-generator';
 import { graphqlRequest } from '../graphql-request';
 
+// #region EVALUATE MAPPING TEMPLATE HELPERS
 // ========================================================
 // EVALUATE MAPPING TEMPLATE HELPERS
 // ========================================================
@@ -297,12 +298,14 @@ const ensureDirectoryExists = (directory: string): boolean => {
     return false;
   }
 };
+// #endregion
 
+// #region E2E TEST HELPERS
 // ========================================================
 // E2E TEST HELPERS
 // ========================================================
 
-// ===== TYPES & INTERFACES =====.
+// ===== TYPES & INTERFACES =====
 
 /**
  * Interface for end-to-end test cases
@@ -393,3 +396,4 @@ export const runE2eTest = async (
     });
   }
 };
+// #endregion
