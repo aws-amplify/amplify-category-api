@@ -19,7 +19,6 @@ export class ValidateTransformer extends TransformerPluginBase implements Transf
 
   /**
    * Processes `@validate` directives and validates their usage and inputs.
-   *
    * @param parent - The parent object or interface type definition node containing the field
    * @param definition - The field definition node being processed
    * @param directive - The `@validate` directive node applied to the field
@@ -45,7 +44,6 @@ export class ValidateTransformer extends TransformerPluginBase implements Transf
 
   /**
    * Generates resolvers for validation directives.
-   *
    * @param ctx - The transformer context provider
    */
   generateResolvers = (ctx: TransformerContextProvider): void => {
@@ -106,7 +104,6 @@ export class ValidateTransformer extends TransformerPluginBase implements Transf
 
   /**
    * Extracts and formats the validation directive configuration from a `@validate` directive.
-   *
    * @param directive - The wrapped directive containing validation arguments
    * @param parentNode - The object type definition node that contains the field
    * @param fieldNode - The field definition node that the directive is applied to

@@ -12,7 +12,6 @@ import { NUMERIC_VALIDATION_TYPES, STRING_VALIDATION_TYPES, ValidateDirectiveCon
  * - The field type is compatible with the validation type.
  * - For length validation, the value is a valid non-negative integer.
  * - For numeric validation, the value is a valid number.
- *
  * @param parentNode - The object type definition node that contains the field
  * @param fieldNode - The field definition node that the directive is applied to
  * @param directive - The `@validate` directive node applied to the field
