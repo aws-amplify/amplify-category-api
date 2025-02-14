@@ -10,6 +10,8 @@ import {
   nspawn as spawn,
   sleep,
   updateApiSchema,
+  addFeatureFlag,
+  amplifyPushForce,
 } from 'amplify-category-api-e2e-core';
 import { DynamoDBClient, DeleteTableCommand, ListTablesCommand, UpdateTableCommand } from '@aws-sdk/client-dynamodb';
 
@@ -189,58 +191,13 @@ export const createGen1ProjectForMigration = async (
   await updateApiSchema(projRoot, name, schema);
   await amplifyPush(projRoot);
 
-  // The test should do a second push after enabling the feature flag to start the migration
-  // TODO: GEN1_GEN2_MIGRATION
-  // The Gen 1 CLI has not released this feature flag yet
-  // In the meantime, manually create the data source mapping
-  // restore this block when the feature flag is released
-  // Start block
-  /*
   addFeatureFlag(projRoot, 'graphqltransformer', 'enablegen2migration', true);
   await amplifyPushForce(projRoot);
-  */
-  // End block
 
   const meta = getProjectMeta(projRoot);
   const { output } = meta.api[name];
-  const {
-    GraphQLAPIEndpointOutput,
-    GraphQLAPIKeyOutput,
-    GraphQLAPIIdOutput,
-    // TODO: GEN1_GEN2_MIGRATION
-    // get DataSourceMappingOutput from output when feature flag is released
-    // uncomment the line below
-    // DataSourceMappingOutput,
-  } = output;
 
-  // TODO: GEN1_GEN2_MIGRATION
-  // Construct the DataSourceMappingOutput with the AWS SDK
-  // Set table deletion protection to true for all tables
-  // Remove this block when the feature flag is released
-  // Start block
-  const client = new DynamoDBClient({ region: process.env.CLI_REGION || 'us-west-2' });
-  const tables = [];
-  let ExclusiveStartTableName;
-  do {
-    const command = new ListTablesCommand({ ExclusiveStartTableName });
-    const response = await client.send(command);
-    ExclusiveStartTableName = response.LastEvaluatedTableName;
-    tables.push(...response.TableNames);
-  } while (ExclusiveStartTableName);
-  const tablesForApi = tables
-    // filter all tables by the API ID
-    .filter((tableName) => tableName.includes(GraphQLAPIIdOutput));
-
-  const tableNameMapping = tablesForApi
-    // extract the model name from the table name and create the mapping
-    .map((tableName) => [tableName.match(/(^.*?)-/)[1], tableName]);
-  const DataSourceMappingOutput = JSON.stringify(Object.fromEntries(tableNameMapping));
-
-  // set deletion protection to true for all tables
-  await Promise.allSettled(
-    tablesForApi.map((tableName) => client.send(new UpdateTableCommand({ TableName: tableName, DeletionProtectionEnabled: true }))),
-  );
-  // End block
+  const { GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput, DataSourceMappingOutput } = output;
 
   return {
     GraphQLAPIEndpointOutput,
@@ -256,12 +213,10 @@ export const createGen1ProjectForMigration = async (
  */
 export const deleteDDBTables = async (tableNames: string[]): Promise<void> => {
   const client = new DynamoDBClient({ region: process.env.CLI_REGION || 'us-west-2' });
-  // TODO: GEN1_GEN2_MIGRATION
-  // disable deletion protection before deleting the tables
-  // start block
+  // deletion protection is enabled for migrated tables
+  // disable deletion protection to teardown the tests
   await Promise.allSettled(
     tableNames.map((tableName) => client.send(new UpdateTableCommand({ TableName: tableName, DeletionProtectionEnabled: false }))),
   );
-  // end block
   await Promise.allSettled(tableNames.map((tableName) => client.send(new DeleteTableCommand({ TableName: tableName }))));
 };
