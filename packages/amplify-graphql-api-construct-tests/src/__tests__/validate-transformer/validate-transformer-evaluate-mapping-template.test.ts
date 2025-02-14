@@ -1,3 +1,15 @@
+/**
+ * Test suites for validating the Validate Transformer's mapping templates.
+ *
+ * All test suites in this file utilize AppSync's EvaluateMappingTemplateCommand to test
+ * mapping templates against expected responses. This allows us to verify that our VTL
+ * templates correctly implement the validation logic.
+ *
+ * Note: During test execution, temporary files will be created in __templates__/ directories:
+ * - *.vtl files: VTL templates for each test case
+ * - *.json files: Context files containing test inputs
+ * These files are automatically cleaned up before and after each test suite runs.
+ */
 import { ValidationType } from '@aws-amplify/graphql-validate-transformer/src/types';
 
 import { ONE_MINUTE } from '../../utils/duration-constants';
@@ -34,11 +46,6 @@ type NumericValidationTestCase = EvaluateTemplateTestCase<number, NumericValidat
  *
  * Each test intentionally fails validation (using a short string against a large minLength)
  * to verify that the error message is returned exactly as specified, with all quotes preserved.
- *
- * Note: During test execution, temporary files will be created in __templates__/error-message-parsing/
- * - *.vtl files: VTL templates for each test case
- * - *.json files: Context files containing test inputs
- * These files are automatically cleaned up before and after each test run.
  */
 describe('Error Message Parsing', () => {
   beforeAll(() => cleanupTemplateFiles(ERROR_MESSAGE_TEMPLATES_DIR));
@@ -104,11 +111,6 @@ describe('Error Message Parsing', () => {
  * This test suite uses the startsWith validation type since the main focus is
  * testing proper quote parsing in validation thresholds. The quote parsing behavior
  * is the same across all validation types.
- *
- * Note: During test execution, temporary files will be created in __templates__/string-validation-threshold-parsing/
- * - *.vtl files: VTL templates for each test case
- * - *.json files: Context files containing test inputs
- * These files are automatically cleaned up before and after each test suite runs.
  */
 describe('String Validation Threshold Parsing', () => {
   beforeAll(() => cleanupTemplateFiles(STRING_VALIDATION_THRESHOLD_TEMPLATES_DIR));
@@ -230,11 +232,6 @@ describe('String Validation Threshold Parsing', () => {
  * - Maximum and minimum safe integers
  * - Large positive/negative values
  * - Zero values
- *
- * Note: During test execution, temporary files will be created in __templates__/numeric-validation/
- * - *.vtl files: VTL templates for each test case
- * - *.json files: Context files containing test inputs
- * These files are automatically cleaned up before and after each test suite runs.
  */
 describe('Numeric Validation', () => {
   beforeAll(() => cleanupTemplateFiles(NUMERIC_TEMPLATES_DIR));
@@ -403,11 +400,6 @@ describe('Numeric Validation', () => {
  * - Strings with special characters, numbers, and unicode characters
  * - Strings with spaces, prefixes, and suffixes
  * - Strings with regex patterns
- *
- * Note: During test execution, temporary files will be created in __templates__/string-validation/
- * - *.vtl files: VTL templates for each test case
- * - *.json files: Context files containing test inputs
- * These files are automatically cleaned up before and after each test suite runs.
  */
 describe('String Validation', () => {
   beforeAll(() => cleanupTemplateFiles(STRING_TEMPLATES_DIR));
