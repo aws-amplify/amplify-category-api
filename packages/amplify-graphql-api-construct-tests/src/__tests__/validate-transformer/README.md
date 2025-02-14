@@ -1,7 +1,6 @@
 # Test Templates Directory
 
-The git ignored `__templates__` directory is used by `validate-transformer-evaluate-mapping-template.test.ts` to store temporary VTL
-templates and context files during test execution.
+The git ignored `__templates__` directory is used by `validate-transformer-evaluate-mapping-template.test.ts` to store temporary VTL templates and context files during test execution.
 
 ## Directory Structure
 
