@@ -13,7 +13,7 @@ jest.setTimeout(DURATION_30_MINUTES);
  * a comprehensive set of validation tests against their CREATE and UPDATE operations.
  *
  * Test Structure:
- * 
+ *
  *   User Type Tests
  *   ├── Valid Cases
  *   │   ├── CREATE Operations
