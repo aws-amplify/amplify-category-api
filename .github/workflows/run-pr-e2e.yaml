@@ -14,4 +14,4 @@ jobs:
       - name: cloud-e2e
         shell: bash
         run: |
-          yarn cloud-e2e
+          . scripts/cloud-utils.sh && cloudE2E
