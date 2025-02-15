@@ -209,7 +209,7 @@ const createFunctions = async (resourceProperties: ResourceProperties): Promise<
   const { apiId, resources } = resourceProperties;
 
   for (const func of Object.keys(resources)) {
-    if (resources[func].type !== 'AppSyncFunction') {
+    if (resources[func].type !== 'AppSyncVtlFunction') {
       continue;
     }
     console.log(`Creating function ${func}`);
@@ -232,7 +232,7 @@ const createResolvers = async (resourceProperties: ResourceProperties): Promise<
   console.log('Create resolvers');
   console.log(JSON.stringify(functionIdValueMap, null, 2));
   for (const resolver of Object.keys(resources)) {
-    if (resources[resolver].type !== 'Resolver') {
+    if (resources[resolver].type !== 'PipelineResolver') {
       continue;
     }
     console.log(`Creating resolver for field ${resources[resolver].fieldName} on type ${resources[resolver].typeName}`);
