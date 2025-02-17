@@ -72,6 +72,7 @@ describe('ModelTransformer:', () => {
     expect(authorTable.DeletionPolicy).toBe('Retain');
     expect(authorTable.Properties.isImported).toBe(true);
     expect(authorTable.Properties.tableName).toBe('Author-myApiId-myEnv');
+    expect(authorTable.Properties.deletionProtectionEnabled).toBe(true);
     validateModelSchema(parse(out.schema));
 
     // Outputs should contain a reference to the Arn to the entry point (onEventHandler)
