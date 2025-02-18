@@ -80,10 +80,10 @@ export module SyncUtils {
                   'dynamodb:UpdateItem',
                 ],
                 Resource: [
-                  Fn.Sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
+                  Fn.Sub('arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
                     tablename: SyncResourceIDs.syncTableName,
                   }),
-                  Fn.Sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
+                  Fn.Sub('arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
                     tablename: SyncResourceIDs.syncTableName,
                   }),
                 ],
@@ -108,8 +108,8 @@ export module SyncUtils {
   }
   export function lambdaArnKey(name: string, region?: string) {
     return region
-      ? `arn:aws:lambda:${region}:\${AWS::AccountId}:function:${name}`
-      : `arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:${name}`;
+      ? `arn:\${AWS::Partition}:lambda:${region}:\${AWS::AccountId}:function:${name}`
+      : `arn:\${AWS::Partition}:lambda:\${AWS::Region}:\${AWS::AccountId}:function:${name}`;
   }
   function referencesEnv(value: string) {
     return value.match(/(\${env})/) !== null;

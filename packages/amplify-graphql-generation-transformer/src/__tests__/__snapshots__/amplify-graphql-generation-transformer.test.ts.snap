@@ -25,7 +25,11 @@ exports[`generation route all scalar types 1`] = `
         "Ref": "AWS::Region",
       },
       ".amazonaws.com";
-  ctx.stash.authRole = "arn:aws:sts::",
+  ctx.stash.authRole = "arn:",
+      {
+        "Ref": "AWS::Partition",
+      },
+      ":sts::",
       {
         "Ref": "AWS::AccountId",
       },
@@ -34,7 +38,11 @@ exports[`generation route all scalar types 1`] = `
         "Ref": "authRoleName",
       },
       "/CognitoIdentityCredentials";
-  ctx.stash.unauthRole = "arn:aws:sts::",
+  ctx.stash.unauthRole = "arn:",
+      {
+        "Ref": "AWS::Partition",
+      },
+      ":sts::",
       {
         "Ref": "AWS::AccountId",
       },
@@ -165,7 +173,11 @@ exports[`generation route custom query 1`] = `
         "Ref": "AWS::Region",
       },
       ".amazonaws.com";
-  ctx.stash.authRole = "arn:aws:sts::",
+  ctx.stash.authRole = "arn:",
+      {
+        "Ref": "AWS::Partition",
+      },
+      ":sts::",
       {
         "Ref": "AWS::AccountId",
       },
@@ -174,7 +186,11 @@ exports[`generation route custom query 1`] = `
         "Ref": "authRoleName",
       },
       "/CognitoIdentityCredentials";
-  ctx.stash.unauthRole = "arn:aws:sts::",
+  ctx.stash.unauthRole = "arn:",
+      {
+        "Ref": "AWS::Partition",
+      },
+      ":sts::",
       {
         "Ref": "AWS::AccountId",
       },
@@ -305,7 +321,11 @@ exports[`generation route model type with null timestamps 1`] = `
         "Ref": "AWS::Region",
       },
       ".amazonaws.com";
-  ctx.stash.authRole = "arn:aws:sts::",
+  ctx.stash.authRole = "arn:",
+      {
+        "Ref": "AWS::Partition",
+      },
+      ":sts::",
       {
         "Ref": "AWS::AccountId",
       },
@@ -314,7 +334,11 @@ exports[`generation route model type with null timestamps 1`] = `
         "Ref": "authRoleName",
       },
       "/CognitoIdentityCredentials";
-  ctx.stash.unauthRole = "arn:aws:sts::",
+  ctx.stash.unauthRole = "arn:",
+      {
+        "Ref": "AWS::Partition",
+      },
+      ":sts::",
       {
         "Ref": "AWS::AccountId",
       },
@@ -443,7 +467,11 @@ exports[`generation route scalar type 1`] = `
         "Ref": "AWS::Region",
       },
       ".amazonaws.com";
-  ctx.stash.authRole = "arn:aws:sts::",
+  ctx.stash.authRole = "arn:",
+      {
+        "Ref": "AWS::Partition",
+      },
+      ":sts::",
       {
         "Ref": "AWS::AccountId",
       },
@@ -452,7 +480,11 @@ exports[`generation route scalar type 1`] = `
         "Ref": "authRoleName",
       },
       "/CognitoIdentityCredentials";
-  ctx.stash.unauthRole = "arn:aws:sts::",
+  ctx.stash.unauthRole = "arn:",
+      {
+        "Ref": "AWS::Partition",
+      },
+      ":sts::",
       {
         "Ref": "AWS::AccountId",
       },

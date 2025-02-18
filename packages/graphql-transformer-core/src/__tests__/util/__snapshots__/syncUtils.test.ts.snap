@@ -6,7 +6,7 @@ Object {
     "HasEnvironmentParameter",
     Object {
       "Fn::Sub": Array [
-        "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:myLambda-\${env}",
+        "arn:\${AWS::Partition}:lambda:\${AWS::Region}:\${AWS::AccountId}:function:myLambda-\${env}",
         Object {
           "env": Object {
             "Ref": "env",
@@ -16,7 +16,7 @@ Object {
     },
     Object {
       "Fn::Sub": Array [
-        "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:myLambda",
+        "arn:\${AWS::Partition}:lambda:\${AWS::Region}:\${AWS::AccountId}:function:myLambda",
         Object {},
       ],
     },
@@ -34,7 +34,7 @@ Object {
         "HasEnvironmentParameter",
         Object {
           "Fn::Sub": Array [
-            "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:myLambda-\${env}",
+            "arn:\${AWS::Partition}:lambda:\${AWS::Region}:\${AWS::AccountId}:function:myLambda-\${env}",
             Object {
               "env": Object {
                 "Ref": "env",
@@ -44,7 +44,7 @@ Object {
         },
         Object {
           "Fn::Sub": Array [
-            "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:myLambda",
+            "arn:\${AWS::Partition}:lambda:\${AWS::Region}:\${AWS::AccountId}:function:myLambda",
             Object {},
           ],
         },

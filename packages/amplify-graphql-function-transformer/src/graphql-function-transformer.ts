@@ -164,9 +164,10 @@ export class FunctionTransformer extends TransformerPluginBase {
           const authRole = context.synthParameters.authenticatedUserRoleName;
           const unauthRole = context.synthParameters.unauthenticatedUserRoleName;
           const account = cdk.Stack.of(context.stackManager.scope).account;
+          const partition = cdk.Stack.of(context.stackManager.scope).partition;
           requestTemplate.push(
-            qref(`$ctx.stash.put("authRole", "arn:aws:sts::${account}:assumed-role/${authRole}/CognitoIdentityCredentials")`),
-            qref(`$ctx.stash.put("unauthRole", "arn:aws:sts::${account}:assumed-role/${unauthRole}/CognitoIdentityCredentials")`),
+            qref(`$ctx.stash.put("authRole", "arn:${partition}:sts::${account}:assumed-role/${authRole}/CognitoIdentityCredentials")`),
+            qref(`$ctx.stash.put("unauthRole", "arn:${partition}:sts::${account}:assumed-role/${unauthRole}/CognitoIdentityCredentials")`),
           );
 
           const identityPoolId = context.synthParameters.identityPoolId;
@@ -252,7 +253,7 @@ const lambdaArnResource = (env: string, name: string, region?: string, accountId
 
 const lambdaArnKey = (name: string, region?: string, accountId?: string): string => {
   // eslint-disable-next-line no-template-curly-in-string
-  return `arn:aws:lambda:${region ? region : '${AWS::Region}'}:${accountId ? accountId : '${AWS::AccountId}'}:function:${name}`;
+  return `arn:\${AWS::Partition}:lambda:${region ? region : '${AWS::Region}'}:${accountId ? accountId : '${AWS::AccountId}'}:function:${name}`;
 };
 
 // #region Validation

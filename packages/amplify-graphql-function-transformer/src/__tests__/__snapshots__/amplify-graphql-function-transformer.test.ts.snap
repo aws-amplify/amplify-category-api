@@ -196,7 +196,11 @@ Object {
       "## [Start] Stash resolver specific context.. **
 $util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
 $util.qr($ctx.stash.put(\\"fieldName\\", \\"myFunction\\"))
-$util.qr($ctx.stash.put(\\"authRole\\", \\"arn:aws:sts::",
+$util.qr($ctx.stash.put(\\"authRole\\", \\"arn:",
+      Object {
+        "Ref": "AWS::Partition",
+      },
+      ":sts::",
       Object {
         "Ref": "AWS::AccountId",
       },
@@ -205,7 +209,11 @@ $util.qr($ctx.stash.put(\\"authRole\\", \\"arn:aws:sts::",
         "Ref": "referencetotransformerrootstackauthRoleNameFB872D50Ref",
       },
       "/CognitoIdentityCredentials\\"))
-$util.qr($ctx.stash.put(\\"unauthRole\\", \\"arn:aws:sts::",
+$util.qr($ctx.stash.put(\\"unauthRole\\", \\"arn:",
+      Object {
+        "Ref": "AWS::Partition",
+      },
+      ":sts::",
       Object {
         "Ref": "AWS::AccountId",
       },

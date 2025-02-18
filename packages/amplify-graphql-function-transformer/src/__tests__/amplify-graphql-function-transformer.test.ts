@@ -53,11 +53,11 @@ test('for @function with only name, it generates the expected resources', () => 
                 'HasEnvironmentParameter',
                 {
                   'Fn::Sub': [
-                    'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:echofunction-${env}',
+                    'arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:echofunction-${env}',
                     { env: { Ref: Match.anyValue() } },
                   ],
                 },
-                { 'Fn::Sub': 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:echofunction' },
+                { 'Fn::Sub': 'arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:echofunction' },
               ],
             },
             {
@@ -69,11 +69,11 @@ test('for @function with only name, it generates the expected resources', () => 
                       'HasEnvironmentParameter',
                       {
                         'Fn::Sub': [
-                          'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:echofunction-${env}',
+                          'arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:echofunction-${env}',
                           { env: { Ref: Match.anyValue() } },
                         ],
                       },
-                      { 'Fn::Sub': 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:echofunction' },
+                      { 'Fn::Sub': 'arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:echofunction' },
                     ],
                   },
                   ':*',
@@ -97,9 +97,9 @@ test('for @function with only name, it generates the expected resources', () => 
         'Fn::If': [
           'HasEnvironmentParameter',
           {
-            'Fn::Sub': ['arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:echofunction-${env}', { env: { Ref: Match.anyValue() } }],
+            'Fn::Sub': ['arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:echofunction-${env}', { env: { Ref: Match.anyValue() } }],
           },
-          { 'Fn::Sub': 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:echofunction' },
+          { 'Fn::Sub': 'arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:echofunction' },
         ],
       },
     },
@@ -187,9 +187,9 @@ test('for @function with account ID, it generates the expected resources', () =>
               'Fn::If': [
                 'HasEnvironmentParameter',
                 {
-                  'Fn::Sub': ['arn:aws:lambda:${AWS::Region}:123123456456:function:echofunction', {}],
+                  'Fn::Sub': ['arn:${AWS::Partition}:lambda:${AWS::Region}:123123456456:function:echofunction', {}],
                 },
-                { 'Fn::Sub': 'arn:aws:lambda:${AWS::Region}:123123456456:function:echofunction' },
+                { 'Fn::Sub': 'arn:${AWS::Partition}:lambda:${AWS::Region}:123123456456:function:echofunction' },
               ],
             },
             {
@@ -200,9 +200,9 @@ test('for @function with account ID, it generates the expected resources', () =>
                     'Fn::If': [
                       'HasEnvironmentParameter',
                       {
-                        'Fn::Sub': ['arn:aws:lambda:${AWS::Region}:123123456456:function:echofunction', {}],
+                        'Fn::Sub': ['arn:${AWS::Partition}:lambda:${AWS::Region}:123123456456:function:echofunction', {}],
                       },
-                      { 'Fn::Sub': 'arn:aws:lambda:${AWS::Region}:123123456456:function:echofunction' },
+                      { 'Fn::Sub': 'arn:${AWS::Partition}:lambda:${AWS::Region}:123123456456:function:echofunction' },
                     ],
                   },
                   ':*',
@@ -226,9 +226,9 @@ test('for @function with account ID, it generates the expected resources', () =>
         'Fn::If': [
           'HasEnvironmentParameter',
           {
-            'Fn::Sub': ['arn:aws:lambda:${AWS::Region}:123123456456:function:echofunction', {}],
+            'Fn::Sub': ['arn:${AWS::Partition}:lambda:${AWS::Region}:123123456456:function:echofunction', {}],
           },
-          { 'Fn::Sub': 'arn:aws:lambda:${AWS::Region}:123123456456:function:echofunction' },
+          { 'Fn::Sub': 'arn:${AWS::Partition}:lambda:${AWS::Region}:123123456456:function:echofunction' },
         ],
       },
     },
