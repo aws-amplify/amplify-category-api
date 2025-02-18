@@ -46,6 +46,7 @@ import { GraphQLApi } from './graphql-api';
 import { setResourceName } from './utils';
 import { getRuntimeSpecificFunctionProps, isJsResolverFnRuntime } from './utils/function-runtime';
 import { APPSYNC_JS_RUNTIME, VTL_RUNTIME } from './types';
+import { createHash } from 'crypto';
 
 type Slot = {
   requestMappingTemplate?: string;
@@ -172,37 +173,41 @@ export class DefaultTransformHost implements TransformHostProvider {
     const lambdaCodePath = path.join(__dirname, '..', 'lib', 'resolver-manager');
     console.log(path.normalize(lambdaCodePath));
 
-    // TODO: Generally, provider policies need to have access to "*" resources since they may be reused across instances. But do we actually
-    // create multiple instances?
+    // The custom resource provider framework by default creates a singleton function. However, we want to scope the handler to this
+    // specific stack, so we'll use the path of the code resource to disambiguate between paths.
+    const pathHash = createHash('sha256').update(lambdaCodePath).digest('hex').substring(0, 16);
+
+    const functionName = `AmplifyResolverManagerOnEventFn-${pathHash}`;
+    const onEventHandler = new Function(customResourceStack, functionName, {
+      functionName,
+      code: Code.fromAsset(lambdaCodePath),
+      handler: 'index.handler',
+      runtime: Runtime.NODEJS_18_X,
+      timeout: Duration.minutes(10),
+      initialPolicy: [
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: [
+            'appsync:CreateFunction',
+            'appsync:CreateResolver',
+            'appsync:DeleteFunction',
+            'appsync:DeleteResolver',
+            'appsync:ListFunctions',
+            'appsync:ListResolvers',
+            'appsync:ListTypes',
+          ],
+          resources: ['*'],
+        }),
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: ['s3:GetObject'],
+          resources: [`${deployment.deployedBucket.bucketArn}/${computedResourcesObjectKey}`],
+        }),
+      ],
+    });
+
     const customResourceProvider = new Provider(customResourceStack, 'AmplifyResolverManagerProvider', {
-      providerFunctionName: 'AmplifyResolverManagerProviderFn',
-      onEventHandler: new Function(customResourceStack, 'AmplifyResolverManagerOnEventFn', {
-        functionName: 'AmplifyResolverManagerOnEventFn',
-        code: Code.fromAsset(lambdaCodePath),
-        handler: 'index.handler',
-        runtime: Runtime.NODEJS_18_X,
-        timeout: Duration.minutes(10),
-        initialPolicy: [
-          new PolicyStatement({
-            effect: Effect.ALLOW,
-            actions: [
-              'appsync:CreateFunction',
-              'appsync:CreateResolver',
-              'appsync:DeleteFunction',
-              'appsync:DeleteResolver',
-              'appsync:ListFunctions',
-              'appsync:ListResolvers',
-              'appsync:ListTypes',
-            ],
-            resources: ['*'],
-          }),
-          new PolicyStatement({
-            effect: Effect.ALLOW,
-            actions: ['s3:GetObject'],
-            resources: ['*'],
-          }),
-        ],
-      }),
+      onEventHandler,
     });
 
     const properties: ResolverManagerCustomResourceProperties = {
