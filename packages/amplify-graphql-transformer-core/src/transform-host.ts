@@ -352,15 +352,15 @@ export class DefaultTransformHost implements TransformHostProvider {
     // TODO: Extend this to work with S3 VTL templates and JS templates
     if (
       isVtlRuntimeTemplate(mappingTemplate) &&
-      mappingTemplate.requestMappingTemplate.type === MappingTemplateType.INLINE &&
-      mappingTemplate.responseMappingTemplate.type === MappingTemplateType.INLINE
+      typeof (mappingTemplate.requestMappingTemplate as any).content === 'string' &&
+      typeof (mappingTemplate.responseMappingTemplate as any).content === 'string'
     ) {
       this.resources[name] = {
         type: 'AppSyncVtlFunction',
         functionId: fn.functionId,
         dataSource: dataSource?.name || dataSourceName,
-        requestMappingTemplate: mappingTemplate.requestMappingTemplate.bind(scope ?? this.api),
-        responseMappingTemplate: mappingTemplate.responseMappingTemplate.bind(scope ?? this.api),
+        requestMappingTemplate: (mappingTemplate.requestMappingTemplate as any).content,
+        responseMappingTemplate: (mappingTemplate.responseMappingTemplate as any).content,
       };
     }
 

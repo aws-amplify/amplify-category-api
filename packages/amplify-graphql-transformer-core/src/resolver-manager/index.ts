@@ -21,6 +21,18 @@ interface ResolverSpec {
   fieldName: string | undefined;
 }
 
+type FunctionDefinition = {};
+
+interface AppSyncVtlFunction {
+  /** Present if the function is a JS runtime */
+  code?: string;
+}
+
+interface CurrentResources {
+  functions: Record<string, string>;
+  resolvers: Record<string, ResolverSpec>;
+}
+
 interface InitialResourceProperties {
   ServiceToken: string;
   apiId: string;
