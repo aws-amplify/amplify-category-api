@@ -135,7 +135,7 @@ export const cdkDeploy = async (cwd: string, option: string, props?: CdkDeployPr
 
   await spawn(
     getNpxPath(),
-    ['cdk', 'deploy', '--outputs-file', 'outputs.json', '--require-approval', 'never', option],
+    ['cdk@2.178.2', 'deploy', '--outputs-file', 'outputs.json', '--require-approval', 'never', option],
     commandOptions,
   ).runAsync();
 
