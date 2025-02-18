@@ -1,3 +1,4 @@
+import { createHash } from 'crypto';
 import * as path from 'path';
 import hash from 'object-hash';
 
@@ -46,7 +47,7 @@ import { GraphQLApi } from './graphql-api';
 import { setResourceName } from './utils';
 import { getRuntimeSpecificFunctionProps, isJsResolverFnRuntime } from './utils/function-runtime';
 import { APPSYNC_JS_RUNTIME, VTL_RUNTIME } from './types';
-import { createHash } from 'crypto';
+import objectHash from 'object-hash';
 
 type Slot = {
   requestMappingTemplate?: string;
@@ -60,10 +61,27 @@ export interface DefaultTransformHostOptions {
 }
 
 interface ResolverManagerCustomResourceProperties {
+  /**
+   * The ID of the AppSync API
+   */
   apiId: string;
+
+  /**
+   * The S3 bucket where the computed-resources.json file is stored
+   */
   computedResourcesAssetBucket: string;
+
+  /**
+   * The S3 key of the computed-resources.json file
+   */
   computedResourcesAssetKey: string;
-  resourceHash: string;
+
+  /**
+   * A change in this value (that is, a change in the customer's GraphQL Input schema, or a change to the transformer internals that change
+   * the structure of the DocumentNode) will trigger the Update flow of the resolver manager. This value is not used by the handler, but
+   * only to trigger a CDK update
+   */
+  schemaHash: string;
 }
 
 type AppSyncResource = AppSyncPipelineResolverResource | AppSyncFunctionResource;
@@ -84,6 +102,7 @@ type AppSyncFunctionResource = AppSyncJsFunctionResource | AppSyncVtlFunctionRes
 
 interface AppSyncJsFunctionResource {
   type: 'AppSyncJsFunction';
+  name: string;
   functionId: string;
   dataSource: string;
   codeMappingTemplate: string;
@@ -91,6 +110,7 @@ interface AppSyncJsFunctionResource {
 
 interface AppSyncVtlFunctionResource {
   type: 'AppSyncVtlFunction';
+  name: string;
   functionId: string;
   dataSource: string;
   requestMappingTemplate: string;
@@ -210,11 +230,12 @@ export class DefaultTransformHost implements TransformHostProvider {
       onEventHandler,
     });
 
+    const schemaHash = createHash('sha256').update(JSON.stringify(context.inputDocument)).digest('base64url');
     const properties: ResolverManagerCustomResourceProperties = {
       apiId: this.api.apiId,
       computedResourcesAssetBucket: deployment.deployedBucket.bucketName,
       computedResourcesAssetKey: computedResourcesObjectKey,
-      resourceHash: hash(this.resources),
+      schemaHash,
     };
 
     const customResource = new CustomResource(customResourceStack, 'ResolverManagerCustomResource', {
@@ -357,6 +378,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     ) {
       this.resources[name] = {
         type: 'AppSyncVtlFunction',
+        name: fn.name,
         functionId: fn.functionId,
         dataSource: dataSource?.name || dataSourceName,
         requestMappingTemplate: (mappingTemplate.requestMappingTemplate as any).content,
