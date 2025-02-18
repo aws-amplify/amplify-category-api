@@ -48,7 +48,7 @@ export const createMappingLambda = (host: TransformHostProvider, stackManager: S
           actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
           effect: iam.Effect.ALLOW,
           resources: [
-            cdk.Fn.sub(`arn:\${AWS::Partition}:logs:\${AWS::Region}:\${AWS::AccountId}:log-group:/aws/lambda/\${funcName}:log-stream:*`, {
+            cdk.Fn.sub(`arn:aws:logs:\${AWS::Region}:\${AWS::AccountId}:log-group:/aws/lambda/\${funcName}:log-stream:*`, {
               funcName: lambdaFunc.functionName,
             }),
           ],
