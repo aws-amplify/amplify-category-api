@@ -209,7 +209,7 @@ function _setupNodeVersion {
   
   # Install and use the specified Node.js version
   nvm install "$version"
-  nvm use "$version"
+  nvm use --delete-prefix "$version" --silent
   
   # Verify the Node.js version in use
   echo "Node.js version in use:"
