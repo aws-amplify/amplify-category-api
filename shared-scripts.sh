@@ -209,10 +209,10 @@ function _setupNodeVersion {
   export NVM_DIR="$HOME/.nvm"
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-  # Unset incompatible npm configurations (globalconfig/prefix)
-  echo "Unsetting incompatible npm configurations"
-  unset npm_config_prefix
-  unset npm_config_globalconfig
+  # # Unset incompatible npm configurations (globalconfig/prefix)
+  # echo "Unsetting incompatible npm configurations"
+  # unset npm_config_prefix
+  # unset npm_config_globalconfig
   
   # Install and use the specified Node.js version
   echo "Installing and using the specified Node.js version"
