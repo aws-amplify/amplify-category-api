@@ -337,6 +337,7 @@ function _runE2ETestsLinux {
 
 function _runCDKTestsLinux {
     echo "RUN CDK Tests Linux"
+    _setupNodeVersion $AMPLIFY_NODE_VERSION
     retry runCDKTest
 }
 
