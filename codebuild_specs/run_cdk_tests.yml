@@ -10,6 +10,7 @@ phases:
   build:
     commands:
       - codebuild-breakpoint
+      - source ./shared-scripts.sh && _setupNodeVersion "${AMPLIFY_NODE_VERSION}"
       - source ./shared-scripts.sh && _setupCDKTestsLinux
       - source ./shared-scripts.sh && _runCDKTestsLinux
   post_build:
