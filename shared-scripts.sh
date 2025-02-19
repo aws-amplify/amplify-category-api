@@ -341,8 +341,6 @@ function _setupCDKTestsLinux {
     yarn package
     _loadTestAccountCredentials
     _setShell
-    echo "Setup Node version"
-    _setupNodeVersion $AMPLIFY_NODE_VERSION
 }
 
 function _runE2ETestsLinux {
@@ -352,6 +350,10 @@ function _runE2ETestsLinux {
 
 function _runCDKTestsLinux {
     echo "RUN CDK Tests Linux"
+
+    echo "Setup Node version"
+    _setupNodeVersion $AMPLIFY_NODE_VERSION
+
     retry runCDKTest
 }
 
