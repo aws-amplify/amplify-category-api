@@ -47,7 +47,6 @@ import { GraphQLApi } from './graphql-api';
 import { setResourceName } from './utils';
 import { getRuntimeSpecificFunctionProps, isJsResolverFnRuntime } from './utils/function-runtime';
 import { APPSYNC_JS_RUNTIME, VTL_RUNTIME } from './types';
-import objectHash from 'object-hash';
 
 type Slot = {
   requestMappingTemplate?: string;
@@ -72,14 +71,18 @@ interface ResolverManagerCustomResourceProperties {
   computedResourcesAssetBucket: string;
 
   /**
-   * The S3 key of the computed-resources.json file
+   * The S3 key of the computed-resources.json file.
+   *
+   * TODO: Compute this key using the hash of the input schema, so it changes if the input schema changes.
    */
   computedResourcesAssetKey: string;
 
   /**
    * A change in this value (that is, a change in the customer's GraphQL Input schema, or a change to the transformer internals that change
    * the structure of the DocumentNode) will trigger the Update flow of the resolver manager. This value is not used by the handler, but
-   * only to trigger a CDK update
+   * only to trigger a CDK update.
+   *
+   * TODO: Instead of a separate property, include the hash as part of the computedResourceAssetKey.
    */
   schemaHash: string;
 }
