@@ -204,6 +204,11 @@ function _setupNodeVersion {
   echo "Installing NVM"
   curl -o - https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
 
+  # Load NVM
+  echo "Loading NVM"
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  
   # Check if .npmrc has incompatible settings
   if [ -f "${HOME}/.npmrc" ] && (grep -q "globalconfig\|prefix" "${HOME}/.npmrc"); then
     echo "Detected incompatible .npmrc settings, using alternative route"
@@ -213,11 +218,6 @@ function _setupNodeVersion {
     node -v
     return
   fi
-
-  # Load NVM
-  echo "Loading NVM"
-  export NVM_DIR="$HOME/.nvm"
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
   
   # Install and use the specified Node.js version
   echo "Installing and using the specified Node.js version"
