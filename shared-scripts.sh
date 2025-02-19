@@ -201,17 +201,21 @@ function _setupNodeVersion {
   echo "Installing NVM and setting Node.js version to $version"
   
   # Install NVM
+  echo "Installing NVM"
   curl -o - https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
   
   # Load NVM
+  echo "Loading NVM"
   export NVM_DIR="$HOME/.nvm"
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
   # Unset incompatible npm configurations (globalconfig/prefix)
+  echo "Unsetting incompatible npm configurations"
   unset npm_config_prefix
   unset npm_config_globalconfig
   
   # Install and use the specified Node.js version
+  echo "Installing and using the specified Node.js version"
   nvm install "$version"
   nvm use --delete-prefix "$version" --silent
   
