@@ -204,20 +204,25 @@ function _setupNodeVersion {
   echo "Installing NVM"
   curl -o - https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
 
+  # Print out the contents of .npmrc if it exists
+  if [ -f "${HOME}/.npmrc" ]; then
+    echo "Contents of ${HOME}/.npmrc:"
+    cat "${HOME}/.npmrc"
+  else
+    echo "No .npmrc file found at ${HOME}/.npmrc"
+  fi
+
+  # Check if .npmrc has an incompatible 'prefix' setting
+  if [ -f "${HOME}/.npmrc" ] && grep -q "prefix" "${HOME}/.npmrc"; then
+    echo "Detected incompatible .npmrc prefix setting"
+    npm config delete prefix
+    npm config set prefix "$NVM_DIR/versions/node/v$version"
+  fi
+
   # Load NVM
   echo "Loading NVM"
   export NVM_DIR="$HOME/.nvm"
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-  
-  # # Check if .npmrc has incompatible settings
-  # if [ -f "${HOME}/.npmrc" ] && (grep -q "globalconfig\|prefix" "${HOME}/.npmrc"); then
-  #   echo "Detected incompatible .npmrc settings, using alternative route"
-  #   nvm use --delete-prefix v$version --silent
-  #   # Verify the Node.js version in use
-  #   echo "Node.js version in use:"
-  #   node -v
-  #   return
-  # fi
   
   # Install and use the specified Node.js version
   echo "Installing and using the specified Node.js version"
