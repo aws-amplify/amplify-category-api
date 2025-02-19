@@ -331,6 +331,7 @@ function _setupCDKTestsLinux {
 }
 
 function _runE2ETestsLinux {
+    printenv
     echo "RUN E2E Tests Linux"
     retry runE2eTest
 }
