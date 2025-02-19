@@ -26,7 +26,7 @@ export const deployJsonServer = () => {
     throw new Error(`'yarn' failed with exit code: ${yarnServerResult.exitCode}`);
   }
 
-  const cdkDeployResult = execa.sync('npx', ['cdk@2.178.2', 'deploy', '--outputsFile', outputValuesFile, '--require-approval', 'never'], {
+  const cdkDeployResult = execa.sync('npx', ['cdk', 'deploy', '--outputsFile', outputValuesFile, '--require-approval', 'never'], {
     cwd: jsonServerRootDirectory,
     stdio: 'inherit',
   });
@@ -51,7 +51,7 @@ export const deployJsonServer = () => {
 };
 
 export const destroyJsonServer = () => {
-  const processResult = execa.sync('npx', ['cdk@2.178.2', 'destroy', '--force'], {
+  const processResult = execa.sync('npx', ['cdk', 'destroy', '--force'], {
     cwd: jsonServerRootDirectory,
     stdio: 'inherit',
   });

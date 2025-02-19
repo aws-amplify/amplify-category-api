@@ -80,7 +80,7 @@ export type InitCDKProjectProps = {
 export const initCDKProject = async (cwd: string, templatePath: string, props?: InitCDKProjectProps): Promise<string> => {
   const { cdkVersion = '2.177.0', additionalDependencies = [] } = props ?? {};
 
-  await spawn(getNpxPath(), ['cdk@2.178.2', 'init', 'app', '--language', 'typescript'], {
+  await spawn(getNpxPath(), ['cdk', 'init', 'app', '--language', 'typescript'], {
     cwd,
     stripColors: true,
     // npx cdk does not work on verdaccio
@@ -135,7 +135,7 @@ export const cdkDeploy = async (cwd: string, option: string, props?: CdkDeployPr
 
   await spawn(
     getNpxPath(),
-    ['cdk@2.178.2', 'deploy', '--outputs-file', 'outputs.json', '--require-approval', 'never', option],
+    ['cdk', 'deploy', '--outputs-file', 'outputs.json', '--require-approval', 'never', option],
     commandOptions,
   ).runAsync();
 
@@ -154,7 +154,7 @@ export const cdkDeploy = async (cwd: string, option: string, props?: CdkDeployPr
  * @returns a promise which resolves after teardown of the stack
  */
 export const cdkDestroy = async (cwd: string, option: string): Promise<void> => {
-  return spawn(getNpxPath(), ['cdk@2.178.2', 'destroy', '--force', option], { cwd, stripColors: true }).runAsync();
+  return spawn(getNpxPath(), ['cdk', 'destroy', '--force', option], { cwd, stripColors: true }).runAsync();
 };
 
 /**
