@@ -216,7 +216,11 @@ function _setupNodeVersion {
   if [ -f "${HOME}/.npmrc" ] && grep -q "prefix" "${HOME}/.npmrc"; then
     echo "Detected incompatible .npmrc prefix setting"
     npm config delete prefix
+    echo "Contents of ${HOME}/.npmrc:"
+    cat "${HOME}/.npmrc"
     npm config set prefix "$NVM_DIR/versions/node/v$version"
+    echo "Contents of ${HOME}/.npmrc:"
+    cat "${HOME}/.npmrc"
   fi
 
   # Load NVM
