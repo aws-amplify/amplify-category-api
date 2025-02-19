@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@aws-amplify/graphql-transformer-test-utils": "1.0.13",
-    "esbuild": "^0.24.0"
+    "esbuild": "^0.25.0"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.177.0",
