@@ -223,9 +223,6 @@ function _setupNodeVersion {
   echo "Setting NVM directory"
   export NVM_DIR="$HOME/.nvm"
 
-  echo "Setting Node version"
-  nvm use --delete-prefix v18.20.4 --silent
-
   # # Print out the contents of .npmrc if it exists
   # if [ -f "${HOME}/.npmrc" ]; then
   #   echo "Contents of ${HOME}/.npmrc:"
