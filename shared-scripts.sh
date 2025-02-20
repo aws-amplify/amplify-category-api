@@ -209,12 +209,6 @@ function _setupNodeVersion {
     rm -rf "$NVM_DIR"
   fi
 
-  # # Remove any system-installed Node executables
-  # echo "Removing any existing Node.js installations from /usr/local/bin..."
-  # [ -f /usr/local/bin/node ] && { rm -f /usr/local/bin/node; echo "Removed /usr/local/bin/node"; }
-  # [ -f /usr/local/bin/npm ] && { rm -f /usr/local/bin/npm; echo "Removed /usr/local/bin/npm"; }
-  # [ -f /usr/local/bin/npx ] && { rm -f /usr/local/bin/npx; echo "Removed /usr/local/bin/npx"; }
-
   # Remove global node modules (if any)
   echo "Removing any global node modules from /usr/local/lib/node_modules..."
   rm -rf /usr/local/lib/node_modules
