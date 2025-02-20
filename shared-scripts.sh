@@ -243,7 +243,8 @@ function _setupNodeVersion {
   # Verify the Node.js version in use.
   echo "Node.js version in use:"
   node -v
-}function _publishToLocalRegistry {
+}
+function _publishToLocalRegistry {
     echo "Publish To Local Registry"
     loadCacheFromBuildJob
     if [ -z "$BRANCH_NAME" ]; then
