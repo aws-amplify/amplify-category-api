@@ -196,7 +196,8 @@ function _verifyAmplifyBackendCompatability {
   echo "Amplify Backend Compatibility verification complete."
 }
 function _setupNodeVersion {
-  local version=$1  # Node.js version to install
+  # Version number passed as an argument
+  local version=$1
 
   # Unset and set NVM_DIR explicitly
   unset NVM_DIR
@@ -208,7 +209,7 @@ function _setupNodeVersion {
     rm -rf "$NVM_DIR"
   fi
 
-  # Remove any system-installed Node.js executables
+  # Remove any system-installed Node executables
   echo "Removing any existing Node.js installations from /usr/local/bin..."
   [ -f /usr/local/bin/node ] && { rm -f /usr/local/bin/node; echo "Removed /usr/local/bin/node"; }
   [ -f /usr/local/bin/npm ] && { rm -f /usr/local/bin/npm; echo "Removed /usr/local/bin/npm"; }
@@ -235,12 +236,12 @@ function _setupNodeVersion {
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
   [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
-  # Install and switch to the specified Node.js version using nvm.
+  # Install and switch to the specified Node version using nvm
   echo "Installing and using Node.js version $version..."
   nvm install "$version"
   nvm use --delete-prefix "$version" --silent
 
-  # Verify the Node.js version in use.
+  # Verify the Node version in use
   echo "Node.js version in use:"
   node -v
 }
