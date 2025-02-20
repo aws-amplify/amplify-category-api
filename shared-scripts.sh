@@ -210,40 +210,30 @@ function _setupNodeVersion {
 
   # Remove any system-installed Node.js executables
   echo "Removing any existing Node.js installations from /usr/local/bin..."
-  if [ -f /usr/local/bin/node ]; then
-    rm -f /usr/local/bin/node
-    echo "Removed /usr/local/bin/node"
-  fi
-  if [ -f /usr/local/bin/npm ]; then
-    rm -f /usr/local/bin/npm
-    echo "Removed /usr/local/bin/npm"
-  fi
-  if [ -f /usr/local/bin/npx ]; then
-    rm -f /usr/local/bin/npx
-    echo "Removed /usr/local/bin/npx"
-  fi
+  [ -f /usr/local/bin/node ] && { rm -f /usr/local/bin/node; echo "Removed /usr/local/bin/node"; }
+  [ -f /usr/local/bin/npm ] && { rm -f /usr/local/bin/npm; echo "Removed /usr/local/bin/npm"; }
+  [ -f /usr/local/bin/npx ] && { rm -f /usr/local/bin/npx; echo "Removed /usr/local/bin/npx"; }
 
   # Remove global node modules (if any)
   echo "Removing any global node modules from /usr/local/lib/node_modules..."
   rm -rf /usr/local/lib/node_modules
 
+  # Remove any conflicting 'prefix' line from .npmrc (using sed so we don't rely on npm)
+  if [ -f "${HOME}/.npmrc" ] && grep -q "^prefix=" "${HOME}/.npmrc"; then
+    echo "Removing conflicting prefix line from .npmrc..."
+    sed -i.bak '/^prefix=/d' "${HOME}/.npmrc"
+  fi
+
   # Install nvm afresh
   echo "Installing nvm..."
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
 
-  # Re-export NVM_DIR (in case the installation script made changes)
+  # Re-export NVM_DIR in case the install script updated anything
   export NVM_DIR="$HOME/.nvm"
 
   # Load nvm and its bash completion (if available)
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
   [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-
-  # Check if .npmrc has an incompatible 'prefix' setting, and reset it if so.
-  if [ -f "${HOME}/.npmrc" ] && grep -q "prefix" "${HOME}/.npmrc"; then
-    echo "Detected incompatible .npmrc prefix setting, resetting the prefix..."
-    npm config delete prefix
-    npm config set prefix "$NVM_DIR/versions/node/v$version"
-  fi
 
   # Install and switch to the specified Node.js version using nvm.
   echo "Installing and using Node.js version $version..."
@@ -253,8 +243,7 @@ function _setupNodeVersion {
   # Verify the Node.js version in use.
   echo "Node.js version in use:"
   node -v
-}
-function _publishToLocalRegistry {
+}function _publishToLocalRegistry {
     echo "Publish To Local Registry"
     loadCacheFromBuildJob
     if [ -z "$BRANCH_NAME" ]; then
