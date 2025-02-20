@@ -34,13 +34,13 @@ describe('function directive', () => {
             {
               'Fn::Sub': [
                 // eslint-disable-next-line no-template-curly-in-string
-                'arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:repeat',
+                'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:repeat',
                 {},
               ],
             },
             {
               // eslint-disable-next-line no-template-curly-in-string
-              'Fn::Sub': 'arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:repeat',
+              'Fn::Sub': 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:repeat',
             },
           ],
         },
@@ -61,13 +61,13 @@ describe('function directive', () => {
                   {
                     'Fn::Sub': [
                       // eslint-disable-next-line no-template-curly-in-string
-                      'arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:repeat',
+                      'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:repeat',
                       {},
                     ],
                   },
                   {
                     // eslint-disable-next-line no-template-curly-in-string
-                    'Fn::Sub': 'arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:repeat',
+                    'Fn::Sub': 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:repeat',
                   },
                 ],
               },
@@ -81,13 +81,13 @@ describe('function directive', () => {
                         {
                           'Fn::Sub': [
                             // eslint-disable-next-line no-template-curly-in-string
-                            'arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:repeat',
+                            'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:repeat',
                             {},
                           ],
                         },
                         {
                           // eslint-disable-next-line no-template-curly-in-string
-                          'Fn::Sub': 'arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:repeat',
+                          'Fn::Sub': 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:repeat',
                         },
                       ],
                     },
