@@ -196,62 +196,61 @@ function _verifyAmplifyBackendCompatability {
   echo "Amplify Backend Compatibility verification complete."
 }
 function _setupNodeVersion {
-  local version=$1  # Version number passed as an argument
-  
-  echo "DEBUG: Starting _setupNodeVersion with version $version"
-  echo "DEBUG: HOME is $HOME"
-  echo "DEBUG: Initial NVM_DIR is '$NVM_DIR'"
-  
-  if [ -d "$HOME/.nvm" ]; then
-    echo "DEBUG: NVM directory exists at $HOME/.nvm"
-    if [ -s "$HOME/.nvm/nvm.sh" ]; then
-      echo "DEBUG: Found nvm.sh at $HOME/.nvm/nvm.sh"
-    else
-      echo "DEBUG: nvm.sh not found in $HOME/.nvm (file is missing or empty)"
-    fi
-  else
-    echo "DEBUG: NVM directory does not exist at $HOME/.nvm"
-  fi
-  
-  echo "Installing NVM and setting Node.js version to $version"
-  
-  # Install NVM
-  echo "Installing NVM"
-  curl -o - https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+  local version=$1  # Node.js version to install
 
-  # Setting NVM directory
-  echo "Setting NVM directory"
+  # Unset and set NVM_DIR explicitly
+  unset NVM_DIR
   export NVM_DIR="$HOME/.nvm"
 
-  # Check if .npmrc has an incompatible 'prefix' setting
+  # Remove any existing nvm installation
+  if [ -d "$NVM_DIR" ]; then
+    echo "Existing nvm installation found. Removing $NVM_DIR..."
+    rm -rf "$NVM_DIR"
+  fi
+
+  # Remove any system-installed Node.js executables
+  echo "Removing any existing Node.js installations from /usr/local/bin..."
+  if [ -f /usr/local/bin/node ]; then
+    rm -f /usr/local/bin/node
+    echo "Removed /usr/local/bin/node"
+  fi
+  if [ -f /usr/local/bin/npm ]; then
+    rm -f /usr/local/bin/npm
+    echo "Removed /usr/local/bin/npm"
+  fi
+  if [ -f /usr/local/bin/npx ]; then
+    rm -f /usr/local/bin/npx
+    echo "Removed /usr/local/bin/npx"
+  fi
+
+  # Remove global node modules (if any)
+  echo "Removing any global node modules from /usr/local/lib/node_modules..."
+  rm -rf /usr/local/lib/node_modules
+
+  # Install nvm afresh
+  echo "Installing nvm..."
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+
+  # Re-export NVM_DIR (in case the installation script made changes)
+  export NVM_DIR="$HOME/.nvm"
+
+  # Load nvm and its bash completion (if available)
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+  # Check if .npmrc has an incompatible 'prefix' setting, and reset it if so.
   if [ -f "${HOME}/.npmrc" ] && grep -q "prefix" "${HOME}/.npmrc"; then
-    echo "Detected incompatible .npmrc prefix setting, resetting the prefix"
+    echo "Detected incompatible .npmrc prefix setting, resetting the prefix..."
     npm config delete prefix
     npm config set prefix "$NVM_DIR/versions/node/v$version"
   fi
 
-  # Additional debugging before loading NVM
-  echo "DEBUG: About to load NVM from $NVM_DIR/nvm.sh"
-  if [ -s "$NVM_DIR/nvm.sh" ]; then
-    echo "DEBUG: $NVM_DIR/nvm.sh exists and is non-empty"
-  else
-    echo "DEBUG: $NVM_DIR/nvm.sh does not exist or is empty"
-  fi
-  
-  # Load NVM
-  echo "Loading NVM"
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-  
-  # Additional debugging after sourcing nvm.sh
-  echo "DEBUG: Finished loading NVM"
-  type nvm &> /dev/null && echo "DEBUG: nvm command is now available" || echo "DEBUG: nvm command is NOT available"
-  
-  # Install and use the specified Node.js version
-  echo "Installing and using the specified Node.js version"
+  # Install and switch to the specified Node.js version using nvm.
+  echo "Installing and using Node.js version $version..."
   nvm install "$version"
-  nvm use "$version"
-  
-  # Verify the Node.js version in use
+  nvm use --delete-prefix "$version" --silent
+
+  # Verify the Node.js version in use.
   echo "Node.js version in use:"
   node -v
 }
