@@ -164,9 +164,6 @@ export class ResourceConstants {
     AuthCognitoUserPoolIdOutput: 'AuthCognitoUserPoolIdOutput',
     AuthCognitoUserPoolNativeClientOutput: 'AuthCognitoUserPoolNativeClientId',
     AuthCognitoUserPoolJSClientOutput: 'AuthCognitoUserPoolJSClientId',
-
-    // Migration
-    DataSourceMappingOutput: 'DataSourceMappingOutput',
   };
 
   public static METADATA = {};
