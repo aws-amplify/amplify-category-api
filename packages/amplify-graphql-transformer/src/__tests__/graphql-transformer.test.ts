@@ -65,7 +65,6 @@ const defaultTransformConfig: TransformConfig = {
     allowDestructiveGraphqlSchemaUpdates: false,
     replaceTableUponGsiUpdate: false,
     allowGen1Patterns: true,
-    enableGen2Migration: false,
   },
 };
 
