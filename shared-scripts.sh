@@ -197,7 +197,7 @@ function _verifyAmplifyBackendCompatability {
 }
 function _setupNodeVersion {
   local version=$1  # Version number passed as an argument
-
+  
   echo "DEBUG: Starting _setupNodeVersion with version $version"
   echo "DEBUG: HOME is $HOME"
   echo "DEBUG: Initial NVM_DIR is '$NVM_DIR'"
@@ -223,14 +223,6 @@ function _setupNodeVersion {
   echo "Setting NVM directory"
   export NVM_DIR="$HOME/.nvm"
 
-  # # Print out the contents of .npmrc if it exists
-  # if [ -f "${HOME}/.npmrc" ]; then
-  #   echo "Contents of ${HOME}/.npmrc:"
-  #   cat "${HOME}/.npmrc"
-  # else
-  #   echo "No .npmrc file found at ${HOME}/.npmrc"
-  # fi
-
   # Check if .npmrc has an incompatible 'prefix' setting
   if [ -f "${HOME}/.npmrc" ] && grep -q "prefix" "${HOME}/.npmrc"; then
     echo "Detected incompatible .npmrc prefix setting, resetting the prefix"
@@ -238,9 +230,21 @@ function _setupNodeVersion {
     npm config set prefix "$NVM_DIR/versions/node/v$version"
   fi
 
+  # Additional debugging before loading NVM
+  echo "DEBUG: About to load NVM from $NVM_DIR/nvm.sh"
+  if [ -s "$NVM_DIR/nvm.sh" ]; then
+    echo "DEBUG: $NVM_DIR/nvm.sh exists and is non-empty"
+  else
+    echo "DEBUG: $NVM_DIR/nvm.sh does not exist or is empty"
+  fi
+  
   # Load NVM
   echo "Loading NVM"
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  
+  # Additional debugging after sourcing nvm.sh
+  echo "DEBUG: Finished loading NVM"
+  type nvm &> /dev/null && echo "DEBUG: nvm command is now available" || echo "DEBUG: nvm command is NOT available"
   
   # Install and use the specified Node.js version
   echo "Installing and using the specified Node.js version"
