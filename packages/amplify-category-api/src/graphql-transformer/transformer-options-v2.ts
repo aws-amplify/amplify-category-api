@@ -291,7 +291,6 @@ const generateTransformParameters = (
     allowDestructiveGraphqlSchemaUpdates: false,
     replaceTableUponGsiUpdate: false,
     allowGen1Patterns: true,
-    enableGen2Migration: featureFlagProvider.getBoolean('enableGen2Migration'),
   };
 };
 
