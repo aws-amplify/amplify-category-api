@@ -204,6 +204,10 @@ function _setupNodeVersion {
   echo "Installing NVM"
   curl -o - https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
 
+  # Setting NVM directory
+  echo "Setting NVM directory"
+  export NVM_DIR="$HOME/.nvm"
+
   # Print out the contents of .npmrc if it exists
   if [ -f "${HOME}/.npmrc" ]; then
     echo "Contents of ${HOME}/.npmrc:"
@@ -225,7 +229,6 @@ function _setupNodeVersion {
 
   # Load NVM
   echo "Loading NVM"
-  export NVM_DIR="$HOME/.nvm"
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
   
   # Install and use the specified Node.js version
