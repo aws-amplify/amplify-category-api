@@ -197,6 +197,21 @@ function _verifyAmplifyBackendCompatability {
 }
 function _setupNodeVersion {
   local version=$1  # Version number passed as an argument
+
+  echo "DEBUG: Starting _setupNodeVersion with version $version"
+  echo "DEBUG: HOME is $HOME"
+  echo "DEBUG: Initial NVM_DIR is '$NVM_DIR'"
+  
+  if [ -d "$HOME/.nvm" ]; then
+    echo "DEBUG: NVM directory exists at $HOME/.nvm"
+    if [ -s "$HOME/.nvm/nvm.sh" ]; then
+      echo "DEBUG: Found nvm.sh at $HOME/.nvm/nvm.sh"
+    else
+      echo "DEBUG: nvm.sh not found in $HOME/.nvm (file is missing or empty)"
+    fi
+  else
+    echo "DEBUG: NVM directory does not exist at $HOME/.nvm"
+  fi
   
   echo "Installing NVM and setting Node.js version to $version"
   
