@@ -208,23 +208,19 @@ function _setupNodeVersion {
   echo "Setting NVM directory"
   export NVM_DIR="$HOME/.nvm"
 
-  # Print out the contents of .npmrc if it exists
-  if [ -f "${HOME}/.npmrc" ]; then
-    echo "Contents of ${HOME}/.npmrc:"
-    cat "${HOME}/.npmrc"
-  else
-    echo "No .npmrc file found at ${HOME}/.npmrc"
-  fi
+  # # Print out the contents of .npmrc if it exists
+  # if [ -f "${HOME}/.npmrc" ]; then
+  #   echo "Contents of ${HOME}/.npmrc:"
+  #   cat "${HOME}/.npmrc"
+  # else
+  #   echo "No .npmrc file found at ${HOME}/.npmrc"
+  # fi
 
   # Check if .npmrc has an incompatible 'prefix' setting
   if [ -f "${HOME}/.npmrc" ] && grep -q "prefix" "${HOME}/.npmrc"; then
-    echo "Detected incompatible .npmrc prefix setting"
+    echo "Detected incompatible .npmrc prefix setting, resetting the prefix"
     npm config delete prefix
-    echo "Contents of ${HOME}/.npmrc:"
-    cat "${HOME}/.npmrc"
     npm config set prefix "$NVM_DIR/versions/node/v$version"
-    echo "Contents of ${HOME}/.npmrc:"
-    cat "${HOME}/.npmrc"
   fi
 
   # Load NVM
