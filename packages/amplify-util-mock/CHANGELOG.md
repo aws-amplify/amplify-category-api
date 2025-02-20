@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.6.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.5.8...amplify-category-api-util-mock@6.6.0) (2025-02-20)
+
+### Features
+
+- add enableGen2Migration feature flag ([#3084](https://github.com/aws-amplify/amplify-category-api/issues/3084)) ([7263b2c](https://github.com/aws-amplify/amplify-category-api/commit/7263b2c561586e5f7107800a915e4d83d7a81374))
+
 ## [6.5.8](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.5.7...amplify-category-api-util-mock@6.5.8) (2025-01-29)
 
 **Note:** Version bump only for package amplify-category-api-util-mock

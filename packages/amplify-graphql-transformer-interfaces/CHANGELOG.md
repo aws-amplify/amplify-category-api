@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.10.2...@aws-amplify/graphql-transformer-interfaces@3.11.0) (2025-02-20)
+
+### Features
+
+- add enableGen2Migration feature flag ([#3084](https://github.com/aws-amplify/amplify-category-api/issues/3084)) ([7263b2c](https://github.com/aws-amplify/amplify-category-api/commit/7263b2c561586e5f7107800a915e4d83d7a81374))
+
 ## [3.10.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.10.1...@aws-amplify/graphql-transformer-interfaces@3.10.2) (2025-01-29)
 
 ### Bug Fixes
