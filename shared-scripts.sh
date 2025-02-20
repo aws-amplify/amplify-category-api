@@ -209,9 +209,9 @@ function _setupNodeVersion {
     rm -rf "$NVM_DIR"
   fi
 
-  # Remove global node modules (if any)
-  echo "Removing any global node modules from /usr/local/lib/node_modules..."
-  rm -rf /usr/local/lib/node_modules
+  # # Remove global node modules (if any)
+  # echo "Removing any global node modules from /usr/local/lib/node_modules..."
+  # rm -rf /usr/local/lib/node_modules
 
   # Remove any conflicting 'prefix' line from .npmrc (using sed so we don't rely on npm)
   if [ -f "${HOME}/.npmrc" ] && grep -q "^prefix=" "${HOME}/.npmrc"; then
