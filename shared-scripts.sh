@@ -208,7 +208,7 @@ function _installCLIFromLocalRegistry {
     npm config set fetch-retry-mintimeout 30000
     npm config set fetch-retry-maxtimeout 180000
     npm config set maxsockets 1
-    npm install -g @aws-amplify/cli-internal
+    npm install -g @aws-amplify/cli-internal@12.14.3
     echo "using Amplify CLI version: "$(amplify --version)
     npm list -g --depth=1 | grep -e '@aws-amplify/amplify-category-api' -e 'amplify-codegen'
     unsetNpmRegistryUrl
