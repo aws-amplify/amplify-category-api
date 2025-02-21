@@ -180,6 +180,7 @@
     "braces": "^3.0.3",
     "@octokit/request-error": "^5.1.1",
     "@octokit/request": "^8.4.1",
-    "@octokit/plugin-paginate-rest": "^9.2.2"
+    "@octokit/plugin-paginate-rest": "^9.2.2",
+    "@aws-amplify/amplify-cli-core": "4.4.0"
   }
 }
