@@ -210,7 +210,7 @@ function _installCLIFromLocalRegistry {
     npm config set maxsockets 1
     npm install -g @aws-amplify/cli
     echo "using Amplify CLI version: "$(amplify --version)
-    npm list -g --depth=1 | grep -e '@aws-amplify/amplify-category-api' -e 'amplify-codegen'
+    # npm list -g --depth=1 | grep -e '@aws-amplify/amplify-category-api' -e 'amplify-codegen'
     unsetNpmRegistryUrl
 }
 function _loadTestAccountCredentials {
