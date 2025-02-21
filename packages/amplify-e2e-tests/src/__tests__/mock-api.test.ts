@@ -19,7 +19,6 @@ describe('amplify mock api (GraphQL)', () => {
   let apiName: string;
 
   beforeEach(async () => {
-    console.log('test pulling latest change from pin-cli-core branch');
     projFolderName = 'mockapi';
     apiName = 'mockapi';
     projRoot = await createNewProjectDir(projFolderName);
