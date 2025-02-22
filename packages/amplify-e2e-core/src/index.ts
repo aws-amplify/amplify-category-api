@@ -27,16 +27,49 @@ declare global {
 const amplifyTestsDir = 'amplify-e2e-tests';
 
 export function getCLIPath(testingWithLatestCodebase = false) {
+  console.log('\n[DEBUG] === CLI Path Resolution Debug Info ===');
+  console.log('[DEBUG] Current working directory:', process.cwd());
+  console.log('[DEBUG] __dirname:', __dirname);
+  console.log('[DEBUG] Testing with latest codebase:', testingWithLatestCodebase);
+  console.log('[DEBUG] Process platform:', process.platform);
+  console.log('[DEBUG] AMPLIFY_PATH env var:', process.env.AMPLIFY_PATH);
+  
   if (!testingWithLatestCodebase) {
     if (process.env.AMPLIFY_PATH && fs.existsSync(process.env.AMPLIFY_PATH)) {
       console.log('Resolving CLI path to AMPLIFY_PATH:', process.env.AMPLIFY_PATH);
+      console.log('[DEBUG] ✓ Using AMPLIFY_PATH from environment variable');
+      console.log('[DEBUG] ✓ Verified path exists:', process.env.AMPLIFY_PATH);
       return process.env.AMPLIFY_PATH;
     }
     console.log('Resolving CLI path to present executable:', process.platform === 'win32' ? 'amplify.exe' : 'amplify');
-    return process.platform === 'win32' ? 'amplify.exe' : 'amplify';
+    const defaultPath = process.platform === 'win32' ? 'amplify.exe' : 'amplify';
+    console.log('[DEBUG] ✓ Using default CLI executable:', defaultPath);
+    return defaultPath;
   }
-  const amplifyScriptPath = path.join(__dirname, '..', '..', '..', 'node_modules', 'amplify-cli-internal', 'bin', 'amplify');
+
+  // When using latest codebase, construct path from __dirname
+  console.log('\n[DEBUG] Constructing path from __dirname:');
+  console.log('[DEBUG] 1. Starting from:', __dirname);
+  
+  const pathComponents = ['..', '..', '..', 'node_modules', 'amplify-cli-internal', 'bin', 'amplify'];
+  let currentPath = __dirname;
+  
+  pathComponents.forEach((component, index) => {
+    currentPath = path.join(currentPath, component);
+    console.log(`[DEBUG] ${index + 1}. After adding '${component}':`, currentPath);
+    
+    // Check if this intermediate directory exists
+    const exists = fs.existsSync(currentPath);
+    console.log(`[DEBUG]    Directory exists: ${exists ? '✓' : '✗'}`);
+  });
+
+  const amplifyScriptPath = path.join(__dirname, ...pathComponents);
   console.log('Resolving CLI Path to source code:', amplifyScriptPath);
+  console.log('\n[DEBUG] Final resolved path:', amplifyScriptPath);
+  console.log('[DEBUG] Final path exists:', fs.existsSync(amplifyScriptPath) ? '✓' : '✗');
+  console.log('[DEBUG] Final path is absolute:', path.isAbsolute(amplifyScriptPath) ? '✓' : '✗');
+  console.log('[DEBUG] === End Debug Info ===\n');
+
   return amplifyScriptPath;
 }
 
