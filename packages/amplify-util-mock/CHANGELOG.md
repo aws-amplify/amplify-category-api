@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.6.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.6.0...amplify-category-api-util-mock@6.6.1) (2025-02-22)
+
+### Reverts
+
+- Revert "Gen1 migration" (#3183) ([6352c5a](https://github.com/aws-amplify/amplify-category-api/commit/6352c5ad3f3e6ddaba6b699f501eb7ad5989db4a)), closes [#3183](https://github.com/aws-amplify/amplify-category-api/issues/3183) [#3084](https://github.com/aws-amplify/amplify-category-api/issues/3084)
+
 # [6.6.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.5.8...amplify-category-api-util-mock@6.6.0) (2025-02-20)
 
 ### Features
