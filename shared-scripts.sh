@@ -212,6 +212,10 @@ function _installCLIFromLocalRegistry {
     # npm install -g @aws-amplify/cli-internal
     
     # Local installation in CODEBUILD_SRC_DIR
+    echo "Debug: CODEBUILD_SRC_DIR value is: $CODEBUILD_SRC_DIR"
+    echo "Debug: Checking if directory exists:"
+    ls -la $CODEBUILD_SRC_DIR || echo "Directory does not exist!"
+    
     cd $CODEBUILD_SRC_DIR
     # Initialize package.json if it doesn't exist
     [ ! -f "package.json" ] && npm init -y
