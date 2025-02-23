@@ -35,7 +35,49 @@ export function getCLIPath(testingWithLatestCodebase = false) {
     console.log('Resolving CLI path to present executable:', process.platform === 'win32' ? 'amplify.exe' : 'amplify');
     return process.platform === 'win32' ? 'amplify.exe' : 'amplify';
   }
+
+  console.log('\n[DEBUG] Inspecting directory structure from root:');
+  
+  // Get the absolute path
   const amplifyScriptPath = path.join(__dirname, '..', '..', '..', 'node_modules', 'amplify-cli-internal', 'bin', 'amplify');
+  const absolutePath = path.resolve(amplifyScriptPath);
+  
+  // Split the path into components
+  const pathParts = absolutePath.split(path.sep).filter(Boolean);
+  
+  // Build up the path piece by piece from root and inspect each level
+  let currentPath = process.platform === 'win32' ? 'C:\\' : '/'; // Start at root
+  console.log(`[DEBUG] Root (${currentPath}):`);
+  try {
+    const rootContents = fs.readdirSync(currentPath);
+    console.log('[DEBUG]   Contents:', rootContents);
+  } catch (err) {
+    console.log('[DEBUG]   ⚠️ Cannot read root directory:', err.message);
+  }
+
+  // Inspect each level of the path
+  for (const part of pathParts) {
+    currentPath = path.join(currentPath, part);
+    console.log(`\n[DEBUG] ${part} (${currentPath}):`);
+    
+    try {
+      if (fs.existsSync(currentPath)) {
+        const contents = fs.readdirSync(currentPath);
+        console.log('[DEBUG]   ✓ Directory exists');
+        console.log('[DEBUG]   Contents:', contents);
+      } else {
+        console.log('[DEBUG]   ✗ Directory does not exist');
+      }
+    } catch (err) {
+      console.log('[DEBUG]   ⚠️ Cannot read directory:', err.message);
+    }
+  }
+
+  console.log('\n[DEBUG] Final path check:');
+  console.log('[DEBUG] Expected path:', amplifyScriptPath);
+  console.log('[DEBUG] Absolute path:', absolutePath);
+  console.log('[DEBUG] Path exists:', fs.existsSync(absolutePath) ? '✓' : '✗');
+  
   console.log('Resolving CLI Path to source code:', amplifyScriptPath);
   return amplifyScriptPath;
 }
