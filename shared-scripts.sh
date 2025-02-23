@@ -213,7 +213,9 @@ function _installCLIFromLocalRegistry {
     
     # Local installation in CODEBUILD_SRC_DIR
     cd $CODEBUILD_SRC_DIR
-    npm install @aws-amplify/cli-internal
+    # Initialize package.json if it doesn't exist
+    [ ! -f "package.json" ] && npm init -y
+    npm install @aws-amplify/cli-internal --save
     
     echo "using Amplify CLI version: "$(amplify --version)
     npm list -g --depth=1 | grep -e '@aws-amplify/amplify-category-api' -e 'amplify-codegen'
