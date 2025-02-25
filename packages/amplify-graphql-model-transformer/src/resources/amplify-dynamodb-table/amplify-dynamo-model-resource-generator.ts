@@ -81,7 +81,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
               envName: context.synthParameters.amplifyEnvironmentName,
             }),
             ...importedTableNames.map((tableName) =>
-              cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}', {
+              cdk.Fn.sub('arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}', {
                 tableName,
               }),
             ),
