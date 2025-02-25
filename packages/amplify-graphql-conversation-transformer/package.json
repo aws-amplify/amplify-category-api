@@ -24,7 +24,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/ai-constructs": "^1.2.2",
+    "@aws-amplify/ai-constructs": "^1.2.3",
     "@aws-amplify/graphql-directives": "2.6.1",
     "@aws-amplify/graphql-index-transformer": "3.0.14",
     "@aws-amplify/graphql-model-transformer": "3.1.6",
