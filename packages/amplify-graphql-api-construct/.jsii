@@ -132,7 +132,7 @@
     "zod": "^3.22.2"
   },
   "dependencies": {
-    "aws-cdk-lib": "^2.177.0",
+    "aws-cdk-lib": "^2.180.0",
     "constructs": "^10.3.0"
   },
   "dependencyClosure": {
@@ -159,32 +159,6 @@
         "python": {
           "distName": "aws-cdk.asset-awscli-v1",
           "module": "aws_cdk.asset_awscli_v1"
-        }
-      }
-    },
-    "@aws-cdk/asset-kubectl-v20": {
-      "targets": {
-        "dotnet": {
-          "namespace": "Amazon.CDK.Asset.KubectlV20",
-          "packageId": "Amazon.CDK.Asset.KubectlV20"
-        },
-        "go": {
-          "moduleName": "github.com/cdklabs/awscdk-asset-kubectl-go",
-          "packageName": "kubectlv20"
-        },
-        "java": {
-          "maven": {
-            "artifactId": "cdk-asset-kubectl-v20",
-            "groupId": "software.amazon.awscdk"
-          },
-          "package": "software.amazon.awscdk.cdk.asset.kubectl.v20"
-        },
-        "js": {
-          "npm": "@aws-cdk/asset-kubectl-v20"
-        },
-        "python": {
-          "distName": "aws-cdk.asset-kubectl-v20",
-          "module": "aws_cdk.asset_kubectl_v20"
         }
       }
     },
@@ -3937,19 +3911,6 @@
             },
             "python": {
               "module": "aws_cdk.lambda_layer_awscli"
-            }
-          }
-        },
-        "aws-cdk-lib.lambda_layer_kubectl": {
-          "targets": {
-            "dotnet": {
-              "namespace": "Amazon.CDK.LambdaLayer.Kubectl"
-            },
-            "java": {
-              "package": "software.amazon.awscdk.lambdalayer.kubectl"
-            },
-            "python": {
-              "module": "aws_cdk.lambda_layer_kubectl"
             }
           }
         },
@@ -9445,5 +9406,5 @@
     }
   },
   "version": "1.18.8",
-  "fingerprint": "/lr8SAaZRkIRGuxPvRw+XiDmOS6sfXFDRSRu2P0oXsc="
+  "fingerprint": "O/IEvSUR+5TneoIA9zpmK12AP8+RWrVqq5ZfG0sPi4E="
 }
