@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@3.1.6...@aws-amplify/graphql-model-transformer@3.2.0) (2025-02-26)
+
+### Features
+
+- add ddb deletion protection on imported tables ([#3158](https://github.com/aws-amplify/amplify-category-api/issues/3158)) ([fe4bfad](https://github.com/aws-amplify/amplify-category-api/commit/fe4bfad8fae7584dc6f9be5dc569b0c00cfbda70))
+- dynamic resolve partition in arn ([#3178](https://github.com/aws-amplify/amplify-category-api/issues/3178)) ([3aa98cd](https://github.com/aws-amplify/amplify-category-api/commit/3aa98cd4d02a1ae9c0c7bb615728225f20614fcc))
+
 ## [3.1.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@3.1.5...@aws-amplify/graphql-model-transformer@3.1.6) (2025-02-07)
 
 ### Bug Fixes

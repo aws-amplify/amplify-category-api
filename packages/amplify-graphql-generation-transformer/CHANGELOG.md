@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-generation-transformer@1.1.5...@aws-amplify/graphql-generation-transformer@1.2.0) (2025-02-26)
+
+### Features
+
+- dynamic resolve partition in arn ([#3178](https://github.com/aws-amplify/amplify-category-api/issues/3178)) ([3aa98cd](https://github.com/aws-amplify/amplify-category-api/commit/3aa98cd4d02a1ae9c0c7bb615728225f20614fcc))
+
 ## [1.1.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-generation-transformer@1.1.4...@aws-amplify/graphql-generation-transformer@1.1.5) (2025-02-07)
 
 **Note:** Version bump only for package @aws-amplify/graphql-generation-transformer
