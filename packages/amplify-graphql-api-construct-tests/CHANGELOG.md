@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.14.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.13.10...amplify-graphql-api-construct-tests@1.14.0) (2025-02-26)
+
+### Features
+
+- add ddb deletion protection on imported tables ([#3158](https://github.com/aws-amplify/amplify-category-api/issues/3158)) ([fe4bfad](https://github.com/aws-amplify/amplify-category-api/commit/fe4bfad8fae7584dc6f9be5dc569b0c00cfbda70))
+- add validate transformer ([#3172](https://github.com/aws-amplify/amplify-category-api/issues/3172)) ([b8771c1](https://github.com/aws-amplify/amplify-category-api/commit/b8771c1f782b19f653f310f0a29528dae08035dc)), closes [#3121](https://github.com/aws-amplify/amplify-category-api/issues/3121) [#3125](https://github.com/aws-amplify/amplify-category-api/issues/3125) [#3129](https://github.com/aws-amplify/amplify-category-api/issues/3129) [#3130](https://github.com/aws-amplify/amplify-category-api/issues/3130) [#3132](https://github.com/aws-amplify/amplify-category-api/issues/3132) [#3134](https://github.com/aws-amplify/amplify-category-api/issues/3134) [#3149](https://github.com/aws-amplify/amplify-category-api/issues/3149) [#3150](https://github.com/aws-amplify/amplify-category-api/issues/3150) [#3157](https://github.com/aws-amplify/amplify-category-api/issues/3157) [#3165](https://github.com/aws-amplify/amplify-category-api/issues/3165) [#3167](https://github.com/aws-amplify/amplify-category-api/issues/3167) [#3171](https://github.com/aws-amplify/amplify-category-api/issues/3171)
+
 ## [1.13.10](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.13.9...amplify-graphql-api-construct-tests@1.13.10) (2025-02-07)
 
 ### Bug Fixes

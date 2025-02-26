@@ -76,12 +76,12 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
           ],
           resources: [
             // eslint-disable-next-line no-template-curly-in-string
-            cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}', {
+            cdk.Fn.sub('arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}', {
               apiId: context.api.apiId,
               envName: context.synthParameters.amplifyEnvironmentName,
             }),
             ...importedTableNames.map((tableName) =>
-              cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}', {
+              cdk.Fn.sub('arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}', {
                 tableName,
               }),
             ),
@@ -91,7 +91,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
           actions: ['lambda:ListTags'],
           resources: [
             // eslint-disable-next-line no-template-curly-in-string
-            cdk.Fn.sub('arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:*TableManager*', {}),
+            cdk.Fn.sub('arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:*TableManager*', {}),
           ],
         }),
       ],

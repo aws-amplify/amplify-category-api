@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.7](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@4.1.6...amplify-category-api-e2e-tests@4.1.7) (2025-02-26)
+
+### Bug Fixes
+
+- add -integtest- to role regex in e2e cleanup script ([#3175](https://github.com/aws-amplify/amplify-category-api/issues/3175)) ([cde4d3e](https://github.com/aws-amplify/amplify-category-api/commit/cde4d3eec12cec7ca95d0339c17c15a55daab564))
+
 ## [4.1.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@4.1.5...amplify-category-api-e2e-tests@4.1.6) (2025-02-07)
 
 **Note:** Version bump only for package amplify-category-api-e2e-tests

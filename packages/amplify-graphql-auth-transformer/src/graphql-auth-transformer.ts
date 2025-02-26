@@ -1438,7 +1438,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         const iamAuthRoleArn = iam.Role.fromRoleArn(
           scope,
           'auth-role-name',
-          `arn:aws:iam::${cdk.Stack.of(scope).account}:role/${authRole}`,
+          `arn:${cdk.Stack.of(scope).partition}:iam::${cdk.Stack.of(scope).account}:role/${authRole}`,
         );
         authPolicyDocuments.forEach((authPolicyDocument, i) => {
           const paddedIndex = `${i + 1}`.padStart(2, '0');
@@ -1461,7 +1461,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       const iamUnauthRoleArn = iam.Role.fromRoleArn(
         scope,
         'unauth-role-name',
-        `arn:aws:iam::${cdk.Stack.of(scope).account}:role/${unauthRole}`,
+        `arn:${cdk.Stack.of(scope).partition}:iam::${cdk.Stack.of(scope).account}:role/${unauthRole}`,
       );
       unauthPolicyDocuments.forEach((unauthPolicyDocument, i) => {
         const paddedIndex = `${i + 1}`.padStart(2, '0');

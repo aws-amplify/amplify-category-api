@@ -262,21 +262,21 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
               ],
               resources: [
                 // eslint-disable-next-line no-template-curly-in-string
-                cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
+                cdk.Fn.sub('arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
                   tablename: tableName,
                 }),
                 // eslint-disable-next-line no-template-curly-in-string
-                cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
+                cdk.Fn.sub('arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
                   tablename: tableName,
                 }),
                 ...(context.isProjectUsingDataStore()
                   ? [
                       // eslint-disable-next-line no-template-curly-in-string
-                      cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
+                      cdk.Fn.sub('arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
                         tablename: amplifyDataStoreTableName,
                       }),
                       // eslint-disable-next-line no-template-curly-in-string
-                      cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
+                      cdk.Fn.sub('arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
                         tablename: amplifyDataStoreTableName,
                       }),
                     ]
