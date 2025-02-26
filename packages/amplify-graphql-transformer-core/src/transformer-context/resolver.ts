@@ -76,7 +76,7 @@ export class ResolverManager implements TransformerResolversManagerProvider {
       fieldName,
       resolverLogicalId,
       { requestMappingTemplate, responseMappingTemplate },
-      ['init', 'preAuth', 'auth', 'postAuth', 'preUpdate'],
+      ['init', 'preAuth', 'auth', 'postAuth', 'validate', 'preUpdate'],
       ['postUpdate', 'finish'],
       dataSource,
     );
@@ -428,9 +428,10 @@ export class TransformerResolver implements TransformerResolverProvider {
       ${dataSource}
     `;
     const account = Stack.of(context.stackManager.scope).account;
+    const partition = Stack.of(context.stackManager.scope).partition;
     const authRole = context.synthParameters.authenticatedUserRoleName;
     if (authRole) {
-      const authRoleArn = `arn:aws:sts::${account}:assumed-role/${authRole}/CognitoIdentityCredentials`;
+      const authRoleArn = `arn:${partition}:sts::${account}:assumed-role/${authRole}/CognitoIdentityCredentials`;
       const authRoleStatement = stashString({ name: 'authRole', value: authRoleArn });
 
       initResolver += dedent`\n
@@ -439,7 +440,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     }
     const unauthRole = context.synthParameters.unauthenticatedUserRoleName;
     if (unauthRole) {
-      const unauthRoleArn = `arn:aws:sts::${account}:assumed-role/${unauthRole}/CognitoIdentityCredentials`;
+      const unauthRoleArn = `arn:${partition}:sts::${account}:assumed-role/${unauthRole}/CognitoIdentityCredentials`;
       const unauthRoleStatement = stashString({ name: 'unauthRole', value: unauthRoleArn });
       initResolver += dedent`\n
         ${unauthRoleStatement}

@@ -37,6 +37,8 @@ import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { GenerationTransformer } from '@aws-amplify/graphql-generation-transformer';
 import { ConversationTransformer } from '@aws-amplify/graphql-conversation-transformer';
 import { BackendOutputEntry, BackendOutputStorageStrategy } from '@aws-amplify/plugin-types';
+import { ValidateTransformer } from '@aws-amplify/graphql-validate-transformer';
+
 /**
  * Arguments passed into a TransformerFactory
  * Used to determine how to create a new GraphQLTransform
@@ -95,6 +97,7 @@ export const constructTransformerChain = (options?: TransformerFactoryArgs): Tra
     new SqlTransformer(),
     new RefersToTransformer(),
     new SearchableModelTransformer(),
+    new ValidateTransformer(),
     ...(options?.customTransformers ?? []),
   ];
 };

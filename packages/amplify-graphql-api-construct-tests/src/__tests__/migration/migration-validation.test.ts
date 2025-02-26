@@ -156,10 +156,10 @@ describe('Migration table import validation', () => {
 
         export const applyOverrides = (api: AmplifyGraphqlApi): void => {
           const todoTable = api.resources.cfnResources.additionalCfnResources['Todo'];
-          todoTable.addOverride('Properties.deletionProtectionEnabled', true);
+          todoTable.addOverride('Properties.deletionProtectionEnabled', false);
         };
       `,
-      ['DeletionProtectionEnabled does not match the expected value.\nImported Value: false\nExpected: true'],
+      ['DeletionProtectionEnabled does not match the expected value.\nImported Value: true\nExpected: false'],
     ],
   ];
   test.each(testCases)('%s', async (testCaseName, overrides, expectedErrors) => {

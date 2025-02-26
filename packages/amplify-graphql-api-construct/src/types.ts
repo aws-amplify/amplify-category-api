@@ -429,7 +429,7 @@ export interface MutationFunctionSlot extends FunctionSlotBase {
    * The slot name to inject this behavior into.
    * For more information on slotting, refer to https://docs.amplify.aws/cli/graphql/custom-business-logic/#extend-amplify-generated-resolvers
    */
-  readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preUpdate' | 'postUpdate' | 'finish';
+  readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'validate' | 'preUpdate' | 'postUpdate' | 'finish';
 }
 /* c8 ignore stop */
 

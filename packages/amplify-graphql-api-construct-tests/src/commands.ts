@@ -11,7 +11,7 @@ import {
   sleep,
   updateApiSchema,
 } from 'amplify-category-api-e2e-core';
-import { DynamoDBClient, DeleteTableCommand, ListTablesCommand } from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient, DeleteTableCommand, ListTablesCommand, UpdateTableCommand } from '@aws-sdk/client-dynamodb';
 
 /**
  * Retrieve the path to the `npx` executable for interacting with the aws-cdk cli.
@@ -215,6 +215,7 @@ export const createGen1ProjectForMigration = async (
 
   // TODO: GEN1_GEN2_MIGRATION
   // Construct the DataSourceMappingOutput with the AWS SDK
+  // Set table deletion protection to true for all tables
   // Remove this block when the feature flag is released
   // Start block
   const client = new DynamoDBClient({ region: process.env.CLI_REGION || 'us-west-2' });
@@ -226,12 +227,19 @@ export const createGen1ProjectForMigration = async (
     ExclusiveStartTableName = response.LastEvaluatedTableName;
     tables.push(...response.TableNames);
   } while (ExclusiveStartTableName);
-  const tableNameMapping = tables
+  const tablesForApi = tables
     // filter all tables by the API ID
-    .filter((tableName) => tableName.includes(GraphQLAPIIdOutput))
+    .filter((tableName) => tableName.includes(GraphQLAPIIdOutput));
+
+  const tableNameMapping = tablesForApi
     // extract the model name from the table name and create the mapping
     .map((tableName) => [tableName.match(/(^.*?)-/)[1], tableName]);
   const DataSourceMappingOutput = JSON.stringify(Object.fromEntries(tableNameMapping));
+
+  // set deletion protection to true for all tables
+  await Promise.allSettled(
+    tablesForApi.map((tableName) => client.send(new UpdateTableCommand({ TableName: tableName, DeletionProtectionEnabled: true }))),
+  );
   // End block
 
   return {
@@ -248,5 +256,12 @@ export const createGen1ProjectForMigration = async (
  */
 export const deleteDDBTables = async (tableNames: string[]): Promise<void> => {
   const client = new DynamoDBClient({ region: process.env.CLI_REGION || 'us-west-2' });
+  // TODO: GEN1_GEN2_MIGRATION
+  // disable deletion protection before deleting the tables
+  // start block
+  await Promise.allSettled(
+    tableNames.map((tableName) => client.send(new UpdateTableCommand({ TableName: tableName, DeletionProtectionEnabled: false }))),
+  );
+  // end block
   await Promise.allSettled(tableNames.map((tableName) => client.send(new DeleteTableCommand({ TableName: tableName }))));
 };

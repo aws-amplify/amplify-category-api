@@ -207,7 +207,7 @@ export class GenerationTransformer extends TransformerPluginBase {
             new iam.PolicyStatement({
               effect: iam.Effect.ALLOW,
               actions: ['bedrock:InvokeModel'],
-              resources: [`arn:aws:bedrock:${region}::foundation-model/${bedrockModelId}`],
+              resources: [`arn:${cdk.Stack.of(dataSourceScope).partition}:bedrock:${region}::foundation-model/${bedrockModelId}`],
             }),
           ],
         }),
