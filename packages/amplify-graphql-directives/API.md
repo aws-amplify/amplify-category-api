@@ -156,6 +156,9 @@ export const V1Directives: readonly Directive[];
 export const V2Directives: readonly Directive[];
 
 // @public (undocumented)
+export const ValidateDirective: Directive;
+
+// @public (undocumented)
 export const VersionedDirectiveV1: Directive<VersionedDirectiveV1Defaults>;
 
 // @public (undocumented)
