@@ -10,10 +10,10 @@
     "@jridgewell/gen-mapping" "^0.3.5"
     "@jridgewell/trace-mapping" "^0.3.24"
 
-"@aws-amplify/ai-constructs@^1.2.3":
-  version "1.2.3"
-  resolved "https://registry.npmjs.org/@aws-amplify/ai-constructs/-/ai-constructs-1.2.3.tgz#3cfa2fb0d0bd8033e7746d377d8a22f9572538a4"
-  integrity sha512-JIaZgFLpJ7jSIxmWGg5CXApbvw/Sbe4tw4prAGmYruSILUnDPUVosji7A/0yhdk7BPavW+rBqPwnZ2rvqPo+zg==
+"@aws-amplify/ai-constructs@^1.2.4":
+  version "1.2.4"
+  resolved "https://registry.npmjs.org/@aws-amplify/ai-constructs/-/ai-constructs-1.2.4.tgz#65981d76ec9b3b2d15b1879998257b78d51c9cb8"
+  integrity sha512-DLjJXhvNdQrzihppXthysKc2xcGT7f6K8enG0rPG1fAGiGo+EE8TedIwv8z8h+FGhVLpOhlmhGp2uY13WeB50Q==
   dependencies:
     "@aws-amplify/backend-output-schemas" "^1.4.0"
     "@aws-amplify/platform-core" "^1.6.2"
