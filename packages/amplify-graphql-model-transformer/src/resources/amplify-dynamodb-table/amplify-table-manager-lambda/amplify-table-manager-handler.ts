@@ -3,6 +3,7 @@
 import {
   AttributeDefinition,
   ContinuousBackupsDescription,
+  ContinuousBackupsUnavailableException,
   CreateGlobalSecondaryIndexAction,
   CreateTableCommandInput,
   DescribeTimeToLiveCommandOutput,
@@ -426,7 +427,16 @@ const processIsComplete = async (
     const pointInTimeUpdate = getPointInTimeRecoveryUpdate(describePointInTimeRecoveryResult.ContinuousBackupsDescription, endState);
     if (pointInTimeUpdate) {
       console.log('Updating table with point in time recovery enabled');
-      await ddbClient.updateContinuousBackups(pointInTimeUpdate);
+      try {
+        await ddbClient.updateContinuousBackups(pointInTimeUpdate);
+      } catch (error) {
+        if (error instanceof ContinuousBackupsUnavailableException) {
+          console.log('Backups are being enabled for the table');
+          return notFinished;
+        } else {
+          throw error;
+        }
+      }
       return notFinished;
     }
     // Need additional call if ttl is defined
