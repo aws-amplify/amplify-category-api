@@ -49,7 +49,7 @@ todoTable.setGlobalSecondaryIndexProvisionedThroughput('byName2', {
   writeCapacityUnits: 4,
 });
 todoTable.pointInTimeRecoveryEnabled = true;
-todoTable.sseSpecification = { sseEnabled: false };
+todoTable.sseSpecification = { sseEnabled: true };
 todoTable.streamSpecification = { streamViewType: StreamViewType.KEYS_ONLY };
 
 Tags.of(stack).add('created-by', 'amplify-updated');

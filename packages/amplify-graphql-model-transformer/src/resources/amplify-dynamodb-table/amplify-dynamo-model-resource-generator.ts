@@ -173,14 +173,11 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
     const tableName = isTableImported ? strategy.tableName : context.resourceHelper.generateTableName(modelName);
 
     // Add parameters.
-    const { readIops, writeIops, billingMode, pointInTimeRecovery, enableSSE } = this.createDynamoDBParameters(scope, true);
+    const { readIops, writeIops, billingMode, pointInTimeRecovery } = this.createDynamoDBParameters(scope, true);
 
     // Add conditions.
     new cdk.CfnCondition(scope, ResourceConstants.CONDITIONS.HasEnvironmentParameter, {
       expression: cdk.Fn.conditionNot(cdk.Fn.conditionEquals(context.synthParameters.amplifyEnvironmentName, ResourceConstants.NONE)),
-    });
-    const useSSE = new cdk.CfnCondition(scope, ResourceConstants.CONDITIONS.ShouldUseServerSideEncryption, {
-      expression: cdk.Fn.conditionEquals(enableSSE, 'true'),
     });
     const usePayPerRequestBilling = new cdk.CfnCondition(scope, ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling, {
       expression: cdk.Fn.conditionEquals(billingMode, 'PAY_PER_REQUEST'),
@@ -231,9 +228,6 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
       'billingMode',
       cdk.Fn.conditionIf(usePayPerRequestBilling.logicalId, 'PAY_PER_REQUEST', cdk.Fn.ref('AWS::NoValue')).toString(),
     );
-    cfnTable.addPropertyOverride('sseSpecification', {
-      sseEnabled: cdk.Fn.conditionIf(useSSE.logicalId, true, false),
-    });
 
     const streamArnOutputId = `GetAtt${ModelResourceIDs.ModelTableStreamArn(def!.name.value)}`;
     if (table.tableStreamArn) {
