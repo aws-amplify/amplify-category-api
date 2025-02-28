@@ -145,7 +145,17 @@ describe('Migration table import validation', () => {
     ],
     [
       'sseDescription',
-      '',
+      `
+        import { AmplifyGraphqlApi } from '@aws-amplify/graphql-api-construct';
+        import { BillingMode } from 'aws-cdk-lib/aws-dynamodb';
+
+        export const applyOverrides = (api: AmplifyGraphqlApi): void => {
+          const todoTable = api.resources.cfnResources.additionalCfnResources['Todo'];
+          todoTable.addOverride('Properties.sseSpecification', {
+            sseEnabled: true
+          });
+        };
+      `,
       ['SSEDescription does not match the expected value.\nImported Value: undefined\nExpected: {"SSEType":"KMS","Status":"ENABLED"}'],
     ],
     [
