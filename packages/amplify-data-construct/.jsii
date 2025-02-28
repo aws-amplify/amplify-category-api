@@ -6,7 +6,7 @@
     ]
   },
   "bundled": {
-    "@aws-amplify/ai-constructs": "^1.2.2",
+    "@aws-amplify/ai-constructs": "^1.2.4",
     "@aws-amplify/backend-output-schemas": "^1.0.0",
     "@aws-amplify/backend-output-storage": "^1.0.0",
     "@aws-amplify/graphql-auth-transformer": "4.2.0",
@@ -133,7 +133,7 @@
   },
   "dependencies": {
     "@aws-amplify/graphql-api-construct": "1.19.0",
-    "aws-cdk-lib": "^2.177.0",
+    "aws-cdk-lib": "^2.180.0",
     "constructs": "^10.3.0"
   },
   "dependencyClosure": {
@@ -167,32 +167,6 @@
         "python": {
           "distName": "aws-cdk.asset-awscli-v1",
           "module": "aws_cdk.asset_awscli_v1"
-        }
-      }
-    },
-    "@aws-cdk/asset-kubectl-v20": {
-      "targets": {
-        "dotnet": {
-          "namespace": "Amazon.CDK.Asset.KubectlV20",
-          "packageId": "Amazon.CDK.Asset.KubectlV20"
-        },
-        "go": {
-          "moduleName": "github.com/cdklabs/awscdk-asset-kubectl-go",
-          "packageName": "kubectlv20"
-        },
-        "java": {
-          "maven": {
-            "artifactId": "cdk-asset-kubectl-v20",
-            "groupId": "software.amazon.awscdk"
-          },
-          "package": "software.amazon.awscdk.cdk.asset.kubectl.v20"
-        },
-        "js": {
-          "npm": "@aws-cdk/asset-kubectl-v20"
-        },
-        "python": {
-          "distName": "aws-cdk.asset-kubectl-v20",
-          "module": "aws_cdk.asset_kubectl_v20"
         }
       }
     },
@@ -3948,19 +3922,6 @@
             }
           }
         },
-        "aws-cdk-lib.lambda_layer_kubectl": {
-          "targets": {
-            "dotnet": {
-              "namespace": "Amazon.CDK.LambdaLayer.Kubectl"
-            },
-            "java": {
-              "package": "software.amazon.awscdk.lambdalayer.kubectl"
-            },
-            "python": {
-              "module": "aws_cdk.lambda_layer_kubectl"
-            }
-          }
-        },
         "aws-cdk-lib.lambda_layer_node_proxy_agent": {
           "targets": {
             "dotnet": {
@@ -4107,5 +4068,5 @@
   },
   "types": {},
   "version": "1.15.0",
-  "fingerprint": "w14UxtHq9b/6B6XP9TgduTUoyy/SC94njlRtXs5xezk="
+  "fingerprint": "8xj065JU+Xv6A2GrghNOVxAbUo31cVT9oh1nRAE9rnk="
 }
