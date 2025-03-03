@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.2-gen1-migrations-0303.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.7.1...@aws-amplify/graphql-transformer@1.7.2-gen1-migrations-0303.0) (2025-03-03)
+
+### Reverts
+
+- Revert "Revert "Gen1 migration" (#3183)" ([0addbed](https://github.com/aws-amplify/amplify-category-api/commit/0addbed0a37199c44efa94c4bab6ec7f822f1b5f)), closes [#3183](https://github.com/aws-amplify/amplify-category-api/issues/3183)
+
 ## [1.7.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.7.0...@aws-amplify/graphql-transformer@1.7.1) (2025-02-22)
 
 ### Reverts
