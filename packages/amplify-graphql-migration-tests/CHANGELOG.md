@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.44-gen1-migrations-0304.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-migration-tests@2.4.43...amplify-category-api-graphql-migration-tests@2.4.44-gen1-migrations-0304.0) (2025-03-04)
+
+**Note:** Version bump only for package amplify-category-api-graphql-migration-tests
+
 ## [2.4.43](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-migration-tests@2.4.42...amplify-category-api-graphql-migration-tests@2.4.43) (2025-02-22)
 
 **Note:** Version bump only for package amplify-category-api-graphql-migration-tests

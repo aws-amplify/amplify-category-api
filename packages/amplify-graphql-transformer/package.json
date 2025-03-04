@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-transformer",
-  "version": "1.7.1",
+  "version": "1.7.2-gen1-migrations-0304.0",
   "description": "Amplify GraphQL Transformer Root Package",
   "repository": {
     "type": "git",
@@ -28,19 +28,19 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/graphql-auth-transformer": "3.6.10",
-    "@aws-amplify/graphql-default-value-transformer": "2.3.18",
-    "@aws-amplify/graphql-function-transformer": "2.1.30",
-    "@aws-amplify/graphql-http-transformer": "2.1.30",
-    "@aws-amplify/graphql-index-transformer": "2.4.14",
-    "@aws-amplify/graphql-maps-to-transformer": "3.4.28",
-    "@aws-amplify/graphql-model-transformer": "2.12.1",
-    "@aws-amplify/graphql-predictions-transformer": "2.1.30",
-    "@aws-amplify/graphql-relational-transformer": "2.5.16",
-    "@aws-amplify/graphql-searchable-transformer": "2.7.14",
+    "@aws-amplify/graphql-auth-transformer": "3.6.11-gen1-migrations-0304.0",
+    "@aws-amplify/graphql-default-value-transformer": "2.3.19-gen1-migrations-0304.0",
+    "@aws-amplify/graphql-function-transformer": "2.1.31-gen1-migrations-0304.0",
+    "@aws-amplify/graphql-http-transformer": "2.1.31-gen1-migrations-0304.0",
+    "@aws-amplify/graphql-index-transformer": "2.4.15-gen1-migrations-0304.0",
+    "@aws-amplify/graphql-maps-to-transformer": "3.4.29-gen1-migrations-0304.0",
+    "@aws-amplify/graphql-model-transformer": "2.12.2-gen1-migrations-0304.0",
+    "@aws-amplify/graphql-predictions-transformer": "2.1.31-gen1-migrations-0304.0",
+    "@aws-amplify/graphql-relational-transformer": "2.5.17-gen1-migrations-0304.0",
+    "@aws-amplify/graphql-searchable-transformer": "2.7.15-gen1-migrations-0304.0",
     "@aws-amplify/graphql-sql-transformer": "^0.3.9",
-    "@aws-amplify/graphql-transformer-core": "2.10.1",
-    "@aws-amplify/graphql-transformer-interfaces": "3.11.1"
+    "@aws-amplify/graphql-transformer-core": "2.10.2-gen1-migrations-0304.0",
+    "@aws-amplify/graphql-transformer-interfaces": "3.11.2-gen1-migrations-0304.0"
   },
   "devDependencies": {
     "@types/node": "^12.12.6",
