@@ -9,7 +9,7 @@ import {
 } from '@aws-amplify/graphql-transformer-core';
 import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, NamedTypeNode, parse } from 'graphql';
 import { getBaseType } from 'graphql-transformer-common';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Template, Match } from 'aws-cdk-lib/assertions';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { VpcConfig, ModelDataSourceStrategySqlDbType, SQLLambdaModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
@@ -2314,6 +2314,141 @@ describe('ModelTransformer:', () => {
       expect(postType.directives!.length).toEqual(1);
       const directiveNames = postType.directives!.map((dir) => dir.name.value);
       expect(directiveNames).toContain('aws_iam');
+    });
+  });
+
+  describe('migration', () => {
+    it('should output data source mapping', async () => {
+      const validSchema = `
+        type Post @model {
+            id: ID!
+            title: String!
+        }
+      `;
+
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer()],
+        transformParameters: {
+          enableGen2Migration: true,
+        },
+      });
+      expect(out).toBeDefined();
+      const template = Template.fromJSON(out.rootStack);
+      template.hasOutput('DataSourceMappingOutput', {
+        Value: Match.objectLike({
+          'Fn::Join': [
+            '',
+            [
+              '{"Post":"',
+              {
+                'Fn::GetAtt': ['Post', 'Outputs.transformerrootstackPostPostTable34CAE87BRef'],
+              },
+              '"}',
+            ],
+          ],
+        }),
+        Description: 'Mapping of model name to data source table name.',
+      });
+    });
+
+    it('should set table removal policy to retain', () => {
+      const validSchema = `
+        type Post @model {
+            id: ID!
+            title: String!
+        }
+      `;
+
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer()],
+        transformParameters: {
+          enableGen2Migration: true,
+        },
+      });
+      expect(out).toBeDefined();
+      const postStack = out.stacks['Post'];
+      const template = Template.fromJSON(postStack);
+      template.hasResource('AWS::DynamoDB::Table', {
+        DeletionPolicy: 'Retain',
+        Properties: {
+          TableName: {
+            'Fn::Join': [
+              '',
+              [
+                'Post-',
+                {
+                  Ref: 'referencetotransformerrootstackGraphQLAPI20497F53ApiId',
+                },
+                '-',
+                {
+                  Ref: 'referencetotransformerrootstackenv10C5A902Ref',
+                },
+              ],
+            ],
+          },
+        },
+      });
+    });
+
+    it('should set table deletion protection to true', () => {
+      const validSchema = `
+        type Post @model {
+            id: ID!
+            title: String!
+        }
+      `;
+
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer()],
+        transformParameters: {
+          enableGen2Migration: true,
+        },
+      });
+      expect(out).toBeDefined();
+      const postStack = out.stacks['Post'];
+      const template = Template.fromJSON(postStack);
+      template.hasResource('AWS::DynamoDB::Table', {
+        Properties: {
+          TableName: {
+            'Fn::Join': [
+              '',
+              [
+                'Post-',
+                {
+                  Ref: 'referencetotransformerrootstackGraphQLAPI20497F53ApiId',
+                },
+                '-',
+                {
+                  Ref: 'referencetotransformerrootstackenv10C5A902Ref',
+                },
+              ],
+            ],
+          },
+          DeletionProtectionEnabled: true,
+        },
+      });
+    });
+
+    describe('does not add SQL data sources to mapping', () => {
+      test.each(sqlDatasources)('%s', (dbType) => {
+        const validSchema = `
+            type Post @model {
+              id: ID! @primaryKey
+              title: String!
+            }
+          `;
+
+        const out = testTransform({
+          schema: validSchema,
+          transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+          dataSourceStrategies: constructDataSourceStrategies(validSchema, makeStrategy(dbType)),
+        });
+        expect(out).toBeDefined();
+        expect(out.rootStack.Outputs?.DataSourceMappingOutput).toBeUndefined();
+      });
     });
   });
 });

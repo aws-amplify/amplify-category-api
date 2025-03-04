@@ -68,7 +68,10 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
       expression: cdk.Fn.conditionEquals(pointInTimeRecovery, 'true'),
     });
 
-    const removalPolicy = this.options.EnableDeletionProtection ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY;
+    const removalPolicy =
+      this.options.EnableDeletionProtection || context.transformParameters.enableGen2Migration
+        ? cdk.RemovalPolicy.RETAIN
+        : cdk.RemovalPolicy.DESTROY;
 
     // Expose a way in context to allow proper resource naming
     const table = new Table(scope, tableLogicalName, {
@@ -80,6 +83,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
       stream: StreamViewType.NEW_AND_OLD_IMAGES,
       encryption: TableEncryption.DEFAULT,
       removalPolicy,
+      deletionProtection: context.transformParameters.enableGen2Migration || undefined,
       ...(context.isProjectUsingDataStore() ? { timeToLiveAttribute: '_ttl' } : undefined),
     });
     const cfnTable = table.node.defaultChild as CfnTable;
