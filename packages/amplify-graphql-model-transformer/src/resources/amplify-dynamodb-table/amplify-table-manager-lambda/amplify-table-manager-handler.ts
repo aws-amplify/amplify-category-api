@@ -391,7 +391,7 @@ const processOnEvent = async (
  * @param event CFN event
  * @returns Response object with `isComplete` bool attribute to indicate the completeness of process
  */
-const processIsComplete = async (
+export const processIsComplete = async (
   event: AWSCDKAsyncCustomResource.IsCompleteRequest,
   context: TableManagerContext,
 ): Promise<AWSCDKAsyncCustomResource.IsCompleteResponse> => {

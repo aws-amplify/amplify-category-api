@@ -5,6 +5,7 @@ import {
   TimeToLiveDescription,
   UpdateContinuousBackupsCommandInput,
   ContinuousBackupsDescription,
+  ContinuousBackupsUnavailableException,
 } from '@aws-sdk/client-dynamodb';
 import {
   getNextAtomicUpdate,
@@ -16,6 +17,7 @@ import {
   getDeletionProtectionUpdate,
   extractOldTableInputFromEvent,
   isTtlModified,
+  processIsComplete,
 } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
 import * as ddbTableManagerLambda from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
 import * as CustomDDB from '../resources/amplify-dynamodb-table/amplify-table-types';
@@ -29,6 +31,22 @@ jest.spyOn(ddbTableManagerLambda, 'getLambdaTags').mockReturnValue(
     { Key: 'key3', Value: 'value3' },
   ]),
 );
+
+// Mock client-ssm
+const mockDescribeTable = jest.fn();
+const mockDescribeContinuousBackups = jest.fn();
+const mockUpdateContinuousBackups = jest.fn();
+jest.mock('@aws-sdk/client-dynamodb', () => {
+  return {
+    ...jest.requireActual('@aws-sdk/client-dynamodb'),
+    DynamoDB: jest.fn().mockImplementation(() => ({
+      describeTable: (input: any) => mockDescribeTable(input),
+      describeContinuousBackups: (input: any) => mockDescribeContinuousBackups(input),
+      updateContinuousBackups: (input: any) => mockUpdateContinuousBackups(input),
+    })),
+  };
+});
+
 describe('Custom Resource Lambda Tests', () => {
   describe('Get next GSI update', () => {
     const endState: CustomDDB.Input = {
@@ -1140,6 +1158,58 @@ describe('Custom Resource Lambda Tests', () => {
         attributeName: '_ttl2',
       };
       expect(isTtlModified(oldTtl, newTtl)).toBe(true);
+    });
+  });
+  describe('processIsComplete', () => {
+    it('should return IsComplete false when thrown ContinuousBackupsUnavailableException create with PITR enabled', async () => {
+      const event = {
+        RequestType: 'Create',
+        ServiceToken: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
+        ResponseURL: '[redacted]',
+        StackId: 'mockStackId',
+        RequestId: 'mockRequestId',
+        LogicalResourceId: 'ResourceTable',
+        ResourceType: 'Custom::AmplifyDynamoDBTable',
+        ResourceProperties: {
+          tableName: 'mockTable',
+          ServiceToken: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
+          pointInTimeRecoverySpecification: { pointInTimeRecoveryEnabled: true },
+        },
+        PhysicalResourceId: 'mockTable',
+        Data: {
+          TableArn: 'arn:aws:dynamodb:ap-northeast-1:123456789100:table/mockTable',
+          TableStreamArn: 'arn:aws:dynamodb:ap-northeast-1:123456789100:table/mockTable/stream/2025-03-05T01:11:03.258',
+          TableName: 'mockTable',
+        },
+      } as const;
+
+      mockDescribeTable.mockResolvedValue({
+        Table: {
+          TableStatus: 'ACTIVE',
+          ContinuousBackupsDescription: {
+            ContinuousBackupsStatus: 'DISABLED',
+            PointInTimeRecoveryDescription: {
+              PointInTimeRecoveryStatus: 'DISABLED',
+            },
+          },
+        },
+      });
+      mockDescribeContinuousBackups.mockResolvedValue({
+        ContinuousBackupsDescription: {
+          ContinuousBackupsStatus: 'DISABLED',
+          PointInTimeRecoveryDescription: {
+            PointInTimeRecoveryStatus: 'DISABLED',
+          },
+        },
+      });
+      mockUpdateContinuousBackups.mockRejectedValue(
+        new ContinuousBackupsUnavailableException({
+          message: 'Backups are being enabled for the table: mockTable. Please retry later',
+          $metadata: {},
+        }),
+      );
+      const { IsComplete } = await processIsComplete(event, { invokedFunctionArn: '' });
+      expect(IsComplete).toBe(false);
     });
   });
 });
