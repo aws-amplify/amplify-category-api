@@ -1208,7 +1208,9 @@ describe('Custom Resource Lambda Tests', () => {
           $metadata: {},
         }),
       );
-      const { IsComplete } = await processIsComplete(event, { invokedFunctionArn: '' });
+      const { IsComplete } = await processIsComplete(event, {
+        invokedFunctionArn: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
+      });
       expect(IsComplete).toBe(false);
     });
   });
