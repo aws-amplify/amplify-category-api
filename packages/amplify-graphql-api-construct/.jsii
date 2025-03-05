@@ -6,27 +6,27 @@
     ]
   },
   "bundled": {
-    "@aws-amplify/ai-constructs": "^1.2.2",
+    "@aws-amplify/ai-constructs": "^1.2.4",
     "@aws-amplify/backend-output-schemas": "^1.0.0",
     "@aws-amplify/backend-output-storage": "^1.0.0",
-    "@aws-amplify/graphql-auth-transformer": "4.1.12",
-    "@aws-amplify/graphql-conversation-transformer": "1.1.7",
-    "@aws-amplify/graphql-default-value-transformer": "3.1.9",
-    "@aws-amplify/graphql-directives": "2.6.1",
-    "@aws-amplify/graphql-function-transformer": "3.1.11",
-    "@aws-amplify/graphql-generation-transformer": "1.1.5",
-    "@aws-amplify/graphql-http-transformer": "3.0.14",
-    "@aws-amplify/graphql-index-transformer": "3.0.14",
-    "@aws-amplify/graphql-maps-to-transformer": "4.0.14",
-    "@aws-amplify/graphql-model-transformer": "3.1.6",
-    "@aws-amplify/graphql-predictions-transformer": "3.0.14",
-    "@aws-amplify/graphql-relational-transformer": "3.1.6",
-    "@aws-amplify/graphql-searchable-transformer": "3.0.14",
-    "@aws-amplify/graphql-sql-transformer": "0.4.14",
-    "@aws-amplify/graphql-transformer": "2.2.7",
-    "@aws-amplify/graphql-transformer-core": "3.3.6",
+    "@aws-amplify/graphql-auth-transformer": "4.2.0",
+    "@aws-amplify/graphql-conversation-transformer": "1.1.8",
+    "@aws-amplify/graphql-default-value-transformer": "3.1.10",
+    "@aws-amplify/graphql-directives": "2.7.0",
+    "@aws-amplify/graphql-function-transformer": "3.1.12",
+    "@aws-amplify/graphql-generation-transformer": "1.2.0",
+    "@aws-amplify/graphql-http-transformer": "3.0.15",
+    "@aws-amplify/graphql-index-transformer": "3.0.15",
+    "@aws-amplify/graphql-maps-to-transformer": "4.0.15",
+    "@aws-amplify/graphql-model-transformer": "3.2.0",
+    "@aws-amplify/graphql-predictions-transformer": "3.0.15",
+    "@aws-amplify/graphql-relational-transformer": "3.1.7",
+    "@aws-amplify/graphql-searchable-transformer": "3.0.15",
+    "@aws-amplify/graphql-sql-transformer": "0.4.15",
+    "@aws-amplify/graphql-transformer": "2.3.0",
+    "@aws-amplify/graphql-transformer-core": "3.4.0",
     "@aws-amplify/graphql-transformer-interfaces": "4.2.3",
-    "@aws-amplify/graphql-validate-transformer": "1.0.0",
+    "@aws-amplify/graphql-validate-transformer": "1.1.0",
     "@aws-amplify/platform-core": "^1.0.0",
     "@aws-amplify/plugin-types": "^1.0.0",
     "@aws-crypto/crc32": "5.2.0",
@@ -132,7 +132,7 @@
     "zod": "^3.22.2"
   },
   "dependencies": {
-    "aws-cdk-lib": "^2.177.0",
+    "aws-cdk-lib": "^2.180.0",
     "constructs": "^10.3.0"
   },
   "dependencyClosure": {
@@ -159,32 +159,6 @@
         "python": {
           "distName": "aws-cdk.asset-awscli-v1",
           "module": "aws_cdk.asset_awscli_v1"
-        }
-      }
-    },
-    "@aws-cdk/asset-kubectl-v20": {
-      "targets": {
-        "dotnet": {
-          "namespace": "Amazon.CDK.Asset.KubectlV20",
-          "packageId": "Amazon.CDK.Asset.KubectlV20"
-        },
-        "go": {
-          "moduleName": "github.com/cdklabs/awscdk-asset-kubectl-go",
-          "packageName": "kubectlv20"
-        },
-        "java": {
-          "maven": {
-            "artifactId": "cdk-asset-kubectl-v20",
-            "groupId": "software.amazon.awscdk"
-          },
-          "package": "software.amazon.awscdk.cdk.asset.kubectl.v20"
-        },
-        "js": {
-          "npm": "@aws-cdk/asset-kubectl-v20"
-        },
-        "python": {
-          "distName": "aws-cdk.asset-kubectl-v20",
-          "module": "aws_cdk.asset_kubectl_v20"
         }
       }
     },
@@ -3937,19 +3911,6 @@
             },
             "python": {
               "module": "aws_cdk.lambda_layer_awscli"
-            }
-          }
-        },
-        "aws-cdk-lib.lambda_layer_kubectl": {
-          "targets": {
-            "dotnet": {
-              "namespace": "Amazon.CDK.LambdaLayer.Kubectl"
-            },
-            "java": {
-              "package": "software.amazon.awscdk.lambdalayer.kubectl"
-            },
-            "python": {
-              "module": "aws_cdk.lambda_layer_kubectl"
             }
           }
         },
@@ -9444,6 +9405,6 @@
       "symbolId": "src/model-datasource-strategy-types:VpcConfig"
     }
   },
-  "version": "1.18.8",
-  "fingerprint": "hYt0AjiITxUODUTW9sDyUQLngu9UQVT3B67KSbXO7FE="
+  "version": "1.19.0",
+  "fingerprint": "M0nbZT4cRfyLhx7hYI8m8pGPy25ho16dKJrbhvnBXzA="
 }

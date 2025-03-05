@@ -34,7 +34,9 @@ describe('CDK amplify table 1', () => {
     expect(table).toBeDefined();
     expect(table.Table.BillingModeSummary.BillingMode).toBe('PAY_PER_REQUEST');
     expect(table.Table.GlobalSecondaryIndexes[0].IndexName).toBe('byName');
-    expect(table.Table.SSEDescription.Status).toBe('ENABLED');
+    // Important: When SSE is undefined or set to false,
+    // it doesn't mean SSE is disabled, it means that the table is using AWS owned key for SSE.
+    expect(table.Table.SSEDescription).toBeUndefined();
     expect(table.Table.StreamSpecification.StreamViewType).toBe('NEW_AND_OLD_IMAGES');
 
     // Verify the tags on the table
@@ -56,7 +58,7 @@ describe('CDK amplify table 1', () => {
     expect(updatedTable).toBeDefined();
     expect(updatedTable.Table.BillingModeSummary.BillingMode).toBe('PROVISIONED');
     expect(updatedTable.Table.GlobalSecondaryIndexes[0].IndexName).toBe('byName2');
-    expect(updatedTable.Table.SSEDescription).toBeUndefined();
+    expect(updatedTable.Table.SSEDescription.Status).toBe('ENABLED');
     expect(updatedTable.Table.StreamSpecification.StreamViewType).toBe('KEYS_ONLY');
 
     // Verify the tags on the table after update
