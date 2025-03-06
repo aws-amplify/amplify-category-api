@@ -824,7 +824,7 @@ limitations under the License.
 
 -----
 
-The following software may be included in this product: @aws-cdk/asset-awscli-v1, @aws-cdk/asset-kubectl-v20, @aws-cdk/asset-node-proxy-agent-v6, jsii, jsii-rosetta. A copy of the source code may be downloaded from https://github.com/cdklabs/awscdk-asset-awscli.git (@aws-cdk/asset-awscli-v1), https://github.com/cdklabs/awscdk-asset-kubectl.git (@aws-cdk/asset-kubectl-v20), https://github.com/cdklabs/awscdk-asset-node-proxy-agent.git (@aws-cdk/asset-node-proxy-agent-v6), https://github.com/aws/jsii-compiler.git (jsii), https://github.com/aws/jsii-rosetta.git (jsii-rosetta). This software contains the following license and notice below:
+The following software may be included in this product: @aws-cdk/asset-awscli-v1, @aws-cdk/asset-node-proxy-agent-v6, jsii, jsii-rosetta. A copy of the source code may be downloaded from https://github.com/cdklabs/awscdk-asset-awscli.git (@aws-cdk/asset-awscli-v1), https://github.com/cdklabs/awscdk-asset-node-proxy-agent.git (@aws-cdk/asset-node-proxy-agent-v6), https://github.com/aws/jsii-compiler.git (jsii), https://github.com/aws/jsii-rosetta.git (jsii-rosetta). This software contains the following license and notice below:
 
 Apache License
                            Version 2.0, January 2004

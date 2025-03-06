@@ -24,7 +24,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/ai-constructs": "^1.2.2",
+    "@aws-amplify/ai-constructs": "^1.2.4",
     "@aws-amplify/graphql-directives": "2.7.0",
     "@aws-amplify/graphql-index-transformer": "3.0.15",
     "@aws-amplify/graphql-model-transformer": "3.2.0",
@@ -43,7 +43,7 @@
     "esbuild": "^0.25.0"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.177.0",
+    "aws-cdk-lib": "^2.180.0",
     "constructs": "^10.3.0"
   }
 }
