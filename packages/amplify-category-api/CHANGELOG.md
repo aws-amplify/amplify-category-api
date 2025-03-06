@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.14.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.14.0...@aws-amplify/amplify-category-api@5.14.1) (2025-03-06)
+
+### Bug Fixes
+
+- typo on enableGen2migration ([#3207](https://github.com/aws-amplify/amplify-category-api/issues/3207)) ([a5d9862](https://github.com/aws-amplify/amplify-category-api/commit/a5d98624e501c415579178c45b256764598ec72d))
+
 # [5.14.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.13.1...@aws-amplify/amplify-category-api@5.14.0) (2025-03-06)
 
 ### Features
