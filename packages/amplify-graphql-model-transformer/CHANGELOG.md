@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@3.2.0...@aws-amplify/graphql-model-transformer@3.2.1) (2025-03-06)
+
+### Bug Fixes
+
+- use aws owned key as default for ddb sse ([#3197](https://github.com/aws-amplify/amplify-category-api/issues/3197)) ([14e5d54](https://github.com/aws-amplify/amplify-category-api/commit/14e5d5492ba6e3f472820f58661def5b50c55d93))
+
 # [3.2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@3.1.6...@aws-amplify/graphql-model-transformer@3.2.0) (2025-02-26)
 
 ### Features
