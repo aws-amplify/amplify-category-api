@@ -373,7 +373,7 @@ export async function transformGraphQLSchemaV1(context, options) {
   const allowDestructiveUpdates = context?.input?.options?.[DESTRUCTIVE_UPDATES_FLAG] || context?.input?.options?.force;
   const sanityCheckRulesList = getSanityCheckRules(isNewAppSyncAPI, ff, allowDestructiveUpdates);
 
-  if (ff.getBoolean('enableGen2Migrations')) {
+  if (ff.getBoolean('enableGen2Migration')) {
     throw new Error('V1 transformer is not supported for Amplify Gen 2 migrations. Migrate to V2 transformer first.');
   }
 
