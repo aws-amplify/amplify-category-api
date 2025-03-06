@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.14.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.13.1...@aws-amplify/amplify-category-api@5.14.0) (2025-03-06)
+
+### Features
+
+- gen 1 migrations ([#3199](https://github.com/aws-amplify/amplify-category-api/issues/3199)) ([22bc2d8](https://github.com/aws-amplify/amplify-category-api/commit/22bc2d8e2e795fc892ac88da6ee259b4459ded4f)), closes [#3183](https://github.com/aws-amplify/amplify-category-api/issues/3183)
+
 ## [5.13.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.13.0...@aws-amplify/amplify-category-api@5.13.1) (2025-02-22)
 
 ### Reverts

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.33.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.32.1...graphql-transformer-common@4.33.0) (2025-03-06)
+
+### Features
+
+- gen 1 migrations ([#3199](https://github.com/aws-amplify/amplify-category-api/issues/3199)) ([22bc2d8](https://github.com/aws-amplify/amplify-category-api/commit/22bc2d8e2e795fc892ac88da6ee259b4459ded4f)), closes [#3183](https://github.com/aws-amplify/amplify-category-api/issues/3183)
+
 ## [4.32.1](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.32.0...graphql-transformer-common@4.32.1) (2025-02-22)
 
 ### Reverts
