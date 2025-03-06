@@ -19,6 +19,23 @@ export interface TimeToLiveSpecification {
 }
 
 /**
+ * Reference to PointInTimeRecovey Specification
+ * for continuous backups
+ */
+export interface PointInTimeRecoverySpecification {
+  /**
+   * Indicates whether point in time recovery is enabled (true) or disabled (false) on the table.
+   */
+  readonly pointInTimeRecoveryEnabled: boolean;
+  /**
+   * The number of preceding days for which continuous backups are taken and maintained.
+   * Your table data is only recoverable to any point-in-time from within the configured recovery period.
+   * If no value is provided, the value will default to 35.
+   */
+  readonly recoveryPeriodInDays?: number;
+}
+
+/**
  * Wrapper for provisioned throughput config in DDB.
  */
 export interface ProvisionedThroughput {
@@ -137,6 +154,14 @@ export class AmplifyDynamoDbTableWrapper {
    */
   set pointInTimeRecoveryEnabled(pointInTimeRecoveryEnabled: boolean) {
     this.resource.addPropertyOverride('pointInTimeRecoverySpecification', { pointInTimeRecoveryEnabled });
+  }
+
+  /**
+   * Whether point-in-time recovery is enabled
+   * and recoveryPeriodInDays is set.
+   */
+  set pointInTimeRecoverySpecification(pointInTimeRecoverySpecification: PointInTimeRecoverySpecification) {
+    this.resource.addPropertyOverride('pointInTimeRecoverySpecification', pointInTimeRecoverySpecification);
   }
 
   /**
