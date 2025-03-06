@@ -4262,7 +4262,7 @@
         },
         "locationInModule": {
           "filename": "src/amplify-dynamodb-table-wrapper.ts",
-          "line": 107
+          "line": 124
         },
         "parameters": [
           {
@@ -4279,7 +4279,7 @@
       "kind": "class",
       "locationInModule": {
         "filename": "src/amplify-dynamodb-table-wrapper.ts",
-        "line": 93
+        "line": 110
       },
       "methods": [
         {
@@ -4290,7 +4290,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 99
+            "line": 116
           },
           "name": "isAmplifyDynamoDbTableResource",
           "parameters": [
@@ -4318,7 +4318,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 117
+            "line": 134
           },
           "name": "applyRemovalPolicy",
           "parameters": [
@@ -4340,7 +4340,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 154
+            "line": 179
           },
           "name": "setGlobalSecondaryIndexProvisionedThroughput",
           "parameters": [
@@ -4374,7 +4374,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 124
+            "line": 141
           },
           "name": "billingMode",
           "type": {
@@ -4388,7 +4388,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 182
+            "line": 207
           },
           "name": "deletionProtectionEnabled",
           "type": {
@@ -4402,7 +4402,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 138
+            "line": 155
           },
           "name": "pointInTimeRecoveryEnabled",
           "type": {
@@ -4412,11 +4412,25 @@
         {
           "docs": {
             "stability": "stable",
+            "summary": "Whether point-in-time recovery is enabled and recoveryPeriodInDays is set."
+          },
+          "locationInModule": {
+            "filename": "src/amplify-dynamodb-table-wrapper.ts",
+            "line": 163
+          },
+          "name": "pointInTimeRecoverySpecification",
+          "type": {
+            "fqn": "@aws-amplify/graphql-api-construct.PointInTimeRecoverySpecification"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
             "summary": "Update the provisioned throughput for the base table."
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 145
+            "line": 170
           },
           "name": "provisionedThroughput",
           "type": {
@@ -4430,7 +4444,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 175
+            "line": 200
           },
           "name": "sseSpecification",
           "type": {
@@ -4444,7 +4458,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 168
+            "line": 193
           },
           "name": "streamSpecification",
           "type": {
@@ -4458,7 +4472,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 131
+            "line": 148
           },
           "name": "timeToLiveAttribute",
           "type": {
@@ -7851,6 +7865,58 @@
       ],
       "symbolId": "src/types:PartialTranslationBehavior"
     },
+    "@aws-amplify/graphql-api-construct.PointInTimeRecoverySpecification": {
+      "assembly": "@aws-amplify/graphql-api-construct",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Reference to PointInTimeRecovey Specification for continuous backups."
+      },
+      "fqn": "@aws-amplify/graphql-api-construct.PointInTimeRecoverySpecification",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "src/amplify-dynamodb-table-wrapper.ts",
+        "line": 25
+      },
+      "name": "PointInTimeRecoverySpecification",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Indicates whether point in time recovery is enabled (true) or disabled (false) on the table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/amplify-dynamodb-table-wrapper.ts",
+            "line": 29
+          },
+          "name": "pointInTimeRecoveryEnabled",
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Your table data is only recoverable to any point-in-time from within the configured recovery period.\nIf no value is provided, the value will default to 35.",
+            "stability": "stable",
+            "summary": "The number of preceding days for which continuous backups are taken and maintained."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/amplify-dynamodb-table-wrapper.ts",
+            "line": 35
+          },
+          "name": "recoveryPeriodInDays",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "src/amplify-dynamodb-table-wrapper:PointInTimeRecoverySpecification"
+    },
     "@aws-amplify/graphql-api-construct.ProvisionedConcurrencyConfig": {
       "assembly": "@aws-amplify/graphql-api-construct",
       "datatype": true,
@@ -7897,7 +7963,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/amplify-dynamodb-table-wrapper.ts",
-        "line": 24
+        "line": 41
       },
       "name": "ProvisionedThroughput",
       "properties": [
@@ -7910,7 +7976,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 28
+            "line": 45
           },
           "name": "readCapacityUnits",
           "type": {
@@ -7926,7 +7992,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 33
+            "line": 50
           },
           "name": "writeCapacityUnits",
           "type": {
@@ -8380,7 +8446,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/amplify-dynamodb-table-wrapper.ts",
-        "line": 47
+        "line": 64
       },
       "name": "SSESpecification",
       "properties": [
@@ -8394,7 +8460,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 53
+            "line": 70
           },
           "name": "sseEnabled",
           "type": {
@@ -8411,7 +8477,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 60
+            "line": 77
           },
           "name": "kmsMasterKeyId",
           "optional": true,
@@ -8429,7 +8495,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 67
+            "line": 84
           },
           "name": "sseType",
           "optional": true,
@@ -8451,7 +8517,7 @@
       "kind": "enum",
       "locationInModule": {
         "filename": "src/amplify-dynamodb-table-wrapper.ts",
-        "line": 40
+        "line": 57
       },
       "members": [
         {
@@ -8845,7 +8911,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/amplify-dynamodb-table-wrapper.ts",
-        "line": 73
+        "line": 90
       },
       "name": "StreamSpecification",
       "properties": [
@@ -8859,7 +8925,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 82
+            "line": 99
           },
           "name": "streamViewType",
           "type": {
@@ -9406,5 +9472,5 @@
     }
   },
   "version": "1.19.0",
-  "fingerprint": "M0nbZT4cRfyLhx7hYI8m8pGPy25ho16dKJrbhvnBXzA="
+  "fingerprint": "29THmDNF/iYA7jtSlUOLH5mwUJZn/V59DbDCdq0xWok="
 }

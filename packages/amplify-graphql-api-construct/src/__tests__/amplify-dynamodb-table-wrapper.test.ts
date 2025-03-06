@@ -143,6 +143,41 @@ describe('AmplifyDynamoDbTable', () => {
           pointInTimeRecoverySpecification: { pointInTimeRecoveryEnabled: false },
         });
       });
+
+      it('round trips a value with direct specification setting', () => {
+        tableWrapper.pointInTimeRecoverySpecification = {
+          pointInTimeRecoveryEnabled: true,
+        };
+        validateProps({
+          pointInTimeRecoverySpecification: { pointInTimeRecoveryEnabled: true },
+        });
+      });
+
+      it('round trips a value with recovery period days', () => {
+        tableWrapper.pointInTimeRecoverySpecification = {
+          pointInTimeRecoveryEnabled: true,
+          recoveryPeriodInDays: 7,
+        };
+        validateProps({
+          pointInTimeRecoverySpecification: {
+            pointInTimeRecoveryEnabled: true,
+            recoveryPeriodInDays: 7,
+          },
+        });
+      });
+
+      it('round trips a value with recovery period days when disabled', () => {
+        tableWrapper.pointInTimeRecoverySpecification = {
+          pointInTimeRecoveryEnabled: false,
+          recoveryPeriodInDays: 14,
+        };
+        validateProps({
+          pointInTimeRecoverySpecification: {
+            pointInTimeRecoveryEnabled: false,
+            recoveryPeriodInDays: 14,
+          },
+        });
+      });
     });
 
     describe('provisionedThroughput', () => {
