@@ -6,6 +6,7 @@ import {
   UpdateContinuousBackupsCommandInput,
   ContinuousBackupsDescription,
   ContinuousBackupsUnavailableException,
+  InternalServerError,
 } from '@aws-sdk/client-dynamodb';
 import {
   getNextAtomicUpdate,
@@ -1161,29 +1162,75 @@ describe('Custom Resource Lambda Tests', () => {
     });
   });
   describe('processIsComplete', () => {
-    it('should return IsComplete false when thrown ContinuousBackupsUnavailableException create with PITR enabled', async () => {
-      const event = {
-        RequestType: 'Create',
+    const createEvent = {
+      RequestType: 'Create',
+      ServiceToken: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
+      ResponseURL: '[redacted]',
+      StackId: 'mockStackId',
+      RequestId: 'mockRequestId',
+      LogicalResourceId: 'ResourceTable',
+      ResourceType: 'Custom::AmplifyDynamoDBTable',
+      ResourceProperties: {
+        tableName: 'mockTable',
         ServiceToken: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
-        ResponseURL: '[redacted]',
-        StackId: 'mockStackId',
-        RequestId: 'mockRequestId',
-        LogicalResourceId: 'ResourceTable',
-        ResourceType: 'Custom::AmplifyDynamoDBTable',
-        ResourceProperties: {
-          tableName: 'mockTable',
-          ServiceToken: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
-          pointInTimeRecoverySpecification: { pointInTimeRecoveryEnabled: true },
-        },
-        PhysicalResourceId: 'mockTable',
-        Data: {
-          TableArn: 'arn:aws:dynamodb:ap-northeast-1:123456789100:table/mockTable',
-          TableStreamArn: 'arn:aws:dynamodb:ap-northeast-1:123456789100:table/mockTable/stream/2025-03-05T01:11:03.258',
-          TableName: 'mockTable',
-        },
-      } as const;
+        pointInTimeRecoverySpecification: { pointInTimeRecoveryEnabled: true },
+      },
+      PhysicalResourceId: 'mockTable',
+      Data: {
+        TableArn: 'arn:aws:dynamodb:ap-northeast-1:123456789100:table/mockTable',
+        TableStreamArn: 'arn:aws:dynamodb:ap-northeast-1:123456789100:table/mockTable/stream/2025-03-05T01:11:03.258',
+        TableName: 'mockTable',
+      },
+    } as const;
 
-      mockDescribeTable.mockResolvedValue({
+    const updateEvent = {
+      RequestType: 'Update',
+      ServiceToken: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
+      ResponseURL: '[redacted]',
+      StackId: 'mockStackId',
+      RequestId: 'mockRequestId',
+      LogicalResourceId: 'ResourceTable',
+      ResourceType: 'Custom::AmplifyDynamoDBTable',
+      ResourceProperties: {
+        tableName: 'mockTable',
+        ServiceToken: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
+        pointInTimeRecoverySpecification: { pointInTimeRecoveryEnabled: true },
+      },
+      PhysicalResourceId: 'mockTable',
+      Data: {
+        TableArn: 'arn:aws:dynamodb:ap-northeast-1:123456789100:table/mockTable',
+        TableStreamArn: 'arn:aws:dynamodb:ap-northeast-1:123456789100:table/mockTable/stream/2025-03-05T01:11:03.258',
+        TableName: 'mockTable',
+        IsTableReplaced: true,
+      },
+    } as const;
+
+    const deleteEvent = {
+      RequestType: 'Delete',
+      ServiceToken: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
+      ResponseURL: '[redacted]',
+      StackId: 'mockStackId',
+      RequestId: 'mockRequestId',
+      LogicalResourceId: 'ResourceTable',
+      ResourceType: 'Custom::AmplifyDynamoDBTable',
+      ResourceProperties: {
+        tableName: 'mockTable',
+        ServiceToken: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
+      },
+      PhysicalResourceId: 'mockTable',
+      Data: {
+        TableArn: 'arn:aws:dynamodb:ap-northeast-1:123456789100:table/mockTable',
+        TableStreamArn: 'arn:aws:dynamodb:ap-northeast-1:123456789100:table/mockTable/stream/2025-03-05T01:11:03.258',
+        TableName: 'mockTable',
+      },
+    } as const;
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should return IsComplete false when thrown ContinuousBackupsUnavailableException if requestType is `Create` with PITR enabled', async () => {
+      mockDescribeTable.mockResolvedValueOnce({
         Table: {
           TableStatus: 'ACTIVE',
           ContinuousBackupsDescription: {
@@ -1194,7 +1241,7 @@ describe('Custom Resource Lambda Tests', () => {
           },
         },
       });
-      mockDescribeContinuousBackups.mockResolvedValue({
+      mockDescribeContinuousBackups.mockResolvedValueOnce({
         ContinuousBackupsDescription: {
           ContinuousBackupsStatus: 'DISABLED',
           PointInTimeRecoveryDescription: {
@@ -1202,16 +1249,127 @@ describe('Custom Resource Lambda Tests', () => {
           },
         },
       });
-      mockUpdateContinuousBackups.mockRejectedValue(
+      mockUpdateContinuousBackups.mockRejectedValueOnce(
         new ContinuousBackupsUnavailableException({
           message: 'Backups are being enabled for the table: mockTable. Please retry later',
           $metadata: {},
         }),
       );
-      const { IsComplete } = await processIsComplete(event, {
+      const { IsComplete } = await processIsComplete(createEvent, {
         invokedFunctionArn: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
       });
       expect(IsComplete).toBe(false);
+    });
+    it('should throw error when thrown it other than ContinuousBackupsUnavailableException if requestType is `Create` with PITR enabled', async () => {
+      mockDescribeTable.mockResolvedValueOnce({
+        Table: {
+          TableStatus: 'ACTIVE',
+          ContinuousBackupsDescription: {
+            ContinuousBackupsStatus: 'DISABLED',
+            PointInTimeRecoveryDescription: {
+              PointInTimeRecoveryStatus: 'DISABLED',
+            },
+          },
+        },
+      });
+      mockDescribeContinuousBackups.mockResolvedValueOnce({
+        ContinuousBackupsDescription: {
+          ContinuousBackupsStatus: 'DISABLED',
+          PointInTimeRecoveryDescription: {
+            PointInTimeRecoveryStatus: 'DISABLED',
+          },
+        },
+      });
+      mockUpdateContinuousBackups.mockRejectedValueOnce(
+        new InternalServerError({
+          message: 'internal server error',
+          $metadata: {},
+        }),
+      );
+      await expect(
+        processIsComplete(createEvent, {
+          invokedFunctionArn: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
+        }),
+      ).rejects.toThrow(InternalServerError);
+    });
+    it('should return IsComplete false when not thrown error if requestType is `Create` with PITR enabled', async () => {
+      mockDescribeTable.mockResolvedValueOnce({
+        Table: {
+          TableStatus: 'ACTIVE',
+          ContinuousBackupsDescription: {
+            ContinuousBackupsStatus: 'DISABLED',
+            PointInTimeRecoveryDescription: {
+              PointInTimeRecoveryStatus: 'DISABLED',
+            },
+          },
+        },
+      });
+      mockDescribeContinuousBackups.mockResolvedValueOnce({
+        ContinuousBackupsDescription: {
+          ContinuousBackupsStatus: 'DISABLED',
+          PointInTimeRecoveryDescription: {
+            PointInTimeRecoveryStatus: 'DISABLED',
+          },
+        },
+      });
+      const { IsComplete } = await processIsComplete(createEvent, {
+        invokedFunctionArn: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
+      });
+      expect(IsComplete).toBe(false);
+    });
+    it('should return IsComplete false when thrown ContinuousBackupsUnavailableException if replace table with PITR enabling', async () => {
+      mockDescribeTable.mockResolvedValueOnce({
+        Table: {
+          TableStatus: 'ACTIVE',
+          ContinuousBackupsDescription: {
+            ContinuousBackupsStatus: 'DISABLED',
+            PointInTimeRecoveryDescription: {
+              PointInTimeRecoveryStatus: 'DISABLED',
+            },
+          },
+        },
+      });
+      mockDescribeContinuousBackups.mockResolvedValueOnce({
+        ContinuousBackupsDescription: {
+          ContinuousBackupsStatus: 'DISABLED',
+          PointInTimeRecoveryDescription: {
+            PointInTimeRecoveryStatus: 'DISABLED',
+          },
+        },
+      });
+      mockUpdateContinuousBackups.mockRejectedValueOnce(
+        new ContinuousBackupsUnavailableException({
+          message: 'Backups are being enabled for the table: mockTable. Please retry later',
+          $metadata: {},
+        }),
+      );
+      const { IsComplete } = await processIsComplete(updateEvent, {
+        invokedFunctionArn: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
+      });
+      expect(IsComplete).toBe(false);
+    });
+    it('should return IsComplete false when table is not acitve', async () => {
+      mockDescribeTable.mockResolvedValueOnce({
+        Table: {
+          TableStatus: 'CREATING',
+          ContinuousBackupsDescription: {
+            ContinuousBackupsStatus: 'DISABLED',
+            PointInTimeRecoveryDescription: {
+              PointInTimeRecoveryStatus: 'DISABLED',
+            },
+          },
+        },
+      });
+      const { IsComplete } = await processIsComplete(createEvent, {
+        invokedFunctionArn: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
+      });
+      expect(IsComplete).toBe(false);
+    });
+    it('should return IsComplete true if requestType is `Delete`', async () => {
+      const { IsComplete } = await processIsComplete(deleteEvent, {
+        invokedFunctionArn: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
+      });
+      expect(IsComplete).toBe(true);
     });
   });
 });
