@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-predictions-transformer",
-  "version": "3.0.15",
+  "version": "3.0.16",
   "description": "Amplify GraphQL @predictions transformer",
   "repository": {
     "type": "git",
@@ -30,8 +30,8 @@
   },
   "dependencies": {
     "@aws-amplify/graphql-directives": "2.7.0",
-    "@aws-amplify/graphql-transformer-core": "3.4.0",
-    "@aws-amplify/graphql-transformer-interfaces": "4.2.3",
+    "@aws-amplify/graphql-transformer-core": "3.4.1",
+    "@aws-amplify/graphql-transformer-interfaces": "4.2.4",
     "graphql": "^15.5.0",
     "graphql-mapping-template": "5.0.2",
     "graphql-transformer-common": "5.1.2"
@@ -41,7 +41,7 @@
     "constructs": "^10.3.0"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-test-utils": "1.0.14",
+    "@aws-amplify/graphql-transformer-test-utils": "1.0.15",
     "bestzip": "^2.1.5"
   }
 }

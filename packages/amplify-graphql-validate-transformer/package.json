@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-validate-transformer",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Amplify GraphQL @validate transformer",
   "repository": {
     "type": "git",
@@ -31,15 +31,15 @@
   },
   "dependencies": {
     "@aws-amplify/graphql-directives": "2.7.0",
-    "@aws-amplify/graphql-transformer-core": "3.4.0",
-    "@aws-amplify/graphql-transformer-interfaces": "4.2.3",
+    "@aws-amplify/graphql-transformer-core": "3.4.1",
+    "@aws-amplify/graphql-transformer-interfaces": "4.2.4",
     "graphql": "^15.5.0",
     "graphql-mapping-template": "5.0.2",
     "graphql-transformer-common": "5.1.2"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-default-value-transformer": "3.1.10",
-    "@aws-amplify/graphql-model-transformer": "3.2.0",
-    "@aws-amplify/graphql-transformer-test-utils": "1.0.14"
+    "@aws-amplify/graphql-default-value-transformer": "3.1.11",
+    "@aws-amplify/graphql-model-transformer": "3.2.1",
+    "@aws-amplify/graphql-transformer-test-utils": "1.0.15"
   }
 }
