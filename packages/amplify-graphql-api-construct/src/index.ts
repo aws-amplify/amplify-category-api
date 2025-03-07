@@ -59,6 +59,7 @@ export { AmplifyGraphqlDefinition } from './amplify-graphql-definition';
 export {
   AmplifyDynamoDbTableWrapper,
   TimeToLiveSpecification,
+  PointInTimeRecoverySpecification,
   ProvisionedThroughput,
   SSESpecification,
   SSEType,
