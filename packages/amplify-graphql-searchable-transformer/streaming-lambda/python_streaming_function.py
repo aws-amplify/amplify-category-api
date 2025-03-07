@@ -215,7 +215,6 @@ def _lambda_handler(event, context):
         if is_ddb_insert_or_update:
             # Generate OpenSearch payload for item
             action = {'index': {'_index': doc_opensearch_index_name,
-                                '_type': doc_type,
                                 '_id': doc_id}}
             # Add external versioning if necessary
             if OPENSEARCH_USE_EXTERNAL_VERSIONING and '_version' in doc_fields:
@@ -237,7 +236,7 @@ def _lambda_handler(event, context):
         # If DynamoDB REMOVE, send 'delete' to OpenSearch
         elif is_ddb_delete:
             action = {'delete': {'_index': doc_opensearch_index_name,
-                                '_type': doc_type, '_id': doc_id}}
+                                 '_id': doc_id}}
             if OPENSEARCH_USE_EXTERNAL_VERSIONING and '_version' in doc_fields:
                 action['delete'].update([
                     ('version_type', 'external'),
