@@ -79,6 +79,7 @@ export class AmplifyDynamoDbTableWrapper {
     set deletionProtectionEnabled(deletionProtectionEnabled: boolean);
     static isAmplifyDynamoDbTableResource(x: any): x is CfnResource;
     set pointInTimeRecoveryEnabled(pointInTimeRecoveryEnabled: boolean);
+    set pointInTimeRecoverySpecification(pointInTimeRecoverySpecification: PointInTimeRecoverySpecification);
     set provisionedThroughput(provisionedThroughput: ProvisionedThroughput);
     setGlobalSecondaryIndexProvisionedThroughput(indexName: string, provisionedThroughput: ProvisionedThroughput): void;
     set sseSpecification(sseSpecification: SSESpecification);
@@ -356,6 +357,12 @@ export interface PartialTranslationBehavior {
     readonly subscriptionsInheritPrimaryAuth?: boolean;
     readonly suppressApiKeyGeneration?: boolean;
     readonly useSubUsernameForDefaultIdentityClaim?: boolean;
+}
+
+// @public
+export interface PointInTimeRecoverySpecification {
+    readonly pointInTimeRecoveryEnabled: boolean;
+    readonly recoveryPeriodInDays?: number;
 }
 
 // @public
