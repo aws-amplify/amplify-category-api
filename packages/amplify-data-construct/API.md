@@ -43,6 +43,7 @@ import { MutationFunctionSlot } from '@aws-amplify/graphql-api-construct';
 import { OIDCAuthorizationConfig } from '@aws-amplify/graphql-api-construct';
 import { OptimisticConflictResolutionStrategy } from '@aws-amplify/graphql-api-construct';
 import { PartialTranslationBehavior } from '@aws-amplify/graphql-api-construct';
+import { PointInTimeRecoverySpecification } from '@aws-amplify/graphql-api-construct';
 import { ProvisionedConcurrencyConfig } from '@aws-amplify/graphql-api-construct';
 import { ProvisionedThroughput } from '@aws-amplify/graphql-api-construct';
 import { QueryFunctionSlot } from '@aws-amplify/graphql-api-construct';
@@ -142,6 +143,8 @@ export { OIDCAuthorizationConfig }
 export { OptimisticConflictResolutionStrategy }
 
 export { PartialTranslationBehavior }
+
+export { PointInTimeRecoverySpecification }
 
 export { ProvisionedConcurrencyConfig }
 
