@@ -109,7 +109,6 @@
     "moduleNameMapper": {
       "axios": "axios/dist/node/axios.cjs"
     },
-    "testEnvironment": "../../FixJestEnvironment.js",
     "coveragePathIgnorePatterns": [
       "/node_modules",
       "/__tests__/"

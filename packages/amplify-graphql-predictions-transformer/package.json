@@ -72,7 +72,6 @@
     "modulePathIgnorePatterns": [
       "overrides"
     ],
-    "testEnvironment": "../../FixJestEnvironment.js",
     "collectCoverageFrom": [
       "src/**/*.ts"
     ],
