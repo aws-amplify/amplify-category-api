@@ -35,111 +35,126 @@ Object {
     },
   },
   "Mappings": Object {
-    "ServiceprincipalMap": Object {
+    "LatestNodeRuntimeMap": Object {
       "af-south-1": Object {
-        "states": "states.af-south-1.amazonaws.com",
+        "value": "nodejs20.x",
       },
       "ap-east-1": Object {
-        "states": "states.ap-east-1.amazonaws.com",
+        "value": "nodejs20.x",
       },
       "ap-northeast-1": Object {
-        "states": "states.ap-northeast-1.amazonaws.com",
+        "value": "nodejs20.x",
       },
       "ap-northeast-2": Object {
-        "states": "states.ap-northeast-2.amazonaws.com",
+        "value": "nodejs20.x",
       },
       "ap-northeast-3": Object {
-        "states": "states.ap-northeast-3.amazonaws.com",
+        "value": "nodejs20.x",
       },
       "ap-south-1": Object {
-        "states": "states.ap-south-1.amazonaws.com",
+        "value": "nodejs20.x",
       },
       "ap-south-2": Object {
-        "states": "states.ap-south-2.amazonaws.com",
+        "value": "nodejs20.x",
       },
       "ap-southeast-1": Object {
-        "states": "states.ap-southeast-1.amazonaws.com",
+        "value": "nodejs20.x",
       },
       "ap-southeast-2": Object {
-        "states": "states.ap-southeast-2.amazonaws.com",
+        "value": "nodejs20.x",
       },
       "ap-southeast-3": Object {
-        "states": "states.ap-southeast-3.amazonaws.com",
+        "value": "nodejs20.x",
       },
       "ap-southeast-4": Object {
-        "states": "states.ap-southeast-4.amazonaws.com",
+        "value": "nodejs20.x",
+      },
+      "ap-southeast-5": Object {
+        "value": "nodejs20.x",
+      },
+      "ap-southeast-7": Object {
+        "value": "nodejs20.x",
       },
       "ca-central-1": Object {
-        "states": "states.ca-central-1.amazonaws.com",
+        "value": "nodejs20.x",
+      },
+      "ca-west-1": Object {
+        "value": "nodejs20.x",
       },
       "cn-north-1": Object {
-        "states": "states.cn-north-1.amazonaws.com",
+        "value": "nodejs20.x",
       },
       "cn-northwest-1": Object {
-        "states": "states.cn-northwest-1.amazonaws.com",
+        "value": "nodejs20.x",
       },
       "eu-central-1": Object {
-        "states": "states.eu-central-1.amazonaws.com",
+        "value": "nodejs20.x",
       },
       "eu-central-2": Object {
-        "states": "states.eu-central-2.amazonaws.com",
+        "value": "nodejs20.x",
+      },
+      "eu-isoe-west-1": Object {
+        "value": "nodejs18.x",
       },
       "eu-north-1": Object {
-        "states": "states.eu-north-1.amazonaws.com",
+        "value": "nodejs20.x",
       },
       "eu-south-1": Object {
-        "states": "states.eu-south-1.amazonaws.com",
+        "value": "nodejs20.x",
       },
       "eu-south-2": Object {
-        "states": "states.eu-south-2.amazonaws.com",
+        "value": "nodejs20.x",
       },
       "eu-west-1": Object {
-        "states": "states.eu-west-1.amazonaws.com",
+        "value": "nodejs20.x",
       },
       "eu-west-2": Object {
-        "states": "states.eu-west-2.amazonaws.com",
+        "value": "nodejs20.x",
       },
       "eu-west-3": Object {
-        "states": "states.eu-west-3.amazonaws.com",
+        "value": "nodejs20.x",
       },
       "il-central-1": Object {
-        "states": "states.il-central-1.amazonaws.com",
+        "value": "nodejs20.x",
       },
       "me-central-1": Object {
-        "states": "states.me-central-1.amazonaws.com",
+        "value": "nodejs20.x",
       },
       "me-south-1": Object {
-        "states": "states.me-south-1.amazonaws.com",
+        "value": "nodejs20.x",
+      },
+      "mx-central-1": Object {
+        "value": "nodejs20.x",
       },
       "sa-east-1": Object {
-        "states": "states.sa-east-1.amazonaws.com",
+        "value": "nodejs20.x",
       },
       "us-east-1": Object {
-        "states": "states.us-east-1.amazonaws.com",
+        "value": "nodejs20.x",
       },
       "us-east-2": Object {
-        "states": "states.us-east-2.amazonaws.com",
+        "value": "nodejs20.x",
       },
       "us-gov-east-1": Object {
-        "states": "states.us-gov-east-1.amazonaws.com",
+        "value": "nodejs20.x",
       },
       "us-gov-west-1": Object {
-        "states": "states.us-gov-west-1.amazonaws.com",
+        "value": "nodejs20.x",
       },
       "us-iso-east-1": Object {
-        "states": "states.amazonaws.com",
+        "value": "nodejs18.x",
       },
       "us-iso-west-1": Object {
-        "states": "states.amazonaws.com",
+        "value": "nodejs18.x",
       },
       "us-isob-east-1": Object {
-        "states": "states.amazonaws.com",
+        "value": "nodejs18.x",
       },
       "us-west-1": Object {
-        "states": "states.us-west-1.amazonaws.com",
+        "value": "nodejs20.x",
       },
       "us-west-2": Object {
-        "states": "states.us-west-2.amazonaws.com",
+        "value": "nodejs20.x",
       },
     },
   },
@@ -695,19 +710,9 @@ Object {
               "Effect": "Allow",
               "Principal": Object {
                 "AWS": Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":iam::",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":root",
-                    ],
+                  "Fn::GetAtt": Array [
+                    "ApiPipelinePipelineRole8C805448",
+                    "Arn",
                   ],
                 },
               },
@@ -763,19 +768,9 @@ Object {
               "Effect": "Allow",
               "Principal": Object {
                 "AWS": Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":iam::",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":root",
-                    ],
+                  "Fn::GetAtt": Array [
+                    "ApiPipelinePipelineRole8C805448",
+                    "Arn",
                   ],
                 },
               },
@@ -975,19 +970,9 @@ Object {
               "Effect": "Allow",
               "Principal": Object {
                 "AWS": Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":iam::",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":root",
-                    ],
+                  "Fn::GetAtt": Array [
+                    "ApiPipelinePipelineRole8C805448",
+                    "Arn",
                   ],
                 },
               },
@@ -1260,7 +1245,7 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
             "Arn",
           ],
         },
-        "Runtime": "nodejs18.x",
+        "Runtime": "nodejs22.x",
         "Timeout": 15,
       },
       "Type": "AWS::Lambda::Function",
@@ -1379,7 +1364,7 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
             "Arn",
           ],
         },
-        "Runtime": "nodejs18.x",
+        "Runtime": "nodejs22.x",
         "Timeout": 15,
       },
       "Type": "AWS::Lambda::Function",
@@ -1453,7 +1438,15 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
             "Arn",
           ],
         },
-        "Runtime": "nodejs18.x",
+        "Runtime": Object {
+          "Fn::FindInMap": Array [
+            "LatestNodeRuntimeMap",
+            Object {
+              "Ref": "AWS::Region",
+            },
+            "value",
+          ],
+        },
         "Timeout": 900,
       },
       "Type": "AWS::Lambda::Function",
@@ -1520,6 +1513,16 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
               ],
             },
             Object {
+              "Action": "lambda:GetFunction",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "AwaiterCustomEventHandler8B7CBA73",
+                  "Arn",
+                ],
+              },
+            },
+            Object {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
               "Resource": Array [
@@ -1544,6 +1547,16 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
                   ],
                 },
               ],
+            },
+            Object {
+              "Action": "lambda:GetFunction",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "AwaiterCustomCompleteHandler21A45EDC",
+                  "Arn",
+                ],
+              },
             },
           ],
           "Version": "2012-10-17",
@@ -1598,7 +1611,15 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
             "Arn",
           ],
         },
-        "Runtime": "nodejs18.x",
+        "Runtime": Object {
+          "Fn::FindInMap": Array [
+            "LatestNodeRuntimeMap",
+            Object {
+              "Ref": "AWS::Region",
+            },
+            "value",
+          ],
+        },
         "Timeout": 900,
       },
       "Type": "AWS::Lambda::Function",
@@ -1665,6 +1686,16 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
               ],
             },
             Object {
+              "Action": "lambda:GetFunction",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "AwaiterCustomEventHandler8B7CBA73",
+                  "Arn",
+                ],
+              },
+            },
+            Object {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
               "Resource": Array [
@@ -1689,6 +1720,16 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
                   ],
                 },
               ],
+            },
+            Object {
+              "Action": "lambda:GetFunction",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "AwaiterCustomCompleteHandler21A45EDC",
+                  "Arn",
+                ],
+              },
             },
             Object {
               "Action": "states:StartExecution",
@@ -1747,7 +1788,15 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
             "Arn",
           ],
         },
-        "Runtime": "nodejs18.x",
+        "Runtime": Object {
+          "Fn::FindInMap": Array [
+            "LatestNodeRuntimeMap",
+            Object {
+              "Ref": "AWS::Region",
+            },
+            "value",
+          ],
+        },
         "Timeout": 900,
       },
       "Type": "AWS::Lambda::Function",
@@ -1814,6 +1863,16 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
               ],
             },
             Object {
+              "Action": "lambda:GetFunction",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "AwaiterCustomEventHandler8B7CBA73",
+                  "Arn",
+                ],
+              },
+            },
+            Object {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
               "Resource": Array [
@@ -1838,6 +1897,16 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
                   ],
                 },
               ],
+            },
+            Object {
+              "Action": "lambda:GetFunction",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "AwaiterCustomCompleteHandler21A45EDC",
+                  "Arn",
+                ],
+              },
             },
           ],
           "Version": "2012-10-17",
@@ -1879,6 +1948,22 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
             ],
           ],
         },
+        "LoggingConfiguration": Object {
+          "Destinations": Array [
+            Object {
+              "CloudWatchLogsLogGroup": Object {
+                "LogGroupArn": Object {
+                  "Fn::GetAtt": Array [
+                    "AwaiterMyProviderwaiterstatemachineLogGroupF7F194F4",
+                    "Arn",
+                  ],
+                },
+              },
+            },
+          ],
+          "IncludeExecutionData": false,
+          "Level": "ERROR",
+        },
         "RoleArn": Object {
           "Fn::GetAtt": Array [
             "AwaiterMyProviderwaiterstatemachineRoleD2CF7945",
@@ -1888,6 +1973,26 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
       },
       "Type": "AWS::StepFunctions::StateMachine",
     },
+    "AwaiterMyProviderwaiterstatemachineLogGroupF7F194F4": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "LogGroupName": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "/aws/vendedlogs/states/waiter-state-machine-",
+              Object {
+                "Ref": "AwaiterMyProviderframeworkisComplete18658065",
+              },
+              "-c811ff24b5cf04e2ef86833f4d6e13a7aaf3a6817c",
+            ],
+          ],
+        },
+        "RetentionInDays": 731,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
     "AwaiterMyProviderwaiterstatemachineRoleD2CF7945": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
@@ -1896,15 +2001,7 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": Object {
-                "Service": Object {
-                  "Fn::FindInMap": Array [
-                    "ServiceprincipalMap",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    "states",
-                  ],
-                },
+                "Service": "states.amazonaws.com",
               },
             },
           ],
@@ -1968,6 +2065,22 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
                   ],
                 },
               ],
+            },
+            Object {
+              "Action": Array [
+                "logs:CreateLogDelivery",
+                "logs:CreateLogStream",
+                "logs:GetLogDelivery",
+                "logs:UpdateLogDelivery",
+                "logs:DeleteLogDelivery",
+                "logs:ListLogDeliveries",
+                "logs:PutLogEvents",
+                "logs:PutResourcePolicy",
+                "logs:DescribeResourcePolicies",
+                "logs:DescribeLogGroups",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
             },
           ],
           "Version": "2012-10-17",
@@ -2106,6 +2219,7 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
                 "ecs:DescribeTasks",
                 "ecs:ListTasks",
                 "ecs:RegisterTaskDefinition",
+                "ecs:TagResource",
                 "ecs:UpdateService",
               ],
               "Effect": "Allow",
@@ -2241,7 +2355,7 @@ exports.handler = async function({ 'CodePipeline.job': { id: jobId } }) {
             "Arn",
           ],
         },
-        "Runtime": "nodejs18.x",
+        "Runtime": "nodejs22.x",
         "Timeout": 15,
       },
       "Type": "AWS::Lambda::Function",
