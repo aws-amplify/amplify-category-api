@@ -34,7 +34,7 @@ export interface StackConfig {
    * **NOTE**
    * - Only applicable when AuthorizationMode is set to OIDC.
    * - Currently only supports Cognito User Pools as the simulated OIDC provider for E2E test.
-   * - Currently only supports JavaScript as the lambda function code, with Node.js runtime version 18.x.
+   * - Currently only supports JavaScript as the lambda function code, with Node.js runtime version 22.x.
    * - Inline code needs to export the handler function as `handler` as `index.handler` would be used as the handler path.
    */
   oidcOptions?: {

@@ -39,7 +39,7 @@ This section should get you running with **Amplify API Category** and get you fa
 
    > If you are using Yarn v2, run `yarn set version classic` to change to Yarn Classic.
    >
-   > Note: Ensure that the version of Node installed is v18.x. During the installation process, some modules may not be compatible with other versions of Node.
+   > Note: Ensure that the version of Node installed is v22.x. During the installation process, some modules may not be compatible with other versions of Node.
 
 1. Ensure you are using the npm registry, even with yarn by running `yarn config set registry https://registry.npmjs.org`
 
