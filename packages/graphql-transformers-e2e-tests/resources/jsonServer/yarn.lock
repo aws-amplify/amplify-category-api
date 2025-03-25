@@ -56,32 +56,6 @@ astral-regex@^2.0.0:
   resolved "https://registry.npmjs.org/astral-regex/-/astral-regex-2.0.0.tgz#483143c567aeed4785759c0865786dc77d7d2e31"
   integrity sha512-Z7tMw1ytTXt5jqMcOP+OQteU1VuNK9Y02uuJtKQ1Sv69jXQKKg5cibLwGJow8yzZP+eAc18EmLGPal0bp36rvQ==
 
-aws-cdk-lib@~2.129.0:
-  version "2.129.0"
-  resolved "https://registry.npmjs.org/aws-cdk-lib/-/aws-cdk-lib-2.129.0.tgz#ddf9df3f5379a9eb90a80bbabe4bfd2d92a9c98b"
-  integrity sha512-EM3zInM95YN0CM9XWmnFPlfZnXbRCm639OUeKEd1YiSGS+LW+Jbs5lSpIaXyFCR4sUXFYa6ZfaH917Gkf3yxrw==
-  dependencies:
-    "@aws-cdk/asset-awscli-v1" "^2.2.202"
-    "@aws-cdk/asset-kubectl-v20" "^2.1.2"
-    "@aws-cdk/asset-node-proxy-agent-v6" "^2.0.1"
-    "@balena/dockerignore" "^1.0.2"
-    case "1.6.3"
-    fs-extra "^11.2.0"
-    ignore "^5.3.1"
-    jsonschema "^1.4.1"
-    minimatch "^3.1.2"
-    punycode "^2.3.1"
-    semver "^7.6.0"
-    table "^6.8.1"
-    yaml "1.10.2"
-
-aws-cdk@~2.129.0:
-  version "2.129.0"
-  resolved "https://registry.npmjs.org/aws-cdk/-/aws-cdk-2.129.0.tgz#68d3eac268b9b78feb68851bbfb994835dfddc42"
-  integrity sha512-Gh/dG2aY0cvlLumYUXalg28/knVI/TrN6NZMBpRWe4gGJe/RH5JROIVB2GOEMMajkew9EiFH0ZeoC+pQ57diaQ==
-  optionalDependencies:
-    fsevents "2.3.2"
-
 balanced-match@^1.0.0:
   version "1.0.2"
   resolved "https://registry.npmjs.org/balanced-match/-/balanced-match-1.0.2.tgz#e83e3a7e3f300b34cb9d87f615fa0cbf357690ee"

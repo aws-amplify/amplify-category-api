@@ -33,12 +33,12 @@
     "@aws-amplify/graphql-transformer-interfaces": "3.12.0"
   },
   "devDependencies": {
-    "@types/node": "^12.12.6",
+    "@types/node": "^22.0.0",
     "rimraf": "^3.0.0",
     "ts-jest": "26.4.4"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.129.0",
+    "aws-cdk-lib": "^2.184.0",
     "constructs": "^10.3.0"
   },
   "jest": {

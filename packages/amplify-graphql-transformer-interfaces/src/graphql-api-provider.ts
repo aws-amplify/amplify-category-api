@@ -1,5 +1,6 @@
 import { CfnResource, IAsset } from 'aws-cdk-lib';
 import { Construct, IConstruct } from 'constructs';
+import { IamResource } from 'aws-cdk-lib/aws-appsync';
 import { Grant, IGrantable, IRole } from 'aws-cdk-lib/aws-iam';
 // eslint-disable-next-line import/no-cycle
 import { TransformHostProvider } from './transform-host-provider';
@@ -136,7 +137,7 @@ export interface GraphQLAPIProvider extends IConstruct {
   addToSchema: (addition: string) => void;
   addSchemaDependency: (construct: CfnResource) => boolean;
 
-  grant: (grantee: IGrantable, resources: APIIAMResourceProvider, ...actions: string[]) => Grant;
+  grant: (grantee: IGrantable, resources: IamResource, ...actions: string[]) => Grant;
   // /**
   //  *  Adds an IAM policy statement for Mutation access to this GraphQLApi to an IAM principal's policy.
   //  *
@@ -158,13 +159,4 @@ export interface GraphQLAPIProvider extends IConstruct {
   //  * @param fields The fields to grant access to that are Subscriptions (leave blank for all).
   //  */
   grantSubscription: (grantee: IGrantable, ...fields: string[]) => Grant;
-}
-
-export interface APIIAMResourceProvider {
-  /**
-   * Return the Resource ARN
-   *
-   * @param api The GraphQL API to give permissions
-   */
-  resourceArns: (api: GraphQLAPIProvider) => string[];
 }

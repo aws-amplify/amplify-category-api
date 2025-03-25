@@ -135,7 +135,7 @@
     "eslint-import-resolver-typescript": "^2.0.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jest": "^26.1.1",
-    "eslint-plugin-jsdoc": "^40.1.0",
+    "eslint-plugin-jsdoc": "^50.6.1",
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "eslint-plugin-react": "^7.29.4",
@@ -180,6 +180,8 @@
     "braces": "^3.0.3",
     "@octokit/request-error": "^5.1.1",
     "@octokit/request": "^8.4.1",
-    "@octokit/plugin-paginate-rest": "^9.2.2"
+    "@octokit/plugin-paginate-rest": "^9.2.2",
+    "@aws-amplify/graphql-transformer-interfaces": "^3.12.0",
+    "aws-cdk-lib": "2.184.0"
   }
 }

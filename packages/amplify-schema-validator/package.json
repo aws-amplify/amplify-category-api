@@ -16,14 +16,15 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "devDependencies": {
-    "@size-limit/preset-small-lib": "6.0.4",
+    "@size-limit/preset-small-lib": "^11.2.0",
+    "@size-limit/webpack": "^11.2.0",
     "@types/jest": "^24.0.18",
     "fs-extra": "^11.1.0",
     "jest": "^29.0.0",
     "jest-environment-jsdom": "^29.3.1",
     "lint-staged": "^9.2.5",
     "rimraf": "^3.0.0",
-    "size-limit": "6.0.4",
+    "size-limit": "^11.2.0",
     "ts-jest": "^29.0.2",
     "ts-node": "^8.5.0"
   },
@@ -33,7 +34,7 @@
   "size-limit": [
     {
       "path": "./dist/index.js",
-      "limit": "6 KB",
+      "limit": "6.1 KB",
       "ignore": [
         "graphql"
       ]

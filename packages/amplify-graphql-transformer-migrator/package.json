@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
-    "@types/node": "^12.12.6"
+    "@types/node": "^22.0.0"
   },
   "jest": {
     "transform": {

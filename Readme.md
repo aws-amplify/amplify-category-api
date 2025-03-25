@@ -34,7 +34,7 @@ This repo manages the API category within Amplify CLI. The Category is responsib
 
 ## Install the CLI
 
-- Requires Node.js® version 18 or later
+- Requires Node.js® version 22 or later
 
 Install and configure the Amplify CLI as follows:
 

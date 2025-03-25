@@ -1,6 +1,5 @@
 import {
   AssetProvider,
-  APIIAMResourceProvider,
   GraphQLAPIProvider,
   TransformHostProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
@@ -10,6 +9,7 @@ import {
   AuthorizationMode,
   AuthorizationType,
   GraphqlApiBase,
+  IamResource,
   LogConfig,
   OpenIdConnectConfig,
   UserPoolConfig,
@@ -17,10 +17,11 @@ import {
   CfnApiKey,
   CfnGraphQLApi,
   CfnGraphQLSchema,
+  Visibility,
 } from 'aws-cdk-lib/aws-appsync';
 import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
-import { ArnFormat, CfnResource, Duration, Stack } from 'aws-cdk-lib';
+import { CfnResource, Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { TransformerSchema } from './cdk-compat/schema-asset';
 import { DefaultTransformHost } from './transform-host';
@@ -58,64 +59,6 @@ export interface GraphqlApiProps {
    * @default - false
    */
   readonly xrayEnabled?: boolean;
-}
-
-export class IamResource implements APIIAMResourceProvider {
-  /**
-   * Generate the resource names given custom arns
-   *
-   * @param arns The custom arns that need to be permissioned
-   *
-   * Example: custom('/types/Query/fields/getExample')
-   */
-  public static custom(...arns: string[]): IamResource {
-    if (arns.length === 0) {
-      throw new Error('At least 1 custom ARN must be provided.');
-    }
-    return new IamResource(arns);
-  }
-
-  /**
-   * Generate the resource names given a type and fields
-   *
-   * @param type The type that needs to be allowed
-   * @param fields The fields that need to be allowed, if empty grant permissions to ALL fields
-   *
-   * Example: ofType('Query', 'GetExample')
-   */
-  public static ofType(type: string, ...fields: string[]): IamResource {
-    const arns = fields.length ? fields.map((field) => `types/${type}/fields/${field}`) : [`types/${type}/*`];
-    return new IamResource(arns);
-  }
-
-  /**
-   * Generate the resource names that accepts all types: `*`
-   */
-  public static all(): IamResource {
-    return new IamResource(['*']);
-  }
-
-  private arns: string[];
-
-  private constructor(arns: string[]) {
-    this.arns = arns;
-  }
-
-  /**
-   * Return the Resource ARN
-   *
-   * @param api The GraphQL API to give permissions
-   */
-  public resourceArns(api: GraphQLAPIProvider): string[] {
-    return this.arns.map((arn) =>
-      Stack.of(api).formatArn({
-        service: 'appsync',
-        resource: `apis/${api.apiId}`,
-        arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
-        resourceName: `${arn}`,
-      }),
-    );
-  }
 }
 
 export type TransformerAPIProps = GraphqlApiProps & {
@@ -193,6 +136,16 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
    */
   public readonly assetProvider: AssetProvider;
 
+  /**
+   * The GraphQL API endpoint ARN
+   */
+  public readonly graphQLEndpointArn: string;
+
+  /**
+   * The scope of the GraphQL API. public (GLOBAL) or private (PRIVATE)
+   */
+  public readonly visibility: Visibility;
+
   private schemaResource: CfnGraphQLSchema;
 
   private api: CfnGraphQLApi;
@@ -231,6 +184,8 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     this.arn = this.api.attrArn;
     this.graphqlUrl = this.api.attrGraphQlUrl;
     this.name = this.api.name;
+    this.graphQLEndpointArn = this.api.attrGraphQlEndpointArn;
+    this.visibility = this.api.visibility === 'PRIVATE' ? Visibility.PRIVATE : Visibility.GLOBAL;
     this.schema = props.schema ?? new TransformerSchema();
     this.assetProvider = props.assetProvider;
     this.schemaResource = this.schema.bind(this);
@@ -267,7 +222,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
    * @param resources The set of resources to allow (i.e. ...:[region]:[accountId]:apis/GraphQLId/...)
    * @param actions The actions that should be granted to the principal (i.e. appsync:graphql )
    */
-  public grant(grantee: IGrantable, resources: APIIAMResourceProvider, ...actions: string[]): Grant {
+  public grant(grantee: IGrantable, resources: IamResource, ...actions: string[]): Grant {
     return Grant.addToPrincipal({
       grantee,
       actions,
