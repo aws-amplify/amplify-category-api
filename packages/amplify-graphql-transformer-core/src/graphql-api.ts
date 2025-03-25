@@ -1,8 +1,4 @@
-import {
-  AssetProvider,
-  GraphQLAPIProvider,
-  TransformHostProvider,
-} from '@aws-amplify/graphql-transformer-interfaces';
+import { AssetProvider, GraphQLAPIProvider, TransformHostProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   ApiKeyConfig,
   AuthorizationConfig,
