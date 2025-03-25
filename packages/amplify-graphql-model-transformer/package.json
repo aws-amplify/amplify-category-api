@@ -47,9 +47,9 @@
   },
   "devDependencies": {
     "@aws-amplify/graphql-transformer-test-utils": "1.0.15",
-    "@aws-sdk/client-dynamodb": "^3.624.0",
-    "@aws-sdk/client-lambda": "^3.624.0",
-    "@aws-sdk/client-sfn": "^3.624.0",
+    "@aws-sdk/client-dynamodb": "^3.774.0",
+    "@aws-sdk/client-lambda": "^3.774.0",
+    "@aws-sdk/client-sfn": "^3.774.0",
     "@types/aws-lambda": "8.10.119",
     "@types/lodash.isequal": "^4.5.8",
     "@types/node": "^18.0.0",
