@@ -11,6 +11,7 @@ export class PredictionsResourceIDs {
 
   static lambdaHandlerName = 'predictionsLambda.handler';
 
+  // TODO: change to 22
   static lambdaRuntime = 'nodejs18.x';
 
   static lambdaTimeout = 60;

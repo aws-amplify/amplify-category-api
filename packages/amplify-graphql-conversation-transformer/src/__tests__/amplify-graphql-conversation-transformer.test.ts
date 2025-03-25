@@ -67,7 +67,7 @@ describe('ConversationTransformer', () => {
       const transformerManager = new TransformManager();
       const stack = transformerManager.getTransformScope();
       const customHandler = new Function(stack, 'conversation-handler', {
-        runtime: Runtime.NODEJS_18_X,
+        runtime: Runtime.NODEJS_22_X,
         code: Code.fromInline('exports.handler = async (event) => { return "Hello World"; }'),
         handler: 'index.handler',
       });

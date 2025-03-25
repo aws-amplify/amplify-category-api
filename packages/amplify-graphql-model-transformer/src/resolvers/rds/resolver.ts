@@ -159,7 +159,7 @@ export const createRdsLambda = (
     `functions/${resourceNames.sqlLambdaFunction}.zip`,
     'handler.run',
     path.resolve(__dirname, '..', '..', '..', 'lib', 'rds-lambda.zip'),
-    Runtime.NODEJS_18_X,
+    Runtime.NODEJS_22_X,
     [LayerVersion.fromLayerVersionArn(scope, resourceNames.sqlLambdaLayerVersion, layerVersionArn)],
     lambdaRole,
     lambdaEnvironment,

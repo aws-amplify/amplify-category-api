@@ -80,7 +80,7 @@ interface StackConfig {
    * **NOTE**
    * - Only applicable when AuthorizationMode is set to OIDC.
    * - Currently only supports Cognito User Pools as the simulated OIDC provider for E2E test.
-   * - Currently only supports JavaScript as the lambda function code, with Node.js runtime version 18.x.
+   * - Currently only supports JavaScript as the lambda function code, with Node.js runtime version 22.x.
    * - Inline code needs to export the handler function as `handler` as `index.handler` would be used as the handler path.
    */
   oidcOptions?: {
@@ -213,7 +213,7 @@ const createUserPoolTriggers = (triggers: Record<string, string>): UserPoolTrigg
 
 const createLambdaFunction = (name: string, code: string): Function => {
   return new Function(stack, `${name}Lambda`, {
-    runtime: Runtime.NODEJS_18_X,
+    runtime: Runtime.NODEJS_22_X,
     handler: 'index.handler',
     code: Code.fromInline(code),
   });

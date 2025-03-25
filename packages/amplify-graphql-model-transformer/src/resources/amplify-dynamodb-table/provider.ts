@@ -29,7 +29,7 @@ export class Provider extends Construct {
     const fn = new aws_lambda.Function(this, `framework-${entrypoint}`, {
       code: code,
       description: `AmplifyManagedTable - ${entrypoint} (${this.node.path})`.slice(0, 256),
-      runtime: aws_lambda.Runtime.NODEJS_18_X,
+      runtime: aws_lambda.Runtime.NODEJS_22_X,
       handler,
       timeout: Duration.minutes(14),
       role,

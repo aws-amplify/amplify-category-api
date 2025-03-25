@@ -148,6 +148,7 @@ const createSchemaInspectorLambda = async (lambdaName: string, iamRole: Role, vp
     FunctionName: lambdaName,
     Handler: 'index.handler',
     Role: iamRole.Arn,
+    // TODO: change to 22
     Runtime: 'nodejs18.x',
     VpcConfig: {
       SecurityGroupIds: vpc.securityGroupIds,
