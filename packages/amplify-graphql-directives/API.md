@@ -41,6 +41,9 @@ export const BelongsToDirective: Directive;
 export const ConnectionDirectiveV1: Directive;
 
 // @public (undocumented)
+export const ConversationDirective: Directive;
+
+// @public (undocumented)
 export const DefaultDirective: Directive;
 
 // @public (undocumented)
@@ -64,10 +67,18 @@ export interface DirectiveDefaults {
 }
 
 // @public (undocumented)
-export const FunctionDirective: Directive;
+export const FunctionDirective: Directive<FunctionDirectiveDefaults>;
+
+// @public (undocumented)
+export type FunctionDirectiveDefaults = {
+    invocationType: string;
+};
 
 // @public (undocumented)
 export const FunctionDirectiveV1: Directive;
+
+// @public (undocumented)
+export const GenerationDirective: Directive;
 
 // @public (undocumented)
 export const HasManyDirective: Directive<HasManyDirectiveDefaults>;
@@ -143,6 +154,9 @@ export const V1Directives: readonly Directive[];
 
 // @public (undocumented)
 export const V2Directives: readonly Directive[];
+
+// @public (undocumented)
+export const ValidateDirective: Directive;
 
 // @public (undocumented)
 export const VersionedDirectiveV1: Directive<VersionedDirectiveV1Defaults>;

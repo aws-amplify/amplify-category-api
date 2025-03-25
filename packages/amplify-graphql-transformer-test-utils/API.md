@@ -104,6 +104,8 @@ export const mockSqlDataSourceStrategy: (options?: MakeSqlDataSourceStrategyOpti
 // @public (undocumented)
 export interface NestedStacks {
     // (undocumented)
+    rawRootStack: Stack;
+    // (undocumented)
     rootStack: Template;
     // (undocumented)
     stackMapping: Record<string, string>;
@@ -224,6 +226,7 @@ export type TestTransformParameters = RDSLayerMappingProvider & RDSSNSTopicMappi
     transformers: TransformerPluginProvider[];
     transformParameters?: Partial<TransformParameters>;
     userDefinedSlots?: Record<string, UserDefinedSlot[]>;
+    transformerManager?: TransformManager;
 };
 
 // @public (undocumented)
