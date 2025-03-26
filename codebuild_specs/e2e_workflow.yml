@@ -15,7 +15,8 @@ batch:
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
         compute-type: BUILD_GENERAL1_LARGE
-        image: $WINDOWS_IMAGE_2019
+        image: >-
+          671107461633.dkr.ecr.us-east-1.amazonaws.com/amplify-cli-codebuild-testing-stack-prod-amplifyclie2eecrc5fd2bba-ke8oxaimjhf2:2.0.0-1
       depend-on:
         - build_linux
     - identifier: test
