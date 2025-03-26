@@ -6,13 +6,10 @@
 
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AssetProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { BackendOutputEntry } from '@aws-amplify/plugin-types';
-import { BackendOutputStorageStrategy } from '@aws-amplify/plugin-types';
 import { Construct } from 'constructs';
 import type { DataSourceStrategiesProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
-import type { LogConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import type { RDSLayerMappingProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import type { RDSSNSTopicMappingProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -42,7 +39,6 @@ export type ExecuteTransformConfig = TransformConfig & DataSourceStrategiesProvi
     parameterProvider?: TransformParameterProvider;
     assetProvider: AssetProvider;
     synthParameters: SynthParameters;
-    logging?: true | LogConfig;
 };
 
 // @public (undocumented)
@@ -60,7 +56,7 @@ export type TransformerFactoryArgs = {
     storageConfig?: any;
     customTransformers?: TransformerPluginProvider[];
     functionNameMap?: Record<string, IFunction>;
-    outputStorageStrategy?: BackendOutputStorageStrategy<BackendOutputEntry>;
+    allowGen1Patterns?: boolean;
 };
 
 // (No @packageDocumentation comment for this package)

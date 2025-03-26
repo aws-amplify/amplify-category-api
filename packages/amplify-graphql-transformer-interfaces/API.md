@@ -7,7 +7,6 @@
 import { BackedDataSource } from 'aws-cdk-lib/aws-appsync';
 import { BaseDataSource } from 'aws-cdk-lib/aws-appsync';
 import { CfnDomain } from 'aws-cdk-lib/aws-elasticsearch';
-import { CfnFunctionConfiguration } from 'aws-cdk-lib/aws-appsync';
 import { CfnParameter } from 'aws-cdk-lib';
 import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import { CfnResource } from 'aws-cdk-lib';
@@ -21,12 +20,10 @@ import { EnumTypeDefinitionNode } from 'graphql';
 import { EnumTypeExtensionNode } from 'graphql';
 import { EnumValueDefinitionNode } from 'graphql';
 import { FieldDefinitionNode } from 'graphql';
-import { FieldLogLevel } from 'aws-cdk-lib/aws-appsync';
 import { FieldNode } from 'graphql';
 import { Grant } from 'aws-cdk-lib/aws-iam';
 import { GraphqlApiBase } from 'aws-cdk-lib/aws-appsync';
 import { HttpDataSource } from 'aws-cdk-lib/aws-appsync';
-import { HttpDataSourceOptions } from 'aws-cdk-lib/aws-appsync';
 import { IamResource } from 'aws-cdk-lib/aws-appsync';
 import { IAsset } from 'aws-cdk-lib';
 import { IConstruct } from 'constructs';
@@ -44,7 +41,6 @@ import { LambdaDataSource } from 'aws-cdk-lib/aws-appsync';
 import { NoneDataSource } from 'aws-cdk-lib/aws-appsync';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { ObjectTypeExtensionNode } from 'graphql';
-import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { ScalarTypeDefinitionNode } from 'graphql';
 import { SchemaDefinitionNode } from 'graphql';
@@ -191,9 +187,6 @@ export type FieldMapEntry = {
 };
 
 // @public (undocumented)
-export type FunctionRuntimeTemplate = VTLRuntimeTemplate | JSRuntimeTemplate;
-
-// @public (undocumented)
 export interface GraphQLAPIProvider extends IConstruct {
     // (undocumented)
     addSchemaDependency: (construct: CfnResource) => boolean;
@@ -212,21 +205,9 @@ export interface GraphQLAPIProvider extends IConstruct {
     // (undocumented)
     grantSubscription: (grantee: IGrantable, ...fields: string[]) => Grant;
     // (undocumented)
-    readonly graphqlUrl: string;
-    // (undocumented)
     readonly host: TransformHostProvider;
     // (undocumented)
     readonly name: string;
-}
-
-// @public (undocumented)
-export interface ImportedAmplifyDynamoDbModelDataSourceStrategy {
-    // (undocumented)
-    readonly dbType: 'DYNAMODB';
-    // (undocumented)
-    readonly provisionStrategy: 'IMPORTED_AMPLIFY_TABLE';
-    // (undocumented)
-    readonly tableName: string;
 }
 
 // @public (undocumented)
@@ -255,21 +236,6 @@ export const isSqlModelDataSourceSsmDbConnectionStringConfig: (obj: any) => obj 
 export const isSslCertSsmPathConfig: (obj: any) => obj is SslCertSsmPathConfig;
 
 // @public (undocumented)
-export type JSRuntimeTemplate = {
-    codeMappingTemplate: MappingTemplateProvider;
-};
-
-// @public (undocumented)
-export interface LogConfig {
-    // (undocumented)
-    excludeVerboseContent?: boolean;
-    // (undocumented)
-    fieldLogLevel?: FieldLogLevel;
-    // (undocumented)
-    retention?: RetentionDays;
-}
-
-// @public (undocumented)
 export type MappingTemplateProvider = InlineMappingTemplateProvider | S3MappingTemplateProvider;
 
 // @public (undocumented)
@@ -281,7 +247,7 @@ export enum MappingTemplateType {
 }
 
 // @public (undocumented)
-export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | ImportedAmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
+export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
 
 // @public (undocumented)
 export interface ModelDataSourceStrategyBase {
@@ -531,7 +497,6 @@ export type SynthParameters = {
     identityPoolId?: string;
     adminRoles?: string[];
     enableIamAccess?: boolean;
-    provisionHotswapFriendlyResources?: boolean;
 };
 
 // @public (undocumented)
@@ -825,9 +790,7 @@ export interface TransformerProviderRegistry {
 // @public (undocumented)
 export interface TransformerResolverProvider {
     // (undocumented)
-    addJsFunctionToSlot: (slotName: string, codeMappingTemplate: MappingTemplateProvider, dataSource?: DataSourceProvider) => void;
-    // (undocumented)
-    addVtlFunctionToSlot: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider, dataSource?: DataSourceProvider) => void;
+    addToSlot: (slotName: string, requestMappingTemplate?: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider, dataSource?: DataSourceProvider) => void;
     // (undocumented)
     mapToStack: (stack: Stack) => void;
     // (undocumented)
@@ -905,17 +868,11 @@ export type TransformerValidationStepContextProvider = Pick<TransformerContextPr
 // @public (undocumented)
 export interface TransformHostProvider {
     // (undocumented)
-    addAppSyncFunction: (name: string, mappingTemplate: FunctionRuntimeTemplate, dataSourceName: string, scope?: Construct, runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty) => AppSyncFunctionConfigurationProvider;
-    // (undocumented)
-    addAppSyncJsRuntimeFunction: (name: string, codeMappingTemplate: MappingTemplateProvider, dataSourceName: string, scope?: Construct) => AppSyncFunctionConfigurationProvider;
-    // (undocumented)
-    addAppSyncVtlRuntimeFunction: (name: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, dataSourceName: string, scope?: Construct) => AppSyncFunctionConfigurationProvider;
+    addAppSyncFunction: (name: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, dataSourceName: string, scope?: Construct) => AppSyncFunctionConfigurationProvider;
     // (undocumented)
     addDynamoDbDataSource(name: string, table: ITable, options?: DynamoDbDataSourceOptions, scope?: Construct): DynamoDbDataSource;
     // (undocumented)
-    addHttpDataSource(name: string, endpoint: string, options?: HttpDataSourceOptions, scope?: Construct): HttpDataSource;
-    // (undocumented)
-    addJsRuntimeResolver: (typeName: string, fieldName: string, codeMappingTemplate: MappingTemplateProvider, resolverLogicalId?: string, dataSourceName?: string, pipelineConfig?: string[], scope?: Construct) => CfnResolver;
+    addHttpDataSource(name: string, endpoint: string, options?: DataSourceOptions, scope?: Construct): HttpDataSource;
     // (undocumented)
     addLambdaDataSource(name: string, lambdaFunction: IFunction, options?: DataSourceOptions, scope?: Construct): LambdaDataSource;
     // (undocumented)
@@ -925,11 +882,9 @@ export interface TransformHostProvider {
     // (undocumented)
     addNoneDataSource(name: string, options?: DataSourceOptions, scope?: Construct): NoneDataSource;
     // (undocumented)
-    addResolver: (typeName: string, fieldName: string, mappingTemplate: FunctionRuntimeTemplate, resolverLogicalId?: string, dataSourceName?: string, pipelineConfig?: string[], scope?: Construct, runtime?: CfnFunctionConfiguration.AppSyncRuntimeProperty) => CfnResolver;
+    addResolver: (typeName: string, fieldName: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, resolverLogicalId?: string, dataSourceName?: string, pipelineConfig?: string[], scope?: Construct) => CfnResolver;
     // (undocumented)
     addSearchableDataSource(name: string, endpoint: string, region: string, options?: SearchableDataSourceOptions, scope?: Construct): BaseDataSource;
-    // (undocumented)
-    addVtlRuntimeResolver: (typeName: string, fieldName: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate: MappingTemplateProvider, resolverLogicalId?: string, dataSourceName?: string, pipelineConfig?: string[], scope?: Construct) => CfnResolver;
     // (undocumented)
     getDataSource: (name: string) => BaseDataSource | void;
     // (undocumented)
@@ -965,6 +920,7 @@ export type TransformParameters = {
     enableAutoIndexQueryNames: boolean;
     respectPrimaryKeyAttributesOnConnectionField: boolean;
     enableSearchNodeToNodeEncryption: boolean;
+    enableGen2Migration?: boolean;
 };
 
 // @public (undocumented)
@@ -982,12 +938,6 @@ export interface VpcConfig {
     // (undocumented)
     readonly vpcId: string;
 }
-
-// @public (undocumented)
-export type VTLRuntimeTemplate = {
-    requestMappingTemplate: MappingTemplateProvider;
-    responseMappingTemplate: MappingTemplateProvider;
-};
 
 // Warnings were encountered during analysis:
 //
