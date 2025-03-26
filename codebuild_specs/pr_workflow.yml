@@ -13,9 +13,7 @@ batch:
       env:
         type: WINDOWS_SERVER_2019_CONTAINER
         compute-type: BUILD_GENERAL1_LARGE
-        # temp use hardcoded image
-        image: '671107461633.dkr.ecr.us-east-1.amazonaws.com/amplify-cli-codebuild-testing-stack-prod-amplifyclie2eecrc5fd2bba-ke8oxaimjhf2:2.0.0-1'
-        # image: $WINDOWS_IMAGE_2019
+        image: $WINDOWS_IMAGE_2019
       # Declaring a dependency on build_linux allows build_windows to run in
       # parallel with the other tasks. This means we detect Windows build
       # failures later in the cycle, but since those are infrequent, and this
