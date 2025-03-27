@@ -182,6 +182,6 @@
     "@octokit/request": "^8.4.1",
     "@octokit/plugin-paginate-rest": "^9.2.2",
     "@aws-amplify/graphql-transformer-interfaces": "^3.12.0",
-    "aws-cdk-lib": "2.184.0"
+    "aws-cdk-lib": "^2.184.0"
   }
 }

@@ -9850,10 +9850,10 @@ aws-appsync@^4.1.1, aws-appsync@^4.1.9:
     url "^0.11.0"
     uuid "3.x"
 
-aws-cdk-lib@2.184.0, aws-cdk-lib@~2.129.0, aws-cdk-lib@~2.184.0:
-  version "2.184.0"
-  resolved "https://registry.npmjs.org/aws-cdk-lib/-/aws-cdk-lib-2.184.0.tgz#2e1d15bc3e3d0fd270555eb5dba0ad3921dca244"
-  integrity sha512-IC/38376PVCJ9cEsfklH0eBd5uwT7SKZxQJlfAd51TquZ7skpo7dt9oetrkUk4H+tsg4VcTF5B0ZbVZdDDP2yg==
+aws-cdk-lib@^2.184.0, aws-cdk-lib@~2.129.0, aws-cdk-lib@~2.184.0:
+  version "2.186.0"
+  resolved "https://registry.npmjs.org/aws-cdk-lib/-/aws-cdk-lib-2.186.0.tgz#8295708ba4bde9e6f57e73d0027feba0d75b5a58"
+  integrity sha512-y/DD4h8CbhwGyPTpoHELATavZe5FWcy1xSuLlReOd3+cCRZ9rAzVSFdPB8kSJUD4nBPrIeGkW1u8ItUOhms17w==
   dependencies:
     "@aws-cdk/asset-awscli-v1" "^2.2.227"
     "@aws-cdk/asset-node-proxy-agent-v6" "^2.1.0"
