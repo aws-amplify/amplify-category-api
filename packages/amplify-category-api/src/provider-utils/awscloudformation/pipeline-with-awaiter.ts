@@ -26,7 +26,7 @@ export type GitHubSourceActionInfo = {
   tokenSecretArn: string;
 };
 
-const lambdaRuntimeNodeVersion = lambda.Runtime.NODEJS_18_X;
+const lambdaRuntimeNodeVersion = new lambda.Runtime('nodejs22.x', lambda.RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
 const lambdasDir = path.resolve(__dirname, '../../../resources/awscloudformation/lambdas');
 

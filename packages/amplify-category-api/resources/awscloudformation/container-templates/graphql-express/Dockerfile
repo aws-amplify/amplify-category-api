@@ -1,4 +1,4 @@
-FROM public.ecr.aws/bitnami/node:18-debian-10
+FROM public.ecr.aws/bitnami/node:22
 
 WORKDIR /usr/src/app
 COPY package*.json ./

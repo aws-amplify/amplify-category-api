@@ -42,7 +42,7 @@ import {
   RDSSNSTopicMapping,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { IFunction, LayerVersion, Runtime, Alias, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
+import { IFunction, LayerVersion, Runtime, RuntimeFamily, Alias, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { CfnVPCEndpoint } from 'aws-cdk-lib/aws-ec2';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
@@ -159,7 +159,7 @@ export const createRdsLambda = (
     `functions/${resourceNames.sqlLambdaFunction}.zip`,
     'handler.run',
     path.resolve(__dirname, '..', '..', '..', 'lib', 'rds-lambda.zip'),
-    Runtime.NODEJS_18_X,
+    new Runtime('nodejs22.x', RuntimeFamily.NODEJS, { supportsInlineCode: true }),
     [LayerVersion.fromLayerVersionArn(scope, resourceNames.sqlLambdaLayerVersion, layerVersionArn)],
     lambdaRole,
     lambdaEnvironment,
@@ -334,7 +334,7 @@ export const createRdsPatchingLambda = (
     `functions/${resourceNames.sqlPatchingLambdaFunction}.zip`,
     'index.handler',
     path.resolve(__dirname, '..', '..', '..', 'lib', 'rds-patching-lambda.zip'),
-    Runtime.NODEJS_18_X,
+    new Runtime('nodejs22.x', RuntimeFamily.NODEJS, { supportsInlineCode: true }),
     [],
     lambdaRole,
     environment,
