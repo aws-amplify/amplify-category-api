@@ -43,6 +43,7 @@ function storeCacheForBuildJob {
 }
 function loadCacheFromBuildJob {
   # download [repo, .cache] from s3
+  rm -rf node_modules
   loadCache repo $CODEBUILD_SRC_DIR
   loadCache .cache $HOME/.cache
 }
