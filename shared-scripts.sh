@@ -43,6 +43,7 @@ function storeCacheForBuildJob {
 }
 function loadCacheFromBuildJob {
   # download [repo, .cache] from s3
+  rm -rf node_modules
   loadCache repo $CODEBUILD_SRC_DIR
   loadCache .cache $HOME/.cache
 }
@@ -371,7 +372,7 @@ function retry {
     TEST_SUITE=${TEST_SUITE:-"TestSuiteNotSet"}
     aws cloudwatch put-metric-data --metric-name FlakyE2ETests --namespace amplify-category-api-e2e-tests --unit Count --value $RUN_INDEX --dimensions testFile=$TEST_SUITE --profile amplify-integ-test-user || true
     echo "Attempt $RUN_INDEX succeeded."
-    exit 0 # don't fail the step if putting the metric fails
+    exit 0 # don't fail the step if putting the metric fails 
 }
 
 function resetAwsAccountCredentials {
