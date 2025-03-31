@@ -425,7 +425,7 @@
     "ejs": "^3.1.7",
     "json5": "^2.2.3",
     "semver": "^7.5.2",
-    "axios": "^1.7.4",
+    "axios": "^1.8.2",
     "braces": "^3.0.3",
     "**/aws-amplify/**/fast-xml-parser": "^4.4.1",
     "cookie": "^0.7.0",
