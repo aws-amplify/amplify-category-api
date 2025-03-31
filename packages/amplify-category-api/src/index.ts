@@ -407,4 +407,4 @@ const disableCDKDeprecationWarning = () => {
     process.env.JSII_DEPRECATED = 'quiet';
   }
 };
-// No-op change to trigger publish
+// No-op change to trigger major version bump
