@@ -1066,6 +1066,19 @@
             }
           }
         },
+        "aws-cdk-lib.aws_cognito_identitypool": {
+          "targets": {
+            "dotnet": {
+              "namespace": "Amazon.CDK.AWS.Cognito.Identitypool"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.cognito.identitypool"
+            },
+            "python": {
+              "module": "aws_cdk.aws_cognito_identitypool"
+            }
+          }
+        },
         "aws-cdk-lib.aws_comprehend": {
           "targets": {
             "dotnet": {
@@ -1739,6 +1752,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_gamelift"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_gameliftstreams": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.GameLiftStreams"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.gameliftstreams"
+            },
+            "python": {
+              "module": "aws_cdk.aws_gameliftstreams"
             }
           }
         },
@@ -3367,6 +3393,19 @@
             }
           }
         },
+        "aws-cdk-lib.aws_scheduler_targets": {
+          "targets": {
+            "dotnet": {
+              "namespace": "Amazon.CDK.AWS.Scheduler.Targets"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.scheduler.targets"
+            },
+            "python": {
+              "module": "aws_cdk.aws_scheduler_targets"
+            }
+          }
+        },
         "aws-cdk-lib.aws_sdb": {
           "targets": {
             "dotnet": {
@@ -4024,7 +4063,7 @@
     "stability": "stable"
   },
   "homepage": "https://github.com/aws-amplify/amplify-category-api.git",
-  "jsiiVersion": "5.6.4 (build a446c6c)",
+  "jsiiVersion": "5.8.3 (build 6fd3bf6)",
   "keywords": [
     "awscdk",
     "aws-cdk",
@@ -8066,7 +8105,7 @@
       "kind": "enum",
       "locationInModule": {
         "filename": "../../node_modules/aws-cdk-lib/aws-logs/lib/log-group.d.ts",
-        "line": 238
+        "line": 239
       },
       "members": [
         {
@@ -9472,5 +9511,5 @@
     }
   },
   "version": "1.19.1",
-  "fingerprint": "RNnJUxImtZvv+vNsWZSIFhn+AtaWlvFnZIlb75aw0oI="
+  "fingerprint": "fO6j4QqT8mChxPLvOQomek/IblojCZMkIToBtMS3fsQ="
 }
