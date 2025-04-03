@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@2.1.31...@aws-amplify/graphql-predictions-transformer@2.2.0) (2025-04-03)
+
+### Features
+
+- upgrade lambda runtimes to node 22 ([#3232](https://github.com/aws-amplify/amplify-category-api/issues/3232)) ([ea4a75a](https://github.com/aws-amplify/amplify-category-api/commit/ea4a75a995b73037b9b89a95b2be8849f4845cfd))
+
 ## [2.1.31](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-predictions-transformer@2.1.30...@aws-amplify/graphql-predictions-transformer@2.1.31) (2025-03-06)
 
 **Note:** Version bump only for package @aws-amplify/graphql-predictions-transformer

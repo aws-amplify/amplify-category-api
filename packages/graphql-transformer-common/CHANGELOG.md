@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.34.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.33.0...graphql-transformer-common@4.34.0) (2025-04-03)
+
+### Features
+
+- upgrade lambda runtimes to node 22 ([#3232](https://github.com/aws-amplify/amplify-category-api/issues/3232)) ([ea4a75a](https://github.com/aws-amplify/amplify-category-api/commit/ea4a75a995b73037b9b89a95b2be8849f4845cfd))
+
 # [4.33.0](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@4.32.1...graphql-transformer-common@4.33.0) (2025-03-06)
 
 ### Features

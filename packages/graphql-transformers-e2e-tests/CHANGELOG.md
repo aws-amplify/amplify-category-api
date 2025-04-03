@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.9.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.8.13...amplify-category-api-graphql-transformers-e2e-tests@8.9.0) (2025-04-03)
+
+### Features
+
+- upgrade lambda runtimes to node 22 ([#3232](https://github.com/aws-amplify/amplify-category-api/issues/3232)) ([ea4a75a](https://github.com/aws-amplify/amplify-category-api/commit/ea4a75a995b73037b9b89a95b2be8849f4845cfd))
+
 ## [8.8.13](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.8.12...amplify-category-api-graphql-transformers-e2e-tests@8.8.13) (2025-03-06)
 
 **Note:** Version bump only for package amplify-category-api-graphql-transformers-e2e-tests

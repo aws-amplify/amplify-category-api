@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-e2e-tests",
-  "version": "3.22.19",
+  "version": "3.22.20",
   "description": "E2e test suite ",
   "repository": {
     "type": "git",
@@ -26,8 +26,8 @@
   "dependencies": {
     "@aws-amplify/amplify-app": "^5.0.35",
     "@aws-amplify/graphql-schema-generator": "^0.9.4",
-    "@aws-amplify/graphql-transformer-core": "2.11.0",
-    "amplify-category-api-e2e-core": "4.9.9",
+    "@aws-amplify/graphql-transformer-core": "2.11.1",
+    "amplify-category-api-e2e-core": "4.9.10",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-sdk": "^2.1113.0",
@@ -39,8 +39,8 @@
     "generate-password": "~1.7.0",
     "graphql": "^15.5.0",
     "graphql-tag": "^2.10.1",
-    "graphql-transformer-common": "4.33.0",
-    "graphql-transformer-core": "8.2.16",
+    "graphql-transformer-common": "4.34.0",
+    "graphql-transformer-core": "8.2.17",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
     "pluralize": "^8.0.0",
