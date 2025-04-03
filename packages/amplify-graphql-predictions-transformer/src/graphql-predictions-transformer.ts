@@ -396,7 +396,7 @@ function createPredictionsLambda(context: TransformerContextProvider, stack: cdk
     `functions/${functionId}.zip`,
     PredictionsResourceIDs.lambdaHandlerName,
     path.join(__dirname, '..', 'lib', 'predictionsLambdaFunction.zip'),
-    lambda.Runtime.NODEJS_18_X,
+    new lambda.Runtime('nodejs22.x', lambda.RuntimeFamily.NODEJS, { supportsInlineCode: true }),
     [],
     role,
     {},

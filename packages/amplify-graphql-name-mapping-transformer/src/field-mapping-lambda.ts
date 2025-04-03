@@ -33,7 +33,7 @@ export const createMappingLambda = (host: TransformHostProvider, stackManager: S
     `functions/${funcLogicalId}.zip`, // function key
     'index.handler', // function handler
     path.join(__dirname, 'assets', 'mapping-lambda.zip'),
-    lambda.Runtime.NODEJS_18_X,
+    new lambda.Runtime('nodejs22.x', lambda.RuntimeFamily.NODEJS, { supportsInlineCode: true }),
     undefined, // layers
     role, // execution role,
     undefined, // env vars
