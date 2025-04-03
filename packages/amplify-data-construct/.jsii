@@ -1074,6 +1074,19 @@
             }
           }
         },
+        "aws-cdk-lib.aws_cognito_identitypool": {
+          "targets": {
+            "dotnet": {
+              "namespace": "Amazon.CDK.AWS.Cognito.Identitypool"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.cognito.identitypool"
+            },
+            "python": {
+              "module": "aws_cdk.aws_cognito_identitypool"
+            }
+          }
+        },
         "aws-cdk-lib.aws_comprehend": {
           "targets": {
             "dotnet": {
@@ -1747,6 +1760,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_gamelift"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_gameliftstreams": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.GameLiftStreams"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.gameliftstreams"
+            },
+            "python": {
+              "module": "aws_cdk.aws_gameliftstreams"
             }
           }
         },
@@ -3375,6 +3401,19 @@
             }
           }
         },
+        "aws-cdk-lib.aws_scheduler_targets": {
+          "targets": {
+            "dotnet": {
+              "namespace": "Amazon.CDK.AWS.Scheduler.Targets"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.scheduler.targets"
+            },
+            "python": {
+              "module": "aws_cdk.aws_scheduler_targets"
+            }
+          }
+        },
         "aws-cdk-lib.aws_sdb": {
           "targets": {
             "dotnet": {
@@ -4032,7 +4071,7 @@
     "stability": "stable"
   },
   "homepage": "https://github.com/aws-amplify/amplify-category-api.git",
-  "jsiiVersion": "5.6.4 (build a446c6c)",
+  "jsiiVersion": "5.8.3 (build 6fd3bf6)",
   "keywords": [
     "awscdk",
     "aws-cdk",
@@ -4068,5 +4107,5 @@
   },
   "types": {},
   "version": "1.15.1",
-  "fingerprint": "BO++ddQvxlLStVXjBx2F5lIsyJj0I9yQhswbSX/gCd8="
+  "fingerprint": "g5Gl1T6L9aWTeIIJDXX9W4nRL9FAU/9CcbfY/Y9HtZQ="
 }
