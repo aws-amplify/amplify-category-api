@@ -32,7 +32,6 @@ describe('CDK Auth Modes', () => {
       cdkVersion: '2.187.0', // Explicitly declaring this, since this version needs to match cognito idp
       additionalDependencies: [
         'esbuild', // required to bundle the lambda function
-        '@aws-cdk/aws-cognito-identitypool-alpha@2.186.0-alpha.0', // using alpha cognito idp resource for auth config
         '@aws-crypto/sha256-js', // All remaining deps are required for the lambda to sign the request to appsync
         '@aws-sdk/credential-provider-node',
         '@aws-sdk/protocol-http',
