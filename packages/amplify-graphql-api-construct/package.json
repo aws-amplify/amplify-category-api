@@ -293,7 +293,7 @@
     "@aws-amplify/graphql-transformer-test-utils": "1.0.15",
     "@types/fs-extra": "^8.0.1",
     "@types/node": "^18.0.0",
-    "aws-cdk-lib": "2.180.0",
+    "aws-cdk-lib": "2.187.0",
     "constructs": "10.3.0",
     "jsii": "^5.4.23",
     "jsii-docgen": "9.1.2",
@@ -303,7 +303,7 @@
     "ts-node": "^8.10.1"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.180.0",
+    "aws-cdk-lib": "^2.187.0",
     "constructs": "^10.3.0"
   },
   "stability": "stable",
