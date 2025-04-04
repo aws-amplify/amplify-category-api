@@ -292,7 +292,7 @@
   "devDependencies": {
     "@aws-amplify/graphql-transformer-test-utils": "1.0.15",
     "@types/fs-extra": "^8.0.1",
-    "@types/node": "^18.0.0",
+    "@types/node": "^20.0.0",
     "aws-cdk-lib": "2.187.0",
     "constructs": "10.3.0",
     "jsii": "^5.4.23",
