@@ -1,7 +1,7 @@
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { FieldDefinitionNode } from 'graphql';
 import { generateJSONSchemaFromTypeNode } from './graphql-json-schema-type';
 import { JSONSchema } from '@aws-amplify/graphql-transformer-core';
+import { GenerationDirectiveConfiguration } from '../grapqhl-generation-transformer';
 
 export type Tool = {
   toolSpec: ToolSpec;
@@ -13,12 +13,20 @@ export type Tools = {
 
 export type ToolConfig = {
   tools: Tool[];
-  toolChoice: {
-    tool: {
-      name: string;
-    };
+  toolChoice?: ToolChoice;
+};
+
+type SpecificToolChoice = {
+  tool: {
+    name: string;
   };
 };
+
+type AnyToolChoice = {
+  any: {};
+};
+
+type ToolChoice = SpecificToolChoice | AnyToolChoice | undefined;
 
 type ToolSpec = {
   name: string;
@@ -43,8 +51,8 @@ type ToolSpec = {
  * The returned tool configuration can be used with AI models that support tool-based interactions,
  * ensuring that generated responses match the expected structure of the GraphQL field.
  */
-export const createResponseTypeTool = (field: FieldDefinitionNode, ctx: TransformerContextProvider): ToolConfig => {
-  const { type } = field;
+export const createResponseTypeTool = (config: GenerationDirectiveConfiguration, ctx: TransformerContextProvider): ToolConfig => {
+  const { type } = config.field;
   const schema = generateJSONSchemaFromTypeNode(type, ctx);
 
   // We box the schema to support scalar return types.
@@ -69,8 +77,50 @@ export const createResponseTypeTool = (field: FieldDefinitionNode, ctx: Transfor
       },
     },
   ];
-  const toolChoice = { tool: { name: 'responseType' } };
+
+  const toolChoice = getToolChoice(config);
   const toolConfig = { tools, toolChoice };
 
   return toolConfig;
+};
+
+const getToolChoice = (config: GenerationDirectiveConfiguration): ToolChoice => {
+  // Note: We're checking `includes()` below to avoid throwing a false positive
+  // for cross-region inference model identifiers, e.g. `us.anthropic.claude-3-5-sonnet-20241022-v2:0`.
+  const model = config.aiModel;
+
+  // https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_SpecificToolChoice.html
+  // This field is only supported by Anthropic Claude 3 models.
+  const claude3Models = [
+    'anthropic.claude-3-opus-20240229-v1:0',
+    'anthropic.claude-3-haiku-20240307-v1:0',
+    'anthropic.claude-3-sonnet-20240229-v1:0',
+    'anthropic.claude-3-5-haiku-20241022-v1:0',
+    'anthropic.claude-3-5-sonnet-20240620-v1:0',
+    'anthropic.claude-3-5-sonnet-20241022-v2:0',
+  ];
+  if (claude3Models.some((supportedModel) => model.includes(supportedModel))) {
+    return { tool: { name: 'responseType' } };
+  }
+
+  // https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_ToolChoice.html
+  // ToolChoice is only supported by Anthropic Claude 3 models and by Mistral AI Mistral Large.
+  const mistralModels = ['mistral.mistral-large-2402-v1:0', 'mistral.mistral-large-2407-v1:0'];
+  if (mistralModels.some((supportedModel) => model.includes(supportedModel))) {
+    return { any: {} };
+  }
+
+  // These models do not support toolChoice but are known to work from testing.
+  const sansToolChoiceKnownWorkingModels = [
+    'amazon.nova-pro-v1:0',
+    'amazon.nova-lite-v1:0',
+    'meta.llama3-1-405b-instruct-v1:0',
+    'ai21.jamba-1-5-mini-v1:0',
+  ];
+
+  if (sansToolChoiceKnownWorkingModels.some((supportedModel) => model.includes(supportedModel))) {
+    return undefined;
+  }
+
+  throw new Error(`Model ${model} is not supported for Generation routes.`);
 };
