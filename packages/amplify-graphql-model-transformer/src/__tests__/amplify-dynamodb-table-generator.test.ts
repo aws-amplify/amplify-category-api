@@ -6,6 +6,7 @@ import {
 } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
 import { ModelTransformer } from '../graphql-model-transformer';
+import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import { CUSTOM_DDB_CFN_TYPE, CUSTOM_IMPORTED_DDB_CFN_TYPE } from '../resources/amplify-dynamodb-table/amplify-dynamodb-table-construct';
 import { ITERATIVE_TABLE_STACK_NAME } from '../resources/amplify-dynamodb-table/amplify-dynamo-model-resource-generator';
 
@@ -148,5 +149,27 @@ describe('ModelTransformer:', () => {
       },
     };
     expect(() => testTransform(transformOption)).toThrow('No resource generator assigned for Post with dbType DYNAMODB');
+  });
+
+  it('should allow searchable on amplify managed table', async () => {
+    const validSchema = `
+    type Post @model @searchable {
+      id: ID!
+      title: String!
+    }
+  `;
+
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+      dataSourceStrategies: {
+        Post: DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
+      },
+    });
+    expect(out).toBeDefined();
+    expect(out.stacks.SearchableStack).toBeDefined();
+
+    validateModelSchema(parse(out.schema));
+    parse(out.schema);
   });
 });
