@@ -50,6 +50,7 @@
     "@aws-sdk/middleware-logger": "3.609.0",
     "@aws-sdk/middleware-recursion-detection": "3.620.0",
     "@aws-sdk/middleware-user-agent": "3.637.0",
+    "@aws-sdk/nested-clients": "^3.777.0",
     "@aws-sdk/region-config-resolver": "3.614.0",
     "@aws-sdk/token-providers": "3.614.0",
     "@aws-sdk/types": "3.609.0",
@@ -101,6 +102,7 @@
     "@smithy/util-stream": "^3.1.3",
     "@smithy/util-uri-escape": "^3.0.0",
     "@smithy/util-utf8": "^3.0.0",
+    "@types/uuid": "^9.0.8",
     "bowser": "^2.11.0",
     "charenc": "^0.0.2",
     "ci-info": "^3.2.0",
@@ -132,7 +134,7 @@
     "zod": "^3.22.2"
   },
   "dependencies": {
-    "aws-cdk-lib": "^2.180.0",
+    "aws-cdk-lib": "^2.187.0",
     "constructs": "^10.3.0"
   },
   "dependencyClosure": {
@@ -9511,5 +9513,5 @@
     }
   },
   "version": "1.19.1",
-  "fingerprint": "fO6j4QqT8mChxPLvOQomek/IblojCZMkIToBtMS3fsQ="
+  "fingerprint": "5V4wdVV1uH1SpFN4wCZGpoK4X/WnHP9/kvWfFJ7bhts="
 }
