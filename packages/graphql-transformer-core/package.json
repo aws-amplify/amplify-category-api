@@ -37,7 +37,7 @@
     "@aws-amplify/amplify-cli-core": "^4.3.9",
     "@types/fs-extra": "^8.0.1",
     "@types/mock-fs": "4.13.4",
-    "@types/node": "^20.0.0",
+    "@types/node": "^18.0.0",
     "mock-fs": "5.2.0"
   }
 }
