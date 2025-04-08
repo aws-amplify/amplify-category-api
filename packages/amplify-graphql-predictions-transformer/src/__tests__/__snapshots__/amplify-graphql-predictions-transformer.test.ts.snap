@@ -1302,7 +1302,7 @@ $utils.error($ctx.result.body)
             "Arn",
           ],
         },
-        "Runtime": "nodejs20.x",
+        "Runtime": "nodejs18.x",
         "Timeout": 60,
       },
       "Type": "AWS::Lambda::Function",
