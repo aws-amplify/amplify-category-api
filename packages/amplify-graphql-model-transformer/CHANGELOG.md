@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.3.0-grant-stream-read.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@3.2.1...@aws-amplify/graphql-model-transformer@3.3.0-grant-stream-read.0) (2025-04-08)
+
+### Bug Fixes
+
+- handle ContinuousBackupsUnavailableException in updateContinuousBackups when RequestType is 'Create' ([#3203](https://github.com/aws-amplify/amplify-category-api/issues/3203)) ([99fdf46](https://github.com/aws-amplify/amplify-category-api/commit/99fdf4608e8b75c51ed8c6bcb6a283ed09299942))
+
+### Features
+
+- add grantStreamRead to amplify managed table ([4896e9d](https://github.com/aws-amplify/amplify-category-api/commit/4896e9de4be70c8e74781ba21fbba0265ced7a69))
+
 ## [3.2.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@3.2.0...@aws-amplify/graphql-model-transformer@3.2.1) (2025-03-06)
 
 ### Bug Fixes

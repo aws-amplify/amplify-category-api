@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.16-grant-stream-read.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-test-utils@1.0.15...@aws-amplify/graphql-transformer-test-utils@1.0.16-grant-stream-read.0) (2025-04-08)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-test-utils
+
 ## [1.0.15](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-test-utils@1.0.14...@aws-amplify/graphql-transformer-test-utils@1.0.15) (2025-03-06)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-test-utils

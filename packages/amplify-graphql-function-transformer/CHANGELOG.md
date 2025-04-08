@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.14-grant-stream-read.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-function-transformer@3.1.13...@aws-amplify/graphql-function-transformer@3.1.14-grant-stream-read.0) (2025-04-08)
+
+**Note:** Version bump only for package @aws-amplify/graphql-function-transformer
+
 ## [3.1.13](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-function-transformer@3.1.12...@aws-amplify/graphql-function-transformer@3.1.13) (2025-03-06)
 
 **Note:** Version bump only for package @aws-amplify/graphql-function-transformer

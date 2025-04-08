@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.20.0-grant-stream-read.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.19.1...@aws-amplify/graphql-api-construct@1.20.0-grant-stream-read.0) (2025-04-08)
+
+### Features
+
+- **graphql-api-construct:** add PointInTimeRecoverySpecification setter ([#3206](https://github.com/aws-amplify/amplify-category-api/issues/3206)) ([55c7bda](https://github.com/aws-amplify/amplify-category-api/commit/55c7bda1471f5b8afc3ae0fc0797d889b38df935))
+
 ## [1.19.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.19.0...@aws-amplify/graphql-api-construct@1.19.1) (2025-03-06)
 
 **Note:** Version bump only for package @aws-amplify/graphql-api-construct
