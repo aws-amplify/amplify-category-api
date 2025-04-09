@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@3.2.1...@aws-amplify/graphql-model-transformer@3.2.2) (2025-04-09)
+
+### Bug Fixes
+
+- handle ContinuousBackupsUnavailableException in updateContinuousBackups when RequestType is 'Create' ([#3203](https://github.com/aws-amplify/amplify-category-api/issues/3203)) ([99fdf46](https://github.com/aws-amplify/amplify-category-api/commit/99fdf4608e8b75c51ed8c6bcb6a283ed09299942))
+
+### Reverts
+
+- Revert "chore: upgrade to node 20 (#3250)" (#3255) ([a2815c7](https://github.com/aws-amplify/amplify-category-api/commit/a2815c76ee6d12e687193ca6eca84609c79ee268)), closes [#3250](https://github.com/aws-amplify/amplify-category-api/issues/3250) [#3255](https://github.com/aws-amplify/amplify-category-api/issues/3255)
+
 ## [3.2.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@3.2.0...@aws-amplify/graphql-model-transformer@3.2.1) (2025-03-06)
 
 ### Bug Fixes
