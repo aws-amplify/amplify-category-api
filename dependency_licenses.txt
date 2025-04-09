@@ -1035,219 +1035,7 @@ Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
 -----
 
-The following software may be included in this product: @aws-cdk/aws-cognito-identitypool-alpha. A copy of the source code may be downloaded from https://github.com/aws/aws-cdk.git. This software contains the following license and notice below:
-
-Apache License
-                           Version 2.0, January 2004
-                        http://www.apache.org/licenses/
-
-   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
-
-   1. Definitions.
-
-      "License" shall mean the terms and conditions for use, reproduction,
-      and distribution as defined by Sections 1 through 9 of this document.
-
-      "Licensor" shall mean the copyright owner or entity authorized by
-      the copyright owner that is granting the License.
-
-      "Legal Entity" shall mean the union of the acting entity and all
-      other entities that control, are controlled by, or are under common
-      control with that entity. For the purposes of this definition,
-      "control" means (i) the power, direct or indirect, to cause the
-      direction or management of such entity, whether by contract or
-      otherwise, or (ii) ownership of fifty percent (50%) or more of the
-      outstanding shares, or (iii) beneficial ownership of such entity.
-
-      "You" (or "Your") shall mean an individual or Legal Entity
-      exercising permissions granted by this License.
-
-      "Source" form shall mean the preferred form for making modifications,
-      including but not limited to software source code, documentation
-      source, and configuration files.
-
-      "Object" form shall mean any form resulting from mechanical
-      transformation or translation of a Source form, including but
-      not limited to compiled object code, generated documentation,
-      and conversions to other media types.
-
-      "Work" shall mean the work of authorship, whether in Source or
-      Object form, made available under the License, as indicated by a
-      copyright notice that is included in or attached to the work
-      (an example is provided in the Appendix below).
-
-      "Derivative Works" shall mean any work, whether in Source or Object
-      form, that is based on (or derived from) the Work and for which the
-      editorial revisions, annotations, elaborations, or other modifications
-      represent, as a whole, an original work of authorship. For the purposes
-      of this License, Derivative Works shall not include works that remain
-      separable from, or merely link (or bind by name) to the interfaces of,
-      the Work and Derivative Works thereof.
-
-      "Contribution" shall mean any work of authorship, including
-      the original version of the Work and any modifications or additions
-      to that Work or Derivative Works thereof, that is intentionally
-      submitted to Licensor for inclusion in the Work by the copyright owner
-      or by an individual or Legal Entity authorized to submit on behalf of
-      the copyright owner. For the purposes of this definition, "submitted"
-      means any form of electronic, verbal, or written communication sent
-      to the Licensor or its representatives, including but not limited to
-      communication on electronic mailing lists, source code control systems,
-      and issue tracking systems that are managed by, or on behalf of, the
-      Licensor for the purpose of discussing and improving the Work, but
-      excluding communication that is conspicuously marked or otherwise
-      designated in writing by the copyright owner as "Not a Contribution."
-
-      "Contributor" shall mean Licensor and any individual or Legal Entity
-      on behalf of whom a Contribution has been received by Licensor and
-      subsequently incorporated within the Work.
-
-   2. Grant of Copyright License. Subject to the terms and conditions of
-      this License, each Contributor hereby grants to You a perpetual,
-      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
-      copyright license to reproduce, prepare Derivative Works of,
-      publicly display, publicly perform, sublicense, and distribute the
-      Work and such Derivative Works in Source or Object form.
-
-   3. Grant of Patent License. Subject to the terms and conditions of
-      this License, each Contributor hereby grants to You a perpetual,
-      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
-      (except as stated in this section) patent license to make, have made,
-      use, offer to sell, sell, import, and otherwise transfer the Work,
-      where such license applies only to those patent claims licensable
-      by such Contributor that are necessarily infringed by their
-      Contribution(s) alone or by combination of their Contribution(s)
-      with the Work to which such Contribution(s) was submitted. If You
-      institute patent litigation against any entity (including a
-      cross-claim or counterclaim in a lawsuit) alleging that the Work
-      or a Contribution incorporated within the Work constitutes direct
-      or contributory patent infringement, then any patent licenses
-      granted to You under this License for that Work shall terminate
-      as of the date such litigation is filed.
-
-   4. Redistribution. You may reproduce and distribute copies of the
-      Work or Derivative Works thereof in any medium, with or without
-      modifications, and in Source or Object form, provided that You
-      meet the following conditions:
-
-      (a) You must give any other recipients of the Work or
-          Derivative Works a copy of this License; and
-
-      (b) You must cause any modified files to carry prominent notices
-          stating that You changed the files; and
-
-      (c) You must retain, in the Source form of any Derivative Works
-          that You distribute, all copyright, patent, trademark, and
-          attribution notices from the Source form of the Work,
-          excluding those notices that do not pertain to any part of
-          the Derivative Works; and
-
-      (d) If the Work includes a "NOTICE" text file as part of its
-          distribution, then any Derivative Works that You distribute must
-          include a readable copy of the attribution notices contained
-          within such NOTICE file, excluding those notices that do not
-          pertain to any part of the Derivative Works, in at least one
-          of the following places: within a NOTICE text file distributed
-          as part of the Derivative Works; within the Source form or
-          documentation, if provided along with the Derivative Works; or,
-          within a display generated by the Derivative Works, if and
-          wherever such third-party notices normally appear. The contents
-          of the NOTICE file are for informational purposes only and
-          do not modify the License. You may add Your own attribution
-          notices within Derivative Works that You distribute, alongside
-          or as an addendum to the NOTICE text from the Work, provided
-          that such additional attribution notices cannot be construed
-          as modifying the License.
-
-      You may add Your own copyright statement to Your modifications and
-      may provide additional or different license terms and conditions
-      for use, reproduction, or distribution of Your modifications, or
-      for any such Derivative Works as a whole, provided Your use,
-      reproduction, and distribution of the Work otherwise complies with
-      the conditions stated in this License.
-
-   5. Submission of Contributions. Unless You explicitly state otherwise,
-      any Contribution intentionally submitted for inclusion in the Work
-      by You to the Licensor shall be under the terms and conditions of
-      this License, without any additional terms or conditions.
-      Notwithstanding the above, nothing herein shall supersede or modify
-      the terms of any separate license agreement you may have executed
-      with Licensor regarding such Contributions.
-
-   6. Trademarks. This License does not grant permission to use the trade
-      names, trademarks, service marks, or product names of the Licensor,
-      except as required for reasonable and customary use in describing the
-      origin of the Work and reproducing the content of the NOTICE file.
-
-   7. Disclaimer of Warranty. Unless required by applicable law or
-      agreed to in writing, Licensor provides the Work (and each
-      Contributor provides its Contributions) on an "AS IS" BASIS,
-      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
-      implied, including, without limitation, any warranties or conditions
-      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
-      PARTICULAR PURPOSE. You are solely responsible for determining the
-      appropriateness of using or redistributing the Work and assume any
-      risks associated with Your exercise of permissions under this License.
-
-   8. Limitation of Liability. In no event and under no legal theory,
-      whether in tort (including negligence), contract, or otherwise,
-      unless required by applicable law (such as deliberate and grossly
-      negligent acts) or agreed to in writing, shall any Contributor be
-      liable to You for damages, including any direct, indirect, special,
-      incidental, or consequential damages of any character arising as a
-      result of this License or out of the use or inability to use the
-      Work (including but not limited to damages for loss of goodwill,
-      work stoppage, computer failure or malfunction, or any and all
-      other commercial damages or losses), even if such Contributor
-      has been advised of the possibility of such damages.
-
-   9. Accepting Warranty or Additional Liability. While redistributing
-      the Work or Derivative Works thereof, You may choose to offer,
-      and charge a fee for, acceptance of support, warranty, indemnity,
-      or other liability obligations and/or rights consistent with this
-      License. However, in accepting such obligations, You may act only
-      on Your own behalf and on Your sole responsibility, not on behalf
-      of any other Contributor, and only if You agree to indemnify,
-      defend, and hold each Contributor harmless for any liability
-      incurred by, or claims asserted against, such Contributor by reason
-      of your accepting any such warranty or additional liability.
-
-   END OF TERMS AND CONDITIONS
-
-   APPENDIX: How to apply the Apache License to your work.
-
-      To apply the Apache License to your work, attach the following
-      boilerplate notice, with the fields enclosed by brackets "[]"
-      replaced with your own identifying information. (Don't include
-      the brackets!)  The text should be enclosed in the appropriate
-      comment syntax for the file format. We also recommend that a
-      file or class name and description of purpose be included on the
-      same "printed page" as the copyright notice for easier
-      identification within third-party archives.
-
-   Copyright 2018-2024 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
-
-NOTICE
-
-AWS Cloud Development Kit (AWS CDK)
-Copyright 2018-2024 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-
------
-
-The following software may be included in this product: @aws-cdk/cloud-assembly-schema. A copy of the source code may be downloaded from https://github.com/cdklabs/cloud-assembly-schema.git. This software contains the following license and notice below:
+The following software may be included in this product: @aws-cdk/cloud-assembly-schema. A copy of the source code may be downloaded from https://github.com/aws/aws-cdk-cli. This software contains the following license and notice below:
 
 Apache License
                            Version 2.0, January 2004
@@ -1915,7 +1703,7 @@ Apache License
 
 -----
 
-The following software may be included in this product: @aws-sdk/abort-controller, @aws-sdk/chunked-blob-reader, @aws-sdk/chunked-blob-reader-native, @aws-sdk/config-resolver, @aws-sdk/credential-provider-env, @aws-sdk/credential-provider-imds, @aws-sdk/credential-provider-ini, @aws-sdk/credential-provider-node, @aws-sdk/credential-providers, @aws-sdk/fetch-http-handler, @aws-sdk/hash-blob-browser, @aws-sdk/hash-node, @aws-sdk/hash-stream-node, @aws-sdk/is-array-buffer, @aws-sdk/lib-storage, @aws-sdk/md5-js, @aws-sdk/middleware-content-length, @aws-sdk/middleware-sdk-ec2, @aws-sdk/middleware-signing, @aws-sdk/middleware-stack, @aws-sdk/node-http-handler, @aws-sdk/property-provider, @aws-sdk/region-config-resolver, @aws-sdk/shared-ini-file-loader, @aws-sdk/signature-v4, @aws-sdk/token-providers, @aws-sdk/types, @aws-sdk/util-arn-parser, @aws-sdk/util-base64-browser, @aws-sdk/util-base64-node, @aws-sdk/util-body-length-browser, @aws-sdk/util-body-length-node, @aws-sdk/util-buffer-from, @aws-sdk/util-endpoints, @aws-sdk/util-format-url, @aws-sdk/util-hex-encoding, @aws-sdk/util-locate-window, @aws-sdk/util-uri-escape, @aws-sdk/util-utf8-browser, @aws-sdk/util-utf8-node, @aws-sdk/util-waiter, @aws-sdk/xml-builder, @smithy/abort-controller, @smithy/chunked-blob-reader, @smithy/chunked-blob-reader-native, @smithy/config-resolver, @smithy/credential-provider-imds, @smithy/fetch-http-handler, @smithy/hash-blob-browser, @smithy/hash-node, @smithy/hash-stream-node, @smithy/is-array-buffer, @smithy/md5-js, @smithy/middleware-content-length, @smithy/middleware-endpoint, @smithy/middleware-stack, @smithy/node-http-handler, @smithy/property-provider, @smithy/shared-ini-file-loader, @smithy/signature-v4, @smithy/util-base64, @smithy/util-body-length-browser, @smithy/util-body-length-node, @smithy/util-buffer-from, @smithy/util-hex-encoding, @smithy/util-stream, @smithy/util-uri-escape, @smithy/util-utf8, @smithy/util-waiter. A copy of the source code may be downloaded from https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/abort-controller), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/chunked-blob-reader), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/chunked-blob-reader-native), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/config-resolver), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/credential-provider-env), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/credential-provider-imds), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/credential-provider-ini), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/credential-provider-node), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/credential-providers), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/fetch-http-handler), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/hash-blob-browser), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/hash-node), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/hash-stream-node), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/is-array-buffer), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/lib-storage), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/md5-js), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-content-length), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-sdk-ec2), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-signing), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-stack), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/node-http-handler), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/property-provider), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/region-config-resolver), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/shared-ini-file-loader), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/signature-v4), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/token-providers), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/types), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-arn-parser), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-base64-browser), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-base64-node), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-body-length-browser), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-body-length-node), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-buffer-from), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-endpoints), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-format-url), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-hex-encoding), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-locate-window), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-uri-escape), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-utf8-browser), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-utf8-node), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-waiter), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/xml-builder), https://github.com/awslabs/smithy-typescript.git (@smithy/abort-controller), https://github.com/awslabs/smithy-typescript.git (@smithy/chunked-blob-reader), https://github.com/awslabs/smithy-typescript.git (@smithy/chunked-blob-reader-native), https://github.com/awslabs/smithy-typescript.git (@smithy/config-resolver), https://github.com/awslabs/smithy-typescript.git (@smithy/credential-provider-imds), https://github.com/awslabs/smithy-typescript.git (@smithy/fetch-http-handler), https://github.com/awslabs/smithy-typescript.git (@smithy/hash-blob-browser), https://github.com/awslabs/smithy-typescript.git (@smithy/hash-node), https://github.com/awslabs/smithy-typescript.git (@smithy/hash-stream-node), https://github.com/awslabs/smithy-typescript.git (@smithy/is-array-buffer), https://github.com/awslabs/smithy-typescript.git (@smithy/md5-js), https://github.com/awslabs/smithy-typescript.git (@smithy/middleware-content-length), https://github.com/awslabs/smithy-typescript.git (@smithy/middleware-endpoint), https://github.com/awslabs/smithy-typescript.git (@smithy/middleware-stack), https://github.com/awslabs/smithy-typescript.git (@smithy/node-http-handler), https://github.com/awslabs/smithy-typescript.git (@smithy/property-provider), https://github.com/awslabs/smithy-typescript.git (@smithy/shared-ini-file-loader), https://github.com/awslabs/smithy-typescript.git (@smithy/signature-v4), https://github.com/awslabs/smithy-typescript.git (@smithy/util-base64), https://github.com/awslabs/smithy-typescript.git (@smithy/util-body-length-browser), https://github.com/awslabs/smithy-typescript.git (@smithy/util-body-length-node), https://github.com/awslabs/smithy-typescript.git (@smithy/util-buffer-from), https://github.com/awslabs/smithy-typescript.git (@smithy/util-hex-encoding), https://github.com/awslabs/smithy-typescript.git (@smithy/util-stream), https://github.com/awslabs/smithy-typescript.git (@smithy/util-uri-escape), https://github.com/awslabs/smithy-typescript.git (@smithy/util-utf8), https://github.com/awslabs/smithy-typescript.git (@smithy/util-waiter). This software contains the following license and notice below:
+The following software may be included in this product: @aws-sdk/abort-controller, @aws-sdk/chunked-blob-reader, @aws-sdk/chunked-blob-reader-native, @aws-sdk/config-resolver, @aws-sdk/credential-provider-env, @aws-sdk/credential-provider-imds, @aws-sdk/credential-provider-ini, @aws-sdk/credential-provider-node, @aws-sdk/credential-providers, @aws-sdk/fetch-http-handler, @aws-sdk/hash-blob-browser, @aws-sdk/hash-node, @aws-sdk/hash-stream-node, @aws-sdk/is-array-buffer, @aws-sdk/lib-storage, @aws-sdk/md5-js, @aws-sdk/middleware-content-length, @aws-sdk/middleware-sdk-ec2, @aws-sdk/middleware-signing, @aws-sdk/middleware-stack, @aws-sdk/node-http-handler, @aws-sdk/property-provider, @aws-sdk/region-config-resolver, @aws-sdk/shared-ini-file-loader, @aws-sdk/signature-v4, @aws-sdk/token-providers, @aws-sdk/types, @aws-sdk/util-arn-parser, @aws-sdk/util-base64-browser, @aws-sdk/util-base64-node, @aws-sdk/util-body-length-browser, @aws-sdk/util-body-length-node, @aws-sdk/util-buffer-from, @aws-sdk/util-endpoints, @aws-sdk/util-format-url, @aws-sdk/util-hex-encoding, @aws-sdk/util-locate-window, @aws-sdk/util-uri-escape, @aws-sdk/util-utf8-browser, @aws-sdk/util-utf8-node, @aws-sdk/util-waiter, @aws-sdk/xml-builder, @smithy/abort-controller, @smithy/chunked-blob-reader, @smithy/chunked-blob-reader-native, @smithy/config-resolver, @smithy/credential-provider-imds, @smithy/fetch-http-handler, @smithy/hash-blob-browser, @smithy/hash-node, @smithy/hash-stream-node, @smithy/is-array-buffer, @smithy/md5-js, @smithy/middleware-content-length, @smithy/middleware-endpoint, @smithy/middleware-stack, @smithy/node-http-handler, @smithy/property-provider, @smithy/shared-ini-file-loader, @smithy/signature-v4, @smithy/util-base64, @smithy/util-body-length-browser, @smithy/util-body-length-node, @smithy/util-buffer-from, @smithy/util-hex-encoding, @smithy/util-stream, @smithy/util-uri-escape, @smithy/util-utf8, @smithy/util-waiter. A copy of the source code may be downloaded from https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/abort-controller), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/chunked-blob-reader), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/chunked-blob-reader-native), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/config-resolver), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/credential-provider-env), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/credential-provider-imds), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/credential-provider-ini), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/credential-provider-node), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/credential-providers), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/fetch-http-handler), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/hash-blob-browser), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/hash-node), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/hash-stream-node), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/is-array-buffer), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/lib-storage), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/md5-js), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-content-length), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-sdk-ec2), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-signing), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-stack), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/node-http-handler), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/property-provider), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/region-config-resolver), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/shared-ini-file-loader), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/signature-v4), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/token-providers), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/types), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-arn-parser), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-base64-browser), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-base64-node), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-body-length-browser), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-body-length-node), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-buffer-from), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-endpoints), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-format-url), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-hex-encoding), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-locate-window), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-uri-escape), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-utf8-browser), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-utf8-node), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-waiter), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/xml-builder), https://github.com/smithy-lang/smithy-typescript.git (@smithy/abort-controller), https://github.com/awslabs/smithy-typescript.git (@smithy/chunked-blob-reader), https://github.com/awslabs/smithy-typescript.git (@smithy/chunked-blob-reader-native), https://github.com/smithy-lang/smithy-typescript.git (@smithy/config-resolver), https://github.com/smithy-lang/smithy-typescript.git (@smithy/credential-provider-imds), https://github.com/awslabs/smithy-typescript.git (@smithy/fetch-http-handler), https://github.com/smithy-lang/smithy-typescript.git (@smithy/hash-blob-browser), https://github.com/awslabs/smithy-typescript.git (@smithy/hash-node), https://github.com/smithy-lang/smithy-typescript.git (@smithy/hash-stream-node), https://github.com/awslabs/smithy-typescript.git (@smithy/is-array-buffer), https://github.com/smithy-lang/smithy-typescript.git (@smithy/md5-js), https://github.com/smithy-lang/smithy-typescript.git (@smithy/middleware-content-length), https://github.com/smithy-lang/smithy-typescript.git (@smithy/middleware-endpoint), https://github.com/smithy-lang/smithy-typescript.git (@smithy/middleware-stack), https://github.com/smithy-lang/smithy-typescript.git (@smithy/node-http-handler), https://github.com/smithy-lang/smithy-typescript.git (@smithy/property-provider), https://github.com/smithy-lang/smithy-typescript.git (@smithy/shared-ini-file-loader), https://github.com/smithy-lang/smithy-typescript.git (@smithy/signature-v4), https://github.com/awslabs/smithy-typescript.git (@smithy/util-base64), https://github.com/awslabs/smithy-typescript.git (@smithy/util-body-length-browser), https://github.com/awslabs/smithy-typescript.git (@smithy/util-body-length-node), https://github.com/awslabs/smithy-typescript.git (@smithy/util-buffer-from), https://github.com/awslabs/smithy-typescript.git (@smithy/util-hex-encoding), https://github.com/smithy-lang/smithy-typescript.git (@smithy/util-stream), https://github.com/awslabs/smithy-typescript.git (@smithy/util-uri-escape), https://github.com/awslabs/smithy-typescript.git (@smithy/util-utf8), https://github.com/smithy-lang/smithy-typescript.git (@smithy/util-waiter). This software contains the following license and notice below:
 
 Apache License
                            Version 2.0, January 2004
@@ -2121,7 +1909,7 @@ Apache License
 
 -----
 
-The following software may be included in this product: @aws-sdk/client-appsync, @aws-sdk/client-cloudformation, @aws-sdk/client-cloudwatch-logs, @aws-sdk/client-cognito-identity, @aws-sdk/client-cognito-identity-provider, @aws-sdk/client-comprehend, @aws-sdk/client-dynamodb, @aws-sdk/client-ec2, @aws-sdk/client-firehose, @aws-sdk/client-iam, @aws-sdk/client-kinesis, @aws-sdk/client-kms, @aws-sdk/client-lambda, @aws-sdk/client-lex-runtime-service, @aws-sdk/client-personalize-events, @aws-sdk/client-pinpoint, @aws-sdk/client-polly, @aws-sdk/client-rds, @aws-sdk/client-rds-data, @aws-sdk/client-rekognition, @aws-sdk/client-s3, @aws-sdk/client-secrets-manager, @aws-sdk/client-sfn, @aws-sdk/client-ssm, @aws-sdk/client-sso, @aws-sdk/client-sso-oidc, @aws-sdk/client-sts, @aws-sdk/client-textract, @aws-sdk/client-translate, @aws-sdk/credential-provider-cognito-identity, @aws-sdk/eventstream-codec, @aws-sdk/eventstream-marshaller, @aws-sdk/middleware-apply-body-checksum, @aws-sdk/middleware-bucket-endpoint, @aws-sdk/middleware-endpoint-discovery, @aws-sdk/middleware-eventstream, @aws-sdk/middleware-expect-continue, @aws-sdk/middleware-header-default, @aws-sdk/middleware-location-constraint, @aws-sdk/middleware-retry, @aws-sdk/middleware-sdk-rds, @aws-sdk/middleware-sdk-sts, @aws-sdk/middleware-ssec, @aws-sdk/querystring-builder, @aws-sdk/querystring-parser, @aws-sdk/service-error-classification, @aws-sdk/url-parser, @aws-sdk/url-parser-native, @aws-sdk/util-defaults-mode-browser, @aws-sdk/util-defaults-mode-node, @aws-sdk/util-user-agent-browser, @aws-sdk/util-user-agent-node, @smithy/eventstream-codec, @smithy/middleware-retry, @smithy/querystring-builder, @smithy/querystring-parser, @smithy/service-error-classification, @smithy/url-parser, @smithy/util-defaults-mode-browser, @smithy/util-defaults-mode-node. A copy of the source code may be downloaded from https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-appsync), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-cloudformation), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-cloudwatch-logs), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-cognito-identity), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-cognito-identity-provider), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-comprehend), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-dynamodb), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-ec2), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-firehose), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-iam), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-kinesis), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-kms), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-lambda), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-lex-runtime-service), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-personalize-events), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-pinpoint), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-polly), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-rds), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-rds-data), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-rekognition), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-s3), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-secrets-manager), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-sfn), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-ssm), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-sso), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-sso-oidc), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-sts), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-textract), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-translate), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/credential-provider-cognito-identity), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/eventstream-codec), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/eventstream-marshaller), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-apply-body-checksum), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-bucket-endpoint), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-endpoint-discovery), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-eventstream), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-expect-continue), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-header-default), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-location-constraint), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-retry), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-sdk-rds), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-sdk-sts), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-ssec), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/querystring-builder), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/querystring-parser), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/service-error-classification), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/url-parser), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/url-parser-native), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-defaults-mode-browser), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-defaults-mode-node), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-user-agent-browser), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-user-agent-node), https://github.com/awslabs/smithy-typescript.git (@smithy/eventstream-codec), https://github.com/awslabs/smithy-typescript.git (@smithy/middleware-retry), https://github.com/awslabs/smithy-typescript.git (@smithy/querystring-builder), https://github.com/awslabs/smithy-typescript.git (@smithy/querystring-parser), https://github.com/awslabs/smithy-typescript.git (@smithy/service-error-classification), https://github.com/awslabs/smithy-typescript.git (@smithy/url-parser), https://github.com/awslabs/smithy-typescript.git (@smithy/util-defaults-mode-browser), https://github.com/awslabs/smithy-typescript.git (@smithy/util-defaults-mode-node). This software contains the following license and notice below:
+The following software may be included in this product: @aws-sdk/client-appsync, @aws-sdk/client-cloudformation, @aws-sdk/client-cloudwatch-logs, @aws-sdk/client-cognito-identity, @aws-sdk/client-cognito-identity-provider, @aws-sdk/client-comprehend, @aws-sdk/client-dynamodb, @aws-sdk/client-ec2, @aws-sdk/client-firehose, @aws-sdk/client-iam, @aws-sdk/client-kinesis, @aws-sdk/client-kms, @aws-sdk/client-lambda, @aws-sdk/client-lex-runtime-service, @aws-sdk/client-personalize-events, @aws-sdk/client-pinpoint, @aws-sdk/client-polly, @aws-sdk/client-rds, @aws-sdk/client-rds-data, @aws-sdk/client-rekognition, @aws-sdk/client-s3, @aws-sdk/client-secrets-manager, @aws-sdk/client-sfn, @aws-sdk/client-ssm, @aws-sdk/client-sso, @aws-sdk/client-sso-oidc, @aws-sdk/client-sts, @aws-sdk/client-textract, @aws-sdk/client-translate, @aws-sdk/credential-provider-cognito-identity, @aws-sdk/eventstream-codec, @aws-sdk/eventstream-marshaller, @aws-sdk/middleware-apply-body-checksum, @aws-sdk/middleware-bucket-endpoint, @aws-sdk/middleware-endpoint-discovery, @aws-sdk/middleware-eventstream, @aws-sdk/middleware-expect-continue, @aws-sdk/middleware-header-default, @aws-sdk/middleware-location-constraint, @aws-sdk/middleware-retry, @aws-sdk/middleware-sdk-rds, @aws-sdk/middleware-sdk-sts, @aws-sdk/middleware-ssec, @aws-sdk/querystring-builder, @aws-sdk/querystring-parser, @aws-sdk/service-error-classification, @aws-sdk/url-parser, @aws-sdk/url-parser-native, @aws-sdk/util-defaults-mode-browser, @aws-sdk/util-defaults-mode-node, @aws-sdk/util-user-agent-browser, @aws-sdk/util-user-agent-node, @smithy/eventstream-codec, @smithy/middleware-retry, @smithy/querystring-builder, @smithy/querystring-parser, @smithy/service-error-classification, @smithy/url-parser, @smithy/util-defaults-mode-browser, @smithy/util-defaults-mode-node. A copy of the source code may be downloaded from https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-appsync), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-cloudformation), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-cloudwatch-logs), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-cognito-identity), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-cognito-identity-provider), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-comprehend), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-dynamodb), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-ec2), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-firehose), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-iam), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-kinesis), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-kms), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-lambda), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-lex-runtime-service), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-personalize-events), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-pinpoint), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-polly), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-rds), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-rds-data), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-rekognition), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-s3), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-secrets-manager), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-sfn), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-ssm), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-sso), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-sso-oidc), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-sts), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-textract), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/client-translate), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/credential-provider-cognito-identity), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/eventstream-codec), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/eventstream-marshaller), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-apply-body-checksum), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-bucket-endpoint), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-endpoint-discovery), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-eventstream), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-expect-continue), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-header-default), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-location-constraint), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-retry), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-sdk-rds), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-sdk-sts), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-ssec), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/querystring-builder), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/querystring-parser), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/service-error-classification), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/url-parser), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/url-parser-native), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-defaults-mode-browser), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-defaults-mode-node), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-user-agent-browser), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-user-agent-node), https://github.com/smithy-lang/smithy-typescript.git (@smithy/eventstream-codec), https://github.com/smithy-lang/smithy-typescript.git (@smithy/middleware-retry), https://github.com/smithy-lang/smithy-typescript.git (@smithy/querystring-builder), https://github.com/smithy-lang/smithy-typescript.git (@smithy/querystring-parser), https://github.com/smithy-lang/smithy-typescript.git (@smithy/service-error-classification), https://github.com/smithy-lang/smithy-typescript.git (@smithy/url-parser), https://github.com/smithy-lang/smithy-typescript.git (@smithy/util-defaults-mode-browser), https://github.com/smithy-lang/smithy-typescript.git (@smithy/util-defaults-mode-node). This software contains the following license and notice below:
 
 Apache License
                            Version 2.0, January 2004
@@ -2945,7 +2733,7 @@ Apache License
 
 -----
 
-The following software may be included in this product: @aws-sdk/endpoint-cache, @aws-sdk/middleware-logger, @aws-sdk/node-config-provider, @aws-sdk/util-config-provider, @smithy/node-config-provider, @smithy/util-config-provider. A copy of the source code may be downloaded from https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/endpoint-cache), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-logger), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/node-config-provider), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-config-provider), https://github.com/awslabs/smithy-typescript.git (@smithy/node-config-provider), https://github.com/awslabs/smithy-typescript.git (@smithy/util-config-provider). This software contains the following license and notice below:
+The following software may be included in this product: @aws-sdk/endpoint-cache, @aws-sdk/middleware-logger, @aws-sdk/node-config-provider, @aws-sdk/util-config-provider, @smithy/node-config-provider, @smithy/util-config-provider. A copy of the source code may be downloaded from https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/endpoint-cache), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-logger), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/node-config-provider), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-config-provider), https://github.com/smithy-lang/smithy-typescript.git (@smithy/node-config-provider), https://github.com/awslabs/smithy-typescript.git (@smithy/util-config-provider). This software contains the following license and notice below:
 
 Apache License
                            Version 2.0, January 2004
@@ -3151,7 +2939,7 @@ Apache License
 
 -----
 
-The following software may be included in this product: @aws-sdk/eventstream-handler-node, @aws-sdk/eventstream-serde-browser, @aws-sdk/eventstream-serde-config-resolver, @aws-sdk/eventstream-serde-node, @aws-sdk/eventstream-serde-universal, @aws-sdk/invalid-dependency, @aws-sdk/middleware-host-header, @aws-sdk/middleware-recursion-detection, @aws-sdk/middleware-sdk-s3, @aws-sdk/middleware-serde, @aws-sdk/middleware-user-agent, @aws-sdk/protocol-http, @aws-sdk/s3-request-presigner, @aws-sdk/signature-v4-multi-region, @aws-sdk/smithy-client, @aws-sdk/util-create-request, @smithy/core, @smithy/eventstream-serde-browser, @smithy/eventstream-serde-config-resolver, @smithy/eventstream-serde-node, @smithy/eventstream-serde-universal, @smithy/invalid-dependency, @smithy/middleware-serde, @smithy/protocol-http, @smithy/smithy-client, @smithy/types. A copy of the source code may be downloaded from https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/eventstream-handler-node), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/eventstream-serde-browser), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/eventstream-serde-config-resolver), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/eventstream-serde-node), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/eventstream-serde-universal), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/invalid-dependency), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-host-header), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-recursion-detection), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-sdk-s3), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-serde), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-user-agent), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/protocol-http), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/s3-request-presigner), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/signature-v4-multi-region), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/smithy-client), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-create-request), https://github.com/awslabs/smithy-typescript.git (@smithy/core), https://github.com/awslabs/smithy-typescript.git (@smithy/eventstream-serde-browser), https://github.com/awslabs/smithy-typescript.git (@smithy/eventstream-serde-config-resolver), https://github.com/awslabs/smithy-typescript.git (@smithy/eventstream-serde-node), https://github.com/awslabs/smithy-typescript.git (@smithy/eventstream-serde-universal), https://github.com/awslabs/smithy-typescript.git (@smithy/invalid-dependency), https://github.com/awslabs/smithy-typescript.git (@smithy/middleware-serde), https://github.com/awslabs/smithy-typescript.git (@smithy/protocol-http), https://github.com/awslabs/smithy-typescript.git (@smithy/smithy-client), https://github.com/awslabs/smithy-typescript.git (@smithy/types). This software contains the following license and notice below:
+The following software may be included in this product: @aws-sdk/eventstream-handler-node, @aws-sdk/eventstream-serde-browser, @aws-sdk/eventstream-serde-config-resolver, @aws-sdk/eventstream-serde-node, @aws-sdk/eventstream-serde-universal, @aws-sdk/invalid-dependency, @aws-sdk/middleware-host-header, @aws-sdk/middleware-recursion-detection, @aws-sdk/middleware-sdk-s3, @aws-sdk/middleware-serde, @aws-sdk/middleware-user-agent, @aws-sdk/protocol-http, @aws-sdk/s3-request-presigner, @aws-sdk/signature-v4-multi-region, @aws-sdk/smithy-client, @aws-sdk/util-create-request, @smithy/core, @smithy/eventstream-serde-browser, @smithy/eventstream-serde-config-resolver, @smithy/eventstream-serde-node, @smithy/eventstream-serde-universal, @smithy/invalid-dependency, @smithy/middleware-serde, @smithy/protocol-http, @smithy/smithy-client, @smithy/types. A copy of the source code may be downloaded from https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/eventstream-handler-node), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/eventstream-serde-browser), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/eventstream-serde-config-resolver), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/eventstream-serde-node), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/eventstream-serde-universal), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/invalid-dependency), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-host-header), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-recursion-detection), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-sdk-s3), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-serde), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/middleware-user-agent), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/protocol-http), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/s3-request-presigner), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/signature-v4-multi-region), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/smithy-client), https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-create-request), https://github.com/smithy-lang/smithy-typescript.git (@smithy/core), https://github.com/smithy-lang/smithy-typescript.git (@smithy/eventstream-serde-browser), https://github.com/smithy-lang/smithy-typescript.git (@smithy/eventstream-serde-config-resolver), https://github.com/smithy-lang/smithy-typescript.git (@smithy/eventstream-serde-node), https://github.com/smithy-lang/smithy-typescript.git (@smithy/eventstream-serde-universal), https://github.com/smithy-lang/smithy-typescript.git (@smithy/invalid-dependency), https://github.com/smithy-lang/smithy-typescript.git (@smithy/middleware-serde), https://github.com/smithy-lang/smithy-typescript.git (@smithy/protocol-http), https://github.com/smithy-lang/smithy-typescript.git (@smithy/smithy-client), https://github.com/awslabs/smithy-typescript.git (@smithy/types). This software contains the following license and notice below:
 
 Apache License
                            Version 2.0, January 2004
@@ -3563,7 +3351,7 @@ Apache License
 
 -----
 
-The following software may be included in this product: @aws-sdk/util-middleware, @smithy/util-endpoints, @smithy/util-middleware, @smithy/util-retry. A copy of the source code may be downloaded from https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-middleware), https://github.com/awslabs/smithy-typescript.git (@smithy/util-endpoints), https://github.com/awslabs/smithy-typescript.git (@smithy/util-middleware), https://github.com/awslabs/smithy-typescript.git (@smithy/util-retry). This software contains the following license and notice below:
+The following software may be included in this product: @aws-sdk/util-middleware, @smithy/util-endpoints, @smithy/util-middleware, @smithy/util-retry. A copy of the source code may be downloaded from https://github.com/aws/aws-sdk-js-v3.git (@aws-sdk/util-middleware), https://github.com/smithy-lang/smithy-typescript.git (@smithy/util-endpoints), https://github.com/smithy-lang/smithy-typescript.git (@smithy/util-middleware), https://github.com/smithy-lang/smithy-typescript.git (@smithy/util-retry). This software contains the following license and notice below:
 
 Apache License
                            Version 2.0, January 2004
@@ -7918,6 +7706,32 @@ THE SOFTWARE.
 
 -----
 
+The following software may be included in this product: async-function. A copy of the source code may be downloaded from git+https://github.com/ljharb/async-function.git. This software contains the following license and notice below:
+
+MIT License
+
+Copyright (c) 2016 EduardoRFS
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+-----
+
 The following software may be included in this product: asynckit. A copy of the source code may be downloaded from git+https://github.com/alexindigo/asynckit.git. This software contains the following license and notice below:
 
 The MIT License (MIT)
@@ -10872,6 +10686,32 @@ SOFTWARE.
 
 -----
 
+The following software may be included in this product: call-bind-apply-helpers, call-bound, data-view-byte-length, data-view-byte-offset, es-define-property, es-errors, es-object-atoms, own-keys, possible-typed-array-names, safe-push-apply, set-proto, side-channel-list, side-channel-map. A copy of the source code may be downloaded from git+https://github.com/ljharb/call-bind-apply-helpers.git (call-bind-apply-helpers), git+https://github.com/ljharb/call-bound.git (call-bound), git+https://github.com/inspect-js/data-view-byte-length.git (data-view-byte-length), git+https://github.com/inspect-js/data-view-byte-offset.git (data-view-byte-offset), git+https://github.com/ljharb/es-define-property.git (es-define-property), git+https://github.com/ljharb/es-errors.git (es-errors), git+https://github.com/ljharb/es-object-atoms.git (es-object-atoms), git+https://github.com/ljharb/own-keys.git (own-keys), git+https://github.com/ljharb/possible-typed-array-names.git (possible-typed-array-names), git+https://github.com/ljharb/safe-push-apply.git (safe-push-apply), git+https://github.com/ljharb/set-proto.git (set-proto), git+https://github.com/ljharb/side-channel-list.git (side-channel-list), git+https://github.com/ljharb/side-channel-map.git (side-channel-map). This software contains the following license and notice below:
+
+MIT License
+
+Copyright (c) 2024 Jordan Harband
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+-----
+
 The following software may be included in this product: caniuse-lite. A copy of the source code may be downloaded from https://github.com/browserslist/caniuse-lite.git. This software contains the following license and notice below:
 
 Attribution 4.0 International
@@ -13194,37 +13034,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -----
 
-The following software may be included in this product: data-view-buffer, define-data-property, safe-array-concat, typed-array-buffer. A copy of the source code may be downloaded from git+https://github.com/ljharb/data-view-buffer.git (data-view-buffer), git+https://github.com/ljharb/define-data-property.git (define-data-property), git+https://github.com/ljharb/safe-array-concat.git (safe-array-concat), git+https://github.com/ljharb/typed-array-buffer.git (typed-array-buffer). This software contains the following license and notice below:
+The following software may be included in this product: data-view-buffer, define-data-property, safe-array-concat, typed-array-buffer. A copy of the source code may be downloaded from git+https://github.com/inspect-js/data-view-buffer.git (data-view-buffer), git+https://github.com/ljharb/define-data-property.git (define-data-property), git+https://github.com/ljharb/safe-array-concat.git (safe-array-concat), git+https://github.com/inspect-js/typed-array-buffer.git (typed-array-buffer). This software contains the following license and notice below:
 
 MIT License
 
 Copyright (c) 2023 Jordan Harband
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
------
-
-The following software may be included in this product: data-view-byte-length, data-view-byte-offset, es-define-property, es-errors, es-object-atoms, possible-typed-array-names. A copy of the source code may be downloaded from git+https://github.com/ljharb/data-view-byte-length.git (data-view-byte-length), git+https://github.com/ljharb/data-view-byte-offset.git (data-view-byte-offset), git+https://github.com/ljharb/es-define-property.git (es-define-property), git+https://github.com/ljharb/es-errors.git (es-errors), git+https://github.com/ljharb/es-object-atoms.git (es-object-atoms), git+https://github.com/ljharb/possible-typed-array-names.git (possible-typed-array-names). This software contains the following license and notice below:
-
-MIT License
-
-Copyright (c) 2024 Jordan Harband
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -14112,6 +13926,32 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -----
 
+The following software may be included in this product: dunder-proto, math-intrinsics. A copy of the source code may be downloaded from git+https://github.com/es-shims/dunder-proto.git (dunder-proto), git+https://github.com/es-shims/math-intrinsics.git (math-intrinsics). This software contains the following license and notice below:
+
+MIT License
+
+Copyright (c) 2024 ECMAScript Shims
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+-----
+
 The following software may be included in this product: ee-first, fs-readdir-recursive. A copy of the source code may be downloaded from https://github.com/jonathanong/ee-first.git (ee-first), https://github.com/fs-utils/fs-readdir-recursive.git (fs-readdir-recursive). This software contains the following license and notice below:
 
 The MIT License (MIT)
@@ -14423,7 +14263,7 @@ SOFTWARE.
 
 -----
 
-The following software may be included in this product: es-to-primitive, is-boolean-object, is-callable, is-date-object, is-number-object, is-string, is-symbol, is-typed-array, object.entries, object.values, string.prototype.matchall, which-typed-array. A copy of the source code may be downloaded from git://github.com/ljharb/es-to-primitive.git (es-to-primitive), git://github.com/inspect-js/is-boolean-object.git (is-boolean-object), git://github.com/inspect-js/is-callable.git (is-callable), git://github.com/inspect-js/is-date-object.git (is-date-object), git://github.com/inspect-js/is-number-object.git (is-number-object), git://github.com/ljharb/is-string.git (is-string), git://github.com/inspect-js/is-symbol.git (is-symbol), git://github.com/inspect-js/is-typed-array.git (is-typed-array), git://github.com/es-shims/Object.entries.git (object.entries), git://github.com/es-shims/Object.values.git (object.values), git+https://github.com/es-shims/String.prototype.matchAll.git (string.prototype.matchall), git://github.com/inspect-js/which-typed-array.git (which-typed-array). This software contains the following license and notice below:
+The following software may be included in this product: es-to-primitive, is-boolean-object, is-callable, is-date-object, is-number-object, is-string, is-symbol, is-typed-array, object.entries, object.values, string.prototype.matchall, which-typed-array. A copy of the source code may be downloaded from git://github.com/ljharb/es-to-primitive.git (es-to-primitive), git://github.com/inspect-js/is-boolean-object.git (is-boolean-object), git://github.com/inspect-js/is-callable.git (is-callable), git://github.com/inspect-js/is-date-object.git (is-date-object), git://github.com/inspect-js/is-number-object.git (is-number-object), git://github.com/inspect-js/is-string.git (is-string), git://github.com/inspect-js/is-symbol.git (is-symbol), git://github.com/inspect-js/is-typed-array.git (is-typed-array), git://github.com/es-shims/Object.entries.git (object.entries), git://github.com/es-shims/Object.values.git (object.values), git+https://github.com/es-shims/String.prototype.matchAll.git (string.prototype.matchall), git://github.com/inspect-js/which-typed-array.git (which-typed-array). This software contains the following license and notice below:
 
 The MIT License (MIT)
 
@@ -15228,7 +15068,7 @@ THE SOFTWARE.
 
 -----
 
-The following software may be included in this product: exponential-backoff. A copy of the source code may be downloaded from git+https://github.com/coveo/exponential-backoff.git. This software contains the following license and notice below:
+The following software may be included in this product: exponential-backoff. A copy of the source code may be downloaded from git+https://github.com/coveooss/exponential-backoff.git. This software contains the following license and notice below:
 
 Apache License
                            Version 2.0, January 2004
@@ -15418,7 +15258,7 @@ Apache License
       same "printed page" as the copyright notice for easier
       identification within third-party archives.
 
-   Copyright [yyyy] [name of copyright owner]
+   Copyright 2019 Coveo Solutions Inc.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -15938,7 +15778,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -----
 
-The following software may be included in this product: for-each. A copy of the source code may be downloaded from git://github.com/Raynos/for-each.git. This software contains the following license and notice below:
+The following software may be included in this product: for-each. A copy of the source code may be downloaded from https://github.com/Raynos/for-each.git. This software contains the following license and notice below:
 
 The MIT License (MIT)
 
@@ -16118,6 +15958,26 @@ The following software may be included in this product: fs-extra. A copy of the 
 
 (The MIT License)
 
+Copyright (c) 2011-2024 JP Richardson
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+(the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
+ merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+-----
+
+The following software may be included in this product: fs-extra. A copy of the source code may be downloaded from https://github.com/jprichardson/node-fs-extra. This software contains the following license and notice below:
+
+(The MIT License)
+
 Copyright (c) 2011-2017 JP Richardson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
@@ -16259,7 +16119,7 @@ SOFTWARE.
 
 -----
 
-The following software may be included in this product: functions-have-names, has-bigints, internal-slot, side-channel, unbox-primitive, which-boxed-primitive. A copy of the source code may be downloaded from git+https://github.com/inspect-js/functions-have-names.git (functions-have-names), git+https://github.com/ljharb/has-bigints.git (has-bigints), git+https://github.com/ljharb/internal-slot.git (internal-slot), git+https://github.com/ljharb/side-channel.git (side-channel), git+https://github.com/ljharb/unbox-primitive.git (unbox-primitive), git+https://github.com/inspect-js/which-boxed-primitive.git (which-boxed-primitive). This software contains the following license and notice below:
+The following software may be included in this product: functions-have-names, has-bigints, internal-slot, side-channel, side-channel-weakmap, unbox-primitive, which-boxed-primitive. A copy of the source code may be downloaded from git+https://github.com/inspect-js/functions-have-names.git (functions-have-names), git+https://github.com/ljharb/has-bigints.git (has-bigints), git+https://github.com/ljharb/internal-slot.git (internal-slot), git+https://github.com/ljharb/side-channel.git (side-channel), git+https://github.com/ljharb/side-channel-weakmap.git (side-channel-weakmap), git+https://github.com/ljharb/unbox-primitive.git (unbox-primitive), git+https://github.com/inspect-js/which-boxed-primitive.git (which-boxed-primitive). This software contains the following license and notice below:
 
 MIT License
 
@@ -16386,6 +16246,32 @@ SOFTWARE.
 
 -----
 
+The following software may be included in this product: get-proto. A copy of the source code may be downloaded from git+https://github.com/ljharb/get-proto.git. This software contains the following license and notice below:
+
+MIT License
+
+Copyright (c) 2025 Jordan Harband
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+-----
+
 The following software may be included in this product: get-symbol-description, has-tostringtag, is-shared-array-buffer. A copy of the source code may be downloaded from git+https://github.com/inspect-js/get-symbol-description.git (get-symbol-description), git+https://github.com/inspect-js/has-tostringtag.git (has-tostringtag), git+https://github.com/inspect-js/is-shared-array-buffer.git (is-shared-array-buffer). This software contains the following license and notice below:
 
 MIT License
@@ -16412,7 +16298,7 @@ SOFTWARE.
 
 -----
 
-The following software may be included in this product: git-up, parse-path, parse-url, protocols. A copy of the source code may be downloaded from https://github.com/IonicaBizau/git-up.git (git-up), git+https://github.com/IonicaBizau/parse-path.git (parse-path), git+https://github.com/IonicaBizau/parse-url.git (parse-url), git@github.com:IonicaBizau/protocols.git (protocols). This software contains the following license and notice below:
+The following software may be included in this product: git-up, parse-path, parse-url. A copy of the source code may be downloaded from https://github.com/IonicaBizau/git-up.git (git-up), git+https://github.com/IonicaBizau/parse-path.git (parse-path), git+https://github.com/IonicaBizau/parse-url.git (parse-url). This software contains the following license and notice below:
 
 The MIT License (MIT)
 
@@ -16895,7 +16781,7 @@ SOFTWARE.
 
 -----
 
-The following software may be included in this product: hosted-git-info. A copy of the source code may be downloaded from https://github.com/npm/hosted-git-info.git. This software contains the following license and notice below:
+The following software may be included in this product: hosted-git-info. A copy of the source code may be downloaded from git+https://github.com/npm/hosted-git-info.git. This software contains the following license and notice below:
 
 Copyright (c) 2015, Rebecca Turner
 
@@ -17718,7 +17604,7 @@ THE SOFTWARE.
 
 -----
 
-The following software may be included in this product: is-arguments, is-generator-function, is-negative-zero, is-regex. A copy of the source code may be downloaded from git://github.com/inspect-js/is-arguments.git (is-arguments), git://github.com/inspect-js/is-generator-function.git (is-generator-function), git://github.com/inspect-js/is-negative-zero.git (is-negative-zero), git://github.com/inspect-js/is-regex.git (is-regex). This software contains the following license and notice below:
+The following software may be included in this product: is-arguments, is-generator-function, is-regex. A copy of the source code may be downloaded from git://github.com/inspect-js/is-arguments.git (is-arguments), git://github.com/inspect-js/is-generator-function.git (is-generator-function), git://github.com/inspect-js/is-regex.git (is-regex). This software contains the following license and notice below:
 
 The MIT License (MIT)
 
@@ -17860,7 +17746,7 @@ THE SOFTWARE.
 
 -----
 
-The following software may be included in this product: is-ci. A copy of the source code may be downloaded from https://github.com/watson/is-ci.git. This software contains the following license and notice below:
+The following software may be included in this product: is-ci. A copy of the source code may be downloaded from git+https://github.com/watson/is-ci.git. This software contains the following license and notice below:
 
 The MIT License (MIT)
 
@@ -18067,11 +17953,11 @@ THE SOFTWARE.
 
 -----
 
-The following software may be included in this product: is-ssh. A copy of the source code may be downloaded from git@github.com:IonicaBizau/node-is-ssh.git. This software contains the following license and notice below:
+The following software may be included in this product: is-ssh, protocols. A copy of the source code may be downloaded from git@github.com:IonicaBizau/node-is-ssh.git (is-ssh), git@github.com:IonicaBizau/protocols.git (protocols). This software contains the following license and notice below:
 
 The MIT License (MIT)
 
-Copyright (c) 2015-22 Ionică Bizău <bizauionica@gmail.com> (http://ionicabizau.net)
+Copyright (c) 2015-25 Ionică Bizău <bizauionica@gmail.com> (https://ionicabizau.net)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29147,7 +29033,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 -----
 
-The following software may be included in this product: retimer, reusify. A copy of the source code may be downloaded from git+https://github.com/mcollina/retimer.git (retimer), git+https://github.com/mcollina/reusify.git (reusify). This software contains the following license and notice below:
+The following software may be included in this product: retimer. A copy of the source code may be downloaded from git+https://github.com/mcollina/retimer.git. This software contains the following license and notice below:
 
 The MIT License (MIT)
 
@@ -29196,6 +29082,32 @@ Felix Geisendörfer (felix@debuggable.com)
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
+
+-----
+
+The following software may be included in this product: reusify. A copy of the source code may be downloaded from git+https://github.com/mcollina/reusify.git. This software contains the following license and notice below:
+
+The MIT License (MIT)
+
+Copyright (c) 2015-2024 Matteo Collina
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 -----
 
@@ -30967,7 +30879,7 @@ The following software may be included in this product: ts-jest. A copy of the s
 
 MIT License
 
-Copyright (c) 2016-2018
+Copyright (c) 2016-2025
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

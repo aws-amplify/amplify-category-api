@@ -9,24 +9,24 @@
     "@aws-amplify/ai-constructs": "^1.2.4",
     "@aws-amplify/backend-output-schemas": "^1.0.0",
     "@aws-amplify/backend-output-storage": "^1.0.0",
-    "@aws-amplify/graphql-auth-transformer": "4.2.0",
-    "@aws-amplify/graphql-conversation-transformer": "1.1.8",
-    "@aws-amplify/graphql-default-value-transformer": "3.1.10",
+    "@aws-amplify/graphql-auth-transformer": "4.2.1",
+    "@aws-amplify/graphql-conversation-transformer": "1.1.9",
+    "@aws-amplify/graphql-default-value-transformer": "3.1.11",
     "@aws-amplify/graphql-directives": "2.7.0",
-    "@aws-amplify/graphql-function-transformer": "3.1.12",
-    "@aws-amplify/graphql-generation-transformer": "1.2.0",
-    "@aws-amplify/graphql-http-transformer": "3.0.15",
-    "@aws-amplify/graphql-index-transformer": "3.0.15",
-    "@aws-amplify/graphql-maps-to-transformer": "4.0.15",
-    "@aws-amplify/graphql-model-transformer": "3.2.0",
-    "@aws-amplify/graphql-predictions-transformer": "3.0.15",
-    "@aws-amplify/graphql-relational-transformer": "3.1.7",
-    "@aws-amplify/graphql-searchable-transformer": "3.0.15",
-    "@aws-amplify/graphql-sql-transformer": "0.4.15",
-    "@aws-amplify/graphql-transformer": "2.3.0",
-    "@aws-amplify/graphql-transformer-core": "3.4.0",
-    "@aws-amplify/graphql-transformer-interfaces": "4.2.3",
-    "@aws-amplify/graphql-validate-transformer": "1.1.0",
+    "@aws-amplify/graphql-function-transformer": "3.1.13",
+    "@aws-amplify/graphql-generation-transformer": "1.2.1",
+    "@aws-amplify/graphql-http-transformer": "3.0.16",
+    "@aws-amplify/graphql-index-transformer": "3.0.16",
+    "@aws-amplify/graphql-maps-to-transformer": "4.0.16",
+    "@aws-amplify/graphql-model-transformer": "3.2.1",
+    "@aws-amplify/graphql-predictions-transformer": "3.0.16",
+    "@aws-amplify/graphql-relational-transformer": "3.1.8",
+    "@aws-amplify/graphql-searchable-transformer": "3.0.16",
+    "@aws-amplify/graphql-sql-transformer": "0.4.16",
+    "@aws-amplify/graphql-transformer": "2.3.1",
+    "@aws-amplify/graphql-transformer-core": "3.4.1",
+    "@aws-amplify/graphql-transformer-interfaces": "4.2.4",
+    "@aws-amplify/graphql-validate-transformer": "1.1.1",
     "@aws-amplify/platform-core": "^1.0.0",
     "@aws-amplify/plugin-types": "^1.0.0",
     "@aws-crypto/crc32": "5.2.0",
@@ -50,6 +50,7 @@
     "@aws-sdk/middleware-logger": "3.609.0",
     "@aws-sdk/middleware-recursion-detection": "3.620.0",
     "@aws-sdk/middleware-user-agent": "3.637.0",
+    "@aws-sdk/nested-clients": "^3.777.0",
     "@aws-sdk/region-config-resolver": "3.614.0",
     "@aws-sdk/token-providers": "3.614.0",
     "@aws-sdk/types": "3.609.0",
@@ -101,6 +102,7 @@
     "@smithy/util-stream": "^3.1.3",
     "@smithy/util-uri-escape": "^3.0.0",
     "@smithy/util-utf8": "^3.0.0",
+    "@types/uuid": "^9.0.8",
     "bowser": "^2.11.0",
     "charenc": "^0.0.2",
     "ci-info": "^3.2.0",
@@ -132,7 +134,7 @@
     "zod": "^3.22.2"
   },
   "dependencies": {
-    "aws-cdk-lib": "^2.180.0",
+    "aws-cdk-lib": "^2.187.0",
     "constructs": "^10.3.0"
   },
   "dependencyClosure": {
@@ -1066,6 +1068,19 @@
             }
           }
         },
+        "aws-cdk-lib.aws_cognito_identitypool": {
+          "targets": {
+            "dotnet": {
+              "namespace": "Amazon.CDK.AWS.Cognito.Identitypool"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.cognito.identitypool"
+            },
+            "python": {
+              "module": "aws_cdk.aws_cognito_identitypool"
+            }
+          }
+        },
         "aws-cdk-lib.aws_comprehend": {
           "targets": {
             "dotnet": {
@@ -1739,6 +1754,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_gamelift"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_gameliftstreams": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.GameLiftStreams"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.gameliftstreams"
+            },
+            "python": {
+              "module": "aws_cdk.aws_gameliftstreams"
             }
           }
         },
@@ -3367,6 +3395,19 @@
             }
           }
         },
+        "aws-cdk-lib.aws_scheduler_targets": {
+          "targets": {
+            "dotnet": {
+              "namespace": "Amazon.CDK.AWS.Scheduler.Targets"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.scheduler.targets"
+            },
+            "python": {
+              "module": "aws_cdk.aws_scheduler_targets"
+            }
+          }
+        },
         "aws-cdk-lib.aws_sdb": {
           "targets": {
             "dotnet": {
@@ -4024,7 +4065,7 @@
     "stability": "stable"
   },
   "homepage": "https://github.com/aws-amplify/amplify-category-api.git",
-  "jsiiVersion": "5.6.4 (build a446c6c)",
+  "jsiiVersion": "5.8.3 (build 6fd3bf6)",
   "keywords": [
     "awscdk",
     "aws-cdk",
@@ -4262,7 +4303,7 @@
         },
         "locationInModule": {
           "filename": "src/amplify-dynamodb-table-wrapper.ts",
-          "line": 107
+          "line": 124
         },
         "parameters": [
           {
@@ -4279,7 +4320,7 @@
       "kind": "class",
       "locationInModule": {
         "filename": "src/amplify-dynamodb-table-wrapper.ts",
-        "line": 93
+        "line": 110
       },
       "methods": [
         {
@@ -4290,7 +4331,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 99
+            "line": 116
           },
           "name": "isAmplifyDynamoDbTableResource",
           "parameters": [
@@ -4318,7 +4359,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 117
+            "line": 134
           },
           "name": "applyRemovalPolicy",
           "parameters": [
@@ -4340,7 +4381,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 154
+            "line": 179
           },
           "name": "setGlobalSecondaryIndexProvisionedThroughput",
           "parameters": [
@@ -4374,7 +4415,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 124
+            "line": 141
           },
           "name": "billingMode",
           "type": {
@@ -4388,7 +4429,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 182
+            "line": 207
           },
           "name": "deletionProtectionEnabled",
           "type": {
@@ -4402,7 +4443,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 138
+            "line": 155
           },
           "name": "pointInTimeRecoveryEnabled",
           "type": {
@@ -4412,11 +4453,25 @@
         {
           "docs": {
             "stability": "stable",
+            "summary": "Whether point-in-time recovery is enabled and recoveryPeriodInDays is set."
+          },
+          "locationInModule": {
+            "filename": "src/amplify-dynamodb-table-wrapper.ts",
+            "line": 163
+          },
+          "name": "pointInTimeRecoverySpecification",
+          "type": {
+            "fqn": "@aws-amplify/graphql-api-construct.PointInTimeRecoverySpecification"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
             "summary": "Update the provisioned throughput for the base table."
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 145
+            "line": 170
           },
           "name": "provisionedThroughput",
           "type": {
@@ -4430,7 +4485,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 175
+            "line": 200
           },
           "name": "sseSpecification",
           "type": {
@@ -4444,7 +4499,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 168
+            "line": 193
           },
           "name": "streamSpecification",
           "type": {
@@ -4458,7 +4513,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 131
+            "line": 148
           },
           "name": "timeToLiveAttribute",
           "type": {
@@ -7851,6 +7906,58 @@
       ],
       "symbolId": "src/types:PartialTranslationBehavior"
     },
+    "@aws-amplify/graphql-api-construct.PointInTimeRecoverySpecification": {
+      "assembly": "@aws-amplify/graphql-api-construct",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Reference to PointInTimeRecovey Specification for continuous backups."
+      },
+      "fqn": "@aws-amplify/graphql-api-construct.PointInTimeRecoverySpecification",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "src/amplify-dynamodb-table-wrapper.ts",
+        "line": 25
+      },
+      "name": "PointInTimeRecoverySpecification",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Indicates whether point in time recovery is enabled (true) or disabled (false) on the table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/amplify-dynamodb-table-wrapper.ts",
+            "line": 29
+          },
+          "name": "pointInTimeRecoveryEnabled",
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Your table data is only recoverable to any point-in-time from within the configured recovery period.\nIf no value is provided, the value will default to 35.",
+            "stability": "stable",
+            "summary": "The number of preceding days for which continuous backups are taken and maintained."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "src/amplify-dynamodb-table-wrapper.ts",
+            "line": 35
+          },
+          "name": "recoveryPeriodInDays",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "src/amplify-dynamodb-table-wrapper:PointInTimeRecoverySpecification"
+    },
     "@aws-amplify/graphql-api-construct.ProvisionedConcurrencyConfig": {
       "assembly": "@aws-amplify/graphql-api-construct",
       "datatype": true,
@@ -7897,7 +8004,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/amplify-dynamodb-table-wrapper.ts",
-        "line": 24
+        "line": 41
       },
       "name": "ProvisionedThroughput",
       "properties": [
@@ -7910,7 +8017,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 28
+            "line": 45
           },
           "name": "readCapacityUnits",
           "type": {
@@ -7926,7 +8033,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 33
+            "line": 50
           },
           "name": "writeCapacityUnits",
           "type": {
@@ -8000,7 +8107,7 @@
       "kind": "enum",
       "locationInModule": {
         "filename": "../../node_modules/aws-cdk-lib/aws-logs/lib/log-group.d.ts",
-        "line": 238
+        "line": 239
       },
       "members": [
         {
@@ -8380,7 +8487,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/amplify-dynamodb-table-wrapper.ts",
-        "line": 47
+        "line": 64
       },
       "name": "SSESpecification",
       "properties": [
@@ -8394,7 +8501,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 53
+            "line": 70
           },
           "name": "sseEnabled",
           "type": {
@@ -8411,7 +8518,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 60
+            "line": 77
           },
           "name": "kmsMasterKeyId",
           "optional": true,
@@ -8429,7 +8536,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 67
+            "line": 84
           },
           "name": "sseType",
           "optional": true,
@@ -8451,7 +8558,7 @@
       "kind": "enum",
       "locationInModule": {
         "filename": "src/amplify-dynamodb-table-wrapper.ts",
-        "line": 40
+        "line": 57
       },
       "members": [
         {
@@ -8845,7 +8952,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/amplify-dynamodb-table-wrapper.ts",
-        "line": 73
+        "line": 90
       },
       "name": "StreamSpecification",
       "properties": [
@@ -8859,7 +8966,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 82
+            "line": 99
           },
           "name": "streamViewType",
           "type": {
@@ -9405,6 +9512,6 @@
       "symbolId": "src/model-datasource-strategy-types:VpcConfig"
     }
   },
-  "version": "1.19.0",
-  "fingerprint": "M0nbZT4cRfyLhx7hYI8m8pGPy25ho16dKJrbhvnBXzA="
+  "version": "1.19.1",
+  "fingerprint": "5V4wdVV1uH1SpFN4wCZGpoK4X/WnHP9/kvWfFJ7bhts="
 }
