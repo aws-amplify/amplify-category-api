@@ -156,8 +156,7 @@ describe('ModelTransformer:', () => {
     type Post @model @searchable {
       id: ID!
       title: String!
-    }
-  `;
+    }`;
 
     const out = testTransform({
       schema: validSchema,
