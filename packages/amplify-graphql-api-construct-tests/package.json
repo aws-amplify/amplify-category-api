@@ -45,7 +45,7 @@
     "ws": "^8.18.0"
   },
   "peerDependencies": {
-    "@aws-amplify/amplify-cli-core": "^4.3.9"
+    "@aws-amplify/amplify-cli-core": "^4.4.0"
   },
   "devDependencies": {
     "@aws-amplify/graphql-transformer-core": "3.4.2",

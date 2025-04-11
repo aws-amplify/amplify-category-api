@@ -112,7 +112,7 @@
     yaml "^2.2.2"
     yauzl "^3.1.3"
 
-"@aws-amplify/amplify-cli-core@4.4.0", "@aws-amplify/amplify-cli-core@^4.3.9":
+"@aws-amplify/amplify-cli-core@4.4.0", "@aws-amplify/amplify-cli-core@^4.4.0":
   version "4.4.0"
   resolved "https://registry.npmjs.org/@aws-amplify/amplify-cli-core/-/amplify-cli-core-4.4.0.tgz#08c50d4323ed40671878b8cdab6a4ad4e2356fad"
   integrity sha512-WMdd1hZm1d9nfmRfGLqsDmgGqPZGWjjU1FFH0vuAGXLCezimCONa08J6ZnrIatS/5NGEfZZ4/ap7R6nOLjV3Sg==
