@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-searchable-transformer",
-  "version": "3.0.16",
+  "version": "3.0.17",
   "description": "Amplfy GraphQL @searchable transformer",
   "repository": {
     "type": "git",
@@ -30,9 +30,9 @@
   },
   "dependencies": {
     "@aws-amplify/graphql-directives": "2.7.0",
-    "@aws-amplify/graphql-model-transformer": "3.2.1",
-    "@aws-amplify/graphql-transformer-core": "3.4.1",
-    "@aws-amplify/graphql-transformer-interfaces": "4.2.4",
+    "@aws-amplify/graphql-model-transformer": "3.2.2",
+    "@aws-amplify/graphql-transformer-core": "3.4.2",
+    "@aws-amplify/graphql-transformer-interfaces": "4.2.5",
     "graphql": "^15.5.0",
     "graphql-mapping-template": "5.0.2",
     "graphql-transformer-common": "5.1.2"
@@ -42,7 +42,7 @@
     "constructs": "^10.3.0"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-test-utils": "1.0.15",
-    "@types/node": "^18.0.0"
+    "@aws-amplify/graphql-transformer-test-utils": "1.0.16",
+    "@types/node": "^20.0.0"
   }
 }

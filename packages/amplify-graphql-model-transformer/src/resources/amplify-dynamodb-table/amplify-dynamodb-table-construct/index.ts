@@ -14,6 +14,7 @@ import {
   TableEncryption,
   TableProps,
 } from 'aws-cdk-lib/aws-dynamodb';
+import { IGrantable, Grant } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 
 const HASH_KEY_TYPE = 'HASH';
@@ -200,6 +201,20 @@ export class AmplifyDynamoDBTable extends Resource {
       throw new Error(`Cannot find schema for index: ${indexName}. Use 'addGlobalSecondaryIndex' or 'addLocalSecondaryIndex' to add index`);
     }
     return schema;
+  }
+
+  public grantStreamRead(grantee: IGrantable): Grant {
+    if (!this.tableStreamArn) {
+      throw new Error(`No stream ARNs found on the table ${this.node.path}`);
+    }
+    if (this.encryptionKey) {
+      this.encryptionKey.grant(grantee, 'kms:Decrypt', 'kms:DescribeKey');
+    }
+    return Grant.addToPrincipal({
+      grantee,
+      actions: ['dynamodb:ListStreams', 'dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator'],
+      resourceArns: [this.tableStreamArn],
+    });
   }
 
   private addKey(attribute: Attribute, keyType: string) {

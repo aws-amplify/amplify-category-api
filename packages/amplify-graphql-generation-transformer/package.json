@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-generation-transformer",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Amplify GraphQL @generation transformer",
   "repository": {
     "type": "git",
@@ -25,15 +25,15 @@
   },
   "dependencies": {
     "@aws-amplify/graphql-directives": "2.7.0",
-    "@aws-amplify/graphql-transformer-core": "3.4.1",
-    "@aws-amplify/graphql-transformer-interfaces": "4.2.4",
+    "@aws-amplify/graphql-transformer-core": "3.4.2",
+    "@aws-amplify/graphql-transformer-interfaces": "4.2.5",
     "graphql": "^15.5.0",
     "graphql-mapping-template": "5.0.2",
     "graphql-transformer-common": "5.1.2",
     "immer": "^9.0.12"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-test-utils": "1.0.15"
+    "@aws-amplify/graphql-transformer-test-utils": "1.0.16"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.187.0",
