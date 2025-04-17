@@ -45,13 +45,13 @@
     "ws": "^8.18.0"
   },
   "peerDependencies": {
-    "@aws-amplify/amplify-cli-core": "^4.3.9"
+    "@aws-amplify/amplify-cli-core": "^4.4.0"
   },
   "devDependencies": {
     "@aws-amplify/graphql-transformer-core": "3.4.2",
     "@aws-amplify/graphql-transformer-interfaces": "4.2.5",
     "@aws-amplify/graphql-validate-transformer": "1.1.2",
-    "@types/node": "^18.0.0",
+    "@types/node": "^20.0.0",
     "aws-cdk-lib": "2.187.0",
     "constructs": "10.3.0",
     "ts-node": "^8.10.2"

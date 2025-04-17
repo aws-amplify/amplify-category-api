@@ -280,47 +280,42 @@ describe('References Migration', () => {
 
     // assert tables have not been deleted after deleting the gen 1 project
 
-    // TODO: GEN1_GEN2_MIGRATION
-    // The enablegen2migration feature flag is not released yet so the tables will be deleted when the gen 1 app is deleted
-    // Restore this block when the feature flag is released
-    // start block
-    // const listResult = await graphql(
-    //   gen2APIEndpoint,
-    //   gen2APIKey,
-    //   /* GraphQL */ `
-    //     query LIST_PRIMARY {
-    //       listPrimaries {
-    //         items {
-    //           id
-    //           relatedMany {
-    //             items {
-    //               id
-    //               primaryId
-    //             }
-    //             nextToken
-    //           }
-    //           relatedOne {
-    //             id
-    //             primaryId
-    //             primary {
-    //               id
-    //             }
-    //           }
-    //         }
-    //         nextToken
-    //       }
-    //     }
-    //   `,
-    // );
+    const listResult = await graphql(
+      gen2APIEndpoint,
+      gen2APIKey,
+      /* GraphQL */ `
+        query LIST_PRIMARY {
+          listPrimaries {
+            items {
+              id
+              relatedMany {
+                items {
+                  id
+                  primaryId
+                }
+                nextToken
+              }
+              relatedOne {
+                id
+                primaryId
+                primary {
+                  id
+                }
+              }
+            }
+            nextToken
+          }
+        }
+      `,
+    );
 
-    // expect(listResult.statusCode).toEqual(200);
-    // expect(listResult.body.data.listPrimaries.items.length).toEqual(2);
-    // expect([gen1Primary.id, gen2Primary.id]).toContain(listResult.body.data.listPrimaries.items[0].id);
-    // expect([gen1Primary.id, gen2Primary.id]).toContain(listResult.body.data.listPrimaries.items[1].id);
-    // expect(listResult.body.data.listPrimaries.items[0].relatedMany.items.length).toEqual(1);
-    // expect(listResult.body.data.listPrimaries.items[1].relatedMany.items.length).toEqual(1);
-    // expect(listResult.body.data.listPrimaries.items[0].relatedOne).toBeDefined();
-    // expect(listResult.body.data.listPrimaries.items[1].relatedOne).toBeDefined();
-    // end block
+    expect(listResult.statusCode).toEqual(200);
+    expect(listResult.body.data.listPrimaries.items.length).toEqual(2);
+    expect([gen1Primary.id, gen2Primary.id]).toContain(listResult.body.data.listPrimaries.items[0].id);
+    expect([gen1Primary.id, gen2Primary.id]).toContain(listResult.body.data.listPrimaries.items[1].id);
+    expect(listResult.body.data.listPrimaries.items[0].relatedMany.items.length).toEqual(1);
+    expect(listResult.body.data.listPrimaries.items[1].relatedMany.items.length).toEqual(1);
+    expect(listResult.body.data.listPrimaries.items[0].relatedOne).toBeDefined();
+    expect(listResult.body.data.listPrimaries.items[1].relatedOne).toBeDefined();
   });
 });
