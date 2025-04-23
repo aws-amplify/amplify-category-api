@@ -1,5 +1,7 @@
 import { DataSourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveNode, FieldDefinitionNode, InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { ApplicationLogLevel } from 'aws-cdk-lib/aws-lambda';
 import { ConversationModel } from './graphql-types/conversation-model';
 import { MessageModel } from './graphql-types/message-model';
 import { Tool } from './tools/process-tools';
@@ -24,7 +26,7 @@ export type ConversationDirectiveConfiguration = {
    * @deprecated Replaced by 'handler'
    */
   functionName: string | undefined;
-  handler: ConversationHandlerFunctionConfiguration | undefined;
+  handler: ConversationHandlerFunctionConfiguration | ConversationHandlerFunctionDefaultConfiguration | undefined;
 
   // Generated within the Conversation Transformer
   toolSpec: Tool[] | undefined;
@@ -37,11 +39,23 @@ export type ConversationDirectiveConfiguration = {
 };
 
 /**
- * Conversation Directive Handler Function Configuration
+ * Conversation Directive Handler Custom Function Configuration
  */
 export type ConversationHandlerFunctionConfiguration = {
   functionName: string;
   eventVersion: string;
+};
+
+/**
+ * Conversation Directive Handler Default Function Configuration
+ */
+export type ConversationHandlerFunctionDefaultConfiguration = {
+  logging?: {
+    level?: ApplicationLogLevel;
+    retention?: RetentionDays;
+  };
+  timeoutSeconds?: number;
+  memoryMB?: number;
 };
 
 /**

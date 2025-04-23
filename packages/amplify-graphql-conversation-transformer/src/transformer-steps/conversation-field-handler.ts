@@ -8,7 +8,7 @@ import {
   ObjectTypeDefinitionNode,
 } from 'graphql';
 import * as semver from 'semver';
-import { ConversationDirectiveConfiguration } from '../conversation-directive-configuration';
+import { ConversationDirectiveConfiguration, ConversationHandlerFunctionConfiguration } from '../conversation-directive-configuration';
 import { ConversationModel, createConversationModel } from '../graphql-types/conversation-model';
 import {
   createAssistantMutationField,
@@ -213,11 +213,12 @@ export class ConversationFieldHandler {
     if (config.handler && config.functionName) {
       throw new InvalidDirectiveError("'functionName' and 'handler' are mutually exclusive");
     }
-    if (config.handler) {
-      const eventVersion = semver.coerce(config.handler.eventVersion);
+    if (config.handler && typeof config.handler === 'function') {
+      const handler = config.handler as ConversationHandlerFunctionConfiguration;
+      const eventVersion = semver.coerce(handler.eventVersion);
       if (eventVersion?.major !== 1) {
         throw new InvalidDirectiveError(
-          `Unsupported custom conversation handler. Expected eventVersion to match 1.x, received ${config.handler.eventVersion}`,
+          `Unsupported custom conversation handler. Expected eventVersion to match 1.x, received ${handler.eventVersion}`,
         );
       }
     }

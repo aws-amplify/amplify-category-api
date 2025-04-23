@@ -7,7 +7,11 @@ import * as cdk from 'aws-cdk-lib';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { FunctionResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import pluralize from 'pluralize';
-import { ConversationDirectiveConfiguration, ConversationDirectiveDataSources } from '../conversation-directive-configuration';
+import {
+  ConversationDirectiveConfiguration,
+  ConversationDirectiveDataSources,
+  ConversationHandlerFunctionDefaultConfiguration,
+} from '../conversation-directive-configuration';
 import {
   CONVERSATION_MESSAGES_REFERENCE_FIELD_NAME,
   getFunctionStackName,
@@ -27,6 +31,7 @@ import {
   sendMessagePipelineDefinition,
 } from '../resolvers';
 import { processTools } from '../tools/process-tools';
+
 export class ConversationResolverGenerator {
   constructor(
     private readonly functionNameMap?: Record<string, IFunction>,
@@ -146,7 +151,16 @@ export class ConversationResolverGenerator {
     capitalizedFieldName: string,
   ): { functionDataSourceId: string; referencedFunction: IFunction } {
     if (directive.handler) {
-      return this.setupExistingFunctionDataSource(directive.handler.functionName);
+      if ('functionName' in directive.handler) {
+        return this.setupExistingFunctionDataSource(directive.handler.functionName);
+      } else {
+        return this.setupDefaultConversationHandler(
+          functionStack,
+          capitalizedFieldName,
+          directive.aiModel,
+          directive.handler, // Pass the default configuration settings to setupDefaultConversationHandler
+        );
+      }
     } else if (directive.functionName) {
       return this.setupExistingFunctionDataSource(directive.functionName);
     } else {
@@ -183,6 +197,7 @@ export class ConversationResolverGenerator {
     functionStack: cdk.Stack,
     capitalizedFieldName: string,
     modelId: string,
+    config?: ConversationHandlerFunctionDefaultConfiguration,
   ): { functionDataSourceId: string; referencedFunction: IFunction } {
     const defaultConversationHandler = new conversation.ConversationHandlerFunction(
       functionStack,
@@ -193,6 +208,9 @@ export class ConversationResolverGenerator {
             modelId,
           },
         ],
+        logging: config?.logging,
+        memoryMB: config?.memoryMB,
+        timeoutSeconds: config?.timeoutSeconds,
         outputStorageStrategy: this.outputStorageStrategy,
       },
     );

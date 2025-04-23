@@ -7,7 +7,8 @@ const definition = /* GraphQL */ `
     systemPrompt: String!
     auth: ConversationAuth!
     functionName: String
-    handler: ConversationHandlerFunctionConfiguration
+    handler: ConversationHandlerFunctionCustomConfiguration
+    defaultHandlerSettings: ConversationHandlerFunctionDefaultConfiguration
     tools: [ToolMap]
     inferenceConfiguration: ConversationInferenceConfiguration
   ) on FIELD_DEFINITION
@@ -25,11 +26,20 @@ const definition = /* GraphQL */ `
     userPools
   }
 
-  input ConversationHandlerFunctionConfiguration {
+  input ConversationHandlerFunctionCustomConfiguration {
     functionName: String!
     eventVersion: String!
   }
 
+  input ConversationHandlerFunctionDefaultConfiguration {
+    logging: {
+      level: ApplicationLogLevel;
+      retention: RetentionDays;
+    };
+    timeoutSeconds: number;
+    memoryMB: number;
+  }
+  
   # The configuration for a tool.
   # This is a fake union (GraphQL doesn't support unions in inputs). It is best thought of as:
   # type ToolMap =
