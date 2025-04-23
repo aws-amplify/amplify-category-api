@@ -368,7 +368,7 @@ describe('Custom operations have @aws_iam directives when enableIamAuthorization
     });
 
     // TODO: Enable this test once we fix https://github.com/aws-amplify/amplify-category-api/issues/2929
-    test.skip('Adds @aws_iam to non-model custom types when there is no model', () => {
+    test('Adds @aws_iam to non-model custom types when there is no model', () => {
       const strategy = makeStrategy(strategyType);
       const schema = /* GraphQL */ `
         type Foo {
@@ -404,7 +404,7 @@ describe('Custom operations have @aws_iam directives when enableIamAuthorization
     });
 
     // TODO: Enable this test once we fix https://github.com/aws-amplify/amplify-category-api/issues/2929
-    test.skip('Adds @aws_iam to non-model custom types when there is a model', () => {
+    test('Adds @aws_iam to non-model custom types when there is a model', () => {
       const strategy = makeStrategy(strategyType);
       const schema = /* GraphQL */ `
         type Todo @model {
