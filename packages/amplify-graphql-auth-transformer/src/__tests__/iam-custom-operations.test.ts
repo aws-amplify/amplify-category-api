@@ -1,3 +1,4 @@
+import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
@@ -40,6 +41,7 @@ const makeTransformers = (): TransformerPluginProvider[] => [
   new AuthTransformer(),
   new PrimaryKeyTransformer(),
   new SqlTransformer(),
+  new FunctionTransformer(),
 ];
 
 const makeSqlDirectiveDataSourceStrategies = (schema: string, strategy: ModelDataSourceStrategy): SqlDirectiveDataSourceStrategy[] =>
@@ -474,6 +476,42 @@ describe('Custom operations have @aws_iam directives when enableIamAuthorization
 
       // Also expect the custom type referenced by the custom operation to be authorized
       expect(out.schema).toMatch(/description: String.*@aws_iam/);
+    });
+
+    test('Adds @aws_iam to async function EventInvocationResponse type', () => {
+      const strategy = makeStrategy(strategyType);
+      const schema = /* GraphQL */ `
+        type Foo {
+          description: String
+        }
+        type EventInvocationResponse @aws_api_key {
+          success: Boolean!
+        }
+        type Query {
+          getFooCustom: Foo
+        }
+        type Mutation {
+          updateFooCustom: Foo
+          doSomethingAsync(body: String!): EventInvocationResponse
+            @function(name: "FnDoSomethingAsync", invocationType: Event)
+            @auth(rules: [{ allow: public, provider: apiKey }])
+        }
+        type Subscription {
+          onUpdateFooCustom: Foo @aws_subscribe(mutations: ["updateFooCustom"])
+        }
+      `;
+
+      const out = testTransform({
+        schema,
+        dataSourceStrategies: constructDataSourceStrategies(schema, strategy),
+        authConfig: makeAuthConfig(),
+        synthParameters: makeSynthParameters(),
+        transformers: makeTransformers(),
+        sqlDirectiveDataSourceStrategies: makeSqlDirectiveDataSourceStrategies(schema, strategy),
+      });
+
+      // Also expect the custom type referenced by the custom operation to be authorized
+      expect(out.schema).toMatch(/type EventInvocationResponse.*@aws_iam/);
     });
 
     test('Does not add duplicate @aws_iam directive to custom type if already present', () => {
