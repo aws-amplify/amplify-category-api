@@ -1,5 +1,43 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Group field as part of secondary index correct generation of auth rules using @hasMany directive linking parent to child where GSI is also auth groupField 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $primaryRole0 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), null) )
+    #if( !$util.isNull($primaryRole0) )
+
+      #set( $ownerClaimsList0 = [] )
+      #if( $util.isString($primaryRole0) )
+        #if( $util.isList($util.parseJson($primaryRole0)) )
+          #set( $ownerClaimsList0 = $util.parseJson($primaryRole0) )
+        #else
+          #set( $ownerClaimsList0 = [$primaryRole0] )
+        #end
+      #else
+        #set( $ownerClaimsList0 = $primaryRole0 )
+      #end
+      #if( (!$util.isNull($ctx.source.id)) && (($ctx.source.id == $primaryRole0) || $ownerClaimsList0.contains($ctx.source.id)) )
+        #set( $isAuthorized = true )
+        $util.qr($ctx.stash.put(\\"authFilter\\", null))
+      #else
+        #if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+          $util.qr($ctx.stash.connectionAttributes.put(\\"id\\", $primaryRole0))
+          #set( $isAuthorized = true )
+        #end
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
 exports[`Group field as part of secondary index group field as GSI field 1`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
