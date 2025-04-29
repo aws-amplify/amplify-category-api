@@ -18,7 +18,7 @@
     "test": "jest",
     "test-watch": "jest --watch",
     "extract-api": "ts-node --project extract-api.tsconfig.json ../../scripts/extract-api.ts",
-    "prepublishOnly": "jsii && git add .jsii && git commit -m \"chore: update .jsii assembly\" --no-verify"
+    "prepublishOnly": "jsii && git add .jsii && git commit -m \"chore: update .jsii assembly\" --no-verify && cat ../*/package.json"
   },
   "keywords": [
     "awscdk",
