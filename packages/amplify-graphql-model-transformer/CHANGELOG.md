@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.3.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@3.2.2...@aws-amplify/graphql-model-transformer@3.3.0) (2025-04-17)
+
+### Features
+
+- add grantStreamRead to amplify managed table ([#3253](https://github.com/aws-amplify/amplify-category-api/issues/3253)) ([d5e9428](https://github.com/aws-amplify/amplify-category-api/commit/d5e942895d0f767b1d5af9d645adaaddda0eaeb2))
+
 ## [3.2.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@3.2.1...@aws-amplify/graphql-model-transformer@3.2.2) (2025-04-09)
 
 ### Bug Fixes
