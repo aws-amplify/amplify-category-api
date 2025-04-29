@@ -34,7 +34,7 @@
     "prettier-write": "yarn prettier --write .",
     "production-install": "yarn --frozen-lockfile --cache-folder ~/.cache/yarn",
     "production-build": "yarn production-install && lerna run build --concurrency 3 --stream",
-    "publish-to-verdaccio": "lerna publish --yes --no-commit-hooks --no-push --exact --dist-tag=latest --conventional-commits --no-git-tag-version --no-verify-access --concurrency 1",
+    "publish-to-verdaccio": "lerna publish --yes --no-commit-hooks --no-push --exact --dist-tag=latest --conventional-commits --no-git-tag-version --no-verify-access",
     "publish:beta": "lerna publish --exact --dist-tag=beta --preid=beta --conventional-commits --conventional-prerelease --message 'chore(release): Publish [ci skip]' --no-verify-access --yes",
     "publish:main": "lerna publish --canary --force-publish --preid=alpha --exact --include-merged-tags --conventional-prerelease --no-verify-access --yes",
     "publish:release": "lerna publish --conventional-commits --conventional-graduate --exact --yes --message 'chore(release): Publish [ci skip]' --no-verify-access",
