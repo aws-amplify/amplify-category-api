@@ -47,6 +47,12 @@ import { SQL_TESTS_USE_BETA } from './sql-e2e-config';
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 
+function logTimestamp(message: string): void {
+  const date = new Date();
+  const timestamp = date.toISOString();
+  console.log(`[${timestamp}] ${message}`);
+}
+
 export const testOIDCFieldAuth = (engine: ImportedRDSType): void => {
   describe('SQL OIDC provider Field Auth tests', () => {
     const [db_user, db_password, db_identifier] = generator.generateMultiple(3);
@@ -76,9 +82,12 @@ export const testOIDCFieldAuth = (engine: ImportedRDSType): void => {
     const apiName = projName;
 
     beforeAll(async () => {
+      logTimestamp('beforeAll start');
       console.log(sqlCreateStatements(engine));
       projRoot = await createNewProjectDir(projName);
+      logTimestamp('beforeAll before setupAmplifyProject');
       await setupAmplifyProject();
+      logTimestamp('beforeAll end');
     });
 
     afterAll(async () => {
@@ -111,21 +120,31 @@ export const testOIDCFieldAuth = (engine: ImportedRDSType): void => {
     };
 
     const setupAmplifyProject = async (): Promise<void> => {
+      logTimestamp('setupAmplifyProject start');
+
+      logTimestamp('setupAmplifyProject initJSProjectWithProfile');
       await initJSProjectWithProfile(projRoot, {
         disableAmplifyAppCreation: false,
         name: projName,
       });
 
+      logTimestamp('setupAmplifyProject getProjectMeta');
       const metaAfterInit = getProjectMeta(projRoot);
       region = metaAfterInit.providers.awscloudformation.Region;
 
+      logTimestamp('setupAmplifyProject addAuthWithPreTokenGenerationTrigger');
       await addAuthWithPreTokenGenerationTrigger(projRoot);
+
+      logTimestamp('setupAmplifyProject updatePreAuthTrigger');
       updatePreAuthTrigger(projRoot, 'user_id');
+
+      logTimestamp('setupAmplifyProject amplifyPush');
       await amplifyPush(projRoot, false, {
         useBetaSqlLayer: SQL_TESTS_USE_BETA,
         skipCodegen: true,
       });
 
+      logTimestamp('setupAmplifyProject addApi');
       await addApi(projRoot, {
         'OpenID Connect': {
           oidcProviderName: 'awscognitouserpool',
@@ -142,7 +161,10 @@ export const testOIDCFieldAuth = (engine: ImportedRDSType): void => {
       const ddbSchemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.graphql');
       removeSync(ddbSchemaFilePath);
 
+      logTimestamp('setupAmplifyProject setupDatabase');
       await setupDatabase();
+
+      logTimestamp('setupAmplifyProject importRDSDatabase');
       await importRDSDatabase(projRoot, {
         database,
         engine,
@@ -156,24 +178,42 @@ export const testOIDCFieldAuth = (engine: ImportedRDSType): void => {
 
       writeFileSync(rdsSchemaFilePath, appendAmplifyInput(schema, engine), 'utf8');
 
+      logTimestamp('setupAmplifyProject updateAuthAddUserGroups');
       await updateAuthAddUserGroups(projRoot, [adminGroupName, devGroupName]);
+
+      logTimestamp('setupAmplifyProject amplifyPush');
       await amplifyPush(projRoot, false, {
         useBetaSqlLayer: SQL_TESTS_USE_BETA,
       });
       await sleep(30 * 1000); // Wait for 30 seconds for the VPC endpoints to be live.
 
+      logTimestamp('setupAmplifyProject getUserPoolId');
       const userPoolId = getUserPoolId(projRoot);
+
+      logTimestamp('setupAmplifyProject configureAmplify');
       configureAmplify(projRoot);
+
+      logTimestamp('setupAmplifyProject setupUser(s)');
       await setupUser(userPoolId, userName1, userPassword, adminGroupName);
       await setupUser(userPoolId, userName2, userPassword, devGroupName);
+
+      logTimestamp('setupAmplifyProject getAppSyncEndpoint');
       graphQlEndpoint = getAppSyncEndpoint(projRoot, apiName);
+
+      logTimestamp('setupAmplifyProject signInUser(s)');
       const user1 = await signInUser(userName1, userPassword);
       userMap[userName1] = user1;
       const user2 = await signInUser(userName2, userPassword);
       userMap[userName2] = user2;
+
+      logTimestamp('setupAmplifyProject configureAppSyncClients');
       const appSyncClients = await configureAppSyncClients(projRoot, apiName, [oidcProvider, apiKeyProvider], userMap);
+
+      logTimestamp('setupAmplifyProject createModelOperationHelpers(s)');
       user1ModelOperationHelpers = createModelOperationHelpers(appSyncClients[oidcProvider][userName1], schema);
       user2ModelOperationHelpers = createModelOperationHelpers(appSyncClients[oidcProvider][userName2], schema);
+
+      logTimestamp('setupAmplifyProject end');
     };
 
     test('Private model auth and allowed field operations', async () => {

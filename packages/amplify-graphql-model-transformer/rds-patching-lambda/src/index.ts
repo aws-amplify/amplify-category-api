@@ -14,7 +14,7 @@ const delay = (ms: number): Promise<void> => new Promise((resolve) => setTimeout
 
 const waitRandomTime = (): Promise<void> => {
   const waitTime = Math.floor(Math.random() * (MAX_WAIT_TIME_IN_MS - MIN_WAIT_TIME_IN_MS + 1) + MIN_WAIT_TIME_IN_MS);
-  console.log(`Waiting for ${waitTime} ms`);
+  console.log(`Waiting for ${waitTime} ms (B)`);
   return delay(waitTime);
 };
 

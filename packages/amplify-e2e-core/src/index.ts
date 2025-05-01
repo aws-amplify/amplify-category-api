@@ -122,7 +122,7 @@ export const createNewProjectDir = async (
     // Especially for nexpect output waiting
     // This makes it a perfect candidate for staggering test start times
     const initialDelay = Math.floor(Math.random() * 180 * 1000); // between 0 to 3 min
-    console.log(`Waiting for ${initialDelay} ms`);
+    console.log(`Waiting for ${initialDelay} ms (A)`);
     await sleep(initialDelay);
   }
 
