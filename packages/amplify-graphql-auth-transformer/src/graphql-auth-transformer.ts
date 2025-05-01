@@ -10,6 +10,7 @@ import {
   isBuiltInGraphqlNode,
   isDynamoDbModel,
   isModelType,
+  isObjectTypeDefinitionNode,
   isSqlModel,
   MappingTemplate,
   TransformerAuthBase,
@@ -377,8 +378,32 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     });
   };
 
+  /**
+   * Adds the `aws_iam` directive to all custom/non-model types when IAM access is enabled.
+   */
+  addIamAuthToCustomTypes = (ctx: TransformerTransformSchemaStepContextProvider): void => {
+    if (!ctx.transformParameters.sandboxModeEnabled && !ctx.synthParameters.enableIamAccess) {
+      return;
+    }
+
+    const needsAwsIamDirective = (type: TypeDefinitionNode): boolean => {
+      return !type.directives?.some((dir) => dir.name.value === 'aws_iam');
+    };
+
+    const isNonModelType = (type: TypeDefinitionNode): boolean => {
+      return !type.directives?.some((dir) => dir.name.value === 'model');
+    };
+
+    ctx.inputDocument.definitions
+      .filter(isObjectTypeDefinitionNode)
+      .filter(isNonModelType)
+      .filter(needsAwsIamDirective)
+      .forEach((def) => extendTypeWithDirectives(ctx, def.name.value, [makeDirective('aws_iam', [])]));
+  };
+
   transformSchema = (context: TransformerTransformSchemaStepContextProvider): void => {
     this.addCustomOperationFieldsToAuthNonModelConfig(context);
+    this.addIamAuthToCustomTypes(context);
 
     const searchableAggregateServiceDirectives = new Set<AuthProvider>();
 
