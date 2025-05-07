@@ -89,6 +89,7 @@ export type CustomQueryTool = {
  * Conversation Directive Data Sources
  */
 export type ConversationDirectiveDataSources = {
+  attachmentLambdaFunctionDataSource: DataSourceProvider;
   lambdaFunctionDataSource: DataSourceProvider;
   messageTableDataSource: DataSourceProvider;
   conversationTableDataSource: DataSourceProvider;

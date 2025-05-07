@@ -27,6 +27,7 @@ import {
   sendMessagePipelineDefinition,
 } from '../resolvers';
 import { processTools } from '../tools/process-tools';
+import path from 'path';
 export class ConversationResolverGenerator {
   constructor(
     private readonly functionNameMap?: Record<string, IFunction>,
@@ -75,14 +76,24 @@ export class ConversationResolverGenerator {
     // Create a function stack for the conversation directive
     const functionStackName = getFunctionStackName(directive);
     const functionStack = ctx.stackManager.createStack(functionStackName);
+    const capitalizedFieldName = upperCaseConversationFieldName(directive);
 
     // Set up the function data source
     const { functionDataSourceId, referencedFunction } = this.setupFunctionDataSource(
       directive,
       functionStack,
-      upperCaseConversationFieldName(directive),
+      capitalizedFieldName,
     );
     const lambdaFunctionDataSource = this.addLambdaDataSource(ctx, functionDataSourceId, referencedFunction, functionStackName);
+
+    // Set up attachment handler data source
+    const attachmentHandler = this.setupAttachmentHandlerHandler(functionStack, capitalizedFieldName);
+    const attachmentLambdaFunctionDataSource = this.addLambdaDataSource(
+      ctx,
+      attachmentHandler.functionDataSourceId,
+      attachmentHandler.referencedFunction,
+      functionStackName
+    );
 
     // Get data sources for conversation message and session
     const conversationMessageTableDataSourceName = getModelDataSourceNameForTypeName(ctx, directive.message.model.name.value);
@@ -92,6 +103,7 @@ export class ConversationResolverGenerator {
     const conversationTableDataSource = ctx.api.host.getDataSource(conversationTableDataSourceName) as DataSourceProvider;
 
     return {
+      attachmentLambdaFunctionDataSource,
       lambdaFunctionDataSource,
       messageTableDataSource,
       conversationTableDataSource,
@@ -199,6 +211,31 @@ export class ConversationResolverGenerator {
 
     const functionDataSourceId = FunctionResourceIDs.FunctionDataSourceID(`${capitalizedFieldName}DefaultConversationHandler`);
     const referencedFunction = defaultConversationHandler.resources.lambda;
+
+    return { functionDataSourceId, referencedFunction };
+  }
+
+  /**
+   * Sets up an attachment handler function
+   * @param functionStack - The CDK stack to add the function to
+   * @param capitalizedFieldName - The capitalized field name
+   * @returns An object containing the function data source ID and the created function
+   */
+  private setupAttachmentHandlerHandler(
+    functionStack: cdk.Stack,
+    capitalizedFieldName: string,
+  ): { functionDataSourceId: string; referencedFunction: IFunction } {
+    const defaultConversationHandler = new cdk.aws_lambda_nodejs.NodejsFunction(
+      functionStack,
+      `${capitalizedFieldName}ConversationAttachmentHandler`,
+      {
+        runtime: cdk.aws_lambda.Runtime.NODEJS_20_X,
+        entry: path.resolve(__dirname, 'attachment-lambda', 'handler.js'),
+      },
+    );
+
+    const functionDataSourceId = FunctionResourceIDs.FunctionDataSourceID(`${capitalizedFieldName}ConversationAttachmentHandler`);
+    const referencedFunction = defaultConversationHandler;
 
     return { functionDataSourceId, referencedFunction };
   }
