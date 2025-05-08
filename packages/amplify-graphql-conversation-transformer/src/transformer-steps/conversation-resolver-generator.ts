@@ -21,6 +21,7 @@ import {
   assistantResponseSubscriptionPipelineDefinition,
   generateResolverFunction,
   generateResolverPipeline,
+  getAttachmentUrlPipelineDefinition,
   listConversationsInitFunctionDefinition,
   listMessagesInitFunctionDefinition,
   listMessagesPostProcessingFunctionDefinition,
@@ -131,6 +132,13 @@ export class ConversationResolverGenerator {
       parentName,
       directive.assistantResponseStreamingMutation.field.name.value,
       assistantResponseStreamingPipelineResolver,
+    );
+
+    const getAttachmentUrlPipelinePipelineResolver = generateResolverPipeline(getAttachmentUrlPipelineDefinition, directive, ctx);
+    ctx.resolvers.addResolver(
+      parentName,
+      directive.attachmentUploadUrlQuery.field.name.value,
+      getAttachmentUrlPipelinePipelineResolver,
     );
 
     const assistantResponseSubscriptionPipelineResolver = generateResolverPipeline(

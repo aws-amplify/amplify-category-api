@@ -33,6 +33,7 @@ export type ConversationDirectiveConfiguration = {
   assistantResponseMutation: { field: FieldDefinitionNode; input: InputObjectTypeDefinitionNode };
   assistantResponseStreamingMutation: { field: FieldDefinitionNode; input: InputObjectTypeDefinitionNode };
   assistantResponseSubscriptionField: FieldDefinitionNode;
+  attachmentUploadUrlQuery: { field: FieldDefinitionNode; input: InputObjectTypeDefinitionNode };
   dataSources: ConversationDirectiveDataSources;
 };
 

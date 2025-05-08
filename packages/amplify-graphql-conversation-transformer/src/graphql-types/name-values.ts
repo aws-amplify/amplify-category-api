@@ -22,6 +22,9 @@ export const getAssistantMutationFieldName = (config: ConversationDirectiveConfi
 export const getAssistantStreamingMutationFieldName = (config: ConversationDirectiveConfiguration) =>
   `createAssistantResponseStream${upperCaseConversationFieldName(config)}`;
 
+export const getAttachmentUploadUrlQueryFieldName = (config: ConversationDirectiveConfiguration) =>
+  `getAttachmentUploadUrl${upperCaseConversationFieldName(config)}`;
+
 export const getFunctionStackName = (config: ConversationDirectiveConfiguration) =>
   `${upperCaseConversationFieldName(config)}ConversationDirectiveLambdaStack`;
 

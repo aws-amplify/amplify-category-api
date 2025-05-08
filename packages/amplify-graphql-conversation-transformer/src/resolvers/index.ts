@@ -2,6 +2,7 @@ import { assistantResponsePipelineDefinition } from './assistant-response-pipeli
 import { assistantResponseStreamPipelineDefinition } from './assistant-response-stream-pipeline-definition';
 import { assistantResponseSubscriptionPipelineDefinition } from './assistant-response-subscription-pipeline-definition';
 import { generateResolverFunction, generateResolverPipeline } from './generate-resolver';
+import { getAttachmentUrlPipelineDefinition } from './get-attachment-url-pipeline-definition';
 import { listConversationsInitFunctionDefinition } from './list-conversations-init-resolver-definition';
 import { listMessagesInitFunctionDefinition } from './list-messages-init-resolver-definition';
 import { listMessagesPostProcessingFunctionDefinition } from './list-messages-post-processing-resolver-definition';
@@ -13,6 +14,7 @@ export {
   assistantResponseSubscriptionPipelineDefinition,
   generateResolverFunction,
   generateResolverPipeline,
+  getAttachmentUrlPipelineDefinition,
   listConversationsInitFunctionDefinition,
   listMessagesInitFunctionDefinition,
   listMessagesPostProcessingFunctionDefinition,

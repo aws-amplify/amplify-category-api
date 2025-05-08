@@ -145,6 +145,17 @@ export const createAssistantResponseStreamingMutationInput = (messageModelName: 
   };
 };
 
+export const createAttachmentUploadUrlQueryInput = (messageModelName: string): InputObjectTypeDefinitionNode => {
+  const inputName = `Get${messageModelName}AttachmentUploadUrlInput`;
+  return {
+    kind: 'InputObjectTypeDefinition',
+    name: { kind: 'Name', value: inputName },
+    fields: [
+      makeInputValueDefinition('conversationId', makeNonNullType(makeNamedType('ID'))),
+    ],
+  };
+};
+
 export const createConversationTurnErrorInput = (): InputObjectTypeDefinitionNode => {
   return {
     kind: 'InputObjectTypeDefinition',
@@ -161,6 +172,13 @@ export const createAssistantStreamingMutationField = (fieldName: string, inputTy
   const cognitoAuthDirective = makeDirective('aws_cognito_user_pools', []);
   const createAssistantResponseMutation = makeField(fieldName, args, makeNamedType(STREAM_RESPONSE_TYPE_NAME), [cognitoAuthDirective]);
   return createAssistantResponseMutation;
+};
+
+export const createAttachmentUploadUrlQueryField = (fieldName: string, inputTypeName: string): FieldDefinitionNode => {
+  const args = [makeInputValueDefinition('input', makeNonNullType(makeNamedType(inputTypeName)))];
+  const cognitoAuthDirective = makeDirective('aws_cognito_user_pools', []);
+  const getAttachmentUploadUrlQuery = makeField(fieldName, args, makeNamedType(ATTACHMENT_URL_RESPONSE_TYPE_NAME), [cognitoAuthDirective]);
+  return getAttachmentUploadUrlQuery;
 };
 
 /**
@@ -294,6 +312,7 @@ const constructConversationMessageModel = (
 };
 
 const STREAM_RESPONSE_TYPE_NAME = 'AmplifyAIConversationMessageStreamPart';
+const ATTACHMENT_URL_RESPONSE_TYPE_NAME = 'AmplifyAIAttachmentUrl';
 
 export const constructStreamResponseType = (): ObjectTypeDefinitionNode => {
   return {

@@ -15,6 +15,8 @@ import {
   createAssistantResponseMutationInput,
   createAssistantResponseStreamingMutationInput,
   createAssistantStreamingMutationField,
+  createAttachmentUploadUrlQueryField,
+  createAttachmentUploadUrlQueryInput,
   createMessageModel,
   createMessageSubscription,
   MessageModel,
@@ -23,6 +25,7 @@ import {
   CONVERSATION_MESSAGES_REFERENCE_FIELD_NAME,
   getAssistantMutationFieldName,
   getAssistantStreamingMutationFieldName,
+  getAttachmentUploadUrlQueryFieldName,
   getConversationMessageTypeName,
   getConversationTypeName,
   getMessageSubscriptionFieldName,
@@ -133,11 +136,13 @@ export class ConversationFieldHandler {
     assistantResponseMutation: { field: FieldDefinitionNode; input: InputObjectTypeDefinitionNode };
     assistantResponseStreamingMutation: { field: FieldDefinitionNode; input: InputObjectTypeDefinitionNode };
     assistantResponseSubscriptionField: FieldDefinitionNode;
+    attachmentUploadUrlQuery: { field: FieldDefinitionNode; input: InputObjectTypeDefinitionNode };
   } {
     const conversationMessageTypeName = getConversationMessageTypeName(config);
     const messageSubscriptionFieldName = getMessageSubscriptionFieldName(config);
     const assistantMutationFieldName = getAssistantMutationFieldName(config);
     const assistantStreamingMutationFieldName = getAssistantStreamingMutationFieldName(config);
+    const attachmentUploadUrlQueryFieldName = getAttachmentUploadUrlQueryFieldName(config);
 
     const assistantResponseSubscriptionField = createMessageSubscription(messageSubscriptionFieldName, assistantStreamingMutationFieldName);
 
@@ -154,6 +159,12 @@ export class ConversationFieldHandler {
       assistantResponseStreamingMutationInput.name.value,
     );
 
+    const attachmentUploadUrlQueryInput = createAttachmentUploadUrlQueryInput(conversationMessageTypeName);
+    const attachmentUploadUrlQueryField = createAttachmentUploadUrlQueryField(
+      attachmentUploadUrlQueryFieldName,
+      attachmentUploadUrlQueryInput.name.value
+    );
+
     return {
       assistantResponseMutation: { field: assistantResponseMutationField, input: assistantResponseMutationInput },
       assistantResponseStreamingMutation: {
@@ -161,6 +172,10 @@ export class ConversationFieldHandler {
         input: assistantResponseStreamingMutationInput,
       },
       assistantResponseSubscriptionField,
+      attachmentUploadUrlQuery: {
+        field: attachmentUploadUrlQueryField,
+        input: attachmentUploadUrlQueryInput
+      },
     };
   }
 
