@@ -233,14 +233,22 @@ export class ConversationResolverGenerator {
     functionStack: cdk.Stack,
     capitalizedFieldName: string,
   ): { functionDataSourceId: string; referencedFunction: IFunction } {
+    const attachmentBucket = new cdk.aws_s3.Bucket(functionStack, `${capitalizedFieldName}ConversationAttachmentBucket`, {
+      enforceSSL: true,
+    });
     const defaultConversationHandler = new cdk.aws_lambda_nodejs.NodejsFunction(
       functionStack,
       `${capitalizedFieldName}ConversationAttachmentHandler`,
       {
         runtime: cdk.aws_lambda.Runtime.NODEJS_20_X,
         entry: path.resolve(__dirname, 'attachment-lambda', 'handler.js'),
+        environment: {
+          S3_BUCKET_NAME: attachmentBucket.bucketName
+        }
       },
     );
+
+    attachmentBucket.grantReadWrite(defaultConversationHandler);
 
     const functionDataSourceId = FunctionResourceIDs.FunctionDataSourceID(`${capitalizedFieldName}ConversationAttachmentHandler`);
     const referencedFunction = defaultConversationHandler;

@@ -4,7 +4,7 @@ export function request(ctx) {
   const { args } = ctx;
 
   const payload = {
-    conversationId: args.conversationId,
+    conversationId: args.input.conversationId,
   };
 
   return {
