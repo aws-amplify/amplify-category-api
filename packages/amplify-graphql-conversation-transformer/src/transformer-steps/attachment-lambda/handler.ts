@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 /**
@@ -6,8 +6,10 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
  */
 export const handler = async (event: {
   conversationId: string;
+  attachmentKey: string;
 }): Promise<{
-  url: string;
+  uploadUrl: string;
+  downloadUrl: string;
 }> => {
   console.log(JSON.stringify(event, null, 2));
   console.log(process.env);
@@ -19,11 +21,14 @@ export const handler = async (event: {
   const bucketName = process.env.S3_BUCKET_NAME;
 
   const client = new S3Client();
-  const attachmentKey = crypto.randomUUID();
-  const command = new PutObjectCommand({ Bucket: bucketName, Key: `${event.conversationId}/${attachmentKey}` });
-  const url = await getSignedUrl(client, command, { expiresIn: 3600 });
+  const putCommand = new PutObjectCommand({ Bucket: bucketName, Key: `${event.conversationId}/${event.attachmentKey}` });
+  const uploadUrl = await getSignedUrl(client, putCommand, { expiresIn: 3600 });
+
+  const getCommand = new GetObjectCommand({ Bucket: bucketName, Key: `${event.conversationId}/${event.attachmentKey}` });
+  const downloadUrl = await getSignedUrl(client, getCommand, { expiresIn: 3600 });
 
   return {
-    url,
+    uploadUrl,
+    downloadUrl,
   };
 };

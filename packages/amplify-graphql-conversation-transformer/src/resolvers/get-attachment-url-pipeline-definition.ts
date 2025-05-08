@@ -83,5 +83,5 @@ function fieldName(config: ConversationDirectiveConfiguration): string {
  * Creates a template generator specific to the send message pipeline for a given slot name.
  */
 function templateGenerator(slotName: string) {
-  return createS3AssetMappingTemplateGenerator('Mutation', slotName, fieldName);
+  return createS3AssetMappingTemplateGenerator('Query', slotName, fieldName);
 }

@@ -5,6 +5,7 @@ export function request(ctx) {
 
   const payload = {
     conversationId: args.input.conversationId,
+    attachmentKey: args.input.attachmentKey,
   };
 
   return {

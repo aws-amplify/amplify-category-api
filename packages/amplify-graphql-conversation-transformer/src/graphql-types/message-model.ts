@@ -146,12 +146,13 @@ export const createAssistantResponseStreamingMutationInput = (messageModelName: 
 };
 
 export const createAttachmentUploadUrlQueryInput = (messageModelName: string): InputObjectTypeDefinitionNode => {
-  const inputName = `Get${messageModelName}AttachmentUploadUrlInput`;
+  const inputName = `Get${messageModelName}AttachmentUrlsInput`;
   return {
     kind: 'InputObjectTypeDefinition',
     name: { kind: 'Name', value: inputName },
     fields: [
       makeInputValueDefinition('conversationId', makeNonNullType(makeNamedType('ID'))),
+      makeInputValueDefinition('attachmentKey', makeNonNullType(makeNamedType('String'))),
     ],
   };
 };
@@ -312,7 +313,7 @@ const constructConversationMessageModel = (
 };
 
 const STREAM_RESPONSE_TYPE_NAME = 'AmplifyAIConversationMessageStreamPart';
-const ATTACHMENT_URL_RESPONSE_TYPE_NAME = 'AmplifyAIAttachmentUrl';
+const ATTACHMENT_URL_RESPONSE_TYPE_NAME = 'AmplifyAIAttachmentUrls';
 
 export const constructStreamResponseType = (): ObjectTypeDefinitionNode => {
   return {
