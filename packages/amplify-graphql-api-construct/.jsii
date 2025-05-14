@@ -1367,6 +1367,19 @@
             }
           }
         },
+        "aws-cdk-lib.aws_dsql": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.DSQL"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.dsql"
+            },
+            "python": {
+              "module": "aws_cdk.aws_dsql"
+            }
+          }
+        },
         "aws-cdk-lib.aws_dynamodb": {
           "targets": {
             "dotnet": {
@@ -9513,5 +9526,5 @@
     }
   },
   "version": "1.20.1",
-  "fingerprint": "+StR3FqEAlc1IFZPMqvjS5CUe5YnkTLZS2rMNf1BHPA="
+  "fingerprint": "oNtoWovWTY04XL/toJV/tRugU0fwH6LEnKJEbslPXlM="
 }

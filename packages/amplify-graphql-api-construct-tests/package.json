@@ -22,7 +22,7 @@
     "build-tests": "tsc --build tsconfig.tests.json"
   },
   "dependencies": {
-    "@aws-amplify/auth-construct": "^1.0.0",
+    "@aws-amplify/auth-construct": "1.8.0",
     "@aws-amplify/core": "^2.1.0",
     "@aws-amplify/graphql-api-construct": "1.20.1",
     "@aws-sdk/client-appsync": "3.624.0",
