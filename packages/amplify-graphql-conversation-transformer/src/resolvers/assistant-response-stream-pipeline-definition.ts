@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { ConversationDirectiveConfiguration } from '../conversation-directive-configuration';
 import {

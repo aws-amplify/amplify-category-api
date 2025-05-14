@@ -21,6 +21,11 @@ export interface StackConfig {
   sqlLambdaLayerArn?: string;
 }
 
+/**
+ * Stringifies `stackConfig` and writes it to `${projRoot}/stack-config.json` ...
+ * @param projRoot
+ * @param stackConfig
+ */
 export const writeStackConfig = (projRoot: string, stackConfig: StackConfig): void => {
   const filePath = path.join(projRoot, 'stack-config.json');
   fs.writeFileSync(filePath, JSON.stringify(stackConfig));
