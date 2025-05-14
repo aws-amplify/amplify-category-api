@@ -6,7 +6,7 @@
     ]
   },
   "bundled": {
-    "@aws-amplify/ai-constructs": "^1.2.4",
+    "@aws-amplify/ai-constructs": "^1.5.2",
     "@aws-amplify/backend-output-schemas": "^1.0.0",
     "@aws-amplify/backend-output-storage": "^1.0.0",
     "@aws-amplify/graphql-auth-transformer": "4.2.3",
@@ -1372,6 +1372,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_docdbelastic"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_dsql": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.DSQL"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.dsql"
+            },
+            "python": {
+              "module": "aws_cdk.aws_dsql"
             }
           }
         },
@@ -4109,5 +4122,5 @@
   },
   "types": {},
   "version": "1.16.1",
-  "fingerprint": "RmejNooIcfMZHBiK6PXB+e2XH6v5bdARzogf0gvsW9Q="
+  "fingerprint": "aPS9UkTqJfDj4lHGfjNRhnq5ti5/6MBCuhPvmRrXASE="
 }
