@@ -147,7 +147,7 @@ describe('conversation', () => {
         expect(conversation.body.data.getConversationPirateChat.updatedAt).toBeDefined();
         expect(conversation.body.data.getConversationPirateChat.updatedAt).toEqual(message.createdAt);
       },
-      ONE_MINUTE * 2,
+      ONE_MINUTE,
     );
 
     test('update conversation', async () => {
@@ -216,7 +216,7 @@ describe('conversation', () => {
         const createdAts = messages.map((message) => message.createdAt);
         expect(createdAts).toEqual([...createdAts].sort((a, b) => new Date(a).getTime() - new Date(b).getTime()));
       },
-      ONE_MINUTE * 2,
+      ONE_MINUTE,
     );
 
     test('list conversations ordered by updatedAt', async () => {
@@ -595,7 +595,6 @@ describe('conversation', () => {
  *
  * 1. Initializes default CDK template from `../backends/configurable-stack` into `projRoot`. Includes:
  *    1. `esbuild`
- *    1. `@aws-sdk/client-bedrock-runtime@3.622.0` (`p` has been is dropped from streaming chunks after this version)
  * 2. Creates a "test definition" containing `./graphql/schema-conversation.graphql`
  * 3. Writes the definition to the app for ingestion + deployment.
  * 4. CDK deploy.
@@ -606,10 +605,7 @@ describe('conversation', () => {
 const deployCdk = async (projRoot: string): Promise<{ apiEndpoint: string; userPoolClientId: string; userPoolId: string }> => {
   const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'configurable-stack'));
   const name = await initCDKProject(projRoot, templatePath, {
-    additionalDependencies: [
-      'esbuild',
-      '@aws-sdk/client-bedrock-runtime@3.622.0', // `p` has been is dropped from streaming chunks after this version
-    ],
+    additionalDependencies: ['esbuild'],
   });
 
   const conversationSchemaPath = path.resolve(path.join(__dirname, 'graphql', 'schema-conversation.graphql'));
