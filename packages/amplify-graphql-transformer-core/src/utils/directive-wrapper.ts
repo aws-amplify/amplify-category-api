@@ -55,7 +55,24 @@ export class DirectiveWrapper {
       {},
     );
     if (options?.deepMergeArguments && needsDeepMerge(defaultValue, argValues)) {
-      return _.merge(_.cloneDeep(defaultValue), argValues);
+      return _.merge(
+        _.cloneDeepWith(defaultValue, (value) => {
+          if (value instanceof Location) {
+            // Skip cloning for 'Locations'
+            // Some transformers are using AST nodes as arguments.
+            // These AST nodes contain 'loc: Location' property which contains information
+            // about where tokens were found in the schema during parsing.
+            // This is a deeply nested structure for large schemas and cloning it may
+            // hit recursive call limits.
+            // Location is typed as read-only and doesn't change in post processing after parsing.
+            // Therefore, is safe to keep original values.
+            return value;
+          }
+          // Returning undefined let's Lodash know to use it's algorithm to clone.
+          return undefined;
+        }),
+        argValues,
+      );
     }
     return Object.assign(defaultValue, argValues);
   };
