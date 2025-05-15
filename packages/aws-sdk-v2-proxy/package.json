@@ -1,0 +1,17 @@
+{
+  "name": "aws-sdk-v2-proxy",
+  "version": "1.0.0",
+  "description": "Testing",
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "aws-sdk": "2.1692.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.5.5"
+  }
+}
