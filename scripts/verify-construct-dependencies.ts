@@ -102,9 +102,6 @@ const computeDepsClosure = (deps: string[]): DepsClosure => {
   const closure: DepsClosure = { repoDeps: [], registryDeps: [] };
 
   const traverse = (path: string[], currDep: string): void => {
-    if (shouldExcludeDependency([...path, stripSemver(currDep)])) {
-      return;
-    }
     if (shouldExcludeDependency([...path, stripSemver(currDep)]) || seenDeps.has(currDep)) {
       return;
     }
