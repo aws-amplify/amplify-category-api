@@ -10,13 +10,12 @@
     "@jridgewell/gen-mapping" "^0.3.5"
     "@jridgewell/trace-mapping" "^0.3.24"
 
-"@aws-amplify/ai-constructs@^1.5.2":
-  version "1.5.2"
-  resolved "https://registry.npmjs.org/@aws-amplify/ai-constructs/-/ai-constructs-1.5.2.tgz#96f58d97cafb50051d1ee137613f361f99290360"
-  integrity sha512-/1ipbpzS/+7IWZ00pceDsIrtqPfcuhEv1yedtfvuyIxtPNDXNOqdTO1SsZvnCO3Hwec5J+c1AfmOgyTChlOSnA==
+"@aws-amplify/ai-constructs@^1.5.3":
+  version "1.5.3"
+  resolved "https://registry.npmjs.org/@aws-amplify/ai-constructs/-/ai-constructs-1.5.3.tgz#24f532f32028f45ba097fb01f43a0a83e243ded6"
+  integrity sha512-eBOsNqh4zwo7iS8Qz2215LqV8JHMk3i+iCqKTB0v9r4Yt0bp4xYNjXr5kCN8kStK0LqtAzNcCmVtVFdlZEG4bA==
   dependencies:
     "@aws-amplify/backend-output-schemas" "^1.6.0"
-    "@aws-amplify/platform-core" "^1.9.0"
     "@aws-amplify/plugin-types" "^1.10.1"
     "@aws-sdk/client-bedrock-runtime" "3.622.0"
     "@smithy/types" "^4.1.0"
@@ -392,23 +391,6 @@
     lodash.snakecase "^4.1.1"
     semver "^7.6.3"
     uuid "^9.0.1"
-    zod "^3.22.2"
-
-"@aws-amplify/platform-core@^1.9.0":
-  version "1.9.0"
-  resolved "https://registry.npmjs.org/@aws-amplify/platform-core/-/platform-core-1.9.0.tgz#d824e69fb8a565a98727c5d06b40634427316e4f"
-  integrity sha512-CLG6NjlTgdrcDxoXp9kwy1jXjAkqpyK4em30nOtDXEwtFMO4vt0mX7e4YoFbIut4qLs8fjLlBN2KFGX0Zg1jEg==
-  dependencies:
-    "@aws-amplify/plugin-types" "^1.10.1"
-    "@aws-sdk/client-sts" "^3.750.0"
-    "@opentelemetry/api" "^1.9.0"
-    "@opentelemetry/core" "^2.0.0"
-    "@opentelemetry/sdk-trace-base" "^2.0.0"
-    is-ci "^4.1.0"
-    lodash.mergewith "^4.6.2"
-    lodash.snakecase "^4.1.1"
-    semver "^7.6.3"
-    uuid "^11.1.0"
     zod "^3.22.2"
 
 "@aws-amplify/plugin-types@^1.0.0", "@aws-amplify/plugin-types@^1.8.1":
@@ -3737,7 +3719,7 @@
     "@smithy/util-utf8" "^3.0.0"
     tslib "^2.6.2"
 
-"@aws-sdk/client-sts@^3", "@aws-sdk/client-sts@^3.750.0":
+"@aws-sdk/client-sts@^3":
   version "3.808.0"
   resolved "https://registry.npmjs.org/@aws-sdk/client-sts/-/client-sts-3.808.0.tgz#34e92cb6e6c5a8d728a307db576559e3e0e96590"
   integrity sha512-AEQtoLS/Ag/cTrUvrWCwJIcbB0/TwkVE4cbpQg4DP2ZgKLOrsY9GypK637o6o9gOQyuUy5loZ9XPzzmC7LDf8Q==
@@ -8634,40 +8616,6 @@
   integrity sha512-D4iHGTdAnEEVsB8fl95m1hiz7D5YiRdQ9b/OEb3BYRVwbLsGHcRVPz+u+BgRLNk0Q0/4iZCBqDN96j2XNxfXrA==
   dependencies:
     "@octokit/openapi-types" "^18.0.0"
-
-"@opentelemetry/api@^1.9.0":
-  version "1.9.0"
-  resolved "https://registry.npmjs.org/@opentelemetry/api/-/api-1.9.0.tgz#d03eba68273dc0f7509e2a3d5cba21eae10379fe"
-  integrity sha512-3giAOQvZiH5F9bMlMiv8+GSPMeqg0dbaeo58/0SlA9sxSqZhnUtxzX9/2FzyhS9sWQf5S0GJE0AKBrFqjpeYcg==
-
-"@opentelemetry/core@2.0.0", "@opentelemetry/core@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/@opentelemetry/core/-/core-2.0.0.tgz#37e9f0e9ddec4479b267aca6f32d88757c941b3a"
-  integrity sha512-SLX36allrcnVaPYG3R78F/UZZsBsvbc7lMCLx37LyH5MJ1KAAZ2E3mW9OAD3zGz0G8q/BtoS5VUrjzDydhD6LQ==
-  dependencies:
-    "@opentelemetry/semantic-conventions" "^1.29.0"
-
-"@opentelemetry/resources@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/@opentelemetry/resources/-/resources-2.0.0.tgz#15c04794c32b7d0b3c7589225ece6ae9bba25989"
-  integrity sha512-rnZr6dML2z4IARI4zPGQV4arDikF/9OXZQzrC01dLmn0CZxU5U5OLd/m1T7YkGRj5UitjeoCtg/zorlgMQcdTg==
-  dependencies:
-    "@opentelemetry/core" "2.0.0"
-    "@opentelemetry/semantic-conventions" "^1.29.0"
-
-"@opentelemetry/sdk-trace-base@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/@opentelemetry/sdk-trace-base/-/sdk-trace-base-2.0.0.tgz#ebc06ea7537dea62f3882f8236c1234f4faf6b23"
-  integrity sha512-qQnYdX+ZCkonM7tA5iU4fSRsVxbFGml8jbxOgipRGMFHKaXKHQ30js03rTobYjKjIfnOsZSbHKWF0/0v0OQGfw==
-  dependencies:
-    "@opentelemetry/core" "2.0.0"
-    "@opentelemetry/resources" "2.0.0"
-    "@opentelemetry/semantic-conventions" "^1.29.0"
-
-"@opentelemetry/semantic-conventions@^1.29.0":
-  version "1.33.0"
-  resolved "https://registry.npmjs.org/@opentelemetry/semantic-conventions/-/semantic-conventions-1.33.0.tgz#ec8ebd2ac768ab366aff94e0e7f27e8ae24fa49f"
-  integrity sha512-TIpZvE8fiEILFfTlfPnltpBaD3d9/+uQHVCyC3vfdh6WfCXKhNFzoP5RyDDIndfvZC5GrA4pyEDNyjPloJud+w==
 
 "@parcel/watcher@2.0.4":
   version "2.0.4"
