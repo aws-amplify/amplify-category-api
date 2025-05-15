@@ -40,15 +40,24 @@ describe('conversation', () => {
     let realtimeEndpoint: string;
 
     beforeAll(async () => {
+      console.log('checkpoint a');
       projRoot = await createNewProjectDir(projFolderName);
+
+      console.log('checkpoint b');
       const { apiEndpoint: graphqlEndpoint, userPoolClientId, userPoolId } = await deployCdk(projRoot);
+
+      console.log('checkpoint c');
       apiEndpoint = graphqlEndpoint;
       realtimeEndpoint = apiEndpoint.replace('appsync-api', 'appsync-realtime-api').replace('https://', 'wss://');
+
+      console.log('checkpoint d');
 
       const { username: user1Username, password: user1Password } = await createCognitoUser({
         region,
         userPoolId,
       });
+
+      console.log('checkpoint d');
 
       const { accessToken: user1AccessToken } = await signInCognitoUser({
         username: user1Username,
@@ -57,10 +66,14 @@ describe('conversation', () => {
         userPoolClientId,
       });
 
+      console.log('checkpoint e');
+
       const { username: user2Username, password: user2Password } = await createCognitoUser({
         region,
         userPoolId,
       });
+
+      console.log('checkpoint f');
 
       const { accessToken: user2AccessToken } = await signInCognitoUser({
         username: user2Username,
@@ -68,6 +81,8 @@ describe('conversation', () => {
         region,
         userPoolClientId,
       });
+
+      console.log('checkpoint g');
 
       accessToken = user1AccessToken;
       accessToken2 = user2AccessToken;
@@ -608,8 +623,12 @@ const deployCdk = async (projRoot: string): Promise<{ apiEndpoint: string; userP
     additionalDependencies: ['esbuild'],
   });
 
+  console.log(`CDK project initialized at ${projRoot}`);
+
   const conversationSchemaPath = path.resolve(path.join(__dirname, 'graphql', 'schema-conversation.graphql'));
   const conversationSchema = fs.readFileSync(conversationSchemaPath).toString();
+
+  console.log(`Schema loaded from ${conversationSchemaPath}`);
 
   const testDefinitions: Record<string, TestDefinition> = {
     conversation: {
@@ -621,7 +640,13 @@ const deployCdk = async (projRoot: string): Promise<{ apiEndpoint: string; userP
   writeStackConfig(projRoot, { prefix: 'Conversation' });
   writeTestDefinitions(testDefinitions, projRoot);
 
+  const stashPath = `/var/tmp/e2e-stash-${path.basename(projRoot)}`;
+  await fs.copy(projRoot, stashPath);
+  console.log(`Project directory copied to ${stashPath}`);
+
   const outputs = await cdkDeploy(projRoot, '--all');
+  console.log(`CDK deployed to ${projRoot}`);
+
   const { awsAppsyncApiEndpoint, UserPoolClientId, UserPoolId } = outputs[name];
   return { apiEndpoint: awsAppsyncApiEndpoint, userPoolClientId: UserPoolClientId, userPoolId: UserPoolId };
 };

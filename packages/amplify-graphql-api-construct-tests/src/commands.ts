@@ -133,6 +133,7 @@ export const cdkDeploy = async (cwd: string, option: string, props?: CdkDeployPr
     // npx cdk does not work on verdaccio
     env: { npm_config_registry: 'https://registry.npmjs.org/' },
     noOutputTimeout,
+    stdio: 'inherit',
   };
 
   await spawn(

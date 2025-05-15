@@ -5,8 +5,14 @@ describe('api directives @auth batch 1', () => {
   let projectDir: string;
 
   beforeEach(async () => {
+    console.log('beforeEach');
+    console.log('process.env', process.env);
+    console.log('process.env.AWS_PROFILE', process.env.AWS_PROFILE);
+    console.log('process.env.AWS_ACCESS_KEY_ID', process.env.AWS_ACCESS_KEY_ID);
     projectDir = await createNewProjectDir('auth1');
     await initJSProjectWithProfile(projectDir, {});
+
+    console.log('done with beforeEach');
   });
 
   afterEach(async () => {
