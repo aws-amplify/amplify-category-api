@@ -394,10 +394,15 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       return !type.directives?.some((dir) => dir.name.value === 'model');
     };
 
+    const isNotInterface = (type: TypeDefinitionNode): boolean => {
+      return type.kind !== Kind.INTERFACE_TYPE_DEFINITION;
+    };
+
     ctx.inputDocument.definitions
       .filter(isObjectTypeDefinitionNode)
       .filter(isNonModelType)
       .filter(needsAwsIamDirective)
+      .filter(isNotInterface)
       .forEach((def) => extendTypeWithDirectives(ctx, def.name.value, [makeDirective('aws_iam', [])]));
   };
 
