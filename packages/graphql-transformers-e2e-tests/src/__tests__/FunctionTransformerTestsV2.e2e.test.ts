@@ -63,7 +63,7 @@ const createEchoFunctionInOtherAccount = async (currentAccountId?: string) => {
       expect(true).toEqual(false);
       return;
     }
-    const otherAccountId = childAccounts[0]?.Id;
+    const otherAccountId = childAccounts.find((account) => account.Id !== currentAccountId)?.Id;
     if (!otherAccountId) {
       console.warn('Could not choose other account to create lambda function');
       expect(true).toEqual(false);
