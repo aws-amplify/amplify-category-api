@@ -202,10 +202,10 @@ export const createLayerVersionCustomResource = (
   context: TransformerContextProvider,
 ): AwsCustomResource => {
   const { SQLLayerManifestBucket, SQLLayerManifestBucketRegion, SQLLayerVersionManifestKeyPrefix } = ResourceConstants.RESOURCES;
-
+  const betaBucket = `${SQLLayerManifestBucket}-beta`;
   const key = Fn.join('', [SQLLayerVersionManifestKeyPrefix, Fn.ref('AWS::Region')]);
 
-  const manifestArn = `arn:aws:s3:::${SQLLayerManifestBucket}/${key}`;
+  const manifestArn = `arn:aws:s3:::${betaBucket}/${key}`;
 
   const resourceName = resourceNames.sqlLayerVersionResolverCustomResource;
 
@@ -226,7 +226,7 @@ export const createLayerVersionCustomResource = (
       action: 'getObject',
       region: SQLLayerManifestBucketRegion,
       parameters: {
-        Bucket: SQLLayerManifestBucket,
+        Bucket: betaBucket,
         Key: key,
       },
       physicalResourceId,
