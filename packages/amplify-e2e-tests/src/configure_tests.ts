@@ -1,4 +1,4 @@
-import { amplifyConfigure as configure, injectSessionToken, isCI } from 'amplify-category-api-e2e-core';
+import { amplifyConfigure as configure, injectSessionToken, isCI, tryScheduleCredentialRefresh } from 'amplify-category-api-e2e-core';
 
 const setupAmplify = async (): Promise<void> => {
   if (isCI()) {
@@ -17,6 +17,7 @@ const setupAmplify = async (): Promise<void> => {
     if (process.env.AWS_SESSION_TOKEN) {
       injectSessionToken('amplify-integ-test-user');
     }
+    tryScheduleCredentialRefresh();
   } else {
     console.log('AWS Profile is already configured');
   }
