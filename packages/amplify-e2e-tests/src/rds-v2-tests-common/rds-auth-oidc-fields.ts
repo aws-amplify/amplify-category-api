@@ -12,6 +12,7 @@ import {
   initJSProjectWithProfile,
   setupRDSInstanceAndData,
   sleep,
+  tryScheduleCredentialRefresh,
   updateAuthAddUserGroups,
 } from 'amplify-category-api-e2e-core';
 import { existsSync, writeFileSync, removeSync } from 'fs-extra';
@@ -79,6 +80,7 @@ export const testOIDCFieldAuth = (engine: ImportedRDSType): void => {
       console.log(sqlCreateStatements(engine));
       projRoot = await createNewProjectDir(projName);
       await setupAmplifyProject();
+      tryScheduleCredentialRefresh();
     });
 
     afterAll(async () => {
