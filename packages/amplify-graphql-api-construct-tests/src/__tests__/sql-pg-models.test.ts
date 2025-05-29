@@ -29,7 +29,6 @@ describe('CDK GraphQL Transformer deployments with Postgres SQL datasources', ()
   const resourceNames = getResourceNamesForStrategyName(strategyName);
 
   beforeAll(async () => {
-    tryScheduleCredentialRefresh();
     await databaseController.setupDatabase();
   });
 
