@@ -50,20 +50,28 @@ let isRotationBackgroundTaskAlreadyScheduled = false;
  * No-op if a background task has already been scheduled.
  */
 export const tryScheduleCredentialRefresh = () => {
-  if (!process.env.CI || !process.env.TEST_ACCOUNT_ROLE || isRotationBackgroundTaskAlreadyScheduled) {
+  if (!process.env.CI || !process.env.TEST_ACCOUNT_ROLE || process.env.CHILD_ACCOUNT_ROLE || isRotationBackgroundTaskAlreadyScheduled) {
     return;
   }
 
-  if (!process.env.USE_PARENT_ACCOUNT) {
-    throw new Error('Credentials rotator supports only tests running in parent account at this time');
+  if (process.env.USE_PARENT_ACCOUNT) {
+    // Attempts to refresh credentials in background every 15 minutes.
+    setInterval(() => {
+      void tryRefreshCredentials(process.env.TEST_ACCOUNT_ROLE);
+    }, 15 * 60 * 1000);
+
+    console.log('Test profile credentials refresh was scheduled for parent account');
+    return;
+  } else if (process.env.CHILD_ACCOUNT_ROLE) {
+    // Attempts to refresh credentials in background every 15 minutes.
+    setInterval(() => {
+      void tryRefreshCredentials(process.env.CHILD_ACCOUNT_ROLE);
+    }, 15 * 60 * 1000);
+
+    console.log('Test profile credentials refresh was scheduled for child account');
+  } else {
+    throw new Error('Credentials rotator could not find any role to rotate credentials for');
   }
 
-  // Attempts to refresh credentials in background every 15 minutes.
-  setInterval(() => {
-    void tryRefreshCredentials(process.env.TEST_ACCOUNT_ROLE);
-  }, 15 * 60 * 1000);
-
   isRotationBackgroundTaskAlreadyScheduled = true;
-
-  console.log('Test profile credentials refresh was scheduled');
 };
