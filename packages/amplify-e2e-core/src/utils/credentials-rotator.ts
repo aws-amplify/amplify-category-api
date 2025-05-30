@@ -50,7 +50,9 @@ let isRotationBackgroundTaskAlreadyScheduled = false;
  * No-op if a background task has already been scheduled.
  */
 export const tryScheduleCredentialRefresh = () => {
-  if (!process.env.CI || !process.env.TEST_ACCOUNT_ROLE || process.env.CHILD_ACCOUNT_ROLE || isRotationBackgroundTaskAlreadyScheduled) {
+  console.log('Scheduling credentials refresh');
+  console.dir(process.env);
+  if (!process.env.CI || !(process.env.TEST_ACCOUNT_ROLE || process.env.CHILD_ACCOUNT_ROLE) || isRotationBackgroundTaskAlreadyScheduled) {
     return;
   }
 
