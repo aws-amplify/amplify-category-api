@@ -417,11 +417,13 @@ function useChildAccountCredentials {
           echo "Unable to find a child account. Falling back to parent AWS account"
           return
         fi
-        creds=$(aws sts assume-role --role-arn arn:aws:iam::${pick_acct}:role/OrganizationAccountAccessRole --role-session-name testSession${session_id} --duration-seconds 3600)
+        account_role=arn:aws:iam::${pick_acct}:role/OrganizationAccountAccessRole
+        creds=$(aws sts assume-role --role-arn ${account_role} --role-session-name testSession${session_id} --duration-seconds 3600)
         if [ -z $(echo $creds | jq -c -r '.AssumedRoleUser.Arn') ]; then
             echo "Unable to assume child account role. Falling back to parent AWS account"
             return
         fi
+        export CHILD_ACCOUNT_ROLE=$account_role
         export ORGANIZATION_SIZE=$org_size
         export CREDS=$creds
         echo "Using account credentials for $(echo $creds | jq -c -r '.AssumedRoleUser.Arn')"

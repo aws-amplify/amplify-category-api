@@ -5,6 +5,7 @@ import { TestOptions } from '../utils/sql-test-config-helper';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
 import { testGraphQLAPI } from '../sql-tests-common/sql-models';
 import { sqlCreateStatements } from '../sql-tests-common/tests-sources/sql-models/provider';
+import { tryScheduleCredentialRefresh } from 'amplify-category-api-e2e-core';
 
 jest.setTimeout(DURATION_1_HOUR);
 

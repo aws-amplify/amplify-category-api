@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { createNewProjectDir, deleteProjectDir, deleteProject } from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir, deleteProject, tryScheduleCredentialRefresh } from 'amplify-category-api-e2e-core';
 import { initCDKProject, cdkDeploy, cdkDestroy, createGen1ProjectForMigration, deleteDDBTables } from '../../commands';
 import { graphql } from '../../graphql-request';
 import { TestDefinition, writeStackConfig, writeTestDefinitions, writeOverrides } from '../../utils';
@@ -13,6 +13,10 @@ describe('Many-to-many Migration', () => {
   let gen1ProjFolderName: string;
   let gen2ProjFolderName: string;
   let dataSourceMapping: Record<string, string>;
+
+  beforeAll(() => {
+    tryScheduleCredentialRefresh();
+  });
 
   beforeEach(async () => {
     gen1ProjFolderName = 'mtmmigrationgen1';
