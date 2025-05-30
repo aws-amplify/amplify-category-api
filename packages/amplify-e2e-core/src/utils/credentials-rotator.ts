@@ -1,13 +1,17 @@
 import { AssumeRoleCommand, STSClient } from '@aws-sdk/client-sts';
 import { fromContainerMetadata } from '@aws-sdk/credential-providers';
-import { generateRandomShortId, TEST_PROFILE_NAME } from './index';
 import * as ini from 'ini';
 import * as fs from 'fs-extra';
 import { pathManager } from '@aws-amplify/amplify-cli-core';
-const refreshCredentials = async (roleArn: string) => {
+import { generateRandomShortId, TEST_PROFILE_NAME } from './index';
+
+const refreshCredentials = async (roleArn: string, useCurrentCreds: boolean = false) => {
+  let credentials = undefined;
+  if (!useCurrentCreds) {
+    credentials = fromContainerMetadata();
+  }
   const client = new STSClient({
-    // Use CodeBuild role to assume test account role. I.e. don't read credentials from process.env
-    credentials: fromContainerMetadata(),
+    credentials,
   });
   const sessionName = `testSession${generateRandomShortId()}`;
   const command = new AssumeRoleCommand({
@@ -29,9 +33,12 @@ const refreshCredentials = async (roleArn: string) => {
   await fs.writeFile(pathManager.getAWSCredentialsFilePath(), ini.stringify(credentialsContents));
 };
 
-const tryRefreshCredentials = async (roleArn: string) => {
+const tryRefreshCredentials = async (parentRoleArn: string, childRoleArn?: string) => {
   try {
-    await refreshCredentials(roleArn);
+    await refreshCredentials(parentRoleArn);
+    if (childRoleArn) {
+      await refreshCredentials(childRoleArn, true);
+    }
     console.log('Test profile credentials refreshed');
   } catch (e) {
     console.error('Test profile credentials request failed');
