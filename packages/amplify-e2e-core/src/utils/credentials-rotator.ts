@@ -40,10 +40,9 @@ const refreshCredentials = async (roleArn: string, useCurrentCreds: boolean = fa
 
 const tryRefreshCredentials = async (parentRoleArn: string, childRoleArn?: string) => {
   try {
+    await refreshCredentials(parentRoleArn);
     if (childRoleArn) {
       await refreshCredentials(childRoleArn, true);
-    } else {
-      await refreshCredentials(parentRoleArn);
     }
     console.log('Test profile credentials refreshed');
   } catch (e) {
