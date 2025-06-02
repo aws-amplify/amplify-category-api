@@ -6,9 +6,13 @@ import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { generateRandomShortId, TEST_PROFILE_NAME } from './index';
 
 const refreshCredentials = async (roleArn: string, useCurrentCreds: boolean = false) => {
+  console.log(`Refreshing credentials for arn ${roleArn}`);
   let credentials = undefined;
   if (!useCurrentCreds) {
+    console.log('Using container credentials');
     credentials = fromContainerMetadata();
+  } else {
+    console.log('Using current credentials');
   }
   const client = new STSClient({
     credentials,
@@ -31,13 +35,15 @@ const refreshCredentials = async (roleArn: string, useCurrentCreds: boolean = fa
   process.env.AWS_SECRET_ACCESS_KEY = response.Credentials.SecretAccessKey;
   process.env.AWS_SESSION_TOKEN = response.Credentials.SessionToken;
   await fs.writeFile(pathManager.getAWSCredentialsFilePath(), ini.stringify(credentialsContents));
+  console.log(`Refreshed credentials for arn ${roleArn}`);
 };
 
 const tryRefreshCredentials = async (parentRoleArn: string, childRoleArn?: string) => {
   try {
-    await refreshCredentials(parentRoleArn);
     if (childRoleArn) {
       await refreshCredentials(childRoleArn, true);
+    } else {
+      await refreshCredentials(parentRoleArn);
     }
     console.log('Test profile credentials refreshed');
   } catch (e) {
