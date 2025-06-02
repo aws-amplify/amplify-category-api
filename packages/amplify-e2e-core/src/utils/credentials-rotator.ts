@@ -6,13 +6,9 @@ import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { generateRandomShortId, TEST_PROFILE_NAME } from './index';
 
 const refreshCredentials = async (roleArn: string, useCurrentCreds: boolean = false) => {
-  console.log(`Refreshing credentials for arn ${roleArn}`);
   let credentials = undefined;
   if (!useCurrentCreds) {
-    console.log('Using container credentials');
     credentials = fromContainerMetadata();
-  } else {
-    console.log('Using current credentials');
   }
   const client = new STSClient({
     credentials,
@@ -35,9 +31,11 @@ const refreshCredentials = async (roleArn: string, useCurrentCreds: boolean = fa
   process.env.AWS_SECRET_ACCESS_KEY = response.Credentials.SecretAccessKey;
   process.env.AWS_SESSION_TOKEN = response.Credentials.SessionToken;
   await fs.writeFile(pathManager.getAWSCredentialsFilePath(), ini.stringify(credentialsContents));
-  console.log(`Refreshed credentials for arn ${roleArn}`);
 };
 
+/**
+ * Refresh the parent account
+ */
 const tryRefreshCredentials = async (parentRoleArn: string, childRoleArn?: string) => {
   try {
     await refreshCredentials(parentRoleArn);
@@ -62,9 +60,7 @@ let isRotationBackgroundTaskAlreadyScheduled = false;
  * No-op if a background task has already been scheduled.
  */
 export const tryScheduleCredentialRefresh = () => {
-  console.log('Scheduling credentials refresh');
-  console.dir(process.env);
-  if (!process.env.CI || !(process.env.TEST_ACCOUNT_ROLE || process.env.CHILD_ACCOUNT_ROLE) || isRotationBackgroundTaskAlreadyScheduled) {
+  if (!process.env.CI || !process.env.TEST_ACCOUNT_ROLE || isRotationBackgroundTaskAlreadyScheduled) {
     return;
   }
 
