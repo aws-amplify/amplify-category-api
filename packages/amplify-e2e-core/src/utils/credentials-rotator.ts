@@ -80,7 +80,7 @@ export const tryScheduleCredentialRefresh = () => {
   } else if (process.env.CHILD_ACCOUNT_ROLE) {
     // Attempts to refresh credentials in background every 15 minutes.
     setInterval(() => {
-      void tryRefreshCredentials(process.env.CHILD_ACCOUNT_ROLE);
+      void tryRefreshCredentials(process.env.TEST_ACCOUNT_ROLE, process.env.CHILD_ACCOUNT_ROLE);
     }, 15 * 60 * 1000);
 
     console.log('Test profile credentials refresh was scheduled for child account');
