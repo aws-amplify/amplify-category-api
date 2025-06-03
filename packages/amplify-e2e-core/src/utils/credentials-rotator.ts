@@ -34,7 +34,7 @@ const refreshCredentials = async (roleArn: string, useCurrentCreds: boolean = fa
 };
 
 /**
- * Refresh the parent account
+ * Refresh the parent account. If child account is available, refresh that as well.
  */
 const tryRefreshCredentials = async (parentRoleArn: string, childRoleArn?: string) => {
   try {
@@ -65,18 +65,18 @@ export const tryScheduleCredentialRefresh = () => {
   }
 
   if (process.env.USE_PARENT_ACCOUNT) {
-    // Attempts to refresh credentials in background every 15 minutes.
+    // Attempts to refresh credentials in background every 10 minutes.
     setInterval(() => {
       void tryRefreshCredentials(process.env.TEST_ACCOUNT_ROLE);
-    }, 15 * 60 * 1000);
+    }, 10 * 60 * 1000);
 
     console.log('Test profile credentials refresh was scheduled for parent account');
     return;
   } else if (process.env.CHILD_ACCOUNT_ROLE) {
-    // Attempts to refresh credentials in background every 15 minutes.
+    // Attempts to refresh credentials in background every 10 minutes.
     setInterval(() => {
       void tryRefreshCredentials(process.env.TEST_ACCOUNT_ROLE, process.env.CHILD_ACCOUNT_ROLE);
-    }, 15 * 60 * 1000);
+    }, 10 * 60 * 1000);
 
     console.log('Test profile credentials refresh was scheduled for child account');
   } else {
