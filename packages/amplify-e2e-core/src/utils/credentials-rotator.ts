@@ -1,13 +1,17 @@
 import { AssumeRoleCommand, STSClient } from '@aws-sdk/client-sts';
 import { fromContainerMetadata } from '@aws-sdk/credential-providers';
-import { generateRandomShortId, TEST_PROFILE_NAME } from './index';
 import * as ini from 'ini';
 import * as fs from 'fs-extra';
 import { pathManager } from '@aws-amplify/amplify-cli-core';
-const refreshCredentials = async (roleArn: string) => {
+import { generateRandomShortId, TEST_PROFILE_NAME } from './index';
+
+const refreshCredentials = async (roleArn: string, useCurrentCreds: boolean = false) => {
+  let credentials = undefined;
+  if (!useCurrentCreds) {
+    credentials = fromContainerMetadata();
+  }
   const client = new STSClient({
-    // Use CodeBuild role to assume test account role. I.e. don't read credentials from process.env
-    credentials: fromContainerMetadata(),
+    credentials,
   });
   const sessionName = `testSession${generateRandomShortId()}`;
   const command = new AssumeRoleCommand({
@@ -29,9 +33,15 @@ const refreshCredentials = async (roleArn: string) => {
   await fs.writeFile(pathManager.getAWSCredentialsFilePath(), ini.stringify(credentialsContents));
 };
 
-const tryRefreshCredentials = async (roleArn: string) => {
+/**
+ * Refresh the parent account. If child account is available, refresh that as well.
+ */
+const tryRefreshCredentials = async (parentRoleArn: string, childRoleArn?: string) => {
   try {
-    await refreshCredentials(roleArn);
+    await refreshCredentials(parentRoleArn);
+    if (childRoleArn) {
+      await refreshCredentials(childRoleArn, true);
+    }
     console.log('Test profile credentials refreshed');
   } catch (e) {
     console.error('Test profile credentials request failed');
@@ -54,16 +64,24 @@ export const tryScheduleCredentialRefresh = () => {
     return;
   }
 
-  if (!process.env.USE_PARENT_ACCOUNT) {
-    throw new Error('Credentials rotator supports only tests running in parent account at this time');
+  if (process.env.USE_PARENT_ACCOUNT) {
+    // Attempts to refresh credentials in background every 10 minutes.
+    setInterval(() => {
+      void tryRefreshCredentials(process.env.TEST_ACCOUNT_ROLE);
+    }, 10 * 60 * 1000);
+
+    console.log('Test profile credentials refresh was scheduled for parent account');
+    return;
+  } else if (process.env.CHILD_ACCOUNT_ROLE) {
+    // Attempts to refresh credentials in background every 10 minutes.
+    setInterval(() => {
+      void tryRefreshCredentials(process.env.TEST_ACCOUNT_ROLE, process.env.CHILD_ACCOUNT_ROLE);
+    }, 10 * 60 * 1000);
+
+    console.log('Test profile credentials refresh was scheduled for child account');
+  } else {
+    throw new Error('Credentials rotator could not find any role to rotate credentials for');
   }
 
-  // Attempts to refresh credentials in background every 15 minutes.
-  setInterval(() => {
-    void tryRefreshCredentials(process.env.TEST_ACCOUNT_ROLE);
-  }, 15 * 60 * 1000);
-
   isRotationBackgroundTaskAlreadyScheduled = true;
-
-  console.log('Test profile credentials refresh was scheduled');
 };
