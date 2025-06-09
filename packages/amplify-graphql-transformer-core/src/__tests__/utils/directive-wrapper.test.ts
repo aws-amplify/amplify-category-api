@@ -186,5 +186,31 @@ describe('Transformer Core Util Tests', () => {
       expect(newArgs.timestamps.createdAt).toEqual('createdOn');
       expect(newArgs.timestamps.updatedAt).toEqual('updatedOn');
     });
+
+    it(': Should skip location when deep cloning', () => {
+      // Cloning token locations is expensive and not useful (they're read only).
+      // Some transformers are passing AST nodes to 'getArguments'
+      // Assert that we don't clone them.
+      const parsedDoc = parse(schema);
+      const objNode = parsedDoc?.definitions?.[0] as ObjectTypeDefinitionNode;
+      const modelDir = objNode?.directives?.[0] as DirectiveNode;
+      const wrappedDir = new DirectiveWrapper(modelDir);
+
+      const argsWithASTNodes = {
+        // add some args that are AST nodes.
+        objNode,
+        modelDir,
+        // include common args to trigger deep merging.
+        ...cloneDeep(defaultArgs),
+      };
+
+      const newArgs = wrappedDir.getArguments(argsWithASTNodes, { deepMergeArguments: true });
+      // Assert that args were cloned.
+      expect(newArgs.objNode === objNode).toBeFalsy();
+      expect(newArgs.modelDir === modelDir).toBeFalsy();
+      // Assert that locations were not cloned.
+      expect(newArgs.objNode.loc === objNode.loc).toBeTruthy();
+      expect(newArgs.modelDir.loc === modelDir.loc).toBeTruthy();
+    });
   });
 });

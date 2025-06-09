@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { createNewProjectDir, deleteProjectDir, deleteProject } from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir, deleteProject, tryScheduleCredentialRefresh } from 'amplify-category-api-e2e-core';
 import { CloudFormationClient, ListStacksCommand, DescribeStackEventsCommand, StackEvent } from '@aws-sdk/client-cloudformation';
 import { initCDKProject, cdkDeploy, cdkDestroy, createGen1ProjectForMigration, deleteDDBTables } from '../../commands';
 import { TestDefinition, writeStackConfig, writeTestDefinitions, writeOverrides } from '../../utils';
@@ -15,6 +15,7 @@ describe('Migration table import validation', () => {
   let dataSourceMapping: Record<string, string>;
 
   beforeAll(async () => {
+    tryScheduleCredentialRefresh();
     gen1ProjFolderName = 'validategen1';
     gen1ProjRoot = await createNewProjectDir(gen1ProjFolderName);
 
