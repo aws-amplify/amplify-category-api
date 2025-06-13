@@ -53,7 +53,7 @@
     "@aws-sdk/nested-clients": "^3.777.0",
     "@aws-sdk/region-config-resolver": "3.614.0",
     "@aws-sdk/token-providers": "3.614.0",
-    "@aws-sdk/types": "3.734.0",
+    "@aws-sdk/types": "^3.734.0",
     "@aws-sdk/util-endpoints": "3.637.0",
     "@aws-sdk/util-locate-window": "^3.0.0",
     "@aws-sdk/util-user-agent-browser": "3.609.0",
@@ -4135,5 +4135,5 @@
   },
   "types": {},
   "version": "1.16.2",
-  "fingerprint": "y676lur/CZBGFnJnJZvt8Zki3cYs0hvW2P0TjjtL2fA="
+  "fingerprint": "IOJjYqGZSGFivVjQmBeKIJH81jWsCkVqqJDm4OdrH2A="
 }
