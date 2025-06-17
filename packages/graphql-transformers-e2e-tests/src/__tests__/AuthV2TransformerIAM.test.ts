@@ -3,9 +3,16 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
+
+// v2
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import { default as S3 } from 'aws-sdk/clients/s3';
+import { CognitoIdentity } from 'aws-sdk';
+import { default as STS } from 'aws-sdk/clients/sts';
+
+// v3
+
 import moment from 'moment';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { CloudFormationClient } from '../CloudFormationClient';
@@ -21,12 +28,11 @@ import {
   setIdentityPoolRoles,
 } from '../cognitoUtils';
 import { resolveTestRegion } from '../testSetup';
-import { CognitoIdentity } from 'aws-sdk';
+
 import { IAMHelper } from '../IAMHelper';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
 import { Auth } from 'aws-amplify';
-import { default as STS } from 'aws-sdk/clients/sts';
 
 const region = resolveTestRegion();
 

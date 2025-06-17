@@ -1,7 +1,9 @@
+/* eslint-disable */
 import * as fs from 'fs';
 import * as path from 'path';
 import { DeploymentResources } from 'graphql-transformer-core';
-import { CognitoIdentityServiceProvider, CognitoIdentity } from 'aws-sdk';
+import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
+import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 import { deleteUserPool, deleteIdentityPool } from './cognitoUtils';
 import { CloudFormationClient } from './CloudFormationClient';
 import { S3Client } from './S3Client';
@@ -204,8 +206,8 @@ export const cleanupStackAfterTest = async (
   bucketName: string,
   stackName: string | undefined,
   cf: CloudFormationClient,
-  cognitoParams?: { cognitoClient: CognitoIdentityServiceProvider; userPoolId: string },
-  identityParams?: { identityClient: CognitoIdentity; identityPoolId: string },
+  cognitoParams?: { cognitoClient: CognitoIdentityProviderClient; userPoolId: string },
+  identityParams?: { identityClient: CognitoIdentityClient; identityPoolId: string },
 ) => {
   try {
     if (stackName) {

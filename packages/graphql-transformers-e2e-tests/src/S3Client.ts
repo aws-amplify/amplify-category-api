@@ -1,127 +1,107 @@
+/* eslint-disable */
 import fs = require('fs');
-import { S3 } from 'aws-sdk';
-
-async function promisify<I, O>(fun: (arg: I, cb: (e: Error, d: O) => void) => void, args: I, that: any): Promise<O> {
-  return await new Promise<O>((resolve, reject) => {
-    fun.apply(that, [
-      args,
-      (err: Error, data: O) => {
-        if (err) {
-          return reject(err);
-        }
-        resolve(data);
-      },
-    ]);
-  });
-}
+import {
+  S3Client as S3ClientSDK,
+  CreateBucketCommand,
+  CreateBucketCommandOutput,
+  PutBucketVersioningCommand,
+  PutBucketVersioningCommandOutput,
+  PutObjectCommand,
+  PutObjectOutput,
+  GetObjectCommand,
+  GetObjectCommandOutput,
+  ListObjectVersionsCommand,
+  ListObjectVersionsCommandOutput,
+  DeleteObjectCommand,
+  DeleteObjectCommandOutput,
+  DeleteBucketCommand,
+  DeleteBucketCommandOutput,
+} from '@aws-sdk/client-s3';
 
 export class S3Client {
-  client: S3;
+  client: S3ClientSDK;
 
   constructor(public region: string) {
-    this.client = new S3({ region: this.region });
+    this.client = new S3ClientSDK({ region: this.region });
   }
 
-  async createBucket(bucketName: string) {
-    return await promisify<S3.Types.CreateBucketRequest, S3.Types.CreateBucketOutput>(
-      this.client.createBucket,
-      {
-        Bucket: bucketName,
-      },
-      this.client,
-    );
+  async createBucket(bucketName: string): Promise<CreateBucketCommandOutput> {
+    return this.client.send(new CreateBucketCommand({ Bucket: bucketName }));
   }
 
-  async putBucketVersioning(bucketName: string) {
-    return await promisify<S3.Types.PutBucketVersioningRequest, {}>(
-      this.client.putBucketVersioning,
-      {
-        Bucket: bucketName,
-        VersioningConfiguration: {
-          Status: 'Enabled',
-        },
-      },
-      this.client,
-    );
+  async putBucketVersioning(bucketName: string): Promise<PutBucketVersioningCommandOutput> {
+    return this.client.send(new PutBucketVersioningCommand({ Bucket: bucketName, VersioningConfiguration: { Status: 'Enabled' } }));
   }
 
-  async uploadZIPFile(bucketName: string, filePath: string, s3key: string, contentType: string = 'application/zip') {
+  async uploadZIPFile(
+    bucketName: string,
+    filePath: string,
+    s3key: string,
+    contentType: string = 'application/zip',
+  ): Promise<PutObjectOutput> {
     const fileContent = this.readZIPFile(filePath);
-
-    return await promisify<S3.Types.PutObjectRequest, S3.Types.PutObjectOutput>(
-      this.client.putObject,
-      {
+    return this.client.send(
+      new PutObjectCommand({
         Bucket: bucketName,
         Key: s3key,
         Body: fileContent,
         ContentType: contentType,
-      },
-      this.client,
+      }),
     );
   }
 
-  async uploadFile(bucketName: string, filePath: string, s3key: string) {
+  async uploadFile(bucketName: string, filePath: string, s3key: string): Promise<PutObjectOutput> {
     const fileContent = this.readFile(filePath);
-
-    return await promisify<S3.Types.PutObjectRequest, S3.Types.PutObjectOutput>(
-      this.client.putObject,
-      {
+    return this.client.send(
+      new PutObjectCommand({
         Bucket: bucketName,
         Key: s3key,
         Body: fileContent,
-      },
-      this.client,
+      }),
     );
   }
 
-  async getFileVersion(bucketName: string, s3key: string) {
-    return await promisify<S3.Types.GetObjectRequest, S3.Types.GetObjectOutput>(
-      this.client.getObject,
-      {
+  async getFileVersion(bucketName: string, s3key: string): Promise<GetObjectCommandOutput> {
+    return this.client.send(
+      new GetObjectCommand({
         Bucket: bucketName,
         Key: s3key,
-      },
-      this.client,
+      }),
     );
   }
 
-  async getAllObjectVersions(bucketName: string) {
-    return await promisify<S3.Types.ListObjectVersionsRequest, S3.Types.ListObjectVersionsOutput>(
-      this.client.listObjectVersions,
-      {
+  async getAllObjectVersions(bucketName: string): Promise<ListObjectVersionsCommandOutput> {
+    return this.client.send(
+      new ListObjectVersionsCommand({
         Bucket: bucketName,
-      },
-      this.client,
+      }),
     );
   }
 
-  async deleteObjectVersion(bucketName: string, versionId: string, s3key: string) {
-    return await promisify<S3.Types.DeleteObjectRequest, S3.Types.DeleteObjectOutput>(
-      this.client.deleteObject,
-      {
+  async deleteObjectVersion(bucketName: string, versionId: string, s3key: string): Promise<DeleteObjectCommandOutput> {
+    return this.client.send(
+      new DeleteObjectCommand({
         Bucket: bucketName,
         Key: s3key,
         VersionId: versionId,
-      },
-      this.client,
+      }),
     );
   }
 
-  async deleteFile(bucketName: string, s3key: string) {
+  async deleteFile(bucketName: string, s3key: string): Promise<void> {
     const response = await this.getAllObjectVersions(bucketName);
-    const versions = response.Versions;
+    const versions = response.Versions || [];
     for (const version of versions) {
+      if (!version.VersionId) continue;
       await this.deleteObjectVersion(bucketName, version.VersionId, s3key);
     }
   }
 
-  async deleteBucket(bucketName: string) {
-    return await promisify<S3.Types.DeleteBucketRequest, {}>(
-      this.client.deleteBucket,
-      {
+  async deleteBucket(bucketName: string): Promise<DeleteBucketCommandOutput> {
+    return this.client.send(
+      new DeleteBucketCommand({
         Bucket: bucketName,
-      },
-      this.client,
+      }),
     );
   }
 
