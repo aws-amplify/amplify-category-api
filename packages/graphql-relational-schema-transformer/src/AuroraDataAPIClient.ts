@@ -1,9 +1,11 @@
+import * as aws from 'aws-sdk';
+
 /**
  * A wrapper around the RDS data service client, forming their responses for
  * easier consumption.
  */
 export class AuroraDataAPIClient {
-  AWS: any;
+  AWSConfig: any;
 
   RDS: any;
 
@@ -13,13 +15,11 @@ export class AuroraDataAPIClient {
     this.RDS = rdsClient;
   }
 
-  constructor(databaseRegion: string, awsSecretStoreArn: string, dbClusterOrInstanceArn: string, database: string, aws: any) {
-    this.AWS = aws;
-    this.AWS.config.update({
-      region: databaseRegion,
-    });
+  constructor(databaseRegion: string, awsSecretStoreArn: string, dbClusterOrInstanceArn: string, database: string, awsConfig: any) {
+    this.AWSConfig = awsConfig;
+    const config = { ...this.AWSConfig, region: databaseRegion };
 
-    this.RDS = new this.AWS.RDSDataService();
+    this.RDS = new aws.RDSDataService(config);
     this.Params = new DataApiParams();
 
     this.Params.secretArn = awsSecretStoreArn;
