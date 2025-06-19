@@ -12,6 +12,7 @@ import chalk from 'chalk';
 import { DataApiParams } from 'graphql-relational-schema-transformer';
 import ora from 'ora';
 import { rootStackFileName } from '@aws-amplify/amplify-provider-awscloudformation';
+import * as aws from 'aws-sdk';
 
 const spinner = ora('');
 const category = 'api';
@@ -62,30 +63,28 @@ export async function serviceWalkthrough(context: $TSContext, datasourceMetadata
     selectedRegion = await promptWalkthroughQuestion(inputs, 0, availableRegions);
   }
 
-  const AWS = await getAwsClient(context, 'list');
+  const AWSConfig = await getAwsClientConfig(context, 'list');
 
   // Prepare the SDK with the region
-  AWS.config.update({
-    region: selectedRegion,
-  });
+  const config = { ...AWSConfig, region: selectedRegion };
 
   // RDS Cluster Question
   let selectedClusterArn = cfnJsonParameters?.rdsClusterIdentifier;
-  let clusterResourceId = getRdsClusterResourceIdFromArn(selectedClusterArn, AWS);
+  let clusterResourceId = getRdsClusterResourceIdFromArn(selectedClusterArn, config);
   if (!selectedClusterArn || !clusterResourceId) {
-    ({ selectedClusterArn, clusterResourceId } = await selectCluster(context, inputs, AWS));
+    ({ selectedClusterArn, clusterResourceId } = await selectCluster(context, inputs, config));
   }
 
   // Secret Store Question
   let selectedSecretArn = cfnJsonParameters?.rdsSecretStoreArn;
   if (!selectedSecretArn) {
-    selectedSecretArn = await getSecretStoreArn(context, inputs, clusterResourceId, AWS);
+    selectedSecretArn = await getSecretStoreArn(context, inputs, clusterResourceId, config);
   }
 
   // Database Name Question
   let selectedDatabase = cfnJsonParameters?.rdsDatabaseName;
   if (!selectedDatabase) {
-    selectedDatabase = await selectDatabase(context, inputs, selectedClusterArn, selectedSecretArn, AWS);
+    selectedDatabase = await selectDatabase(context, inputs, selectedClusterArn, selectedSecretArn, config);
   }
 
   return {
@@ -97,13 +96,13 @@ export async function serviceWalkthrough(context: $TSContext, datasourceMetadata
   };
 }
 
-async function getRdsClusterResourceIdFromArn(arn: string | undefined, AWS) {
+async function getRdsClusterResourceIdFromArn(arn: string | undefined, AWSConfig) {
   // If the arn was not already existing in cloudformation template, return undefined to prompt for input.
   if (!arn) {
     return;
   }
 
-  const RDS = new AWS.RDS();
+  const RDS = new aws.RDS(AWSConfig);
   const describeDBClustersResult = await RDS.describeDBClusters().promise();
   const rawClusters = describeDBClustersResult.DBClusters;
   const identifiedCluster = rawClusters.find((cluster) => cluster.DBClusterArn === arn);
@@ -114,8 +113,8 @@ async function getRdsClusterResourceIdFromArn(arn: string | undefined, AWS) {
  *
  * @param {*} inputs
  */
-async function selectCluster(context: $TSContext, inputs, AWS) {
-  const RDS = new AWS.RDS();
+async function selectCluster(context: $TSContext, inputs, AWSConfig) {
+  const RDS = new aws.RDS(AWSConfig);
 
   const describeDBClustersResult = await RDS.describeDBClusters().promise();
   const rawClusters = describeDBClustersResult.DBClusters;
@@ -163,8 +162,8 @@ async function selectCluster(context: $TSContext, inputs, AWS) {
  * @param {*} inputs
  * @param {*} clusterResourceId
  */
-async function getSecretStoreArn(context: $TSContext, inputs, clusterResourceId, AWS) {
-  const SecretsManager = new AWS.SecretsManager();
+async function getSecretStoreArn(context: $TSContext, inputs, clusterResourceId, AWSConfig) {
+  const SecretsManager = new aws.SecretsManager(AWSConfig);
   const NextToken = 'NextToken';
   let rawSecrets = [];
   const params = {
@@ -221,9 +220,9 @@ async function getSecretStoreArn(context: $TSContext, inputs, clusterResourceId,
  * @param {*} clusterArn
  * @param {*} secretArn
  */
-async function selectDatabase(context: $TSContext, inputs, clusterArn, secretArn, AWS) {
+async function selectDatabase(context: $TSContext, inputs, clusterArn, secretArn, AWSConfig) {
   // Database Name Question
-  const DataApi = new AWS.RDSDataService();
+  const DataApi = new aws.RDSDataService(AWSConfig);
   const params = new DataApiParams();
   const databaseList = [];
   params.secretArn = secretArn;
@@ -285,8 +284,8 @@ async function promptWalkthroughQuestion(inputs, questionNumber, choicesList) {
   return await prompter.pick(question.message, choicesList);
 }
 
-async function getAwsClient(context: $TSContext, action: string) {
+async function getAwsClientConfig(context: $TSContext, action: string) {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins[providerName]);
-  return await provider.getConfiguredAWSClient(context, 'aurora-serverless', action);
+  return await provider.getConfiguredAWSClientConfig(context, 'aurora-serverless', action);
 }
