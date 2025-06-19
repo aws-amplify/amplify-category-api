@@ -1,9 +1,9 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import path from 'path';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { Output } from 'aws-sdk/clients/cloudformation';
-import { default as S3 } from 'aws-sdk/clients/s3';
+import { Output } from '@aws-sdk/client-cloudformation';
 import * as fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { default as moment } from 'moment';
@@ -46,7 +46,7 @@ beforeAll(async () => {
     }
   `;
   try {
-    await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
+    await customS3Client.createBucket(BUCKET_NAME);
   } catch (e) {
     console.warn(`Could not create bucket: ${e}`);
   }
