@@ -61,7 +61,7 @@ export class S3Client {
     );
   }
 
-  async putObject(bucketName: string, s3key: string, body: string | Buffer<ArrayBufferLike>): Promise<PutObjectOutput> {
+  async putObject(bucketName: string, s3key: string, body: string | Buffer): Promise<PutObjectOutput> {
     return this.client.send(
       new PutObjectCommand({
         Bucket: bucketName,
