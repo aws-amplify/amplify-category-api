@@ -11,7 +11,7 @@ const BUCKET_STALE_DURATION_MS = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
 /**
  * We define a bucket as viable for deletion if it has 'test' in the name, and if it is >6 hours old.
  */
-const testBucketStalenessFilter = (bucket: S3.Bucket): boolean => {
+const testBucketStalenessFilter = (bucket: Bucket): boolean => {
   const isTestBucket = bucket.Name.match(TEST_BUCKET_REGEX);
   const isStaleBucket = Date.now() - bucket.CreationDate.getMilliseconds() > BUCKET_STALE_DURATION_MS;
   return isTestBucket && isStaleBucket;
