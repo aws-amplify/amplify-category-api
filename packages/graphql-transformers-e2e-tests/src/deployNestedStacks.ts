@@ -49,13 +49,7 @@ async function uploadDirectory(client: S3Client, directory: string, bucket: stri
       const fileKey = s3Location;
       await client.wait(0.25, () => Promise.resolve());
       const fileContents = await fs.readFileSync(contentPath);
-      await client.client
-        .putObject({
-          Bucket: bucket,
-          Key: fileKey,
-          Body: fileContents,
-        })
-        .promise();
+      await client.putObject(bucket, fileKey, fileContents);
       const formattedName = file
         .split('.')
         .map((s, i) => (i > 0 ? `${s[0].toUpperCase()}${s.slice(1, s.length)}` : s))

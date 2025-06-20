@@ -20,7 +20,6 @@ jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient(AWS_REGION);
 const customS3Client = new S3Client(AWS_REGION);
-const awsS3Client = new S3({ region: AWS_REGION });
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `PredictionsTransformerV2Tests-${BUILD_TIMESTAMP}`;
 const BUCKET_NAME = `appsync-predictions-transformer-v2-test-bucket-${BUILD_TIMESTAMP}`;
@@ -135,13 +134,7 @@ test('identify image text', async () => {
   const file = path.join(__dirname, 'test-data', 'amazon.png');
   const buffer = fs.readFileSync(file);
 
-  const params = {
-    Key: 'public/amazon-logo.png',
-    Body: buffer,
-    Bucket: BUCKET_NAME,
-  };
-
-  await awsS3Client.upload(params).promise();
+  await customS3Client.putObject(BUCKET_NAME, 'public/amazon-logo.png', buffer);
   const response = await GRAPHQL_CLIENT.query(
     `query TranslateImageText($input: TranslateImageTextInput!) {
       translateImageText(input: $input)
@@ -163,13 +156,7 @@ test('identify labels', async () => {
   const file = path.join(__dirname, 'test-data', 'dogs.png');
   const buffer = fs.readFileSync(file);
 
-  const params = {
-    Key: 'public/dogs.png',
-    Body: buffer,
-    Bucket: BUCKET_NAME,
-  };
-
-  await awsS3Client.upload(params).promise();
+  await customS3Client.putObject(BUCKET_NAME, 'public/dogs.png', buffer);
   const response = await GRAPHQL_CLIENT.query(
     `query TranslateLabels($input: TranslateLabelsInput!) {
       translateLabels(input: $input)

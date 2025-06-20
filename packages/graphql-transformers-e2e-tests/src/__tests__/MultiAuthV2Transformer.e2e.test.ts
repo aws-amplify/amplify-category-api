@@ -391,7 +391,7 @@ beforeAll(async () => {
   `;
   // create deployment bucket
   try {
-    await awsS3Client.createBucket(BUCKET_NAME);
+    await customS3Client.createBucket(BUCKET_NAME);
   } catch (e) {
     // fail early if we can't create the bucket
     expect(e).not.toBeDefined();

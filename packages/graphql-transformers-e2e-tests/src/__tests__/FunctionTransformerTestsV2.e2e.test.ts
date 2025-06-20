@@ -125,14 +125,13 @@ const deleteEchoFunctionInOtherAccount = async (accountId: string) => {
       expect(true).toEqual(false);
       return;
     }
-    const crossAccountLambdaHelper = new LambdaHelper(
-      region,
-      new AWS.Credentials(accountCredentials.AccessKeyId, accountCredentials.SecretAccessKey, accountCredentials.SessionToken),
-    );
-    const crossAccountIAMHelper = new IAMHelper(
-      region,
-      new AWS.Credentials(accountCredentials.AccessKeyId, accountCredentials.SecretAccessKey, accountCredentials.SessionToken),
-    );
+    const credentials: AwsCredentialIdentity = {
+      accessKeyId: accountCredentials.AccessKeyId,
+      secretAccessKey: accountCredentials.SecretAccessKey,
+      sessionToken: accountCredentials.SessionToken,
+    };
+    const crossAccountLambdaHelper = new LambdaHelper(region, credentials);
+    const crossAccountIAMHelper = new IAMHelper(region, credentials);
 
     await crossAccountLambdaHelper.deleteFunction(ECHO_FUNCTION_NAME);
     await crossAccountIAMHelper.detachPolicy(CROSS_ACCOUNT_LAMBDA_EXECUTION_POLICY_ARN, LAMBDA_EXECUTION_ROLE_NAME);

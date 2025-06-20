@@ -68,7 +68,6 @@ const customS3Client = new S3Client(AWS_REGION);
 const cognitoClient = new CognitoIdentityProviderClient({ region: AWS_REGION });
 const identityClient = new CognitoIdentityClient({ region: AWS_REGION });
 const iamHelper = new IAMHelper(AWS_REGION);
-const awsS3Client = new S3({ region: AWS_REGION });
 
 // stack info
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');

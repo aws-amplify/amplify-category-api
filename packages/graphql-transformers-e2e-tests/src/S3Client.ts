@@ -61,6 +61,16 @@ export class S3Client {
     );
   }
 
+  async putObject(bucketName: string, s3key: string, body: string | Buffer<ArrayBufferLike>): Promise<PutObjectOutput> {
+    return this.client.send(
+      new PutObjectCommand({
+        Bucket: bucketName,
+        Key: s3key,
+        Body: body,
+      }),
+    );
+  }
+
   async getFileVersion(bucketName: string, s3key: string): Promise<GetObjectCommandOutput> {
     return this.client.send(
       new GetObjectCommand({
