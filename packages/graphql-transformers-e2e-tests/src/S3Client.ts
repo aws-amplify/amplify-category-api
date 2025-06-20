@@ -1,5 +1,5 @@
 /* eslint-disable */
-import fs = require('fs');
+import fs from 'fs';
 import {
   S3Client as S3ClientSDK,
   CreateBucketCommand,
@@ -11,11 +11,11 @@ import {
   GetObjectCommand,
   GetObjectCommandOutput,
   ListObjectVersionsCommand,
-  ListObjectVersionsCommandOutput,
   DeleteObjectCommand,
   DeleteObjectCommandOutput,
   DeleteBucketCommand,
   DeleteBucketCommandOutput,
+  ObjectVersion,
 } from '@aws-sdk/client-s3';
 
 export class S3Client {
@@ -70,12 +70,25 @@ export class S3Client {
     );
   }
 
-  async getAllObjectVersions(bucketName: string): Promise<ListObjectVersionsCommandOutput> {
-    return this.client.send(
-      new ListObjectVersionsCommand({
-        Bucket: bucketName,
-      }),
-    );
+  async getAllObjectVersions(bucketName: string): Promise<ObjectVersion[]> {
+    let objectVersions: ObjectVersion[] = [];
+    let isTruncated: boolean = false;
+    let NextKeyMarker: string | undefined;
+    let NextVersionIdMarker: string | undefined;
+    do {
+      const page = await this.client.send(
+        new ListObjectVersionsCommand({
+          Bucket: bucketName,
+          KeyMarker: NextKeyMarker,
+          VersionIdMarker: NextVersionIdMarker,
+        }),
+      );
+      objectVersions.push(...(page.Versions || []));
+      NextKeyMarker = page.NextKeyMarker;
+      NextVersionIdMarker = page.NextVersionIdMarker;
+      isTruncated = page.IsTruncated || false;
+    } while (isTruncated);
+    return objectVersions;
   }
 
   async deleteObjectVersion(bucketName: string, versionId: string, s3key: string): Promise<DeleteObjectCommandOutput> {
@@ -89,8 +102,7 @@ export class S3Client {
   }
 
   async deleteFile(bucketName: string, s3key: string): Promise<void> {
-    const response = await this.getAllObjectVersions(bucketName);
-    const versions = response.Versions || [];
+    const versions = await this.getAllObjectVersions(bucketName);
     for (const version of versions) {
       if (!version.VersionId) continue;
       await this.deleteObjectVersion(bucketName, version.VersionId, s3key);
@@ -103,6 +115,14 @@ export class S3Client {
         Bucket: bucketName,
       }),
     );
+  }
+
+  async emptyBucket(bucketName: string): Promise<void> {
+    const versions = await this.getAllObjectVersions(bucketName);
+    for (const version of versions) {
+      if (!version.VersionId) continue;
+      await this.deleteObjectVersion(bucketName, version.VersionId, version.Key!);
+    }
   }
 
   async setUpS3Resources(bucketName: string, filePath: string, s3key: string, zip?: boolean) {

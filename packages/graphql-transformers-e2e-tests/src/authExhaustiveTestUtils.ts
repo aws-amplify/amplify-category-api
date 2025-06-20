@@ -1,18 +1,19 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import * as crypto from 'crypto';
 import { AuthProvider, AuthStrategy, AuthTransformer, ModelOperation } from '@aws-amplify/graphql-auth-transformer';
 import { JWTToken } from '@aws-amplify/amplify-appsync-simulator';
 import { Auth } from 'aws-amplify';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { CognitoIdentity, S3 } from 'aws-sdk';
-import { Output } from 'aws-sdk/clients/cloudformation';
-import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { Output } from '@aws-sdk/client-cloudformation';
+import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
+import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 import { AppSyncAuthConfiguration, SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import gql from 'graphql-tag';
 import { plurality, ResourceConstants } from 'graphql-transformer-common';
 import { v4 } from 'uuid';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { CloudFormationClient } from './CloudFormationClient';
 import {
   addUserToGroup,
@@ -29,13 +30,12 @@ import { cleanupStackAfterTest, deploy } from './deployNestedStacks';
 import { IAMHelper } from './IAMHelper';
 import { S3Client } from './S3Client';
 import { resolveTestRegion } from './testSetup';
-import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 
 const REGION = resolveTestRegion();
 const IAM_HELPER = new IAMHelper(REGION);
 const CF = new CloudFormationClient(REGION);
-const COGNITO_CLIENT = new CognitoClient({ apiVersion: '2016-04-19', region: REGION });
-const IDENTITY_CLIENT = new CognitoIdentity({ apiVersion: '2014-06-30', region: REGION });
+const COGNITO_CLIENT = new CognitoIdentityProviderClient({ region: REGION });
+const IDENTITY_CLIENT = new CognitoIdentityClient({ region: REGION });
 
 const USERNAME1 = 'user1@test.com';
 const TMP_PASSWORD = 'Password123!';
@@ -456,9 +456,9 @@ export const deploySchema = async (
   buildTimestamp: string,
   synthParameters?: Partial<SynthParameters>,
 ) => {
+  const customS3Client = new S3Client(REGION);
   try {
-    const awsS3Client = new S3({ region: REGION });
-    await awsS3Client.createBucket({ Bucket: bucketName }).promise();
+    await customS3Client.createBucket(bucketName);
   } catch (e) {
     // fail early if we can't create the bucket
     expect(e).not.toBeDefined();
@@ -491,8 +491,6 @@ export const deploySchema = async (
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer()],
     synthParameters,
   });
-
-  const customS3Client = new S3Client(REGION);
 
   const finishedStack = await deploy(
     customS3Client,
