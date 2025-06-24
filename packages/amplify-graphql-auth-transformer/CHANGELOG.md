@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.2.3...@aws-amplify/graphql-auth-transformer@4.2.4) (2025-06-09)
+
+### Bug Fixes
+
+- add missing aws_iam directive on custom types ([#3270](https://github.com/aws-amplify/amplify-category-api/issues/3270)) ([2d08997](https://github.com/aws-amplify/amplify-category-api/commit/2d0899764356df9c51e4b400ea4f97df7a0b31a4))
+- remove aws_iam directive incorrectly added to interfaces ([#3283](https://github.com/aws-amplify/amplify-category-api/issues/3283)) ([5b7f4c3](https://github.com/aws-amplify/amplify-category-api/commit/5b7f4c3c3298144ad6a9028f78c5e263d6093b3a))
+
 ## [4.2.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.2.2...@aws-amplify/graphql-auth-transformer@4.2.3) (2025-04-17)
 
 **Note:** Version bump only for package @aws-amplify/graphql-auth-transformer

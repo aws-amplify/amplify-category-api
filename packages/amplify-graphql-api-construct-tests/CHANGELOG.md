@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.14.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.14.4...amplify-graphql-api-construct-tests@1.14.5) (2025-06-17)
+
+**Note:** Version bump only for package amplify-graphql-api-construct-tests
+
+## [1.14.4](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.14.3...amplify-graphql-api-construct-tests@1.14.4) (2025-06-09)
+
+### Bug Fixes
+
+- remove sql-pg-models.test.ts from creds refresher ([7684e1e](https://github.com/aws-amplify/amplify-category-api/commit/7684e1e55aaae64e907cb733811c645514175d09))
+
 ## [1.14.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.14.2...amplify-graphql-api-construct-tests@1.14.3) (2025-04-17)
 
 **Note:** Version bump only for package amplify-graphql-api-construct-tests
