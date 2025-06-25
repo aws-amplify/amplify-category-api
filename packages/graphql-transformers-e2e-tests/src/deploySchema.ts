@@ -1,21 +1,20 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import * as path from 'path';
 import * as os from 'os';
-import { default as S3 } from 'aws-sdk/clients/s3';
 import moment from 'moment';
-import { Output } from 'aws-sdk/clients/cloudformation';
+import { Output } from '@aws-sdk/client-cloudformation';
 import { ResourceConstants } from 'graphql-transformer-common';
 import * as fs from 'fs-extra';
+import { DeploymentResources } from '@aws-amplify/graphql-transformer-test-utils';
 import { CloudFormationClient } from './CloudFormationClient';
 import { GraphQLClient } from './GraphQLClient';
 import { S3Client } from './S3Client';
 import { cleanupStackAfterTest, deploy } from './deployNestedStacks';
 import { resolveTestRegion } from './testSetup';
-import { DeploymentResources } from '@aws-amplify/graphql-transformer-test-utils';
 
 const region = resolveTestRegion();
 const cf = new CloudFormationClient(region);
 const customS3Client = new S3Client(region);
-const awsS3Client = new S3({ region: region });
 
 /**
  * Interface for object that can manage graphql api deployments and cleanup for e2e tests
@@ -54,7 +53,7 @@ export const getSchemaDeployer = async (testId: string, transform: (schema: stri
 
   // create deployment bucket
   try {
-    await awsS3Client.createBucket({ Bucket: testBucketName }).promise();
+    await customS3Client.createBucket(testBucketName);
   } catch (err) {
     console.error(`Failed to create bucket ${testBucketName}: ${err}`);
   }

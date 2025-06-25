@@ -1,8 +1,10 @@
+/* eslint-disable jest/no-standalone-expect */
+/* eslint-disable import/no-extraneous-dependencies */
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { HttpTransformer } from '@aws-amplify/graphql-http-transformer';
-import { Output } from 'aws-sdk/clients/cloudformation';
+import { Output } from '@aws-sdk/client-cloudformation';
 import { default as moment } from 'moment';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { GraphQLClient } from '../GraphQLClient';
