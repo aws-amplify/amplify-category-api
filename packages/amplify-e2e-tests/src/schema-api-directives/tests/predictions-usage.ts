@@ -19,7 +19,6 @@ export async function runTest(projectDir: string, testModule: any): Promise<void
   updateSchemaInTestProject(projectDir, testModule.schema);
 
   await amplifyPush(projectDir);
-
   await uploadImageFile(projectDir);
 
   const apiKey = getApiKey(projectDir);
@@ -43,14 +42,6 @@ export async function runTest(projectDir: string, testModule: any): Promise<void
 
 async function uploadImageFile(projectDir: string) {
   const imageFilePath = path.join(__dirname, 'predictions-usage-image.jpg');
-  const s3Client = new S3Client({
-    credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-      sessionToken: process.env.AWS_SESSION_TOKEN,
-    },
-    region: process.env.AWS_DEFAULT_REGION,
-  });
 
   const amplifyMeta = getBackendAmplifyMeta(projectDir);
   const storageResourceName = Object.keys(amplifyMeta.storage).find((key: any) => {
@@ -58,7 +49,11 @@ async function uploadImageFile(projectDir: string) {
   }) as any;
 
   const bucketName = amplifyMeta.storage[storageResourceName].output.BucketName;
+
   try {
+    const s3Client = new S3Client({
+      region: amplifyMeta.providers.awscloudformation.Region,
+    });
     const fileStream = fs.createReadStream(imageFilePath);
     await s3Client.send(
       new PutObjectCommand({
@@ -70,7 +65,7 @@ async function uploadImageFile(projectDir: string) {
       }),
     );
   } catch (err) {
-    if (err.code !== 'AccessControlListNotSupported') {
+    if (err.Code !== 'AccessControlListNotSupported') {
       throw err;
     }
   }
