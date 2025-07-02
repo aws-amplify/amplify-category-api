@@ -15,6 +15,7 @@
     "cloud-e2e-beta": "source scripts/cloud-utils.sh && cloudE2EBeta",
     "cloud-e2e-debug": "source scripts/cloud-utils.sh && cloudE2EDebug",
     "cloud-e2e": "source scripts/cloud-utils.sh && cloudE2E",
+    "cloud-pr": "./scripts/cloud-pr.sh",
     "commit": "git-cz",
     "coverage": "codecov || exit 0",
     "depcheck": "eslint --no-eslintrc --config depcheck.config.js",
