@@ -677,12 +677,13 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const addServiceDirective = (typeName: string, operation: ModelOperation, operationName: string | null = null): void => {
       if (operationName) {
         const includeDefault = this.doesTypeHaveRulesForOperation(acm, operation);
-        const providers = this.getAuthProviders(acm.getRolesPerOperation(operation, operation === 'delete'));
+        const rolesPerOperation = acm.getRolesPerOperation(operation, operation === 'delete');
+        const providers = this.getAuthProviders(rolesPerOperation);
         const operationDirectives = this.getServiceDirectives(providers, includeDefault);
         if (operationDirectives.length > 0) {
           addDirectivesToOperation(ctx, typeName, operationName, operationDirectives);
         }
-        this.addOperationToResourceReferences(typeName, operationName, acm.getRoles());
+        this.addOperationToResourceReferences(typeName, operationName, rolesPerOperation);
       }
     };
     // default model operations
