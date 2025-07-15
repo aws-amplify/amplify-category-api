@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "amplify-category-api",
   "scripts": {
     "add-cli-no-save": "yarn add @aws-amplify/cli-internal -W --pure-lockfile && git checkout -- package.json",
@@ -73,10 +73,7 @@
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-category-api/issues"
   },
-  "publishConfig": {
-    "access": "restricted",
-    "registry": "http://localhost:4873"
-  },
+  "private": true,
   "homepage": "https://github.com/aws-amplify/amplify-category-api#readme",
   "main": "index.js",
   "repository": {
