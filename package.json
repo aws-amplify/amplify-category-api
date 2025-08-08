@@ -436,6 +436,7 @@
     "cookie": "^0.7.0",
     "@octokit/request-error": "^5.1.1",
     "@octokit/request": "^8.4.1",
-    "@octokit/plugin-paginate-rest": "^9.2.2"
+    "@octokit/plugin-paginate-rest": "^9.2.2",
+    "@types/node": "20.10.0"
   }
 }
