@@ -13,6 +13,9 @@
     "ts-jest": "^29.0.3",
     "uuid": "^9.0.0"
   },
+  "overrides": {
+    "@types/node": "^22.15.15"
+  },
   "scripts": {
     "test": "jest",
     "build": "tsc && cd lib && tsc && bestzip --force node ../../../lib/rds-lambda.zip ./*"
