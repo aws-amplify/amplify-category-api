@@ -10,7 +10,7 @@
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
   "files.exclude": {
     "**/.git": true,
-    "**/node_modules": true,
+    // "**/node_modules": true,
     "**/build": true,
     "**/coverage": true
   },
@@ -23,5 +23,6 @@
   },
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
