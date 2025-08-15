@@ -23,6 +23,7 @@ The `@conversation` directive is defined as follows:
 ```graphql
 directive @conversation(
   aiModel: String!
+  crossRegionInference: Boolean
   systemPrompt: String!
   functionName: String
   tools: [ToolMap]
@@ -59,6 +60,7 @@ To find the necessary GraphQL types to use with the `@conversation` directive, s
 The `@conversation` directive accepts the following configuration options:
 
 - `aiModel` (required): Specifies the AI model to be used for generating responses.
+- `crossRegionInference` (optional): Specifies whether the AI model will be called using Bedrock cross-region inference.
 - `systemPrompt` (required): Defines the initial prompt that sets the context for the AI model.
 - `functionName` (optional): Specifies a custom Lambda function to handle the conversation logic.
 - `tools` (optional): An array of tool configurations that the AI can use during the conversation.
@@ -79,9 +81,10 @@ When you use the `@conversation` directive, the transformer generates several AW
    - A resolver for the assistant's response mutation
    - A subscription resolver for real-time updates
 
-3. Lambda Function:
+3. Lambda Functions:
 
    - A default conversation handler (if no custom `functionName` is provided)
+   - A Lambda-backed CDK custom resource that generates the needed Bedrock policy resources for the model
 
 4. IAM Roles and Policies:
 
@@ -112,6 +115,7 @@ type Mutation {
   customerSupport(conversationId: ID!, inquiry: String!): ConversationMessage
     @conversation(
       aiModel: "anthropic.claude-3-haiku-20240307-v1:0"
+      crossRegionInference: true
       systemPrompt: "You are a customer support AI. Help users with their product inquiries and issues."
       tools: [
         { name: "getProductInfo", description: "Retrieves detailed information about a product" }
