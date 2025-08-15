@@ -1,5 +1,1733 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference disabled: AssistantResponseMutation auth slot function code 1`] = `
+"export function request(ctx) {
+  ctx.stash.hasAuth = true;
+  const isAuthorized = false;
+
+  if (util.authType() === 'User Pool Authorization') {
+    if (!isAuthorized) {
+      const authFilter = [];
+      let ownerClaim0 = ctx.identity['claims']['sub'];
+      ctx.args.owner = ownerClaim0;
+      const currentClaim1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (ownerClaim0 && currentClaim1) {
+        ownerClaim0 = ownerClaim0 + '::' + currentClaim1;
+        authFilter.push({ owner: { eq: ownerClaim0 } });
+      }
+      const role0_0 = ctx.identity['claims']['sub'];
+      if (role0_0) {
+        authFilter.push({ owner: { eq: role0_0 } });
+      }
+      // we can just reuse currentClaim1 here, but doing this (for now) to mirror the existing
+      // vtl auth resolver.
+      const role0_1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (role0_1) {
+        authFilter.push({ owner: { eq: role0_1 } });
+      }
+      if (authFilter.length !== 0) {
+        ctx.stash.authFilter = { or: authFilter };
+      }
+    }
+  }
+  if (!isAuthorized && ctx.stash.authFilter.length === 0) {
+    util.unauthorized();
+  }
+  return { version: '2018-05-29', payload: {} };
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference disabled: AssistantResponseMutation init slot function code 1`] = `
+"export function request(ctx) {
+  ctx.stash.graphqlApiEndpoint = '[[GRAPHQL_API_ENDPOINT]]';
+  ctx.stash.defaultValues = ctx.stash.defaultValues ?? {};
+  ctx.stash.defaultValues.id = util.autoId();
+  const createdAt = util.time.nowISO8601();
+  ctx.stash.defaultValues.createdAt = createdAt;
+  ctx.stash.defaultValues.updatedAt = createdAt;
+  return {
+    version: '2018-05-09',
+    payload: {},
+  };
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference disabled: AssistantResponseMutation resolver code 1`] = `
+{
+  "Fn::Join": [
+    "",
+    [
+      "export const request = (ctx) => {
+  ctx.stash.typeName = "Mutation";
+  ctx.stash.fieldName = "createAssistantResponsePirateChat";
+  ctx.stash.conditions = [];
+  ctx.stash.metadata = {};
+  ctx.stash.metadata.dataSourceType = "AMAZON_DYNAMODB";
+  ctx.stash.metadata.apiId = "",
+      {
+        "Fn::GetAtt": [
+          "GraphQLAPI",
+          "ApiId",
+        ],
+      },
+      "";
+  ctx.stash.connectionAttributes = {};
+  ctx.stash.tableName = "",
+      {
+        "Fn::Select": [
+          1,
+          {
+            "Fn::Split": [
+              "/",
+              {
+                "Fn::Select": [
+                  5,
+                  {
+                    "Fn::Split": [
+                      ":",
+                      {
+                        "Fn::GetAtt": [
+                          "ConversationMessagePirateChat",
+                          "Outputs.transformerrootstackConversationMessagePirateChatConversationMessagePirateChatTableFC80206BTableArn",
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      "";
+  ctx.stash.adminRoles = [];
+  return {};
+}
+
+export const response = (ctx) => {
+  return ctx.prev.result;
+};",
+    ],
+  ],
+}
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference disabled: AssistantResponseMutation verify session owner slot function code 1`] = `
+"export function request(ctx) {
+  const { authFilter } = ctx.stash;
+  const { conversationId } = ctx.args.input;
+
+  const query = {
+    expression: 'id = :id',
+    expressionValues: util.dynamodb.toMapValues({
+      ':id': conversationId,
+    }),
+  };
+
+  const filter = JSON.parse(util.transform.toDynamoDBFilterExpression(authFilter));
+
+  return {
+    operation: 'Query',
+    query,
+    filter,
+  };
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  }
+
+  if (ctx.result.items.length !== 0) {
+    return ctx.result.items[0];
+  }
+
+  util.error('Conversation not found', 'ResourceNotFound');
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference disabled: AssistantResponseStreamMutation auth slot function code 1`] = `
+"export function request(ctx) {
+  ctx.stash.hasAuth = true;
+  const isAuthorized = false;
+
+  if (util.authType() === 'User Pool Authorization') {
+    if (!isAuthorized) {
+      const authFilter = [];
+      let ownerClaim0 = ctx.identity['claims']['sub'];
+      ctx.args.owner = ownerClaim0;
+      const currentClaim1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (ownerClaim0 && currentClaim1) {
+        ownerClaim0 = ownerClaim0 + '::' + currentClaim1;
+        authFilter.push({ owner: { eq: ownerClaim0 } });
+      }
+      const role0_0 = ctx.identity['claims']['sub'];
+      if (role0_0) {
+        authFilter.push({ owner: { eq: role0_0 } });
+      }
+      // we can just reuse currentClaim1 here, but doing this (for now) to mirror the existing
+      // vtl auth resolver.
+      const role0_1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (role0_1) {
+        authFilter.push({ owner: { eq: role0_1 } });
+      }
+      if (authFilter.length !== 0) {
+        ctx.stash.authFilter = { or: authFilter };
+      }
+    }
+  }
+  if (!isAuthorized && ctx.stash.authFilter.length === 0) {
+    util.unauthorized();
+  }
+  return { version: '2018-05-29', payload: {} };
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference disabled: AssistantResponseStreamMutation data slot function code 1`] = `
+"import { util } from '@aws-appsync/utils';
+import * as ddb from '@aws-appsync/utils/dynamodb';
+
+/**
+ * Sends a request to the attached data source
+ * @param {import('@aws-appsync/utils').Context} ctx the context
+ * @returns {*} the request
+ */
+export function request(ctx) {
+  const {
+    conversationId,
+    associatedUserMessageId,
+    accumulatedTurnContent,
+    errors,
+  } = ctx.args.input;
+
+  const { owner } = ctx.args;
+
+  if (errors) {
+    runtime.earlyReturn({
+      id: \`\${associatedUserMessageId}#response\`,
+      conversationId,
+      associatedUserMessageId,
+      errors,
+      owner,
+    });
+  }
+  const { createdAt, updatedAt } = ctx.stash.defaultValues;
+
+  const assistantResponseId = \`\${associatedUserMessageId}#response\`;
+  const expression = 'SET #typename = :typename, #conversationId = :conversationId, #associatedUserMessageId = :associatedUserMessageId, #role = :role, #content = :content, #owner = :owner, #createdAt = if_not_exists(#createdAt, :createdAt), #updatedAt = :updatedAt';
+
+  const expressionValues = util.dynamodb.toMapValues({
+    ':typename': 'ConversationMessagePirateChat',
+    ':conversationId': conversationId,
+    ':associatedUserMessageId': associatedUserMessageId,
+    ':role': 'assistant',
+    ':content': accumulatedTurnContent,
+    ':owner': owner,
+    ':createdAt': createdAt,
+    ':updatedAt': updatedAt,
+  });
+
+  // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ReservedWords.html
+  const expressionNames = {
+    '#typename': '__typename',
+    '#conversationId': 'conversationId',
+    '#associatedUserMessageId': 'associatedUserMessageId',
+    '#role': 'role',
+    '#content': 'content',
+    '#owner': 'owner',
+    '#createdAt': 'createdAt',
+    '#updatedAt': 'updatedAt',
+  };
+
+  return {
+    operation: 'UpdateItem',
+    key: util.dynamodb.toMapValues({ id: assistantResponseId }),
+    update: {
+      expression,
+      expressionValues,
+      expressionNames,
+    },
+  };
+}
+
+/**
+ * Returns the resolver result
+ * @param {import('@aws-appsync/utils').Context} ctx the context
+ * @returns {*} the result
+ */
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  }
+  const streamId = \`\${ctx.args.input.associatedUserMessageId}#stream\`;
+  const { owner } = ctx.args;
+  const event = ctx.args.input;
+  const padding = generateRandomPadding();
+
+  const streamEvent = {
+    p: padding,
+    ...event,
+    __typename: 'ConversationMessageStreamPart',
+    id: streamId,
+    owner,
+  };
+
+  // TODO: The lambda event should provide the toolUse directly.
+  if (event.contentBlockToolUse && event.contentBlockToolUse.toolUse) {
+    streamEvent.contentBlockToolUse = event.contentBlockToolUse.toolUse;
+  }
+
+  return streamEvent;
+}
+
+function generateRandomPadding() {
+  const base = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  const rand = Math.floor(Math.random() * 36);
+  return base.slice(0, rand);
+}"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference disabled: AssistantResponseStreamMutation init slot function code 1`] = `
+{
+  "Fn::Join": [
+    "",
+    [
+      "export function request(ctx) {
+  ctx.stash.graphqlApiEndpoint = '",
+      {
+        "Fn::GetAtt": [
+          "GraphQLAPI",
+          "GraphQLUrl",
+        ],
+      },
+      "';
+  ctx.stash.defaultValues = ctx.stash.defaultValues ?? {};
+  ctx.stash.defaultValues.id = util.autoId();
+  const createdAt = util.time.nowISO8601();
+  ctx.stash.defaultValues.createdAt = createdAt;
+  ctx.stash.defaultValues.updatedAt = createdAt;
+  return {
+    version: '2018-05-09',
+    payload: {},
+  };
+}
+
+export function response(ctx) {
+  return {};
+}
+",
+    ],
+  ],
+}
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference disabled: AssistantResponseStreamMutation resolver code 1`] = `
+{
+  "Fn::Join": [
+    "",
+    [
+      "export const request = (ctx) => {
+  ctx.stash.typeName = "Mutation";
+  ctx.stash.fieldName = "createAssistantResponseStreamPirateChat";
+  ctx.stash.conditions = [];
+  ctx.stash.metadata = {};
+  ctx.stash.metadata.dataSourceType = "AMAZON_DYNAMODB";
+  ctx.stash.metadata.apiId = "",
+      {
+        "Fn::GetAtt": [
+          "GraphQLAPI",
+          "ApiId",
+        ],
+      },
+      "";
+  ctx.stash.connectionAttributes = {};
+  ctx.stash.tableName = "",
+      {
+        "Fn::Select": [
+          1,
+          {
+            "Fn::Split": [
+              "/",
+              {
+                "Fn::Select": [
+                  5,
+                  {
+                    "Fn::Split": [
+                      ":",
+                      {
+                        "Fn::GetAtt": [
+                          "ConversationMessagePirateChat",
+                          "Outputs.transformerrootstackConversationMessagePirateChatConversationMessagePirateChatTableFC80206BTableArn",
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      "";
+  ctx.stash.adminRoles = [];
+  return {};
+}
+
+export const response = (ctx) => {
+  return ctx.prev.result;
+};",
+    ],
+  ],
+}
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference disabled: AssistantResponseStreamMutation verify session owner slot function code 1`] = `
+"export function request(ctx) {
+  const { authFilter } = ctx.stash;
+  const { conversationId } = ctx.args.input;
+
+  const query = {
+    expression: 'id = :id',
+    expressionValues: util.dynamodb.toMapValues({
+      ':id': conversationId,
+    }),
+  };
+
+  const filter = JSON.parse(util.transform.toDynamoDBFilterExpression(authFilter));
+
+  return {
+    operation: 'Query',
+    query,
+    filter,
+  };
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  }
+
+  if (ctx.result.items.length !== 0) {
+    return ctx.result.items[0];
+  }
+
+  util.error('Conversation not found', 'ResourceNotFound');
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference disabled: AssistantResponseSubscription data slot function code 1`] = `
+"import { util, extensions } from '@aws-appsync/utils';
+
+export function request(ctx) {
+  ctx.stash.hasAuth = true;
+  const isAuthorized = false;
+
+  if (util.authType() === 'User Pool Authorization') {
+    if (!isAuthorized) {
+      const authFilter = [];
+      let ownerClaim0 = ctx.identity['claims']['sub'];
+      ctx.args.owner = ownerClaim0;
+      const currentClaim1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (ownerClaim0 && currentClaim1) {
+        ownerClaim0 = ownerClaim0 + '::' + currentClaim1;
+        authFilter.push({ owner: { eq: ownerClaim0 } });
+      }
+      const role0_0 = ctx.identity['claims']['sub'];
+      if (role0_0) {
+        authFilter.push({ owner: { eq: role0_0 } });
+      }
+      // we can just reuse currentClaim1 here, but doing this (for now) to mirror the existing
+      // vtl auth resolver.
+      const role0_1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (role0_1) {
+        authFilter.push({ owner: { eq: role0_1 } });
+      }
+      if (authFilter.length !== 0) {
+        ctx.stash.authFilter = { or: authFilter };
+      }
+    }
+  }
+  if (!isAuthorized && ctx.stash.authFilter.length === 0) {
+    util.unauthorized();
+  }
+  ctx.args.filter = { ...ctx.stash.authFilter, and: [{ conversationId: { eq: ctx.args.conversationId } }] };
+  return { version: '2018-05-29', payload: {} };
+}
+
+export function response(ctx) {
+  const subscriptionFilter = util.transform.toSubscriptionFilter(ctx.args.filter);
+  extensions.setSubscriptionFilter(subscriptionFilter);
+  return null;
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference disabled: AssistantResponseSubscription resolver code 1`] = `
+{
+  "Fn::Join": [
+    "",
+    [
+      "export const request = (ctx) => {
+  ctx.stash.typeName = "Subscription";
+  ctx.stash.fieldName = "onCreateAssistantResponsePirateChat";
+  ctx.stash.conditions = [];
+  ctx.stash.metadata = {};
+  ctx.stash.metadata.dataSourceType = "NONE";
+  ctx.stash.metadata.apiId = "",
+      {
+        "Fn::GetAtt": [
+          "GraphQLAPI",
+          "ApiId",
+        ],
+      },
+      "";
+  ctx.stash.connectionAttributes = {};
+  
+  ctx.stash.adminRoles = [];
+  return {};
+}
+
+export const response = (ctx) => {
+  return ctx.prev.result;
+};",
+    ],
+  ],
+}
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference disabled: ListConversationsInit resolver function code 1`] = `
+"import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
+  ctx.stash.metadata.index = 'gsi-Conversation.typename.updatedAt';
+  ctx.stash.modelQueryExpression = {
+      expression: '#typename = :typename',
+      expressionNames: {
+        '#typename': '__typename',
+      },
+      expressionValues: util.dynamodb.toMapValues({
+        ':typename': 'ConversationPirateChat',
+      }),
+    };
+  ctx.args.sortDirection = 'DESC';
+  return {};
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference disabled: ListMessagesInit resolver function code 1`] = `
+"import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
+  ctx.stash.metadata.index = 'gsi-ConversationMessage.conversationId.createdAt';
+  const conversationId = ctx.args?.filter?.conversationId?.eq;
+  if (conversationId) {
+    // If a conversationId was provided, we're going to execute a query
+    // rather than a scan. The index (gsi) we're performing this query on has
+    // a partitionKey of conversationId.
+    // We need to remove conversationId from the filter to prevent a
+    // DynamoDB exception:
+    // \`Filter Expression can only contain non-primary key attributes\`
+    delete ctx.args.filter.conversationId;
+    // If conversationId was the only filter, remove the filter object
+    // to prevent errors when the \`{}\` filter is combined with
+    // the \`authFilter\` further downstream.
+    if (Object.keys(ctx.args.filter).length === 0) {
+        delete ctx.args.filter;
+    }
+    ctx.stash.modelQueryExpression = {
+      expression: '#conversationId = :conversationId',
+      expressionNames: {
+        '#conversationId': 'conversationId',
+      },
+      expressionValues: util.dynamodb.toMapValues({
+        ':conversationId': conversationId,
+      }),
+    };
+  }
+  ctx.args.sortDirection = 'DESC';
+  return {};
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference disabled: ListMessagesPostDataLoad resolver function code 1`] = `
+"export function request(ctx) {
+  return {};
+}
+
+export function response(ctx) {
+  // Conversation messages are retrieved from DynamoDB in descending order by createdAt.
+  // We reverse them here because the most recent messages should be last in the list for clients:
+  // We can't use ascending order because we can miss the most recent messages due to limits / pagination.
+  const { items, ...rest } = ctx.prev.result;
+  const reversed = items.reverse();
+  return { items: reversed, ...rest };
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference disabled: SendMessageMutation auth slot function code 1`] = `
+"export function request(ctx) {
+  ctx.stash.hasAuth = true;
+  const isAuthorized = false;
+
+  if (util.authType() === 'User Pool Authorization') {
+    if (!isAuthorized) {
+      const authFilter = [];
+      let ownerClaim0 = ctx.identity['claims']['sub'];
+      ctx.args.owner = ownerClaim0;
+      const currentClaim1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (ownerClaim0 && currentClaim1) {
+        ownerClaim0 = ownerClaim0 + '::' + currentClaim1;
+        authFilter.push({ owner: { eq: ownerClaim0 } });
+      }
+      const role0_0 = ctx.identity['claims']['sub'];
+      if (role0_0) {
+        authFilter.push({ owner: { eq: role0_0 } });
+      }
+      // we can just reuse currentClaim1 here, but doing this (for now) to mirror the existing
+      // vtl auth resolver.
+      const role0_1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (role0_1) {
+        authFilter.push({ owner: { eq: role0_1 } });
+      }
+      if (authFilter.length !== 0) {
+        ctx.stash.authFilter = { or: authFilter };
+      }
+    }
+  }
+  if (!isAuthorized && ctx.stash.authFilter.length === 0) {
+    util.unauthorized();
+  }
+  return { version: '2018-05-29', payload: {} };
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference disabled: SendMessageMutation init slot function code 1`] = `
+{
+  "Fn::Join": [
+    "",
+    [
+      "export function request(ctx) {
+  ctx.stash.graphqlApiEndpoint = '",
+      {
+        "Fn::GetAtt": [
+          "GraphQLAPI",
+          "GraphQLUrl",
+        ],
+      },
+      "';
+  ctx.stash.defaultValues = ctx.stash.defaultValues ?? {};
+  ctx.stash.defaultValues.id = util.autoId();
+  const createdAt = util.time.nowISO8601();
+  ctx.stash.defaultValues.createdAt = createdAt;
+  ctx.stash.defaultValues.updatedAt = createdAt;
+  return {
+    version: '2018-05-09',
+    payload: {},
+  };
+}
+
+export function response(ctx) {
+  return {};
+}
+",
+    ],
+  ],
+}
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference disabled: SendMessageMutation invoke lambda slot function code 1`] = `
+"import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
+  const { args, request } = ctx;
+  const { graphqlApiEndpoint } = ctx.stash;
+  const userAgent = createUserAgent(request);
+
+  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message } p';
+
+  const streamingResponseMutation = {
+    name: 'createAssistantResponseStreamPirateChat',
+    inputTypeName: 'CreateConversationMessagePirateChatAssistantStreamingInput',
+    selectionSet,
+  };
+
+  const currentMessageId = ctx.stash.defaultValues.id;
+
+  const modelConfiguration = {
+    modelId: "anthropic.claude-3-haiku-20240307-v1:0",
+    systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
+    inferenceConfiguration: undefined,
+  };
+
+  const clientTools = args.toolConfiguration?.tools?.map((tool) => {
+    return { ...tool.toolSpec };
+  });
+  const dataTools = undefined;
+  const toolsConfiguration = { dataTools, clientTools };
+
+  const messageHistoryQuery = {
+    getQueryName: 'getConversationMessagePirateChat',
+    getQueryInputTypeName: 'ID',
+    listQueryName: 'listConversationMessagePirateChats',
+    listQueryInputTypeName: 'ModelConversationMessagePirateChatFilterInput',
+    listQueryLimit: undefined,
+  };
+
+  const authHeader = request.headers['authorization'];
+  const payload = {
+    conversationId: args.conversationId,
+    currentMessageId,
+    responseMutation: streamingResponseMutation,
+    graphqlApiEndpoint,
+    modelConfiguration,
+    request: {
+      headers: {
+        authorization: authHeader,
+        'x-amz-user-agent': userAgent,
+      }
+    },
+    messageHistoryQuery,
+    toolsConfiguration,
+    streamResponse: true,
+  };
+
+  return {
+    operation: 'Invoke',
+    payload,
+    invocationType: 'Event',
+  };
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.appendError(ctx.error.message, ctx.error.type);
+  }
+  const response = {
+    __typename: 'ConversationMessagePirateChat',
+    id: ctx.stash.defaultValues.id,
+    conversationId: ctx.args.conversationId,
+    role: 'user',
+    content: ctx.args.content,
+    aiContext: ctx.args.aiContext,
+    toolConfiguration: ctx.args.toolConfiguration,
+    createdAt: ctx.stash.defaultValues.createdAt,
+    updatedAt: ctx.stash.defaultValues.updatedAt,
+  };
+  return response;
+}
+
+function createUserAgent(request) {
+  const packageMetadata = 'amplify-graphql-conversation-transformer#0.0.0';
+  let userAgent = request.headers['x-amz-user-agent'];
+  if (userAgent) {
+    userAgent = \`\${userAgent} md/\${packageMetadata}\`;
+  } else {
+    userAgent = \`lib/\${packageMetadata}\`;
+  }
+  return userAgent;
+}"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference disabled: SendMessageMutation resolver code 1`] = `
+{
+  "Fn::Join": [
+    "",
+    [
+      "export const request = (ctx) => {
+  ctx.stash.typeName = "Mutation";
+  ctx.stash.fieldName = "pirateChat";
+  ctx.stash.conditions = [];
+  ctx.stash.metadata = {};
+  ctx.stash.metadata.dataSourceType = "AWS_LAMBDA";
+  ctx.stash.metadata.apiId = "",
+      {
+        "Fn::GetAtt": [
+          "GraphQLAPI",
+          "ApiId",
+        ],
+      },
+      "";
+  ctx.stash.connectionAttributes = {};
+  ctx.stash.lambdaFunctionArn = "",
+      {
+        "Fn::GetAtt": [
+          "PirateChatConversationDirectiveLambdaStack",
+          "Outputs.transformerrootstackPirateChatConversationDirectiveLambdaStackPirateChatDefaultConversationHandlerconversationHandlerFunction2B526F1AArn",
+        ],
+      },
+      "";
+  ctx.stash.adminRoles = [];
+  return {};
+}
+
+export const response = (ctx) => {
+  return ctx.prev.result;
+};",
+    ],
+  ],
+}
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference disabled: SendMessageMutation verify session owner slot function code 1`] = `
+"import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
+  const { authFilter } = ctx.stash;
+  const { conversationId } = ctx.args;
+
+  const filter = JSON.parse(util.transform.toDynamoDBFilterExpression(authFilter));
+
+  return {
+    operation: 'UpdateItem',
+    key: util.dynamodb.toMapValues({ id: conversationId }),
+    update: {
+      expression: 'SET #updatedAt = :updatedAt',
+      expressionValues: util.dynamodb.toMapValues({
+        ':updatedAt': ctx.stash.defaultValues.createdAt,
+      }),
+      expressionNames: {
+        '#updatedAt': 'updatedAt',
+      },
+    },
+    condition: filter
+  };
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error('Conversation not found', 'ResourceNotFound');
+  }
+
+  return ctx.result;
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference disabled: SendMessageMutation write message to table slot function code 1`] = `
+"import { util } from '@aws-appsync/utils';
+import * as ddb from '@aws-appsync/utils/dynamodb';
+
+export function request(ctx) {
+  const args = ctx.stash.transformedArgs ?? ctx.args;
+  const defaultValues = ctx.stash.defaultValues ?? {};
+  const message = {
+    __typename: 'ConversationMessagePirateChat',
+    role: 'user',
+    ...args,
+    ...defaultValues,
+  };
+  const id = ctx.stash.defaultValues.id;
+
+  return ddb.put({ key: { id }, item: message });
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  } else {
+    return ctx.result;
+  }
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference enabled: AssistantResponseMutation auth slot function code 1`] = `
+"export function request(ctx) {
+  ctx.stash.hasAuth = true;
+  const isAuthorized = false;
+
+  if (util.authType() === 'User Pool Authorization') {
+    if (!isAuthorized) {
+      const authFilter = [];
+      let ownerClaim0 = ctx.identity['claims']['sub'];
+      ctx.args.owner = ownerClaim0;
+      const currentClaim1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (ownerClaim0 && currentClaim1) {
+        ownerClaim0 = ownerClaim0 + '::' + currentClaim1;
+        authFilter.push({ owner: { eq: ownerClaim0 } });
+      }
+      const role0_0 = ctx.identity['claims']['sub'];
+      if (role0_0) {
+        authFilter.push({ owner: { eq: role0_0 } });
+      }
+      // we can just reuse currentClaim1 here, but doing this (for now) to mirror the existing
+      // vtl auth resolver.
+      const role0_1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (role0_1) {
+        authFilter.push({ owner: { eq: role0_1 } });
+      }
+      if (authFilter.length !== 0) {
+        ctx.stash.authFilter = { or: authFilter };
+      }
+    }
+  }
+  if (!isAuthorized && ctx.stash.authFilter.length === 0) {
+    util.unauthorized();
+  }
+  return { version: '2018-05-29', payload: {} };
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference enabled: AssistantResponseMutation init slot function code 1`] = `
+"export function request(ctx) {
+  ctx.stash.graphqlApiEndpoint = '[[GRAPHQL_API_ENDPOINT]]';
+  ctx.stash.defaultValues = ctx.stash.defaultValues ?? {};
+  ctx.stash.defaultValues.id = util.autoId();
+  const createdAt = util.time.nowISO8601();
+  ctx.stash.defaultValues.createdAt = createdAt;
+  ctx.stash.defaultValues.updatedAt = createdAt;
+  return {
+    version: '2018-05-09',
+    payload: {},
+  };
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference enabled: AssistantResponseMutation resolver code 1`] = `
+{
+  "Fn::Join": [
+    "",
+    [
+      "export const request = (ctx) => {
+  ctx.stash.typeName = "Mutation";
+  ctx.stash.fieldName = "createAssistantResponsePirateChat";
+  ctx.stash.conditions = [];
+  ctx.stash.metadata = {};
+  ctx.stash.metadata.dataSourceType = "AMAZON_DYNAMODB";
+  ctx.stash.metadata.apiId = "",
+      {
+        "Fn::GetAtt": [
+          "GraphQLAPI",
+          "ApiId",
+        ],
+      },
+      "";
+  ctx.stash.connectionAttributes = {};
+  ctx.stash.tableName = "",
+      {
+        "Fn::Select": [
+          1,
+          {
+            "Fn::Split": [
+              "/",
+              {
+                "Fn::Select": [
+                  5,
+                  {
+                    "Fn::Split": [
+                      ":",
+                      {
+                        "Fn::GetAtt": [
+                          "ConversationMessagePirateChat",
+                          "Outputs.transformerrootstackConversationMessagePirateChatConversationMessagePirateChatTableFC80206BTableArn",
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      "";
+  ctx.stash.adminRoles = [];
+  return {};
+}
+
+export const response = (ctx) => {
+  return ctx.prev.result;
+};",
+    ],
+  ],
+}
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference enabled: AssistantResponseMutation verify session owner slot function code 1`] = `
+"export function request(ctx) {
+  const { authFilter } = ctx.stash;
+  const { conversationId } = ctx.args.input;
+
+  const query = {
+    expression: 'id = :id',
+    expressionValues: util.dynamodb.toMapValues({
+      ':id': conversationId,
+    }),
+  };
+
+  const filter = JSON.parse(util.transform.toDynamoDBFilterExpression(authFilter));
+
+  return {
+    operation: 'Query',
+    query,
+    filter,
+  };
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  }
+
+  if (ctx.result.items.length !== 0) {
+    return ctx.result.items[0];
+  }
+
+  util.error('Conversation not found', 'ResourceNotFound');
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference enabled: AssistantResponseStreamMutation auth slot function code 1`] = `
+"export function request(ctx) {
+  ctx.stash.hasAuth = true;
+  const isAuthorized = false;
+
+  if (util.authType() === 'User Pool Authorization') {
+    if (!isAuthorized) {
+      const authFilter = [];
+      let ownerClaim0 = ctx.identity['claims']['sub'];
+      ctx.args.owner = ownerClaim0;
+      const currentClaim1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (ownerClaim0 && currentClaim1) {
+        ownerClaim0 = ownerClaim0 + '::' + currentClaim1;
+        authFilter.push({ owner: { eq: ownerClaim0 } });
+      }
+      const role0_0 = ctx.identity['claims']['sub'];
+      if (role0_0) {
+        authFilter.push({ owner: { eq: role0_0 } });
+      }
+      // we can just reuse currentClaim1 here, but doing this (for now) to mirror the existing
+      // vtl auth resolver.
+      const role0_1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (role0_1) {
+        authFilter.push({ owner: { eq: role0_1 } });
+      }
+      if (authFilter.length !== 0) {
+        ctx.stash.authFilter = { or: authFilter };
+      }
+    }
+  }
+  if (!isAuthorized && ctx.stash.authFilter.length === 0) {
+    util.unauthorized();
+  }
+  return { version: '2018-05-29', payload: {} };
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference enabled: AssistantResponseStreamMutation data slot function code 1`] = `
+"import { util } from '@aws-appsync/utils';
+import * as ddb from '@aws-appsync/utils/dynamodb';
+
+/**
+ * Sends a request to the attached data source
+ * @param {import('@aws-appsync/utils').Context} ctx the context
+ * @returns {*} the request
+ */
+export function request(ctx) {
+  const {
+    conversationId,
+    associatedUserMessageId,
+    accumulatedTurnContent,
+    errors,
+  } = ctx.args.input;
+
+  const { owner } = ctx.args;
+
+  if (errors) {
+    runtime.earlyReturn({
+      id: \`\${associatedUserMessageId}#response\`,
+      conversationId,
+      associatedUserMessageId,
+      errors,
+      owner,
+    });
+  }
+  const { createdAt, updatedAt } = ctx.stash.defaultValues;
+
+  const assistantResponseId = \`\${associatedUserMessageId}#response\`;
+  const expression = 'SET #typename = :typename, #conversationId = :conversationId, #associatedUserMessageId = :associatedUserMessageId, #role = :role, #content = :content, #owner = :owner, #createdAt = if_not_exists(#createdAt, :createdAt), #updatedAt = :updatedAt';
+
+  const expressionValues = util.dynamodb.toMapValues({
+    ':typename': 'ConversationMessagePirateChat',
+    ':conversationId': conversationId,
+    ':associatedUserMessageId': associatedUserMessageId,
+    ':role': 'assistant',
+    ':content': accumulatedTurnContent,
+    ':owner': owner,
+    ':createdAt': createdAt,
+    ':updatedAt': updatedAt,
+  });
+
+  // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ReservedWords.html
+  const expressionNames = {
+    '#typename': '__typename',
+    '#conversationId': 'conversationId',
+    '#associatedUserMessageId': 'associatedUserMessageId',
+    '#role': 'role',
+    '#content': 'content',
+    '#owner': 'owner',
+    '#createdAt': 'createdAt',
+    '#updatedAt': 'updatedAt',
+  };
+
+  return {
+    operation: 'UpdateItem',
+    key: util.dynamodb.toMapValues({ id: assistantResponseId }),
+    update: {
+      expression,
+      expressionValues,
+      expressionNames,
+    },
+  };
+}
+
+/**
+ * Returns the resolver result
+ * @param {import('@aws-appsync/utils').Context} ctx the context
+ * @returns {*} the result
+ */
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  }
+  const streamId = \`\${ctx.args.input.associatedUserMessageId}#stream\`;
+  const { owner } = ctx.args;
+  const event = ctx.args.input;
+  const padding = generateRandomPadding();
+
+  const streamEvent = {
+    p: padding,
+    ...event,
+    __typename: 'ConversationMessageStreamPart',
+    id: streamId,
+    owner,
+  };
+
+  // TODO: The lambda event should provide the toolUse directly.
+  if (event.contentBlockToolUse && event.contentBlockToolUse.toolUse) {
+    streamEvent.contentBlockToolUse = event.contentBlockToolUse.toolUse;
+  }
+
+  return streamEvent;
+}
+
+function generateRandomPadding() {
+  const base = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  const rand = Math.floor(Math.random() * 36);
+  return base.slice(0, rand);
+}"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference enabled: AssistantResponseStreamMutation init slot function code 1`] = `
+{
+  "Fn::Join": [
+    "",
+    [
+      "export function request(ctx) {
+  ctx.stash.graphqlApiEndpoint = '",
+      {
+        "Fn::GetAtt": [
+          "GraphQLAPI",
+          "GraphQLUrl",
+        ],
+      },
+      "';
+  ctx.stash.defaultValues = ctx.stash.defaultValues ?? {};
+  ctx.stash.defaultValues.id = util.autoId();
+  const createdAt = util.time.nowISO8601();
+  ctx.stash.defaultValues.createdAt = createdAt;
+  ctx.stash.defaultValues.updatedAt = createdAt;
+  return {
+    version: '2018-05-09',
+    payload: {},
+  };
+}
+
+export function response(ctx) {
+  return {};
+}
+",
+    ],
+  ],
+}
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference enabled: AssistantResponseStreamMutation resolver code 1`] = `
+{
+  "Fn::Join": [
+    "",
+    [
+      "export const request = (ctx) => {
+  ctx.stash.typeName = "Mutation";
+  ctx.stash.fieldName = "createAssistantResponseStreamPirateChat";
+  ctx.stash.conditions = [];
+  ctx.stash.metadata = {};
+  ctx.stash.metadata.dataSourceType = "AMAZON_DYNAMODB";
+  ctx.stash.metadata.apiId = "",
+      {
+        "Fn::GetAtt": [
+          "GraphQLAPI",
+          "ApiId",
+        ],
+      },
+      "";
+  ctx.stash.connectionAttributes = {};
+  ctx.stash.tableName = "",
+      {
+        "Fn::Select": [
+          1,
+          {
+            "Fn::Split": [
+              "/",
+              {
+                "Fn::Select": [
+                  5,
+                  {
+                    "Fn::Split": [
+                      ":",
+                      {
+                        "Fn::GetAtt": [
+                          "ConversationMessagePirateChat",
+                          "Outputs.transformerrootstackConversationMessagePirateChatConversationMessagePirateChatTableFC80206BTableArn",
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      "";
+  ctx.stash.adminRoles = [];
+  return {};
+}
+
+export const response = (ctx) => {
+  return ctx.prev.result;
+};",
+    ],
+  ],
+}
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference enabled: AssistantResponseStreamMutation verify session owner slot function code 1`] = `
+"export function request(ctx) {
+  const { authFilter } = ctx.stash;
+  const { conversationId } = ctx.args.input;
+
+  const query = {
+    expression: 'id = :id',
+    expressionValues: util.dynamodb.toMapValues({
+      ':id': conversationId,
+    }),
+  };
+
+  const filter = JSON.parse(util.transform.toDynamoDBFilterExpression(authFilter));
+
+  return {
+    operation: 'Query',
+    query,
+    filter,
+  };
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  }
+
+  if (ctx.result.items.length !== 0) {
+    return ctx.result.items[0];
+  }
+
+  util.error('Conversation not found', 'ResourceNotFound');
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference enabled: AssistantResponseSubscription data slot function code 1`] = `
+"import { util, extensions } from '@aws-appsync/utils';
+
+export function request(ctx) {
+  ctx.stash.hasAuth = true;
+  const isAuthorized = false;
+
+  if (util.authType() === 'User Pool Authorization') {
+    if (!isAuthorized) {
+      const authFilter = [];
+      let ownerClaim0 = ctx.identity['claims']['sub'];
+      ctx.args.owner = ownerClaim0;
+      const currentClaim1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (ownerClaim0 && currentClaim1) {
+        ownerClaim0 = ownerClaim0 + '::' + currentClaim1;
+        authFilter.push({ owner: { eq: ownerClaim0 } });
+      }
+      const role0_0 = ctx.identity['claims']['sub'];
+      if (role0_0) {
+        authFilter.push({ owner: { eq: role0_0 } });
+      }
+      // we can just reuse currentClaim1 here, but doing this (for now) to mirror the existing
+      // vtl auth resolver.
+      const role0_1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (role0_1) {
+        authFilter.push({ owner: { eq: role0_1 } });
+      }
+      if (authFilter.length !== 0) {
+        ctx.stash.authFilter = { or: authFilter };
+      }
+    }
+  }
+  if (!isAuthorized && ctx.stash.authFilter.length === 0) {
+    util.unauthorized();
+  }
+  ctx.args.filter = { ...ctx.stash.authFilter, and: [{ conversationId: { eq: ctx.args.conversationId } }] };
+  return { version: '2018-05-29', payload: {} };
+}
+
+export function response(ctx) {
+  const subscriptionFilter = util.transform.toSubscriptionFilter(ctx.args.filter);
+  extensions.setSubscriptionFilter(subscriptionFilter);
+  return null;
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference enabled: AssistantResponseSubscription resolver code 1`] = `
+{
+  "Fn::Join": [
+    "",
+    [
+      "export const request = (ctx) => {
+  ctx.stash.typeName = "Subscription";
+  ctx.stash.fieldName = "onCreateAssistantResponsePirateChat";
+  ctx.stash.conditions = [];
+  ctx.stash.metadata = {};
+  ctx.stash.metadata.dataSourceType = "NONE";
+  ctx.stash.metadata.apiId = "",
+      {
+        "Fn::GetAtt": [
+          "GraphQLAPI",
+          "ApiId",
+        ],
+      },
+      "";
+  ctx.stash.connectionAttributes = {};
+  
+  ctx.stash.adminRoles = [];
+  return {};
+}
+
+export const response = (ctx) => {
+  return ctx.prev.result;
+};",
+    ],
+  ],
+}
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference enabled: ListConversationsInit resolver function code 1`] = `
+"import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
+  ctx.stash.metadata.index = 'gsi-Conversation.typename.updatedAt';
+  ctx.stash.modelQueryExpression = {
+      expression: '#typename = :typename',
+      expressionNames: {
+        '#typename': '__typename',
+      },
+      expressionValues: util.dynamodb.toMapValues({
+        ':typename': 'ConversationPirateChat',
+      }),
+    };
+  ctx.args.sortDirection = 'DESC';
+  return {};
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference enabled: ListMessagesInit resolver function code 1`] = `
+"import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
+  ctx.stash.metadata.index = 'gsi-ConversationMessage.conversationId.createdAt';
+  const conversationId = ctx.args?.filter?.conversationId?.eq;
+  if (conversationId) {
+    // If a conversationId was provided, we're going to execute a query
+    // rather than a scan. The index (gsi) we're performing this query on has
+    // a partitionKey of conversationId.
+    // We need to remove conversationId from the filter to prevent a
+    // DynamoDB exception:
+    // \`Filter Expression can only contain non-primary key attributes\`
+    delete ctx.args.filter.conversationId;
+    // If conversationId was the only filter, remove the filter object
+    // to prevent errors when the \`{}\` filter is combined with
+    // the \`authFilter\` further downstream.
+    if (Object.keys(ctx.args.filter).length === 0) {
+        delete ctx.args.filter;
+    }
+    ctx.stash.modelQueryExpression = {
+      expression: '#conversationId = :conversationId',
+      expressionNames: {
+        '#conversationId': 'conversationId',
+      },
+      expressionValues: util.dynamodb.toMapValues({
+        ':conversationId': conversationId,
+      }),
+    };
+  }
+  ctx.args.sortDirection = 'DESC';
+  return {};
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference enabled: ListMessagesPostDataLoad resolver function code 1`] = `
+"export function request(ctx) {
+  return {};
+}
+
+export function response(ctx) {
+  // Conversation messages are retrieved from DynamoDB in descending order by createdAt.
+  // We reverse them here because the most recent messages should be last in the list for clients:
+  // We can't use ascending order because we can miss the most recent messages due to limits / pagination.
+  const { items, ...rest } = ctx.prev.result;
+  const reversed = items.reverse();
+  return { items: reversed, ...rest };
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference enabled: SendMessageMutation auth slot function code 1`] = `
+"export function request(ctx) {
+  ctx.stash.hasAuth = true;
+  const isAuthorized = false;
+
+  if (util.authType() === 'User Pool Authorization') {
+    if (!isAuthorized) {
+      const authFilter = [];
+      let ownerClaim0 = ctx.identity['claims']['sub'];
+      ctx.args.owner = ownerClaim0;
+      const currentClaim1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (ownerClaim0 && currentClaim1) {
+        ownerClaim0 = ownerClaim0 + '::' + currentClaim1;
+        authFilter.push({ owner: { eq: ownerClaim0 } });
+      }
+      const role0_0 = ctx.identity['claims']['sub'];
+      if (role0_0) {
+        authFilter.push({ owner: { eq: role0_0 } });
+      }
+      // we can just reuse currentClaim1 here, but doing this (for now) to mirror the existing
+      // vtl auth resolver.
+      const role0_1 = ctx.identity['claims']['username'] ?? ctx.identity['claims']['cognito:username'];
+      if (role0_1) {
+        authFilter.push({ owner: { eq: role0_1 } });
+      }
+      if (authFilter.length !== 0) {
+        ctx.stash.authFilter = { or: authFilter };
+      }
+    }
+  }
+  if (!isAuthorized && ctx.stash.authFilter.length === 0) {
+    util.unauthorized();
+  }
+  return { version: '2018-05-29', payload: {} };
+}
+
+export function response(ctx) {
+  return {};
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference enabled: SendMessageMutation init slot function code 1`] = `
+{
+  "Fn::Join": [
+    "",
+    [
+      "export function request(ctx) {
+  ctx.stash.graphqlApiEndpoint = '",
+      {
+        "Fn::GetAtt": [
+          "GraphQLAPI",
+          "GraphQLUrl",
+        ],
+      },
+      "';
+  ctx.stash.defaultValues = ctx.stash.defaultValues ?? {};
+  ctx.stash.defaultValues.id = util.autoId();
+  const createdAt = util.time.nowISO8601();
+  ctx.stash.defaultValues.createdAt = createdAt;
+  ctx.stash.defaultValues.updatedAt = createdAt;
+  return {
+    version: '2018-05-09',
+    payload: {},
+  };
+}
+
+export function response(ctx) {
+  return {};
+}
+",
+    ],
+  ],
+}
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference enabled: SendMessageMutation invoke lambda slot function code 1`] = `
+"import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
+  const { args, request } = ctx;
+  const { graphqlApiEndpoint } = ctx.stash;
+  const userAgent = createUserAgent(request);
+
+  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message } p';
+
+  const streamingResponseMutation = {
+    name: 'createAssistantResponseStreamPirateChat',
+    inputTypeName: 'CreateConversationMessagePirateChatAssistantStreamingInput',
+    selectionSet,
+  };
+
+  const currentMessageId = ctx.stash.defaultValues.id;
+
+  const modelConfiguration = {
+    modelId: "anthropic.claude-3-haiku-20240307-v1:0",
+    systemPrompt: "You are a helpful chatbot. Answer questions to the best of your ability.",
+    inferenceConfiguration: undefined,
+  };
+
+  const clientTools = args.toolConfiguration?.tools?.map((tool) => {
+    return { ...tool.toolSpec };
+  });
+  const dataTools = undefined;
+  const toolsConfiguration = { dataTools, clientTools };
+
+  const messageHistoryQuery = {
+    getQueryName: 'getConversationMessagePirateChat',
+    getQueryInputTypeName: 'ID',
+    listQueryName: 'listConversationMessagePirateChats',
+    listQueryInputTypeName: 'ModelConversationMessagePirateChatFilterInput',
+    listQueryLimit: undefined,
+  };
+
+  const authHeader = request.headers['authorization'];
+  const payload = {
+    conversationId: args.conversationId,
+    currentMessageId,
+    responseMutation: streamingResponseMutation,
+    graphqlApiEndpoint,
+    modelConfiguration,
+    request: {
+      headers: {
+        authorization: authHeader,
+        'x-amz-user-agent': userAgent,
+      }
+    },
+    messageHistoryQuery,
+    toolsConfiguration,
+    streamResponse: true,
+  };
+
+  return {
+    operation: 'Invoke',
+    payload,
+    invocationType: 'Event',
+  };
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.appendError(ctx.error.message, ctx.error.type);
+  }
+  const response = {
+    __typename: 'ConversationMessagePirateChat',
+    id: ctx.stash.defaultValues.id,
+    conversationId: ctx.args.conversationId,
+    role: 'user',
+    content: ctx.args.content,
+    aiContext: ctx.args.aiContext,
+    toolConfiguration: ctx.args.toolConfiguration,
+    createdAt: ctx.stash.defaultValues.createdAt,
+    updatedAt: ctx.stash.defaultValues.updatedAt,
+  };
+  return response;
+}
+
+function createUserAgent(request) {
+  const packageMetadata = 'amplify-graphql-conversation-transformer#0.0.0';
+  let userAgent = request.headers['x-amz-user-agent'];
+  if (userAgent) {
+    userAgent = \`\${userAgent} md/\${packageMetadata}\`;
+  } else {
+    userAgent = \`lib/\${packageMetadata}\`;
+  }
+  return userAgent;
+}"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference enabled: SendMessageMutation resolver code 1`] = `
+{
+  "Fn::Join": [
+    "",
+    [
+      "export const request = (ctx) => {
+  ctx.stash.typeName = "Mutation";
+  ctx.stash.fieldName = "pirateChat";
+  ctx.stash.conditions = [];
+  ctx.stash.metadata = {};
+  ctx.stash.metadata.dataSourceType = "AWS_LAMBDA";
+  ctx.stash.metadata.apiId = "",
+      {
+        "Fn::GetAtt": [
+          "GraphQLAPI",
+          "ApiId",
+        ],
+      },
+      "";
+  ctx.stash.connectionAttributes = {};
+  ctx.stash.lambdaFunctionArn = "",
+      {
+        "Fn::GetAtt": [
+          "PirateChatConversationDirectiveLambdaStack",
+          "Outputs.transformerrootstackPirateChatConversationDirectiveLambdaStackPirateChatDefaultConversationHandlerconversationHandlerFunction2B526F1AArn",
+        ],
+      },
+      "";
+  ctx.stash.adminRoles = [];
+  return {};
+}
+
+export const response = (ctx) => {
+  return ctx.prev.result;
+};",
+    ],
+  ],
+}
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference enabled: SendMessageMutation verify session owner slot function code 1`] = `
+"import { util } from '@aws-appsync/utils';
+
+export function request(ctx) {
+  const { authFilter } = ctx.stash;
+  const { conversationId } = ctx.args;
+
+  const filter = JSON.parse(util.transform.toDynamoDBFilterExpression(authFilter));
+
+  return {
+    operation: 'UpdateItem',
+    key: util.dynamodb.toMapValues({ id: conversationId }),
+    update: {
+      expression: 'SET #updatedAt = :updatedAt',
+      expressionValues: util.dynamodb.toMapValues({
+        ':updatedAt': ctx.stash.defaultValues.createdAt,
+      }),
+      expressionNames: {
+        '#updatedAt': 'updatedAt',
+      },
+    },
+    condition: filter
+  };
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error('Conversation not found', 'ResourceNotFound');
+  }
+
+  return ctx.result;
+}
+"
+`;
+
+exports[`ConversationTransformer valid schemas should transform conversation route with crossRegionInference enabled: SendMessageMutation write message to table slot function code 1`] = `
+"import { util } from '@aws-appsync/utils';
+import * as ddb from '@aws-appsync/utils/dynamodb';
+
+export function request(ctx) {
+  const args = ctx.stash.transformedArgs ?? ctx.args;
+  const defaultValues = ctx.stash.defaultValues ?? {};
+  const message = {
+    __typename: 'ConversationMessagePirateChat',
+    role: 'user',
+    ...args,
+    ...defaultValues,
+  };
+  const id = ctx.stash.defaultValues.id;
+
+  return ddb.put({ key: { id }, item: message });
+}
+
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  } else {
+    return ctx.result;
+  }
+}
+"
+`;
+
 exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration: AssistantResponseMutation auth slot function code 1`] = `
 "export function request(ctx) {
   ctx.stash.hasAuth = true;
