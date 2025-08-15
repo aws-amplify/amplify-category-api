@@ -4,6 +4,7 @@ const name = 'conversation';
 const definition = /* GraphQL */ `
   directive @${name}(
     aiModel: String!
+    crossRegionInference: Boolean
     systemPrompt: String!
     auth: ConversationAuth!
     functionName: String
