@@ -161,7 +161,7 @@
     "zod"
   ],
   "dependencies": {
-    "@aws-amplify/ai-constructs": "^1.5.3",
+    "@aws-amplify/ai-constructs": "0.0.0-test-20250815173825",
     "@aws-amplify/backend-output-schemas": "^1.0.0",
     "@aws-amplify/backend-output-storage": "^1.0.0",
     "@aws-amplify/graphql-api-construct": "1.20.3",
