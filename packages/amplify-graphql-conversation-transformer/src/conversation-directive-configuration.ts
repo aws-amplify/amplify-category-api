@@ -15,6 +15,7 @@ export type ConversationDirectiveConfiguration = {
 
   // Raw Directive Input
   aiModel: string;
+  crossRegionInference: boolean;
   systemPrompt: string;
   inferenceConfiguration: ConversationInferenceConfiguration | undefined;
   tools: ToolDefinition[];
