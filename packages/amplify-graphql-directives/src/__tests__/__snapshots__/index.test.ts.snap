@@ -230,6 +230,7 @@ Object {
   "definition": "
   directive @conversation(
     aiModel: String!
+    crossRegionInference: Boolean
     systemPrompt: String!
     auth: ConversationAuth!
     functionName: String

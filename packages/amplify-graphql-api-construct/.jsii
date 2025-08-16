@@ -6,7 +6,7 @@
     ]
   },
   "bundled": {
-    "@aws-amplify/ai-constructs": "^1.5.3",
+    "@aws-amplify/ai-constructs": "0.0.0-test-20250815225305",
     "@aws-amplify/backend-output-schemas": "^1.0.0",
     "@aws-amplify/backend-output-storage": "^1.0.0",
     "@aws-amplify/graphql-auth-transformer": "4.2.4",
@@ -9538,6 +9538,6 @@
       "symbolId": "src/model-datasource-strategy-types:VpcConfig"
     }
   },
-  "version": "1.20.2",
-  "fingerprint": "aDNB//dUpAsPLLJ4XZrlf+6g6v9U0csDaDMmfFsQWHs="
+  "version": "1.20.3",
+  "fingerprint": "PKiTD0Iwc0naWBJYrgklJFs+pueDg7BGh383JZjJHgE="
 }

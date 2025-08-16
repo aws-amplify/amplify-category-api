@@ -150,7 +150,7 @@ export class ConversationResolverGenerator {
     } else if (directive.functionName) {
       return this.setupExistingFunctionDataSource(directive.functionName);
     } else {
-      return this.setupDefaultConversationHandler(functionStack, capitalizedFieldName, directive.aiModel);
+      return this.setupDefaultConversationHandler(functionStack, capitalizedFieldName, directive.aiModel, directive.crossRegionInference);
     }
   }
 
@@ -183,6 +183,7 @@ export class ConversationResolverGenerator {
     functionStack: cdk.Stack,
     capitalizedFieldName: string,
     modelId: string,
+    crossRegionInference: boolean,
   ): { functionDataSourceId: string; referencedFunction: IFunction } {
     const defaultConversationHandler = new conversation.ConversationHandlerFunction(
       functionStack,
@@ -191,6 +192,7 @@ export class ConversationResolverGenerator {
         models: [
           {
             modelId,
+            crossRegionInference,
           },
         ],
         outputStorageStrategy: this.outputStorageStrategy,

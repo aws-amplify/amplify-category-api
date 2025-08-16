@@ -6,7 +6,7 @@
     ]
   },
   "bundled": {
-    "@aws-amplify/ai-constructs": "^1.5.3",
+    "@aws-amplify/ai-constructs": "0.0.0-test-20250815225305",
     "@aws-amplify/backend-output-schemas": "^1.0.0",
     "@aws-amplify/backend-output-storage": "^1.0.0",
     "@aws-amplify/graphql-auth-transformer": "4.2.4",
@@ -134,7 +134,7 @@
     "zod": "^3.22.2"
   },
   "dependencies": {
-    "@aws-amplify/graphql-api-construct": "1.20.2",
+    "@aws-amplify/graphql-api-construct": "1.20.3",
     "aws-cdk-lib": "^2.187.0",
     "constructs": "^10.3.0"
   },
@@ -4134,6 +4134,6 @@
     }
   },
   "types": {},
-  "version": "1.16.2",
-  "fingerprint": "IOJjYqGZSGFivVjQmBeKIJH81jWsCkVqqJDm4OdrH2A="
+  "version": "1.16.3",
+  "fingerprint": "gL9xKcYOOhOo853cnxecbnGCXr0uFKlrJroqN9F1BsE="
 }

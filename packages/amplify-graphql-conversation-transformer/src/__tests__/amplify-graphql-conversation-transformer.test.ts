@@ -42,6 +42,8 @@ describe('ConversationTransformer', () => {
         'conversation route with model query tool including relationships',
         'conversation-route-model-query-tool-with-relationships.graphql',
       ],
+      ['conversation route with crossRegionInference enabled', 'conversation-route-with-cross-region-inference-enabled.graphql'],
+      ['conversation route with crossRegionInference disabled', 'conversation-route-with-cross-region-inference-disabled.graphql'],
     ])('should transform %s', (_, schemaFile) => {
       const routeName = 'pirateChat';
       const inputSchema = getSchema(schemaFile, { ROUTE_NAME: routeName });
