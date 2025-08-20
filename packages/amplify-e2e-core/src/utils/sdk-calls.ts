@@ -1,111 +1,141 @@
-import { config, DynamoDB, S3, CognitoIdentityServiceProvider, Lambda, AppSync, CloudFormation, AmplifyBackend, IAM } from 'aws-sdk';
+import { DynamoDBClient, DescribeTableCommand, ListTagsOfResourceCommand } from '@aws-sdk/client-dynamodb';
+import {
+  S3Client,
+  HeadBucketCommand,
+  ListObjectVersionsCommand,
+  DeleteObjectsCommand,
+  DeleteBucketCommand,
+  GetBucketCorsCommand,
+} from '@aws-sdk/client-s3';
+import { LambdaClient, GetFunctionCommand } from '@aws-sdk/client-lambda';
+import {
+  IAMClient,
+  ListRolesCommand,
+  GetRolePolicyCommand,
+  ListRolePoliciesCommand,
+  ListAttachedRolePoliciesCommand,
+} from '@aws-sdk/client-iam';
 import _ from 'lodash';
 
+// Note: Some services are not available in the current AWS SDK v3 setup
+// These functions will need to be updated when the packages are available
+
 export const getDDBTable = async (tableName: string, region: string) => {
-  const service = new DynamoDB({ region });
+  const client = new DynamoDBClient({ region });
   if (tableName) {
-    return await service.describeTable({ TableName: tableName }).promise();
+    return await client.send(new DescribeTableCommand({ TableName: tableName }));
   }
 };
 
 export const getDDBTableTags = async (tableName: string, region: string) => {
-  const service = new DynamoDB({ region });
-  return await service.listTagsOfResource({ ResourceArn: tableName }).promise();
+  const client = new DynamoDBClient({ region });
+  return await client.send(new ListTagsOfResourceCommand({ ResourceArn: tableName }));
 };
 
 export const checkIfBucketExists = async (bucketName: string, region: string) => {
-  const service = new S3({ region });
-  return await service.headBucket({ Bucket: bucketName }).promise();
+  const client = new S3Client({ region });
+  return await client.send(new HeadBucketCommand({ Bucket: bucketName }));
 };
 
 export const bucketNotExists = async (bucket: string) => {
-  const s3 = new S3();
-  const params = {
-    Bucket: bucket,
-    $waiter: { maxAttempts: 10, delay: 30 },
-  };
-  try {
-    await s3.waitFor('bucketNotExists', params).promise();
-    return true;
-  } catch (error) {
-    if (error.statusCode === 200) {
-      return false;
+  const s3 = new S3Client({});
+  const maxAttempts = 10;
+  const delay = 30000; // 30 seconds
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    try {
+      await s3.send(new HeadBucketCommand({ Bucket: bucket }));
+      // If no error, bucket exists, wait and try again
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    } catch (error) {
+      if (error.name === 'NotFound' || error.$metadata?.httpStatusCode === 404) {
+        return true; // Bucket doesn't exist
+      }
+      throw error;
     }
-    throw error;
   }
+  return false; // Bucket still exists after max attempts
 };
 
-export const deleteS3Bucket = async (bucket: string, providedS3Client: S3 | undefined = undefined) => {
-  const s3 = providedS3Client ? providedS3Client : new S3();
-  let continuationToken: Required<Pick<S3.ListObjectVersionsOutput, 'KeyMarker' | 'VersionIdMarker'>> = undefined;
-  const objectKeyAndVersion = <S3.ObjectIdentifier[]>[];
-  let truncated = false;
+export const deleteS3Bucket = async (bucket: string, providedS3Client: S3Client | undefined = undefined) => {
+  const s3 = providedS3Client ? providedS3Client : new S3Client({});
+  let keyMarker: string | undefined;
+  let versionIdMarker: string | undefined;
+  const objectKeyAndVersion: { Key: string; VersionId?: string }[] = [];
+  let isTruncated = false;
+
   do {
-    const results = await s3
-      .listObjectVersions({
-        Bucket: bucket,
-        ...continuationToken,
-      })
-      .promise();
+    const command = new ListObjectVersionsCommand({
+      Bucket: bucket,
+      KeyMarker: keyMarker,
+      VersionIdMarker: versionIdMarker,
+    });
+    const results = await s3.send(command);
 
     results.Versions?.forEach(({ Key, VersionId }) => {
-      objectKeyAndVersion.push({ Key, VersionId });
+      if (Key) {
+        objectKeyAndVersion.push({ Key, VersionId });
+      }
     });
 
     results.DeleteMarkers?.forEach(({ Key, VersionId }) => {
-      objectKeyAndVersion.push({ Key, VersionId });
+      if (Key) {
+        objectKeyAndVersion.push({ Key, VersionId });
+      }
     });
 
-    continuationToken = { KeyMarker: results.NextKeyMarker, VersionIdMarker: results.NextVersionIdMarker };
-    truncated = results.IsTruncated;
-  } while (truncated);
+    keyMarker = results.NextKeyMarker;
+    versionIdMarker = results.NextVersionIdMarker;
+    isTruncated = results.IsTruncated || false;
+  } while (isTruncated);
+
   const chunkedResult = _.chunk(objectKeyAndVersion, 1000);
-  const deleteReq = chunkedResult
-    .map((r) => {
-      return {
+  const deletePromises = chunkedResult.map((objects) => {
+    return s3.send(
+      new DeleteObjectsCommand({
         Bucket: bucket,
         Delete: {
-          Objects: r,
+          Objects: objects,
           Quiet: true,
         },
-      };
-    })
-    .map((delParams) => s3.deleteObjects(delParams).promise());
-  await Promise.all(deleteReq);
-  await s3
-    .deleteBucket({
-      Bucket: bucket,
-    })
-    .promise();
+      }),
+    );
+  });
+
+  await Promise.all(deletePromises);
+  await s3.send(new DeleteBucketCommand({ Bucket: bucket }));
   await bucketNotExists(bucket);
 };
 
-export const getUserPool = async (userpoolId, region) => {
-  config.update({ region });
-  let res;
+// TODO: Migrate these functions when AWS SDK v3 packages are available
+export const getUserPool = async (userpoolId: string, region: string) => {
+  // Temporarily using require to avoid import errors
+  const { CognitoIdentityServiceProvider } = require('aws-sdk');
+  const client = new CognitoIdentityServiceProvider({ region });
   try {
-    res = await new CognitoIdentityServiceProvider().describeUserPool({ UserPoolId: userpoolId }).promise();
+    return await client.describeUserPool({ UserPoolId: userpoolId }).promise();
   } catch (e) {
     console.log(e);
   }
-  return res;
 };
 
 export const getLambdaFunction = async (functionName: string, region: string) => {
-  const lambda = new Lambda({ region });
+  const client = new LambdaClient({ region });
   try {
-    return await lambda.getFunction({ FunctionName: functionName }).promise();
+    return await client.send(new GetFunctionCommand({ FunctionName: functionName }));
   } catch (e) {
     console.log(e);
   }
 };
 
 export const getUserPoolClients = async (userPoolId: string, clientIds: string[], region: string) => {
-  const provider = new CognitoIdentityServiceProvider({ region });
+  // Temporarily using require to avoid import errors
+  const { CognitoIdentityServiceProvider } = require('aws-sdk');
+  const client = new CognitoIdentityServiceProvider({ region });
   const res = [];
   try {
     for (let i = 0; i < clientIds.length; i++) {
-      const clientData = await provider
+      const clientData = await client
         .describeUserPoolClient({
           UserPoolId: userPoolId,
           ClientId: clientIds[i],
@@ -120,40 +150,57 @@ export const getUserPoolClients = async (userPoolId: string, clientIds: string[]
 };
 
 export const getTable = async (tableName: string, region: string) => {
-  const service = new DynamoDB({ region });
-  return await service.describeTable({ TableName: tableName }).promise();
+  const client = new DynamoDBClient({ region });
+  return await client.send(new DescribeTableCommand({ TableName: tableName }));
 };
 
 export const putItemInTable = async (tableName: string, region: string, item: unknown) => {
+  // Temporarily using require to avoid import errors
+  const { DynamoDB } = require('aws-sdk');
   const ddb = new DynamoDB.DocumentClient({ region });
   return await ddb.put({ TableName: tableName, Item: item }).promise();
 };
 
 export const scanTable = async (tableName: string, region: string) => {
+  // Temporarily using require to avoid import errors
+  const { DynamoDB } = require('aws-sdk');
   const ddb = new DynamoDB.DocumentClient({ region });
   return await ddb.scan({ TableName: tableName }).promise();
 };
 
 export const getAppSyncApi = async (appSyncApiId: string, region: string) => {
-  const service = new AppSync({ region });
-  return await service.getGraphqlApi({ apiId: appSyncApiId }).promise();
+  // Temporarily using require to avoid import errors
+  const { AppSync } = require('aws-sdk');
+  const client = new AppSync({ region });
+  return await client.getGraphqlApi({ apiId: appSyncApiId }).promise();
 };
 
 export const listAppSyncFunctions = async (appSyncApiId: string, region: string) => {
-  const service = new AppSync({ region });
-  return await service.listFunctions({ apiId: appSyncApiId }).promise();
+  // Temporarily using require to avoid import errors
+  const { AppSync } = require('aws-sdk');
+  const client = new AppSync({ region });
+  return await client.listFunctions({ apiId: appSyncApiId }).promise();
 };
 
 export const describeCloudFormationStack = async (stackName: string, region: string, profileConfig?: any) => {
-  const service = profileConfig ? new CloudFormation({ ...profileConfig, region }) : new CloudFormation({ region });
-  return (await service.describeStacks({ StackName: stackName }).promise()).Stacks.find(
-    (stack) => stack.StackName === stackName || stack.StackId === stackName,
-  );
+  // Temporarily using require to avoid import errors
+  const { CloudFormation } = require('aws-sdk');
+  const clientConfig = profileConfig ? { ...profileConfig, region } : { region };
+  const client = new CloudFormation(clientConfig);
+  const result = await client.describeStacks({ StackName: stackName }).promise();
+  return result.Stacks?.find((stack) => stack.StackName === stackName || stack.StackId === stackName);
 };
 
 export const getNestedStackID = async (stackName: string, region: string, logicalId: string): Promise<string> => {
-  const cfnClient = new CloudFormation({ region });
-  const resource = await cfnClient.describeStackResources({ StackName: stackName, LogicalResourceId: logicalId }).promise();
+  // Temporarily using require to avoid import errors
+  const { CloudFormation } = require('aws-sdk');
+  const client = new CloudFormation({ region });
+  const resource = await client
+    .describeStackResources({
+      StackName: stackName,
+      LogicalResourceId: logicalId,
+    })
+    .promise();
   return resource?.StackResources?.[0].PhysicalResourceId ?? null;
 };
 
@@ -164,35 +211,38 @@ export const getNestedStackID = async (stackName: string, region: string, logica
  * @param StackId id of the parent stack
  * @returns
  */
-
 export const getTableResourceId = async (region: string, table: string, StackId: string): Promise<string | null> => {
-  const cfnClient = new CloudFormation({ region });
-  const apiResources = await cfnClient
+  // Temporarily using require to avoid import errors
+  const { CloudFormation } = require('aws-sdk');
+  const client = new CloudFormation({ region });
+  const apiResources = await client
     .describeStackResources({
       StackName: StackId,
     })
     .promise();
-  const resource = apiResources.StackResources.find((stackResource) => table === stackResource.LogicalResourceId);
+  const resource = apiResources.StackResources?.find((stackResource) => table === stackResource.LogicalResourceId);
   if (resource) {
-    const tableStack = await cfnClient.describeStacks({ StackName: resource.PhysicalResourceId }).promise();
+    const tableStack = await client.describeStacks({ StackName: resource.PhysicalResourceId }).promise();
     if (tableStack?.Stacks?.length > 0) {
-      const tableName = tableStack.Stacks[0].Outputs.find((out) => out.OutputKey === `GetAtt${resource.LogicalResourceId}TableName`);
-      return tableName.OutputValue;
+      const tableName = tableStack.Stacks[0].Outputs?.find((out) => out.OutputKey === `GetAtt${resource.LogicalResourceId}TableName`);
+      return tableName?.OutputValue || null;
     }
   }
   return null;
 };
 
 export const setupAmplifyAdminUI = async (appId: string, region: string) => {
-  const amplifyBackend = new AmplifyBackend({ region });
-
-  return await amplifyBackend.createBackendConfig({ AppId: appId }).promise();
+  // Temporarily using require to avoid import errors
+  const { AmplifyBackend } = require('aws-sdk');
+  const client = new AmplifyBackend({ region });
+  return await client.createBackendConfig({ AppId: appId }).promise();
 };
 
 export const getAmplifyBackendJobStatus = async (jobId: string, appId: string, envName: string, region: string) => {
-  const amplifyBackend = new AmplifyBackend({ region });
-
-  return await amplifyBackend
+  // Temporarily using require to avoid import errors
+  const { AmplifyBackend } = require('aws-sdk');
+  const client = new AmplifyBackend({ region });
+  return await client
     .getBackendJob({
       JobId: jobId,
       AppId: appId,
@@ -202,20 +252,20 @@ export const getAmplifyBackendJobStatus = async (jobId: string, appId: string, e
 };
 
 export const listRoleNamesContaining = async (searchString: string, region: string): Promise<string[]> => {
-  const service = new IAM({ region });
+  const client = new IAMClient({ region });
 
   const roles: string[] = [];
   let isTruncated = true;
   let marker: string | undefined;
 
   while (isTruncated) {
-    const params = marker ? { Marker: marker } : {};
-    const response = await service.listRoles(params).promise();
+    const command = new ListRolesCommand(marker ? { Marker: marker } : {});
+    const response = await client.send(command);
 
-    const matchingRoles = response.Roles.filter((role) => role.RoleName.includes(searchString));
-    roles.push(...matchingRoles.map((r) => r.RoleName));
+    const matchingRoles = response.Roles?.filter((role) => role.RoleName?.includes(searchString)) || [];
+    roles.push(...matchingRoles.map((r) => r.RoleName!));
 
-    isTruncated = response.IsTruncated;
+    isTruncated = response.IsTruncated || false;
     marker = response.Marker;
   }
 
@@ -223,25 +273,36 @@ export const listRoleNamesContaining = async (searchString: string, region: stri
 };
 
 export const getRolePolicy = async (roleName: string, policyName: string, region: string): Promise<any> => {
-  const service = new IAM({ region });
-  const rawDocument = (await service.getRolePolicy({ PolicyName: policyName, RoleName: roleName }).promise()).PolicyDocument;
-  const decodedDocument = decodeURIComponent(rawDocument);
-  return JSON.parse(decodedDocument);
+  const client = new IAMClient({ region });
+  const response = await client.send(
+    new GetRolePolicyCommand({
+      PolicyName: policyName,
+      RoleName: roleName,
+    }),
+  );
+  const rawDocument = response.PolicyDocument;
+  if (rawDocument) {
+    const decodedDocument = decodeURIComponent(rawDocument);
+    return JSON.parse(decodedDocument);
+  }
+  return null;
 };
 
 export const listRolePolicies = async (roleName: string, region: string): Promise<string[]> => {
-  const service = new IAM({ region });
-  return (await service.listRolePolicies({ RoleName: roleName }).promise()).PolicyNames;
+  const client = new IAMClient({ region });
+  const response = await client.send(new ListRolePoliciesCommand({ RoleName: roleName }));
+  return response.PolicyNames || [];
 };
 
 export const listAttachedRolePolicies = async (roleName: string, region: string) => {
-  const service = new IAM({ region });
-  return (await service.listAttachedRolePolicies({ RoleName: roleName }).promise()).AttachedPolicies;
+  const client = new IAMClient({ region });
+  const response = await client.send(new ListAttachedRolePoliciesCommand({ RoleName: roleName }));
+  return response.AttachedPolicies || [];
 };
 
 export const getBucketNameFromModelSchemaS3Uri = (uri: string | null): string | null => {
   const pattern = /(s3:\/\/)(.*)(\/.*)/;
-  const matches = uri.match(pattern);
+  const matches = uri?.match(pattern);
   // Sample Input Uri looks like 's3://bucket-name/model-schema.graphql'.
   // The output of string.match returns an array which looks like the below. The third element is the bucket name.
   // [
@@ -261,10 +322,11 @@ export const getBucketNameFromModelSchemaS3Uri = (uri: string | null): string | 
 };
 
 export const getBucketCorsPolicy = async (bucketName: string, region: string): Promise<Record<string, any>[]> => {
-  const service = new S3({ region });
-  const params = {
-    Bucket: bucketName,
-  };
-  const corsPolicy = await service.getBucketCors(params).promise();
-  return corsPolicy.CORSRules;
+  const client = new S3Client({ region });
+  const response = await client.send(
+    new GetBucketCorsCommand({
+      Bucket: bucketName,
+    }),
+  );
+  return response.CORSRules || [];
 };

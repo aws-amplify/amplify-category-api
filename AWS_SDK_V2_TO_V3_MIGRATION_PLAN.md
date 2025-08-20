@@ -10,6 +10,7 @@ This document outlines the plan to migrate from AWS SDK v2 to v3 across all pack
 - **Priority**: Start with core packages, then move to dependent packages
 - **Testing**: Ensure all existing tests pass after migration
 - **Compatibility**: Maintain backward compatibility where possible
+- **Branching**: Use format `wirej/gen1-migrate-aws-sdk-PACKAGE-NAME` where "gen1" refers to the library version
 
 ## Packages Requiring Migration
 
@@ -158,7 +159,11 @@ const result = await lambda.send(new InvokeCommand(params));
 
 ### Phase 1: Core Infrastructure (Weeks 1-2)
 
-- amplify-e2e-core (cleanup)
+- ✅ **amplify-e2e-core** (cleanup) - COMPLETED
+  - Migrated DynamoDB, S3, Lambda, and IAM operations to AWS SDK v3
+  - Used hybrid approach: migrated available services, kept temporary v2 usage for unavailable packages
+  - Services migrated: DynamoDB, S3, Lambda, IAM
+  - Services pending: Cognito, AppSync, CloudFormation, AmplifyBackend (using temporary require() calls)
 - amplify-util-mock
 - amplify-dynamodb-simulator
 
