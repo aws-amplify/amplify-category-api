@@ -202,6 +202,29 @@ const result = await lambda.send(new InvokeCommand(params));
 
 ## Notes for Implementation
 
+### Branching Convention
+
+- Format: `wirej/gen1-migrate-aws-sdk-PACKAGE-NAME`
+- Example: `wirej/gen1-migrate-aws-sdk-e2e-core`
+- "gen1" refers to the version of the library being migrated
+- "wirej/" is the developer prefix
+
+### Commit Message Format
+
+- Use conventional commits: `feat(scope): description`
+- Scope must match the exact package name from the allowed list
+- Example: `feat(amplify-category-api-e2e-core): migrate to AWS SDK v3`
+
+### Hybrid Migration Approach
+
+For packages where not all AWS SDK v3 clients are available:
+
+1. Migrate services that have v3 clients available
+2. Keep temporary v2 usage with `require('aws-sdk')` for unavailable services
+3. Add both v3 clients and temporary v2 dependency to package.json
+4. Document which services are fully migrated vs. temporary
+5. Plan to complete migration when missing v3 clients become available
+
 ### Code Review Focus
 
 - Proper error handling migration
