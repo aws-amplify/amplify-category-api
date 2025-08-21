@@ -58,11 +58,11 @@ export class CloudFormationClient {
     };
   }
 
-  async updateStack(name: string, defParams: any = {}, addAppSyncApiName = true): Promise<UpdateStackCommandOutput> {
+  async updateStack(_template: any, name: string, defParams: any = {}, addAppSyncApiName = true): Promise<UpdateStackCommandOutput> {
     return this.client.send(new UpdateStackCommand(this.buildDeployInputs(name, defParams, addAppSyncApiName)));
   }
 
-  async createStack(name: string, defParams: any = {}, addAppSyncApiName = true): Promise<CreateStackCommandOutput> {
+  async createStack(_template: any, name: string, defParams: any = {}, addAppSyncApiName = true): Promise<CreateStackCommandOutput> {
     return this.client.send(new CreateStackCommand(this.buildDeployInputs(name, defParams, addAppSyncApiName)));
   }
 

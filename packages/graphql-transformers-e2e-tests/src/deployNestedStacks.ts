@@ -160,7 +160,7 @@ export async function deploy(
 
   try {
     const operation = initialDeployment ? 'createStack' : 'updateStack';
-    await cf[operation](stackName, {
+    await cf[operation]({}, stackName, {
       ...params,
       S3DeploymentBucket: bucketName,
       S3DeploymentRootKey: s3RootKey,
