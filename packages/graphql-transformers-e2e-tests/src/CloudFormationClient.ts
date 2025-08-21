@@ -2,10 +2,15 @@
 import {
   CloudFormationClient as BaseCloudFormationClient,
   CreateStackCommand,
+  CreateStackCommandInput,
   CreateStackCommandOutput,
+  Parameter,
   DeleteStackCommand,
   DeleteStackCommandOutput,
   DescribeStacksCommand,
+  UpdateStackCommand,
+  UpdateStackCommandInput,
+  UpdateStackCommandOutput,
   StackStatus,
   Stack,
 } from '@aws-sdk/client-cloudformation';
@@ -18,18 +23,8 @@ export class CloudFormationClient {
     this.client = new BaseCloudFormationClient({ region: this.region });
   }
 
-  async updateStack(template: any, name: string, defParams: any = {}, addAppSyncApiName = true): Promise<CreateStackCommandOutput> {
-    return this.createStack(template, name, defParams, addAppSyncApiName, true);
-  }
-
-  async createStack(
-    _template: any,
-    name: string,
-    defParams: any = {},
-    addAppSyncApiName = true,
-    _isUpdate = false,
-  ): Promise<CreateStackCommandOutput> {
-    const params = [];
+  buildParams(name: string, defParams: Record<string, string>, addAppSyncApiName: boolean): Parameter[] {
+    const params: Parameter[] = [];
 
     if (addAppSyncApiName === true) {
       params.push({
@@ -45,16 +40,30 @@ export class CloudFormationClient {
       });
     }
 
-    const templateURL = `https://s3.amazonaws.com/${defParams.S3DeploymentBucket}/${defParams.S3DeploymentRootKey}/rootStack.json`;
+    return params;
+  }
 
-    return this.client.send(
-      new CreateStackCommand({
-        StackName: name,
-        Capabilities: ['CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
-        Parameters: params,
-        TemplateURL: templateURL,
-      }),
-    );
+  buildDeployInputs(
+    name: string,
+    defParams: Record<string, string>,
+    addAppSyncApiName: boolean,
+  ): CreateStackCommandInput & UpdateStackCommandInput {
+    const params = this.buildParams(name, defParams, addAppSyncApiName);
+    const templateURL = `https://s3.amazonaws.com/${defParams.S3DeploymentBucket}/${defParams.S3DeploymentRootKey}/rootStack.json`;
+    return {
+      StackName: name,
+      Capabilities: ['CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
+      Parameters: params,
+      TemplateURL: templateURL,
+    };
+  }
+
+  async updateStack(name: string, defParams: any = {}, addAppSyncApiName = true): Promise<UpdateStackCommandOutput> {
+    return this.client.send(new UpdateStackCommand(this.buildDeployInputs(name, defParams, addAppSyncApiName)));
+  }
+
+  async createStack(name: string, defParams: any = {}, addAppSyncApiName = true): Promise<CreateStackCommandOutput> {
+    return this.client.send(new CreateStackCommand(this.buildDeployInputs(name, defParams, addAppSyncApiName)));
   }
 
   async deleteStack(name: string): Promise<DeleteStackCommandOutput> {

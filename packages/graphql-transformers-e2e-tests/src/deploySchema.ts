@@ -62,6 +62,7 @@ export const getSchemaDeployer = async (testId: string, transform: (schema: stri
     deploy: async (schema: string) => {
       const deployTimestamp = moment().format('YYYYMMDDHHmmss');
       const out = transform(schema);
+
       const finishedStack = await deploy(
         customS3Client,
         cf,
