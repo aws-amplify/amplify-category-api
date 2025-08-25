@@ -189,10 +189,10 @@ const getOrphanRdsInstances = async (account: AWSAccountInfo, region: string): P
     const staleInstances = listRdsInstanceResponse.DBInstances.filter(testInstanceStalenessFilter);
     return staleInstances.map((i) => ({ identifier: i.DBInstanceIdentifier, region }));
   } catch (e) {
-    if (e?.Code === 'InvalidClientTokenId') {
+    if (e?.name === 'InvalidClientTokenId') {
       // Do not fail the cleanup and continue
       // This is due to either child account or parent account not available in that region
-      console.log(`Listing RDS instances for account ${account.accountId}-${region} failed with error with code ${e?.Code}. Skipping.`);
+      console.log(`Listing RDS instances for account ${account.accountId}-${region} failed with error with code ${e?.name}. Skipping.`);
       return [];
     } else {
       throw e;
@@ -220,9 +220,9 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
     amplifyApps = await amplifyClient.send(listAppsCommand);
   } catch (e) {
     console.log('Error keys', Object.keys(e));
-    if (e?.Code === 'UnrecognizedClientException') {
+    if (e?.name === 'UnrecognizedClientException') {
       // Do not fail the cleanup and continue
-      console.log(`Listing apps for account ${account.accountId}-${region} failed with error with code ${e?.Code}. Skipping.`);
+      console.log(`Listing apps for account ${account.accountId}-${region} failed with error with code ${e?.name}. Skipping.`);
       return result;
     } else {
       throw e;
@@ -318,9 +318,9 @@ const getStacks = async (account: AWSAccountInfo, region: string): Promise<Stack
       }),
     );
   } catch (e) {
-    if (e?.Code === 'InvalidClientTokenId') {
+    if (e?.name === 'InvalidClientTokenId') {
       // Do not fail the cleanup and continue
-      console.log(`Listing stacks for account ${account.accountId}-${region} failed with error with code ${e?.Code}. Skipping.`);
+      console.log(`Listing stacks for account ${account.accountId}-${region} failed with error with code ${e?.name}. Skipping.`);
       return results;
     } else {
       throw e;
@@ -392,12 +392,12 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
       }
     } catch (e) {
       // TODO: Why do we process the bucket even with these particular errors?
-      if (e.Code === 'NoSuchTagSet' || e.Code === 'NoSuchBucket') {
+      if (e.name === 'NoSuchTagSet' || e.name === 'NoSuchBucket') {
         result.push({
           name: bucket.Name,
           region: region ?? 'us-east-1',
         });
-      } else if (e.Code === 'InvalidToken') {
+      } else if (e.name === 'InvalidToken') {
         // We see some buckets in some accounts that were somehow created in an opt-in region different from the one to which the account is
         // actually opted in. We don't quite know how this happened, but for now, we'll make a note of the inconsistency and continue
         // processing the rest of the buckets.
@@ -538,7 +538,7 @@ const deleteAmplifyApp = async (account: AWSAccountInfo, accountIndex: number, a
     await amplifyClient.send(deleteAppCommand);
   } catch (e) {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting Amplify App ${appId} failed with the following error`, e);
-    if (e.Code === 'ExpiredTokenException') {
+    if (e.name === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
   }
@@ -565,7 +565,7 @@ const deleteIamRole = async (account: AWSAccountInfo, accountIndex: number, role
     await iamClient.send(new DeleteRoleCommand({ RoleName: roleName }));
   } catch (e) {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting iam role ${roleName} failed with error ${e.message}`);
-    if (e.Code === 'ExpiredTokenException') {
+    if (e.name === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
   }
@@ -589,7 +589,7 @@ const detachIamAttachedRolePolicy = async (
     await iamClient.send(new DetachRolePolicyCommand({ RoleName: roleName, PolicyArn: policy.PolicyArn }));
   } catch (e) {
     console.log(`${generateAccountInfo(account, accountIndex)} Detach iam role policy ${policy.PolicyName} failed with error ${e.message}`);
-    if (e.Code === 'ExpiredTokenException') {
+    if (e.name === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
   }
@@ -608,7 +608,7 @@ const deleteIamRolePolicy = async (account: AWSAccountInfo, accountIndex: number
     await iamClient.send(new DeleteRolePolicyCommand({ RoleName: roleName, PolicyName: policyName }));
   } catch (e) {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting iam role policy ${policyName} failed with error ${e.message}`);
-    if (e.Code === 'ExpiredTokenException') {
+    if (e.name === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
   }
@@ -629,7 +629,7 @@ const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucke
     await deleteS3Bucket(name, regionalizedS3Client);
   } catch (e) {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting bucket ${name} failed with error ${e.message}`);
-    if (e.Code === 'ExpiredTokenException') {
+    if (e.name === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
   }
@@ -647,7 +647,7 @@ const deleteRdsInstance = async (account: AWSAccountInfo, accountIndex: number, 
     await rdsClient.send(new DeleteDBInstanceCommand({ DBInstanceIdentifier: identifier, SkipFinalSnapshot: true }));
   } catch (e) {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting instance ${identifier} failed with error ${e.message}`);
-    if (e.Code === 'ExpiredTokenException') {
+    if (e.name === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
   }
@@ -667,7 +667,7 @@ const deleteCfnStack = async (account: AWSAccountInfo, accountIndex: number, sta
     await waitUntilStackDeleteComplete({ client: cfnClient, maxWaitTime: 600 }, { StackName: stackName });
   } catch (e) {
     console.log(`Deleting CloudFormation stack ${stackName} failed with error ${e.message}`);
-    if (e.Code === 'ExpiredTokenException') {
+    if (e.name === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
   }
