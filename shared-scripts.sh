@@ -290,8 +290,8 @@ function _installCLIFromLocalRegistry {
     # set longer timeout to avoid socket timeout error
     npm config set fetch-retries 5
     npm config set fetch-timeout 600000
-    npm config set fetch-retry-mintimeout 30000
-    npm config set fetch-retry-maxtimeout 180000
+    npm config set fetch-retry-mintimeout 40000
+    npm config set fetch-retry-maxtimeout 240000
     npm config set maxsockets 1
     npm install -g @aws-amplify/cli-internal
     echo "using Amplify CLI version: "$(amplify --version)
