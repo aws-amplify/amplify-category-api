@@ -1,55 +1,15 @@
-import { default as S3 } from 'aws-sdk/clients/s3';
+import { S3Client } from './S3Client';
 import { resolveTestRegion } from './testSetup';
 
 const region = resolveTestRegion();
-const awsS3Client = new S3({ region: region });
+const customS3Client = new S3Client(region);
 
-const emptyBucket = async (bucket: string) => {
-  let listObjects = await awsS3Client
-    .listObjectsV2({
-      Bucket: bucket,
-    })
-    .promise();
-  while (true) {
-    try {
-      const objectIds = listObjects.Contents.map((content) => ({
-        Key: content.Key,
-      }));
-      const response = await awsS3Client
-        .deleteObjects({
-          Bucket: bucket,
-          Delete: {
-            Objects: objectIds,
-          },
-        })
-        .promise();
-    } catch (e) {
-      console.error(`Error deleting objects: ${e}`);
-    }
-    if (listObjects.NextContinuationToken) {
-      listObjects = await awsS3Client
-        .listObjectsV2({
-          Bucket: bucket,
-          ContinuationToken: listObjects.NextContinuationToken,
-        })
-        .promise();
-    } else {
-      break;
-    }
-  }
-  try {
-    await awsS3Client
-      .deleteBucket({
-        Bucket: bucket,
-      })
-      .promise();
-    const params = {
-      Bucket: bucket,
-      $waiter: { maxAttempts: 10 },
-    };
-    await awsS3Client.waitFor('bucketNotExists', params).promise();
-  } catch (e) {
-    console.error(`Error deleting bucket: ${e}`);
-  }
+/**
+ * Empties *and **deletes*** a bucket.
+ */
+const emptyBucket = async (bucket: string): Promise<void> => {
+  await customS3Client.emptyBucket(bucket);
+  await customS3Client.deleteBucket(bucket);
 };
+
 export default emptyBucket;

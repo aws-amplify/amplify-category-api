@@ -11,15 +11,19 @@ import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs-extra';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { CodeBuild, S3, SharedIniFileCredentials } from 'aws-sdk';
+import { CodeBuildClient, BatchGetBuildBatchesCommand } from '@aws-sdk/client-codebuild';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { S3Client, ListObjectsCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { fromIni } from '@aws-sdk/credential-provider-ini';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { SingleBar, Presets } from 'cli-progress';
 import execa from 'execa';
 
 const E2E_PROFILE_NAME = 'AmplifyAPIE2EProd';
-const credentials = new SharedIniFileCredentials({ profile: E2E_PROFILE_NAME });
-const s3 = new S3({ credentials });
-const codeBuild = new CodeBuild({ credentials, region: 'us-east-1' });
+const credentials = fromIni({ profile: E2E_PROFILE_NAME });
+const s3 = new S3Client({ credentials });
+const codeBuild = new CodeBuildClient({ credentials, region: 'us-east-1' });
 const progressBar = new SingleBar({}, Presets.shades_classic);
 
 type BuildStatus = 'FAILED' | 'FAULT' | 'IN_PROGRESS' | 'STOPPED' | 'SUCCEEDED' | 'TIMED_OUT';
@@ -85,7 +89,7 @@ const generateIndexFile = (directory: string, artifacts: TestArtifact[]): void =
  * @param batchId the batch to look up.
  */
 const retrieveArtifactsForBatch = async (batchId: string): Promise<TestArtifact[]> => {
-  const { buildBatches } = await codeBuild.batchGetBuildBatches({ ids: [batchId] }).promise();
+  const { buildBatches } = await codeBuild.send(new BatchGetBuildBatchesCommand({ ids: [batchId] }));
   return (buildBatches || [])
     .flatMap((batch) =>
       (batch.buildGroups || []).map(
@@ -105,7 +109,7 @@ const downloadSingleTestArtifact = async (tempDir: string, artifact: Required<Te
   fs.mkdirSync(artifactDownloadPath);
   const [Bucket, ...rest] = artifact.artifactLocation.split(':::')[1].split('/');
   const Prefix = rest.join('/');
-  const listObjectsResponse = await s3.listObjects({ Bucket, Prefix }).promise();
+  const listObjectsResponse = await s3.send(new ListObjectsCommand({ Bucket, Prefix }));
 
   const hasKey = (x: any): x is { Key: string } => x.Key !== undefined;
 
@@ -114,14 +118,15 @@ const downloadSingleTestArtifact = async (tempDir: string, artifact: Required<Te
   }
 
   return Promise.all(
-    listObjectsResponse.Contents.filter(hasKey).map(({ Key }) => {
+    listObjectsResponse.Contents.filter(hasKey).map(async ({ Key }) => {
       const filePath = path.join(artifactDownloadPath, Key.split('/').slice(3).join('/'));
       fs.ensureDirSync(path.dirname(filePath));
+      const getObjectResponse = await s3.send(new GetObjectCommand({ Bucket, Key }));
       return new Promise((resolve, reject) => {
         const writer = fs.createWriteStream(filePath);
-        s3.getObject({ Bucket, Key }).createReadStream().pipe(writer);
-        writer.on('finish', resolve);
-        writer.on('close', resolve);
+        (getObjectResponse.Body as NodeJS.ReadableStream).pipe(writer);
+        writer.on('finish', () => resolve(undefined));
+        writer.on('close', () => resolve(undefined));
         writer.on('error', reject);
       });
     }),

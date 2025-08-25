@@ -1,11 +1,17 @@
-import { IAM } from 'aws-sdk';
+import { IAMClient, GetRoleCommand } from '@aws-sdk/client-iam';
 
-export const toBeIAMRoleWithArn = async (roleName: string, arn?: string) => {
-  const iam = new IAM();
+export const toBeIAMRoleWithArn = async (
+  roleName: string,
+  arn?: string,
+): Promise<{
+  message: () => string;
+  pass: boolean;
+}> => {
+  const iam = new IAMClient();
   let pass: boolean;
   let message: string;
   try {
-    const { Role: role } = await iam.getRole({ RoleName: roleName }).promise();
+    const { Role: role } = await iam.send(new GetRoleCommand({ RoleName: roleName }));
     if (arn) {
       pass = role.Arn === arn;
       if (pass) {
@@ -28,18 +34,26 @@ export const toBeIAMRoleWithArn = async (roleName: string, arn?: string) => {
   return result;
 };
 
-export const toHaveValidPolicyConditionMatchingIdpId = async (roleName: string, idpId: string) => {
-  let pass: boolean = false;
-  let message: string = '';
+export const toHaveValidPolicyConditionMatchingIdpId = async (
+  roleName: string,
+  idpId: string,
+): Promise<{
+  message: () => string;
+  pass: boolean;
+}> => {
+  let pass = false;
+  let message = '';
 
   try {
-    const iam = new IAM({
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-      sessionToken: process.env.AWS_SESSION_TOKEN,
+    const iam = new IAMClient({
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        sessionToken: process.env.AWS_SESSION_TOKEN,
+      },
     });
 
-    const { Role: role } = await iam.getRole({ RoleName: roleName }).promise();
+    const { Role: role } = await iam.send(new GetRoleCommand({ RoleName: roleName }));
     const assumeRolePolicyDocument = JSON.parse(decodeURIComponent(role.AssumeRolePolicyDocument));
 
     pass = assumeRolePolicyDocument.Statement.some((statement) => {

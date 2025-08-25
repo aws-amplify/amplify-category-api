@@ -1,7 +1,9 @@
+/* eslint-disable */
 import * as fs from 'fs';
 import * as path from 'path';
 import { DeploymentResources } from 'graphql-transformer-core';
-import { CognitoIdentityServiceProvider, CognitoIdentity } from 'aws-sdk';
+import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
+import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 import { deleteUserPool, deleteIdentityPool } from './cognitoUtils';
 import { CloudFormationClient } from './CloudFormationClient';
 import { S3Client } from './S3Client';
@@ -47,13 +49,7 @@ async function uploadDirectory(client: S3Client, directory: string, bucket: stri
       const fileKey = s3Location;
       await client.wait(0.25, () => Promise.resolve());
       const fileContents = await fs.readFileSync(contentPath);
-      await client.client
-        .putObject({
-          Bucket: bucket,
-          Key: fileKey,
-          Body: fileContents,
-        })
-        .promise();
+      await client.putObject(bucket, fileKey, fileContents);
       const formattedName = file
         .split('.')
         .map((s, i) => (i > 0 ? `${s[0].toUpperCase()}${s.slice(1, s.length)}` : s))
@@ -164,7 +160,7 @@ export async function deploy(
 
   try {
     const operation = initialDeployment ? 'createStack' : 'updateStack';
-    await cf[operation](deploymentResources.rootStack, stackName, {
+    await cf[operation]({}, stackName, {
       ...params,
       S3DeploymentBucket: bucketName,
       S3DeploymentRootKey: s3RootKey,
@@ -204,8 +200,8 @@ export const cleanupStackAfterTest = async (
   bucketName: string,
   stackName: string | undefined,
   cf: CloudFormationClient,
-  cognitoParams?: { cognitoClient: CognitoIdentityServiceProvider; userPoolId: string },
-  identityParams?: { identityClient: CognitoIdentity; identityPoolId: string },
+  cognitoParams?: { cognitoClient: CognitoIdentityProviderClient; userPoolId: string },
+  identityParams?: { identityClient: CognitoIdentityClient; identityPoolId: string },
 ) => {
   try {
     if (stackName) {
@@ -224,7 +220,7 @@ export const cleanupStackAfterTest = async (
       await cf.waitForStack(stackName);
     }
   } catch (e) {
-    if (!(e.code === 'ValidationError' && e.message === `Stack with id ${stackName} does not exist`)) {
+    if (!(e.Code === 'ValidationError' && e.message === `Stack with id ${stackName} does not exist`)) {
       throw e;
     }
   }
