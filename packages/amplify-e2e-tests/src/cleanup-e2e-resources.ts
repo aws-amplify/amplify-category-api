@@ -189,13 +189,13 @@ const getOrphanRdsInstances = async (account: AWSAccountInfo, region: string): P
     const staleInstances = listRdsInstanceResponse.DBInstances.filter(testInstanceStalenessFilter);
     return staleInstances.map((i) => ({ identifier: i.DBInstanceIdentifier, region }));
   } catch (e) {
-    console.log('Error', JSON.stringify(e));
     if (e?.name === 'InvalidClientTokenId') {
       // Do not fail the cleanup and continue
       // This is due to either child account or parent account not available in that region
       console.log(`Listing RDS instances for account ${account.accountId}-${region} failed with error with code ${e?.name}. Skipping.`);
       return [];
     } else {
+      console.log('Irrecoverable error in getOrphanedRdsInstances', JSON.stringify(e));
       throw e;
     }
   }
@@ -220,12 +220,12 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
     const listAppsCommand = new ListAppsCommand({ maxResults: 50 });
     amplifyApps = await amplifyClient.send(listAppsCommand);
   } catch (e) {
-    console.log('Error', JSON.stringify(e));
     if (e?.name === 'UnrecognizedClientException') {
       // Do not fail the cleanup and continue
       console.log(`Listing apps for account ${account.accountId}-${region} failed with error with code ${e?.name}. Skipping.`);
       return result;
     } else {
+      console.log('Irrecoverable error in getAmplifyApps', JSON.stringify(e));
       throw e;
     }
   }
@@ -242,7 +242,6 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
         }
       }
     } catch (e) {
-      console.log('Error', JSON.stringify(e));
       console.log(e);
     }
     result.push({
@@ -320,12 +319,12 @@ const getStacks = async (account: AWSAccountInfo, region: string): Promise<Stack
       }),
     );
   } catch (e) {
-    console.log('Error', JSON.stringify(e));
     if (e?.name === 'InvalidClientTokenId') {
       // Do not fail the cleanup and continue
       console.log(`Listing stacks for account ${account.accountId}-${region} failed with error with code ${e?.name}. Skipping.`);
       return results;
     } else {
+      console.log('Irrecoverable error in getStacks', JSON.stringify(e));
       throw e;
     }
   }
@@ -358,7 +357,6 @@ const getJobCodeBuildDetails = async (jobIds: string[]): Promise<Build[]> => {
     const { builds } = await client.send(new BatchGetBuildsCommand({ ids: jobIds }));
     return builds || [];
   } catch (e) {
-    console.log('Error', JSON.stringify(e));
     console.log(e);
     return [];
   }
@@ -395,7 +393,6 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
         });
       }
     } catch (e) {
-      console.log('Error', JSON.stringify(e));
       // TODO: Why do we process the bucket even with these particular errors?
       if (e.name === 'NoSuchTagSet' || e.name === 'NoSuchBucket') {
         result.push({
@@ -408,6 +405,7 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
         // processing the rest of the buckets.
         console.error(`Skipping processing ${account.accountId}, bucket ${bucket.Name}`, e);
       } else {
+        console.log('Irrecoverable error in getS3Buckets', JSON.stringify(e));
         throw e;
       }
     }
