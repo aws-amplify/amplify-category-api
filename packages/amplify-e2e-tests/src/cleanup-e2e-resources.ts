@@ -189,6 +189,7 @@ const getOrphanRdsInstances = async (account: AWSAccountInfo, region: string): P
     const staleInstances = listRdsInstanceResponse.DBInstances.filter(testInstanceStalenessFilter);
     return staleInstances.map((i) => ({ identifier: i.DBInstanceIdentifier, region }));
   } catch (e) {
+    console.log('Error', JSON.stringify(e));
     if (e?.name === 'InvalidClientTokenId') {
       // Do not fail the cleanup and continue
       // This is due to either child account or parent account not available in that region
@@ -219,7 +220,7 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
     const listAppsCommand = new ListAppsCommand({ maxResults: 50 });
     amplifyApps = await amplifyClient.send(listAppsCommand);
   } catch (e) {
-    console.log('Error keys', Object.keys(e));
+    console.log('Error', JSON.stringify(e));
     if (e?.name === 'UnrecognizedClientException') {
       // Do not fail the cleanup and continue
       console.log(`Listing apps for account ${account.accountId}-${region} failed with error with code ${e?.name}. Skipping.`);
@@ -241,6 +242,7 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
         }
       }
     } catch (e) {
+      console.log('Error', JSON.stringify(e));
       console.log(e);
     }
     result.push({
@@ -318,6 +320,7 @@ const getStacks = async (account: AWSAccountInfo, region: string): Promise<Stack
       }),
     );
   } catch (e) {
+    console.log('Error', JSON.stringify(e));
     if (e?.name === 'InvalidClientTokenId') {
       // Do not fail the cleanup and continue
       console.log(`Listing stacks for account ${account.accountId}-${region} failed with error with code ${e?.name}. Skipping.`);
@@ -355,6 +358,7 @@ const getJobCodeBuildDetails = async (jobIds: string[]): Promise<Build[]> => {
     const { builds } = await client.send(new BatchGetBuildsCommand({ ids: jobIds }));
     return builds || [];
   } catch (e) {
+    console.log('Error', JSON.stringify(e));
     console.log(e);
     return [];
   }
@@ -391,6 +395,7 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
         });
       }
     } catch (e) {
+      console.log('Error', JSON.stringify(e));
       // TODO: Why do we process the bucket even with these particular errors?
       if (e.name === 'NoSuchTagSet' || e.name === 'NoSuchBucket') {
         result.push({
@@ -537,6 +542,7 @@ const deleteAmplifyApp = async (account: AWSAccountInfo, accountIndex: number, a
     const deleteAppCommand = new DeleteAppCommand({ appId });
     await amplifyClient.send(deleteAppCommand);
   } catch (e) {
+    console.log('Error', JSON.stringify(e));
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting Amplify App ${appId} failed with the following error`, e);
     if (e.name === 'ExpiredTokenException') {
       handleExpiredTokenException();
@@ -564,6 +570,7 @@ const deleteIamRole = async (account: AWSAccountInfo, accountIndex: number, role
     await deleteRolePolicies(account, accountIndex, roleName);
     await iamClient.send(new DeleteRoleCommand({ RoleName: roleName }));
   } catch (e) {
+    console.log('Error', JSON.stringify(e));
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting iam role ${roleName} failed with error ${e.message}`);
     if (e.name === 'ExpiredTokenException') {
       handleExpiredTokenException();
@@ -607,6 +614,7 @@ const deleteIamRolePolicy = async (account: AWSAccountInfo, accountIndex: number
     const iamClient = new IAMClient({ credentials: account.credentials });
     await iamClient.send(new DeleteRolePolicyCommand({ RoleName: roleName, PolicyName: policyName }));
   } catch (e) {
+    console.log('Error', JSON.stringify(e));
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting iam role policy ${policyName} failed with error ${e.message}`);
     if (e.name === 'ExpiredTokenException') {
       handleExpiredTokenException();
@@ -646,6 +654,7 @@ const deleteRdsInstance = async (account: AWSAccountInfo, accountIndex: number, 
     const rdsClient = new RDSClient({ credentials: account.credentials, region });
     await rdsClient.send(new DeleteDBInstanceCommand({ DBInstanceIdentifier: identifier, SkipFinalSnapshot: true }));
   } catch (e) {
+    console.log('Error', JSON.stringify(e));
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting instance ${identifier} failed with error ${e.message}`);
     if (e.name === 'ExpiredTokenException') {
       handleExpiredTokenException();
@@ -666,6 +675,7 @@ const deleteCfnStack = async (account: AWSAccountInfo, accountIndex: number, sta
     await cfnClient.send(new DeleteStackCommand({ StackName: stackName, RetainResources: resourceToRetain }));
     await waitUntilStackDeleteComplete({ client: cfnClient, maxWaitTime: 600 }, { StackName: stackName });
   } catch (e) {
+    console.log('Error', JSON.stringify(e));
     console.log(`Deleting CloudFormation stack ${stackName} failed with error ${e.message}`);
     if (e.name === 'ExpiredTokenException') {
       handleExpiredTokenException();
@@ -784,6 +794,7 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
     });
     return await Promise.all(accountCredentialPromises);
   } catch (e) {
+    console.log('Error', JSON.stringify(e));
     console.error(e);
     console.log(
       'Error assuming child account role. This could be because the script is already running from within a child account. Running on current AWS account only.',
