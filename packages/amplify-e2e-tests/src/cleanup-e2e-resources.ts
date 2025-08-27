@@ -760,9 +760,12 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
       RoleArn: process.env.TEST_ACCOUNT_ROLE,
       RoleSessionName: `testSession${Math.floor(Math.random() * 100000)}`,
     },
+    clientConfig: {
+      region: 'us-east-1',
+    },
   });
 
-  const stsClientForE2E = new STSClient({ credentials: parentAccountCreds });
+  const stsClientForE2E = new STSClient({ credentials: parentAccountCreds, region: 'us-east-1' });
   const parentAccountIdentity = await stsClientForE2E.send(new GetCallerIdentityCommand({}));
   const orgApi = new OrganizationsClient({
     region: 'us-east-1',
@@ -787,6 +790,9 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
             RoleSessionName: `testSession${randomNumber}`,
           },
           masterCredentials: parentAccountCreds,
+          clientConfig: {
+            region: 'us-east-1',
+          },
         }),
       };
     });
