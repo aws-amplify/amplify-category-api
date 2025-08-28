@@ -742,15 +742,6 @@ const getFilterPredicate = (args: any): JobFilterPredicate => {
 };
 
 /**
- *
- * Need to go from ...
- *
- * 1. service role = arn:aws:iam::594813022831:role/amplify-api-codebuild-tesie2eworkflowrolee3c1ea2adea7c0ff60ae
- * 2. "e2e parent account" = arn:aws:iam::182702232950:role/TestAccountRole-amplify-category-api
- * 3. "e2e account" = arn:aws:iam::${account.Id}:role/OrganizationAccountAccessRole
- */
-
-/**
  * Retrieve the accounts to process for potential cleanup. By default we will attempt
  * to get all accounts within the root account organization.
  */
