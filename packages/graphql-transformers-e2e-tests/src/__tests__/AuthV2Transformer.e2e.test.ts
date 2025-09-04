@@ -1,16 +1,24 @@
+/* eslint-disable jest/no-standalone-expect */
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { Output } from 'aws-sdk/clients/cloudformation';
-import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import { default as S3 } from 'aws-sdk/clients/s3';
+
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { Output } from '@aws-sdk/client-cloudformation';
+
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
+
 import moment from 'moment';
 import { ResourceConstants } from 'graphql-transformer-common';
+
+// also v2, but maybe "adapted" enough not to matter.
 import { CloudFormationClient } from '../CloudFormationClient';
 import { S3Client } from '../S3Client';
+
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import {
   createUserPool,
@@ -31,9 +39,8 @@ jest.setTimeout(2000000);
 describe('@model with @auth', () => {
   // setup clients
   const cf = new CloudFormationClient(region);
-  const customS3Client = new S3Client(region);
-  const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: region });
-  const awsS3Client = new S3({ region: region });
+  const s3Client = new S3Client(region);
+  const cognitoClient = new CognitoIdentityProviderClient({ region: region });
 
   // stack info
   const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
@@ -77,12 +84,13 @@ describe('@model with @auth', () => {
   const WATCHER_GROUP_NAME = 'Watcher';
   const SUBSCRIBER_GROUP_NAME = 'Subscriber';
 
-  function outputValueSelector(key: string) {
+  const outputValueSelector = (key: string): ((outputs: Output[]) => string | null | undefined) => {
     return (outputs: Output[]) => {
       const output = outputs.find((o: Output) => o.OutputKey === key);
       return output ? output.OutputValue : null;
     };
-  }
+  };
+
   beforeAll(async () => {
     const validSchema = `
       type Post @model @auth(rules: [{ allow: owner }]) {
@@ -281,7 +289,7 @@ describe('@model with @auth', () => {
       }
       `;
     try {
-      await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
+      await s3Client.createBucket(BUCKET_NAME);
     } catch (e) {
       throw Error(`Could not create bucket: ${e}`);
     }
@@ -292,9 +300,9 @@ describe('@model with @auth', () => {
       additionalAuthenticationProviders: [],
     };
     const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
-    USER_POOL_ID = userPoolResponse.UserPool.Id;
+    USER_POOL_ID = userPoolResponse.UserPool!.Id!;
     const userPoolClientResponse = await createUserPoolClient(cognitoClient, USER_POOL_ID, `UserPool${STACK_NAME}`);
-    const userPoolClientId = userPoolClientResponse.UserPoolClient.ClientId;
+    const userPoolClientId = userPoolClientResponse.UserPoolClient?.ClientId;
     try {
       const out = testTransform({
         schema: validSchema,
@@ -312,7 +320,7 @@ describe('@model with @auth', () => {
         },
       });
       const finishedStack = await deploy(
-        customS3Client,
+        s3Client,
         cf,
         STACK_NAME,
         out,
@@ -329,9 +337,9 @@ describe('@model with @auth', () => {
       expect(finishedStack).toBeDefined();
       const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
       const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput);
-      GRAPHQL_ENDPOINT = getApiEndpoint(finishedStack.Outputs);
+      GRAPHQL_ENDPOINT = getApiEndpoint(finishedStack.Outputs!);
 
-      const apiKey = getApiKey(finishedStack.Outputs);
+      const apiKey = getApiKey(finishedStack.Outputs!);
       expect(apiKey).not.toBeTruthy();
 
       // Verify we have all the details
@@ -340,7 +348,7 @@ describe('@model with @auth', () => {
       expect(userPoolClientId).toBeTruthy();
 
       // Configure Amplify, create users, and sign in
-      configureAmplify(USER_POOL_ID, userPoolClientId);
+      configureAmplify(USER_POOL_ID, userPoolClientId!);
 
       await signupUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD);
       await signupUser(USER_POOL_ID, USERNAME2, TMP_PASSWORD);
