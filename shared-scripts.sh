@@ -154,7 +154,7 @@ function _publishToLocalRegistry {
     fi
 
     git checkout $BRANCH_NAME
-  
+
     # Fetching git tags from upstream
     # For forked repo only
     # Can be removed when using team account
@@ -232,6 +232,8 @@ function _setupE2ETestsLinux {
     echo "Setup E2E Tests Linux"
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+    # Ignore engines while we're still on Node 18.x
+    yarn config set ignore-engines true
     _installCLIFromLocalRegistry
     _loadTestAccountCredentials
     _setShell
@@ -267,7 +269,7 @@ function _runCanaryTest {
     echo RUN Canary Test
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
-    _installCLIFromLocalRegistry  
+    _installCLIFromLocalRegistry
     _loadTestAccountCredentials
     _setShell
     cd client-test-apps/js/api-model-relationship-app
