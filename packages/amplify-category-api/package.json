@@ -82,7 +82,7 @@
   "devDependencies": {
     "@aws-amplify/graphql-transformer-test-utils": "0.6.7",
     "@types/js-yaml": "^4.0.0",
-    "@types/node": "^12.12.6",
+    "@types/node": "^18.18.0",
     "amplify-util-headless-input": "^1.9.18",
     "ts-jest": "26.4.4"
   },
