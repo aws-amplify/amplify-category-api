@@ -33,7 +33,7 @@ export const name = subcommand;
  */
 export const run = async (context: $TSContext): Promise<void> => {
   try {
-    const AWS = await getAwsClient(context, 'list');
+    const AWSConfig = await getAwsClientConfig(context, 'list');
 
     const result: any = await datasourceSelectionPrompt(context, supportedDataSources);
 
@@ -76,7 +76,7 @@ export const run = async (context: $TSContext): Promise<void> => {
       answers.secretStoreArn,
       answers.dbClusterArn,
       answers.databaseName,
-      AWS,
+      AWSConfig,
     );
 
     /**
@@ -219,12 +219,12 @@ const datasourceSelectionPrompt = async (context: $TSContext, supportedDataSourc
   return inquirer.prompt(question).then((answer) => answer.datasource);
 };
 
-const getAwsClient = async (context: $TSContext, action: string): Promise<any> => {
+const getAwsClientConfig = async (context: $TSContext, action: string): Promise<any> => {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   // eslint-disable-next-line
   const provider = require(providerPlugins[providerName]);
 
-  return provider.getConfiguredAWSClient(context, 'aurora-serverless', action);
+  return provider.getConfiguredAWSClientConfig(context, 'aurora-serverless', action);
 };
 
 /**
