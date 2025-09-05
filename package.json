@@ -53,7 +53,7 @@
     "test": "lerna run test",
     "trigger-release": "source ./scripts/cloud-release.sh && triggerRelease",
     "trigger-postpublish": "source ./scripts/cloud-release.sh && triggerPostPublish",
-    "trigger-tag-release": "source ./scripts/cloud-release.sh && triggerTagRelease",
+    "trigger-tag-release": "bash -c 'source ./scripts/cloud-release.sh && triggerTagRelease'",
     "trigger-deprecate-release": "source ./scripts/cloud-release.sh && deprecateRelease",
     "update-cli-packages": "./scripts/update-cli-dependencies.sh && yarn",
     "update-test-timing-data": "ts-node ./scripts/cci/get-test-timing-from-cci-job-metrics.ts",
