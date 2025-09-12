@@ -68,10 +68,15 @@ Users can interact with the TODO system:
 
 ## Current Sprint
 
+**Purpose**: Context management and logical break-points for user feedback only.
+Not traditional sprint planning - items here represent work actively being delivered.
+
 - [ ] Task 1 (Priority: High) - Brief description
 - [x] Completed task - What was accomplished
 
 ## Backlog
+
+**Purpose**: All work not currently being delivered, regardless of priority or timeline.
 
 - [ ] Future task - Description and context
 
