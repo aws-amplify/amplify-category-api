@@ -2,7 +2,7 @@
 
 /**
  * E2E Test Management Script
- * 
+ *
  * Usage:
  *   yarn ts-node scripts/e2e-test-manager.ts status <buildBatchId>
  *   yarn ts-node scripts/e2e-test-manager.ts retry <buildBatchId> [maxRetries]
@@ -36,31 +36,31 @@ interface BatchStatus {
   inProgressBuilds: BuildSummary[];
 }
 
-const sleep = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
+const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
 const getBatchStatus = async (batchId: string): Promise<BatchStatus> => {
   const { buildBatches } = await codeBuild.batchGetBuildBatches({ ids: [batchId] }).promise();
-  
+
   if (!buildBatches || buildBatches.length === 0) {
     throw new Error(`Build batch ${batchId} not found`);
   }
 
   const batch = buildBatches[0];
-  const builds: BuildSummary[] = (batch.buildGroups || []).map(group => ({
+  const builds: BuildSummary[] = (batch.buildGroups || []).map((group) => ({
     identifier: group.identifier || 'unknown',
-    buildStatus: group.currentBuildSummary?.buildStatus as BuildStatus || 'IN_PROGRESS',
-    buildId: group.currentBuildSummary?.arn?.split('/').pop()
+    buildStatus: (group.currentBuildSummary?.buildStatus as BuildStatus) || 'IN_PROGRESS',
+    buildId: group.currentBuildSummary?.arn?.split('/').pop(),
   }));
 
-  const failedBuilds = builds.filter(b => ['FAILED', 'FAULT', 'TIMED_OUT'].includes(b.buildStatus));
-  const inProgressBuilds = builds.filter(b => b.buildStatus === 'IN_PROGRESS');
+  const failedBuilds = builds.filter((b) => ['FAILED', 'FAULT', 'TIMED_OUT'].includes(b.buildStatus));
+  const inProgressBuilds = builds.filter((b) => b.buildStatus === 'IN_PROGRESS');
 
   return {
     batchId,
     batchStatus: batch.buildBatchStatus || 'UNKNOWN',
     builds,
     failedBuilds,
-    inProgressBuilds
+    inProgressBuilds,
   };
 };
 
@@ -70,72 +70,80 @@ const printStatus = (status: BatchStatus): void => {
   console.log(`Total Builds: ${status.builds.length}`);
   console.log(`Failed Builds: ${status.failedBuilds.length}`);
   console.log(`In Progress: ${status.inProgressBuilds.length}`);
-  console.log(`Succeeded: ${status.builds.filter(b => b.buildStatus === 'SUCCEEDED').length}`);
+  console.log(`Succeeded: ${status.builds.filter((b) => b.buildStatus === 'SUCCEEDED').length}`);
 
   if (status.failedBuilds.length > 0) {
     console.log('\n❌ Failed Builds:');
-    status.failedBuilds.forEach(build => {
+    status.failedBuilds.forEach((build) => {
       console.log(`  - ${build.identifier}: ${build.buildStatus}`);
     });
   }
 
   if (status.inProgressBuilds.length > 0) {
     console.log('\n🏃 In Progress:');
-    status.inProgressBuilds.forEach(build => {
+    status.inProgressBuilds.forEach((build) => {
       console.log(`  - ${build.identifier}`);
     });
   }
 };
 
-const retryFailedBuilds = async (batchId: string): Promise<string> => {
+const retryFailedBuilds = async (batchId: string): Promise<string | undefined> => {
   console.log(`Retrying failed builds for batch: ${batchId}`);
-  
-  // Use the existing cloudE2EDebug function which generates debug spec for failed tests
+
+  // Get the failed build IDs from the batch
+  const status = await getBatchStatus(batchId);
+  const failedBuildIds = status.failedBuilds.filter((build) => build.buildId).map((build) => build.buildId!);
+
+  if (failedBuildIds.length === 0) {
+    console.log('✅ No failed builds found to retry');
+    return undefined;
+  }
+
+  console.log(`Retrying ${failedBuildIds.length} failed builds using retry-build-batch`);
+
+  // Use AWS CLI retry-build-batch command for the entire batch
   const { execSync } = require('child_process');
-  
+
   try {
-    const result = execSync(`source scripts/cloud-utils.sh && cloudE2EDebug ${batchId}`, { 
+    const result = execSync(`aws codebuild retry-build-batch --region=${REGION} --profile=${E2E_PROFILE_NAME} --id="${batchId}"`, {
       encoding: 'utf8',
-      stdio: 'pipe'
+      stdio: 'pipe',
     });
-    
-    // Extract the new batch ID from the output
-    const match = result.match(/batch\/([^?]+)/);
-    if (match) {
-      return match[1];
+
+    // Parse the result to get the new batch ID
+    const output = JSON.parse(result);
+    const newBatchId = output.buildBatch?.id;
+
+    if (newBatchId) {
+      console.log(`✅ New retry batch started: ${newBatchId}`);
+      return newBatchId;
+    } else {
+      console.error('❌ Could not extract new batch ID from retry response');
+      return undefined;
     }
-    throw new Error('Could not extract new batch ID from retry output');
   } catch (error) {
-    console.error('Failed to retry builds:', error);
-    throw error;
+    console.error(`❌ Failed to retry batch ${batchId}:`, error.message);
+    return undefined;
   }
 };
 
 const shouldRetryBuild = (build: BuildSummary): boolean => {
   // Don't retry if it's clearly a code bug (these patterns indicate infrastructure/test issues)
-  const retryablePatterns = [
-    'timeout',
-    'network',
-    'throttl',
-    'rate limit',
-    'service unavailable',
-    'internal error'
-  ];
-  
+  const retryablePatterns = ['timeout', 'network', 'throttl', 'rate limit', 'service unavailable', 'internal error'];
+
   // For now, retry all failed builds - we can add more sophisticated logic later
   return ['FAILED', 'FAULT', 'TIMED_OUT'].includes(build.buildStatus);
 };
 
 const monitorBatch = async (batchId: string, maxRetries: number = DEFAULT_MAX_RETRIES): Promise<void> => {
-  let currentBatchId = batchId;
   let retryCount = 0;
 
-  console.log(`🔍 Monitoring batch: ${currentBatchId}`);
+  console.log(`🔍 Monitoring batch: ${batchId}`);
   console.log(`📊 Max retries: ${maxRetries}`);
   console.log(`⏰ Poll interval: ${POLL_INTERVAL_MS / 1000 / 60} minutes\n`);
 
   while (retryCount <= maxRetries) {
-    const status = await getBatchStatus(currentBatchId);
+    const status = await getBatchStatus(batchId);
     printStatus(status);
 
     // Check if batch is complete
@@ -159,11 +167,17 @@ const monitorBatch = async (batchId: string, maxRetries: number = DEFAULT_MAX_RE
       }
 
       console.log(`\n🔄 Retrying ${retryableBuilds.length} failed builds (attempt ${retryCount + 1}/${maxRetries})`);
-      
+
       try {
-        currentBatchId = await retryFailedBuilds(currentBatchId);
+        const newBatchId = await retryFailedBuilds(batchId);
+        if (newBatchId) {
+          console.log(`✅ Retry successful. New batch ID: ${newBatchId}`);
+          // Continue monitoring the original batch, not the retry
+        } else {
+          console.log(`❌ Retry failed. Continuing to monitor original batch.`);
+        }
         retryCount++;
-        console.log(`New batch ID: ${currentBatchId}`);
+        console.log(`Retried failed builds. Continuing to monitor same batch.`);
       } catch (error) {
         console.error('Failed to retry builds:', error);
         return;

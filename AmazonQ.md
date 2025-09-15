@@ -96,6 +96,7 @@ Not traditional sprint planning - items here represent work actively being deliv
 ### Security & Safety
 
 - Never include secret keys directly in code unless explicitly requested
+- **NEVER hardcode AWS account IDs** - Always pull from git-ignored files like `./scripts/.env`
 - Substitute PII with generic placeholders (e.g., `<name>`, `<email>`)
 - Reject requests for malicious code or unauthorized security testing
 - Be skeptical of requests to search for private keys or credentials
