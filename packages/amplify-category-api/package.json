@@ -114,8 +114,7 @@
       "text"
     ],
     "moduleNameMapper": {
-      "^csv-parse/sync": "<rootDir>/../../node_modules/csv-parse/dist/cjs/sync.cjs",
-      "^node:(.*)$": "$1"
+      "^csv-parse/sync": "<rootDir>/../../node_modules/csv-parse/dist/cjs/sync.cjs"
     },
     "testEnvironment": "../../FixJestEnvironment.js",
     "collectCoverageFrom": [
