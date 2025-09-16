@@ -39,7 +39,7 @@
     "@aws-sdk/client-ec2": "3.624.0",
     "@aws-sdk/client-iam": "3.624.0",
     "@aws-sdk/client-lambda": "3.624.0",
-    "@aws-sdk/client-ssm": "^3.882.0",
+    "@aws-sdk/client-ssm": "3.624.0",
     "@graphql-tools/merge": "^6.0.18",
     "@octokit/rest": "^20.1.2",
     "aws-sdk": "^2.1113.0",
