@@ -44,7 +44,7 @@ export class SSMClient {
         }),
       );
 
-      return result.Parameters.map(({ Name, Value }) => ({ secretName: Name, secretValue: Value }));
+      return result ? result?.Parameters?.map(({ Name, Value }) => ({ secretName: Name, secretValue: Value })) : [];
     }
     const result = await this.ssmClient
       .getParameters({
@@ -182,7 +182,7 @@ const getSSMClient = async (context: $TSContext): Promise<aws.SSM | SSM_Client> 
   const { client } = (await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'getConfiguredSSMClient', [
     context,
   ])) as any;
-  if ('middlewareStack' in client) {
+  if (typeof client.send === 'function') {
     return client as SSM_Client;
   }
   return client as aws.SSM;

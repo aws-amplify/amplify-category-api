@@ -84,6 +84,8 @@
     "@types/js-yaml": "^4.0.0",
     "@types/node": "^18.18.0",
     "amplify-util-headless-input": "^1.9.18",
+    "aws-sdk-client-mock": "3.0.1",
+    "aws-sdk-client-mock-jest": "3.0.1",
     "ts-jest": "26.4.4"
   },
   "jest": {
