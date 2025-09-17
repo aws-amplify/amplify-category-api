@@ -3,7 +3,7 @@ import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator'
 import * as dynamoEmulator from 'amplify-category-api-dynamodb-simulator';
 import * as fs from 'fs-extra';
 import { v4 } from 'uuid';
-import { DynamoDB } from 'aws-sdk';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { functionRuntimeContributorFactory } from 'amplify-nodejs-function-runtime-provider';
 import { ExecuteTransformConfig, executeTransform } from '@aws-amplify/graphql-transformer';
 import { DeploymentResources, TransformManager } from '@aws-amplify/graphql-transformer-test-utils';
@@ -25,14 +25,14 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
 
 const getAuthenticationTypesForAuthConfig = (authConfig?: AppSyncAuthConfiguration): (string | undefined)[] =>
   [authConfig?.defaultAuthentication, ...(authConfig?.additionalAuthenticationProviders ?? [])].map(
-    (authConfigEntry) => authConfigEntry?.authenticationType,
+    authConfigEntry => authConfigEntry?.authenticationType,
   );
 
 const hasIamAuth = (authConfig?: AppSyncAuthConfiguration): boolean =>
-  getAuthenticationTypesForAuthConfig(authConfig).some((authType) => authType === 'AWS_IAM');
+  getAuthenticationTypesForAuthConfig(authConfig).some(authType => authType === 'AWS_IAM');
 
 const hasUserPoolAuth = (authConfig?: AppSyncAuthConfiguration): boolean =>
-  getAuthenticationTypesForAuthConfig(authConfig).some((authType) => authType === 'AMAZON_COGNITO_USER_POOLS');
+  getAuthenticationTypesForAuthConfig(authConfig).some(authType => authType === 'AMAZON_COGNITO_USER_POOLS');
 
 export const transformAndSynth = (
   options: Omit<ExecuteTransformConfig, 'scope' | 'nestedStackProvider' | 'assetProvider' | 'synthParameters' | 'dataSourceStrategies'> & {
@@ -85,12 +85,15 @@ export async function launchDDBLocal() {
     dbPath,
     port: null,
   });
-  const client: DynamoDB = await dynamoEmulator.getClient(emulator);
+  const client: DynamoDBClient = await dynamoEmulator.getClient(emulator);
   logDebug(dbPath);
   return { emulator, dbPath, client };
 }
 
-export async function deploy(transformerOutput: any, client?: DynamoDB): Promise<{ config: any; simulator: AmplifyAppSyncSimulator }> {
+export async function deploy(
+  transformerOutput: any,
+  client?: DynamoDBClient,
+): Promise<{ config: any; simulator: AmplifyAppSyncSimulator }> {
   let config: any = processTransformerStacks(transformerOutput);
   config.appSync.apiKey = 'da-fake-api-key';
 
@@ -106,7 +109,7 @@ export async function deploy(transformerOutput: any, client?: DynamoDB): Promise
 export async function reDeploy(
   transformerOutput: any,
   simulator: AmplifyAppSyncSimulator,
-  client?: DynamoDB,
+  client?: DynamoDBClient,
 ): Promise<{ config: any; simulator: AmplifyAppSyncSimulator }> {
   let config: any = processTransformerStacks(transformerOutput);
   config.appSync.apiKey = 'da-fake-api-key';
@@ -122,13 +125,13 @@ export async function reDeploy(
 
 async function configureLambdaDataSource(config) {
   config.dataSources
-    .filter((d) => d.type === 'AWS_LAMBDA')
-    .forEach((d) => {
+    .filter(d => d.type === 'AWS_LAMBDA')
+    .forEach(d => {
       const arn = d.LambdaFunctionArn;
       const arnParts = arn.split(':');
       let functionName = arnParts[arnParts.length - 1];
       const lambdaConfig = getFunctionDetails(functionName);
-      d.invoke = (payload) => {
+      d.invoke = payload => {
         logDebug('Invoking lambda with config', lambdaConfig);
         return invoke({
           srcRoot: lambdaConfig.packageFolder,
