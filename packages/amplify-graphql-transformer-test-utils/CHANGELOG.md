@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.8-sdk-0-ssmv3.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-test-utils@0.6.7...@aws-amplify/graphql-transformer-test-utils@0.6.8-sdk-0-ssmv3.0) (2025-09-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-test-utils
+
 ## [0.6.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-test-utils@0.6.6...@aws-amplify/graphql-transformer-test-utils@0.6.7) (2025-04-03)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-test-utils

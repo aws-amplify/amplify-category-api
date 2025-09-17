@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.15.1-sdk-0-ssmv3.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.15.0...@aws-amplify/amplify-category-api@5.15.1-sdk-0-ssmv3.0) (2025-09-17)
+
+### Bug Fixes
+
+- remove global config ([4854365](https://github.com/aws-amplify/amplify-category-api/commit/4854365cb4b52a9351702c2251decf0c1301af92))
+- ssmclient can use v1 or v2 ([517f929](https://github.com/aws-amplify/amplify-category-api/commit/517f929dd3fdc9e2e66ee92b62940d15f0bff421))
+- unit tests and better way of identifing v3 client ([2ad6d51](https://github.com/aws-amplify/amplify-category-api/commit/2ad6d512c4d2e310a2fc904b102d9cccfcbfbf67))
+
 # [5.15.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.14.2...@aws-amplify/amplify-category-api@5.15.0) (2025-04-03)
 
 ### Features

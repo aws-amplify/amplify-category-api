@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.22.21-sdk-0-ssmv3.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.20...amplify-category-api-e2e-tests@3.22.21-sdk-0-ssmv3.0) (2025-09-17)
+
+### Bug Fixes
+
+- update expected error message ([3e7d101](https://github.com/aws-amplify/amplify-category-api/commit/3e7d101f5926456777f92fd947857eb48397a24f))
+
 ## [3.22.20](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.19...amplify-category-api-e2e-tests@3.22.20) (2025-04-03)
 
 **Note:** Version bump only for package amplify-category-api-e2e-tests
