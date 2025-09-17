@@ -145,6 +145,33 @@ When approaching context limits:
 3. Update `Q_TODO.md` with detailed next steps
 4. Provide handoff summary for next session
 
+## E2E Testing Workflow
+
+### Critical Requirements
+
+- **E2E tests MUST run against pushed code** - They cannot test local changes
+- **All code must be committed and pushed before running e2e tests**
+- E2E tests run in CI/CD environment against the remote repository state
+
+### E2E Workflow Commands
+
+- `ada` - AWS credential refresh command (required before e2e tests)
+- `yarn e2e` - Run e2e test suite (only after pushing code)
+
+### E2E Test Process
+
+1. **Complete all local development and testing**
+2. **Commit and push all changes to remote branch**
+3. **Refresh AWS credentials using `ada` command**
+4. **Run `yarn e2e` to execute e2e test suite**
+5. **Monitor test results and address any failures**
+
+### Common E2E Issues
+
+- **ExpiredToken errors**: Run `ada` to refresh AWS credentials
+- **Test failures on local changes**: Ensure all code is pushed first
+- **Authentication failures**: Verify AWS credentials are valid
+
 ## Quality Gates
 
 Before marking tasks complete:
@@ -154,3 +181,5 @@ Before marking tasks complete:
 - [ ] Linting passes (`yarn lint`)
 - [ ] Documentation is updated
 - [ ] `Q_TODO.md` is current
+- [ ] **All code committed and pushed before e2e tests**
+- [ ] **E2E tests passing (after `ada` credential refresh)**

@@ -93,15 +93,15 @@ describe('createAndUpdateTable', () => {
     };
 
     // Mock that both tables already exist
-    ddbMock.on(ListTablesCommand).resolves({ 
-      TableNames: [table1Input.TableName, table2Input.TableName] 
+    ddbMock.on(ListTablesCommand).resolves({
+      TableNames: [table1Input.TableName, table2Input.TableName],
     });
-    
+
     (describeTables as jest.Mock).mockReturnValue({
       [table1Input.TableName]: table1Input,
       [table2Input.TableName]: { ...table2Input, GlobalSecondaryIndexes: [] },
     });
-    
+
     const getUpdateTableInputResult = [
       {
         ...table2Input,
@@ -121,7 +121,7 @@ describe('createAndUpdateTable', () => {
       },
     ];
 
-    (getUpdateTableInput as jest.Mock).mockImplementation((input) => (input === table2Input ? getUpdateTableInputResult : []));
+    (getUpdateTableInput as jest.Mock).mockImplementation(input => (input === table2Input ? getUpdateTableInputResult : []));
 
     const client = new DynamoDBClient({});
     await createAndUpdateTable(client, mockDDBConfig);

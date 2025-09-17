@@ -1,16 +1,16 @@
-import { 
-  DynamoDBClient, 
-  DescribeTableCommand, 
-  CreateTableCommand, 
-  UpdateTableCommand, 
-  KeyType, 
-  ScalarAttributeType, 
+import {
+  DynamoDBClient,
+  DescribeTableCommand,
+  CreateTableCommand,
+  UpdateTableCommand,
+  KeyType,
+  ScalarAttributeType,
   ProjectionType,
-  DescribeTableOutput, 
-  CreateTableInput, 
-  UpdateTableInput, 
-  UpdateTableOutput, 
-  TableDescription 
+  DescribeTableOutput,
+  CreateTableInput,
+  UpdateTableInput,
+  UpdateTableOutput,
+  TableDescription,
 } from '@aws-sdk/client-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
 import * as ddbUtils from '../../../utils/dynamo-db/utils';
@@ -20,7 +20,7 @@ jest.mock('../../../utils/dynamo-db/helpers');
 
 describe('DynamoDB Utils', () => {
   const ddbMock = mockClient(DynamoDBClient);
-  
+
   beforeEach(() => {
     jest.resetAllMocks();
     ddbMock.reset();
@@ -77,16 +77,16 @@ describe('DynamoDB Utils', () => {
           },
         },
       };
-      
+
       ddbMock.on(DescribeTableCommand, { TableName: 'table1' }).resolves(describeTableResult.table1);
       ddbMock.on(DescribeTableCommand, { TableName: 'table2' }).resolves(describeTableResult.table2);
-      
+
       const client = new DynamoDBClient({});
       await expect(ddbUtils.describeTables(client, tableNames)).resolves.toEqual({
         table1: describeTableResult.table1.Table,
         table2: describeTableResult.table2.Table,
       });
-      
+
       const calls = ddbMock.commandCalls(DescribeTableCommand);
       expect(calls).toHaveLength(2);
       expect(calls[0].args[0].input).toEqual({ TableName: 'table1' });
@@ -132,7 +132,7 @@ describe('DynamoDB Utils', () => {
       ];
       const client = new DynamoDBClient({});
       await ddbUtils.createTables(client, tableInputs);
-      
+
       const calls = ddbMock.commandCalls(CreateTableCommand);
       expect(calls).toHaveLength(2);
       expect(calls[0].args[0].input).toEqual(tableInputs[0]);
@@ -143,18 +143,18 @@ describe('DynamoDB Utils', () => {
   describe('updateTables', () => {
     it('should wait for table to be in ACTIVE state before updating', async () => {
       const waitTillTableStateIsActiveMock = (waitTillTableStateIsActive as jest.Mock).mockResolvedValue(undefined);
-      
+
       ddbMock.on(UpdateTableCommand).callsFake((input: UpdateTableInput) => {
         const response: UpdateTableOutput = {
           TableDescription: {
             TableName: input.TableName,
             AttributeDefinitions: input.AttributeDefinitions,
-            GlobalSecondaryIndexes: input.GlobalSecondaryIndexUpdates?.filter((update) => update.Create).map((gsi) => gsi.Create),
+            GlobalSecondaryIndexes: input.GlobalSecondaryIndexUpdates?.filter(update => update.Create).map(gsi => gsi.Create),
           },
         };
         return response;
       });
-      
+
       const tables: UpdateTableInput[] = [
         {
           TableName: 'table1',
