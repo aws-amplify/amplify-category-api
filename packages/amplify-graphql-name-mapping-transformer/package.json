@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-maps-to-transformer",
-  "version": "3.5.0",
+  "version": "3.5.1-sdk-0-ssmClient.0",
   "description": "Amplify GraphQL @mapsTo transformer",
   "repository": {
     "type": "git",
@@ -31,8 +31,8 @@
   },
   "dependencies": {
     "@aws-amplify/graphql-directives": "1.1.0",
-    "@aws-amplify/graphql-transformer-core": "2.11.1",
-    "@aws-amplify/graphql-transformer-interfaces": "3.12.0",
+    "@aws-amplify/graphql-transformer-core": "2.11.2-sdk-0-ssmClient.0",
+    "@aws-amplify/graphql-transformer-interfaces": "3.12.1-sdk-0-ssmClient.0",
     "graphql-mapping-template": "4.20.16",
     "graphql-transformer-common": "4.34.0"
   },
@@ -41,11 +41,11 @@
     "constructs": "^10.3.0"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-index-transformer": "2.4.16",
-    "@aws-amplify/graphql-model-transformer": "2.14.0",
-    "@aws-amplify/graphql-relational-transformer": "2.5.18",
-    "@aws-amplify/graphql-searchable-transformer": "2.7.16",
-    "@aws-amplify/graphql-transformer-test-utils": "0.6.7",
+    "@aws-amplify/graphql-index-transformer": "2.4.17-sdk-0-ssmClient.0",
+    "@aws-amplify/graphql-model-transformer": "2.14.1-sdk-0-ssmClient.0",
+    "@aws-amplify/graphql-relational-transformer": "2.5.19-sdk-0-ssmClient.0",
+    "@aws-amplify/graphql-searchable-transformer": "2.7.17-sdk-0-ssmClient.0",
+    "@aws-amplify/graphql-transformer-test-utils": "0.6.8-sdk-0-ssmClient.0",
     "graphql": "^15.5.0"
   },
   "jest": {

@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.1-sdk-0-ssmClient.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.5.0...@aws-amplify/graphql-maps-to-transformer@3.5.1-sdk-0-ssmClient.0) (2025-09-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
 # [3.5.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.29...@aws-amplify/graphql-maps-to-transformer@3.5.0) (2025-04-03)
 
 ### Features

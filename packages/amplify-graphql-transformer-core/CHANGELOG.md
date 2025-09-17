@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.11.2-sdk-0-ssmClient.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.11.1...@aws-amplify/graphql-transformer-core@2.11.2-sdk-0-ssmClient.0) (2025-09-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-core
+
 ## [2.11.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.11.0...@aws-amplify/graphql-transformer-core@2.11.1) (2025-04-03)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-core

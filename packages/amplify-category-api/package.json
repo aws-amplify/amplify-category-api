@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-api",
-  "version": "5.15.0",
+  "version": "5.15.1-sdk-0-ssmClient.0",
   "description": "Amplify CLI API Category Plugin",
   "repository": {
     "type": "git",
@@ -29,12 +29,12 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/graphql-auth-transformer": "3.6.12",
+    "@aws-amplify/graphql-auth-transformer": "3.6.13-sdk-0-ssmClient.0",
     "@aws-amplify/graphql-schema-generator": "^0.9.4",
-    "@aws-amplify/graphql-transformer": "1.8.1",
-    "@aws-amplify/graphql-transformer-core": "2.11.1",
-    "@aws-amplify/graphql-transformer-interfaces": "3.12.0",
-    "@aws-amplify/graphql-transformer-migrator": "2.2.32",
+    "@aws-amplify/graphql-transformer": "1.8.2-sdk-0-ssmClient.0",
+    "@aws-amplify/graphql-transformer-core": "2.11.2-sdk-0-ssmClient.0",
+    "@aws-amplify/graphql-transformer-interfaces": "3.12.1-sdk-0-ssmClient.0",
+    "@aws-amplify/graphql-transformer-migrator": "2.2.33-sdk-0-ssmClient.0",
     "@aws-cdk/aws-apigatewayv2-alpha": "~2.114.1-alpha.0",
     "@aws-sdk/client-ec2": "3.624.0",
     "@aws-sdk/client-iam": "3.624.0",
@@ -47,15 +47,15 @@
     "cloudform-types": "^4.2.0",
     "fs-extra": "^8.1.0",
     "graphql": "^15.5.0",
-    "graphql-auth-transformer": "7.2.86",
+    "graphql-auth-transformer": "7.2.87-sdk-0-ssmClient.0",
     "graphql-connection-transformer": "5.2.84",
     "graphql-dynamodb-transformer": "7.2.84",
-    "graphql-elasticsearch-transformer": "5.2.85",
+    "graphql-elasticsearch-transformer": "5.2.86-sdk-0-ssmClient.0",
     "graphql-function-transformer": "3.3.75",
     "graphql-http-transformer": "5.2.84",
     "graphql-key-transformer": "3.2.84",
     "graphql-predictions-transformer": "3.2.84",
-    "graphql-relational-schema-transformer": "2.21.38",
+    "graphql-relational-schema-transformer": "2.21.39-sdk-0-ssmClient.0",
     "graphql-transformer-common": "4.34.0",
     "graphql-transformer-core": "8.2.17",
     "graphql-versioned-transformer": "5.2.84",
@@ -80,7 +80,7 @@
     "constructs": "^10.3.0"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-test-utils": "0.6.7",
+    "@aws-amplify/graphql-transformer-test-utils": "0.6.8-sdk-0-ssmClient.0",
     "@types/js-yaml": "^4.0.0",
     "@types/node": "^18.18.0",
     "amplify-util-headless-input": "^1.9.18",

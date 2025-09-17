@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.7.2-sdk-0-ssmClient.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.7.1...amplify-category-api-util-mock@6.7.2-sdk-0-ssmClient.0) (2025-09-17)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
 ## [6.7.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.7.0...amplify-category-api-util-mock@6.7.1) (2025-04-03)
 
 **Note:** Version bump only for package amplify-category-api-util-mock
