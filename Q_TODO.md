@@ -5,72 +5,39 @@
 **Purpose**: Context management and logical break-points for user feedback only.
 Not traditional sprint planning - items here represent work actively being delivered.
 
-**Phase 1 Complete!** E2E testing - Fix applied, ready for validation.
+**SSM Migration Reverted** - Conflicts with CLI package updates
 
-**Test Failure Analysis & Fix:**
+**Updated Migration Plan:**
 
-1. **api_3.test.ts**: AppSync error message format change
+- SSM components will be handled LAST due to CLI compatibility requirements
+- Proceeding with Phase 2: amplify-util-mock DynamoDB utilities migration
 
-   - Expected: "GraphQL API {id} not found."
-   - Actual: "API not found"
-   - **Root Cause**: AWS service behavior change (not SSM migration related)
-   - **Fix Applied**: Updated expected error message to match current AWS AppSync response
-   - **Status**: ✅ Committed in f80900b24
+**Test Fix Status:**
 
-2. **FunctionTransformerTestsV2**: S3 bucket access error
-   - Error: "NoSuchBucket: The specified bucket does not exist"
-   - **Root Cause**: Infrastructure/deployment issue (not SSM migration related)
-   - **Status**: Likely transient, may resolve with retry
-
-**Key Findings:**
-
-- Test failures are NOT related to SSM migration
-- SSM migration only modified SSM-related files
-- Failing tests have no SSM/RDS dependencies
-- Failures are due to AWS service changes and infrastructure issues
-
-**Next Steps:**
-
-- Push branch to GitHub (required for CodeBuild access)
-- Re-run E2E tests to validate 100% pass rate
-- Proceed to Phase 2 if tests pass
-
-**Important Learning:**
-
-- CodeBuild requires branch to be pushed to GitHub before triggering tests
-- Always ensure branch is pushed before running `yarn cloud-e2e`
-
-- SSM migration only modified SSM-related files
-- Failing tests have no SSM/RDS dependencies
-- Failures are due to AWS service changes and infrastructure issues
-
-**Next Steps:**
-
-- Commit fix for api_3.test.ts error message
-- Re-run E2E tests to validate 100% pass rate
-- Proceed to Phase 2 if tests pass
+- ✅ Fixed api_3.test.ts AppSync error message format (committed in f80900b24)
+- E2E tests ready for validation after next migration phase
 
 ## Backlog
 
 **Purpose**: All work not currently being delivered, regardless of priority or timeline.
 
-- [ ] **Phase 1: Complete Partial Migrations** (amplify-category-api)
-
-  - [ ] Migrate ssmClient.ts from v2 to v3
-  - [ ] Remove aws-sdk v2 dependency from package.json
-  - [ ] Add @aws-sdk/client-ssm dependency
-
-- [ ] **Phase 2: Core Utilities Migration** (amplify-util-mock)
+- [ ] **Phase 1: Core Utilities Migration** (amplify-util-mock) - **NEXT**
 
   - [ ] Migrate DynamoDB utilities (highest complexity)
   - [ ] Update test patterns and mocking infrastructure
   - [ ] Establish v3 patterns for other packages
 
-- [ ] **Phase 3: Supporting Packages**
+- [ ] **Phase 2: Supporting Packages**
 
   - [ ] Migrate amplify-dynamodb-simulator
   - [ ] Migrate amplify-e2e-tests
   - [ ] Leverage amplify-e2e-core patterns
+
+- [ ] **Phase 3: SSM Migration** (amplify-category-api) - **DEFERRED**
+
+  - [ ] Migrate ssmClient.ts from v2 to v3 (AFTER CLI updates)
+  - [ ] Remove aws-sdk v2 dependency from package.json
+  - [ ] Add @aws-sdk/client-ssm dependency
 
 - [ ] **Phase 4: Final Cleanup**
   - [ ] Remove aws-sdk v2 from root package.json resolutions
@@ -78,37 +45,29 @@ Not traditional sprint planning - items here represent work actively being deliv
 
 ## Completed
 
-- [x] Created development guidelines (2025-09-12) - Established patterns for AI-assisted development with task decomposition, context management, and quality gates
-- [x] Set up Q workspace (2025-09-12) - Created .q/ folder structure with tasks/, designs/, context/ directories and templates
-- [x] Initial codebase analysis (2025-09-12) - Identified mixed v2/v3 usage, key packages, and migration scope
-- [x] **Created E2E test management tooling** (2025-09-12) - Built automated monitoring, retry logic, and status checking scripts for managing E2E test workflows
+- [x] Created development guidelines (2025-09-12)
+- [x] Set up Q workspace (2025-09-12)
+- [x] Initial codebase analysis (2025-09-12)
+- [x] **Completed comprehensive AWS SDK inventory** (2025-09-12)
+- [x] **Fixed E2E test error message format** (2025-09-16)
 
 ## Context Notes
 
-### Key Discovery: Migration More Advanced Than Expected
+### Important: SSM Deferred
 
-- **Container templates**: Already fully migrated to v3
-- **Lambda functions**: Already fully migrated to v3
-- **amplify-e2e-core**: Already fully migrated to v3 (good reference)
-- **amplify-graphql-model-transformer**: Lambda functions already use v3
+- **SSM migration conflicts with CLI package updates**
+- **SSM will be handled LAST** after CLI compatibility is resolved
+- Focus shifted to amplify-util-mock DynamoDB utilities
 
-### Remaining Migration Work (Much Smaller Scope)
+### Remaining Migration Work
 
-1. **amplify-category-api**: Only ssmClient.ts needs migration (1 file)
-2. **amplify-util-mock**: DynamoDB utilities need migration (main complexity)
-3. **amplify-dynamodb-simulator**: Simple v2 dependency removal
-4. **amplify-e2e-tests**: Simple v2 dependency removal
+1. **amplify-util-mock**: DynamoDB utilities need migration (main complexity) - **NEXT**
+2. **amplify-dynamodb-simulator**: Simple v2 dependency removal
+3. **amplify-e2e-tests**: Simple v2 dependency removal
+4. **amplify-category-api**: SSM migration (DEFERRED until CLI updates complete)
 
 ### Technical Considerations
 
 - DynamoDB client migration is the main complexity (amplify-util-mock)
 - Most infrastructure already provides v3 patterns to follow
 - Risk is much lower than initially assessed
-- Estimated timeline reduced from 2-3 weeks to 1-2 weeks
-
-### Migration Priority Refined
-
-1. **Phase 1**: Complete amplify-category-api (1 file) - 1 day
-2. **Phase 2**: Migrate amplify-util-mock DynamoDB utilities - 3-4 days
-3. **Phase 3**: Simple dependency updates for simulator and e2e-tests - 1-2 days
-4. **Phase 4**: Final cleanup - 1 day

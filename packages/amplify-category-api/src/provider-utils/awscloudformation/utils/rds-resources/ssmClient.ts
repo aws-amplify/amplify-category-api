@@ -1,12 +1,5 @@
 import { $TSContext } from '@aws-amplify/amplify-cli-core';
-import {
-  SSMClient as AWSSSMClient,
-  GetParametersCommand,
-  GetParametersByPathCommand,
-  PutParameterCommand,
-  DeleteParameterCommand,
-  DeleteParametersCommand,
-} from '@aws-sdk/client-ssm';
+import aws from 'aws-sdk';
 
 export type Secret = {
   secretName: string;
@@ -26,7 +19,7 @@ export class SSMClient {
     return SSMClient.instance;
   };
 
-  private constructor(private readonly ssmClient: AWSSSMClient) {}
+  private constructor(private readonly ssmClient: aws.SSM) {}
 
   /**
    * Returns a list of secret name value pairs
@@ -35,11 +28,12 @@ export class SSMClient {
     if (!secretNames || secretNames?.length === 0) {
       return [];
     }
-    const command = new GetParametersCommand({
-      Names: secretNames,
-      WithDecryption: true,
-    });
-    const result = await this.ssmClient.send(command);
+    const result = await this.ssmClient
+      .getParameters({
+        Names: secretNames,
+        WithDecryption: true,
+      })
+      .promise();
 
     return result?.Parameters?.map(({ Name, Value }) => ({ secretName: Name, secretValue: Value }));
   };
@@ -51,19 +45,20 @@ export class SSMClient {
     let nextToken: string | undefined;
     const secretNames: string[] = [];
     do {
-      const command = new GetParametersByPathCommand({
-        Path: secretPath,
-        MaxResults: 10,
-        ParameterFilters: [
-          {
-            Key: 'Type',
-            Option: 'Equals',
-            Values: ['SecureString'],
-          },
-        ],
-        NextToken: nextToken,
-      });
-      const result = await this.ssmClient.send(command);
+      const result = await this.ssmClient
+        .getParametersByPath({
+          Path: secretPath,
+          MaxResults: 10,
+          ParameterFilters: [
+            {
+              Key: 'Type',
+              Option: 'Equals',
+              Values: ['SecureString'],
+            },
+          ],
+          NextToken: nextToken,
+        })
+        .promise();
       secretNames.push(...result?.Parameters?.map((param) => param?.Name));
       nextToken = result?.NextToken;
     } while (nextToken);
@@ -74,13 +69,14 @@ export class SSMClient {
    * Sets the given secretName to the secretValue. If secretName is already present, it is overwritten.
    */
   setSecret = async (secretName: string, secretValue: string): Promise<void> => {
-    const command = new PutParameterCommand({
-      Name: secretName,
-      Value: secretValue,
-      Type: 'SecureString',
-      Overwrite: true,
-    });
-    await this.ssmClient.send(command);
+    await this.ssmClient
+      .putParameter({
+        Name: secretName,
+        Value: secretValue,
+        Type: 'SecureString',
+        Overwrite: true,
+      })
+      .promise();
   };
 
   /**
@@ -88,10 +84,9 @@ export class SSMClient {
    */
   deleteSecret = async (secretName: string): Promise<void> => {
     try {
-      const command = new DeleteParameterCommand({ Name: secretName });
-      await this.ssmClient.send(command);
+      await this.ssmClient.deleteParameter({ Name: secretName }).promise();
     } catch (err) {
-      if (err?.name !== 'ParameterNotFound') {
+      if (err?.code !== 'ParameterNotFound') {
         // if the value didn't exist in the first place, consider it deleted
         throw err;
       }
@@ -103,11 +98,10 @@ export class SSMClient {
    */
   deleteSecrets = async (secretNames: string[]): Promise<void> => {
     try {
-      const command = new DeleteParametersCommand({ Names: secretNames });
-      await this.ssmClient.send(command);
+      await this.ssmClient.deleteParameters({ Names: secretNames }).promise();
     } catch (err) {
       // if the value didn't exist in the first place, consider it deleted
-      if (err?.name !== 'ParameterNotFound') {
+      if (err?.code !== 'ParameterNotFound') {
         throw err;
       }
     }
@@ -115,9 +109,9 @@ export class SSMClient {
 }
 
 // The Provider plugin holds all the configured service clients. Fetch from there.
-const getSSMClient = async (context: $TSContext): Promise<AWSSSMClient> => {
+const getSSMClient = async (context: $TSContext): Promise<aws.SSM> => {
   const { client } = (await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'getConfiguredSSMClient', [
     context,
   ])) as any;
-  return client as AWSSSMClient;
+  return client as aws.SSM;
 };
