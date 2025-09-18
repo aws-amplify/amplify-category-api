@@ -27,7 +27,8 @@ export class SSMClient {
     return SSMClient.instance;
   };
 
-  private constructor(private readonly ssmClient: aws.SSM | SSM_Client) {}
+  // when V2 is no longer needed cast ssmClient to SSM_Client (V3 Client)
+  private constructor(private readonly ssmClient) {}
 
   /**
    * Returns a list of secret name value pairs
@@ -36,8 +37,8 @@ export class SSMClient {
     if (!secretNames || secretNames?.length === 0) {
       return [];
     }
-    if (this.ssmClient instanceof SSM_Client) {
-      const result = await this.ssmClient.send(
+    if (typeof (this.ssmClient as SSM_Client).send === 'function') {
+      const result = await (this.ssmClient as SSM_Client).send(
         new GetParametersCommand({
           Names: secretNames,
           WithDecryption: true,
@@ -46,7 +47,7 @@ export class SSMClient {
 
       return result ? result?.Parameters?.map(({ Name, Value }) => ({ secretName: Name, secretValue: Value })) : [];
     }
-    const result = await this.ssmClient
+    const result = await (this.ssmClient as aws.SSM)
       .getParameters({
         Names: secretNames,
         WithDecryption: true,
@@ -64,8 +65,8 @@ export class SSMClient {
     const secretNames: string[] = [];
     do {
       let result;
-      if (this.ssmClient instanceof SSM_Client) {
-        result = await this.ssmClient.send(
+      if (typeof (this.ssmClient as SSM_Client).send === 'function') {
+        result = await (this.ssmClient as SSM_Client).send(
           new GetParametersByPathCommand({
             Path: secretPath,
             MaxResults: 10,
@@ -80,7 +81,7 @@ export class SSMClient {
           }),
         );
       } else {
-        result = await this.ssmClient
+        result = await (this.ssmClient as aws.SSM)
           .getParametersByPath({
             Path: secretPath,
             MaxResults: 10,
@@ -105,8 +106,8 @@ export class SSMClient {
    * Sets the given secretName to the secretValue. If secretName is already present, it is overwritten.
    */
   setSecret = async (secretName: string, secretValue: string): Promise<void> => {
-    if (this.ssmClient instanceof SSM_Client) {
-      await this.ssmClient.send(
+    if (typeof (this.ssmClient as SSM_Client).send === 'function') {
+      await (this.ssmClient as SSM_Client).send(
         new PutParameterCommand({
           Name: secretName,
           Value: secretValue,
@@ -115,7 +116,7 @@ export class SSMClient {
         }),
       );
     } else {
-      await this.ssmClient
+      await (this.ssmClient as aws.SSM)
         .putParameter({
           Name: secretName,
           Value: secretValue,
@@ -130,9 +131,9 @@ export class SSMClient {
    * Deletes secretName. If it already doesn't exist, this is treated as success. All other errors will throw.
    */
   deleteSecret = async (secretName: string): Promise<void> => {
-    if (this.ssmClient instanceof SSM_Client) {
+    if (typeof (this.ssmClient as SSM_Client).send === 'function') {
       try {
-        await this.ssmClient.send(new DeleteParameterCommand({ Name: secretName }));
+        await (this.ssmClient as SSM_Client).send(new DeleteParameterCommand({ Name: secretName }));
       } catch (err) {
         if (err?.name !== 'ParameterNotFound') {
           // if the value didn't exist in the first place, consider it deleted
@@ -141,7 +142,7 @@ export class SSMClient {
       }
     } else {
       try {
-        await this.ssmClient.deleteParameter({ Name: secretName }).promise();
+        await (this.ssmClient as aws.SSM).deleteParameter({ Name: secretName }).promise();
       } catch (err) {
         if (err?.code !== 'ParameterNotFound') {
           // if the value didn't exist in the first place, consider it deleted
@@ -155,7 +156,7 @@ export class SSMClient {
    * Deletes all secrets in secretNames.If secret doesn't exist, this is treated as success. All other errors will throw.
    */
   deleteSecrets = async (secretNames: string[]): Promise<void> => {
-    if (this.ssmClient instanceof SSM_Client) {
+    if (typeof (this.ssmClient as SSM_Client).send === 'function') {
       try {
         await this.ssmClient.send(new DeleteParametersCommand({ Names: secretNames }));
       } catch (err) {
@@ -182,8 +183,6 @@ const getSSMClient = async (context: $TSContext): Promise<aws.SSM | SSM_Client> 
   const { client } = (await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'getConfiguredSSMClient', [
     context,
   ])) as any;
-  if (typeof client.send === 'function') {
-    return client as SSM_Client;
-  }
-  return client as aws.SSM;
+  // when V2 is no longer needed cast this to SSM_Client
+  return client;
 };
