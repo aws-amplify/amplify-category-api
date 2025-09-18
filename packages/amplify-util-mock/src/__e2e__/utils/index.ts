@@ -85,7 +85,20 @@ export async function launchDDBLocal() {
     dbPath,
     port: null,
   });
-  const client: DynamoDBClient = await dynamoEmulator.getClient(emulator);
+  
+  // Create SDK v3 client instead of using the v2 client from getClient
+  const client = new DynamoDBClient({
+    endpoint: emulator.url,
+    region: 'us-fake-1',
+    credentials: {
+      accessKeyId: 'fake',
+      secretAccessKey: 'fake',
+    },
+  });
+  
+  // Store emulator URL on client for later use
+  (client as any)._emulatorUrl = emulator.url;
+  
   logDebug(dbPath);
   return { emulator, dbPath, client };
 }
@@ -99,7 +112,15 @@ export async function deploy(
 
   if (client) {
     await createAndUpdateTable(client, config);
-    config = configureDDBDataSource(config, client.config);
+    // Extract config from DynamoDBClient for SDK v3 compatibility
+    const ddbConfig = {
+      endpoint: (client as any)._emulatorUrl,
+      region: 'us-fake-1',
+      accessKeyId: 'fake',
+      secretAccessKey: 'fake',
+      sessionToken: undefined,
+    };
+    config = configureDDBDataSource(config, ddbConfig);
   }
   configureLambdaDataSource(config);
   const simulator = await runAppSyncSimulator(config);
@@ -116,7 +137,15 @@ export async function reDeploy(
 
   if (client) {
     await createAndUpdateTable(client, config);
-    config = configureDDBDataSource(config, client.config);
+    // Extract config from DynamoDBClient for SDK v3 compatibility
+    const ddbConfig = {
+      endpoint: (client as any)._emulatorUrl,
+      region: 'us-fake-1',
+      accessKeyId: 'fake',
+      secretAccessKey: 'fake',
+      sessionToken: undefined,
+    };
+    config = configureDDBDataSource(config, ddbConfig);
   }
   configureLambdaDataSource(config);
   simulator?.reload(config);
