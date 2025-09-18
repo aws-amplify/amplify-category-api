@@ -138,7 +138,7 @@ const shouldRetryBuild = (build: BuildSummary): boolean => {
   return ['FAILED', 'FAULT', 'TIMED_OUT'].includes(build.buildStatus);
 };
 
-const listRecentBatches = async (limit: number = 10): Promise<void> => {
+const listRecentBatches = async (limit: number = 20): Promise<void> => {
   console.log(`🔍 Fetching ${limit} most recent build batches...`);
 
   const result = await codeBuild
@@ -313,7 +313,7 @@ const main = async (): Promise<void> => {
     console.error('  status <batchId>           - Show batch status');
     console.error('  retry <batchId> [retries]  - Retry failed builds');
     console.error('  monitor <batchId> [retries] - Monitor batch with auto-retry');
-    console.error('  list [limit]               - List recent batches (default: 10)');
+    console.error('  list [limit]               - List recent batches (default: 20)');
     console.error('  failed <batchId>           - Show failed builds with log commands');
     console.error('  logs <buildId>             - Show build logs');
     process.exit(1);
@@ -350,7 +350,7 @@ const main = async (): Promise<void> => {
         break;
 
       case 'list':
-        const limit = arg1 ? parseInt(arg1, 10) : 10;
+        const limit = arg1 ? parseInt(arg1, 10) : 20;
         await listRecentBatches(limit);
         break;
 
