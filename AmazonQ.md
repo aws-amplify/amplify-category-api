@@ -159,6 +159,9 @@ When approaching context limits:
 - `yarn e2e-status {batchId}` - Get the status of an e2e one time. Run using ID extraced from `yarn cloud-e2e` output.
 - `yarn e2e-monitor {batchId}`- Checks the status of the batch every 5 minutes. Run using ID extraced from `yarn cloud-e2e` output.
 - `yarn e2e-retry {batchId}` - To retry failed builds in the e2e. Run using ID extraced from `yarn cloud-e2e` output.
+- `yarn e2e-list [limit]` - List recent build batches (default: 10 most recent).
+- `yarn e2e-failed {batchId}` - Show failed builds with log commands for a specific batch.
+- `yarn e2e-logs {buildId}` - Show build logs for a specific build ID.
 
 ### E2E Test Process
 

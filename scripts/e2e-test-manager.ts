@@ -7,6 +7,9 @@
  *   yarn ts-node scripts/e2e-test-manager.ts status <buildBatchId>
  *   yarn ts-node scripts/e2e-test-manager.ts retry <buildBatchId> [maxRetries]
  *   yarn ts-node scripts/e2e-test-manager.ts monitor <buildBatchId> [maxRetries]
+ *   yarn ts-node scripts/e2e-test-manager.ts list [limit]
+ *   yarn ts-node scripts/e2e-test-manager.ts failed <buildBatchId>
+ *   yarn ts-node scripts/e2e-test-manager.ts logs <buildId>
  */
 
 import { CodeBuild, SharedIniFileCredentials } from 'aws-sdk';
@@ -135,6 +138,116 @@ const shouldRetryBuild = (build: BuildSummary): boolean => {
   return ['FAILED', 'FAULT', 'TIMED_OUT'].includes(build.buildStatus);
 };
 
+const listRecentBatches = async (limit: number = 10): Promise<void> => {
+  console.log(`🔍 Fetching ${limit} most recent build batches...`);
+
+  const result = await codeBuild
+    .listBuildBatches({
+      maxResults: limit,
+      sortOrder: 'DESCENDING',
+    })
+    .promise();
+
+  if (!result.ids || result.ids.length === 0) {
+    console.log('No build batches found');
+    return;
+  }
+
+  // Get detailed info for the batches
+  const { buildBatches } = await codeBuild.batchGetBuildBatches({ ids: result.ids }).promise();
+
+  if (!buildBatches || buildBatches.length === 0) {
+    console.log('No build batch details found');
+    return;
+  }
+
+  console.log('\n=== Recent Build Batches ===');
+  for (const batch of buildBatches) {
+    const startTime = batch.startTime ? new Date(batch.startTime).toLocaleString() : 'Unknown';
+    const status = batch.buildBatchStatus || 'Unknown';
+    const buildCount = batch.buildGroups?.length || 0;
+
+    console.log(`${batch.id}`);
+    console.log(`  Status: ${status}`);
+    console.log(`  Started: ${startTime}`);
+    console.log(`  Builds: ${buildCount}`);
+    console.log('');
+  }
+};
+
+const getFailedBuilds = async (batchId: string): Promise<void> => {
+  const status = await getBatchStatus(batchId);
+
+  console.log(`\n=== Failed Builds for Batch: ${batchId} ===`);
+
+  if (status.failedBuilds.length === 0) {
+    console.log('✅ No failed builds found');
+    return;
+  }
+
+  console.log(`❌ Found ${status.failedBuilds.length} failed builds:\n`);
+
+  for (const build of status.failedBuilds) {
+    console.log(`Build: ${build.identifier}`);
+    console.log(`  Status: ${build.buildStatus}`);
+    if (build.buildId) {
+      console.log(`  Build ID: ${build.buildId}`);
+      console.log(`  Logs: yarn e2e-logs ${build.buildId}`);
+    }
+    console.log('');
+  }
+};
+
+const getBuildLogs = async (buildId: string): Promise<void> => {
+  console.log(`📋 Fetching logs for build: ${buildId}`);
+
+  try {
+    const { builds } = await codeBuild.batchGetBuilds({ ids: [buildId] }).promise();
+
+    if (!builds || builds.length === 0) {
+      console.log('❌ Build not found');
+      return;
+    }
+
+    const build = builds[0];
+    const logGroup = build.logs?.groupName;
+    const logStream = build.logs?.streamName;
+
+    if (!logGroup || !logStream) {
+      console.log('❌ No logs available for this build');
+      return;
+    }
+
+    console.log(`\n=== Build Information ===`);
+    console.log(`Build ID: ${buildId}`);
+    console.log(`Status: ${build.buildStatus}`);
+    console.log(`Project: ${build.projectName}`);
+    console.log(`Log Group: ${logGroup}`);
+    console.log(`Log Stream: ${logStream}`);
+
+    // Use AWS CLI to get logs (more reliable than SDK for large logs)
+    const { execSync } = require('child_process');
+
+    console.log(`\n=== Recent Log Output ===`);
+    try {
+      const logOutput = execSync(
+        `aws logs get-log-events --region=${REGION} --profile=${E2E_PROFILE_NAME} --log-group-name="${logGroup}" --log-stream-name="${logStream}" --start-from-head --limit=50 --query="events[*].message" --output=text`,
+        { encoding: 'utf8', maxBuffer: 1024 * 1024 },
+      );
+
+      console.log(logOutput);
+    } catch (error) {
+      console.log('❌ Could not fetch log content:', error.message);
+      console.log(`\nTo view logs manually:`);
+      console.log(
+        `aws logs get-log-events --region=${REGION} --profile=${E2E_PROFILE_NAME} --log-group-name="${logGroup}" --log-stream-name="${logStream}"`,
+      );
+    }
+  } catch (error) {
+    console.error('❌ Error fetching build logs:', error.message);
+  }
+};
+
 const monitorBatch = async (batchId: string, maxRetries: number = DEFAULT_MAX_RETRIES): Promise<void> => {
   let retryCount = 0;
 
@@ -190,29 +303,69 @@ const monitorBatch = async (batchId: string, maxRetries: number = DEFAULT_MAX_RE
 };
 
 const main = async (): Promise<void> => {
-  const [command, batchId, maxRetriesStr] = process.argv.slice(2);
-  const maxRetries = maxRetriesStr ? parseInt(maxRetriesStr, 10) : DEFAULT_MAX_RETRIES;
+  const [command, arg1, arg2] = process.argv.slice(2);
 
-  if (!command || !batchId) {
-    console.error('Usage: yarn ts-node scripts/e2e-test-manager.ts <command> <buildBatchId> [maxRetries]');
-    console.error('Commands: status, retry, monitor');
+  if (!command) {
+    console.error('Usage: yarn ts-node scripts/e2e-test-manager.ts <command> [args...]');
+    console.error('Commands:');
+    console.error('  status <batchId>           - Show batch status');
+    console.error('  retry <batchId> [retries]  - Retry failed builds');
+    console.error('  monitor <batchId> [retries] - Monitor batch with auto-retry');
+    console.error('  list [limit]               - List recent batches (default: 10)');
+    console.error('  failed <batchId>           - Show failed builds with log commands');
+    console.error('  logs <buildId>             - Show build logs');
     process.exit(1);
   }
 
   try {
     switch (command) {
       case 'status':
-        const status = await getBatchStatus(batchId);
+        if (!arg1) {
+          console.error('Error: batchId required for status command');
+          process.exit(1);
+        }
+        const status = await getBatchStatus(arg1);
         printStatus(status);
         break;
 
       case 'retry':
-        const newBatchId = await retryFailedBuilds(batchId);
+        if (!arg1) {
+          console.error('Error: batchId required for retry command');
+          process.exit(1);
+        }
+        const maxRetries = arg2 ? parseInt(arg2, 10) : DEFAULT_MAX_RETRIES;
+        const newBatchId = await retryFailedBuilds(arg1);
         console.log(`New batch started: ${newBatchId}`);
         break;
 
       case 'monitor':
-        await monitorBatch(batchId, maxRetries);
+        if (!arg1) {
+          console.error('Error: batchId required for monitor command');
+          process.exit(1);
+        }
+        const monitorRetries = arg2 ? parseInt(arg2, 10) : DEFAULT_MAX_RETRIES;
+        await monitorBatch(arg1, monitorRetries);
+        break;
+
+      case 'list':
+        const limit = arg1 ? parseInt(arg1, 10) : 10;
+        await listRecentBatches(limit);
+        break;
+
+      case 'failed':
+        if (!arg1) {
+          console.error('Error: batchId required for failed command');
+          process.exit(1);
+        }
+        await getFailedBuilds(arg1);
+        break;
+
+      case 'logs':
+        if (!arg1) {
+          console.error('Error: buildId required for logs command');
+          process.exit(1);
+        }
+        await getBuildLogs(arg1);
         break;
 
       default:
