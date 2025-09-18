@@ -166,8 +166,10 @@ const listRecentBatches = async (limit: number = 10): Promise<void> => {
     const startTime = batch.startTime ? new Date(batch.startTime).toLocaleString() : 'Unknown';
     const status = batch.buildBatchStatus || 'Unknown';
     const buildCount = batch.buildGroups?.length || 0;
+    const branch = batch.sourceVersion || 'Unknown';
 
     console.log(`${batch.id}`);
+    console.log(`  Branch: ${branch}`);
     console.log(`  Status: ${status}`);
     console.log(`  Started: ${startTime}`);
     console.log(`  Builds: ${buildCount}`);
