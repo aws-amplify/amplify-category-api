@@ -1,74 +1,73 @@
-import * as AWSMock from 'aws-sdk-mock';
-import * as AWS from 'aws-sdk';
-import { DynamoDB } from 'aws-sdk';
+import { DynamoDBClient, DescribeTableCommand } from '@aws-sdk/client-dynamodb';
+import { mockClient } from 'aws-sdk-client-mock';
 import { waitTillTableStateIsActive } from '../../../utils/dynamo-db/helpers';
 
-describe('aitTillTableStateIsActive', () => {
-  const describeTableMock = jest.fn();
+describe('waitTillTableStateIsActive', () => {
+  const ddbMock = mockClient(DynamoDBClient);
+
   beforeEach(() => {
     jest.resetAllMocks();
     jest.useFakeTimers();
-    AWSMock.setSDKInstance(AWS);
-    AWSMock.mock('DynamoDB', 'describeTable', describeTableMock);
+    ddbMock.reset();
   });
+
   afterEach(() => {
     jest.useRealTimers();
   });
 
   it('should wait for table to be in active state', async () => {
-    describeTableMock.mockImplementation(({ TableName }, cb) => {
-      cb(null, {
-        Table: {
-          TableName,
-          TableStatus: 'ACTIVE',
-        },
-      });
+    ddbMock.on(DescribeTableCommand).resolves({
+      Table: {
+        TableName: 'table1',
+        TableStatus: 'ACTIVE',
+      },
     });
-    const dynamoDBClient = new DynamoDB();
 
+    const dynamoDBClient = new DynamoDBClient({});
     const waitTillTableStateIsActivePromise = waitTillTableStateIsActive(dynamoDBClient, 'table1');
     jest.advanceTimersByTime(1000);
     await waitTillTableStateIsActivePromise;
-    expect(describeTableMock.mock.calls[0][0]).toEqual({ TableName: 'table1' });
+
+    expect(ddbMock.commandCalls(DescribeTableCommand)[0].args[0].input).toEqual({ TableName: 'table1' });
   });
 
   it('should reject the promise when table does not become active for timeout period', async () => {
-    describeTableMock.mockImplementation(({ TableName }, cb) => {
-      cb(null, {
-        Table: {
-          TableName,
-          TableStatus: 'UPDATING',
-        },
-      });
+    ddbMock.on(DescribeTableCommand).resolves({
+      Table: {
+        TableName: 'table1',
+        TableStatus: 'UPDATING',
+      },
     });
-    const dynamoDBClient = new DynamoDB();
 
+    const dynamoDBClient = new DynamoDBClient({});
     const waitTillTableStateIsActivePromise = waitTillTableStateIsActive(dynamoDBClient, 'table1');
     jest.runOnlyPendingTimers();
     await expect(waitTillTableStateIsActivePromise).rejects.toMatchObject({ message: 'Waiting for table status to turn ACTIVE timed out' });
-    expect(describeTableMock).toHaveBeenCalled();
+    expect(ddbMock.commandCalls(DescribeTableCommand).length).toBeGreaterThan(0);
   });
 
   it('should periodically call check status', async () => {
     let callCount = 0;
-    describeTableMock.mockImplementation(({ TableName }, cb) => {
+    ddbMock.on(DescribeTableCommand).callsFake(() => {
       callCount += 1;
-      cb(null, {
+      return {
         Table: {
-          TableName,
+          TableName: 'table1',
           TableStatus: callCount === 3 ? 'ACTIVE' : 'UPDATING',
         },
-      });
+      };
     });
-    const dynamoDBClient = new DynamoDB();
 
+    const dynamoDBClient = new DynamoDBClient({});
     const waitTillTableStateIsActivePromise = waitTillTableStateIsActive(dynamoDBClient, 'table1');
     jest.advanceTimersByTime(3000);
     await waitTillTableStateIsActivePromise;
-    expect(describeTableMock).toBeCalledTimes(4);
-    expect(describeTableMock.mock.calls[0][0]).toEqual({ TableName: 'table1' });
-    expect(describeTableMock.mock.calls[1][0]).toEqual({ TableName: 'table1' });
-    expect(describeTableMock.mock.calls[2][0]).toEqual({ TableName: 'table1' });
-    expect(describeTableMock.mock.calls[3][0]).toEqual({ TableName: 'table1' });
+
+    const calls = ddbMock.commandCalls(DescribeTableCommand);
+    expect(calls.length).toBe(4);
+    expect(calls[0].args[0].input).toEqual({ TableName: 'table1' });
+    expect(calls[1].args[0].input).toEqual({ TableName: 'table1' });
+    expect(calls[2].args[0].input).toEqual({ TableName: 'table1' });
+    expect(calls[3].args[0].input).toEqual({ TableName: 'table1' });
   });
 });

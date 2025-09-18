@@ -3,7 +3,7 @@ import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator'
 import * as dynamoEmulator from 'amplify-category-api-dynamodb-simulator';
 import * as fs from 'fs-extra';
 import { v4 } from 'uuid';
-import { DynamoDB } from 'aws-sdk';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { functionRuntimeContributorFactory } from 'amplify-nodejs-function-runtime-provider';
 import { ExecuteTransformConfig, executeTransform } from '@aws-amplify/graphql-transformer';
 import { DeploymentResources, TransformManager } from '@aws-amplify/graphql-transformer-test-utils';
@@ -85,18 +85,42 @@ export async function launchDDBLocal() {
     dbPath,
     port: null,
   });
-  const client: DynamoDB = await dynamoEmulator.getClient(emulator);
+
+  // Create SDK v3 client instead of using the v2 client from getClient
+  const client = new DynamoDBClient({
+    endpoint: emulator.url,
+    region: 'us-fake-1',
+    credentials: {
+      accessKeyId: 'fake',
+      secretAccessKey: 'fake',
+    },
+  });
+
+  // Store emulator URL on client for later use
+  (client as any)._emulatorUrl = emulator.url;
+
   logDebug(dbPath);
   return { emulator, dbPath, client };
 }
 
-export async function deploy(transformerOutput: any, client?: DynamoDB): Promise<{ config: any; simulator: AmplifyAppSyncSimulator }> {
+export async function deploy(
+  transformerOutput: any,
+  client?: DynamoDBClient,
+): Promise<{ config: any; simulator: AmplifyAppSyncSimulator }> {
   let config: any = processTransformerStacks(transformerOutput);
   config.appSync.apiKey = 'da-fake-api-key';
 
   if (client) {
     await createAndUpdateTable(client, config);
-    config = configureDDBDataSource(config, client.config);
+    // Extract config from DynamoDBClient for SDK v3 compatibility
+    const ddbConfig = {
+      endpoint: (client as any)._emulatorUrl,
+      region: 'us-fake-1',
+      accessKeyId: 'fake',
+      secretAccessKey: 'fake',
+      sessionToken: undefined,
+    };
+    config = configureDDBDataSource(config, ddbConfig);
   }
   configureLambdaDataSource(config);
   const simulator = await runAppSyncSimulator(config);
@@ -106,14 +130,22 @@ export async function deploy(transformerOutput: any, client?: DynamoDB): Promise
 export async function reDeploy(
   transformerOutput: any,
   simulator: AmplifyAppSyncSimulator,
-  client?: DynamoDB,
+  client?: DynamoDBClient,
 ): Promise<{ config: any; simulator: AmplifyAppSyncSimulator }> {
   let config: any = processTransformerStacks(transformerOutput);
   config.appSync.apiKey = 'da-fake-api-key';
 
   if (client) {
     await createAndUpdateTable(client, config);
-    config = configureDDBDataSource(config, client.config);
+    // Extract config from DynamoDBClient for SDK v3 compatibility
+    const ddbConfig = {
+      endpoint: (client as any)._emulatorUrl,
+      region: 'us-fake-1',
+      accessKeyId: 'fake',
+      secretAccessKey: 'fake',
+      sessionToken: undefined,
+    };
+    config = configureDDBDataSource(config, ddbConfig);
   }
   configureLambdaDataSource(config);
   simulator?.reload(config);

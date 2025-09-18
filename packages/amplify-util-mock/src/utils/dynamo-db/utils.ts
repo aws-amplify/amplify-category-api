@@ -1,15 +1,15 @@
-import { DynamoDB } from 'aws-sdk';
-import { CreateTableInput, GlobalSecondaryIndexUpdate, TableDescription, UpdateTableInput } from 'aws-sdk/clients/dynamodb';
+import { DynamoDBClient, CreateTableCommand, UpdateTableCommand, DescribeTableCommand } from '@aws-sdk/client-dynamodb';
+import { CreateTableInput, GlobalSecondaryIndexUpdate, TableDescription, UpdateTableInput } from '@aws-sdk/client-dynamodb';
 import { waitTillTableStateIsActive } from './helpers';
 
-export async function createTables(dynamoDbClient: DynamoDB, tables: CreateTableInput[]): Promise<void> {
+export async function createTables(dynamoDbClient: DynamoDBClient, tables: CreateTableInput[]): Promise<void> {
   for (let table of tables) {
     console.log(`Creating new table ${table.TableName}`);
-    await dynamoDbClient.createTable(table).promise();
+    await dynamoDbClient.send(new CreateTableCommand(table));
   }
 }
 
-export async function updateTables(dynamoDbClient: DynamoDB, tables: UpdateTableInput[]): Promise<void> {
+export async function updateTables(dynamoDbClient: DynamoDBClient, tables: UpdateTableInput[]): Promise<void> {
   for (let table of tables) {
     const updateType = table.GlobalSecondaryIndexUpdates[0].Delete ? 'Deleting' : 'Creating';
     const indexName =
@@ -18,14 +18,14 @@ export async function updateTables(dynamoDbClient: DynamoDB, tables: UpdateTable
         : table.GlobalSecondaryIndexUpdates[0].Create.IndexName;
     await waitTillTableStateIsActive(dynamoDbClient, table.TableName);
     console.log(`${updateType} index ${indexName} on ${table.TableName}`);
-    await dynamoDbClient.updateTable(table).promise();
+    await dynamoDbClient.send(new UpdateTableCommand(table));
   }
 }
 
-export async function describeTables(dynamoDbClient: DynamoDB, tableNames: string[]): Promise<Record<string, TableDescription>> {
+export async function describeTables(dynamoDbClient: DynamoDBClient, tableNames: string[]): Promise<Record<string, TableDescription>> {
   const tableDetails: Record<string, TableDescription> = {};
   for (let tableName of tableNames) {
-    const tableDescription = await dynamoDbClient.describeTable({ TableName: tableName }).promise();
+    const tableDescription = await dynamoDbClient.send(new DescribeTableCommand({ TableName: tableName }));
     if (tableDescription.Table) {
       tableDetails[tableName] = tableDescription.Table;
     }
@@ -37,18 +37,18 @@ export function getUpdateTableInput(createInput: CreateTableInput, existingTable
   if (createInput.TableName !== existingTableConfig.TableName) {
     throw new Error('Invalid input, table name mismatch');
   }
-  const inputGSINames = (createInput.GlobalSecondaryIndexes || []).map((index) => index.IndexName);
-  const existingGSINames = (existingTableConfig.GlobalSecondaryIndexes || []).map((index) => index.IndexName);
-  const indexNamesToAdd = inputGSINames.filter((indexName) => !existingGSINames.includes(indexName));
-  const indexNamesToRemove = existingGSINames.filter((indexName) => !inputGSINames.includes(indexName));
+  const inputGSINames = (createInput.GlobalSecondaryIndexes || []).map(index => index.IndexName);
+  const existingGSINames = (existingTableConfig.GlobalSecondaryIndexes || []).map(index => index.IndexName);
+  const indexNamesToAdd = inputGSINames.filter(indexName => !existingGSINames.includes(indexName));
+  const indexNamesToRemove = existingGSINames.filter(indexName => !inputGSINames.includes(indexName));
 
-  const indicesToAdd: GlobalSecondaryIndexUpdate[] = indexNamesToAdd.map((indexName) => {
-    const idx = createInput.GlobalSecondaryIndexes.find((index) => index.IndexName === indexName);
+  const indicesToAdd: GlobalSecondaryIndexUpdate[] = indexNamesToAdd.map(indexName => {
+    const idx = createInput.GlobalSecondaryIndexes.find(index => index.IndexName === indexName);
     return {
       Create: idx,
     };
   });
-  const indicesToRemove: GlobalSecondaryIndexUpdate[] = indexNamesToRemove.map((indexName) => {
+  const indicesToRemove: GlobalSecondaryIndexUpdate[] = indexNamesToRemove.map(indexName => {
     return {
       Delete: {
         IndexName: indexName,
@@ -58,7 +58,7 @@ export function getUpdateTableInput(createInput: CreateTableInput, existingTable
 
   return [
     ...(indicesToRemove.length
-      ? indicesToRemove.map((index) => {
+      ? indicesToRemove.map(index => {
           return {
             TableName: existingTableConfig.TableName,
             GlobalSecondaryIndexUpdates: [index],
@@ -66,7 +66,7 @@ export function getUpdateTableInput(createInput: CreateTableInput, existingTable
         })
       : []),
     ...(indicesToAdd.length
-      ? indicesToAdd.map((index) => {
+      ? indicesToAdd.map(index => {
           return {
             TableName: existingTableConfig.TableName,
             AttributeDefinitions: createInput.AttributeDefinitions,
