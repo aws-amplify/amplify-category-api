@@ -25,14 +25,14 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
 
 const getAuthenticationTypesForAuthConfig = (authConfig?: AppSyncAuthConfiguration): (string | undefined)[] =>
   [authConfig?.defaultAuthentication, ...(authConfig?.additionalAuthenticationProviders ?? [])].map(
-    authConfigEntry => authConfigEntry?.authenticationType,
+    (authConfigEntry) => authConfigEntry?.authenticationType,
   );
 
 const hasIamAuth = (authConfig?: AppSyncAuthConfiguration): boolean =>
-  getAuthenticationTypesForAuthConfig(authConfig).some(authType => authType === 'AWS_IAM');
+  getAuthenticationTypesForAuthConfig(authConfig).some((authType) => authType === 'AWS_IAM');
 
 const hasUserPoolAuth = (authConfig?: AppSyncAuthConfiguration): boolean =>
-  getAuthenticationTypesForAuthConfig(authConfig).some(authType => authType === 'AMAZON_COGNITO_USER_POOLS');
+  getAuthenticationTypesForAuthConfig(authConfig).some((authType) => authType === 'AMAZON_COGNITO_USER_POOLS');
 
 export const transformAndSynth = (
   options: Omit<ExecuteTransformConfig, 'scope' | 'nestedStackProvider' | 'assetProvider' | 'synthParameters' | 'dataSourceStrategies'> & {
@@ -85,7 +85,7 @@ export async function launchDDBLocal() {
     dbPath,
     port: null,
   });
-  
+
   // Create SDK v3 client instead of using the v2 client from getClient
   const client = new DynamoDBClient({
     endpoint: emulator.url,
@@ -95,10 +95,10 @@ export async function launchDDBLocal() {
       secretAccessKey: 'fake',
     },
   });
-  
+
   // Store emulator URL on client for later use
   (client as any)._emulatorUrl = emulator.url;
-  
+
   logDebug(dbPath);
   return { emulator, dbPath, client };
 }
@@ -154,13 +154,13 @@ export async function reDeploy(
 
 async function configureLambdaDataSource(config) {
   config.dataSources
-    .filter(d => d.type === 'AWS_LAMBDA')
-    .forEach(d => {
+    .filter((d) => d.type === 'AWS_LAMBDA')
+    .forEach((d) => {
       const arn = d.LambdaFunctionArn;
       const arnParts = arn.split(':');
       let functionName = arnParts[arnParts.length - 1];
       const lambdaConfig = getFunctionDetails(functionName);
-      d.invoke = payload => {
+      d.invoke = (payload) => {
         logDebug('Invoking lambda with config', lambdaConfig);
         return invoke({
           srcRoot: lambdaConfig.packageFolder,
