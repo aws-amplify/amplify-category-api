@@ -155,22 +155,25 @@ When approaching context limits:
 
 ### E2E Workflow Commands
 
-- `ada` - AWS credential refresh command (required before e2e tests)
-- `yarn e2e` - Run e2e test suite (only after pushing code)
+- `yarn cloud-e2e` - Run e2e tests against pushed code.
+- `yarn e2e-status {batchId}` - Get the status of an e2e one time. Run using ID extraced from `yarn cloud-e2e` output.
+- `yarn e2e-monitor {batchId}`- Checks the status of the batch every 5 minutes. Run using ID extraced from `yarn cloud-e2e` output.
+- `yarn e2e-retry {batchId}` - To retry failed builds in the e2e. Run using ID extraced from `yarn cloud-e2e` output.
 
 ### E2E Test Process
 
 1. **Complete all local development and testing**
 2. **Commit and push all changes to remote branch**
 3. **Refresh AWS credentials using `ada` command**
-4. **Run `yarn e2e` to execute e2e test suite**
+4. **Run `yarn cloud-e2e` to execute e2e test suite**
 5. **Monitor test results and address any failures**
 
 ### Common E2E Issues
 
-- **ExpiredToken errors**: Run `ada` to refresh AWS credentials
-- **Test failures on local changes**: Ensure all code is pushed first
-- **Authentication failures**: Verify AWS credentials are valid
+1. Expired credentials and timeouts during test execution usually indicate that the test took too long to run: Retry it.
+2. Quota errors: Retry it, but also let the user know that resource cleanup is needed.
+
+Errors that are clearly related to code changes should not be retried. Instead, investigate potential causes of the error and recommend a fix.
 
 ## Quality Gates
 
@@ -183,3 +186,9 @@ Before marking tasks complete:
 - [ ] `Q_TODO.md` is current
 - [ ] **All code committed and pushed before e2e tests**
 - [ ] **E2E tests passing (after `ada` credential refresh)**
+
+## Misc
+
+Use the `say` command with a _very brief_ (three to six words) message when you're ready for the user to review results. Similarly, use something like `say your input is needed` when you need input or action from the user.
+
+DO NOT leave instructions for yourself in non-canonical file names or locations. Keep general instructions for yourself in `AmazonQ.md`. Keep TODOs for yourself in `Q_TODO.md`. Keep large, task-specific context in `.q/`. When starting on a complex task, look in `.q/` for related context. Leverage that folder for large chunks of context, to help decompose work, etc..

@@ -14,7 +14,7 @@ import * as process from 'process';
 
 const E2E_PROFILE_NAME = 'AmplifyAPIE2EProd';
 const REGION = 'us-east-1';
-const POLL_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
+const POLL_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 const DEFAULT_MAX_RETRIES = 10;
 
 const credentials = new SharedIniFileCredentials({ profile: E2E_PROFILE_NAME });

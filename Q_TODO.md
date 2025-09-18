@@ -75,3 +75,7 @@ Not traditional sprint planning - items here represent work actively being deliv
 - DynamoDB client migration is the main complexity (amplify-util-mock)
 - Most infrastructure already provides v3 patterns to follow
 - Risk is much lower than initially assessed
+
+### Context
+
+As-needed, use the `.q/` folder for larger chunks of _task sepcific_ context. This also means that when starting a task, check for related context in `.q/`. Look for filenames, check READMEs, or `grep` to determine what is related.
