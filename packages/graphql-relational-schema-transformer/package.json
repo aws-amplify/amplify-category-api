@@ -1,6 +1,6 @@
 {
   "name": "graphql-relational-schema-transformer",
-  "version": "2.21.38",
+  "version": "2.21.39-sdk-0-ssmSend.0",
   "description": "An AppSync model transform that takes a relational database and turns that into a GraphQL API.",
   "repository": {
     "type": "git",

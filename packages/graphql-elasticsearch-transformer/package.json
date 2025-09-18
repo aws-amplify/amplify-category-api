@@ -1,6 +1,6 @@
 {
   "name": "graphql-elasticsearch-transformer",
-  "version": "5.2.85",
+  "version": "5.2.86-sdk-0-ssmSend.0",
   "description": "An AppSync model transform that creates an ElasticSearch index with the queries to match.",
   "repository": {
     "type": "git",
