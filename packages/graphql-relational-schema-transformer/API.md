@@ -12,9 +12,9 @@ import Template from 'cloudform-types/types/template';
 
 // @public (undocumented)
 export class AuroraDataAPIClient {
-    constructor(databaseRegion: string, awsSecretStoreArn: string, dbClusterOrInstanceArn: string, database: string, aws: any);
+    constructor(databaseRegion: string, awsSecretStoreArn: string, dbClusterOrInstanceArn: string, database: string, awsConfig: any);
     // (undocumented)
-    AWS: any;
+    AWSConfig: any;
     // (undocumented)
     describeTable: (tableName: string) => Promise<any[]>;
     // (undocumented)
@@ -33,7 +33,7 @@ export class AuroraDataAPIClient {
 //
 // @public (undocumented)
 export class AuroraServerlessMySQLDatabaseReader implements IRelationalDBReader {
-    constructor(dbRegion: string, awsSecretStoreArn: string, dbClusterOrInstanceArn: string, database: string, aws: any);
+    constructor(dbRegion: string, awsSecretStoreArn: string, dbClusterOrInstanceArn: string, database: string, awsConfig: any);
     // (undocumented)
     auroraClient: AuroraDataAPIClient;
     // (undocumented)
