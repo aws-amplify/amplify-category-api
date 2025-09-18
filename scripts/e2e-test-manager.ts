@@ -138,12 +138,12 @@ const shouldRetryBuild = (build: BuildSummary): boolean => {
   return ['FAILED', 'FAULT', 'TIMED_OUT'].includes(build.buildStatus);
 };
 
-const listRecentBatches = async (limit: number = 20): Promise<void> => {
-  console.log(`🔍 Fetching ${limit} most recent build batches...`);
+const listRecentBatches = async (limit: number = 20, filterType?: 'e2e' | 'canary'): Promise<void> => {
+  console.log(`🔍 Fetching ${limit} most recent build batches${filterType ? ` (${filterType} only)` : ''}...`);
 
   const result = await codeBuild
     .listBuildBatches({
-      maxResults: limit,
+      maxResults: limit * 3, // Get more to account for filtering
       sortOrder: 'DESCENDING',
     })
     .promise();
@@ -161,8 +161,24 @@ const listRecentBatches = async (limit: number = 20): Promise<void> => {
     return;
   }
 
-  console.log('\n=== Recent Build Batches ===');
-  for (const batch of buildBatches) {
+  // Filter batches based on type
+  let filteredBatches = buildBatches;
+  if (filterType === 'e2e') {
+    filteredBatches = buildBatches.filter((batch) => batch.id?.includes('e2e-workflow'));
+  } else if (filterType === 'canary') {
+    filteredBatches = buildBatches.filter((batch) => batch.id?.includes('canary-workflow'));
+  }
+
+  // Limit results after filtering
+  filteredBatches = filteredBatches.slice(0, limit);
+
+  if (filteredBatches.length === 0) {
+    console.log(`No ${filterType || 'build'} batches found`);
+    return;
+  }
+
+  console.log(`\n=== Recent ${filterType ? filterType.toUpperCase() : 'Build'} Batches ===`);
+  for (const batch of filteredBatches) {
     const startTime = batch.startTime ? new Date(batch.startTime).toLocaleString() : 'Unknown';
     const status = batch.buildBatchStatus || 'Unknown';
     const buildCount = batch.buildGroups?.length || 0;
@@ -313,7 +329,7 @@ const main = async (): Promise<void> => {
     console.error('  status <batchId>           - Show batch status');
     console.error('  retry <batchId> [retries]  - Retry failed builds');
     console.error('  monitor <batchId> [retries] - Monitor batch with auto-retry');
-    console.error('  list [limit]               - List recent batches (default: 20)');
+    console.error('  list [limit] [e2e|canary]  - List recent batches (default: 20, all types)');
     console.error('  failed <batchId>           - Show failed builds with log commands');
     console.error('  logs <buildId>             - Show build logs');
     process.exit(1);
@@ -351,7 +367,8 @@ const main = async (): Promise<void> => {
 
       case 'list':
         const limit = arg1 ? parseInt(arg1, 10) : 20;
-        await listRecentBatches(limit);
+        const filterType = arg2 as 'e2e' | 'canary' | undefined;
+        await listRecentBatches(limit, filterType);
         break;
 
       case 'failed':
