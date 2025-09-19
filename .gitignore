@@ -1,4 +1,5 @@
 **/.DS_Store
+.jsii
 build
 node_modules
 out
