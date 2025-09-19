@@ -61,6 +61,7 @@ const defaultTransformConfig: TransformConfig = {
     enableAutoIndexQueryNames: false,
     respectPrimaryKeyAttributesOnConnectionField: false,
     enableSearchNodeToNodeEncryption: false,
+    enableSearchEncryptionAtRest: false,
     enableTransformerCfnOutputs: true,
     allowDestructiveGraphqlSchemaUpdates: false,
     replaceTableUponGsiUpdate: false,
