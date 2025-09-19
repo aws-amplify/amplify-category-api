@@ -30,7 +30,7 @@ export const createLambda = (
     `functions/${OpenSearchStreamingLambdaFunctionLogicalID}.zip`,
     parameterMap.get(OpenSearchStreamingLambdaHandlerName)!.valueAsString,
     path.resolve(__dirname, '..', '..', 'lib', 'streaming-lambda.zip'),
-    Runtime.PYTHON_3_8,
+    Runtime.PYTHON_3_13,
     [
       LayerVersion.fromLayerVersionArn(
         scope,
