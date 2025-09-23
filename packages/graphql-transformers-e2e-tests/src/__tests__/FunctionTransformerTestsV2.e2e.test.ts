@@ -72,7 +72,7 @@ async function randomOtherAccount(currentAccountId: string) {
   }
 
   const randIx = Math.floor(Math.random() * eligibleAccounts.length);
-  const otherAccountId = eligigbleAccounts[randIx].Id;
+  const otherAccountId = eligibleAccounts[randIx].Id;
 
   const childAccountRoleARN = `arn:aws:iam::${otherAccountId}:role/OrganizationAccountAccessRole`;
   const accountCredentials = (
