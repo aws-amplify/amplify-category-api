@@ -59,15 +59,11 @@ const createEchoFunctionInOtherAccount = async (currentAccountId?: string) => {
   try {
     const childAccounts = (await organizations.send(new ListAccountsCommand()))?.Accounts;
     if (!childAccounts || childAccounts?.length < 1) {
-      console.warn('Could not find any child accounts attached to current account');
-      expect(true).toEqual(false);
-      return;
+      throw new Error('Could not find any child accounts attached to current account');
     }
     const otherAccountId = childAccounts.find((account) => account.Id !== currentAccountId)?.Id;
     if (!otherAccountId) {
-      console.warn('Could not choose other account to create lambda function');
-      expect(true).toEqual(false);
-      return;
+      throw new Error('Could not choose other account to create lambda function');
     }
     const childAccountRoleARN = `arn:aws:iam::${otherAccountId}:role/OrganizationAccountAccessRole`;
     const accountCredentials = (
@@ -80,9 +76,7 @@ const createEchoFunctionInOtherAccount = async (currentAccountId?: string) => {
       )
     )?.Credentials;
     if (!accountCredentials?.AccessKeyId || !accountCredentials?.SecretAccessKey || !accountCredentials?.SessionToken) {
-      console.warn('Could not assume role to access child account');
-      expect(true).toEqual(false);
-      return;
+      throw new Error('Could not assume role to access child account');
     }
     const credentials: AwsCredentialIdentity = {
       accessKeyId: accountCredentials.AccessKeyId,
@@ -102,9 +96,7 @@ const createEchoFunctionInOtherAccount = async (currentAccountId?: string) => {
     await crossAccountLambdaHelper.addAppSyncCrossAccountAccess(currentAccountId, ECHO_FUNCTION_NAME);
     return otherAccountId;
   } catch (e) {
-    console.warn(`Could not create echo function in other account: ${e}`);
-    expect(true).toEqual(false);
-    return;
+    throw new Error(`Could not create echo function in other account: ${e}`);
   }
 };
 
@@ -121,9 +113,7 @@ const deleteEchoFunctionInOtherAccount = async (accountId: string) => {
       )
     )?.Credentials;
     if (!accountCredentials?.AccessKeyId || !accountCredentials?.SecretAccessKey || !accountCredentials?.SessionToken) {
-      console.warn('Could not assume role to access child account');
-      expect(true).toEqual(false);
-      return;
+      throw new Error('Could not assume role to access child account');
     }
     const credentials: AwsCredentialIdentity = {
       accessKeyId: accountCredentials.AccessKeyId,
@@ -138,9 +128,7 @@ const deleteEchoFunctionInOtherAccount = async (accountId: string) => {
     await crossAccountIAMHelper.deleteRole(LAMBDA_EXECUTION_ROLE_NAME);
     await crossAccountIAMHelper.deletePolicy(CROSS_ACCOUNT_LAMBDA_EXECUTION_POLICY_ARN);
   } catch (e) {
-    console.warn(`Could not delete echo function in other account: ${e}`);
-    expect(true).toEqual(false);
-    return;
+    throw new Error(`Could not delete echo function in other account: ${e}`);
   }
 };
 
@@ -151,8 +139,7 @@ const getCurrentAccountId = async (): Promise<string | undefined> => {
     const accountDetails = await sts.send(new GetCallerIdentityCommand());
     return accountDetails?.Account;
   } catch (e) {
-    console.warn(`Could not get current AWS account ID: ${e}`);
-    expect(true).toEqual(false);
+    throw new Error(`Could not get current AWS account ID: ${e}`);
   }
 };
 
@@ -207,8 +194,7 @@ beforeAll(async () => {
   try {
     await customS3Client.createBucket(BUCKET_NAME);
   } catch (e) {
-    console.warn(`Could not create bucket: ${e}`);
-    expect(true).toEqual(false);
+    throw new Error(`Could not create bucket: ${e}`);
   }
   try {
     const role = await IAM_HELPER.createLambdaExecutionRole(LAMBDA_EXECUTION_ROLE_NAME);
@@ -221,8 +207,7 @@ beforeAll(async () => {
     await LAMBDA_HELPER.createFunction(ECHO_FUNCTION_NAME, role.Role.Arn, 'echoFunction');
     await LAMBDA_HELPER.createFunction(HELLO_FUNCTION_NAME, role.Role.Arn, 'hello');
   } catch (e) {
-    console.warn(`Could not setup function: ${e}`);
-    expect(true).toEqual(false);
+    throw new Error(`Could not setup function: ${e}`);
   }
   const out = testTransform({
     schema: validSchema,

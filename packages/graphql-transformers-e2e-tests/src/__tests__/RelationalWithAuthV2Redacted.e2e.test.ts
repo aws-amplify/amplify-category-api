@@ -162,14 +162,12 @@ beforeAll(async () => {
       ],
     });
   } catch (e) {
-    console.error(`Failed to transform schema: ${e}`);
-    expect(true).toEqual(false);
+    throw new Error(`Failed to transform schema: ${e}`);
   }
   try {
     await customS3Client.createBucket(BUCKET_NAME);
   } catch (e) {
-    console.error(`Failed to create S3 bucket: ${e}`);
-    expect(true).toEqual(false);
+    throw new Error(`Failed to create S3 bucket: ${e}`);
   }
   const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
   USER_POOL_ID = userPoolResponse.UserPool.Id;
@@ -231,8 +229,7 @@ beforeAll(async () => {
     // "The security token included in the request is invalid" errors
     await new Promise<void>((res) => setTimeout(() => res(), 5000));
   } catch (e) {
-    console.error(e);
-    expect(true).toEqual(false);
+    throw new Error(`${e}`);
   }
 });
 
