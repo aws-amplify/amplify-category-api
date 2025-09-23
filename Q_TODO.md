@@ -5,17 +5,12 @@
 **Purpose**: Context management and logical break-points for user feedback only.
 Not traditional sprint planning - items here represent work actively being delivered.
 
-**SSM Migration Reverted** - Conflicts with CLI package updates
+**Status: Ready for E2E Testing**
 
-**Updated Migration Plan:**
-
-- SSM components will be handled LAST due to CLI compatibility requirements
-- Proceeding with Phase 2: amplify-util-mock DynamoDB utilities migration
-
-**Test Fix Status:**
-
+- ✅ All local tests passing after parent branch merge
 - ✅ Fixed api_3.test.ts AppSync error message format (committed in f80900b24)
-- E2E tests ready for validation after next migration phase
+- ✅ Parent branch merge completed successfully
+- 🚀 Ready to commit and run E2E tests
 
 ## Backlog
 
@@ -40,8 +35,15 @@ Not traditional sprint planning - items here represent work actively being deliv
   - [ ] Add @aws-sdk/client-ssm dependency
 
 - [ ] **Phase 4: Final Cleanup**
+
   - [ ] Remove aws-sdk v2 from root package.json resolutions
   - [ ] Final validation and testing
+
+- [ ] **Investigate transient STS role assumption issue in e2e tests**
+  - FunctionTransformerTestsV2 failing with "NoSuchBucket" error
+  - Issue appears related to test infra not properly handling STS role assumption
+  - Transient because test pool includes parent account which can cause conflicts
+  - Need to investigate proper role assumption patterns in test infrastructure
 
 ## Completed
 
