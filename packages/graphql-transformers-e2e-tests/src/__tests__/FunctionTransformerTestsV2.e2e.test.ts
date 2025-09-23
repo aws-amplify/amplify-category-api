@@ -62,13 +62,13 @@ async function randomOtherAccount(currentAccountId: string) {
 
   const eligibleAccounts = childAccounts
     // Eliminate the current account
-    .filter(a => a.Id !== currentAccountId)
+    .filter((a) => a.Id !== currentAccountId)
     // Eliminate the root account. Every ARN will look `arn:aws:organizations::${root}:account/${org}/${account}` like,
     // only for the root account will it be $root == $account.
-    .filter(a => !a.Arn!.startsWith(`arn:aws:organizations::${a.Id}:`));
+    .filter((a) => !a.Arn!.startsWith(`arn:aws:organizations::${a.Id}:`));
 
   if (eligibleAccounts.length === 0) {
-    throw new Error(`Could not find any eligible accounts in organization (found ${childAccounts.map(a => a.Id)})`);
+    throw new Error(`Could not find any eligible accounts in organization (found ${childAccounts.map((a) => a.Id)})`);
   }
 
   const randIx = Math.floor(Math.random() * eligibleAccounts.length);
@@ -118,7 +118,7 @@ const createEchoFunctionInOtherAccount = async (currentAccountId?: string) => {
     return otherAccountId;
   } catch (e) {
     console.warn(`Could not create echo function in other account: ${e}`);
-    throw;
+    throw e;
   }
 };
 
