@@ -5765,7 +5765,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -----
 
-The following software may be included in this product: @sinonjs/fake-timers. A copy of the source code may be downloaded from https://github.com/sinonjs/fake-timers.git. This software contains the following license and notice below:
+The following software may be included in this product: @sinonjs/fake-timers. A copy of the source code may be downloaded from git+https://github.com/sinonjs/fake-timers.git. This software contains the following license and notice below:
 
 Copyright (c) 2010-2014, Christian Johansen, christian@cjohansen.no. All rights reserved.
 
@@ -11368,11 +11368,7 @@ Amazon Web Services, Inc. (http://aws.amazon.com/).
 
 -----
 
-<<<<<<< HEAD
-The following software may be included in this product: aws-sdk-client-mock. A copy of the source code may be downloaded from https://github.com/m-radzikowski/aws-sdk-client-mock.git. This software contains the following license and notice below:
-=======
 The following software may be included in this product: aws-sdk-client-mock, aws-sdk-client-mock-jest. A copy of the source code may be downloaded from https://github.com/m-radzikowski/aws-sdk-client-mock.git (aws-sdk-client-mock), https://github.com/m-radzikowski/aws-sdk-client-mock.git (aws-sdk-client-mock-jest). This software contains the following license and notice below:
->>>>>>> origin/release-api-plugin-stable
 
 MIT License
 
