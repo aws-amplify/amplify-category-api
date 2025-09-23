@@ -32,11 +32,16 @@ export const createLambda = (
     path.resolve(__dirname, '..', '..', 'lib', 'streaming-lambda.zip'),
     Runtime.PYTHON_3_12,
     [
+      // Let's avoid using the Layer, it's only there to keep on bringing the 'requests' dependency
+      // for people who transitively depend on it; but we don't, so we can use the version of boto3 that
+      // comes with Lambda by default.
+      /*
       LayerVersion.fromLayerVersionArn(
         scope,
         'LambdaLayerVersion',
         Fn.findInMap('LayerResourceMapping', Fn.ref('AWS::Region'), 'layerRegion'),
       ),
+      */
     ],
     lambdaRole,
     enviroment,
