@@ -3,7 +3,7 @@ import * as path from 'path';
 import { DeploymentResources } from 'graphql-transformer-core';
 import { CognitoIdentityServiceProvider, CognitoIdentity } from 'aws-sdk';
 import { deleteUserPool, deleteIdentityPool } from './cognitoUtils';
-import { CloudFormationClient } from './CloudFormationClient';
+import { CloudFormationClient, sleepSecs } from './CloudFormationClient';
 import { S3Client } from './S3Client';
 import emptyBucket from './emptyBucket';
 
@@ -171,7 +171,7 @@ export async function deploy(
     });
     const finishedStack = await cf.waitForStack(stackName);
 
-    await cf.wait(10, () => Promise.resolve());
+    await sleepSecs(10);
     return finishedStack;
   } catch (e) {
     console.error(`Error deploying cloudformation stack: ${e}`);

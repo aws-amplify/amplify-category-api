@@ -1,3 +1,5 @@
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
+/* eslint-disable func-style */
 import { CloudFormation } from 'aws-sdk';
 import { DescribeStacksOutput, StackStatus } from 'aws-sdk/clients/cloudformation';
 import { ResourceConstants } from 'graphql-transformer-common';
@@ -108,20 +110,24 @@ export class CloudFormationClient {
     maxPolls = 1000,
     pollInterval = 20,
   ): Promise<CloudFormation.Stack> {
-    const stack = await this.describeStack(name);
-    if (success.includes(stack.StackStatus)) {
-      return Promise.resolve(stack);
-    }
-    if (failure.includes(stack.StackStatus)) {
-      return Promise.reject(new Error(`Stack ${stack.StackName} failed with status "${stack.StackStatus}"`));
-    }
-    if (poll.includes(stack.StackStatus)) {
-      if (maxPolls === 0) {
-        return Promise.reject(new Error('Stack did not finish before hitting the max poll count.'));
+    let stack = await this.describeStack(name);
+
+    console.log(`Deploying stack ${stack.StackId}`);
+
+    for (let i = 0; i < maxPolls; i++) {
+      if (success.includes(stack.StackStatus)) {
+        return stack;
+      } else if (failure.includes(stack.StackStatus)) {
+        throw new Error(`Stack ${stack.StackName} failed with status "${stack.StackStatus}"`);
+      } else if (poll.includes(stack.StackStatus)) {
+        await sleepSecs(pollInterval);
+      } else {
+        throw new Error(`Invalid stack status: ${stack.StackStatus}`);
       }
-      return this.wait<CloudFormation.Stack>(pollInterval, this.waitForStack, name, success, failure, poll, maxPolls - 1, pollInterval);
+
+      stack = await this.describeStack(name);
     }
-    return Promise.reject(new Error(`Invalid stack status: ${stack.StackStatus}`));
+    throw new Error(`Invalid stack status: ${stack.StackStatus}`);
   }
 
   /**
@@ -137,4 +143,10 @@ export class CloudFormationClient {
       }, 1000 * secs);
     });
   }
+}
+
+export function sleepSecs(s: number): Promise<void> {
+  return new Promise<void>((resolve) => {
+    setTimeout(resolve, s * 1000);
+  });
 }

@@ -5,7 +5,7 @@ import moment from 'moment';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { ResourceConstants } from 'graphql-transformer-common';
 import * as fs from 'fs-extra';
-import { CloudFormationClient } from './CloudFormationClient';
+import { CloudFormationClient, sleepSecs } from './CloudFormationClient';
 import { GraphQLClient } from './GraphQLClient';
 import { S3Client } from './S3Client';
 import { cleanupStackAfterTest, deploy } from './deployNestedStacks';
@@ -76,7 +76,7 @@ export const getSchemaDeployer = async (testId: string, transform: (schema: stri
         initialDeployment,
       );
       // Arbitrary wait to make sure everything is ready.
-      await cf.wait(10, () => Promise.resolve());
+      await sleepSecs(10);
       expect(finishedStack).toBeDefined();
       const endpoint = getApiEndpoint(finishedStack.Outputs);
       const apiKey = getApiKey(finishedStack.Outputs);
