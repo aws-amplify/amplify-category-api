@@ -45,7 +45,8 @@ export type SchemaDeployer = {
  * @returns A GraphQL client pointing to an AppSync API with the provided schema deployed to it
  */
 export const getSchemaDeployer = async (testId: string, transform: (schema: string) => DeploymentResources): Promise<SchemaDeployer> => {
-  const initialTimestamp = moment().format('YYYYMMDDHHmmss');
+  const randomSubsecondSuffix = Math.floor(Math.random() * 10000); // In case tests run too fast
+  const initialTimestamp = `${moment().format('YYYYMMDDHHmmss')}${randomSubsecondSuffix}`;
   const stackName = `${testId}-${initialTimestamp}`;
   const testBucketName = `${testId}-bucket-${initialTimestamp}`.toLowerCase();
   const localBuildDir = path.join(os.tmpdir(), testId);
@@ -83,6 +84,7 @@ export const getSchemaDeployer = async (testId: string, transform: (schema: stri
       expect(apiKey).toBeDefined();
       expect(endpoint).toBeDefined();
       initialDeployment = false;
+      console.log(`[${new Date().toISOString()}] Schema for ${testId} deployed.`);
       return new GraphQLClient(endpoint, { 'x-api-key': apiKey });
     },
     cleanup: async () => {

@@ -112,8 +112,6 @@ export class CloudFormationClient {
   ): Promise<CloudFormation.Stack> {
     let stack = await this.describeStack(name);
 
-    console.log(`Deploying stack ${stack.StackId}`);
-
     for (let i = 0; i < maxPolls; i++) {
       if (success.includes(stack.StackStatus)) {
         return stack;

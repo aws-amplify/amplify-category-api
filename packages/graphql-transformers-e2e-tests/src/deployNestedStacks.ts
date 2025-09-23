@@ -1,3 +1,8 @@
+/* eslint-disable prefer-const */
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable func-style */
+/* eslint-disable quotes */
 import * as fs from 'fs';
 import * as path from 'path';
 import { DeploymentResources } from 'graphql-transformer-core';
@@ -164,11 +169,13 @@ export async function deploy(
 
   try {
     const operation = initialDeployment ? 'createStack' : 'updateStack';
-    await cf[operation](deploymentResources.rootStack, stackName, {
+    let response: Awaited<ReturnType<CloudFormationClient['updateStack' | 'createStack']>>;
+    response = await cf[operation](deploymentResources.rootStack, stackName, {
       ...params,
       S3DeploymentBucket: bucketName,
       S3DeploymentRootKey: s3RootKey,
     });
+    console.log(`[${new Date().toISOString()}] Deploying ${response.StackId}`);
     const finishedStack = await cf.waitForStack(stackName);
 
     await sleepSecs(10);
