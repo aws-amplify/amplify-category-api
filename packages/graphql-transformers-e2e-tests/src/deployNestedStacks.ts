@@ -177,8 +177,9 @@ export async function deploy(
     });
     console.log(`[${new Date().toISOString()}] Deploying ${response.StackId}`);
     const finishedStack = await cf.waitForStack(stackName);
-
     await sleepSecs(10);
+    console.log(`[${new Date().toISOString()}] Deployment of ${response.StackId} complete, status ${finishedStack.StackStatus}`);
+
     return finishedStack;
   } catch (e) {
     console.error(`Error deploying cloudformation stack: ${e}`);
