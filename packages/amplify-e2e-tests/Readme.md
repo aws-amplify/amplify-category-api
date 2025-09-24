@@ -10,7 +10,10 @@ Please see sample.env for the keys that are expected in your `.env` file.
 
 The `.env` file does not get commited as its in the `.gitignore` file.
 
-Set `AMPLIFY_PATH` to point to `amplify-cli/bin/amplify`
+Set `AMPLIFY_PATH` to point to `amplify-cli/bin/amplify`.
+
+(rix0rrr@) -- I made it work by putting my AWS credentials in the `[default]` section of `~/.aws/credentials`.
+
 
 ## Running individual tests
 
