@@ -12,7 +12,7 @@ import {
 } from 'amplify-category-api-e2e-core';
 import _ from 'lodash';
 import { JSONUtilities } from '@aws-amplify/amplify-cli-core';
-import AWS from 'aws-sdk';
+import { SSMClient, PutParameterCommand, GetParameterCommand } from '@aws-sdk/client-ssm';
 
 const customIAMPolicy: CustomIAMPolicy = {
   Effect: 'Allow',
@@ -48,21 +48,21 @@ it(`should init and deploy a api container, attach custom policies to the Fargat
   await addRestContainerApiForCustomPolicies(projRoot, { name: name });
 
   // Put SSM parameter
-  const ssmClient = new AWS.SSM({ region });
-  await ssmClient
-    .putParameter({
+  const ssmClient = new SSMClient({ region });
+  await ssmClient.send(
+    new PutParameterCommand({
       Name: '/amplify/testCustomPolicies',
       Value: 'testCustomPoliciesValue',
       Type: 'String',
       Overwrite: true,
-    })
-    .promise();
+    }),
+  );
 
-  const getParaResponse = await ssmClient
-    .getParameter({
+  const getParaResponse = await ssmClient.send(
+    new GetParameterCommand({
       Name: '/amplify/testCustomPolicies',
-    })
-    .promise();
+    }),
+  );
   let ssmParameterArn = getParaResponse.Parameter.ARN;
 
   customIAMPolicy.Resource.push(ssmParameterArn);
