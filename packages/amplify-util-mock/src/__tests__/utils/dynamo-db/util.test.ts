@@ -13,6 +13,7 @@ import {
   TableDescription,
 } from '@aws-sdk/client-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
+import 'aws-sdk-client-mock-jest';
 import * as ddbUtils from '../../../utils/dynamo-db/utils';
 import { waitTillTableStateIsActive } from '../../../utils/dynamo-db/helpers';
 
@@ -87,10 +88,9 @@ describe('DynamoDB Utils', () => {
         table2: describeTableResult.table2.Table,
       });
 
-      const calls = ddbMock.commandCalls(DescribeTableCommand);
-      expect(calls).toHaveLength(2);
-      expect(calls[0].args[0].input).toEqual({ TableName: 'table1' });
-      expect(calls[1].args[0].input).toEqual({ TableName: 'table2' });
+      expect(ddbMock).toHaveReceivedCommandTimes(DescribeTableCommand, 2);
+      expect(ddbMock).toHaveReceivedCommandWith(DescribeTableCommand, { TableName: 'table1' });
+      expect(ddbMock).toHaveReceivedCommandWith(DescribeTableCommand, { TableName: 'table2' });
     });
   });
 
@@ -133,10 +133,9 @@ describe('DynamoDB Utils', () => {
       const client = new DynamoDBClient({});
       await ddbUtils.createTables(client, tableInputs);
 
-      const calls = ddbMock.commandCalls(CreateTableCommand);
-      expect(calls).toHaveLength(2);
-      expect(calls[0].args[0].input).toEqual(tableInputs[0]);
-      expect(calls[1].args[0].input).toEqual(tableInputs[1]);
+      expect(ddbMock).toHaveReceivedCommandTimes(CreateTableCommand, 2);
+      expect(ddbMock).toHaveReceivedCommandWith(CreateTableCommand, tableInputs[0]);
+      expect(ddbMock).toHaveReceivedCommandWith(CreateTableCommand, tableInputs[1]);
     });
   });
 
@@ -149,7 +148,7 @@ describe('DynamoDB Utils', () => {
           TableDescription: {
             TableName: input.TableName,
             AttributeDefinitions: input.AttributeDefinitions,
-            GlobalSecondaryIndexes: input.GlobalSecondaryIndexUpdates?.filter(update => update.Create).map(gsi => gsi.Create),
+            GlobalSecondaryIndexes: input.GlobalSecondaryIndexUpdates?.filter((update) => update.Create).map((gsi) => gsi.Create),
           },
         };
         return response;
@@ -215,10 +214,9 @@ describe('DynamoDB Utils', () => {
       const updatePromise = ddbUtils.updateTables(client, tables);
       await updatePromise;
 
-      const calls = ddbMock.commandCalls(UpdateTableCommand);
-      expect(calls).toHaveLength(2);
-      expect(calls[0].args[0].input).toEqual(tables[0]);
-      expect(calls[1].args[0].input).toEqual(tables[1]);
+      expect(ddbMock).toHaveReceivedCommandTimes(UpdateTableCommand, 2);
+      expect(ddbMock).toHaveReceivedCommandWith(UpdateTableCommand, tables[0]);
+      expect(ddbMock).toHaveReceivedCommandWith(UpdateTableCommand, tables[1]);
 
       expect(waitTillTableStateIsActiveMock).toHaveBeenCalledTimes(2);
       expect(waitTillTableStateIsActiveMock).toHaveBeenNthCalledWith(1, client, tables[0].TableName);
