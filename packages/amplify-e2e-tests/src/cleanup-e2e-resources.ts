@@ -1,9 +1,11 @@
 /* eslint-disable spellcheck/spell-checker, camelcase, jsdoc/require-jsdoc, @typescript-eslint/no-explicit-any */
 import path from 'path';
-import { CodeBuild } from 'aws-sdk';
+import { CodeBuildClient, type Build } from '@aws-sdk/client-codebuild';
 import { config } from 'dotenv';
 import yargs from 'yargs';
-import * as aws from 'aws-sdk';
+import { S3Client } from '@aws-sdk/client-s3';
+import { STSClient } from '@aws-sdk/client-sts';
+import { IAMClient } from '@aws-sdk/client-iam';
 import _ from 'lodash';
 import fs from 'fs-extra';
 import { deleteS3Bucket, sleep } from 'amplify-category-api-e2e-core';
@@ -31,7 +33,7 @@ type StackInfo = {
   tags: Record<string, string>;
   region: string;
   jobId: string;
-  cbInfo?: CodeBuild.Build;
+  cbInfo?: Build;
 };
 
 type AmplifyAppInfo = {
@@ -45,7 +47,7 @@ type S3BucketInfo = {
   name: string;
   jobId?: string;
   region: string;
-  cbInfo?: CodeBuild.Build;
+  cbInfo?: Build;
 };
 
 type IamRoleInfo = {
