@@ -229,14 +229,37 @@ async function launch(givenOptions = {}, retry = 0, startTime = Date.now()) {
 }
 
 function getClient(emu, options = {}) {
-  const { DynamoDB } = require('aws-sdk');
-  return new DynamoDB({
+  const { DynamoDBClient, ListTablesCommand, CreateTableCommand } = require('@aws-sdk/client-dynamodb');
+  const client = new DynamoDBClient({
     endpoint: emu.url,
     region: 'us-fake-1',
-    accessKeyId: 'fake',
-    secretAccessKey: 'fake',
+    credentials: {
+      accessKeyId: 'fake',
+      secretAccessKey: 'fake',
+    },
     ...options,
   });
+
+  // Add v2-style API compatibility methods that strip v3 metadata
+  client.listTables = (params = {}) => ({
+    promise: async () => {
+      const result = await client.send(new ListTablesCommand(params));
+      // Strip v3 metadata to match v2 response format
+      const { $metadata, ...v2Response } = result;
+      return v2Response;
+    },
+  });
+
+  client.createTable = (params) => ({
+    promise: async () => {
+      const result = await client.send(new CreateTableCommand(params));
+      // Strip v3 metadata to match v2 response format
+      const { $metadata, ...v2Response } = result;
+      return v2Response;
+    },
+  });
+
+  return client;
 }
 
 const getPackageAssetPaths = async () => [relativeEmulatorPath];
