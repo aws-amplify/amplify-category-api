@@ -58,6 +58,7 @@ export const getSchemaDeployer = async (testId: string, transform: (schema: stri
     await awsS3Client.createBucket({ Bucket: testBucketName }).promise();
   } catch (err) {
     console.error(`Failed to create bucket ${testBucketName}: ${err}`);
+    throw err;
   }
 
   return {
