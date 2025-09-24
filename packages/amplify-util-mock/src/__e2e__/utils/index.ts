@@ -86,8 +86,15 @@ export async function launchDDBLocal() {
     port: null,
   });
 
-  // Use the emulator's getClient method which now returns SDK v3 client
-  const client = dynamoEmulator.getClient(emulator);
+  // Create SDK v3 client instead of using the v2 client from getClient
+  const client = new DynamoDBClient({
+    endpoint: emulator.url,
+    region: 'us-fake-1',
+    credentials: {
+      accessKeyId: 'fake',
+      secretAccessKey: 'fake',
+    },
+  });
 
   // Store emulator URL on client for later use
   (client as any)._emulatorUrl = emulator.url;
