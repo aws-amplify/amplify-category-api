@@ -1,5 +1,6 @@
 import { DynamoDBClient, DescribeTableCommand } from '@aws-sdk/client-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
+import 'aws-sdk-client-mock-jest';
 import { waitTillTableStateIsActive } from '../../../utils/dynamo-db/helpers';
 
 describe('waitTillTableStateIsActive', () => {
@@ -28,7 +29,7 @@ describe('waitTillTableStateIsActive', () => {
     jest.advanceTimersByTime(1000);
     await waitTillTableStateIsActivePromise;
 
-    expect(ddbMock.commandCalls(DescribeTableCommand)[0].args[0].input).toEqual({ TableName: 'table1' });
+    expect(ddbMock).toHaveReceivedCommandWith(DescribeTableCommand, { TableName: 'table1' });
   });
 
   it('should reject the promise when table does not become active for timeout period', async () => {
@@ -43,7 +44,7 @@ describe('waitTillTableStateIsActive', () => {
     const waitTillTableStateIsActivePromise = waitTillTableStateIsActive(dynamoDBClient, 'table1');
     jest.runOnlyPendingTimers();
     await expect(waitTillTableStateIsActivePromise).rejects.toMatchObject({ message: 'Waiting for table status to turn ACTIVE timed out' });
-    expect(ddbMock.commandCalls(DescribeTableCommand).length).toBeGreaterThan(0);
+    expect(ddbMock).toHaveReceivedCommand(DescribeTableCommand);
   });
 
   it('should periodically call check status', async () => {
@@ -63,11 +64,7 @@ describe('waitTillTableStateIsActive', () => {
     jest.advanceTimersByTime(3000);
     await waitTillTableStateIsActivePromise;
 
-    const calls = ddbMock.commandCalls(DescribeTableCommand);
-    expect(calls.length).toBe(4);
-    expect(calls[0].args[0].input).toEqual({ TableName: 'table1' });
-    expect(calls[1].args[0].input).toEqual({ TableName: 'table1' });
-    expect(calls[2].args[0].input).toEqual({ TableName: 'table1' });
-    expect(calls[3].args[0].input).toEqual({ TableName: 'table1' });
+    expect(ddbMock).toHaveReceivedCommandTimes(DescribeTableCommand, 4);
+    expect(ddbMock).toHaveReceivedCommandWith(DescribeTableCommand, { TableName: 'table1' });
   });
 });
