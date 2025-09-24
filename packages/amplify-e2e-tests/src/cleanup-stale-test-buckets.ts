@@ -46,7 +46,7 @@ const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucke
   try {
     console.log(`[ACCOUNT ${accountIndex}] Deleting S3 Bucket ${Name} created on ${CreationDate}`);
     const s3 = new S3Client(getAWSConfig(account));
-    await deleteS3Bucket(Name, s3);
+    await deleteS3Bucket(Name, s3 as any);
   } catch (e) {
     console.log(`[ACCOUNT ${accountIndex}] Deleting S3 Bucket ${Name} failed with error ${e.message}`);
   }

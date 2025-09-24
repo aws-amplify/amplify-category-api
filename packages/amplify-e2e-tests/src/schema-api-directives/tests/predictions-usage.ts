@@ -64,7 +64,6 @@ async function uploadImageFile(projectDir: string) {
       Key: imageKey,
       Body: fileStream,
       ContentType: 'image/jpeg',
-      ACL: 'public-read',
     };
     await s3Client.send(new PutObjectCommand(uploadParams));
   } catch (err) {
