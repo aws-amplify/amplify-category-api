@@ -136,7 +136,7 @@ For manual retries, consider:
 
 ```bash
 # Configure ada profiles (if not already done)
-ada cred update --profile=AmplifyAPIE2EProd --account=$(grep E2E_ACCOUNT_PROD ./scripts/.env | cut -d'=' -f2) --role=CodebuildDeveloper --provider=isengard
+ada cred update --profile=AmplifyAPIE2EProd --account=$(grep E2E_ACCOUNT_PROD ./scripts/.env | cut -d'=' -f2) --role=CodebuildDeveloper --provider=isengard --once
 ```
 
 ### Per-Session Authentication
