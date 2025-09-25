@@ -288,8 +288,6 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
     const stack = context.stackManager.createStack(STACK_NAME);
 
-    setMappings(stack);
-
     new CfnCondition(stack, HasEnvironmentParameter, {
       expression: Fn.conditionNot(Fn.conditionEquals(context.synthParameters.amplifyEnvironmentName, ResourceConstants.NONE)),
     });
