@@ -133,7 +133,7 @@ export const createNewProjectDir = async (
     await sleep(initialDelay);
   }
 
-  console.log(`projectDir: ${projectDir}`);
+  console.log(`App name ${projectName}; projectDir: ${projectDir}`);
   return projectDir;
 };
 
