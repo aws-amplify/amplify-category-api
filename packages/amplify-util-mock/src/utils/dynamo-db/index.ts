@@ -7,15 +7,15 @@ export type MockDynamoDBConfig = {
 };
 
 export async function createAndUpdateTable(dynamoDbClient: DynamoDBClient, config: MockDynamoDBConfig): Promise<void> {
-  const tables = config.tables.map(table => table.Properties);
+  const tables = config.tables.map((table) => table.Properties);
   const existingTables = await dynamoDbClient.send(new ListTablesCommand({}));
   const existingTablesWithDetails = await describeTables(dynamoDbClient, existingTables.TableNames);
-  const tablesToCreate = tables.filter(t => {
+  const tablesToCreate = tables.filter((t) => {
     const tableName = t.TableName;
     return !existingTables.TableNames.includes(tableName);
   });
 
-  const tablesToUpdate = tables.filter(t => {
+  const tablesToUpdate = tables.filter((t) => {
     const tableName = t.TableName;
     return existingTables.TableNames.includes(tableName);
   });
@@ -30,7 +30,7 @@ export async function createAndUpdateTable(dynamoDbClient: DynamoDBClient, confi
 export function configureDDBDataSource(config, ddbConfig) {
   return {
     ...config,
-    dataSources: config.dataSources.map(d => {
+    dataSources: config.dataSources.map((d) => {
       if (d.type !== 'AMAZON_DYNAMODB') {
         return d;
       }
