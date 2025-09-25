@@ -72,11 +72,10 @@ describe('emulator operations', () => {
     const emuOne = await ddbSimulator.launch({ dbPath });
     emulators.push(emuOne);
     const dynamoOne = ddbSimulator.getClient(emuOne);
-    await dynamoOne
-      .createTable({
-        TableName: 'foo',
-        ...dbParams,
-      });
+    await dynamoOne.createTable({
+      TableName: 'foo',
+      ...dbParams,
+    });
     await emuOne.terminate();
     emulators = [];
     const emuTwo = await ddbSimulator.launch({ dbPath });
