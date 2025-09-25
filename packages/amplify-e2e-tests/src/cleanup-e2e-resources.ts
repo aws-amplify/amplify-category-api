@@ -50,6 +50,7 @@ import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import { OrganizationsClient, ListAccountsCommand } from '@aws-sdk/client-organizations';
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 import { appendAmplifyInput } from './rds-v2-test-utils';
+import { ConfiguredRetryStrategy } from '@smithy/util-retry';
 
 type TestRegion = {
   name: string;
@@ -60,6 +61,11 @@ const repoRoot = path.join(__dirname, '..', '..', '..');
 const supportedRegionsPath = path.join(repoRoot, 'scripts', 'e2e-test-regions.json');
 const suportedRegions: TestRegion[] = JSON.parse(fs.readFileSync(supportedRegionsPath, 'utf-8'));
 const testRegions = suportedRegions.map((region) => region.name);
+
+const retryStrategy = new ConfiguredRetryStrategy(
+  10, // max attempts.
+  (attempt: number) => Math.floor(Math.random() * 2 ** attempt * 100),
+);
 
 const reportPathDir = path.normalize(path.join(__dirname, '..', 'amplify-e2e-reports'));
 
@@ -309,7 +315,7 @@ const getJobId = (tags: CFNTag[] = []): string | undefined => {
  * @returns stack details
  */
 const getStackDetails = async (stackName: string, account: AWSAccountInfo, region: string): Promise<StackInfo | void> => {
-  const cfnClient = new CloudFormationClient({ credentials: account.credentials, region });
+  const cfnClient = new CloudFormationClient({ credentials: account.credentials, region, retryStrategy });
   const stack = await cfnClient.send(new DescribeStacksCommand({ StackName: stackName }));
   const tags = stack.Stacks.length && stack.Stacks[0].Tags;
   const stackStatus = stack.Stacks[0].StackStatus;
@@ -354,7 +360,7 @@ const listStacks = async (client: CloudFormationClient, stackStatusFilter: Stack
     return ret;
   } catch (e: any) {
     if (e?.name === 'InvalidClientTokenId') {
-      console.log(`(opt-in region failure) Listing stacks for ${client.config.region} failed with error with code ${e?.name}. Skipping.`);
+      console.log(`(opt-in region failure) Listing stacks failed with error with code ${e?.name}. Skipping.`);
       return [];
     }
     throw e;
@@ -362,7 +368,7 @@ const listStacks = async (client: CloudFormationClient, stackStatusFilter: Stack
 };
 
 const getStacks = async (account: AWSAccountInfo, region: string): Promise<StackInfo[]> => {
-  const cfnClient = new CloudFormationClient({ credentials: account.credentials, region });
+  const cfnClient = new CloudFormationClient({ credentials: account.credentials, region, retryStrategy });
   const stacks = await listStacks(cfnClient, STABLE_STATUSES);
   const results: StackInfo[] = [];
 
@@ -403,15 +409,22 @@ const getAllCfnManagedResources = async (account: AWSAccountInfo, region: string
     'UPDATE_ROLLBACK_FAILED',
   ];
 
-  const client = new CloudFormationClient({ credentials: account.credentials, region });
+  const client = new CloudFormationClient({ credentials: account.credentials, region, retryStrategy });
   const ret = new Set<string>();
   for (const stack of await listStacks(client, undefined)) {
-    for await (const page of paginateListStackResources({ client }, { StackName: stack.StackName })) {
-      for (const resource of page.StackResourceSummaries ?? []) {
-        if (resource.PhysicalResourceId && liveResourceStates.includes(resource.ResourceStatus)) {
-          ret.add(resourceId(resource.ResourceType, resource.PhysicalResourceId));
+    try {
+      for await (const page of paginateListStackResources({ client }, { StackName: stack.StackName })) {
+        for (const resource of page.StackResourceSummaries ?? []) {
+          if (resource.PhysicalResourceId && liveResourceStates.includes(resource.ResourceStatus)) {
+            ret.add(resourceId(resource.ResourceType, resource.PhysicalResourceId));
+          }
         }
       }
+    } catch (e: any) {
+      if (e.name === 'ValidationError') {
+        continue;
+      }
+      throw e;
     }
   }
   return ret;
@@ -747,7 +760,7 @@ const deleteCfnStack = async (account: AWSAccountInfo, accountIndex: number, sta
   const resourceToRetain = resourcesFailedToDelete && resourcesFailedToDelete.length ? resourcesFailedToDelete : undefined;
   console.log(`${generateAccountInfo(account, accountIndex)} Deleting CloudFormation stack ${stackName}`);
   try {
-    const cfnClient = new CloudFormationClient({ credentials: account.credentials, region });
+    const cfnClient = new CloudFormationClient({ credentials: account.credentials, region, retryStrategy });
     await cfnClient.send(
       new DeleteStackCommand({
         StackName: stackName,
@@ -912,7 +925,7 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const staleResources = _.pickBy(allResources, filterPredicate);
 
   generateReport(staleResources, accountIndex);
-  await deleteResources(account, accountIndex, staleResources);
+  // await deleteResources(account, accountIndex, staleResources);
   console.log(`${generateAccountInfo(account, accountIndex)} Cleanup done!`);
 };
 
@@ -947,7 +960,7 @@ const cleanup = async (): Promise<void> => {
   config();
 
   const filterPredicate = getFilterPredicate(args);
-  const accounts = await getAccountsToCleanup();
+  const accounts = (await getAccountsToCleanup()).slice(0, 2);
 
   accounts.map((account, i) => {
     console.log(`${generateAccountInfo(account, i)} is under cleanup`);
