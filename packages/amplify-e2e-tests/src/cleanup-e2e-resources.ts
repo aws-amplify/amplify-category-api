@@ -26,12 +26,30 @@ import {
   DeleteStackCommand,
   Tag as CFNTag,
   waitUntilStackDeleteComplete,
+  Stack,
+  ResourceIdentifierSummary,
+  ListStacksOutput,
+  CloudFormation,
+  paginateListStackResources,
+  StackResourceSummary,
+  paginateListStacks,
+  StackStatus,
+  StackSummary,
+  ResourceStatus,
 } from '@aws-sdk/client-cloudformation';
-import { AmplifyClient, DeleteAppCommand, ListAppsCommand, ListBackendEnvironmentsCommand } from '@aws-sdk/client-amplify';
+import {
+  AmplifyClient,
+  App,
+  DeleteAppCommand,
+  ListAppsCommand,
+  ListAppsCommandOutput,
+  ListBackendEnvironmentsCommand,
+} from '@aws-sdk/client-amplify';
 import { BatchGetBuildsCommand, Build, CodeBuildClient } from '@aws-sdk/client-codebuild';
 import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import { OrganizationsClient, ListAccountsCommand } from '@aws-sdk/client-organizations';
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
+import { appendAmplifyInput } from './rds-v2-test-utils';
 
 type TestRegion = {
   name: string;
@@ -50,6 +68,7 @@ const ORPHAN = '<orphan>';
 const UNKNOWN = '<unknown>';
 
 type StackInfo = {
+  stackId: string;
   stackName: string;
   stackStatus: string;
   resourcesFailedToDelete?: string[];
@@ -115,7 +134,9 @@ const BUCKET_TEST_REGEX = /test/;
 const IAM_TEST_REGEX =
   /!RotateE2eAwsToken-e2eTestContextRole|-integtest$|^amplify-|^eu-|^us-|^ap-|^auth-exhaustive-tests|rds-schema-inspector-integtest|^amplify_e2e_tests_lambda|^JsonMockStack-jsonMockApi|^SubscriptionAuth|^cdkamplifytable[0-9]*-|^MutationConditionTest-|^SearchableAuth|^SubscriptionRTFTests-|^NonModelAuthV2FunctionTransformerTests-|^MultiAuthV2Transformer|^FunctionTransformerTests|-integtest-/;
 const RDS_TEST_REGEX = /integtest/;
-const STALE_DURATION_MS = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
+const STALE_DURATION_MS = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
+
+const staleHorizonDate = new Date(Date.now() - STALE_DURATION_MS);
 
 /*
  * Exit on expired token as all future requests will fail.
@@ -130,22 +151,30 @@ const handleExpiredTokenException = (): void => {
  */
 const testBucketStalenessFilter = (resource: Bucket): boolean => {
   const isTestResource = resource.Name?.match(BUCKET_TEST_REGEX);
-  const isStaleResource = resource.CreationDate && Date.now() - new Date(resource.CreationDate).getTime() > STALE_DURATION_MS;
+  const isStaleResource = resource.CreationDate && before(resource.CreationDate, staleHorizonDate);
   return !!isTestResource && !!isStaleResource;
+};
+
+const testStackStalenessFilter = (resource: Stack): boolean => {
+  const isStaleResource = before(resource.CreationTime, staleHorizonDate);
+  return !!isStaleResource;
+};
+
+const testAppStalenessFilter = (resource: App): boolean => {
+  const isStaleResource = before(resource.createTime, staleHorizonDate);
+  return !!isStaleResource;
 };
 
 const testRoleStalenessFilter = (resource: Role): boolean => {
   const isTestResource = resource.RoleName?.match(IAM_TEST_REGEX);
-  const isStaleResource = resource.CreateDate && Date.now() - new Date(resource.CreateDate).getTime() > STALE_DURATION_MS;
+  const isStaleResource = resource.CreateDate && before(resource.CreateDate, staleHorizonDate);
   return !!isTestResource && !!isStaleResource;
 };
 
 const testInstanceStalenessFilter = (resource: DBInstance): boolean => {
   const isTestResource = resource.DBInstanceIdentifier?.match(RDS_TEST_REGEX);
   const isStaleResource =
-    resource.DBInstanceStatus === 'available' &&
-    resource.InstanceCreateTime &&
-    Date.now() - new Date(resource.InstanceCreateTime).getTime() > STALE_DURATION_MS;
+    resource.DBInstanceStatus === 'available' && resource.InstanceCreateTime && before(resource.InstanceCreateTime, staleHorizonDate);
   return !!isTestResource && !!isStaleResource;
 };
 
@@ -192,7 +221,9 @@ const getOrphanRdsInstances = async (account: AWSAccountInfo, region: string): P
     if (e?.name === 'InvalidClientTokenId') {
       // Do not fail the cleanup and continue
       // This is due to either child account or parent account not available in that region
-      console.log(`Listing RDS instances for account ${account.accountId}-${region} failed with error with code ${e?.name}. Skipping.`);
+      console.log(
+        `(opt-in region failure) Listing RDS instances for account ${account.accountId}-${region} failed with error with code ${e?.name}. Skipping.`,
+      );
       return [];
     } else {
       console.log('Irrecoverable error in getOrphanedRdsInstances', JSON.stringify(e));
@@ -214,7 +245,7 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
     region,
   });
   const result: AmplifyAppInfo[] = [];
-  let amplifyApps = { apps: [] };
+  let amplifyApps: ListAppsCommandOutput | undefined;
   try {
     console.log(`Listing apps for ${account.accountId} in ${region}.`);
     const listAppsCommand = new ListAppsCommand({ maxResults: 50 });
@@ -222,7 +253,9 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
   } catch (e) {
     if (e?.name === 'UnrecognizedClientException' || e?.name === 'InvalidClientTokenId') {
       // Do not fail the cleanup and continue
-      console.log(`Listing apps for account ${account.accountId}-${region} failed with error with code ${e?.name}. Skipping.`);
+      console.log(
+        `(opt-in region failure) Listing apps for account ${account.accountId}-${region} failed with error with code ${e?.name}. Skipping.`,
+      );
       return result;
     } else {
       console.log('Irrecoverable error in getAmplifyApps', JSON.stringify(e));
@@ -230,7 +263,7 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
     }
   }
 
-  for (const app of amplifyApps?.apps) {
+  for (const app of (amplifyApps?.apps ?? []).filter(testAppStalenessFilter)) {
     const backends: Record<string, StackInfo> = {};
     try {
       const listBackendEnvironments = new ListBackendEnvironmentsCommand({ appId: app.appId, maxResults: 50 });
@@ -251,6 +284,7 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
       backends,
     });
   }
+
   return result;
 };
 
@@ -289,6 +323,7 @@ const getStackDetails = async (stackName: string, account: AWSAccountInfo, regio
   }
   const jobId = getJobId(tags);
   return {
+    stackId: stack.Stacks[0].StackId,
     stackName,
     stackStatus,
     resourcesFailedToDelete,
@@ -298,51 +333,93 @@ const getStackDetails = async (stackName: string, account: AWSAccountInfo, regio
   };
 };
 
+const STABLE_STATUSES: StackStatus[] = [
+  'CREATE_COMPLETE',
+  'ROLLBACK_FAILED',
+  'DELETE_FAILED',
+  'UPDATE_COMPLETE',
+  'UPDATE_ROLLBACK_FAILED',
+  'UPDATE_ROLLBACK_COMPLETE',
+  'IMPORT_COMPLETE',
+  'IMPORT_ROLLBACK_FAILED',
+  'IMPORT_ROLLBACK_COMPLETE',
+];
+
+const listStacks = async (client: CloudFormationClient, stackStatusFilter: StackStatus[] | undefined): Promise<StackSummary[]> => {
+  try {
+    const ret: StackSummary[] = [];
+    for await (const page of paginateListStacks({ client }, { StackStatusFilter: stackStatusFilter })) {
+      ret.push(...(await page).StackSummaries);
+    }
+    return ret;
+  } catch (e: any) {
+    if (e?.name === 'InvalidClientTokenId') {
+      console.log(`(opt-in region failure) Listing stacks for ${client.config.region} failed with error with code ${e?.name}. Skipping.`);
+      return [];
+    }
+    throw e;
+  }
+};
+
 const getStacks = async (account: AWSAccountInfo, region: string): Promise<StackInfo[]> => {
   const cfnClient = new CloudFormationClient({ credentials: account.credentials, region });
+  const stacks = await listStacks(cfnClient, STABLE_STATUSES);
   const results: StackInfo[] = [];
-  let stacks;
-  try {
-    stacks = await cfnClient.send(
-      new ListStacksCommand({
-        StackStatusFilter: [
-          'CREATE_COMPLETE',
-          'ROLLBACK_FAILED',
-          'DELETE_FAILED',
-          'UPDATE_COMPLETE',
-          'UPDATE_ROLLBACK_FAILED',
-          'UPDATE_ROLLBACK_COMPLETE',
-          'IMPORT_COMPLETE',
-          'IMPORT_ROLLBACK_FAILED',
-          'IMPORT_ROLLBACK_COMPLETE',
-        ],
-      }),
-    );
-  } catch (e) {
-    if (e?.name === 'InvalidClientTokenId') {
-      // Do not fail the cleanup and continue
-      console.log(`Listing stacks for account ${account.accountId}-${region} failed with error with code ${e?.name}. Skipping.`);
-      return results;
-    } else {
-      console.log('Irrecoverable error in getStacks', JSON.stringify(e));
-      throw e;
-    }
-  }
 
   // We are interested in only the root stacks that are deployed by amplify-cli
-  const rootStacks = stacks.StackSummaries.filter((stack) => !stack.RootId);
+  const rootStacks = (stacks ?? []).filter((stack) => !stack.RootId).filter(testStackStalenessFilter);
   for (const stack of rootStacks) {
     try {
       const details = await getStackDetails(stack.StackName, account, region);
       if (details) {
-        results.push(details);
+        results[details.stackId] = details;
       }
     } catch {
       // don't want to barf and fail e2e tests
     }
   }
+
   return results;
 };
+
+/**
+ * Return all resources managed by stacks in the entire account
+ *
+ * Returns all resources as a string in a set, so it's easy to test for membership.
+ */
+const getAllCfnManagedResources = async (account: AWSAccountInfo, region: string): Promise<Set<string>> => {
+  const liveResourceStates: ResourceStatus[] = [
+    'CREATE_IN_PROGRESS',
+    'CREATE_COMPLETE',
+    'DELETE_IN_PROGRESS',
+    'IMPORT_IN_PROGRESS',
+    'IMPORT_COMPLETE',
+    'ROLLBACK_IN_PROGRESS',
+    'ROLLBACK_FAILED',
+    'UPDATE_COMPLETE',
+    'UPDATE_FAILED',
+    'UPDATE_ROLLBACK_COMPLETE',
+    'UPDATE_ROLLBACK_IN_PROGRESS',
+    'UPDATE_ROLLBACK_FAILED',
+  ];
+
+  const client = new CloudFormationClient({ credentials: account.credentials, region });
+  const ret = new Set<string>();
+  for (const stack of await listStacks(client, undefined)) {
+    for await (const page of paginateListStackResources({ client }, { StackName: stack.StackName })) {
+      for (const resource of page.StackResourceSummaries ?? []) {
+        if (resource.PhysicalResourceId && liveResourceStates.includes(resource.ResourceStatus)) {
+          ret.add(resourceId(resource.ResourceType, resource.PhysicalResourceId));
+        }
+      }
+    }
+  }
+  return ret;
+};
+
+function resourceId(resourceType: string, resourceId: string) {
+  return `${resourceType}#${resourceId}`;
+}
 
 const getCodeBuildClient = (): CodeBuildClient => {
   return new CodeBuildClient({ region: 'us-east-1' });
@@ -373,7 +450,7 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
   const s3Client = new S3Client({ credentials: account.credentials });
   const buckets = await s3Client.send(new ListBucketsCommand({}));
   const result: S3BucketInfo[] = [];
-  for (const bucket of buckets.Buckets) {
+  for (const bucket of buckets.Buckets.filter(testBucketStalenessFilter)) {
     let region: string | undefined;
     try {
       region = await getBucketRegion(account, bucket.Name);
@@ -410,6 +487,7 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
       }
     }
   }
+
   return result;
 };
 
@@ -670,7 +748,13 @@ const deleteCfnStack = async (account: AWSAccountInfo, accountIndex: number, sta
   console.log(`${generateAccountInfo(account, accountIndex)} Deleting CloudFormation stack ${stackName}`);
   try {
     const cfnClient = new CloudFormationClient({ credentials: account.credentials, region });
-    await cfnClient.send(new DeleteStackCommand({ StackName: stackName, RetainResources: resourceToRetain }));
+    await cfnClient.send(
+      new DeleteStackCommand({
+        StackName: stackName,
+        RetainResources: resourceToRetain,
+        DeletionMode: 'FORCE_DELETE_STACK',
+      }),
+    );
     await waitUntilStackDeleteComplete({ client: cfnClient, maxWaitTime: 600 }, { StackName: stackName });
   } catch (e) {
     console.log('Error', JSON.stringify(e));
@@ -746,10 +830,12 @@ const getFilterPredicate = (args: any): JobFilterPredicate => {
  * to get all accounts within the root account organization.
  */
 const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
+  const cleanupTag = new Date().toISOString().replace(/:/g, '').replace(/\..+$/, '');
+
   const parentAccountCreds = fromTemporaryCredentials({
     params: {
       RoleArn: process.env.TEST_ACCOUNT_ROLE,
-      RoleSessionName: `testSession${Math.floor(Math.random() * 100000)}`,
+      RoleSessionName: `cleanupSession${cleanupTag}`,
     },
     clientConfig: {
       region: 'us-east-1',
@@ -772,13 +858,12 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
           credentials: parentAccountCreds,
         };
       }
-      const randomNumber = Math.floor(Math.random() * 100000);
       return {
         accountId: account.Id,
         credentials: fromTemporaryCredentials({
           params: {
             RoleArn: `arn:aws:iam::${account.Id}:role/OrganizationAccountAccessRole`,
-            RoleSessionName: `testSession${randomNumber}`,
+            RoleSessionName: `cleanupSession${cleanupTag}`,
           },
           masterCredentials: parentAccountCreds,
           clientConfig: {
@@ -810,13 +895,18 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const orphanBucketPromise = getOrphanS3TestBuckets(account);
   const orphanIamRolesPromise = getOrphanTestIamRoles(account);
   const orphanRdsInstancesPromise = testRegions.map((region) => getOrphanRdsInstances(account, region));
+  const cfnResourcesPromise = testRegions.map((region) => getAllCfnManagedResources(account, region));
+
+  const cfnManaged = setUnion(...(await Promise.all(cfnResourcesPromise)).flat());
 
   const apps = (await Promise.all(appPromises)).flat();
   const stacks = (await Promise.all(stackPromises)).flat();
-  const buckets = await bucketPromise;
-  const orphanBuckets = await orphanBucketPromise;
-  const orphanIamRoles = await orphanIamRolesPromise;
-  const orphanRdsInstances = (await Promise.all(orphanRdsInstancesPromise)).flat();
+  const buckets = (await bucketPromise).filter((x) => !cfnManaged.has(resourceId('AWS::S3::Bucket', x.name)));
+  const orphanBuckets = (await orphanBucketPromise).filter((x) => !cfnManaged.has(resourceId('AWS::S3::Bucket', x.name)));
+  const orphanIamRoles = (await orphanIamRolesPromise).filter((x) => !cfnManaged.has(resourceId('AWS::IAM::Role', x.name)));
+  const orphanRdsInstances = (await Promise.all(orphanRdsInstancesPromise))
+    .flat()
+    .filter((b) => !cfnManaged.has(resourceId('AWS::RDS::DBInstance', b.identifier)));
 
   const allResources = await mergeResourcesByCCIJob(apps, stacks, buckets, orphanBuckets, orphanIamRoles, orphanRdsInstances);
   const staleResources = _.pickBy(allResources, filterPredicate);
@@ -858,6 +948,7 @@ const cleanup = async (): Promise<void> => {
 
   const filterPredicate = getFilterPredicate(args);
   const accounts = await getAccountsToCleanup();
+
   accounts.map((account, i) => {
     console.log(`${generateAccountInfo(account, i)} is under cleanup`);
   });
@@ -865,4 +956,22 @@ const cleanup = async (): Promise<void> => {
   console.log('Done cleaning all accounts!');
 };
 
-cleanup();
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+function before(a: Date, b: Date) {
+  return a.getTime() < b.getTime();
+}
+
+function setUnion<A>(...xss: Set<A>[]): Set<A> {
+  const ret = new Set<A>();
+  for (const xs of xss) {
+    for (const x of Array.from(xs)) {
+      ret.add(x);
+    }
+  }
+  return ret;
+}
+
+cleanup().catch((e) => {
+  console.error(e);
+  process.exitCode = 1;
+});
