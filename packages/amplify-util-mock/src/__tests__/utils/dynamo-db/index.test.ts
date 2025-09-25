@@ -121,7 +121,7 @@ describe('createAndUpdateTable', () => {
       },
     ];
 
-    (getUpdateTableInput as jest.Mock).mockImplementation(input => (input === table2Input ? getUpdateTableInputResult : []));
+    (getUpdateTableInput as jest.Mock).mockImplementation((input) => (input === table2Input ? getUpdateTableInputResult : []));
 
     const client = new DynamoDBClient({});
     await createAndUpdateTable(client, mockDDBConfig);
