@@ -427,8 +427,7 @@ describe('@model with @auth', () => {
       GRAPHQL_CLIENT_3 = new GraphQLClient(GRAPHQL_ENDPOINT, { Authorization: idToken3 });
       USER_3_SUB = authRes3AfterGroup.idToken.payload.sub;
     } catch (e) {
-      console.error(`Could not setup transformer ${e}`);
-      expect(true).toBe(false);
+      throw new Error(`Could not setup transformer ${e}`);
     }
   });
 
