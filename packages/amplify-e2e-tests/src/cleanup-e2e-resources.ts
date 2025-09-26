@@ -730,24 +730,40 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
 };
 
 const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, filterPredicate: JobFilterPredicate): Promise<void> => {
-  const appPromises = testRegions.map((region) => getAmplifyApps(account, region));
-  const stackPromises = testRegions.map((region) => getStacks(account, region));
-  const bucketPromise = getS3Buckets(account);
-  const orphanBucketPromise = getOrphanS3TestBuckets(account);
-  const orphanIamRolesPromise = getOrphanTestIamRoles(account);
+  console.log(`${generateAccountInfo(account, accountIndex)} Starting cleanup process...`);
 
-  const apps = (await Promise.all(appPromises)).flat();
-  const stacks = (await Promise.all(stackPromises)).flat();
-  const buckets = await bucketPromise;
-  const orphanBuckets = await orphanBucketPromise;
-  const orphanIamRoles = await orphanIamRolesPromise;
+  try {
+    const appPromises = testRegions.map((region) => getAmplifyApps(account, region));
+    const stackPromises = testRegions.map((region) => getStacks(account, region));
+    const bucketPromise = getS3Buckets(account);
+    const orphanBucketPromise = getOrphanS3TestBuckets(account);
+    const orphanIamRolesPromise = getOrphanTestIamRoles(account);
 
-  const allResources = await mergeResourcesByCCIJob(apps, stacks, buckets, orphanBuckets, orphanIamRoles);
-  const staleResources = _.pickBy(allResources, filterPredicate);
+    console.log(`${generateAccountInfo(account, accountIndex)} Gathering resources...`);
+    const apps = (await Promise.all(appPromises)).flat();
+    const stacks = (await Promise.all(stackPromises)).flat();
+    const buckets = await bucketPromise;
+    const orphanBuckets = await orphanBucketPromise;
+    const orphanIamRoles = await orphanIamRolesPromise;
 
-  generateReport(staleResources, accountIndex);
-  await deleteResources(account, accountIndex, staleResources);
-  console.log(`${generateAccountInfo(account, accountIndex)} Cleanup done!`);
+    console.log(
+      `${generateAccountInfo(account, accountIndex)} Found ${apps.length} apps, ${stacks.length} stacks, ${buckets.length} buckets, ${
+        orphanBuckets.length
+      } orphan buckets, ${orphanIamRoles.length} orphan roles`,
+    );
+
+    const allResources = await mergeResourcesByCCIJob(apps, stacks, buckets, orphanBuckets, orphanIamRoles);
+    const staleResources = _.pickBy(allResources, filterPredicate);
+
+    console.log(`${generateAccountInfo(account, accountIndex)} Found ${Object.keys(staleResources).length} stale resource groups to clean`);
+
+    generateReport(staleResources, accountIndex);
+    await deleteResources(account, accountIndex, staleResources);
+    console.log(`${generateAccountInfo(account, accountIndex)} Cleanup done!`);
+  } catch (error) {
+    console.error(`${generateAccountInfo(account, accountIndex)} Cleanup failed:`, error);
+    throw error;
+  }
 };
 
 const generateAccountInfo = (account: AWSAccountInfo, accountIndex: number): string => {
@@ -789,4 +805,7 @@ const cleanup = async (): Promise<void> => {
   console.log('Done cleaning all accounts!');
 };
 
-cleanup();
+cleanup().catch((error) => {
+  console.error('Cleanup script failed:', error);
+  process.exit(1);
+});
