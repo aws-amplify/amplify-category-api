@@ -1,12 +1,55 @@
 /* eslint-disable spellcheck/spell-checker, camelcase, jsdoc/require-jsdoc, @typescript-eslint/no-explicit-any */
 import path from 'path';
-import { CodeBuild } from 'aws-sdk';
+import { CodeBuildClient, BatchGetBuildsCommand, Build } from '@aws-sdk/client-codebuild';
 import { config } from 'dotenv';
 import yargs from 'yargs';
-import * as aws from 'aws-sdk';
+import { 
+  S3Client, 
+  ListBucketsCommand, 
+  GetBucketLocationCommand, 
+  GetBucketTaggingCommand,
+  Bucket 
+} from '@aws-sdk/client-s3';
+import { 
+  CloudFormationClient, 
+  DescribeStacksCommand, 
+  ListStacksCommand, 
+  ListStackResourcesCommand,
+  DeleteStackCommand,
+  waitUntilStackDeleteComplete,
+  Tag as CloudFormationTag
+} from '@aws-sdk/client-cloudformation';
+import { 
+  STSClient, 
+  AssumeRoleCommand, 
+  GetCallerIdentityCommand 
+} from '@aws-sdk/client-sts';
+import { 
+  OrganizationsClient, 
+  ListAccountsCommand 
+} from '@aws-sdk/client-organizations';
+import { 
+  AmplifyClient, 
+  ListAppsCommand, 
+  ListBackendEnvironmentsCommand,
+  DeleteAppCommand 
+} from '@aws-sdk/client-amplify';
+import { 
+  IAMClient, 
+  ListRolesCommand, 
+  DeleteRoleCommand,
+  ListAttachedRolePoliciesCommand,
+  DetachRolePolicyCommand,
+  ListRolePoliciesCommand,
+  DeleteRolePolicyCommand,
+  Role,
+  AttachedPolicy
+} from '@aws-sdk/client-iam';
 import _ from 'lodash';
 import fs from 'fs-extra';
 import { deleteS3Bucket, sleep } from 'amplify-category-api-e2e-core';
+// Temporary compatibility import for deleteS3Bucket function
+import { S3 as S3V2 } from 'aws-sdk';
 
 type TestRegion = {
   name: string;
@@ -31,7 +74,7 @@ type StackInfo = {
   tags: Record<string, string>;
   region: string;
   jobId: string;
-  cbInfo?: CodeBuild.Build;
+  cbInfo?: Build;
 };
 
 type AmplifyAppInfo = {
@@ -45,19 +88,19 @@ type S3BucketInfo = {
   name: string;
   jobId?: string;
   region: string;
-  cbInfo?: CodeBuild.Build;
+  cbInfo?: Build;
 };
 
 type IamRoleInfo = {
   name: string;
-  cbInfo?: CodeBuild.Build;
+  cbInfo?: Build;
 };
 
 type ReportEntry = {
   jobId?: string;
   buildBatchArn?: string;
   buildComplete?: boolean;
-  cbJobDetails?: CodeBuild.Build;
+  cbJobDetails?: Build;
   buildStatus?: string;
   amplifyApps: Record<string, AmplifyAppInfo>;
   stacks: Record<string, StackInfo>;
@@ -71,7 +114,7 @@ type CBJobInfo = {
   buildBatchArn: string;
   projectName: string;
   buildComplete: boolean;
-  cbJobDetails: CodeBuild.Build;
+  cbJobDetails: Build;
   buildStatus: string;
 };
 
@@ -99,13 +142,13 @@ const handleExpiredTokenException = (): void => {
 /**
  * We define a resource as viable for deletion if it matches TEST_REGEX in the name, and if it is > STALE_DURATION_MS old.
  */
-const testBucketStalenessFilter = (resource: aws.S3.Bucket): boolean => {
+const testBucketStalenessFilter = (resource: Bucket): boolean => {
   const isTestResource = resource.Name.match(BUCKET_TEST_REGEX);
   const isStaleResource = Date.now() - resource.CreationDate.getMilliseconds() > STALE_DURATION_MS;
   return isTestResource && isStaleResource;
 };
 
-const testRoleStalenessFilter = (resource: aws.IAM.Role): boolean => {
+const testRoleStalenessFilter = (resource: Role): boolean => {
   const isTestResource = resource.RoleName.match(IAM_TEST_REGEX);
   const isStaleResource = Date.now() - resource.CreateDate.getMilliseconds() > STALE_DURATION_MS;
   return isTestResource && isStaleResource;
@@ -115,8 +158,8 @@ const testRoleStalenessFilter = (resource: aws.IAM.Role): boolean => {
  * Get all S3 buckets in the account, and filter down to the ones we consider stale.
  */
 const getOrphanS3TestBuckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> => {
-  const s3Client = new aws.S3(getAWSConfig(account));
-  const listBucketResponse = await s3Client.listBuckets().promise();
+  const s3Client = new S3Client(getAWSConfig(account));
+  const listBucketResponse = await s3Client.send(new ListBucketsCommand({}));
   const staleBuckets = listBucketResponse.Buckets.filter(testBucketStalenessFilter);
 
   const bucketInfos = await Promise.all(
@@ -135,8 +178,8 @@ const getOrphanS3TestBuckets = async (account: AWSAccountInfo): Promise<S3Bucket
  * Get all iam roles in the account, and filter down to the ones we consider stale.
  */
 const getOrphanTestIamRoles = async (account: AWSAccountInfo): Promise<IamRoleInfo[]> => {
-  const iamClient = new aws.IAM(getAWSConfig(account));
-  const listRoleResponse = await iamClient.listRoles({ MaxItems: 1000 }).promise();
+  const iamClient = new IAMClient(getAWSConfig(account));
+  const listRoleResponse = await iamClient.send(new ListRolesCommand({ MaxItems: 1000 }));
   const staleRoles = listRoleResponse.Roles.filter(testRoleStalenessFilter);
   return staleRoles.map((it) => ({ name: it.RoleName }));
 };
@@ -144,14 +187,14 @@ const getOrphanTestIamRoles = async (account: AWSAccountInfo): Promise<IamRoleIn
 /**
  * Get the relevant AWS config object for a given account and region.
  */
-const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccountInfo, region?: string): unknown => ({
+const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccountInfo, region?: string) => ({
   credentials: {
     accessKeyId,
     secretAccessKey,
     sessionToken,
   },
   ...(region ? { region } : {}),
-  maxRetries: 10,
+  maxAttempts: 10,
 });
 
 /**
@@ -163,11 +206,11 @@ const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccount
  */
 const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<AmplifyAppInfo[]> => {
   const config = getAWSConfig(account, region);
-  const amplifyClient = new aws.Amplify(config);
+  const amplifyClient = new AmplifyClient(config);
   const result: AmplifyAppInfo[] = [];
   let amplifyApps = { apps: [] };
   try {
-    amplifyApps = await amplifyClient.listApps({ maxResults: 50 }).promise(); // keeping it to 50 as max supported is 50
+    amplifyApps = await amplifyClient.send(new ListAppsCommand({ maxResults: 50 })); // keeping it to 50 as max supported is 50
   } catch (e) {
     if (e?.code === 'UnrecognizedClientException') {
       // Do not fail the cleanup and continue
@@ -181,7 +224,7 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
   for (const app of amplifyApps?.apps) {
     const backends: Record<string, StackInfo> = {};
     try {
-      const backendEnvironments = await amplifyClient.listBackendEnvironments({ appId: app.appId, maxResults: 50 }).promise();
+      const backendEnvironments = await amplifyClient.send(new ListBackendEnvironmentsCommand({ appId: app.appId, maxResults: 50 }));
       for (const backendEnv of backendEnvironments.backendEnvironments) {
         const buildInfo = await getStackDetails(backendEnv.stackName, account, region);
         if (buildInfo) {
@@ -206,7 +249,7 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
  * @param tags Tags associated with the resource
  * @returns build number or undefined
  */
-const getJobId = (tags: aws.CloudFormation.Tags = []): string | undefined => {
+const getJobId = (tags: CloudFormationTag[] = []): string | undefined => {
   const jobId = tags.find((tag) => tag.Key === 'codebuild:build_id')?.Value;
   return jobId;
 };
@@ -222,14 +265,14 @@ const getJobId = (tags: aws.CloudFormation.Tags = []): string | undefined => {
  * @returns stack details
  */
 const getStackDetails = async (stackName: string, account: AWSAccountInfo, region: string): Promise<StackInfo | void> => {
-  const cfnClient = new aws.CloudFormation(getAWSConfig(account, region));
-  const stack = await cfnClient.describeStacks({ StackName: stackName }).promise();
+  const cfnClient = new CloudFormationClient(getAWSConfig(account, region));
+  const stack = await cfnClient.send(new DescribeStacksCommand({ StackName: stackName }));
   const tags = stack.Stacks.length && stack.Stacks[0].Tags;
   const stackStatus = stack.Stacks[0].StackStatus;
   let resourcesFailedToDelete: string[] = [];
   if (stackStatus === 'DELETE_FAILED') {
     // TODO: We need to investigate if we should go ahead and remove the resources to prevent account getting cluttered
-    const resources = await cfnClient.listStackResources({ StackName: stackName }).promise();
+    const resources = await cfnClient.send(new ListStackResourcesCommand({ StackName: stackName }));
     resourcesFailedToDelete = resources.StackResourceSummaries.filter((r) => r.ResourceStatus === 'DELETE_FAILED').map(
       (r) => r.LogicalResourceId,
     );
@@ -246,25 +289,23 @@ const getStackDetails = async (stackName: string, account: AWSAccountInfo, regio
 };
 
 const getStacks = async (account: AWSAccountInfo, region: string): Promise<StackInfo[]> => {
-  const cfnClient = new aws.CloudFormation(getAWSConfig(account, region));
+  const cfnClient = new CloudFormationClient(getAWSConfig(account, region));
   const results: StackInfo[] = [];
   let stacks;
   try {
-    stacks = await cfnClient
-      .listStacks({
-        StackStatusFilter: [
-          'CREATE_COMPLETE',
-          'ROLLBACK_FAILED',
-          'DELETE_FAILED',
-          'UPDATE_COMPLETE',
-          'UPDATE_ROLLBACK_FAILED',
-          'UPDATE_ROLLBACK_COMPLETE',
-          'IMPORT_COMPLETE',
-          'IMPORT_ROLLBACK_FAILED',
-          'IMPORT_ROLLBACK_COMPLETE',
-        ],
-      })
-      .promise();
+    stacks = await cfnClient.send(new ListStacksCommand({
+      StackStatusFilter: [
+        'CREATE_COMPLETE',
+        'ROLLBACK_FAILED',
+        'DELETE_FAILED',
+        'UPDATE_COMPLETE',
+        'UPDATE_ROLLBACK_FAILED',
+        'UPDATE_ROLLBACK_COMPLETE',
+        'IMPORT_COMPLETE',
+        'IMPORT_ROLLBACK_FAILED',
+        'IMPORT_ROLLBACK_COMPLETE',
+      ],
+    }));
   } catch (e) {
     if (e?.code === 'InvalidClientTokenId') {
       // Do not fail the cleanup and continue
@@ -290,20 +331,19 @@ const getStacks = async (account: AWSAccountInfo, region: string): Promise<Stack
   return results;
 };
 
-const getCodeBuildClient = (): CodeBuild => {
-  return new CodeBuild({
-    apiVersion: '2016-10-06',
+const getCodeBuildClient = (): CodeBuildClient => {
+  return new CodeBuildClient({
     region: 'us-east-1',
   });
 };
 
-const getJobCodeBuildDetails = async (jobIds: string[]): Promise<CodeBuild.Build[]> => {
+const getJobCodeBuildDetails = async (jobIds: string[]): Promise<Build[]> => {
   if (jobIds.length === 0) {
     return [];
   }
   const client = getCodeBuildClient();
   try {
-    const { builds } = await client.batchGetBuilds({ ids: jobIds }).promise();
+    const { builds } = await client.send(new BatchGetBuildsCommand({ ids: jobIds }));
     return builds;
   } catch (e) {
     console.log(e);
@@ -312,27 +352,27 @@ const getJobCodeBuildDetails = async (jobIds: string[]): Promise<CodeBuild.Build
 
 const getBucketRegion = async (account: AWSAccountInfo, bucketName: string): Promise<string> => {
   const awsConfig = getAWSConfig(account);
-  const s3Client = new aws.S3(awsConfig);
-  const location = await s3Client.getBucketLocation({ Bucket: bucketName }).promise();
+  const s3Client = new S3Client(awsConfig);
+  const location = await s3Client.send(new GetBucketLocationCommand({ Bucket: bucketName }));
   const region = location.LocationConstraint ?? 'us-east-1';
   return region;
 };
 
 const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> => {
   const awsConfig = getAWSConfig(account);
-  const s3Client = new aws.S3(awsConfig);
-  const buckets = await s3Client.listBuckets().promise();
+  const s3Client = new S3Client(awsConfig);
+  const buckets = await s3Client.send(new ListBucketsCommand({}));
   const result: S3BucketInfo[] = [];
   for (const bucket of buckets.Buckets) {
     let region: string | undefined;
     try {
       region = await getBucketRegion(account, bucket.Name);
       // Operations on buckets created in opt-in regions appear to require region-specific clients
-      const regionalizedClient = new aws.S3({
+      const regionalizedClient = new S3Client({
         region,
         ...(awsConfig as object),
       });
-      const bucketDetails = await regionalizedClient.getBucketTagging({ Bucket: bucket.Name }).promise();
+      const bucketDetails = await regionalizedClient.send(new GetBucketTaggingCommand({ Bucket: bucket.Name }));
       const jobId = getJobId(bucketDetails.TagSet);
       if (jobId) {
         result.push({
@@ -364,7 +404,7 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
 /**
  * extract and moves CodeBuild job details
  */
-const extractCCIJobInfo = (record: S3BucketInfo | StackInfo | AmplifyAppInfo, buildInfos: Record<string, CodeBuild.Build[]>): CBJobInfo => {
+const extractCCIJobInfo = (record: S3BucketInfo | StackInfo | AmplifyAppInfo, buildInfos: Record<string, Build[]>): CBJobInfo => {
   const buildId = _.get(record, ['0', 'jobId']);
   return {
     buildBatchArn: _.get(buildInfos, [buildId, '0', 'buildBatchArn']),
@@ -411,7 +451,7 @@ const mergeResourcesByCCIJob = async (
     ...Object.keys(amplifyAppByJobId),
   ]).filter((jobId: string) => jobId !== UNKNOWN && jobId !== ORPHAN && jobId !== MULTI_JOB_APP);
   const buildInfos = await getJobCodeBuildDetails(codeBuildJobIds);
-  const buildInfosByJobId = _.groupBy(buildInfos, (build: CodeBuild.Build) => _.get(build, ['id']));
+  const buildInfosByJobId = _.groupBy(buildInfos, (build: Build) => _.get(build, ['id']));
   _.mergeWith(
     result,
     _.pickBy(amplifyAppByJobId, (__, key) => key !== MULTI_JOB_APP),
@@ -472,9 +512,9 @@ const deleteAmplifyApps = async (account: AWSAccountInfo, accountIndex: number, 
 const deleteAmplifyApp = async (account: AWSAccountInfo, accountIndex: number, app: AmplifyAppInfo): Promise<void> => {
   const { name, appId, region } = app;
   console.log(`${generateAccountInfo(account, accountIndex)} Deleting App ${name}(${appId})`);
-  const amplifyClient = new aws.Amplify(getAWSConfig(account, region));
+  const amplifyClient = new AmplifyClient(getAWSConfig(account, region));
   try {
-    await amplifyClient.deleteApp({ appId }).promise();
+    await amplifyClient.send(new DeleteAppCommand({ appId }));
   } catch (e) {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting Amplify App ${appId} failed with the following error`, e);
     if (e.code === 'ExpiredTokenException') {
@@ -498,10 +538,10 @@ const deleteIamRole = async (account: AWSAccountInfo, accountIndex: number, role
   const { name: roleName } = role;
   try {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting Iam Role ${roleName}`);
-    const iamClient = new aws.IAM(getAWSConfig(account));
+    const iamClient = new IAMClient(getAWSConfig(account));
     await deleteAttachedRolePolicies(account, accountIndex, roleName);
     await deleteRolePolicies(account, accountIndex, roleName);
-    await iamClient.deleteRole({ RoleName: roleName }).promise();
+    await iamClient.send(new DeleteRoleCommand({ RoleName: roleName }));
   } catch (e) {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting iam role ${roleName} failed with error ${e.message}`);
     if (e.code === 'ExpiredTokenException') {
@@ -511,8 +551,8 @@ const deleteIamRole = async (account: AWSAccountInfo, accountIndex: number, role
 };
 
 const deleteAttachedRolePolicies = async (account: AWSAccountInfo, accountIndex: number, roleName: string): Promise<void> => {
-  const iamClient = new aws.IAM(getAWSConfig(account));
-  const rolePolicies = await iamClient.listAttachedRolePolicies({ RoleName: roleName }).promise();
+  const iamClient = new IAMClient(getAWSConfig(account));
+  const rolePolicies = await iamClient.send(new ListAttachedRolePoliciesCommand({ RoleName: roleName }));
   await Promise.all(rolePolicies.AttachedPolicies.map((policy) => detachIamAttachedRolePolicy(account, accountIndex, roleName, policy)));
 };
 
@@ -520,12 +560,12 @@ const detachIamAttachedRolePolicy = async (
   account: AWSAccountInfo,
   accountIndex: number,
   roleName: string,
-  policy: aws.IAM.AttachedPolicy,
+  policy: AttachedPolicy,
 ): Promise<void> => {
   try {
     console.log(`${generateAccountInfo(account, accountIndex)} Detach Iam Attached Role Policy ${policy.PolicyName}`);
-    const iamClient = new aws.IAM(getAWSConfig(account));
-    await iamClient.detachRolePolicy({ RoleName: roleName, PolicyArn: policy.PolicyArn }).promise();
+    const iamClient = new IAMClient(getAWSConfig(account));
+    await iamClient.send(new DetachRolePolicyCommand({ RoleName: roleName, PolicyArn: policy.PolicyArn }));
   } catch (e) {
     console.log(`${generateAccountInfo(account, accountIndex)} Detach iam role policy ${policy.PolicyName} failed with error ${e.message}`);
     if (e.code === 'ExpiredTokenException') {
@@ -535,16 +575,16 @@ const detachIamAttachedRolePolicy = async (
 };
 
 const deleteRolePolicies = async (account: AWSAccountInfo, accountIndex: number, roleName: string): Promise<void> => {
-  const iamClient = new aws.IAM(getAWSConfig(account));
-  const rolePolicies = await iamClient.listRolePolicies({ RoleName: roleName }).promise();
+  const iamClient = new IAMClient(getAWSConfig(account));
+  const rolePolicies = await iamClient.send(new ListRolePoliciesCommand({ RoleName: roleName }));
   await Promise.all(rolePolicies.PolicyNames.map((policy) => deleteIamRolePolicy(account, accountIndex, roleName, policy)));
 };
 
 const deleteIamRolePolicy = async (account: AWSAccountInfo, accountIndex: number, roleName: string, policyName: string): Promise<void> => {
   try {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting Iam Role Policy ${policyName}`);
-    const iamClient = new aws.IAM(getAWSConfig(account));
-    await iamClient.deleteRolePolicy({ RoleName: roleName, PolicyName: policyName }).promise();
+    const iamClient = new IAMClient(getAWSConfig(account));
+    await iamClient.send(new DeleteRolePolicyCommand({ RoleName: roleName, PolicyName: policyName }));
   } catch (e) {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting iam role policy ${policyName} failed with error ${e.message}`);
     if (e.code === 'ExpiredTokenException') {
@@ -562,9 +602,11 @@ const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucke
   try {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting S3 Bucket ${name}`);
     const awsConfig = getAWSConfig(account);
-    const regionalizedS3Client = new aws.S3({
+    // Use v2 client for compatibility with deleteS3Bucket function from e2e-core
+    const regionalizedS3Client = new S3V2({
       region: bucket.region,
-      ...(awsConfig as object),
+      credentials: awsConfig.credentials,
+      maxRetries: awsConfig.maxAttempts,
     });
     await deleteS3Bucket(name, regionalizedS3Client);
   } catch (e) {
@@ -584,9 +626,9 @@ const deleteCfnStack = async (account: AWSAccountInfo, accountIndex: number, sta
   const resourceToRetain = resourcesFailedToDelete.length ? resourcesFailedToDelete : undefined;
   console.log(`${generateAccountInfo(account, accountIndex)} Deleting CloudFormation stack ${stackName}`);
   try {
-    const cfnClient = new aws.CloudFormation(getAWSConfig(account, region));
-    await cfnClient.deleteStack({ StackName: stackName, RetainResources: resourceToRetain }).promise();
-    await cfnClient.waitFor('stackDeleteComplete', { StackName: stackName }).promise();
+    const cfnClient = new CloudFormationClient(getAWSConfig(account, region));
+    await cfnClient.send(new DeleteStackCommand({ StackName: stackName, RetainResources: resourceToRetain }));
+    await waitUntilStackDeleteComplete({ client: cfnClient, maxWaitTime: 3600 }, { StackName: stackName });
   } catch (e) {
     console.log(`Deleting CloudFormation stack ${stackName} failed with error ${e.message}`);
     if (e.code === 'ExpiredTokenException') {
@@ -657,35 +699,29 @@ const getFilterPredicate = (args: any): JobFilterPredicate => {
  */
 const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
   // This script runs using the codebuild project role to begin with
-  const stsClient = new aws.STS({
-    apiVersion: '2011-06-15',
-  });
-  const assumeRoleResForE2EParent = await stsClient
-    .assumeRole({
-      RoleArn: process.env.TEST_ACCOUNT_ROLE,
-      RoleSessionName: `testSession${Math.floor(Math.random() * 100000)}`,
-      // One hour
-      DurationSeconds: 1 * 60 * 60,
-    })
-    .promise();
+  const stsClient = new STSClient({});
+  const assumeRoleResForE2EParent = await stsClient.send(new AssumeRoleCommand({
+    RoleArn: process.env.TEST_ACCOUNT_ROLE,
+    RoleSessionName: `testSession${Math.floor(Math.random() * 100000)}`,
+    // One hour
+    DurationSeconds: 1 * 60 * 60,
+  }));
   const e2eParentAccountCred = {
     accessKeyId: assumeRoleResForE2EParent.Credentials.AccessKeyId,
     secretAccessKey: assumeRoleResForE2EParent.Credentials.SecretAccessKey,
     sessionToken: assumeRoleResForE2EParent.Credentials.SessionToken,
   };
-  const stsClientForE2E = new aws.STS({
-    apiVersion: '2011-06-15',
+  const stsClientForE2E = new STSClient({
     credentials: e2eParentAccountCred,
   });
-  const parentAccountIdentity = await stsClientForE2E.getCallerIdentity().promise();
-  const orgApi = new aws.Organizations({
-    apiVersion: '2016-11-28',
+  const parentAccountIdentity = await stsClientForE2E.send(new GetCallerIdentityCommand({}));
+  const orgApi = new OrganizationsClient({
     // the region where the organization exists
     region: 'us-east-1',
     credentials: e2eParentAccountCred,
   });
   try {
-    const orgAccounts = await orgApi.listAccounts().promise();
+    const orgAccounts = await orgApi.send(new ListAccountsCommand({}));
     const accountCredentialPromises = orgAccounts.Accounts.map(async (account) => {
       if (account.Id === parentAccountIdentity.Account) {
         return {
@@ -694,14 +730,12 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
         };
       }
       const randomNumber = Math.floor(Math.random() * 100000);
-      const assumeRoleRes = await stsClientForE2E
-        .assumeRole({
-          RoleArn: `arn:aws:iam::${account.Id}:role/OrganizationAccountAccessRole`,
-          RoleSessionName: `testSession${randomNumber}`,
-          // One hour
-          DurationSeconds: 1 * 60 * 60,
-        })
-        .promise();
+      const assumeRoleRes = await stsClientForE2E.send(new AssumeRoleCommand({
+        RoleArn: `arn:aws:iam::${account.Id}:role/OrganizationAccountAccessRole`,
+        RoleSessionName: `testSession${randomNumber}`,
+        // One hour
+        DurationSeconds: 1 * 60 * 60,
+      }));
       return {
         accountId: account.Id,
         accessKeyId: assumeRoleRes.Credentials.AccessKeyId,
