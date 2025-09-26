@@ -796,7 +796,10 @@ const cleanup = async (): Promise<void> => {
     .help().argv;
   config();
 
+  console.log('Cleanup script arguments:', JSON.stringify(args, null, 2));
   const filterPredicate = getFilterPredicate(args);
+  console.log('Filter predicate created for args:', args._);
+
   const accounts = await getAccountsToCleanup();
   accounts.map((account, i) => {
     console.log(`${generateAccountInfo(account, i)} is under cleanup`);
