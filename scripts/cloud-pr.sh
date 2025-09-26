@@ -2,19 +2,15 @@
 
 scriptDir=$(dirname -- "$(readlink -f -- "$BASH_SOURCE")")
 source $scriptDir/.env set
+source $scriptDir/cloud-utils.sh
 
 printf 'What is your PR number ? '
 read PR_NUMBER
 
-if [[ -n $USE_FIDO_KEY ]] ; then
-  mwinit -s -f
-else
-  mwinit
-fi
-
-ada cred update --profile=AmplifyAPIE2EProd --account=$E2E_ACCOUNT_PROD --role=CodebuildDeveloper --provider=isengard --once
+profile=AmplifyAPIE2EProd
+authenticate "$E2E_ACCOUNT_PROD" CodebuildDeveloper "$profile"
 RESULT=$(aws codebuild start-build-batch \
---profile=AmplifyAPIE2EProd \
+--profile="$profile" \
 --region us-east-1 \
 --project-name amplify-category-api-pr-workflow \
 --build-timeout-in-minutes-override 180 \
