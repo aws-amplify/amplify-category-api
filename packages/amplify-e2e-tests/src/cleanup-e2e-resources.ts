@@ -912,6 +912,8 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
 
   const cfnManaged = setUnion(...(await Promise.all(cfnResourcesPromise)).flat());
 
+  console.log(cfnManaged);
+
   const apps = (await Promise.all(appPromises)).flat();
   const stacks = (await Promise.all(stackPromises)).flat();
   const buckets = (await bucketPromise).filter((x) => !cfnManaged.has(resourceId('AWS::S3::Bucket', x.name)));
@@ -966,10 +968,17 @@ const cleanup = async (): Promise<void> => {
   const filterPredicate = getFilterPredicate(args);
   const accounts = await getAccountsToCleanup();
 
-  accounts.map((account, i) => {
-    console.log(`${generateAccountInfo(account, i)} is under cleanup`);
-  });
-  await Promise.all(accounts.map((account, i) => cleanupAccount(account, i, filterPredicate)));
+  // Do a limited amount of accounts in parallel. Otherwise there are too many and the machine might
+  // have trouble resolving DNS, and generally doing the network things it needs to do.
+  for (const batch of chunk(2, accounts)) {
+    await Promise.all(
+      batch.map(async (account, i) => {
+        console.log(`${generateAccountInfo(account, i)} is under cleanup`);
+        return cleanupAccount(account, i, filterPredicate);
+      }),
+    );
+  }
+
   console.log('Done cleaning all accounts!');
 };
 
@@ -984,6 +993,14 @@ function setUnion<A>(...xss: Set<A>[]): Set<A> {
     for (const x of Array.from(xs)) {
       ret.add(x);
     }
+  }
+  return ret;
+}
+
+function chunk<A>(n: number, xs: A[]): A[][] {
+  const ret: A[][] = [];
+  for (let i = 0; i < xs.length; i += n) {
+    ret.push(xs.slice(i, i + n));
   }
   return ret;
 }
