@@ -29,6 +29,10 @@ config();
 export const TEST_PROFILE_NAME = 'amplify-integ-test-user';
 
 export function deleteProjectDir(root: string) {
+  if (process.env.SKIP_DELETE) {
+    console.warn(`🌋 Did not delete project dir: ${root}`);
+    return;
+  }
   rimraf.sync(root);
 }
 

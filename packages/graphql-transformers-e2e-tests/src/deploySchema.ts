@@ -6,7 +6,7 @@ import { Output } from '@aws-sdk/client-cloudformation';
 import { ResourceConstants } from 'graphql-transformer-common';
 import * as fs from 'fs-extra';
 import { DeploymentResources } from '@aws-amplify/graphql-transformer-test-utils';
-import { CloudFormationClient } from './CloudFormationClient';
+import { CloudFormationClient, sleepSecs } from './CloudFormationClient';
 import { GraphQLClient } from './GraphQLClient';
 import { S3Client } from './S3Client';
 import { cleanupStackAfterTest, deploy } from './deployNestedStacks';
@@ -44,7 +44,8 @@ export type SchemaDeployer = {
  * @returns A GraphQL client pointing to an AppSync API with the provided schema deployed to it
  */
 export const getSchemaDeployer = async (testId: string, transform: (schema: string) => DeploymentResources): Promise<SchemaDeployer> => {
-  const initialTimestamp = moment().format('YYYYMMDDHHmmss');
+  const randomSubsecondSuffix = Math.floor(Math.random() * 10000); // In case tests run too fast
+  const initialTimestamp = `${moment().format('YYYYMMDDHHmmss')}${randomSubsecondSuffix}`;
   const stackName = `${testId}-${initialTimestamp}`;
   const testBucketName = `${testId}-bucket-${initialTimestamp}`.toLowerCase();
   const localBuildDir = path.join(os.tmpdir(), testId);
@@ -56,6 +57,7 @@ export const getSchemaDeployer = async (testId: string, transform: (schema: stri
     await customS3Client.createBucket(testBucketName);
   } catch (err) {
     console.error(`Failed to create bucket ${testBucketName}: ${err}`);
+    throw err;
   }
 
   return {
@@ -76,13 +78,14 @@ export const getSchemaDeployer = async (testId: string, transform: (schema: stri
         initialDeployment,
       );
       // Arbitrary wait to make sure everything is ready.
-      await cf.wait(10, () => Promise.resolve());
+      await sleepSecs(10);
       expect(finishedStack).toBeDefined();
       const endpoint = getApiEndpoint(finishedStack.Outputs);
       const apiKey = getApiKey(finishedStack.Outputs);
       expect(apiKey).toBeDefined();
       expect(endpoint).toBeDefined();
       initialDeployment = false;
+      console.log(`[${new Date().toISOString()}] Schema for ${testId} deployed.`);
       return new GraphQLClient(endpoint, { 'x-api-key': apiKey });
     },
     cleanup: async () => {

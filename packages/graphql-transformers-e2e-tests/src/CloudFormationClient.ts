@@ -111,21 +111,26 @@ export class CloudFormationClient {
     maxPolls = 1000,
     pollInterval = 20,
   ): Promise<Stack> {
-    const stack = await this.describeStack(name);
-    if (!stack?.StackStatus) {
+    let stack = await this.describeStack(name);
+    if (!stack || !stack.StackStatus) {
       throw new Error(`Stack ${name} does not exist`);
     }
-    if (success.includes(stack.StackStatus)) {
-      return stack;
-    }
-    if (failure.includes(stack.StackStatus)) {
-      throw new Error(`Stack ${stack.StackName} failed with status "${stack.StackStatus}"`);
-    }
-    if (poll.includes(stack.StackStatus)) {
-      if (maxPolls === 0) {
-        throw new Error('Stack did not finish before hitting the max poll count.');
+
+    for (let i = 0; i < maxPolls; i++) {
+      if (success.includes(stack.StackStatus)) {
+        return stack;
+      } else if (failure.includes(stack.StackStatus)) {
+        throw new Error(`Stack ${stack.StackName} failed with status "${stack.StackStatus}"`);
+      } else if (poll.includes(stack.StackStatus)) {
+        await sleepSecs(pollInterval);
+      } else {
+        throw new Error(`Invalid stack status: ${stack.StackStatus}`);
       }
-      return this.wait(pollInterval, this.waitForStack, name, success, failure, poll, maxPolls - 1, pollInterval);
+
+      stack = await this.describeStack(name);
+      if (!stack || !stack.StackStatus) {
+        throw new Error(`Stack ${name} does not exist`);
+      }
     }
     throw new Error(`Invalid stack status: ${stack.StackStatus}`);
   }
@@ -143,4 +148,10 @@ export class CloudFormationClient {
       }, 1000 * secs);
     });
   }
+}
+
+export function sleepSecs(s: number): Promise<void> {
+  return new Promise<void>((resolve) => {
+    setTimeout(resolve, s * 1000);
+  });
 }

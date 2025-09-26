@@ -2,6 +2,10 @@ import { nspawn as spawn, retry, getCLIPath, describeCloudFormationStack } from 
 import { getBackendAmplifyMeta } from '../utils';
 
 export const deleteProject = async (cwd: string, profileConfig?: any, usingLatestCodebase = false): Promise<void> => {
+  if (process.env.SKIP_DELETE) {
+    console.warn(`🌋 Did not delete project dir: ${cwd}`);
+    return;
+  }
   // Read the meta from backend otherwise it could fail on non-pushed, just initialized projects
   const { StackName: stackName, Region: region } = getBackendAmplifyMeta(cwd).providers.awscloudformation;
   await retry(

@@ -181,6 +181,7 @@ beforeAll(async () => {
     await customS3Client.createBucket(BUCKET_NAME);
   } catch (e) {
     console.error(`Failed to create bucket: ${e}`);
+    throw e;
   }
   try {
     const out = testTransform({

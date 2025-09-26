@@ -147,7 +147,7 @@ beforeAll(async () => {
     downs: Int
     percentageUp: Float
     isPublished: Boolean
-    createdAt: AWSDateTime 
+    createdAt: AWSDateTime
     updatedAt: AWSDateTime
     owner: String
     groupsField: String
@@ -181,6 +181,7 @@ beforeAll(async () => {
     await customS3Client.createBucket(BUCKET_NAME);
   } catch (e) {
     console.error(`Failed to create bucket: ${e}`);
+    throw e;
   }
   try {
     const out = testTransform({
@@ -364,6 +365,7 @@ test('Comments as owner', async () => {
       }
     `,
   });
+
   expect(ownerResponse.data.searchComments).toBeDefined();
   expect(ownerResponse.data.searchComments.items.length).toEqual(1);
   expect(ownerResponse.data.searchComments.items[0].content).toEqual('ownerContent');
