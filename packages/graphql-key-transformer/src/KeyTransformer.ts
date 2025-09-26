@@ -762,7 +762,7 @@ export class KeyTransformer extends Transformer {
   }
 
   private supportsConditions(context: TransformerContext) {
-    return context.getTransformerVersion() >= CONDITIONS_MINIMUM_VERSION;
+    return Number(context.getTransformerVersion()) >= CONDITIONS_MINIMUM_VERSION;
   }
 }
 
