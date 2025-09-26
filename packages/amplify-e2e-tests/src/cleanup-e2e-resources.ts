@@ -925,7 +925,11 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const staleResources = _.pickBy(allResources, filterPredicate);
 
   generateReport(staleResources, accountIndex);
-  // await deleteResources(account, accountIndex, staleResources);
+  if (process.env.SKIP_DELETE) {
+    console.log('🧸 Skipping delete ($SKIP_DELETE)');
+  } else {
+    await deleteResources(account, accountIndex, staleResources);
+  }
   console.log(`${generateAccountInfo(account, accountIndex)} Cleanup done!`);
 };
 
