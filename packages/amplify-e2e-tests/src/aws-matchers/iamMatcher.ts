@@ -44,7 +44,7 @@ export const toHaveValidPolicyConditionMatchingIdpId = async (roleName: string, 
     const { Role: role } = await iam.send(new GetRoleCommand({ RoleName: roleName }));
     const assumeRolePolicyDocument = JSON.parse(decodeURIComponent(role.AssumeRolePolicyDocument));
 
-    pass = assumeRolePolicyDocument.Statement.some(statement => {
+    pass = assumeRolePolicyDocument.Statement.some((statement) => {
       if (statement.Condition) {
         return (
           statement.Condition.StringEquals &&

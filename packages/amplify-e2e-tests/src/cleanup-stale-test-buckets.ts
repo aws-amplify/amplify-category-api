@@ -74,7 +74,7 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
   });
   try {
     const orgAccounts = await orgApi.send(new ListAccountsCommand({}));
-    const accountCredentialPromises = orgAccounts.Accounts.map(async account => {
+    const accountCredentialPromises = orgAccounts.Accounts.map(async (account) => {
       if (account.Id === parentAccountIdentity.Account) {
         return {
           accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -116,7 +116,7 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
 
 const deleteBucketsForAccount = async (account: AWSAccountInfo, accountIndex: number): Promise<void> => {
   const buckets = await getStaleS3TestBuckets(account);
-  await Promise.all(buckets.map(bucket => deleteBucket(account, accountIndex, bucket)));
+  await Promise.all(buckets.map((bucket) => deleteBucket(account, accountIndex, bucket)));
   console.log(`[ACCOUNT ${accountIndex}] Cleanup done!`);
 };
 

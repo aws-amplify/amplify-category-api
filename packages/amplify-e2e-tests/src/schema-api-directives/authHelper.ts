@@ -30,7 +30,7 @@ export async function setupUser(userPoolId: string, username: string, password: 
 
   if (groupName) {
     if (Array.isArray(groupName)) {
-      groupName.forEach(async group => {
+      groupName.forEach(async (group) => {
         await cognitoClient.send(
           new AdminAddUserToGroupCommand({
             UserPoolId: userPoolId,
