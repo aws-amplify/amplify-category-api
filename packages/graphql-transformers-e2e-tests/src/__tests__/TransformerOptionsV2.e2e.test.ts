@@ -136,8 +136,7 @@ describe('V2 transformer options', () => {
 
           configureAmplify(USER_POOL_ID, userPoolClientId);
         } catch (e) {
-          console.error(`Could not setup tests ${e}`);
-          expect(true).toBe(false);
+          throw new Error(`Could not setup tests ${e}`);
         }
       });
 
