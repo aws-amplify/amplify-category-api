@@ -1,35 +1,36 @@
 /* eslint-disable spellcheck/spell-checker, camelcase, jsdoc/require-jsdoc, @typescript-eslint/no-explicit-any */
 import path from 'path';
-import { CodeBuildClient, BatchGetBuildsCommand, Build } from '@aws-sdk/client-codebuild';
 import { config } from 'dotenv';
 import yargs from 'yargs';
+import _ from 'lodash';
+import * as fs from 'fs-extra';
+import { deleteS3Bucket, sleep } from 'amplify-category-api-e2e-core';
 import { S3Client, ListBucketsCommand, GetBucketLocationCommand, GetBucketTaggingCommand, Bucket } from '@aws-sdk/client-s3';
-import {
-  CloudFormationClient,
-  DescribeStacksCommand,
-  ListStacksCommand,
-  ListStackResourcesCommand,
-  DeleteStackCommand,
-  waitUntilStackDeleteComplete,
-  Tag as CloudFormationTag,
-} from '@aws-sdk/client-cloudformation';
-import { STSClient, AssumeRoleCommand, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
-import { OrganizationsClient, ListAccountsCommand } from '@aws-sdk/client-organizations';
-import { AmplifyClient, ListAppsCommand, ListBackendEnvironmentsCommand, DeleteAppCommand } from '@aws-sdk/client-amplify';
 import {
   IAMClient,
   ListRolesCommand,
-  DeleteRoleCommand,
   ListAttachedRolePoliciesCommand,
-  DetachRolePolicyCommand,
   ListRolePoliciesCommand,
+  DeleteRoleCommand,
+  DetachRolePolicyCommand,
   DeleteRolePolicyCommand,
   Role,
   AttachedPolicy,
 } from '@aws-sdk/client-iam';
-import _ from 'lodash';
-import fs from 'fs-extra';
-import { deleteS3Bucket, sleep } from 'amplify-category-api-e2e-core';
+import {
+  CloudFormationClient,
+  DescribeStacksCommand,
+  ListStackResourcesCommand,
+  ListStacksCommand,
+  DeleteStackCommand,
+  Tag as CFNTag,
+  waitUntilStackDeleteComplete,
+} from '@aws-sdk/client-cloudformation';
+import { AmplifyClient, DeleteAppCommand, ListAppsCommand, ListBackendEnvironmentsCommand } from '@aws-sdk/client-amplify';
+import { BatchGetBuildsCommand, Build, CodeBuildClient } from '@aws-sdk/client-codebuild';
+import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
+import { OrganizationsClient, ListAccountsCommand } from '@aws-sdk/client-organizations';
+import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 // Temporary compatibility import for deleteS3Bucket function
 import { S3 as S3V2 } from 'aws-sdk';
 
@@ -102,9 +103,7 @@ type CBJobInfo = {
 
 type AWSAccountInfo = {
   accountId: string;
-  accessKeyId: string;
-  secretAccessKey: string;
-  sessionToken: string;
+  credentials: ReturnType<typeof fromTemporaryCredentials>;
 };
 
 const BUCKET_TEST_REGEX = /test/;
@@ -140,7 +139,7 @@ const testRoleStalenessFilter = (resource: Role): boolean => {
  * Get all S3 buckets in the account, and filter down to the ones we consider stale.
  */
 const getOrphanS3TestBuckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> => {
-  const s3Client = new S3Client(getAWSConfig(account));
+  const s3Client = new S3Client({ credentials: account.credentials });
   const listBucketResponse = await s3Client.send(new ListBucketsCommand({}));
   const staleBuckets = listBucketResponse.Buckets.filter(testBucketStalenessFilter);
 
@@ -160,24 +159,11 @@ const getOrphanS3TestBuckets = async (account: AWSAccountInfo): Promise<S3Bucket
  * Get all iam roles in the account, and filter down to the ones we consider stale.
  */
 const getOrphanTestIamRoles = async (account: AWSAccountInfo): Promise<IamRoleInfo[]> => {
-  const iamClient = new IAMClient(getAWSConfig(account));
+  const iamClient = new IAMClient({ credentials: account.credentials });
   const listRoleResponse = await iamClient.send(new ListRolesCommand({ MaxItems: 1000 }));
   const staleRoles = listRoleResponse.Roles.filter(testRoleStalenessFilter);
   return staleRoles.map((it) => ({ name: it.RoleName }));
 };
-
-/**
- * Get the relevant AWS config object for a given account and region.
- */
-const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccountInfo, region?: string) => ({
-  credentials: {
-    accessKeyId,
-    secretAccessKey,
-    sessionToken,
-  },
-  ...(region ? { region } : {}),
-  maxAttempts: 10,
-});
 
 /**
  * Returns a list of Amplify Apps in the region. The apps includes information about the CodeBuild that created the app
@@ -187,8 +173,10 @@ const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccount
  * @returns Promise<AmplifyAppInfo[]> a list of Amplify Apps in the region with build info
  */
 const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<AmplifyAppInfo[]> => {
-  const config = getAWSConfig(account, region);
-  const amplifyClient = new AmplifyClient(config);
+  const amplifyClient = new AmplifyClient({
+    credentials: account.credentials,
+    region,
+  });
   const result: AmplifyAppInfo[] = [];
   let amplifyApps = { apps: [] };
   try {
@@ -231,7 +219,7 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
  * @param tags Tags associated with the resource
  * @returns build number or undefined
  */
-const getJobId = (tags: CloudFormationTag[] = []): string | undefined => {
+const getJobId = (tags: CFNTag[] = []): string | undefined => {
   const jobId = tags.find((tag) => tag.Key === 'codebuild:build_id')?.Value;
   return jobId;
 };
@@ -247,7 +235,7 @@ const getJobId = (tags: CloudFormationTag[] = []): string | undefined => {
  * @returns stack details
  */
 const getStackDetails = async (stackName: string, account: AWSAccountInfo, region: string): Promise<StackInfo | void> => {
-  const cfnClient = new CloudFormationClient(getAWSConfig(account, region));
+  const cfnClient = new CloudFormationClient({ credentials: account.credentials, region });
   const stack = await cfnClient.send(new DescribeStacksCommand({ StackName: stackName }));
   const tags = stack.Stacks.length && stack.Stacks[0].Tags;
   const stackStatus = stack.Stacks[0].StackStatus;
@@ -271,7 +259,7 @@ const getStackDetails = async (stackName: string, account: AWSAccountInfo, regio
 };
 
 const getStacks = async (account: AWSAccountInfo, region: string): Promise<StackInfo[]> => {
-  const cfnClient = new CloudFormationClient(getAWSConfig(account, region));
+  const cfnClient = new CloudFormationClient({ credentials: account.credentials, region });
   const results: StackInfo[] = [];
   let stacks;
   try {
@@ -335,16 +323,14 @@ const getJobCodeBuildDetails = async (jobIds: string[]): Promise<Build[]> => {
 };
 
 const getBucketRegion = async (account: AWSAccountInfo, bucketName: string): Promise<string> => {
-  const awsConfig = getAWSConfig(account);
-  const s3Client = new S3Client(awsConfig);
+  const s3Client = new S3Client({ credentials: account.credentials });
   const location = await s3Client.send(new GetBucketLocationCommand({ Bucket: bucketName }));
   const region = location.LocationConstraint ?? 'us-east-1';
   return region;
 };
 
 const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> => {
-  const awsConfig = getAWSConfig(account);
-  const s3Client = new S3Client(awsConfig);
+  const s3Client = new S3Client({ credentials: account.credentials });
   const buckets = await s3Client.send(new ListBucketsCommand({}));
   const result: S3BucketInfo[] = [];
   for (const bucket of buckets.Buckets) {
@@ -354,7 +340,7 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
       // Operations on buckets created in opt-in regions appear to require region-specific clients
       const regionalizedClient = new S3Client({
         region,
-        ...(awsConfig as object),
+        credentials: account.credentials,
       });
       const bucketDetails = await regionalizedClient.send(new GetBucketTaggingCommand({ Bucket: bucket.Name }));
       const jobId = getJobId(bucketDetails.TagSet);
@@ -496,7 +482,7 @@ const deleteAmplifyApps = async (account: AWSAccountInfo, accountIndex: number, 
 const deleteAmplifyApp = async (account: AWSAccountInfo, accountIndex: number, app: AmplifyAppInfo): Promise<void> => {
   const { name, appId, region } = app;
   console.log(`${generateAccountInfo(account, accountIndex)} Deleting App ${name}(${appId})`);
-  const amplifyClient = new AmplifyClient(getAWSConfig(account, region));
+  const amplifyClient = new AmplifyClient({ credentials: account.credentials, region });
   try {
     await amplifyClient.send(new DeleteAppCommand({ appId }));
   } catch (e) {
@@ -522,7 +508,7 @@ const deleteIamRole = async (account: AWSAccountInfo, accountIndex: number, role
   const { name: roleName } = role;
   try {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting Iam Role ${roleName}`);
-    const iamClient = new IAMClient(getAWSConfig(account));
+    const iamClient = new IAMClient({ credentials: account.credentials });
     await deleteAttachedRolePolicies(account, accountIndex, roleName);
     await deleteRolePolicies(account, accountIndex, roleName);
     await iamClient.send(new DeleteRoleCommand({ RoleName: roleName }));
@@ -535,7 +521,7 @@ const deleteIamRole = async (account: AWSAccountInfo, accountIndex: number, role
 };
 
 const deleteAttachedRolePolicies = async (account: AWSAccountInfo, accountIndex: number, roleName: string): Promise<void> => {
-  const iamClient = new IAMClient(getAWSConfig(account));
+  const iamClient = new IAMClient({ credentials: account.credentials });
   const rolePolicies = await iamClient.send(new ListAttachedRolePoliciesCommand({ RoleName: roleName }));
   await Promise.all(rolePolicies.AttachedPolicies.map((policy) => detachIamAttachedRolePolicy(account, accountIndex, roleName, policy)));
 };
@@ -548,7 +534,7 @@ const detachIamAttachedRolePolicy = async (
 ): Promise<void> => {
   try {
     console.log(`${generateAccountInfo(account, accountIndex)} Detach Iam Attached Role Policy ${policy.PolicyName}`);
-    const iamClient = new IAMClient(getAWSConfig(account));
+    const iamClient = new IAMClient({ credentials: account.credentials });
     await iamClient.send(new DetachRolePolicyCommand({ RoleName: roleName, PolicyArn: policy.PolicyArn }));
   } catch (e) {
     console.log(`${generateAccountInfo(account, accountIndex)} Detach iam role policy ${policy.PolicyName} failed with error ${e.message}`);
@@ -559,7 +545,7 @@ const detachIamAttachedRolePolicy = async (
 };
 
 const deleteRolePolicies = async (account: AWSAccountInfo, accountIndex: number, roleName: string): Promise<void> => {
-  const iamClient = new IAMClient(getAWSConfig(account));
+  const iamClient = new IAMClient({ credentials: account.credentials });
   const rolePolicies = await iamClient.send(new ListRolePoliciesCommand({ RoleName: roleName }));
   await Promise.all(rolePolicies.PolicyNames.map((policy) => deleteIamRolePolicy(account, accountIndex, roleName, policy)));
 };
@@ -567,7 +553,7 @@ const deleteRolePolicies = async (account: AWSAccountInfo, accountIndex: number,
 const deleteIamRolePolicy = async (account: AWSAccountInfo, accountIndex: number, roleName: string, policyName: string): Promise<void> => {
   try {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting Iam Role Policy ${policyName}`);
-    const iamClient = new IAMClient(getAWSConfig(account));
+    const iamClient = new IAMClient({ credentials: account.credentials });
     await iamClient.send(new DeleteRolePolicyCommand({ RoleName: roleName, PolicyName: policyName }));
   } catch (e) {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting iam role policy ${policyName} failed with error ${e.message}`);
@@ -585,12 +571,17 @@ const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucke
   const { name } = bucket;
   try {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting S3 Bucket ${name}`);
-    const awsConfig = getAWSConfig(account);
     // Use v2 client for compatibility with deleteS3Bucket function from e2e-core
+    // The fromTemporaryCredentials returns a credential provider, so we need to resolve it
+    const creds = await account.credentials();
     const regionalizedS3Client = new S3V2({
       region: bucket.region,
-      credentials: awsConfig.credentials,
-      maxRetries: awsConfig.maxAttempts,
+      credentials: {
+        accessKeyId: creds.accessKeyId,
+        secretAccessKey: creds.secretAccessKey,
+        sessionToken: creds.sessionToken,
+      },
+      maxRetries: 10,
     });
     await deleteS3Bucket(name, regionalizedS3Client);
   } catch (e) {
@@ -610,7 +601,7 @@ const deleteCfnStack = async (account: AWSAccountInfo, accountIndex: number, sta
   const resourceToRetain = resourcesFailedToDelete.length ? resourcesFailedToDelete : undefined;
   console.log(`${generateAccountInfo(account, accountIndex)} Deleting CloudFormation stack ${stackName}`);
   try {
-    const cfnClient = new CloudFormationClient(getAWSConfig(account, region));
+    const cfnClient = new CloudFormationClient({ credentials: account.credentials, region });
     await cfnClient.send(new DeleteStackCommand({ StackName: stackName, RetainResources: resourceToRetain }));
     await waitUntilStackDeleteComplete({ client: cfnClient, maxWaitTime: 3600 }, { StackName: stackName });
   } catch (e) {
@@ -682,53 +673,45 @@ const getFilterPredicate = (args: any): JobFilterPredicate => {
  * to get all accounts within the root account organization.
  */
 const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
-  // This script runs using the codebuild project role to begin with
-  const stsClient = new STSClient({});
-  const assumeRoleResForE2EParent = await stsClient.send(
-    new AssumeRoleCommand({
+  const parentAccountCreds = fromTemporaryCredentials({
+    params: {
       RoleArn: process.env.TEST_ACCOUNT_ROLE,
       RoleSessionName: `testSession${Math.floor(Math.random() * 100000)}`,
-      // One hour
-      DurationSeconds: 1 * 60 * 60,
-    }),
-  );
-  const e2eParentAccountCred = {
-    accessKeyId: assumeRoleResForE2EParent.Credentials.AccessKeyId,
-    secretAccessKey: assumeRoleResForE2EParent.Credentials.SecretAccessKey,
-    sessionToken: assumeRoleResForE2EParent.Credentials.SessionToken,
-  };
-  const stsClientForE2E = new STSClient({
-    credentials: e2eParentAccountCred,
+    },
+    clientConfig: {
+      region: 'us-east-1',
+    },
   });
+
+  const stsClientForE2E = new STSClient({ credentials: parentAccountCreds, region: 'us-east-1' });
   const parentAccountIdentity = await stsClientForE2E.send(new GetCallerIdentityCommand({}));
   const orgApi = new OrganizationsClient({
-    // the region where the organization exists
     region: 'us-east-1',
-    credentials: e2eParentAccountCred,
+    credentials: parentAccountCreds,
   });
+
   try {
     const orgAccounts = await orgApi.send(new ListAccountsCommand({}));
     const accountCredentialPromises = orgAccounts.Accounts.map(async (account) => {
       if (account.Id === parentAccountIdentity.Account) {
         return {
           accountId: account.Id,
-          ...e2eParentAccountCred,
+          credentials: parentAccountCreds,
         };
       }
       const randomNumber = Math.floor(Math.random() * 100000);
-      const assumeRoleRes = await stsClientForE2E.send(
-        new AssumeRoleCommand({
-          RoleArn: `arn:aws:iam::${account.Id}:role/OrganizationAccountAccessRole`,
-          RoleSessionName: `testSession${randomNumber}`,
-          // One hour
-          DurationSeconds: 1 * 60 * 60,
-        }),
-      );
       return {
         accountId: account.Id,
-        accessKeyId: assumeRoleRes.Credentials.AccessKeyId,
-        secretAccessKey: assumeRoleRes.Credentials.SecretAccessKey,
-        sessionToken: assumeRoleRes.Credentials.SessionToken,
+        credentials: fromTemporaryCredentials({
+          params: {
+            RoleArn: `arn:aws:iam::${account.Id}:role/OrganizationAccountAccessRole`,
+            RoleSessionName: `testSession${randomNumber}`,
+          },
+          masterCredentials: parentAccountCreds,
+          clientConfig: {
+            region: 'us-east-1',
+          },
+        }),
       };
     });
     return await Promise.all(accountCredentialPromises);
@@ -740,7 +723,7 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
     return [
       {
         accountId: parentAccountIdentity.Account,
-        ...e2eParentAccountCred,
+        credentials: parentAccountCreds,
       },
     ];
   }
