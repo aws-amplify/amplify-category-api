@@ -7768,31 +7768,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -----
 
-The following software may be included in this product: are-docs-informative. A copy of the source code may be downloaded from https://github.com/JoshuaKGoldberg/are-docs-informative. This software contains the following license and notice below:
-
-# MIT License
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-'Software'), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
------
-
 The following software may be included in this product: are-we-there-yet, init-package-json. A copy of the source code may be downloaded from https://github.com/npm/are-we-there-yet.git (are-we-there-yet), https://github.com/npm/init-package-json.git (init-package-json). This software contains the following license and notice below:
 
 ISC License
@@ -12417,7 +12392,7 @@ THE SOFTWARE.
 
 -----
 
-The following software may be included in this product: chownr, color-support, dezalgo, fs-minipass, ignore-walk, ini, isexe, json-stringify-nice, json-stringify-safe, lru-cache, minimatch, minipass-collect, minipass-flush, minipass-pipeline, minipass-sized, mute-stream, nopt, npm-packlist, once, proto-list, read, readdir-scoped-modules, rimraf, semver, tar, which, wrappy, yallist. A copy of the source code may be downloaded from git://github.com/isaacs/chownr.git (chownr), git+https://github.com/isaacs/color-support.git (color-support), https://github.com/npm/dezalgo (dezalgo), https://github.com/npm/fs-minipass.git (fs-minipass), git+https://github.com/isaacs/ignore-walk.git (ignore-walk), https://github.com/npm/ini.git (ini), git+https://github.com/isaacs/isexe.git (isexe), https://github.com/isaacs/json-stringify-nice (json-stringify-nice), git://github.com/isaacs/json-stringify-safe (json-stringify-safe), git://github.com/isaacs/node-lru-cache.git (lru-cache), git://github.com/isaacs/minimatch.git (minimatch), git+https://github.com/isaacs/minipass-flush.git (minipass-flush), git+https://github.com/isaacs/minipass-sized.git (minipass-sized), git://github.com/isaacs/mute-stream (mute-stream), https://github.com/npm/nopt.git (nopt), https://github.com/npm/npm-packlist.git (npm-packlist), git://github.com/isaacs/once (once), https://github.com/isaacs/proto-list (proto-list), git://github.com/isaacs/read.git (read), https://github.com/npm/readdir-scoped-modules (readdir-scoped-modules), git://github.com/isaacs/rimraf.git (rimraf), git+https://github.com/npm/node-semver.git (semver), https://github.com/isaacs/node-tar.git (tar), https://github.com/npm/node-which.git (which), https://github.com/npm/wrappy (wrappy), git+https://github.com/isaacs/yallist.git (yallist). This software contains the following license and notice below:
+The following software may be included in this product: chownr, color-support, dezalgo, fs-minipass, ignore-walk, ini, isexe, json-stringify-nice, json-stringify-safe, lru-cache, minimatch, minipass-collect, minipass-flush, minipass-pipeline, minipass-sized, mute-stream, nopt, npm-packlist, once, proto-list, read, readdir-scoped-modules, rimraf, semver, tar, which, wrappy, yallist. A copy of the source code may be downloaded from git://github.com/isaacs/chownr.git (chownr), git+https://github.com/isaacs/color-support.git (color-support), https://github.com/npm/dezalgo (dezalgo), https://github.com/npm/fs-minipass.git (fs-minipass), git+https://github.com/isaacs/ignore-walk.git (ignore-walk), https://github.com/npm/ini.git (ini), git+https://github.com/isaacs/isexe.git (isexe), https://github.com/isaacs/json-stringify-nice (json-stringify-nice), git://github.com/isaacs/json-stringify-safe (json-stringify-safe), git://github.com/isaacs/node-lru-cache.git (lru-cache), git://github.com/isaacs/minimatch.git (minimatch), git+https://github.com/isaacs/minipass-flush.git (minipass-flush), git+https://github.com/isaacs/minipass-sized.git (minipass-sized), git://github.com/isaacs/mute-stream (mute-stream), https://github.com/npm/nopt.git (nopt), https://github.com/npm/npm-packlist.git (npm-packlist), git://github.com/isaacs/once (once), https://github.com/isaacs/proto-list (proto-list), git://github.com/isaacs/read.git (read), https://github.com/npm/readdir-scoped-modules (readdir-scoped-modules), git://github.com/isaacs/rimraf.git (rimraf), https://github.com/npm/node-semver.git (semver), https://github.com/isaacs/node-tar.git (tar), https://github.com/npm/node-which.git (which), https://github.com/npm/wrappy (wrappy), git+https://github.com/isaacs/yallist.git (yallist). This software contains the following license and notice below:
 
 The ISC License
 
