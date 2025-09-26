@@ -550,6 +550,8 @@ export interface TranslationBehavior {
 
   readonly enableSearchNodeToNodeEncryption: boolean;
 
+  readonly enableSearchEncryptionAtRest: boolean;
+
   /**
    * When enabled, internal cfn outputs which existed in Amplify-generated apps will continue to be emitted.
    * @default false
