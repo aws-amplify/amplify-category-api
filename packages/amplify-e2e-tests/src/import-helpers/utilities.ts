@@ -8,10 +8,10 @@ import {
   getProjectMeta,
   getTeamProviderInfo,
 } from 'amplify-category-api-e2e-core';
-import { 
-  CognitoIdentityProviderClient, 
-  CreateUserPoolClientCommand, 
-  DeleteUserPoolClientCommand 
+import {
+  CognitoIdentityProviderClient,
+  CreateUserPoolClientCommand,
+  DeleteUserPoolClientCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { fromIni } from '@aws-sdk/credential-providers';
 import * as fs from 'fs-extra';
@@ -30,8 +30,8 @@ export const getAuthProjectDetails = (projectRoot: string): AuthProjectDetails =
   const meta = getBackendAmplifyMeta(projectRoot);
   const team = getTeamProviderInfo(projectRoot);
   const authMetaKey = Object.keys(meta.auth)
-    .filter((key) => meta.auth[key].service === 'Cognito')
-    .map((key) => key)[0];
+    .filter(key => meta.auth[key].service === 'Cognito')
+    .map(key => key)[0];
 
   const authMeta = meta.auth[authMetaKey];
   const authTeam = _.get(team, ['integtest', 'categories', 'auth', authMetaKey]);
@@ -95,8 +95,8 @@ export const getOGAuthProjectDetails = (projectRoot: string): AuthProjectDetails
   const team = getTeamProviderInfo(projectRoot);
 
   const authMetaKey = Object.keys(meta.auth)
-    .filter((key) => meta.auth[key].service === 'Cognito')
-    .map((key) => key)[0];
+    .filter(key => meta.auth[key].service === 'Cognito')
+    .map(key => key)[0];
 
   const authMeta = meta.auth[authMetaKey];
   const authTeam = _.get(team, ['integtest', 'categories', 'auth', authMetaKey]);
@@ -153,8 +153,8 @@ export const getOGStorageProjectDetails = (projectRoot: string): StorageProjectD
   const meta = getBackendAmplifyMeta(projectRoot);
 
   const storageMetaKey = Object.keys(meta.storage)
-    .filter((key) => meta.storage[key].service === 'S3')
-    .map((key) => key)[0];
+    .filter(key => meta.storage[key].service === 'S3')
+    .map(key => key)[0];
 
   const storageMeta = meta.storage[storageMetaKey];
   const parameters = readResourceParametersJson(projectRoot, 'storage', storageMetaKey);
@@ -176,8 +176,8 @@ export const getStorageProjectDetails = (projectRoot: string): StorageProjectDet
   const team = getTeamProviderInfo(projectRoot);
 
   const storageMetaKey = Object.keys(meta.storage)
-    .filter((key) => meta.storage[key].service === 'S3')
-    .map((key) => key)[0];
+    .filter(key => meta.storage[key].service === 'S3')
+    .map(key => key)[0];
 
   const stoargeMeta = meta.storage[storageMetaKey];
   const storageTeam = _.get(team, ['integtest', 'categories', 'storage', storageMetaKey]);
@@ -213,8 +213,8 @@ export const getOGDynamoDBProjectDetails = (projectRoot: string): DynamoDBProjec
   const meta = getBackendAmplifyMeta(projectRoot);
 
   const storageMetaKey = Object.keys(meta.storage)
-    .filter((key) => meta.storage[key].service === 'DynamoDB')
-    .map((key) => key)[0];
+    .filter(key => meta.storage[key].service === 'DynamoDB')
+    .map(key => key)[0];
 
   const storageMeta = meta.storage[storageMetaKey];
   const parameters = readResourceParametersJson(projectRoot, 'storage', storageMetaKey);
@@ -242,8 +242,8 @@ export const getDynamoDBProjectDetails = (projectRoot: string): DynamoDBProjectD
   const team = getTeamProviderInfo(projectRoot);
 
   const storageMetaKey = Object.keys(meta.storage)
-    .filter((key) => meta.storage[key].service === 'DynamoDB')
-    .map((key) => key)[0];
+    .filter(key => meta.storage[key].service === 'DynamoDB')
+    .map(key => key)[0];
 
   const dynamodbMeta = meta.storage[storageMetaKey];
   const storageTeam = _.get(team, ['integtest', 'categories', 'storage', storageMetaKey]);
@@ -296,21 +296,23 @@ const addAppClient = async (
   const authDetails = getAuthProjectDetails(projectRoot);
   const credentials = fromIni({ profile: profileName });
 
-  const cognitoClient = new CognitoIdentityProviderClient({ 
+  const cognitoClient = new CognitoIdentityProviderClient({
     region: projectDetails.providers.awscloudformation.Region,
-    credentials 
+    credentials,
   });
-  const response = await cognitoClient.send(new CreateUserPoolClientCommand({
-    ClientName: clientName,
-    UserPoolId: authDetails.meta.UserPoolId,
-    GenerateSecret: generateSecret,
-    AllowedOAuthFlows: settings.allowedOAuthFlows,
-    CallbackURLs: settings.callbackURLs,
-    LogoutURLs: settings.logoutURLs,
-    AllowedOAuthScopes: settings.allowedScopes,
-    SupportedIdentityProviders: settings.supportedIdentityProviders,
-    AllowedOAuthFlowsUserPoolClient: settings.allowedOAuthFlowsUserPoolClient,
-  }));
+  const response = await cognitoClient.send(
+    new CreateUserPoolClientCommand({
+      ClientName: clientName,
+      UserPoolId: authDetails.meta.UserPoolId,
+      GenerateSecret: generateSecret,
+      AllowedOAuthFlows: settings.allowedOAuthFlows,
+      CallbackURLs: settings.callbackURLs,
+      LogoutURLs: settings.logoutURLs,
+      AllowedOAuthScopes: settings.allowedScopes,
+      SupportedIdentityProviders: settings.supportedIdentityProviders,
+      AllowedOAuthFlowsUserPoolClient: settings.allowedOAuthFlowsUserPoolClient,
+    }),
+  );
   return { appClientId: response.UserPoolClient.ClientId, appclientSecret: response.UserPoolClient.ClientSecret };
 };
 
@@ -332,9 +334,9 @@ export const deleteAppClient = async (profileName: string, projectRoot: string, 
   const projectDetails = getProjectMeta(projectRoot);
   const credentials = fromIni({ profile: profileName });
 
-  const cognitoClient = new CognitoIdentityProviderClient({ 
+  const cognitoClient = new CognitoIdentityProviderClient({
     region: projectDetails.providers.awscloudformation.Region,
-    credentials 
+    credentials,
   });
   await cognitoClient.send(new DeleteUserPoolClientCommand({ ClientId: clientId, UserPoolId: authDetails.meta.UserPoolId }));
 };

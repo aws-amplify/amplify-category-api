@@ -92,7 +92,7 @@ Not traditional sprint planning - items here represent work actively being deliv
 ### Technical Considerations
 
 - DynamoDB client migration patterns established and working
-- AWS SDK v3 response format includes $metadata (tests updated accordingly)
+- AWS SDK v3 response format includes \$metadata (tests updated accordingly)
 - v3 returns promises directly (no .promise() calls needed)
 - Credentials format changed from flat properties to credentials object
 - **Jest compatibility resolved using workspace yarn.lock with compatible AWS SDK versions**

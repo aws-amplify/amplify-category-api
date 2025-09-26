@@ -1,6 +1,4 @@
-import {
-  OAuthFlowType,
-} from '@aws-sdk/client-cognito-identity-provider';
+import { OAuthFlowType } from '@aws-sdk/client-cognito-identity-provider';
 
 export type AuthProjectDetails = {
   authResourceName?: string;
