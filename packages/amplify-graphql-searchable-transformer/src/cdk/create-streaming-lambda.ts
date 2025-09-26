@@ -31,13 +31,7 @@ export const createLambda = (
     parameterMap.get(OpenSearchStreamingLambdaHandlerName)!.valueAsString,
     path.resolve(__dirname, '..', '..', 'lib', 'streaming-lambda.zip'),
     Runtime.PYTHON_3_13,
-    [
-      LayerVersion.fromLayerVersionArn(
-        scope,
-        'LambdaLayerVersion',
-        Fn.findInMap('LayerResourceMapping', Fn.ref('AWS::Region'), 'layerRegion'),
-      ),
-    ],
+    [],
     lambdaRole,
     enviroment,
     undefined,
