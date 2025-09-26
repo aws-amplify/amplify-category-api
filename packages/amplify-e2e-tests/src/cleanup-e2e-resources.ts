@@ -964,7 +964,7 @@ const cleanup = async (): Promise<void> => {
   config();
 
   const filterPredicate = getFilterPredicate(args);
-  const accounts = (await getAccountsToCleanup()).slice(0, 2);
+  const accounts = await getAccountsToCleanup();
 
   accounts.map((account, i) => {
     console.log(`${generateAccountInfo(account, i)} is under cleanup`);
