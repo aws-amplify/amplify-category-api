@@ -96,7 +96,7 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "lerna": "^9",
+    "lerna": "^8",
     "npm-check-updates": "^16.1.0",
     "strip-ansi": "^6.0.0"
   },
