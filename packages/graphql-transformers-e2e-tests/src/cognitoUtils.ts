@@ -173,6 +173,10 @@ export async function createUserPool(client: CognitoClient, userPoolName: string
         },
       ],
       AutoVerifiedAttributes: ['email'],
+      // Self-signup disabled
+      AdminCreateUserConfig: {
+        AllowAdminCreateUserOnly: true,
+      },
     };
     client.createUserPool(params, (err, data) => (err ? rej(err) : res(data)));
   });

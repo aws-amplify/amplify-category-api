@@ -9,7 +9,7 @@ from urllib.parse import urlparse, quote
 from botocore.auth import SigV4Auth
 from botocore.awsrequest import AWSRequest
 from botocore.credentials import get_credentials
-from botocore.endpoint import BotocoreHTTPSession
+from botocore.httpsession import URLLib3Session
 from botocore.session import Session
 from boto3.dynamodb.types import TypeDeserializer
 
@@ -68,7 +68,7 @@ def post_data_to_opensearch(payload, region, creds, host, path, method='POST', p
                     quote(path), data=payload, headers={'Host': host, 'Content-Type': 'application/json'})
     # SigV4Auth may be expecting 'es' but need to swap with 'os' or 'OpenSearch'
     SigV4Auth(creds, 'es', region).add_auth(req)
-    http_session = BotocoreHTTPSession()
+    http_session = URLLib3Session()
     res = http_session.send(req.prepare())
     if res.status_code >= 200 and res.status_code <= 299:
         return res._content
@@ -188,12 +188,12 @@ def _lambda_handler(event, context):
         logger.debug(image_name + ': %s', ddb[image_name])
         # Deserialize DynamoDB type to Python types
         doc_fields = ddb_deserializer.deserialize({'M': ddb[image_name]})
-        
+
         # Sync enabled APIs do soft delete. We need to delete the record in OpenSearch if _deleted field is set
         if OPENSEARCH_USE_EXTERNAL_VERSIONING and event_name == 'MODIFY' and '_deleted' in  doc_fields and doc_fields['_deleted']:
             is_ddb_insert_or_update = False
             is_ddb_delete = True
-            
+
          # Update counters
         if event_name == 'INSERT':
             cnt_insert += 1
@@ -210,6 +210,7 @@ def _lambda_handler(event, context):
             doc_id = compute_doc_index(ddb['Keys'], ddb_deserializer)
         else:
             logger.error('Cannot find keys in ddb record')
+            doc_id = None
 
         # If DynamoDB INSERT or MODIFY, send 'index' to OpenSearch
         if is_ddb_insert_or_update:

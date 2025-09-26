@@ -52,38 +52,52 @@ function outputValueSelector(key: string) {
   };
 }
 
+/**
+ * Return a random other account in the organization, other than ourselves and the root account.
+ */
+async function randomOtherAccount(currentAccountId: string) {
+  const childAccounts = (await organizations.listAccounts({}).promise())?.Accounts ?? [];
+
+  // Eliminate the current
+
+  const eligibleAccounts = childAccounts
+    // Eliminate the current account
+    .filter((a) => a.Id !== currentAccountId)
+    // Eliminate the root account. Every ARN will look `arn:aws:organizations::${root}:account/${org}/${account}` like,
+    // only for the root account will it be $root == $account.
+    .filter((a) => !a.Arn!.startsWith(`arn:aws:organizations::${a.Id}:`));
+
+  if (eligibleAccounts.length === 0) {
+    throw new Error(`Could not find any eligible accounts in organization (found ${childAccounts.map((a) => a.Id)})`);
+  }
+
+  const randIx = Math.floor(Math.random() * eligibleAccounts.length);
+  const otherAccountId = eligibleAccounts[randIx].Id;
+
+  const childAccountRoleARN = `arn:aws:iam::${otherAccountId}:role/OrganizationAccountAccessRole`;
+  const accountCredentials = (
+    await sts
+      .assumeRole({
+        RoleArn: childAccountRoleARN,
+        RoleSessionName: `testCrossAccountFunction${BUILD_TIMESTAMP}`,
+        DurationSeconds: 900,
+      })
+      .promise()
+  )?.Credentials;
+  if (!accountCredentials?.AccessKeyId || !accountCredentials?.SecretAccessKey || !accountCredentials?.SessionToken) {
+    throw new Error('Could not assume role to access child account');
+  }
+
+  return { otherAccountId, accountCredentials };
+}
+
 const createEchoFunctionInOtherAccount = async (currentAccountId?: string) => {
   if (!currentAccountId) {
     return;
   }
   try {
-    const childAccounts = (await organizations.listAccounts({}).promise())?.Accounts;
-    if (!childAccounts || childAccounts?.length < 1) {
-      console.warn('Could not find any child accounts attached to current account');
-      expect(true).toEqual(false);
-      return;
-    }
-    const otherAccountId = childAccounts.find((account) => account.Id !== currentAccountId)?.Id;
-    if (!otherAccountId) {
-      console.warn('Could not choose other account to create lambda function');
-      expect(true).toEqual(false);
-      return;
-    }
-    const childAccountRoleARN = `arn:aws:iam::${otherAccountId}:role/OrganizationAccountAccessRole`;
-    const accountCredentials = (
-      await sts
-        .assumeRole({
-          RoleArn: childAccountRoleARN,
-          RoleSessionName: `testCrossAccountFunction${BUILD_TIMESTAMP}`,
-          DurationSeconds: 900,
-        })
-        .promise()
-    )?.Credentials;
-    if (!accountCredentials?.AccessKeyId || !accountCredentials?.SecretAccessKey || !accountCredentials?.SessionToken) {
-      console.warn('Could not assume role to access child account');
-      expect(true).toEqual(false);
-      return;
-    }
+    const { otherAccountId, accountCredentials } = await randomOtherAccount(currentAccountId);
+
     const crossAccountLambdaHelper = new LambdaHelper(
       region,
       new AWS.Credentials(accountCredentials.AccessKeyId, accountCredentials.SecretAccessKey, accountCredentials.SessionToken),
@@ -104,8 +118,7 @@ const createEchoFunctionInOtherAccount = async (currentAccountId?: string) => {
     return otherAccountId;
   } catch (e) {
     console.warn(`Could not create echo function in other account: ${e}`);
-    expect(true).toEqual(false);
-    return;
+    throw e;
   }
 };
 

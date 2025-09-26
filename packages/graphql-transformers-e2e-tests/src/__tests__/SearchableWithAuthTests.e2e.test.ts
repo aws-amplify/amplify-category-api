@@ -330,7 +330,7 @@ beforeAll(async () => {
     await createRecords();
   } catch (e) {
     console.error(e);
-    expect(true).toEqual(false);
+    throw e;
   }
 });
 

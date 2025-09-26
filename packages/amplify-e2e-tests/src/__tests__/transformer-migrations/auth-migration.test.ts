@@ -35,12 +35,9 @@ describe('transformer @auth migration test', () => {
   let projRoot: string;
   let projectName: string;
 
-  const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
   const GROUPNAME = 'Admin';
   const PASSWORD = 'user1Password';
-  const NEW_PASSWORD = 'user1Password!!!**@@@';
   const EMAIL = 'username@amazon.com';
-  const UNAUTH_ROLE_NAME = `unauthRole${BUILD_TIMESTAMP}`;
 
   const modelSchemaV1 = 'transformer_migration/auth-model-v1.graphql';
   const modelSchemaV2 = 'transformer_migration/auth-model-v2.graphql';
@@ -63,7 +60,6 @@ describe('transformer @auth migration test', () => {
   });
 
   it('migration of queries with different auth methods should succeed', async () => {
-    const iamHelper = new IAM({ region: 'us-east-2' });
     const awsconfig = configureAmplify(projRoot);
     const userPoolId = getUserPoolId(projRoot);
 
@@ -82,7 +78,7 @@ describe('transformer @auth migration test', () => {
       awsconfig.aws_appsync_region,
       apiKey,
     );
-    let appSyncClientViaIAM = getConfiguredAppsyncClientIAMAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region);
+    const appSyncClientViaIAM = getConfiguredAppsyncClientIAMAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region);
 
     let createPostMutation = /* GraphQL */ `
       mutation CreatePost {
@@ -116,7 +112,7 @@ describe('transformer @auth migration test', () => {
     expect(createPostPublicResult.errors).toBeUndefined();
     expect(createPostPublicResult.data).toBeDefined();
 
-    let createPostPublicIAMMutation = /* GraphQL */ `
+    const createPostPublicIAMMutation = /* GraphQL */ `
       mutation CreatePostPublicIAM {
         createPostPublicIAM(input: { title: "Created in V1" }) {
           id
@@ -124,7 +120,7 @@ describe('transformer @auth migration test', () => {
       }
     `;
 
-    let createPostPublicIAMResult = await appSyncClientViaIAM.mutate({
+    const createPostPublicIAMResult = await appSyncClientViaIAM.mutate({
       mutation: gql(createPostPublicIAMMutation),
       fetchPolicy: 'no-cache',
     });
