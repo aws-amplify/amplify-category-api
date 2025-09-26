@@ -27,12 +27,7 @@ import {
   Tag as CFNTag,
   waitUntilStackDeleteComplete,
   Stack,
-  ResourceIdentifierSummary,
-  ListStacksOutput,
-  CloudFormation,
-  paginateListStackResources,
   StackResourceSummary,
-  paginateListStacks,
   StackStatus,
   StackSummary,
   ResourceStatus,
@@ -51,6 +46,7 @@ import { OrganizationsClient, ListAccountsCommand } from '@aws-sdk/client-organi
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 import { appendAmplifyInput } from './rds-v2-test-utils';
 import { ConfiguredRetryStrategy } from '@smithy/util-retry';
+import { paginate } from './utils/retries';
 
 type TestRegion = {
   name: string;
@@ -351,13 +347,29 @@ const STABLE_STATUSES: StackStatus[] = [
   'IMPORT_ROLLBACK_COMPLETE',
 ];
 
+const listStackResources = async (client: CloudFormationClient, stackName: string): Promise<StackResourceSummary[]> => {
+  return paginate(async (token) => {
+    const response = await client.send(
+      new ListStackResourcesCommand({
+        StackName: stackName,
+        NextToken: token,
+      }),
+    );
+    return { nextPage: response.NextToken, items: response.StackResourceSummaries };
+  });
+};
+
 const listStacks = async (client: CloudFormationClient, stackStatusFilter: StackStatus[] | undefined): Promise<StackSummary[]> => {
   try {
-    const ret: StackSummary[] = [];
-    for await (const page of paginateListStacks({ client }, { StackStatusFilter: stackStatusFilter })) {
-      ret.push(...(await page).StackSummaries);
-    }
-    return ret;
+    return await paginate(async (token) => {
+      const response = await client.send(
+        new ListStacksCommand({
+          NextToken: token,
+          StackStatusFilter: stackStatusFilter,
+        }),
+      );
+      return { token: response.NextToken, items: response.StackSummaries };
+    });
   } catch (e: any) {
     if (e?.name === 'InvalidClientTokenId') {
       console.log(`(opt-in region failure) Listing stacks failed with error with code ${e?.name}. Skipping.`);
@@ -413,11 +425,9 @@ const getAllCfnManagedResources = async (account: AWSAccountInfo, region: string
   const ret = new Set<string>();
   for (const stack of await listStacks(client, undefined)) {
     try {
-      for await (const page of paginateListStackResources({ client }, { StackName: stack.StackName })) {
-        for (const resource of page.StackResourceSummaries ?? []) {
-          if (resource.PhysicalResourceId && liveResourceStates.includes(resource.ResourceStatus)) {
-            ret.add(resourceId(resource.ResourceType, resource.PhysicalResourceId));
-          }
+      for (const resource of await listStackResources(client, stack.StackName)) {
+        if (resource.PhysicalResourceId && liveResourceStates.includes(resource.ResourceStatus)) {
+          ret.add(resourceId(resource.ResourceType, resource.PhysicalResourceId));
         }
       }
     } catch (e: any) {
@@ -430,7 +440,7 @@ const getAllCfnManagedResources = async (account: AWSAccountInfo, region: string
   return ret;
 };
 
-function resourceId(resourceType: string, resourceId: string) {
+function resourceId(resourceType: string, resourceId: string): string {
   return `${resourceType}#${resourceId}`;
 }
 
@@ -911,8 +921,6 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const cfnResourcesPromise = testRegions.map((region) => getAllCfnManagedResources(account, region));
 
   const cfnManaged = setUnion(...(await Promise.all(cfnResourcesPromise)).flat());
-
-  console.log(cfnManaged);
 
   const apps = (await Promise.all(appPromises)).flat();
   const stacks = (await Promise.all(stackPromises)).flat();
