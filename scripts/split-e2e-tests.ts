@@ -44,7 +44,7 @@ type BatchBuildJob = {
   buildspec: string;
   env: {
     'compute-type': ComputeType;
-    variables?: {[string: string]: string};
+    variables?: { [string: string]: string };
   };
   'depend-on': string[] | string;
 };
@@ -56,7 +56,7 @@ type ConfigBase = {
   env: {
     'compute-type': ComputeType;
     shell: 'bash';
-    variables: {[string: string]: string};
+    variables: { [string: string]: string };
   };
 };
 
@@ -414,7 +414,7 @@ const main = (): void => {
       variables: {
         // The tests are using deprecated CDK APIs and the constant complaints
         // about it are making it hard to read logs.
-        'JSII_DEPRECATED': 'quiet',
+        JSII_DEPRECATED: 'quiet',
       },
     },
     'depend-on': builds.length > 0 ? [builds[0].identifier] : 'publish_to_local_registry',

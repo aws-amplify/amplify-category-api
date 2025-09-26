@@ -14,7 +14,6 @@ Set `AMPLIFY_PATH` to point to `amplify-cli/bin/amplify`.
 
 (rix0rrr@) -- I made it work by putting my AWS credentials in the `[default]` section of `~/.aws/credentials`.
 
-
 ## Running individual tests
 
 Amplify E2E tests use Jest. So all the standard Jest comnmads work.
