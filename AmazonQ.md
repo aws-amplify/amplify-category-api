@@ -167,9 +167,8 @@ When approaching context limits:
 
 1. **Complete all local development and testing**
 2. **Commit and push all changes to remote branch**
-3. **Refresh AWS credentials using `ada` command**
-4. **Run `yarn cloud-e2e` to execute e2e test suite**
-5. **Monitor test results and address any failures**
+3. **Run `yarn cloud-e2e` to execute e2e test suite** (handles AWS credentials automatically)
+4. **Monitor test results and address any failures**
 
 ### Common E2E Issues
 
@@ -188,7 +187,7 @@ Before marking tasks complete:
 - [ ] Documentation is updated
 - [ ] `Q_TODO.md` is current
 - [ ] **All code committed and pushed before e2e tests**
-- [ ] **E2E tests passing (after `ada` credential refresh)**
+- [ ] **E2E tests passing (credentials handled automatically)**
 
 ## Misc
 
