@@ -1,11 +1,19 @@
 version: 0.2
 env:
   shell: powershell.exe
+  variables:
+    NODE_OPTIONS: --max-old-space-size=8096
 phases:
+  pre_build:
+    commands:
+      - choco install -fy nodejs-lts --version=18.20.4
+      - |
+        $nodeVersion = node -v
+        Write-Host "Node version: $nodeVersion"
   build:
     commands:
-      - |
-        # Use bash to run the shared Node.js setup function
-        bash -c "source ./shared-scripts.sh && _setupNodeVersion 18.20.4"
       - yarn run production-build
       - yarn build-tests
+artifacts:
+  files:
+    - 'shared-scripts.sh'
