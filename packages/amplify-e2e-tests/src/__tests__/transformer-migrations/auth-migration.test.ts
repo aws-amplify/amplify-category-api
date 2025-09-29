@@ -19,7 +19,7 @@ import gql from 'graphql-tag';
 import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import { Auth } from 'aws-amplify';
 import moment from 'moment';
-import { IAM } from 'aws-sdk';
+import { IAMClient } from '@aws-sdk/client-iam';
 import {
   configureAmplify,
   getUserPoolId,
@@ -63,7 +63,7 @@ describe('transformer @auth migration test', () => {
   });
 
   it('migration of queries with different auth methods should succeed', async () => {
-    const iamHelper = new IAM({ region: 'us-east-2' });
+    const iamHelper = new IAMClient({ region: 'us-east-2' });
     const awsconfig = configureAmplify(projRoot);
     const userPoolId = getUserPoolId(projRoot);
 

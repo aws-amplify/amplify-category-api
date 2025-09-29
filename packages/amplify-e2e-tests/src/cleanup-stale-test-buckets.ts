@@ -2,8 +2,6 @@ import { S3Client, ListBucketsCommand, Bucket } from '@aws-sdk/client-s3';
 import { STSClient, GetCallerIdentityCommand, AssumeRoleCommand } from '@aws-sdk/client-sts';
 import { OrganizationsClient, ListAccountsCommand } from '@aws-sdk/client-organizations';
 import { deleteS3Bucket } from 'amplify-category-api-e2e-core';
-// Temporary compatibility import for deleteS3Bucket function
-import { S3 as S3V2 } from 'aws-sdk';
 
 const TEST_BUCKET_REGEX = /test/;
 const BUCKET_STALE_DURATION_MS = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
@@ -47,8 +45,7 @@ const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucke
   const { Name, CreationDate } = bucket;
   try {
     console.log(`[ACCOUNT ${accountIndex}] Deleting S3 Bucket ${Name} created on ${CreationDate}`);
-    // Use v2 client for compatibility with deleteS3Bucket function from e2e-core
-    const s3 = new S3V2(getAWSConfig(account));
+    const s3 = new S3Client(getAWSConfig(account));
     await deleteS3Bucket(Name, s3);
   } catch (e) {
     console.log(`[ACCOUNT ${accountIndex}] Deleting S3 Bucket ${Name} failed with error ${e.message}`);
