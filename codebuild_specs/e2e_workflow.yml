@@ -3,6 +3,8 @@ version: 0.2
 env:
   shell: bash
   compute-type: BUILD_GENERAL1_MEDIUM
+  variables:
+    JSII_DEPRECATED: 'quiet'
 batch:
   fast-fail: false
   build-graph:
