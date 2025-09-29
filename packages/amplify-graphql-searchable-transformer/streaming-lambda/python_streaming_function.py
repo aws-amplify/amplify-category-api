@@ -83,7 +83,8 @@ def post_to_opensearch(payload):
 
     # Get aws_region and credentials to post signed URL to OpenSearch
     opensearch_region = OPENSEARCH_REGION or os.environ['AWS_REGION']
-    session = Session({'region': opensearch_region})
+    session = Session()
+    session.set_config_variable('region', opensearch_region)
     creds = get_credentials(session)
     opensearch_url = urlparse(OPENSEARCH_ENDPOINT)
     # Extract the domain name in OPENSEARCH_ENDPOINT
