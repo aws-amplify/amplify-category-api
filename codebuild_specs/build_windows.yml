@@ -2,31 +2,10 @@ version: 0.2
 env:
   shell: powershell.exe
 phases:
-  install:
-    commands:
-      - |
-        # Install nvm for Windows
-        $nvmVersion = "1.1.11"
-        $nvmUrl = "https://github.com/coreybutler/nvm-windows/releases/download/$nvmVersion/nvm-noinstall.zip"
-        Invoke-WebRequest -Uri $nvmUrl -OutFile "nvm.zip"
-        Expand-Archive -Path "nvm.zip" -DestinationPath "C:\nvm"
-
-        # Add nvm to PATH
-        $env:PATH = "C:\nvm;$env:PATH"
-        [Environment]::SetEnvironmentVariable("PATH", $env:PATH, "Machine")
-
-        # Install and use Node.js 18
-        C:\nvm\nvm.exe install 18.20.4
-        C:\nvm\nvm.exe use 18.20.4
-
-        # Verify Node.js version
-        node --version
-        npm --version
   build:
     commands:
+      - |
+        # Use bash to run the shared Node.js setup function
+        bash -c "source ./shared-scripts.sh && _setupNodeVersion 18.20.4"
       - yarn run production-build
       - yarn build-tests
-
-artifacts:
-  files:
-    - 'shared-scripts.sh'
