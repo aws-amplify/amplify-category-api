@@ -31,8 +31,6 @@ import { BatchGetBuildsCommand, Build, CodeBuildClient } from '@aws-sdk/client-c
 import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import { OrganizationsClient, ListAccountsCommand } from '@aws-sdk/client-organizations';
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
-// Temporary compatibility import for deleteS3Bucket function
-import { S3 as S3V2 } from 'aws-sdk';
 
 type TestRegion = {
   name: string;
@@ -571,17 +569,9 @@ const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucke
   const { name } = bucket;
   try {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting S3 Bucket ${name}`);
-    // Use v2 client for compatibility with deleteS3Bucket function from e2e-core
-    // The fromTemporaryCredentials returns a credential provider, so we need to resolve it
-    const creds = await account.credentials();
-    const regionalizedS3Client = new S3V2({
+    const regionalizedS3Client = new S3Client({
       region: bucket.region,
-      credentials: {
-        accessKeyId: creds.accessKeyId,
-        secretAccessKey: creds.secretAccessKey,
-        sessionToken: creds.sessionToken,
-      },
-      maxRetries: 10,
+      credentials: account.credentials,
     });
     await deleteS3Bucket(name, regionalizedS3Client);
   } catch (e) {

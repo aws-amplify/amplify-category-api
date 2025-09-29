@@ -1,4 +1,5 @@
 import { config, DynamoDB, S3, CognitoIdentityServiceProvider, Lambda, AppSync, CloudFormation, AmplifyBackend, IAM } from 'aws-sdk';
+import { S3Client, ListObjectVersionsCommand, DeleteObjectsCommand, DeleteBucketCommand } from '@aws-sdk/client-s3';
 import _ from 'lodash';
 
 export const getDDBTable = async (tableName: string, region: string) => {
@@ -35,25 +36,25 @@ export const bucketNotExists = async (bucket: string) => {
   }
 };
 
-export const deleteS3Bucket = async (bucket: string, providedS3Client: S3 | undefined = undefined) => {
-  const s3 = providedS3Client ? providedS3Client : new S3();
-  let continuationToken: Required<Pick<S3.ListObjectVersionsOutput, 'KeyMarker' | 'VersionIdMarker'>> = undefined;
-  const objectKeyAndVersion = <S3.ObjectIdentifier[]>[];
+export const deleteS3Bucket = async (bucket: string, providedS3Client: S3Client | undefined = undefined) => {
+  const s3 = providedS3Client ? providedS3Client : new S3Client({});
+  let continuationToken: { KeyMarker?: string; VersionIdMarker?: string } = {};
+  const objectKeyAndVersion: { Key: string; VersionId?: string }[] = [];
   let truncated = false;
   do {
-    const results = await s3
-      .listObjectVersions({
+    const results = await s3.send(
+      new ListObjectVersionsCommand({
         Bucket: bucket,
         ...continuationToken,
-      })
-      .promise();
+      }),
+    );
 
     results.Versions?.forEach(({ Key, VersionId }) => {
-      objectKeyAndVersion.push({ Key, VersionId });
+      if (Key) objectKeyAndVersion.push({ Key, VersionId });
     });
 
     results.DeleteMarkers?.forEach(({ Key, VersionId }) => {
-      objectKeyAndVersion.push({ Key, VersionId });
+      if (Key) objectKeyAndVersion.push({ Key, VersionId });
     });
 
     continuationToken = { KeyMarker: results.NextKeyMarker, VersionIdMarker: results.NextVersionIdMarker };
@@ -70,13 +71,13 @@ export const deleteS3Bucket = async (bucket: string, providedS3Client: S3 | unde
         },
       };
     })
-    .map((delParams) => s3.deleteObjects(delParams).promise());
+    .map((delParams) => s3.send(new DeleteObjectsCommand(delParams)));
   await Promise.all(deleteReq);
-  await s3
-    .deleteBucket({
+  await s3.send(
+    new DeleteBucketCommand({
       Bucket: bucket,
-    })
-    .promise();
+    }),
+  );
   await bucketNotExists(bucket);
 };
 
