@@ -19331,9 +19331,9 @@ node-machine-id@1.1.12:
   resolved "https://registry.yarnpkg.com/node-machine-id/-/node-machine-id-1.1.12.tgz#37904eee1e59b320bb9c5d6c0a59f3b469cb6267"
   integrity sha512-QNABxbrPa3qEIfrE6GOJ7BYIuignnJw7iQ2YPbc3Nla1HzRJjXzZOiikfF8m7eAMfichLt3M4VgLOetqgDmgGQ==
 
-node-pty@beta:
+node-pty@1.1.0-beta33:
   version "1.1.0-beta33"
-  resolved "https://registry.npmjs.org/node-pty/-/node-pty-1.1.0-beta33.tgz#9262e19712e7f42c84c14b11a864fb292de139d4"
+  resolved "https://registry.yarnpkg.com/node-pty/-/node-pty-1.1.0-beta33.tgz#9262e19712e7f42c84c14b11a864fb292de139d4"
   integrity sha512-+BN2bT/KqO+fmCHnpFS99VMVJr7VUBCUa2VIBEw0oEvszkR7ri0kwD1lF91OeQToUJ2dXKA8j6scPjbO4eRWOQ==
   dependencies:
     node-addon-api "^7.1.0"
