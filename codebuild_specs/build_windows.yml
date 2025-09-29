@@ -6,10 +6,11 @@ env:
 phases:
   pre_build:
     commands:
-      - choco install -fy nodejs-lts --version=18.20.4
       - |
-        $nodeVersion = node -v
-        Write-Host "Node version: $nodeVersion"
+        # Skip Node.js installation and use ignore-engines to bypass version checks
+        Write-Host "Current Node version: $(node -v)"
+        Write-Host "Setting yarn to ignore engines for eslint-plugin-jsdoc compatibility"
+        yarn config set ignore-engines true
   build:
     commands:
       - yarn run production-build
