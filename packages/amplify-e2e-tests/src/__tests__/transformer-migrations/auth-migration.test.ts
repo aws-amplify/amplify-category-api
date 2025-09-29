@@ -16,7 +16,7 @@ import gql from 'graphql-tag';
 
 (global as any).fetch = require('node-fetch');
 
-import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 import { Auth } from 'aws-amplify';
 import moment from 'moment';
 import { IAMClient } from '@aws-sdk/client-iam';

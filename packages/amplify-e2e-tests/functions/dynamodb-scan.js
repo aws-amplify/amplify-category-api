@@ -1,7 +1,7 @@
-const AWS = require('aws-sdk');
+const { DynamoDBClient, ScanCommand } = require('@aws-sdk/client-dynamodb');
 
-const DDB = new AWS.DynamoDB();
+const DDB = new DynamoDBClient();
 
 exports.handler = async (event, context) => {
-  return await DDB.scan({ TableName: event.tableName }).promise();
+  return await DDB.send(new ScanCommand({ TableName: event.tableName }));
 };
