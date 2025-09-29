@@ -1,32 +1,52 @@
-import { config, DynamoDB, S3, CognitoIdentityServiceProvider, Lambda, AppSync, CloudFormation, AmplifyBackend, IAM } from 'aws-sdk';
-import { S3Client, ListObjectVersionsCommand, DeleteObjectsCommand, DeleteBucketCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  ListObjectVersionsCommand,
+  DeleteObjectsCommand,
+  DeleteBucketCommand,
+  HeadBucketCommand,
+  GetBucketCorsCommand,
+  waitUntilBucketNotExists,
+} from '@aws-sdk/client-s3';
+import { DynamoDBClient, DescribeTableCommand, ListTagsOfResourceCommand, PutItemCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
+import {
+  CognitoIdentityProviderClient,
+  DescribeUserPoolCommand,
+  DescribeUserPoolClientCommand,
+} from '@aws-sdk/client-cognito-identity-provider';
+import { LambdaClient, GetFunctionCommand } from '@aws-sdk/client-lambda';
+import { AppSyncClient, GetGraphqlApiCommand, ListFunctionsCommand } from '@aws-sdk/client-appsync';
+import { CloudFormationClient, DescribeStacksCommand, DescribeStackResourcesCommand } from '@aws-sdk/client-cloudformation';
+import { AmplifyBackendClient, CreateBackendConfigCommand, GetBackendJobCommand } from '@aws-sdk/client-amplifybackend';
+import {
+  IAMClient,
+  ListRolesCommand,
+  GetRolePolicyCommand,
+  ListRolePoliciesCommand,
+  ListAttachedRolePoliciesCommand,
+} from '@aws-sdk/client-iam';
 import _ from 'lodash';
 
 export const getDDBTable = async (tableName: string, region: string) => {
-  const service = new DynamoDB({ region });
+  const service = new DynamoDBClient({ region });
   if (tableName) {
-    return await service.describeTable({ TableName: tableName }).promise();
+    return await service.send(new DescribeTableCommand({ TableName: tableName }));
   }
 };
 
 export const getDDBTableTags = async (tableName: string, region: string) => {
-  const service = new DynamoDB({ region });
-  return await service.listTagsOfResource({ ResourceArn: tableName }).promise();
+  const service = new DynamoDBClient({ region });
+  return await service.send(new ListTagsOfResourceCommand({ ResourceArn: tableName }));
 };
 
 export const checkIfBucketExists = async (bucketName: string, region: string) => {
-  const service = new S3({ region });
-  return await service.headBucket({ Bucket: bucketName }).promise();
+  const service = new S3Client({ region });
+  return await service.send(new HeadBucketCommand({ Bucket: bucketName }));
 };
 
 export const bucketNotExists = async (bucket: string) => {
-  const s3 = new S3();
-  const params = {
-    Bucket: bucket,
-    $waiter: { maxAttempts: 10, delay: 30 },
-  };
+  const s3 = new S3Client({});
   try {
-    await s3.waitFor('bucketNotExists', params).promise();
+    await waitUntilBucketNotExists({ client: s3, maxWaitTime: 300, minDelay: 30, maxDelay: 30 }, { Bucket: bucket });
     return true;
   } catch (error) {
     if (error.statusCode === 200) {
@@ -82,10 +102,10 @@ export const deleteS3Bucket = async (bucket: string, providedS3Client: S3Client 
 };
 
 export const getUserPool = async (userpoolId, region) => {
-  config.update({ region });
   let res;
   try {
-    res = await new CognitoIdentityServiceProvider().describeUserPool({ UserPoolId: userpoolId }).promise();
+    const client = new CognitoIdentityProviderClient({ region });
+    res = await client.send(new DescribeUserPoolCommand({ UserPoolId: userpoolId }));
   } catch (e) {
     console.log(e);
   }
@@ -93,25 +113,25 @@ export const getUserPool = async (userpoolId, region) => {
 };
 
 export const getLambdaFunction = async (functionName: string, region: string) => {
-  const lambda = new Lambda({ region });
+  const lambda = new LambdaClient({ region });
   try {
-    return await lambda.getFunction({ FunctionName: functionName }).promise();
+    return await lambda.send(new GetFunctionCommand({ FunctionName: functionName }));
   } catch (e) {
     console.log(e);
   }
 };
 
 export const getUserPoolClients = async (userPoolId: string, clientIds: string[], region: string) => {
-  const provider = new CognitoIdentityServiceProvider({ region });
+  const provider = new CognitoIdentityProviderClient({ region });
   const res = [];
   try {
     for (let i = 0; i < clientIds.length; i++) {
-      const clientData = await provider
-        .describeUserPoolClient({
+      const clientData = await provider.send(
+        new DescribeUserPoolClientCommand({
           UserPoolId: userPoolId,
           ClientId: clientIds[i],
-        })
-        .promise();
+        }),
+      );
       res.push(clientData);
     }
   } catch (e) {
@@ -121,40 +141,39 @@ export const getUserPoolClients = async (userPoolId: string, clientIds: string[]
 };
 
 export const getTable = async (tableName: string, region: string) => {
-  const service = new DynamoDB({ region });
-  return await service.describeTable({ TableName: tableName }).promise();
+  const service = new DynamoDBClient({ region });
+  return await service.send(new DescribeTableCommand({ TableName: tableName }));
 };
 
 export const putItemInTable = async (tableName: string, region: string, item: unknown) => {
-  const ddb = new DynamoDB.DocumentClient({ region });
-  return await ddb.put({ TableName: tableName, Item: item }).promise();
+  const ddb = new DynamoDBClient({ region });
+  return await ddb.send(new PutItemCommand({ TableName: tableName, Item: item as any }));
 };
 
 export const scanTable = async (tableName: string, region: string) => {
-  const ddb = new DynamoDB.DocumentClient({ region });
-  return await ddb.scan({ TableName: tableName }).promise();
+  const ddb = new DynamoDBClient({ region });
+  return await ddb.send(new ScanCommand({ TableName: tableName }));
 };
 
 export const getAppSyncApi = async (appSyncApiId: string, region: string) => {
-  const service = new AppSync({ region });
-  return await service.getGraphqlApi({ apiId: appSyncApiId }).promise();
+  const service = new AppSyncClient({ region });
+  return await service.send(new GetGraphqlApiCommand({ apiId: appSyncApiId }));
 };
 
 export const listAppSyncFunctions = async (appSyncApiId: string, region: string) => {
-  const service = new AppSync({ region });
-  return await service.listFunctions({ apiId: appSyncApiId }).promise();
+  const service = new AppSyncClient({ region });
+  return await service.send(new ListFunctionsCommand({ apiId: appSyncApiId }));
 };
 
 export const describeCloudFormationStack = async (stackName: string, region: string, profileConfig?: any) => {
-  const service = profileConfig ? new CloudFormation({ ...profileConfig, region }) : new CloudFormation({ region });
-  return (await service.describeStacks({ StackName: stackName }).promise()).Stacks.find(
-    (stack) => stack.StackName === stackName || stack.StackId === stackName,
-  );
+  const service = profileConfig ? new CloudFormationClient({ ...profileConfig, region }) : new CloudFormationClient({ region });
+  const result = await service.send(new DescribeStacksCommand({ StackName: stackName }));
+  return result.Stacks.find((stack) => stack.StackName === stackName || stack.StackId === stackName);
 };
 
 export const getNestedStackID = async (stackName: string, region: string, logicalId: string): Promise<string> => {
-  const cfnClient = new CloudFormation({ region });
-  const resource = await cfnClient.describeStackResources({ StackName: stackName, LogicalResourceId: logicalId }).promise();
+  const cfnClient = new CloudFormationClient({ region });
+  const resource = await cfnClient.send(new DescribeStackResourcesCommand({ StackName: stackName, LogicalResourceId: logicalId }));
   return resource?.StackResources?.[0].PhysicalResourceId ?? null;
 };
 
@@ -167,15 +186,15 @@ export const getNestedStackID = async (stackName: string, region: string, logica
  */
 
 export const getTableResourceId = async (region: string, table: string, StackId: string): Promise<string | null> => {
-  const cfnClient = new CloudFormation({ region });
-  const apiResources = await cfnClient
-    .describeStackResources({
+  const cfnClient = new CloudFormationClient({ region });
+  const apiResources = await cfnClient.send(
+    new DescribeStackResourcesCommand({
       StackName: StackId,
-    })
-    .promise();
+    }),
+  );
   const resource = apiResources.StackResources.find((stackResource) => table === stackResource.LogicalResourceId);
   if (resource) {
-    const tableStack = await cfnClient.describeStacks({ StackName: resource.PhysicalResourceId }).promise();
+    const tableStack = await cfnClient.send(new DescribeStacksCommand({ StackName: resource.PhysicalResourceId }));
     if (tableStack?.Stacks?.length > 0) {
       const tableName = tableStack.Stacks[0].Outputs.find((out) => out.OutputKey === `GetAtt${resource.LogicalResourceId}TableName`);
       return tableName.OutputValue;
@@ -185,25 +204,25 @@ export const getTableResourceId = async (region: string, table: string, StackId:
 };
 
 export const setupAmplifyAdminUI = async (appId: string, region: string) => {
-  const amplifyBackend = new AmplifyBackend({ region });
+  const amplifyBackend = new AmplifyBackendClient({ region });
 
-  return await amplifyBackend.createBackendConfig({ AppId: appId }).promise();
+  return await amplifyBackend.send(new CreateBackendConfigCommand({ AppId: appId }));
 };
 
 export const getAmplifyBackendJobStatus = async (jobId: string, appId: string, envName: string, region: string) => {
-  const amplifyBackend = new AmplifyBackend({ region });
+  const amplifyBackend = new AmplifyBackendClient({ region });
 
-  return await amplifyBackend
-    .getBackendJob({
+  return await amplifyBackend.send(
+    new GetBackendJobCommand({
       JobId: jobId,
       AppId: appId,
       BackendEnvironmentName: envName,
-    })
-    .promise();
+    }),
+  );
 };
 
 export const listRoleNamesContaining = async (searchString: string, region: string): Promise<string[]> => {
-  const service = new IAM({ region });
+  const service = new IAMClient({ region });
 
   const roles: string[] = [];
   let isTruncated = true;
@@ -211,7 +230,7 @@ export const listRoleNamesContaining = async (searchString: string, region: stri
 
   while (isTruncated) {
     const params = marker ? { Marker: marker } : {};
-    const response = await service.listRoles(params).promise();
+    const response = await service.send(new ListRolesCommand(params));
 
     const matchingRoles = response.Roles.filter((role) => role.RoleName.includes(searchString));
     roles.push(...matchingRoles.map((r) => r.RoleName));
@@ -224,20 +243,22 @@ export const listRoleNamesContaining = async (searchString: string, region: stri
 };
 
 export const getRolePolicy = async (roleName: string, policyName: string, region: string): Promise<any> => {
-  const service = new IAM({ region });
-  const rawDocument = (await service.getRolePolicy({ PolicyName: policyName, RoleName: roleName }).promise()).PolicyDocument;
-  const decodedDocument = decodeURIComponent(rawDocument);
+  const service = new IAMClient({ region });
+  const result = await service.send(new GetRolePolicyCommand({ PolicyName: policyName, RoleName: roleName }));
+  const decodedDocument = decodeURIComponent(result.PolicyDocument);
   return JSON.parse(decodedDocument);
 };
 
 export const listRolePolicies = async (roleName: string, region: string): Promise<string[]> => {
-  const service = new IAM({ region });
-  return (await service.listRolePolicies({ RoleName: roleName }).promise()).PolicyNames;
+  const service = new IAMClient({ region });
+  const result = await service.send(new ListRolePoliciesCommand({ RoleName: roleName }));
+  return result.PolicyNames;
 };
 
 export const listAttachedRolePolicies = async (roleName: string, region: string) => {
-  const service = new IAM({ region });
-  return (await service.listAttachedRolePolicies({ RoleName: roleName }).promise()).AttachedPolicies;
+  const service = new IAMClient({ region });
+  const result = await service.send(new ListAttachedRolePoliciesCommand({ RoleName: roleName }));
+  return result.AttachedPolicies;
 };
 
 export const getBucketNameFromModelSchemaS3Uri = (uri: string | null): string | null => {
@@ -262,10 +283,7 @@ export const getBucketNameFromModelSchemaS3Uri = (uri: string | null): string | 
 };
 
 export const getBucketCorsPolicy = async (bucketName: string, region: string): Promise<Record<string, any>[]> => {
-  const service = new S3({ region });
-  const params = {
-    Bucket: bucketName,
-  };
-  const corsPolicy = await service.getBucketCors(params).promise();
+  const service = new S3Client({ region });
+  const corsPolicy = await service.send(new GetBucketCorsCommand({ Bucket: bucketName }));
   return corsPolicy.CORSRules;
 };
