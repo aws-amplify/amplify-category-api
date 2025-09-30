@@ -207,7 +207,7 @@ Apache License
 
 -----
 
-The following software may be included in this product: @ardatan/aggregate-error, aggregate-error, ansi-escapes, ansi-regex, ansi-styles, any-observable, array-differ, array-union, arrify, auto-bind, callsites, camelcase, camelcase-keys, chalk, clean-stack, cli-cursor, dargs, define-lazy-prop, del, detect-newline, dot-prop, env-paths, escape-string-regexp, execa, find-up, get-port, get-stdin, get-stream, global-dirs, globals, globby, got, hard-rejection, has-flag, import-from, import-global, import-lazy, import-local, indent-string, is-finite, is-fullwidth-code-point, is-generator-fn, is-interactive, is-obj, is-observable, is-path-cwd, is-path-inside, is-stream, is-wsl, leven, load-json-file, locate-path, log-symbols, log-update, make-dir, mimic-fn, normalize-url, npm-run-path, p-finally, p-is-promise, p-limit, p-locate, p-map, p-map-series, p-reduce, p-timeout, p-try, parent-module, parse-json, path-exists, path-key, path-type, pify, pkg-dir, quick-lru, read-pkg, read-pkg-up, redent, remote-git-tags, resolve-cwd, resolve-from, resolve-global, resolve-pkg, restore-cursor, run-node, shebang-regex, slash, sort-keys, string-width, string-width-cjs, strip-ansi, strip-ansi-cjs, strip-bom, strip-final-newline, strip-indent, supports-color, terminal-link, text-extensions, tildify, trim-newlines, type-fest, untildify, wrap-ansi, write-json-file, write-pkg, yn. A copy of the source code may be downloaded from https://github.com/sindresorhus/aggregate-error.git (@ardatan/aggregate-error), https://github.com/sindresorhus/aggregate-error.git (aggregate-error), https://github.com/sindresorhus/ansi-escapes.git (ansi-escapes), https://github.com/chalk/ansi-regex.git (ansi-regex), https://github.com/chalk/ansi-styles.git (ansi-styles), https://github.com/sindresorhus/any-observable.git (any-observable), https://github.com/sindresorhus/array-differ.git (array-differ), https://github.com/sindresorhus/array-union.git (array-union), https://github.com/sindresorhus/arrify.git (arrify), https://github.com/sindresorhus/auto-bind.git (auto-bind), https://github.com/sindresorhus/callsites.git (callsites), https://github.com/sindresorhus/camelcase.git (camelcase), https://github.com/sindresorhus/camelcase-keys.git (camelcase-keys), https://github.com/chalk/chalk.git (chalk), https://github.com/sindresorhus/clean-stack.git (clean-stack), https://github.com/sindresorhus/cli-cursor.git (cli-cursor), https://github.com/sindresorhus/dargs.git (dargs), https://github.com/sindresorhus/define-lazy-prop.git (define-lazy-prop), https://github.com/sindresorhus/del.git (del), https://github.com/sindresorhus/detect-newline.git (detect-newline), https://github.com/sindresorhus/dot-prop.git (dot-prop), https://github.com/sindresorhus/env-paths.git (env-paths), https://github.com/sindresorhus/escape-string-regexp.git (escape-string-regexp), https://github.com/sindresorhus/execa.git (execa), https://github.com/sindresorhus/find-up.git (find-up), https://github.com/sindresorhus/get-port.git (get-port), https://github.com/sindresorhus/get-stdin.git (get-stdin), https://github.com/sindresorhus/get-stream.git (get-stream), https://github.com/sindresorhus/global-dirs.git (global-dirs), https://github.com/sindresorhus/globals.git (globals), https://github.com/sindresorhus/globby.git (globby), https://github.com/sindresorhus/got.git (got), https://github.com/sindresorhus/hard-rejection.git (hard-rejection), https://github.com/sindresorhus/has-flag.git (has-flag), https://github.com/sindresorhus/import-from.git (import-from), https://github.com/sindresorhus/import-global.git (import-global), https://github.com/sindresorhus/import-lazy.git (import-lazy), https://github.com/sindresorhus/import-local.git (import-local), https://github.com/sindresorhus/indent-string.git (indent-string), https://github.com/sindresorhus/is-finite.git (is-finite), https://github.com/sindresorhus/is-fullwidth-code-point.git (is-fullwidth-code-point), https://github.com/sindresorhus/is-generator-fn.git (is-generator-fn), https://github.com/sindresorhus/is-interactive.git (is-interactive), https://github.com/sindresorhus/is-obj.git (is-obj), https://github.com/sindresorhus/is-observable.git (is-observable), https://github.com/sindresorhus/is-path-cwd.git (is-path-cwd), https://github.com/sindresorhus/is-path-inside.git (is-path-inside), https://github.com/sindresorhus/is-stream.git (is-stream), https://github.com/sindresorhus/is-wsl.git (is-wsl), https://github.com/sindresorhus/leven.git (leven), https://github.com/sindresorhus/load-json-file.git (load-json-file), https://github.com/sindresorhus/locate-path.git (locate-path), https://github.com/sindresorhus/log-symbols.git (log-symbols), https://github.com/sindresorhus/log-update.git (log-update), https://github.com/sindresorhus/make-dir.git (make-dir), https://github.com/sindresorhus/mimic-fn.git (mimic-fn), https://github.com/sindresorhus/normalize-url.git (normalize-url), https://github.com/sindresorhus/npm-run-path.git (npm-run-path), https://github.com/sindresorhus/p-finally.git (p-finally), https://github.com/sindresorhus/p-is-promise.git (p-is-promise), https://github.com/sindresorhus/p-limit.git (p-limit), https://github.com/sindresorhus/p-locate.git (p-locate), https://github.com/sindresorhus/p-map.git (p-map), https://github.com/sindresorhus/p-map-series.git (p-map-series), https://github.com/sindresorhus/p-reduce.git (p-reduce), https://github.com/sindresorhus/p-timeout.git (p-timeout), https://github.com/sindresorhus/p-try.git (p-try), https://github.com/sindresorhus/parent-module.git (parent-module), https://github.com/sindresorhus/parse-json.git (parse-json), https://github.com/sindresorhus/path-exists.git (path-exists), https://github.com/sindresorhus/path-key.git (path-key), https://github.com/sindresorhus/path-type.git (path-type), https://github.com/sindresorhus/pify.git (pify), https://github.com/sindresorhus/pkg-dir.git (pkg-dir), https://github.com/sindresorhus/quick-lru.git (quick-lru), https://github.com/sindresorhus/read-pkg.git (read-pkg), https://github.com/sindresorhus/read-pkg-up.git (read-pkg-up), https://github.com/sindresorhus/redent.git (redent), https://github.com/sindresorhus/remote-git-tags.git (remote-git-tags), https://github.com/sindresorhus/resolve-cwd.git (resolve-cwd), https://github.com/sindresorhus/resolve-from.git (resolve-from), https://github.com/sindresorhus/resolve-global.git (resolve-global), https://github.com/sindresorhus/resolve-pkg.git (resolve-pkg), https://github.com/sindresorhus/restore-cursor.git (restore-cursor), https://github.com/sindresorhus/run-node.git (run-node), https://github.com/sindresorhus/shebang-regex.git (shebang-regex), https://github.com/sindresorhus/slash.git (slash), https://github.com/sindresorhus/sort-keys.git (sort-keys), https://github.com/sindresorhus/string-width.git (string-width), https://github.com/sindresorhus/string-width.git (string-width-cjs), https://github.com/chalk/strip-ansi.git (strip-ansi), https://github.com/chalk/strip-ansi.git (strip-ansi-cjs), https://github.com/sindresorhus/strip-bom.git (strip-bom), https://github.com/sindresorhus/strip-final-newline.git (strip-final-newline), https://github.com/sindresorhus/strip-indent.git (strip-indent), https://github.com/chalk/supports-color.git (supports-color), https://github.com/sindresorhus/terminal-link.git (terminal-link), https://github.com/sindresorhus/text-extensions.git (text-extensions), https://github.com/sindresorhus/tildify.git (tildify), https://github.com/sindresorhus/trim-newlines.git (trim-newlines), https://github.com/sindresorhus/type-fest.git (type-fest), https://github.com/sindresorhus/untildify.git (untildify), https://github.com/chalk/wrap-ansi.git (wrap-ansi), https://github.com/sindresorhus/write-json-file.git (write-json-file), https://github.com/sindresorhus/write-pkg.git (write-pkg), https://github.com/sindresorhus/yn.git (yn). This software contains the following license and notice below:
+The following software may be included in this product: @ardatan/aggregate-error, aggregate-error, ansi-escapes, ansi-regex, ansi-styles, any-observable, array-differ, array-union, arrify, auto-bind, callsites, camelcase, camelcase-keys, chalk, clean-stack, cli-cursor, dargs, define-lazy-prop, del, detect-indent, detect-newline, dot-prop, env-paths, escape-string-regexp, execa, find-up, get-port, get-stdin, get-stream, global-dirs, globals, globby, got, hard-rejection, has-flag, import-from, import-global, import-lazy, indent-string, is-finite, is-fullwidth-code-point, is-generator-fn, is-interactive, is-obj, is-observable, is-path-cwd, is-path-inside, is-plain-obj, is-wsl, leven, load-json-file, locate-path, log-symbols, log-update, make-dir, mimic-fn, normalize-url, npm-run-path, p-finally, p-is-promise, p-limit, p-locate, p-map, p-map-series, p-reduce, p-timeout, p-try, parent-module, parse-json, path-exists, path-key, path-type, pify, pkg-dir, quick-lru, read-pkg, read-pkg-up, redent, remote-git-tags, resolve-cwd, resolve-from, resolve-global, resolve-pkg, restore-cursor, run-node, shebang-regex, slash, sort-keys, string-width, string-width-cjs, strip-ansi, strip-ansi-cjs, strip-bom, strip-final-newline, strip-indent, supports-color, terminal-link, text-extensions, tildify, trim-newlines, type-fest, untildify, wrap-ansi, write-json-file, write-pkg, yn. A copy of the source code may be downloaded from https://github.com/sindresorhus/aggregate-error.git (@ardatan/aggregate-error), https://github.com/sindresorhus/aggregate-error.git (aggregate-error), https://github.com/sindresorhus/ansi-escapes.git (ansi-escapes), https://github.com/chalk/ansi-regex.git (ansi-regex), https://github.com/chalk/ansi-styles.git (ansi-styles), https://github.com/sindresorhus/any-observable.git (any-observable), https://github.com/sindresorhus/array-differ.git (array-differ), https://github.com/sindresorhus/array-union.git (array-union), https://github.com/sindresorhus/arrify.git (arrify), https://github.com/sindresorhus/auto-bind.git (auto-bind), https://github.com/sindresorhus/callsites.git (callsites), https://github.com/sindresorhus/camelcase.git (camelcase), https://github.com/sindresorhus/camelcase-keys.git (camelcase-keys), https://github.com/chalk/chalk.git (chalk), https://github.com/sindresorhus/clean-stack.git (clean-stack), https://github.com/sindresorhus/cli-cursor.git (cli-cursor), https://github.com/sindresorhus/dargs.git (dargs), https://github.com/sindresorhus/define-lazy-prop.git (define-lazy-prop), https://github.com/sindresorhus/del.git (del), https://github.com/sindresorhus/detect-indent.git (detect-indent), https://github.com/sindresorhus/detect-newline.git (detect-newline), https://github.com/sindresorhus/dot-prop.git (dot-prop), https://github.com/sindresorhus/env-paths.git (env-paths), https://github.com/sindresorhus/escape-string-regexp.git (escape-string-regexp), https://github.com/sindresorhus/execa.git (execa), https://github.com/sindresorhus/find-up.git (find-up), https://github.com/sindresorhus/get-port.git (get-port), https://github.com/sindresorhus/get-stdin.git (get-stdin), https://github.com/sindresorhus/get-stream.git (get-stream), https://github.com/sindresorhus/global-dirs.git (global-dirs), https://github.com/sindresorhus/globals.git (globals), https://github.com/sindresorhus/globby.git (globby), https://github.com/sindresorhus/got.git (got), https://github.com/sindresorhus/hard-rejection.git (hard-rejection), https://github.com/sindresorhus/has-flag.git (has-flag), https://github.com/sindresorhus/import-from.git (import-from), https://github.com/sindresorhus/import-global.git (import-global), https://github.com/sindresorhus/import-lazy.git (import-lazy), https://github.com/sindresorhus/indent-string.git (indent-string), https://github.com/sindresorhus/is-finite.git (is-finite), https://github.com/sindresorhus/is-fullwidth-code-point.git (is-fullwidth-code-point), https://github.com/sindresorhus/is-generator-fn.git (is-generator-fn), https://github.com/sindresorhus/is-interactive.git (is-interactive), https://github.com/sindresorhus/is-obj.git (is-obj), https://github.com/sindresorhus/is-observable.git (is-observable), https://github.com/sindresorhus/is-path-cwd.git (is-path-cwd), https://github.com/sindresorhus/is-path-inside.git (is-path-inside), https://github.com/sindresorhus/is-plain-obj.git (is-plain-obj), https://github.com/sindresorhus/is-wsl.git (is-wsl), https://github.com/sindresorhus/leven.git (leven), https://github.com/sindresorhus/load-json-file.git (load-json-file), https://github.com/sindresorhus/locate-path.git (locate-path), https://github.com/sindresorhus/log-symbols.git (log-symbols), https://github.com/sindresorhus/log-update.git (log-update), https://github.com/sindresorhus/make-dir.git (make-dir), https://github.com/sindresorhus/mimic-fn.git (mimic-fn), https://github.com/sindresorhus/normalize-url.git (normalize-url), https://github.com/sindresorhus/npm-run-path.git (npm-run-path), https://github.com/sindresorhus/p-finally.git (p-finally), https://github.com/sindresorhus/p-is-promise.git (p-is-promise), https://github.com/sindresorhus/p-limit.git (p-limit), https://github.com/sindresorhus/p-locate.git (p-locate), https://github.com/sindresorhus/p-map.git (p-map), https://github.com/sindresorhus/p-map-series.git (p-map-series), https://github.com/sindresorhus/p-reduce.git (p-reduce), https://github.com/sindresorhus/p-timeout.git (p-timeout), https://github.com/sindresorhus/p-try.git (p-try), https://github.com/sindresorhus/parent-module.git (parent-module), https://github.com/sindresorhus/parse-json.git (parse-json), https://github.com/sindresorhus/path-exists.git (path-exists), https://github.com/sindresorhus/path-key.git (path-key), https://github.com/sindresorhus/path-type.git (path-type), https://github.com/sindresorhus/pify.git (pify), https://github.com/sindresorhus/pkg-dir.git (pkg-dir), https://github.com/sindresorhus/quick-lru.git (quick-lru), https://github.com/sindresorhus/read-pkg.git (read-pkg), https://github.com/sindresorhus/read-pkg-up.git (read-pkg-up), https://github.com/sindresorhus/redent.git (redent), https://github.com/sindresorhus/remote-git-tags.git (remote-git-tags), https://github.com/sindresorhus/resolve-cwd.git (resolve-cwd), https://github.com/sindresorhus/resolve-from.git (resolve-from), https://github.com/sindresorhus/resolve-global.git (resolve-global), https://github.com/sindresorhus/resolve-pkg.git (resolve-pkg), https://github.com/sindresorhus/restore-cursor.git (restore-cursor), https://github.com/sindresorhus/run-node.git (run-node), https://github.com/sindresorhus/shebang-regex.git (shebang-regex), https://github.com/sindresorhus/slash.git (slash), https://github.com/sindresorhus/sort-keys.git (sort-keys), https://github.com/sindresorhus/string-width.git (string-width), https://github.com/sindresorhus/string-width.git (string-width-cjs), https://github.com/chalk/strip-ansi.git (strip-ansi), https://github.com/chalk/strip-ansi.git (strip-ansi-cjs), https://github.com/sindresorhus/strip-bom.git (strip-bom), https://github.com/sindresorhus/strip-final-newline.git (strip-final-newline), https://github.com/sindresorhus/strip-indent.git (strip-indent), https://github.com/chalk/supports-color.git (supports-color), https://github.com/sindresorhus/terminal-link.git (terminal-link), https://github.com/sindresorhus/text-extensions.git (text-extensions), https://github.com/sindresorhus/tildify.git (tildify), https://github.com/sindresorhus/trim-newlines.git (trim-newlines), https://github.com/sindresorhus/type-fest.git (type-fest), https://github.com/sindresorhus/untildify.git (untildify), https://github.com/chalk/wrap-ansi.git (wrap-ansi), https://github.com/sindresorhus/write-json-file.git (write-json-file), https://github.com/sindresorhus/write-pkg.git (write-pkg), https://github.com/sindresorhus/yn.git (yn). This software contains the following license and notice below:
 
 MIT License
 
@@ -4551,32 +4551,6 @@ SOFTWARE.
 
 -----
 
-The following software may be included in this product: @emnapi/core, @emnapi/runtime, @emnapi/wasi-threads. A copy of the source code may be downloaded from git+https://github.com/toyobayashi/emnapi.git (@emnapi/core), git+https://github.com/toyobayashi/emnapi.git (@emnapi/runtime), git+https://github.com/toyobayashi/emnapi.git (@emnapi/wasi-threads). This software contains the following license and notice below:
-
-MIT License
-
-Copyright (c) 2021-present Toyobayashi
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
------
-
 The following software may be included in this product: @eslint-community/eslint-utils, @eslint-community/regexpp. A copy of the source code may be downloaded from https://github.com/eslint-community/eslint-utils (@eslint-community/eslint-utils), https://github.com/eslint-community/regexpp (@eslint-community/regexpp). This software contains the following license and notice below:
 
 MIT License
@@ -5031,7 +5005,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 -----
 
-The following software may be included in this product: @isaacs/string-locale-compare, common-ancestor-path, inflight, promise-all-reject-late, promise-call-limit, promzard, walk-up-path. A copy of the source code may be downloaded from git+https://github.com/isaacs/string-locale-compare (@isaacs/string-locale-compare), git+https://github.com/isaacs/common-ancestor-path (common-ancestor-path), https://github.com/npm/inflight.git (inflight), git+https://github.com/isaacs/promise-call-limit (promise-call-limit), git+https://github.com/npm/promzard.git (promzard), git+https://github.com/isaacs/walk-up-path (walk-up-path). This software contains the following license and notice below:
+The following software may be included in this product: @isaacs/string-locale-compare, common-ancestor-path, inflight, mkdirp-infer-owner, promise-all-reject-late, promise-call-limit, promzard, walk-up-path. A copy of the source code may be downloaded from git+https://github.com/isaacs/string-locale-compare (@isaacs/string-locale-compare), git+https://github.com/isaacs/common-ancestor-path (common-ancestor-path), https://github.com/npm/inflight.git (inflight), git+https://github.com/isaacs/mkdirp-infer-owner (mkdirp-infer-owner), git+https://github.com/isaacs/promise-call-limit (promise-call-limit), git://github.com/isaacs/promzard (promzard), git+https://github.com/isaacs/walk-up-path (walk-up-path). This software contains the following license and notice below:
 
 The ISC License
 
@@ -5077,32 +5051,6 @@ The following software may be included in this product: @istanbuljs/schema. A co
 MIT License
 
 Copyright (c) 2019 CFWare, LLC
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
------
-
-The following software may be included in this product: @jest/schemas, diff-sequences, jest-diff, jest-get-type, pretty-format. A copy of the source code may be downloaded from https://github.com/jestjs/jest.git (@jest/schemas), https://github.com/jestjs/jest.git (diff-sequences), https://github.com/jestjs/jest.git (jest-diff), https://github.com/jestjs/jest.git (jest-get-type), https://github.com/jestjs/jest.git (pretty-format). This software contains the following license and notice below:
-
-MIT License
-
-Copyright (c) Meta Platforms, Inc. and affiliates.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -5246,7 +5194,7 @@ SOFTWARE.
 
 -----
 
-The following software may be included in this product: @lerna/create, lerna. A copy of the source code may be downloaded from git+https://github.com/lerna/lerna.git (@lerna/create), git+https://github.com/lerna/lerna.git (lerna). This software contains the following license and notice below:
+The following software may be included in this product: @lerna/add, @lerna/bootstrap, @lerna/changed, @lerna/check-working-tree, @lerna/child-process, @lerna/clean, @lerna/cli, @lerna/collect-uncommitted, @lerna/collect-updates, @lerna/command, @lerna/conventional-commits, @lerna/create, @lerna/create-symlink, @lerna/describe-ref, @lerna/diff, @lerna/exec, @lerna/filter-options, @lerna/filter-packages, @lerna/get-npm-exec-opts, @lerna/get-packed, @lerna/github-client, @lerna/gitlab-client, @lerna/global-options, @lerna/has-npm-version, @lerna/import, @lerna/info, @lerna/init, @lerna/link, @lerna/list, @lerna/listable, @lerna/log-packed, @lerna/npm-conf, @lerna/npm-dist-tag, @lerna/npm-install, @lerna/npm-publish, @lerna/npm-run-script, @lerna/otplease, @lerna/output, @lerna/pack-directory, @lerna/package, @lerna/package-graph, @lerna/prerelease-id-from-version, @lerna/profiler, @lerna/project, @lerna/prompt, @lerna/publish, @lerna/pulse-till-done, @lerna/query-graph, @lerna/resolve-symlink, @lerna/rimraf-dir, @lerna/run, @lerna/run-lifecycle, @lerna/run-topologically, @lerna/symlink-binary, @lerna/symlink-dependencies, @lerna/temp-write, @lerna/timer, @lerna/validation-error, @lerna/version, @lerna/write-log-file, lerna. A copy of the source code may be downloaded from git+https://github.com/lerna/lerna.git (@lerna/add), git+https://github.com/lerna/lerna.git (@lerna/bootstrap), git+https://github.com/lerna/lerna.git (@lerna/changed), git+https://github.com/lerna/lerna.git (@lerna/check-working-tree), git+https://github.com/lerna/lerna.git (@lerna/child-process), git+https://github.com/lerna/lerna.git (@lerna/clean), git+https://github.com/lerna/lerna.git (@lerna/cli), git+https://github.com/lerna/lerna.git (@lerna/collect-uncommitted), git+https://github.com/lerna/lerna.git (@lerna/collect-updates), git+https://github.com/lerna/lerna.git (@lerna/command), git+https://github.com/lerna/lerna.git (@lerna/conventional-commits), git+https://github.com/lerna/lerna.git (@lerna/create), git+https://github.com/lerna/lerna.git (@lerna/create-symlink), git+https://github.com/lerna/lerna.git (@lerna/describe-ref), git+https://github.com/lerna/lerna.git (@lerna/diff), git+https://github.com/lerna/lerna.git (@lerna/exec), git+https://github.com/lerna/lerna.git (@lerna/filter-options), git+https://github.com/lerna/lerna.git (@lerna/filter-packages), git+https://github.com/lerna/lerna.git (@lerna/get-npm-exec-opts), git+https://github.com/lerna/lerna.git (@lerna/get-packed), git+https://github.com/lerna/lerna.git (@lerna/github-client), git+https://gitlab.com/lerna/lerna.git (@lerna/gitlab-client), git+https://github.com/lerna/lerna.git (@lerna/global-options), git+https://github.com/lerna/lerna.git (@lerna/has-npm-version), git+https://github.com/lerna/lerna.git (@lerna/import), git+https://github.com/lerna/lerna.git (@lerna/info), git+https://github.com/lerna/lerna.git (@lerna/init), git+https://github.com/lerna/lerna.git (@lerna/link), git+https://github.com/lerna/lerna.git (@lerna/list), git+https://github.com/lerna/lerna.git (@lerna/listable), git+https://github.com/lerna/lerna.git (@lerna/log-packed), git+https://github.com/lerna/lerna.git (@lerna/npm-conf), git+https://github.com/lerna/lerna.git (@lerna/npm-dist-tag), git+https://github.com/lerna/lerna.git (@lerna/npm-install), git+https://github.com/lerna/lerna.git (@lerna/npm-publish), git+https://github.com/lerna/lerna.git (@lerna/npm-run-script), git+https://github.com/lerna/lerna.git (@lerna/otplease), git+https://github.com/lerna/lerna.git (@lerna/output), git+https://github.com/lerna/lerna.git (@lerna/pack-directory), git+https://github.com/lerna/lerna.git (@lerna/package), git+https://github.com/lerna/lerna.git (@lerna/package-graph), git+https://github.com/lerna/lerna.git (@lerna/prerelease-id-from-version), git+https://github.com/lerna/lerna.git (@lerna/profiler), git+https://github.com/lerna/lerna.git (@lerna/project), git+https://github.com/lerna/lerna.git (@lerna/prompt), git+https://github.com/lerna/lerna.git (@lerna/publish), git+https://github.com/lerna/lerna.git (@lerna/pulse-till-done), git+https://github.com/lerna/lerna.git (@lerna/query-graph), git+https://github.com/lerna/lerna.git (@lerna/resolve-symlink), git+https://github.com/lerna/lerna.git (@lerna/rimraf-dir), git+https://github.com/lerna/lerna.git (@lerna/run), git+https://github.com/lerna/lerna.git (@lerna/run-lifecycle), git+https://github.com/lerna/lerna.git (@lerna/run-topologically), git+https://github.com/lerna/lerna.git (@lerna/symlink-binary), git+https://github.com/lerna/lerna.git (@lerna/symlink-dependencies), git+https://github.com/lerna/lerna.git (@lerna/temp-write), git+https://github.com/lerna/lerna.git (@lerna/timer), git+https://github.com/lerna/lerna.git (@lerna/validation-error), git+https://github.com/lerna/lerna.git (@lerna/version), git+https://github.com/lerna/lerna.git (@lerna/write-log-file), git+https://github.com/lerna/lerna.git (lerna). This software contains the following license and notice below:
 
 Copyright (c) 2015-present Lerna Contributors
 
@@ -5358,54 +5306,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -----
 
-The following software may be included in this product: @napi-rs/wasm-runtime. A copy of the source code may be downloaded from git+https://github.com/napi-rs/napi-rs.git. This software contains the following license and notice below:
-
-MIT License
-
-Copyright (c) 2020-present LongYinan
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-MIT License
-
-Copyright (c) 2018 GitHub
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
------
-
 The following software may be included in this product: @nodelib/fs.scandir, @nodelib/fs.stat, @nodelib/fs.walk, fast-glob. A copy of the source code may be downloaded from https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.scandir (@nodelib/fs.scandir), https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.stat (@nodelib/fs.stat), https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.walk (@nodelib/fs.walk), https://github.com/mrmlnc/fast-glob.git (fast-glob). This software contains the following license and notice below:
 
 The MIT License (MIT)
@@ -5432,7 +5332,7 @@ SOFTWARE.
 
 -----
 
-The following software may be included in this product: @npmcli/arborist, @npmcli/fs, @npmcli/map-workspaces, @npmcli/query, gauge, npm-registry-fetch, npmlog, parse-conflict-json. A copy of the source code may be downloaded from git+https://github.com/npm/cli.git (@npmcli/arborist), https://github.com/npm/fs.git (@npmcli/fs), https://github.com/npm/map-workspaces.git (@npmcli/map-workspaces), https://github.com/npm/query.git (@npmcli/query), https://github.com/npm/gauge.git (gauge), https://github.com/npm/npm-registry-fetch.git (npm-registry-fetch), https://github.com/npm/npmlog.git (npmlog), https://github.com/npm/parse-conflict-json.git (parse-conflict-json). This software contains the following license and notice below:
+The following software may be included in this product: @npmcli/arborist, @npmcli/fs, @npmcli/map-workspaces, gauge, npm-registry-fetch, npmlog, parse-conflict-json. A copy of the source code may be downloaded from https://github.com/npm/cli.git (@npmcli/arborist), git+https://github.com/npm/fs.git (@npmcli/fs), https://github.com/npm/map-workspaces.git (@npmcli/map-workspaces), https://github.com/npm/gauge.git (gauge), https://github.com/npm/npm-registry-fetch.git (npm-registry-fetch), https://github.com/npm/npmlog.git (npmlog), https://github.com/npm/parse-conflict-json.git (parse-conflict-json). This software contains the following license and notice below:
 
 <!-- This file is automatically added by @npmcli/template-oss. Do not edit. -->
 
@@ -5477,7 +5377,7 @@ SOFTWARE.
 
 -----
 
-The following software may be included in this product: @npmcli/installed-package-contents, @npmcli/metavuln-calculator, @npmcli/run-script, bin-links, npm-normalize-package-bin, npm-package-arg. A copy of the source code may be downloaded from https://github.com/npm/installed-package-contents.git (@npmcli/installed-package-contents), git+https://github.com/npm/metavuln-calculator.git (@npmcli/metavuln-calculator), https://github.com/npm/run-script.git (@npmcli/run-script), git+https://github.com/npm/bin-links.git (bin-links), https://github.com/npm/npm-normalize-package-bin.git (npm-normalize-package-bin), https://github.com/npm/npm-package-arg.git (npm-package-arg). This software contains the following license and notice below:
+The following software may be included in this product: @npmcli/installed-package-contents, @npmcli/metavuln-calculator, @npmcli/run-script, bin-links, npm-normalize-package-bin, npm-package-arg. A copy of the source code may be downloaded from https://github.com/npm/installed-package-contents.git (@npmcli/installed-package-contents), https://github.com/npm/metavuln-calculator.git (@npmcli/metavuln-calculator), https://github.com/npm/run-script.git (@npmcli/run-script), https://github.com/npm/bin-links.git (bin-links), https://github.com/npm/npm-normalize-package-bin.git (npm-normalize-package-bin), https://github.com/npm/npm-package-arg.git (npm-package-arg). This software contains the following license and notice below:
 
 The ISC License
 
@@ -5524,7 +5424,7 @@ DEALINGS IN THE SOFTWARE.
 
 -----
 
-The following software may be included in this product: @npmcli/name-from-folder. A copy of the source code may be downloaded from https://github.com/npm/name-from-folder.git. This software contains the following license and notice below:
+The following software may be included in this product: @npmcli/name-from-folder. A copy of the source code may be downloaded from git+https://github.com/npm/name-from-folder. This software contains the following license and notice below:
 
 The ISC License
 
@@ -5544,7 +5444,7 @@ SOFTWARE.
 
 -----
 
-The following software may be included in this product: @npmcli/package-json. A copy of the source code may be downloaded from git+https://github.com/npm/package-json.git. This software contains the following license and notice below:
+The following software may be included in this product: @npmcli/package-json. A copy of the source code may be downloaded from https://github.com/npm/package-json.git. This software contains the following license and notice below:
 
 ISC License
 
@@ -5567,37 +5467,11 @@ USE OR PERFORMANCE OF THIS SOFTWARE.
 
 -----
 
-The following software may be included in this product: @npmcli/redact. A copy of the source code may be downloaded from https://github.com/npm/redact.git. This software contains the following license and notice below:
-
-MIT License
-
-Copyright (c) 2024 npm
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
------
-
-The following software may be included in this product: @nx/devkit, nx. A copy of the source code may be downloaded from https://github.com/nrwl/nx.git (@nx/devkit), https://github.com/nrwl/nx.git (nx). This software contains the following license and notice below:
+The following software may be included in this product: @nrwl/cli, @nrwl/devkit, @nrwl/nx-darwin-arm64, @nrwl/nx-darwin-x64, @nrwl/nx-linux-arm-gnueabihf, @nrwl/nx-linux-arm64-gnu, @nrwl/nx-linux-arm64-musl, @nrwl/nx-linux-x64-gnu, @nrwl/nx-linux-x64-musl, @nrwl/nx-win32-arm64-msvc, @nrwl/nx-win32-x64-msvc, @nrwl/tao, nx. A copy of the source code may be downloaded from https://github.com/nrwl/nx.git (@nrwl/cli), https://github.com/nrwl/nx.git (@nrwl/devkit), https://github.com/nrwl/nx.git (@nrwl/tao), https://github.com/nrwl/nx.git (nx). This software contains the following license and notice below:
 
 (The MIT License)
 
-Copyright (c) 2017-2025 Narwhal Technologies Inc.
+Copyright (c) 2017-2023 Narwhal Technologies Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -5732,6 +5606,32 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
+-----
+
+The following software may be included in this product: @parcel/watcher. A copy of the source code may be downloaded from https://github.com/parcel-bundler/watcher.git. This software contains the following license and notice below:
+
+MIT License
+
+Copyright (c) 2017-present Devon Govett
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 -----
 
@@ -5931,7 +5831,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 -----
 
-The following software may be included in this product: @sigstore/bundle, @sigstore/core, @sigstore/protobuf-specs, @sigstore/sign, @sigstore/tuf, sigstore. A copy of the source code may be downloaded from git+https://github.com/sigstore/sigstore-js.git (@sigstore/bundle), git+https://github.com/sigstore/sigstore-js.git (@sigstore/core), git+https://github.com/sigstore/protobuf-specs.git (@sigstore/protobuf-specs), git+https://github.com/sigstore/sigstore-js.git (@sigstore/sign), git+https://github.com/sigstore/sigstore-js.git (@sigstore/tuf), git+https://github.com/sigstore/sigstore-js.git (sigstore). This software contains the following license and notice below:
+The following software may be included in this product: @sigstore/bundle, @sigstore/protobuf-specs, @sigstore/sign, @sigstore/tuf, sigstore. A copy of the source code may be downloaded from git+https://github.com/sigstore/sigstore-js.git (@sigstore/bundle), git+https://github.com/sigstore/protobuf-specs.git (@sigstore/protobuf-specs), git+https://github.com/sigstore/sigstore-js.git (@sigstore/sign), git+https://github.com/sigstore/sigstore-js.git (@sigstore/tuf), git+https://github.com/sigstore/sigstore-js.git (sigstore). This software contains the following license and notice below:
 
 Apache License
                            Version 2.0, January 2004
@@ -6143,34 +6043,6 @@ TypeBox: JSON Schema Type Builder with Static Type Resolution for TypeScript
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2023 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-
------
-
-The following software may be included in this product: @sinclair/typebox. A copy of the source code may be downloaded from https://github.com/sinclairzx81/typebox. This software contains the following license and notice below:
-
-TypeBox: JSON Schema Type Builder with Static Type Resolution for TypeScript 
-
-The MIT License (MIT)
-
 Copyright (c) 2022 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -6193,7 +6065,7 @@ THE SOFTWARE.
 
 -----
 
-The following software may be included in this product: @sindresorhus/is, ansi-escapes, ansi-regex, ansi-styles, boxen, camelcase, chalk, cli-boxes, cli-cursor, cli-spinners, cli-truncate, crypto-random-string, decompress-response, dot-prop, emittery, escape-goat, escape-string-regexp, execa, figures, find-cache-dir, find-up, get-stdin, get-stream, global-dirs, globals, gzip-size, has-yarn, import-fresh, import-from, import-local, into-stream, is-docker, is-fullwidth-code-point, is-installed-globally, is-npm, is-stream, is-unicode-supported, latest-version, locate-path, log-symbols, log-update, lowercase-keys, make-dir, map-obj, meow, mimic-fn, mimic-response, multimatch, normalize-url, npm-run-path, onetime, open, ora, p-cancelable, p-each-series, p-limit, p-locate, p-map, p-pipe, p-queue, p-waterfall, package-json, parse-json, path-key, pify, pupa, registry-url, restore-cursor, semver-diff, string-length, string-width, strip-ansi, strip-final-newline, strip-json-comments, supports-color, type-fest, unique-string, widest-line, wrap-ansi, wrap-ansi-cjs, xdg-basedir, yocto-queue. A copy of the source code may be downloaded from https://github.com/sindresorhus/is.git (@sindresorhus/is), https://github.com/sindresorhus/ansi-escapes.git (ansi-escapes), https://github.com/chalk/ansi-regex.git (ansi-regex), https://github.com/chalk/ansi-styles.git (ansi-styles), https://github.com/sindresorhus/boxen.git (boxen), https://github.com/sindresorhus/camelcase.git (camelcase), https://github.com/chalk/chalk.git (chalk), https://github.com/sindresorhus/cli-boxes.git (cli-boxes), https://github.com/sindresorhus/cli-cursor.git (cli-cursor), https://github.com/sindresorhus/cli-spinners.git (cli-spinners), https://github.com/sindresorhus/cli-truncate.git (cli-truncate), https://github.com/sindresorhus/crypto-random-string.git (crypto-random-string), https://github.com/sindresorhus/decompress-response.git (decompress-response), https://github.com/sindresorhus/dot-prop.git (dot-prop), https://github.com/sindresorhus/emittery.git (emittery), https://github.com/sindresorhus/escape-goat.git (escape-goat), https://github.com/sindresorhus/escape-string-regexp.git (escape-string-regexp), https://github.com/sindresorhus/execa.git (execa), https://github.com/sindresorhus/figures.git (figures), https://github.com/avajs/find-cache-dir.git (find-cache-dir), https://github.com/sindresorhus/find-up.git (find-up), https://github.com/sindresorhus/get-stdin.git (get-stdin), https://github.com/sindresorhus/get-stream.git (get-stream), https://github.com/sindresorhus/global-dirs.git (global-dirs), https://github.com/sindresorhus/globals.git (globals), https://github.com/sindresorhus/gzip-size.git (gzip-size), https://github.com/sindresorhus/has-yarn.git (has-yarn), https://github.com/sindresorhus/import-fresh.git (import-fresh), https://github.com/sindresorhus/import-from.git (import-from), https://github.com/sindresorhus/import-local.git (import-local), https://github.com/sindresorhus/into-stream.git (into-stream), https://github.com/sindresorhus/is-docker.git (is-docker), https://github.com/sindresorhus/is-fullwidth-code-point.git (is-fullwidth-code-point), https://github.com/sindresorhus/is-installed-globally.git (is-installed-globally), https://github.com/sindresorhus/is-npm.git (is-npm), https://github.com/sindresorhus/is-stream.git (is-stream), https://github.com/sindresorhus/is-unicode-supported.git (is-unicode-supported), https://github.com/sindresorhus/latest-version.git (latest-version), https://github.com/sindresorhus/locate-path.git (locate-path), https://github.com/sindresorhus/log-symbols.git (log-symbols), https://github.com/sindresorhus/log-update.git (log-update), https://github.com/sindresorhus/lowercase-keys.git (lowercase-keys), https://github.com/sindresorhus/make-dir.git (make-dir), https://github.com/sindresorhus/map-obj.git (map-obj), https://github.com/sindresorhus/meow.git (meow), https://github.com/sindresorhus/mimic-fn.git (mimic-fn), https://github.com/sindresorhus/mimic-response.git (mimic-response), https://github.com/sindresorhus/multimatch.git (multimatch), https://github.com/sindresorhus/normalize-url.git (normalize-url), https://github.com/sindresorhus/npm-run-path.git (npm-run-path), https://github.com/sindresorhus/onetime.git (onetime), https://github.com/sindresorhus/open.git (open), https://github.com/sindresorhus/ora.git (ora), https://github.com/sindresorhus/p-cancelable.git (p-cancelable), https://github.com/sindresorhus/p-each-series.git (p-each-series), https://github.com/sindresorhus/p-limit.git (p-limit), https://github.com/sindresorhus/p-locate.git (p-locate), https://github.com/sindresorhus/p-map.git (p-map), https://github.com/sindresorhus/p-pipe.git (p-pipe), https://github.com/sindresorhus/p-queue.git (p-queue), https://github.com/sindresorhus/p-waterfall.git (p-waterfall), https://github.com/sindresorhus/package-json.git (package-json), https://github.com/sindresorhus/parse-json.git (parse-json), https://github.com/sindresorhus/path-key.git (path-key), https://github.com/sindresorhus/pify.git (pify), https://github.com/sindresorhus/pupa.git (pupa), https://github.com/sindresorhus/registry-url.git (registry-url), https://github.com/sindresorhus/restore-cursor.git (restore-cursor), https://github.com/sindresorhus/semver-diff.git (semver-diff), https://github.com/sindresorhus/string-length.git (string-length), https://github.com/sindresorhus/string-width.git (string-width), https://github.com/chalk/strip-ansi.git (strip-ansi), https://github.com/sindresorhus/strip-final-newline.git (strip-final-newline), https://github.com/sindresorhus/strip-json-comments.git (strip-json-comments), https://github.com/chalk/supports-color.git (supports-color), https://github.com/sindresorhus/type-fest.git (type-fest), https://github.com/sindresorhus/unique-string.git (unique-string), https://github.com/sindresorhus/widest-line.git (widest-line), https://github.com/chalk/wrap-ansi.git (wrap-ansi), https://github.com/chalk/wrap-ansi.git (wrap-ansi-cjs), https://github.com/sindresorhus/xdg-basedir.git (xdg-basedir), https://github.com/sindresorhus/yocto-queue.git (yocto-queue). This software contains the following license and notice below:
+The following software may be included in this product: @sindresorhus/is, ansi-escapes, ansi-regex, ansi-styles, boxen, camelcase, chalk, cli-boxes, cli-cursor, cli-spinners, cli-truncate, crypto-random-string, decompress-response, dot-prop, emittery, escape-goat, escape-string-regexp, execa, figures, find-cache-dir, find-up, get-stdin, get-stream, global-dirs, globals, gzip-size, has-yarn, import-fresh, import-from, import-local, into-stream, is-docker, is-fullwidth-code-point, is-installed-globally, is-npm, is-stream, is-unicode-supported, latest-version, locate-path, log-symbols, log-update, lowercase-keys, make-dir, map-obj, meow, mimic-fn, mimic-response, multimatch, normalize-url, npm-run-path, onetime, open, ora, p-cancelable, p-each-series, p-limit, p-locate, p-map, p-pipe, p-queue, p-waterfall, package-json, parse-json, path-key, pify, pupa, registry-url, restore-cursor, semver-diff, sort-keys, string-length, string-width, strip-ansi, strip-final-newline, strip-json-comments, supports-color, type-fest, unique-string, widest-line, wrap-ansi, wrap-ansi-cjs, xdg-basedir, yocto-queue. A copy of the source code may be downloaded from https://github.com/sindresorhus/is.git (@sindresorhus/is), https://github.com/sindresorhus/ansi-escapes.git (ansi-escapes), https://github.com/chalk/ansi-regex.git (ansi-regex), https://github.com/chalk/ansi-styles.git (ansi-styles), https://github.com/sindresorhus/boxen.git (boxen), https://github.com/sindresorhus/camelcase.git (camelcase), https://github.com/chalk/chalk.git (chalk), https://github.com/sindresorhus/cli-boxes.git (cli-boxes), https://github.com/sindresorhus/cli-cursor.git (cli-cursor), https://github.com/sindresorhus/cli-spinners.git (cli-spinners), https://github.com/sindresorhus/cli-truncate.git (cli-truncate), https://github.com/sindresorhus/crypto-random-string.git (crypto-random-string), https://github.com/sindresorhus/decompress-response.git (decompress-response), https://github.com/sindresorhus/dot-prop.git (dot-prop), https://github.com/sindresorhus/emittery.git (emittery), https://github.com/sindresorhus/escape-goat.git (escape-goat), https://github.com/sindresorhus/escape-string-regexp.git (escape-string-regexp), https://github.com/sindresorhus/execa.git (execa), https://github.com/sindresorhus/figures.git (figures), https://github.com/avajs/find-cache-dir.git (find-cache-dir), https://github.com/sindresorhus/find-up.git (find-up), https://github.com/sindresorhus/get-stdin.git (get-stdin), https://github.com/sindresorhus/get-stream.git (get-stream), https://github.com/sindresorhus/global-dirs.git (global-dirs), https://github.com/sindresorhus/globals.git (globals), https://github.com/sindresorhus/gzip-size.git (gzip-size), https://github.com/sindresorhus/has-yarn.git (has-yarn), https://github.com/sindresorhus/import-fresh.git (import-fresh), https://github.com/sindresorhus/import-from.git (import-from), https://github.com/sindresorhus/import-local.git (import-local), https://github.com/sindresorhus/into-stream.git (into-stream), https://github.com/sindresorhus/is-docker.git (is-docker), https://github.com/sindresorhus/is-fullwidth-code-point.git (is-fullwidth-code-point), https://github.com/sindresorhus/is-installed-globally.git (is-installed-globally), https://github.com/sindresorhus/is-npm.git (is-npm), https://github.com/sindresorhus/is-stream.git (is-stream), https://github.com/sindresorhus/is-unicode-supported.git (is-unicode-supported), https://github.com/sindresorhus/latest-version.git (latest-version), https://github.com/sindresorhus/locate-path.git (locate-path), https://github.com/sindresorhus/log-symbols.git (log-symbols), https://github.com/sindresorhus/log-update.git (log-update), https://github.com/sindresorhus/lowercase-keys.git (lowercase-keys), https://github.com/sindresorhus/make-dir.git (make-dir), https://github.com/sindresorhus/map-obj.git (map-obj), https://github.com/sindresorhus/meow.git (meow), https://github.com/sindresorhus/mimic-fn.git (mimic-fn), https://github.com/sindresorhus/mimic-response.git (mimic-response), https://github.com/sindresorhus/multimatch.git (multimatch), https://github.com/sindresorhus/normalize-url.git (normalize-url), https://github.com/sindresorhus/npm-run-path.git (npm-run-path), https://github.com/sindresorhus/onetime.git (onetime), https://github.com/sindresorhus/open.git (open), https://github.com/sindresorhus/ora.git (ora), https://github.com/sindresorhus/p-cancelable.git (p-cancelable), https://github.com/sindresorhus/p-each-series.git (p-each-series), https://github.com/sindresorhus/p-limit.git (p-limit), https://github.com/sindresorhus/p-locate.git (p-locate), https://github.com/sindresorhus/p-map.git (p-map), https://github.com/sindresorhus/p-pipe.git (p-pipe), https://github.com/sindresorhus/p-queue.git (p-queue), https://github.com/sindresorhus/p-waterfall.git (p-waterfall), https://github.com/sindresorhus/package-json.git (package-json), https://github.com/sindresorhus/parse-json.git (parse-json), https://github.com/sindresorhus/path-key.git (path-key), https://github.com/sindresorhus/pify.git (pify), https://github.com/sindresorhus/pupa.git (pupa), https://github.com/sindresorhus/registry-url.git (registry-url), https://github.com/sindresorhus/restore-cursor.git (restore-cursor), https://github.com/sindresorhus/semver-diff.git (semver-diff), https://github.com/sindresorhus/sort-keys.git (sort-keys), https://github.com/sindresorhus/string-length.git (string-length), https://github.com/sindresorhus/string-width.git (string-width), https://github.com/chalk/strip-ansi.git (strip-ansi), https://github.com/sindresorhus/strip-final-newline.git (strip-final-newline), https://github.com/sindresorhus/strip-json-comments.git (strip-json-comments), https://github.com/chalk/supports-color.git (supports-color), https://github.com/sindresorhus/type-fest.git (type-fest), https://github.com/sindresorhus/unique-string.git (unique-string), https://github.com/sindresorhus/widest-line.git (widest-line), https://github.com/chalk/wrap-ansi.git (wrap-ansi), https://github.com/chalk/wrap-ansi.git (wrap-ansi-cjs), https://github.com/sindresorhus/xdg-basedir.git (xdg-basedir), https://github.com/sindresorhus/yocto-queue.git (yocto-queue). This software contains the following license and notice below:
 
 MIT License
 
@@ -6660,7 +6532,7 @@ SOFTWARE.
 
 -----
 
-The following software may be included in this product: @trysound/sax, chownr, color-support, fs-minipass, ignore-walk, ini, isexe, json-stringify-nice, json-stringify-safe, lru-cache, minimatch, minipass-collect, minipass-flush, minipass-pipeline, minipass-sized, mute-stream, nopt, npm-packlist, once, proto-list, read, rimraf, semver, tar, which, wrappy, yallist. A copy of the source code may be downloaded from git://github.com/svg/sax.git (@trysound/sax), git://github.com/isaacs/chownr.git (chownr), git+https://github.com/isaacs/color-support.git (color-support), git+https://github.com/npm/fs-minipass.git (fs-minipass), git+https://github.com/isaacs/ignore-walk.git (ignore-walk), https://github.com/npm/ini.git (ini), git+https://github.com/isaacs/isexe.git (isexe), https://github.com/isaacs/json-stringify-nice (json-stringify-nice), git://github.com/isaacs/json-stringify-safe (json-stringify-safe), git://github.com/isaacs/node-lru-cache.git (lru-cache), git://github.com/isaacs/minimatch.git (minimatch), git+https://github.com/isaacs/minipass-flush.git (minipass-flush), git+https://github.com/isaacs/minipass-sized.git (minipass-sized), git://github.com/isaacs/mute-stream (mute-stream), https://github.com/npm/nopt.git (nopt), https://github.com/npm/npm-packlist.git (npm-packlist), git://github.com/isaacs/once (once), https://github.com/isaacs/proto-list (proto-list), https://github.com/npm/read.git (read), git://github.com/isaacs/rimraf.git (rimraf), git+https://github.com/npm/node-semver.git (semver), https://github.com/isaacs/node-tar.git (tar), https://github.com/npm/node-which.git (which), https://github.com/npm/wrappy (wrappy), git+https://github.com/isaacs/yallist.git (yallist). This software contains the following license and notice below:
+The following software may be included in this product: @trysound/sax, chownr, color-support, dezalgo, fs-minipass, ignore-walk, ini, isexe, json-stringify-nice, json-stringify-safe, lru-cache, minimatch, minipass-collect, minipass-flush, minipass-pipeline, minipass-sized, mute-stream, nopt, npm-packlist, once, proto-list, read, readdir-scoped-modules, rimraf, semver, tar, which, wrappy, yallist. A copy of the source code may be downloaded from git://github.com/svg/sax.git (@trysound/sax), git://github.com/isaacs/chownr.git (chownr), git+https://github.com/isaacs/color-support.git (color-support), https://github.com/npm/dezalgo (dezalgo), https://github.com/npm/fs-minipass.git (fs-minipass), git+https://github.com/isaacs/ignore-walk.git (ignore-walk), https://github.com/npm/ini.git (ini), git+https://github.com/isaacs/isexe.git (isexe), https://github.com/isaacs/json-stringify-nice (json-stringify-nice), git://github.com/isaacs/json-stringify-safe (json-stringify-safe), git://github.com/isaacs/node-lru-cache.git (lru-cache), git://github.com/isaacs/minimatch.git (minimatch), git+https://github.com/isaacs/minipass-flush.git (minipass-flush), git+https://github.com/isaacs/minipass-sized.git (minipass-sized), git://github.com/isaacs/mute-stream (mute-stream), https://github.com/npm/nopt.git (nopt), https://github.com/npm/npm-packlist.git (npm-packlist), git://github.com/isaacs/once (once), https://github.com/isaacs/proto-list (proto-list), git://github.com/isaacs/read.git (read), https://github.com/npm/readdir-scoped-modules (readdir-scoped-modules), git://github.com/isaacs/rimraf.git (rimraf), git+https://github.com/npm/node-semver.git (semver), https://github.com/isaacs/node-tar.git (tar), https://github.com/npm/node-which.git (which), https://github.com/npm/wrappy (wrappy), git+https://github.com/isaacs/yallist.git (yallist). This software contains the following license and notice below:
 
 The ISC License
 
@@ -8258,7 +8130,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -----
 
-The following software may be included in this product: are-docs-informative, dedent. A copy of the source code may be downloaded from https://github.com/JoshuaKGoldberg/are-docs-informative (are-docs-informative), https://github.com/dmnd/dedent (dedent). This software contains the following license and notice below:
+The following software may be included in this product: are-docs-informative. A copy of the source code may be downloaded from https://github.com/JoshuaKGoldberg/are-docs-informative. This software contains the following license and notice below:
 
 # MIT License
 
@@ -8283,7 +8155,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -----
 
-The following software may be included in this product: are-we-there-yet, init-package-json. A copy of the source code may be downloaded from https://github.com/npm/are-we-there-yet.git (are-we-there-yet), git+https://github.com/npm/init-package-json.git (init-package-json). This software contains the following license and notice below:
+The following software may be included in this product: are-we-there-yet, init-package-json. A copy of the source code may be downloaded from https://github.com/npm/are-we-there-yet.git (are-we-there-yet), https://github.com/npm/init-package-json.git (init-package-json). This software contains the following license and notice below:
 
 ISC License
 
@@ -12250,11 +12122,36 @@ SOFTWARE.
 
 -----
 
+The following software may be included in this product: builtins. A copy of the source code may be downloaded from https://github.com/juliangruber/builtins.git. This software contains the following license and notice below:
+
+Copyright (c) 2015 Julian Gruber <julian@juliangruber.com>
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+-----
+
 The following software may be included in this product: byte-size. A copy of the source code may be downloaded from https://github.com/75lb/byte-size. This software contains the following license and notice below:
 
 The MIT License (MIT)
 
-Copyright (c) 2014-23 Lloyd Brookes <75pound@gmail.com>
+Copyright (c) 2014-21 Lloyd Brookes <75pound@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -13370,7 +13267,7 @@ SOFTWARE.
 
 -----
 
-The following software may be included in this product: cmd-shim, infer-owner, npm-bundled, read-package-json-fast, treeverse. A copy of the source code may be downloaded from git+https://github.com/npm/cmd-shim.git (cmd-shim), https://github.com/npm/infer-owner (infer-owner), git+https://github.com/npm/npm-bundled.git (npm-bundled), https://github.com/npm/read-package-json-fast.git (read-package-json-fast), https://github.com/npm/treeverse.git (treeverse). This software contains the following license and notice below:
+The following software may be included in this product: cmd-shim, infer-owner, npm-bundled, read-package-json-fast, treeverse. A copy of the source code may be downloaded from https://github.com/npm/cmd-shim.git (cmd-shim), https://github.com/npm/infer-owner (infer-owner), git+https://github.com/npm/npm-bundled.git (npm-bundled), https://github.com/npm/read-package-json-fast.git (read-package-json-fast), https://github.com/npm/treeverse.git (treeverse). This software contains the following license and notice below:
 
 The ISC License
 
@@ -15283,6 +15180,30 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -----
 
+The following software may be included in this product: debuglog. A copy of the source code may be downloaded from https://github.com/sam-github/node-debuglog.git. This software contains the following license and notice below:
+
+Copyright Joyent, Inc. and other Node contributors. All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to
+deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+sell copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
+
+-----
+
 The following software may be included in this product: decamelize-keys. A copy of the source code may be downloaded from https://github.com/sindresorhus/decamelize-keys.git. This software contains the following license and notice below:
 
 The MIT License (MIT)
@@ -16167,35 +16088,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -----
 
-The following software may be included in this product: dotenv-expand. A copy of the source code may be downloaded from https://github.com/motdotla/dotenv-expand. This software contains the following license and notice below:
-
-Copyright (c) 2016, Scott Motte
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-* Redistributions of source code must retain the above copyright notice, this
-  list of conditions and the following disclaimer.
-
-* Redistributions in binary form must reproduce the above copyright notice,
-  this list of conditions and the following disclaimer in the documentation
-  and/or other materials provided with the distribution.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
------
-
-The following software may be included in this product: dset, kleur, resolve.exports. A copy of the source code may be downloaded from https://github.com/lukeed/dset.git (dset), https://github.com/lukeed/kleur.git (kleur), https://github.com/lukeed/resolve.exports.git (resolve.exports). This software contains the following license and notice below:
+The following software may be included in this product: dset, kleur. A copy of the source code may be downloaded from https://github.com/lukeed/dset.git (dset), https://github.com/lukeed/kleur.git (kleur). This software contains the following license and notice below:
 
 The MIT License (MIT)
 
@@ -18128,18 +18021,6 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 -----
 
-The following software may be included in this product: fdir. A copy of the source code may be downloaded from git+https://github.com/thecodrr/fdir.git. This software contains the following license and notice below:
-
-Copyright 2023 Abdullah Atta
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
------
-
 The following software may be included in this product: fecha. A copy of the source code may be downloaded from https://taylorhakes@github.com/taylorhakes/fecha.git. This software contains the following license and notice below:
 
 The MIT License (MIT)
@@ -18568,20 +18449,6 @@ THE SOFTWARE.
 
 -----
 
-The following software may be included in this product: front-matter. A copy of the source code may be downloaded from git://github.com/jxson/front-matter.git. This software contains the following license and notice below:
-
-# The MIT License (MIT)
-
-Copyright (c) Jason Campbell ("Author")
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
------
-
 The following software may be included in this product: fs-constants. A copy of the source code may be downloaded from https://github.com/mafintosh/fs-constants.git. This software contains the following license and notice below:
 
 The MIT License (MIT)
@@ -18612,7 +18479,7 @@ The following software may be included in this product: fs-extra. A copy of the 
 
 (The MIT License)
 
-Copyright (c) 2011-2024 JP Richardson
+Copyright (c) 2011-2017 JP Richardson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
 (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
@@ -18632,7 +18499,7 @@ The following software may be included in this product: fs-extra. A copy of the 
 
 (The MIT License)
 
-Copyright (c) 2011-2017 JP Richardson
+Copyright (c) 2011-2024 JP Richardson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
 (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
@@ -19000,7 +18867,7 @@ The following software may be included in this product: git-url-parse. A copy of
 
 The MIT License (MIT)
 
-Copyright (c) 2015-24 Ionică Bizău <bizauionica@gmail.com> (https://ionicabizau.net)
+Copyright (c) 2015-23 Ionică Bizău <bizauionica@gmail.com> (https://ionicabizau.net)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19052,7 +18919,7 @@ The following software may be included in this product: glob. A copy of the sour
 
 The ISC License
 
-Copyright (c) 2009-2023 Isaac Z. Schlueter and Contributors
+Copyright (c) 2009-2022 Isaac Z. Schlueter and Contributors
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that the above
@@ -19072,7 +18939,7 @@ The following software may be included in this product: glob. A copy of the sour
 
 The ISC License
 
-Copyright (c) 2009-2022 Isaac Z. Schlueter and Contributors
+Copyright (c) 2009-2023 Isaac Z. Schlueter and Contributors
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that the above
@@ -20816,26 +20683,6 @@ SOFTWARE.
 
 -----
 
-The following software may be included in this product: isexe. A copy of the source code may be downloaded from https://github.com/isaacs/isexe. This software contains the following license and notice below:
-
-The ISC License
-
-Copyright (c) 2016-2022 Isaac Z. Schlueter and Contributors
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted, provided that the above
-copyright notice and this permission notice appear in all copies.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
-IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
------
-
 The following software may be included in this product: isomorphic-fetch. A copy of the source code may be downloaded from https://github.com/matthew-andrews/isomorphic-fetch.git. This software contains the following license and notice below:
 
 The MIT License (MIT)
@@ -21910,7 +21757,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 -----
 
-The following software may be included in this product: libnpmaccess, libnpmpublish. A copy of the source code may be downloaded from git+https://github.com/npm/cli.git (libnpmaccess), git+https://github.com/npm/cli.git (libnpmpublish). This software contains the following license and notice below:
+The following software may be included in this product: libnpmaccess, libnpmpublish. A copy of the source code may be downloaded from https://github.com/npm/cli.git (libnpmaccess), https://github.com/npm/cli.git (libnpmpublish). This software contains the following license and notice below:
 
 Copyright npm, Inc
 
@@ -22916,26 +22763,6 @@ The following software may be included in this product: minipass. A copy of the 
 
 The ISC License
 
-Copyright (c) 2017-2023 npm, Inc., Isaac Z. Schlueter, and Contributors
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted, provided that the above
-copyright notice and this permission notice appear in all copies.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
-IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
------
-
-The following software may be included in this product: minipass. A copy of the source code may be downloaded from git+https://github.com/isaacs/minipass.git. This software contains the following license and notice below:
-
-The ISC License
-
 Copyright (c) 2017-2022 npm, Inc., Isaac Z. Schlueter, and Contributors
 
 Permission to use, copy, modify, and/or distribute this software for any
@@ -22952,11 +22779,11 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 -----
 
-The following software may be included in this product: minipass-collect. A copy of the source code may be downloaded from https://github.com/isaacs/minipass-collect. This software contains the following license and notice below:
+The following software may be included in this product: minipass. A copy of the source code may be downloaded from https://github.com/isaacs/minipass. This software contains the following license and notice below:
 
 The ISC License
 
-Copyright (c) 2019-2023 Isaac Z. Schlueter and Contributors
+Copyright (c) 2017-2023 npm, Inc., Isaac Z. Schlueter, and Contributors
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that the above
@@ -22972,7 +22799,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 -----
 
-The following software may be included in this product: minipass-fetch. A copy of the source code may be downloaded from https://github.com/npm/minipass-fetch.git. This software contains the following license and notice below:
+The following software may be included in this product: minipass-fetch. A copy of the source code may be downloaded from git+https://github.com/npm/minipass-fetch.git. This software contains the following license and notice below:
 
 The MIT License (MIT)
 
@@ -23656,6 +23483,24 @@ SOFTWARE.
 
 -----
 
+The following software may be included in this product: node-addon-api. A copy of the source code may be downloaded from git://github.com/nodejs/node-addon-api.git. This software contains the following license and notice below:
+
+The MIT License (MIT)
+=====================
+
+Copyright (c) 2017 Node.js API collaborators
+-----------------------------------
+
+*Node.js API collaborators listed at <https://github.com/nodejs/node-addon-api#collaborators>*
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+-----
+
 The following software may be included in this product: node-emoji. A copy of the source code may be downloaded from https://github.com/omnidan/node-emoji.git. This software contains the following license and notice below:
 
 The MIT License (MIT)
@@ -23737,9 +23582,11 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 -----
 
-The following software may be included in this product: node-int64. A copy of the source code may be downloaded from https://github.com/broofa/node-int64. This software contains the following license and notice below:
+The following software may be included in this product: node-gyp-build. A copy of the source code may be downloaded from https://github.com/prebuild/node-gyp-build.git. This software contains the following license and notice below:
 
-Copyright (c) 2014 Robert Kieffer
+The MIT License (MIT)
+
+Copyright (c) 2017 Mathias Buus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23761,11 +23608,9 @@ THE SOFTWARE.
 
 -----
 
-The following software may be included in this product: node-machine-id. A copy of the source code may be downloaded from git@github.com:automation-stack/node-machine-id.git. This software contains the following license and notice below:
+The following software may be included in this product: node-int64. A copy of the source code may be downloaded from https://github.com/broofa/node-int64. This software contains the following license and notice below:
 
-The MIT License (MIT)
-
-Copyright (c) 2016 Aleksandr Komlev
+Copyright (c) 2014 Robert Kieffer
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23774,16 +23619,16 @@ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
 
 -----
 
@@ -31230,7 +31075,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 -----
 
-The following software may be included in this product: proc-log, proggy. A copy of the source code may be downloaded from https://github.com/npm/proc-log.git (proc-log), https://github.com/npm/proggy.git (proggy). This software contains the following license and notice below:
+The following software may be included in this product: proc-log. A copy of the source code may be downloaded from https://github.com/npm/proc-log.git. This software contains the following license and notice below:
 
 The ISC License
 
@@ -33599,7 +33444,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -----
 
-The following software may be included in this product: ssri. A copy of the source code may be downloaded from https://github.com/npm/ssri.git. This software contains the following license and notice below:
+The following software may be included in this product: ssri. A copy of the source code may be downloaded from git+https://github.com/npm/ssri.git. This software contains the following license and notice below:
 
 ISC License
 
@@ -33998,6 +33843,28 @@ SOFTWARE.
 
 -----
 
+The following software may be included in this product: strong-log-transformer. A copy of the source code may be downloaded from git://github.com/strongloop/strong-log-transformer. This software contains the following license and notice below:
+
+Copyright (c) Ryan Graham <ryan@strongloop.com> 2014,2018. All Rights Reserved.
+Node module: strong-log-transformer
+
+--------
+Copyright 2014,2018 Ryan Graham <ryan@strongloop.com>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+-----
+
 The following software may be included in this product: supports-hyperlinks. A copy of the source code may be downloaded from https://github.com/jamestalmage/supports-hyperlinks.git. This software contains the following license and notice below:
 
 MIT License
@@ -34270,32 +34137,6 @@ The following software may be included in this product: timeout-signal. A copy o
 MIT License
 
 Copyright (c) 2020, 2022 Richie Bendall
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
------
-
-The following software may be included in this product: tinyglobby. A copy of the source code may be downloaded from git+https://github.com/SuperchupuDev/tinyglobby.git. This software contains the following license and notice below:
-
-MIT License
-
-Copyright (c) 2024 Madeline Gurriarán
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -35318,7 +35159,7 @@ SOFTWARE.
 
 -----
 
-The following software may be included in this product: v8-compile-cache-lib. A copy of the source code may be downloaded from https://github.com/cspotcode/v8-compile-cache-lib.git. This software contains the following license and notice below:
+The following software may be included in this product: v8-compile-cache, v8-compile-cache-lib. A copy of the source code may be downloaded from https://github.com/zertosh/v8-compile-cache.git (v8-compile-cache), https://github.com/cspotcode/v8-compile-cache-lib.git (v8-compile-cache-lib). This software contains the following license and notice below:
 
 The MIT License (MIT)
 
@@ -36230,7 +36071,7 @@ THIS SOFTWARE.
 
 The following software may be included in this product: yaml. A copy of the source code may be downloaded from https://github.com/eemeli/yaml.git. This software contains the following license and notice below:
 
-Copyright Eemeli Aro <eemeli@gmail.com>
+Copyright 2018 Eemeli Aro <eemeli@gmail.com>
 
 Permission to use, copy, modify, and/or distribute this software for any purpose
 with or without fee is hereby granted, provided that the above copyright notice
@@ -36248,7 +36089,7 @@ THIS SOFTWARE.
 
 The following software may be included in this product: yaml. A copy of the source code may be downloaded from https://github.com/eemeli/yaml.git. This software contains the following license and notice below:
 
-Copyright 2018 Eemeli Aro <eemeli@gmail.com>
+Copyright Eemeli Aro <eemeli@gmail.com>
 
 Permission to use, copy, modify, and/or distribute this software for any purpose
 with or without fee is hereby granted, provided that the above copyright notice
