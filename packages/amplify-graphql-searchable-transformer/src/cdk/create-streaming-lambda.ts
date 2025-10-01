@@ -30,14 +30,8 @@ export const createLambda = (
     `functions/${OpenSearchStreamingLambdaFunctionLogicalID}.zip`,
     parameterMap.get(OpenSearchStreamingLambdaHandlerName)!.valueAsString,
     path.resolve(__dirname, '..', '..', 'lib', 'streaming-lambda.zip'),
-    Runtime.PYTHON_3_8,
-    [
-      LayerVersion.fromLayerVersionArn(
-        scope,
-        'LambdaLayerVersion',
-        Fn.findInMap('LayerResourceMapping', Fn.ref('AWS::Region'), 'layerRegion'),
-      ),
-    ],
+    Runtime.PYTHON_3_12,
+    [],
     lambdaRole,
     enviroment,
     undefined,
