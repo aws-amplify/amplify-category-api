@@ -35,6 +35,13 @@ export type TestTransformParameters = RDSLayerMappingProvider &
   };
 
 /**
+ * Defaults for transform parameters in tests, if they're not set explicitly.
+ */
+const DEFAULT_TEST_TRANSFORM_PARAMETERS: Partial<TransformParameters> = {
+  enableSearchNodeToNodeEncryption: true,
+};
+
+/**
  * This mirrors the old behavior of the graphql transformer, where we fully synthesize internally, for the purposes of
  * unit testing, and to introduce fewer changes during the refactor.
  */
@@ -60,7 +67,10 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     transformers,
     stackMapping,
     authConfig,
-    transformParameters,
+    transformParameters: {
+      ...DEFAULT_TEST_TRANSFORM_PARAMETERS,
+      ...transformParameters,
+    },
     userDefinedSlots,
     resolverConfig,
   });

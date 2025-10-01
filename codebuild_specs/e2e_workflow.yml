@@ -3,6 +3,8 @@ version: 0.2
 env:
   shell: bash
   compute-type: BUILD_GENERAL1_MEDIUM
+  variables:
+    JSII_DEPRECATED: 'quiet'
 batch:
   fast-fail: false
   build-graph:
@@ -1848,6 +1850,8 @@ batch:
       buildspec: codebuild_specs/cleanup_e2e_resources.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          JSII_DEPRECATED: quiet
       depend-on:
         - >-
           custom_transformers_invalid_input_arguments_schema_data_access_patterns_schema_predictions_function_10

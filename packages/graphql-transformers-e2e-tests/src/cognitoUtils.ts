@@ -178,6 +178,10 @@ export async function createUserPool(client: CognitoIdentityProviderClient, user
         },
       ],
       AutoVerifiedAttributes: ['email'],
+      // Self-signup disabled
+      AdminCreateUserConfig: {
+        AllowAdminCreateUserOnly: true,
+      },
     }),
   );
 }
