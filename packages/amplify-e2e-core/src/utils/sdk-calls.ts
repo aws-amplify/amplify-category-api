@@ -34,9 +34,11 @@ export const getDDBTable = async (tableName: string, region: string) => {
     } catch (error) {
       // In AWS SDK v3, ResourceNotFoundException has a different structure
       if (error.name === 'ResourceNotFoundException') {
-        // Create an error with the expected message format for the tests
-        const notFoundError = new Error(`${tableName} not found`);
-        notFoundError.name = 'ResourceNotFoundException';
+        // Create an error object with enumerable message property for the tests
+        const notFoundError = {
+          name: 'ResourceNotFoundException',
+          message: `${tableName} not found`,
+        };
         throw notFoundError;
       }
       throw error;

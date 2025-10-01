@@ -76,21 +76,14 @@ async function uploadImageFile(projectDir: string) {
     region: bucketRegion,
   });
 
-  try {
-    const fileStream = fs.createReadStream(imageFilePath);
-    const uploadParams = {
-      Bucket: bucketName,
-      Key: imageKey,
-      Body: fileStream,
-      ContentType: 'image/jpeg',
-      ACL: 'public-read' as const,
-    };
-    await s3Client.send(new PutObjectCommand(uploadParams));
-  } catch (err) {
-    if (err.code !== 'AccessControlListNotSupported') {
-      throw err;
-    }
-  }
+  const fileStream = fs.createReadStream(imageFilePath);
+  const uploadParams = {
+    Bucket: bucketName,
+    Key: imageKey,
+    Body: fileStream,
+    ContentType: 'image/jpeg',
+  };
+  await s3Client.send(new PutObjectCommand(uploadParams));
 }
 
 // schema
