@@ -55,7 +55,6 @@ import {
   extendTypeWithDirectives,
   DATASTORE_SYNC_FIELDS,
 } from './definitions';
-import { setMappings } from './cdk/create-layer-cfnMapping';
 import { createSearchableDomain, createSearchableDomainRole } from './cdk/create-searchable-domain';
 import { createSearchableDataSource } from './cdk/create-searchable-datasource';
 import { createEventSourceMapping, createLambda, createLambdaRole } from './cdk/create-streaming-lambda';
@@ -295,8 +294,6 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     const { HasEnvironmentParameter } = ResourceConstants.CONDITIONS;
 
     const stack = context.stackManager.createStack(STACK_NAME);
-
-    setMappings(stack);
 
     new CfnCondition(stack, HasEnvironmentParameter, {
       expression: Fn.conditionNot(Fn.conditionEquals(context.synthParameters.amplifyEnvironmentName, ResourceConstants.NONE)),
