@@ -243,23 +243,84 @@ const getBuildLogs = async (buildId: string): Promise<void> => {
     console.log(`Log Group: ${logGroup}`);
     console.log(`Log Stream: ${logStream}`);
 
-    // Use AWS CLI to get logs (more reliable than SDK for large logs)
-    const { execSync } = require('child_process');
+    // Use AWS SDK to get ALL logs with pagination
+    const { CloudWatchLogs } = require('aws-sdk');
+    const cloudWatchLogs = new CloudWatchLogs({
+      region: REGION,
+      credentials: new SharedIniFileCredentials({ profile: E2E_PROFILE_NAME }),
+    });
 
-    console.log(`\n=== Recent Log Output ===`);
+    console.log(`\n=== Complete Log Output ===`);
+    console.log(`📄 Fetching all log events (this may take a moment for large logs)...`);
+
     try {
-      const logOutput = execSync(
-        `aws logs get-log-events --region=${REGION} --profile=${E2E_PROFILE_NAME} --log-group-name="${logGroup}" --log-stream-name="${logStream}" --start-from-head --limit=50 --query="events[*].message" --output=text`,
-        { encoding: 'utf8', maxBuffer: 1024 * 1024 },
-      );
+      let allEvents: any[] = [];
+      let nextToken: string | undefined;
+      let pageCount = 0;
 
-      console.log(logOutput);
+      do {
+        pageCount++;
+        console.log(`📄 Fetching page ${pageCount}...`);
+
+        const params: any = {
+          logGroupName: logGroup,
+          logStreamName: logStream,
+          startFromHead: true,
+          limit: 10000, // Maximum allowed per request
+        };
+
+        if (nextToken) {
+          params.nextToken = nextToken;
+        }
+
+        const response = await cloudWatchLogs.getLogEvents(params).promise();
+
+        if (response.events && response.events.length > 0) {
+          allEvents = allEvents.concat(response.events);
+          console.log(`📄 Page ${pageCount}: ${response.events.length} events (total: ${allEvents.length})`);
+        }
+
+        nextToken = response.nextForwardToken;
+
+        // Prevent infinite loops - if we get the same token back, we're done
+        if (nextToken === response.nextBackwardToken) {
+          nextToken = undefined;
+        }
+
+        // Safety limit to prevent runaway pagination
+        if (pageCount > 100) {
+          console.log(`⚠️  Reached page limit (100), stopping pagination`);
+          break;
+        }
+      } while (nextToken);
+
+      console.log(`\n📊 Total log events retrieved: ${allEvents.length}`);
+      console.log(`📊 Total pages fetched: ${pageCount}`);
+      console.log(`\n=== FULL LOG CONTENT ===\n`);
+
+      // Print all log messages
+      for (const event of allEvents) {
+        console.log(event.message);
+      }
     } catch (error) {
-      console.log('❌ Could not fetch log content:', error.message);
-      console.log(`\nTo view logs manually:`);
-      console.log(
-        `aws logs get-log-events --region=${REGION} --profile=${E2E_PROFILE_NAME} --log-group-name="${logGroup}" --log-stream-name="${logStream}"`,
-      );
+      console.log('❌ Could not fetch log content via SDK:', error.message);
+      console.log(`\nFalling back to AWS CLI...`);
+
+      // Fallback to CLI approach but get more logs
+      const { execSync } = require('child_process');
+      try {
+        const logOutput = execSync(
+          `aws logs get-log-events --region=${REGION} --profile=${E2E_PROFILE_NAME} --log-group-name="${logGroup}" --log-stream-name="${logStream}" --limit=10000 --query="events[*].message" --output=text`,
+          { encoding: 'utf8', maxBuffer: 10 * 1024 * 1024 }, // 10MB buffer
+        );
+        console.log(logOutput);
+      } catch (cliError) {
+        console.log('❌ CLI fallback also failed:', cliError.message);
+        console.log(`\nTo view logs manually:`);
+        console.log(
+          `aws logs get-log-events --region=${REGION} --profile=${E2E_PROFILE_NAME} --log-group-name="${logGroup}" --log-stream-name="${logStream}"`,
+        );
+      }
     }
   } catch (error) {
     console.error('❌ Error fetching build logs:', error.message);
