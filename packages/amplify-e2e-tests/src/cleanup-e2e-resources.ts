@@ -351,12 +351,12 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
       }
     } catch (e) {
       // TODO: Why do we process the bucket even with these particular errors?
-      if (e.code === 'NoSuchTagSet' || e.code === 'NoSuchBucket') {
+      if (e.name === 'NoSuchTagSet' || e.name === 'NoSuchBucket') {
         result.push({
           name: bucket.Name,
           region: region ?? 'us-east-1',
         });
-      } else if (e.code === 'InvalidToken') {
+      } else if (e.name === 'InvalidToken') {
         // We see some buckets in some accounts that were somehow created in an opt-in region different from the one to which the account is
         // actually opted in. We don't quite know how this happened, but for now, we'll make a note of the inconsistency and continue
         // processing the rest of the buckets.
@@ -485,7 +485,7 @@ const deleteAmplifyApp = async (account: AWSAccountInfo, accountIndex: number, a
     await amplifyClient.send(new DeleteAppCommand({ appId }));
   } catch (e) {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting Amplify App ${appId} failed with the following error`, e);
-    if (e.code === 'ExpiredTokenException') {
+    if (e.name === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
   }
@@ -512,7 +512,7 @@ const deleteIamRole = async (account: AWSAccountInfo, accountIndex: number, role
     await iamClient.send(new DeleteRoleCommand({ RoleName: roleName }));
   } catch (e) {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting iam role ${roleName} failed with error ${e.message}`);
-    if (e.code === 'ExpiredTokenException') {
+    if (e.name === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
   }
@@ -536,7 +536,7 @@ const detachIamAttachedRolePolicy = async (
     await iamClient.send(new DetachRolePolicyCommand({ RoleName: roleName, PolicyArn: policy.PolicyArn }));
   } catch (e) {
     console.log(`${generateAccountInfo(account, accountIndex)} Detach iam role policy ${policy.PolicyName} failed with error ${e.message}`);
-    if (e.code === 'ExpiredTokenException') {
+    if (e.name === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
   }
@@ -555,7 +555,7 @@ const deleteIamRolePolicy = async (account: AWSAccountInfo, accountIndex: number
     await iamClient.send(new DeleteRolePolicyCommand({ RoleName: roleName, PolicyName: policyName }));
   } catch (e) {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting iam role policy ${policyName} failed with error ${e.message}`);
-    if (e.code === 'ExpiredTokenException') {
+    if (e.name === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
   }
@@ -576,7 +576,7 @@ const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucke
     await deleteS3Bucket(name, regionalizedS3Client);
   } catch (e) {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting bucket ${name} failed with error ${e.message}`);
-    if (e.code === 'ExpiredTokenException') {
+    if (e.name === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
   }
@@ -596,7 +596,7 @@ const deleteCfnStack = async (account: AWSAccountInfo, accountIndex: number, sta
     await waitUntilStackDeleteComplete({ client: cfnClient, maxWaitTime: 3600 }, { StackName: stackName });
   } catch (e) {
     console.log(`Deleting CloudFormation stack ${stackName} failed with error ${e.message}`);
-    if (e.code === 'ExpiredTokenException') {
+    if (e.name === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
   }
