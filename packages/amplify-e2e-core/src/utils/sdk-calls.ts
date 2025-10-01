@@ -29,7 +29,18 @@ import _ from 'lodash';
 export const getDDBTable = async (tableName: string, region: string) => {
   const service = new DynamoDBClient({ region });
   if (tableName) {
-    return await service.send(new DescribeTableCommand({ TableName: tableName }));
+    try {
+      return await service.send(new DescribeTableCommand({ TableName: tableName }));
+    } catch (error) {
+      // In AWS SDK v3, ResourceNotFoundException has a different structure
+      if (error.name === 'ResourceNotFoundException') {
+        // Create an error with the expected message format for the tests
+        const notFoundError = new Error(`${tableName} not found`);
+        notFoundError.name = 'ResourceNotFoundException';
+        throw notFoundError;
+      }
+      throw error;
+    }
   }
 };
 
