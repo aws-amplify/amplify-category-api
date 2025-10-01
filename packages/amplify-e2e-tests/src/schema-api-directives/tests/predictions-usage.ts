@@ -2,48 +2,6 @@
 // This test will faile due to a possible AppSync bug, see details below the test code
 import path from 'path';
 import fs from 'fs-extra';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-import gql from 'graphql-tag';
-import { addAuthWithDefault, addS3Storage, getBackendAmplifyMeta, addApi, amplifyPush } from 'amplify-category-api-e2e-core';
-
-import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../authHelper';
-import { updateSchemaInTestProject } from '../common';
-
-const imageKey = 'public/myimage.jpg';
-
-export async function runTest(projectDir: string, testModule: any) {
-  await addAuthWithDefault(projectDir);
-  await addS3Storage(projectDir);
-  await addApi(projectDir, { transformerVersion: 1 });
-  updateSchemaInTestProject(projectDir, testModule.schema);
-
-  await amplifyPush(projectDir);
-
-  await uploadImageFile(projectDir);
-
-  const apiKey = getApiKey(projectDir);
-  const awsconfig = configureAmplify(projectDir);
-  const appSyncClient = getConfiguredAppsyncClientAPIKeyAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region, apiKey);
-
-  try {
-    const result = await appSyncClient.query({
-      query: gql(query),
-      fetchPolicy: 'no-cache',
-    });
-
-    expect(result).toBeDefined();
-    const pollyURL = result.data.speakTranslatedImageText;
-    // check that return format is a url
-    expect(pollyURL).toMatch(/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/);
-  } catch (err) {
-    // #error: the query will fail due to an AppSync bug, see below
-  }
-}
-
-// special handling needed to test prediction
-// This test will faile due to a possible AppSync bug, see details below the test code
-import path from 'path';
-import fs from 'fs-extra';
 import { S3Client, PutObjectCommand, GetBucketLocationCommand } from '@aws-sdk/client-s3';
 import gql from 'graphql-tag';
 import { addAuthWithDefault, addS3Storage, getBackendAmplifyMeta, addApi, amplifyPush } from 'amplify-category-api-e2e-core';
