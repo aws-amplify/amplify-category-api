@@ -180,9 +180,9 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
   try {
     amplifyApps = await amplifyClient.send(new ListAppsCommand({ maxResults: 50 })); // keeping it to 50 as max supported is 50
   } catch (e) {
-    if (e?.code === 'UnrecognizedClientException') {
+    if (e?.name === 'UnrecognizedClientException') {
       // Do not fail the cleanup and continue
-      console.log(`Listing apps for account ${account.accountId}-${region} failed with error with code ${e?.code}. Skipping.`);
+      console.log(`Listing apps for account ${account.accountId}-${region} failed with error with code ${e?.name}. Skipping.`);
       return result;
     } else {
       throw e;
@@ -277,9 +277,9 @@ const getStacks = async (account: AWSAccountInfo, region: string): Promise<Stack
       }),
     );
   } catch (e) {
-    if (e?.code === 'InvalidClientTokenId') {
+    if (e?.name === 'InvalidClientTokenId') {
       // Do not fail the cleanup and continue
-      console.log(`Listing stacks for account ${account.accountId}-${region} failed with error with code ${e?.code}. Skipping.`);
+      console.log(`Listing stacks for account ${account.accountId}-${region} failed with error with code ${e?.name}. Skipping.`);
       return results;
     } else {
       throw e;
