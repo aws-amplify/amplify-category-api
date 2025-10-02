@@ -88,7 +88,8 @@ describe('Schema iterative update - locking', () => {
           }),
         );
 
-        const deploymentState = JSONUtilities.parse<DeploymentState>(deploymentStateObject.Body.toString());
+        const bodyString = await deploymentStateObject.Body?.transformToString();
+        const deploymentState = JSONUtilities.parse<DeploymentState>(bodyString);
 
         if (deploymentState.status === DeploymentStatus.DEPLOYING) {
           lockFileExists = true;
