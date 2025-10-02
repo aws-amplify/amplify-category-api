@@ -3,6 +3,8 @@ version: 0.2
 env:
   shell: bash
   compute-type: BUILD_GENERAL1_MEDIUM
+  variables:
+    JSII_DEPRECATED: quiet
 batch:
   fast-fail: false
   build-graph:
@@ -765,5 +767,7 @@ batch:
       buildspec: codebuild_specs/cleanup_e2e_resources.yml
       env:
         compute-type: BUILD_GENERAL1_SMALL
+        variables:
+          JSII_DEPRECATED: quiet
       depend-on:
         - auth_2_datastore_modelgen_mock_api_amplify_app

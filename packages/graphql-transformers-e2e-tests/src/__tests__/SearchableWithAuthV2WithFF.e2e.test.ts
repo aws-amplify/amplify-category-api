@@ -180,6 +180,7 @@ beforeAll(async () => {
     await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
   } catch (e) {
     console.error(`Failed to create bucket: ${e}`);
+    throw e;
   }
   try {
     const out = testTransform({
