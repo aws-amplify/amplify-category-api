@@ -8,6 +8,7 @@ import {
   waitUntilBucketNotExists,
 } from '@aws-sdk/client-s3';
 import { DynamoDBClient, DescribeTableCommand, ListTagsOfResourceCommand, PutItemCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
+import { marshall } from '@aws-sdk/util-dynamodb';
 import {
   CognitoIdentityProviderClient,
   DescribeUserPoolCommand,
@@ -160,7 +161,8 @@ export const getTable = async (tableName: string, region: string) => {
 
 export const putItemInTable = async (tableName: string, region: string, item: unknown) => {
   const ddb = new DynamoDBClient({ region });
-  return await ddb.send(new PutItemCommand({ TableName: tableName, Item: item as any }));
+  const marshalledItem = marshall(item as Record<string, any>);
+  return await ddb.send(new PutItemCommand({ TableName: tableName, Item: marshalledItem }));
 };
 
 export const scanTable = async (tableName: string, region: string) => {
