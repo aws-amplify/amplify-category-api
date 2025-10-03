@@ -5,7 +5,7 @@ import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-inter
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { type Output } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient as CognitoClient } from '@aws-sdk/client-cognito-identity-provider';
-import { S3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
+import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import moment from 'moment';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { CloudFormationClient } from '../CloudFormationClient';
@@ -21,7 +21,7 @@ import {
   setIdentityPoolRoles,
 } from '../cognitoUtils';
 import { resolveTestRegion } from '../testSetup';
-import { CognitoIdentity } from 'aws-sdk';
+import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
 import { IAMHelper } from '../IAMHelper';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
@@ -38,7 +38,7 @@ describe('@model with @auth - iam access', () => {
   const customS3Client = new S3Client(region);
   const cognitoClient = new CognitoClient({ region: region });
   const cognitoIdentityClient = new CognitoIdentityClient({ apiVersion: '2014-06-30', region: region });
-  const awsS3Client = new S3Client({ region: region });
+  const awsS3Client = new AWSS3Client({ region: region });
   const iamHelper = new IAMHelper(region);
   const sts = new STS();
 

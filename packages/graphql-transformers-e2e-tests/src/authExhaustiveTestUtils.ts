@@ -4,7 +4,7 @@ import { JWTToken } from '@aws-amplify/amplify-appsync-simulator';
 import { Auth } from 'aws-amplify';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
-import { S3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
+import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import { type Output } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 import { AppSyncAuthConfiguration, SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
@@ -460,7 +460,7 @@ export const deploySchema = async (
   jest.setTimeout(1000 * 60 * 30);
 
   try {
-    const awsS3Client = new S3Client({ region: REGION });
+    const awsS3Client = new AWSS3Client({ region: REGION });
     await awsS3Client.send(new CreateBucketCommand({ Bucket: bucketName }));
   } catch (e) {
     // fail early if we can't create the bucket

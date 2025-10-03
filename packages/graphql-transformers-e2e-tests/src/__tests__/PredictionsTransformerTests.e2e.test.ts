@@ -5,7 +5,7 @@ import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { PredictionsTransformer } from 'graphql-predictions-transformer';
 import { type Output } from '@aws-sdk/client-cloudformation';
 import { default as moment } from 'moment';
-import { S3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
+import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { GraphQLClient } from '../GraphQLClient';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
@@ -19,7 +19,7 @@ jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient(AWS_REGION);
 const customS3Client = new S3Client(AWS_REGION);
-const awsS3Client = new S3Client({ region: AWS_REGION });
+const awsS3Client = new AWSS3Client({ region: AWS_REGION });
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
     if (name === 'improvePluralization') {

@@ -8,7 +8,7 @@ import { KeyTransformer } from 'graphql-key-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { type Output } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient as CognitoClient } from '@aws-sdk/client-cognito-identity-provider';
-import { S3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
+import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import { default as moment } from 'moment';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { GraphQLClient } from '../GraphQLClient';
@@ -90,7 +90,7 @@ describe(`ModelAuthTests`, () => {
 
   const cognitoClient = new CognitoClient({ region: region });
   const customS3Client = new S3Client(region);
-  const awsS3Client = new S3Client({ region: region });
+  const awsS3Client = new AWSS3Client({ region: region });
 
   function outputValueSelector(key: string) {
     return (outputs: Output[]) => {

@@ -71,7 +71,7 @@ const INSTRUCTOR_GROUP_NAME = 'Instructor';
 
 const cognitoClient = new CognitoClient({ region: region });
 const customS3Client = new S3Client(region);
-const awsS3Client = new S3Client({ region: region });
+const awsS3Client = new AWSS3Client({ region: region });
 
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {

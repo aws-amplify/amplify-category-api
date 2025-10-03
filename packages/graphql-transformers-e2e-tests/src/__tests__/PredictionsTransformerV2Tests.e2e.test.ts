@@ -3,7 +3,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { type Output } from '@aws-sdk/client-cloudformation';
-import { S3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
+import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import * as fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { default as moment } from 'moment';
@@ -20,7 +20,7 @@ jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient(AWS_REGION);
 const customS3Client = new S3Client(AWS_REGION);
-const awsS3Client = new S3Client({ region: AWS_REGION });
+const awsS3Client = new AWSS3Client({ region: AWS_REGION });
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `PredictionsTransformerV2Tests-${BUILD_TIMESTAMP}`;
 const BUCKET_NAME = `appsync-predictions-transformer-v2-test-bucket-${BUILD_TIMESTAMP}`;

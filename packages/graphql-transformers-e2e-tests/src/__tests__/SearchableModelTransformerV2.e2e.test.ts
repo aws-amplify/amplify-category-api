@@ -4,7 +4,7 @@ import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-tran
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { type Output } from '@aws-sdk/client-cloudformation';
 import { default as moment } from 'moment';
-import { S3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
+import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import { CloudFormationClient, sleepSecs } from '../CloudFormationClient';
 import { S3Client } from '../S3Client';
 import { GraphQLClient } from '../GraphQLClient';
@@ -18,7 +18,7 @@ jest.setTimeout(60000 * 60);
 
 const cf = new CloudFormationClient(region);
 const customS3Client = new S3Client(region);
-const awsS3Client = new S3Client({ region: region });
+const awsS3Client = new AWSS3Client({ region: region });
 let GRAPHQL_CLIENT: GraphQLClient = undefined;
 
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');

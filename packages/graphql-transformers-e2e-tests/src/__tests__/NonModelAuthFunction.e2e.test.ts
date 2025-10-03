@@ -5,9 +5,8 @@ import { FunctionTransformer } from 'graphql-function-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { type Output } from '@aws-sdk/client-cloudformation';
 import { default as moment } from 'moment';
-import { S3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
+import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import AWS from 'aws-sdk';
 import { CognitoIdentityProviderClient as CognitoClient } from '@aws-sdk/client-cognito-identity-provider';
 import Role from 'cloudform-types/types/iam/role';
 import UserPoolClient from 'cloudform-types/types/cognito/userPoolClient';
@@ -39,18 +38,11 @@ const featureFlags = {
   getNumber: jest.fn(),
   getObject: jest.fn(),
 };
-// To overcome of the way of how AmplifyJS picks up currentUserCredentials
-const anyAWS = AWS as any;
-
-if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
-  delete anyAWS.config.credentials;
-}
-
 jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient(REGION);
 const customS3Client = new S3Client(REGION);
-const awsS3Client = new S3Client({ region: REGION });
+const awsS3Client = new AWSS3Client({ region: REGION });
 
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `NonModelAuthFunctionTransformerTests-${BUILD_TIMESTAMP}`;

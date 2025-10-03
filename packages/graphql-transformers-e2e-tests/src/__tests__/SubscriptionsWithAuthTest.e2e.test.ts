@@ -119,7 +119,7 @@ const ADMIN_GROUP_NAME = 'Admin';
 
 const cognitoClient = new CognitoClient({ region: AWS_REGION });
 const customS3Client = new S3Client(AWS_REGION);
-const awsS3Client = new S3Client({ region: AWS_REGION });
+const awsS3Client = new AWSS3Client({ region: AWS_REGION });
 
 // interface inputs
 interface MemberInput {

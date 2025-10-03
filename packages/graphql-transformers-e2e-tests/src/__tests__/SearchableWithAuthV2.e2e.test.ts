@@ -45,7 +45,7 @@ jest.setTimeout(60000 * 60);
 
 const cf = new CloudFormationClient(AWS_REGION);
 const customS3Client = new S3Client(AWS_REGION);
-const awsS3Client = new S3Client({ region: AWS_REGION });
+const awsS3Client = new AWSS3Client({ region: AWS_REGION });
 const cognitoClient = new CognitoClient({ region: AWS_REGION });
 const identityClient = new CognitoIdentityClient({ apiVersion: '2014-06-30', region: AWS_REGION });
 const iamHelper = new IAMHelper(AWS_REGION);

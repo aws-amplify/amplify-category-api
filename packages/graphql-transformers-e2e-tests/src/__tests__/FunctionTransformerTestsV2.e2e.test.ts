@@ -5,10 +5,9 @@ import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { type Output } from '@aws-sdk/client-cloudformation';
 import { default as moment } from 'moment';
-import { S3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
+import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import { default as STS } from 'aws-sdk/clients/sts';
 import { default as Organizations } from 'aws-sdk/clients/organizations';
-import AWS from 'aws-sdk';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { GraphQLClient } from '../GraphQLClient';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
@@ -23,7 +22,7 @@ jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient(region);
 const customS3Client = new S3Client(region);
-const awsS3Client = new S3Client({ region: region });
+const awsS3Client = new AWSS3Client({ region: region });
 const sts = new STS();
 const organizations = new Organizations({ region: 'us-east-1' });
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
@@ -98,14 +97,16 @@ const createEchoFunctionInOtherAccount = async (currentAccountId?: string) => {
   try {
     const { otherAccountId, accountCredentials } = await randomOtherAccount(currentAccountId);
 
-    const crossAccountLambdaHelper = new LambdaHelper(
-      region,
-      new AWS.Credentials(accountCredentials.AccessKeyId, accountCredentials.SecretAccessKey, accountCredentials.SessionToken),
-    );
-    const crossAccountIAMHelper = new IAMHelper(
-      region,
-      new AWS.Credentials(accountCredentials.AccessKeyId, accountCredentials.SecretAccessKey, accountCredentials.SessionToken),
-    );
+    const crossAccountLambdaHelper = new LambdaHelper(region, {
+      accessKeyId: accountCredentials.AccessKeyId,
+      secretAccessKey: accountCredentials.SecretAccessKey,
+      sessionToken: accountCredentials.SessionToken,
+    });
+    const crossAccountIAMHelper = new IAMHelper(region, {
+      accessKeyId: accountCredentials.AccessKeyId,
+      secretAccessKey: accountCredentials.SecretAccessKey,
+      sessionToken: accountCredentials.SessionToken,
+    });
     const role = await crossAccountIAMHelper.createLambdaExecutionRole(LAMBDA_EXECUTION_ROLE_NAME);
     await wait(shortWaitForResource);
     const policy = await crossAccountIAMHelper.createLambdaExecutionPolicy(LAMBDA_EXECUTION_POLICY_NAME);
@@ -139,14 +140,16 @@ const deleteEchoFunctionInOtherAccount = async (accountId: string) => {
       expect(true).toEqual(false);
       return;
     }
-    const crossAccountLambdaHelper = new LambdaHelper(
-      region,
-      new AWS.Credentials(accountCredentials.AccessKeyId, accountCredentials.SecretAccessKey, accountCredentials.SessionToken),
-    );
-    const crossAccountIAMHelper = new IAMHelper(
-      region,
-      new AWS.Credentials(accountCredentials.AccessKeyId, accountCredentials.SecretAccessKey, accountCredentials.SessionToken),
-    );
+    const crossAccountLambdaHelper = new LambdaHelper(region, {
+      accessKeyId: accountCredentials.AccessKeyId,
+      secretAccessKey: accountCredentials.SecretAccessKey,
+      sessionToken: accountCredentials.SessionToken,
+    });
+    const crossAccountIAMHelper = new IAMHelper(region, {
+      accessKeyId: accountCredentials.AccessKeyId,
+      secretAccessKey: accountCredentials.SecretAccessKey,
+      sessionToken: accountCredentials.SessionToken,
+    });
 
     await crossAccountLambdaHelper.deleteFunction(ECHO_FUNCTION_NAME);
     await crossAccountIAMHelper.detachPolicy(CROSS_ACCOUNT_LAMBDA_EXECUTION_POLICY_ARN, LAMBDA_EXECUTION_ROLE_NAME);

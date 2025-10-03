@@ -20,7 +20,7 @@ import gql from 'graphql-tag';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { type Output } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient as CognitoClient } from '@aws-sdk/client-cognito-identity-provider';
-import { S3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
+import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import { default as moment } from 'moment';
 import Role from 'cloudform-types/types/iam/role';
 import UserPoolClient from 'cloudform-types/types/cognito/userPoolClient';
@@ -583,7 +583,7 @@ describe(`Deployed Mutation Condition tests`, () => {
 
   const cognitoClient = new CognitoClient({ region: REGION });
   const customS3Client = new S3Client(REGION);
-  const awsS3Client = new S3Client({ region: REGION });
+  const awsS3Client = new AWSS3Client({ region: REGION });
 
   const conditionRegexMatch =
     /GraphQL error: The conditional request failed \(Service: \w*DynamoD\w*\,?\;? Status Code: 400\,?\;? [a-zA-Z0-9:;, ]*\)/gm;

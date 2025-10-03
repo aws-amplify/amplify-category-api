@@ -5,7 +5,10 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { type Output } from '@aws-sdk/client-cloudformation';
-import { CognitoIdentityProviderClient as CognitoClient, S3, CognitoIdentity, IAM } from 'aws-sdk';
+import { CognitoIdentityProviderClient as CognitoClient } from '@aws-sdk/client-cognito-identity-provider';
+import { S3Client as AWSS3Client } from '@aws-sdk/client-s3';
+import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
+import { IAMClient } from '@aws-sdk/client-iam';
 import moment from 'moment';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { ResourceConstants } from 'graphql-transformer-common';
@@ -55,7 +58,7 @@ const customS3Client = new S3Client(AWS_REGION);
 const cognitoClient = new CognitoClient({ region: AWS_REGION });
 const identityClient = new CognitoIdentityClient({ apiVersion: '2014-06-30', region: AWS_REGION });
 const iamHelper = new IAMHelper(AWS_REGION);
-const awsS3Client = new S3Client({ region: AWS_REGION });
+const awsS3Client = new AWSS3Client({ region: AWS_REGION });
 
 // stack info
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');

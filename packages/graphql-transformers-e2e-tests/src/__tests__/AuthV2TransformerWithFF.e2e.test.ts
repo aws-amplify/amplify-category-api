@@ -6,7 +6,7 @@ import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-inter
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { type Output } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient as CognitoClient } from '@aws-sdk/client-cognito-identity-provider';
-import { S3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
+import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import moment from 'moment';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { CloudFormationClient } from '../CloudFormationClient';
@@ -33,7 +33,7 @@ describe('@model with @auth', () => {
   const cf = new CloudFormationClient(region);
   const customS3Client = new S3Client(region);
   const cognitoClient = new CognitoClient({ region: region });
-  const awsS3Client = new S3Client({ region: region });
+  const awsS3Client = new AWSS3Client({ region: region });
 
   // stack info
   const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');

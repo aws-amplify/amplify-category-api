@@ -1,7 +1,7 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { type Output } from '@aws-sdk/client-cloudformation';
-import { S3Client } from '@aws-sdk/client-s3';
+import { S3Client as AWSS3Client } from '@aws-sdk/client-s3';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { default as moment } from 'moment';
 import { CloudFormationClient } from '../CloudFormationClient';
@@ -16,7 +16,7 @@ jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient(region);
 const customS3Client = new S3Client(region);
-const awsS3Client = new S3Client({ region: region });
+const awsS3Client = new AWSS3Client({ region: region });
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `ModelTransformerTest-${BUILD_TIMESTAMP}`;
 const BUCKET_NAME = `appsync-model-transformer-test-bucket-${BUILD_TIMESTAMP}`;

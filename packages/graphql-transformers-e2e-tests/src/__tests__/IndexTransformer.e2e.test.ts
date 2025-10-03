@@ -6,7 +6,7 @@ import { type Output } from '@aws-sdk/client-cloudformation';
 // eslint-disable-next-line import/no-named-default
 import { default as moment } from 'moment';
 // eslint-disable-next-line import/no-named-default
-import { S3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
+import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { GraphQLClient } from '../GraphQLClient';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
@@ -19,7 +19,7 @@ jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient(region);
 const customS3Client = new S3Client(region);
-const awsS3Client = new S3Client({ region: region });
+const awsS3Client = new AWSS3Client({ region: region });
 // eslint-disable-next-line spellcheck/spell-checker
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `IndexTransformerTests-${BUILD_TIMESTAMP}`;

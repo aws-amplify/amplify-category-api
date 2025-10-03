@@ -104,7 +104,7 @@ const ADMIN_GROUP_NAME = 'admin';
 
 const cognitoClient = new CognitoClient({ region: AWS_REGION });
 const customS3Client = new S3Client(AWS_REGION);
-const awsS3Client = new S3Client({ region: AWS_REGION });
+const awsS3Client = new AWSS3Client({ region: AWS_REGION });
 
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {

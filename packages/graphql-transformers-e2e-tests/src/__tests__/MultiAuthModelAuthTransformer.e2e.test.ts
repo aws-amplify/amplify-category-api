@@ -11,7 +11,7 @@ import { KeyTransformer } from 'graphql-key-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import { type Output } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient as CognitoClient } from '@aws-sdk/client-cognito-identity-provider';
-import { S3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
+import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import { default as moment } from 'moment';
 import Role from 'cloudform-types/types/iam/role';
 import UserPoolClient from 'cloudform-types/types/cognito/userPoolClient';
@@ -77,7 +77,7 @@ const REAL_PASSWORD = 'Password1234!';
 
 const cognitoClient = new CognitoClient({ region: REGION });
 const customS3Client = new S3Client(REGION);
-const awsS3Client = new S3Client({ region: REGION });
+const awsS3Client = new AWSS3Client({ region: REGION });
 
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {
