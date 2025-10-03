@@ -1,4 +1,4 @@
-import * as aws from 'aws-sdk';
+import { RDSDataClient, ExecuteStatementCommand } from '@aws-sdk/client-rds-data';
 
 /**
  * A wrapper around the RDS data service client, forming their responses for
@@ -19,7 +19,7 @@ export class AuroraDataAPIClient {
     this.AWSConfig = awsConfig;
     const config = { ...this.AWSConfig, region: databaseRegion };
 
-    this.RDS = new aws.RDSDataService(config);
+    this.RDS = new RDSDataClient(config);
     this.Params = new DataApiParams();
 
     this.Params.secretArn = awsSecretStoreArn;
@@ -34,7 +34,7 @@ export class AuroraDataAPIClient {
    */
   public listTables = async () => {
     this.Params.sql = 'SHOW TABLES';
-    const response = await this.RDS.executeStatement(this.Params).promise();
+    const response = await this.RDS.send(new ExecuteStatementCommand(this.Params));
 
     let tableList = [];
     const records = response['records'];
@@ -53,7 +53,7 @@ export class AuroraDataAPIClient {
    */
   public describeTable = async (tableName: string) => {
     this.Params.sql = `DESCRIBE \`${tableName}\``;
-    const response = await this.RDS.executeStatement(this.Params).promise();
+    const response = await this.RDS.send(new ExecuteStatementCommand(this.Params));
     const listOfColumns = response['records'];
     let columnDescriptions = [];
     for (const column of listOfColumns) {
@@ -82,7 +82,7 @@ export class AuroraDataAPIClient {
     this.Params.sql = `SELECT TABLE_NAME FROM information_schema.key_column_usage 
             WHERE referenced_table_name is not null 
             AND REFERENCED_TABLE_NAME = '${tableName}';`;
-    const response = await this.RDS.executeStatement(this.Params).promise();
+    const response = await this.RDS.send(new ExecuteStatementCommand(this.Params));
 
     let tableList = [];
     const records = response['records'];

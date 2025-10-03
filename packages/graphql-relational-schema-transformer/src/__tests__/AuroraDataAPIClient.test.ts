@@ -8,52 +8,46 @@ const tableAName = 'Dog';
 const tableBName = 'Owners';
 
 test('list tables', async () => {
-  const rdsPromise = {
-    promise: jest.fn().mockImplementation(() => {
-      return new Promise((resolve, reject) => {
-        const response = {
-          numberOfRecordsUpdated: -1,
-          records: [
-            [
-              {
-                bigIntValue: null,
-                bitValue: null,
-                blobValue: null,
-                doubleValue: null,
-                intValue: null,
-                isNull: null,
-                realValue: null,
-                stringValue: `${tableAName}`,
-              },
-            ],
-          ],
-          columnMetadata: [
-            {
-              arrayBaseColumnType: 0,
-              isAutoIncrement: false,
-              isCaseSensitive: false,
-              isCurrency: false,
-              isSigned: false,
-              label: `Tables_in_${databaseName}`,
-              name: 'TABLE_NAME',
-              nullable: 0,
-              precision: 64,
-              scale: 0,
-              schemaName: '',
-              tableName: 'TABLE_NAMES',
-              type: 12,
-              typeName: 'VARCHAR',
-            },
-          ],
-        };
-        resolve(response);
-      });
-    }),
+  const rdsResponse = {
+    numberOfRecordsUpdated: -1,
+    records: [
+      [
+        {
+          bigIntValue: null,
+          bitValue: null,
+          blobValue: null,
+          doubleValue: null,
+          intValue: null,
+          isNull: null,
+          realValue: null,
+          stringValue: `${tableAName}`,
+        },
+      ],
+    ],
+    columnMetadata: [
+      {
+        arrayBaseColumnType: 0,
+        isAutoIncrement: false,
+        isCaseSensitive: false,
+        isCurrency: false,
+        isSigned: false,
+        label: `Tables_in_${databaseName}`,
+        name: 'TABLE_NAME',
+        nullable: 0,
+        precision: 64,
+        scale: 0,
+        schemaName: '',
+        tableName: 'TABLE_NAMES',
+        type: 12,
+        typeName: 'VARCHAR',
+      },
+    ],
   };
-  const MockRDSClient = jest.fn<any>(() => ({
-    executeStatement: jest.fn((params: DataApiParams) => {
-      if (params.sql == 'SHOW TABLES') {
-        return rdsPromise;
+
+  const MockRDSClient = jest.fn(() => ({
+    send: jest.fn((command: any) => {
+      if (command.input.sql == 'SHOW TABLES') {
+        return Promise.resolve(rdsResponse);
       }
       throw new Error('Incorrect SQL given.');
     }),
@@ -71,7 +65,11 @@ test('list tables', async () => {
   Params.resourceArn = clusterArn;
   Params.database = databaseName;
   Params.sql = 'SHOW TABLES';
-  expect(mockRDS.executeStatement).toHaveBeenCalledWith(Params);
+  expect(mockRDS.send).toHaveBeenCalledWith(
+    expect.objectContaining({
+      input: Params,
+    }),
+  );
   expect(tables.length).toEqual(1);
   expect(tables[0]).toEqual(tableAName);
 });
@@ -120,10 +118,10 @@ test('foreign key lookup', async () => {
     }),
   };
 
-  const MockRDSClient = jest.fn<any>(() => ({
-    executeStatement: jest.fn((params: DataApiParams) => {
-      if (params.sql.indexOf(`AND REFERENCED_TABLE_NAME = '${tableBName}'`) > -1) {
-        return rdsPromise;
+  const MockRDSClient = jest.fn(() => ({
+    send: jest.fn((command: any) => {
+      if (command.input.sql.indexOf(`AND REFERENCED_TABLE_NAME = '${tableBName}'`) > -1) {
+        return rdsPromise.promise();
       }
       throw new Error('Incorrect SQL given.');
     }),
@@ -438,10 +436,10 @@ test('describe table', async () => {
     }),
   };
 
-  const MockRDSClient = jest.fn<any>(() => ({
-    executeStatement: jest.fn((params: DataApiParams) => {
-      if (params.sql == `DESCRIBE \`${tableAName}\``) {
-        return rdsPromise;
+  const MockRDSClient = jest.fn(() => ({
+    send: jest.fn((command: any) => {
+      if (command.input.sql == `DESCRIBE \`${tableAName}\``) {
+        return rdsPromise.promise();
       }
       throw new Error('Incorrect SQL given.');
     }),
@@ -458,7 +456,11 @@ test('describe table', async () => {
   Params.resourceArn = clusterArn;
   Params.database = databaseName;
   Params.sql = `DESCRIBE \`${tableAName}\``;
-  expect(mockRDS.executeStatement).toHaveBeenCalledWith(Params);
+  expect(mockRDS.send).toHaveBeenCalledWith(
+    expect.objectContaining({
+      input: Params,
+    }),
+  );
   expect(columnDescriptions.length).toEqual(3);
   // TODO: the rest of these tests
 });
