@@ -12,7 +12,9 @@
  *   yarn ts-node scripts/e2e-test-manager.ts logs <buildId>
  */
 
-import { CodeBuild, SharedIniFileCredentials } from 'aws-sdk';
+import { CodeBuildClient, BatchGetBuildBatchesCommand, ListBuildBatchesCommand, BatchGetBuildsCommand } from '@aws-sdk/client-codebuild';
+import { CloudWatchLogsClient, GetLogEventsCommand } from '@aws-sdk/client-cloudwatch-logs';
+import { fromIni } from '@aws-sdk/credential-providers';
 import * as process from 'process';
 
 const E2E_PROFILE_NAME = 'AmplifyAPIE2EProd';
@@ -20,8 +22,8 @@ const REGION = 'us-east-1';
 const POLL_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 const DEFAULT_MAX_RETRIES = 10;
 
-const credentials = new SharedIniFileCredentials({ profile: E2E_PROFILE_NAME });
-const codeBuild = new CodeBuild({ credentials, region: REGION });
+const credentials = fromIni({ profile: E2E_PROFILE_NAME });
+const codeBuild = new CodeBuildClient({ credentials, region: REGION });
 
 type BuildStatus = 'FAILED' | 'FAULT' | 'IN_PROGRESS' | 'STOPPED' | 'SUCCEEDED' | 'TIMED_OUT';
 
@@ -42,7 +44,7 @@ interface BatchStatus {
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
 const getBatchStatus = async (batchId: string): Promise<BatchStatus> => {
-  const { buildBatches } = await codeBuild.batchGetBuildBatches({ ids: [batchId] }).promise();
+  const { buildBatches } = await codeBuild.send(new BatchGetBuildBatchesCommand({ ids: [batchId] }));
 
   if (!buildBatches || buildBatches.length === 0) {
     throw new Error(`Build batch ${batchId} not found`);
@@ -141,12 +143,12 @@ const shouldRetryBuild = (build: BuildSummary): boolean => {
 const listRecentBatches = async (limit: number = 20, filterType?: 'e2e' | 'canary'): Promise<void> => {
   console.log(`🔍 Fetching ${limit} most recent build batches${filterType ? ` (${filterType} only)` : ''}...`);
 
-  const result = await codeBuild
-    .listBuildBatches({
+  const result = await codeBuild.send(
+    new ListBuildBatchesCommand({
       maxResults: limit * 3, // Get more to account for filtering
       sortOrder: 'DESCENDING',
-    })
-    .promise();
+    }),
+  );
 
   if (!result.ids || result.ids.length === 0) {
     console.log('No build batches found');
@@ -154,7 +156,7 @@ const listRecentBatches = async (limit: number = 20, filterType?: 'e2e' | 'canar
   }
 
   // Get detailed info for the batches
-  const { buildBatches } = await codeBuild.batchGetBuildBatches({ ids: result.ids }).promise();
+  const { buildBatches } = await codeBuild.send(new BatchGetBuildBatchesCommand({ ids: result.ids }));
 
   if (!buildBatches || buildBatches.length === 0) {
     console.log('No build batch details found');
@@ -220,7 +222,7 @@ const getBuildLogs = async (buildId: string): Promise<void> => {
   console.log(`📋 Fetching logs for build: ${buildId}`);
 
   try {
-    const { builds } = await codeBuild.batchGetBuilds({ ids: [buildId] }).promise();
+    const { builds } = await codeBuild.send(new BatchGetBuildsCommand({ ids: [buildId] }));
 
     if (!builds || builds.length === 0) {
       console.log('❌ Build not found');
@@ -244,10 +246,9 @@ const getBuildLogs = async (buildId: string): Promise<void> => {
     console.log(`Log Stream: ${logStream}`);
 
     // Use AWS SDK to get ALL logs with pagination
-    const { CloudWatchLogs } = require('aws-sdk');
-    const cloudWatchLogs = new CloudWatchLogs({
+    const cloudWatchLogs = new CloudWatchLogsClient({
       region: REGION,
-      credentials: new SharedIniFileCredentials({ profile: E2E_PROFILE_NAME }),
+      credentials: fromIni({ profile: E2E_PROFILE_NAME }),
     });
 
     console.log(`\n=== Complete Log Output ===`);
@@ -273,7 +274,7 @@ const getBuildLogs = async (buildId: string): Promise<void> => {
           params.nextToken = nextToken;
         }
 
-        const response = await cloudWatchLogs.getLogEvents(params).promise();
+        const response = await cloudWatchLogs.send(new GetLogEventsCommand(params));
 
         if (response.events && response.events.length > 0) {
           allEvents = allEvents.concat(response.events);
