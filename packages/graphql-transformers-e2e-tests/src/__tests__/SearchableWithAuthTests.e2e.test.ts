@@ -5,9 +5,9 @@ import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { Output } from 'aws-sdk/clients/cloudformation';
+import { type Output } from '@aws-sdk/client-cloudformation';
 import { default as S3, CreateBucketRequest } from 'aws-sdk/clients/s3';
-import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { CognitoIdentityProviderClient as CognitoClient } from '@aws-sdk/client-cognito-identity-provider';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { AWS } from '@aws-amplify/core';
 import { Auth } from 'aws-amplify';
@@ -102,9 +102,9 @@ const REAL_PASSWORD = 'Password1234!';
 const WRITER_GROUP_NAME = 'writer';
 const ADMIN_GROUP_NAME = 'admin';
 
-const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: AWS_REGION });
+const cognitoClient = new CognitoClient({ region: AWS_REGION });
 const customS3Client = new S3Client(AWS_REGION);
-const awsS3Client = new S3({ region: AWS_REGION });
+const awsS3Client = new S3Client({ region: AWS_REGION });
 
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {

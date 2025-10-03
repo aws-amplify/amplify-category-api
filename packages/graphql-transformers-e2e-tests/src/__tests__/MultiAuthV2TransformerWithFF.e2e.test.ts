@@ -4,8 +4,8 @@ import { HasOneTransformer, HasManyTransformer } from '@aws-amplify/graphql-rela
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { Output } from 'aws-sdk/clients/cloudformation';
-import { CognitoIdentityServiceProvider as CognitoClient, S3, CognitoIdentity, IAM } from 'aws-sdk';
+import { type Output } from '@aws-sdk/client-cloudformation';
+import { CognitoIdentityProviderClient as CognitoClient, S3, CognitoIdentity, IAM } from 'aws-sdk';
 import moment from 'moment';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { ResourceConstants } from 'graphql-transformer-common';
@@ -52,10 +52,10 @@ function outputValueSelector(key: string) {
 
 const cf = new CloudFormationClient(AWS_REGION);
 const customS3Client = new S3Client(AWS_REGION);
-const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: AWS_REGION });
-const identityClient = new CognitoIdentity({ apiVersion: '2014-06-30', region: AWS_REGION });
+const cognitoClient = new CognitoClient({ region: AWS_REGION });
+const identityClient = new CognitoIdentityClient({ apiVersion: '2014-06-30', region: AWS_REGION });
 const iamHelper = new IAMHelper(AWS_REGION);
-const awsS3Client = new S3({ region: AWS_REGION });
+const awsS3Client = new S3Client({ region: AWS_REGION });
 
 // stack info
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
@@ -398,7 +398,7 @@ beforeAll(async () => {
   `;
   // create deployment bucket
   try {
-    await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
+    await awsS3Client.send(new CreateBucketCommand({ Bucket: BUCKET_NAME }));
   } catch (e) {
     // fail early if we can't create the bucket
     expect(e).not.toBeDefined();

@@ -3,9 +3,9 @@ import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { VersionedModelTransformer } from 'graphql-versioned-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
-import { Output } from 'aws-sdk/clients/cloudformation';
+import { type Output } from '@aws-sdk/client-cloudformation';
 import { default as moment } from 'moment';
-import { default as S3 } from 'aws-sdk/clients/s3';
+import { S3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import { GraphQLClient } from '../GraphQLClient';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { S3Client } from '../S3Client';
@@ -36,7 +36,7 @@ const S3_ROOT_DIR_KEY = 'deployments';
 let GRAPHQL_CLIENT = undefined;
 
 const customS3Client = new S3Client(region);
-const awsS3Client = new S3({ region: region });
+const awsS3Client = new S3Client({ region: region });
 
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {
@@ -71,7 +71,7 @@ beforeAll(async () => {
     ],
   });
   try {
-    await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
+    await awsS3Client.send(new CreateBucketCommand({ Bucket: BUCKET_NAME }));
   } catch (e) {
     console.error(`Failed to create bucket: ${e}`);
   }

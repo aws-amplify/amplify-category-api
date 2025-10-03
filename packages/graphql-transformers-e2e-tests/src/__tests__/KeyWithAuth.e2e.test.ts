@@ -5,9 +5,9 @@ import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
-import { Output } from 'aws-sdk/clients/cloudformation';
-import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import { default as S3 } from 'aws-sdk/clients/s3';
+import { type Output } from '@aws-sdk/client-cloudformation';
+import { CognitoIdentityProviderClient as CognitoClient } from '@aws-sdk/client-cognito-identity-provider';
+import { S3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import { default as moment } from 'moment';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { GraphQLClient } from '../GraphQLClient';
@@ -85,9 +85,9 @@ const DEVS_GROUP_NAME = 'Devs';
 const PARTICIPANT_GROUP_NAME = 'Participant';
 const WATCHER_GROUP_NAME = 'Watcher';
 
-const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: region });
+const cognitoClient = new CognitoClient({ region: region });
 const customS3Client = new S3Client(region);
-const awsS3Client = new S3({ region: region });
+const awsS3Client = new S3Client({ region: region });
 
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {
@@ -139,7 +139,7 @@ beforeAll(async () => {
     ],
   });
   try {
-    await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
+    await awsS3Client.send(new CreateBucketCommand({ Bucket: BUCKET_NAME }));
   } catch (e) {
     console.error(`Failed to create bucket: ${e}`);
   }

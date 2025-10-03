@@ -3,9 +3,9 @@ import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { Output } from 'aws-sdk/clients/cloudformation';
+import { type Output } from '@aws-sdk/client-cloudformation';
 import { default as S3, CreateBucketRequest } from 'aws-sdk/clients/s3';
-import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { CognitoIdentityProviderClient as CognitoClient } from '@aws-sdk/client-cognito-identity-provider';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { AWS } from '@aws-amplify/core';
 import { Auth, API } from 'aws-amplify';
@@ -117,9 +117,9 @@ const INSTRUCTOR_GROUP_NAME = 'Instructor';
 const MEMBER_GROUP_NAME = 'Member';
 const ADMIN_GROUP_NAME = 'Admin';
 
-const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: AWS_REGION });
+const cognitoClient = new CognitoClient({ region: AWS_REGION });
 const customS3Client = new S3Client(AWS_REGION);
-const awsS3Client = new S3({ region: AWS_REGION });
+const awsS3Client = new S3Client({ region: AWS_REGION });
 
 // interface inputs
 interface MemberInput {

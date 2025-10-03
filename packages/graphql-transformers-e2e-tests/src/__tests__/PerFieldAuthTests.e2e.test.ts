@@ -4,9 +4,9 @@ import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
-import { Output } from 'aws-sdk/clients/cloudformation';
+import { type Output } from '@aws-sdk/client-cloudformation';
 import { default as S3, CreateBucketRequest } from 'aws-sdk/clients/s3';
-import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { CognitoIdentityProviderClient as CognitoClient } from '@aws-sdk/client-cognito-identity-provider';
 import { default as moment } from 'moment';
 import { GraphQLClient } from '../GraphQLClient';
 import { S3Client } from '../S3Client';
@@ -80,9 +80,9 @@ const PARTICIPANT_GROUP_NAME = 'Participant';
 const WATCHER_GROUP_NAME = 'Watcher';
 const INSTRUCTOR_GROUP_NAME = 'Instructor';
 
-const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: region });
+const cognitoClient = new CognitoClient({ region: region });
 const customS3Client = new S3Client(region);
-const awsS3Client = new S3({ region: region });
+const awsS3Client = new S3Client({ region: region });
 
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {

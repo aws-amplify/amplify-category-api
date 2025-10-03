@@ -2,8 +2,8 @@ import path from 'path';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { Output } from 'aws-sdk/clients/cloudformation';
-import { default as S3 } from 'aws-sdk/clients/s3';
+import { type Output } from '@aws-sdk/client-cloudformation';
+import { S3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import * as fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { default as moment } from 'moment';
@@ -20,7 +20,7 @@ jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient(AWS_REGION);
 const customS3Client = new S3Client(AWS_REGION);
-const awsS3Client = new S3({ region: AWS_REGION });
+const awsS3Client = new S3Client({ region: AWS_REGION });
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `PredictionsTransformerV2Tests-${BUILD_TIMESTAMP}`;
 const BUCKET_NAME = `appsync-predictions-transformer-v2-test-bucket-${BUILD_TIMESTAMP}`;
@@ -46,7 +46,7 @@ beforeAll(async () => {
     }
   `;
   try {
-    await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
+    await awsS3Client.send(new CreateBucketCommand({ Bucket: BUCKET_NAME }));
   } catch (e) {
     console.warn(`Could not create bucket: ${e}`);
   }

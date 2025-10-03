@@ -3,9 +3,9 @@ import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { Output } from 'aws-sdk/clients/cloudformation';
+import { type Output } from '@aws-sdk/client-cloudformation';
 import { default as moment } from 'moment';
-import { default as S3 } from 'aws-sdk/clients/s3';
+import { S3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import { default as STS } from 'aws-sdk/clients/sts';
 import { default as Organizations } from 'aws-sdk/clients/organizations';
 import AWS from 'aws-sdk';
@@ -23,7 +23,7 @@ jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient(region);
 const customS3Client = new S3Client(region);
-const awsS3Client = new S3({ region: region });
+const awsS3Client = new S3Client({ region: region });
 const sts = new STS();
 const organizations = new Organizations({ region: 'us-east-1' });
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
@@ -218,7 +218,7 @@ beforeAll(async () => {
     }
     `;
   try {
-    await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
+    await awsS3Client.send(new CreateBucketCommand({ Bucket: BUCKET_NAME }));
   } catch (e) {
     console.warn(`Could not create bucket: ${e}`);
     expect(true).toEqual(false);
