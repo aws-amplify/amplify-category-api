@@ -22,10 +22,9 @@ Not traditional sprint planning - items here represent work actively being deliv
 - ✅ amplify-e2e-tests migration completed and verified
 - ✅ amplify-e2e-core migration completed and verified
 - ✅ **amplify-category-api migration completed and verified**
-  - Migrated appSync-rds-walkthrough.ts from AWS SDK v2 to v3
-  - Updated ssmClient.ts to use only AWS SDK v3
-  - Removed all v2 imports and .promise() calls
-  - Updated error handling to use v3 format
+  - Migrated appSync-rds-walkthrough.ts from AWS SDK v2 to v3 (RDS, SecretsManager, RDSData)
+  - Updated package.json: removed aws-sdk v2, added missing v3 clients
+  - SSM client kept as dual v2/v3 support (provider still uses v2)
   - All tests passing
 
 ## Backlog
