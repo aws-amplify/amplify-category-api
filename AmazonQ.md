@@ -163,6 +163,8 @@ When approaching context limits:
 - `yarn e2e-failed {batchId}` - Show failed builds with log commands for a specific batch.
 - `yarn e2e-logs {buildId}` - Show build logs for a specific build ID.
 
+**NOTE:** Where `batchId` or `buildId` are required, use the **FULL** name in the format of `amplify-category-api-e2e-workflow:{UUID}`.
+
 ### E2E Test Process
 
 1. **Complete all local development and testing**

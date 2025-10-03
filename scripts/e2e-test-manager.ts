@@ -12,7 +12,9 @@
  *   yarn ts-node scripts/e2e-test-manager.ts logs <buildId>
  */
 
-import { CodeBuild, SharedIniFileCredentials } from 'aws-sdk';
+import { CodeBuildClient, BatchGetBuildBatchesCommand, ListBuildBatchesCommand, BatchGetBuildsCommand } from '@aws-sdk/client-codebuild';
+import { CloudWatchLogsClient, GetLogEventsCommand } from '@aws-sdk/client-cloudwatch-logs';
+import { fromIni } from '@aws-sdk/credential-providers';
 import * as process from 'process';
 
 const E2E_PROFILE_NAME = 'AmplifyAPIE2EProd';
@@ -20,8 +22,8 @@ const REGION = 'us-east-1';
 const POLL_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 const DEFAULT_MAX_RETRIES = 10;
 
-const credentials = new SharedIniFileCredentials({ profile: E2E_PROFILE_NAME });
-const codeBuild = new CodeBuild({ credentials, region: REGION });
+const credentials = fromIni({ profile: E2E_PROFILE_NAME });
+const codeBuild = new CodeBuildClient({ credentials, region: REGION });
 
 type BuildStatus = 'FAILED' | 'FAULT' | 'IN_PROGRESS' | 'STOPPED' | 'SUCCEEDED' | 'TIMED_OUT';
 
@@ -42,7 +44,7 @@ interface BatchStatus {
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
 const getBatchStatus = async (batchId: string): Promise<BatchStatus> => {
-  const { buildBatches } = await codeBuild.batchGetBuildBatches({ ids: [batchId] }).promise();
+  const { buildBatches } = await codeBuild.send(new BatchGetBuildBatchesCommand({ ids: [batchId] }));
 
   if (!buildBatches || buildBatches.length === 0) {
     throw new Error(`Build batch ${batchId} not found`);
@@ -141,12 +143,12 @@ const shouldRetryBuild = (build: BuildSummary): boolean => {
 const listRecentBatches = async (limit: number = 20, filterType?: 'e2e' | 'canary'): Promise<void> => {
   console.log(`🔍 Fetching ${limit} most recent build batches${filterType ? ` (${filterType} only)` : ''}...`);
 
-  const result = await codeBuild
-    .listBuildBatches({
+  const result = await codeBuild.send(
+    new ListBuildBatchesCommand({
       maxResults: limit * 3, // Get more to account for filtering
       sortOrder: 'DESCENDING',
-    })
-    .promise();
+    }),
+  );
 
   if (!result.ids || result.ids.length === 0) {
     console.log('No build batches found');
@@ -154,7 +156,7 @@ const listRecentBatches = async (limit: number = 20, filterType?: 'e2e' | 'canar
   }
 
   // Get detailed info for the batches
-  const { buildBatches } = await codeBuild.batchGetBuildBatches({ ids: result.ids }).promise();
+  const { buildBatches } = await codeBuild.send(new BatchGetBuildBatchesCommand({ ids: result.ids }));
 
   if (!buildBatches || buildBatches.length === 0) {
     console.log('No build batch details found');
@@ -220,7 +222,7 @@ const getBuildLogs = async (buildId: string): Promise<void> => {
   console.log(`📋 Fetching logs for build: ${buildId}`);
 
   try {
-    const { builds } = await codeBuild.batchGetBuilds({ ids: [buildId] }).promise();
+    const { builds } = await codeBuild.send(new BatchGetBuildsCommand({ ids: [buildId] }));
 
     if (!builds || builds.length === 0) {
       console.log('❌ Build not found');
@@ -243,23 +245,83 @@ const getBuildLogs = async (buildId: string): Promise<void> => {
     console.log(`Log Group: ${logGroup}`);
     console.log(`Log Stream: ${logStream}`);
 
-    // Use AWS CLI to get logs (more reliable than SDK for large logs)
-    const { execSync } = require('child_process');
+    // Use AWS SDK to get ALL logs with pagination
+    const cloudWatchLogs = new CloudWatchLogsClient({
+      region: REGION,
+      credentials: fromIni({ profile: E2E_PROFILE_NAME }),
+    });
 
-    console.log(`\n=== Recent Log Output ===`);
+    console.log(`\n=== Complete Log Output ===`);
+    console.log(`📄 Fetching all log events (this may take a moment for large logs)...`);
+
     try {
-      const logOutput = execSync(
-        `aws logs get-log-events --region=${REGION} --profile=${E2E_PROFILE_NAME} --log-group-name="${logGroup}" --log-stream-name="${logStream}" --start-from-head --limit=50 --query="events[*].message" --output=text`,
-        { encoding: 'utf8', maxBuffer: 1024 * 1024 },
-      );
+      let allEvents: any[] = [];
+      let nextToken: string | undefined;
+      let pageCount = 0;
 
-      console.log(logOutput);
+      do {
+        pageCount++;
+        console.log(`📄 Fetching page ${pageCount}...`);
+
+        const params: any = {
+          logGroupName: logGroup,
+          logStreamName: logStream,
+          startFromHead: true,
+          limit: 10000, // Maximum allowed per request
+        };
+
+        if (nextToken) {
+          params.nextToken = nextToken;
+        }
+
+        const response = await cloudWatchLogs.send(new GetLogEventsCommand(params));
+
+        if (response.events && response.events.length > 0) {
+          allEvents = allEvents.concat(response.events);
+          console.log(`📄 Page ${pageCount}: ${response.events.length} events (total: ${allEvents.length})`);
+        }
+
+        nextToken = response.nextForwardToken;
+
+        // Prevent infinite loops - if we get the same token back, we're done
+        if (nextToken === response.nextBackwardToken) {
+          nextToken = undefined;
+        }
+
+        // Safety limit to prevent runaway pagination
+        if (pageCount > 100) {
+          console.log(`⚠️  Reached page limit (100), stopping pagination`);
+          break;
+        }
+      } while (nextToken);
+
+      console.log(`\n📊 Total log events retrieved: ${allEvents.length}`);
+      console.log(`📊 Total pages fetched: ${pageCount}`);
+      console.log(`\n=== FULL LOG CONTENT ===\n`);
+
+      // Print all log messages
+      for (const event of allEvents) {
+        console.log(event.message);
+      }
     } catch (error) {
-      console.log('❌ Could not fetch log content:', error.message);
-      console.log(`\nTo view logs manually:`);
-      console.log(
-        `aws logs get-log-events --region=${REGION} --profile=${E2E_PROFILE_NAME} --log-group-name="${logGroup}" --log-stream-name="${logStream}"`,
-      );
+      console.log('❌ Could not fetch log content via SDK:', error.message);
+      console.log(`\nFalling back to AWS CLI...`);
+
+      // Fallback to CLI approach but get more logs
+      const { execSync } = require('child_process');
+      try {
+        const logOutput = execSync(
+          `aws logs get-log-events --region=${REGION} --profile=${E2E_PROFILE_NAME} --log-group-name="${logGroup}" --log-stream-name="${logStream}" --limit=10000 --query="events[*].message" --output=text`,
+          { encoding: 'utf8', maxBuffer: 10 * 1024 * 1024 }, // 10MB buffer
+        );
+        console.log(logOutput);
+      } catch (cliError) {
+        console.log('❌ CLI fallback also failed:', cliError.message);
+        console.log(`\nTo view logs manually:`);
+        console.log(
+          `aws logs get-log-events --region=${REGION} --profile=${E2E_PROFILE_NAME} --log-group-name="${logGroup}" --log-stream-name="${logStream}"`,
+        );
+      }
     }
   } catch (error) {
     console.error('❌ Error fetching build logs:', error.message);

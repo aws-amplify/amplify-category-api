@@ -6,7 +6,6 @@ phases:
     commands:
       - yarn run production-build
       - yarn build-tests
-
 artifacts:
   files:
     - 'shared-scripts.sh'

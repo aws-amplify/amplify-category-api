@@ -1,53 +1,80 @@
 # Q Development TODO
 
+## Executive Summary
+
+**AWS SDK v2 → v3 Migration Status**: 60% complete, 5 packages remaining
+
+**Completed**: 2 packages (amplify-util-mock, amplify-dynamodb-simulator)
+**In Progress**: 2 packages (amplify-e2e-tests, amplify-e2e-core) - E2E tests failing
+**Remaining**: 3 packages requiring ~80-100 lines of migration across 30+ files
+
+**Critical Blocker**: E2E tests must pass before any package can be marked complete
+**Estimated Completion**: 5-8 days (primarily E2E test iteration time, not coding complexity)
+
 ## Current Sprint
 
 **Purpose**: Context management and logical break-points for user feedback only.
 Not traditional sprint planning - items here represent work actively being delivered.
 
-**Status: Phase 2 Complete - E2E Tests PASSED ✅**
+**Status: E2E Tests Failing - Migration In Progress ❌**
 
+- ✅ amplify-util-mock migration completed and verified
 - ✅ amplify-dynamodb-simulator migration completed and verified
-- ✅ All repository tests passing (33/33 packages successful)
-- ✅ All local tests passing after parent branch merge
-- ✅ Fixed api_3.test.ts AppSync error message format (committed in f80900b24)
-- ✅ Parent branch merge completed successfully
-- ✅ **E2E tests completed successfully (82/82 passed)**
-- ✅ **Batch ID: amplify-category-api-e2e-workflow:bd0e4650-d0c9-413d-9aac-267994713556**
-- 🚀 Ready to continue with amplify-e2e-tests migration
+- ✅ All local repository tests passing
+- [ ] **amplify-e2e-tests migration** - IN PROGRESS (E2E TESTS FAILING)
+  - Migration work partially done but E2E tests are not passing
+  - **CANNOT mark complete until E2E tests pass**
+- [ ] **amplify-e2e-core migration** - IN PROGRESS (E2E TESTS FAILING)
+  - Migration work partially done but E2E tests are not passing
+  - **CANNOT mark complete until E2E tests pass**
 
 ## Backlog
 
 **Purpose**: All work not currently being delivered, regardless of priority or timeline.
 
-- [x] **Phase 1: Core Utilities Migration** (amplify-util-mock) - **COMPLETED**
+**Packages Still Requiring Migration:**
 
-  - [x] Migrate DynamoDB utilities (highest complexity)
-  - [x] Update test patterns and mocking infrastructure
-  - [x] Establish v3 patterns for other packages
+- [ ] **amplify-e2e-tests migration** - IN PROGRESS (E2E TESTS FAILING)
 
-- [x] **Phase 2: Supporting Packages** - **COMPLETED**
+  - Migration work partially done but E2E tests are not passing
+  - **CANNOT mark complete until E2E tests pass**
+  - **Estimated timeline**: 1-2 days (debugging + 2-3 E2E test iterations)
 
-  - [x] Migrate amplify-dynamodb-simulator - **COMPLETED**
-  - [ ] Migrate amplify-e2e-tests - **NEXT**
-  - [ ] Leverage amplify-e2e-core patterns
+- [ ] **amplify-e2e-core migration** - IN PROGRESS (E2E TESTS FAILING)
 
-- [ ] **Phase 3: SSM Migration** (amplify-category-api) - **DEFERRED**
+  - Migration work partially done but E2E tests are not passing
+  - **CANNOT mark complete until E2E tests pass**
+  - **Estimated timeline**: 1-2 days (debugging + 2-3 E2E test iterations)
 
-  - [ ] Migrate ssmClient.ts from v2 to v3 (AFTER CLI updates)
-  - [ ] Remove aws-sdk v2 dependency from package.json
-  - [ ] Add @aws-sdk/client-ssm dependency
+- [ ] **amplify-category-api** - HIGH PRIORITY
 
-- [ ] **Phase 4: Final Cleanup**
+  - **LOC to migrate**: 3 import lines + ~10-15 client usage lines
+  - **Complexity**: Medium (SSM client patterns, .promise() removal, type updates)
+  - **Files**: ssmClient.ts, appSync-rds-walkthrough.ts, ssmClient.test.ts
+  - **Estimated timeline**: 0.5 days coding + 1 day E2E validation
 
-  - [ ] Remove aws-sdk v2 from root package.json resolutions
-  - [ ] Final validation and testing
+- [ ] **graphql-transformers-e2e-tests** - HIGH PRIORITY
 
-- [ ] **Investigate transient STS role assumption issue in e2e tests**
-  - FunctionTransformerTestsV2 failing with "NoSuchBucket" error
-  - Issue appears related to test infra not properly handling STS role assumption
-  - Transient because test pool includes parent account which can cause conflicts
-  - Need to investigate proper role assumption patterns in test infrastructure
+  - **LOC to migrate**: 25+ import lines + extensive client usage in tests
+  - **Complexity**: High (multiple AWS services: Cognito, S3, IAM, Lambda, CloudFormation)
+  - **Files**: 7 utility files + 20+ test files
+  - **Services**: CognitoIdentity, CognitoIdentityServiceProvider, S3, IAM, Lambda, CloudFormation
+  - **Estimated timeline**: 2-3 days coding + 2-3 days E2E validation
+
+- [ ] **graphql-relational-schema-transformer** - MEDIUM PRIORITY
+  - **LOC to migrate**: 1 import line + ~5-8 RDS Data API client usage lines
+  - **Complexity**: Low (single service: RDS Data API)
+  - **Files**: AuroraDataAPIClient.ts
+  - **Estimated timeline**: 0.25 days coding + 0.5 days E2E validation
+
+**Total Migration Scope**: ~32 import lines + ~50-75 client usage lines across 30+ files
+**Total Estimated Timeline**: 5-8 days (factoring E2E test iterations)
+
+**Post-Migration Tasks:**
+
+- [ ] Remove aws-sdk v2 from root package.json resolutions
+- [ ] Upgrade AWS SDK v3 versions from pinned ~3.600.0 to latest
+- [ ] Final E2E validation
 
 ## Completed
 
@@ -56,31 +83,25 @@ Not traditional sprint planning - items here represent work actively being deliv
 - [x] Initial codebase analysis (2025-09-12)
 - [x] **Completed comprehensive AWS SDK inventory** (2025-09-12)
 - [x] **Completed DynamoDB utilities migration in amplify-util-mock** (2025-01-27)
-  - Migrated all test files from aws-sdk-mock to aws-sdk-client-mock
-  - Updated imports from aws-sdk to @aws-sdk/client-dynamodb
-  - Fixed type definitions to use proper SDK v3 enums
-  - All DynamoDB tests passing with 86%+ coverage
-- [x] **Completed amplify-dynamodb-simulator migration** (2025-09-23)
-  - Updated package.json dependency from aws-sdk to @aws-sdk/client-dynamodb
-  - Updated index.js to use DynamoDB client from @aws-sdk/client-dynamodb
-  - Updated credentials format for v3 compatibility
-  - Updated tests to remove .promise() calls and handle v3 response format
-  - Resolved Node.js compatibility issues with Jest and AWS SDK v3
-  - **All tests passing (4/4) - Migration verified successful**
-  - **E2E tests passed (82/82) - Production ready**
+- [x] **Completed amplify-dynamodb-simulator migration** (2025-09-26)
 
 ## Context Notes
 
-### Important: SSM Deferred
+### Critical Rule
 
-- **SSM migration conflicts with CLI package updates**
-- **SSM will be handled LAST** after CLI compatibility is resolved
-- Focus shifted to amplify-util-mock DynamoDB utilities
+**CANNOT mark any package migration complete until E2E tests are passing**
 
-### Remaining Migration Work
+### Current Status Summary
 
-1. **amplify-e2e-tests**: Simple v2 dependency removal - **NEXT**
-2. **amplify-category-api**: SSM migration (DEFERRED until CLI updates complete)
+- **2 packages have partial migrations** (amplify-e2e-tests, amplify-e2e-core) - IN PROGRESS
+- **3 packages still need full migration** (amplify-category-api, graphql-transformers-e2e-tests, graphql-relational-schema-transformer)
+- **E2E tests are currently failing** - this blocks completion of any migration work
+
+### Remaining Migration Scope
+
+- **amplify-category-api**: 3 files (SSM client usage)
+- **graphql-transformers-e2e-tests**: 30+ files (extensive AWS SDK usage across test infrastructure)
+- **graphql-relational-schema-transformer**: 1 file (Aurora Data API client)
 
 ### Technical Considerations
 
@@ -92,4 +113,4 @@ Not traditional sprint planning - items here represent work actively being deliv
 
 ### Context
 
-As-needed, use the `.q/` folder for larger chunks of _task sepcific_ context. This also means that when starting a task, check for related context in `.q/`. Look for filenames, check READMEs, or `grep` to determine what is related.
+As-needed, use the `.q/` folder for larger chunks of _task specific_ context. This also means that when starting a task, check for related context in `.q/`. Look for filenames, check READMEs, or `grep` to determine what is related.

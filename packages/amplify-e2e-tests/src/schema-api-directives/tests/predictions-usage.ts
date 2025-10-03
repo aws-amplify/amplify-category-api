@@ -2,7 +2,7 @@
 // This test will faile due to a possible AppSync bug, see details below the test code
 import path from 'path';
 import fs from 'fs-extra';
-import aws from 'aws-sdk';
+import { S3Client, PutObjectCommand, GetBucketLocationCommand } from '@aws-sdk/client-s3';
 import gql from 'graphql-tag';
 import { addAuthWithDefault, addS3Storage, getBackendAmplifyMeta, addApi, amplifyPush } from 'amplify-category-api-e2e-core';
 
@@ -40,14 +40,23 @@ export async function runTest(projectDir: string, testModule: any) {
   }
 }
 
-async function uploadImageFile(projectDir: string) {
-  const imageFilePath = path.join(__dirname, 'predictions-usage-image.jpg');
-  const s3Client = new aws.S3({
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    sessionToken: process.env.AWS_SESSION_TOKEN,
+async function getBucketRegion(bucketName: string): Promise<string> {
+  const s3Client = new S3Client({
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      sessionToken: process.env.AWS_SESSION_TOKEN,
+    },
     region: process.env.AWS_DEFAULT_REGION,
   });
+
+  const location = await s3Client.send(new GetBucketLocationCommand({ Bucket: bucketName }));
+  const region = location.LocationConstraint ?? 'us-east-1';
+  return region;
+}
+
+async function uploadImageFile(projectDir: string) {
+  const imageFilePath = path.join(__dirname, 'predictions-usage-image.jpg');
 
   const amplifyMeta = getBackendAmplifyMeta(projectDir);
   const storageResourceName = Object.keys(amplifyMeta.storage).find((key: any) => {
@@ -55,21 +64,26 @@ async function uploadImageFile(projectDir: string) {
   }) as any;
 
   const bucketName = amplifyMeta.storage[storageResourceName].output.BucketName;
-  try {
-    const fileStream = fs.createReadStream(imageFilePath);
-    const uploadParams = {
-      Bucket: bucketName,
-      Key: imageKey,
-      Body: fileStream,
-      ContentType: 'image/jpeg',
-      ACL: 'public-read',
-    };
-    await s3Client.upload(uploadParams).promise();
-  } catch (err) {
-    if (err.code !== 'AccessControlListNotSupported') {
-      throw err;
-    }
-  }
+
+  // Get the bucket's actual region and create a regionalized S3 client
+  const bucketRegion = await getBucketRegion(bucketName);
+  const s3Client = new S3Client({
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      sessionToken: process.env.AWS_SESSION_TOKEN,
+    },
+    region: bucketRegion,
+  });
+
+  const fileStream = fs.createReadStream(imageFilePath);
+  const uploadParams = {
+    Bucket: bucketName,
+    Key: imageKey,
+    Body: fileStream,
+    ContentType: 'image/jpeg',
+  };
+  await s3Client.send(new PutObjectCommand(uploadParams));
 }
 
 // schema

@@ -8,7 +8,12 @@ import {
   getProjectMeta,
   getTeamProviderInfo,
 } from 'amplify-category-api-e2e-core';
-import * as aws from 'aws-sdk';
+import {
+  CognitoIdentityProviderClient,
+  CreateUserPoolClientCommand,
+  DeleteUserPoolClientCommand,
+} from '@aws-sdk/client-cognito-identity-provider';
+import { fromIni } from '@aws-sdk/credential-providers';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
@@ -289,12 +294,14 @@ const addAppClient = async (
 ) => {
   const projectDetails = getProjectMeta(projectRoot);
   const authDetails = getAuthProjectDetails(projectRoot);
-  const creds = new aws.SharedIniFileCredentials({ profile: profileName });
-  aws.config.credentials = creds;
+  const credentials = fromIni({ profile: profileName });
 
-  const cognitoClient = new aws.CognitoIdentityServiceProvider({ region: projectDetails.providers.awscloudformation.Region });
-  const response = await cognitoClient
-    .createUserPoolClient({
+  const cognitoClient = new CognitoIdentityProviderClient({
+    region: projectDetails.providers.awscloudformation.Region,
+    credentials,
+  });
+  const response = await cognitoClient.send(
+    new CreateUserPoolClientCommand({
       ClientName: clientName,
       UserPoolId: authDetails.meta.UserPoolId,
       GenerateSecret: generateSecret,
@@ -304,8 +311,8 @@ const addAppClient = async (
       AllowedOAuthScopes: settings.allowedScopes,
       SupportedIdentityProviders: settings.supportedIdentityProviders,
       AllowedOAuthFlowsUserPoolClient: settings.allowedOAuthFlowsUserPoolClient,
-    })
-    .promise();
+    }),
+  );
   return { appClientId: response.UserPoolClient.ClientId, appclientSecret: response.UserPoolClient.ClientSecret };
 };
 
@@ -325,11 +332,13 @@ export const addAppClientWithoutSecret = async (
 export const deleteAppClient = async (profileName: string, projectRoot: string, clientId: string) => {
   const authDetails = getAuthProjectDetails(projectRoot);
   const projectDetails = getProjectMeta(projectRoot);
-  const creds = new aws.SharedIniFileCredentials({ profile: profileName });
-  aws.config.credentials = creds;
+  const credentials = fromIni({ profile: profileName });
 
-  const cognitoClient = new aws.CognitoIdentityServiceProvider({ region: projectDetails.providers.awscloudformation.Region });
-  await cognitoClient.deleteUserPoolClient({ ClientId: clientId, UserPoolId: authDetails.meta.UserPoolId }).promise();
+  const cognitoClient = new CognitoIdentityProviderClient({
+    region: projectDetails.providers.awscloudformation.Region,
+    credentials,
+  });
+  await cognitoClient.send(new DeleteUserPoolClientCommand({ ClientId: clientId, UserPoolId: authDetails.meta.UserPoolId }));
 };
 
 /**
