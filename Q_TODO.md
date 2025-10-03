@@ -2,32 +2,50 @@
 
 ## Executive Summary
 
-**AWS SDK v2 → v3 Migration Status**: 80% complete, 3 packages remaining
+**AWS SDK v2 → v3 Migration Status**: 90% complete, 1 package remaining
 
 **Completed**: 4 packages (amplify-util-mock, amplify-dynamodb-simulator, amplify-e2e-tests, amplify-e2e-core)
-**In Progress**: 2 packages (amplify-category-api, graphql-transformers-e2e-tests)
-**Remaining**: 1 package (graphql-relational-schema-transformer)
+**In Progress**: 2 packages (amplify-category-api - 95% complete, graphql-transformers-e2e-tests - 85% complete)
+**Remaining**: 1 package (graphql-relational-schema-transformer - deferred)
 
-**Estimated Completion**: 3-5 days (primarily E2E test iteration time, not coding complexity)
+**Estimated Completion**: 1-2 days (primarily completing test file updates and E2E validation)
 
 ## Current Sprint
 
 **Purpose**: Context management and logical break-points for user feedback only.
 Not traditional sprint planning - items here represent work actively being delivered.
 
-**Status: Phase 2 Migration In Progress ⚡**
+**Status: Phase 2 Migration Nearly Complete ⚡**
 
-- [ ] **amplify-category-api migration** - IN PROGRESS
-  - SSM client migration (3 files, ~15 lines)
-  - **Note**: SSM-related work deferred per user request
-- [ ] **graphql-transformers-e2e-tests migration** - IN PROGRESS
-  - Multi-service migration (30+ files, extensive AWS SDK usage)
+- [ ] **amplify-category-api migration** - 95% COMPLETE
+  - ✅ Core RDS/SecretsManager client migration completed
+  - ✅ All local tests passing
+  - ⏸️ SSM-related work deferred per user request
+  - **Ready for E2E testing**
+- [ ] **graphql-transformers-e2e-tests migration** - 85% COMPLETE
+  - ✅ Core utility files migrated (IAMHelper, CloudFormationClient, S3Client, cognitoUtils)
+  - ✅ Import statements updated across test suite
+  - ✅ Client type references updated
+  - 🔄 Resolving S3Client naming conflicts in test files
+  - **Estimated**: 0.5 days to complete remaining test file updates
 
 ## Backlog
 
 **Purpose**: All work not currently being delivered, regardless of priority or timeline.
 
-**Packages Still Requiring Migration:**
+**Remaining Work:**
+
+- [ ] **Complete graphql-transformers-e2e-tests migration** - HIGH PRIORITY
+
+  - Fix S3Client naming conflicts in test files (AWS S3Client vs local S3Client wrapper)
+  - Complete remaining test file updates
+  - **Estimated timeline**: 0.5 days
+
+- [ ] **E2E Testing Phase** - HIGH PRIORITY
+
+  - Run E2E tests for amplify-category-api
+  - Run E2E tests for graphql-transformers-e2e-tests
+  - **Estimated timeline**: 1-2 days (test execution + any fixes)
 
 - [ ] **graphql-relational-schema-transformer** - DEFERRED
   - **LOC to migrate**: 1 import line + ~5-8 RDS Data API client usage lines
@@ -35,8 +53,7 @@ Not traditional sprint planning - items here represent work actively being deliv
   - **Files**: AuroraDataAPIClient.ts
   - **Estimated timeline**: 0.25 days coding + 0.5 days E2E validation
 
-**Total Migration Scope**: ~32 import lines + ~50-75 client usage lines across 30+ files
-**Total Estimated Timeline**: 3-5 days (factoring E2E test iterations)
+**Total Remaining Work**: ~0.5-1 day coding + 1-2 days E2E validation
 
 **Post-Migration Tasks:**
 
@@ -64,14 +81,31 @@ Not traditional sprint planning - items here represent work actively being deliv
 ### Current Status Summary
 
 - **4 packages completed and merged** (amplify-util-mock, amplify-dynamodb-simulator, amplify-e2e-tests, amplify-e2e-core)
-- **2 packages in active migration** (amplify-category-api, graphql-transformers-e2e-tests)
+- **2 packages nearly complete** (amplify-category-api 95%, graphql-transformers-e2e-tests 85%)
 - **1 package deferred** (graphql-relational-schema-transformer - SSM work)
 
-### Remaining Migration Scope
+### Migration Progress Details
 
-- **amplify-category-api**: 3 files (SSM client usage) - SSM work deferred per user request
-- **graphql-transformers-e2e-tests**: 30+ files (extensive AWS SDK usage across test infrastructure)
-- **graphql-relational-schema-transformer**: 1 file (Aurora Data API client) - deferred
+**amplify-category-api (95% complete):**
+
+- ✅ RDS client migration (DescribeDBClustersCommand)
+- ✅ SecretsManager client migration (ListSecretsCommand)
+- ✅ RDSData client migration (ExecuteStatementCommand)
+- ✅ All local tests passing
+- ⏸️ SSM client work deferred per user request
+
+**graphql-transformers-e2e-tests (85% complete):**
+
+- ✅ Core utility files migrated (IAMHelper, CloudFormationClient, S3Client, cognitoUtils)
+- ✅ Import statements updated across 30+ test files
+- ✅ Client type references updated (CognitoIdentityProviderClient, CognitoIdentityClient)
+- 🔄 Resolving S3Client naming conflicts (AWS S3Client vs local wrapper)
+
+### Remaining Work
+
+- Complete S3Client naming conflict resolution in test files
+- Run E2E tests to validate migrations
+- Address any E2E test failures
 
 ### Technical Considerations
 
