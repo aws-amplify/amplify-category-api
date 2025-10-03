@@ -12,7 +12,9 @@ import chalk from 'chalk';
 import { DataApiParams } from 'graphql-relational-schema-transformer';
 import ora from 'ora';
 import { rootStackFileName } from '@aws-amplify/amplify-provider-awscloudformation';
-import * as aws from 'aws-sdk';
+import { RDSClient, DescribeDBClustersCommand } from '@aws-sdk/client-rds';
+import { SecretsManagerClient, ListSecretsCommand } from '@aws-sdk/client-secrets-manager';
+import { RDSDataClient, ExecuteStatementCommand } from '@aws-sdk/client-rds-data';
 
 const spinner = ora('');
 const category = 'api';
@@ -102,8 +104,9 @@ async function getRdsClusterResourceIdFromArn(arn: string | undefined, AWSConfig
     return;
   }
 
-  const RDS = new aws.RDS(AWSConfig);
-  const describeDBClustersResult = await RDS.describeDBClusters().promise();
+  const rds = new RDSClient(AWSConfig);
+  const command = new DescribeDBClustersCommand({});
+  const describeDBClustersResult = await rds.send(command);
   const rawClusters = describeDBClustersResult.DBClusters;
   const identifiedCluster = rawClusters.find((cluster) => cluster.DBClusterArn === arn);
   return identifiedCluster.DBClusterIdentifier;
@@ -114,9 +117,10 @@ async function getRdsClusterResourceIdFromArn(arn: string | undefined, AWSConfig
  * @param {*} inputs
  */
 async function selectCluster(context: $TSContext, inputs, AWSConfig) {
-  const RDS = new aws.RDS(AWSConfig);
+  const rds = new RDSClient(AWSConfig);
 
-  const describeDBClustersResult = await RDS.describeDBClusters().promise();
+  const command = new DescribeDBClustersCommand({});
+  const describeDBClustersResult = await rds.send(command);
   const rawClusters = describeDBClustersResult.DBClusters;
 
   const clusters = new Map();
@@ -163,20 +167,23 @@ async function selectCluster(context: $TSContext, inputs, AWSConfig) {
  * @param {*} clusterResourceId
  */
 async function getSecretStoreArn(context: $TSContext, inputs, clusterResourceId, AWSConfig) {
-  const SecretsManager = new aws.SecretsManager(AWSConfig);
-  const NextToken = 'NextToken';
+  const secretsManager = new SecretsManagerClient(AWSConfig);
   let rawSecrets = [];
   const params = {
     MaxResults: 20,
   };
 
-  const listSecretsResult = await SecretsManager.listSecrets(params).promise();
+  const command = new ListSecretsCommand(params);
+  const listSecretsResult = await secretsManager.send(command);
 
   rawSecrets = listSecretsResult.SecretList;
   let token = listSecretsResult.NextToken;
   while (token) {
-    params[NextToken] = token;
-    const tempSecretsResult = await SecretsManager.listSecrets(params).promise();
+    const nextCommand = new ListSecretsCommand({
+      ...params,
+      NextToken: token,
+    });
+    const tempSecretsResult = await secretsManager.send(nextCommand);
     rawSecrets = [...rawSecrets, ...tempSecretsResult.SecretList];
     token = tempSecretsResult.NextToken;
   }
@@ -222,7 +229,7 @@ async function getSecretStoreArn(context: $TSContext, inputs, clusterResourceId,
  */
 async function selectDatabase(context: $TSContext, inputs, clusterArn, secretArn, AWSConfig) {
   // Database Name Question
-  const DataApi = new aws.RDSDataService(AWSConfig);
+  const dataApi = new RDSDataClient(AWSConfig);
   const params = new DataApiParams();
   const databaseList = [];
   params.secretArn = secretArn;
@@ -232,7 +239,8 @@ async function selectDatabase(context: $TSContext, inputs, clusterArn, secretArn
   spinner.start('Fetching Aurora Serverless cluster...');
 
   try {
-    const dataApiResult = await DataApi.executeStatement(params).promise();
+    const command = new ExecuteStatementCommand(params);
+    const dataApiResult = await dataApi.send(command);
     const excludedDatabases = ['information_schema', 'performance_schema', 'mysql', 'sys'];
 
     databaseList.push(...dataApiResult.records.map((record) => record[0].stringValue).filter((name) => !excludedDatabases.includes(name)));
@@ -241,7 +249,7 @@ async function selectDatabase(context: $TSContext, inputs, clusterArn, secretArn
   } catch (err) {
     spinner.fail(err.message);
 
-    if (err.code === 'BadRequestException' && /Access denied for user/.test(err.message)) {
+    if (err.name === 'BadRequestException' && /Access denied for user/.test(err.message)) {
       const msg =
         `Ensure that '${secretArn}' contains your database credentials. ` +
         'Please note that Aurora Serverless does not support IAM database authentication.';
