@@ -1,28 +1,22 @@
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable func-style */
-import { CloudFormation } from 'aws-sdk';
-import { DescribeStacksOutput, StackStatus } from 'aws-sdk/clients/cloudformation';
+import {
+  CloudFormationClient as CFClient,
+  CreateStackCommand,
+  UpdateStackCommand,
+  DeleteStackCommand,
+  DescribeStacksCommand,
+  type DescribeStacksOutput,
+  type StackStatus,
+  type Stack,
+} from '@aws-sdk/client-cloudformation';
 import { ResourceConstants } from 'graphql-transformer-common';
 
-async function promisify<I, O>(fun: (arg: I, cb: (e: Error, d: O) => void) => void, args: I, that: any): Promise<O> {
-  return new Promise<O>((resolve, reject) => {
-    fun.apply(that, [
-      args,
-      (err: Error, data: O) => {
-        if (err) {
-          return reject(err);
-        }
-        resolve(data);
-      },
-    ]);
-  });
-}
-
 export class CloudFormationClient {
-  client: CloudFormation;
+  client: CFClient;
 
   constructor(public region: string) {
-    this.client = new CloudFormation({ apiVersion: '2010-05-15', region: this.region });
+    this.client = new CFClient({ region: this.region });
   }
 
   async updateStack(template: any, name: string, defParams: any = {}, addAppSyncApiName = true) {
@@ -48,39 +42,33 @@ export class CloudFormationClient {
 
     const templateURL = `https://s3.amazonaws.com/${defParams.S3DeploymentBucket}/${defParams.S3DeploymentRootKey}/rootStack.json`;
 
-    return promisify<CloudFormation.Types.CreateStackInput, CloudFormation.Types.CreateStackOutput>(
-      isUpdate ? this.client.updateStack : this.client.createStack,
-      {
-        StackName: name,
-        Capabilities: ['CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
-        Parameters: params,
-        TemplateURL: templateURL,
-      },
-      this.client,
-    );
+    const command = isUpdate
+      ? new UpdateStackCommand({
+          StackName: name,
+          Capabilities: ['CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
+          Parameters: params,
+          TemplateURL: templateURL,
+        })
+      : new CreateStackCommand({
+          StackName: name,
+          Capabilities: ['CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
+          Parameters: params,
+          TemplateURL: templateURL,
+        });
+
+    return this.client.send(command);
   }
 
   async deleteStack(name: string) {
-    return promisify<CloudFormation.Types.DeleteStackInput, {}>(this.client.deleteStack, { StackName: name }, this.client);
+    return this.client.send(new DeleteStackCommand({ StackName: name }));
   }
 
-  async describeStack(name: string): Promise<CloudFormation.Stack> {
-    return new Promise<CloudFormation.Stack>((resolve, reject) => {
-      this.client.describeStacks(
-        {
-          StackName: name,
-        },
-        (err: Error, data: DescribeStacksOutput) => {
-          if (err) {
-            return reject(err);
-          }
-          if (data.Stacks.length !== 1) {
-            return reject(new Error(`No stack named: ${name}`));
-          }
-          resolve(data.Stacks[0]);
-        },
-      );
-    });
+  async describeStack(name: string): Promise<Stack> {
+    const result = await this.client.send(new DescribeStacksCommand({ StackName: name }));
+    if (!result.Stacks || result.Stacks.length !== 1) {
+      throw new Error(`No stack named: ${name}`);
+    }
+    return result.Stacks[0];
   }
 
   /**
@@ -109,7 +97,7 @@ export class CloudFormationClient {
     ],
     maxPolls = 1000,
     pollInterval = 20,
-  ): Promise<CloudFormation.Stack> {
+  ): Promise<Stack> {
     let stack = await this.describeStack(name);
 
     for (let i = 0; i < maxPolls; i++) {
