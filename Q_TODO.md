@@ -34,6 +34,7 @@ Not traditional sprint planning - items here represent work actively being deliv
 **Packages Still Requiring Migration:**
 
 - [ ] **graphql-transformers-e2e-tests** - HIGH PRIORITY
+
   - **LOC to migrate**: 25+ import lines + extensive client usage in tests
   - **Complexity**: High (multiple AWS services: Cognito, S3, IAM, Lambda, CloudFormation)
   - **Files**: 7 utility files + 20+ test files

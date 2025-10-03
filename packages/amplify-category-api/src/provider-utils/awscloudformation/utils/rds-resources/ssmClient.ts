@@ -36,7 +36,7 @@ export class SSMClient {
     if (!secretNames || secretNames?.length === 0) {
       return [];
     }
-    
+
     const result = await this.ssmClient.send(
       new GetParametersCommand({
         Names: secretNames,
@@ -68,7 +68,7 @@ export class SSMClient {
           NextToken: nextToken,
         }),
       );
-      
+
       secretNames.push(...result?.Parameters?.map((param) => param?.Name));
       nextToken = result?.NextToken;
     } while (nextToken);
