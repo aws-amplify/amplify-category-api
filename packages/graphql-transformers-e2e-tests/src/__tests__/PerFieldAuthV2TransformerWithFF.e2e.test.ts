@@ -5,7 +5,7 @@ import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { type Output } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient as CognitoClient } from '@aws-sdk/client-cognito-identity-provider';
-import { S3Client as S3, CreateBucketCommand } from '@aws-sdk/client-s3';
+import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import { default as moment } from 'moment';
 import { GraphQLClient } from '../GraphQLClient';
 import { S3Client } from '../S3Client';
@@ -70,7 +70,7 @@ const INSTRUCTOR_GROUP_NAME = 'Instructor';
 
 const cognitoClient = new CognitoClient({ region: region });
 const customS3Client = new S3Client(region);
-const awsS3Client = new S3({ region: region });
+const awsS3Client = new AWSS3Client({ region: region });
 
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {
