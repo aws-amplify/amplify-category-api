@@ -26,7 +26,7 @@ import { IAMHelper } from '../IAMHelper';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
 import { Auth } from 'aws-amplify';
-import { default as STS } from 'aws-sdk/clients/sts';
+import { STSClient, GetCallerIdentityCommand, AssumeRoleCommand } from '@aws-sdk/client-sts';
 
 const region = resolveTestRegion();
 
@@ -40,7 +40,7 @@ describe('@model with @auth - iam access', () => {
   const cognitoIdentityClient = new CognitoIdentityClient({ apiVersion: '2014-06-30', region: region });
   const awsS3Client = new AWSS3Client({ region: region });
   const iamHelper = new IAMHelper(region);
-  const sts = new STS();
+  const sts = new STSClient({ region });
 
   // stack info
   const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
@@ -224,13 +224,13 @@ describe('@model with @auth - iam access', () => {
     await Auth.signOut();
     const unauthCreds = await Auth.currentCredentials();
     const basicRoleCreds = (
-      await sts
-        .assumeRole({
+      await sts.send(
+        new AssumeRoleCommand({
           RoleArn: basicRole.Arn,
           RoleSessionName: BUILD_TIMESTAMP,
           DurationSeconds: 3600,
-        })
-        .promise()
+        }),
+      )
     ).Credentials;
 
     GRAPHQL_CLIENT_API_KEY_WITH_IAM_ACCESS = new AWSAppSyncClient({
