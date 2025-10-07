@@ -11687,7 +11687,7 @@ aws-sdk-client-mock@^4.1.0:
     sinon "^18.0.1"
     tslib "^2.1.0"
 
-aws-sdk@2.518.0, aws-sdk@^2.1113.0, aws-sdk@^2.1141.0, aws-sdk@^2.1464.0:
+aws-sdk@2.518.0, aws-sdk@^2.1141.0, aws-sdk@^2.1464.0:
   version "2.1692.0"
   resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1692.0.tgz#9dac5f7bfcc5ab45825cc8591b12753aa7d2902c"
   integrity sha512-x511uiJ/57FIsbgUe5csJ13k3uzu25uWQE+XqfBis/sB0SFoiElJWXRkgEAUh0U6n40eT3ay5Ue4oPkRMu1LYw==
