@@ -5,8 +5,8 @@ import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import { type Output } from '@aws-sdk/client-cloudformation';
-import { default as S3, CreateBucketRequest } from 'aws-sdk/clients/s3';
 import { CognitoIdentityProviderClient as CognitoClient } from '@aws-sdk/client-cognito-identity-provider';
+import { S3Client as AWSS3Client, CreateBucketCommand, DeleteBucketCommand } from '@aws-sdk/client-s3';
 import { default as moment } from 'moment';
 import { GraphQLClient } from '../GraphQLClient';
 import { S3Client } from '../S3Client';
@@ -92,21 +92,19 @@ function outputValueSelector(key: string) {
 }
 
 async function createBucket(name: string) {
-  return new Promise((res, rej) => {
-    const params: CreateBucketRequest = {
+  return awsS3Client.send(
+    new CreateBucketCommand({
       Bucket: name,
-    };
-    awsS3Client.createBucket(params, (err, data) => (err ? rej(err) : res(data)));
-  });
+    }),
+  );
 }
 
 async function deleteBucket(name: string) {
-  return new Promise((res, rej) => {
-    const params: CreateBucketRequest = {
+  return awsS3Client.send(
+    new DeleteBucketCommand({
       Bucket: name,
-    };
-    awsS3Client.deleteBucket(params, (err, data) => (err ? rej(err) : res(data)));
-  });
+    }),
+  );
 }
 
 beforeAll(async () => {

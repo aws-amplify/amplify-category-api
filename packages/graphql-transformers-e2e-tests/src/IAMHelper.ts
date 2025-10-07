@@ -18,9 +18,10 @@ export class IAMHelper {
   client: IAMClient;
   sts = new STSClient({ region: REGION });
 
-  constructor(region: string = REGION) {
+  constructor(region: string = REGION, credentials?: any) {
     this.client = new IAMClient({
       region,
+      credentials,
     });
   }
 

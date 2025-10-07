@@ -6,8 +6,8 @@ import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { type Output } from '@aws-sdk/client-cloudformation';
-import { default as S3, CreateBucketRequest } from 'aws-sdk/clients/s3';
 import { CognitoIdentityProviderClient as CognitoClient } from '@aws-sdk/client-cognito-identity-provider';
+import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { AWS } from '@aws-amplify/core';
 import { Auth } from 'aws-amplify';
@@ -114,12 +114,11 @@ function outputValueSelector(key: string) {
 }
 
 async function createBucket(name: string) {
-  return new Promise((res, rej) => {
-    const params: CreateBucketRequest = {
+  return awsS3Client.send(
+    new CreateBucketCommand({
       Bucket: name,
-    };
-    awsS3Client.createBucket(params, (err, data) => (err ? rej(err) : res(data)));
-  });
+    }),
+  );
 }
 
 beforeAll(async () => {

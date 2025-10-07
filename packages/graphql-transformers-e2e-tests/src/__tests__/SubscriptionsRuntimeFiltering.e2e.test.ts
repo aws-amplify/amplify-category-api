@@ -7,7 +7,7 @@ import { API, Auth } from 'aws-amplify';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
 import { CognitoIdentityProviderClient as CognitoClient } from '@aws-sdk/client-cognito-identity-provider';
-import { S3Client as AWSS3Client } from '@aws-sdk/client-s3';
+import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import { type Output } from '@aws-sdk/client-cloudformation';
 import gql from 'graphql-tag';
 import { ResourceConstants } from 'graphql-transformer-common';

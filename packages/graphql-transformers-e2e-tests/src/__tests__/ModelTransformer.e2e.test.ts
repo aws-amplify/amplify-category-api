@@ -1,7 +1,7 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { type Output } from '@aws-sdk/client-cloudformation';
-import { S3Client as AWSS3Client } from '@aws-sdk/client-s3';
+import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { default as moment } from 'moment';
 import { CloudFormationClient } from '../CloudFormationClient';
@@ -95,11 +95,11 @@ beforeAll(async () => {
   });
 
   try {
-    await awsS3Client
-      .createBucket({
+    await awsS3Client.send(
+      new CreateBucketCommand({
         Bucket: BUCKET_NAME,
-      })
-      .promise();
+      }),
+    );
   } catch (e) {
     console.error(`Failed to create S3 bucket: ${e}`);
   }

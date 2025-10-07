@@ -6,7 +6,7 @@ import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { type Output } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient as CognitoClient } from '@aws-sdk/client-cognito-identity-provider';
-import { S3Client as AWSS3Client } from '@aws-sdk/client-s3';
+import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
 import { IAMClient } from '@aws-sdk/client-iam';
 import moment from 'moment';

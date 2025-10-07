@@ -3,7 +3,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { type Output } from '@aws-sdk/client-cloudformation';
-import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
+import { S3Client as AWSS3Client, CreateBucketCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import * as fs from 'fs-extra';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { default as moment } from 'moment';
@@ -135,13 +135,13 @@ test('identify image text', async () => {
   const file = path.join(__dirname, 'test-data', 'amazon.png');
   const buffer = fs.readFileSync(file);
 
-  const params = {
-    Key: 'public/amazon-logo.png',
-    Body: buffer,
-    Bucket: BUCKET_NAME,
-  };
-
-  await awsS3Client.upload(params).promise();
+  await awsS3Client.send(
+    new PutObjectCommand({
+      Key: 'public/amazon-logo.png',
+      Body: buffer,
+      Bucket: BUCKET_NAME,
+    }),
+  );
   const response = await GRAPHQL_CLIENT.query(
     `query TranslateImageText($input: TranslateImageTextInput!) {
       translateImageText(input: $input)
@@ -163,13 +163,13 @@ test('identify labels', async () => {
   const file = path.join(__dirname, 'test-data', 'dogs.png');
   const buffer = fs.readFileSync(file);
 
-  const params = {
-    Key: 'public/dogs.png',
-    Body: buffer,
-    Bucket: BUCKET_NAME,
-  };
-
-  await awsS3Client.upload(params).promise();
+  await awsS3Client.send(
+    new PutObjectCommand({
+      Key: 'public/dogs.png',
+      Body: buffer,
+      Bucket: BUCKET_NAME,
+    }),
+  );
   const response = await GRAPHQL_CLIENT.query(
     `query TranslateLabels($input: TranslateLabelsInput!) {
       translateLabels(input: $input)

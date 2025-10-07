@@ -4,7 +4,7 @@ import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { type Output } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient as CognitoClient } from '@aws-sdk/client-cognito-identity-provider';
-import { S3Client as S3 } from '@aws-sdk/client-s3';
+import { S3Client as S3, CreateBucketCommand } from '@aws-sdk/client-s3';
 import { CognitoIdentityClient as CognitoIdentity } from '@aws-sdk/client-cognito-identity';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { AWS } from '@aws-amplify/core';
@@ -66,9 +66,9 @@ function outputValueSelector(key: string) {
 const cf = new CloudFormationClient(AWS_REGION);
 const customS3Client = new S3Client(AWS_REGION);
 const cognitoClient = new CognitoClient({ region: AWS_REGION });
-const identityClient = new CognitoIdentityClient({ apiVersion: '2014-06-30', region: AWS_REGION });
+const identityClient = new CognitoIdentity({ apiVersion: '2014-06-30', region: AWS_REGION });
 const iamHelper = new IAMHelper(AWS_REGION);
-const awsS3Client = new AWSS3Client({ region: AWS_REGION });
+const awsS3Client = new S3({ region: AWS_REGION });
 
 // stack info
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
