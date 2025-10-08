@@ -97,7 +97,7 @@ export const getSchemaDeployer = async (testId: string, transform: (schema: stri
 
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {
-    const output = outputs.find((o: Output) => o.OutputKey === key);
+    const output = outputs?.find((o: Output) => o.OutputKey === key);
     return output ? output.OutputValue : null;
   };
 }

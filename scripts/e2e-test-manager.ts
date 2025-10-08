@@ -16,6 +16,7 @@ import { CodeBuildClient, BatchGetBuildBatchesCommand, ListBuildBatchesCommand, 
 import { CloudWatchLogsClient, GetLogEventsCommand } from '@aws-sdk/client-cloudwatch-logs';
 import { fromIni } from '@aws-sdk/credential-providers';
 import * as process from 'process';
+import { execSync } from 'child_process';
 
 const E2E_PROFILE_NAME = 'AmplifyAPIE2EProd';
 const REGION = 'us-east-1';
@@ -42,6 +43,12 @@ interface BatchStatus {
 }
 
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
+
+const authenticate = () => {
+  execSync(
+    'source ./scripts/.env && ada cred update --profile=AmplifyAPIE2EProd --account=$E2E_ACCOUNT_PROD --role=CodebuildDeveloper --provider=isengard --once',
+  );
+};
 
 const getBatchStatus = async (batchId: string): Promise<BatchStatus> => {
   const { buildBatches } = await codeBuild.send(new BatchGetBuildBatchesCommand({ ids: [batchId] }));
@@ -384,6 +391,9 @@ const monitorBatch = async (batchId: string, maxRetries: number = DEFAULT_MAX_RE
 
 const main = async (): Promise<void> => {
   const [command, arg1, arg2] = process.argv.slice(2);
+
+  // most commands require authentication
+  authenticate();
 
   if (!command) {
     console.error('Usage: yarn ts-node scripts/e2e-test-manager.ts <command> [args...]');
