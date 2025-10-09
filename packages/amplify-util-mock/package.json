@@ -30,8 +30,8 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-appsync-simulator": "^2.16.4",
-    "@aws-amplify/amplify-category-function": "^5.7.9",
+    "@aws-amplify/amplify-appsync-simulator": "^2.16.15",
+    "@aws-amplify/amplify-category-function": "^5.7.16",
     "@aws-amplify/amplify-provider-awscloudformation": "^8.10.11",
     "@aws-sdk/client-dynamodb": "3.624.0",
     "@hapi/topo": "^5.0.0",
@@ -50,7 +50,7 @@
     "which": "^2.0.2"
   },
   "peerDependencies": {
-    "@aws-amplify/amplify-cli-core": "^4.3.9",
+    "@aws-amplify/amplify-cli-core": "^4.4.3",
     "@aws-amplify/amplify-environment-parameters": "^1.9.14"
   },
   "devDependencies": {
