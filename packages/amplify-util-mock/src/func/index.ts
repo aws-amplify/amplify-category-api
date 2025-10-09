@@ -12,7 +12,7 @@ export async function start(context: $TSContext) {
   const ampMeta = stateManager.getMeta();
   let resourceName = context?.input?.subCommands?.[0];
   if (!resourceName) {
-    const choices = _.keys(_.get(ampMeta, ['function'])).filter((resourceName) => isMockable(context, resourceName).isMockable);
+    const choices = _.keys(_.get(ampMeta, ['function'])).filter((resourceName) => isMockable(context as any, resourceName).isMockable);
     if (choices.length < 1) {
       throw new Error('There are no mockable functions in the project. Use `amplify add function` to create one.');
     } else if (choices.length == 1) {
@@ -29,7 +29,7 @@ export async function start(context: $TSContext) {
       ({ resourceName } = await inquirer.prompt<{ resourceName: string }>(resourceNameQuestion));
     }
   } else {
-    const mockable = isMockable(context, resourceName);
+    const mockable = isMockable(context as any, resourceName);
     if (!mockable.isMockable) {
       throw new Error(`Unable to mock ${resourceName}. ${mockable.reason}`);
     }
@@ -41,8 +41,8 @@ export async function start(context: $TSContext) {
     throw new Error(`Could not parse handler for ${resourceName} from cloudformation file`);
   }
   context.print.blue('Ensuring latest function changes are built...');
-  await getBuilder(context, resourceName, BuildType.DEV)();
-  const invoker = await getInvoker(context, { resourceName, handler: lambdaConfig.handler, envVars: lambdaConfig.environment });
+  await getBuilder(context as any, resourceName, BuildType.DEV)();
+  const invoker = await getInvoker(context as any, { resourceName, handler: lambdaConfig.handler, envVars: lambdaConfig.environment });
   context.print.blue('Starting execution...');
   try {
     const result = await timeConstrainedInvoker(invoker({ event }), context.input.options as any);
