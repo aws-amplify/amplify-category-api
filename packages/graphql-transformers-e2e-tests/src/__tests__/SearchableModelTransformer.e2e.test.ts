@@ -4,9 +4,9 @@ import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
 import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
-import { Output } from 'aws-sdk/clients/cloudformation';
+import { type Output } from '@aws-sdk/client-cloudformation';
 import { default as moment } from 'moment';
-import { default as S3 } from 'aws-sdk/clients/s3';
+import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { S3Client } from '../S3Client';
 import { GraphQLClient } from '../GraphQLClient';
@@ -21,7 +21,7 @@ jest.setTimeout(60000 * 60);
 
 const cf = new CloudFormationClient(region);
 const customS3Client = new S3Client(region);
-const awsS3Client = new S3({ region: region });
+const awsS3Client = new AWSS3Client({ region: region });
 let GRAPHQL_CLIENT: GraphQLClient = undefined;
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
@@ -167,7 +167,7 @@ beforeAll(async () => {
     },
   });
   try {
-    await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
+    await awsS3Client.send(new CreateBucketCommand({ Bucket: BUCKET_NAME }));
   } catch (e) {
     console.error(`Failed to create bucket: ${e}`);
   }

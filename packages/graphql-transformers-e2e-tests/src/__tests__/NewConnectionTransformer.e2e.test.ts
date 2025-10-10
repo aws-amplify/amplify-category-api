@@ -4,8 +4,8 @@ import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
-import { Output } from 'aws-sdk/clients/cloudformation';
-import { default as S3 } from 'aws-sdk/clients/s3';
+import { type Output } from '@aws-sdk/client-cloudformation';
+import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import { default as moment } from 'moment';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { GraphQLClient } from '../GraphQLClient';
@@ -19,7 +19,7 @@ jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient(region);
 const customS3Client = new S3Client(region);
-const awsS3Client = new S3({ region: region });
+const awsS3Client = new AWSS3Client({ region: region });
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
     if (name === 'improvePluralization') {
@@ -157,11 +157,11 @@ type PostAuthor
     expect(true).toEqual(false);
   }
   try {
-    await awsS3Client
-      .createBucket({
+    await awsS3Client.send(
+      new CreateBucketCommand({
         Bucket: BUCKET_NAME,
-      })
-      .promise();
+      }),
+    );
   } catch (e) {
     console.error(`Failed to create S3 bucket: ${e}`);
     expect(true).toEqual(false);

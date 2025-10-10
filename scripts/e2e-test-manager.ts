@@ -16,6 +16,7 @@ import { CodeBuildClient, BatchGetBuildBatchesCommand, ListBuildBatchesCommand, 
 import { CloudWatchLogsClient, GetLogEventsCommand } from '@aws-sdk/client-cloudwatch-logs';
 import { fromIni } from '@aws-sdk/credential-providers';
 import * as process from 'process';
+import { execSync } from 'child_process';
 
 const E2E_PROFILE_NAME = 'AmplifyAPIE2EProd';
 const REGION = 'us-east-1';
@@ -42,6 +43,12 @@ interface BatchStatus {
 }
 
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
+
+const authenticate = () => {
+  execSync(
+    'source ./scripts/.env && ada cred update --profile=AmplifyAPIE2EProd --account=$E2E_ACCOUNT_PROD --role=CodebuildDeveloper --provider=isengard --once',
+  );
+};
 
 const getBatchStatus = async (batchId: string): Promise<BatchStatus> => {
   const { buildBatches } = await codeBuild.send(new BatchGetBuildBatchesCommand({ ids: [batchId] }));
@@ -192,6 +199,30 @@ const listRecentBatches = async (limit: number = 20, filterType?: 'e2e' | 'canar
     console.log(`  Started: ${startTime}`);
     console.log(`  Builds: ${buildCount}`);
     console.log('');
+  }
+};
+
+const getAllBuilds = async (batchId: string): Promise<void> => {
+  const status = await getBatchStatus(batchId);
+
+  console.log(`\n=== All Builds for Batch: ${batchId} ===`);
+  console.log(`Total: ${status.builds.length} builds\n`);
+
+  for (const build of status.builds) {
+    const statusIcon =
+      build.buildStatus === 'SUCCEEDED'
+        ? '✅'
+        : build.buildStatus === 'IN_PROGRESS'
+        ? '🏃'
+        : ['FAILED', 'FAULT', 'TIMED_OUT'].includes(build.buildStatus)
+        ? '❌'
+        : '⚠️';
+
+    console.log(`${statusIcon} ${build.identifier}: ${build.buildStatus}`);
+    if (build.buildId && ['FAILED', 'FAULT', 'TIMED_OUT'].includes(build.buildStatus)) {
+      console.log(`    Build ID: ${build.buildId}`);
+      console.log(`    Logs: yarn e2e-logs ${build.buildId}`);
+    }
   }
 };
 
@@ -385,10 +416,14 @@ const monitorBatch = async (batchId: string, maxRetries: number = DEFAULT_MAX_RE
 const main = async (): Promise<void> => {
   const [command, arg1, arg2] = process.argv.slice(2);
 
+  // most commands require authentication
+  authenticate();
+
   if (!command) {
     console.error('Usage: yarn ts-node scripts/e2e-test-manager.ts <command> [args...]');
     console.error('Commands:');
     console.error('  status <batchId>           - Show batch status');
+    console.error('  builds <batchId>           - Show all builds with their statuses');
     console.error('  retry <batchId> [retries]  - Retry failed builds');
     console.error('  monitor <batchId> [retries] - Monitor batch with auto-retry');
     console.error('  list [limit] [e2e|canary]  - List recent batches (default: 20, all types)');
@@ -431,6 +466,14 @@ const main = async (): Promise<void> => {
         const limit = arg1 ? parseInt(arg1, 10) : 20;
         const filterType = arg2 as 'e2e' | 'canary' | undefined;
         await listRecentBatches(limit, filterType);
+        break;
+
+      case 'builds':
+        if (!arg1) {
+          console.error('Error: batchId required for builds command');
+          process.exit(1);
+        }
+        await getAllBuilds(arg1);
         break;
 
       case 'failed':

@@ -1,8 +1,8 @@
 import * as path from 'path';
 import * as os from 'os';
-import { default as S3 } from 'aws-sdk/clients/s3';
+import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import moment from 'moment';
-import { Output } from 'aws-sdk/clients/cloudformation';
+import { type Output } from '@aws-sdk/client-cloudformation';
 import { ResourceConstants } from 'graphql-transformer-common';
 import * as fs from 'fs-extra';
 import { CloudFormationClient, sleepSecs } from './CloudFormationClient';
@@ -15,7 +15,7 @@ import { DeploymentResources } from '@aws-amplify/graphql-transformer-test-utils
 const region = resolveTestRegion();
 const cf = new CloudFormationClient(region);
 const customS3Client = new S3Client(region);
-const awsS3Client = new S3({ region: region });
+const awsS3Client = new AWSS3Client({ region: region });
 
 /**
  * Interface for object that can manage graphql api deployments and cleanup for e2e tests
@@ -55,7 +55,7 @@ export const getSchemaDeployer = async (testId: string, transform: (schema: stri
 
   // create deployment bucket
   try {
-    await awsS3Client.createBucket({ Bucket: testBucketName }).promise();
+    await awsS3Client.send(new CreateBucketCommand({ Bucket: testBucketName }));
   } catch (err) {
     console.error(`Failed to create bucket ${testBucketName}: ${err}`);
     throw err;
@@ -97,7 +97,7 @@ export const getSchemaDeployer = async (testId: string, transform: (schema: stri
 
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {
-    const output = outputs.find((o: Output) => o.OutputKey === key);
+    const output = outputs?.find((o: Output) => o.OutputKey === key);
     return output ? output.OutputValue : null;
   };
 }

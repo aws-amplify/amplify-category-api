@@ -11,7 +11,9 @@ import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs-extra';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { CodeBuild, S3, SharedIniFileCredentials } from 'aws-sdk';
+import { CodeBuildClient } from '@aws-sdk/client-codebuild';
+import { S3Client } from '@aws-sdk/client-s3';
+import { fromIni } from '@aws-sdk/credential-providers';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { SingleBar, Presets } from 'cli-progress';
 import execa from 'execa';

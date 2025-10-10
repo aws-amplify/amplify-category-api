@@ -1,9 +1,9 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { Output } from 'aws-sdk/clients/cloudformation';
-import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import { default as S3 } from 'aws-sdk/clients/s3';
+import { type Output } from '@aws-sdk/client-cloudformation';
+import { CognitoIdentityProviderClient as CognitoClient } from '@aws-sdk/client-cognito-identity-provider';
+import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import moment from 'moment';
 import { ResourceConstants } from 'graphql-transformer-common';
@@ -22,8 +22,8 @@ jest.setTimeout(2000000);
 describe('V2 transformer options', () => {
   const cf = new CloudFormationClient(AWS_REGION);
   const customS3Client = new S3Client(AWS_REGION);
-  const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: AWS_REGION });
-  const awsS3Client = new S3({ region: AWS_REGION });
+  const cognitoClient = new CognitoClient({ region: AWS_REGION });
+  const awsS3Client = new AWSS3Client({ region: AWS_REGION });
 
   const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
   const STACK_NAME = `TransformerOptionsV2Tests-${BUILD_TIMESTAMP}`;
@@ -58,7 +58,7 @@ describe('V2 transformer options', () => {
       }`;
 
     try {
-      await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
+      await awsS3Client.send(new CreateBucketCommand({ Bucket: BUCKET_NAME }));
     } catch (e) {
       throw Error(`Could not create bucket: ${e}`);
     }

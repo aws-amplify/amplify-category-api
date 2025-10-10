@@ -9,15 +9,15 @@ import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
-import { Output } from 'aws-sdk/clients/cloudformation';
-import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import { default as S3 } from 'aws-sdk/clients/s3';
+import { type Output } from '@aws-sdk/client-cloudformation';
+import { CognitoIdentityProviderClient as CognitoClient } from '@aws-sdk/client-cognito-identity-provider';
+import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import { default as moment } from 'moment';
 import Role from 'cloudform-types/types/iam/role';
 import UserPoolClient from 'cloudform-types/types/cognito/userPoolClient';
 import IdentityPool from 'cloudform-types/types/cognito/identityPool';
 import IdentityPoolRoleAttachment from 'cloudform-types/types/cognito/identityPoolRoleAttachment';
-import AWS = require('aws-sdk');
+
 import { createUserPool, createUserPoolClient, configureAmplify, signupUser, authenticateUser } from '../cognitoUtils';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
@@ -28,13 +28,6 @@ import 'isomorphic-fetch';
 (global as any).fetch = require('node-fetch');
 
 import { resolveTestRegion } from '../testSetup';
-
-// To overcome of the way of how AmplifyJS picks up currentUserCredentials
-const anyAWS = AWS as any;
-
-if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
-  delete anyAWS.config.credentials;
-}
 
 const REGION = resolveTestRegion();
 
@@ -75,9 +68,9 @@ const USERNAME1 = 'user1@test.com';
 const TMP_PASSWORD = 'Password123!';
 const REAL_PASSWORD = 'Password1234!';
 
-const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: REGION });
+const cognitoClient = new CognitoClient({ region: REGION });
 const customS3Client = new S3Client(REGION);
-const awsS3Client = new S3({ region: REGION });
+const awsS3Client = new AWSS3Client({ region: REGION });
 
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {
@@ -278,7 +271,7 @@ beforeAll(async () => {
   });
 
   try {
-    await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
+    await awsS3Client.send(new CreateBucketCommand({ Bucket: BUCKET_NAME }));
   } catch (e) {
     console.error(`Failed to create bucket: ${e}`);
   }

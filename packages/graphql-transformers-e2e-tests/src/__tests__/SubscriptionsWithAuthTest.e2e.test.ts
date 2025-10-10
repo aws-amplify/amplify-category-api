@@ -3,11 +3,10 @@ import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { Output } from 'aws-sdk/clients/cloudformation';
-import { default as S3, CreateBucketRequest } from 'aws-sdk/clients/s3';
-import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { type Output } from '@aws-sdk/client-cloudformation';
+import { CognitoIdentityProviderClient as CognitoClient } from '@aws-sdk/client-cognito-identity-provider';
+import { S3Client as AWSS3Client, CreateBucketCommand, DeleteBucketCommand } from '@aws-sdk/client-s3';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { AWS } from '@aws-amplify/core';
 import { Auth, API } from 'aws-amplify';
 import gql from 'graphql-tag';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
@@ -33,11 +32,6 @@ import { resolveTestRegion } from '../testSetup';
 
 // tslint:disable: no-use-before-declare
 
-// To overcome of the way of how AmplifyJS picks up currentUserCredentials
-const anyAWS = AWS as any;
-if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
-  delete anyAWS.config.credentials;
-}
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
     if (name === 'improvePluralization') {
@@ -117,9 +111,9 @@ const INSTRUCTOR_GROUP_NAME = 'Instructor';
 const MEMBER_GROUP_NAME = 'Member';
 const ADMIN_GROUP_NAME = 'Admin';
 
-const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: AWS_REGION });
+const cognitoClient = new CognitoClient({ region: AWS_REGION });
 const customS3Client = new S3Client(AWS_REGION);
-const awsS3Client = new S3({ region: AWS_REGION });
+const awsS3Client = new AWSS3Client({ region: AWS_REGION });
 
 // interface inputs
 interface MemberInput {
@@ -173,21 +167,19 @@ function outputValueSelector(key: string) {
 }
 
 async function createBucket(name: string) {
-  return new Promise((res, rej) => {
-    const params: CreateBucketRequest = {
+  return awsS3Client.send(
+    new CreateBucketCommand({
       Bucket: name,
-    };
-    awsS3Client.createBucket(params, (err, data) => (err ? rej(err) : res(data)));
-  });
+    }),
+  );
 }
 
 async function deleteBucket(name: string) {
-  return new Promise((res, rej) => {
-    const params: CreateBucketRequest = {
+  return awsS3Client.send(
+    new DeleteBucketCommand({
       Bucket: name,
-    };
-    awsS3Client.deleteBucket(params, (err, data) => (err ? rej(err) : res(data)));
-  });
+    }),
+  );
 }
 beforeEach(async () => {
   try {
