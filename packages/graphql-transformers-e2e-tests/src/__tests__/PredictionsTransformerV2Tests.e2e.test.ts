@@ -75,6 +75,25 @@ beforeAll(async () => {
   const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput);
   const endpoint = getApiEndpoint(finishedStack.Outputs);
   const apiKey = getApiKey(finishedStack.Outputs);
+
+  if (!finishedStack.Outputs) {
+    throw new Error(`Stack deployment failed. Stack status: ${finishedStack.StackStatus}. No outputs available.`);
+  }
+
+  if (!endpoint) {
+    throw new Error(
+      `GraphQL API endpoint not found in stack outputs. Available outputs: ${JSON.stringify(
+        finishedStack.Outputs.map((o) => o.OutputKey),
+      )}`,
+    );
+  }
+
+  if (!apiKey) {
+    throw new Error(
+      `GraphQL API key not found in stack outputs. Available outputs: ${JSON.stringify(finishedStack.Outputs.map((o) => o.OutputKey))}`,
+    );
+  }
+
   expect(apiKey).toBeDefined();
   expect(endpoint).toBeDefined();
   GRAPHQL_CLIENT = new GraphQLClient(endpoint, { 'x-api-key': apiKey });
