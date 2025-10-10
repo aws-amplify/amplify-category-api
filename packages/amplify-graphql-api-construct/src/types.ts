@@ -595,10 +595,21 @@ export interface TranslationBehavior {
 /* c8 ignore stop */
 
 /**
- * A utility interface equivalent to Partial<TranslationBehavior>.
+ * A utility interface equivalent to Partial<TranslationBehavior>, plus
+ * some additional private fields.
  */
 /* c8 ignore start */
-export type PartialTranslationBehavior = Partial<TranslationBehavior>;
+export type PartialTranslationBehavior = Partial<TranslationBehavior> & {
+  /**
+   * When enabled, sandbox deployment will be faster by skipping the creation of the Hotswap friendly resources.
+   *
+   * @default false
+   * @internal
+   * WARNING: Although this has `public` access, it is intended for internal use and should not be used directly.
+   * The behavior of this may change without warning.
+   */
+  readonly _provisionHotswapFriendlyResources?: boolean;
+};
 /* c8 ignore stop */
 
 /**
