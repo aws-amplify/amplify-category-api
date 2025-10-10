@@ -7,7 +7,6 @@ import { type Output } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient as CognitoClient } from '@aws-sdk/client-cognito-identity-provider';
 import { S3Client as AWSS3Client, CreateBucketCommand, DeleteBucketCommand } from '@aws-sdk/client-s3';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { AWS } from '@aws-amplify/core';
 import { Auth, API } from 'aws-amplify';
 import gql from 'graphql-tag';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
@@ -33,11 +32,6 @@ import { resolveTestRegion } from '../testSetup';
 
 // tslint:disable: no-use-before-declare
 
-// To overcome of the way of how AmplifyJS picks up currentUserCredentials
-const anyAWS = AWS as any;
-if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
-  delete anyAWS.config.credentials;
-}
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
     if (name === 'improvePluralization') {

@@ -7,7 +7,6 @@ import { CognitoIdentityProviderClient as CognitoClient } from '@aws-sdk/client-
 import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { AWS } from '@aws-amplify/core';
 import { Auth, API } from 'aws-amplify';
 import gql from 'graphql-tag';
 import { default as moment } from 'moment';
@@ -41,12 +40,6 @@ import { CloudFormationClient } from '../CloudFormationClient';
 import { resolveTestRegion } from '../testSetup';
 
 const AWS_REGION = resolveTestRegion();
-
-// To overcome of the way of how AmplifyJS picks up currentUserCredentials
-const anyAWS = AWS as any;
-if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
-  delete anyAWS.config.credentials;
-}
 
 // delay times
 const SUBSCRIPTION_DELAY = 10000;
