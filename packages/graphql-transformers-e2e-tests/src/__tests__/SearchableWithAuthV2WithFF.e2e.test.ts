@@ -9,7 +9,6 @@ import moment from 'moment';
 import { CognitoIdentityProviderClient as CognitoClient } from '@aws-sdk/client-cognito-identity-provider';
 import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
 import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
-import { AWS } from '@aws-amplify/core';
 import { Auth } from 'aws-amplify';
 import gql from 'graphql-tag';
 import { IAMHelper } from '../IAMHelper';
@@ -33,12 +32,6 @@ import {
 import { resolveTestRegion } from '../testSetup';
 
 const AWS_REGION = resolveTestRegion();
-
-// To overcome of the way of how AmplifyJS picks up currentUserCredentials
-const anyAWS = AWS as any;
-if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
-  delete anyAWS.config.credentials;
-}
 
 // tslint:disable: no-magic-numbers
 jest.setTimeout(60000 * 60);

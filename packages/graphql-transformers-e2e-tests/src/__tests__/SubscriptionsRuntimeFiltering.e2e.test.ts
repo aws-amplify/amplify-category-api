@@ -1,5 +1,4 @@
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
-import { AWS } from '@aws-amplify/core';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
@@ -39,12 +38,6 @@ import { S3Client } from '../S3Client';
 import { resolveTestRegion } from '../testSetup';
 
 const AWS_REGION = resolveTestRegion();
-
-// To overcome of the way of how AmplifyJS picks up currentUserCredentials
-const anyAWS = AWS as any;
-if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
-  delete anyAWS.config.credentials;
-}
 
 // delay times
 const SUBSCRIPTION_DELAY = 10000;

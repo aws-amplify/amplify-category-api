@@ -9,7 +9,6 @@ import { type Output } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient as CognitoClient } from '@aws-sdk/client-cognito-identity-provider';
 import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { AWS } from '@aws-amplify/core';
 import { Auth } from 'aws-amplify';
 import gql from 'graphql-tag';
 import { default as moment } from 'moment';
@@ -28,8 +27,13 @@ import {
 } from '../cognitoUtils';
 import 'isomorphic-fetch';
 
-// To overcome of the way of how AmplifyJS picks up currentUserCredentials
-const anyAWS = AWS as any;
+// to deal with bug in cognito-identity-js
+(global as any).fetch = require('node-fetch');
+
+import { resolveTestRegion } from '../testSetup';
+
+const AWS_REGION = resolveTestRegion();
+
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
     if (name === 'improvePluralization') {
@@ -40,16 +44,6 @@ const featureFlags = {
   getNumber: jest.fn(),
   getObject: jest.fn(),
 };
-if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
-  delete anyAWS.config.credentials;
-}
-
-// to deal with bug in cognito-identity-js
-(global as any).fetch = require('node-fetch');
-
-import { resolveTestRegion } from '../testSetup';
-
-const AWS_REGION = resolveTestRegion();
 
 jest.setTimeout(9700000);
 

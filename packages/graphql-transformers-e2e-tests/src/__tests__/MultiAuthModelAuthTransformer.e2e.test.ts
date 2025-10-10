@@ -17,7 +17,7 @@ import Role from 'cloudform-types/types/iam/role';
 import UserPoolClient from 'cloudform-types/types/cognito/userPoolClient';
 import IdentityPool from 'cloudform-types/types/cognito/identityPool';
 import IdentityPoolRoleAttachment from 'cloudform-types/types/cognito/identityPoolRoleAttachment';
-import AWS = require('aws-sdk');
+
 import { createUserPool, createUserPoolClient, configureAmplify, signupUser, authenticateUser } from '../cognitoUtils';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
@@ -28,13 +28,6 @@ import 'isomorphic-fetch';
 (global as any).fetch = require('node-fetch');
 
 import { resolveTestRegion } from '../testSetup';
-
-// To overcome of the way of how AmplifyJS picks up currentUserCredentials
-const anyAWS = AWS as any;
-
-if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
-  delete anyAWS.config.credentials;
-}
 
 const REGION = resolveTestRegion();
 

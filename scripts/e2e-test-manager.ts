@@ -202,6 +202,30 @@ const listRecentBatches = async (limit: number = 20, filterType?: 'e2e' | 'canar
   }
 };
 
+const getAllBuilds = async (batchId: string): Promise<void> => {
+  const status = await getBatchStatus(batchId);
+
+  console.log(`\n=== All Builds for Batch: ${batchId} ===`);
+  console.log(`Total: ${status.builds.length} builds\n`);
+
+  for (const build of status.builds) {
+    const statusIcon =
+      build.buildStatus === 'SUCCEEDED'
+        ? '✅'
+        : build.buildStatus === 'IN_PROGRESS'
+        ? '🏃'
+        : ['FAILED', 'FAULT', 'TIMED_OUT'].includes(build.buildStatus)
+        ? '❌'
+        : '⚠️';
+
+    console.log(`${statusIcon} ${build.identifier}: ${build.buildStatus}`);
+    if (build.buildId && ['FAILED', 'FAULT', 'TIMED_OUT'].includes(build.buildStatus)) {
+      console.log(`    Build ID: ${build.buildId}`);
+      console.log(`    Logs: yarn e2e-logs ${build.buildId}`);
+    }
+  }
+};
+
 const getFailedBuilds = async (batchId: string): Promise<void> => {
   const status = await getBatchStatus(batchId);
 
@@ -399,6 +423,7 @@ const main = async (): Promise<void> => {
     console.error('Usage: yarn ts-node scripts/e2e-test-manager.ts <command> [args...]');
     console.error('Commands:');
     console.error('  status <batchId>           - Show batch status');
+    console.error('  builds <batchId>           - Show all builds with their statuses');
     console.error('  retry <batchId> [retries]  - Retry failed builds');
     console.error('  monitor <batchId> [retries] - Monitor batch with auto-retry');
     console.error('  list [limit] [e2e|canary]  - List recent batches (default: 20, all types)');
@@ -441,6 +466,14 @@ const main = async (): Promise<void> => {
         const limit = arg1 ? parseInt(arg1, 10) : 20;
         const filterType = arg2 as 'e2e' | 'canary' | undefined;
         await listRecentBatches(limit, filterType);
+        break;
+
+      case 'builds':
+        if (!arg1) {
+          console.error('Error: batchId required for builds command');
+          process.exit(1);
+        }
+        await getAllBuilds(arg1);
         break;
 
       case 'failed':
