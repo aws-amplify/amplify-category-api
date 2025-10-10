@@ -447,6 +447,23 @@ describe('nodeToNodeEncryption transformParameter', () => {
       },
     });
   });
+
+  it('synthesizes w/ serverSideEncryption enabled if specified', () => {
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+      transformParameters: {
+        enableSearchEncryptionAtRest: true,
+      },
+    });
+    expect(out).toBeDefined();
+    const searchableStack = out.stacks.SearchableStack;
+    Template.fromJSON(searchableStack).hasResourceProperties('AWS::Elasticsearch::Domain', {
+      EncryptionAtRest: {
+        Enabled: true,
+      },
+    });
+  });
 });
 
 describe('auth', () => {

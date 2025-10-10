@@ -36,9 +36,12 @@ export type TestTransformParameters = RDSLayerMappingProvider &
 
 /**
  * Defaults for transform parameters in tests, if they're not set explicitly.
+ *
+ * Will be applied to e2e tests, so also affect actually deployed infrastructure.
  */
 const DEFAULT_TEST_TRANSFORM_PARAMETERS: Partial<TransformParameters> = {
   enableSearchNodeToNodeEncryption: true,
+  enableSearchEncryptionAtRest: true,
 };
 
 /**

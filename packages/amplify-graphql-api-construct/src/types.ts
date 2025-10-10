@@ -353,7 +353,7 @@ export type ConflictResolutionStrategy =
  * @deprecated use DataStoreConfiguration instead.
  */
 /* c8 ignore start */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/no-empty-object-type
 export interface ConflictResolution extends DataStoreConfiguration {}
 /* c8 ignore stop */
 
@@ -548,8 +548,18 @@ export interface TranslationBehavior {
    */
   readonly respectPrimaryKeyAttributesOnConnectionField: boolean;
 
+  /**
+   * Whether Node to Node encryption is enabled on the ElasticSearch cluster
+   *
+   * @default false
+   */
   readonly enableSearchNodeToNodeEncryption: boolean;
 
+  /**
+   * Whether server-side encryption is enabled on the ElasticSearch cluster
+   *
+   * @default false
+   */
   readonly enableSearchEncryptionAtRest: boolean;
 
   /**
@@ -588,120 +598,7 @@ export interface TranslationBehavior {
  * A utility interface equivalent to Partial<TranslationBehavior>.
  */
 /* c8 ignore start */
-export interface PartialTranslationBehavior {
-  /**
-   * Restore parity w/ GQLv1 @model parameter behavior, where setting a single field doesn't implicitly set the other fields to null.
-   * @default true
-   */
-  readonly shouldDeepMergeDirectiveConfigDefaults?: boolean;
-
-  /**
-   * Disable resolver deduping, this can sometimes cause problems because dedupe ordering isn't stable today, which can
-   * lead to circular dependencies across stacks if models are reordered.
-   * @default true
-   */
-  readonly disableResolverDeduping?: boolean;
-
-  /**
-   * Enabling sandbox mode will enable api key auth on all models in the transformed schema.
-   * @default false
-   */
-  readonly sandboxModeEnabled?: boolean;
-
-  /**
-   * Ensure that oidc and userPool auth use the `sub` field in the for the username field, which disallows new users with the same
-   * id to access data from a deleted user in the pool.
-   * @default true
-   */
-  readonly useSubUsernameForDefaultIdentityClaim?: boolean;
-
-  /**
-   * When enabled, suppresses default behavior of redacting relational fields when auth rules do not exactly match.
-   * @default false
-   */
-  readonly subscriptionsInheritPrimaryAuth?: boolean;
-
-  /**
-   * Ensure that the owner field is still populated even if a static iam or group authorization applies.
-   * @default true
-   */
-  readonly populateOwnerFieldForStaticGroupAuth?: boolean;
-
-  /**
-   * If enabled, disable api key resource generation even if specified as an auth rule on the construct.
-   * This is a legacy parameter from the Graphql Transformer existing in Amplify CLI, not recommended to change.
-   * @default false
-   */
-  readonly suppressApiKeyGeneration?: boolean;
-
-  /**
-   * If disabled, generated @index as an LSI instead of a GSI.
-   * @default true
-   */
-  readonly secondaryKeyAsGSI?: boolean;
-
-  /**
-   * Automate generation of query names, and as a result attaching all indexes as queries to the generated Api.
-   * If enabled, @index can be provided a null name field to disable the generation of the query on the Api.
-   * @default true
-   */
-  readonly enableAutoIndexQueryNames?: boolean;
-
-  /**
-   * Enable custom primary key support, there's no good reason to disable this unless trying not to update a legacy app.
-   * @default true
-   */
-  readonly respectPrimaryKeyAttributesOnConnectionField?: boolean;
-
-  /**
-   * If enabled, set nodeToNodeEncryption on the searchable domain (if one exists). Not recommended for use, prefer
-   * to use `Object.values(resources.additionalResources['AWS::Elasticsearch::Domain']).forEach((domain: CfnDomain) => {
-   *   domain.NodeToNodeEncryptionOptions = { Enabled: True };
-   * });
-   * @default false
-   */
-  readonly enableSearchNodeToNodeEncryption?: boolean;
-
-  /**
-   * When enabled, internal cfn outputs which existed in Amplify-generated apps will continue to be emitted.
-   * @default false
-   */
-  readonly enableTransformerCfnOutputs?: boolean;
-
-  /**
-   * The following schema updates require replacement of the underlying DynamoDB table:
-   *
-   *  - Removing or renaming a model
-   *  - Modifying the primary key of a model
-   *  - Modifying a Local Secondary Index of a model (only applies to projects with secondaryKeyAsGSI turned off)
-   *
-   * ALL DATA WILL BE LOST when the table replacement happens. When enabled, destructive updates are allowed.
-   * This will only affect DynamoDB tables with provision strategy "AMPLIFY_TABLE".
-   * @default false
-   * @experimental
-   */
-  readonly allowDestructiveGraphqlSchemaUpdates?: boolean;
-
-  /**
-   * This behavior will only come into effect when both "allowDestructiveGraphqlSchemaUpdates" and this value are set to true
-   *
-   * When enabled, any global secondary index update operation will replace the table instead of iterative deployment, which will WIPE ALL
-   * EXISTING DATA but cost much less time for deployment This will only affect DynamoDB tables with provision strategy "AMPLIFY_TABLE".
-   * @default false
-   * @experimental
-   */
-  readonly replaceTableUponGsiUpdate?: boolean;
-
-  /**
-   * When enabled, sandbox deployment will be faster by skipping the creation of the Hotswap friendly resources.
-   *
-   * @default false
-   * @internal
-   * WARNING: Although this has `public` access, it is intended for internal use and should not be used directly.
-   * The behavior of this may change without warning.
-   */
-  readonly _provisionHotswapFriendlyResources?: boolean;
-}
+export type PartialTranslationBehavior = Partial<TranslationBehavior>;
 /* c8 ignore stop */
 
 /**
