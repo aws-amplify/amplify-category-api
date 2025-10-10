@@ -227,7 +227,7 @@ export const cleanupStackAfterTest = async (
       await cf.waitForStack(stackName);
     }
   } catch (e) {
-    if (!(e.name === 'ValidationError' && e.message === `Stack with id ${stackName} does not exist`)) {
+    if (!(e.code === 'ValidationError' && e.message === `Stack with id ${stackName} does not exist`)) {
       throw e;
     }
   }
