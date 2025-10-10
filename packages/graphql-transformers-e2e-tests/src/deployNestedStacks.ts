@@ -53,7 +53,7 @@ async function uploadDirectory(client: S3Client, directory: string, bucket: stri
       const fileKey = s3Location;
       await client.wait(0.25, () => Promise.resolve());
       const fileContents = await fs.readFileSync(contentPath);
-      await client.uploadFile(bucket, contentPath, fileKey);
+      await client.putObject(bucket, fileKey, fileContents);
       const formattedName = file
         .split('.')
         .map((s, i) => (i > 0 ? `${s[0].toUpperCase()}${s.slice(1, s.length)}` : s))
@@ -165,7 +165,7 @@ export async function deploy(
   try {
     const operation = initialDeployment ? 'createStack' : 'updateStack';
     let response: Awaited<ReturnType<CloudFormationClient['updateStack' | 'createStack']>>;
-    response = await cf[operation](deploymentResources.rootStack, stackName, {
+    response = await cf[operation]({}, stackName, {
       ...params,
       S3DeploymentBucket: bucketName,
       S3DeploymentRootKey: s3RootKey,
@@ -227,7 +227,7 @@ export const cleanupStackAfterTest = async (
       await cf.waitForStack(stackName);
     }
   } catch (e) {
-    if (!(e.name === 'ValidationError' && e.message === `Stack with id ${stackName} does not exist`)) {
+    if (!(e.Code === 'ValidationError' && e.message === `Stack with id ${stackName} does not exist`)) {
       throw e;
     }
   }

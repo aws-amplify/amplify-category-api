@@ -19,11 +19,11 @@ export class CloudFormationClient {
     this.client = new CFClient({ region: this.region });
   }
 
-  async updateStack(template: any, name: string, defParams: any = {}, addAppSyncApiName = true) {
-    return this.createStack(template, name, defParams, addAppSyncApiName, true);
+  async updateStack(_template: any, name: string, defParams: any = {}, addAppSyncApiName = true) {
+    return this.createStack(_template, name, defParams, addAppSyncApiName, true);
   }
 
-  async createStack(template: any, name: string, defParams: any = {}, addAppSyncApiName = true, isUpdate = false) {
+  async createStack(_template: any, name: string, defParams: any = {}, addAppSyncApiName = true, isUpdate = false) {
     const params = [];
 
     if (addAppSyncApiName === true) {
@@ -83,8 +83,8 @@ export class CloudFormationClient {
    */
   async waitForStack(
     name: string,
-    success: StackStatus[] = ['CREATE_COMPLETE', 'DELETE_COMPLETE', 'UPDATE_COMPLETE', 'UPDATE_ROLLBACK_COMPLETE'],
-    failure: StackStatus[] = ['CREATE_FAILED', 'ROLLBACK_FAILED', 'DELETE_FAILED', 'UPDATE_ROLLBACK_FAILED', 'ROLLBACK_COMPLETE'],
+    success: StackStatus[] = ['CREATE_COMPLETE', 'ROLLBACK_COMPLETE', 'DELETE_COMPLETE', 'UPDATE_COMPLETE', 'UPDATE_ROLLBACK_COMPLETE'],
+    failure: StackStatus[] = ['CREATE_FAILED', 'ROLLBACK_FAILED', 'DELETE_FAILED', 'UPDATE_ROLLBACK_FAILED'],
     poll: StackStatus[] = [
       'CREATE_IN_PROGRESS',
       'ROLLBACK_IN_PROGRESS',
