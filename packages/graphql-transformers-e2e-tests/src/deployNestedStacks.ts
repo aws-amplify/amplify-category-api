@@ -165,7 +165,7 @@ export async function deploy(
   try {
     const operation = initialDeployment ? 'createStack' : 'updateStack';
     let response: Awaited<ReturnType<CloudFormationClient['updateStack' | 'createStack']>>;
-    response = await cf[operation]({}, stackName, {
+    response = await cf[operation](deploymentResources.rootStack, stackName, {
       ...params,
       S3DeploymentBucket: bucketName,
       S3DeploymentRootKey: s3RootKey,
@@ -227,7 +227,7 @@ export const cleanupStackAfterTest = async (
       await cf.waitForStack(stackName);
     }
   } catch (e) {
-    if (!(e.Code === 'ValidationError' && e.message === `Stack with id ${stackName} does not exist`)) {
+    if (!(e.code === 'ValidationError' && e.message === `Stack with id ${stackName} does not exist`)) {
       throw e;
     }
   }
