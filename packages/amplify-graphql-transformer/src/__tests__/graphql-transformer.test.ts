@@ -39,6 +39,9 @@ describe('constructTransformerChain', () => {
   });
 });
 
+/**
+ * Default transform config for the unit tests in this file
+ */
 const defaultTransformConfig: TransformConfig = {
   transformersFactoryArgs: {},
   transformParameters: {
@@ -53,6 +56,7 @@ const defaultTransformConfig: TransformConfig = {
     enableAutoIndexQueryNames: false,
     respectPrimaryKeyAttributesOnConnectionField: false,
     enableSearchNodeToNodeEncryption: false,
+    enableSearchEncryptionAtRest: true,
     enableTransformerCfnOutputs: true,
     allowDestructiveGraphqlSchemaUpdates: false,
     replaceTableUponGsiUpdate: false,
