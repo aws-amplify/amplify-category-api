@@ -2180,7 +2180,7 @@
     "@smithy/util-waiter" "^3.1.2"
     tslib "^2.6.2"
 
-"@aws-sdk/client-lambda@^3.908.0":
+"@aws-sdk/client-lambda@^3.700.0":
   version "3.908.0"
   resolved "https://registry.yarnpkg.com/@aws-sdk/client-lambda/-/client-lambda-3.908.0.tgz#40fe7e62b646c48092de47474b1b680e467d9121"
   integrity sha512-g5Fb4da8lUzjv1XEZSzpxTDtPcQHVHqqMOfjTWtBBwKqacRqM6L+M79WKeMt/Wm3Lul1EWKzyOSpq7qYO9zHRw==
