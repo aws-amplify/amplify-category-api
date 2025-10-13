@@ -18,6 +18,9 @@ export const createSearchableDomain = (
   const { OpenSearchDomainLogicalID } = ResourceConstants.RESOURCES;
   const { HasEnvironmentParameter } = ResourceConstants.CONDITIONS;
 
+  // Encryption at rest is not supported with t2.small.elasticsearch instances
+  // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html
+
   const domain = new Domain(stack, OpenSearchDomainLogicalID, {
     version: { version: '7.10' } as ElasticsearchVersion,
     enforceHttps: true,
