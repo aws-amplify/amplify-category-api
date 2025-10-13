@@ -164,7 +164,6 @@
     "**/istanbul/async": "^2.6.4",
     "**/jake/async": "^2.6.4",
     "**/nth-check": "^2.0.1",
-    "**/glob": "^10",
     "**/rimraf": "^5",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
@@ -185,6 +184,17 @@
     "braces": "^3.0.3",
     "@octokit/request-error": "^5.1.1",
     "@octokit/request": "^8.4.1",
-    "@octokit/plugin-paginate-rest": "^9.2.2"
+    "@octokit/plugin-paginate-rest": "^9.2.2",
+    "@aws-amplify/amplify-app/glob": "^10",
+    "@aws-amplify/amplify-category-custom/glob": "^10",
+    "@aws-amplify/amplify-console-hosting/glob": "^10",
+    "@aws-amplify/amplify-provider-awscloudformation/glob": "^10",
+    "@aws-amplify/amplify-util-mock/glob": "^10",
+    "@aws-amplify/cli-internal/glob": "^10",
+    "amplify-dotnet-function-runtime-provider/glob": "^10",
+    "amplify-go-function-runtime-provider/glob": "^10",
+    "amplify-java-function-runtime-provider/glob": "^10",
+    "amplify-nodejs-function-runtime-provider/glob": "^10",
+    "amplify-python-function-runtime-provider/glob": "^10"
   }
 }
