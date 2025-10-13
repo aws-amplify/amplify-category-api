@@ -24,7 +24,7 @@ export class LambdaHelper {
         Code: {
           ZipFile: zipContents,
         },
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs20.x',
         Handler: `${filePrefix}.handler`,
         Role: roleArn,
       }),
