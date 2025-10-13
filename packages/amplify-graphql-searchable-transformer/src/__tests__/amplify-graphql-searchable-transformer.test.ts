@@ -459,7 +459,7 @@ describe('nodeToNodeEncryption transformParameter', () => {
     expect(out).toBeDefined();
     const searchableStack = out.stacks.SearchableStack;
     Template.fromJSON(searchableStack).hasResourceProperties('AWS::Elasticsearch::Domain', {
-      EncryptionAtRest: {
+      EncryptionAtRestOptions: {
         Enabled: true,
       },
     });
