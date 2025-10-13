@@ -95,8 +95,8 @@ export class CloudFormationClient {
    */
   async waitForStack(
     name: string,
-    success: StackStatus[] = ['CREATE_COMPLETE', 'ROLLBACK_COMPLETE', 'DELETE_COMPLETE', 'UPDATE_COMPLETE', 'UPDATE_ROLLBACK_COMPLETE'],
-    failure: StackStatus[] = ['CREATE_FAILED', 'ROLLBACK_FAILED', 'DELETE_FAILED', 'UPDATE_ROLLBACK_FAILED'],
+    success: StackStatus[] = ['CREATE_COMPLETE', 'DELETE_COMPLETE', 'UPDATE_COMPLETE', 'UPDATE_ROLLBACK_COMPLETE'],
+    failure: StackStatus[] = ['CREATE_FAILED', 'ROLLBACK_COMPLETE', 'ROLLBACK_FAILED', 'DELETE_FAILED', 'UPDATE_ROLLBACK_FAILED'],
     poll: StackStatus[] = [
       'CREATE_IN_PROGRESS',
       'ROLLBACK_IN_PROGRESS',
