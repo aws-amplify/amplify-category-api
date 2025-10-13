@@ -145,6 +145,7 @@ export async function deploy(
   } catch (e) {
     console.error(`Error cleaning up build directory: ${e}`);
   }
+
   try {
     addAPIKeys(deploymentResources);
 
