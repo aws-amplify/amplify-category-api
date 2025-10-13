@@ -164,6 +164,8 @@
     "**/istanbul/async": "^2.6.4",
     "**/jake/async": "^2.6.4",
     "**/nth-check": "^2.0.1",
+    "**/glob": "^10",
+    "**/rimraf": "^5",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
     "cross-fetch": "^2.2.6",
