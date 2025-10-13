@@ -7,8 +7,6 @@ export const createParametersStack = (scope: Construct): Map<string, CfnParamete
   const {
     OpenSearchAccessIAMRoleName,
     OpenSearchStreamingLambdaHandlerName,
-    OpenSearchStreamingLambdaRuntime,
-    OpenSearchStreamingFunctionName,
     OpenSearchStreamBatchSize,
     OpenSearchStreamMaximumBatchingWindowInSeconds,
     OpenSearchStreamingIAMRoleName,
@@ -32,25 +30,6 @@ export const createParametersStack = (scope: Construct): Map<string, CfnParamete
       new CfnParameter(scope, OpenSearchStreamingLambdaHandlerName, {
         description: 'The name of the lambda handler.',
         default: 'python_streaming_function.lambda_handler',
-      }),
-    ],
-
-    [
-      OpenSearchStreamingLambdaRuntime,
-      new CfnParameter(scope, OpenSearchStreamingLambdaRuntime, {
-        // eslint-disable-next-line no-multi-str
-        description:
-          'The lambda runtime \
-                (https://docs.aws.amazon.com/lambda/latest/dg/API_CreateFunction.html#SSS-CreateFunction-request-Runtime)',
-        default: 'python3.6',
-      }),
-    ],
-
-    [
-      OpenSearchStreamingFunctionName,
-      new CfnParameter(scope, OpenSearchStreamingFunctionName, {
-        description: 'The name of the streaming lambda function.',
-        default: 'DdbToEsFn',
       }),
     ],
 
