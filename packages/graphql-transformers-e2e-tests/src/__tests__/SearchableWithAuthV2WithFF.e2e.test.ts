@@ -218,7 +218,7 @@ beforeAll(async () => {
         [ResourceConstants.PARAMETERS.AuthRoleName]: authRole.RoleName ?? '',
         [ResourceConstants.PARAMETERS.UnauthRoleName]: unauthRole.RoleName ?? '',
         // Cheapest instance type that supports encryption at rest
-        [ResourceConstants.PARAMETERS.OpenSearchInstanceType]: 'm4.large.search',
+        [ResourceConstants.PARAMETERS.OpenSearchInstanceType]: 'm4.large.elasticsearch',
       },
       LOCAL_FS_BUILD_DIR,
       BUCKET_NAME,
