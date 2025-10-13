@@ -96,7 +96,6 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "@aws-amplify/cli-internal": "^14.1.1",
     "lerna": "^5.1.6",
     "npm-check-updates": "^16.1.0",
     "strip-ansi": "^6.0.0"
