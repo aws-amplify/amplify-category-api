@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "description": "amplify-category-api",
   "scripts": {
-    "add-cli-no-save": "yarn add @aws-amplify/cli-internal -W --pure-lockfile && git checkout -- package.json",
     "authenticate-e2e-profile": "source scripts/cloud-utils.sh && authenticateWithE2EProfile",
     "build-tests-changed": "lerna run build-tests --since main",
     "build-tests": "lerna run build-tests",
@@ -30,10 +29,6 @@
     "e2e": "lerna run e2e",
     "extract-api": "lerna run extract-api",
     "extract-dependency-licenses": "./scripts/extract-dependency-licenses.sh",
-    "hoist-cli-win": "rimraf node_modules/amplify-cli-internal && mkdir node_modules\\amplify-cli-internal && xcopy /e /q node_modules\\@aws-amplify\\cli-internal node_modules\\amplify-cli-internal\\",
-    "hoist-cli": "rm -rf node_modules/amplify-cli-internal && mkdir node_modules/amplify-cli-internal && cp -r node_modules/@aws-amplify/cli-internal/* node_modules/amplify-cli-internal",
-    "link-dev": "cd node_modules/amplify-cli-internal && ln -s \"$(pwd)/bin/amplify\" \"$(yarn global bin)/amplify-dev\" && cd -",
-    "link-win": "node ./scripts/link-bin.js node_modules/amplify-cli-internal/bin/amplify amplify-dev",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "package": "lerna run package",
     "postpublish:release-api-plugin-stable": "./codebuild_specs/scripts/post_publish.sh",
@@ -48,9 +43,8 @@
     "publish:release-api-plugin-stable": "lerna publish --dist-tag=api-plugin-stable --conventional-commits --conventional-graduate --exact --yes --message 'chore(release): Publish [ci skip]' --no-verify-access",
     "publish:tag": "lerna publish --exact --dist-tag=$NPM_TAG --preid=$NPM_TAG --conventional-commits --conventional-prerelease --message \"chore(release): Publish tagged release $NPM_TAG [ci skip]\" --no-verify-access --yes",
     "refresh-lockfile": "rimraf yarn.lock && yarn",
-    "rm-dev-link": "rimraf -f \"$(yarn global bin)/amplify-dev\"",
-    "setup-dev-win": "(yarn && lerna run build) && yarn add-cli-no-save && (yarn hoist-cli-win && yarn rm-dev-link && yarn link-win)",
-    "setup-dev": "(yarn && lerna run build) && yarn add-cli-no-save && (yarn hoist-cli && yarn rm-dev-link && yarn link-dev)",
+    "setup-dev-win": "yarn setup-dev",
+    "setup-dev": "yarn && lerna run build",
     "split-e2e-tests": "yarn ts-node ./scripts/split-e2e-tests.ts prod && git add codebuild_specs/e2e_workflow.yml",
     "split-e2e-tests-beta": "yarn ts-node ./scripts/split-e2e-tests.ts beta && git add codebuild_specs/e2e_workflow.yml",
     "test-changed": "lerna run test --since main",
@@ -102,6 +96,7 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
+    "@aws-amplify/cli-internal": "^14.1.1",
     "lerna": "^5.1.6",
     "npm-check-updates": "^16.1.0",
     "strip-ansi": "^6.0.0"
@@ -115,6 +110,7 @@
     ]
   },
   "devDependencies": {
+    "@aws-amplify/cli-internal": "*",
     "@babel/cli": "^7.10.5",
     "@babel/core": "^7.10.5",
     "@babel/plugin-proposal-numeric-separator": "^7.10.4",

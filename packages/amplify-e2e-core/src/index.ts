@@ -37,7 +37,7 @@ export function getCLIPath(testingWithLatestCodebase = false) {
       ret = process.platform === 'win32' ? 'amplify.exe' : 'amplify';
     }
   } else {
-    ret = path.join(__dirname, '..', '..', '..', 'node_modules', 'amplify-cli-internal', 'bin', 'amplify');
+    ret = path.join(__dirname, '..', '..', '..', 'node_modules', '@aws-amplify/cli-internal', 'bin', 'amplify');
   }
 
   if (lastResolve !== ret) {
