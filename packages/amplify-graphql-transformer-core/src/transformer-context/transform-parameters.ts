@@ -27,4 +27,5 @@ export const defaultTransformParameters: TransformParameters = {
 
   // Search Params
   enableSearchNodeToNodeEncryption: false,
+  enableSearchEncryptionAtRest: false,
 };

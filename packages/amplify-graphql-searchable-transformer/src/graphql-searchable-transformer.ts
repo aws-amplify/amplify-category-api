@@ -311,6 +311,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       parameterMap,
       context.api.apiId,
       context.transformParameters.enableSearchNodeToNodeEncryption,
+      context.transformParameters.enableSearchEncryptionAtRest,
     );
 
     const openSearchRole = createSearchableDomainRole(context, stack, parameterMap);

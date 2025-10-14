@@ -129,7 +129,7 @@ export async function deploy(
   cf: CloudFormationClient,
   stackName: string,
   deploymentResources: DeploymentResources,
-  params: any,
+  params: Record<string, string>,
   buildPath: string,
   bucketName: string,
   rootKey: string,
@@ -145,6 +145,7 @@ export async function deploy(
   } catch (e) {
     console.error(`Error cleaning up build directory: ${e}`);
   }
+
   try {
     addAPIKeys(deploymentResources);
 

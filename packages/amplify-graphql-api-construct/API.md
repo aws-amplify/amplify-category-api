@@ -344,6 +344,7 @@ export interface PartialTranslationBehavior {
     readonly allowDestructiveGraphqlSchemaUpdates?: boolean;
     readonly disableResolverDeduping?: boolean;
     readonly enableAutoIndexQueryNames?: boolean;
+    readonly enableSearchEncryptionAtRest?: boolean;
     readonly enableSearchNodeToNodeEncryption?: boolean;
     readonly enableTransformerCfnOutputs?: boolean;
     readonly populateOwnerFieldForStaticGroupAuth?: boolean;
@@ -478,7 +479,7 @@ export interface TranslationBehavior {
     readonly allowDestructiveGraphqlSchemaUpdates: boolean;
     readonly disableResolverDeduping: boolean;
     readonly enableAutoIndexQueryNames: boolean;
-    // (undocumented)
+    readonly enableSearchEncryptionAtRest: boolean;
     readonly enableSearchNodeToNodeEncryption: boolean;
     readonly enableTransformerCfnOutputs: boolean;
     readonly populateOwnerFieldForStaticGroupAuth: boolean;
