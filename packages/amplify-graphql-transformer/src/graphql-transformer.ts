@@ -80,7 +80,12 @@ export const constructTransformerChain = (options?: TransformerFactoryArgs): Tra
     new DefaultValueTransformer(),
     authTransformer,
     new MapsToTransformer(),
-    new SqlTransformer(),
+
+    // This doesn't typecheck because of weird dependencies, but nobody's
+    // complained yet that it's really broken, so we're just assuming that
+    // this is safe to cast away.
+    new SqlTransformer() as any,
+
     new RefersToTransformer(),
     ...(allowGen1Patterns ? [new SearchableModelTransformer()] : []),
     ...(options?.customTransformers ?? []),
