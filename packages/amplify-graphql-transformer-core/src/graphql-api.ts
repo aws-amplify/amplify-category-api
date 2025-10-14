@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable max-classes-per-file */
 import {
   AssetProvider,
   APIIAMResourceProvider,
@@ -17,6 +19,7 @@ import {
   CfnApiKey,
   CfnGraphQLApi,
   CfnGraphQLSchema,
+  Visibility,
 } from 'aws-cdk-lib/aws-appsync';
 import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
@@ -193,6 +196,10 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
    */
   public readonly assetProvider: AssetProvider;
 
+  public readonly graphQLEndpointArn: string;
+
+  public readonly visibility: cdk.aws_appsync.Visibility;
+
   private schemaResource: CfnGraphQLSchema;
 
   private api: CfnGraphQLApi;
@@ -227,6 +234,9 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       xrayEnabled: props.xrayEnabled,
     });
 
+    this.graphQLEndpointArn = this.api.attrGraphQlEndpointArn;
+    this.visibility = Visibility.GLOBAL; // Default value if not specified
+
     this.apiId = this.api.attrApiId;
     this.arn = this.api.attrArn;
     this.graphqlUrl = this.api.attrGraphQlUrl;
@@ -251,8 +261,13 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
 
     if (props.host) {
       this.host = props.host;
+      // NOTE: we incorrectly implement the required interface, because the upstream
+      // interface is unnecessarily hard to work with.
+      // but due to upgrades it started to fail type checks. Override for now.
       this.host.setAPI(this);
     } else {
+      // NOTE: we incorrectly implement the required interface. This code was always this way,
+      // but due to upgrades it started to fail type checks. Override for now.
       this.host = new DefaultTransformHost({
         api: this,
       });
@@ -267,7 +282,10 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
    * @param resources The set of resources to allow (i.e. ...:[region]:[accountId]:apis/GraphQLId/...)
    * @param actions The actions that should be granted to the principal (i.e. appsync:graphql )
    */
-  public grant(grantee: IGrantable, resources: APIIAMResourceProvider, ...actions: string[]): Grant {
+  public grant(grantee: IGrantable, resources: cdk.aws_appsync.IamResource | APIIAMResourceProvider, ...actions: string[]): Grant {
+    // The upstream grant method requires a class, where an interface would be good enough.
+    // This `grant` method requires less strict treatment, anything that implements `resourceArns()`
+    // is good enough.
     return Grant.addToPrincipal({
       grantee,
       actions,

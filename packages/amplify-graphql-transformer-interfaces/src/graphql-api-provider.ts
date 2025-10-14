@@ -2,6 +2,7 @@ import { CfnResource, IAsset } from 'aws-cdk-lib';
 import { Construct, IConstruct } from 'constructs';
 import { Grant, IGrantable, IRole } from 'aws-cdk-lib/aws-iam';
 // eslint-disable-next-line import/no-cycle
+import { IamResource } from 'aws-cdk-lib/aws-appsync';
 import { TransformHostProvider } from './transform-host-provider';
 import { AssetProvider } from './asset-provider';
 
@@ -136,7 +137,7 @@ export interface GraphQLAPIProvider extends IConstruct {
   addToSchema: (addition: string) => void;
   addSchemaDependency: (construct: CfnResource) => boolean;
 
-  grant: (grantee: IGrantable, resources: APIIAMResourceProvider, ...actions: string[]) => Grant;
+  grant: (grantee: IGrantable, resources: IamResource | APIIAMResourceProvider, ...actions: string[]) => Grant;
   // /**
   //  *  Adds an IAM policy statement for Mutation access to this GraphQLApi to an IAM principal's policy.
   //  *
