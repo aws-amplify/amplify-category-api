@@ -81,9 +81,12 @@ export const constructTransformerChain = (options?: TransformerFactoryArgs): Tra
     authTransformer,
     new MapsToTransformer(),
 
-    // This doesn't typecheck because of weird dependencies, but nobody's
-    // complained yet that it's really broken, so we're just assuming that
-    // this is safe to cast away.
+    // This doesn't typecheck because of weird dependencies: this package
+    // comes from Amplify Gen2, not in this repository, and will implement
+    // a different version of the abstract base class than the one this
+    // function declares to be returning... but nobody's
+    // complained yet that it's really broken, so we're just assuming that this
+    // is safe to cast away.
     new SqlTransformer() as any,
 
     new RefersToTransformer(),
