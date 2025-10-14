@@ -4,7 +4,7 @@
  * a single location, and isn't spread around the transformers, where they can
  * have different default behaviors.
  */
-export type TransformParameters = {
+export interface TransformParameters {
   // General Params
   enableTransformerCfnOutputs: boolean;
 

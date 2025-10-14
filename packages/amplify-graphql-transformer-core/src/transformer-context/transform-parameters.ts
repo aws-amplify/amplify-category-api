@@ -1,5 +1,8 @@
 import type { TransformParameters } from '@aws-amplify/graphql-transformer-interfaces';
 
+/**
+ * Default settings for the transform parameters
+ */
 export const defaultTransformParameters: TransformParameters = {
   // General Params
   enableTransformerCfnOutputs: true,

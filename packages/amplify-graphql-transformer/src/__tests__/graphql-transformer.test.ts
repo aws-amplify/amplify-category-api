@@ -47,6 +47,9 @@ describe('constructTransformerChain', () => {
   });
 });
 
+/**
+ * Default transform config for these unit tests
+ */
 const defaultTransformConfig: TransformConfig = {
   transformersFactoryArgs: {},
   transformParameters: {
