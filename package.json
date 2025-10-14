@@ -34,7 +34,7 @@
     "postpublish:release-api-plugin-stable": "./codebuild_specs/scripts/post_publish.sh",
     "prettier-check": "yarn prettier --check .",
     "prettier-write": "yarn prettier --write .",
-    "production-install": "yarn --frozen-lockfile --cache-folder ~/.cache/yarn",
+    "production-install": "yarn --ignore-engines --frozen-lockfile --cache-folder ~/.cache/yarn",
     "production-build": "yarn production-install && lerna run build --concurrency 3 --stream",
     "publish-to-verdaccio": "lerna publish --dist-tag=api-plugin-stable --yes --no-commit-hooks --no-push --exact --conventional-commits --no-git-tag-version --no-verify-access",
     "publish:beta": "lerna publish --exact --dist-tag=beta --preid=beta --conventional-commits --conventional-prerelease --message 'chore(release): Publish [ci skip]' --no-verify-access --yes",
@@ -97,8 +97,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "lerna": "^8",
-    "npm-check-updates": "^18",
-    "strip-ansi": "^6.0.0"
+    "npm-check-updates": "^18"
   },
   "workspaces": {
     "packages": [
