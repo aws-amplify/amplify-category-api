@@ -1,18 +1,33 @@
 import Amplify, { Auth } from 'aws-amplify';
 import {
-  CreateGroupRequest,
-  CreateGroupResponse,
-  AdminAddUserToGroupRequest,
-  CreateUserPoolResponse,
-  CreateUserPoolRequest,
-  CreateUserPoolClientRequest,
-  CreateUserPoolClientResponse,
-  DeleteUserPoolRequest,
-  DeleteUserRequest,
-} from 'aws-sdk/clients/cognitoidentityserviceprovider';
+  type CreateGroupRequest,
+  type CreateGroupResponse,
+  type AdminAddUserToGroupRequest,
+  type CreateUserPoolResponse,
+  type CreateUserPoolRequest,
+  type CreateUserPoolClientRequest,
+  type CreateUserPoolClientResponse,
+  type DeleteUserPoolRequest,
+  type DeleteUserRequest,
+  CognitoIdentityProviderClient,
+  AdminCreateUserCommand,
+  AdminSetUserPasswordCommand,
+  CreateGroupCommand,
+  AdminAddUserToGroupCommand,
+  CreateUserPoolCommand,
+  CreateUserPoolClientCommand,
+  DeleteUserPoolCommand,
+  AdminDeleteUserCommand,
+  DeleteUserCommand,
+} from '@aws-sdk/client-cognito-identity-provider';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { IAM as cfnIAM, Cognito as cfnCognito } from 'cloudform-types';
-import { CognitoIdentityServiceProvider as CognitoClient, CognitoIdentity } from 'aws-sdk';
+import {
+  CognitoIdentityClient,
+  CreateIdentityPoolCommand,
+  SetIdentityPoolRolesCommand,
+  DeleteIdentityPoolCommand,
+} from '@aws-sdk/client-cognito-identity';
 import TestStorage from './TestStorage';
 import { resolveTestRegion } from './testSetup';
 import { DeploymentResources } from 'graphql-transformer-core';
@@ -29,7 +44,7 @@ interface E2Econfiguration {
   USER_POOL_ID?: string;
 }
 
-const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: region });
+const cognitoClient = new CognitoIdentityProviderClient({ region: region });
 
 export function configureAmplify(userPoolId: string, userPoolClientId: string, identityPoolId?: string) {
   Amplify.configure({
@@ -45,20 +60,16 @@ export function configureAmplify(userPoolId: string, userPoolClientId: string, i
 }
 
 export async function signupUser(userPoolId: string, name: string, pw: string) {
-  return new Promise((res, rej) => {
-    const createUser = cognitoClient.adminCreateUser.bind(cognitoClient) as any;
-    createUser(
-      {
-        UserPoolId: userPoolId,
-        UserAttributes: [{ Name: 'email', Value: name }],
-        Username: name,
-        TemporaryPassword: pw,
-        DesiredDeliveryMediums: [],
-        MessageAction: 'SUPPRESS',
-      },
-      (err, data) => (err ? rej(err) : res(data)),
-    );
-  });
+  return cognitoClient.send(
+    new AdminCreateUserCommand({
+      UserPoolId: userPoolId,
+      UserAttributes: [{ Name: 'email', Value: name }],
+      Username: name,
+      TemporaryPassword: pw,
+      DesiredDeliveryMediums: [],
+      MessageAction: 'SUPPRESS',
+    }),
+  );
 }
 
 export async function authenticateUser(username: string, tempPassword: string, password: string) {
@@ -74,43 +85,40 @@ export async function authenticateUser(username: string, tempPassword: string, p
 }
 
 export async function deleteUser(accessToken: string): Promise<{}> {
-  return new Promise((res, rej) => {
-    const params: DeleteUserRequest = {
+  return cognitoClient.send(
+    new DeleteUserCommand({
       AccessToken: accessToken,
-    };
-    cognitoClient.deleteUser(params, (err, data) => (err ? rej(err) : res(data)));
-  });
+    }),
+  );
 }
 
 export async function createGroup(userPoolId: string, name: string, roleArn?: string): Promise<CreateGroupResponse> {
-  return new Promise((res, rej) => {
-    const params: CreateGroupRequest = {
+  return cognitoClient.send(
+    new CreateGroupCommand({
       GroupName: name,
       UserPoolId: userPoolId,
       ...(roleArn ? { RoleArn: roleArn } : {}),
-    };
-    cognitoClient.createGroup(params, (err, data) => (err ? rej(err) : res(data)));
-  });
+    }),
+  );
 }
 
 export async function addUserToGroup(groupName: string, username: string, userPoolId: string) {
-  return new Promise((res, rej) => {
-    const params: AdminAddUserToGroupRequest = {
+  return cognitoClient.send(
+    new AdminAddUserToGroupCommand({
       GroupName: groupName,
       Username: username,
       UserPoolId: userPoolId,
-    };
-    cognitoClient.adminAddUserToGroup(params, (err, data) => (err ? rej(err) : res(data)));
-  });
+    }),
+  );
 }
 
 export const createIdentityPool = async (
-  client: CognitoIdentity,
+  client: CognitoIdentityClient,
   identityPoolName: string,
   params: { providerName: string; clientId: string },
 ): Promise<string> => {
-  const idPool = await client
-    .createIdentityPool({
+  const idPool = await client.send(
+    new CreateIdentityPoolCommand({
       IdentityPoolName: identityPoolName,
       AllowUnauthenticatedIdentities: true,
       CognitoIdentityProviders: [
@@ -119,20 +127,20 @@ export const createIdentityPool = async (
           ClientId: params.clientId,
         },
       ],
-    })
-    .promise();
+    }),
+  );
 
   return idPool.IdentityPoolId;
 };
 
 export const setIdentityPoolRoles = async (
-  client: CognitoIdentity,
+  client: CognitoIdentityClient,
   identityPoolId: string,
   params: { authRoleArn: string; unauthRoleArn: string; providerName: string; clientId: string; useTokenAuth?: boolean },
 ): Promise<void> => {
   const useTokenAuth = params?.useTokenAuth ?? false;
-  await client
-    .setIdentityPoolRoles({
+  await client.send(
+    new SetIdentityPoolRolesCommand({
       IdentityPoolId: identityPoolId,
       Roles: {
         authenticated: params.authRoleArn,
@@ -148,13 +156,13 @@ export const setIdentityPoolRoles = async (
             },
           }
         : {}),
-    })
-    .promise();
+    }),
+  );
 };
 
-export async function createUserPool(client: CognitoClient, userPoolName: string): Promise<CreateUserPoolResponse> {
-  return new Promise((res, rej) => {
-    const params: CreateUserPoolRequest = {
+export async function createUserPool(client: CognitoIdentityProviderClient, userPoolName: string): Promise<CreateUserPoolResponse> {
+  return client.send(
+    new CreateUserPoolCommand({
       PoolName: userPoolName,
       Policies: {
         PasswordPolicy: {
@@ -177,42 +185,39 @@ export async function createUserPool(client: CognitoClient, userPoolName: string
       AdminCreateUserConfig: {
         AllowAdminCreateUserOnly: true,
       },
-    };
-    client.createUserPool(params, (err, data) => (err ? rej(err) : res(data)));
-  });
+    }),
+  );
 }
 
-export async function deleteUserPool(client: CognitoClient, userPoolId: string): Promise<{}> {
-  return new Promise((res, rej) => {
-    const params: DeleteUserPoolRequest = {
+export async function deleteUserPool(client: CognitoIdentityProviderClient, userPoolId: string): Promise<{}> {
+  return client.send(
+    new DeleteUserPoolCommand({
       UserPoolId: userPoolId,
-    };
-    client.deleteUserPool(params, (err, data) => (err ? rej(err) : res(data)));
-  });
+    }),
+  );
 }
 
-export async function deleteIdentityPool(client: CognitoIdentity, identityPoolId: string) {
-  await client
-    .deleteIdentityPool({
+export async function deleteIdentityPool(client: CognitoIdentityClient, identityPoolId: string) {
+  await client.send(
+    new DeleteIdentityPoolCommand({
       IdentityPoolId: identityPoolId,
-    })
-    .promise();
+    }),
+  );
 }
 
 export async function createUserPoolClient(
-  client: CognitoClient,
+  client: CognitoIdentityProviderClient,
   userPoolId: string,
   clientName: string,
 ): Promise<CreateUserPoolClientResponse> {
-  return new Promise((res, rej) => {
-    const params: CreateUserPoolClientRequest = {
+  return client.send(
+    new CreateUserPoolClientCommand({
       ClientName: clientName,
       UserPoolId: userPoolId,
       GenerateSecret: false,
       RefreshTokenValidity: 30,
-    };
-    client.createUserPoolClient(params, (err, data) => (err ? rej(err) : res(data)));
-  });
+    }),
+  );
 }
 
 export function addIAMRolesToCFNStack(out: DeploymentResources, e2eConfig: E2Econfiguration) {

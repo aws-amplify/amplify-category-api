@@ -3,8 +3,9 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { Output } from 'aws-sdk/clients/cloudformation';
-import { S3, CognitoIdentityServiceProvider as CognitoClient } from 'aws-sdk';
+import { type Output } from '@aws-sdk/client-cloudformation';
+import { CognitoIdentityProviderClient as CognitoClient } from '@aws-sdk/client-cognito-identity-provider';
+import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import { default as moment } from 'moment';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
@@ -31,8 +32,8 @@ jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient(region);
 const customS3Client = new S3Client(region);
-const awsS3Client = new S3({ region: region });
-const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: region });
+const awsS3Client = new AWSS3Client({ region: region });
+const cognitoClient = new CognitoClient({ region: region });
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `IndexWithClaimFieldAsSortKeyAuthTest-${BUILD_TIMESTAMP}`;
 const BUCKET_NAME = `appsync-index-with-claim-field-as-sk-test-${BUILD_TIMESTAMP}`;
@@ -109,11 +110,11 @@ beforeAll(async () => {
     expect(true).toEqual(false);
   }
   try {
-    await awsS3Client
-      .createBucket({
+    await awsS3Client.send(
+      new CreateBucketCommand({
         Bucket: BUCKET_NAME,
-      })
-      .promise();
+      }),
+    );
   } catch (e) {
     console.error(`Failed to create S3 bucket: ${e}`);
     expect(true).toEqual(false);

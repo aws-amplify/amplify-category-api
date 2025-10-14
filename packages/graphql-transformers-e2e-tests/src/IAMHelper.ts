@@ -1,15 +1,25 @@
-import { IAM, Credentials } from 'aws-sdk';
+import {
+  IAMClient,
+  CreateRoleCommand,
+  DeleteRoleCommand,
+  AttachRolePolicyCommand,
+  DetachRolePolicyCommand,
+  ListAttachedRolePoliciesCommand,
+  CreatePolicyCommand,
+  DeletePolicyCommand,
+  type Role,
+} from '@aws-sdk/client-iam';
+import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import { resolveTestRegion } from './testSetup';
-import { default as STS } from 'aws-sdk/clients/sts';
 
 const REGION = resolveTestRegion();
 
 export class IAMHelper {
-  client: IAM;
-  sts = new STS();
+  client: IAMClient;
+  sts = new STSClient({ region: REGION });
 
-  constructor(region: string = REGION, credentials?: Credentials) {
-    this.client = new IAM({
+  constructor(region: string = REGION, credentials?: any) {
+    this.client = new IAMClient({
       region,
       credentials,
     });
@@ -18,13 +28,9 @@ export class IAMHelper {
   /**
    * Creates auth and unauth roles
    */
-  async createRoles(
-    authRoleName: string,
-    unauthRoleName: string,
-    identityPoolId: string,
-  ): Promise<{ authRole: IAM.Role; unauthRole: IAM.Role }> {
-    const authRole = await this.client
-      .createRole({
+  async createRoles(authRoleName: string, unauthRoleName: string, identityPoolId: string): Promise<{ authRole: Role; unauthRole: Role }> {
+    const authRole = await this.client.send(
+      new CreateRoleCommand({
         RoleName: authRoleName,
         AssumeRolePolicyDocument: `{
         "Version": "2012-10-17",
@@ -46,10 +52,10 @@ export class IAMHelper {
           }
         ]
       }`,
-      })
-      .promise();
-    const unauthRole = await this.client
-      .createRole({
+      }),
+    );
+    const unauthRole = await this.client.send(
+      new CreateRoleCommand({
         RoleName: unauthRoleName,
         AssumeRolePolicyDocument: `{
         "Version": "2012-10-17",
@@ -71,15 +77,15 @@ export class IAMHelper {
           }
         ]
       }`,
-      })
-      .promise();
+      }),
+    );
 
     return { authRole: authRole.Role, unauthRole: unauthRole.Role };
   }
 
-  async createRoleForCognitoGroup(name: string, identityPoolId: string): Promise<IAM.Role> {
-    const role = await this.client
-      .createRole({
+  async createRoleForCognitoGroup(name: string, identityPoolId: string): Promise<Role> {
+    const role = await this.client.send(
+      new CreateRoleCommand({
         RoleName: name,
         AssumeRolePolicyDocument: `{
         "Version": "2012-10-17",
@@ -101,14 +107,14 @@ export class IAMHelper {
           }
         ]
       }`,
-      })
-      .promise();
+      }),
+    );
     return role.Role;
   }
 
   async createLambdaExecutionRole(name: string) {
-    return await this.client
-      .createRole({
+    return await this.client.send(
+      new CreateRoleCommand({
         AssumeRolePolicyDocument: `{
                 "Version": "2012-10-17",
                 "Statement": [
@@ -122,13 +128,13 @@ export class IAMHelper {
                 ]
             }`,
         RoleName: name,
-      })
-      .promise();
+      }),
+    );
   }
 
   async createLambdaExecutionPolicy(name: string) {
-    return await this.client
-      .createPolicy({
+    return await this.client.send(
+      new CreatePolicyCommand({
         PolicyDocument: `{
                 "Version": "2012-10-17",
                 "Statement": [
@@ -144,41 +150,41 @@ export class IAMHelper {
                 ]
             }`,
         PolicyName: name,
-      })
-      .promise();
+      }),
+    );
   }
 
   async attachPolicy(policyArn: string, roleName: string) {
-    return await this.client
-      .attachRolePolicy({
+    return await this.client.send(
+      new AttachRolePolicyCommand({
         PolicyArn: policyArn,
         RoleName: roleName,
-      })
-      .promise();
+      }),
+    );
   }
 
   async deletePolicy(policyArn: string) {
-    return await this.client.deletePolicy({ PolicyArn: policyArn }).promise();
+    return await this.client.send(new DeletePolicyCommand({ PolicyArn: policyArn }));
   }
 
   async deleteRole(roleName: string) {
-    return await this.client.deleteRole({ RoleName: roleName }).promise();
+    return await this.client.send(new DeleteRoleCommand({ RoleName: roleName }));
   }
 
   async detachPolicy(policyArn: string, roleName: string) {
-    return await this.client
-      .detachRolePolicy({
+    return await this.client.send(
+      new DetachRolePolicyCommand({
         PolicyArn: policyArn,
         RoleName: roleName,
-      })
-      .promise();
+      }),
+    );
   }
 
-  async createRole(name: string): Promise<IAM.Role> {
-    const accountDetails = await this.sts.getCallerIdentity({}).promise();
+  async createRole(name: string): Promise<Role> {
+    const accountDetails = await this.sts.send(new GetCallerIdentityCommand({}));
     const currentAccountId = accountDetails.Account;
-    const role = await this.client
-      .createRole({
+    const role = await this.client.send(
+      new CreateRoleCommand({
         RoleName: name,
         AssumeRolePolicyDocument: `{
           "Version": "2012-10-17",
@@ -193,13 +199,13 @@ export class IAMHelper {
             }
           ]
         }`,
-      })
-      .promise();
+      }),
+    );
     return role.Role;
   }
 
   async createAppSyncDataPolicy(policyName: string, region: string, appsyncApiIds: Array<string>) {
-    const accountDetails = await this.sts.getCallerIdentity({}).promise();
+    const accountDetails = await this.sts.send(new GetCallerIdentityCommand({}));
     const currentAccountId = accountDetails.Account;
     const policyStatement = {
       Version: '2012-10-17',
@@ -211,11 +217,11 @@ export class IAMHelper {
         },
       ],
     };
-    return await this.client
-      .createPolicy({
+    return await this.client.send(
+      new CreatePolicyCommand({
         PolicyDocument: JSON.stringify(policyStatement),
         PolicyName: policyName,
-      })
-      .promise();
+      }),
+    );
   }
 }

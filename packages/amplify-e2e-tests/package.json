@@ -58,7 +58,7 @@
     "yargs": "^15.1.0"
   },
   "peerDependencies": {
-    "@aws-amplify/amplify-cli-core": "^4.3.9"
+    "@aws-amplify/amplify-cli-core": "^4.4.3"
   },
   "devDependencies": {
     "@aws-amplify/graphql-transformer-interfaces": "3.12.1",

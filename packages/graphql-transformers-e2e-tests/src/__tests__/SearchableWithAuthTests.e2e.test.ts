@@ -5,11 +5,10 @@ import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { Output } from 'aws-sdk/clients/cloudformation';
-import { default as S3, CreateBucketRequest } from 'aws-sdk/clients/s3';
-import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { type Output } from '@aws-sdk/client-cloudformation';
+import { CognitoIdentityProviderClient as CognitoClient } from '@aws-sdk/client-cognito-identity-provider';
+import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { AWS } from '@aws-amplify/core';
 import { Auth } from 'aws-amplify';
 import gql from 'graphql-tag';
 import { default as moment } from 'moment';
@@ -28,8 +27,13 @@ import {
 } from '../cognitoUtils';
 import 'isomorphic-fetch';
 
-// To overcome of the way of how AmplifyJS picks up currentUserCredentials
-const anyAWS = AWS as any;
+// to deal with bug in cognito-identity-js
+(global as any).fetch = require('node-fetch');
+
+import { resolveTestRegion } from '../testSetup';
+
+const AWS_REGION = resolveTestRegion();
+
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
     if (name === 'improvePluralization') {
@@ -40,16 +44,6 @@ const featureFlags = {
   getNumber: jest.fn(),
   getObject: jest.fn(),
 };
-if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
-  delete anyAWS.config.credentials;
-}
-
-// to deal with bug in cognito-identity-js
-(global as any).fetch = require('node-fetch');
-
-import { resolveTestRegion } from '../testSetup';
-
-const AWS_REGION = resolveTestRegion();
 
 jest.setTimeout(9700000);
 
@@ -102,9 +96,9 @@ const REAL_PASSWORD = 'Password1234!';
 const WRITER_GROUP_NAME = 'writer';
 const ADMIN_GROUP_NAME = 'admin';
 
-const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: AWS_REGION });
+const cognitoClient = new CognitoClient({ region: AWS_REGION });
 const customS3Client = new S3Client(AWS_REGION);
-const awsS3Client = new S3({ region: AWS_REGION });
+const awsS3Client = new AWSS3Client({ region: AWS_REGION });
 
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {
@@ -114,12 +108,11 @@ function outputValueSelector(key: string) {
 }
 
 async function createBucket(name: string) {
-  return new Promise((res, rej) => {
-    const params: CreateBucketRequest = {
+  return awsS3Client.send(
+    new CreateBucketCommand({
       Bucket: name,
-    };
-    awsS3Client.createBucket(params, (err, data) => (err ? rej(err) : res(data)));
-  });
+    }),
+  );
 }
 
 beforeAll(async () => {

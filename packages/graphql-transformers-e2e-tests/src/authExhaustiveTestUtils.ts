@@ -3,9 +3,10 @@ import { AuthProvider, AuthStrategy, AuthTransformer, ModelOperation } from '@aw
 import { JWTToken } from '@aws-amplify/amplify-appsync-simulator';
 import { Auth } from 'aws-amplify';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { CognitoIdentity, S3 } from 'aws-sdk';
-import { Output } from 'aws-sdk/clients/cloudformation';
-import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
+import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
+import { type Output } from '@aws-sdk/client-cloudformation';
+import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 import { AppSyncAuthConfiguration, SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import gql from 'graphql-tag';
 import { plurality, ResourceConstants } from 'graphql-transformer-common';
@@ -27,15 +28,15 @@ import {
 } from './cognitoUtils';
 import { cleanupStackAfterTest, deploy } from './deployNestedStacks';
 import { IAMHelper } from './IAMHelper';
-import { S3Client } from './S3Client';
+import { S3Client as S3ClientUtil } from './S3Client';
 import { resolveTestRegion } from './testSetup';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 
 const REGION = resolveTestRegion();
 const IAM_HELPER = new IAMHelper(REGION);
 const CF = new CloudFormationClient(REGION);
-const COGNITO_CLIENT = new CognitoClient({ apiVersion: '2016-04-19', region: REGION });
-const IDENTITY_CLIENT = new CognitoIdentity({ apiVersion: '2014-06-30', region: REGION });
+const COGNITO_CLIENT = new CognitoIdentityProviderClient({ region: REGION });
+const IDENTITY_CLIENT = new CognitoIdentityClient({ region: REGION });
 
 const USERNAME1 = 'user1@test.com';
 const TMP_PASSWORD = 'Password123!';
@@ -459,8 +460,8 @@ export const deploySchema = async (
   jest.setTimeout(1000 * 60 * 30);
 
   try {
-    const awsS3Client = new S3({ region: REGION });
-    await awsS3Client.createBucket({ Bucket: bucketName }).promise();
+    const awsS3Client = new AWSS3Client({ region: REGION });
+    await awsS3Client.send(new CreateBucketCommand({ Bucket: bucketName }));
   } catch (e) {
     // fail early if we can't create the bucket
     expect(e).not.toBeDefined();
@@ -494,7 +495,7 @@ export const deploySchema = async (
     synthParameters,
   });
 
-  const customS3Client = new S3Client(REGION);
+  const customS3Client = new S3ClientUtil(REGION);
 
   const finishedStack = await deploy(
     customS3Client,
