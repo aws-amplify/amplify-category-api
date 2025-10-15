@@ -909,24 +909,42 @@ export interface TransformParameterProvider {
 }
 
 // @public (undocumented)
-export type TransformParameters = {
-    enableTransformerCfnOutputs: boolean;
-    shouldDeepMergeDirectiveConfigDefaults: boolean;
-    disableResolverDeduping: boolean;
-    sandboxModeEnabled: boolean;
+export interface TransformParameters {
+    // (undocumented)
     allowDestructiveGraphqlSchemaUpdates: boolean;
-    replaceTableUponGsiUpdate: boolean;
+    // (undocumented)
     allowGen1Patterns: boolean;
-    useSubUsernameForDefaultIdentityClaim: boolean;
-    populateOwnerFieldForStaticGroupAuth: boolean;
-    suppressApiKeyGeneration: boolean;
-    subscriptionsInheritPrimaryAuth: boolean;
-    secondaryKeyAsGSI: boolean;
+    // (undocumented)
+    disableResolverDeduping: boolean;
+    // (undocumented)
     enableAutoIndexQueryNames: boolean;
-    respectPrimaryKeyAttributesOnConnectionField: boolean;
-    enableSearchNodeToNodeEncryption: boolean;
+    // (undocumented)
     enableGen2Migration?: boolean;
-};
+    // (undocumented)
+    enableSearchEncryptionAtRest: boolean;
+    // (undocumented)
+    enableSearchNodeToNodeEncryption: boolean;
+    // (undocumented)
+    enableTransformerCfnOutputs: boolean;
+    // (undocumented)
+    populateOwnerFieldForStaticGroupAuth: boolean;
+    // (undocumented)
+    replaceTableUponGsiUpdate: boolean;
+    // (undocumented)
+    respectPrimaryKeyAttributesOnConnectionField: boolean;
+    // (undocumented)
+    sandboxModeEnabled: boolean;
+    // (undocumented)
+    secondaryKeyAsGSI: boolean;
+    // (undocumented)
+    shouldDeepMergeDirectiveConfigDefaults: boolean;
+    // (undocumented)
+    subscriptionsInheritPrimaryAuth: boolean;
+    // (undocumented)
+    suppressApiKeyGeneration: boolean;
+    // (undocumented)
+    useSubUsernameForDefaultIdentityClaim: boolean;
+}
 
 // @public (undocumented)
 export interface UserPoolConfig {
