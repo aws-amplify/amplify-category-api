@@ -1,6 +1,5 @@
 import * as path from 'path';
 import { $TSContext, AmplifyCategories, pathManager, stateManager } from '@aws-amplify/amplify-cli-core';
-import _ from 'lodash';
 import * as dotenv from 'dotenv';
 import { loadConfigurationForEnv, resolveAppId } from '@aws-amplify/amplify-provider-awscloudformation';
 import { ProcessedLambdaFunction } from '../../CFNParser/stack/types';
@@ -30,9 +29,9 @@ const getAwsCredentials = async (_, context: $TSContext): Promise<Record<string,
   }
   const awsConfigInfo = await loadConfigurationForEnv(context, env, appId);
   return {
-    AWS_ACCESS_KEY_ID: awsConfigInfo.accessKeyId,
-    AWS_SECRET_ACCESS_KEY: awsConfigInfo.secretAccessKey,
-    AWS_SESSION_TOKEN: awsConfigInfo.sessionToken,
+    AWS_ACCESS_KEY_ID: awsConfigInfo.credentials.accessKeyId,
+    AWS_SECRET_ACCESS_KEY: awsConfigInfo.credentials.secretAccessKey,
+    AWS_SESSION_TOKEN: awsConfigInfo.credentials.sessionToken,
   };
 };
 
