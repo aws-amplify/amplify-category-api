@@ -18,20 +18,24 @@ async function main() {
   const packageRoot = path.resolve('packages');
 
   const dirs = await fs.readdir(packageRoot);
-  const packageJsons = await Promise.all(dirs.map(async (dir) => JSON.parse(await fs.readFile(path.join(packageRoot, dir, 'package.json')))));
+  const packageJsons = await Promise.all(
+    dirs.map(async (dir) => JSON.parse(await fs.readFile(path.join(packageRoot, dir, 'package.json')))),
+  );
   const packageNames = packageJsons.map((packageJson) => packageJson.name);
 
   const locations = packageNames.map((packageName) => ({
     packageName,
     foundLocation: require.resolve(`${packageName}/package.json`, {
-      paths: [path.join('node_modules', '@aws-amplify', 'cli-internal', 'index.js')]
+      paths: [path.join('node_modules', '@aws-amplify', 'cli-internal', 'index.js')],
     }),
   }));
 
   const outsidePackageRoot = locations.filter(({ foundLocation }) => !foundLocation.startsWith(packageRoot));
 
   if (outsidePackageRoot.length > 0) {
-    console.log('❌ Some dependencies of @aws-amplify/cli-internal resolve to versions downloaded from the Internet, rather than produced here:');
+    console.log(
+      '❌ Some dependencies of @aws-amplify/cli-internal resolve to versions downloaded from the Internet, rather than produced here:',
+    );
     for (const { packageName, foundLocation } of outsidePackageRoot) {
       console.log(`  ${packageName} -> ${foundLocation}`);
     }
