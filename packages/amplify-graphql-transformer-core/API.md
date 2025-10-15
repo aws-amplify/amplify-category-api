@@ -13,6 +13,7 @@ import { AppSyncFunctionConfigurationProvider } from '@aws-amplify/graphql-trans
 import { AssetProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationConfig } from 'aws-cdk-lib/aws-appsync';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
+import * as cdk from 'aws-cdk-lib';
 import { CfnApiKey } from 'aws-cdk-lib/aws-appsync';
 import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
 import { CfnParameter } from 'aws-cdk-lib';

@@ -215,7 +215,7 @@ export const getCLIPath = (testingWithLatestCodebase = false) => {
     return process.platform === 'win32' ? 'amplify.exe' : 'amplify';
   }
 
-  return path.join(__dirname, '..', '..', '..', 'node_modules', 'amplify-cli-internal', 'bin', 'amplify');
+  return path.join(__dirname, '..', '..', '..', 'node_modules', '@aws-amplify/cli-internal', 'bin', 'amplify');
 };
 
 interface AddApiOptions {

@@ -233,6 +233,7 @@ function _setupE2ETestsLinux {
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
     # Ignore engines while we're still on Node 18.x
+    echo "Node version: $(node --version)"
     yarn config set ignore-engines true
     _installCLIFromLocalRegistry
     _loadTestAccountCredentials

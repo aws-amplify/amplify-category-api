@@ -62,7 +62,6 @@ module.exports = {
         format: null,
       },
     ],
-    '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],
     '@typescript-eslint/no-explicit-any': 'warn',
     '@typescript-eslint/method-signature-style': ['error', 'property'],
 
@@ -136,7 +135,6 @@ module.exports = {
     'no-lonely-if': 'error',
     'no-unneeded-ternary': 'error',
     'no-use-before-define': 'off',
-    'consistent-return': 'error',
     'no-bitwise': 'error',
     yoda: 'error',
     'no-var': 'error',
@@ -167,8 +165,6 @@ module.exports = {
 
     // function style
     'arrow-parens': ['error', 'always'],
-    'func-style': ['error', 'expression'],
-    'prefer-arrow/prefer-arrow-functions': ['error', { disallowPrototype: true }],
     // yes I know these are all supposed to be errors, but this one requires too much functional refactoring at the moment
     // we should still aim to keep functions small moving forward
     'max-lines-per-function': [
