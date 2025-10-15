@@ -3,9 +3,9 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { Output } from 'aws-sdk/clients/cloudformation';
-import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import { default as S3 } from 'aws-sdk/clients/s3';
+import { type Output } from '@aws-sdk/client-cloudformation';
+import { CognitoIdentityProviderClient as CognitoClient } from '@aws-sdk/client-cognito-identity-provider';
+import { S3Client as AWSS3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
 import moment from 'moment';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { CloudFormationClient } from '../CloudFormationClient';
@@ -21,12 +21,12 @@ import {
   setIdentityPoolRoles,
 } from '../cognitoUtils';
 import { resolveTestRegion } from '../testSetup';
-import { CognitoIdentity } from 'aws-sdk';
+import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
 import { IAMHelper } from '../IAMHelper';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
 import { Auth } from 'aws-amplify';
-import { default as STS } from 'aws-sdk/clients/sts';
+import { STSClient, GetCallerIdentityCommand, AssumeRoleCommand } from '@aws-sdk/client-sts';
 
 const region = resolveTestRegion();
 
@@ -36,11 +36,11 @@ describe('@model with @auth - iam access', () => {
   // setup clients
   const cf = new CloudFormationClient(region);
   const customS3Client = new S3Client(region);
-  const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: region });
-  const cognitoIdentityClient = new CognitoIdentity({ apiVersion: '2014-06-30', region: region });
-  const awsS3Client = new S3({ region: region });
+  const cognitoClient = new CognitoClient({ region: region });
+  const cognitoIdentityClient = new CognitoIdentityClient({ apiVersion: '2014-06-30', region: region });
+  const awsS3Client = new AWSS3Client({ region: region });
   const iamHelper = new IAMHelper(region);
-  const sts = new STS();
+  const sts = new STSClient({ region });
 
   // stack info
   const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
@@ -113,8 +113,8 @@ describe('@model with @auth - iam access', () => {
       }
       `;
 
-    await awsS3Client.createBucket({ Bucket: BUCKET_NAME_WITH_IAM_ACCESS }).promise();
-    await awsS3Client.createBucket({ Bucket: BUCKET_NAME_WITHOUT_IAM_ACCESS }).promise();
+    await awsS3Client.send(new CreateBucketCommand({ Bucket: BUCKET_NAME_WITH_IAM_ACCESS }));
+    await awsS3Client.send(new CreateBucketCommand({ Bucket: BUCKET_NAME_WITHOUT_IAM_ACCESS }));
 
     const userPoolResource = await createUserPool(cognitoClient, `${NAME_PREFIX}UserPool`);
     const userPoolId = userPoolResource.UserPool!.Id!;
@@ -224,13 +224,13 @@ describe('@model with @auth - iam access', () => {
     await Auth.signOut();
     const unauthCreds = await Auth.currentCredentials();
     const basicRoleCreds = (
-      await sts
-        .assumeRole({
+      await sts.send(
+        new AssumeRoleCommand({
           RoleArn: basicRole.Arn,
           RoleSessionName: BUILD_TIMESTAMP,
           DurationSeconds: 3600,
-        })
-        .promise()
+        }),
+      )
     ).Credentials;
 
     GRAPHQL_CLIENT_API_KEY_WITH_IAM_ACCESS = new AWSAppSyncClient({

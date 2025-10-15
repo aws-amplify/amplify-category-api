@@ -31,8 +31,8 @@
     "graphql-transformer-common": "4.34.0"
   },
   "devDependencies": {
-    "@types/fs-extra": "^8.0.1",
-    "aws-sdk": "^2.1113.0"
+    "@aws-sdk/client-rds-data": "3.624.0",
+    "@types/fs-extra": "^8.0.1"
   },
   "jest": {
     "collectCoverage": true,

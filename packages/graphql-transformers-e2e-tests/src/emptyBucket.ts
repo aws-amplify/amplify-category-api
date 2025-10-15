@@ -1,53 +1,49 @@
-import { default as S3 } from 'aws-sdk/clients/s3';
+import { S3Client, ListObjectsV2Command, DeleteObjectsCommand, DeleteBucketCommand, waitUntilBucketNotExists } from '@aws-sdk/client-s3';
 import { resolveTestRegion } from './testSetup';
 
 const region = resolveTestRegion();
-const awsS3Client = new S3({ region: region });
+const awsS3Client = new S3Client({ region: region });
 
 const emptyBucket = async (bucket: string) => {
-  let listObjects = await awsS3Client
-    .listObjectsV2({
+  let listObjects = await awsS3Client.send(
+    new ListObjectsV2Command({
       Bucket: bucket,
-    })
-    .promise();
+    }),
+  );
   while (true) {
     try {
       const objectIds = listObjects.Contents.map((content) => ({
         Key: content.Key,
       }));
-      const response = await awsS3Client
-        .deleteObjects({
+      const response = await awsS3Client.send(
+        new DeleteObjectsCommand({
           Bucket: bucket,
           Delete: {
             Objects: objectIds,
           },
-        })
-        .promise();
+        }),
+      );
     } catch (e) {
       console.error(`Error deleting objects: ${e}`);
     }
     if (listObjects.NextContinuationToken) {
-      listObjects = await awsS3Client
-        .listObjectsV2({
+      listObjects = await awsS3Client.send(
+        new ListObjectsV2Command({
           Bucket: bucket,
           ContinuationToken: listObjects.NextContinuationToken,
-        })
-        .promise();
+        }),
+      );
     } else {
       break;
     }
   }
   try {
-    await awsS3Client
-      .deleteBucket({
+    await awsS3Client.send(
+      new DeleteBucketCommand({
         Bucket: bucket,
-      })
-      .promise();
-    const params = {
-      Bucket: bucket,
-      $waiter: { maxAttempts: 10 },
-    };
-    await awsS3Client.waitFor('bucketNotExists', params).promise();
+      }),
+    );
+    await waitUntilBucketNotExists({ client: awsS3Client, maxWaitTime: 300 }, { Bucket: bucket });
   } catch (e) {
     console.error(`Error deleting bucket: ${e}`);
   }
