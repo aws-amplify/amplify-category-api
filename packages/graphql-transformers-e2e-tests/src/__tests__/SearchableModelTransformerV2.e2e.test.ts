@@ -5,7 +5,7 @@ import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-tran
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { default as moment } from 'moment';
 import { Output } from '@aws-sdk/client-cloudformation';
-import { CloudFormationClient } from '../CloudFormationClient';
+import { CloudFormationClient, sleepSecs } from '../CloudFormationClient';
 import { S3Client } from '../S3Client';
 import { GraphQLClient } from '../GraphQLClient';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
@@ -45,7 +45,7 @@ const createEntries = async () => {
   await runQuery(getCreateTodosMutation('test2', 'test2', 20));
   await runQuery(getCreateTodosMutation('test3', 'test3', 30));
   // Waiting for the ES Cluster + Streaming Lambda infra to be setup
-  await cf.wait(120, () => Promise.resolve());
+  await sleepSecs(120);
   await waitForESPropagate();
 };
 
@@ -85,6 +85,7 @@ beforeAll(async () => {
     await customS3Client.createBucket(BUCKET_NAME);
   } catch (e) {
     console.error(`Failed to create bucket: ${e}`);
+    throw e;
   }
   try {
     const out = testTransform({
@@ -99,14 +100,18 @@ beforeAll(async () => {
       cf,
       STACK_NAME,
       out,
-      {},
+      {
+        // Cheapest instance type that supports encryption at rest, and is available in
+        // most regions (m4 is not everywhere)
+        [ResourceConstants.PARAMETERS.OpenSearchInstanceType]: 'm5.large.elasticsearch',
+      },
       LOCAL_FS_BUILD_DIR,
       BUCKET_NAME,
       S3_ROOT_DIR_KEY,
       BUILD_TIMESTAMP,
     );
     // Arbitrary wait to make sure everything is ready.
-    await cf.wait(120, () => Promise.resolve());
+    await sleepSecs(120);
     expect(finishedStack).toBeDefined();
     const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
     const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput);
@@ -150,8 +155,17 @@ test('query for aggregate scalar results', async () => {
     {},
   );
   expect(searchResponse).toBeDefined();
-  const result = searchResponse.data.searchTodos.aggregateItems[0].result.value;
-  expect(result).toEqual(expectedValue);
+  expect(searchResponse.data).toMatchObject({
+    searchTodos: {
+      aggregateItems: [
+        {
+          result: {
+            value: expectedValue,
+          },
+        },
+      ],
+    },
+  });
 });
 
 test('query for aggregate bucket results', async () => {

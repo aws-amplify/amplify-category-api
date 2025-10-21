@@ -1,11 +1,15 @@
-/* eslint-disable */
+/* eslint-disable prefer-const */
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable func-style */
+/* eslint-disable quotes */
 import * as fs from 'fs';
 import * as path from 'path';
 import { DeploymentResources } from 'graphql-transformer-core';
 import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 import { deleteUserPool, deleteIdentityPool } from './cognitoUtils';
-import { CloudFormationClient } from './CloudFormationClient';
+import { CloudFormationClient, sleepSecs } from './CloudFormationClient';
 import { S3Client } from './S3Client';
 import emptyBucket from './emptyBucket';
 
@@ -125,7 +129,7 @@ export async function deploy(
   cf: CloudFormationClient,
   stackName: string,
   deploymentResources: DeploymentResources,
-  params: any,
+  params: Record<string, string>,
   buildPath: string,
   bucketName: string,
   rootKey: string,
@@ -141,6 +145,7 @@ export async function deploy(
   } catch (e) {
     console.error(`Error cleaning up build directory: ${e}`);
   }
+
   try {
     addAPIKeys(deploymentResources);
 
@@ -160,14 +165,17 @@ export async function deploy(
 
   try {
     const operation = initialDeployment ? 'createStack' : 'updateStack';
-    await cf[operation]({}, stackName, {
+    let response: Awaited<ReturnType<CloudFormationClient['updateStack' | 'createStack']>>;
+    response = await cf[operation]({}, stackName, {
       ...params,
       S3DeploymentBucket: bucketName,
       S3DeploymentRootKey: s3RootKey,
     });
+    console.log(`[${new Date().toISOString()}] Deploying ${response.StackId}`);
     const finishedStack = await cf.waitForStack(stackName);
+    await sleepSecs(10);
+    console.log(`[${new Date().toISOString()}] Deployment of ${response.StackId} complete, status ${finishedStack.StackStatus}`);
 
-    await cf.wait(10, () => Promise.resolve());
     return finishedStack;
   } catch (e) {
     console.error(`Error deploying cloudformation stack: ${e}`);
