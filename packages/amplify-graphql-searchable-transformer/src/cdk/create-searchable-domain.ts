@@ -12,6 +12,7 @@ export const createSearchableDomain = (
   parameterMap: Map<string, CfnParameter>,
   apiId: string,
   nodeToNodeEncryption: boolean,
+  encryptionAtRest: boolean,
 ): Domain => {
   const { OpenSearchEBSVolumeGB, OpenSearchInstanceType, OpenSearchInstanceCount } = ResourceConstants.PARAMETERS;
   const { OpenSearchDomainLogicalID } = ResourceConstants.RESOURCES;
@@ -26,6 +27,9 @@ export const createSearchableDomain = (
       volumeSize: parameterMap.get(OpenSearchEBSVolumeGB)?.valueAsNumber,
     },
     nodeToNodeEncryption,
+    encryptionAtRest: {
+      enabled: encryptionAtRest,
+    },
     zoneAwareness: {
       enabled: false,
     },
