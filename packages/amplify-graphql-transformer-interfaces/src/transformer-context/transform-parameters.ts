@@ -35,4 +35,4 @@ export interface TransformParameters {
 
   // Migration
   enableGen2Migration?: boolean;
-};
+}
