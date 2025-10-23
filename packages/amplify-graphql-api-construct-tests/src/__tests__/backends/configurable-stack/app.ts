@@ -52,6 +52,7 @@ interface StackConfig {
 const createUserPool = (prefix: string): { userPool: UserPool; userPoolClient: UserPoolClient } => {
   const userPool = new UserPool(stack, `${prefix}UserPool`, {
     deletionProtection: false,
+    selfSignUpEnabled: false,
   });
   userPool.applyRemovalPolicy(RemovalPolicy.DESTROY);
 

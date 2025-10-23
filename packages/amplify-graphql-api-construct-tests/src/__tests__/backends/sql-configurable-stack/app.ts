@@ -169,7 +169,7 @@ const createUserPool = (prefix: string, triggers?: Record<string, string>): { us
       username: true,
       email: false,
     },
-    selfSignUpEnabled: true,
+    selfSignUpEnabled: false,
     autoVerify: { email: true },
     standardAttributes: {
       email: {

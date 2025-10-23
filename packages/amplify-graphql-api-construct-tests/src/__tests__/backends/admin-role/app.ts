@@ -49,7 +49,9 @@ new CfnOutput(stack, 'ApiInvokerFunctionName', {
   value: apiInvoker.functionName,
 });
 
-const userPool = new UserPool(stack, 'Userpool');
+const userPool = new UserPool(stack, 'Userpool', {
+  selfSignUpEnabled: false,
+});
 const userPoolClient = new UserPoolClient(stack, 'UserpoolClient', { userPool });
 const identityPool = new IdentityPool(stack, 'Identitypool', {
   authenticationProviders: {
