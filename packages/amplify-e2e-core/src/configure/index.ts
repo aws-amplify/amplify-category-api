@@ -31,6 +31,7 @@ export const amplifyRegions = [
   'ap-southeast-1',
   'ap-southeast-2',
   'ap-south-1',
+  'ap-east-1',
   'ca-central-1',
   'me-south-1',
   'sa-east-1',
