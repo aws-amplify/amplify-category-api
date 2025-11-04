@@ -1,0 +1,11 @@
+input AMPLIFY {
+  globalAuthRule: AuthRule = { allow: public }
+}
+
+type Product @model {
+  id: ID!
+  name: String!
+  category: String! @index(name: "byCategory", queryField: "productsByCategory", projection: { type: ALL })
+  price: Float!
+  inStock: Boolean!
+}
