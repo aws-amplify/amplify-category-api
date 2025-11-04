@@ -176,4 +176,55 @@ describe('Index Projection Tests', () => {
     expect((result as any).data.productsByCategory.items.length).toEqual(1);
     expect((result as any).data.productsByCategory.items[0].inStock).toEqual(true);
   });
+
+  it('returns error when querying non-projected fields with INCLUDE projection', async () => {
+    updateApiSchema(projRoot, projectName, 'index_projection_include.graphql');
+    await amplifyPush(projRoot);
+
+    const meta = getProjectMeta(projRoot);
+    const region = meta.providers[providerName].Region as string;
+    const { output } = meta.api[projectName];
+    const url = output.GraphQLAPIEndpointOutput as string;
+    const apiKey = output.GraphQLAPIKeyOutput as string;
+
+    const api = new AWSAppSyncClient({ url, region, disableOffline: true, auth: { type: AUTH_TYPE.API_KEY, apiKey } });
+
+    await api.mutate({
+      mutation: gql`
+        mutation CreateProduct($input: CreateProductInput!) {
+          createProduct(input: $input) {
+            id
+            name
+            category
+            price
+            inStock
+          }
+        }
+      `,
+      fetchPolicy: 'no-cache',
+      variables: { input: { name: 'Phone', category: 'Electronics', price: 999.99, inStock: false } },
+    });
+
+    try {
+      await api.query({
+        query: gql`
+          query ProductsByCategory($category: String!) {
+            productsByCategory(category: $category) {
+              items {
+                id
+                category
+                inStock
+              }
+            }
+          }
+        `,
+        fetchPolicy: 'no-cache',
+        variables: { category: 'Electronics' },
+      });
+      fail('Expected query to fail when requesting non-projected field');
+    } catch (error: any) {
+      expect(error.graphQLErrors).toBeDefined();
+      expect(error.graphQLErrors.length).toBeGreaterThan(0);
+    }
+  });
 });

@@ -1694,7 +1694,7 @@ test('@index throws error when INCLUDE projection has no nonKeyAttributes', () =
       id: ID!
       category: String! @index(name: "byCategory", projection: { type: INCLUDE })
     }`;
-  
+
   expect(() =>
     testTransform({
       schema: inputSchema,
