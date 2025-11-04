@@ -11,7 +11,9 @@ import {
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
 
+// to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
+// to deal with subscriptions in node env
 (global as any).WebSocket = require('ws');
 
 const projectName = 'indexprojection';
@@ -44,13 +46,30 @@ describe('Index Projection Tests', () => {
     const api = new AWSAppSyncClient({ url, region, disableOffline: true, auth: { type: AUTH_TYPE.API_KEY, apiKey } });
 
     await api.mutate({
-      mutation: gql`mutation CreateProduct($input: CreateProductInput!) { createProduct(input: $input) { id name category } }`,
+      mutation: gql`
+        mutation CreateProduct($input: CreateProductInput!) {
+          createProduct(input: $input) {
+            id
+            name
+            category
+          }
+        }
+      `,
       fetchPolicy: 'no-cache',
       variables: { input: { name: 'Laptop', category: 'Electronics' } },
     });
 
     const result = await api.query({
-      query: gql`query ProductsByCategory($category: String!) { productsByCategory(category: $category) { items { id category } } }`,
+      query: gql`
+        query ProductsByCategory($category: String!) {
+          productsByCategory(category: $category) {
+            items {
+              id
+              category
+            }
+          }
+        }
+      `,
       fetchPolicy: 'no-cache',
       variables: { category: 'Electronics' },
     });
@@ -72,13 +91,33 @@ describe('Index Projection Tests', () => {
     const api = new AWSAppSyncClient({ url, region, disableOffline: true, auth: { type: AUTH_TYPE.API_KEY, apiKey } });
 
     await api.mutate({
-      mutation: gql`mutation CreateProduct($input: CreateProductInput!) { createProduct(input: $input) { id name category price } }`,
+      mutation: gql`
+        mutation CreateProduct($input: CreateProductInput!) {
+          createProduct(input: $input) {
+            id
+            name
+            category
+            price
+          }
+        }
+      `,
       fetchPolicy: 'no-cache',
       variables: { input: { name: 'Phone', category: 'Electronics', price: 999.99 } },
     });
 
     const result = await api.query({
-      query: gql`query ProductsByCategory($category: String!) { productsByCategory(category: $category) { items { id category name price } } }`,
+      query: gql`
+        query ProductsByCategory($category: String!) {
+          productsByCategory(category: $category) {
+            items {
+              id
+              category
+              name
+              price
+            }
+          }
+        }
+      `,
       fetchPolicy: 'no-cache',
       variables: { category: 'Electronics' },
     });
@@ -101,13 +140,35 @@ describe('Index Projection Tests', () => {
     const api = new AWSAppSyncClient({ url, region, disableOffline: true, auth: { type: AUTH_TYPE.API_KEY, apiKey } });
 
     await api.mutate({
-      mutation: gql`mutation CreateProduct($input: CreateProductInput!) { createProduct(input: $input) { id name category price inStock } }`,
+      mutation: gql`
+        mutation CreateProduct($input: CreateProductInput!) {
+          createProduct(input: $input) {
+            id
+            name
+            category
+            price
+            inStock
+          }
+        }
+      `,
       fetchPolicy: 'no-cache',
       variables: { input: { name: 'Tablet', category: 'Electronics', price: 499.99, inStock: true } },
     });
 
     const result = await api.query({
-      query: gql`query ProductsByCategory($category: String!) { productsByCategory(category: $category) { items { id category name price inStock } } }`,
+      query: gql`
+        query ProductsByCategory($category: String!) {
+          productsByCategory(category: $category) {
+            items {
+              id
+              category
+              name
+              price
+              inStock
+            }
+          }
+        }
+      `,
       fetchPolicy: 'no-cache',
       variables: { category: 'Electronics' },
     });
