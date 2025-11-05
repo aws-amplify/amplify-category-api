@@ -1702,3 +1702,29 @@ test('@index throws error when INCLUDE projection has no nonKeyAttributes', () =
     }),
   ).toThrow("@index 'byCategory': nonKeyAttributes must be specified when projection type is INCLUDE");
 });
+
+test('@index without projection defaults to ALL projection type', () => {
+  const inputSchema = `
+    type Product @model {
+      id: ID!
+      name: String!
+      category: String! @index(name: "byCategory", queryField: "productsByCategory")
+      price: Float!
+    }`;
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new IndexTransformer()],
+  });
+  const stack = out.stacks.Product;
+
+  AssertionTemplate.fromJSON(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'byCategory',
+        Projection: {
+          ProjectionType: 'ALL',
+        },
+      },
+    ],
+  });
+});

@@ -5,7 +5,7 @@ const definition = /* GraphQL */ `
   directive @${name}(name: String, sortKeyFields: [String], queryField: String, projection: ProjectionInput) repeatable on FIELD_DEFINITION
   
   input ProjectionInput {
-    type: ProjectionType!
+    type: ProjectionType
     nonKeyAttributes: [String]
   }
   

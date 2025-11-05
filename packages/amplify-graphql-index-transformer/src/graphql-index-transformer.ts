@@ -51,7 +51,7 @@ export class IndexTransformer extends TransformerPluginBase {
         directive,
       } as Required<IndexDirectiveConfiguration>,
       generateGetArgumentsInput(context.transformParameters),
-    ) as Required<IndexDirectiveConfiguration>;
+    );
 
     /**
      * Impute Optional Fields
