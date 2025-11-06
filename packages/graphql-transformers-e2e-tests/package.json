@@ -117,6 +117,7 @@
       "axios": "axios/dist/node/axios.cjs"
     },
     "testEnvironment": "../../FixJestEnvironment.js",
+    "testTimeout": 2000000,
     "coveragePathIgnorePatterns": [
       "/node_modules",
       "/__tests__/"

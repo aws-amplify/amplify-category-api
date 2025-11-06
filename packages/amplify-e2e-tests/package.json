@@ -129,7 +129,8 @@
     "coveragePathIgnorePatterns": [
       "/node_modules/",
       "/__tests__/"
-    ]
+    ],
+    "testTimeout": 2000000
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",

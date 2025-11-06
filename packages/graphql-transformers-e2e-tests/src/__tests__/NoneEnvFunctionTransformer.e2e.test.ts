@@ -15,7 +15,6 @@ import { IAMHelper } from '../IAMHelper';
 import { resolveTestRegion } from '../testSetup';
 
 const region = resolveTestRegion();
-jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient(region);
 const customS3Client = new S3Client(region);

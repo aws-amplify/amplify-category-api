@@ -14,7 +14,6 @@ import { resolveTestRegion } from '../testSetup';
 const region = resolveTestRegion();
 
 // tslint:disable: no-magic-numbers
-jest.setTimeout(60000 * 60);
 
 const cf = new CloudFormationClient(region);
 const customS3Client = new S3Client(region);

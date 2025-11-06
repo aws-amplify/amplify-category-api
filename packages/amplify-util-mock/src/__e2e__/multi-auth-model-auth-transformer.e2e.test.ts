@@ -8,8 +8,6 @@ import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
 import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
 import 'isomorphic-fetch';
 
-jest.setTimeout(2000000);
-
 const REGION = 'us-west-2';
 
 let ddbEmulator = null;

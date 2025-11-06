@@ -1,8 +1,6 @@
 import { AmplifyAppSyncSimulator } from '@aws-amplify/amplify-appsync-simulator';
 import { deploy, logDebug, GraphQLClient, defaultTransformParams, transformAndSynth } from '../__e2e__/utils';
 
-jest.setTimeout(2000000);
-
 const ECHO_FUNCTION_NAME = 'echoFunction';
 const HELLO_FUNCTION_NAME = 'hello';
 

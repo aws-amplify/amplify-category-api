@@ -5,7 +5,6 @@ import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { getSchemaDeployer, SchemaDeployer } from '../deploySchema';
 
 describe('@mapsTo transformer', () => {
-  jest.setTimeout(1000 * 60 * 15); // 15 minutes
   const transform = (schema: string) =>
     testTransform({
       schema,

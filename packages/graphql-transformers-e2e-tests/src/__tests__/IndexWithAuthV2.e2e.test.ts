@@ -24,8 +24,6 @@ import { resolveTestRegion } from '../testSetup';
 
 const AWS_REGION = resolveTestRegion();
 
-jest.setTimeout(2000000);
-
 const cf = new CloudFormationClient(AWS_REGION);
 const customS3Client = new S3Client(AWS_REGION);
 const awsS3Client = new AWSS3Client({ region: AWS_REGION });

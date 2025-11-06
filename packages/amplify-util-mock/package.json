@@ -94,6 +94,7 @@
   "jest": {
     "testRunner": "jest-circus/runner",
     "preset": "ts-jest",
+    "testTimeout": 2000000,
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },

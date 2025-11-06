@@ -9,7 +9,6 @@ let GRAPHQL_CLIENT = undefined;
 let ddbEmulator = null;
 let dbPath = null;
 let server: AmplifyAppSyncSimulator;
-jest.setTimeout(2000000);
 
 const runTransformer = async (validSchema: string) => {
   const transformer = new GraphQLTransform({

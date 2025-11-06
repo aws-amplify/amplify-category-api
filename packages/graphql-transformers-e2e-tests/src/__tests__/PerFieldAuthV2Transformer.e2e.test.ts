@@ -29,8 +29,6 @@ import { resolveTestRegion } from '../testSetup';
 
 const region = resolveTestRegion();
 
-jest.setTimeout(2000000);
-
 const cf = new CloudFormationClient(region);
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `PerFieldAuthV2Tests-${BUILD_TIMESTAMP}`;

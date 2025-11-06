@@ -4,8 +4,6 @@ import { KeyTransformer } from 'graphql-key-transformer';
 import { GraphQLClient } from './utils/graphql-client';
 import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
 
-jest.setTimeout(2000000);
-
 let GRAPHQL_ENDPOINT: string = undefined;
 let GRAPHQL_CLIENT: GraphQLClient = undefined;
 let ddbEmulator = null;

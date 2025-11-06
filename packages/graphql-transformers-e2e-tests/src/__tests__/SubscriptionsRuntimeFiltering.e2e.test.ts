@@ -45,8 +45,6 @@ const PROPAGATION_DELAY = 5000;
 const JEST_TIMEOUT = 2000000;
 const SUBSCRIPTION_TIMEOUT = 10000;
 
-jest.setTimeout(JEST_TIMEOUT);
-
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {
     const output = outputs.find((o: Output) => o.OutputKey === key);

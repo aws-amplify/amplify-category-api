@@ -457,8 +457,6 @@ export const deploySchema = async (
   buildTimestamp: string,
   synthParameters?: Partial<SynthParameters>,
 ) => {
-  jest.setTimeout(1000 * 60 * 30);
-
   try {
     const awsS3Client = new AWSS3Client({ region: REGION });
     await awsS3Client.send(new CreateBucketCommand({ Bucket: bucketName }));

@@ -30,8 +30,6 @@ import { resolveTestRegion } from '../testSetup';
 
 const region = resolveTestRegion();
 
-jest.setTimeout(2000000);
-
 const cf = new CloudFormationClient(region);
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {

@@ -9,7 +9,6 @@ let GRAPHQL_CLIENT = undefined;
 let ddbEmulator = null;
 let dbPath = null;
 let server;
-jest.setTimeout(2000000);
 
 beforeAll(async () => {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
