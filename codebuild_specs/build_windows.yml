@@ -4,6 +4,19 @@ env:
 phases:
   build:
     commands:
+      - |
+        Write-Host "Checking for NVM..."
+        if (-not (Get-Command nvm -ErrorAction SilentlyContinue)) {
+          Write-Host "NVM not found. Installing..."
+          $nvmUrl = "https://raw.githubusercontent.com/coreybutler/nvm-windows/master/nvm-setup.zip"
+          Invoke-WebRequest $nvmUrl -OutFile nvm-setup.zip
+          Expand-Archive nvm-setup.zip -DestinationPath "C:\nvm-temp"
+          $installer = Get-ChildItem "C:\nvm-temp" -Recurse | Where-Object { $_.Name -match "nvm-setup.exe" } | Select-Object -First 1
+          Start-Process -FilePath $installer.FullName -ArgumentList "/SILENT" -Wait
+          $env:Path += ";$($env:ProgramFiles)\nvm;$($env:APPDATA)\nvm"
+        }
+      - nvm install 20
+      - nvm use 20
       - yarn run production-build
       - yarn build-tests
 artifacts:
