@@ -26,6 +26,8 @@ import { resolveTestRegion } from '../testSetup';
 
 const region = resolveTestRegion();
 
+jest.setTimeout(2000000);
+
 describe('@model with @auth', () => {
   // setup clients
   const cf = new CloudFormationClient(region);

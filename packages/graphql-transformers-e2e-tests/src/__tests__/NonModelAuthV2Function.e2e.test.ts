@@ -34,6 +34,8 @@ import { resolveTestRegion } from '../testSetup';
 
 const REGION = resolveTestRegion();
 
+jest.setTimeout(2000000);
+
 const cf = new CloudFormationClient(REGION);
 const identityClient = new CognitoIdentityClient({ apiVersion: '2014-06-30', region: REGION });
 const cognitoClient = new CognitoClient({ region: REGION });

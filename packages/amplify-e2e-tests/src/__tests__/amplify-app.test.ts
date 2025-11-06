@@ -29,6 +29,8 @@ describe('amplify-app platform tests', () => {
     deleteProjectDir(projRoot);
   });
 
+  jest.setTimeout(1000 * 60 * 30); // 30 minutes is suffice as push operations are taking time
+
   it('should set up an android project', async () => {
     await amplifyAppAndroid(projRoot);
     validateProject(projRoot, 'android');

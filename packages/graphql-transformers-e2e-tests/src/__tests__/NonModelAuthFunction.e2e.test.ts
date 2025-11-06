@@ -38,6 +38,7 @@ const featureFlags = {
   getNumber: jest.fn(),
   getObject: jest.fn(),
 };
+jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient(REGION);
 const customS3Client = new S3Client(REGION);

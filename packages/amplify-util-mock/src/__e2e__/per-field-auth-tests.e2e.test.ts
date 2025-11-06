@@ -7,6 +7,8 @@ import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
 import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
 import 'isomorphic-fetch';
 
+jest.setTimeout(2000000);
+
 let GRAPHQL_ENDPOINT = undefined;
 let ddbEmulator = null;
 let dbPath = null;

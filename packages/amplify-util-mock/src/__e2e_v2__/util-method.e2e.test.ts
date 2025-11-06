@@ -16,6 +16,8 @@ let ddbEmulator = null;
 let dbPath = null;
 let server: AmplifyAppSyncSimulator;
 
+jest.setTimeout(2000000);
+
 const runTransformer = async (validSchema: string) =>
   transformAndSynth({
     ...defaultTransformParams,

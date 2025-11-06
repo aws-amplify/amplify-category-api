@@ -17,6 +17,8 @@ import { resolveTestRegion } from '../testSetup';
 
 const AWS_REGION = resolveTestRegion();
 
+jest.setTimeout(2000000);
+
 describe('V2 transformer options', () => {
   const cf = new CloudFormationClient(AWS_REGION);
   const customS3Client = new S3Client(AWS_REGION);

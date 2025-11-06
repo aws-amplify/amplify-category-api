@@ -4,6 +4,8 @@ import { VersionedModelTransformer } from 'graphql-versioned-transformer';
 import { GraphQLClient } from './utils/graphql-client';
 import { deploy, launchDDBLocal, terminateDDB, logDebug } from './utils/index';
 
+jest.setTimeout(20000);
+
 let GRAPHQL_CLIENT = undefined;
 let ddbEmulator = null;
 let dbPath = null;

@@ -37,6 +37,8 @@ import { resolveTestRegion } from '../testSetup';
 
 const AWS_REGION = resolveTestRegion();
 
+jest.setTimeout(2000000);
+
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {
     const output = outputs.find((o: Output) => o.OutputKey === key);

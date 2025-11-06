@@ -30,6 +30,8 @@ import { STSClient, GetCallerIdentityCommand, AssumeRoleCommand } from '@aws-sdk
 
 const region = resolveTestRegion();
 
+jest.setTimeout(2000000);
+
 describe('@model with @auth - iam access', () => {
   // setup clients
   const cf = new CloudFormationClient(region);

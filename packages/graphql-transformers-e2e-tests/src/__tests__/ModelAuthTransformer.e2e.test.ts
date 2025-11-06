@@ -32,6 +32,7 @@ import { resolveTestRegion } from '../testSetup';
 
 const region = resolveTestRegion();
 
+jest.setTimeout(2000000);
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
     if (name === 'improvePluralization') {

@@ -51,6 +51,7 @@ describe('emulator operations', () => {
   beforeEach(async () => {
     ensureNoDbPath();
     emulators = [];
+    jest.setTimeout(40 * 1000);
   });
 
   afterEach(async () => {

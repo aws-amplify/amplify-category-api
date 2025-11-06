@@ -7,6 +7,8 @@ let ddbEmulator = null;
 let dbPath = null;
 let server: AmplifyAppSyncSimulator;
 
+jest.setTimeout(20000);
+
 describe('@model with relational transformers', () => {
   beforeAll(async () => {
     const validSchema = `

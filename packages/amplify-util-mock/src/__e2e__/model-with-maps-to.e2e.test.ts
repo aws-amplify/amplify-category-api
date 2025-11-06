@@ -1,6 +1,8 @@
 import { GraphQLClient } from './utils/graphql-client';
 import { defaultTransformParams, deploy, launchDDBLocal, logDebug, terminateDDB, transformAndSynth } from './utils/index';
 
+jest.setTimeout(1000 * 30);
+
 let graphqlClient;
 let server;
 

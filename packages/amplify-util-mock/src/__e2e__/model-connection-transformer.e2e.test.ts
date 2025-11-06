@@ -11,6 +11,7 @@ let GRAPHQL_ENDPOINT = undefined;
 let ddbEmulator = null;
 let dbPath = null;
 let server;
+jest.setTimeout(20000);
 beforeAll(async () => {
   const validSchema = `
     type Post @model {

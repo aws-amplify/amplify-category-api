@@ -56,6 +56,8 @@ const PROPAGATION_DELAY = 5000;
 const JEST_TIMEOUT = 2000000;
 const SUBSCRIPTION_TIMEOUT = 10000;
 
+jest.setTimeout(JEST_TIMEOUT);
+
 const cf = new CloudFormationClient(AWS_REGION);
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `SubscriptionAuthTests-${BUILD_TIMESTAMP}`;

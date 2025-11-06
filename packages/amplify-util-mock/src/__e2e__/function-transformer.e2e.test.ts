@@ -4,6 +4,8 @@ import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core'
 import { GraphQLClient } from './utils/graphql-client';
 import { deploy, logDebug } from './utils/index';
 
+jest.setTimeout(2000000);
+
 const ECHO_FUNCTION_NAME = `echoFunction`;
 const HELLO_FUNCTION_NAME = `hello`;
 
