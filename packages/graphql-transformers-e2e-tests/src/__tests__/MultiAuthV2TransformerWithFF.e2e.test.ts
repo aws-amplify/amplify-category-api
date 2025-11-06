@@ -734,7 +734,7 @@ test(`'private' authStrategy`, async () => {
           id: postId,
         },
       }),
-    ).rejects.toThrowError('Network error: Response not successful: Received status code 401');
+    ).rejects.toThrow('Network error: Response not successful: Received status code 401');
   } catch (e) {
     expect(e).not.toBeDefined();
   }
