@@ -110,8 +110,11 @@
       "default",
       "jest-junit"
     ],
-    "testURL": "http://localhost/",
+    "testEnvironmentOptions": {
+      "url": "http://localhost/"
+    },
     "testRegex": "(src/(__tests__|__e2e__|__e2e_v2__)/.*.test.ts)$",
+    "testPathIgnorePatterns": [],
     "moduleFileExtensions": [
       "ts",
       "tsx",
@@ -120,9 +123,6 @@
       "json",
       "node"
     ],
-    "moduleNameMapper": {
-      "axios": "axios/dist/node/axios.cjs"
-    },
     "testEnvironment": "../../FixJestEnvironment.js",
     "coveragePathIgnorePatterns": [
       "/__tests__/",
