@@ -70,7 +70,7 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
-    "collectCoverage": true,
+    "collectCoverage": false,
     "coverageProvider": "v8",
     "collectCoverageFrom": [
       "src/**/*.ts"
