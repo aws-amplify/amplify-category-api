@@ -53,7 +53,7 @@ test('KeyTransformer should fail if more than 1 @key is provided without a name.
     featureFlags,
   });
 
-  expect(() => transformer.transform(invalidSchema)).toThrowError(InvalidDirectiveError);
+  expect(() => transformer.transform(invalidSchema)).toThrow(InvalidDirectiveError);
 });
 
 test('KeyTransformer should fail if more than 1 @key is provided with the same name.', () => {
@@ -69,7 +69,7 @@ test('KeyTransformer should fail if more than 1 @key is provided with the same n
     featureFlags,
   });
 
-  expect(() => transformer.transform(invalidSchema)).toThrowError(InvalidDirectiveError);
+  expect(() => transformer.transform(invalidSchema)).toThrow(InvalidDirectiveError);
 });
 
 test('KeyTransformer should fail if referencing a field that does not exist.', () => {
@@ -85,7 +85,7 @@ test('KeyTransformer should fail if referencing a field that does not exist.', (
     featureFlags,
   });
 
-  expect(() => transformer.transform(invalidSchema)).toThrowError(InvalidDirectiveError);
+  expect(() => transformer.transform(invalidSchema)).toThrow(InvalidDirectiveError);
 });
 
 test('that a primary @key fails if pointing to nullable fields.', () => {
@@ -101,7 +101,7 @@ test('that a primary @key fails if pointing to nullable fields.', () => {
     featureFlags,
   });
 
-  expect(() => transformer.transform(invalidSchema)).toThrowError(InvalidDirectiveError);
+  expect(() => transformer.transform(invalidSchema)).toThrow(InvalidDirectiveError);
 });
 
 test('that model with an LSI but no primary sort key will fail.', () => {
@@ -116,7 +116,7 @@ test('that model with an LSI but no primary sort key will fail.', () => {
     transformers: [new KeyTransformer()],
     featureFlags,
   });
-  expect(() => transformer.transform(invalidSchema)).toThrowError(InvalidDirectiveError);
+  expect(() => transformer.transform(invalidSchema)).toThrow(InvalidDirectiveError);
 });
 
 test('KeyTransformer should fail if a non-existing type field is defined as key field.', () => {
@@ -132,7 +132,7 @@ test('KeyTransformer should fail if a non-existing type field is defined as key 
     featureFlags,
   });
 
-  expect(() => transformer.transform(invalidSchema)).toThrowError(InvalidDirectiveError);
+  expect(() => transformer.transform(invalidSchema)).toThrow(InvalidDirectiveError);
 });
 
 test('Check sortDirection validation code present in list resolver code for simple keys', () => {

@@ -29,7 +29,7 @@ describe('AmplifyCLIFeatureFlagAdapter', () => {
         throw new Error('Error');
       });
       const flagName = 'testFlag';
-      expect(() => ff.getBoolean(flagName)).toThrowError();
+      expect(() => ff.getBoolean(flagName)).toThrow();
       expect(FeatureFlags.getBoolean).toHaveBeenCalledWith(`${transformerFeatureFlagPrefix}.${flagName}`);
     });
   });
@@ -58,7 +58,7 @@ describe('AmplifyCLIFeatureFlagAdapter', () => {
         throw new Error('Error');
       });
       const flagName = 'testFlag';
-      expect(() => ff.getNumber(flagName)).toThrowError();
+      expect(() => ff.getNumber(flagName)).toThrow();
       expect(FeatureFlags.getNumber).toHaveBeenCalledWith(`${transformerFeatureFlagPrefix}.${flagName}`);
     });
   });

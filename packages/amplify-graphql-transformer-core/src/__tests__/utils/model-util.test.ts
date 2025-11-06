@@ -188,7 +188,7 @@ describe('model-util', () => {
       `;
       const ast = parse(schema);
       const model = getType(ast, 'Post')!;
-      expect(() => getPrimaryKeyFieldNodes(model)).toThrowError('Invalid sort key field name in primary key directive: notFound');
+      expect(() => getPrimaryKeyFieldNodes(model)).toThrow('Invalid sort key field name in primary key directive: notFound');
     });
   });
 
@@ -293,7 +293,7 @@ describe('model-util', () => {
       `;
       const ast = parse(schema);
       const model = getType(ast, 'Post')!;
-      expect(() => getPrimaryKeyFields(model)).toThrowError('Invalid sort key field name in primary key directive: notFound');
+      expect(() => getPrimaryKeyFields(model)).toThrow('Invalid sort key field name in primary key directive: notFound');
     });
   });
 

@@ -30,7 +30,7 @@ test('fails if used as a has one relation', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
     }),
-  ).toThrowError('@hasMany must be used with a list. Use @hasOne for non-list types.');
+  ).toThrow('@hasMany must be used with a list. Use @hasOne for non-list types.');
 });
 
 test('fails if the provided indexName does not exist.', () => {
@@ -52,7 +52,7 @@ test('fails if the provided indexName does not exist.', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
     }),
-  ).toThrowError('Index notDefault does not exist for model Test1');
+  ).toThrow('Index notDefault does not exist for model Test1');
 });
 
 test('fails if a partial sort key is provided', () => {
@@ -74,7 +74,7 @@ test('fails if a partial sort key is provided', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new IndexTransformer(), new HasManyTransformer()],
     }),
-  ).toThrowError('Invalid @hasMany directive on testObj. Partial sort keys are not accepted.');
+  ).toThrow('Invalid @hasMany directive on testObj. Partial sort keys are not accepted.');
 });
 
 test('accepts @hasMany without a sort key', () => {
@@ -96,7 +96,7 @@ test('accepts @hasMany without a sort key', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new IndexTransformer(), new HasManyTransformer()],
     }),
-  ).not.toThrowError();
+  ).not.toThrow();
 });
 
 test('fails if provided sort key type does not match custom index sort key type', () => {
@@ -118,7 +118,7 @@ test('fails if provided sort key type does not match custom index sort key type'
       schema: inputSchema,
       transformers: [new ModelTransformer(), new IndexTransformer(), new HasManyTransformer()],
     }),
-  ).toThrowError('email field is not of type ID');
+  ).toThrow('email field is not of type ID');
 });
 
 test('fails if partition key type passed in does not match custom index partition key type', () => {
@@ -140,7 +140,7 @@ test('fails if partition key type passed in does not match custom index partitio
       schema: inputSchema,
       transformers: [new ModelTransformer(), new IndexTransformer(), new HasManyTransformer()],
     }),
-  ).toThrowError('email field is not of type ID');
+  ).toThrow('email field is not of type ID');
 });
 
 test('fails if @hasMany was used on an object that is not a model type', () => {
@@ -161,7 +161,7 @@ test('fails if @hasMany was used on an object that is not a model type', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasManyTransformer()],
     }),
-  ).toThrowError('@hasMany must be on an @model object type field.');
+  ).toThrow('@hasMany must be on an @model object type field.');
 });
 
 test('fails if @hasMany was used with a related type that is not a model', () => {
@@ -186,7 +186,7 @@ test('fails if @hasMany was used with a related type that is not a model', () =>
         Test1: DDB_DEFAULT_DATASOURCE_STRATEGY,
       },
     }),
-  ).toThrowError('Object type Test1 must be annotated with @model.');
+  ).toThrow('Object type Test1 must be annotated with @model.');
 });
 
 test('fails if the related type does not exist', () => {
@@ -207,7 +207,7 @@ test('fails if the related type does not exist', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasManyTransformer()],
     }),
-  ).toThrowError('Unknown type "Test2". Did you mean "Test" or "Test1"?');
+  ).toThrow('Unknown type "Test2". Did you mean "Test" or "Test1"?');
 });
 
 test('fails if an empty list of fields is passed in', () => {
@@ -228,7 +228,7 @@ test('fails if an empty list of fields is passed in', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasManyTransformer()],
     }),
-  ).toThrowError('No fields passed to @hasMany directive.');
+  ).toThrow('No fields passed to @hasMany directive.');
 });
 
 test('fails if any of the fields passed in are not in the parent model', () => {
@@ -250,7 +250,7 @@ test('fails if any of the fields passed in are not in the parent model', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
     }),
-  ).toThrowError('name is not a field in Test');
+  ).toThrow('name is not a field in Test');
 });
 
 test('has many query case', () => {
@@ -746,7 +746,7 @@ test('@hasMany and @hasMany cannot point at each other if DataStore is enabled',
       },
       transformers: [new ModelTransformer(), new HasOneTransformer(), new HasManyTransformer()],
     }),
-  ).toThrowError('Blog and Post cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.');
+  ).toThrow('Blog and Post cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.');
 });
 
 test('recursive @hasMany relationships are supported if DataStore is enabled', () => {

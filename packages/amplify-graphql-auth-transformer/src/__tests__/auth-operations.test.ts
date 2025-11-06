@@ -29,7 +29,7 @@ test('invalid granular read operation at the field level', () => {
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
     }),
-  ).toThrowError("'get' operation is not allowed at the field level.");
+  ).toThrow("'get' operation is not allowed at the field level.");
 });
 
 test('renamed subscriptions should generate auth resolver', () => {
@@ -85,7 +85,7 @@ test('invalid read list operation combination', () => {
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
     }),
-  ).toThrowError(
+  ).toThrow(
     "'list' operations are specified in addition to 'read'. Either remove 'read' to limit access only to 'list' or only keep 'read' to grant all get,list,search,listen,sync access.",
   );
 });
@@ -108,7 +108,7 @@ test('invalid read get operation combination', () => {
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
     }),
-  ).toThrowError(
+  ).toThrow(
     "'get' operations are specified in addition to 'read'. Either remove 'read' to limit access only to 'get' or only keep 'read' to grant all get,list,search,listen,sync access.",
   );
 });

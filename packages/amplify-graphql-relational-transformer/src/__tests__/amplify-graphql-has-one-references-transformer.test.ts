@@ -25,7 +25,7 @@ test('fails if @hasOne was used on an object that is not a model type', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('@hasOne must be on an @model object type field.');
+  ).toThrow('@hasOne must be on an @model object type field.');
 });
 
 test('fails if @hasOne was used with a related type that is not a model', () => {
@@ -48,7 +48,7 @@ test('fails if @hasOne was used with a related type that is not a model', () => 
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('Object type Team must be annotated with @model.');
+  ).toThrow('Object type Team must be annotated with @model.');
 });
 
 test('fails if the related type does not exist', () => {
@@ -72,7 +72,7 @@ test('fails if the related type does not exist', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('Unknown type "Team1". Did you mean "Team"?');
+  ).toThrow('Unknown type "Team1". Did you mean "Team"?');
 });
 
 test('fails if an empty list of fields is passed in', () => {
@@ -95,7 +95,7 @@ test('fails if an empty list of fields is passed in', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('Invalid @hasOne directive on team - empty references list');
+  ).toThrow('Invalid @hasOne directive on team - empty references list');
 });
 
 test('fails if any of the fields passed in are not in the related model', () => {
@@ -119,7 +119,7 @@ test('fails if any of the fields passed in are not in the related model', () => 
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('foo is not a field in Team');
+  ).toThrow('foo is not a field in Team');
 });
 
 test('fails if @hasOne field does not match related type primary key', () => {
@@ -143,7 +143,7 @@ test('fails if @hasOne field does not match related type primary key', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError(
+  ).toThrow(
     'Type mismatch between primary key field(s) of Project and reference fields of Team. Type of Project.id does not match type of Team.projectID',
   );
 });
@@ -171,7 +171,7 @@ test('fails if sort key type does not match related type sort key', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError(
+  ).toThrow(
     'Type mismatch between primary key field(s) of Project and reference fields of Team. Type of Project.resourceID does not match type of Team.projectResourceID',
   );
 });
@@ -198,7 +198,7 @@ test('fails if partial sort key is provided', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('The number of references provided to @hasOne must match the number of primary keys on Project.');
+  ).toThrow('The number of references provided to @hasOne must match the number of primary keys on Project.');
 });
 
 test('uni-directional @hasOne fails', () => {
@@ -221,9 +221,7 @@ test('uni-directional @hasOne fails', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError(
-    'Uni-directional relationships are not supported. Add a @belongsTo field in Test1 to match the @hasOne field Test.testObj',
-  );
+  ).toThrow('Uni-directional relationships are not supported. Add a @belongsTo field in Test1 to match the @hasOne field Test.testObj');
 });
 
 test('fails if used as a has many relation', () => {
@@ -246,7 +244,7 @@ test('fails if used as a has many relation', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('@hasOne cannot be used with lists. Use @hasMany instead.');
+  ).toThrow('@hasOne cannot be used with lists. Use @hasMany instead.');
 });
 
 test('fails if object type fields are provided', () => {
@@ -274,7 +272,7 @@ test('fails if object type fields are provided', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('All reference fields provided to @hasOne must be scalar or enum fields.');
+  ).toThrow('All reference fields provided to @hasOne must be scalar or enum fields.');
 });
 
 test('fails if primary relational field is required', () => {
@@ -296,7 +294,7 @@ test('fails if primary relational field is required', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError("@hasOne fields must not be required. Change 'Team.project: Project!' to 'Team.project: Project'");
+  ).toThrow("@hasOne fields must not be required. Change 'Team.project: Project!' to 'Team.project: Project'");
 });
 
 test('fails if related relational field is required', () => {
@@ -318,7 +316,7 @@ test('fails if related relational field is required', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError("@belongsTo fields must not be required. Change 'Project.team: Team!' to 'Project.team: Team'");
+  ).toThrow("@belongsTo fields must not be required. Change 'Project.team: Team!' to 'Project.team: Team'");
 });
 
 test('fails with inconsistent nullability of reference fields', () => {
@@ -342,7 +340,7 @@ test('fails with inconsistent nullability of reference fields', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError(
+  ).toThrow(
     "Reference fields defined on related type: 'Project' for @hasOne(references: ['teamId', 'teamMantra']) Team.project relationship have inconsistent nullability." +
       "\nRequired fields: 'teamId'" +
       "\nNullable fields: 'teamMantra'" +
@@ -509,7 +507,7 @@ test('fails if reference field has different type than primary key with implicit
     schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
   };
-  expect(() => testTransform(transformOptions)).toThrowError(
+  expect(() => testTransform(transformOptions)).toThrow(
     'Type mismatch between primary key field(s) of Team and reference fields of Member. Type of Team.id does not match type of Member.teamID',
   );
 });
@@ -531,7 +529,7 @@ test('fails if reference field has different type than primary key with explicit
     schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
   };
-  expect(() => testTransform(transformOptions)).toThrowError(
+  expect(() => testTransform(transformOptions)).toThrow(
     'Type mismatch between primary key field(s) of Team and reference fields of Member. Type of Team.id does not match type of Member.teamID',
   );
 });
@@ -553,7 +551,7 @@ test('fails if reference field has different type than primary key with explicit
     schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
   };
-  expect(() => testTransform(transformOptions)).toThrowError(
+  expect(() => testTransform(transformOptions)).toThrow(
     'Type mismatch between primary key field(s) of Team and reference fields of Member. Type of Team.id does not match type of Member.teamID',
   );
 });
@@ -578,7 +576,7 @@ test('fails to validate if reference lengths do not match', () => {
     transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
   };
 
-  expect(() => testTransform(transformParams)).toThrowError(
+  expect(() => testTransform(transformParams)).toThrow(
     'Uni-directional relationships are not supported. Add a @belongsTo field in Related to match the @hasOne field Primary.related, and ' +
       'ensure the number and type of reference fields match the number and type of primary key fields in Primary.',
   );

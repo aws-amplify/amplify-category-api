@@ -8,7 +8,7 @@ describe('NoopFeatureFlagProvider', () => {
   });
 
   test('getBoolean to throw error if no default value is passed', () => {
-    expect(() => ff.getBoolean('testFlag')).toThrowError('No value found for feature testFlag');
+    expect(() => ff.getBoolean('testFlag')).toThrow('No value found for feature testFlag');
   });
 
   test('getNumber to return default value', () => {
@@ -16,6 +16,6 @@ describe('NoopFeatureFlagProvider', () => {
   });
 
   test('getNumber to throw error if no default value is passed', () => {
-    expect(() => ff.getNumber('testNumberFlag')).toThrowError('No value found for feature testNumberFlag');
+    expect(() => ff.getNumber('testNumberFlag')).toThrow('No value found for feature testNumberFlag');
   });
 });

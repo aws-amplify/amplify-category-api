@@ -457,7 +457,7 @@ describe('ModelTransformer:', () => {
         schema: invalidSchema,
         transformers: [new ModelTransformer()],
       }),
-    ).toThrowError("'Subscription' is a reserved type name and currently in use within the default schema element.");
+    ).toThrow("'Subscription' is a reserved type name and currently in use within the default schema element.");
   });
 
   it('should not add default primary key when ID is defined', () => {
@@ -1781,7 +1781,7 @@ describe('ModelTransformer:', () => {
           transformers: [new ModelTransformer()],
           dataSourceStrategies: constructDataSourceStrategies(invalidSchema, makeStrategy(dbType)),
         }),
-      ).toThrowError('SQL model "Note" must contain a primary key field');
+      ).toThrow('SQL model "Note" must contain a primary key field');
     });
 
     it('should compute and render the array fields correctly in the resolver', () => {

@@ -83,20 +83,20 @@ describe('API resource information utils', () => {
 
   it('getAppSyncAPIName throws when there is no API added', () => {
     stateManager_mock.getMeta = jest.fn().mockReturnValueOnce(metaWithNoAPI);
-    expect(() => getAppSyncAPIName()).toThrowError(
+    expect(() => getAppSyncAPIName()).toThrow(
       'You do not have AppSync API added. Use "amplify add api" or "amplify import api" to add one to your project.',
     );
   });
 
   it('ensureNoAppSyncAPIExists throws when there is an API added', () => {
     stateManager_mock.getMeta = jest.fn().mockReturnValueOnce(metaWithMultipleAPIs);
-    expect(() => ensureNoAppSyncAPIExists()).toThrowError(
+    expect(() => ensureNoAppSyncAPIExists()).toThrow(
       'You already have an AppSync API named api1 in your project. Use the "amplify update api" command to update your existing AppSync API.',
     );
   });
 
   it('ensureNoAppSyncAPIExists does not throw when there is no API added', () => {
     stateManager_mock.getMeta = jest.fn().mockReturnValueOnce(metaWithNoAPI);
-    expect(() => ensureNoAppSyncAPIExists()).not.toThrowError();
+    expect(() => ensureNoAppSyncAPIExists()).not.toThrow();
   });
 });

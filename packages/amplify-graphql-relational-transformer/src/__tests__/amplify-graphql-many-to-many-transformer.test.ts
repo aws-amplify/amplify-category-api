@@ -27,7 +27,7 @@ test('fails if @manyToMany was used on an object that is not a model type', () =
     }`;
   const transformer = createTransformer();
 
-  expect(() => transformer.transform(inputSchema)).toThrowError(`@manyToMany must be on an @model object type field.`);
+  expect(() => transformer.transform(inputSchema)).toThrow(`@manyToMany must be on an @model object type field.`);
 });
 
 test('fails if the related type does not exist', () => {
@@ -43,7 +43,7 @@ test('fails if the related type does not exist', () => {
     }`;
   const transformer = createTransformer();
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('Unknown type "Baz". Did you mean "Bar"?');
+  expect(() => transformer.transform(inputSchema)).toThrow('Unknown type "Baz". Did you mean "Bar"?');
 });
 
 test('fails if used on a non-list type', () => {
@@ -59,7 +59,7 @@ test('fails if used on a non-list type', () => {
     }`;
   const transformer = createTransformer();
 
-  expect(() => transformer.transform(inputSchema)).toThrowError('@manyToMany must be used with a list.');
+  expect(() => transformer.transform(inputSchema)).toThrow('@manyToMany must be used with a list.');
 });
 
 test('fails if a relation is used in less than two places', () => {
@@ -75,7 +75,7 @@ test('fails if a relation is used in less than two places', () => {
     }`;
   const transformer = createTransformer();
 
-  expect(() => transformer.transform(inputSchema)).toThrowError(`@manyToMany relation 'FooBar' must be used in exactly two locations.`);
+  expect(() => transformer.transform(inputSchema)).toThrow(`@manyToMany relation 'FooBar' must be used in exactly two locations.`);
 });
 
 test('fails if a relation is used in more than two places', () => {
@@ -96,7 +96,7 @@ test('fails if a relation is used in more than two places', () => {
     }`;
   const transformer = createTransformer();
 
-  expect(() => transformer.transform(inputSchema)).toThrowError(`@manyToMany relation 'FooBar' must be used in exactly two locations.`);
+  expect(() => transformer.transform(inputSchema)).toThrow(`@manyToMany relation 'FooBar' must be used in exactly two locations.`);
 });
 
 test('fails if a relation name conflicts with an existing type name', () => {
@@ -116,7 +116,7 @@ test('fails if a relation name conflicts with an existing type name', () => {
     }`;
   const transformer = createTransformer();
 
-  expect(() => transformer.transform(inputSchema)).toThrowError(
+  expect(() => transformer.transform(inputSchema)).toThrow(
     `@manyToMany relation name 'FooBar' (derived from 'foo   Bar') already exists as a type in the schema.`,
   );
 });
@@ -138,7 +138,7 @@ test('fails if first half of relation uses the wrong type', () => {
     }`;
   const transformer = createTransformer();
 
-  expect(() => transformer.transform(inputSchema)).toThrowError(`@manyToMany relation 'FooBar' expects 'Baz' but got 'Bar'.`);
+  expect(() => transformer.transform(inputSchema)).toThrow(`@manyToMany relation 'FooBar' expects 'Baz' but got 'Bar'.`);
 });
 
 test('fails if second half of relation uses the wrong type', () => {
@@ -158,7 +158,7 @@ test('fails if second half of relation uses the wrong type', () => {
     }`;
   const transformer = createTransformer();
 
-  expect(() => transformer.transform(inputSchema)).toThrowError(`@manyToMany relation 'FooBar' expects 'Baz' but got 'Foo'.`);
+  expect(() => transformer.transform(inputSchema)).toThrow(`@manyToMany relation 'FooBar' expects 'Baz' but got 'Foo'.`);
 });
 
 test('fails if used on a SQL model', () => {
@@ -177,7 +177,7 @@ test('fails if used on a SQL model', () => {
 
   const dataSourceStrategies = constructDataSourceStrategies(inputSchema, mySqlStrategy);
   const transformer = createTransformer(undefined, dataSourceStrategies);
-  expect(() => transformer.transform(inputSchema)).toThrowError('@manyToMany directive cannot be used on a SQL model.');
+  expect(() => transformer.transform(inputSchema)).toThrow('@manyToMany directive cannot be used on a SQL model.');
 });
 
 test('valid schema', () => {

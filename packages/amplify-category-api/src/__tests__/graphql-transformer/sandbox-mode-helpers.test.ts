@@ -116,7 +116,7 @@ sandbox mode disabled, do not create an API Key.
           input AMPLIFY { globalAuthRule: AuthRule = { allow: private } }
         `;
 
-        expect(() => schemaHasSandboxModeEnabled(schema, 'mockLink')).toThrowError(
+        expect(() => schemaHasSandboxModeEnabled(schema, 'mockLink')).toThrow(
           Error('There was a problem with your auth configuration. Learn more about auth here: mockLink'),
         );
       });

@@ -397,7 +397,7 @@ test('ModelConnectionTransformer with sortField fails if not specified in associ
   });
   expect(() => {
     transformer.transform(validSchema);
-  }).toThrowError();
+  }).toThrow();
 });
 
 test('ModelConnectionTransformer with sortField creates a connection resolver with a sort key condition.', () => {

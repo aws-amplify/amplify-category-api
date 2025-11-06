@@ -156,7 +156,7 @@ test('validation on @auth on a non-@model type', () => {
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
     }),
-  ).toThrowError('Types annotated with @auth must also be annotated with @model.');
+  ).toThrow('Types annotated with @auth must also be annotated with @model.');
 });
 
 test('empty groups list', () => {
@@ -180,7 +180,7 @@ test('empty groups list', () => {
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
     }),
-  ).toThrowError('@auth rules using groups cannot have an empty list');
+  ).toThrow('@auth rules using groups cannot have an empty list');
 });
 
 test('no @auth rules list', () => {
@@ -204,7 +204,7 @@ test('no @auth rules list', () => {
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
     }),
-  ).toThrowError('@auth on Post does not have any auth rules.');
+  ).toThrow('@auth on Post does not have any auth rules.');
 });
 
 test('dynamic group auth generates authorized fields list correctly', () => {

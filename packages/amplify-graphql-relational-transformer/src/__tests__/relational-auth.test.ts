@@ -275,7 +275,7 @@ test('auth with hasOne relation mismatch fields count - missing sort key must th
         shouldDeepMergeDirectiveConfigDefaults: false,
       },
     }),
-  ).toThrowError('Invalid @hasOne on Student:scores. Provided fields do not match the size of primary key(s) for StudentScore');
+  ).toThrow('Invalid @hasOne on Student:scores. Provided fields do not match the size of primary key(s) for StudentScore');
 });
 
 test('auth with hasOne relation match fields count - single sort key do not throw error', () => {
@@ -369,7 +369,7 @@ test('auth with hasOne relation mismatch fields count - partial missing sort key
         new AuthTransformer(),
       ],
     }),
-  ).toThrowError('Invalid @hasOne directive on scores. Partial sort keys are not accepted.');
+  ).toThrow('Invalid @hasOne directive on scores. Partial sort keys are not accepted.');
 });
 
 test('auth with hasOne relation match fields count - multiple sort keys do not throw error', () => {

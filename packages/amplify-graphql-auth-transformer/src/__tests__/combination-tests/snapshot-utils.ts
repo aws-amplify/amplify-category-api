@@ -219,7 +219,7 @@ export const makeTransformationExpectation = (
     });
 
     if (expectedErrorMessage) {
-      expect(() => testTransform(transformParams)).toThrowError(expectedErrorMessage);
+      expect(() => testTransform(transformParams)).toThrow(expectedErrorMessage);
     } else {
       const out = testTransform(transformParams);
       expect(out).toBeDefined();

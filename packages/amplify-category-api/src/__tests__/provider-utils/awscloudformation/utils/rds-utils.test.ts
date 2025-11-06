@@ -149,7 +149,7 @@ describe('check for unsupported RDS directives', () => {
         Post: DDB_DEFAULT_DATASOURCE_STRATEGY,
       },
     };
-    expect(() => checkForUnsupportedDirectives(schema, ddbProvider)).not.toThrowError();
+    expect(() => checkForUnsupportedDirectives(schema, ddbProvider)).not.toThrow();
   });
 
   it('early return if model_to_datasource map is empty or undefined', () => {
@@ -159,7 +159,7 @@ describe('check for unsupported RDS directives', () => {
                 title: String!
             }
         `;
-    expect(() => checkForUnsupportedDirectives(schema, emptyProvider)).not.toThrowError();
+    expect(() => checkForUnsupportedDirectives(schema, emptyProvider)).not.toThrow();
   });
 
   it('early return for a schema with no models', () => {
@@ -169,12 +169,12 @@ describe('check for unsupported RDS directives', () => {
                 title: String!
             }
         `;
-    expect(() => checkForUnsupportedDirectives(schema, emptyProvider)).not.toThrowError();
+    expect(() => checkForUnsupportedDirectives(schema, emptyProvider)).not.toThrow();
   });
 
   it('early return if schema is empty or undefined', () => {
     const schema = '';
-    expect(() => checkForUnsupportedDirectives(schema, dataSourceStrategiesProvider)).not.toThrowError();
+    expect(() => checkForUnsupportedDirectives(schema, dataSourceStrategiesProvider)).not.toThrow();
   });
 
   it('containsSqlModelOrDirective should return true if there are sql models', () => {

@@ -100,5 +100,5 @@ test('@function directive applied to Object should throw Error', () => {
   const transformer = new GraphQLTransform({
     transformers: [new FunctionTransformer()],
   });
-  expect(() => transformer.transform(invalidSchema)).toThrowError(/Directive "@function" may not be used on OBJECT/);
+  expect(() => transformer.transform(invalidSchema)).toThrow(/Directive "@function" may not be used on OBJECT/);
 });
