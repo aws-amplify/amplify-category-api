@@ -41,7 +41,7 @@ describe('amplify add api', () => {
         projRoot,
         /Attempting to delete more than 1 global secondary index SomeGSI1 and someGSI2 on the TodoTable table in the Todo stack.*/,
       ),
-    ).rejects.toThrowError('Process exited with non zero exit code 1');
+    ).rejects.toThrow('Process exited with non zero exit code 1');
   });
 
   it('init project, run invalid migration trying to add and delete gsi, and check for error', async () => {
@@ -61,6 +61,6 @@ describe('amplify add api', () => {
         projRoot,
         /Attempting to add and delete a global secondary index SomeGSI1 and someGSI2 on the TodoTable table in the Todo stack.*/,
       ),
-    ).rejects.toThrowError('Process exited with non zero exit code 1');
+    ).rejects.toThrow('Process exited with non zero exit code 1');
   });
 });

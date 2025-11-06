@@ -38,7 +38,7 @@ describe('amplify add api', () => {
         projRoot,
         /Attempting to edit the global secondary index gsi-PostComments on the CommentTable table in the Comment stack.*/,
       ),
-    ).rejects.toThrowError('Process exited with non zero exit code 1');
+    ).rejects.toThrow('Process exited with non zero exit code 1');
   });
 
   it('init project, run valid migration to remove a connection, then run another migration that adds a slightly different GSI.', async () => {

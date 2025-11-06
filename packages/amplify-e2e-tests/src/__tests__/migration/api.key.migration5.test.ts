@@ -41,7 +41,7 @@ describe('amplify add api', () => {
         projRoot,
         /Attempting to add more than 1 global secondary index SomeGSI1 and someGSI2 on the TodoTable table in the Todo stack.*/,
       ),
-    ).rejects.toThrowError('Process exited with non zero exit code 1');
+    ).rejects.toThrow('Process exited with non zero exit code 1');
   });
 
   it('init project, run invalid migration when adding more than one gsi on the same table', async () => {
@@ -63,6 +63,6 @@ describe('amplify add api', () => {
         projRoot,
         /Attempting to mutate more than 1 global secondary index at the same time on the TodoTable table in the Todo stack.*/,
       ),
-    ).rejects.toThrowError('Process exited with non zero exit code 1');
+    ).rejects.toThrow('Process exited with non zero exit code 1');
   });
 });

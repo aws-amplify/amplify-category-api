@@ -11,7 +11,7 @@ import { amplifyAppAndroid, amplifyAppAngular, amplifyAppIos, amplifyAppReact } 
 // This is to fix the issue of error not rejected in the codebuild,
 async function testModelsWithUnknownType(projRoot: string): Promise<void> {
   if (process.env.CIRCLECI) {
-    await expect(generateModels(projRoot)).rejects.toThrowError();
+    await expect(generateModels(projRoot)).rejects.toThrow();
   } else if (process.env.CODEBUILD) {
     await generateModelsWithUnknownTypeError(projRoot);
   }

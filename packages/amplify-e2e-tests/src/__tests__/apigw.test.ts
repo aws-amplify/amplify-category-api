@@ -121,12 +121,12 @@ describe('API Gateway e2e tests', () => {
     // test override file in compilation error state
     const srcInvalidOverrideCompileError = path.join(__dirname, '..', '..', 'overrides', 'override-compile-error.txt');
     fs.copyFileSync(srcInvalidOverrideCompileError, destOverrideTsFilePath);
-    await expect(amplifyPushAuth(projRoot)).rejects.toThrowError();
+    await expect(amplifyPushAuth(projRoot)).rejects.toThrow();
 
     // test override file in runtime error state
     const srcInvalidOverrideRuntimeError = path.join(__dirname, '..', '..', 'overrides', 'override-runtime-error.txt');
     fs.copyFileSync(srcInvalidOverrideRuntimeError, destOverrideTsFilePath);
-    await expect(amplifyPushAuth(projRoot)).rejects.toThrowError();
+    await expect(amplifyPushAuth(projRoot)).rejects.toThrow();
 
     // test happy path
     const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-api-rest.ts');
