@@ -5,18 +5,11 @@ phases:
   build:
     commands:
       - |
-        Write-Host "Checking for NVM..."
-        if (-not (Get-Command nvm -ErrorAction SilentlyContinue)) {
-          Write-Host "NVM not found. Installing..."
-          $nvmUrl = "https://github.com/coreybutler/nvm-windows/releases/download/1.2.2/nvm-setup.zip"
-          Invoke-WebRequest $nvmUrl -OutFile nvm-setup.zip
-          Expand-Archive nvm-setup.zip -DestinationPath "C:\nvm-temp"
-          $installer = Get-ChildItem "C:\nvm-temp" -Recurse | Where-Object { $_.Name -match "nvm-setup.exe" } | Select-Object -First 1
-          Start-Process -FilePath $installer.FullName -ArgumentList "/SILENT" -Wait
-          $env:Path += ";$($env:ProgramFiles)\nvm;$($env:APPDATA)\nvm"
-        }
-      - nvm install 20
-      - nvm use 20
+        Write-Host "Installing Node.js 20 via Chocolatey..."
+        choco install nodejs --version=20.18.0 -y --force
+        refreshenv
+        node --version
+        npm --version
       - yarn run production-build
       - yarn build-tests
 artifacts:
