@@ -8,7 +8,7 @@ phases:
         Write-Host "Checking for NVM..."
         if (-not (Get-Command nvm -ErrorAction SilentlyContinue)) {
           Write-Host "NVM not found. Installing..."
-          $nvmUrl = "https://raw.githubusercontent.com/coreybutler/nvm-windows/master/nvm-setup.zip"
+          $nvmUrl = "https://github.com/coreybutler/nvm-windows/releases/download/1.2.2/nvm-setup.zip"
           Invoke-WebRequest $nvmUrl -OutFile nvm-setup.zip
           Expand-Archive nvm-setup.zip -DestinationPath "C:\nvm-temp"
           $installer = Get-ChildItem "C:\nvm-temp" -Recurse | Where-Object { $_.Name -match "nvm-setup.exe" } | Select-Object -First 1
