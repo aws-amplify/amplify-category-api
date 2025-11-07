@@ -1,39 +1,39 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`ownerCanReassignWarning oidc provider does not warn on custom owner fields with field-level overrides 1`] = `
-Array [
-  Object {
+[
+  {
     "level": "WARN",
-    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: \\"username\\"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
+    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: "username"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
   },
 ]
 `;
 
 exports[`ownerCanReassignWarning oidc provider does not warn on owner auth rule with field-level auth 1`] = `
-Array [
-  Object {
+[
+  {
     "level": "WARN",
-    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: \\"username\\"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
+    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: "username"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
   },
 ]
 `;
 
 exports[`ownerCanReassignWarning oidc provider does not warn on single custom owner fields with field-level override 1`] = `
-Array [
-  Object {
+[
+  {
     "level": "WARN",
-    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: \\"username\\"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
+    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: "username"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
   },
 ]
 `;
 
 exports[`ownerCanReassignWarning oidc provider malformed field-level auth will continue to warn 1`] = `
-Array [
-  Object {
+[
+  {
     "level": "WARN",
-    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: \\"username\\"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
+    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: "username"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
   },
-  Object {
+  {
     "level": "WARN",
     "message": "WARNING: owners may reassign ownership for the following model(s) and role(s): Todo: [owner]. If this is not intentional, you may want to apply field-level authorization rules to these fields. To read more: https://docs.amplify.aws/cli/graphql/authorization-rules/#per-user--owner-based-data-access.",
   },
@@ -41,12 +41,12 @@ Array [
 `;
 
 exports[`ownerCanReassignWarning oidc provider should warn on implicit owner field 1`] = `
-Array [
-  Object {
+[
+  {
     "level": "WARN",
-    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: \\"username\\"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
+    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: "username"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
   },
-  Object {
+  {
     "level": "WARN",
     "message": "WARNING: owners may reassign ownership for the following model(s) and role(s): Blog: [owner]. If this is not intentional, you may want to apply field-level authorization rules to these fields. To read more: https://docs.amplify.aws/cli/graphql/authorization-rules/#per-user--owner-based-data-access.",
   },
@@ -54,12 +54,12 @@ Array [
 `;
 
 exports[`ownerCanReassignWarning oidc provider warns on multiple schemas with multiple reassignable owners each 1`] = `
-Array [
-  Object {
+[
+  {
     "level": "WARN",
-    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: \\"username\\"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
+    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: "username"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
   },
-  Object {
+  {
     "level": "WARN",
     "message": "WARNING: owners may reassign ownership for the following model(s) and role(s): Todo: [writer, editors], Blog: [owner]. If this is not intentional, you may want to apply field-level authorization rules to these fields. To read more: https://docs.amplify.aws/cli/graphql/authorization-rules/#per-user--owner-based-data-access.",
   },
@@ -67,12 +67,12 @@ Array [
 `;
 
 exports[`ownerCanReassignWarning oidc provider warns on owner auth rule without field-level auth 1`] = `
-Array [
-  Object {
+[
+  {
     "level": "WARN",
-    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: \\"username\\"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
+    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: "username"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
   },
-  Object {
+  {
     "level": "WARN",
     "message": "WARNING: owners may reassign ownership for the following model(s) and role(s): Blog: [owner]. If this is not intentional, you may want to apply field-level authorization rules to these fields. To read more: https://docs.amplify.aws/cli/graphql/authorization-rules/#per-user--owner-based-data-access.",
   },
@@ -80,39 +80,39 @@ Array [
 `;
 
 exports[`ownerCanReassignWarning userPools provider does not warn on custom owner fields with field-level overrides 1`] = `
-Array [
-  Object {
+[
+  {
     "level": "WARN",
-    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: \\"username\\"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
+    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: "username"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
   },
 ]
 `;
 
 exports[`ownerCanReassignWarning userPools provider does not warn on owner auth rule with field-level auth 1`] = `
-Array [
-  Object {
+[
+  {
     "level": "WARN",
-    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: \\"username\\"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
+    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: "username"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
   },
 ]
 `;
 
 exports[`ownerCanReassignWarning userPools provider does not warn on single custom owner fields with field-level override 1`] = `
-Array [
-  Object {
+[
+  {
     "level": "WARN",
-    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: \\"username\\"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
+    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: "username"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
   },
 ]
 `;
 
 exports[`ownerCanReassignWarning userPools provider malformed field-level auth will continue to warn 1`] = `
-Array [
-  Object {
+[
+  {
     "level": "WARN",
-    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: \\"username\\"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
+    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: "username"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
   },
-  Object {
+  {
     "level": "WARN",
     "message": "WARNING: owners may reassign ownership for the following model(s) and role(s): Todo: [owner]. If this is not intentional, you may want to apply field-level authorization rules to these fields. To read more: https://docs.amplify.aws/cli/graphql/authorization-rules/#per-user--owner-based-data-access.",
   },
@@ -120,12 +120,12 @@ Array [
 `;
 
 exports[`ownerCanReassignWarning userPools provider should warn on implicit owner field 1`] = `
-Array [
-  Object {
+[
+  {
     "level": "WARN",
-    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: \\"username\\"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
+    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: "username"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
   },
-  Object {
+  {
     "level": "WARN",
     "message": "WARNING: owners may reassign ownership for the following model(s) and role(s): Blog: [owner]. If this is not intentional, you may want to apply field-level authorization rules to these fields. To read more: https://docs.amplify.aws/cli/graphql/authorization-rules/#per-user--owner-based-data-access.",
   },
@@ -133,12 +133,12 @@ Array [
 `;
 
 exports[`ownerCanReassignWarning userPools provider warns on multiple schemas with multiple reassignable owners each 1`] = `
-Array [
-  Object {
+[
+  {
     "level": "WARN",
-    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: \\"username\\"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
+    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: "username"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
   },
-  Object {
+  {
     "level": "WARN",
     "message": "WARNING: owners may reassign ownership for the following model(s) and role(s): Todo: [writer, editors], Blog: [owner]. If this is not intentional, you may want to apply field-level authorization rules to these fields. To read more: https://docs.amplify.aws/cli/graphql/authorization-rules/#per-user--owner-based-data-access.",
   },
@@ -146,12 +146,12 @@ Array [
 `;
 
 exports[`ownerCanReassignWarning userPools provider warns on owner auth rule without field-level auth 1`] = `
-Array [
-  Object {
+[
+  {
     "level": "WARN",
-    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: \\"username\\"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
+    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: "username"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
   },
-  Object {
+  {
     "level": "WARN",
     "message": "WARNING: owners may reassign ownership for the following model(s) and role(s): Blog: [owner]. If this is not intentional, you may want to apply field-level authorization rules to these fields. To read more: https://docs.amplify.aws/cli/graphql/authorization-rules/#per-user--owner-based-data-access.",
   },
@@ -159,32 +159,32 @@ Array [
 `;
 
 exports[`ownerFieldCaseWarning does not show message with case matching fields 1`] = `
-Array [
-  Object {
+[
+  {
     "level": "WARN",
-    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: \\"username\\"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
+    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: "username"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
   },
-  Object {
+  {
     "level": "WARN",
     "message": "WARNING: owners may reassign ownership for the following model(s) and role(s): Invoice: [owner]. If this is not intentional, you may want to apply field-level authorization rules to these fields. To read more: https://docs.amplify.aws/cli/graphql/authorization-rules/#per-user--owner-based-data-access.",
   },
 ]
 `;
 
-exports[`ownerFieldCaseWarning does not show message with no auth rules 1`] = `Array []`;
+exports[`ownerFieldCaseWarning does not show message with no auth rules 1`] = `[]`;
 
 exports[`ownerFieldCaseWarning shows message once with one case mismatch in fields 1`] = `
-Array [
-  Object {
+[
+  {
     "level": "WARN",
-    "message": "WARNING: Schema field \\"storeId\\" and ownerField \\"storeID\\" in type Invoice are getting added to your schema but could be referencing the same owner field. If this is not intentional, you may want to change one of the fields to the correct name.
+    "message": "WARNING: Schema field "storeId" and ownerField "storeID" in type Invoice are getting added to your schema but could be referencing the same owner field. If this is not intentional, you may want to change one of the fields to the correct name.
 ",
   },
-  Object {
+  {
     "level": "WARN",
-    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: \\"username\\"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
+    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: "username"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
   },
-  Object {
+  {
     "level": "WARN",
     "message": "WARNING: owners may reassign ownership for the following model(s) and role(s): Invoice: [owner]. If this is not intentional, you may want to apply field-level authorization rules to these fields. To read more: https://docs.amplify.aws/cli/graphql/authorization-rules/#per-user--owner-based-data-access.",
   },
@@ -192,22 +192,22 @@ Array [
 `;
 
 exports[`ownerFieldCaseWarning shows message twice with two case mismatch in fields 1`] = `
-Array [
-  Object {
+[
+  {
     "level": "WARN",
-    "message": "WARNING: Schema field \\"storeId\\" and ownerField \\"storeID\\" in type Invoice are getting added to your schema but could be referencing the same owner field. If this is not intentional, you may want to change one of the fields to the correct name.
+    "message": "WARNING: Schema field "storeId" and ownerField "storeID" in type Invoice are getting added to your schema but could be referencing the same owner field. If this is not intentional, you may want to change one of the fields to the correct name.
 ",
   },
-  Object {
+  {
     "level": "WARN",
-    "message": "WARNING: Schema field \\"customerId\\" and ownerField \\"customerID\\" in type Invoice are getting added to your schema but could be referencing the same owner field. If this is not intentional, you may want to change one of the fields to the correct name.
+    "message": "WARNING: Schema field "customerId" and ownerField "customerID" in type Invoice are getting added to your schema but could be referencing the same owner field. If this is not intentional, you may want to change one of the fields to the correct name.
 ",
   },
-  Object {
+  {
     "level": "WARN",
-    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: \\"username\\"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
+    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: "username"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
   },
-  Object {
+  {
     "level": "WARN",
     "message": "WARNING: owners may reassign ownership for the following model(s) and role(s): Invoice: [owner]. If this is not intentional, you may want to apply field-level authorization rules to these fields. To read more: https://docs.amplify.aws/cli/graphql/authorization-rules/#per-user--owner-based-data-access.",
   },
@@ -215,17 +215,17 @@ Array [
 `;
 
 exports[`ownerFieldCaseWarning shows message with implicit owner field 1`] = `
-Array [
-  Object {
+[
+  {
     "level": "WARN",
-    "message": "WARNING: Schema field \\"Owner\\" and ownerField \\"owner\\" in type Invoice are getting added to your schema but could be referencing the same owner field. If this is not intentional, you may want to change one of the fields to the correct name.
+    "message": "WARNING: Schema field "Owner" and ownerField "owner" in type Invoice are getting added to your schema but could be referencing the same owner field. If this is not intentional, you may want to change one of the fields to the correct name.
 ",
   },
-  Object {
+  {
     "level": "WARN",
-    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: \\"username\\"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
+    "message": " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: "username"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
   },
-  Object {
+  {
     "level": "WARN",
     "message": "WARNING: owners may reassign ownership for the following model(s) and role(s): Invoice: [owner]. If this is not intentional, you may want to apply field-level authorization rules to these fields. To read more: https://docs.amplify.aws/cli/graphql/authorization-rules/#per-user--owner-based-data-access.",
   },

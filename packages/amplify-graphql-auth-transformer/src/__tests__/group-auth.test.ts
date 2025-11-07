@@ -233,7 +233,7 @@ test('dynamic group auth generates authorized fields list correctly', () => {
   // a more targeted test would require some bigger refactoring
   expect(result.resolvers['Mutation.updateTodo.auth.1.res.vtl']).toMatchInlineSnapshot(`
     "## [Start] Authorization Steps. **
-    $util.qr($ctx.stash.put(\\"hasAuth\\", true))
+    $util.qr($ctx.stash.put("hasAuth", true))
     #if( $ctx.error )
       $util.error($ctx.error.message, $ctx.error.type)
     #end
@@ -242,11 +242,11 @@ test('dynamic group auth generates authorized fields list correctly', () => {
     #set( $allowedFields = [] )
     #set( $nullAllowedFields = [] )
     #set( $deniedFields = {} )
-    #if( $util.authType() == \\"User Pool Authorization\\" )
+    #if( $util.authType() == "User Pool Authorization" )
       #if( !$isAuthorized )
         #set( $groupEntity0 = $util.defaultIfNull($ctx.result.allowedGroups, []) )
-        #set( $groupClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
-        #set( $groupAllowedFields0 = [\\"id\\",\\"description\\"] )
+        #set( $groupClaim0 = $util.defaultIfNull($ctx.identity.claims.get("cognito:groups"), []) )
+        #set( $groupAllowedFields0 = ["id","description"] )
         #set( $groupNullAllowedFields0 = [] )
         #set( $isAuthorizedOnAllFields0 = false )
         #if( $util.isString($groupClaim0) )
@@ -275,15 +275,15 @@ test('dynamic group auth generates authorized fields list correctly', () => {
     #if( !$isAuthorized )
       #foreach( $entry in $util.map.copyAndRetainAllKeys($ctx.args.input, $inputFields).entrySet() )
         #if( $util.isNull($entry.value) && !$nullAllowedFields.contains($entry.key) )
-          $util.qr($deniedFields.put($entry.key, \\"\\"))
+          $util.qr($deniedFields.put($entry.key, ""))
         #end
       #end
       #foreach( $deniedField in $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
-        $util.qr($deniedFields.put($deniedField, \\"\\"))
+        $util.qr($deniedFields.put($deniedField, ""))
       #end
     #end
     #if( $deniedFields.keySet().size() > 0 )
-      $util.error(\\"Unauthorized on \${deniedFields.keySet()}\\", \\"Unauthorized\\")
+      $util.error("Unauthorized on \${deniedFields.keySet()}", "Unauthorized")
     #end
     $util.toJson({})
     ## [End] Authorization Steps. **"
