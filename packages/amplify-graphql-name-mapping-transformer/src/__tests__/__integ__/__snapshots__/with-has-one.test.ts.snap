@@ -1,13 +1,13 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 1`] = `
-"$util.qr($ctx.args.input.put(\\"personTaskId\\", $ctx.args.input.employeeTaskId))
-$util.qr($ctx.args.input.remove(\\"employeeTaskId\\"))
+"$util.qr($ctx.args.input.put("personTaskId", $ctx.args.input.employeeTaskId))
+$util.qr($ctx.args.input.remove("employeeTaskId"))
 $util.toJson({})"
 `;
 
 exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 2`] = `
-"#set( $fieldMap = {\\"employeeTaskId\\":\\"personTaskId\\"} )
+"#set( $fieldMap = {"employeeTaskId":"personTaskId"} )
 #if( $util.isNull($fieldMap) || $fieldMap.keySet().size() <= 0 )
   #return($ctx.args)
 #end
@@ -15,10 +15,10 @@ exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type
   #return($ctx.args)
 #end
 #set( $invoke = {
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\": {
-      \\"args\\": $ctx.args,
-      \\"fieldMap\\": $fieldMap
+  "operation": "Invoke",
+  "payload": {
+      "args": $ctx.args,
+      "fieldMap": $fieldMap
   }
 } )
 $util.toJson($invoke)"
@@ -33,19 +33,19 @@ $util.toJson({})"
 `;
 
 exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 4`] = `
-"$util.qr($ctx.prev.result.put(\\"employeeTaskId\\", $ctx.prev.result.personTaskId))
-$util.qr($ctx.prev.result.remove(\\"personTaskId\\"))
+"$util.qr($ctx.prev.result.put("employeeTaskId", $ctx.prev.result.personTaskId))
+$util.qr($ctx.prev.result.remove("personTaskId"))
 $util.toJson($ctx.prev.result)"
 `;
 
 exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 5`] = `
-"$util.qr($ctx.args.input.put(\\"personTaskId\\", $ctx.args.input.employeeTaskId))
-$util.qr($ctx.args.input.remove(\\"employeeTaskId\\"))
+"$util.qr($ctx.args.input.put("personTaskId", $ctx.args.input.employeeTaskId))
+$util.qr($ctx.args.input.remove("employeeTaskId"))
 $util.toJson({})"
 `;
 
 exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 6`] = `
-"#set( $fieldMap = {\\"employeeTaskId\\":\\"personTaskId\\"} )
+"#set( $fieldMap = {"employeeTaskId":"personTaskId"} )
 #if( $util.isNull($fieldMap) || $fieldMap.keySet().size() <= 0 )
   #return($ctx.args)
 #end
@@ -53,10 +53,10 @@ exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type
   #return($ctx.args)
 #end
 #set( $invoke = {
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\": {
-      \\"args\\": $ctx.args,
-      \\"fieldMap\\": $fieldMap
+  "operation": "Invoke",
+  "payload": {
+      "args": $ctx.args,
+      "fieldMap": $fieldMap
   }
 } )
 $util.toJson($invoke)"
@@ -71,19 +71,19 @@ $util.toJson({})"
 `;
 
 exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 8`] = `
-"$util.qr($ctx.prev.result.put(\\"employeeTaskId\\", $ctx.prev.result.personTaskId))
-$util.qr($ctx.prev.result.remove(\\"personTaskId\\"))
+"$util.qr($ctx.prev.result.put("employeeTaskId", $ctx.prev.result.personTaskId))
+$util.qr($ctx.prev.result.remove("personTaskId"))
 $util.toJson($ctx.prev.result)"
 `;
 
 exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 9`] = `
-"$util.qr($ctx.args.input.put(\\"personTaskId\\", $ctx.args.input.employeeTaskId))
-$util.qr($ctx.args.input.remove(\\"employeeTaskId\\"))
+"$util.qr($ctx.args.input.put("personTaskId", $ctx.args.input.employeeTaskId))
+$util.qr($ctx.args.input.remove("employeeTaskId"))
 $util.toJson({})"
 `;
 
 exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 10`] = `
-"#set( $fieldMap = {\\"employeeTaskId\\":\\"personTaskId\\"} )
+"#set( $fieldMap = {"employeeTaskId":"personTaskId"} )
 #if( $util.isNull($fieldMap) || $fieldMap.keySet().size() <= 0 )
   #return($ctx.args)
 #end
@@ -91,10 +91,10 @@ exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type
   #return($ctx.args)
 #end
 #set( $invoke = {
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\": {
-      \\"args\\": $ctx.args,
-      \\"fieldMap\\": $fieldMap
+  "operation": "Invoke",
+  "payload": {
+      "args": $ctx.args,
+      "fieldMap": $fieldMap
   }
 } )
 $util.toJson($invoke)"
@@ -109,19 +109,19 @@ $util.toJson({})"
 `;
 
 exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 12`] = `
-"$util.qr($ctx.prev.result.put(\\"employeeTaskId\\", $ctx.prev.result.personTaskId))
-$util.qr($ctx.prev.result.remove(\\"personTaskId\\"))
+"$util.qr($ctx.prev.result.put("employeeTaskId", $ctx.prev.result.personTaskId))
+$util.qr($ctx.prev.result.remove("personTaskId"))
 $util.toJson($ctx.prev.result)"
 `;
 
 exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 13`] = `
-"$util.qr($ctx.prev.result.put(\\"employeeTaskId\\", $ctx.prev.result.personTaskId))
-$util.qr($ctx.prev.result.remove(\\"personTaskId\\"))
+"$util.qr($ctx.prev.result.put("employeeTaskId", $ctx.prev.result.personTaskId))
+$util.qr($ctx.prev.result.remove("personTaskId"))
 $util.toJson($ctx.prev.result)"
 `;
 
 exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 14`] = `
-"#set( $fieldMap = {\\"employeeTaskId\\":\\"personTaskId\\"} )
+"#set( $fieldMap = {"employeeTaskId":"personTaskId"} )
 #if( $util.isNull($fieldMap) || $fieldMap.keySet().size() <= 0 )
   #return($ctx.args)
 #end
@@ -129,10 +129,10 @@ exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type
   #return($ctx.args)
 #end
 #set( $invoke = {
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\": {
-      \\"args\\": $ctx.args,
-      \\"fieldMap\\": $fieldMap
+  "operation": "Invoke",
+  "payload": {
+      "args": $ctx.args,
+      "fieldMap": $fieldMap
   }
 } )
 $util.toJson($invoke)"
@@ -148,8 +148,8 @@ $util.toJson({})"
 
 exports[`@mapsTo with @hasOne adds CRUD input and output mappings on hasOne type 16`] = `
 "#foreach( $item in $ctx.prev.result.items )
-  $util.qr($item.put(\\"employeeTaskId\\", $item.personTaskId))
-  $util.qr($item.remove(\\"personTaskId\\"))
+  $util.qr($item.put("employeeTaskId", $item.personTaskId))
+  $util.qr($item.remove("personTaskId"))
 #end
 $util.toJson($ctx.prev.result)"
 `;
@@ -157,14 +157,14 @@ $util.toJson($ctx.prev.result)"
 exports[`@refersTo with @hasOne for RDS Models model table names are mapped 1`] = `
 "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
-#set( $lambdaInput.table = \\"Person\\" )
+#set( $lambdaInput.table = "Person" )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.operation = \\"CREATE\\" )
-#set( $lambdaInput.operationName = \\"createEmployee\\" )
+#set( $lambdaInput.operation = "CREATE" )
+#set( $lambdaInput.operationName = "createEmployee" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"tags\\", \\"task\\"] )
-#set( $lambdaInput.args.metadata.arrayFields = [\\"tags\\"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["tags", "task"] )
+#set( $lambdaInput.args.metadata.arrayFields = ["tags"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -173,9 +173,9 @@ $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.k
 ## copy the values from input **
 $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments.input, {})))
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Invoke RDS Lambda data source. **"
 `;
@@ -183,14 +183,14 @@ $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments.i
 exports[`@refersTo with @hasOne for RDS Models model table names are mapped 2`] = `
 "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
-#set( $lambdaInput.table = \\"Person\\" )
+#set( $lambdaInput.table = "Person" )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.operation = \\"UPDATE\\" )
-#set( $lambdaInput.operationName = \\"updateEmployee\\" )
+#set( $lambdaInput.operation = "UPDATE" )
+#set( $lambdaInput.operationName = "updateEmployee" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"tags\\", \\"task\\"] )
-#set( $lambdaInput.args.metadata.arrayFields = [\\"tags\\"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["tags", "task"] )
+#set( $lambdaInput.args.metadata.arrayFields = ["tags"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -200,9 +200,9 @@ $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.k
 $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments.input, {})))
 #set( $lambdaInput.args.condition = $util.defaultIfNull($context.arguments.condition, {}) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Invoke RDS Lambda data source. **"
 `;
@@ -210,22 +210,22 @@ $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments.i
 exports[`@refersTo with @hasOne for RDS Models model table names are mapped 3`] = `
 "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
-#set( $lambdaInput.table = \\"Person\\" )
+#set( $lambdaInput.table = "Person" )
 #set( $lambdaInput.args = $context.arguments )
-#set( $lambdaInput.operation = \\"DELETE\\" )
-#set( $lambdaInput.operationName = \\"deleteEmployee\\" )
+#set( $lambdaInput.operation = "DELETE" )
+#set( $lambdaInput.operationName = "deleteEmployee" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"tags\\", \\"task\\"] )
-#set( $lambdaInput.args.metadata.arrayFields = [\\"tags\\"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["tags", "task"] )
+#set( $lambdaInput.args.metadata.arrayFields = ["tags"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.condition = $util.defaultIfNull($context.arguments.condition, {}) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Invoke RDS Lambda data source. **"
 `;
@@ -234,23 +234,23 @@ exports[`@refersTo with @hasOne for RDS Models model table names are mapped 4`] 
 "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"Person\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"getEmployee\\" )
+#set( $lambdaInput.table = "Person" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "getEmployee" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.authFilter = {} )
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"tags\\", \\"task\\"] )
-#set( $lambdaInput.args.metadata.arrayFields = [\\"tags\\"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["tags", "task"] )
+#set( $lambdaInput.args.metadata.arrayFields = ["tags"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments, {})))
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Invoke RDS Lambda data source. **"
 `;
@@ -259,25 +259,25 @@ exports[`@refersTo with @hasOne for RDS Models model table names are mapped 5`] 
 "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"Person\\" )
-#set( $lambdaInput.operation = \\"LIST\\" )
-#set( $lambdaInput.operationName = \\"listEmployees\\" )
+#set( $lambdaInput.table = "Person" )
+#set( $lambdaInput.operation = "LIST" )
+#set( $lambdaInput.operationName = "listEmployees" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
 #end
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"tags\\", \\"task\\"] )
-#set( $lambdaInput.args.metadata.arrayFields = [\\"tags\\"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["tags", "task"] )
+#set( $lambdaInput.args.metadata.arrayFields = ["tags"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Invoke RDS Lambda data source. **"
 `;
@@ -285,14 +285,14 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 exports[`@refersTo with @hasOne for RDS Models model table names are mapped 6`] = `
 "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
-#set( $lambdaInput.table = \\"Todo\\" )
+#set( $lambdaInput.table = "Todo" )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.operation = \\"CREATE\\" )
-#set( $lambdaInput.operationName = \\"createTask\\" )
+#set( $lambdaInput.operation = "CREATE" )
+#set( $lambdaInput.operationName = "createTask" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"tags\\", \\"employee\\"] )
-#set( $lambdaInput.args.metadata.arrayFields = [\\"tags\\"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["tags", "employee"] )
+#set( $lambdaInput.args.metadata.arrayFields = ["tags"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -301,9 +301,9 @@ $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.k
 ## copy the values from input **
 $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments.input, {})))
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Invoke RDS Lambda data source. **"
 `;
@@ -311,14 +311,14 @@ $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments.i
 exports[`@refersTo with @hasOne for RDS Models model table names are mapped 7`] = `
 "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
-#set( $lambdaInput.table = \\"Todo\\" )
+#set( $lambdaInput.table = "Todo" )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.operation = \\"UPDATE\\" )
-#set( $lambdaInput.operationName = \\"updateTask\\" )
+#set( $lambdaInput.operation = "UPDATE" )
+#set( $lambdaInput.operationName = "updateTask" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"tags\\", \\"employee\\"] )
-#set( $lambdaInput.args.metadata.arrayFields = [\\"tags\\"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["tags", "employee"] )
+#set( $lambdaInput.args.metadata.arrayFields = ["tags"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -328,9 +328,9 @@ $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.k
 $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments.input, {})))
 #set( $lambdaInput.args.condition = $util.defaultIfNull($context.arguments.condition, {}) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Invoke RDS Lambda data source. **"
 `;
@@ -338,22 +338,22 @@ $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments.i
 exports[`@refersTo with @hasOne for RDS Models model table names are mapped 8`] = `
 "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
-#set( $lambdaInput.table = \\"Todo\\" )
+#set( $lambdaInput.table = "Todo" )
 #set( $lambdaInput.args = $context.arguments )
-#set( $lambdaInput.operation = \\"DELETE\\" )
-#set( $lambdaInput.operationName = \\"deleteTask\\" )
+#set( $lambdaInput.operation = "DELETE" )
+#set( $lambdaInput.operationName = "deleteTask" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"tags\\", \\"employee\\"] )
-#set( $lambdaInput.args.metadata.arrayFields = [\\"tags\\"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["tags", "employee"] )
+#set( $lambdaInput.args.metadata.arrayFields = ["tags"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.condition = $util.defaultIfNull($context.arguments.condition, {}) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Invoke RDS Lambda data source. **"
 `;
@@ -362,23 +362,23 @@ exports[`@refersTo with @hasOne for RDS Models model table names are mapped 9`] 
 "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"Todo\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"getTask\\" )
+#set( $lambdaInput.table = "Todo" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "getTask" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.authFilter = {} )
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"tags\\", \\"employee\\"] )
-#set( $lambdaInput.args.metadata.arrayFields = [\\"tags\\"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["tags", "employee"] )
+#set( $lambdaInput.args.metadata.arrayFields = ["tags"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments, {})))
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Invoke RDS Lambda data source. **"
 `;
@@ -387,25 +387,25 @@ exports[`@refersTo with @hasOne for RDS Models model table names are mapped 10`]
 "## [Start] Invoke RDS Lambda data source. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"Todo\\" )
-#set( $lambdaInput.operation = \\"LIST\\" )
-#set( $lambdaInput.operationName = \\"listTasks\\" )
+#set( $lambdaInput.table = "Todo" )
+#set( $lambdaInput.operation = "LIST" )
+#set( $lambdaInput.operationName = "listTasks" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
 #end
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"tags\\", \\"employee\\"] )
-#set( $lambdaInput.args.metadata.arrayFields = [\\"tags\\"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["tags", "employee"] )
+#set( $lambdaInput.args.metadata.arrayFields = ["tags"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Invoke RDS Lambda data source. **"
 `;
@@ -417,13 +417,13 @@ exports[`@refersTo with @hasOne for RDS Models model table names are mapped 11`]
 #end
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"Todo\\" )
-#set( $lambdaInput.operation = \\"GET_FIRST\\" )
-#set( $lambdaInput.operationName = \\"GetItemConnectionQuery\\" )
+#set( $lambdaInput.table = "Todo" )
+#set( $lambdaInput.operation = "GET_FIRST" )
+#set( $lambdaInput.operationName = "GetItemConnectionQuery" )
 #set( $lambdaInput.args.metadata = {} )
-#set( $lambdaInput.args.metadata.keys = [\\"id\\"] )
-#set( $lambdaInput.args.metadata.arrayFields = [\\"tags\\"] )
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"tags\\", \\"employee\\"] )
+#set( $lambdaInput.args.metadata.keys = ["id"] )
+#set( $lambdaInput.args.metadata.arrayFields = ["tags"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["tags", "employee"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
@@ -433,13 +433,13 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
 #end
-$util.qr($lambdaInput.args.input.put(\\"employeeId\\", {
-  \\"eq\\": $ctx.source.id
+$util.qr($lambdaInput.args.input.put("employeeId", {
+  "eq": $ctx.source.id
 }))
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Invoke RDS Lambda data source. **"
 `;
@@ -451,13 +451,13 @@ exports[`@refersTo with @hasOne for RDS Models model table names are mapped 12`]
 #end
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"Person\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"BelongsToConnectionQuery\\" )
+#set( $lambdaInput.table = "Person" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "BelongsToConnectionQuery" )
 #set( $lambdaInput.args.metadata = {} )
-#set( $lambdaInput.args.metadata.keys = [\\"id\\"] )
-#set( $lambdaInput.args.metadata.arrayFields = [\\"tags\\"] )
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"tags\\", \\"task\\"] )
+#set( $lambdaInput.args.metadata.keys = ["id"] )
+#set( $lambdaInput.args.metadata.arrayFields = ["tags"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["tags", "task"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
@@ -467,11 +467,11 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
 #end
-$util.qr($lambdaInput.args.input.put(\\"id\\", $ctx.source.employeeId))
+$util.qr($lambdaInput.args.input.put("id", $ctx.source.employeeId))
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Invoke RDS Lambda data source. **"
 `;
@@ -483,13 +483,13 @@ exports[`@refersTo with @hasOne for RDS Models model table names are mapped 13`]
 #end
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"Todo\\" )
-#set( $lambdaInput.operation = \\"GET_FIRST\\" )
-#set( $lambdaInput.operationName = \\"GetItemConnectionQuery\\" )
+#set( $lambdaInput.table = "Todo" )
+#set( $lambdaInput.operation = "GET_FIRST" )
+#set( $lambdaInput.operationName = "GetItemConnectionQuery" )
 #set( $lambdaInput.args.metadata = {} )
-#set( $lambdaInput.args.metadata.keys = [\\"id\\"] )
-#set( $lambdaInput.args.metadata.arrayFields = [\\"tags\\"] )
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"tags\\", \\"employee\\"] )
+#set( $lambdaInput.args.metadata.keys = ["id"] )
+#set( $lambdaInput.args.metadata.arrayFields = ["tags"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["tags", "employee"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
@@ -499,13 +499,13 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
 #end
-$util.qr($lambdaInput.args.input.put(\\"employeeId\\", {
-  \\"eq\\": $ctx.source.id
+$util.qr($lambdaInput.args.input.put("employeeId", {
+  "eq": $ctx.source.id
 }))
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Invoke RDS Lambda data source. **"
 `;
@@ -517,13 +517,13 @@ exports[`@refersTo with @hasOne for RDS Models model table names are mapped 14`]
 #end
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"Person\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"BelongsToConnectionQuery\\" )
+#set( $lambdaInput.table = "Person" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "BelongsToConnectionQuery" )
 #set( $lambdaInput.args.metadata = {} )
-#set( $lambdaInput.args.metadata.keys = [\\"id\\"] )
-#set( $lambdaInput.args.metadata.arrayFields = [\\"tags\\"] )
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"tags\\", \\"task\\"] )
+#set( $lambdaInput.args.metadata.keys = ["id"] )
+#set( $lambdaInput.args.metadata.arrayFields = ["tags"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["tags", "task"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
@@ -533,11 +533,11 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
 #end
-$util.qr($lambdaInput.args.input.put(\\"id\\", $ctx.source.employeeId))
+$util.qr($lambdaInput.args.input.put("id", $ctx.source.employeeId))
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Invoke RDS Lambda data source. **"
 `;
@@ -549,13 +549,13 @@ exports[`@refersTo with @hasOne for RDS Models model table names are mapped 15`]
 #end
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"Todo\\" )
-#set( $lambdaInput.operation = \\"GET_FIRST\\" )
-#set( $lambdaInput.operationName = \\"GetItemConnectionQuery\\" )
+#set( $lambdaInput.table = "Todo" )
+#set( $lambdaInput.operation = "GET_FIRST" )
+#set( $lambdaInput.operationName = "GetItemConnectionQuery" )
 #set( $lambdaInput.args.metadata = {} )
-#set( $lambdaInput.args.metadata.keys = [\\"id\\"] )
-#set( $lambdaInput.args.metadata.arrayFields = [\\"tags\\"] )
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"tags\\", \\"employee\\"] )
+#set( $lambdaInput.args.metadata.keys = ["id"] )
+#set( $lambdaInput.args.metadata.arrayFields = ["tags"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["tags", "employee"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
@@ -565,13 +565,13 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
 #end
-$util.qr($lambdaInput.args.input.put(\\"employeeId\\", {
-  \\"eq\\": $ctx.source.id
+$util.qr($lambdaInput.args.input.put("employeeId", {
+  "eq": $ctx.source.id
 }))
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Invoke RDS Lambda data source. **"
 `;
@@ -583,13 +583,13 @@ exports[`@refersTo with @hasOne for RDS Models model table names are mapped 16`]
 #end
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"Person\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"BelongsToConnectionQuery\\" )
+#set( $lambdaInput.table = "Person" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "BelongsToConnectionQuery" )
 #set( $lambdaInput.args.metadata = {} )
-#set( $lambdaInput.args.metadata.keys = [\\"id\\"] )
-#set( $lambdaInput.args.metadata.arrayFields = [\\"tags\\"] )
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"tags\\", \\"task\\"] )
+#set( $lambdaInput.args.metadata.keys = ["id"] )
+#set( $lambdaInput.args.metadata.arrayFields = ["tags"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["tags", "task"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
@@ -599,11 +599,11 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
 #end
-$util.qr($lambdaInput.args.input.put(\\"id\\", $ctx.source.employeeId))
+$util.qr($lambdaInput.args.input.put("id", $ctx.source.employeeId))
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Invoke RDS Lambda data source. **"
 `;

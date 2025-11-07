@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`@belongsTo directive with RDS datasource composite key should generate correct resolvers 1`] = `
 "type User {
@@ -222,12 +222,12 @@ input ModelSubscriptionUserFilterInput {
 }
 
 type Subscription {
-  onCreateUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: [\\"createUser\\"])
-  onUpdateUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: [\\"updateUser\\"])
-  onDeleteUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: [\\"deleteUser\\"])
-  onCreateProfile(filter: ModelSubscriptionProfileFilterInput): Profile @aws_subscribe(mutations: [\\"createProfile\\"])
-  onUpdateProfile(filter: ModelSubscriptionProfileFilterInput): Profile @aws_subscribe(mutations: [\\"updateProfile\\"])
-  onDeleteProfile(filter: ModelSubscriptionProfileFilterInput): Profile @aws_subscribe(mutations: [\\"deleteProfile\\"])
+  onCreateUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: ["createUser"])
+  onUpdateUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: ["updateUser"])
+  onDeleteUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: ["deleteUser"])
+  onCreateProfile(filter: ModelSubscriptionProfileFilterInput): Profile @aws_subscribe(mutations: ["createProfile"])
+  onUpdateProfile(filter: ModelSubscriptionProfileFilterInput): Profile @aws_subscribe(mutations: ["updateProfile"])
+  onDeleteProfile(filter: ModelSubscriptionProfileFilterInput): Profile @aws_subscribe(mutations: ["deleteProfile"])
 }
 
 type ModelProfileConnection {
@@ -295,13 +295,13 @@ exports[`@belongsTo directive with RDS datasource composite key should generate 
 #end
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"User\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"BelongsToConnectionQuery\\" )
+#set( $lambdaInput.table = "User" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "BelongsToConnectionQuery" )
 #set( $lambdaInput.args.metadata = {} )
-#set( $lambdaInput.args.metadata.keys = [\\"firstName\\", \\"lastName\\"] )
+#set( $lambdaInput.args.metadata.keys = ["firstName", "lastName"] )
 #set( $lambdaInput.args.metadata.arrayFields = [] )
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"profile\\"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["profile"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
@@ -311,12 +311,12 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
 #end
-$util.qr($lambdaInput.args.input.put(\\"firstName\\", $ctx.source.userFirstName))
-$util.qr($lambdaInput.args.input.put(\\"lastName\\", $ctx.source.userLastName))
+$util.qr($lambdaInput.args.input.put("firstName", $ctx.source.userFirstName))
+$util.qr($lambdaInput.args.input.put("lastName", $ctx.source.userLastName))
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Invoke RDS Lambda data source. **"
 `;
@@ -327,9 +327,9 @@ exports[`@belongsTo directive with RDS datasource composite key should generate 
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   #set( $resultValue = $ctx.result )
-  #set( $operation = $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) )
-  #if( $operation == \\"Mutation\\" )
-    $util.qr($resultValue.put(\\"__operation\\", \\"Mutation\\"))
+  #set( $operation = $util.defaultIfNull($ctx.source.get("__operation"), null) )
+  #if( $operation == "Mutation" )
+    $util.qr($resultValue.put("__operation", "Mutation"))
   #end
   $util.toJson($resultValue)
 #end
@@ -558,12 +558,12 @@ input ModelSubscriptionUserFilterInput {
 }
 
 type Subscription {
-  onCreateUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: [\\"createUser\\"])
-  onUpdateUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: [\\"updateUser\\"])
-  onDeleteUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: [\\"deleteUser\\"])
-  onCreateProfile(filter: ModelSubscriptionProfileFilterInput): Profile @aws_subscribe(mutations: [\\"createProfile\\"])
-  onUpdateProfile(filter: ModelSubscriptionProfileFilterInput): Profile @aws_subscribe(mutations: [\\"updateProfile\\"])
-  onDeleteProfile(filter: ModelSubscriptionProfileFilterInput): Profile @aws_subscribe(mutations: [\\"deleteProfile\\"])
+  onCreateUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: ["createUser"])
+  onUpdateUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: ["updateUser"])
+  onDeleteUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: ["deleteUser"])
+  onCreateProfile(filter: ModelSubscriptionProfileFilterInput): Profile @aws_subscribe(mutations: ["createProfile"])
+  onUpdateProfile(filter: ModelSubscriptionProfileFilterInput): Profile @aws_subscribe(mutations: ["updateProfile"])
+  onDeleteProfile(filter: ModelSubscriptionProfileFilterInput): Profile @aws_subscribe(mutations: ["deleteProfile"])
 }
 
 type ModelProfileConnection {
@@ -621,13 +621,13 @@ exports[`@belongsTo directive with RDS datasource happy case should generate cor
 #end
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"User\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"BelongsToConnectionQuery\\" )
+#set( $lambdaInput.table = "User" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "BelongsToConnectionQuery" )
 #set( $lambdaInput.args.metadata = {} )
-#set( $lambdaInput.args.metadata.keys = [\\"id\\"] )
+#set( $lambdaInput.args.metadata.keys = ["id"] )
 #set( $lambdaInput.args.metadata.arrayFields = [] )
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"profile\\"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["profile"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
@@ -637,11 +637,11 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
 #end
-$util.qr($lambdaInput.args.input.put(\\"id\\", $ctx.source.userId))
+$util.qr($lambdaInput.args.input.put("id", $ctx.source.userId))
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Invoke RDS Lambda data source. **"
 `;
@@ -652,9 +652,9 @@ exports[`@belongsTo directive with RDS datasource happy case should generate cor
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   #set( $resultValue = $ctx.result )
-  #set( $operation = $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) )
-  #if( $operation == \\"Mutation\\" )
-    $util.qr($resultValue.put(\\"__operation\\", \\"Mutation\\"))
+  #set( $operation = $util.defaultIfNull($ctx.source.get("__operation"), null) )
+  #if( $operation == "Mutation" )
+    $util.qr($resultValue.put("__operation", "Mutation"))
   #end
   $util.toJson($resultValue)
 #end

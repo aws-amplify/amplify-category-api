@@ -1423,8 +1423,8 @@ describe('Index query resolver creation', () => {
     mockModelFieldMap.getMappedFields.mockReturnValue([{ details: 'description' }]);
     resolverUtils.makeQueryResolver(mockConfig as any, mockContext as any, MYSQL_DB_TYPE);
 
-    expect(mockContext.resolvers.addResolver).toBeCalledWith('Query', 'queryByUsername', mockResolver);
-    expect(mockModelFieldMap.addResolverReference).toBeCalledWith({
+    expect(mockContext.resolvers.addResolver).toHaveBeenCalledWith('Query', 'queryByUsername', mockResolver);
+    expect(mockModelFieldMap.addResolverReference).toHaveBeenCalledWith({
       typeName: 'Query',
       fieldName: 'queryByUsername',
       isList: false,
@@ -1437,8 +1437,8 @@ describe('Index query resolver creation', () => {
     mockModelFieldMap.getMappedFields.mockReturnValue([]);
     resolverUtils.makeQueryResolver(mockConfig as any, mockContext as any, MYSQL_DB_TYPE);
 
-    expect(mockContext.resolvers.addResolver).toBeCalledWith('Query', 'queryByUsername', mockResolver);
-    expect(mockModelFieldMap.addResolverReference).not.toBeCalled();
+    expect(mockContext.resolvers.addResolver).toHaveBeenCalledWith('Query', 'queryByUsername', mockResolver);
+    expect(mockModelFieldMap.addResolverReference).not.toHaveBeenCalled();
   });
 
   it('does not set resolver reference for a DDB model', () => {
@@ -1465,9 +1465,9 @@ describe('Index query resolver creation', () => {
     resolverUtils.makeQueryResolver(mockConfig as any, mockContext as any, DDB_DB_TYPE);
 
     // The resolver is added with correct type and field names
-    expect(mockContext.resolvers.addResolver).toBeCalledWith('Query', 'queryByUsername', mockResolver);
+    expect(mockContext.resolvers.addResolver).toHaveBeenCalledWith('Query', 'queryByUsername', mockResolver);
     // Even if the field mapping exists, the resolver reference is not added for DDB models
-    expect(mockModelFieldMap.addResolverReference).not.toBeCalled();
+    expect(mockModelFieldMap.addResolverReference).not.toHaveBeenCalled();
   });
 
   const constructMockContext = () => {

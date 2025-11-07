@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`has one query with implicit IDs 1`] = `
 "type Team {
@@ -231,12 +231,12 @@ input ModelSubscriptionTeamFilterInput {
 }
 
 type Subscription {
-  onCreateTeam(filter: ModelSubscriptionTeamFilterInput): Team @aws_subscribe(mutations: [\\"createTeam\\"])
-  onUpdateTeam(filter: ModelSubscriptionTeamFilterInput): Team @aws_subscribe(mutations: [\\"updateTeam\\"])
-  onDeleteTeam(filter: ModelSubscriptionTeamFilterInput): Team @aws_subscribe(mutations: [\\"deleteTeam\\"])
-  onCreateMember(filter: ModelSubscriptionMemberFilterInput): Member @aws_subscribe(mutations: [\\"createMember\\"])
-  onUpdateMember(filter: ModelSubscriptionMemberFilterInput): Member @aws_subscribe(mutations: [\\"updateMember\\"])
-  onDeleteMember(filter: ModelSubscriptionMemberFilterInput): Member @aws_subscribe(mutations: [\\"deleteMember\\"])
+  onCreateTeam(filter: ModelSubscriptionTeamFilterInput): Team @aws_subscribe(mutations: ["createTeam"])
+  onUpdateTeam(filter: ModelSubscriptionTeamFilterInput): Team @aws_subscribe(mutations: ["updateTeam"])
+  onDeleteTeam(filter: ModelSubscriptionTeamFilterInput): Team @aws_subscribe(mutations: ["deleteTeam"])
+  onCreateMember(filter: ModelSubscriptionMemberFilterInput): Member @aws_subscribe(mutations: ["createMember"])
+  onUpdateMember(filter: ModelSubscriptionMemberFilterInput): Member @aws_subscribe(mutations: ["updateMember"])
+  onDeleteMember(filter: ModelSubscriptionMemberFilterInput): Member @aws_subscribe(mutations: ["deleteMember"])
 }
 
 type ModelMemberConnection {
@@ -292,26 +292,26 @@ exports[`has one query with implicit IDs 2`] = `
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"id\\"), $ctx.source.id) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("id"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\",
-  \\"index\\": \\"gsi-Team.members\\"
+  "version": "2018-05-29",
+  "operation": "Query",
+  "index": "gsi-Team.members"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"teamID\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue",
+  "expressionNames": {
+      "#partitionKey": "teamID"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -321,25 +321,25 @@ exports[`has one query with implicit IDs 3`] = `
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"teamID\\"), $ctx.source.teamID) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("teamID"), $ctx.source.teamID) )
 #if( $util.isNull($partitionKeyValue) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\"
+  "version": "2018-05-29",
+  "operation": "Query"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"id\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue",
+  "expressionNames": {
+      "#partitionKey": "id"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -349,26 +349,26 @@ exports[`has one references single partition key 1`] = `
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"id\\"), $ctx.source.id) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("id"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\",
-  \\"index\\": \\"gsi-Team.project\\"
+  "version": "2018-05-29",
+  "operation": "Query",
+  "index": "gsi-Team.project"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"teamId\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue",
+  "expressionNames": {
+      "#partitionKey": "teamId"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -378,25 +378,25 @@ exports[`has one references single partition key 2`] = `
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"teamId\\"), $ctx.source.teamId) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("teamId"), $ctx.source.teamId) )
 #if( $util.isNull($partitionKeyValue) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\"
+  "version": "2018-05-29",
+  "operation": "Query"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"id\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue",
+  "expressionNames": {
+      "#partitionKey": "id"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -406,26 +406,26 @@ exports[`has one references with multiple relationships to the same model 1`] = 
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"id\\"), $ctx.source.id) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("id"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\",
-  \\"index\\": \\"gsi-Primary.related1\\"
+  "version": "2018-05-29",
+  "operation": "Query",
+  "index": "gsi-Primary.related1"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"primaryId1\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue",
+  "expressionNames": {
+      "#partitionKey": "primaryId1"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -435,26 +435,26 @@ exports[`has one references with multiple relationships to the same model 2`] = 
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"id\\"), $ctx.source.id) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("id"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\",
-  \\"index\\": \\"gsi-Primary.related2\\"
+  "version": "2018-05-29",
+  "operation": "Query",
+  "index": "gsi-Primary.related2"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"primaryId2\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue",
+  "expressionNames": {
+      "#partitionKey": "primaryId2"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -464,25 +464,25 @@ exports[`has one references with multiple relationships to the same model 3`] = 
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"primaryId1\\"), $ctx.source.primaryId1) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("primaryId1"), $ctx.source.primaryId1) )
 #if( $util.isNull($partitionKeyValue) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\"
+  "version": "2018-05-29",
+  "operation": "Query"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"id\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue",
+  "expressionNames": {
+      "#partitionKey": "id"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -492,25 +492,25 @@ exports[`has one references with multiple relationships to the same model 4`] = 
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"primaryId2\\"), $ctx.source.primaryId2) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("primaryId2"), $ctx.source.primaryId2) )
 #if( $util.isNull($partitionKeyValue) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\"
+  "version": "2018-05-29",
+  "operation": "Query"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"id\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue",
+  "expressionNames": {
+      "#partitionKey": "id"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -520,28 +520,28 @@ exports[`has one references with multiple relationships to the same model with c
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"pk\\"), $ctx.source.pk) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("pk"), $ctx.source.pk) )
 #if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.sk1) || $util.isNull($ctx.source.sk2) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\",
-  \\"index\\": \\"gsi-Primary.related1\\"
+  "version": "2018-05-29",
+  "operation": "Query",
+  "index": "gsi-Primary.related1"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"primaryPk1\\",
-      \\"#sortKeyName\\": \\"primarySk11#primarySk12\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName",
+  "expressionNames": {
+      "#partitionKey": "primaryPk1",
+      "#sortKeyName": "primarySk11#primarySk12"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\"))),
-      \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.sk1}#\${ctx.source.sk2}\\", \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____"))),
+      ":sortKeyName": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank("\${ctx.source.sk1}#\${ctx.source.sk2}", "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -551,28 +551,28 @@ exports[`has one references with multiple relationships to the same model with c
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"pk\\"), $ctx.source.pk) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("pk"), $ctx.source.pk) )
 #if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.sk1) || $util.isNull($ctx.source.sk2) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\",
-  \\"index\\": \\"gsi-Primary.related2\\"
+  "version": "2018-05-29",
+  "operation": "Query",
+  "index": "gsi-Primary.related2"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"primaryPk2\\",
-      \\"#sortKeyName\\": \\"primarySk21#primarySk22\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName",
+  "expressionNames": {
+      "#partitionKey": "primaryPk2",
+      "#sortKeyName": "primarySk21#primarySk22"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\"))),
-      \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.sk1}#\${ctx.source.sk2}\\", \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____"))),
+      ":sortKeyName": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank("\${ctx.source.sk1}#\${ctx.source.sk2}", "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -582,27 +582,27 @@ exports[`has one references with multiple relationships to the same model with c
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"primaryPk1\\"), $ctx.source.primaryPk1) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("primaryPk1"), $ctx.source.primaryPk1) )
 #if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.primarySk11) || $util.isNull($ctx.source.primarySk12) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\"
+  "version": "2018-05-29",
+  "operation": "Query"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"pk\\",
-      \\"#sortKeyName\\": \\"sk1#sk2\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName",
+  "expressionNames": {
+      "#partitionKey": "pk",
+      "#sortKeyName": "sk1#sk2"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\"))),
-      \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.primarySk11}#\${ctx.source.primarySk12}\\", \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____"))),
+      ":sortKeyName": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank("\${ctx.source.primarySk11}#\${ctx.source.primarySk12}", "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -612,47 +612,47 @@ exports[`has one references with multiple relationships to the same model with c
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"primaryPk2\\"), $ctx.source.primaryPk2) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("primaryPk2"), $ctx.source.primaryPk2) )
 #if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.primarySk21) || $util.isNull($ctx.source.primarySk22) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\"
+  "version": "2018-05-29",
+  "operation": "Query"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"pk\\",
-      \\"#sortKeyName\\": \\"sk1#sk2\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName",
+  "expressionNames": {
+      "#partitionKey": "pk",
+      "#sortKeyName": "sk1#sk2"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\"))),
-      \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.primarySk21}#\${ctx.source.primarySk22}\\", \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____"))),
+      ":sortKeyName": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank("\${ctx.source.primarySk21}#\${ctx.source.primarySk22}", "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
 `;
 
 exports[`has one references with multiple sort keys 1`] = `
-Object {
+{
   "Mutation.createProject.init.1.req.vtl": "## [Start] Initialization default values. **
-$util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-$util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
+$util.qr($ctx.stash.put("defaultValues", $util.defaultIfNull($ctx.stash.defaultValues, {})))
+$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))
 #set( $createdAt = $util.time.nowISO8601() )
-$util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
-$util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
+$util.qr($ctx.stash.defaultValues.put("createdAt", $createdAt))
+$util.qr($ctx.stash.defaultValues.put("updatedAt", $createdAt))
 $util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
+  "version": "2018-05-29",
+  "payload": {}
 })
 ## [End] Initialization default values. **",
   "Mutation.createProject.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -663,23 +663,23 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
 ## [Start] Validate create mutation for global secondary index 'gsi-Team.project'. **
 #set( $hasSeenSomeKeyArg = false )
-#set( $keyFieldNames = [\\"teamMantra\\", \\"teamOrganization\\"] )
+#set( $keyFieldNames = ["teamMantra", "teamOrganization"] )
 #foreach( $keyFieldName in $keyFieldNames )
-#if( $mergedValues.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
+#if( $mergedValues.containsKey("$keyFieldName") ) #set( $hasSeenSomeKeyArg = true ) #end
 #end
 #foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey(\\"$keyFieldName\\") )
-    $util.error(\\"When creating any part of the composite sort key for global secondary index 'gsi-Team.project', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
+  #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey("$keyFieldName") )
+    $util.error("When creating any part of the composite sort key for global secondary index 'gsi-Team.project', you must provide all fields for the key. Missing key: '$keyFieldName'.")
   #end
 #end
 ## [End] Validate create mutation for global secondary index 'gsi-Team.project'. **
 #if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", { 'teamMantra#teamOrganization': \\"teamMantraTeamOrganization\\" }))
+  $util.qr($ctx.stash.metadata.put("dynamodbNameOverrideMap", { 'teamMantra#teamOrganization': "teamMantraTeamOrganization" }))
 #else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('teamMantra#teamOrganization', \\"teamMantraTeamOrganization\\"))
+  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('teamMantra#teamOrganization', "teamMantraTeamOrganization"))
 #end
 #if( $hasSeenSomeKeyArg )
-  $util.qr($ctx.args.input.put('teamMantra#teamOrganization',\\"\${mergedValues.teamMantra}#\${mergedValues.teamOrganization}\\"))
+  $util.qr($ctx.args.input.put('teamMantra#teamOrganization',"\${mergedValues.teamMantra}#\${mergedValues.teamOrganization}"))
 #end
 {}",
   "Mutation.createProject.req.vtl": "## [Start] Create Request template. **
@@ -689,12 +689,12 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## copy the values from input **
 $util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 ## set the typename **
-$util.qr($mergedValues.put(\\"__typename\\", \\"Project\\"))
+$util.qr($mergedValues.put("__typename", "Project"))
 #set( $PutObject = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"PutItem\\",
-  \\"attributeValues\\":   $util.dynamodb.toMapValues($mergedValues),
-  \\"condition\\": $condition
+  "version": "2018-05-29",
+  "operation": "PutItem",
+  "attributeValues":   $util.dynamodb.toMapValues($mergedValues),
+  "condition": $condition
 } )
 #if( $args.condition )
   $util.qr($ctx.stash.conditions.add($args.condition))
@@ -704,16 +704,16 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Project\\"))
   #set( $keyConditionExpr = {} )
   #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
-  \\"attributeExists\\": false
+    $util.qr($keyConditionExpr.put("keyCondition$velocityCount", {
+  "attributeExists": false
 }))
-    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    $util.qr($keyConditionExprNames.put("#keyCondition$velocityCount", "$entry.key"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
   $util.qr($ctx.stash.conditions.add({
-  \\"id\\": {
-      \\"attributeExists\\": false
+  "id": {
+      "attributeExists": false
   }
 }))
 #end
@@ -721,13 +721,13 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Project\\"))
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
   #set( $mergedConditions = {
-  \\"and\\": $ctx.stash.conditions
+  "and": $ctx.stash.conditions
 } )
   #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
   #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
     #set( $Conditions = {
-  \\"expression\\": $Conditions.expression,
-  \\"expressionNames\\": $Conditions.expressionNames
+  "expression": $Conditions.expression,
+  "expressionNames": $Conditions.expressionNames
 } )
   #end
   ## End condition block **
@@ -736,20 +736,20 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Project\\"))
   #if( $keyConditionExprNames )
     $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
   #end
-  $util.qr($PutObject.put(\\"condition\\", $Conditions))
+  $util.qr($PutObject.put("condition", $Conditions))
 #end
 #if( $ctx.stash.metadata.modelObjectKey )
-  $util.qr($PutObject.put(\\"key\\", $ctx.stash.metadata.modelObjectKey))
+  $util.qr($PutObject.put("key", $ctx.stash.metadata.modelObjectKey))
 #else
   #set( $Key = {
-  \\"id\\":   $util.dynamodb.toDynamoDB($mergedValues.id)
+  "id":   $util.dynamodb.toDynamoDB($mergedValues.id)
 } )
-  $util.qr($PutObject.put(\\"key\\", $Key))
+  $util.qr($PutObject.put("key", $Key))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
   "Mutation.createProject.res.vtl": "## [Start] ResponseTemplate. **
-$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
+$util.qr($ctx.result.put("__operation", "Mutation"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
@@ -757,18 +757,18 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 ## [End] ResponseTemplate. **",
   "Mutation.createTeam.init.1.req.vtl": "## [Start] Initialization default values. **
-$util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-$util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
+$util.qr($ctx.stash.put("defaultValues", $util.defaultIfNull($ctx.stash.defaultValues, {})))
+$util.qr($ctx.stash.defaultValues.put("id", $util.autoId()))
 #set( $createdAt = $util.time.nowISO8601() )
-$util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
-$util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
+$util.qr($ctx.stash.defaultValues.put("createdAt", $createdAt))
+$util.qr($ctx.stash.defaultValues.put("updatedAt", $createdAt))
 $util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
+  "version": "2018-05-29",
+  "payload": {}
 })
 ## [End] Initialization default values. **",
   "Mutation.createTeam.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -778,17 +778,17 @@ $util.toJson({})
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
 ## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id),
-  \\"mantra#organization\\": $util.dynamodb.toDynamoDB(\\"\${mergedValues.mantra}#\${mergedValues.organization}\\")
+$util.qr($ctx.stash.metadata.put("modelObjectKey", {
+  "id": $util.dynamodb.toDynamoDB($mergedValues.id),
+  "mantra#organization": $util.dynamodb.toDynamoDB("\${mergedValues.mantra}#\${mergedValues.organization}")
 }))
 ## [End] Set the primary key. **
 #if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", { 'mantra#organization': \\"mantraOrganization\\" }))
+  $util.qr($ctx.stash.metadata.put("dynamodbNameOverrideMap", { 'mantra#organization': "mantraOrganization" }))
 #else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('mantra#organization', \\"mantraOrganization\\"))
+  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('mantra#organization', "mantraOrganization"))
 #end
-$util.qr($ctx.args.input.put('mantra#organization',\\"\${mergedValues.mantra}#\${mergedValues.organization}\\"))
+$util.qr($ctx.args.input.put('mantra#organization',"\${mergedValues.mantra}#\${mergedValues.organization}"))
 {}",
   "Mutation.createTeam.req.vtl": "## [Start] Create Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -797,12 +797,12 @@ $util.qr($ctx.args.input.put('mantra#organization',\\"\${mergedValues.mantra}#\$
 ## copy the values from input **
 $util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
 ## set the typename **
-$util.qr($mergedValues.put(\\"__typename\\", \\"Team\\"))
+$util.qr($mergedValues.put("__typename", "Team"))
 #set( $PutObject = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"PutItem\\",
-  \\"attributeValues\\":   $util.dynamodb.toMapValues($mergedValues),
-  \\"condition\\": $condition
+  "version": "2018-05-29",
+  "operation": "PutItem",
+  "attributeValues":   $util.dynamodb.toMapValues($mergedValues),
+  "condition": $condition
 } )
 #if( $args.condition )
   $util.qr($ctx.stash.conditions.add($args.condition))
@@ -812,16 +812,16 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Team\\"))
   #set( $keyConditionExpr = {} )
   #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
-  \\"attributeExists\\": false
+    $util.qr($keyConditionExpr.put("keyCondition$velocityCount", {
+  "attributeExists": false
 }))
-    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    $util.qr($keyConditionExprNames.put("#keyCondition$velocityCount", "$entry.key"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
   $util.qr($ctx.stash.conditions.add({
-  \\"id\\": {
-      \\"attributeExists\\": false
+  "id": {
+      "attributeExists": false
   }
 }))
 #end
@@ -829,13 +829,13 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Team\\"))
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
   #set( $mergedConditions = {
-  \\"and\\": $ctx.stash.conditions
+  "and": $ctx.stash.conditions
 } )
   #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
   #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
     #set( $Conditions = {
-  \\"expression\\": $Conditions.expression,
-  \\"expressionNames\\": $Conditions.expressionNames
+  "expression": $Conditions.expression,
+  "expressionNames": $Conditions.expressionNames
 } )
   #end
   ## End condition block **
@@ -844,20 +844,20 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Team\\"))
   #if( $keyConditionExprNames )
     $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
   #end
-  $util.qr($PutObject.put(\\"condition\\", $Conditions))
+  $util.qr($PutObject.put("condition", $Conditions))
 #end
 #if( $ctx.stash.metadata.modelObjectKey )
-  $util.qr($PutObject.put(\\"key\\", $ctx.stash.metadata.modelObjectKey))
+  $util.qr($PutObject.put("key", $ctx.stash.metadata.modelObjectKey))
 #else
   #set( $Key = {
-  \\"id\\":   $util.dynamodb.toDynamoDB($mergedValues.id)
+  "id":   $util.dynamodb.toDynamoDB($mergedValues.id)
 } )
-  $util.qr($PutObject.put(\\"key\\", $Key))
+  $util.qr($PutObject.put("key", $Key))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
   "Mutation.createTeam.res.vtl": "## [Start] ResponseTemplate. **
-$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
+$util.qr($ctx.result.put("__operation", "Mutation"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
@@ -865,7 +865,7 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 ## [End] ResponseTemplate. **",
   "Mutation.deleteProject.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -873,32 +873,32 @@ $util.toJson({})
   "Mutation.deleteProject.req.vtl": "## [Start] Delete Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"DeleteItem\\"
+  "version": "2018-05-29",
+  "operation": "DeleteItem"
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $Key = {
-  \\"id\\":   $util.dynamodb.toDynamoDB($args.input.id)
+  "id":   $util.dynamodb.toDynamoDB($args.input.id)
 } )
 #end
-$util.qr($DeleteRequest.put(\\"key\\", $Key))
+$util.qr($DeleteRequest.put("key", $Key))
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
   #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
-  \\"attributeExists\\": true
+    $util.qr($keyConditionExpr.put("keyCondition$velocityCount", {
+  "attributeExists": true
 }))
-    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    $util.qr($keyConditionExprNames.put("#keyCondition$velocityCount", "$entry.key"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
   $util.qr($ctx.stash.conditions.add({
-  \\"id\\": {
-      \\"attributeExists\\": true
+  "id": {
+      "attributeExists": true
   }
 }))
 #end
@@ -909,13 +909,13 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
   #set( $mergedConditions = {
-  \\"and\\": $ctx.stash.conditions
+  "and": $ctx.stash.conditions
 } )
   #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
   #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
     #set( $Conditions = {
-  \\"expression\\": $Conditions.expression,
-  \\"expressionNames\\": $Conditions.expressionNames
+  "expression": $Conditions.expression,
+  "expressionNames": $Conditions.expressionNames
 } )
   #end
   ## End condition block **
@@ -924,12 +924,12 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
   #if( $keyConditionExprNames )
     $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
   #end
-  $util.qr($DeleteRequest.put(\\"condition\\", $Conditions))
+  $util.qr($DeleteRequest.put("condition", $Conditions))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
   "Mutation.deleteProject.res.vtl": "## [Start] ResponseTemplate. **
-$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
+$util.qr($ctx.result.put("__operation", "Mutation"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
@@ -937,7 +937,7 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 ## [End] ResponseTemplate. **",
   "Mutation.deleteTeam.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -947,41 +947,41 @@ $util.toJson({})
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
 ## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id),
-  \\"mantra#organization\\": $util.dynamodb.toDynamoDB(\\"\${mergedValues.mantra}#\${mergedValues.organization}\\")
+$util.qr($ctx.stash.metadata.put("modelObjectKey", {
+  "id": $util.dynamodb.toDynamoDB($mergedValues.id),
+  "mantra#organization": $util.dynamodb.toDynamoDB("\${mergedValues.mantra}#\${mergedValues.organization}")
 }))
 ## [End] Set the primary key. **
 {}",
   "Mutation.deleteTeam.req.vtl": "## [Start] Delete Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"DeleteItem\\"
+  "version": "2018-05-29",
+  "operation": "DeleteItem"
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $Key = {
-  \\"id\\":   $util.dynamodb.toDynamoDB($args.input.id)
+  "id":   $util.dynamodb.toDynamoDB($args.input.id)
 } )
 #end
-$util.qr($DeleteRequest.put(\\"key\\", $Key))
+$util.qr($DeleteRequest.put("key", $Key))
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
   #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
-  \\"attributeExists\\": true
+    $util.qr($keyConditionExpr.put("keyCondition$velocityCount", {
+  "attributeExists": true
 }))
-    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    $util.qr($keyConditionExprNames.put("#keyCondition$velocityCount", "$entry.key"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
   $util.qr($ctx.stash.conditions.add({
-  \\"id\\": {
-      \\"attributeExists\\": true
+  "id": {
+      "attributeExists": true
   }
 }))
 #end
@@ -992,13 +992,13 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
   #set( $mergedConditions = {
-  \\"and\\": $ctx.stash.conditions
+  "and": $ctx.stash.conditions
 } )
   #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
   #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
     #set( $Conditions = {
-  \\"expression\\": $Conditions.expression,
-  \\"expressionNames\\": $Conditions.expressionNames
+  "expression": $Conditions.expression,
+  "expressionNames": $Conditions.expressionNames
 } )
   #end
   ## End condition block **
@@ -1007,12 +1007,12 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
   #if( $keyConditionExprNames )
     $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
   #end
-  $util.qr($DeleteRequest.put(\\"condition\\", $Conditions))
+  $util.qr($DeleteRequest.put("condition", $Conditions))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
   "Mutation.deleteTeam.res.vtl": "## [Start] ResponseTemplate. **
-$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
+$util.qr($ctx.result.put("__operation", "Mutation"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
@@ -1020,16 +1020,16 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 ## [End] ResponseTemplate. **",
   "Mutation.updateProject.init.1.req.vtl": "## [Start] Initialization default values. **
-$util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
+$util.qr($ctx.stash.put("defaultValues", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
-$util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $updatedAt))
+$util.qr($ctx.stash.defaultValues.put("updatedAt", $updatedAt))
 $util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
+  "version": "2018-05-29",
+  "payload": {}
 })
 ## [End] Initialization default values. **",
   "Mutation.updateProject.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -1040,23 +1040,23 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
 ## [Start] Validate update mutation for global secondary index 'gsi-Team.project'. **
 #set( $hasSeenSomeKeyArg = false )
-#set( $keyFieldNames = [\\"teamMantra\\", \\"teamOrganization\\"] )
+#set( $keyFieldNames = ["teamMantra", "teamOrganization"] )
 #foreach( $keyFieldName in $keyFieldNames )
-#if( $mergedValues.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
+#if( $mergedValues.containsKey("$keyFieldName") ) #set( $hasSeenSomeKeyArg = true ) #end
 #end
 #foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey(\\"$keyFieldName\\") )
-    $util.error(\\"When updating any part of the composite sort key for global secondary index 'gsi-Team.project', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
+  #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey("$keyFieldName") )
+    $util.error("When updating any part of the composite sort key for global secondary index 'gsi-Team.project', you must provide all fields for the key. Missing key: '$keyFieldName'.")
   #end
 #end
 ## [End] Validate update mutation for global secondary index 'gsi-Team.project'. **
 #if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", { 'teamMantra#teamOrganization': \\"teamMantraTeamOrganization\\" }))
+  $util.qr($ctx.stash.metadata.put("dynamodbNameOverrideMap", { 'teamMantra#teamOrganization': "teamMantraTeamOrganization" }))
 #else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('teamMantra#teamOrganization', \\"teamMantraTeamOrganization\\"))
+  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('teamMantra#teamOrganization', "teamMantraTeamOrganization"))
 #end
 #if( $hasSeenSomeKeyArg )
-  $util.qr($ctx.args.input.put('teamMantra#teamOrganization',\\"\${mergedValues.teamMantra}#\${mergedValues.teamOrganization}\\"))
+  $util.qr($ctx.args.input.put('teamMantra#teamOrganization',"\${mergedValues.teamMantra}#\${mergedValues.teamOrganization}"))
 #end
 {}",
   "Mutation.updateProject.req.vtl": "## [Start] Mutation Update resolver. **
@@ -1076,84 +1076,84 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $Key = {
-  \\"id\\":   $util.dynamodb.toDynamoDB($args.input.id)
+  "id":   $util.dynamodb.toDynamoDB($args.input.id)
 } )
 #end
 ## Model key **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyFields = [] )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyFields.add(\\"$entry.key\\"))
+    $util.qr($keyFields.add("$entry.key"))
   #end
 #else
-  #set( $keyFields = [\\"id\\"] )
+  #set( $keyFields = ["id"] )
 #end
 #foreach( $entry in $util.map.copyAndRemoveAllKeys($mergedValues, $keyFields).entrySet() )
-  #if( !$util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) && $ctx.stash.metadata.dynamodbNameOverrideMap.containsKey(\\"$entry.key\\") )
-    #set( $entryKeyAttributeName = $ctx.stash.metadata.dynamodbNameOverrideMap.get(\\"$entry.key\\") )
+  #if( !$util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) && $ctx.stash.metadata.dynamodbNameOverrideMap.containsKey("$entry.key") )
+    #set( $entryKeyAttributeName = $ctx.stash.metadata.dynamodbNameOverrideMap.get("$entry.key") )
   #else
     #set( $entryKeyAttributeName = $entry.key )
   #end
   #if( $util.isNull($entry.value) )
-    #set( $discard = $expRemove.add(\\"#$entryKeyAttributeName\\") )
-    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+    #set( $discard = $expRemove.add("#$entryKeyAttributeName") )
+    $util.qr($expNames.put("#$entryKeyAttributeName", "$entry.key"))
   #else
-    $util.qr($expSet.put(\\"#$entryKeyAttributeName\\", \\":$entryKeyAttributeName\\"))
-    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
-    $util.qr($expValues.put(\\":$entryKeyAttributeName\\", $util.dynamodb.toDynamoDB($entry.value)))
+    $util.qr($expSet.put("#$entryKeyAttributeName", ":$entryKeyAttributeName"))
+    $util.qr($expNames.put("#$entryKeyAttributeName", "$entry.key"))
+    $util.qr($expValues.put(":$entryKeyAttributeName", $util.dynamodb.toDynamoDB($entry.value)))
   #end
 #end
-#set( $expression = \\"\\" )
+#set( $expression = "" )
 #if( !$expSet.isEmpty() )
-  #set( $expression = \\"SET\\" )
+  #set( $expression = "SET" )
   #foreach( $entry in $expSet.entrySet() )
-    #set( $expression = \\"$expression $entry.key = $entry.value\\" )
+    #set( $expression = "$expression $entry.key = $entry.value" )
     #if( $foreach.hasNext() )
-      #set( $expression = \\"$expression,\\" )
+      #set( $expression = "$expression," )
     #end
   #end
 #end
 #if( !$expAdd.isEmpty() )
-  #set( $expression = \\"$expression ADD\\" )
+  #set( $expression = "$expression ADD" )
   #foreach( $entry in $expAdd.entrySet() )
-    #set( $expression = \\"$expression $entry.key $entry.value\\" )
+    #set( $expression = "$expression $entry.key $entry.value" )
     #if( $foreach.hasNext() )
-      #set( $expression = \\"$expression,\\" )
+      #set( $expression = "$expression," )
     #end
   #end
 #end
 #if( !$expRemove.isEmpty() )
-  #set( $expression = \\"$expression REMOVE\\" )
+  #set( $expression = "$expression REMOVE" )
   #foreach( $entry in $expRemove )
-    #set( $expression = \\"$expression $entry\\" )
+    #set( $expression = "$expression $entry" )
     #if( $foreach.hasNext() )
-      #set( $expression = \\"$expression,\\" )
+      #set( $expression = "$expression," )
     #end
   #end
 #end
 #set( $update = {} )
-$util.qr($update.put(\\"expression\\", \\"$expression\\"))
+$util.qr($update.put("expression", "$expression"))
 #if( !$expNames.isEmpty() )
-  $util.qr($update.put(\\"expressionNames\\", $expNames))
+  $util.qr($update.put("expressionNames", $expNames))
 #end
 #if( !$expValues.isEmpty() )
-  $util.qr($update.put(\\"expressionValues\\", $expValues))
+  $util.qr($update.put("expressionValues", $expValues))
 #end
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
   #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
-  \\"attributeExists\\": true
+    $util.qr($keyConditionExpr.put("keyCondition$velocityCount", {
+  "attributeExists": true
 }))
-    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    $util.qr($keyConditionExprNames.put("#keyCondition$velocityCount", "$entry.key"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
   $util.qr($ctx.stash.conditions.add({
-  \\"id\\": {
-      \\"attributeExists\\": true
+  "id": {
+      "attributeExists": true
   }
 }))
 #end
@@ -1164,33 +1164,33 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
   #set( $mergedConditions = {
-  \\"and\\": $ctx.stash.conditions
+  "and": $ctx.stash.conditions
 } )
   #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
   #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
     #set( $Conditions = {
-  \\"expression\\": $Conditions.expression,
-  \\"expressionNames\\": $Conditions.expressionNames
+  "expression": $Conditions.expression,
+  "expressionNames": $Conditions.expressionNames
 } )
   #end
   ## End condition block **
 #end
 #set( $UpdateItem = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"UpdateItem\\",
-  \\"key\\": $Key,
-  \\"update\\": $update
+  "version": "2018-05-29",
+  "operation": "UpdateItem",
+  "key": $Key,
+  "update": $update
 } )
 #if( $Conditions )
   #if( $keyConditionExprNames )
     $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
   #end
-  $util.qr($UpdateItem.put(\\"condition\\", $Conditions))
+  $util.qr($UpdateItem.put("condition", $Conditions))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
   "Mutation.updateProject.res.vtl": "## [Start] ResponseTemplate. **
-$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
+$util.qr($ctx.result.put("__operation", "Mutation"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
@@ -1198,16 +1198,16 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 ## [End] ResponseTemplate. **",
   "Mutation.updateTeam.init.1.req.vtl": "## [Start] Initialization default values. **
-$util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
+$util.qr($ctx.stash.put("defaultValues", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
-$util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $updatedAt))
+$util.qr($ctx.stash.defaultValues.put("updatedAt", $updatedAt))
 $util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
+  "version": "2018-05-29",
+  "payload": {}
 })
 ## [End] Initialization default values. **",
   "Mutation.updateTeam.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -1217,17 +1217,17 @@ $util.toJson({})
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
 ## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id),
-  \\"mantra#organization\\": $util.dynamodb.toDynamoDB(\\"\${mergedValues.mantra}#\${mergedValues.organization}\\")
+$util.qr($ctx.stash.metadata.put("modelObjectKey", {
+  "id": $util.dynamodb.toDynamoDB($mergedValues.id),
+  "mantra#organization": $util.dynamodb.toDynamoDB("\${mergedValues.mantra}#\${mergedValues.organization}")
 }))
 ## [End] Set the primary key. **
 #if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", { 'mantra#organization': \\"mantraOrganization\\" }))
+  $util.qr($ctx.stash.metadata.put("dynamodbNameOverrideMap", { 'mantra#organization': "mantraOrganization" }))
 #else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('mantra#organization', \\"mantraOrganization\\"))
+  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('mantra#organization', "mantraOrganization"))
 #end
-$util.qr($ctx.args.input.put('mantra#organization',\\"\${mergedValues.mantra}#\${mergedValues.organization}\\"))
+$util.qr($ctx.args.input.put('mantra#organization',"\${mergedValues.mantra}#\${mergedValues.organization}"))
 {}",
   "Mutation.updateTeam.req.vtl": "## [Start] Mutation Update resolver. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -1246,84 +1246,84 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($args.input, {})))
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $Key = {
-  \\"id\\":   $util.dynamodb.toDynamoDB($args.input.id)
+  "id":   $util.dynamodb.toDynamoDB($args.input.id)
 } )
 #end
 ## Model key **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyFields = [] )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyFields.add(\\"$entry.key\\"))
+    $util.qr($keyFields.add("$entry.key"))
   #end
 #else
-  #set( $keyFields = [\\"id\\"] )
+  #set( $keyFields = ["id"] )
 #end
 #foreach( $entry in $util.map.copyAndRemoveAllKeys($mergedValues, $keyFields).entrySet() )
-  #if( !$util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) && $ctx.stash.metadata.dynamodbNameOverrideMap.containsKey(\\"$entry.key\\") )
-    #set( $entryKeyAttributeName = $ctx.stash.metadata.dynamodbNameOverrideMap.get(\\"$entry.key\\") )
+  #if( !$util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) && $ctx.stash.metadata.dynamodbNameOverrideMap.containsKey("$entry.key") )
+    #set( $entryKeyAttributeName = $ctx.stash.metadata.dynamodbNameOverrideMap.get("$entry.key") )
   #else
     #set( $entryKeyAttributeName = $entry.key )
   #end
   #if( $util.isNull($entry.value) )
-    #set( $discard = $expRemove.add(\\"#$entryKeyAttributeName\\") )
-    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+    #set( $discard = $expRemove.add("#$entryKeyAttributeName") )
+    $util.qr($expNames.put("#$entryKeyAttributeName", "$entry.key"))
   #else
-    $util.qr($expSet.put(\\"#$entryKeyAttributeName\\", \\":$entryKeyAttributeName\\"))
-    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
-    $util.qr($expValues.put(\\":$entryKeyAttributeName\\", $util.dynamodb.toDynamoDB($entry.value)))
+    $util.qr($expSet.put("#$entryKeyAttributeName", ":$entryKeyAttributeName"))
+    $util.qr($expNames.put("#$entryKeyAttributeName", "$entry.key"))
+    $util.qr($expValues.put(":$entryKeyAttributeName", $util.dynamodb.toDynamoDB($entry.value)))
   #end
 #end
-#set( $expression = \\"\\" )
+#set( $expression = "" )
 #if( !$expSet.isEmpty() )
-  #set( $expression = \\"SET\\" )
+  #set( $expression = "SET" )
   #foreach( $entry in $expSet.entrySet() )
-    #set( $expression = \\"$expression $entry.key = $entry.value\\" )
+    #set( $expression = "$expression $entry.key = $entry.value" )
     #if( $foreach.hasNext() )
-      #set( $expression = \\"$expression,\\" )
+      #set( $expression = "$expression," )
     #end
   #end
 #end
 #if( !$expAdd.isEmpty() )
-  #set( $expression = \\"$expression ADD\\" )
+  #set( $expression = "$expression ADD" )
   #foreach( $entry in $expAdd.entrySet() )
-    #set( $expression = \\"$expression $entry.key $entry.value\\" )
+    #set( $expression = "$expression $entry.key $entry.value" )
     #if( $foreach.hasNext() )
-      #set( $expression = \\"$expression,\\" )
+      #set( $expression = "$expression," )
     #end
   #end
 #end
 #if( !$expRemove.isEmpty() )
-  #set( $expression = \\"$expression REMOVE\\" )
+  #set( $expression = "$expression REMOVE" )
   #foreach( $entry in $expRemove )
-    #set( $expression = \\"$expression $entry\\" )
+    #set( $expression = "$expression $entry" )
     #if( $foreach.hasNext() )
-      #set( $expression = \\"$expression,\\" )
+      #set( $expression = "$expression," )
     #end
   #end
 #end
 #set( $update = {} )
-$util.qr($update.put(\\"expression\\", \\"$expression\\"))
+$util.qr($update.put("expression", "$expression"))
 #if( !$expNames.isEmpty() )
-  $util.qr($update.put(\\"expressionNames\\", $expNames))
+  $util.qr($update.put("expressionNames", $expNames))
 #end
 #if( !$expValues.isEmpty() )
-  $util.qr($update.put(\\"expressionValues\\", $expValues))
+  $util.qr($update.put("expressionValues", $expValues))
 #end
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
   #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
-  \\"attributeExists\\": true
+    $util.qr($keyConditionExpr.put("keyCondition$velocityCount", {
+  "attributeExists": true
 }))
-    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    $util.qr($keyConditionExprNames.put("#keyCondition$velocityCount", "$entry.key"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
   $util.qr($ctx.stash.conditions.add({
-  \\"id\\": {
-      \\"attributeExists\\": true
+  "id": {
+      "attributeExists": true
   }
 }))
 #end
@@ -1334,33 +1334,33 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
   #set( $mergedConditions = {
-  \\"and\\": $ctx.stash.conditions
+  "and": $ctx.stash.conditions
 } )
   #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
   #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
     #set( $Conditions = {
-  \\"expression\\": $Conditions.expression,
-  \\"expressionNames\\": $Conditions.expressionNames
+  "expression": $Conditions.expression,
+  "expressionNames": $Conditions.expressionNames
 } )
   #end
   ## End condition block **
 #end
 #set( $UpdateItem = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"UpdateItem\\",
-  \\"key\\": $Key,
-  \\"update\\": $update
+  "version": "2018-05-29",
+  "operation": "UpdateItem",
+  "key": $Key,
+  "update": $update
 } )
 #if( $Conditions )
   #if( $keyConditionExprNames )
     $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
   #end
-  $util.qr($UpdateItem.put(\\"condition\\", $Conditions))
+  $util.qr($UpdateItem.put("condition", $Conditions))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
   "Mutation.updateTeam.res.vtl": "## [Start] ResponseTemplate. **
-$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
+$util.qr($ctx.result.put("__operation", "Mutation"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
@@ -1370,27 +1370,27 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   "Project.team.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"teamId\\"), $ctx.source.teamId) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("teamId"), $ctx.source.teamId) )
 #if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.teamMantra) || $util.isNull($ctx.source.teamOrganization) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\"
+  "version": "2018-05-29",
+  "operation": "Query"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"id\\",
-      \\"#sortKeyName\\": \\"mantra#organization\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName",
+  "expressionNames": {
+      "#partitionKey": "id",
+      "#sortKeyName": "mantra#organization"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\"))),
-      \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.teamMantra}#\${ctx.source.teamOrganization}\\", \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____"))),
+      ":sortKeyName": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank("\${ctx.source.teamMantra}#\${ctx.source.teamOrganization}", "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end",
@@ -1399,9 +1399,9 @@ $util.error($ctx.error.message, $ctx.error.type)
 #else
   #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
     #set( $resultValue = $ctx.result.items[0] )
-    #set( $operation = $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) )
-    #if( $operation == \\"Mutation\\" )
-      $util.qr($resultValue.put(\\"__operation\\", \\"Mutation\\"))
+    #set( $operation = $util.defaultIfNull($ctx.source.get("__operation"), null) )
+    #if( $operation == "Mutation" )
+      $util.qr($resultValue.put("__operation", "Mutation"))
     #end
     $util.toJson($resultValue)
   #else
@@ -1412,42 +1412,42 @@ $util.unauthorized()
   #end
 #end",
   "Query.getProject.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.getProject.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\"
+  "version": "2018-05-29",
+  "operation": "Query"
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
-  #set( $expression = \\"\\" )
+  #set( $expression = "" )
   #set( $expressionNames = {} )
   #set( $expressionValues = {} )
   #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
-    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
-    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
+    #set( $expression = "$expression#keyCount$velocityCount = :valueCount$velocityCount AND " )
+    $util.qr($expressionNames.put("#keyCount$velocityCount", $item.key))
+    $util.qr($expressionValues.put(":valueCount$velocityCount", $item.value))
   #end
-  #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
+  #set( $expression = $expression.replaceAll("AND $", "") )
   #set( $query = {
-  \\"expression\\": $expression,
-  \\"expressionNames\\": $expressionNames,
-  \\"expressionValues\\": $expressionValues
+  "expression": $expression,
+  "expressionNames": $expressionNames,
+  "expressionValues": $expressionValues
 } )
 #else
   #set( $query = {
-  \\"expression\\": \\"id = :id\\",
-  \\"expressionValues\\": {
-      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
+  "expression": "id = :id",
+  "expressionValues": {
+      ":id":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
-$util.qr($GetRequest.put(\\"query\\", $query))
+$util.qr($GetRequest.put("query", $query))
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+  $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
@@ -1465,49 +1465,49 @@ $util.unauthorized()
 #end
 ## [End] Get Response template. **",
   "Query.getTeam.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.getTeam.preAuth.1.req.vtl": "## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"id\\": $util.dynamodb.toDynamoDB($ctx.args.id),
-  \\"mantra#organization\\": $util.dynamodb.toDynamoDB(\\"\${ctx.args.mantra}#\${ctx.args.organization}\\")
+$util.qr($ctx.stash.metadata.put("modelObjectKey", {
+  "id": $util.dynamodb.toDynamoDB($ctx.args.id),
+  "mantra#organization": $util.dynamodb.toDynamoDB("\${ctx.args.mantra}#\${ctx.args.organization}")
 }))
 ## [End] Set the primary key. **
 {}",
   "Query.getTeam.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\"
+  "version": "2018-05-29",
+  "operation": "Query"
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
-  #set( $expression = \\"\\" )
+  #set( $expression = "" )
   #set( $expressionNames = {} )
   #set( $expressionValues = {} )
   #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
-    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
-    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
+    #set( $expression = "$expression#keyCount$velocityCount = :valueCount$velocityCount AND " )
+    $util.qr($expressionNames.put("#keyCount$velocityCount", $item.key))
+    $util.qr($expressionValues.put(":valueCount$velocityCount", $item.value))
   #end
-  #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
+  #set( $expression = $expression.replaceAll("AND $", "") )
   #set( $query = {
-  \\"expression\\": $expression,
-  \\"expressionNames\\": $expressionNames,
-  \\"expressionValues\\": $expressionValues
+  "expression": $expression,
+  "expressionNames": $expressionNames,
+  "expressionValues": $expressionValues
 } )
 #else
   #set( $query = {
-  \\"expression\\": \\"id = :id\\",
-  \\"expressionValues\\": {
-      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
+  "expression": "id = :id",
+  "expressionValues": {
+      ":id":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
-$util.qr($GetRequest.put(\\"query\\", $query))
+$util.qr($GetRequest.put("query", $query))
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+  $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
@@ -1525,7 +1525,7 @@ $util.unauthorized()
 #end
 ## [End] Get Response template. **",
   "Query.listProjects.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -1534,8 +1534,8 @@ $util.toJson({})
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $limit = $util.defaultIfNull($args.limit, 100) )
 #set( $ListRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"limit\\": $limit
+  "version": "2018-05-29",
+  "limit": $limit
 } )
 #if( $args.nextToken )
   #set( $ListRequest.nextToken = $args.nextToken )
@@ -1544,7 +1544,7 @@ $util.toJson({})
   #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($args.filter) )
     #set( $filter = {
-  \\"and\\":   [$filter, $args.filter]
+  "and":   [$filter, $args.filter]
 } )
   #end
 #else
@@ -1555,25 +1555,25 @@ $util.toJson({})
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( $util.isNullOrEmpty($filterExpression) )
-    $util.error(\\"Unable to process the filter expression\\", \\"Unrecognized Filter\\")
+    $util.error("Unable to process the filter expression", "Unrecognized Filter")
   #end
   #if( !$util.isNullOrBlank($filterExpression.expression) )
     #if( $filterExpression.expressionValues.size() == 0 )
-      $util.qr($filterExpression.remove(\\"expressionValues\\"))
+      $util.qr($filterExpression.remove("expressionValues"))
     #end
     #set( $ListRequest.filter = $filterExpression )
   #end
 #end
 #if( !$util.isNull($ctx.stash.modelQueryExpression) && !$util.isNullOrEmpty($ctx.stash.modelQueryExpression.expression) )
-  $util.qr($ListRequest.put(\\"operation\\", \\"Query\\"))
-  $util.qr($ListRequest.put(\\"query\\", $ctx.stash.modelQueryExpression))
-  #if( !$util.isNull($args.sortDirection) && $args.sortDirection == \\"DESC\\" )
+  $util.qr($ListRequest.put("operation", "Query"))
+  $util.qr($ListRequest.put("query", $ctx.stash.modelQueryExpression))
+  #if( !$util.isNull($args.sortDirection) && $args.sortDirection == "DESC" )
     #set( $ListRequest.scanIndexForward = false )
   #else
     #set( $ListRequest.scanIndexForward = true )
   #end
 #else
-  $util.qr($ListRequest.put(\\"operation\\", \\"Scan\\"))
+  $util.qr($ListRequest.put("operation", "Scan"))
 #end
 #if( !$util.isNull($ctx.stash.metadata.index) )
   #set( $ListRequest.IndexName = $ctx.stash.metadata.index )
@@ -1588,125 +1588,125 @@ $util.toJson($ListRequest)
 #end
 ## [End] ResponseTemplate. **",
   "Query.listTeams.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.listTeams.preAuth.1.req.vtl": "## [Start] Set query expression for key **
 #if( $util.isNull($ctx.args.id) && !$util.isNull($ctx.args.sortDirection) )
-  $util.error(\\"When providing argument 'sortDirection' you must also provide argument 'id'.\\", \\"InvalidArgumentsError\\")
+  $util.error("When providing argument 'sortDirection' you must also provide argument 'id'.", "InvalidArgumentsError")
 #end
 #set( $modelQueryExpression = {} )
 ## [Start] Validate key arguments. **
 #if( !$util.isNull($ctx.args.mantraOrganization) && $util.isNullOrBlank($ctx.args.id) )
-  $util.error(\\"When providing argument 'mantraOrganization' you must also provide 'id'.\\", \\"InvalidArgumentsError\\")
+  $util.error("When providing argument 'mantraOrganization' you must also provide 'id'.", "InvalidArgumentsError")
 #end
 #if( !$util.isNull($ctx.args.mantraOrganization) )
   #set( $sortKeyArgumentOperations = $ctx.args.mantraOrganization.keySet() )
   #if( $sortKeyArgumentOperations.size() > 1 )
-    $util.error(\\"Argument mantraOrganization must specify at most one key condition operation.\\", \\"InvalidArgumentsError\\")
+    $util.error("Argument mantraOrganization must specify at most one key condition operation.", "InvalidArgumentsError")
   #end
   #foreach( $operation in $sortKeyArgumentOperations )
-    #if( $operation == \\"between\\" )
+    #if( $operation == "between" )
       #if( $ctx.args.mantraOrganization.between.size() != 2 )
-        $util.error(\\"Argument 'mantraOrganization.between' expects exactly two elements.\\", \\"InvalidArgumentsError\\")
+        $util.error("Argument 'mantraOrganization.between' expects exactly two elements.", "InvalidArgumentsError")
       #end
       #if( !$util.isNullOrBlank($ctx.args.mantraOrganization.between[0].organization) && $util.isNullOrBlank($ctx.args.mantraOrganization.between[0].mantra) )
-        $util.error(\\"When providing argument 'mantraOrganization.between[0].organization' you must also provide 'mantraOrganization.between[0].mantra'.\\", \\"InvalidArgumentsError\\")
+        $util.error("When providing argument 'mantraOrganization.between[0].organization' you must also provide 'mantraOrganization.between[0].mantra'.", "InvalidArgumentsError")
       #end
       #if( !$util.isNullOrBlank($ctx.args.mantraOrganization.between[1].organization) && $util.isNullOrBlank($ctx.args.mantraOrganization.between[1].mantra) )
-        $util.error(\\"When providing argument 'mantraOrganization.between[1].organization' you must also provide 'mantraOrganization.between[1].mantra'.\\", \\"InvalidArgumentsError\\")
+        $util.error("When providing argument 'mantraOrganization.between[1].organization' you must also provide 'mantraOrganization.between[1].mantra'.", "InvalidArgumentsError")
       #end
     #else
-      #if( !$util.isNullOrBlank($ctx.args.mantraOrganization.get(\\"$operation\\").organization) && $util.isNullOrBlank($ctx.args.mantraOrganization.get(\\"$operation\\").mantra) )
-        $util.error(\\"When providing argument 'mantraOrganization.$operation.organization' you must also provide 'mantraOrganization.$operation.mantra'.\\", \\"InvalidArgumentsError\\")
+      #if( !$util.isNullOrBlank($ctx.args.mantraOrganization.get("$operation").organization) && $util.isNullOrBlank($ctx.args.mantraOrganization.get("$operation").mantra) )
+        $util.error("When providing argument 'mantraOrganization.$operation.organization' you must also provide 'mantraOrganization.$operation.mantra'.", "InvalidArgumentsError")
       #end
     #end
   #end
 #end
 ## [End] Validate key arguments. **
 #if( !$util.isNull($ctx.args.id) )
-  #set( $modelQueryExpression.expression = \\"#id = :id\\" )
+  #set( $modelQueryExpression.expression = "#id = :id" )
   #set( $modelQueryExpression.expressionNames = {
-  \\"#id\\": \\"id\\"
+  "#id": "id"
 } )
   #set( $modelQueryExpression.expressionValues = {
-  \\":id\\": {
-      \\"S\\": \\"$ctx.args.id\\"
+  ":id": {
+      "S": "$ctx.args.id"
   }
 } )
 #end
 ## [Start] Applying Key Condition **
-#set( $sortKeyValue = \\"\\" )
-#set( $sortKeyValue2 = \\"\\" )
+#set( $sortKeyValue = "" )
+#set( $sortKeyValue2 = "" )
 #if( !$util.isNull($ctx.args.mantraOrganization) && !$util.isNull($ctx.args.mantraOrganization.beginsWith) )
-#if( !$util.isNull($ctx.args.mantraOrganization.beginsWith.mantra) ) #set( $sortKeyValue = \\"$ctx.args.mantraOrganization.beginsWith.mantra\\" ) #end
-#if( !$util.isNull($ctx.args.mantraOrganization.beginsWith.organization) ) #set( $sortKeyValue = \\"$sortKeyValue#$ctx.args.mantraOrganization.beginsWith.organization\\" ) #end
-  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND begins_with(#sortKey, :sortKey)\\" )
-  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"mantra#organization\\"))
-  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$sortKeyValue\\" }))
+#if( !$util.isNull($ctx.args.mantraOrganization.beginsWith.mantra) ) #set( $sortKeyValue = "$ctx.args.mantraOrganization.beginsWith.mantra" ) #end
+#if( !$util.isNull($ctx.args.mantraOrganization.beginsWith.organization) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.mantraOrganization.beginsWith.organization" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND begins_with(#sortKey, :sortKey)" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "mantra#organization"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "S": "$sortKeyValue" }))
 #end
 #if( !$util.isNull($ctx.args.mantraOrganization) && !$util.isNull($ctx.args.mantraOrganization.between) )
   #if( $ctx.args.mantraOrganization.between.size() != 2 )
-    $util.error(\\"Argument mantraOrganization.between expects exactly 2 elements.\\")
+    $util.error("Argument mantraOrganization.between expects exactly 2 elements.")
   #end
-#if( !$util.isNull($ctx.args.mantraOrganization.between[0].mantra) ) #set( $sortKeyValue = \\"$ctx.args.mantraOrganization.between[0].mantra\\" ) #end
-#if( !$util.isNull($ctx.args.mantraOrganization.between[0].organization) ) #set( $sortKeyValue = \\"$sortKeyValue#$ctx.args.mantraOrganization.between[0].organization\\" ) #end
-#if( !$util.isNull($ctx.args.mantraOrganization.between[1].mantra) ) #set( $sortKeyValue2 = \\"$ctx.args.mantraOrganization.between[1].mantra\\" ) #end
-#if( !$util.isNull($ctx.args.mantraOrganization.between[1].organization) ) #set( $sortKeyValue2 = \\"$sortKeyValue2#$ctx.args.mantraOrganization.between[1].organization\\" ) #end
-  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey BETWEEN :sortKey0 AND :sortKey1\\" )
-  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"mantra#organization\\"))
-  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey0\\", { \\"S\\": \\"$sortKeyValue\\" }))
-  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey1\\", { \\"S\\": \\"$sortKeyValue2\\" }))
+#if( !$util.isNull($ctx.args.mantraOrganization.between[0].mantra) ) #set( $sortKeyValue = "$ctx.args.mantraOrganization.between[0].mantra" ) #end
+#if( !$util.isNull($ctx.args.mantraOrganization.between[0].organization) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.mantraOrganization.between[0].organization" ) #end
+#if( !$util.isNull($ctx.args.mantraOrganization.between[1].mantra) ) #set( $sortKeyValue2 = "$ctx.args.mantraOrganization.between[1].mantra" ) #end
+#if( !$util.isNull($ctx.args.mantraOrganization.between[1].organization) ) #set( $sortKeyValue2 = "$sortKeyValue2#$ctx.args.mantraOrganization.between[1].organization" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey BETWEEN :sortKey0 AND :sortKey1" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "mantra#organization"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey0", { "S": "$sortKeyValue" }))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey1", { "S": "$sortKeyValue2" }))
 #end
 #if( !$util.isNull($ctx.args.mantraOrganization) && !$util.isNull($ctx.args.mantraOrganization.eq) )
-#if( !$util.isNull($ctx.args.mantraOrganization.eq.mantra) ) #set( $sortKeyValue = \\"$ctx.args.mantraOrganization.eq.mantra\\" ) #end
-#if( !$util.isNull($ctx.args.mantraOrganization.eq.organization) ) #set( $sortKeyValue = \\"$sortKeyValue#$ctx.args.mantraOrganization.eq.organization\\" ) #end
-  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey = :sortKey\\" )
-  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"mantra#organization\\"))
-  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$sortKeyValue\\" }))
+#if( !$util.isNull($ctx.args.mantraOrganization.eq.mantra) ) #set( $sortKeyValue = "$ctx.args.mantraOrganization.eq.mantra" ) #end
+#if( !$util.isNull($ctx.args.mantraOrganization.eq.organization) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.mantraOrganization.eq.organization" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey = :sortKey" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "mantra#organization"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "S": "$sortKeyValue" }))
 #end
 #if( !$util.isNull($ctx.args.mantraOrganization) && !$util.isNull($ctx.args.mantraOrganization.lt) )
-#if( !$util.isNull($ctx.args.mantraOrganization.lt.mantra) ) #set( $sortKeyValue = \\"$ctx.args.mantraOrganization.lt.mantra\\" ) #end
-#if( !$util.isNull($ctx.args.mantraOrganization.lt.organization) ) #set( $sortKeyValue = \\"$sortKeyValue#$ctx.args.mantraOrganization.lt.organization\\" ) #end
-  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey < :sortKey\\" )
-  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"mantra#organization\\"))
-  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$sortKeyValue\\" }))
+#if( !$util.isNull($ctx.args.mantraOrganization.lt.mantra) ) #set( $sortKeyValue = "$ctx.args.mantraOrganization.lt.mantra" ) #end
+#if( !$util.isNull($ctx.args.mantraOrganization.lt.organization) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.mantraOrganization.lt.organization" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey < :sortKey" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "mantra#organization"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "S": "$sortKeyValue" }))
 #end
 #if( !$util.isNull($ctx.args.mantraOrganization) && !$util.isNull($ctx.args.mantraOrganization.le) )
-#if( !$util.isNull($ctx.args.mantraOrganization.le.mantra) ) #set( $sortKeyValue = \\"$ctx.args.mantraOrganization.le.mantra\\" ) #end
-#if( !$util.isNull($ctx.args.mantraOrganization.le.organization) ) #set( $sortKeyValue = \\"$sortKeyValue#$ctx.args.mantraOrganization.le.organization\\" ) #end
-  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey <= :sortKey\\" )
-  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"mantra#organization\\"))
-  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$sortKeyValue\\" }))
+#if( !$util.isNull($ctx.args.mantraOrganization.le.mantra) ) #set( $sortKeyValue = "$ctx.args.mantraOrganization.le.mantra" ) #end
+#if( !$util.isNull($ctx.args.mantraOrganization.le.organization) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.mantraOrganization.le.organization" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey <= :sortKey" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "mantra#organization"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "S": "$sortKeyValue" }))
 #end
 #if( !$util.isNull($ctx.args.mantraOrganization) && !$util.isNull($ctx.args.mantraOrganization.gt) )
-#if( !$util.isNull($ctx.args.mantraOrganization.gt.mantra) ) #set( $sortKeyValue = \\"$ctx.args.mantraOrganization.gt.mantra\\" ) #end
-#if( !$util.isNull($ctx.args.mantraOrganization.gt.organization) ) #set( $sortKeyValue = \\"$sortKeyValue#$ctx.args.mantraOrganization.gt.organization\\" ) #end
-  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey > :sortKey\\" )
-  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"mantra#organization\\"))
-  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$sortKeyValue\\" }))
+#if( !$util.isNull($ctx.args.mantraOrganization.gt.mantra) ) #set( $sortKeyValue = "$ctx.args.mantraOrganization.gt.mantra" ) #end
+#if( !$util.isNull($ctx.args.mantraOrganization.gt.organization) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.mantraOrganization.gt.organization" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey > :sortKey" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "mantra#organization"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "S": "$sortKeyValue" }))
 #end
 #if( !$util.isNull($ctx.args.mantraOrganization) && !$util.isNull($ctx.args.mantraOrganization.ge) )
-#if( !$util.isNull($ctx.args.mantraOrganization.ge.mantra) ) #set( $sortKeyValue = \\"$ctx.args.mantraOrganization.ge.mantra\\" ) #end
-#if( !$util.isNull($ctx.args.mantraOrganization.ge.organization) ) #set( $sortKeyValue = \\"$sortKeyValue#$ctx.args.mantraOrganization.ge.organization\\" ) #end
-  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey >= :sortKey\\" )
-  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"mantra#organization\\"))
-  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$sortKeyValue\\" }))
+#if( !$util.isNull($ctx.args.mantraOrganization.ge.mantra) ) #set( $sortKeyValue = "$ctx.args.mantraOrganization.ge.mantra" ) #end
+#if( !$util.isNull($ctx.args.mantraOrganization.ge.organization) ) #set( $sortKeyValue = "$sortKeyValue#$ctx.args.mantraOrganization.ge.organization" ) #end
+  #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey >= :sortKey" )
+  $util.qr($modelQueryExpression.expressionNames.put("#sortKey", "mantra#organization"))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "S": "$sortKeyValue" }))
 #end
 
 
 ## [End] Applying Key Condition **
 ## [End] Set query expression for key **
-$util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
+$util.qr($ctx.stash.put("modelQueryExpression", $modelQueryExpression))
 {}",
   "Query.listTeams.req.vtl": "## [Start] List Request. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $limit = $util.defaultIfNull($args.limit, 100) )
 #set( $ListRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"limit\\": $limit
+  "version": "2018-05-29",
+  "limit": $limit
 } )
 #if( $args.nextToken )
   #set( $ListRequest.nextToken = $args.nextToken )
@@ -1715,7 +1715,7 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
   #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($args.filter) )
     #set( $filter = {
-  \\"and\\":   [$filter, $args.filter]
+  "and":   [$filter, $args.filter]
 } )
   #end
 #else
@@ -1726,25 +1726,25 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #if( !$util.isNullOrEmpty($filter) )
   #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( $util.isNullOrEmpty($filterExpression) )
-    $util.error(\\"Unable to process the filter expression\\", \\"Unrecognized Filter\\")
+    $util.error("Unable to process the filter expression", "Unrecognized Filter")
   #end
   #if( !$util.isNullOrBlank($filterExpression.expression) )
     #if( $filterExpression.expressionValues.size() == 0 )
-      $util.qr($filterExpression.remove(\\"expressionValues\\"))
+      $util.qr($filterExpression.remove("expressionValues"))
     #end
     #set( $ListRequest.filter = $filterExpression )
   #end
 #end
 #if( !$util.isNull($ctx.stash.modelQueryExpression) && !$util.isNullOrEmpty($ctx.stash.modelQueryExpression.expression) )
-  $util.qr($ListRequest.put(\\"operation\\", \\"Query\\"))
-  $util.qr($ListRequest.put(\\"query\\", $ctx.stash.modelQueryExpression))
-  #if( !$util.isNull($args.sortDirection) && $args.sortDirection == \\"DESC\\" )
+  $util.qr($ListRequest.put("operation", "Query"))
+  $util.qr($ListRequest.put("query", $ctx.stash.modelQueryExpression))
+  #if( !$util.isNull($args.sortDirection) && $args.sortDirection == "DESC" )
     #set( $ListRequest.scanIndexForward = false )
   #else
     #set( $ListRequest.scanIndexForward = true )
   #end
 #else
-  $util.qr($ListRequest.put(\\"operation\\", \\"Scan\\"))
+  $util.qr($ListRequest.put("operation", "Scan"))
 #end
 #if( !$util.isNull($ctx.stash.metadata.index) )
   #set( $ListRequest.IndexName = $ctx.stash.metadata.index )
@@ -1759,15 +1759,15 @@ $util.toJson($ListRequest)
 #end
 ## [End] ResponseTemplate. **",
   "Subscription.onCreateProject.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onCreateProject.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
+  "version": "2018-05-29",
+  "payload": {}
 })
 ## [End] Subscription Request template. **",
   "Subscription.onCreateProject.res.vtl": "## [Start] Subscription Response template. **
@@ -1777,15 +1777,15 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onCreateTeam.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onCreateTeam.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
+  "version": "2018-05-29",
+  "payload": {}
 })
 ## [End] Subscription Request template. **",
   "Subscription.onCreateTeam.res.vtl": "## [Start] Subscription Response template. **
@@ -1795,15 +1795,15 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onDeleteProject.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onDeleteProject.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
+  "version": "2018-05-29",
+  "payload": {}
 })
 ## [End] Subscription Request template. **",
   "Subscription.onDeleteProject.res.vtl": "## [Start] Subscription Response template. **
@@ -1813,15 +1813,15 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onDeleteTeam.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onDeleteTeam.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
+  "version": "2018-05-29",
+  "payload": {}
 })
 ## [End] Subscription Request template. **",
   "Subscription.onDeleteTeam.res.vtl": "## [Start] Subscription Response template. **
@@ -1831,15 +1831,15 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onUpdateProject.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onUpdateProject.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
+  "version": "2018-05-29",
+  "payload": {}
 })
 ## [End] Subscription Request template. **",
   "Subscription.onUpdateProject.res.vtl": "## [Start] Subscription Response template. **
@@ -1849,15 +1849,15 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 $util.toJson(null)
 ## [End] Subscription Response template. **",
   "Subscription.onUpdateTeam.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
 ## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onUpdateTeam.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
+  "version": "2018-05-29",
+  "payload": {}
 })
 ## [End] Subscription Request template. **",
   "Subscription.onUpdateTeam.res.vtl": "## [Start] Subscription Response template. **
@@ -1869,28 +1869,28 @@ $util.toJson(null)
   "Team.project.req.vtl": "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"id\\"), $ctx.source.id) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("id"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.mantra) || $util.isNull($ctx.source.organization) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\",
-  \\"index\\": \\"gsi-Team.project\\"
+  "version": "2018-05-29",
+  "operation": "Query",
+  "index": "gsi-Team.project"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"teamId\\",
-      \\"#sortKeyName\\": \\"teamMantra#teamOrganization\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName",
+  "expressionNames": {
+      "#partitionKey": "teamId",
+      "#sortKeyName": "teamMantra#teamOrganization"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\"))),
-      \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.mantra}#\${ctx.source.organization}\\", \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____"))),
+      ":sortKeyName": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank("\${ctx.source.mantra}#\${ctx.source.organization}", "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end",
@@ -1899,9 +1899,9 @@ $util.error($ctx.error.message, $ctx.error.type)
 #else
   #if( !$ctx.result.items.isEmpty() )
     #set( $resultValue = $ctx.result.items[0] )
-    #set( $operation = $util.defaultIfNull($ctx.source.get(\\"__operation\\"), null) )
-    #if( $operation == \\"Mutation\\" )
-      $util.qr($resultValue.put(\\"__operation\\", \\"Mutation\\"))
+    #set( $operation = $util.defaultIfNull($ctx.source.get("__operation"), null) )
+    #if( $operation == "Mutation" )
+      $util.qr($resultValue.put("__operation", "Mutation"))
     #end
     $util.toJson($resultValue)
   #else
@@ -1918,28 +1918,28 @@ exports[`has one references with multiple sort keys 2`] = `
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"id\\"), $ctx.source.id) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("id"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.mantra) || $util.isNull($ctx.source.organization) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\",
-  \\"index\\": \\"gsi-Team.project\\"
+  "version": "2018-05-29",
+  "operation": "Query",
+  "index": "gsi-Team.project"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"teamId\\",
-      \\"#sortKeyName\\": \\"teamMantra#teamOrganization\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName",
+  "expressionNames": {
+      "#partitionKey": "teamId",
+      "#sortKeyName": "teamMantra#teamOrganization"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\"))),
-      \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.mantra}#\${ctx.source.organization}\\", \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____"))),
+      ":sortKeyName": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank("\${ctx.source.mantra}#\${ctx.source.organization}", "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -1949,27 +1949,27 @@ exports[`has one references with multiple sort keys 3`] = `
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"teamId\\"), $ctx.source.teamId) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("teamId"), $ctx.source.teamId) )
 #if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.teamMantra) || $util.isNull($ctx.source.teamOrganization) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\"
+  "version": "2018-05-29",
+  "operation": "Query"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"id\\",
-      \\"#sortKeyName\\": \\"mantra#organization\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName",
+  "expressionNames": {
+      "#partitionKey": "id",
+      "#sortKeyName": "mantra#organization"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\"))),
-      \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.teamMantra}#\${ctx.source.teamOrganization}\\", \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____"))),
+      ":sortKeyName": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank("\${ctx.source.teamMantra}#\${ctx.source.teamOrganization}", "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -1979,28 +1979,28 @@ exports[`has one references with partition key + sort key 1`] = `
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"id\\"), $ctx.source.id) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("id"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.mantra) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\",
-  \\"index\\": \\"gsi-Team.project\\"
+  "version": "2018-05-29",
+  "operation": "Query",
+  "index": "gsi-Team.project"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"teamId\\",
-      \\"#sortKeyName\\": \\"teamMantra\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName",
+  "expressionNames": {
+      "#partitionKey": "teamId",
+      "#sortKeyName": "teamMantra"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\"))),
-      \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.mantra, \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____"))),
+      ":sortKeyName": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.mantra, "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -2010,27 +2010,27 @@ exports[`has one references with partition key + sort key 2`] = `
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"teamId\\"), $ctx.source.teamId) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("teamId"), $ctx.source.teamId) )
 #if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.teamMantra) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\"
+  "version": "2018-05-29",
+  "operation": "Query"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"id\\",
-      \\"#sortKeyName\\": \\"mantra\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName",
+  "expressionNames": {
+      "#partitionKey": "id",
+      "#sortKeyName": "mantra"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\"))),
-      \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.teamMantra, \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____"))),
+      ":sortKeyName": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.teamMantra, "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -2040,26 +2040,26 @@ exports[`supports recursive schemas 1`] = `
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"id\\"), $ctx.source.id) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("id"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\",
-  \\"index\\": \\"gsi-TreeNode.child\\"
+  "version": "2018-05-29",
+  "operation": "Query",
+  "index": "gsi-TreeNode.child"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"parentId\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue",
+  "expressionNames": {
+      "#partitionKey": "parentId"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -2069,25 +2069,25 @@ exports[`supports recursive schemas 2`] = `
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"parentId\\"), $ctx.source.parentId) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("parentId"), $ctx.source.parentId) )
 #if( $util.isNull($partitionKeyValue) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\"
+  "version": "2018-05-29",
+  "operation": "Query"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"id\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue",
+  "expressionNames": {
+      "#partitionKey": "id"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"

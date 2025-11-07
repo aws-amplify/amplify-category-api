@@ -107,8 +107,8 @@ describe('@mapsTo with @hasOne', () => {
   it('if belongsTo related type is renamed, adds mappings when fetching related type through hasOne field', () => {
     const out = transformSchema(mappedBelongsTo, DDB_DEFAULT_DATASOURCE_STRATEGY);
     expect(out.resolvers['Employee.task.postDataLoad.1.res.vtl']).toMatchInlineSnapshot(`
-      "$util.qr($ctx.prev.result.put(\\"taskEmployeeId\\", $ctx.prev.result.todoEmployeeId))
-      $util.qr($ctx.prev.result.remove(\\"todoEmployeeId\\"))
+      "$util.qr($ctx.prev.result.put("taskEmployeeId", $ctx.prev.result.todoEmployeeId))
+      $util.qr($ctx.prev.result.remove("todoEmployeeId"))
       $util.toJson($ctx.prev.result)"
     `);
   });
@@ -116,13 +116,13 @@ describe('@mapsTo with @hasOne', () => {
   it('if bi-di hasOne, remaps foreign key in both types', () => {
     const out = transformSchema(biDiHasOneMapped, DDB_DEFAULT_DATASOURCE_STRATEGY);
     expect(out.resolvers['Employee.task.postDataLoad.1.res.vtl']).toMatchInlineSnapshot(`
-      "$util.qr($ctx.prev.result.put(\\"taskEmployeeId\\", $ctx.prev.result.todoEmployeeId))
-      $util.qr($ctx.prev.result.remove(\\"todoEmployeeId\\"))
+      "$util.qr($ctx.prev.result.put("taskEmployeeId", $ctx.prev.result.todoEmployeeId))
+      $util.qr($ctx.prev.result.remove("todoEmployeeId"))
       $util.toJson($ctx.prev.result)"
     `);
     expect(out.resolvers['Task.employee.postDataLoad.1.res.vtl']).toMatchInlineSnapshot(`
-      "$util.qr($ctx.prev.result.put(\\"employeeTaskId\\", $ctx.prev.result.personTaskId))
-      $util.qr($ctx.prev.result.remove(\\"personTaskId\\"))
+      "$util.qr($ctx.prev.result.put("employeeTaskId", $ctx.prev.result.personTaskId))
+      $util.qr($ctx.prev.result.remove("personTaskId"))
       $util.toJson($ctx.prev.result)"
     `);
   });

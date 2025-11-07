@@ -1,15 +1,15 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`get sanity check rules sanity check rule list when destructive changes flag is present and ff enabled 1`] = `Array []`;
+exports[`get sanity check rules sanity check rule list when destructive changes flag is present and ff enabled 1`] = `[]`;
 
 exports[`get sanity check rules sanity check rule list when destructive changes flag is present and ff enabled 2`] = `
-Array [
+[
   "cantHaveMoreThan500ResourcesRule",
 ]
 `;
 
 exports[`get sanity check rules sanity check rule list when destructive changes flag is present but ff not enabled 1`] = `
-Array [
+[
   "cantEditKeySchemaRule",
   "cantAddLSILaterRule",
   "cantRemoveLSILater",
@@ -20,14 +20,14 @@ Array [
 `;
 
 exports[`get sanity check rules sanity check rule list when destructive changes flag is present but ff not enabled 2`] = `
-Array [
+[
   "cantHaveMoreThan500ResourcesRule",
   "cantMutateMultipleGSIAtUpdateTimeRule",
 ]
 `;
 
 exports[`get sanity check rules sanitycheck rule list when api is in update status and ff enabled 1`] = `
-Array [
+[
   "cantEditKeySchemaRule",
   "cantAddLSILaterRule",
   "cantRemoveLSILater",
@@ -37,13 +37,13 @@ Array [
 `;
 
 exports[`get sanity check rules sanitycheck rule list when api is in update status and ff enabled 2`] = `
-Array [
+[
   "cantHaveMoreThan500ResourcesRule",
 ]
 `;
 
 exports[`get sanity check rules sanitycheck rule list when api is in update status and no ff enabled 1`] = `
-Array [
+[
   "cantEditKeySchemaRule",
   "cantAddLSILaterRule",
   "cantRemoveLSILater",
@@ -55,7 +55,7 @@ Array [
 `;
 
 exports[`get sanity check rules sanitycheck rule list when api is in update status and no ff enabled 2`] = `
-Array [
+[
   "cantHaveMoreThan500ResourcesRule",
   "cantMutateMultipleGSIAtUpdateTimeRule",
 ]

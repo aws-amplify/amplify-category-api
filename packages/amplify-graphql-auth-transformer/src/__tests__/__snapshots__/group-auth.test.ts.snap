@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Group field as part of secondary index group field as GSI field 1`] = `
 "## [Start] Authorization Steps. **

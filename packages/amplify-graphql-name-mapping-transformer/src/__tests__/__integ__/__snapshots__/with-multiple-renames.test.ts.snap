@@ -1,17 +1,17 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`@mapsTo with multiple foreign key field renames on single model 1`] = `
-"$util.qr($ctx.args.input.put(\\"checklistTasksId\\", $ctx.args.input.agendaTasksId))
-$util.qr($ctx.args.input.remove(\\"agendaTasksId\\"))
-$util.qr($ctx.args.input.put(\\"taskLocId\\", $ctx.args.input.todoLocId))
-$util.qr($ctx.args.input.remove(\\"todoLocId\\"))
-$util.qr($ctx.args.input.put(\\"taskDayId\\", $ctx.args.input.todoDayId))
-$util.qr($ctx.args.input.remove(\\"todoDayId\\"))
+"$util.qr($ctx.args.input.put("checklistTasksId", $ctx.args.input.agendaTasksId))
+$util.qr($ctx.args.input.remove("agendaTasksId"))
+$util.qr($ctx.args.input.put("taskLocId", $ctx.args.input.todoLocId))
+$util.qr($ctx.args.input.remove("todoLocId"))
+$util.qr($ctx.args.input.put("taskDayId", $ctx.args.input.todoDayId))
+$util.qr($ctx.args.input.remove("todoDayId"))
 $util.toJson({})"
 `;
 
 exports[`@mapsTo with multiple foreign key field renames on single model 2`] = `
-"#set( $fieldMap = {\\"agendaTasksId\\":\\"checklistTasksId\\",\\"todoLocId\\":\\"taskLocId\\",\\"todoDayId\\":\\"taskDayId\\"} )
+"#set( $fieldMap = {"agendaTasksId":"checklistTasksId","todoLocId":"taskLocId","todoDayId":"taskDayId"} )
 #if( $util.isNull($fieldMap) || $fieldMap.keySet().size() <= 0 )
   #return($ctx.args)
 #end
@@ -19,10 +19,10 @@ exports[`@mapsTo with multiple foreign key field renames on single model 2`] = `
   #return($ctx.args)
 #end
 #set( $invoke = {
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\": {
-      \\"args\\": $ctx.args,
-      \\"fieldMap\\": $fieldMap
+  "operation": "Invoke",
+  "payload": {
+      "args": $ctx.args,
+      "fieldMap": $fieldMap
   }
 } )
 $util.toJson($invoke)"
@@ -37,27 +37,27 @@ $util.toJson({})"
 `;
 
 exports[`@mapsTo with multiple foreign key field renames on single model 4`] = `
-"$util.qr($ctx.prev.result.put(\\"agendaTasksId\\", $ctx.prev.result.checklistTasksId))
-$util.qr($ctx.prev.result.remove(\\"checklistTasksId\\"))
-$util.qr($ctx.prev.result.put(\\"todoLocId\\", $ctx.prev.result.taskLocId))
-$util.qr($ctx.prev.result.remove(\\"taskLocId\\"))
-$util.qr($ctx.prev.result.put(\\"todoDayId\\", $ctx.prev.result.taskDayId))
-$util.qr($ctx.prev.result.remove(\\"taskDayId\\"))
+"$util.qr($ctx.prev.result.put("agendaTasksId", $ctx.prev.result.checklistTasksId))
+$util.qr($ctx.prev.result.remove("checklistTasksId"))
+$util.qr($ctx.prev.result.put("todoLocId", $ctx.prev.result.taskLocId))
+$util.qr($ctx.prev.result.remove("taskLocId"))
+$util.qr($ctx.prev.result.put("todoDayId", $ctx.prev.result.taskDayId))
+$util.qr($ctx.prev.result.remove("taskDayId"))
 $util.toJson($ctx.prev.result)"
 `;
 
 exports[`@mapsTo with multiple foreign key field renames on single model 5`] = `
-"$util.qr($ctx.args.input.put(\\"checklistTasksId\\", $ctx.args.input.agendaTasksId))
-$util.qr($ctx.args.input.remove(\\"agendaTasksId\\"))
-$util.qr($ctx.args.input.put(\\"taskLocId\\", $ctx.args.input.todoLocId))
-$util.qr($ctx.args.input.remove(\\"todoLocId\\"))
-$util.qr($ctx.args.input.put(\\"taskDayId\\", $ctx.args.input.todoDayId))
-$util.qr($ctx.args.input.remove(\\"todoDayId\\"))
+"$util.qr($ctx.args.input.put("checklistTasksId", $ctx.args.input.agendaTasksId))
+$util.qr($ctx.args.input.remove("agendaTasksId"))
+$util.qr($ctx.args.input.put("taskLocId", $ctx.args.input.todoLocId))
+$util.qr($ctx.args.input.remove("todoLocId"))
+$util.qr($ctx.args.input.put("taskDayId", $ctx.args.input.todoDayId))
+$util.qr($ctx.args.input.remove("todoDayId"))
 $util.toJson({})"
 `;
 
 exports[`@mapsTo with multiple foreign key field renames on single model 6`] = `
-"#set( $fieldMap = {\\"agendaTasksId\\":\\"checklistTasksId\\",\\"todoLocId\\":\\"taskLocId\\",\\"todoDayId\\":\\"taskDayId\\"} )
+"#set( $fieldMap = {"agendaTasksId":"checklistTasksId","todoLocId":"taskLocId","todoDayId":"taskDayId"} )
 #if( $util.isNull($fieldMap) || $fieldMap.keySet().size() <= 0 )
   #return($ctx.args)
 #end
@@ -65,10 +65,10 @@ exports[`@mapsTo with multiple foreign key field renames on single model 6`] = `
   #return($ctx.args)
 #end
 #set( $invoke = {
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\": {
-      \\"args\\": $ctx.args,
-      \\"fieldMap\\": $fieldMap
+  "operation": "Invoke",
+  "payload": {
+      "args": $ctx.args,
+      "fieldMap": $fieldMap
   }
 } )
 $util.toJson($invoke)"
@@ -83,27 +83,27 @@ $util.toJson({})"
 `;
 
 exports[`@mapsTo with multiple foreign key field renames on single model 8`] = `
-"$util.qr($ctx.prev.result.put(\\"agendaTasksId\\", $ctx.prev.result.checklistTasksId))
-$util.qr($ctx.prev.result.remove(\\"checklistTasksId\\"))
-$util.qr($ctx.prev.result.put(\\"todoLocId\\", $ctx.prev.result.taskLocId))
-$util.qr($ctx.prev.result.remove(\\"taskLocId\\"))
-$util.qr($ctx.prev.result.put(\\"todoDayId\\", $ctx.prev.result.taskDayId))
-$util.qr($ctx.prev.result.remove(\\"taskDayId\\"))
+"$util.qr($ctx.prev.result.put("agendaTasksId", $ctx.prev.result.checklistTasksId))
+$util.qr($ctx.prev.result.remove("checklistTasksId"))
+$util.qr($ctx.prev.result.put("todoLocId", $ctx.prev.result.taskLocId))
+$util.qr($ctx.prev.result.remove("taskLocId"))
+$util.qr($ctx.prev.result.put("todoDayId", $ctx.prev.result.taskDayId))
+$util.qr($ctx.prev.result.remove("taskDayId"))
 $util.toJson($ctx.prev.result)"
 `;
 
 exports[`@mapsTo with multiple foreign key field renames on single model 9`] = `
-"$util.qr($ctx.args.input.put(\\"checklistTasksId\\", $ctx.args.input.agendaTasksId))
-$util.qr($ctx.args.input.remove(\\"agendaTasksId\\"))
-$util.qr($ctx.args.input.put(\\"taskLocId\\", $ctx.args.input.todoLocId))
-$util.qr($ctx.args.input.remove(\\"todoLocId\\"))
-$util.qr($ctx.args.input.put(\\"taskDayId\\", $ctx.args.input.todoDayId))
-$util.qr($ctx.args.input.remove(\\"todoDayId\\"))
+"$util.qr($ctx.args.input.put("checklistTasksId", $ctx.args.input.agendaTasksId))
+$util.qr($ctx.args.input.remove("agendaTasksId"))
+$util.qr($ctx.args.input.put("taskLocId", $ctx.args.input.todoLocId))
+$util.qr($ctx.args.input.remove("todoLocId"))
+$util.qr($ctx.args.input.put("taskDayId", $ctx.args.input.todoDayId))
+$util.qr($ctx.args.input.remove("todoDayId"))
 $util.toJson({})"
 `;
 
 exports[`@mapsTo with multiple foreign key field renames on single model 10`] = `
-"#set( $fieldMap = {\\"agendaTasksId\\":\\"checklistTasksId\\",\\"todoLocId\\":\\"taskLocId\\",\\"todoDayId\\":\\"taskDayId\\"} )
+"#set( $fieldMap = {"agendaTasksId":"checklistTasksId","todoLocId":"taskLocId","todoDayId":"taskDayId"} )
 #if( $util.isNull($fieldMap) || $fieldMap.keySet().size() <= 0 )
   #return($ctx.args)
 #end
@@ -111,10 +111,10 @@ exports[`@mapsTo with multiple foreign key field renames on single model 10`] = 
   #return($ctx.args)
 #end
 #set( $invoke = {
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\": {
-      \\"args\\": $ctx.args,
-      \\"fieldMap\\": $fieldMap
+  "operation": "Invoke",
+  "payload": {
+      "args": $ctx.args,
+      "fieldMap": $fieldMap
   }
 } )
 $util.toJson($invoke)"
@@ -129,27 +129,27 @@ $util.toJson({})"
 `;
 
 exports[`@mapsTo with multiple foreign key field renames on single model 12`] = `
-"$util.qr($ctx.prev.result.put(\\"agendaTasksId\\", $ctx.prev.result.checklistTasksId))
-$util.qr($ctx.prev.result.remove(\\"checklistTasksId\\"))
-$util.qr($ctx.prev.result.put(\\"todoLocId\\", $ctx.prev.result.taskLocId))
-$util.qr($ctx.prev.result.remove(\\"taskLocId\\"))
-$util.qr($ctx.prev.result.put(\\"todoDayId\\", $ctx.prev.result.taskDayId))
-$util.qr($ctx.prev.result.remove(\\"taskDayId\\"))
+"$util.qr($ctx.prev.result.put("agendaTasksId", $ctx.prev.result.checklistTasksId))
+$util.qr($ctx.prev.result.remove("checklistTasksId"))
+$util.qr($ctx.prev.result.put("todoLocId", $ctx.prev.result.taskLocId))
+$util.qr($ctx.prev.result.remove("taskLocId"))
+$util.qr($ctx.prev.result.put("todoDayId", $ctx.prev.result.taskDayId))
+$util.qr($ctx.prev.result.remove("taskDayId"))
 $util.toJson($ctx.prev.result)"
 `;
 
 exports[`@mapsTo with multiple foreign key field renames on single model 13`] = `
-"$util.qr($ctx.prev.result.put(\\"agendaTasksId\\", $ctx.prev.result.checklistTasksId))
-$util.qr($ctx.prev.result.remove(\\"checklistTasksId\\"))
-$util.qr($ctx.prev.result.put(\\"todoLocId\\", $ctx.prev.result.taskLocId))
-$util.qr($ctx.prev.result.remove(\\"taskLocId\\"))
-$util.qr($ctx.prev.result.put(\\"todoDayId\\", $ctx.prev.result.taskDayId))
-$util.qr($ctx.prev.result.remove(\\"taskDayId\\"))
+"$util.qr($ctx.prev.result.put("agendaTasksId", $ctx.prev.result.checklistTasksId))
+$util.qr($ctx.prev.result.remove("checklistTasksId"))
+$util.qr($ctx.prev.result.put("todoLocId", $ctx.prev.result.taskLocId))
+$util.qr($ctx.prev.result.remove("taskLocId"))
+$util.qr($ctx.prev.result.put("todoDayId", $ctx.prev.result.taskDayId))
+$util.qr($ctx.prev.result.remove("taskDayId"))
 $util.toJson($ctx.prev.result)"
 `;
 
 exports[`@mapsTo with multiple foreign key field renames on single model 14`] = `
-"#set( $fieldMap = {\\"agendaTasksId\\":\\"checklistTasksId\\",\\"todoLocId\\":\\"taskLocId\\",\\"todoDayId\\":\\"taskDayId\\"} )
+"#set( $fieldMap = {"agendaTasksId":"checklistTasksId","todoLocId":"taskLocId","todoDayId":"taskDayId"} )
 #if( $util.isNull($fieldMap) || $fieldMap.keySet().size() <= 0 )
   #return($ctx.args)
 #end
@@ -157,10 +157,10 @@ exports[`@mapsTo with multiple foreign key field renames on single model 14`] = 
   #return($ctx.args)
 #end
 #set( $invoke = {
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\": {
-      \\"args\\": $ctx.args,
-      \\"fieldMap\\": $fieldMap
+  "operation": "Invoke",
+  "payload": {
+      "args": $ctx.args,
+      "fieldMap": $fieldMap
   }
 } )
 $util.toJson($invoke)"
@@ -176,18 +176,18 @@ $util.toJson({})"
 
 exports[`@mapsTo with multiple foreign key field renames on single model 16`] = `
 "#foreach( $item in $ctx.prev.result.items )
-  $util.qr($item.put(\\"agendaTasksId\\", $item.checklistTasksId))
-  $util.qr($item.remove(\\"checklistTasksId\\"))
-  $util.qr($item.put(\\"todoLocId\\", $item.taskLocId))
-  $util.qr($item.remove(\\"taskLocId\\"))
-  $util.qr($item.put(\\"todoDayId\\", $item.taskDayId))
-  $util.qr($item.remove(\\"taskDayId\\"))
+  $util.qr($item.put("agendaTasksId", $item.checklistTasksId))
+  $util.qr($item.remove("checklistTasksId"))
+  $util.qr($item.put("todoLocId", $item.taskLocId))
+  $util.qr($item.remove("taskLocId"))
+  $util.qr($item.put("todoDayId", $item.taskDayId))
+  $util.qr($item.remove("taskDayId"))
 #end
 $util.toJson($ctx.prev.result)"
 `;
 
 exports[`maps sync resolvers when DataStore is enabled 1`] = `
-"#set( $fieldMap = {\\"agendaTasksId\\":\\"checklistTasksId\\",\\"todoLocId\\":\\"taskLocId\\",\\"todoDayId\\":\\"taskDayId\\"} )
+"#set( $fieldMap = {"agendaTasksId":"checklistTasksId","todoLocId":"taskLocId","todoDayId":"taskDayId"} )
 #if( $util.isNull($fieldMap) || $fieldMap.keySet().size() <= 0 )
   #return($ctx.args)
 #end
@@ -195,10 +195,10 @@ exports[`maps sync resolvers when DataStore is enabled 1`] = `
   #return($ctx.args)
 #end
 #set( $invoke = {
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\": {
-      \\"args\\": $ctx.args,
-      \\"fieldMap\\": $fieldMap
+  "operation": "Invoke",
+  "payload": {
+      "args": $ctx.args,
+      "fieldMap": $fieldMap
   }
 } )
 $util.toJson($invoke)"
@@ -214,12 +214,12 @@ $util.toJson({})"
 
 exports[`maps sync resolvers when DataStore is enabled 3`] = `
 "#foreach( $item in $ctx.prev.result.items )
-  $util.qr($item.put(\\"agendaTasksId\\", $item.checklistTasksId))
-  $util.qr($item.remove(\\"checklistTasksId\\"))
-  $util.qr($item.put(\\"todoLocId\\", $item.taskLocId))
-  $util.qr($item.remove(\\"taskLocId\\"))
-  $util.qr($item.put(\\"todoDayId\\", $item.taskDayId))
-  $util.qr($item.remove(\\"taskDayId\\"))
+  $util.qr($item.put("agendaTasksId", $item.checklistTasksId))
+  $util.qr($item.remove("checklistTasksId"))
+  $util.qr($item.put("todoLocId", $item.taskLocId))
+  $util.qr($item.remove("taskLocId"))
+  $util.qr($item.put("todoDayId", $item.taskDayId))
+  $util.qr($item.remove("taskDayId"))
 #end
 $util.toJson($ctx.prev.result)"
 `;

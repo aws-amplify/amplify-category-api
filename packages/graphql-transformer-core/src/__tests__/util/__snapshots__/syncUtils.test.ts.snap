@@ -1,23 +1,23 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`sync lambda arn resource creates the correct lambda arn substitution 1`] = `
-Object {
-  "Fn::If": Array [
+{
+  "Fn::If": [
     "HasEnvironmentParameter",
-    Object {
-      "Fn::Sub": Array [
+    {
+      "Fn::Sub": [
         "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:myLambda-\${env}",
-        Object {
-          "env": Object {
+        {
+          "env": {
             "Ref": "env",
           },
         },
       ],
     },
-    Object {
-      "Fn::Sub": Array [
+    {
+      "Fn::Sub": [
         "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:myLambda",
-        Object {},
+        {},
       ],
     },
   ],
@@ -25,27 +25,27 @@ Object {
 `;
 
 exports[`sync resolver config creates the correct lambda resolver config 1`] = `
-Object {
+{
   "ConflictDetection": "VERSION",
   "ConflictHandler": "LAMBDA",
-  "LambdaConflictHandlerConfig": Object {
-    "LambdaConflictHandlerArn": Object {
-      "Fn::If": Array [
+  "LambdaConflictHandlerConfig": {
+    "LambdaConflictHandlerArn": {
+      "Fn::If": [
         "HasEnvironmentParameter",
-        Object {
-          "Fn::Sub": Array [
+        {
+          "Fn::Sub": [
             "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:myLambda-\${env}",
-            Object {
-              "env": Object {
+            {
+              "env": {
                 "Ref": "env",
               },
             },
           ],
         },
-        Object {
-          "Fn::Sub": Array [
+        {
+          "Fn::Sub": [
             "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:myLambda",
-            Object {},
+            {},
           ],
         },
       ],

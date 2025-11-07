@@ -28,11 +28,7 @@ test('AppSync auth directives are not migrated', async () => {
       }`;
     const result = await detectPassthroughDirectives(schema);
 
-    expect(result).toMatchInlineSnapshot(`
-      Array [
-        "${directive}",
-      ]
-    `);
+    expect(result).toMatchSnapshot(`AppSync auth directive ${directive}`);
   }
 });
 
@@ -45,7 +41,7 @@ test('custom directives are not migrated', async () => {
   const result = await detectPassthroughDirectives(schema);
 
   expect(result).toMatchInlineSnapshot(`
-    Array [
+    [
       "sandwich",
     ]
   `);
@@ -60,7 +56,7 @@ test('@versioned is not migrated', async () => {
   const result = await detectPassthroughDirectives(schema);
 
   expect(result).toMatchInlineSnapshot(`
-    Array [
+    [
       "versioned",
     ]
   `);

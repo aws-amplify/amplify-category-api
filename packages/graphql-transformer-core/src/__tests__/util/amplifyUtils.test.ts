@@ -73,7 +73,7 @@ describe('get S3 keys from directory', () => {
     mock(mockFilePath);
     const keys = getS3KeyNamesFromDirectory(MOCK_ROOT_DIR);
     expect(keys).toMatchInlineSnapshot(`
-      Array [
+      [
         "testFile3",
         "c/testFile2",
         "a/b/testFile1",

@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`lambda function is added to pipeline when lambda dependent action is added 1`] = `
 "type Query {
@@ -44,58 +44,58 @@ input TranslateLabelsInput {
 `;
 
 exports[`snapshot test to check generated function resolvers 1`] = `
-Object {
-  "DependsOn": Array [],
-  "Properties": Object {
-    "ApiId": Object {
+{
+  "DependsOn": [],
+  "Properties": {
+    "ApiId": {
       "Ref": "AppSyncApiId",
     },
     "FieldName": "speakTranslatedImageText",
     "Kind": "PIPELINE",
-    "PipelineConfig": Object {
-      "Functions": Array [
-        Object {
-          "Fn::GetAtt": Array [
+    "PipelineConfig": {
+      "Functions": [
+        {
+          "Fn::GetAtt": [
             "identifyTextFunction",
             "FunctionId",
           ],
         },
-        Object {
-          "Fn::GetAtt": Array [
+        {
+          "Fn::GetAtt": [
             "translateTextFunction",
             "FunctionId",
           ],
         },
-        Object {
-          "Fn::GetAtt": Array [
+        {
+          "Fn::GetAtt": [
             "convertTextToSpeechFunction",
             "FunctionId",
           ],
         },
       ],
     },
-    "RequestMappingTemplate": Object {
-      "Fn::Join": Array [
+    "RequestMappingTemplate": {
+      "Fn::Join": [
         "
 ",
-        Array [
-          Object {
-            "Fn::If": Array [
+        [
+          {
+            "Fn::If": [
               "HasEnvironmentParameter",
-              Object {
-                "Fn::Sub": Array [
-                  "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}-\${env}\\"))",
-                  Object {
-                    "env": Object {
+              {
+                "Fn::Sub": [
+                  "$util.qr($ctx.stash.put("s3Bucket", "myStorage\${hash}-\${env}"))",
+                  {
+                    "env": {
                       "Ref": "env",
                     },
-                    "hash": Object {
-                      "Fn::Select": Array [
+                    "hash": {
+                      "Fn::Select": [
                         3,
-                        Object {
-                          "Fn::Split": Array [
+                        {
+                          "Fn::Split": [
                             "-",
-                            Object {
+                            {
                               "Ref": "AWS::StackName",
                             },
                           ],
@@ -105,17 +105,17 @@ Object {
                   },
                 ],
               },
-              Object {
-                "Fn::Sub": Array [
-                  "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}\\"))",
-                  Object {
-                    "hash": Object {
-                      "Fn::Select": Array [
+              {
+                "Fn::Sub": [
+                  "$util.qr($ctx.stash.put("s3Bucket", "myStorage\${hash}"))",
+                  {
+                    "hash": {
+                      "Fn::Select": [
                         3,
-                        Object {
-                          "Fn::Split": Array [
+                        {
+                          "Fn::Split": [
                             "-",
-                            Object {
+                            {
                               "Ref": "AWS::StackName",
                             },
                           ],
@@ -127,14 +127,14 @@ Object {
               },
             ],
           },
-          "$util.qr($ctx.stash.put(\\"isList\\", false))
+          "$util.qr($ctx.stash.put("isList", false))
 {}",
         ],
       ],
     },
     "ResponseMappingTemplate": "## If the result is a list return the result as a list **
-#if( $ctx.stash.get(\\"isList\\") )
-  #set( $result = $ctx.result.split(\\"[ ,]+\\") )
+#if( $ctx.stash.get("isList") )
+  #set( $result = $ctx.result.split("[ ,]+") )
   $util.toJson($result)
 #else
   $util.toJson($ctx.result)
@@ -146,40 +146,40 @@ Object {
 `;
 
 exports[`snapshot test to check generated function resolvers 2`] = `
-"#set( $bucketName = $ctx.stash.get(\\"s3Bucket\\") )
-$util.qr($ctx.stash.put(\\"isList\\", false))
+"#set( $bucketName = $ctx.stash.get("s3Bucket") )
+$util.qr($ctx.stash.put("isList", false))
 #set( $text = $util.defaultIfNull($ctx.args.input.convertTextToSpeech.text, $ctx.prev.result) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson({
-  \\"uuid\\": \\"$util.autoId()\\",
-  \\"action\\": \\"convertTextToSpeech\\",
-  \\"voiceID\\": $ctx.args.input.convertTextToSpeech.voiceID,
-  \\"text\\": $text
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson({
+  "uuid": "$util.autoId()",
+  "action": "convertTextToSpeech",
+  "voiceID": $ctx.args.input.convertTextToSpeech.voiceID,
+  "text": $text
 })
 }"
 `;
 
 exports[`snapshot test to check generated function resolvers 3`] = `
-"#set( $bucketName = $ctx.stash.get(\\"s3Bucket\\") )
+"#set( $bucketName = $ctx.stash.get("s3Bucket") )
 #set( $identityTextKey = $ctx.args.input.identifyText.key )
 #set( $identifyTextPayload = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"method\\": \\"POST\\",
-  \\"resourcePath\\": \\"/\\",
-  \\"params\\": {
-      \\"body\\": {
-          \\"Image\\": {
-              \\"S3Object\\": {
-                  \\"Bucket\\": \\"$bucketName\\",
-                  \\"Name\\": \\"public/$identityTextKey\\"
+  "version": "2018-05-29",
+  "method": "POST",
+  "resourcePath": "/",
+  "params": {
+      "body": {
+          "Image": {
+              "S3Object": {
+                  "Bucket": "$bucketName",
+                  "Name": "public/$identityTextKey"
         }
       }
     },
-      \\"headers\\": {
-          \\"Content-Type\\": \\"application/x-amz-json-1.1\\",
-          \\"X-Amz-Target\\": \\"RekognitionService.DetectText\\"
+      "headers": {
+          "Content-Type": "application/x-amz-json-1.1",
+          "X-Amz-Target": "RekognitionService.DetectText"
     }
   }
 } )
@@ -189,18 +189,18 @@ $util.toJson($identifyTextPayload)"
 exports[`snapshot test to check generated function resolvers 4`] = `
 "#set( $text = $util.defaultIfNull($ctx.args.input.translateText.text, $ctx.prev.result) )
 #set( $translateTextPayload = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"method\\": \\"POST\\",
-  \\"resourcePath\\": \\"/\\",
-  \\"params\\": {
-      \\"body\\": {
-          \\"SourceLanguageCode\\": $ctx.args.input.translateText.sourceLanguage,
-          \\"TargetLanguageCode\\": $ctx.args.input.translateText.targetLanguage,
-          \\"Text\\": $text
+  "version": "2018-05-29",
+  "method": "POST",
+  "resourcePath": "/",
+  "params": {
+      "body": {
+          "SourceLanguageCode": $ctx.args.input.translateText.sourceLanguage,
+          "TargetLanguageCode": $ctx.args.input.translateText.targetLanguage,
+          "Text": $text
     },
-      \\"headers\\": {
-          \\"Content-Type\\": \\"application/x-amz-json-1.1\\",
-          \\"X-Amz-Target\\": \\"AWSShineFrontendService_20170701.TranslateText\\"
+      "headers": {
+          "Content-Type": "application/x-amz-json-1.1",
+          "X-Amz-Target": "AWSShineFrontendService_20170701.TranslateText"
     }
   }
 } )

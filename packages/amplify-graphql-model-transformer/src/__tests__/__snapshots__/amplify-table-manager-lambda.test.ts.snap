@@ -1,10 +1,10 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Custom Resource Lambda Tests Compute GSI deletion when non key attributes are modified 1`] = `
-Object {
-  "GlobalSecondaryIndexUpdates": Array [
-    Object {
-      "Delete": Object {
+{
+  "GlobalSecondaryIndexUpdates": [
+    {
+      "Delete": {
         "IndexName": "gsi1",
       },
     },
@@ -14,10 +14,10 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Compute GSI deletion when projection type is modified 1`] = `
-Object {
-  "GlobalSecondaryIndexUpdates": Array [
-    Object {
-      "Delete": Object {
+{
+  "GlobalSecondaryIndexUpdates": [
+    {
+      "Delete": {
         "IndexName": "gsi1",
       },
     },
@@ -27,10 +27,10 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Compute GSI deletion when the hash key is renamed 1`] = `
-Object {
-  "GlobalSecondaryIndexUpdates": Array [
-    Object {
-      "Delete": Object {
+{
+  "GlobalSecondaryIndexUpdates": [
+    {
+      "Delete": {
         "IndexName": "gsi1",
       },
     },
@@ -40,10 +40,10 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Compute GSI deletion when the index is removed completely 1`] = `
-Object {
-  "GlobalSecondaryIndexUpdates": Array [
-    Object {
-      "Delete": Object {
+{
+  "GlobalSecondaryIndexUpdates": [
+    {
+      "Delete": {
         "IndexName": "gsi1",
       },
     },
@@ -53,10 +53,10 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Compute GSI deletion when the sort key is modified 1`] = `
-Object {
-  "GlobalSecondaryIndexUpdates": Array [
-    Object {
-      "Delete": Object {
+{
+  "GlobalSecondaryIndexUpdates": [
+    {
+      "Delete": {
         "IndexName": "gsi1",
       },
     },
@@ -66,58 +66,58 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Extract table definition input from event test should extract the correct old table definition from event object 1`] = `
-Object {
-  "attributeDefinitions": Array [
-    Object {
+{
+  "attributeDefinitions": [
+    {
       "attributeName": "todoId",
       "attributeType": "S",
     },
-    Object {
+    {
       "attributeName": "name",
       "attributeType": "S",
     },
-    Object {
+    {
       "attributeName": "name2",
       "attributeType": "S",
     },
   ],
   "billingMode": "PROVISIONED",
-  "globalSecondaryIndexes": Array [
-    Object {
+  "globalSecondaryIndexes": [
+    {
       "indexName": "byName2",
-      "keySchema": Array [
-        Object {
+      "keySchema": [
+        {
           "attributeName": "name2",
           "keyType": "HASH",
         },
       ],
-      "projection": Object {
+      "projection": {
         "projectionType": "ALL",
       },
-      "provisionedThroughput": Object {
+      "provisionedThroughput": {
         "readCapacityUnits": 5,
         "writeCapacityUnits": 5,
       },
     },
   ],
-  "keySchema": Array [
-    Object {
+  "keySchema": [
+    {
       "attributeName": "todoId",
       "keyType": "HASH",
     },
-    Object {
+    {
       "attributeName": "name",
       "keyType": "RANGE",
     },
   ],
-  "provisionedThroughput": Object {
+  "provisionedThroughput": {
     "readCapacityUnits": 5,
     "writeCapacityUnits": 5,
   },
-  "sseSpecification": Object {
+  "sseSpecification": {
     "sseEnabled": true,
   },
-  "streamSpecification": Object {
+  "streamSpecification": {
     "streamViewType": "NEW_AND_OLD_IMAGES",
   },
   "tableName": "mockTableName",
@@ -125,71 +125,71 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Extract table definition input from event test should extract the correct table definition from event object and parse it into create table input 1`] = `
-Object {
-  "attributeDefinitions": Array [
-    Object {
+{
+  "attributeDefinitions": [
+    {
       "attributeName": "todoId",
       "attributeType": "S",
     },
-    Object {
+    {
       "attributeName": "name",
       "attributeType": "S",
     },
-    Object {
+    {
       "attributeName": "name2",
       "attributeType": "S",
     },
   ],
   "billingMode": "PROVISIONED",
-  "globalSecondaryIndexes": Array [
-    Object {
+  "globalSecondaryIndexes": [
+    {
       "indexName": "byName2",
-      "keySchema": Array [
-        Object {
+      "keySchema": [
+        {
           "attributeName": "name2",
           "keyType": "HASH",
         },
       ],
-      "projection": Object {
+      "projection": {
         "projectionType": "ALL",
       },
-      "provisionedThroughput": Object {
+      "provisionedThroughput": {
         "readCapacityUnits": 5,
         "writeCapacityUnits": 5,
       },
     },
   ],
-  "keySchema": Array [
-    Object {
+  "keySchema": [
+    {
       "attributeName": "todoId",
       "keyType": "HASH",
     },
-    Object {
+    {
       "attributeName": "name",
       "keyType": "RANGE",
     },
   ],
-  "provisionedThroughput": Object {
+  "provisionedThroughput": {
     "readCapacityUnits": 5,
     "writeCapacityUnits": 5,
   },
-  "sseSpecification": Object {
+  "sseSpecification": {
     "sseEnabled": true,
   },
-  "streamSpecification": Object {
+  "streamSpecification": {
     "streamViewType": "NEW_AND_OLD_IMAGES",
   },
   "tableName": "mockTableName",
-  "tags": Array [
-    Object {
+  "tags": [
+    {
       "Key": "key1",
       "Value": "value1",
     },
-    Object {
+    {
       "Key": "key2",
       "Value": "value2",
     },
-    Object {
+    {
       "Key": "key3",
       "Value": "value3",
     },
@@ -198,72 +198,72 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Extract table definition input from event test should extract the correct table definition from event object and parse it into create table input 2`] = `
-Object {
-  "AttributeDefinitions": Array [
-    Object {
+{
+  "AttributeDefinitions": [
+    {
       "AttributeName": "todoId",
       "AttributeType": "S",
     },
-    Object {
+    {
       "AttributeName": "name",
       "AttributeType": "S",
     },
-    Object {
+    {
       "AttributeName": "name2",
       "AttributeType": "S",
     },
   ],
   "BillingMode": "PROVISIONED",
-  "GlobalSecondaryIndexes": Array [
-    Object {
+  "GlobalSecondaryIndexes": [
+    {
       "IndexName": "byName2",
-      "KeySchema": Array [
-        Object {
+      "KeySchema": [
+        {
           "AttributeName": "name2",
           "KeyType": "HASH",
         },
       ],
-      "Projection": Object {
+      "Projection": {
         "ProjectionType": "ALL",
       },
-      "ProvisionedThroughput": Object {
+      "ProvisionedThroughput": {
         "ReadCapacityUnits": 5,
         "WriteCapacityUnits": 5,
       },
     },
   ],
-  "KeySchema": Array [
-    Object {
+  "KeySchema": [
+    {
       "AttributeName": "todoId",
       "KeyType": "HASH",
     },
-    Object {
+    {
       "AttributeName": "name",
       "KeyType": "RANGE",
     },
   ],
-  "ProvisionedThroughput": Object {
+  "ProvisionedThroughput": {
     "ReadCapacityUnits": 5,
     "WriteCapacityUnits": 5,
   },
-  "SSESpecification": Object {
+  "SSESpecification": {
     "Enabled": true,
   },
-  "StreamSpecification": Object {
+  "StreamSpecification": {
     "StreamEnabled": true,
     "StreamViewType": "NEW_AND_OLD_IMAGES",
   },
   "TableName": "mockTableName",
-  "Tags": Array [
-    Object {
+  "Tags": [
+    {
       "Key": "key1",
       "Value": "value1",
     },
-    Object {
+    {
       "Key": "key2",
       "Value": "value2",
     },
-    Object {
+    {
       "Key": "key3",
       "Value": "value3",
     },
@@ -272,24 +272,24 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Get next GSI update should compute addition correctly 1`] = `
-Object {
-  "AttributeDefinitions": Array [
-    Object {
+{
+  "AttributeDefinitions": [
+    {
       "AttributeName": "sk",
       "AttributeType": "S",
     },
   ],
-  "GlobalSecondaryIndexUpdates": Array [
-    Object {
-      "Create": Object {
+  "GlobalSecondaryIndexUpdates": [
+    {
+      "Create": {
         "IndexName": "gsi2",
-        "KeySchema": Array [
-          Object {
+        "KeySchema": [
+          {
             "AttributeName": "sk",
             "KeyType": "HASH",
           },
         ],
-        "Projection": Object {
+        "Projection": {
           "ProjectionType": "ALL",
         },
       },
@@ -300,10 +300,10 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Get next GSI update should compute deletion correctly 1`] = `
-Object {
-  "GlobalSecondaryIndexUpdates": Array [
-    Object {
-      "Delete": Object {
+{
+  "GlobalSecondaryIndexUpdates": [
+    {
+      "Delete": {
         "IndexName": "gsi1",
       },
     },
@@ -313,24 +313,24 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Get next GSI update should compute next addition correctly 1`] = `
-Object {
-  "AttributeDefinitions": Array [
-    Object {
+{
+  "AttributeDefinitions": [
+    {
       "AttributeName": "newKey",
       "AttributeType": "S",
     },
   ],
-  "GlobalSecondaryIndexUpdates": Array [
-    Object {
-      "Create": Object {
+  "GlobalSecondaryIndexUpdates": [
+    {
+      "Create": {
         "IndexName": "gsi3",
-        "KeySchema": Array [
-          Object {
+        "KeySchema": [
+          {
             "AttributeName": "newKey",
             "KeyType": "HASH",
           },
         ],
-        "Projection": Object {
+        "Projection": {
           "ProjectionType": "ALL",
         },
       },
@@ -341,27 +341,27 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Non GSI update Get billing mode update should assign the table provision throughput when billingMode is "PROVISIONED" and no throughput defined in the new GSI 1`] = `
-Object {
-  "AttributeDefinitions": Array [
-    Object {
+{
+  "AttributeDefinitions": [
+    {
       "AttributeName": "sk",
       "AttributeType": "S",
     },
   ],
-  "GlobalSecondaryIndexUpdates": Array [
-    Object {
-      "Create": Object {
+  "GlobalSecondaryIndexUpdates": [
+    {
+      "Create": {
         "IndexName": "bySk",
-        "KeySchema": Array [
-          Object {
+        "KeySchema": [
+          {
             "AttributeName": "sk",
             "KeyType": "HASH",
           },
         ],
-        "Projection": Object {
+        "Projection": {
           "ProjectionType": "ALL",
         },
-        "ProvisionedThroughput": Object {
+        "ProvisionedThroughput": {
           "ReadCapacityUnits": 5,
           "WriteCapacityUnits": 5,
         },
@@ -373,16 +373,16 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Non GSI update Get billing mode update should compute the difference correctly when billingMode is changed to "PAY_PER_REQUEST" 1`] = `
-Object {
+{
   "BillingMode": "PAY_PER_REQUEST",
   "TableName": "test-table",
 }
 `;
 
 exports[`Custom Resource Lambda Tests Non GSI update Get billing mode update should compute the difference correctly when billingMode is changed to "PROVISIONED" 1`] = `
-Object {
+{
   "BillingMode": "PROVISIONED",
-  "ProvisionedThroughput": Object {
+  "ProvisionedThroughput": {
     "ReadCapacityUnits": 5,
     "WriteCapacityUnits": 5,
   },
@@ -391,20 +391,20 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Non GSI update Get billing mode update should compute the difference correctly when billingMode is changed to "PROVISIONED" and GSIs exist in current table 1`] = `
-Object {
+{
   "BillingMode": "PROVISIONED",
-  "GlobalSecondaryIndexUpdates": Array [
-    Object {
-      "Update": Object {
+  "GlobalSecondaryIndexUpdates": [
+    {
+      "Update": {
         "IndexName": "gsi1",
-        "ProvisionedThroughput": Object {
+        "ProvisionedThroughput": {
           "ReadCapacityUnits": 5,
           "WriteCapacityUnits": 5,
         },
       },
     },
   ],
-  "ProvisionedThroughput": Object {
+  "ProvisionedThroughput": {
     "ReadCapacityUnits": 5,
     "WriteCapacityUnits": 5,
   },
@@ -413,12 +413,12 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Non GSI update Get billing mode update should compute the difference correctly when billingMode is changed to "PROVISIONED" and GSIs exist in current table 2`] = `
-Object {
-  "GlobalSecondaryIndexUpdates": Array [
-    Object {
-      "Update": Object {
+{
+  "GlobalSecondaryIndexUpdates": [
+    {
+      "Update": {
         "IndexName": "gsi1",
-        "ProvisionedThroughput": Object {
+        "ProvisionedThroughput": {
           "ReadCapacityUnits": 4,
           "WriteCapacityUnits": 4,
         },
@@ -430,29 +430,29 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Non GSI update Get deletion protection update should compute the difference correctly when deletion protection is disabled 1`] = `
-Object {
+{
   "DeletionProtectionEnabled": false,
   "TableName": "test-table",
 }
 `;
 
 exports[`Custom Resource Lambda Tests Non GSI update Get deletion protection update should compute the difference correctly when deletion protection is disabled 2`] = `
-Object {
+{
   "DeletionProtectionEnabled": false,
   "TableName": "test-table",
 }
 `;
 
 exports[`Custom Resource Lambda Tests Non GSI update Get deletion protection update should compute the difference correctly when deletion protection is enabled 1`] = `
-Object {
+{
   "DeletionProtectionEnabled": true,
   "TableName": "test-table",
 }
 `;
 
 exports[`Custom Resource Lambda Tests Non GSI update Get point in time recovery update should compute the difference correctly when PITR is disabled 1`] = `
-Object {
-  "PointInTimeRecoverySpecification": Object {
+{
+  "PointInTimeRecoverySpecification": {
     "PointInTimeRecoveryEnabled": false,
   },
   "TableName": "test-table",
@@ -460,8 +460,8 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Non GSI update Get point in time recovery update should compute the difference correctly when PITR is disabled 2`] = `
-Object {
-  "PointInTimeRecoverySpecification": Object {
+{
+  "PointInTimeRecoverySpecification": {
     "PointInTimeRecoveryEnabled": false,
   },
   "TableName": "test-table",
@@ -469,8 +469,8 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Non GSI update Get point in time recovery update should compute the difference correctly when PITR is enabled 1`] = `
-Object {
-  "PointInTimeRecoverySpecification": Object {
+{
+  "PointInTimeRecoverySpecification": {
     "PointInTimeRecoveryEnabled": true,
   },
   "TableName": "test-table",
@@ -478,8 +478,8 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Non GSI update Get server side encrytion update should compute the difference correctly when SSE is disabled 1`] = `
-Object {
-  "SSESpecification": Object {
+{
+  "SSESpecification": {
     "Enabled": false,
   },
   "TableName": "test-table",
@@ -487,8 +487,8 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Non GSI update Get server side encrytion update should compute the difference correctly when SSE is disabled 2`] = `
-Object {
-  "SSESpecification": Object {
+{
+  "SSESpecification": {
     "Enabled": false,
   },
   "TableName": "test-table",
@@ -496,8 +496,8 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Non GSI update Get server side encrytion update should compute the difference correctly when SSE is enabled 1`] = `
-Object {
-  "SSESpecification": Object {
+{
+  "SSESpecification": {
     "Enabled": true,
   },
   "TableName": "test-table",
@@ -505,8 +505,8 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Non GSI update Get server side encrytion update should compute the difference correctly when SSE type is changed 1`] = `
-Object {
-  "SSESpecification": Object {
+{
+  "SSESpecification": {
     "Enabled": true,
     "KMSMasterKeyId": "alias/aws/dynamodb/custom",
     "SSEType": "KMS",
@@ -516,8 +516,8 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Non GSI update Get stream update should compute the difference correctly when stream is disabled 1`] = `
-Object {
-  "StreamSpecification": Object {
+{
+  "StreamSpecification": {
     "StreamEnabled": false,
   },
   "TableName": "test-table",
@@ -525,8 +525,8 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Non GSI update Get stream update should compute the difference correctly when stream is enabled 1`] = `
-Object {
-  "StreamSpecification": Object {
+{
+  "StreamSpecification": {
     "StreamEnabled": true,
     "StreamViewType": "NEW_AND_OLD_IMAGES",
   },
@@ -535,8 +535,8 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Non GSI update Get stream update should compute the difference correctly when stream is enabled 2`] = `
-Object {
-  "StreamSpecification": Object {
+{
+  "StreamSpecification": {
     "StreamEnabled": true,
     "StreamViewType": "NEW_AND_OLD_IMAGES",
   },
@@ -545,9 +545,9 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Non GSI update Get time to live update should compute the difference correctly when attribute is renamed 1`] = `
-Object {
+{
   "TableName": "test-table",
-  "TimeToLiveSpecification": Object {
+  "TimeToLiveSpecification": {
     "AttributeName": "_ttl1",
     "Enabled": true,
   },
@@ -555,9 +555,9 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Non GSI update Get time to live update should compute the difference correctly when ttl is disabled 1`] = `
-Object {
+{
   "TableName": "test-table",
-  "TimeToLiveSpecification": Object {
+  "TimeToLiveSpecification": {
     "AttributeName": "_ttl",
     "Enabled": false,
   },
@@ -565,9 +565,9 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Non GSI update Get time to live update should compute the difference correctly when ttl is disabled 2`] = `
-Object {
+{
   "TableName": "test-table",
-  "TimeToLiveSpecification": Object {
+  "TimeToLiveSpecification": {
     "AttributeName": "_ttl",
     "Enabled": false,
   },
@@ -575,9 +575,9 @@ Object {
 `;
 
 exports[`Custom Resource Lambda Tests Non GSI update Get time to live update should compute the difference correctly when ttl is enabled 1`] = `
-Object {
+{
   "TableName": "test-table",
-  "TimeToLiveSpecification": Object {
+  "TimeToLiveSpecification": {
     "AttributeName": "_ttl",
     "Enabled": true,
   },

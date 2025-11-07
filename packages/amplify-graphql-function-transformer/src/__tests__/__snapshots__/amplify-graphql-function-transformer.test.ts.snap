@@ -1,19 +1,19 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`for @function with account ID, it generates the expected resources 1`] = `
-Object {
+{
   "InvokeEchofunction123123456456LambdaDataSource.req.vtl": "## [Start] Invoke AWS Lambda data source: Echofunction123123456456LambdaDataSource. **
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\": {
-      \\"typeName\\": $util.toJson($ctx.stash.get(\\"typeName\\")),
-      \\"fieldName\\": $util.toJson($ctx.stash.get(\\"fieldName\\")),
-      \\"arguments\\": $util.toJson($ctx.arguments),
-      \\"identity\\": $util.toJson($ctx.identity),
-      \\"source\\": $util.toJson($ctx.source),
-      \\"request\\": $util.toJson($ctx.request),
-      \\"prev\\": $util.toJson($ctx.prev)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload": {
+      "typeName": $util.toJson($ctx.stash.get("typeName")),
+      "fieldName": $util.toJson($ctx.stash.get("fieldName")),
+      "arguments": $util.toJson($ctx.arguments),
+      "identity": $util.toJson($ctx.identity),
+      "source": $util.toJson($ctx.source),
+      "request": $util.toJson($ctx.request),
+      "prev": $util.toJson($ctx.prev)
   }
 }
 ## [End] Invoke AWS Lambda data source: Echofunction123123456456LambdaDataSource. **",
@@ -28,19 +28,19 @@ $util.toJson($ctx.result)
 `;
 
 exports[`for @function with only name, it generates the expected resources 1`] = `
-Object {
+{
   "InvokeEchofunctionLambdaDataSource.req.vtl": "## [Start] Invoke AWS Lambda data source: EchofunctionLambdaDataSource. **
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\": {
-      \\"typeName\\": $util.toJson($ctx.stash.get(\\"typeName\\")),
-      \\"fieldName\\": $util.toJson($ctx.stash.get(\\"fieldName\\")),
-      \\"arguments\\": $util.toJson($ctx.arguments),
-      \\"identity\\": $util.toJson($ctx.identity),
-      \\"source\\": $util.toJson($ctx.source),
-      \\"request\\": $util.toJson($ctx.request),
-      \\"prev\\": $util.toJson($ctx.prev)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload": {
+      "typeName": $util.toJson($ctx.stash.get("typeName")),
+      "fieldName": $util.toJson($ctx.stash.get("fieldName")),
+      "arguments": $util.toJson($ctx.arguments),
+      "identity": $util.toJson($ctx.identity),
+      "source": $util.toJson($ctx.source),
+      "request": $util.toJson($ctx.request),
+      "prev": $util.toJson($ctx.prev)
   }
 }
 ## [End] Invoke AWS Lambda data source: EchofunctionLambdaDataSource. **",
@@ -55,33 +55,33 @@ $util.toJson($ctx.result)
 `;
 
 exports[`includes auth info in stash 1`] = `
-Object {
-  "Fn::Join": Array [
+{
+  "Fn::Join": [
     "",
-    Array [
+    [
       "## [Start] Stash resolver specific context.. **
-$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"myFunction\\"))
-$util.qr($ctx.stash.put(\\"authRole\\", \\"arn:aws:sts::",
-      Object {
+$util.qr($ctx.stash.put("typeName", "Query"))
+$util.qr($ctx.stash.put("fieldName", "myFunction"))
+$util.qr($ctx.stash.put("authRole", "arn:aws:sts::",
+      {
         "Ref": "AWS::AccountId",
       },
       ":assumed-role/",
-      Object {
+      {
         "Ref": "referencetotransformerrootstackauthRoleNameFB872D50Ref",
       },
-      "/CognitoIdentityCredentials\\"))
-$util.qr($ctx.stash.put(\\"unauthRole\\", \\"arn:aws:sts::",
-      Object {
+      "/CognitoIdentityCredentials"))
+$util.qr($ctx.stash.put("unauthRole", "arn:aws:sts::",
+      {
         "Ref": "AWS::AccountId",
       },
       ":assumed-role/",
-      Object {
+      {
         "Ref": "referencetotransformerrootstackunauthRoleName49F3C1FERef",
       },
-      "/CognitoIdentityCredentials\\"))
-$util.qr($ctx.stash.put(\\"identityPoolId\\", \\"fake-test-id\\"))
-$util.qr($ctx.stash.put(\\"adminRoles\\", [\\"fake-test-role\\"]))
+      "/CognitoIdentityCredentials"))
+$util.qr($ctx.stash.put("identityPoolId", "fake-test-id"))
+$util.qr($ctx.stash.put("adminRoles", ["fake-test-role"]))
 {}
 ## [End] Stash resolver specific context.. **",
     ],

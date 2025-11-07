@@ -1,11 +1,11 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`ModelTransformer: should successfully transform simple valid schema 1`] = `
-Object {
-  "PolicyDocument": Object {
-    "Statement": Array [
-      Object {
-        "Action": Array [
+{
+  "PolicyDocument": {
+    "Statement": [
+      {
+        "Action": [
           "dynamodb:CreateTable",
           "dynamodb:UpdateTable",
           "dynamodb:DeleteTable",
@@ -19,27 +19,27 @@ Object {
           "dynamodb:ListTagsOfResource",
         ],
         "Effect": "Allow",
-        "Resource": Object {
-          "Fn::Sub": Array [
+        "Resource": {
+          "Fn::Sub": [
             "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/*-\${apiId}-\${envName}",
-            Object {
-              "apiId": Object {
+            {
+              "apiId": {
                 "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
               },
-              "envName": Object {
+              "envName": {
                 "Ref": "referencetotransformerrootstackenv10C5A902Ref",
               },
             },
           ],
         },
       },
-      Object {
+      {
         "Action": "lambda:ListTags",
         "Effect": "Allow",
-        "Resource": Object {
-          "Fn::Sub": Array [
+        "Resource": {
+          "Fn::Sub": [
             "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:*TableManager*",
-            Object {},
+            {},
           ],
         },
       },

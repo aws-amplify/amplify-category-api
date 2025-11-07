@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Verify RDS Model level Auth rules on queries: should successfully transform IdentityPool auth rules 1`] = `
 "## [Start] Authorization rules. **

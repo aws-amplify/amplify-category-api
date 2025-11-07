@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`admin roles should be return the field name inside field resolvers 1`] = `
 "## [Start] Field Authorization Steps. **

@@ -48,14 +48,14 @@ describe('attemptV2TransformerMigration', () => {
     expect(await fs.readFile(path.join(apiResourceDir, 'schema', 'Mud.graphql'), 'utf8')).toMatchInlineSnapshot(`
       "type Mud @model @auth(rules: [{allow: public}]) {
         id: ID!
-        obligations: [Obligation] @hasMany(indexName: \\"byMud\\", fields: [\\"id\\"])
+        obligations: [Obligation] @hasMany(indexName: "byMud", fields: ["id"])
       }
       "
     `);
     expect(await fs.readFile(path.join(apiResourceDir, 'schema', 'nested', 'Obligation.graphql'), 'utf8')).toMatchInlineSnapshot(`
       "type Obligation @model @auth(rules: [{allow: public}]) {
         id: ID!
-        mudID: ID @index(name: \\"byMud\\", sortKeyFields: [\\"content\\"])
+        mudID: ID @index(name: "byMud", sortKeyFields: ["content"])
         content: String
       }
       "

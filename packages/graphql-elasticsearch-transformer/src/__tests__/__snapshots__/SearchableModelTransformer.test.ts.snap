@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`SearchableModelTransformer validation happy case 1`] = `
 "type Post {
@@ -110,9 +110,9 @@ type Mutation {
 }
 
 type Subscription {
-  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreatePost: Post @aws_subscribe(mutations: ["createPost"])
+  onUpdatePost: Post @aws_subscribe(mutations: ["updatePost"])
+  onDeletePost: Post @aws_subscribe(mutations: ["deletePost"])
 }
 
 input SearchableStringFilterInput {
@@ -210,36 +210,36 @@ type SearchablePostConnection {
 `;
 
 exports[`SearchableModelTransformer with external versioning 1`] = `
-"#set( $indexPath = \\"/post/doc/_search\\" )
+"#set( $indexPath = "/post/doc/_search" )
 #set( $nonKeywordFields = [] )
 #if( $util.isNullOrEmpty($context.args.sort) )
-  #set( $sortDirection = \\"desc\\" )
-  #set( $sortField = \\"id\\" )
+  #set( $sortDirection = "desc" )
+  #set( $sortField = "id" )
 #else
-  #set( $sortDirection = $util.defaultIfNull($context.args.sort.direction, \\"desc\\") )
-  #set( $sortField = $util.defaultIfNull($context.args.sort.field, \\"id\\") )
+  #set( $sortDirection = $util.defaultIfNull($context.args.sort.direction, "desc") )
+  #set( $sortField = $util.defaultIfNull($context.args.sort.field, "id") )
 #end
 #if( $nonKeywordFields.contains($sortField) )
   #set( $sortField0 = $util.toJson($sortField) )
 #else
-  #set( $sortField0 = $util.toJson(\\"\${sortField}.keyword\\") )
+  #set( $sortField0 = $util.toJson("\${sortField}.keyword") )
 #end
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"GET\\",
-  \\"path\\": \\"$indexPath\\",
-  \\"params\\": {
-      \\"body\\":     {
-                #if( $context.args.nextToken )\\"search_after\\": [$util.toJson($context.args.nextToken)], #end
-                #if( $context.args.from )\\"from\\": $context.args.from, #end
-                \\"size\\": #if( $context.args.limit ) $context.args.limit #else 100 #end,
-                \\"sort\\": [{$sortField0: { \\"order\\" : $util.toJson($sortDirection) }}],
-                \\"version\\": true,
-                \\"query\\": #if( $context.args.filter )
+  "version": "2018-05-29",
+  "operation": "GET",
+  "path": "$indexPath",
+  "params": {
+      "body":     {
+                #if( $context.args.nextToken )"search_after": [$util.toJson($context.args.nextToken)], #end
+                #if( $context.args.from )"from": $context.args.from, #end
+                "size": #if( $context.args.limit ) $context.args.limit #else 100 #end,
+                "sort": [{$sortField0: { "order" : $util.toJson($sortDirection) }}],
+                "version": true,
+                "query": #if( $context.args.filter )
 $util.transform.toElasticsearchQueryDSL($ctx.args.filter)
 #else
 {
-      \\"match_all\\": {}
+      "match_all": {}
   }
 #end
                 }
@@ -253,14 +253,14 @@ exports[`SearchableModelTransformer with external versioning 2`] = `
   #if( !$foreach.hasNext )
     #set( $nextToken = $entry.sort.get(0) )
   #end
-  #set( $row = $entry.get(\\"_source\\") )
-  $util.qr($row.put(\\"_version\\", $entry.get(\\"_version\\")))
+  #set( $row = $entry.get("_source") )
+  $util.qr($row.put("_version", $entry.get("_version")))
   $util.qr($es_items.add($row))
 #end
 $util.toJson({
-  \\"items\\": $es_items,
-  \\"total\\": $ctx.result.hits.total,
-  \\"nextToken\\": $nextToken
+  "items": $es_items,
+  "total": $ctx.result.hits.total,
+  "nextToken": $nextToken
 })"
 `;
 
@@ -387,12 +387,12 @@ type Mutation {
 }
 
 type Subscription {
-  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
-  onCreateUser: User @aws_subscribe(mutations: [\\"createUser\\"])
-  onUpdateUser: User @aws_subscribe(mutations: [\\"updateUser\\"])
-  onDeleteUser: User @aws_subscribe(mutations: [\\"deleteUser\\"])
+  onCreatePost: Post @aws_subscribe(mutations: ["createPost"])
+  onUpdatePost: Post @aws_subscribe(mutations: ["updatePost"])
+  onDeletePost: Post @aws_subscribe(mutations: ["deletePost"])
+  onCreateUser: User @aws_subscribe(mutations: ["createUser"])
+  onUpdateUser: User @aws_subscribe(mutations: ["updateUser"])
+  onDeleteUser: User @aws_subscribe(mutations: ["deleteUser"])
 }
 
 type ModelUserConnection {
@@ -637,7 +637,7 @@ type Mutation {
 }
 
 type Subscription {
-  onCreatePost: Post @aws_subscribe(mutations: [\\"customCreatePost\\"])
+  onCreatePost: Post @aws_subscribe(mutations: ["customCreatePost"])
 }
 
 input SearchableStringFilterInput {
@@ -844,9 +844,9 @@ type Mutation {
 }
 
 type Subscription {
-  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreatePost: Post @aws_subscribe(mutations: ["createPost"])
+  onUpdatePost: Post @aws_subscribe(mutations: ["updatePost"])
+  onDeletePost: Post @aws_subscribe(mutations: ["deletePost"])
 }
 
 input SearchableStringFilterInput {
@@ -1053,9 +1053,9 @@ type Mutation {
 }
 
 type Subscription {
-  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreatePost: Post @aws_subscribe(mutations: ["createPost"])
+  onUpdatePost: Post @aws_subscribe(mutations: ["updatePost"])
+  onDeletePost: Post @aws_subscribe(mutations: ["deletePost"])
 }
 
 input SearchableStringFilterInput {

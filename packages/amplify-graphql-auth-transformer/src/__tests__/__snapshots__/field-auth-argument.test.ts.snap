@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`does not generate field resolvers when private rule takes precedence over provider-related rules 1`] = `
 "## [Start] Field Authorization Steps. **

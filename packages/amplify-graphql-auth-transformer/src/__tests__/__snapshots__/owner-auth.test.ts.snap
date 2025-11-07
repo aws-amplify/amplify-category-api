@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`owner based @auth owner field where the field is a list 1`] = `
 "## [Start] Authorization Steps. **

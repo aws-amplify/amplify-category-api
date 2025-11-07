@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`ddb generates related type sandbox resolvers when both sandbox and iam access enabled 1`] = `
 "## [Start] Sandbox Mode Enabled, IAM Access Enabled. **

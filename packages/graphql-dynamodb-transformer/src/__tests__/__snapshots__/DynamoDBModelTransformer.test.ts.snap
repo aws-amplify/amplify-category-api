@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Current version transformer snapshot test 1`] = `
 "type Post {
@@ -145,9 +145,9 @@ input ModelPostConditionInput {
 }
 
 type Subscription {
-  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreatePost: Post @aws_subscribe(mutations: ["createPost"])
+  onUpdatePost: Post @aws_subscribe(mutations: ["updatePost"])
+  onDeletePost: Post @aws_subscribe(mutations: ["deletePost"])
 }
 "
 `;
@@ -156,56 +156,56 @@ exports[`DynamoDB transformer should not add default primary key when ID is defi
 "## [Start] Set default values. **
 #set( $createdAt = $util.time.nowISO8601() )
 ## Automatically set the createdAt timestamp. **
-$util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $createdAt)))
+$util.qr($context.args.input.put("createdAt", $util.defaultIfNull($ctx.args.input.createdAt, $createdAt)))
 ## Automatically set the updatedAt timestamp. **
-$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $createdAt)))
+$util.qr($context.args.input.put("updatedAt", $util.defaultIfNull($ctx.args.input.updatedAt, $createdAt)))
 ## [End] Set default values. **
 ## [Start] Prepare DynamoDB PutItem Request. **
-$util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
+$util.qr($context.args.input.put("__typename", "Post"))
 #if( $modelObjectKey )
   #set( $condition = {
-  \\"expression\\": \\"\\",
-  \\"expressionNames\\": {},
-  \\"expressionValues\\": {}
+  "expression": "",
+  "expressionNames": {},
+  "expressionValues": {}
 } )
   #foreach( $entry in $modelObjectKey.entrySet() )
     #if( $velocityCount == 1 )
-      $util.qr($condition.put(\\"expression\\", \\"attribute_not_exists(#keyCondition$velocityCount)\\"))
+      $util.qr($condition.put("expression", "attribute_not_exists(#keyCondition$velocityCount)"))
     #else
-      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)\\"))
+      $util.qr($condition.put("expression", "$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)"))
     #end
-    $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    $util.qr($condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key"))
   #end
 #else
   #set( $condition = {
-  \\"expression\\": \\"attribute_not_exists(#id)\\",
-  \\"expressionNames\\": {
-      \\"#id\\": \\"id\\"
+  "expression": "attribute_not_exists(#id)",
+  "expressionNames": {
+      "#id": "id"
   },
-  \\"expressionValues\\": {}
+  "expressionValues": {}
 } )
 #end
 #if( $context.args.condition )
   #set( $condition.expressionValues = {} )
   #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
-  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
+  $util.qr($condition.put("expression", "($condition.expression) AND $conditionFilterExpressions.expression"))
   $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
   $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
 #end
 #if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
   #set( $condition = {
-  \\"expression\\": $condition.expression,
-  \\"expressionNames\\": $condition.expressionNames
+  "expression": $condition.expression,
+  "expressionNames": $condition.expressionNames
 } )
 #end
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"PutItem\\",
-  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
-  \\"id\\":   $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
+  "version": "2018-05-29",
+  "operation": "PutItem",
+  "key": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  "id":   $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
 } #end,
-  \\"attributeValues\\": $util.dynamodb.toMapValuesJson($context.args.input),
-  \\"condition\\": $util.toJson($condition)
+  "attributeValues": $util.dynamodb.toMapValuesJson($context.args.input),
+  "condition": $util.toJson($condition)
 }
 ## [End] Prepare DynamoDB PutItem Request. **"
 `;
@@ -313,9 +313,9 @@ type Mutation {
 }
 
 type Subscription {
-  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreatePost: Post @aws_subscribe(mutations: ["createPost"])
+  onUpdatePost: Post @aws_subscribe(mutations: ["updatePost"])
+  onDeletePost: Post @aws_subscribe(mutations: ["deletePost"])
 }
 "
 `;
@@ -465,9 +465,9 @@ input ModelPostConditionInput {
 }
 
 type Subscription {
-  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreatePost: Post @aws_subscribe(mutations: ["createPost"])
+  onUpdatePost: Post @aws_subscribe(mutations: ["updatePost"])
+  onDeletePost: Post @aws_subscribe(mutations: ["deletePost"])
 }
 "
 `;
@@ -581,134 +581,134 @@ type Mutation {
 }
 
 type Subscription {
-  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreatePost: Post @aws_subscribe(mutations: ["createPost"])
+  onUpdatePost: Post @aws_subscribe(mutations: ["updatePost"])
+  onDeletePost: Post @aws_subscribe(mutations: ["deletePost"])
 }
 "
 `;
 
 exports[`create and update mutation input should have timestamps as nullable fields when the type makes it non-nullable 2`] = `
 "## [Start] Set default values. **
-$util.qr($context.args.input.put(\\"id\\", $util.defaultIfNull($ctx.args.input.id, $util.autoId())))
+$util.qr($context.args.input.put("id", $util.defaultIfNull($ctx.args.input.id, $util.autoId())))
 #set( $createdAt = $util.time.nowISO8601() )
 ## Automatically set the createdAt timestamp. **
-$util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $createdAt)))
+$util.qr($context.args.input.put("createdAt", $util.defaultIfNull($ctx.args.input.createdAt, $createdAt)))
 ## Automatically set the updatedAt timestamp. **
-$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $createdAt)))
+$util.qr($context.args.input.put("updatedAt", $util.defaultIfNull($ctx.args.input.updatedAt, $createdAt)))
 ## [End] Set default values. **
 ## [Start] Prepare DynamoDB PutItem Request. **
-$util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
+$util.qr($context.args.input.put("__typename", "Post"))
 #if( $modelObjectKey )
   #set( $condition = {
-  \\"expression\\": \\"\\",
-  \\"expressionNames\\": {},
-  \\"expressionValues\\": {}
+  "expression": "",
+  "expressionNames": {},
+  "expressionValues": {}
 } )
   #foreach( $entry in $modelObjectKey.entrySet() )
     #if( $velocityCount == 1 )
-      $util.qr($condition.put(\\"expression\\", \\"attribute_not_exists(#keyCondition$velocityCount)\\"))
+      $util.qr($condition.put("expression", "attribute_not_exists(#keyCondition$velocityCount)"))
     #else
-      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)\\"))
+      $util.qr($condition.put("expression", "$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)"))
     #end
-    $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    $util.qr($condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key"))
   #end
 #else
   #set( $condition = {
-  \\"expression\\": \\"attribute_not_exists(#id)\\",
-  \\"expressionNames\\": {
-      \\"#id\\": \\"id\\"
+  "expression": "attribute_not_exists(#id)",
+  "expressionNames": {
+      "#id": "id"
   },
-  \\"expressionValues\\": {}
+  "expressionValues": {}
 } )
 #end
 #if( $context.args.condition )
   #set( $condition.expressionValues = {} )
   #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
-  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
+  $util.qr($condition.put("expression", "($condition.expression) AND $conditionFilterExpressions.expression"))
   $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
   $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
 #end
 #if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
   #set( $condition = {
-  \\"expression\\": $condition.expression,
-  \\"expressionNames\\": $condition.expressionNames
+  "expression": $condition.expression,
+  "expressionNames": $condition.expressionNames
 } )
 #end
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"PutItem\\",
-  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
-  \\"id\\":   $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
+  "version": "2018-05-29",
+  "operation": "PutItem",
+  "key": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  "id":   $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
 } #end,
-  \\"attributeValues\\": $util.dynamodb.toMapValuesJson($context.args.input),
-  \\"condition\\": $util.toJson($condition)
+  "attributeValues": $util.dynamodb.toMapValuesJson($context.args.input),
+  "condition": $util.toJson($condition)
 }
 ## [End] Prepare DynamoDB PutItem Request. **"
 `;
 
 exports[`create and update mutation input should have timestamps as nullable fields when the type makes it non-nullable 3`] = `
-"#set( $optionalNonNullableFields = [\\"createdAt\\", \\"updatedAt\\"] )
+"#set( $optionalNonNullableFields = ["createdAt", "updatedAt"] )
 #foreach( $field in $optionalNonNullableFields )
   #if( $context.arguments.input.keySet().contains($field) && $util.isNull($context.args.input.get($field)) )
-$util.error(\\"An argument you marked as Non-Null is set to Null in the query or the body of your request.\\")
+$util.error("An argument you marked as Non-Null is set to Null in the query or the body of your request.")
   #end
 #end
-#if( $authCondition && $authCondition.expression != \\"\\" )
+#if( $authCondition && $authCondition.expression != "" )
   #set( $condition = $authCondition )
   #if( $modelObjectKey )
     #foreach( $entry in $modelObjectKey.entrySet() )
-      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
-      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+      $util.qr($condition.put("expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)"))
+      $util.qr($condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key"))
     #end
   #else
-    $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#id)\\"))
-    $util.qr($condition.expressionNames.put(\\"#id\\", \\"id\\"))
+    $util.qr($condition.put("expression", "$condition.expression AND attribute_exists(#id)"))
+    $util.qr($condition.expressionNames.put("#id", "id"))
   #end
 #else
   #if( $modelObjectKey )
     #set( $condition = {
-  \\"expression\\": \\"\\",
-  \\"expressionNames\\": {},
-  \\"expressionValues\\": {}
+  "expression": "",
+  "expressionNames": {},
+  "expressionValues": {}
 } )
     #foreach( $entry in $modelObjectKey.entrySet() )
       #if( $velocityCount == 1 )
-        $util.qr($condition.put(\\"expression\\", \\"attribute_exists(#keyCondition$velocityCount)\\"))
+        $util.qr($condition.put("expression", "attribute_exists(#keyCondition$velocityCount)"))
       #else
-        $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+        $util.qr($condition.put("expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)"))
       #end
-      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+      $util.qr($condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key"))
     #end
   #else
     #set( $condition = {
-  \\"expression\\": \\"attribute_exists(#id)\\",
-  \\"expressionNames\\": {
-      \\"#id\\": \\"id\\"
+  "expression": "attribute_exists(#id)",
+  "expressionNames": {
+      "#id": "id"
   },
-  \\"expressionValues\\": {}
+  "expressionValues": {}
 } )
   #end
 #end
 ## Automatically set the updatedAt timestamp. **
-$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601())))
-$util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
+$util.qr($context.args.input.put("updatedAt", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601())))
+$util.qr($context.args.input.put("__typename", "Post"))
 ## Update condition if type is @versioned **
 #if( $versionedCondition )
-  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $versionedCondition.expression\\"))
+  $util.qr($condition.put("expression", "($condition.expression) AND $versionedCondition.expression"))
   $util.qr($condition.expressionNames.putAll($versionedCondition.expressionNames))
   $util.qr($condition.expressionValues.putAll($versionedCondition.expressionValues))
 #end
 #if( $context.args.condition )
   #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
-  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
+  $util.qr($condition.put("expression", "($condition.expression) AND $conditionFilterExpressions.expression"))
   $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
   $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
 #end
 #if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
   #set( $condition = {
-  \\"expression\\": $condition.expression,
-  \\"expressionNames\\": $condition.expressionNames
+  "expression": $condition.expression,
+  "expressionNames": $condition.expressionNames
 } )
 #end
 #set( $expNames = {} )
@@ -719,72 +719,72 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 #if( $modelObjectKey )
   #set( $keyFields = [] )
   #foreach( $entry in $modelObjectKey.entrySet() )
-    $util.qr($keyFields.add(\\"$entry.key\\"))
+    $util.qr($keyFields.add("$entry.key"))
   #end
 #else
-  #set( $keyFields = [\\"id\\"] )
+  #set( $keyFields = ["id"] )
 #end
 #foreach( $entry in $util.map.copyAndRemoveAllKeys($context.args.input, $keyFields).entrySet() )
-  #if( !$util.isNull($dynamodbNameOverrideMap) && $dynamodbNameOverrideMap.containsKey(\\"$entry.key\\") )
-    #set( $entryKeyAttributeName = $dynamodbNameOverrideMap.get(\\"$entry.key\\") )
+  #if( !$util.isNull($dynamodbNameOverrideMap) && $dynamodbNameOverrideMap.containsKey("$entry.key") )
+    #set( $entryKeyAttributeName = $dynamodbNameOverrideMap.get("$entry.key") )
   #else
     #set( $entryKeyAttributeName = $entry.key )
   #end
   #if( $util.isNull($entry.value) )
-    #set( $discard = $expRemove.add(\\"#$entryKeyAttributeName\\") )
-    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+    #set( $discard = $expRemove.add("#$entryKeyAttributeName") )
+    $util.qr($expNames.put("#$entryKeyAttributeName", "$entry.key"))
   #else
-    $util.qr($expSet.put(\\"#$entryKeyAttributeName\\", \\":$entryKeyAttributeName\\"))
-    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
-    $util.qr($expValues.put(\\":$entryKeyAttributeName\\", $util.dynamodb.toDynamoDB($entry.value)))
+    $util.qr($expSet.put("#$entryKeyAttributeName", ":$entryKeyAttributeName"))
+    $util.qr($expNames.put("#$entryKeyAttributeName", "$entry.key"))
+    $util.qr($expValues.put(":$entryKeyAttributeName", $util.dynamodb.toDynamoDB($entry.value)))
   #end
 #end
-#set( $expression = \\"\\" )
+#set( $expression = "" )
 #if( !$expSet.isEmpty() )
-  #set( $expression = \\"SET\\" )
+  #set( $expression = "SET" )
   #foreach( $entry in $expSet.entrySet() )
-    #set( $expression = \\"$expression $entry.key = $entry.value\\" )
+    #set( $expression = "$expression $entry.key = $entry.value" )
     #if( $foreach.hasNext() )
-      #set( $expression = \\"$expression,\\" )
+      #set( $expression = "$expression," )
     #end
   #end
 #end
 #if( !$expAdd.isEmpty() )
-  #set( $expression = \\"$expression ADD\\" )
+  #set( $expression = "$expression ADD" )
   #foreach( $entry in $expAdd.entrySet() )
-    #set( $expression = \\"$expression $entry.key $entry.value\\" )
+    #set( $expression = "$expression $entry.key $entry.value" )
     #if( $foreach.hasNext() )
-      #set( $expression = \\"$expression,\\" )
+      #set( $expression = "$expression," )
     #end
   #end
 #end
 #if( !$expRemove.isEmpty() )
-  #set( $expression = \\"$expression REMOVE\\" )
+  #set( $expression = "$expression REMOVE" )
   #foreach( $entry in $expRemove )
-    #set( $expression = \\"$expression $entry\\" )
+    #set( $expression = "$expression $entry" )
     #if( $foreach.hasNext() )
-      #set( $expression = \\"$expression,\\" )
+      #set( $expression = "$expression," )
     #end
   #end
 #end
 #set( $update = {} )
-$util.qr($update.put(\\"expression\\", \\"$expression\\"))
+$util.qr($update.put("expression", "$expression"))
 #if( !$expNames.isEmpty() )
-  $util.qr($update.put(\\"expressionNames\\", $expNames))
+  $util.qr($update.put("expressionNames", $expNames))
 #end
 #if( !$expValues.isEmpty() )
-  $util.qr($update.put(\\"expressionValues\\", $expValues))
+  $util.qr($update.put("expressionValues", $expValues))
 #end
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"UpdateItem\\",
-  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
-  \\"id\\": {
-      \\"S\\": $util.toJson($context.args.input.id)
+  "version": "2018-05-29",
+  "operation": "UpdateItem",
+  "key": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  "id": {
+      "S": $util.toJson($context.args.input.id)
   }
 } #end,
-  \\"update\\": $util.toJson($update),
-  \\"condition\\": $util.toJson($condition)
+  "update": $util.toJson($update),
+  "condition": $util.toJson($condition)
 }"
 `;
 
@@ -889,63 +889,63 @@ type Mutation {
 }
 
 type Subscription {
-  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreatePost: Post @aws_subscribe(mutations: ["createPost"])
+  onUpdatePost: Post @aws_subscribe(mutations: ["updatePost"])
+  onDeletePost: Post @aws_subscribe(mutations: ["deletePost"])
 }
 "
 `;
 
 exports[`not to include createdAt and updatedAt field when timestamps is set to null 2`] = `
 "## [Start] Set default values. **
-$util.qr($context.args.input.put(\\"id\\", $util.defaultIfNull($ctx.args.input.id, $util.autoId())))
+$util.qr($context.args.input.put("id", $util.defaultIfNull($ctx.args.input.id, $util.autoId())))
 ## [End] Set default values. **
 ## [Start] Prepare DynamoDB PutItem Request. **
-$util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
+$util.qr($context.args.input.put("__typename", "Post"))
 #if( $modelObjectKey )
   #set( $condition = {
-  \\"expression\\": \\"\\",
-  \\"expressionNames\\": {},
-  \\"expressionValues\\": {}
+  "expression": "",
+  "expressionNames": {},
+  "expressionValues": {}
 } )
   #foreach( $entry in $modelObjectKey.entrySet() )
     #if( $velocityCount == 1 )
-      $util.qr($condition.put(\\"expression\\", \\"attribute_not_exists(#keyCondition$velocityCount)\\"))
+      $util.qr($condition.put("expression", "attribute_not_exists(#keyCondition$velocityCount)"))
     #else
-      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)\\"))
+      $util.qr($condition.put("expression", "$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)"))
     #end
-    $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    $util.qr($condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key"))
   #end
 #else
   #set( $condition = {
-  \\"expression\\": \\"attribute_not_exists(#id)\\",
-  \\"expressionNames\\": {
-      \\"#id\\": \\"id\\"
+  "expression": "attribute_not_exists(#id)",
+  "expressionNames": {
+      "#id": "id"
   },
-  \\"expressionValues\\": {}
+  "expressionValues": {}
 } )
 #end
 #if( $context.args.condition )
   #set( $condition.expressionValues = {} )
   #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
-  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
+  $util.qr($condition.put("expression", "($condition.expression) AND $conditionFilterExpressions.expression"))
   $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
   $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
 #end
 #if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
   #set( $condition = {
-  \\"expression\\": $condition.expression,
-  \\"expressionNames\\": $condition.expressionNames
+  "expression": $condition.expression,
+  "expressionNames": $condition.expressionNames
 } )
 #end
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"PutItem\\",
-  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
-  \\"id\\":   $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
+  "version": "2018-05-29",
+  "operation": "PutItem",
+  "key": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  "id":   $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
 } #end,
-  \\"attributeValues\\": $util.dynamodb.toMapValuesJson($context.args.input),
-  \\"condition\\": $util.toJson($condition)
+  "attributeValues": $util.dynamodb.toMapValuesJson($context.args.input),
+  "condition": $util.toJson($condition)
 }
 ## [End] Prepare DynamoDB PutItem Request. **"
 `;
@@ -954,62 +954,62 @@ exports[`not to include createdAt and updatedAt field when timestamps is set to 
 "#set( $optionalNonNullableFields = [] )
 #foreach( $field in $optionalNonNullableFields )
   #if( $context.arguments.input.keySet().contains($field) && $util.isNull($context.args.input.get($field)) )
-$util.error(\\"An argument you marked as Non-Null is set to Null in the query or the body of your request.\\")
+$util.error("An argument you marked as Non-Null is set to Null in the query or the body of your request.")
   #end
 #end
-#if( $authCondition && $authCondition.expression != \\"\\" )
+#if( $authCondition && $authCondition.expression != "" )
   #set( $condition = $authCondition )
   #if( $modelObjectKey )
     #foreach( $entry in $modelObjectKey.entrySet() )
-      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
-      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+      $util.qr($condition.put("expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)"))
+      $util.qr($condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key"))
     #end
   #else
-    $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#id)\\"))
-    $util.qr($condition.expressionNames.put(\\"#id\\", \\"id\\"))
+    $util.qr($condition.put("expression", "$condition.expression AND attribute_exists(#id)"))
+    $util.qr($condition.expressionNames.put("#id", "id"))
   #end
 #else
   #if( $modelObjectKey )
     #set( $condition = {
-  \\"expression\\": \\"\\",
-  \\"expressionNames\\": {},
-  \\"expressionValues\\": {}
+  "expression": "",
+  "expressionNames": {},
+  "expressionValues": {}
 } )
     #foreach( $entry in $modelObjectKey.entrySet() )
       #if( $velocityCount == 1 )
-        $util.qr($condition.put(\\"expression\\", \\"attribute_exists(#keyCondition$velocityCount)\\"))
+        $util.qr($condition.put("expression", "attribute_exists(#keyCondition$velocityCount)"))
       #else
-        $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+        $util.qr($condition.put("expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)"))
       #end
-      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+      $util.qr($condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key"))
     #end
   #else
     #set( $condition = {
-  \\"expression\\": \\"attribute_exists(#id)\\",
-  \\"expressionNames\\": {
-      \\"#id\\": \\"id\\"
+  "expression": "attribute_exists(#id)",
+  "expressionNames": {
+      "#id": "id"
   },
-  \\"expressionValues\\": {}
+  "expressionValues": {}
 } )
   #end
 #end
-$util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
+$util.qr($context.args.input.put("__typename", "Post"))
 ## Update condition if type is @versioned **
 #if( $versionedCondition )
-  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $versionedCondition.expression\\"))
+  $util.qr($condition.put("expression", "($condition.expression) AND $versionedCondition.expression"))
   $util.qr($condition.expressionNames.putAll($versionedCondition.expressionNames))
   $util.qr($condition.expressionValues.putAll($versionedCondition.expressionValues))
 #end
 #if( $context.args.condition )
   #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
-  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
+  $util.qr($condition.put("expression", "($condition.expression) AND $conditionFilterExpressions.expression"))
   $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
   $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
 #end
 #if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
   #set( $condition = {
-  \\"expression\\": $condition.expression,
-  \\"expressionNames\\": $condition.expressionNames
+  "expression": $condition.expression,
+  "expressionNames": $condition.expressionNames
 } )
 #end
 #set( $expNames = {} )
@@ -1020,72 +1020,72 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 #if( $modelObjectKey )
   #set( $keyFields = [] )
   #foreach( $entry in $modelObjectKey.entrySet() )
-    $util.qr($keyFields.add(\\"$entry.key\\"))
+    $util.qr($keyFields.add("$entry.key"))
   #end
 #else
-  #set( $keyFields = [\\"id\\"] )
+  #set( $keyFields = ["id"] )
 #end
 #foreach( $entry in $util.map.copyAndRemoveAllKeys($context.args.input, $keyFields).entrySet() )
-  #if( !$util.isNull($dynamodbNameOverrideMap) && $dynamodbNameOverrideMap.containsKey(\\"$entry.key\\") )
-    #set( $entryKeyAttributeName = $dynamodbNameOverrideMap.get(\\"$entry.key\\") )
+  #if( !$util.isNull($dynamodbNameOverrideMap) && $dynamodbNameOverrideMap.containsKey("$entry.key") )
+    #set( $entryKeyAttributeName = $dynamodbNameOverrideMap.get("$entry.key") )
   #else
     #set( $entryKeyAttributeName = $entry.key )
   #end
   #if( $util.isNull($entry.value) )
-    #set( $discard = $expRemove.add(\\"#$entryKeyAttributeName\\") )
-    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+    #set( $discard = $expRemove.add("#$entryKeyAttributeName") )
+    $util.qr($expNames.put("#$entryKeyAttributeName", "$entry.key"))
   #else
-    $util.qr($expSet.put(\\"#$entryKeyAttributeName\\", \\":$entryKeyAttributeName\\"))
-    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
-    $util.qr($expValues.put(\\":$entryKeyAttributeName\\", $util.dynamodb.toDynamoDB($entry.value)))
+    $util.qr($expSet.put("#$entryKeyAttributeName", ":$entryKeyAttributeName"))
+    $util.qr($expNames.put("#$entryKeyAttributeName", "$entry.key"))
+    $util.qr($expValues.put(":$entryKeyAttributeName", $util.dynamodb.toDynamoDB($entry.value)))
   #end
 #end
-#set( $expression = \\"\\" )
+#set( $expression = "" )
 #if( !$expSet.isEmpty() )
-  #set( $expression = \\"SET\\" )
+  #set( $expression = "SET" )
   #foreach( $entry in $expSet.entrySet() )
-    #set( $expression = \\"$expression $entry.key = $entry.value\\" )
+    #set( $expression = "$expression $entry.key = $entry.value" )
     #if( $foreach.hasNext() )
-      #set( $expression = \\"$expression,\\" )
+      #set( $expression = "$expression," )
     #end
   #end
 #end
 #if( !$expAdd.isEmpty() )
-  #set( $expression = \\"$expression ADD\\" )
+  #set( $expression = "$expression ADD" )
   #foreach( $entry in $expAdd.entrySet() )
-    #set( $expression = \\"$expression $entry.key $entry.value\\" )
+    #set( $expression = "$expression $entry.key $entry.value" )
     #if( $foreach.hasNext() )
-      #set( $expression = \\"$expression,\\" )
+      #set( $expression = "$expression," )
     #end
   #end
 #end
 #if( !$expRemove.isEmpty() )
-  #set( $expression = \\"$expression REMOVE\\" )
+  #set( $expression = "$expression REMOVE" )
   #foreach( $entry in $expRemove )
-    #set( $expression = \\"$expression $entry\\" )
+    #set( $expression = "$expression $entry" )
     #if( $foreach.hasNext() )
-      #set( $expression = \\"$expression,\\" )
+      #set( $expression = "$expression," )
     #end
   #end
 #end
 #set( $update = {} )
-$util.qr($update.put(\\"expression\\", \\"$expression\\"))
+$util.qr($update.put("expression", "$expression"))
 #if( !$expNames.isEmpty() )
-  $util.qr($update.put(\\"expressionNames\\", $expNames))
+  $util.qr($update.put("expressionNames", $expNames))
 #end
 #if( !$expValues.isEmpty() )
-  $util.qr($update.put(\\"expressionValues\\", $expValues))
+  $util.qr($update.put("expressionValues", $expValues))
 #end
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"UpdateItem\\",
-  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
-  \\"id\\": {
-      \\"S\\": $util.toJson($context.args.input.id)
+  "version": "2018-05-29",
+  "operation": "UpdateItem",
+  "key": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  "id": {
+      "S": $util.toJson($context.args.input.id)
   }
 } #end,
-  \\"update\\": $util.toJson($update),
-  \\"condition\\": $util.toJson($condition)
+  "update": $util.toJson($update),
+  "condition": $util.toJson($condition)
 }"
 `;
 
@@ -1212,63 +1212,63 @@ type Mutation {
 }
 
 type Subscription {
-  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreatePost: Post @aws_subscribe(mutations: ["createPost"])
+  onUpdatePost: Post @aws_subscribe(mutations: ["updatePost"])
+  onDeletePost: Post @aws_subscribe(mutations: ["deletePost"])
 }
 "
 `;
 
 exports[`resolver template not to auto generate createdAt and updatedAt when the type in schema is not AWSDateTime 2`] = `
 "## [Start] Set default values. **
-$util.qr($context.args.input.put(\\"id\\", $util.defaultIfNull($ctx.args.input.id, $util.autoId())))
+$util.qr($context.args.input.put("id", $util.defaultIfNull($ctx.args.input.id, $util.autoId())))
 ## [End] Set default values. **
 ## [Start] Prepare DynamoDB PutItem Request. **
-$util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
+$util.qr($context.args.input.put("__typename", "Post"))
 #if( $modelObjectKey )
   #set( $condition = {
-  \\"expression\\": \\"\\",
-  \\"expressionNames\\": {},
-  \\"expressionValues\\": {}
+  "expression": "",
+  "expressionNames": {},
+  "expressionValues": {}
 } )
   #foreach( $entry in $modelObjectKey.entrySet() )
     #if( $velocityCount == 1 )
-      $util.qr($condition.put(\\"expression\\", \\"attribute_not_exists(#keyCondition$velocityCount)\\"))
+      $util.qr($condition.put("expression", "attribute_not_exists(#keyCondition$velocityCount)"))
     #else
-      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)\\"))
+      $util.qr($condition.put("expression", "$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)"))
     #end
-    $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    $util.qr($condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key"))
   #end
 #else
   #set( $condition = {
-  \\"expression\\": \\"attribute_not_exists(#id)\\",
-  \\"expressionNames\\": {
-      \\"#id\\": \\"id\\"
+  "expression": "attribute_not_exists(#id)",
+  "expressionNames": {
+      "#id": "id"
   },
-  \\"expressionValues\\": {}
+  "expressionValues": {}
 } )
 #end
 #if( $context.args.condition )
   #set( $condition.expressionValues = {} )
   #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
-  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
+  $util.qr($condition.put("expression", "($condition.expression) AND $conditionFilterExpressions.expression"))
   $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
   $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
 #end
 #if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
   #set( $condition = {
-  \\"expression\\": $condition.expression,
-  \\"expressionNames\\": $condition.expressionNames
+  "expression": $condition.expression,
+  "expressionNames": $condition.expressionNames
 } )
 #end
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"PutItem\\",
-  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
-  \\"id\\":   $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
+  "version": "2018-05-29",
+  "operation": "PutItem",
+  "key": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  "id":   $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
 } #end,
-  \\"attributeValues\\": $util.dynamodb.toMapValuesJson($context.args.input),
-  \\"condition\\": $util.toJson($condition)
+  "attributeValues": $util.dynamodb.toMapValuesJson($context.args.input),
+  "condition": $util.toJson($condition)
 }
 ## [End] Prepare DynamoDB PutItem Request. **"
 `;
@@ -1277,62 +1277,62 @@ exports[`resolver template not to auto generate createdAt and updatedAt when the
 "#set( $optionalNonNullableFields = [] )
 #foreach( $field in $optionalNonNullableFields )
   #if( $context.arguments.input.keySet().contains($field) && $util.isNull($context.args.input.get($field)) )
-$util.error(\\"An argument you marked as Non-Null is set to Null in the query or the body of your request.\\")
+$util.error("An argument you marked as Non-Null is set to Null in the query or the body of your request.")
   #end
 #end
-#if( $authCondition && $authCondition.expression != \\"\\" )
+#if( $authCondition && $authCondition.expression != "" )
   #set( $condition = $authCondition )
   #if( $modelObjectKey )
     #foreach( $entry in $modelObjectKey.entrySet() )
-      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
-      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+      $util.qr($condition.put("expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)"))
+      $util.qr($condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key"))
     #end
   #else
-    $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#id)\\"))
-    $util.qr($condition.expressionNames.put(\\"#id\\", \\"id\\"))
+    $util.qr($condition.put("expression", "$condition.expression AND attribute_exists(#id)"))
+    $util.qr($condition.expressionNames.put("#id", "id"))
   #end
 #else
   #if( $modelObjectKey )
     #set( $condition = {
-  \\"expression\\": \\"\\",
-  \\"expressionNames\\": {},
-  \\"expressionValues\\": {}
+  "expression": "",
+  "expressionNames": {},
+  "expressionValues": {}
 } )
     #foreach( $entry in $modelObjectKey.entrySet() )
       #if( $velocityCount == 1 )
-        $util.qr($condition.put(\\"expression\\", \\"attribute_exists(#keyCondition$velocityCount)\\"))
+        $util.qr($condition.put("expression", "attribute_exists(#keyCondition$velocityCount)"))
       #else
-        $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+        $util.qr($condition.put("expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)"))
       #end
-      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+      $util.qr($condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key"))
     #end
   #else
     #set( $condition = {
-  \\"expression\\": \\"attribute_exists(#id)\\",
-  \\"expressionNames\\": {
-      \\"#id\\": \\"id\\"
+  "expression": "attribute_exists(#id)",
+  "expressionNames": {
+      "#id": "id"
   },
-  \\"expressionValues\\": {}
+  "expressionValues": {}
 } )
   #end
 #end
-$util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
+$util.qr($context.args.input.put("__typename", "Post"))
 ## Update condition if type is @versioned **
 #if( $versionedCondition )
-  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $versionedCondition.expression\\"))
+  $util.qr($condition.put("expression", "($condition.expression) AND $versionedCondition.expression"))
   $util.qr($condition.expressionNames.putAll($versionedCondition.expressionNames))
   $util.qr($condition.expressionValues.putAll($versionedCondition.expressionValues))
 #end
 #if( $context.args.condition )
   #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
-  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
+  $util.qr($condition.put("expression", "($condition.expression) AND $conditionFilterExpressions.expression"))
   $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
   $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
 #end
 #if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
   #set( $condition = {
-  \\"expression\\": $condition.expression,
-  \\"expressionNames\\": $condition.expressionNames
+  "expression": $condition.expression,
+  "expressionNames": $condition.expressionNames
 } )
 #end
 #set( $expNames = {} )
@@ -1343,72 +1343,72 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 #if( $modelObjectKey )
   #set( $keyFields = [] )
   #foreach( $entry in $modelObjectKey.entrySet() )
-    $util.qr($keyFields.add(\\"$entry.key\\"))
+    $util.qr($keyFields.add("$entry.key"))
   #end
 #else
-  #set( $keyFields = [\\"id\\"] )
+  #set( $keyFields = ["id"] )
 #end
 #foreach( $entry in $util.map.copyAndRemoveAllKeys($context.args.input, $keyFields).entrySet() )
-  #if( !$util.isNull($dynamodbNameOverrideMap) && $dynamodbNameOverrideMap.containsKey(\\"$entry.key\\") )
-    #set( $entryKeyAttributeName = $dynamodbNameOverrideMap.get(\\"$entry.key\\") )
+  #if( !$util.isNull($dynamodbNameOverrideMap) && $dynamodbNameOverrideMap.containsKey("$entry.key") )
+    #set( $entryKeyAttributeName = $dynamodbNameOverrideMap.get("$entry.key") )
   #else
     #set( $entryKeyAttributeName = $entry.key )
   #end
   #if( $util.isNull($entry.value) )
-    #set( $discard = $expRemove.add(\\"#$entryKeyAttributeName\\") )
-    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+    #set( $discard = $expRemove.add("#$entryKeyAttributeName") )
+    $util.qr($expNames.put("#$entryKeyAttributeName", "$entry.key"))
   #else
-    $util.qr($expSet.put(\\"#$entryKeyAttributeName\\", \\":$entryKeyAttributeName\\"))
-    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
-    $util.qr($expValues.put(\\":$entryKeyAttributeName\\", $util.dynamodb.toDynamoDB($entry.value)))
+    $util.qr($expSet.put("#$entryKeyAttributeName", ":$entryKeyAttributeName"))
+    $util.qr($expNames.put("#$entryKeyAttributeName", "$entry.key"))
+    $util.qr($expValues.put(":$entryKeyAttributeName", $util.dynamodb.toDynamoDB($entry.value)))
   #end
 #end
-#set( $expression = \\"\\" )
+#set( $expression = "" )
 #if( !$expSet.isEmpty() )
-  #set( $expression = \\"SET\\" )
+  #set( $expression = "SET" )
   #foreach( $entry in $expSet.entrySet() )
-    #set( $expression = \\"$expression $entry.key = $entry.value\\" )
+    #set( $expression = "$expression $entry.key = $entry.value" )
     #if( $foreach.hasNext() )
-      #set( $expression = \\"$expression,\\" )
+      #set( $expression = "$expression," )
     #end
   #end
 #end
 #if( !$expAdd.isEmpty() )
-  #set( $expression = \\"$expression ADD\\" )
+  #set( $expression = "$expression ADD" )
   #foreach( $entry in $expAdd.entrySet() )
-    #set( $expression = \\"$expression $entry.key $entry.value\\" )
+    #set( $expression = "$expression $entry.key $entry.value" )
     #if( $foreach.hasNext() )
-      #set( $expression = \\"$expression,\\" )
+      #set( $expression = "$expression," )
     #end
   #end
 #end
 #if( !$expRemove.isEmpty() )
-  #set( $expression = \\"$expression REMOVE\\" )
+  #set( $expression = "$expression REMOVE" )
   #foreach( $entry in $expRemove )
-    #set( $expression = \\"$expression $entry\\" )
+    #set( $expression = "$expression $entry" )
     #if( $foreach.hasNext() )
-      #set( $expression = \\"$expression,\\" )
+      #set( $expression = "$expression," )
     #end
   #end
 #end
 #set( $update = {} )
-$util.qr($update.put(\\"expression\\", \\"$expression\\"))
+$util.qr($update.put("expression", "$expression"))
 #if( !$expNames.isEmpty() )
-  $util.qr($update.put(\\"expressionNames\\", $expNames))
+  $util.qr($update.put("expressionNames", $expNames))
 #end
 #if( !$expValues.isEmpty() )
-  $util.qr($update.put(\\"expressionValues\\", $expValues))
+  $util.qr($update.put("expressionValues", $expValues))
 #end
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"UpdateItem\\",
-  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
-  \\"id\\": {
-      \\"S\\": $util.toJson($context.args.input.id)
+  "version": "2018-05-29",
+  "operation": "UpdateItem",
+  "key": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  "id": {
+      "S": $util.toJson($context.args.input.id)
   }
 } #end,
-  \\"update\\": $util.toJson($update),
-  \\"condition\\": $util.toJson($condition)
+  "update": $util.toJson($update),
+  "condition": $util.toJson($condition)
 }"
 `;
 
@@ -1634,68 +1634,68 @@ type Mutation {
 }
 
 type Subscription {
-  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreatePost: Post @aws_subscribe(mutations: ["createPost"])
+  onUpdatePost: Post @aws_subscribe(mutations: ["updatePost"])
+  onDeletePost: Post @aws_subscribe(mutations: ["deletePost"])
 }
 "
 `;
 
 exports[`timestamp parameters when generating resolvers and output schema 2`] = `
 "## [Start] Set default values. **
-$util.qr($context.args.input.put(\\"id\\", $util.defaultIfNull($ctx.args.input.id, $util.autoId())))
+$util.qr($context.args.input.put("id", $util.defaultIfNull($ctx.args.input.id, $util.autoId())))
 #set( $createdAt = $util.time.nowISO8601() )
 ## Automatically set the createdAt timestamp. **
-$util.qr($context.args.input.put(\\"createdOn\\", $util.defaultIfNull($ctx.args.input.createdOn, $createdAt)))
+$util.qr($context.args.input.put("createdOn", $util.defaultIfNull($ctx.args.input.createdOn, $createdAt)))
 ## Automatically set the updatedAt timestamp. **
-$util.qr($context.args.input.put(\\"updatedOn\\", $util.defaultIfNull($ctx.args.input.updatedOn, $createdAt)))
+$util.qr($context.args.input.put("updatedOn", $util.defaultIfNull($ctx.args.input.updatedOn, $createdAt)))
 ## [End] Set default values. **
 ## [Start] Prepare DynamoDB PutItem Request. **
-$util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
+$util.qr($context.args.input.put("__typename", "Post"))
 #if( $modelObjectKey )
   #set( $condition = {
-  \\"expression\\": \\"\\",
-  \\"expressionNames\\": {},
-  \\"expressionValues\\": {}
+  "expression": "",
+  "expressionNames": {},
+  "expressionValues": {}
 } )
   #foreach( $entry in $modelObjectKey.entrySet() )
     #if( $velocityCount == 1 )
-      $util.qr($condition.put(\\"expression\\", \\"attribute_not_exists(#keyCondition$velocityCount)\\"))
+      $util.qr($condition.put("expression", "attribute_not_exists(#keyCondition$velocityCount)"))
     #else
-      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)\\"))
+      $util.qr($condition.put("expression", "$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)"))
     #end
-    $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    $util.qr($condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key"))
   #end
 #else
   #set( $condition = {
-  \\"expression\\": \\"attribute_not_exists(#id)\\",
-  \\"expressionNames\\": {
-      \\"#id\\": \\"id\\"
+  "expression": "attribute_not_exists(#id)",
+  "expressionNames": {
+      "#id": "id"
   },
-  \\"expressionValues\\": {}
+  "expressionValues": {}
 } )
 #end
 #if( $context.args.condition )
   #set( $condition.expressionValues = {} )
   #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
-  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
+  $util.qr($condition.put("expression", "($condition.expression) AND $conditionFilterExpressions.expression"))
   $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
   $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
 #end
 #if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
   #set( $condition = {
-  \\"expression\\": $condition.expression,
-  \\"expressionNames\\": $condition.expressionNames
+  "expression": $condition.expression,
+  "expressionNames": $condition.expressionNames
 } )
 #end
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"PutItem\\",
-  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
-  \\"id\\":   $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
+  "version": "2018-05-29",
+  "operation": "PutItem",
+  "key": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  "id":   $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
 } #end,
-  \\"attributeValues\\": $util.dynamodb.toMapValuesJson($context.args.input),
-  \\"condition\\": $util.toJson($condition)
+  "attributeValues": $util.dynamodb.toMapValuesJson($context.args.input),
+  "condition": $util.toJson($condition)
 }
 ## [End] Prepare DynamoDB PutItem Request. **"
 `;
@@ -1704,64 +1704,64 @@ exports[`timestamp parameters when generating resolvers and output schema 3`] = 
 "#set( $optionalNonNullableFields = [] )
 #foreach( $field in $optionalNonNullableFields )
   #if( $context.arguments.input.keySet().contains($field) && $util.isNull($context.args.input.get($field)) )
-$util.error(\\"An argument you marked as Non-Null is set to Null in the query or the body of your request.\\")
+$util.error("An argument you marked as Non-Null is set to Null in the query or the body of your request.")
   #end
 #end
-#if( $authCondition && $authCondition.expression != \\"\\" )
+#if( $authCondition && $authCondition.expression != "" )
   #set( $condition = $authCondition )
   #if( $modelObjectKey )
     #foreach( $entry in $modelObjectKey.entrySet() )
-      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
-      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+      $util.qr($condition.put("expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)"))
+      $util.qr($condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key"))
     #end
   #else
-    $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#id)\\"))
-    $util.qr($condition.expressionNames.put(\\"#id\\", \\"id\\"))
+    $util.qr($condition.put("expression", "$condition.expression AND attribute_exists(#id)"))
+    $util.qr($condition.expressionNames.put("#id", "id"))
   #end
 #else
   #if( $modelObjectKey )
     #set( $condition = {
-  \\"expression\\": \\"\\",
-  \\"expressionNames\\": {},
-  \\"expressionValues\\": {}
+  "expression": "",
+  "expressionNames": {},
+  "expressionValues": {}
 } )
     #foreach( $entry in $modelObjectKey.entrySet() )
       #if( $velocityCount == 1 )
-        $util.qr($condition.put(\\"expression\\", \\"attribute_exists(#keyCondition$velocityCount)\\"))
+        $util.qr($condition.put("expression", "attribute_exists(#keyCondition$velocityCount)"))
       #else
-        $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+        $util.qr($condition.put("expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)"))
       #end
-      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+      $util.qr($condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key"))
     #end
   #else
     #set( $condition = {
-  \\"expression\\": \\"attribute_exists(#id)\\",
-  \\"expressionNames\\": {
-      \\"#id\\": \\"id\\"
+  "expression": "attribute_exists(#id)",
+  "expressionNames": {
+      "#id": "id"
   },
-  \\"expressionValues\\": {}
+  "expressionValues": {}
 } )
   #end
 #end
 ## Automatically set the updatedAt timestamp. **
-$util.qr($context.args.input.put(\\"updatedOn\\", $util.defaultIfNull($ctx.args.input.updatedOn, $util.time.nowISO8601())))
-$util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
+$util.qr($context.args.input.put("updatedOn", $util.defaultIfNull($ctx.args.input.updatedOn, $util.time.nowISO8601())))
+$util.qr($context.args.input.put("__typename", "Post"))
 ## Update condition if type is @versioned **
 #if( $versionedCondition )
-  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $versionedCondition.expression\\"))
+  $util.qr($condition.put("expression", "($condition.expression) AND $versionedCondition.expression"))
   $util.qr($condition.expressionNames.putAll($versionedCondition.expressionNames))
   $util.qr($condition.expressionValues.putAll($versionedCondition.expressionValues))
 #end
 #if( $context.args.condition )
   #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
-  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
+  $util.qr($condition.put("expression", "($condition.expression) AND $conditionFilterExpressions.expression"))
   $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
   $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
 #end
 #if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
   #set( $condition = {
-  \\"expression\\": $condition.expression,
-  \\"expressionNames\\": $condition.expressionNames
+  "expression": $condition.expression,
+  "expressionNames": $condition.expressionNames
 } )
 #end
 #set( $expNames = {} )
@@ -1772,71 +1772,71 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 #if( $modelObjectKey )
   #set( $keyFields = [] )
   #foreach( $entry in $modelObjectKey.entrySet() )
-    $util.qr($keyFields.add(\\"$entry.key\\"))
+    $util.qr($keyFields.add("$entry.key"))
   #end
 #else
-  #set( $keyFields = [\\"id\\"] )
+  #set( $keyFields = ["id"] )
 #end
 #foreach( $entry in $util.map.copyAndRemoveAllKeys($context.args.input, $keyFields).entrySet() )
-  #if( !$util.isNull($dynamodbNameOverrideMap) && $dynamodbNameOverrideMap.containsKey(\\"$entry.key\\") )
-    #set( $entryKeyAttributeName = $dynamodbNameOverrideMap.get(\\"$entry.key\\") )
+  #if( !$util.isNull($dynamodbNameOverrideMap) && $dynamodbNameOverrideMap.containsKey("$entry.key") )
+    #set( $entryKeyAttributeName = $dynamodbNameOverrideMap.get("$entry.key") )
   #else
     #set( $entryKeyAttributeName = $entry.key )
   #end
   #if( $util.isNull($entry.value) )
-    #set( $discard = $expRemove.add(\\"#$entryKeyAttributeName\\") )
-    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+    #set( $discard = $expRemove.add("#$entryKeyAttributeName") )
+    $util.qr($expNames.put("#$entryKeyAttributeName", "$entry.key"))
   #else
-    $util.qr($expSet.put(\\"#$entryKeyAttributeName\\", \\":$entryKeyAttributeName\\"))
-    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
-    $util.qr($expValues.put(\\":$entryKeyAttributeName\\", $util.dynamodb.toDynamoDB($entry.value)))
+    $util.qr($expSet.put("#$entryKeyAttributeName", ":$entryKeyAttributeName"))
+    $util.qr($expNames.put("#$entryKeyAttributeName", "$entry.key"))
+    $util.qr($expValues.put(":$entryKeyAttributeName", $util.dynamodb.toDynamoDB($entry.value)))
   #end
 #end
-#set( $expression = \\"\\" )
+#set( $expression = "" )
 #if( !$expSet.isEmpty() )
-  #set( $expression = \\"SET\\" )
+  #set( $expression = "SET" )
   #foreach( $entry in $expSet.entrySet() )
-    #set( $expression = \\"$expression $entry.key = $entry.value\\" )
+    #set( $expression = "$expression $entry.key = $entry.value" )
     #if( $foreach.hasNext() )
-      #set( $expression = \\"$expression,\\" )
+      #set( $expression = "$expression," )
     #end
   #end
 #end
 #if( !$expAdd.isEmpty() )
-  #set( $expression = \\"$expression ADD\\" )
+  #set( $expression = "$expression ADD" )
   #foreach( $entry in $expAdd.entrySet() )
-    #set( $expression = \\"$expression $entry.key $entry.value\\" )
+    #set( $expression = "$expression $entry.key $entry.value" )
     #if( $foreach.hasNext() )
-      #set( $expression = \\"$expression,\\" )
+      #set( $expression = "$expression," )
     #end
   #end
 #end
 #if( !$expRemove.isEmpty() )
-  #set( $expression = \\"$expression REMOVE\\" )
+  #set( $expression = "$expression REMOVE" )
   #foreach( $entry in $expRemove )
-    #set( $expression = \\"$expression $entry\\" )
+    #set( $expression = "$expression $entry" )
     #if( $foreach.hasNext() )
-      #set( $expression = \\"$expression,\\" )
+      #set( $expression = "$expression," )
     #end
   #end
 #end
 #set( $update = {} )
-$util.qr($update.put(\\"expression\\", \\"$expression\\"))
+$util.qr($update.put("expression", "$expression"))
 #if( !$expNames.isEmpty() )
-  $util.qr($update.put(\\"expressionNames\\", $expNames))
+  $util.qr($update.put("expressionNames", $expNames))
 #end
 #if( !$expValues.isEmpty() )
-  $util.qr($update.put(\\"expressionValues\\", $expValues))
+  $util.qr($update.put("expressionValues", $expValues))
 #end
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"UpdateItem\\",
-  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
-  \\"id\\": {
-      \\"S\\": $util.toJson($context.args.input.id)
+  "version": "2018-05-29",
+  "operation": "UpdateItem",
+  "key": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  "id": {
+      "S": $util.toJson($context.args.input.id)
   }
 } #end,
-  \\"update\\": $util.toJson($update),
-  \\"condition\\": $util.toJson($condition)
+  "update": $util.toJson($update),
+  "condition": $util.toJson($condition)
 }"
 `;
