@@ -36,6 +36,7 @@
     "link-win": "node ./scripts/link-bin.js node_modules/amplify-cli-internal/bin/amplify amplify-dev",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "package": "lerna run package",
+    "postinstall": "npm rebuild",
     "postpublish:release-api-plugin-stable": "./codebuild_specs/scripts/post_publish.sh",
     "prettier-check": "yarn prettier --check .",
     "prettier-write": "yarn prettier --write .",
