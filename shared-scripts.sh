@@ -255,6 +255,9 @@ function _setupE2ETestsLinux {
     # Ignore engines while we're still on Node 18.x
     yarn config set ignore-engines true
     _installCLIFromLocalRegistry
+    # Rebuild native modules for current Node.js version
+    echo "Rebuilding native modules for Node.js $(node --version)"
+    npm rebuild
     _loadTestAccountCredentials
     _setShell
 }
