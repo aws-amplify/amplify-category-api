@@ -94,6 +94,14 @@
   "jest": {
     "testRunner": "<rootDir>/../../FixJestCircusRunner.js",
     "preset": "ts-jest",
+    "extensionsToTreatAsEsm": [
+      ".ts"
+    ],
+    "globals": {
+      "ts-jest": {
+        "useESM": true
+      }
+    },
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
