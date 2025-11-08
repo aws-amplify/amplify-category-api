@@ -47,7 +47,7 @@ describe('get IAM policies', () => {
     authConfigHasApiKey_mock.mockImplementationOnce(() => false);
     const iamArtifact: IAMArtifact = getIAMPolicies('testResourceName', ['Query']);
     expect(iamArtifact.attributes).toMatchInlineSnapshot(`
-      Array [
+      [
         "GraphQLAPIIdOutput",
         "GraphQLAPIEndpointOutput",
       ]
@@ -60,7 +60,7 @@ describe('get IAM policies', () => {
     authConfigHasApiKey_mock.mockImplementationOnce(() => true);
     const iamArtifact: IAMArtifact = getIAMPolicies('testResourceName', ['Query']);
     expect(iamArtifact.attributes).toMatchInlineSnapshot(`
-      Array [
+      [
         "GraphQLAPIIdOutput",
         "GraphQLAPIEndpointOutput",
         "GraphQLAPIKeyOutput",
@@ -74,7 +74,7 @@ describe('get IAM policies', () => {
     authConfigHasApiKey_mock.mockImplementationOnce(() => false);
     const iamArtifact: IAMArtifact = getIAMPolicies('testResourceName', ['Query', 'Mutate']);
     expect(iamArtifact.attributes).toMatchInlineSnapshot(`
-      Array [
+      [
         "GraphQLAPIIdOutput",
         "GraphQLAPIEndpointOutput",
       ]
@@ -88,7 +88,7 @@ describe('get IAM policies', () => {
     authConfigHasApiKey_mock.mockImplementationOnce(() => false);
     const iamArtifact: IAMArtifact = getIAMPolicies('testResourceName', ['create', 'update']);
     expect(iamArtifact.attributes).toMatchInlineSnapshot(`
-      Array [
+      [
         "GraphQLAPIIdOutput",
         "GraphQLAPIEndpointOutput",
       ]

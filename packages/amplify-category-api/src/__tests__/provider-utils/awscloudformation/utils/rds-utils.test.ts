@@ -61,7 +61,7 @@ describe('check for unsupported RDS directives', () => {
             }
         `;
     expect(() => checkForUnsupportedDirectives(schema, dataSourceStrategiesProvider)).toThrowErrorMatchingInlineSnapshot(
-      '"@searchable directive on type \\"Post\\"  is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"',
+      `"@searchable directive on type "Post"  is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
     );
   });
 
@@ -72,7 +72,7 @@ describe('check for unsupported RDS directives', () => {
             }
         `;
     expect(() => checkForUnsupportedDirectives(schema, dataSourceStrategiesProvider)).toThrowErrorMatchingInlineSnapshot(
-      '"@predictions directive on type \\"Query\\" and field \\"recognizeTextFromImage\\" is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"',
+      `"@predictions directive on type "Query" and field "recognizeTextFromImage" is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
     );
   });
 
@@ -83,7 +83,7 @@ describe('check for unsupported RDS directives', () => {
             }
         `;
     expect(() => checkForUnsupportedDirectives(schema, dataSourceStrategiesProvider)).toThrowErrorMatchingInlineSnapshot(
-      '"@function directive on type \\"Query\\" and field \\"echo\\" is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"',
+      `"@function directive on type "Query" and field "echo" is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
     );
   });
 
@@ -103,7 +103,7 @@ describe('check for unsupported RDS directives', () => {
             }
         `;
     expect(() => checkForUnsupportedDirectives(schema, dataSourceStrategiesProvider)).toThrowErrorMatchingInlineSnapshot(
-      '"@manyToMany directive on type \\"Post\\" and field \\"tags\\" is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"',
+      `"@manyToMany directive on type "Post" and field "tags" is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
     );
   });
 
@@ -121,7 +121,7 @@ describe('check for unsupported RDS directives', () => {
             }
         `;
     expect(() => checkForUnsupportedDirectives(schema, dataSourceStrategiesProvider)).toThrowErrorMatchingInlineSnapshot(
-      '"@http directive on type \\"Query\\" and field \\"listPosts\\" is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"',
+      `"@http directive on type "Query" and field "listPosts" is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
     );
   });
 
@@ -133,7 +133,7 @@ describe('check for unsupported RDS directives', () => {
             }
         `;
     expect(() => checkForUnsupportedDirectives(schema, dataSourceStrategiesProvider)).toThrowErrorMatchingInlineSnapshot(
-      '"@mapsTo directive on type \\"Post\\"  is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"',
+      `"@mapsTo directive on type "Post"  is not supported on a SQL datasource. Following directives are not supported on a SQL datasource: searchable, predictions, function, manyToMany, http, mapsTo"`,
     );
   });
 

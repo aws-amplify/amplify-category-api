@@ -74,5 +74,5 @@ test('migrate resource', async () => {
       apiName: 'apiunittests',
     },
   };
-  expect(JSONUtilities.writeJson).toBeCalledWith(expectedPath, expectedPayload);
+  expect(JSONUtilities.writeJson).toHaveBeenCalledWith(expectedPath, expectedPayload);
 });

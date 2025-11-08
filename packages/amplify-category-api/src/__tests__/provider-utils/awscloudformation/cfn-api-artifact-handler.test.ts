@@ -140,7 +140,7 @@ describe('create artifacts', () => {
   it('creates correct cli-inputs', async () => {
     jest.spyOn(AppsyncApiInputState.prototype, 'saveCLIInputPayload');
     await cfnApiArtifactHandler.createArtifacts(addRequestStub);
-    expect(AppsyncApiInputState.prototype.saveCLIInputPayload).toBeCalledWith({
+    expect(AppsyncApiInputState.prototype.saveCLIInputPayload).toHaveBeenCalledWith({
       serviceConfiguration: {
         apiName: 'testApiName',
         defaultAuthType: { expirationTime: 10, keyDescription: 'api key description', mode: 'API_KEY' },
@@ -287,7 +287,7 @@ describe('update artifacts', () => {
       version: 1,
     });
     await cfnApiArtifactHandler.updateArtifacts(updateRequestStub);
-    expect(AppsyncApiInputState.prototype.saveCLIInputPayload).toBeCalledWith({
+    expect(AppsyncApiInputState.prototype.saveCLIInputPayload).toHaveBeenCalledWith({
       serviceConfiguration: {
         additionalAuthTypes: [{ mode: 'AWS_IAM' }, { mode: 'API_KEY' }],
         apiName: 'testApiName',

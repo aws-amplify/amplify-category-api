@@ -105,10 +105,10 @@ describe('transformGraphQLSchemaV2', () => {
     getAppSyncAPINameMock.mockReturnValue(['testapi']);
 
     await transformGraphQLSchemaV2(contextMock, {});
-    expect(printerMock.warn).toBeCalledWith(
+    expect(printerMock.warn).toHaveBeenCalledWith(
       " WARNING: Amplify CLI will change the default identity claim from 'username' to use 'sub::username'. To continue using only usernames, set 'identityClaim: \"username\"' on your 'owner' rules on your schema. The default will be officially switched with v9.0.0. To read more: https://docs.amplify.aws/cli/migration/identity-claim-changes/",
     );
-    expect(printerMock.warn).toBeCalledWith(
+    expect(printerMock.warn).toHaveBeenCalledWith(
       'WARNING: owners may reassign ownership for the following model(s) and role(s): Todo: [owner]. If this is not intentional, you may want to apply field-level authorization rules to these fields. To read more: https://docs.amplify.aws/cli/graphql/authorization-rules/#per-user--owner-based-data-access.',
     );
   });

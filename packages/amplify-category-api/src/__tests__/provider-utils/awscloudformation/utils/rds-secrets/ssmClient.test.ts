@@ -36,10 +36,14 @@ describe('SSM V3 Client Configuration', () => {
     (SSMClient as any).instance = undefined;
     const ssmClient = await SSMClient.getInstance(mockContext);
     expect(ssmClient).toBeDefined();
-    expect(mockContext.amplify.invokePluginMethod).toBeCalledTimes(1);
-    expect(mockContext.amplify.invokePluginMethod).toBeCalledWith(mockContext, 'awscloudformation', undefined, 'getConfiguredSSMClient', [
+    expect(mockContext.amplify.invokePluginMethod).toHaveBeenCalledTimes(1);
+    expect(mockContext.amplify.invokePluginMethod).toHaveBeenCalledWith(
       mockContext,
-    ]);
+      'awscloudformation',
+      undefined,
+      'getConfiguredSSMClient',
+      [mockContext],
+    );
   });
 
   test('able to set the secret value', async () => {

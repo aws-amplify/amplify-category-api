@@ -51,7 +51,7 @@ describe('set existing secret arns', () => {
     setExistingSecretArns(secretMap, mockTemplate);
     expect(secretMap.size).toBe(1);
     expect(secretMap.entries().next().value).toMatchInlineSnapshot(`
-      Array [
+      [
         "SOMETHING",
         "some:secretsmanager:arn",
       ]

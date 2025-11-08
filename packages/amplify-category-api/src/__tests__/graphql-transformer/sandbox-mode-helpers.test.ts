@@ -35,7 +35,7 @@ describe('sandbox mode helpers', () => {
       it('displays warning', async () => {
         await showSandboxModePrompts(ctx);
 
-        expect(prompts.printer.info).toBeCalledWith(
+        expect(prompts.printer.info).toHaveBeenCalledWith(
           `
 ⚠️  WARNING: Global Sandbox Mode has been enabled, which requires a valid API key. If
 you'd like to disable, remove ${chalk.green('"input AMPLIFY { globalAuthRule: AuthRule = { allow: public } }"')}
@@ -44,7 +44,7 @@ sandbox mode disabled, do not create an API Key.
 `,
           'yellow',
         );
-        expect(ctx.amplify.invokePluginMethod).toBeCalledWith(ctx, 'api', undefined, 'promptToAddApiKey', [ctx]);
+        expect(ctx.amplify.invokePluginMethod).toHaveBeenCalledWith(ctx, 'api', undefined, 'promptToAddApiKey', [ctx]);
       });
     });
   });
@@ -53,7 +53,7 @@ sandbox mode disabled, do not create an API Key.
     it('prints sandbox api key message', () => {
       showGlobalSandboxModeWarning('mockLink');
 
-      expect(prompts.printer.info).toBeCalledWith(
+      expect(prompts.printer.info).toHaveBeenCalledWith(
         `
 ⚠️  WARNING: your GraphQL API currently allows public create, read, update, and delete access to all models via an API Key. To configure PRODUCTION-READY authorization rules, review: mockLink
 `,

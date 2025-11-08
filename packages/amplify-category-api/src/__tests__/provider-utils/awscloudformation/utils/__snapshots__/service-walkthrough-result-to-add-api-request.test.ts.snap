@@ -1,16 +1,16 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`walkthrough result to AddApiRequest conversion maps properties correctly 1`] = `
-Object {
-  "serviceConfiguration": Object {
-    "additionalAuthTypes": Array [
-      Object {
+{
+  "serviceConfiguration": {
+    "additionalAuthTypes": [
+      {
         "mode": "AWS_IAM",
       },
     ],
     "apiName": "myApiName",
-    "conflictResolution": Object {},
-    "defaultAuthType": Object {
+    "conflictResolution": {},
+    "defaultAuthType": {
       "mode": "AWS_IAM",
     },
     "serviceName": "AppSync",
