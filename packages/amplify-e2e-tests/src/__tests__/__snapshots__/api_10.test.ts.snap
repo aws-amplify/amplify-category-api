@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`amplify add api (GraphQL) init a project and add custom iam roles - local test with gql v2 1`] = `
 "## [Start] Authorization Steps. **
