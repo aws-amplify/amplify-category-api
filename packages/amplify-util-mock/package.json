@@ -92,7 +92,7 @@
     "ws": "^7.5.7"
   },
   "jest": {
-    "testRunner": "jest-circus/runner",
+    "testRunner": "<rootDir>/../../FixJestCircusRunner.js",
     "preset": "ts-jest",
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
