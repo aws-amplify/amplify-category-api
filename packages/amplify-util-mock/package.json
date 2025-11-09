@@ -94,8 +94,16 @@
   "jest": {
     "testRunner": "<rootDir>/../../FixJestCircusRunner.js",
     "preset": "ts-jest",
+    "extensionsToTreatAsEsm": [
+      ".ts"
+    ],
     "transform": {
-      "^.+\\.tsx?$": "ts-jest"
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "useESM": true
+        }
+      ]
     },
     "collectCoverage": true,
     "coverageProvider": "v8",

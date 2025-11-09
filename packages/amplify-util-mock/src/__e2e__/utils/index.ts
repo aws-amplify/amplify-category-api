@@ -109,9 +109,10 @@ export async function deploy(
     const ddbConfig = {
       endpoint: (client as any)._emulatorUrl,
       region: 'us-fake-1',
-      accessKeyId: 'fake',
-      secretAccessKey: 'fake',
-      sessionToken: undefined,
+      credentials: {
+        accessKeyId: 'fake',
+        secretAccessKey: 'fake',
+      },
     };
     config = configureDDBDataSource(config, ddbConfig);
   }
@@ -134,9 +135,10 @@ export async function reDeploy(
     const ddbConfig = {
       endpoint: (client as any)._emulatorUrl,
       region: 'us-fake-1',
-      accessKeyId: 'fake',
-      secretAccessKey: 'fake',
-      sessionToken: undefined,
+      credentials: {
+        accessKeyId: 'fake',
+        secretAccessKey: 'fake',
+      },
     };
     config = configureDDBDataSource(config, ddbConfig);
   }
