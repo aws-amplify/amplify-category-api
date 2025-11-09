@@ -93,15 +93,7 @@
   },
   "jest": {
     "testRunner": "<rootDir>/../../FixJestCircusRunner.js",
-    "preset": "ts-jest",
-    "extensionsToTreatAsEsm": [
-      ".ts"
-    ],
-    "globals": {
-      "ts-jest": {
-        "useESM": true
-      }
-    },
+    "preset": "ts-jest/presets/default-cjs",
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
@@ -131,7 +123,7 @@
       "json",
       "node"
     ],
-    "testEnvironment": "../../FixJestEnvironment.js",
+    "testEnvironment": "node",
     "coveragePathIgnorePatterns": [
       "/__tests__/",
       "/lib/",
