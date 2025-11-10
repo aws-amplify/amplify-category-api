@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.4.3...@aws-amplify/graphql-transformer-core@3.4.4) (2025-06-09)
+
+### Bug Fixes
+
+- skip location when deep cloning AST nodes ([#3280](https://github.com/aws-amplify/amplify-category-api/issues/3280)) ([06fec17](https://github.com/aws-amplify/amplify-category-api/commit/06fec17797b1b0cb642bfd3f5498fc36f8123099))
+
 ## [3.4.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.4.2...@aws-amplify/graphql-transformer-core@3.4.3) (2025-04-17)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-core

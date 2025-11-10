@@ -6,27 +6,27 @@
     ]
   },
   "bundled": {
-    "@aws-amplify/ai-constructs": "^1.2.4",
+    "@aws-amplify/ai-constructs": "^1.5.3",
     "@aws-amplify/backend-output-schemas": "^1.0.0",
     "@aws-amplify/backend-output-storage": "^1.0.0",
-    "@aws-amplify/graphql-auth-transformer": "4.2.3",
-    "@aws-amplify/graphql-conversation-transformer": "1.1.11",
-    "@aws-amplify/graphql-default-value-transformer": "3.1.13",
+    "@aws-amplify/graphql-auth-transformer": "4.2.4",
+    "@aws-amplify/graphql-conversation-transformer": "1.1.12",
+    "@aws-amplify/graphql-default-value-transformer": "3.1.14",
     "@aws-amplify/graphql-directives": "2.7.1",
-    "@aws-amplify/graphql-function-transformer": "3.1.15",
-    "@aws-amplify/graphql-generation-transformer": "1.2.3",
-    "@aws-amplify/graphql-http-transformer": "3.0.18",
-    "@aws-amplify/graphql-index-transformer": "3.0.18",
-    "@aws-amplify/graphql-maps-to-transformer": "4.0.18",
-    "@aws-amplify/graphql-model-transformer": "3.3.0",
-    "@aws-amplify/graphql-predictions-transformer": "3.0.18",
-    "@aws-amplify/graphql-relational-transformer": "3.1.10",
-    "@aws-amplify/graphql-searchable-transformer": "3.0.18",
-    "@aws-amplify/graphql-sql-transformer": "0.4.18",
-    "@aws-amplify/graphql-transformer": "2.3.3",
-    "@aws-amplify/graphql-transformer-core": "3.4.3",
+    "@aws-amplify/graphql-function-transformer": "3.1.16",
+    "@aws-amplify/graphql-generation-transformer": "1.2.4",
+    "@aws-amplify/graphql-http-transformer": "3.0.19",
+    "@aws-amplify/graphql-index-transformer": "3.0.19",
+    "@aws-amplify/graphql-maps-to-transformer": "4.0.19",
+    "@aws-amplify/graphql-model-transformer": "3.3.1",
+    "@aws-amplify/graphql-predictions-transformer": "3.0.19",
+    "@aws-amplify/graphql-relational-transformer": "3.1.11",
+    "@aws-amplify/graphql-searchable-transformer": "3.0.19",
+    "@aws-amplify/graphql-sql-transformer": "0.4.19",
+    "@aws-amplify/graphql-transformer": "2.3.4",
+    "@aws-amplify/graphql-transformer-core": "3.4.4",
     "@aws-amplify/graphql-transformer-interfaces": "4.2.6",
-    "@aws-amplify/graphql-validate-transformer": "1.1.3",
+    "@aws-amplify/graphql-validate-transformer": "1.1.4",
     "@aws-amplify/platform-core": "^1.0.0",
     "@aws-amplify/plugin-types": "^1.0.0",
     "@aws-crypto/crc32": "5.2.0",
@@ -53,8 +53,8 @@
     "@aws-sdk/nested-clients": "^3.777.0",
     "@aws-sdk/region-config-resolver": "3.614.0",
     "@aws-sdk/token-providers": "3.614.0",
-    "@aws-sdk/types": "3.609.0",
-    "@aws-sdk/util-endpoints": "3.637.0",
+    "@aws-sdk/types": "^3.734.0",
+    "@aws-sdk/util-endpoints": "3.734.0",
     "@aws-sdk/util-locate-window": "^3.0.0",
     "@aws-sdk/util-user-agent-browser": "3.609.0",
     "@aws-sdk/util-user-agent-node": "3.614.0",
@@ -1364,6 +1364,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_docdbelastic"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_dsql": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.DSQL"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.dsql"
+            },
+            "python": {
+              "module": "aws_cdk.aws_dsql"
             }
           }
         },
@@ -3626,6 +3639,19 @@
             },
             "python": {
               "module": "aws_cdk.aws_ssmcontacts"
+            }
+          }
+        },
+        "aws-cdk-lib.aws_ssmguiconnect": {
+          "targets": {
+            "dotnet": {
+              "package": "Amazon.CDK.AWS.SSMGuiConnect"
+            },
+            "java": {
+              "package": "software.amazon.awscdk.services.ssmguiconnect"
+            },
+            "python": {
+              "module": "aws_cdk.aws_ssmguiconnect"
             }
           }
         },
@@ -9512,6 +9538,6 @@
       "symbolId": "src/model-datasource-strategy-types:VpcConfig"
     }
   },
-  "version": "1.20.1",
-  "fingerprint": "+StR3FqEAlc1IFZPMqvjS5CUe5YnkTLZS2rMNf1BHPA="
+  "version": "1.20.3",
+  "fingerprint": "IW0P0JYVA+diTo23Fc0HRgkPQV5yGpfvNeoIu6/qYkQ="
 }

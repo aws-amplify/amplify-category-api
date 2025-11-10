@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.9](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@5.0.8...amplify-category-api-e2e-core@5.0.9) (2025-06-09)
+
+### Bug Fixes
+
+- reduce frequency to 10 minutes ([ea83734](https://github.com/aws-amplify/amplify-category-api/commit/ea83734dbb9f74662159215a044c8c9772cb3e70))
+- remove logging ([03c993b](https://github.com/aws-amplify/amplify-category-api/commit/03c993bc3da667d4e8ca48dae093f9c9dcfa2777))
+- try adding child account creds rotator ([7eabd7a](https://github.com/aws-amplify/amplify-category-api/commit/7eabd7a0f955a6514f713327538afc6c8cabfc6f))
+- try something ([7d3d602](https://github.com/aws-amplify/amplify-category-api/commit/7d3d602f97ac6810baa6e65cbf9f7bd4f321aed0))
+- try something ([f4ae608](https://github.com/aws-amplify/amplify-category-api/commit/f4ae6081b59ee159b60f3cdc3a2c8f57d47ace0c))
+- try something ([05ebf39](https://github.com/aws-amplify/amplify-category-api/commit/05ebf39603b5ac16ffe20068a4bdc097df8a79fe))
+- try something ([7816a53](https://github.com/aws-amplify/amplify-category-api/commit/7816a53fbc4903afa72b5df9a29f58dab7753d18))
+- try something ([dce8bd6](https://github.com/aws-amplify/amplify-category-api/commit/dce8bd6eab3308a27eef6df90b5af7b4ac500d36))
+
 ## [5.0.8](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@5.0.7...amplify-category-api-e2e-core@5.0.8) (2025-04-17)
 
 **Note:** Version bump only for package amplify-category-api-e2e-core

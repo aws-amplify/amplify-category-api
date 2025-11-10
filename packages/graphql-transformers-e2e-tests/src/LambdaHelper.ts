@@ -1,25 +1,35 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import * as fs from 'fs';
 import * as path from 'path';
-import { Credentials, Lambda } from 'aws-sdk';
+import { AwsCredentialIdentity } from '@aws-sdk/types';
+import {
+  LambdaClient,
+  AddPermissionCommand,
+  AddPermissionCommandOutput,
+  CreateFunctionCommand,
+  CreateFunctionCommandOutput,
+  DeleteFunctionCommand,
+  DeleteAliasCommandOutput,
+} from '@aws-sdk/client-lambda';
 import { resolveTestRegion } from './testSetup';
 
 const REGION = resolveTestRegion();
 
 export class LambdaHelper {
-  client: Lambda;
+  client: LambdaClient;
 
-  constructor(region: string = REGION, credentials?: Credentials) {
-    this.client = new Lambda({
+  constructor(region: string = REGION, credentials?: AwsCredentialIdentity) {
+    this.client = new LambdaClient({
       region,
       credentials,
     });
   }
 
-  async createFunction(name: string, roleArn: string, filePrefix: string) {
+  async createFunction(name: string, roleArn: string, filePrefix: string): Promise<CreateFunctionCommandOutput> {
     const filePath = path.join(__dirname, 'testfunctions', `${filePrefix}.zip`);
     const zipContents = fs.readFileSync(filePath);
-    return await this.client
-      .createFunction({
+    return await this.client.send(
+      new CreateFunctionCommand({
         FunctionName: name,
         Code: {
           ZipFile: zipContents,
@@ -27,22 +37,22 @@ export class LambdaHelper {
         Runtime: 'nodejs20.x',
         Handler: `${filePrefix}.handler`,
         Role: roleArn,
-      })
-      .promise();
+      }),
+    );
   }
 
-  async deleteFunction(name: string) {
-    return await this.client.deleteFunction({ FunctionName: name }).promise();
+  async deleteFunction(name: string): Promise<DeleteAliasCommandOutput> {
+    return await this.client.send(new DeleteFunctionCommand({ FunctionName: name }));
   }
 
-  async addAppSyncCrossAccountAccess(accountId: string, name: string) {
-    await this.client
-      .addPermission({
+  async addAppSyncCrossAccountAccess(accountId: string, name: string): Promise<AddPermissionCommandOutput> {
+    return await this.client.send(
+      new AddPermissionCommand({
         Action: 'lambda:InvokeFunction',
         FunctionName: name,
         Principal: `arn:aws:iam::${accountId}:root`,
         StatementId: 'cross-account-appsync-lambda-access',
-      })
-      .promise();
+      }),
+    );
   }
 }

@@ -1,4 +1,8 @@
-import { S3, STS, Organizations } from 'aws-sdk';
+/* eslint-disable import/no-extraneous-dependencies */
+import { S3Client, Bucket, ListBucketsCommand } from '@aws-sdk/client-s3';
+import { STSClient, AssumeRoleCommand, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
+import { Organizations, ListAccountsCommand } from '@aws-sdk/client-organizations';
+import { AwsCredentialIdentity } from '@aws-sdk/types';
 import { deleteS3Bucket } from 'amplify-category-api-e2e-core';
 
 const TEST_BUCKET_REGEX = /test/;
@@ -7,43 +11,26 @@ const BUCKET_STALE_DURATION_MS = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
 /**
  * We define a bucket as viable for deletion if it has 'test' in the name, and if it is >6 hours old.
  */
-const testBucketStalenessFilter = (bucket: S3.Bucket): boolean => {
+const testBucketStalenessFilter = (bucket: Bucket): boolean => {
   const isTestBucket = bucket.Name.match(TEST_BUCKET_REGEX);
   const isStaleBucket = Date.now() - bucket.CreationDate.getMilliseconds() > BUCKET_STALE_DURATION_MS;
   return isTestBucket && isStaleBucket;
 };
 
-type AWSAccountInfo = {
-  accessKeyId: string;
-  secretAccessKey: string;
-  sessionToken: string;
-};
-
-/**
- * Get the relevant AWS config object for a given account and region.
- */
-const getAWSConfig = ({ accessKeyId, secretAccessKey, sessionToken }: AWSAccountInfo): S3.ClientConfiguration => ({
-  credentials: {
-    accessKeyId,
-    secretAccessKey,
-    sessionToken,
-  },
-});
-
 /**
  * Get all S3 buckets in the account, and filter down to the ones we consider stale.
  */
-const getStaleS3TestBuckets = async (account: AWSAccountInfo): Promise<S3.Bucket[]> => {
-  const s3Client = new S3(getAWSConfig(account));
-  const listBucketResponse = await s3Client.listBuckets().promise();
+const getStaleS3TestBuckets = async (account: AwsCredentialIdentity): Promise<Bucket[]> => {
+  const s3Client = new S3Client({ credentials: account });
+  const listBucketResponse = await s3Client.send(new ListBucketsCommand());
   return listBucketResponse.Buckets.filter(testBucketStalenessFilter);
 };
 
-const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucket: S3.Bucket): Promise<void> => {
+const deleteBucket = async (account: AwsCredentialIdentity, accountIndex: number, bucket: Bucket): Promise<void> => {
   const { Name, CreationDate } = bucket;
   try {
     console.log(`[ACCOUNT ${accountIndex}] Deleting S3 Bucket ${Name} created on ${CreationDate}`);
-    const s3 = new S3(getAWSConfig(account));
+    const s3 = new S3Client({ credentials: account });
     await deleteS3Bucket(Name, s3);
   } catch (e) {
     console.log(`[ACCOUNT ${accountIndex}] Deleting S3 Bucket ${Name} failed with error ${e.message}`);
@@ -54,21 +41,23 @@ const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucke
  * Retrieve the accounts to process for potential cleanup. By default we will attempt
  * to get all accounts within the root account organization.
  */
-const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
-  const sts = new STS({
+const getAccountsToCleanup = async (): Promise<AwsCredentialIdentity[]> => {
+  const sts = new STSClient({
     apiVersion: '2011-06-15',
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    sessionToken: process.env.AWS_SESSION_TOKEN,
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      sessionToken: process.env.AWS_SESSION_TOKEN,
+    },
   });
-  const parentAccountIdentity = await sts.getCallerIdentity().promise();
+  const parentAccountIdentity = await sts.send(new GetCallerIdentityCommand());
   const orgApi = new Organizations({
     apiVersion: '2016-11-28',
     // the region where the organization exists
     region: 'us-east-1',
   });
   try {
-    const orgAccounts = await orgApi.listAccounts().promise();
+    const orgAccounts = await orgApi.send(new ListAccountsCommand({}));
     const accountCredentialPromises = orgAccounts.Accounts.map(async (account) => {
       if (account.Id === parentAccountIdentity.Account) {
         return {
@@ -79,14 +68,14 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
       }
 
       const randomNumber = Math.floor(Math.random() * 100000);
-      const assumeRoleRes = await sts
-        .assumeRole({
+      const assumeRoleRes = await sts.send(
+        new AssumeRoleCommand({
           RoleArn: `arn:aws:iam::${account.Id}:role/OrganizationAccountAccessRole`,
           RoleSessionName: `testSession${randomNumber}`,
           // One hour
           DurationSeconds: 1 * 60 * 60,
-        })
-        .promise();
+        }),
+      );
       return {
         accessKeyId: assumeRoleRes.Credentials.AccessKeyId,
         secretAccessKey: assumeRoleRes.Credentials.SecretAccessKey,
@@ -109,7 +98,7 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
   }
 };
 
-const deleteBucketsForAccount = async (account: AWSAccountInfo, accountIndex: number): Promise<void> => {
+const deleteBucketsForAccount = async (account: AwsCredentialIdentity, accountIndex: number): Promise<void> => {
   const buckets = await getStaleS3TestBuckets(account);
   await Promise.all(buckets.map((bucket) => deleteBucket(account, accountIndex, bucket)));
   console.log(`[ACCOUNT ${accountIndex}] Cleanup done!`);
@@ -124,4 +113,5 @@ const cleanup = async (): Promise<void> => {
   console.log('Done cleaning all stale s3 buckets!');
 };
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 cleanup();

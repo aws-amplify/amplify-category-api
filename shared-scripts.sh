@@ -149,7 +149,7 @@ function _verifyAmplifyBackendCompatability {
   echo "Verify Amplify Backend Compatibility"
   loadCacheFromBuildJob
 
-  # Unset container credentials environment variables since some of the tests in packages/cli/src/command_middleware.test.ts 
+  # Unset container credentials environment variables since some of the tests in packages/cli/src/command_middleware.test.ts
   # expect not to fetch the credentials. This is to avoid the tests from failing.
   echo "Unsetting container credentials environment variables"
   unset AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
@@ -162,7 +162,7 @@ function _verifyAmplifyBackendCompatability {
   echo "Emulating Publish Shell"
   # Clean Verdaccio cache and prepare for publishing
   rm -rf ../verdaccio-cache && mkdir ../verdaccio-cache
-  # Create a new local branch for testing 
+  # Create a new local branch for testing
   git checkout -B validate-amplify-backend
   # Dummy git config to avoid errors
   git config user.email not@used.com
@@ -198,20 +198,20 @@ function _verifyAmplifyBackendCompatability {
 }
 function _setupNodeVersion {
   local version=$1  # Version number passed as an argument
-  
+
   echo "Installing NVM and setting Node.js version to $version"
-  
+
   # Install NVM
   curl -o - https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
-  
+
   # Load NVM
   export NVM_DIR="$HOME/.nvm"
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-  
+
   # Install and use the specified Node.js version
   nvm install "$version"
   nvm use "$version"
-  
+
   # Verify the Node.js version in use
   echo "Node.js version in use:"
   node -v
@@ -238,7 +238,7 @@ function _publishToLocalRegistry {
     fi
 
     git checkout $BRANCH_NAME
-  
+
     # Fetching git tags from upstream
     # For forked repo only
     # Can be removed when using team account
@@ -290,8 +290,8 @@ function _installCLIFromLocalRegistry {
     # set longer timeout to avoid socket timeout error
     npm config set fetch-retries 5
     npm config set fetch-timeout 600000
-    npm config set fetch-retry-mintimeout 30000
-    npm config set fetch-retry-maxtimeout 180000
+    npm config set fetch-retry-mintimeout 40000
+    npm config set fetch-retry-maxtimeout 240000
     npm config set maxsockets 1
     npm install -g @aws-amplify/cli-internal
     echo "using Amplify CLI version: "$(amplify --version)
@@ -316,6 +316,8 @@ function _setupE2ETestsLinux {
     echo "Setup E2E Tests Linux"
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+    # Ignore engines while we're still on Node 18.x
+    yarn config set ignore-engines true
     _installCLIFromLocalRegistry
     _loadTestAccountCredentials
     _setShell
@@ -357,7 +359,7 @@ function _runCanaryTest {
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
     # Set Node.js version to $AMPLIFY_NODE_VERSION as one of the package requires version ">= 18.18.0"
     _setupNodeVersion $AMPLIFY_NODE_VERSION
-    _installCLIFromLocalRegistry  
+    _installCLIFromLocalRegistry
     _loadTestAccountCredentials
     _setShell
     cd client-test-apps/js/api-model-relationship-app
@@ -417,11 +419,13 @@ function useChildAccountCredentials {
           echo "Unable to find a child account. Falling back to parent AWS account"
           return
         fi
-        creds=$(aws sts assume-role --role-arn arn:aws:iam::${pick_acct}:role/OrganizationAccountAccessRole --role-session-name testSession${session_id} --duration-seconds 3600)
+        account_role=arn:aws:iam::${pick_acct}:role/OrganizationAccountAccessRole
+        creds=$(aws sts assume-role --role-arn ${account_role} --role-session-name testSession${session_id} --duration-seconds 3600)
         if [ -z $(echo $creds | jq -c -r '.AssumedRoleUser.Arn') ]; then
             echo "Unable to assume child account role. Falling back to parent AWS account"
             return
         fi
+        export CHILD_ACCOUNT_ROLE=$account_role
         export ORGANIZATION_SIZE=$org_size
         export CREDS=$creds
         echo "Using account credentials for $(echo $creds | jq -c -r '.AssumedRoleUser.Arn')"

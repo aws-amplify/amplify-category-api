@@ -31,4 +31,5 @@ export type TransformParameters = {
 
   // Search Params
   enableSearchNodeToNodeEncryption: boolean;
+  enableSearchEncryptionAtRest: boolean;
 };

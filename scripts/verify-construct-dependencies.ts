@@ -24,7 +24,12 @@ const CONSTRUCT_PACKAGE_CONFIGURATIONS: ConstructPackageConfiguration[] = [
   },
 ];
 
-const EXCLUSION_PATHS: string[][] = [['@aws-amplify/graphql-conversation-transformer', '@aws-amplify/ai-constructs', 'json-schema-to-ts']];
+const EXCLUSION_PATHS: string[][] = [
+  // Dependencies of ai-constructs below are only used for typings (compile time).
+  // They are not active at runtime. Therefore, can be skipped at bundling.
+  ['@aws-amplify/ai-constructs', '@aws-amplify/plugin-types', '@aws-cdk/toolkit-lib'],
+  ['@aws-amplify/graphql-conversation-transformer', '@aws-amplify/ai-constructs', 'json-schema-to-ts'],
+];
 
 const PACKAGES_DIR = 'packages';
 const NON_JSII_DEPENDENCIES_FILENAME = 'nonJsiiDependencies.json';
