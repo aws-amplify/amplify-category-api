@@ -102,13 +102,13 @@ describe('@mapsTo transformer', () => {
     const listArticlesResponse = await graphqlClient.query(listArticles);
     expect(listArticlesResponse.errors).toBeUndefined();
     expect(listArticlesResponse.data).toMatchInlineSnapshot(`
-      Object {
-        "listArticles": Object {
-          "items": Array [
-            Object {
-              "comments": Object {
-                "items": Array [
-                  Object {
+      {
+        "listArticles": {
+          "items": [
+            {
+              "comments": {
+                "items": [
+                  {
                     "articleCommentsId": "post1",
                     "id": "comment1",
                     "message": "test comment 1",
@@ -118,10 +118,10 @@ describe('@mapsTo transformer', () => {
               "id": "post1",
               "title": "test post 1",
             },
-            Object {
-              "comments": Object {
-                "items": Array [
-                  Object {
+            {
+              "comments": {
+                "items": [
+                  {
                     "articleCommentsId": "post2",
                     "id": "comment2",
                     "message": "test comment 2",
@@ -152,10 +152,10 @@ describe('@mapsTo transformer', () => {
     const filteredCommentsResponse = await graphqlClient.query(filterCommentsByArticle);
     expect(filteredCommentsResponse.errors).toBeUndefined();
     expect(filteredCommentsResponse.data).toMatchInlineSnapshot(`
-      Object {
-        "listComments": Object {
-          "items": Array [
-            Object {
+      {
+        "listComments": {
+          "items": [
+            {
               "articleCommentsId": "post2",
               "id": "comment2",
               "message": "test comment 2",
@@ -222,8 +222,8 @@ describe('@mapsTo transformer', () => {
     const updateCommentSatisfiedConditionResponse = await graphqlClient.query(updateCommentSatisfiedCondition);
     expect(updateCommentSatisfiedConditionResponse.errors).toBeUndefined();
     expect(updateCommentSatisfiedConditionResponse.data).toMatchInlineSnapshot(`
-      Object {
-        "updateComment": Object {
+      {
+        "updateComment": {
           "articleCommentsId": "post1",
           "id": "comment2",
           "message": "moved comment2 from post2 to post1",
@@ -252,23 +252,23 @@ describe('@mapsTo transformer', () => {
     const listArticlesResponse2 = await graphqlClient.query(listArticles);
     expect(listArticlesResponse2.errors).toBeUndefined();
     expect(listArticlesResponse2.data).toMatchInlineSnapshot(`
-      Object {
-        "listArticles": Object {
-          "items": Array [
-            Object {
-              "comments": Object {
-                "items": Array [
-                  Object {
+      {
+        "listArticles": {
+          "items": [
+            {
+              "comments": {
+                "items": [
+                  {
                     "articleCommentsId": "post1",
                     "id": "comment1",
                     "message": "test comment 1",
                   },
-                  Object {
+                  {
                     "articleCommentsId": "post1",
                     "id": "comment2",
                     "message": "moved comment2 from post2 to post1",
                   },
-                  Object {
+                  {
                     "articleCommentsId": "post1",
                     "id": "comment3",
                     "message": "test comment 3",
@@ -278,10 +278,10 @@ describe('@mapsTo transformer', () => {
               "id": "post1",
               "title": "test post 1",
             },
-            Object {
-              "comments": Object {
-                "items": Array [
-                  Object {
+            {
+              "comments": {
+                "items": [
+                  {
                     "articleCommentsId": "article3",
                     "id": "comment4",
                     "message": "test comment 4",
@@ -291,9 +291,9 @@ describe('@mapsTo transformer', () => {
               "id": "article3",
               "title": "article 3 title",
             },
-            Object {
-              "comments": Object {
-                "items": Array [],
+            {
+              "comments": {
+                "items": [],
               },
               "id": "post2",
               "title": "test post 2",
@@ -326,15 +326,15 @@ describe('@mapsTo transformer', () => {
     const nestedFilterCommentsResponse = await graphqlClient.query(nestedFilterComments);
     expect(nestedFilterCommentsResponse.errors).toBeUndefined();
     expect(nestedFilterCommentsResponse.data).toMatchInlineSnapshot(`
-      Object {
-        "listComments": Object {
-          "items": Array [
-            Object {
+      {
+        "listComments": {
+          "items": [
+            {
               "articleCommentsId": "post1",
               "id": "comment1",
               "message": "test comment 1",
             },
-            Object {
+            {
               "articleCommentsId": "article3",
               "id": "comment4",
               "message": "test comment 4",
