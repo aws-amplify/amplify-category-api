@@ -309,6 +309,9 @@ function _scanArtifacts {
 function _cleanupE2EResources {
   echo "Cleanup E2E resources"
   loadCacheFromBuildJob
+  # Rebuild native modules for current Node.js version
+  echo "Rebuilding native modules for Node.js $(node --version)"
+  npm rebuild
   cd packages/amplify-e2e-tests
   echo "Running clean up script"
   build_batch_arn=$(aws codebuild batch-get-builds --ids $CODEBUILD_BUILD_ID | jq -r -c '.builds[0].buildBatchArn')
