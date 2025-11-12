@@ -8,6 +8,8 @@ import {
   testAuthResolver,
 } from '../authExhaustiveTestUtils';
 
+jest.setTimeout(1000 * 60 * 30);
+
 const strategyProviders: Record<AuthStrategy, AuthProvider[]> = {
   owner: [],
   public: ['iam'],

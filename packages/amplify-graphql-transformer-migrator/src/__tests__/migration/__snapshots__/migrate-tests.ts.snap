@@ -1,17 +1,17 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Schema migration tests @connection belongs to relationship 1`] = `
 "type Post @model @auth(rules: [{allow: public}]) {
   id: ID!
   title: String!
-  comments: [Comment] @hasMany(indexName: \\"byPost\\", fields: [\\"id\\"])
+  comments: [Comment] @hasMany(indexName: "byPost", fields: ["id"])
 }
 
 type Comment @model @auth(rules: [{allow: public}]) {
   id: ID!
-  postID: ID! @index(name: \\"byPost\\", sortKeyFields: [\\"content\\"])
+  postID: ID! @index(name: "byPost", sortKeyFields: ["content"])
   content: String!
-  post: Post @belongsTo(fields: [\\"postID\\"])
+  post: Post @belongsTo(fields: ["postID"])
 }
 "
 `;
@@ -20,12 +20,12 @@ exports[`Schema migration tests @connection has many relationship 1`] = `
 "type Post @model @auth(rules: [{allow: public}]) {
   id: ID!
   title: String!
-  comments: [Comment] @hasMany(indexName: \\"byPost\\", fields: [\\"id\\"])
+  comments: [Comment] @hasMany(indexName: "byPost", fields: ["id"])
 }
 
 type Comment @model @auth(rules: [{allow: public}]) {
   id: ID!
-  postID: ID! @index(name: \\"byPost\\", sortKeyFields: [\\"content\\"])
+  postID: ID! @index(name: "byPost", sortKeyFields: ["content"])
   content: String!
 }
 "
@@ -50,7 +50,7 @@ exports[`Schema migration tests @connection has one relationship with fields 1`]
   id: ID!
   name: String
   teamID: ID!
-  team: Team @hasOne(fields: [\\"teamID\\"])
+  team: Team @hasOne(fields: ["teamID"])
 }
 
 type Team @model @auth(rules: [{allow: public}]) {
@@ -78,32 +78,32 @@ exports[`Schema migration tests @connection many to many relationship 1`] = `
 "type Post @model @auth(rules: [{allow: public}]) {
   id: ID!
   title: String!
-  editors: [PostEditor] @hasMany(indexName: \\"byPost\\", fields: [\\"id\\"])
+  editors: [PostEditor] @hasMany(indexName: "byPost", fields: ["id"])
 }
 
 type PostEditor @model(queries: null) @auth(rules: [{allow: public}]) {
   id: ID!
-  postID: ID! @index(name: \\"byPost\\", sortKeyFields: [\\"editorID\\"])
-  editorID: ID! @index(name: \\"byEditor\\", sortKeyFields: [\\"postID\\"])
-  post: Post! @belongsTo(fields: [\\"postID\\"])
-  editor: User! @belongsTo(fields: [\\"editorID\\"])
+  postID: ID! @index(name: "byPost", sortKeyFields: ["editorID"])
+  editorID: ID! @index(name: "byEditor", sortKeyFields: ["postID"])
+  post: Post! @belongsTo(fields: ["postID"])
+  editor: User! @belongsTo(fields: ["editorID"])
 }
 
 type User @model @auth(rules: [{allow: public}]) {
   id: ID!
   username: String!
-  posts: [PostEditor] @hasMany(indexName: \\"byEditor\\", fields: [\\"id\\"])
+  posts: [PostEditor] @hasMany(indexName: "byEditor", fields: ["id"])
 }
 "
 `;
 
 exports[`Schema migration tests @function directive is migrated 1`] = `
 "type Query {
-  echo(msg: String!): Context @function(name: \\"echo\\")
-  echoEnv(msg: String!): Context @function(name: \\"long-prefix-e2e-test-functions-echo-\${env}-v2\\")
-  duplicate(msg: String!): Context @function(name: \\"long-prefix-e2e-test-functions-echo-dev-v2\\")
-  pipeline(msg: String!): String @function(name: \\"echo\\") @function(name: \\"hello\\")
-  echoRegion(msg: String!): Context @function(name: \\"echo-\${env}\\", region: \\"us-east-1\\")
+  echo(msg: String!): Context @function(name: "echo")
+  echoEnv(msg: String!): Context @function(name: "long-prefix-e2e-test-functions-echo-\${env}-v2")
+  duplicate(msg: String!): Context @function(name: "long-prefix-e2e-test-functions-echo-dev-v2")
+  pipeline(msg: String!): String @function(name: "echo") @function(name: "hello")
+  echoRegion(msg: String!): Context @function(name: "echo-\${env}", region: "us-east-1")
 }
 
 type Context {
@@ -117,12 +117,12 @@ exports[`Schema migration tests @http directive is migrated 1`] = `
 "type Comment @model @auth(rules: [{allow: public}]) {
   id: ID!
   title: String
-  simpleGet: CompObj @http(method: GET, url: \\"https://amazon.com/posts/1\\")
-  simpleGet2: CompObj @http(url: \\"https://amazon.com/posts/2\\")
-  complexPost(id: Int, title: String!, body: String, userId: Int): CompObj @http(method: POST, url: \\"https://amazon.com/posts\\")
-  complexPut(id: Int!, title: String, body: String, userId: Int): CompObj @http(method: PUT, url: \\"https://amazon.com/posts/\${env}/:id\\")
-  deleter: String @http(method: DELETE, url: \\"https://amazon.com/posts/4\\")
-  complexGet(data: String!, userId: Int!, _limit: Int): [CompObj] @http(url: \\"https://amazon.com:data\\")
+  simpleGet: CompObj @http(method: GET, url: "https://amazon.com/posts/1")
+  simpleGet2: CompObj @http(url: "https://amazon.com/posts/2")
+  complexPost(id: Int, title: String!, body: String, userId: Int): CompObj @http(method: POST, url: "https://amazon.com/posts")
+  complexPut(id: Int!, title: String, body: String, userId: Int): CompObj @http(method: PUT, url: "https://amazon.com/posts/\${env}/:id")
+  deleter: String @http(method: DELETE, url: "https://amazon.com/posts/4")
+  complexGet(data: String!, userId: Int!, _limit: Int): [CompObj] @http(url: "https://amazon.com:data")
 }
 
 type CompObj {
@@ -146,7 +146,7 @@ exports[`Schema migration tests @predictions directive is migrated 1`] = `
 
 exports[`Schema migration tests @searchable directive is migrated 1`] = `
 "type Book @model @searchable @auth(rules: [{allow: public}]) {
-  author: String! @primaryKey(sortKeyFields: [\\"name\\"])
+  author: String! @primaryKey(sortKeyFields: ["name"])
   name: String!
   genre: String!
 }
@@ -160,7 +160,7 @@ type Todo @model @searchable @auth(rules: [{allow: public}]) {
 
 type Comment @model @searchable @auth(rules: [{allow: public}]) {
   id: ID!
-  version: Int! @index(name: \\"commentByVersion\\", sortKeyFields: [\\"id\\"])
+  version: Int! @index(name: "commentByVersion", sortKeyFields: ["id"])
   content: String!
 }
 "
@@ -200,7 +200,7 @@ exports[`Schema migration tests configure a primary key 1`] = `
 exports[`Schema migration tests configure a secondary index 1`] = `
 "type Todo @model @auth(rules: [{allow: public}]) {
   id: ID!
-  name: String! @index(name: \\"nameIndex\\")
+  name: String! @index(name: "nameIndex")
   description: String
 }
 "
@@ -210,13 +210,13 @@ exports[`Schema migration tests configure a secondary index with queryField 1`] 
 "type Todo @model @auth(rules: [{allow: public}]) {
   id: ID!
   name: String!
-  status: String! @index(name: \\"todosByStatus\\", queryField: \\"listTodosByStatus\\")
+  status: String! @index(name: "todosByStatus", queryField: "listTodosByStatus")
 }
 "
 `;
 
 exports[`Schema migration tests customized creation and update timestamp names 1`] = `
-"type Todo @model(timestamps: {createdAt: \\"createdOn\\", updatedAt: \\"updatedOn\\"}) @auth(rules: [{allow: public}]) {
+"type Todo @model(timestamps: {createdAt: "createdOn", updatedAt: "updatedOn"}) @auth(rules: [{allow: public}]) {
   id: ID!
   str: String
 }
@@ -235,9 +235,9 @@ exports[`Schema migration tests explicit creation and update timestamps 1`] = `
 exports[`Schema migration tests migrates complex schema from documentation 1`] = `
 "type Order @model @auth(rules: [{allow: public}]) {
   id: ID!
-  customerID: ID! @index(name: \\"byCustomerByStatusByDate\\", sortKeyFields: [\\"status\\", \\"date\\"]) @index(name: \\"byCustomerByDate\\", sortKeyFields: [\\"date\\"])
-  accountRepresentativeID: ID! @index(name: \\"byRepresentativebyDate\\", sortKeyFields: [\\"date\\"])
-  productID: ID! @index(name: \\"byProduct\\", sortKeyFields: [\\"id\\"])
+  customerID: ID! @index(name: "byCustomerByStatusByDate", sortKeyFields: ["status", "date"]) @index(name: "byCustomerByDate", sortKeyFields: ["date"])
+  accountRepresentativeID: ID! @index(name: "byRepresentativebyDate", sortKeyFields: ["date"])
+  productID: ID! @index(name: "byProduct", sortKeyFields: ["id"])
   status: String!
   amount: Int!
   date: String!
@@ -247,45 +247,45 @@ type Customer @model @auth(rules: [{allow: public}]) {
   id: ID!
   name: String!
   phoneNumber: String
-  accountRepresentativeID: ID! @index(name: \\"byRepresentative\\", sortKeyFields: [\\"id\\"])
-  ordersByDate: [Order] @hasMany(indexName: \\"byCustomerByDate\\", fields: [\\"id\\"])
-  ordersByStatusDate: [Order] @hasMany(indexName: \\"byCustomerByStatusByDate\\", fields: [\\"id\\"])
+  accountRepresentativeID: ID! @index(name: "byRepresentative", sortKeyFields: ["id"])
+  ordersByDate: [Order] @hasMany(indexName: "byCustomerByDate", fields: ["id"])
+  ordersByStatusDate: [Order] @hasMany(indexName: "byCustomerByStatusByDate", fields: ["id"])
 }
 
 type Employee @model @auth(rules: [{allow: public}]) {
   id: ID!
-  name: String! @index(name: \\"byName\\", queryField: \\"employeeByName\\", sortKeyFields: [\\"id\\"])
+  name: String! @index(name: "byName", queryField: "employeeByName", sortKeyFields: ["id"])
   startDate: String!
   phoneNumber: String!
-  warehouseID: ID! @index(name: \\"byWarehouse\\", sortKeyFields: [\\"id\\"])
-  jobTitle: String! @index(name: \\"byTitle\\", queryField: \\"employeesByJobTitle\\", sortKeyFields: [\\"id\\"])
-  newHire: String! @index(name: \\"newHire\\", queryField: \\"employeesNewHire\\", sortKeyFields: [\\"id\\"]) @index(name: \\"newHireByStartDate\\", queryField: \\"employeesNewHireByStartDate\\", sortKeyFields: [\\"startDate\\"])
+  warehouseID: ID! @index(name: "byWarehouse", sortKeyFields: ["id"])
+  jobTitle: String! @index(name: "byTitle", queryField: "employeesByJobTitle", sortKeyFields: ["id"])
+  newHire: String! @index(name: "newHire", queryField: "employeesNewHire", sortKeyFields: ["id"]) @index(name: "newHireByStartDate", queryField: "employeesNewHireByStartDate", sortKeyFields: ["startDate"])
 }
 
 type Warehouse @model @auth(rules: [{allow: public}]) {
   id: ID!
-  employees: [Employee] @hasMany(indexName: \\"byWarehouse\\", fields: [\\"id\\"])
+  employees: [Employee] @hasMany(indexName: "byWarehouse", fields: ["id"])
 }
 
 type AccountRepresentative @model @auth(rules: [{allow: public}]) {
   id: ID!
-  customers: [Customer] @hasMany(indexName: \\"byRepresentative\\", fields: [\\"id\\"])
-  orders: [Order] @hasMany(indexName: \\"byRepresentativebyDate\\", fields: [\\"id\\"])
+  customers: [Customer] @hasMany(indexName: "byRepresentative", fields: ["id"])
+  orders: [Order] @hasMany(indexName: "byRepresentativebyDate", fields: ["id"])
   orderTotal: Int
-  salesPeriod: String @index(name: \\"bySalesPeriodByOrderTotal\\", queryField: \\"repsByPeriodAndTotal\\", sortKeyFields: [\\"orderTotal\\"])
+  salesPeriod: String @index(name: "bySalesPeriodByOrderTotal", queryField: "repsByPeriodAndTotal", sortKeyFields: ["orderTotal"])
 }
 
 type Inventory @model @auth(rules: [{allow: public}]) {
-  productID: ID! @primaryKey(sortKeyFields: [\\"warehouseID\\"])
-  warehouseID: ID! @index(name: \\"byWarehouseID\\", queryField: \\"itemsByWarehouseID\\")
+  productID: ID! @primaryKey(sortKeyFields: ["warehouseID"])
+  warehouseID: ID! @index(name: "byWarehouseID", queryField: "itemsByWarehouseID")
   inventoryAmount: Int!
 }
 
 type Product @model @auth(rules: [{allow: public}]) {
   id: ID!
   name: String!
-  orders: [Order] @hasMany(indexName: \\"byProduct\\", fields: [\\"id\\"])
-  inventories: [Inventory] @hasMany(fields: [\\"id\\"])
+  orders: [Order] @hasMany(indexName: "byProduct", fields: ["id"])
+  inventories: [Inventory] @hasMany(fields: ["id"])
 }
 "
 `;
@@ -314,17 +314,17 @@ exports[`Schema migration tests no amplify directives in schema 1`] = `
 `;
 
 exports[`Schema migration tests passes built-in directives through 1`] = `
-"scalar UUID @specifiedBy(url: \\"https://tools.ietf.org/html/rfc4122\\")
+"scalar UUID @specifiedBy(url: "https://tools.ietf.org/html/rfc4122")
 
 type Todo {
   newField: String
-  oldField: String @deprecated(reason: \\"Use newField.\\")
+  oldField: String @deprecated(reason: "Use newField.")
 }
 "
 `;
 
 exports[`Schema migration tests renamed queries/mutations/subscriptions 1`] = `
-"type Entity @model(mutations: null, subscriptions: null, queries: {get: \\"getEntity\\"}) @auth(rules: [{allow: public}]) {
+"type Entity @model(mutations: null, subscriptions: null, queries: {get: "getEntity"}) @auth(rules: [{allow: public}]) {
   id: ID!
   str: String
 }

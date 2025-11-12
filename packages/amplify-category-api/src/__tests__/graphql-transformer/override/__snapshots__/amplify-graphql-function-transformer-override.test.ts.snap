@@ -1,14 +1,14 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`it ovderrides the expected resources 1`] = `
-Object {
+{
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Conditions": Object {
-    "HasEnvironmentParameter": Object {
-      "Fn::Not": Array [
-        Object {
-          "Fn::Equals": Array [
-            Object {
+  "Conditions": {
+    "HasEnvironmentParameter": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
               "Ref": "referencetotransformerrootstackenv10C5A902Ref",
             },
             "NONE",
@@ -18,41 +18,41 @@ Object {
     },
   },
   "Description": "An auto-generated nested stack for the @function directive.",
-  "Parameters": Object {
-    "referencetotransformerrootstackGraphQLAPI20497F53ApiId": Object {
+  "Parameters": {
+    "referencetotransformerrootstackGraphQLAPI20497F53ApiId": {
       "Type": "String",
     },
-    "referencetotransformerrootstackS3DeploymentBucket7592718ARef": Object {
+    "referencetotransformerrootstackS3DeploymentBucket7592718ARef": {
       "Type": "String",
     },
-    "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref": Object {
+    "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref": {
       "Type": "String",
     },
-    "referencetotransformerrootstackenv10C5A902Ref": Object {
+    "referencetotransformerrootstackenv10C5A902Ref": {
       "Type": "String",
     },
   },
-  "Resources": Object {
-    "EchofunctionLambdaDataSource": Object {
-      "Properties": Object {
-        "ApiId": Object {
+  "Resources": {
+    "EchofunctionLambdaDataSource": {
+      "Properties": {
+        "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
-        "LambdaConfig": Object {
-          "LambdaFunctionArn": Object {
-            "Fn::If": Array [
+        "LambdaConfig": {
+          "LambdaFunctionArn": {
+            "Fn::If": [
               "HasEnvironmentParameter",
-              Object {
-                "Fn::Sub": Array [
+              {
+                "Fn::Sub": [
                   "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:echofunction-\${env}",
-                  Object {
-                    "env": Object {
+                  {
+                    "env": {
                       "Ref": "referencetotransformerrootstackenv10C5A902Ref",
                     },
                   },
                 ],
               },
-              Object {
+              {
                 "Fn::Sub": "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:echofunction",
               },
             ],
@@ -64,14 +64,14 @@ Object {
       },
       "Type": "AWS::AppSync::DataSource",
     },
-    "EchofunctionLambdaDataSourceServiceRole3BE2FA57": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "EchofunctionLambdaDataSourceServiceRole3BE2FA57": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Principal": Object {
+              "Principal": {
                 "Service": "appsync.amazonaws.com",
               },
             },
@@ -81,50 +81,50 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "EchofunctionLambdaDataSourceServiceRoleDefaultPolicyCAA363A9": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "EchofunctionLambdaDataSourceServiceRoleDefaultPolicyCAA363A9": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": Array [
-                Object {
-                  "Fn::If": Array [
+              "Resource": [
+                {
+                  "Fn::If": [
                     "HasEnvironmentParameter",
-                    Object {
-                      "Fn::Sub": Array [
+                    {
+                      "Fn::Sub": [
                         "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:echofunction-\${env}",
-                        Object {
-                          "env": Object {
+                        {
+                          "env": {
                             "Ref": "referencetotransformerrootstackenv10C5A902Ref",
                           },
                         },
                       ],
                     },
-                    Object {
+                    {
                       "Fn::Sub": "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:echofunction",
                     },
                   ],
                 },
-                Object {
-                  "Fn::Join": Array [
+                {
+                  "Fn::Join": [
                     "",
-                    Array [
-                      Object {
-                        "Fn::If": Array [
+                    [
+                      {
+                        "Fn::If": [
                           "HasEnvironmentParameter",
-                          Object {
-                            "Fn::Sub": Array [
+                          {
+                            "Fn::Sub": [
                               "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:echofunction-\${env}",
-                              Object {
-                                "env": Object {
+                              {
+                                "env": {
                                   "Ref": "referencetotransformerrootstackenv10C5A902Ref",
                                 },
                               },
                             ],
                           },
-                          Object {
+                          {
                             "Fn::Sub": "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:echofunction",
                           },
                         ],
@@ -139,56 +139,56 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "EchofunctionLambdaDataSourceServiceRoleDefaultPolicyCAA363A9",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "EchofunctionLambdaDataSourceServiceRole3BE2FA57",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "InvokeEchofunctionLambdaDataSourceInvokeEchofunctionLambdaDataSourceAppSyncFunctionCDB52C03": Object {
-      "DependsOn": Array [
+    "InvokeEchofunctionLambdaDataSourceInvokeEchofunctionLambdaDataSourceAppSyncFunctionCDB52C03": {
+      "DependsOn": [
         "EchofunctionLambdaDataSource",
       ],
-      "Properties": Object {
-        "ApiId": Object {
+      "Properties": {
+        "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
-        "DataSourceName": Object {
-          "Fn::GetAtt": Array [
+        "DataSourceName": {
+          "Fn::GetAtt": [
             "EchofunctionLambdaDataSource",
             "Name",
           ],
         },
         "FunctionVersion": "2018-05-29",
         "Name": "InvokeEchofunctionLambdaDataSource",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
+        "RequestMappingTemplateS3Location": {
+          "Fn::Join": [
             "",
-            Array [
+            [
               "s3://",
-              Object {
+              {
                 "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
               },
               "/",
-              Object {
+              {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
               },
               "/resolvers/InvokeEchofunctionLambdaDataSource.req.vtl",
             ],
           ],
         },
-        "ResponseMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Join": [
             "",
-            Array [
+            [
               "s3://",
-              Object {
+              {
                 "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
               },
               "/",
-              Object {
+              {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
               },
               "/resolvers/InvokeEchofunctionLambdaDataSource.res.vtl",
@@ -198,48 +198,48 @@ Object {
       },
       "Type": "AWS::AppSync::FunctionConfiguration",
     },
-    "InvokeOtherfunctionLambdaDataSourceInvokeOtherfunctionLambdaDataSourceAppSyncFunctionB834903D": Object {
-      "DependsOn": Array [
+    "InvokeOtherfunctionLambdaDataSourceInvokeOtherfunctionLambdaDataSourceAppSyncFunctionB834903D": {
+      "DependsOn": [
         "OtherfunctionLambdaDataSource",
       ],
-      "Properties": Object {
-        "ApiId": Object {
+      "Properties": {
+        "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
-        "DataSourceName": Object {
-          "Fn::GetAtt": Array [
+        "DataSourceName": {
+          "Fn::GetAtt": [
             "OtherfunctionLambdaDataSource",
             "Name",
           ],
         },
         "FunctionVersion": "2018-05-29",
         "Name": "InvokeOtherfunctionLambdaDataSource",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
+        "RequestMappingTemplateS3Location": {
+          "Fn::Join": [
             "",
-            Array [
+            [
               "s3://",
-              Object {
+              {
                 "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
               },
               "/",
-              Object {
+              {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
               },
               "/resolvers/InvokeOtherfunctionLambdaDataSource.req.vtl",
             ],
           ],
         },
-        "ResponseMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Join": [
             "",
-            Array [
+            [
               "s3://",
-              Object {
+              {
                 "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
               },
               "/",
-              Object {
+              {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
               },
               "/resolvers/InvokeOtherfunctionLambdaDataSource.res.vtl",
@@ -249,22 +249,22 @@ Object {
       },
       "Type": "AWS::AppSync::FunctionConfiguration",
     },
-    "OtherfunctionLambdaDataSource": Object {
-      "Properties": Object {
-        "ApiId": Object {
+    "OtherfunctionLambdaDataSource": {
+      "Properties": {
+        "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
-        "LambdaConfig": Object {
-          "LambdaFunctionArn": Object {
-            "Fn::If": Array [
+        "LambdaConfig": {
+          "LambdaFunctionArn": {
+            "Fn::If": [
               "HasEnvironmentParameter",
-              Object {
-                "Fn::Sub": Array [
+              {
+                "Fn::Sub": [
                   "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:otherfunction",
-                  Object {},
+                  {},
                 ],
               },
-              Object {
+              {
                 "Fn::Sub": "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:otherfunction",
               },
             ],
@@ -276,14 +276,14 @@ Object {
       },
       "Type": "AWS::AppSync::DataSource",
     },
-    "OtherfunctionLambdaDataSourceServiceRole611EC792": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "OtherfunctionLambdaDataSourceServiceRole611EC792": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Principal": Object {
+              "Principal": {
                 "Service": "appsync.amazonaws.com",
               },
             },
@@ -293,42 +293,42 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "OtherfunctionLambdaDataSourceServiceRoleDefaultPolicy3263A5C1": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "OtherfunctionLambdaDataSourceServiceRoleDefaultPolicy3263A5C1": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": Array [
-                Object {
-                  "Fn::If": Array [
+              "Resource": [
+                {
+                  "Fn::If": [
                     "HasEnvironmentParameter",
-                    Object {
-                      "Fn::Sub": Array [
+                    {
+                      "Fn::Sub": [
                         "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:otherfunction",
-                        Object {},
+                        {},
                       ],
                     },
-                    Object {
+                    {
                       "Fn::Sub": "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:otherfunction",
                     },
                   ],
                 },
-                Object {
-                  "Fn::Join": Array [
+                {
+                  "Fn::Join": [
                     "",
-                    Array [
-                      Object {
-                        "Fn::If": Array [
+                    [
+                      {
+                        "Fn::If": [
                           "HasEnvironmentParameter",
-                          Object {
-                            "Fn::Sub": Array [
+                          {
+                            "Fn::Sub": [
                               "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:otherfunction",
-                              Object {},
+                              {},
                             ],
                           },
-                          Object {
+                          {
                             "Fn::Sub": "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:otherfunction",
                           },
                         ],
@@ -343,31 +343,31 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "OtherfunctionLambdaDataSourceServiceRoleDefaultPolicy3263A5C1",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "OtherfunctionLambdaDataSourceServiceRole611EC792",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "QueryechoResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
+    "QueryechoResolver": {
+      "Properties": {
+        "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
         "FieldName": "echo",
         "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
                 "InvokeEchofunctionLambdaDataSourceInvokeEchofunctionLambdaDataSourceAppSyncFunctionCDB52C03",
                 "FunctionId",
               ],
             },
-            Object {
-              "Fn::GetAtt": Array [
+            {
+              "Fn::GetAtt": [
                 "InvokeOtherfunctionLambdaDataSourceInvokeOtherfunctionLambdaDataSourceAppSyncFunctionB834903D",
                 "FunctionId",
               ],
@@ -375,16 +375,16 @@ Object {
           ],
         },
         "RequestMappingTemplate": "mockTemplate",
-        "ResponseMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Join": [
             "",
-            Array [
+            [
               "s3://",
-              Object {
+              {
                 "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
               },
               "/",
-              Object {
+              {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
               },
               "/resolvers/Query.echo.res.vtl",
@@ -400,14 +400,14 @@ Object {
 `;
 
 exports[`it skips override if override file does not exist 1`] = `
-Object {
+{
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Conditions": Object {
-    "HasEnvironmentParameter": Object {
-      "Fn::Not": Array [
-        Object {
-          "Fn::Equals": Array [
-            Object {
+  "Conditions": {
+    "HasEnvironmentParameter": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
               "Ref": "referencetotransformerrootstackenv10C5A902Ref",
             },
             "NONE",
@@ -417,49 +417,49 @@ Object {
     },
   },
   "Description": "An auto-generated nested stack for the @function directive.",
-  "Parameters": Object {
-    "referencetotransformerrootstackGraphQLAPI20497F53ApiId": Object {
+  "Parameters": {
+    "referencetotransformerrootstackGraphQLAPI20497F53ApiId": {
       "Type": "String",
     },
-    "referencetotransformerrootstackS3DeploymentBucket7592718ARef": Object {
+    "referencetotransformerrootstackS3DeploymentBucket7592718ARef": {
       "Type": "String",
     },
-    "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref": Object {
+    "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref": {
       "Type": "String",
     },
-    "referencetotransformerrootstackenv10C5A902Ref": Object {
+    "referencetotransformerrootstackenv10C5A902Ref": {
       "Type": "String",
     },
   },
-  "Resources": Object {
-    "EchofunctionLambdaDataSource": Object {
-      "Properties": Object {
-        "ApiId": Object {
+  "Resources": {
+    "EchofunctionLambdaDataSource": {
+      "Properties": {
+        "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
-        "LambdaConfig": Object {
-          "LambdaFunctionArn": Object {
-            "Fn::If": Array [
+        "LambdaConfig": {
+          "LambdaFunctionArn": {
+            "Fn::If": [
               "HasEnvironmentParameter",
-              Object {
-                "Fn::Sub": Array [
+              {
+                "Fn::Sub": [
                   "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:echofunction-\${env}",
-                  Object {
-                    "env": Object {
+                  {
+                    "env": {
                       "Ref": "referencetotransformerrootstackenv10C5A902Ref",
                     },
                   },
                 ],
               },
-              Object {
+              {
                 "Fn::Sub": "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:echofunction",
               },
             ],
           },
         },
         "Name": "EchofunctionLambdaDataSource",
-        "ServiceRoleArn": Object {
-          "Fn::GetAtt": Array [
+        "ServiceRoleArn": {
+          "Fn::GetAtt": [
             "EchofunctionLambdaDataSourceServiceRole3BE2FA57",
             "Arn",
           ],
@@ -468,14 +468,14 @@ Object {
       },
       "Type": "AWS::AppSync::DataSource",
     },
-    "EchofunctionLambdaDataSourceServiceRole3BE2FA57": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "EchofunctionLambdaDataSourceServiceRole3BE2FA57": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Principal": Object {
+              "Principal": {
                 "Service": "appsync.amazonaws.com",
               },
             },
@@ -485,50 +485,50 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "EchofunctionLambdaDataSourceServiceRoleDefaultPolicyCAA363A9": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "EchofunctionLambdaDataSourceServiceRoleDefaultPolicyCAA363A9": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": Array [
-                Object {
-                  "Fn::If": Array [
+              "Resource": [
+                {
+                  "Fn::If": [
                     "HasEnvironmentParameter",
-                    Object {
-                      "Fn::Sub": Array [
+                    {
+                      "Fn::Sub": [
                         "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:echofunction-\${env}",
-                        Object {
-                          "env": Object {
+                        {
+                          "env": {
                             "Ref": "referencetotransformerrootstackenv10C5A902Ref",
                           },
                         },
                       ],
                     },
-                    Object {
+                    {
                       "Fn::Sub": "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:echofunction",
                     },
                   ],
                 },
-                Object {
-                  "Fn::Join": Array [
+                {
+                  "Fn::Join": [
                     "",
-                    Array [
-                      Object {
-                        "Fn::If": Array [
+                    [
+                      {
+                        "Fn::If": [
                           "HasEnvironmentParameter",
-                          Object {
-                            "Fn::Sub": Array [
+                          {
+                            "Fn::Sub": [
                               "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:echofunction-\${env}",
-                              Object {
-                                "env": Object {
+                              {
+                                "env": {
                                   "Ref": "referencetotransformerrootstackenv10C5A902Ref",
                                 },
                               },
                             ],
                           },
-                          Object {
+                          {
                             "Fn::Sub": "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:echofunction",
                           },
                         ],
@@ -543,56 +543,56 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "EchofunctionLambdaDataSourceServiceRoleDefaultPolicyCAA363A9",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "EchofunctionLambdaDataSourceServiceRole3BE2FA57",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "InvokeEchofunctionLambdaDataSourceInvokeEchofunctionLambdaDataSourceAppSyncFunctionCDB52C03": Object {
-      "DependsOn": Array [
+    "InvokeEchofunctionLambdaDataSourceInvokeEchofunctionLambdaDataSourceAppSyncFunctionCDB52C03": {
+      "DependsOn": [
         "EchofunctionLambdaDataSource",
       ],
-      "Properties": Object {
-        "ApiId": Object {
+      "Properties": {
+        "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
-        "DataSourceName": Object {
-          "Fn::GetAtt": Array [
+        "DataSourceName": {
+          "Fn::GetAtt": [
             "EchofunctionLambdaDataSource",
             "Name",
           ],
         },
         "FunctionVersion": "2018-05-29",
         "Name": "InvokeEchofunctionLambdaDataSource",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
+        "RequestMappingTemplateS3Location": {
+          "Fn::Join": [
             "",
-            Array [
+            [
               "s3://",
-              Object {
+              {
                 "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
               },
               "/",
-              Object {
+              {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
               },
               "/resolvers/InvokeEchofunctionLambdaDataSource.req.vtl",
             ],
           ],
         },
-        "ResponseMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Join": [
             "",
-            Array [
+            [
               "s3://",
-              Object {
+              {
                 "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
               },
               "/",
-              Object {
+              {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
               },
               "/resolvers/InvokeEchofunctionLambdaDataSource.res.vtl",
@@ -602,48 +602,48 @@ Object {
       },
       "Type": "AWS::AppSync::FunctionConfiguration",
     },
-    "InvokeOtherfunctionLambdaDataSourceInvokeOtherfunctionLambdaDataSourceAppSyncFunctionB834903D": Object {
-      "DependsOn": Array [
+    "InvokeOtherfunctionLambdaDataSourceInvokeOtherfunctionLambdaDataSourceAppSyncFunctionB834903D": {
+      "DependsOn": [
         "OtherfunctionLambdaDataSource",
       ],
-      "Properties": Object {
-        "ApiId": Object {
+      "Properties": {
+        "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
-        "DataSourceName": Object {
-          "Fn::GetAtt": Array [
+        "DataSourceName": {
+          "Fn::GetAtt": [
             "OtherfunctionLambdaDataSource",
             "Name",
           ],
         },
         "FunctionVersion": "2018-05-29",
         "Name": "InvokeOtherfunctionLambdaDataSource",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
+        "RequestMappingTemplateS3Location": {
+          "Fn::Join": [
             "",
-            Array [
+            [
               "s3://",
-              Object {
+              {
                 "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
               },
               "/",
-              Object {
+              {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
               },
               "/resolvers/InvokeOtherfunctionLambdaDataSource.req.vtl",
             ],
           ],
         },
-        "ResponseMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Join": [
             "",
-            Array [
+            [
               "s3://",
-              Object {
+              {
                 "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
               },
               "/",
-              Object {
+              {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
               },
               "/resolvers/InvokeOtherfunctionLambdaDataSource.res.vtl",
@@ -653,30 +653,30 @@ Object {
       },
       "Type": "AWS::AppSync::FunctionConfiguration",
     },
-    "OtherfunctionLambdaDataSource": Object {
-      "Properties": Object {
-        "ApiId": Object {
+    "OtherfunctionLambdaDataSource": {
+      "Properties": {
+        "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
-        "LambdaConfig": Object {
-          "LambdaFunctionArn": Object {
-            "Fn::If": Array [
+        "LambdaConfig": {
+          "LambdaFunctionArn": {
+            "Fn::If": [
               "HasEnvironmentParameter",
-              Object {
-                "Fn::Sub": Array [
+              {
+                "Fn::Sub": [
                   "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:otherfunction",
-                  Object {},
+                  {},
                 ],
               },
-              Object {
+              {
                 "Fn::Sub": "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:otherfunction",
               },
             ],
           },
         },
         "Name": "OtherfunctionLambdaDataSource",
-        "ServiceRoleArn": Object {
-          "Fn::GetAtt": Array [
+        "ServiceRoleArn": {
+          "Fn::GetAtt": [
             "OtherfunctionLambdaDataSourceServiceRole611EC792",
             "Arn",
           ],
@@ -685,14 +685,14 @@ Object {
       },
       "Type": "AWS::AppSync::DataSource",
     },
-    "OtherfunctionLambdaDataSourceServiceRole611EC792": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "OtherfunctionLambdaDataSourceServiceRole611EC792": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Principal": Object {
+              "Principal": {
                 "Service": "appsync.amazonaws.com",
               },
             },
@@ -702,42 +702,42 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "OtherfunctionLambdaDataSourceServiceRoleDefaultPolicy3263A5C1": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "OtherfunctionLambdaDataSourceServiceRoleDefaultPolicy3263A5C1": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": Array [
-                Object {
-                  "Fn::If": Array [
+              "Resource": [
+                {
+                  "Fn::If": [
                     "HasEnvironmentParameter",
-                    Object {
-                      "Fn::Sub": Array [
+                    {
+                      "Fn::Sub": [
                         "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:otherfunction",
-                        Object {},
+                        {},
                       ],
                     },
-                    Object {
+                    {
                       "Fn::Sub": "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:otherfunction",
                     },
                   ],
                 },
-                Object {
-                  "Fn::Join": Array [
+                {
+                  "Fn::Join": [
                     "",
-                    Array [
-                      Object {
-                        "Fn::If": Array [
+                    [
+                      {
+                        "Fn::If": [
                           "HasEnvironmentParameter",
-                          Object {
-                            "Fn::Sub": Array [
+                          {
+                            "Fn::Sub": [
                               "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:otherfunction",
-                              Object {},
+                              {},
                             ],
                           },
-                          Object {
+                          {
                             "Fn::Sub": "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:otherfunction",
                           },
                         ],
@@ -752,31 +752,31 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "OtherfunctionLambdaDataSourceServiceRoleDefaultPolicy3263A5C1",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "OtherfunctionLambdaDataSourceServiceRole611EC792",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "QueryechoResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
+    "QueryechoResolver": {
+      "Properties": {
+        "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
         "FieldName": "echo",
         "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
                 "InvokeEchofunctionLambdaDataSourceInvokeEchofunctionLambdaDataSourceAppSyncFunctionCDB52C03",
                 "FunctionId",
               ],
             },
-            Object {
-              "Fn::GetAtt": Array [
+            {
+              "Fn::GetAtt": [
                 "InvokeOtherfunctionLambdaDataSourceInvokeOtherfunctionLambdaDataSourceAppSyncFunctionB834903D",
                 "FunctionId",
               ],
@@ -784,20 +784,20 @@ Object {
           ],
         },
         "RequestMappingTemplate": "## [Start] Stash resolver specific context.. **
-$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"echo\\"))
+$util.qr($ctx.stash.put("typeName", "Query"))
+$util.qr($ctx.stash.put("fieldName", "echo"))
 {}
 ## [End] Stash resolver specific context.. **",
-        "ResponseMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
+        "ResponseMappingTemplateS3Location": {
+          "Fn::Join": [
             "",
-            Array [
+            [
               "s3://",
-              Object {
+              {
                 "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
               },
               "/",
-              Object {
+              {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
               },
               "/resolvers/Query.echo.res.vtl",

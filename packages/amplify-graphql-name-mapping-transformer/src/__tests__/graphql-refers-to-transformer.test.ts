@@ -142,7 +142,7 @@ describe('@refersTo directive on models', () => {
     stubDirective.arguments![0].value.kind = 'ListValue';
     expect(() =>
       refersToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
-    ).toThrowErrorMatchingInlineSnapshot('"A single string must be provided for \\"name\\" in @refersTo directive"');
+    ).toThrowErrorMatchingInlineSnapshot(`"A single string must be provided for "name" in @refersTo directive"`);
   });
 
   it('registers the rename mapping', () => {
@@ -156,7 +156,7 @@ describe('@refersTo directive on models', () => {
     expect(() =>
       refersToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
     ).toThrowErrorMatchingInlineSnapshot(
-      '"Cannot apply @refersTo with name \\"OriginalName\\" on type \\"TestName\\" because \\"OriginalName\\" model already exists in the schema."',
+      `"Cannot apply @refersTo with name "OriginalName" on type "TestName" because "OriginalName" model already exists in the schema."`,
     );
   });
 
@@ -168,7 +168,7 @@ describe('@refersTo directive on models', () => {
     expect(() =>
       refersToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
     ).toThrowErrorMatchingInlineSnapshot(
-      '"Cannot apply @refersTo with name \\"OriginalName\\" on type \\"TestName\\" because \\"DuplicateName\\" model already has the same name mapping."',
+      `"Cannot apply @refersTo with name "OriginalName" on type "TestName" because "DuplicateName" model already has the same name mapping."`,
     );
   });
 
@@ -299,7 +299,7 @@ describe('@refersTo directive on fields', () => {
     const [parent, field, directive, context] = getTransformerInputsFromSchema(schema, modelName);
     expect(() =>
       refersToTransformer.field(parent as ObjectTypeDefinitionNode, field as FieldDefinitionNode, directive as DirectiveNode, context),
-    ).toThrowErrorMatchingInlineSnapshot('"@refersTo is not supported on \\"details\\" relational field in \\"Todo\\" model."');
+    ).toThrowErrorMatchingInlineSnapshot(`"@refersTo is not supported on "details" relational field in "Todo" model."`);
   });
 
   it('requires a name to be specified', () => {
@@ -325,7 +325,7 @@ describe('@refersTo directive on fields', () => {
     const [parent, field, directive, context] = getTransformerInputsFromSchema(schema, modelName);
     expect(() =>
       refersToTransformer.field(parent as ObjectTypeDefinitionNode, field as FieldDefinitionNode, directive as DirectiveNode, context),
-    ).toThrowErrorMatchingInlineSnapshot('"A single string must be provided for \\"name\\" in @refersTo directive"');
+    ).toThrowErrorMatchingInlineSnapshot(`"A single string must be provided for "name" in @refersTo directive"`);
   });
 
   it('throws if a duplicate field name mapping is present in the schema', () => {
@@ -333,7 +333,7 @@ describe('@refersTo directive on fields', () => {
     expect(() =>
       refersToTransformer.field(parent as ObjectTypeDefinitionNode, field as FieldDefinitionNode, directive as DirectiveNode, context),
     ).toThrowErrorMatchingInlineSnapshot(
-      '"Cannot apply @refersTo with name \\"Description\\" on field \\"details\\" in type \\"Todo\\" because \\"description\\" field already has the same name mapping."',
+      `"Cannot apply @refersTo with name "Description" on field "details" in type "Todo" because "description" field already has the same name mapping."`,
     );
   });
 
@@ -342,7 +342,7 @@ describe('@refersTo directive on fields', () => {
     expect(() =>
       refersToTransformer.field(parent as ObjectTypeDefinitionNode, field as FieldDefinitionNode, directive as DirectiveNode, context),
     ).toThrowErrorMatchingInlineSnapshot(
-      '"Cannot apply @refersTo with name \\"description\\" on field \\"details\\" in type \\"Todo\\" because \\"description\\" field already exists in the model."',
+      `"Cannot apply @refersTo with name "description" on field "details" in type "Todo" because "description" field already exists in the model."`,
     );
   });
 
@@ -352,8 +352,8 @@ describe('@refersTo directive on fields', () => {
       addMappedField: jest.fn(),
     });
     refersToTransformer.field(parent as ObjectTypeDefinitionNode, field as FieldDefinitionNode, directive as DirectiveNode, context);
-    expect(context.resourceHelper.getModelFieldMap).toBeCalledWith(modelName);
-    expect(context.resourceHelper.getModelFieldMap(modelName).addMappedField).toBeCalledWith({
+    expect(context.resourceHelper.getModelFieldMap).toHaveBeenCalledWith(modelName);
+    expect(context.resourceHelper.getModelFieldMap(modelName).addMappedField).toHaveBeenCalledWith({
       currentFieldName: mappedFieldName,
       originalFieldName: 'Description',
     });
@@ -368,7 +368,7 @@ describe('@refersTo directive on fields', () => {
     });
     getResolver_mock.mockReturnValue({});
     refersToTransformer.after(context as TransformerContextProvider);
-    expect(attachFieldMappingSlot_mock).toBeCalledWith({
+    expect(attachFieldMappingSlot_mock).toHaveBeenCalledWith({
       resolver: {},
       resolverTypeName: 'Query',
       resolverFieldName: mappedFieldName,
@@ -379,7 +379,7 @@ describe('@refersTo directive on fields', () => {
   it('does not attach resolver slot even if field mapping exists for DDB Model', () => {
     const [parent, field, directive, context] = getTransformerInputsFromSchema(simpleSchema, modelName);
     context.dataSourceStrategies[modelName] = DDB_DEFAULT_DATASOURCE_STRATEGY;
-    expect(attachFieldMappingSlot_mock).toBeCalledTimes(0);
+    expect(attachFieldMappingSlot_mock).toHaveBeenCalledTimes(0);
   });
 
   it('does not attach resolver slot if field mapping does not exist for RDS Model', () => {
@@ -390,7 +390,7 @@ describe('@refersTo directive on fields', () => {
       getResolverReferences: jest.fn().mockReturnValue([{ typeName: 'Query', fieldName: mappedFieldName, isList: false }]),
     });
     refersToTransformer.after(context as TransformerContextProvider);
-    expect(attachFieldMappingSlot_mock).toBeCalledTimes(0);
+    expect(attachFieldMappingSlot_mock).toHaveBeenCalledTimes(0);
   });
 
   it('does not attach resolver slot if the resolver does not exist for RDS Model', () => {
@@ -401,6 +401,6 @@ describe('@refersTo directive on fields', () => {
     });
     getResolver_mock.mockReturnValue(undefined);
     refersToTransformer.after(context as TransformerContextProvider);
-    expect(attachFieldMappingSlot_mock).toBeCalledTimes(0);
+    expect(attachFieldMappingSlot_mock).toHaveBeenCalledTimes(0);
   });
 });

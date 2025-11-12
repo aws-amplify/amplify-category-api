@@ -74,7 +74,9 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
-    "testURL": "http://localhost",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "testRegex": "(src/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
     "testPathIgnorePatterns": [
       "/node_modules/",
@@ -121,7 +123,7 @@
       }
     },
     "moduleNameMapper": {
-      "axios": "axios/dist/node/axios.cjs",
+      "axios": "<rootDir>/../../node_modules/axios/dist/node/axios.cjs",
       "^csv-parse/sync": "<rootDir>/../../node_modules/csv-parse/dist/cjs/sync.cjs"
     },
     "coveragePathIgnorePatterns": [

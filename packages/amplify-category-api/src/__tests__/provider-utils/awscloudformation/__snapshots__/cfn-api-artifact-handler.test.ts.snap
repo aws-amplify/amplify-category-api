@@ -1,9 +1,9 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`create artifacts creates the transform.conf.json file 1`] = `
-Array [
+[
   "backendDirPath/api/testApiName",
-  Object {
+  {
     "ElasticsearchWarning": true,
     "Version": undefined,
   },
@@ -11,13 +11,13 @@ Array [
 `;
 
 exports[`update artifacts updates additional auth if not empty 1`] = `
-Object {
-  "additionalAuthenticationProviders": Array [
-    Object {
+{
+  "additionalAuthenticationProviders": [
+    {
       "authenticationType": "AWS_IAM",
     },
-    Object {
-      "apiKeyConfig": Object {
+    {
+      "apiKeyConfig": {
         "apiKeyExpirationDate": undefined,
         "apiKeyExpirationDays": undefined,
         "description": undefined,
@@ -25,8 +25,8 @@ Object {
       "authenticationType": "API_KEY",
     },
   ],
-  "defaultAuthentication": Object {
-    "apiKeyConfig": Object {
+  "defaultAuthentication": {
+    "apiKeyConfig": {
       "apiKeyExpirationDays": 7,
       "description": "",
     },
@@ -36,16 +36,16 @@ Object {
 `;
 
 exports[`update artifacts updates default auth if not empty 1`] = `
-Object {
-  "additionalAuthenticationProviders": Array [
-    Object {
+{
+  "additionalAuthenticationProviders": [
+    {
       "authenticationType": "AMAZON_COGNITO_USER_POOLS",
-      "userPoolConfig": Object {
+      "userPoolConfig": {
         "userPoolId": "myUserPoolId",
       },
     },
   ],
-  "defaultAuthentication": Object {
+  "defaultAuthentication": {
     "authenticationType": "AWS_IAM",
   },
 }

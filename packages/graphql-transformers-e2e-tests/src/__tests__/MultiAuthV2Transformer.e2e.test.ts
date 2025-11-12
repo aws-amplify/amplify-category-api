@@ -13,7 +13,6 @@ import moment from 'moment';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { ResourceConstants } from 'graphql-transformer-common';
 import gql from 'graphql-tag';
-import AWS = require('aws-sdk');
 import { IAMHelper } from '../IAMHelper';
 import {
   createUserPool,
@@ -37,12 +36,6 @@ import 'isomorphic-fetch';
 import { resolveTestRegion } from '../testSetup';
 
 const AWS_REGION = resolveTestRegion();
-
-// To overcome of the way of how AmplifyJS picks up currentUserCredentials
-const anyAWS = AWS as any;
-if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
-  delete anyAWS.config.credentials;
-}
 
 jest.setTimeout(2000000);
 
@@ -799,7 +792,7 @@ test(`'private' authStrategy`, async () => {
           id: postId,
         },
       }),
-    ).rejects.toThrowError('Network error: Response not successful: Received status code 401');
+    ).rejects.toThrow('Network error: Response not successful: Received status code 401');
   } catch (e) {
     expect(e).not.toBeDefined();
   }

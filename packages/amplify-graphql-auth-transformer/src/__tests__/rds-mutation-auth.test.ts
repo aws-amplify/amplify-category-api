@@ -549,7 +549,7 @@ describe('Verify RDS Model level Auth rules on mutations:', () => {
         authConfig,
         dataSourceStrategies: constructDataSourceStrategies(validSchema, mysqlStrategy),
       }),
-    ).not.toThrowError();
+    ).not.toThrow();
   });
 
   it('should not throw error if auth is defined on a field with identityPool', async () => {
@@ -584,7 +584,7 @@ describe('Verify RDS Model level Auth rules on mutations:', () => {
         authConfig,
         dataSourceStrategies: constructDataSourceStrategies(validSchema, mysqlStrategy),
       }),
-    ).not.toThrowError();
+    ).not.toThrow();
   });
 
   it('should allow field auth on mutation type', async () => {

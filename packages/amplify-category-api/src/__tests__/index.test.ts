@@ -30,7 +30,7 @@ const mockContext: $TSContext = {
   },
 } as unknown as $TSContext;
 test('throws amplify exception when building overrides failed', async () => {
-  await expect(() => transformCategoryStack(mockContext, { service: 'AppSync' })).rejects.toThrowError(
+  await expect(() => transformCategoryStack(mockContext, { service: 'AppSync' })).rejects.toThrow(
     expect.objectContaining({
       classification: 'ERROR',
       name: 'InvalidOverrideError',
@@ -41,7 +41,7 @@ test('throws amplify exception when building overrides failed', async () => {
 });
 
 test('throws amplify error when calling compile schema', async () => {
-  await expect(() => transformCategoryStack(mockContext, { service: 'AppSync' })).rejects.toThrowError(
+  await expect(() => transformCategoryStack(mockContext, { service: 'AppSync' })).rejects.toThrow(
     expect.objectContaining({
       classification: 'ERROR',
       name: 'InvalidDirectiveError',

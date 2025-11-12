@@ -132,6 +132,26 @@ function _lint {
   loadCacheFromBuildJob
   chmod +x codebuild_specs/scripts/lint_pr.sh && ./codebuild_specs/scripts/lint_pr.sh
 }
+function _setupNodeVersion {
+  local version=$1  # Version number passed as an argument
+
+  echo "Installing NVM and setting Node.js version to $version"
+
+  # Install NVM
+  curl -o - https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+
+  # Load NVM
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+  # Install and use the specified Node.js version
+  nvm install "$version"
+  nvm use "$version"
+
+  # Verify the Node.js version in use
+  echo "Node.js version in use:"
+  node -v
+}
 function _publishToLocalRegistry {
     echo "Publish To Local Registry"
     loadCacheFromBuildJob
@@ -235,6 +255,9 @@ function _setupE2ETestsLinux {
     # Ignore engines while we're still on Node 18.x
     yarn config set ignore-engines true
     _installCLIFromLocalRegistry
+    # Rebuild native modules for current Node.js version
+    echo "Rebuilding native modules for Node.js $(node --version)"
+    npm rebuild
     _loadTestAccountCredentials
     _setShell
 }
@@ -286,6 +309,9 @@ function _scanArtifacts {
 function _cleanupE2EResources {
   echo "Cleanup E2E resources"
   loadCacheFromBuildJob
+  # Rebuild native modules for current Node.js version
+  echo "Rebuilding native modules for Node.js $(node --version)"
+  npm rebuild
   cd packages/amplify-e2e-tests
   echo "Running clean up script"
   build_batch_arn=$(aws codebuild batch-get-builds --ids $CODEBUILD_BUILD_ID | jq -r -c '.builds[0].buildBatchArn')

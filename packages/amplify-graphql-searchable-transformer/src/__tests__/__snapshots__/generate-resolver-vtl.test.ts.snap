@@ -1,23 +1,23 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`generateAddAggregateValues renders 1`] = `
 "#set( $aggregateValue = {} )
-$util.qr($aggregateValue.put(\\"filter\\", $aggFilter))
+$util.qr($aggregateValue.put("filter", $aggFilter))
 #set( $aggsValue = {} )
 #set( $aggItemType = {} )
 #if( $nonKeywordFields.contains($aggItem.field) )
-  $util.qr($aggItemType.put(\\"$aggItem.type\\", { \\"field\\": \\"$aggItem.field\\" }))
+  $util.qr($aggItemType.put("$aggItem.type", { "field": "$aggItem.field" }))
 #else
-  $util.qr($aggItemType.put(\\"$aggItem.type\\", { \\"field\\": \\"\${aggItem.field}.keyword\\" }))
+  $util.qr($aggItemType.put("$aggItem.type", { "field": "\${aggItem.field}.keyword" }))
 #end
-$util.qr($aggsValue.put(\\"$aggItem.name\\", $aggItemType))
-$util.qr($aggregateValue.put(\\"aggs\\", $aggsValue))
-$util.qr($aggregateValues.put(\\"$aggItem.name\\", $aggregateValue))"
+$util.qr($aggsValue.put("$aggItem.name", $aggItemType))
+$util.qr($aggregateValue.put("aggs", $aggsValue))
+$util.qr($aggregateValues.put("$aggItem.name", $aggregateValue))"
 `;
 
 exports[`requestTemplate renders with simple id pk and version is disabled 1`] = `
 "#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
-#set( $indexPath = \\"/byid/_search\\" )
+#set( $indexPath = "/byid/_search" )
 #set( $allowedAggFields = $util.defaultIfNull($ctx.stash.allowedAggFields, []) )
 #set( $aggFieldsFilterMap = $util.defaultIfNull($ctx.stash.aggFieldsFilterMap, {}) )
 #set( $nonKeywordFields = [] )
@@ -25,7 +25,7 @@ exports[`requestTemplate renders with simple id pk and version is disabled 1`] =
 #set( $sortValues = [] )
 #set( $sortFields = [] )
 #set( $aggregateValues = {} )
-#set( $primaryKey = \\"id\\" )
+#set( $primaryKey = "id" )
 #if( !$util.isNullOrEmpty($args.sort) )
   #foreach( $sortItem in $args.sort )
     #if( $util.isNullOrEmpty($sortItem.field) )
@@ -37,21 +37,21 @@ exports[`requestTemplate renders with simple id pk and version is disabled 1`] =
       #if( $nonKeywordFields.contains($primaryKey) )
         #set( $sortField = $util.toJson($primaryKey) )
       #else
-        #set( $sortField = $util.toJson(\\"\${primaryKey}.keyword\\") )
+        #set( $sortField = $util.toJson("\${primaryKey}.keyword") )
       #end
     #else
       #if( $nonKeywordFields.contains($sortItem.field) )
         #set( $sortField = $util.toJson($sortItem.field) )
       #else
-        #set( $sortField = $util.toJson(\\"\${sortItem.field}.keyword\\") )
+        #set( $sortField = $util.toJson("\${sortItem.field}.keyword") )
       #end
     #end
     #if( $util.isNullOrEmpty($sortItem.direction) )
-      #set( $sortDirection = $util.toJson({\\"order\\": \\"desc\\"}) )
+      #set( $sortDirection = $util.toJson({"order": "desc"}) )
     #else
-      #set( $sortDirection = $util.toJson({\\"order\\": $sortItem.direction}) )
+      #set( $sortDirection = $util.toJson({"order": $sortItem.direction}) )
     #end
-    $util.qr($sortValues.add(\\"{$sortField: $sortDirection}\\"))
+    $util.qr($sortValues.add("{$sortField: $sortDirection}"))
   #end
 #end
 #foreach( $keyItem in $keyFields )
@@ -59,39 +59,39 @@ exports[`requestTemplate renders with simple id pk and version is disabled 1`] =
     #if( $nonKeywordFields.contains($keyItem) )
       #set( $sortField = $util.toJson($keyItem) )
     #else
-      #set( $sortField = $util.toJson(\\"\${keyItem}.keyword\\") )
+      #set( $sortField = $util.toJson("\${keyItem}.keyword") )
     #end
-    #set( $sortDirection = $util.toJson({\\"order\\": \\"desc\\"}) )
-    $util.qr($sortValues.add(\\"{$sortField: $sortDirection}\\"))
+    #set( $sortDirection = $util.toJson({"order": "desc"}) )
+    $util.qr($sortValues.add("{$sortField: $sortDirection}"))
   #end
 #end
 #foreach( $aggItem in $args.aggregates )
   #if( $allowedAggFields.contains($aggItem.field) )
-    #set( $aggFilter = { \\"match_all\\": {} } )
+    #set( $aggFilter = { "match_all": {} } )
   #elseif( $aggFieldsFilterMap.containsKey($aggItem.field) )
-    #set( $aggFilter = { \\"bool\\": { \\"should\\": $aggFieldsFilterMap.get($aggItem.field) } } )
+    #set( $aggFilter = { "bool": { "should": $aggFieldsFilterMap.get($aggItem.field) } } )
   #else
-    $util.error(\\"Unauthorized to run aggregation on field: \${aggItem.field}\\", \\"Unauthorized\\")
+    $util.error("Unauthorized to run aggregation on field: \${aggItem.field}", "Unauthorized")
   #end
   #set( $aggregateValue = {} )
-  $util.qr($aggregateValue.put(\\"filter\\", $aggFilter))
+  $util.qr($aggregateValue.put("filter", $aggFilter))
   #set( $aggsValue = {} )
   #set( $aggItemType = {} )
   #if( $nonKeywordFields.contains($aggItem.field) )
-    $util.qr($aggItemType.put(\\"$aggItem.type\\", { \\"field\\": \\"$aggItem.field\\" }))
+    $util.qr($aggItemType.put("$aggItem.type", { "field": "$aggItem.field" }))
   #else
-    $util.qr($aggItemType.put(\\"$aggItem.type\\", { \\"field\\": \\"\${aggItem.field}.keyword\\" }))
+    $util.qr($aggItemType.put("$aggItem.type", { "field": "\${aggItem.field}.keyword" }))
   #end
-  $util.qr($aggsValue.put(\\"$aggItem.name\\", $aggItemType))
-  $util.qr($aggregateValue.put(\\"aggs\\", $aggsValue))
-  $util.qr($aggregateValues.put(\\"$aggItem.name\\", $aggregateValue))
+  $util.qr($aggsValue.put("$aggItem.name", $aggItemType))
+  $util.qr($aggregateValue.put("aggs", $aggsValue))
+  $util.qr($aggregateValues.put("$aggItem.name", $aggregateValue))
 #end
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($args.filter) )
     #set( $filter = {
-  \\"bool\\": {
-      \\"must\\":     [$ctx.stash.authFilter, $util.parseJson($util.transform.toElasticsearchQueryDSL($args.filter))]
+  "bool": {
+      "must":     [$ctx.stash.authFilter, $util.parseJson($util.transform.toElasticsearchQueryDSL($args.filter))]
   }
 } )
   #end
@@ -102,22 +102,22 @@ exports[`requestTemplate renders with simple id pk and version is disabled 1`] =
 #end
 #if( $util.isNullOrEmpty($filter) )
   #set( $filter = {
-  \\"match_all\\": {}
+  "match_all": {}
 } )
 #end
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"GET\\",
-  \\"path\\": \\"$indexPath\\",
-  \\"params\\": {
-      \\"body\\":     {
-                #if( $context.args.nextToken )\\"search_after\\": $util.base64Decode($args.nextToken), #end
-                #if( $context.args.from )\\"from\\": $args.from, #end
-                \\"size\\": #if( $args.limit ) $args.limit #else 100 #end,
-                \\"sort\\": $sortValues,
-                \\"version\\": false,
-                \\"query\\": $util.toJson($filter),
-                \\"aggs\\": $util.toJson($aggregateValues)
+  "version": "2018-05-29",
+  "operation": "GET",
+  "path": "$indexPath",
+  "params": {
+      "body":     {
+                #if( $context.args.nextToken )"search_after": $util.base64Decode($args.nextToken), #end
+                #if( $context.args.from )"from": $args.from, #end
+                "size": #if( $args.limit ) $args.limit #else 100 #end,
+                "sort": $sortValues,
+                "version": false,
+                "query": $util.toJson($filter),
+                "aggs": $util.toJson($aggregateValues)
                 }
   }
 }"
@@ -125,7 +125,7 @@ exports[`requestTemplate renders with simple id pk and version is disabled 1`] =
 
 exports[`requestTemplate renders with simple id pk and version is enabled 1`] = `
 "#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
-#set( $indexPath = \\"/byid/_search\\" )
+#set( $indexPath = "/byid/_search" )
 #set( $allowedAggFields = $util.defaultIfNull($ctx.stash.allowedAggFields, []) )
 #set( $aggFieldsFilterMap = $util.defaultIfNull($ctx.stash.aggFieldsFilterMap, {}) )
 #set( $nonKeywordFields = [] )
@@ -133,7 +133,7 @@ exports[`requestTemplate renders with simple id pk and version is enabled 1`] = 
 #set( $sortValues = [] )
 #set( $sortFields = [] )
 #set( $aggregateValues = {} )
-#set( $primaryKey = \\"id\\" )
+#set( $primaryKey = "id" )
 #if( !$util.isNullOrEmpty($args.sort) )
   #foreach( $sortItem in $args.sort )
     #if( $util.isNullOrEmpty($sortItem.field) )
@@ -145,21 +145,21 @@ exports[`requestTemplate renders with simple id pk and version is enabled 1`] = 
       #if( $nonKeywordFields.contains($primaryKey) )
         #set( $sortField = $util.toJson($primaryKey) )
       #else
-        #set( $sortField = $util.toJson(\\"\${primaryKey}.keyword\\") )
+        #set( $sortField = $util.toJson("\${primaryKey}.keyword") )
       #end
     #else
       #if( $nonKeywordFields.contains($sortItem.field) )
         #set( $sortField = $util.toJson($sortItem.field) )
       #else
-        #set( $sortField = $util.toJson(\\"\${sortItem.field}.keyword\\") )
+        #set( $sortField = $util.toJson("\${sortItem.field}.keyword") )
       #end
     #end
     #if( $util.isNullOrEmpty($sortItem.direction) )
-      #set( $sortDirection = $util.toJson({\\"order\\": \\"desc\\"}) )
+      #set( $sortDirection = $util.toJson({"order": "desc"}) )
     #else
-      #set( $sortDirection = $util.toJson({\\"order\\": $sortItem.direction}) )
+      #set( $sortDirection = $util.toJson({"order": $sortItem.direction}) )
     #end
-    $util.qr($sortValues.add(\\"{$sortField: $sortDirection}\\"))
+    $util.qr($sortValues.add("{$sortField: $sortDirection}"))
   #end
 #end
 #foreach( $keyItem in $keyFields )
@@ -167,39 +167,39 @@ exports[`requestTemplate renders with simple id pk and version is enabled 1`] = 
     #if( $nonKeywordFields.contains($keyItem) )
       #set( $sortField = $util.toJson($keyItem) )
     #else
-      #set( $sortField = $util.toJson(\\"\${keyItem}.keyword\\") )
+      #set( $sortField = $util.toJson("\${keyItem}.keyword") )
     #end
-    #set( $sortDirection = $util.toJson({\\"order\\": \\"desc\\"}) )
-    $util.qr($sortValues.add(\\"{$sortField: $sortDirection}\\"))
+    #set( $sortDirection = $util.toJson({"order": "desc"}) )
+    $util.qr($sortValues.add("{$sortField: $sortDirection}"))
   #end
 #end
 #foreach( $aggItem in $args.aggregates )
   #if( $allowedAggFields.contains($aggItem.field) )
-    #set( $aggFilter = { \\"match_all\\": {} } )
+    #set( $aggFilter = { "match_all": {} } )
   #elseif( $aggFieldsFilterMap.containsKey($aggItem.field) )
-    #set( $aggFilter = { \\"bool\\": { \\"should\\": $aggFieldsFilterMap.get($aggItem.field) } } )
+    #set( $aggFilter = { "bool": { "should": $aggFieldsFilterMap.get($aggItem.field) } } )
   #else
-    $util.error(\\"Unauthorized to run aggregation on field: \${aggItem.field}\\", \\"Unauthorized\\")
+    $util.error("Unauthorized to run aggregation on field: \${aggItem.field}", "Unauthorized")
   #end
   #set( $aggregateValue = {} )
-  $util.qr($aggregateValue.put(\\"filter\\", $aggFilter))
+  $util.qr($aggregateValue.put("filter", $aggFilter))
   #set( $aggsValue = {} )
   #set( $aggItemType = {} )
   #if( $nonKeywordFields.contains($aggItem.field) )
-    $util.qr($aggItemType.put(\\"$aggItem.type\\", { \\"field\\": \\"$aggItem.field\\" }))
+    $util.qr($aggItemType.put("$aggItem.type", { "field": "$aggItem.field" }))
   #else
-    $util.qr($aggItemType.put(\\"$aggItem.type\\", { \\"field\\": \\"\${aggItem.field}.keyword\\" }))
+    $util.qr($aggItemType.put("$aggItem.type", { "field": "\${aggItem.field}.keyword" }))
   #end
-  $util.qr($aggsValue.put(\\"$aggItem.name\\", $aggItemType))
-  $util.qr($aggregateValue.put(\\"aggs\\", $aggsValue))
-  $util.qr($aggregateValues.put(\\"$aggItem.name\\", $aggregateValue))
+  $util.qr($aggsValue.put("$aggItem.name", $aggItemType))
+  $util.qr($aggregateValue.put("aggs", $aggsValue))
+  $util.qr($aggregateValues.put("$aggItem.name", $aggregateValue))
 #end
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($args.filter) )
     #set( $filter = {
-  \\"bool\\": {
-      \\"must\\":     [$ctx.stash.authFilter, $util.parseJson($util.transform.toElasticsearchQueryDSL($args.filter))]
+  "bool": {
+      "must":     [$ctx.stash.authFilter, $util.parseJson($util.transform.toElasticsearchQueryDSL($args.filter))]
   }
 } )
   #end
@@ -210,22 +210,22 @@ exports[`requestTemplate renders with simple id pk and version is enabled 1`] = 
 #end
 #if( $util.isNullOrEmpty($filter) )
   #set( $filter = {
-  \\"match_all\\": {}
+  "match_all": {}
 } )
 #end
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"GET\\",
-  \\"path\\": \\"$indexPath\\",
-  \\"params\\": {
-      \\"body\\":     {
-                #if( $context.args.nextToken )\\"search_after\\": $util.base64Decode($args.nextToken), #end
-                #if( $context.args.from )\\"from\\": $args.from, #end
-                \\"size\\": #if( $args.limit ) $args.limit #else 100 #end,
-                \\"sort\\": $sortValues,
-                \\"version\\": true,
-                \\"query\\": $util.toJson($filter),
-                \\"aggs\\": $util.toJson($aggregateValues)
+  "version": "2018-05-29",
+  "operation": "GET",
+  "path": "$indexPath",
+  "params": {
+      "body":     {
+                #if( $context.args.nextToken )"search_after": $util.base64Decode($args.nextToken), #end
+                #if( $context.args.from )"from": $args.from, #end
+                "size": #if( $args.limit ) $args.limit #else 100 #end,
+                "sort": $sortValues,
+                "version": true,
+                "query": $util.toJson($filter),
+                "aggs": $util.toJson($aggregateValues)
                 }
   }
 }"
@@ -233,7 +233,7 @@ exports[`requestTemplate renders with simple id pk and version is enabled 1`] = 
 
 exports[`requestTemplate renders with simple id pk and version is undefined 1`] = `
 "#set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
-#set( $indexPath = \\"/byid/_search\\" )
+#set( $indexPath = "/byid/_search" )
 #set( $allowedAggFields = $util.defaultIfNull($ctx.stash.allowedAggFields, []) )
 #set( $aggFieldsFilterMap = $util.defaultIfNull($ctx.stash.aggFieldsFilterMap, {}) )
 #set( $nonKeywordFields = [] )
@@ -241,7 +241,7 @@ exports[`requestTemplate renders with simple id pk and version is undefined 1`] 
 #set( $sortValues = [] )
 #set( $sortFields = [] )
 #set( $aggregateValues = {} )
-#set( $primaryKey = \\"id\\" )
+#set( $primaryKey = "id" )
 #if( !$util.isNullOrEmpty($args.sort) )
   #foreach( $sortItem in $args.sort )
     #if( $util.isNullOrEmpty($sortItem.field) )
@@ -253,21 +253,21 @@ exports[`requestTemplate renders with simple id pk and version is undefined 1`] 
       #if( $nonKeywordFields.contains($primaryKey) )
         #set( $sortField = $util.toJson($primaryKey) )
       #else
-        #set( $sortField = $util.toJson(\\"\${primaryKey}.keyword\\") )
+        #set( $sortField = $util.toJson("\${primaryKey}.keyword") )
       #end
     #else
       #if( $nonKeywordFields.contains($sortItem.field) )
         #set( $sortField = $util.toJson($sortItem.field) )
       #else
-        #set( $sortField = $util.toJson(\\"\${sortItem.field}.keyword\\") )
+        #set( $sortField = $util.toJson("\${sortItem.field}.keyword") )
       #end
     #end
     #if( $util.isNullOrEmpty($sortItem.direction) )
-      #set( $sortDirection = $util.toJson({\\"order\\": \\"desc\\"}) )
+      #set( $sortDirection = $util.toJson({"order": "desc"}) )
     #else
-      #set( $sortDirection = $util.toJson({\\"order\\": $sortItem.direction}) )
+      #set( $sortDirection = $util.toJson({"order": $sortItem.direction}) )
     #end
-    $util.qr($sortValues.add(\\"{$sortField: $sortDirection}\\"))
+    $util.qr($sortValues.add("{$sortField: $sortDirection}"))
   #end
 #end
 #foreach( $keyItem in $keyFields )
@@ -275,39 +275,39 @@ exports[`requestTemplate renders with simple id pk and version is undefined 1`] 
     #if( $nonKeywordFields.contains($keyItem) )
       #set( $sortField = $util.toJson($keyItem) )
     #else
-      #set( $sortField = $util.toJson(\\"\${keyItem}.keyword\\") )
+      #set( $sortField = $util.toJson("\${keyItem}.keyword") )
     #end
-    #set( $sortDirection = $util.toJson({\\"order\\": \\"desc\\"}) )
-    $util.qr($sortValues.add(\\"{$sortField: $sortDirection}\\"))
+    #set( $sortDirection = $util.toJson({"order": "desc"}) )
+    $util.qr($sortValues.add("{$sortField: $sortDirection}"))
   #end
 #end
 #foreach( $aggItem in $args.aggregates )
   #if( $allowedAggFields.contains($aggItem.field) )
-    #set( $aggFilter = { \\"match_all\\": {} } )
+    #set( $aggFilter = { "match_all": {} } )
   #elseif( $aggFieldsFilterMap.containsKey($aggItem.field) )
-    #set( $aggFilter = { \\"bool\\": { \\"should\\": $aggFieldsFilterMap.get($aggItem.field) } } )
+    #set( $aggFilter = { "bool": { "should": $aggFieldsFilterMap.get($aggItem.field) } } )
   #else
-    $util.error(\\"Unauthorized to run aggregation on field: \${aggItem.field}\\", \\"Unauthorized\\")
+    $util.error("Unauthorized to run aggregation on field: \${aggItem.field}", "Unauthorized")
   #end
   #set( $aggregateValue = {} )
-  $util.qr($aggregateValue.put(\\"filter\\", $aggFilter))
+  $util.qr($aggregateValue.put("filter", $aggFilter))
   #set( $aggsValue = {} )
   #set( $aggItemType = {} )
   #if( $nonKeywordFields.contains($aggItem.field) )
-    $util.qr($aggItemType.put(\\"$aggItem.type\\", { \\"field\\": \\"$aggItem.field\\" }))
+    $util.qr($aggItemType.put("$aggItem.type", { "field": "$aggItem.field" }))
   #else
-    $util.qr($aggItemType.put(\\"$aggItem.type\\", { \\"field\\": \\"\${aggItem.field}.keyword\\" }))
+    $util.qr($aggItemType.put("$aggItem.type", { "field": "\${aggItem.field}.keyword" }))
   #end
-  $util.qr($aggsValue.put(\\"$aggItem.name\\", $aggItemType))
-  $util.qr($aggregateValue.put(\\"aggs\\", $aggsValue))
-  $util.qr($aggregateValues.put(\\"$aggItem.name\\", $aggregateValue))
+  $util.qr($aggsValue.put("$aggItem.name", $aggItemType))
+  $util.qr($aggregateValue.put("aggs", $aggsValue))
+  $util.qr($aggregateValues.put("$aggItem.name", $aggregateValue))
 #end
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($args.filter) )
     #set( $filter = {
-  \\"bool\\": {
-      \\"must\\":     [$ctx.stash.authFilter, $util.parseJson($util.transform.toElasticsearchQueryDSL($args.filter))]
+  "bool": {
+      "must":     [$ctx.stash.authFilter, $util.parseJson($util.transform.toElasticsearchQueryDSL($args.filter))]
   }
 } )
   #end
@@ -318,22 +318,22 @@ exports[`requestTemplate renders with simple id pk and version is undefined 1`] 
 #end
 #if( $util.isNullOrEmpty($filter) )
   #set( $filter = {
-  \\"match_all\\": {}
+  "match_all": {}
 } )
 #end
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"GET\\",
-  \\"path\\": \\"$indexPath\\",
-  \\"params\\": {
-      \\"body\\":     {
-                #if( $context.args.nextToken )\\"search_after\\": $util.base64Decode($args.nextToken), #end
-                #if( $context.args.from )\\"from\\": $args.from, #end
-                \\"size\\": #if( $args.limit ) $args.limit #else 100 #end,
-                \\"sort\\": $sortValues,
-                \\"version\\": false,
-                \\"query\\": $util.toJson($filter),
-                \\"aggs\\": $util.toJson($aggregateValues)
+  "version": "2018-05-29",
+  "operation": "GET",
+  "path": "$indexPath",
+  "params": {
+      "body":     {
+                #if( $context.args.nextToken )"search_after": $util.base64Decode($args.nextToken), #end
+                #if( $context.args.from )"from": $args.from, #end
+                "size": #if( $args.limit ) $args.limit #else 100 #end,
+                "sort": $sortValues,
+                "version": false,
+                "query": $util.toJson($filter),
+                "aggs": $util.toJson($aggregateValues)
                 }
   }
 }"
@@ -346,31 +346,31 @@ exports[`responseTemplate generates when version is disabled 1`] = `
   #if( !$foreach.hasNext )
     #set( $nextToken = $util.base64Encode($util.toJson($entry.sort)) )
   #end
-  $util.qr($es_items.add($entry.get(\\"_source\\")))
+  $util.qr($es_items.add($entry.get("_source")))
 #end
 #foreach( $aggItem in $context.result.aggregations.keySet() )
   #set( $aggResult = {} )
   #set( $aggResultValue = {} )
   #set( $currentAggItem = $ctx.result.aggregations.get($aggItem) )
-  $util.qr($aggResult.put(\\"name\\", $aggItem))
+  $util.qr($aggResult.put("name", $aggItem))
   #if( !$util.isNullOrEmpty($currentAggItem) )
     #if( !$util.isNullOrEmpty($currentAggItem.get($aggItem).buckets) )
-      $util.qr($aggResultValue.put(\\"__typename\\", \\"SearchableAggregateBucketResult\\"))
-      $util.qr($aggResultValue.put(\\"buckets\\", $currentAggItem.get($aggItem).buckets))
+      $util.qr($aggResultValue.put("__typename", "SearchableAggregateBucketResult"))
+      $util.qr($aggResultValue.put("buckets", $currentAggItem.get($aggItem).buckets))
     #end
     #if( !$util.isNullOrEmpty($currentAggItem.get($aggItem).value) )
-      $util.qr($aggResultValue.put(\\"__typename\\", \\"SearchableAggregateScalarResult\\"))
-      $util.qr($aggResultValue.put(\\"value\\", $currentAggItem.get($aggItem).value))
+      $util.qr($aggResultValue.put("__typename", "SearchableAggregateScalarResult"))
+      $util.qr($aggResultValue.put("value", $currentAggItem.get($aggItem).value))
     #end
   #end
-  $util.qr($aggResult.put(\\"result\\", $aggResultValue))
+  $util.qr($aggResult.put("result", $aggResultValue))
   $util.qr($aggregateValues.add($aggResult))
 #end
 $util.toJson({
-  \\"items\\": $es_items,
-  \\"total\\": $ctx.result.hits.total.value,
-  \\"nextToken\\": $nextToken,
-  \\"aggregateItems\\": $aggregateValues
+  "items": $es_items,
+  "total": $ctx.result.hits.total.value,
+  "nextToken": $nextToken,
+  "aggregateItems": $aggregateValues
 })"
 `;
 
@@ -381,33 +381,33 @@ exports[`responseTemplate generates when version is enabled 1`] = `
   #if( !$foreach.hasNext )
     #set( $nextToken = $util.base64Encode($util.toJson($entry.sort)) )
   #end
-  #set( $row = $entry.get(\\"_source\\") )
-  $util.qr($row.put(\\"_version\\", $entry.get(\\"_version\\")))
+  #set( $row = $entry.get("_source") )
+  $util.qr($row.put("_version", $entry.get("_version")))
   $util.qr($es_items.add($row))
 #end
 #foreach( $aggItem in $context.result.aggregations.keySet() )
   #set( $aggResult = {} )
   #set( $aggResultValue = {} )
   #set( $currentAggItem = $ctx.result.aggregations.get($aggItem) )
-  $util.qr($aggResult.put(\\"name\\", $aggItem))
+  $util.qr($aggResult.put("name", $aggItem))
   #if( !$util.isNullOrEmpty($currentAggItem) )
     #if( !$util.isNullOrEmpty($currentAggItem.get($aggItem).buckets) )
-      $util.qr($aggResultValue.put(\\"__typename\\", \\"SearchableAggregateBucketResult\\"))
-      $util.qr($aggResultValue.put(\\"buckets\\", $currentAggItem.get($aggItem).buckets))
+      $util.qr($aggResultValue.put("__typename", "SearchableAggregateBucketResult"))
+      $util.qr($aggResultValue.put("buckets", $currentAggItem.get($aggItem).buckets))
     #end
     #if( !$util.isNullOrEmpty($currentAggItem.get($aggItem).value) )
-      $util.qr($aggResultValue.put(\\"__typename\\", \\"SearchableAggregateScalarResult\\"))
-      $util.qr($aggResultValue.put(\\"value\\", $currentAggItem.get($aggItem).value))
+      $util.qr($aggResultValue.put("__typename", "SearchableAggregateScalarResult"))
+      $util.qr($aggResultValue.put("value", $currentAggItem.get($aggItem).value))
     #end
   #end
-  $util.qr($aggResult.put(\\"result\\", $aggResultValue))
+  $util.qr($aggResult.put("result", $aggResultValue))
   $util.qr($aggregateValues.add($aggResult))
 #end
 $util.toJson({
-  \\"items\\": $es_items,
-  \\"total\\": $ctx.result.hits.total.value,
-  \\"nextToken\\": $nextToken,
-  \\"aggregateItems\\": $aggregateValues
+  "items": $es_items,
+  "total": $ctx.result.hits.total.value,
+  "nextToken": $nextToken,
+  "aggregateItems": $aggregateValues
 })"
 `;
 
@@ -418,37 +418,37 @@ exports[`responseTemplate generates when version is undefined 1`] = `
   #if( !$foreach.hasNext )
     #set( $nextToken = $util.base64Encode($util.toJson($entry.sort)) )
   #end
-  $util.qr($es_items.add($entry.get(\\"_source\\")))
+  $util.qr($es_items.add($entry.get("_source")))
 #end
 #foreach( $aggItem in $context.result.aggregations.keySet() )
   #set( $aggResult = {} )
   #set( $aggResultValue = {} )
   #set( $currentAggItem = $ctx.result.aggregations.get($aggItem) )
-  $util.qr($aggResult.put(\\"name\\", $aggItem))
+  $util.qr($aggResult.put("name", $aggItem))
   #if( !$util.isNullOrEmpty($currentAggItem) )
     #if( !$util.isNullOrEmpty($currentAggItem.get($aggItem).buckets) )
-      $util.qr($aggResultValue.put(\\"__typename\\", \\"SearchableAggregateBucketResult\\"))
-      $util.qr($aggResultValue.put(\\"buckets\\", $currentAggItem.get($aggItem).buckets))
+      $util.qr($aggResultValue.put("__typename", "SearchableAggregateBucketResult"))
+      $util.qr($aggResultValue.put("buckets", $currentAggItem.get($aggItem).buckets))
     #end
     #if( !$util.isNullOrEmpty($currentAggItem.get($aggItem).value) )
-      $util.qr($aggResultValue.put(\\"__typename\\", \\"SearchableAggregateScalarResult\\"))
-      $util.qr($aggResultValue.put(\\"value\\", $currentAggItem.get($aggItem).value))
+      $util.qr($aggResultValue.put("__typename", "SearchableAggregateScalarResult"))
+      $util.qr($aggResultValue.put("value", $currentAggItem.get($aggItem).value))
     #end
   #end
-  $util.qr($aggResult.put(\\"result\\", $aggResultValue))
+  $util.qr($aggResult.put("result", $aggResultValue))
   $util.qr($aggregateValues.add($aggResult))
 #end
 $util.toJson({
-  \\"items\\": $es_items,
-  \\"total\\": $ctx.result.hits.total.value,
-  \\"nextToken\\": $nextToken,
-  \\"aggregateItems\\": $aggregateValues
+  "items": $es_items,
+  "total": $ctx.result.hits.total.value,
+  "nextToken": $nextToken,
+  "aggregateItems": $aggregateValues
 })"
 `;
 
 exports[`sandboxMappingTemplate renders when sandbox is disabled and iam access disabled 1`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -457,9 +457,9 @@ $util.toJson({})
 
 exports[`sandboxMappingTemplate renders when sandbox is disabled and iam access enabled 1`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Enabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
-  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
-    $util.qr($ctx.stash.put(\\"allowedAggFields\\", [\\"id\\",\\"content\\"]))
+#if( !$ctx.stash.get("hasAuth") )
+  #if( $util.authType() == "IAM Authorization" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put("allowedAggFields", ["id","content"]))
     #return($util.toJson({}))
   #end
   $util.unauthorized()
@@ -470,9 +470,9 @@ $util.toJson({})
 
 exports[`sandboxMappingTemplate renders when sandbox is enabled and iam access disabled 1`] = `
 "## [Start] Sandbox Mode Enabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
-  #if( $util.authType() == \\"API Key Authorization\\" )
-    $util.qr($ctx.stash.put(\\"allowedAggFields\\", [\\"id\\",\\"content\\"]))
+#if( !$ctx.stash.get("hasAuth") )
+  #if( $util.authType() == "API Key Authorization" )
+    $util.qr($ctx.stash.put("allowedAggFields", ["id","content"]))
     #return($util.toJson({}))
   #end
   $util.unauthorized()
@@ -483,13 +483,13 @@ $util.toJson({})
 
 exports[`sandboxMappingTemplate renders when sandbox is enabled and iam access enabled 1`] = `
 "## [Start] Sandbox Mode Enabled, IAM Access Enabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
-  #if( $util.authType() == \\"API Key Authorization\\" )
-    $util.qr($ctx.stash.put(\\"allowedAggFields\\", [\\"id\\",\\"content\\"]))
+#if( !$ctx.stash.get("hasAuth") )
+  #if( $util.authType() == "API Key Authorization" )
+    $util.qr($ctx.stash.put("allowedAggFields", ["id","content"]))
     #return($util.toJson({}))
   #end
-  #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
-    $util.qr($ctx.stash.put(\\"allowedAggFields\\", [\\"id\\",\\"content\\"]))
+  #if( $util.authType() == "IAM Authorization" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
+    $util.qr($ctx.stash.put("allowedAggFields", ["id","content"]))
     #return($util.toJson({}))
   #end
   $util.unauthorized()

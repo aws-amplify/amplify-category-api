@@ -1,4 +1,4 @@
-const circusRunner = require('jest-circus/runner');
+const { default: circusRunner } = require('jest-circus/runner');
 const throat = require('throat');
 const { v4: uuid } = require('uuid');
 

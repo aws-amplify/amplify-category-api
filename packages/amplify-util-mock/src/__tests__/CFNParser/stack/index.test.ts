@@ -67,7 +67,7 @@ describe('CloudFormation stack', () => {
           },
           {},
         ),
-      ).toThrowError('missing default value');
+      ).toThrow('missing default value');
     });
   });
 
@@ -169,7 +169,7 @@ describe('CloudFormation stack', () => {
     //       Type: 'DummyResource',
     //     },
     //   };
-    //   expect(() => sortResources(resources, {})).toThrowError('Resource resource3 has missing intrinsic dependency resource resource10');
+    //   expect(() => sortResources(resources, {})).toThrow('Resource resource3 has missing intrinsic dependency resource resource10');
     // });
 
     it('should throw error when resource depends on non-existent resource', () => {
@@ -185,7 +185,7 @@ describe('CloudFormation stack', () => {
           Type: 'DummyResource',
         },
       };
-      expect(() => sortResources(resources, {})).toThrowError('DependsOn a non-existent resource');
+      expect(() => sortResources(resources, {})).toThrow('DependsOn a non-existent resource');
     });
 
     it('should throw error when resource Depends on itself', () => {
@@ -201,7 +201,7 @@ describe('CloudFormation stack', () => {
           Type: 'DummyResource',
         },
       };
-      expect(() => sortResources(resources, {})).toThrowError('Resource resource1 can not depend on itself');
+      expect(() => sortResources(resources, {})).toThrow('Resource resource1 can not depend on itself');
     });
   });
   describe('filterResourcesBasedOnConditions', () => {
@@ -237,7 +237,7 @@ describe('CloudFormation stack', () => {
           },
           {},
         ),
-      ).toThrowError('not defined in Condition block');
+      ).toThrow('not defined in Condition block');
     });
   });
 
@@ -606,7 +606,7 @@ describe('CloudFormation stack', () => {
           },
           cfnResourceFetcher,
         ),
-      ).toThrowError('is already exported in a different stack');
+      ).toThrow('is already exported in a different stack');
     });
 
     it('should throw error if the nested stack resource does not have TemplateURL', () => {
@@ -626,7 +626,7 @@ describe('CloudFormation stack', () => {
           },
           cfnResourceFetcher,
         ),
-      ).toThrowError('Stack is missing required property TemplateURL');
+      ).toThrow('Stack is missing required property TemplateURL');
     });
   });
 

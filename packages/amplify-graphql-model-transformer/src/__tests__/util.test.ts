@@ -21,7 +21,7 @@ test('getEnv succeeds with existing / fails with non-existing', () => {
   process.env['FOO'] = 'BAR';
   const fooValue = getEnv('FOO');
   expect(fooValue).toEqual('BAR');
-  expect(() => getEnv('')).toThrowError();
+  expect(() => getEnv('')).toThrow();
 });
 
 test('log helper coverage', () => {

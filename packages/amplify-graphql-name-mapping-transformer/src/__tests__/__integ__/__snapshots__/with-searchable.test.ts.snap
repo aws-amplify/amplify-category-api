@@ -1,7 +1,7 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`mapsTo with searchable adds mapping slots if searchable model has renamed field 1`] = `
-"#set( $fieldMap = {\\"agendaTodosId\\":\\"checklistTodosId\\"} )
+"#set( $fieldMap = {"agendaTodosId":"checklistTodosId"} )
 #if( $util.isNull($fieldMap) || $fieldMap.keySet().size() <= 0 )
   #return($ctx.args)
 #end
@@ -9,10 +9,10 @@ exports[`mapsTo with searchable adds mapping slots if searchable model has renam
   #return($ctx.args)
 #end
 #set( $invoke = {
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\": {
-      \\"args\\": $ctx.args,
-      \\"fieldMap\\": $fieldMap
+  "operation": "Invoke",
+  "payload": {
+      "args": $ctx.args,
+      "fieldMap": $fieldMap
   }
 } )
 $util.toJson($invoke)"
@@ -28,8 +28,8 @@ $util.toJson({})"
 
 exports[`mapsTo with searchable adds mapping slots if searchable model has renamed field 3`] = `
 "#foreach( $item in $ctx.prev.result.items )
-  $util.qr($item.put(\\"agendaTodosId\\", $item.checklistTodosId))
-  $util.qr($item.remove(\\"checklistTodosId\\"))
+  $util.qr($item.put("agendaTodosId", $item.checklistTodosId))
+  $util.qr($item.remove("checklistTodosId"))
 #end
 $util.toJson($ctx.prev.result)"
 `;

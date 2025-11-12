@@ -561,7 +561,7 @@ const testDoesNotHaveCRUDLAccess = async (
         `,
       fetchPolicy: 'no-cache',
     }),
-  ).rejects.toThrowError(
+  ).rejects.toThrow(
     /GraphQL error: Not Authorized to access .* on type Mutation|Network error: Response not successful: Received status code 401/,
   );
 
@@ -579,7 +579,7 @@ const testDoesNotHaveCRUDLAccess = async (
         `,
       fetchPolicy: 'no-cache',
     }),
-  ).rejects.toThrowError(
+  ).rejects.toThrow(
     /GraphQL error: Not Authorized to access .* on type Query|Network error: Response not successful: Received status code 401/,
   );
 
@@ -595,7 +595,7 @@ const testDoesNotHaveCRUDLAccess = async (
         `,
       fetchPolicy: 'no-cache',
     }),
-  ).rejects.toThrowError(
+  ).rejects.toThrow(
     /GraphQL error: Not Authorized to access .* on type Query|Network error: Response not successful: Received status code 401/,
   );
 
@@ -611,7 +611,7 @@ const testDoesNotHaveCRUDLAccess = async (
         `,
       fetchPolicy: 'no-cache',
     }),
-  ).rejects.toThrowError(
+  ).rejects.toThrow(
     /GraphQL error: Not Authorized to access .* on type Mutation|Network error: Response not successful: Received status code 401/,
   );
 
@@ -627,7 +627,7 @@ const testDoesNotHaveCRUDLAccess = async (
         `,
       fetchPolicy: 'no-cache',
     }),
-  ).rejects.toThrowError(
+  ).rejects.toThrow(
     /GraphQL error: Not Authorized to access .* on type Mutation|Network error: Response not successful: Received status code 401/,
   );
 };

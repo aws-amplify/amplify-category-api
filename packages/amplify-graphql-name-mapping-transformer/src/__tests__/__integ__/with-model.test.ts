@@ -33,16 +33,16 @@ describe('@mapsTo directive on model type', () => {
     `;
     const out = transformSchema(basicSchema, DDB_DEFAULT_DATASOURCE_STRATEGY);
     expect(out.stacks.Task.Resources!.TaskTable!.Properties.TableName).toMatchInlineSnapshot(`
-      Object {
-        "Fn::Join": Array [
+      {
+        "Fn::Join": [
           "",
-          Array [
+          [
             "Task-",
-            Object {
+            {
               "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
             },
             "-",
-            Object {
+            {
               "Ref": "referencetotransformerrootstackenv10C5A902Ref",
             },
           ],
@@ -50,14 +50,14 @@ describe('@mapsTo directive on model type', () => {
       }
     `);
     expect(out.stacks.Task.Outputs!.GetAttTaskTableName).toMatchInlineSnapshot(`
-      Object {
+      {
         "Description": "Your DynamoDB table name.",
-        "Export": Object {
-          "Name": Object {
-            "Fn::Join": Array [
+        "Export": {
+          "Name": {
+            "Fn::Join": [
               ":",
-              Array [
-                Object {
+              [
+                {
                   "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
                 },
                 "GetAtt:TaskTable:Name",
@@ -65,7 +65,7 @@ describe('@mapsTo directive on model type', () => {
             ],
           },
         },
-        "Value": Object {
+        "Value": {
           "Ref": "TaskTable",
         },
       }

@@ -44,7 +44,7 @@ test('ModelConnectionTransformer should fail if connection was called on an obje
     featureFlags,
   });
 
-  expect(() => transformer.transform(validSchema)).toThrowError(`@connection must be on an @model object type field.`);
+  expect(() => transformer.transform(validSchema)).toThrow(`@connection must be on an @model object type field.`);
 });
 
 test('ModelConnectionTransformer should fail if connection was with an object that is not a Model type.', () => {
@@ -66,7 +66,7 @@ test('ModelConnectionTransformer should fail if connection was with an object th
     featureFlags,
   });
 
-  expect(() => transformer.transform(validSchema)).toThrowError(`Object type Test1 must be annotated with @model.`);
+  expect(() => transformer.transform(validSchema)).toThrow(`Object type Test1 must be annotated with @model.`);
 });
 
 test('ModelConnectionTransformer should fail if the field type where the directive is called is incorrect.', () => {
@@ -88,7 +88,7 @@ test('ModelConnectionTransformer should fail if the field type where the directi
     featureFlags,
   });
 
-  expect(() => transformer.transform(validSchema)).toThrowError('Unknown type "Test2". Did you mean "Test" or "Test1"?');
+  expect(() => transformer.transform(validSchema)).toThrow('Unknown type "Test2". Did you mean "Test" or "Test1"?');
 });
 
 test('ModelConnectionTransformer should fail if an empty list of fields is passed in.', () => {
@@ -110,7 +110,7 @@ test('ModelConnectionTransformer should fail if an empty list of fields is passe
     featureFlags,
   });
 
-  expect(() => transformer.transform(validSchema)).toThrowError('No fields passed in to @connection directive.');
+  expect(() => transformer.transform(validSchema)).toThrow('No fields passed in to @connection directive.');
 });
 
 test('ModelConnectionTransformer should fail if any of the fields passed in are not in the Parent model.', () => {
@@ -136,7 +136,7 @@ test('ModelConnectionTransformer should fail if any of the fields passed in are 
     featureFlags,
   });
 
-  expect(() => transformer.transform(validSchema)).toThrowError('name is not a field in Test');
+  expect(() => transformer.transform(validSchema)).toThrow('name is not a field in Test');
 });
 
 test('ModelConnectionTransformer should fail if the query is not run on the default table when connection is trying to connect a single object.', () => {
@@ -162,7 +162,7 @@ test('ModelConnectionTransformer should fail if the query is not run on the defa
     featureFlags,
   });
 
-  expect(() => transformer.transform(validSchema)).toThrowError(
+  expect(() => transformer.transform(validSchema)).toThrow(
     'Connection is to a single object but the keyName notDefault was provided which does not reference the default table.',
   );
 });
@@ -187,7 +187,7 @@ test('ModelConnectionTransformer should fail if keyName provided does not exist.
     featureFlags,
   });
 
-  expect(() => transformer.transform(validSchema)).toThrowError('Key notDefault does not exist for model Test1');
+  expect(() => transformer.transform(validSchema)).toThrow('Key notDefault does not exist for model Test1');
 });
 
 test('ModelConnectionTransformer should fail if first field does not match PK of table. (When using default table)', () => {
@@ -210,7 +210,7 @@ test('ModelConnectionTransformer should fail if first field does not match PK of
     featureFlags,
   });
 
-  expect(() => transformer.transform(validSchema)).toThrowError('email field is not of type ID');
+  expect(() => transformer.transform(validSchema)).toThrow('email field is not of type ID');
 });
 
 test('ModelConnectionTransformer should fail if sort key type passed in does not match default table sort key type.', () => {
@@ -236,7 +236,7 @@ test('ModelConnectionTransformer should fail if sort key type passed in does not
     featureFlags,
   });
 
-  expect(() => transformer.transform(validSchema)).toThrowError('email field is not of type ID');
+  expect(() => transformer.transform(validSchema)).toThrow('email field is not of type ID');
 });
 
 test('ModelConnectionTransformer should fail if partial sort key is passed in connection.', () => {
@@ -262,7 +262,7 @@ test('ModelConnectionTransformer should fail if partial sort key is passed in co
     featureFlags,
   });
 
-  expect(() => transformer.transform(validSchema)).toThrowError(
+  expect(() => transformer.transform(validSchema)).toThrow(
     'Invalid @connection directive  testObj. fields does not accept partial sort key',
   );
 });
@@ -290,7 +290,7 @@ test('ModelConnectionTransformer should accept connection without sort key', () 
     featureFlags,
   });
 
-  expect(() => transformer.transform(validSchema)).not.toThrowError();
+  expect(() => transformer.transform(validSchema)).not.toThrow();
 });
 
 test('ModelConnectionTransformer should fail if sort key type passed in does not match custom index sort key type.', () => {
@@ -316,7 +316,7 @@ test('ModelConnectionTransformer should fail if sort key type passed in does not
     featureFlags,
   });
 
-  expect(() => transformer.transform(validSchema)).toThrowError('email field is not of type ID');
+  expect(() => transformer.transform(validSchema)).toThrow('email field is not of type ID');
 });
 
 test('ModelConnectionTransformer should fail if partition key type passed in does not match custom index partition key type.', () => {
@@ -342,7 +342,7 @@ test('ModelConnectionTransformer should fail if partition key type passed in doe
     featureFlags,
   });
 
-  expect(() => transformer.transform(validSchema)).toThrowError('email field is not of type ID');
+  expect(() => transformer.transform(validSchema)).toThrow('email field is not of type ID');
 });
 
 test('ModelConnectionTransformer for One-to-One getItem case.', () => {

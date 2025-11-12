@@ -4,6 +4,12 @@ env:
 phases:
   build:
     commands:
+      - |
+        Write-Host "Installing Node.js 20 via Chocolatey..."
+        choco install nodejs --version=20.18.0 -y --force
+        refreshenv
+        node --version
+        npm --version
       - yarn run production-build
       - yarn build-tests
 artifacts:

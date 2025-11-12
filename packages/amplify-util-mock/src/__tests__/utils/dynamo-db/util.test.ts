@@ -317,7 +317,7 @@ describe('DynamoDB Utils', () => {
         ...baseSchema,
         GlobalSecondaryIndexes: [existingIndex],
       };
-      expect(() => ddbUtils.getUpdateTableInput(createTableInput, existingTableConfig)).toThrowError('Invalid input, table name mismatch');
+      expect(() => ddbUtils.getUpdateTableInput(createTableInput, existingTableConfig)).toThrow('Invalid input, table name mismatch');
     });
 
     it('should generate sepearate inputs when there is an addition and deletion of index', () => {

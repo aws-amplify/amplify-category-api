@@ -30,9 +30,13 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-appsync-simulator": "^2.16.15",
-    "@aws-amplify/amplify-category-function": "^5.7.16",
-    "@aws-amplify/amplify-provider-awscloudformation": "^8.10.11",
+    "@aws-amplify/amplify-appsync-simulator": "^2.16.17",
+    "@aws-amplify/amplify-category-function": "^5.7.18",
+    "@aws-amplify/amplify-provider-awscloudformation": "^8.11.16",
+    "@aws-amplify/graphql-transformer": "1.8.2",
+    "@aws-amplify/graphql-transformer-core": "2.11.2",
+    "@aws-amplify/graphql-transformer-interfaces": "3.12.1",
+    "@aws-amplify/graphql-transformer-test-utils": "0.6.8",
     "@aws-sdk/client-dynamodb": "3.624.0",
     "@hapi/topo": "^5.0.0",
     "amplify-category-api-dynamodb-simulator": "2.4.17",
@@ -88,10 +92,18 @@
     "ws": "^7.5.7"
   },
   "jest": {
-    "testRunner": "jest-circus/runner",
+    "testRunner": "<rootDir>/../../FixJestCircusRunner.js",
     "preset": "ts-jest",
+    "extensionsToTreatAsEsm": [
+      ".ts"
+    ],
     "transform": {
-      "^.+\\.tsx?$": "ts-jest"
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "useESM": true
+        }
+      ]
     },
     "collectCoverage": true,
     "coverageProvider": "v8",
@@ -106,8 +118,11 @@
       "default",
       "jest-junit"
     ],
-    "testURL": "http://localhost/",
+    "testEnvironmentOptions": {
+      "url": "http://localhost/"
+    },
     "testRegex": "(src/(__tests__|__e2e__|__e2e_v2__)/.*.test.ts)$",
+    "testPathIgnorePatterns": [],
     "moduleFileExtensions": [
       "ts",
       "tsx",
@@ -116,9 +131,6 @@
       "json",
       "node"
     ],
-    "moduleNameMapper": {
-      "axios": "axios/dist/node/axios.cjs"
-    },
     "testEnvironment": "../../FixJestEnvironment.js",
     "coveragePathIgnorePatterns": [
       "/__tests__/",

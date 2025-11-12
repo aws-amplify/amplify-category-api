@@ -213,7 +213,7 @@ describe('validation tests', () => {
       transform(authConfig, schema);
     };
 
-    expect(t).toThrowError(expectedError);
+    expect(t).toThrow(expectedError);
   };
 
   test('AMAZON_COGNITO_USER_POOLS not configured for project', () => {

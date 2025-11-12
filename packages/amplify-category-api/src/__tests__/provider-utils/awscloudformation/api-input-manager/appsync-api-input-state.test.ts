@@ -57,5 +57,5 @@ test('Api Input State -> validate cli payload manual payload', async () => {
 test('Api Input State -> validate cli payload manual payload to throw error', async () => {
   const resourceName = 'mockResource';
   const apiState = new AppsyncApiInputState(mockContext, resourceName);
-  expect(apiState.isCLIInputsValid()).rejects.toThrowError();
+  expect(apiState.isCLIInputsValid()).rejects.toThrow();
 });

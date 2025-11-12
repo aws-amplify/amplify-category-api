@@ -48,8 +48,8 @@ describe('attachInputMappingSlot', () => {
     });
     expect(addToSlot_mock.mock.calls[0][1]).toMatchInlineSnapshot(`
       S3MappingTemplate {
-        "content": "$util.qr($ctx.args.input.put(\\"origFieldName\\", $ctx.args.input.newFieldName))
-      $util.qr($ctx.args.input.remove(\\"newFieldName\\"))
+        "content": "$util.qr($ctx.args.input.put("origFieldName", $ctx.args.input.newFieldName))
+      $util.qr($ctx.args.input.remove("newFieldName"))
       $util.toJson({})",
         "name": "resolvers/Mutation.createTestType.{slotName}.{slotIndex}.req.vtl",
         "type": "S3_LOCATION",
@@ -66,10 +66,10 @@ describe('attachInputMappingSlot', () => {
     });
     expect(addToSlot_mock.mock.calls[0][1]).toMatchInlineSnapshot(`
       S3MappingTemplate {
-        "content": "$util.qr($ctx.args.input.put(\\"origFieldName\\", $ctx.args.input.newFieldName))
-      $util.qr($ctx.args.input.remove(\\"newFieldName\\"))
-      $util.qr($ctx.args.input.put(\\"theOG\\", $ctx.args.input.anotherOne))
-      $util.qr($ctx.args.input.remove(\\"anotherOne\\"))
+        "content": "$util.qr($ctx.args.input.put("origFieldName", $ctx.args.input.newFieldName))
+      $util.qr($ctx.args.input.remove("newFieldName"))
+      $util.qr($ctx.args.input.put("theOG", $ctx.args.input.anotherOne))
+      $util.qr($ctx.args.input.remove("anotherOne"))
       $util.toJson({})",
         "name": "resolvers/Mutation.createTestType.{slotName}.{slotIndex}.req.vtl",
         "type": "S3_LOCATION",
@@ -103,8 +103,8 @@ describe('attachResponseMappingSlot', () => {
     expect(addToSlot_mock.mock.calls[0][1]).toBeUndefined();
     expect(addToSlot_mock.mock.calls[0][2]).toMatchInlineSnapshot(`
       S3MappingTemplate {
-        "content": "$util.qr($ctx.prev.result.put(\\"newFieldName\\", $ctx.prev.result.origFieldName))
-      $util.qr($ctx.prev.result.remove(\\"origFieldName\\"))
+        "content": "$util.qr($ctx.prev.result.put("newFieldName", $ctx.prev.result.origFieldName))
+      $util.qr($ctx.prev.result.remove("origFieldName"))
       $util.toJson($ctx.prev.result)",
         "name": "resolvers/Mutation.createTestType.{slotName}.{slotIndex}.res.vtl",
         "type": "S3_LOCATION",
@@ -124,10 +124,10 @@ describe('attachResponseMappingSlot', () => {
     expect(addToSlot_mock.mock.calls[0][1]).toBeUndefined();
     expect(addToSlot_mock.mock.calls[0][2]).toMatchInlineSnapshot(`
       S3MappingTemplate {
-        "content": "$util.qr($ctx.prev.result.put(\\"newFieldName\\", $ctx.prev.result.origFieldName))
-      $util.qr($ctx.prev.result.remove(\\"origFieldName\\"))
-      $util.qr($ctx.prev.result.put(\\"anotherOne\\", $ctx.prev.result.theOG))
-      $util.qr($ctx.prev.result.remove(\\"theOG\\"))
+        "content": "$util.qr($ctx.prev.result.put("newFieldName", $ctx.prev.result.origFieldName))
+      $util.qr($ctx.prev.result.remove("origFieldName"))
+      $util.qr($ctx.prev.result.put("anotherOne", $ctx.prev.result.theOG))
+      $util.qr($ctx.prev.result.remove("theOG"))
       $util.toJson($ctx.prev.result)",
         "name": "resolvers/Mutation.createTestType.{slotName}.{slotIndex}.res.vtl",
         "type": "S3_LOCATION",
@@ -148,8 +148,8 @@ describe('attachResponseMappingSlot', () => {
     expect(addToSlot_mock.mock.calls[0][2]).toMatchInlineSnapshot(`
       S3MappingTemplate {
         "content": "#foreach( $item in $ctx.prev.result.items )
-        $util.qr($item.put(\\"newFieldName\\", $item.origFieldName))
-        $util.qr($item.remove(\\"origFieldName\\"))
+        $util.qr($item.put("newFieldName", $item.origFieldName))
+        $util.qr($item.remove("origFieldName"))
       #end
       $util.toJson($ctx.prev.result)",
         "name": "resolvers/Mutation.createTestType.{slotName}.{slotIndex}.res.vtl",
@@ -171,10 +171,10 @@ describe('attachResponseMappingSlot', () => {
     expect(addToSlot_mock.mock.calls[0][2]).toMatchInlineSnapshot(`
       S3MappingTemplate {
         "content": "#foreach( $item in $ctx.prev.result.items )
-        $util.qr($item.put(\\"newFieldName\\", $item.origFieldName))
-        $util.qr($item.remove(\\"origFieldName\\"))
-        $util.qr($item.put(\\"anotherOne\\", $item.theOG))
-        $util.qr($item.remove(\\"theOG\\"))
+        $util.qr($item.put("newFieldName", $item.origFieldName))
+        $util.qr($item.remove("origFieldName"))
+        $util.qr($item.put("anotherOne", $item.theOG))
+        $util.qr($item.remove("theOG"))
       #end
       $util.toJson($ctx.prev.result)",
         "name": "resolvers/Mutation.createTestType.{slotName}.{slotIndex}.res.vtl",

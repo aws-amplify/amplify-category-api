@@ -53,9 +53,15 @@ test('list tables', async () => {
     }),
   }));
 
-  const aws = require('aws-sdk');
+  const mockAwsConfig = {
+    region: 'us-east-1',
+    credentials: {
+      accessKeyId: 'test',
+      secretAccessKey: 'test',
+    },
+  };
 
-  const testClient = new AuroraDataAPIClient(region, secretStoreArn, clusterArn, databaseName, aws);
+  const testClient = new AuroraDataAPIClient(region, secretStoreArn, clusterArn, databaseName, mockAwsConfig);
   const mockRDS = new MockRDSClient();
   testClient.setRDSClient(mockRDS);
 
@@ -127,8 +133,14 @@ test('foreign key lookup', async () => {
     }),
   }));
 
-  const aws = require('aws-sdk');
-  const testClient = new AuroraDataAPIClient(region, secretStoreArn, clusterArn, databaseName, aws);
+  const mockAwsConfig = {
+    region: 'us-east-1',
+    credentials: {
+      accessKeyId: 'test',
+      secretAccessKey: 'test',
+    },
+  };
+  const testClient = new AuroraDataAPIClient(region, secretStoreArn, clusterArn, databaseName, mockAwsConfig);
   const mockRDS = new MockRDSClient();
   testClient.setRDSClient(mockRDS);
 
@@ -445,8 +457,14 @@ test('describe table', async () => {
     }),
   }));
 
-  const aws = require('aws-sdk');
-  const testClient = new AuroraDataAPIClient(region, secretStoreArn, clusterArn, databaseName, aws);
+  const mockAwsConfig = {
+    region: 'us-east-1',
+    credentials: {
+      accessKeyId: 'test',
+      secretAccessKey: 'test',
+    },
+  };
+  const testClient = new AuroraDataAPIClient(region, secretStoreArn, clusterArn, databaseName, mockAwsConfig);
   const mockRDS = new MockRDSClient();
   testClient.setRDSClient(mockRDS);
 

@@ -68,7 +68,12 @@
   },
   "jest": {
     "transform": {
-      "^.+\\.tsx?$": "ts-jest"
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "tsconfig": "<rootDir>/tsconfig.tests.json"
+        }
+      ]
     },
     "collectCoverage": true,
     "coverageProvider": "v8",
@@ -90,7 +95,9 @@
         }
       ]
     ],
-    "testURL": "http://localhost",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "testRegex": "(src/__tests__/.*.test.*)$",
     "testPathIgnorePatterns": [
       "/lib/",
@@ -106,19 +113,17 @@
       "node"
     ],
     "globals": {
-      "window": {},
-      "ts-jest": {
-        "tsconfig": "<rootDir>/tsconfig.tests.json"
-      }
+      "window": {}
     },
     "moduleNameMapper": {
-      "axios": "axios/dist/node/axios.cjs"
+      "^axios$": "<rootDir>/../../node_modules/axios/dist/node/axios.cjs"
     },
     "testEnvironment": "../../FixJestEnvironment.js",
     "coveragePathIgnorePatterns": [
       "/node_modules",
       "/__tests__/"
-    ]
+    ],
+    "testTimeout": 300000
   },
   "jest-junit": {
     "outputDirectory": "reports/junit/",

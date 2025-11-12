@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`can use actions individually and in supported sequences 1`] = `
 "type Query {
@@ -102,13 +102,13 @@ input SpeakTranslatedTextInput {
 `;
 
 exports[`can use actions individually and in supported sequences 2`] = `
-Object {
-  "Conditions": Object {
-    "HasEnvironmentParameter": Object {
-      "Fn::Not": Array [
-        Object {
-          "Fn::Equals": Array [
-            Object {
+{
+  "Conditions": {
+    "HasEnvironmentParameter": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
               "Ref": "referencetotransformerrootstackenv10C5A902Ref",
             },
             "NONE",
@@ -117,37 +117,37 @@ Object {
       ],
     },
   },
-  "Parameters": Object {
-    "referencetotransformerrootstackGraphQLAPI20497F53ApiId": Object {
+  "Parameters": {
+    "referencetotransformerrootstackGraphQLAPI20497F53ApiId": {
       "Type": "String",
     },
-    "referencetotransformerrootstackS3DeploymentBucket7592718ARef": Object {
+    "referencetotransformerrootstackS3DeploymentBucket7592718ARef": {
       "Type": "String",
     },
-    "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref": Object {
+    "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref": {
       "Type": "String",
     },
-    "referencetotransformerrootstackenv10C5A902Ref": Object {
+    "referencetotransformerrootstackenv10C5A902Ref": {
       "Type": "String",
     },
   },
-  "Resources": Object {
-    "LambdaDataSource": Object {
-      "Properties": Object {
-        "ApiId": Object {
+  "Resources": {
+    "LambdaDataSource": {
+      "Properties": {
+        "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
-        "LambdaConfig": Object {
-          "LambdaFunctionArn": Object {
-            "Fn::GetAtt": Array [
+        "LambdaConfig": {
+          "LambdaFunctionArn": {
+            "Fn::GetAtt": [
               "predictionsLambda8B880A74",
               "Arn",
             ],
           },
         },
         "Name": "LambdaDataSource",
-        "ServiceRoleArn": Object {
-          "Fn::GetAtt": Array [
+        "ServiceRoleArn": {
+          "Fn::GetAtt": [
             "predictionsIAMRole5BB74A99",
             "Arn",
           ],
@@ -156,14 +156,14 @@ Object {
       },
       "Type": "AWS::AppSync::DataSource",
     },
-    "LambdaDataSourceServiceRole81BB3362": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "LambdaDataSourceServiceRole81BB3362": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Principal": Object {
+              "Principal": {
                 "Service": "appsync.amazonaws.com",
               },
             },
@@ -173,26 +173,26 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "LambdaDataSourceServiceRoleDefaultPolicy00CC76B1": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "LambdaDataSourceServiceRoleDefaultPolicy00CC76B1": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": Array [
-                Object {
-                  "Fn::GetAtt": Array [
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
                     "predictionsLambda8B880A74",
                     "Arn",
                   ],
                 },
-                Object {
-                  "Fn::Join": Array [
+                {
+                  "Fn::Join": [
                     "",
-                    Array [
-                      Object {
-                        "Fn::GetAtt": Array [
+                    [
+                      {
+                        "Fn::GetAtt": [
                           "predictionsLambda8B880A74",
                           "Arn",
                         ],
@@ -207,23 +207,23 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "LambdaDataSourceServiceRoleDefaultPolicy00CC76B1",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "LambdaDataSourceServiceRole81BB3362",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "PredictionsLambdaAccess4D9DA807": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "PredictionsLambdaAccess4D9DA807": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
+              "Resource": {
+                "Fn::GetAtt": [
                   "predictionsLambda8B880A74",
                   "Arn",
                 ],
@@ -233,38 +233,38 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "PredictionsLambdaAccess4D9DA807",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "predictionsIAMRole5BB74A99",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "PredictionsStorageAccess68CD5140": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "PredictionsStorageAccess68CD5140": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "s3:GetObject",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::If": Array [
+              "Resource": {
+                "Fn::If": [
                   "HasEnvironmentParameter",
-                  Object {
-                    "Fn::Sub": Array [
+                  {
+                    "Fn::Sub": [
                       "arn:aws:s3:::myStorage\${hash}-\${env}/public/*",
-                      Object {
-                        "env": Object {
+                      {
+                        "env": {
                           "Ref": "referencetotransformerrootstackenv10C5A902Ref",
                         },
-                        "hash": Object {
-                          "Fn::Select": Array [
+                        "hash": {
+                          "Fn::Select": [
                             3,
-                            Object {
-                              "Fn::Split": Array [
+                            {
+                              "Fn::Split": [
                                 "-",
-                                Object {
+                                {
                                   "Ref": "AWS::StackName",
                                 },
                               ],
@@ -274,17 +274,17 @@ Object {
                       },
                     ],
                   },
-                  Object {
-                    "Fn::Sub": Array [
+                  {
+                    "Fn::Sub": [
                       "arn:aws:s3:::myStorage\${hash}/public/*",
-                      Object {
-                        "hash": Object {
-                          "Fn::Select": Array [
+                      {
+                        "hash": {
+                          "Fn::Select": [
                             3,
-                            Object {
-                              "Fn::Split": Array [
+                            {
+                              "Fn::Split": [
                                 "-",
-                                Object {
+                                {
                                   "Ref": "AWS::StackName",
                                 },
                               ],
@@ -301,53 +301,53 @@ Object {
           "Version": "2012-10-17",
         },
         "PolicyName": "PredictionsStorageAccess68CD5140",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "predictionsIAMRole5BB74A99",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "QueryconvertTextToSpeechResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
+    "QueryconvertTextToSpeechResolver": {
+      "Properties": {
+        "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
         "FieldName": "convertTextToSpeech",
         "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
                 "convertTextToSpeechFunctionconvertTextToSpeechFunctionAppSyncFunction15BC20B8",
                 "FunctionId",
               ],
             },
           ],
         },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
+        "RequestMappingTemplate": {
+          "Fn::Join": [
             "
 ",
-            Array [
-              Object {
-                "Fn::If": Array [
+            [
+              {
+                "Fn::If": [
                   "HasEnvironmentParameter",
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}-\${env}\\"))",
-                      Object {
-                        "env": Object {
+                  {
+                    "Fn::Sub": [
+                      "$util.qr($ctx.stash.put("s3Bucket", "myStorage\${hash}-\${env}"))",
+                      {
+                        "env": {
                           "Ref": "referencetotransformerrootstackenv10C5A902Ref",
                         },
-                        "hash": Object {
-                          "Fn::Select": Array [
+                        "hash": {
+                          "Fn::Select": [
                             3,
-                            Object {
-                              "Fn::Split": Array [
+                            {
+                              "Fn::Split": [
                                 "-",
-                                Object {
+                                {
                                   "Ref": "AWS::StackName",
                                 },
                               ],
@@ -357,17 +357,17 @@ Object {
                       },
                     ],
                   },
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}\\"))",
-                      Object {
-                        "hash": Object {
-                          "Fn::Select": Array [
+                  {
+                    "Fn::Sub": [
+                      "$util.qr($ctx.stash.put("s3Bucket", "myStorage\${hash}"))",
+                      {
+                        "hash": {
+                          "Fn::Select": [
                             3,
-                            Object {
-                              "Fn::Split": Array [
+                            {
+                              "Fn::Split": [
                                 "-",
-                                Object {
+                                {
                                   "Ref": "AWS::StackName",
                                 },
                               ],
@@ -379,14 +379,14 @@ Object {
                   },
                 ],
               },
-              "$util.qr($ctx.stash.put(\\"isList\\", false))
+              "$util.qr($ctx.stash.put("isList", false))
 {}",
             ],
           ],
         },
         "ResponseMappingTemplate": "## If the result is a list return the result as a list **
-#if( $ctx.stash.get(\\"isList\\") )
-  #set( $result = $ctx.result.split(\\"[ ,]+\\") )
+#if( $ctx.stash.get("isList") )
+  #set( $result = $ctx.result.split("[ ,]+") )
   $util.toJson($result)
 #else
   $util.toJson($ctx.result)
@@ -395,45 +395,45 @@ Object {
       },
       "Type": "AWS::AppSync::Resolver",
     },
-    "QueryidentifyLabelsResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
+    "QueryidentifyLabelsResolver": {
+      "Properties": {
+        "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
         "FieldName": "identifyLabels",
         "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
                 "identifyLabelsFunctionidentifyLabelsFunctionAppSyncFunction7C2A1E61",
                 "FunctionId",
               ],
             },
           ],
         },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
+        "RequestMappingTemplate": {
+          "Fn::Join": [
             "
 ",
-            Array [
-              Object {
-                "Fn::If": Array [
+            [
+              {
+                "Fn::If": [
                   "HasEnvironmentParameter",
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}-\${env}\\"))",
-                      Object {
-                        "env": Object {
+                  {
+                    "Fn::Sub": [
+                      "$util.qr($ctx.stash.put("s3Bucket", "myStorage\${hash}-\${env}"))",
+                      {
+                        "env": {
                           "Ref": "referencetotransformerrootstackenv10C5A902Ref",
                         },
-                        "hash": Object {
-                          "Fn::Select": Array [
+                        "hash": {
+                          "Fn::Select": [
                             3,
-                            Object {
-                              "Fn::Split": Array [
+                            {
+                              "Fn::Split": [
                                 "-",
-                                Object {
+                                {
                                   "Ref": "AWS::StackName",
                                 },
                               ],
@@ -443,17 +443,17 @@ Object {
                       },
                     ],
                   },
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}\\"))",
-                      Object {
-                        "hash": Object {
-                          "Fn::Select": Array [
+                  {
+                    "Fn::Sub": [
+                      "$util.qr($ctx.stash.put("s3Bucket", "myStorage\${hash}"))",
+                      {
+                        "hash": {
+                          "Fn::Select": [
                             3,
-                            Object {
-                              "Fn::Split": Array [
+                            {
+                              "Fn::Split": [
                                 "-",
-                                Object {
+                                {
                                   "Ref": "AWS::StackName",
                                 },
                               ],
@@ -465,14 +465,14 @@ Object {
                   },
                 ],
               },
-              "$util.qr($ctx.stash.put(\\"isList\\", false))
+              "$util.qr($ctx.stash.put("isList", false))
 {}",
             ],
           ],
         },
         "ResponseMappingTemplate": "## If the result is a list return the result as a list **
-#if( $ctx.stash.get(\\"isList\\") )
-  #set( $result = $ctx.result.split(\\"[ ,]+\\") )
+#if( $ctx.stash.get("isList") )
+  #set( $result = $ctx.result.split("[ ,]+") )
   $util.toJson($result)
 #else
   $util.toJson($ctx.result)
@@ -481,45 +481,45 @@ Object {
       },
       "Type": "AWS::AppSync::Resolver",
     },
-    "QueryidentifyTextResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
+    "QueryidentifyTextResolver": {
+      "Properties": {
+        "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
         "FieldName": "identifyText",
         "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
                 "identifyTextFunctionidentifyTextFunctionAppSyncFunction7877885A",
                 "FunctionId",
               ],
             },
           ],
         },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
+        "RequestMappingTemplate": {
+          "Fn::Join": [
             "
 ",
-            Array [
-              Object {
-                "Fn::If": Array [
+            [
+              {
+                "Fn::If": [
                   "HasEnvironmentParameter",
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}-\${env}\\"))",
-                      Object {
-                        "env": Object {
+                  {
+                    "Fn::Sub": [
+                      "$util.qr($ctx.stash.put("s3Bucket", "myStorage\${hash}-\${env}"))",
+                      {
+                        "env": {
                           "Ref": "referencetotransformerrootstackenv10C5A902Ref",
                         },
-                        "hash": Object {
-                          "Fn::Select": Array [
+                        "hash": {
+                          "Fn::Select": [
                             3,
-                            Object {
-                              "Fn::Split": Array [
+                            {
+                              "Fn::Split": [
                                 "-",
-                                Object {
+                                {
                                   "Ref": "AWS::StackName",
                                 },
                               ],
@@ -529,17 +529,17 @@ Object {
                       },
                     ],
                   },
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}\\"))",
-                      Object {
-                        "hash": Object {
-                          "Fn::Select": Array [
+                  {
+                    "Fn::Sub": [
+                      "$util.qr($ctx.stash.put("s3Bucket", "myStorage\${hash}"))",
+                      {
+                        "hash": {
+                          "Fn::Select": [
                             3,
-                            Object {
-                              "Fn::Split": Array [
+                            {
+                              "Fn::Split": [
                                 "-",
-                                Object {
+                                {
                                   "Ref": "AWS::StackName",
                                 },
                               ],
@@ -551,14 +551,14 @@ Object {
                   },
                 ],
               },
-              "$util.qr($ctx.stash.put(\\"isList\\", false))
+              "$util.qr($ctx.stash.put("isList", false))
 {}",
             ],
           ],
         },
         "ResponseMappingTemplate": "## If the result is a list return the result as a list **
-#if( $ctx.stash.get(\\"isList\\") )
-  #set( $result = $ctx.result.split(\\"[ ,]+\\") )
+#if( $ctx.stash.get("isList") )
+  #set( $result = $ctx.result.split("[ ,]+") )
   $util.toJson($result)
 #else
   $util.toJson($ctx.result)
@@ -567,57 +567,57 @@ Object {
       },
       "Type": "AWS::AppSync::Resolver",
     },
-    "QueryspeakTranslatedIdentifiedTextResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
+    "QueryspeakTranslatedIdentifiedTextResolver": {
+      "Properties": {
+        "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
         "FieldName": "speakTranslatedIdentifiedText",
         "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
                 "identifyTextFunctionidentifyTextFunctionAppSyncFunction7877885A",
                 "FunctionId",
               ],
             },
-            Object {
-              "Fn::GetAtt": Array [
+            {
+              "Fn::GetAtt": [
                 "translateTextFunctiontranslateTextFunctionAppSyncFunction77C9D7A9",
                 "FunctionId",
               ],
             },
-            Object {
-              "Fn::GetAtt": Array [
+            {
+              "Fn::GetAtt": [
                 "convertTextToSpeechFunctionconvertTextToSpeechFunctionAppSyncFunction15BC20B8",
                 "FunctionId",
               ],
             },
           ],
         },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
+        "RequestMappingTemplate": {
+          "Fn::Join": [
             "
 ",
-            Array [
-              Object {
-                "Fn::If": Array [
+            [
+              {
+                "Fn::If": [
                   "HasEnvironmentParameter",
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}-\${env}\\"))",
-                      Object {
-                        "env": Object {
+                  {
+                    "Fn::Sub": [
+                      "$util.qr($ctx.stash.put("s3Bucket", "myStorage\${hash}-\${env}"))",
+                      {
+                        "env": {
                           "Ref": "referencetotransformerrootstackenv10C5A902Ref",
                         },
-                        "hash": Object {
-                          "Fn::Select": Array [
+                        "hash": {
+                          "Fn::Select": [
                             3,
-                            Object {
-                              "Fn::Split": Array [
+                            {
+                              "Fn::Split": [
                                 "-",
-                                Object {
+                                {
                                   "Ref": "AWS::StackName",
                                 },
                               ],
@@ -627,17 +627,17 @@ Object {
                       },
                     ],
                   },
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}\\"))",
-                      Object {
-                        "hash": Object {
-                          "Fn::Select": Array [
+                  {
+                    "Fn::Sub": [
+                      "$util.qr($ctx.stash.put("s3Bucket", "myStorage\${hash}"))",
+                      {
+                        "hash": {
+                          "Fn::Select": [
                             3,
-                            Object {
-                              "Fn::Split": Array [
+                            {
+                              "Fn::Split": [
                                 "-",
-                                Object {
+                                {
                                   "Ref": "AWS::StackName",
                                 },
                               ],
@@ -649,14 +649,14 @@ Object {
                   },
                 ],
               },
-              "$util.qr($ctx.stash.put(\\"isList\\", false))
+              "$util.qr($ctx.stash.put("isList", false))
 {}",
             ],
           ],
         },
         "ResponseMappingTemplate": "## If the result is a list return the result as a list **
-#if( $ctx.stash.get(\\"isList\\") )
-  #set( $result = $ctx.result.split(\\"[ ,]+\\") )
+#if( $ctx.stash.get("isList") )
+  #set( $result = $ctx.result.split("[ ,]+") )
   $util.toJson($result)
 #else
   $util.toJson($ctx.result)
@@ -665,57 +665,57 @@ Object {
       },
       "Type": "AWS::AppSync::Resolver",
     },
-    "QueryspeakTranslatedLabelTextResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
+    "QueryspeakTranslatedLabelTextResolver": {
+      "Properties": {
+        "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
         "FieldName": "speakTranslatedLabelText",
         "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
                 "identifyLabelsFunctionidentifyLabelsFunctionAppSyncFunction7C2A1E61",
                 "FunctionId",
               ],
             },
-            Object {
-              "Fn::GetAtt": Array [
+            {
+              "Fn::GetAtt": [
                 "translateTextFunctiontranslateTextFunctionAppSyncFunction77C9D7A9",
                 "FunctionId",
               ],
             },
-            Object {
-              "Fn::GetAtt": Array [
+            {
+              "Fn::GetAtt": [
                 "convertTextToSpeechFunctionconvertTextToSpeechFunctionAppSyncFunction15BC20B8",
                 "FunctionId",
               ],
             },
           ],
         },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
+        "RequestMappingTemplate": {
+          "Fn::Join": [
             "
 ",
-            Array [
-              Object {
-                "Fn::If": Array [
+            [
+              {
+                "Fn::If": [
                   "HasEnvironmentParameter",
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}-\${env}\\"))",
-                      Object {
-                        "env": Object {
+                  {
+                    "Fn::Sub": [
+                      "$util.qr($ctx.stash.put("s3Bucket", "myStorage\${hash}-\${env}"))",
+                      {
+                        "env": {
                           "Ref": "referencetotransformerrootstackenv10C5A902Ref",
                         },
-                        "hash": Object {
-                          "Fn::Select": Array [
+                        "hash": {
+                          "Fn::Select": [
                             3,
-                            Object {
-                              "Fn::Split": Array [
+                            {
+                              "Fn::Split": [
                                 "-",
-                                Object {
+                                {
                                   "Ref": "AWS::StackName",
                                 },
                               ],
@@ -725,17 +725,17 @@ Object {
                       },
                     ],
                   },
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}\\"))",
-                      Object {
-                        "hash": Object {
-                          "Fn::Select": Array [
+                  {
+                    "Fn::Sub": [
+                      "$util.qr($ctx.stash.put("s3Bucket", "myStorage\${hash}"))",
+                      {
+                        "hash": {
+                          "Fn::Select": [
                             3,
-                            Object {
-                              "Fn::Split": Array [
+                            {
+                              "Fn::Split": [
                                 "-",
-                                Object {
+                                {
                                   "Ref": "AWS::StackName",
                                 },
                               ],
@@ -747,14 +747,14 @@ Object {
                   },
                 ],
               },
-              "$util.qr($ctx.stash.put(\\"isList\\", false))
+              "$util.qr($ctx.stash.put("isList", false))
 {}",
             ],
           ],
         },
         "ResponseMappingTemplate": "## If the result is a list return the result as a list **
-#if( $ctx.stash.get(\\"isList\\") )
-  #set( $result = $ctx.result.split(\\"[ ,]+\\") )
+#if( $ctx.stash.get("isList") )
+  #set( $result = $ctx.result.split("[ ,]+") )
   $util.toJson($result)
 #else
   $util.toJson($ctx.result)
@@ -763,51 +763,51 @@ Object {
       },
       "Type": "AWS::AppSync::Resolver",
     },
-    "QueryspeakTranslatedTextResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
+    "QueryspeakTranslatedTextResolver": {
+      "Properties": {
+        "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
         "FieldName": "speakTranslatedText",
         "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
                 "translateTextFunctiontranslateTextFunctionAppSyncFunction77C9D7A9",
                 "FunctionId",
               ],
             },
-            Object {
-              "Fn::GetAtt": Array [
+            {
+              "Fn::GetAtt": [
                 "convertTextToSpeechFunctionconvertTextToSpeechFunctionAppSyncFunction15BC20B8",
                 "FunctionId",
               ],
             },
           ],
         },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
+        "RequestMappingTemplate": {
+          "Fn::Join": [
             "
 ",
-            Array [
-              Object {
-                "Fn::If": Array [
+            [
+              {
+                "Fn::If": [
                   "HasEnvironmentParameter",
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}-\${env}\\"))",
-                      Object {
-                        "env": Object {
+                  {
+                    "Fn::Sub": [
+                      "$util.qr($ctx.stash.put("s3Bucket", "myStorage\${hash}-\${env}"))",
+                      {
+                        "env": {
                           "Ref": "referencetotransformerrootstackenv10C5A902Ref",
                         },
-                        "hash": Object {
-                          "Fn::Select": Array [
+                        "hash": {
+                          "Fn::Select": [
                             3,
-                            Object {
-                              "Fn::Split": Array [
+                            {
+                              "Fn::Split": [
                                 "-",
-                                Object {
+                                {
                                   "Ref": "AWS::StackName",
                                 },
                               ],
@@ -817,17 +817,17 @@ Object {
                       },
                     ],
                   },
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}\\"))",
-                      Object {
-                        "hash": Object {
-                          "Fn::Select": Array [
+                  {
+                    "Fn::Sub": [
+                      "$util.qr($ctx.stash.put("s3Bucket", "myStorage\${hash}"))",
+                      {
+                        "hash": {
+                          "Fn::Select": [
                             3,
-                            Object {
-                              "Fn::Split": Array [
+                            {
+                              "Fn::Split": [
                                 "-",
-                                Object {
+                                {
                                   "Ref": "AWS::StackName",
                                 },
                               ],
@@ -839,14 +839,14 @@ Object {
                   },
                 ],
               },
-              "$util.qr($ctx.stash.put(\\"isList\\", false))
+              "$util.qr($ctx.stash.put("isList", false))
 {}",
             ],
           ],
         },
         "ResponseMappingTemplate": "## If the result is a list return the result as a list **
-#if( $ctx.stash.get(\\"isList\\") )
-  #set( $result = $ctx.result.split(\\"[ ,]+\\") )
+#if( $ctx.stash.get("isList") )
+  #set( $result = $ctx.result.split("[ ,]+") )
   $util.toJson($result)
 #else
   $util.toJson($ctx.result)
@@ -855,45 +855,45 @@ Object {
       },
       "Type": "AWS::AppSync::Resolver",
     },
-    "QuerytranslateTextResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
+    "QuerytranslateTextResolver": {
+      "Properties": {
+        "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
         "FieldName": "translateText",
         "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
+        "PipelineConfig": {
+          "Functions": [
+            {
+              "Fn::GetAtt": [
                 "translateTextFunctiontranslateTextFunctionAppSyncFunction77C9D7A9",
                 "FunctionId",
               ],
             },
           ],
         },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
+        "RequestMappingTemplate": {
+          "Fn::Join": [
             "
 ",
-            Array [
-              Object {
-                "Fn::If": Array [
+            [
+              {
+                "Fn::If": [
                   "HasEnvironmentParameter",
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}-\${env}\\"))",
-                      Object {
-                        "env": Object {
+                  {
+                    "Fn::Sub": [
+                      "$util.qr($ctx.stash.put("s3Bucket", "myStorage\${hash}-\${env}"))",
+                      {
+                        "env": {
                           "Ref": "referencetotransformerrootstackenv10C5A902Ref",
                         },
-                        "hash": Object {
-                          "Fn::Select": Array [
+                        "hash": {
+                          "Fn::Select": [
                             3,
-                            Object {
-                              "Fn::Split": Array [
+                            {
+                              "Fn::Split": [
                                 "-",
-                                Object {
+                                {
                                   "Ref": "AWS::StackName",
                                 },
                               ],
@@ -903,17 +903,17 @@ Object {
                       },
                     ],
                   },
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}\\"))",
-                      Object {
-                        "hash": Object {
-                          "Fn::Select": Array [
+                  {
+                    "Fn::Sub": [
+                      "$util.qr($ctx.stash.put("s3Bucket", "myStorage\${hash}"))",
+                      {
+                        "hash": {
+                          "Fn::Select": [
                             3,
-                            Object {
-                              "Fn::Split": Array [
+                            {
+                              "Fn::Split": [
                                 "-",
-                                Object {
+                                {
                                   "Ref": "AWS::StackName",
                                 },
                               ],
@@ -925,14 +925,14 @@ Object {
                   },
                 ],
               },
-              "$util.qr($ctx.stash.put(\\"isList\\", false))
+              "$util.qr($ctx.stash.put("isList", false))
 {}",
             ],
           ],
         },
         "ResponseMappingTemplate": "## If the result is a list return the result as a list **
-#if( $ctx.stash.get(\\"isList\\") )
-  #set( $result = $ctx.result.split(\\"[ ,]+\\") )
+#if( $ctx.stash.get("isList") )
+  #set( $result = $ctx.result.split("[ ,]+") )
   $util.toJson($result)
 #else
   $util.toJson($ctx.result)
@@ -941,28 +941,28 @@ Object {
       },
       "Type": "AWS::AppSync::Resolver",
     },
-    "RekognitionDataSource": Object {
-      "Properties": Object {
-        "ApiId": Object {
+    "RekognitionDataSource": {
+      "Properties": {
+        "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
-        "HttpConfig": Object {
-          "AuthorizationConfig": Object {
+        "HttpConfig": {
+          "AuthorizationConfig": {
             "AuthorizationType": "AWS_IAM",
-            "AwsIamConfig": Object {
-              "SigningRegion": Object {
+            "AwsIamConfig": {
+              "SigningRegion": {
                 "Fn::Sub": "\${AWS::Region}",
               },
               "SigningServiceName": "rekognition",
             },
           },
-          "Endpoint": Object {
+          "Endpoint": {
             "Fn::Sub": "https://rekognition.\${AWS::Region}.amazonaws.com",
           },
         },
         "Name": "RekognitionDataSource",
-        "ServiceRoleArn": Object {
-          "Fn::GetAtt": Array [
+        "ServiceRoleArn": {
+          "Fn::GetAtt": [
             "predictionsIAMRole5BB74A99",
             "Arn",
           ],
@@ -971,14 +971,14 @@ Object {
       },
       "Type": "AWS::AppSync::DataSource",
     },
-    "RekognitionDataSourceServiceRole3628B5DB": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "RekognitionDataSourceServiceRole3628B5DB": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Principal": Object {
+              "Principal": {
                 "Service": "appsync.amazonaws.com",
               },
             },
@@ -988,28 +988,28 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "TranslateDataSource": Object {
-      "Properties": Object {
-        "ApiId": Object {
+    "TranslateDataSource": {
+      "Properties": {
+        "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
-        "HttpConfig": Object {
-          "AuthorizationConfig": Object {
+        "HttpConfig": {
+          "AuthorizationConfig": {
             "AuthorizationType": "AWS_IAM",
-            "AwsIamConfig": Object {
-              "SigningRegion": Object {
+            "AwsIamConfig": {
+              "SigningRegion": {
                 "Fn::Sub": "\${AWS::Region}",
               },
               "SigningServiceName": "translate",
             },
           },
-          "Endpoint": Object {
+          "Endpoint": {
             "Fn::Sub": "https://translate.\${AWS::Region}.amazonaws.com",
           },
         },
         "Name": "TranslateDataSource",
-        "ServiceRoleArn": Object {
-          "Fn::GetAtt": Array [
+        "ServiceRoleArn": {
+          "Fn::GetAtt": [
             "predictionsIAMRole5BB74A99",
             "Arn",
           ],
@@ -1018,14 +1018,14 @@ Object {
       },
       "Type": "AWS::AppSync::DataSource",
     },
-    "TranslateDataSourceServiceRole2FE48B83": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "TranslateDataSourceServiceRole2FE48B83": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Principal": Object {
+              "Principal": {
                 "Service": "appsync.amazonaws.com",
               },
             },
@@ -1035,33 +1035,33 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "convertTextToSpeechFunctionconvertTextToSpeechFunctionAppSyncFunction15BC20B8": Object {
-      "DependsOn": Array [
+    "convertTextToSpeechFunctionconvertTextToSpeechFunctionAppSyncFunction15BC20B8": {
+      "DependsOn": [
         "LambdaDataSource",
       ],
-      "Properties": Object {
-        "ApiId": Object {
+      "Properties": {
+        "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
-        "DataSourceName": Object {
-          "Fn::GetAtt": Array [
+        "DataSourceName": {
+          "Fn::GetAtt": [
             "LambdaDataSource",
             "Name",
           ],
         },
         "FunctionVersion": "2018-05-29",
         "Name": "convertTextToSpeechFunction",
-        "RequestMappingTemplate": "#set( $bucketName = $ctx.stash.get(\\"s3Bucket\\") )
-$util.qr($ctx.stash.put(\\"isList\\", false))
+        "RequestMappingTemplate": "#set( $bucketName = $ctx.stash.get("s3Bucket") )
+$util.qr($ctx.stash.put("isList", false))
 #set( $text = $util.defaultIfNull($ctx.args.input.convertTextToSpeech.text, $ctx.prev.result) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson({
-  \\"uuid\\": \\"$util.autoId()\\",
-  \\"action\\": \\"convertTextToSpeech\\",
-  \\"voiceID\\": $ctx.args.input.convertTextToSpeech.voiceID,
-  \\"text\\": $text
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson({
+  "uuid": "$util.autoId()",
+  "action": "convertTextToSpeech",
+  "voiceID": $ctx.args.input.convertTextToSpeech.voiceID,
+  "text": $text
 })
 }",
         "ResponseMappingTemplate": "#if( $ctx.error )
@@ -1072,11 +1072,11 @@ $util.toJson($ctx.result.url)",
       },
       "Type": "AWS::AppSync::FunctionConfiguration",
     },
-    "identifyLabelsAccess7BFAF94B": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "identifyLabelsAccess7BFAF94B": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "rekognition:DetectLabels",
               "Effect": "Allow",
               "Resource": "*",
@@ -1085,51 +1085,51 @@ $util.toJson($ctx.result.url)",
           "Version": "2012-10-17",
         },
         "PolicyName": "identifyLabelsAccess7BFAF94B",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "predictionsIAMRole5BB74A99",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "identifyLabelsFunctionidentifyLabelsFunctionAppSyncFunction7C2A1E61": Object {
-      "DependsOn": Array [
+    "identifyLabelsFunctionidentifyLabelsFunctionAppSyncFunction7C2A1E61": {
+      "DependsOn": [
         "RekognitionDataSource",
       ],
-      "Properties": Object {
-        "ApiId": Object {
+      "Properties": {
+        "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
-        "DataSourceName": Object {
-          "Fn::GetAtt": Array [
+        "DataSourceName": {
+          "Fn::GetAtt": [
             "RekognitionDataSource",
             "Name",
           ],
         },
         "FunctionVersion": "2018-05-29",
         "Name": "identifyLabelsFunction",
-        "RequestMappingTemplate": "#set( $bucketName = $ctx.stash.get(\\"s3Bucket\\") )
+        "RequestMappingTemplate": "#set( $bucketName = $ctx.stash.get("s3Bucket") )
 #set( $identifyLabelKey = $ctx.args.input.identifyLabels.key )
-$util.qr($ctx.stash.put(\\"isList\\", true))
+$util.qr($ctx.stash.put("isList", true))
 #set( $identifyLabelsPayload = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"method\\": \\"POST\\",
-  \\"resourcePath\\": \\"/\\",
-  \\"params\\": {
-      \\"body\\": {
-          \\"Image\\": {
-              \\"S3Object\\": {
-                  \\"Bucket\\": \\"$bucketName\\",
-                  \\"Name\\": \\"public/$identifyLabelKey\\"
+  "version": "2018-05-29",
+  "method": "POST",
+  "resourcePath": "/",
+  "params": {
+      "body": {
+          "Image": {
+              "S3Object": {
+                  "Bucket": "$bucketName",
+                  "Name": "public/$identifyLabelKey"
         }
       },
-          \\"MaxLabels\\": 10,
-          \\"MinConfidence\\": 55
+          "MaxLabels": 10,
+          "MinConfidence": 55
     },
-      \\"headers\\": {
-          \\"Content-Type\\": \\"application/x-amz-json-1.1\\",
-          \\"X-Amz-Target\\": \\"RekognitionService.DetectLabels\\"
+      "headers": {
+          "Content-Type": "application/x-amz-json-1.1",
+          "X-Amz-Target": "RekognitionService.DetectLabels"
     }
   }
 } )
@@ -1138,23 +1138,23 @@ $util.toJson($identifyLabelsPayload)",
 $util.error($ctx.error.message)
 #end
 #if( $ctx.result.statusCode == 200 )
-  #set( $labels = \\"\\" )
+  #set( $labels = "" )
   #set( $result = $util.parseJson($ctx.result.body) )
   #foreach( $label in $result.Labels )
-    #set( $labels = \\"$labels$label.Name, \\" )
+    #set( $labels = "$labels$label.Name, " )
   #end
-  $util.toJson($labels.replaceAll(\\", $\\", \\"\\"))
+  $util.toJson($labels.replaceAll(", $", ""))
 #else
 $util.error($ctx.result.body)
 #end",
       },
       "Type": "AWS::AppSync::FunctionConfiguration",
     },
-    "identifyTextAccess5A2D7702": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "identifyTextAccess5A2D7702": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "rekognition:DetectText",
               "Effect": "Allow",
               "Resource": "*",
@@ -1163,48 +1163,48 @@ $util.error($ctx.result.body)
           "Version": "2012-10-17",
         },
         "PolicyName": "identifyTextAccess5A2D7702",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "predictionsIAMRole5BB74A99",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "identifyTextFunctionidentifyTextFunctionAppSyncFunction7877885A": Object {
-      "DependsOn": Array [
+    "identifyTextFunctionidentifyTextFunctionAppSyncFunction7877885A": {
+      "DependsOn": [
         "RekognitionDataSource",
       ],
-      "Properties": Object {
-        "ApiId": Object {
+      "Properties": {
+        "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
-        "DataSourceName": Object {
-          "Fn::GetAtt": Array [
+        "DataSourceName": {
+          "Fn::GetAtt": [
             "RekognitionDataSource",
             "Name",
           ],
         },
         "FunctionVersion": "2018-05-29",
         "Name": "identifyTextFunction",
-        "RequestMappingTemplate": "#set( $bucketName = $ctx.stash.get(\\"s3Bucket\\") )
+        "RequestMappingTemplate": "#set( $bucketName = $ctx.stash.get("s3Bucket") )
 #set( $identityTextKey = $ctx.args.input.identifyText.key )
 #set( $identifyTextPayload = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"method\\": \\"POST\\",
-  \\"resourcePath\\": \\"/\\",
-  \\"params\\": {
-      \\"body\\": {
-          \\"Image\\": {
-              \\"S3Object\\": {
-                  \\"Bucket\\": \\"$bucketName\\",
-                  \\"Name\\": \\"public/$identityTextKey\\"
+  "version": "2018-05-29",
+  "method": "POST",
+  "resourcePath": "/",
+  "params": {
+      "body": {
+          "Image": {
+              "S3Object": {
+                  "Bucket": "$bucketName",
+                  "Name": "public/$identityTextKey"
         }
       }
     },
-      \\"headers\\": {
-          \\"Content-Type\\": \\"application/x-amz-json-1.1\\",
-          \\"X-Amz-Target\\": \\"RekognitionService.DetectText\\"
+      "headers": {
+          "Content-Type": "application/x-amz-json-1.1",
+          "X-Amz-Target": "RekognitionService.DetectText"
     }
   }
 } )
@@ -1214,10 +1214,10 @@ $util.error($ctx.error.message)
 #end
 #if( $ctx.result.statusCode == 200 )
   #set( $results = $util.parseJson($ctx.result.body) )
-  #set( $finalResult = \\"\\" )
+  #set( $finalResult = "" )
   #foreach( $item in $results.TextDetections )
-    #if( $item.Type == \\"LINE\\" )
-      #set( $finalResult = \\"$finalResult$item.DetectedText \\" )
+    #if( $item.Type == "LINE" )
+      #set( $finalResult = "$finalResult$item.DetectedText " )
     #end
   #end
 $util.toJson($finalResult.trim())
@@ -1227,43 +1227,43 @@ $utils.error($ctx.result.body)
       },
       "Type": "AWS::AppSync::FunctionConfiguration",
     },
-    "predictionsIAMRole5BB74A99": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "predictionsIAMRole5BB74A99": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Principal": Object {
+              "Principal": {
                 "Service": "appsync.amazonaws.com",
               },
             },
           ],
           "Version": "2012-10-17",
         },
-        "RoleName": Object {
-          "Fn::If": Array [
+        "RoleName": {
+          "Fn::If": [
             "HasEnvironmentParameter",
-            Object {
-              "Fn::Join": Array [
+            {
+              "Fn::Join": [
                 "-",
-                Array [
+                [
                   "predictionsIAMRole",
-                  Object {
+                  {
                     "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
                   },
-                  Object {
+                  {
                     "Ref": "referencetotransformerrootstackenv10C5A902Ref",
                   },
                 ],
               ],
             },
-            Object {
-              "Fn::Join": Array [
+            {
+              "Fn::Join": [
                 "-",
-                Array [
+                [
                   "predictionsIAMRole",
-                  Object {
+                  {
                     "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
                   },
                 ],
@@ -1274,20 +1274,20 @@ $utils.error($ctx.result.body)
       },
       "Type": "AWS::IAM::Role",
     },
-    "predictionsLambda8B880A74": Object {
-      "DependsOn": Array [
+    "predictionsLambda8B880A74": {
+      "DependsOn": [
         "predictionsLambdaIAMRoleB8AC96D3",
       ],
-      "Properties": Object {
-        "Code": Object {
-          "S3Bucket": Object {
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
             "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
           },
-          "S3Key": Object {
-            "Fn::Join": Array [
+          "S3Key": {
+            "Fn::Join": [
               "",
-              Array [
-                Object {
+              [
+                {
                   "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
                 },
                 "/functions/predictionsLambdaFunction.zip",
@@ -1296,8 +1296,8 @@ $utils.error($ctx.result.body)
           },
         },
         "Handler": "predictionsLambda.handler",
-        "Role": Object {
-          "Fn::GetAtt": Array [
+        "Role": {
+          "Fn::GetAtt": [
             "predictionsLambdaIAMRoleB8AC96D3",
             "Arn",
           ],
@@ -1307,25 +1307,25 @@ $utils.error($ctx.result.body)
       },
       "Type": "AWS::Lambda::Function",
     },
-    "predictionsLambdaIAMRoleB8AC96D3": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "predictionsLambdaIAMRoleB8AC96D3": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Principal": Object {
+              "Principal": {
                 "Service": "lambda.amazonaws.com",
               },
             },
           ],
           "Version": "2012-10-17",
         },
-        "Policies": Array [
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
                   "Action": "polly:SynthesizeSpeech",
                   "Effect": "Allow",
                   "Resource": "*",
@@ -1336,29 +1336,29 @@ $utils.error($ctx.result.body)
             "PolicyName": "PollyAccess",
           },
         ],
-        "RoleName": Object {
-          "Fn::If": Array [
+        "RoleName": {
+          "Fn::If": [
             "HasEnvironmentParameter",
-            Object {
-              "Fn::Join": Array [
+            {
+              "Fn::Join": [
                 "-",
-                Array [
+                [
                   "predictionsLambdaIAMRole",
-                  Object {
+                  {
                     "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
                   },
-                  Object {
+                  {
                     "Ref": "referencetotransformerrootstackenv10C5A902Ref",
                   },
                 ],
               ],
             },
-            Object {
-              "Fn::Join": Array [
+            {
+              "Fn::Join": [
                 "-",
-                Array [
+                [
                   "predictionsLambdaIAMRole",
-                  Object {
+                  {
                     "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
                   },
                 ],
@@ -1369,11 +1369,11 @@ $utils.error($ctx.result.body)
       },
       "Type": "AWS::IAM::Role",
     },
-    "translateTextAccess74D3AE90": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
+    "translateTextAccess74D3AE90": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
               "Action": "translate:TranslateText",
               "Effect": "Allow",
               "Resource": "*",
@@ -1382,24 +1382,24 @@ $utils.error($ctx.result.body)
           "Version": "2012-10-17",
         },
         "PolicyName": "translateTextAccess74D3AE90",
-        "Roles": Array [
-          Object {
+        "Roles": [
+          {
             "Ref": "predictionsIAMRole5BB74A99",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "translateTextFunctiontranslateTextFunctionAppSyncFunction77C9D7A9": Object {
-      "DependsOn": Array [
+    "translateTextFunctiontranslateTextFunctionAppSyncFunction77C9D7A9": {
+      "DependsOn": [
         "TranslateDataSource",
       ],
-      "Properties": Object {
-        "ApiId": Object {
+      "Properties": {
+        "ApiId": {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
-        "DataSourceName": Object {
-          "Fn::GetAtt": Array [
+        "DataSourceName": {
+          "Fn::GetAtt": [
             "TranslateDataSource",
             "Name",
           ],
@@ -1408,18 +1408,18 @@ $utils.error($ctx.result.body)
         "Name": "translateTextFunction",
         "RequestMappingTemplate": "#set( $text = $util.defaultIfNull($ctx.args.input.translateText.text, $ctx.prev.result) )
 #set( $translateTextPayload = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"method\\": \\"POST\\",
-  \\"resourcePath\\": \\"/\\",
-  \\"params\\": {
-      \\"body\\": {
-          \\"SourceLanguageCode\\": $ctx.args.input.translateText.sourceLanguage,
-          \\"TargetLanguageCode\\": $ctx.args.input.translateText.targetLanguage,
-          \\"Text\\": $text
+  "version": "2018-05-29",
+  "method": "POST",
+  "resourcePath": "/",
+  "params": {
+      "body": {
+          "SourceLanguageCode": $ctx.args.input.translateText.sourceLanguage,
+          "TargetLanguageCode": $ctx.args.input.translateText.targetLanguage,
+          "Text": $text
     },
-      \\"headers\\": {
-          \\"Content-Type\\": \\"application/x-amz-json-1.1\\",
-          \\"X-Amz-Target\\": \\"AWSShineFrontendService_20170701.TranslateText\\"
+      "headers": {
+          "Content-Type": "application/x-amz-json-1.1",
+          "X-Amz-Target": "AWSShineFrontendService_20170701.TranslateText"
     }
   }
 } )

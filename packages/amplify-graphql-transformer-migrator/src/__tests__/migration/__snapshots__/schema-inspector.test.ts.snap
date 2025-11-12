@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`AppSync auth directives are not migrated: AppSync auth directive aws_api_key 1`] = `
+[
+  "aws_api_key",
+]
+`;
+
+exports[`AppSync auth directives are not migrated: AppSync auth directive aws_auth 1`] = `
+[
+  "aws_auth",
+]
+`;
+
+exports[`AppSync auth directives are not migrated: AppSync auth directive aws_cognito_user_pools 1`] = `
+[
+  "aws_cognito_user_pools",
+]
+`;
+
+exports[`AppSync auth directives are not migrated: AppSync auth directive aws_iam 1`] = `
+[
+  "aws_iam",
+]
+`;
+
+exports[`AppSync auth directives are not migrated: AppSync auth directive aws_oidc 1`] = `
+[
+  "aws_oidc",
+]
+`;

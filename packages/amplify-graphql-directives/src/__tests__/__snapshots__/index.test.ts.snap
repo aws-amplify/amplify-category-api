@@ -1,8 +1,8 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Directive Definitions AuthDirective 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @auth(rules: [AuthRule!]!) on OBJECT | FIELD_DEFINITION
   input AuthRule {
@@ -47,8 +47,8 @@ Object {
 `;
 
 exports[`Directive Definitions AuthDirectiveV1 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @auth(rules: [AuthRule!]!) on OBJECT | FIELD_DEFINITION
   input AuthRule {
@@ -56,7 +56,7 @@ Object {
     allow: AuthStrategy!
 
     # Legacy name for identityClaim
-    identityField: String @deprecated(reason: \\"The 'identityField' argument is replaced by the 'identityClaim'.\\")
+    identityField: String @deprecated(reason: "The 'identityField' argument is replaced by the 'identityClaim'.")
 
     # Specifies the name of the provider to use for the rule. This overrides the default provider
     # when 'public' and 'private' AuthStrategy is used. Specifying a provider for 'owner' or 'groups'
@@ -67,7 +67,7 @@ Object {
     # from Cognito User Pools (and in the future OIDC) that contains the identity
     # of the user. If 'allow' is 'groups', this value should point to a list of groups
     # in the claims. If 'allow' is 'owner', this value should point to the logged in user identity string.
-    # Defaults to \\"cognito:username\\" for Cognito User Pools auth.
+    # Defaults to "cognito:username" for Cognito User Pools auth.
     identityClaim: String
 
     # Allows for custom config of 'groups' which is validated against the JWT
@@ -76,7 +76,7 @@ Object {
 
     # Allowed when the 'allow' argument is 'owner'.
     # Specifies the field of type String or [String] that contains owner(s) that can access the object.
-    ownerField: String # defaults to \\"owner\\"
+    ownerField: String # defaults to "owner"
     # Allowed when the 'allow' argument is 'groups'.
     # Specifies the field of type String or [String] that contains group(s) that can access the object.
     groupsField: String
@@ -89,11 +89,11 @@ Object {
     operations: [ModelOperation]
 
     # Deprecated. It is recommended to use the 'operations' arguments.
-    queries: [ModelQuery] @deprecated(reason: \\"The 'queries' argument will be replaced by the 'operations' argument in a future release.\\")
+    queries: [ModelQuery] @deprecated(reason: "The 'queries' argument will be replaced by the 'operations' argument in a future release.")
 
     # Deprecated. It is recommended to use the 'operations' arguments.
     mutations: [ModelMutation]
-      @deprecated(reason: \\"The 'mutations' argument will be replaced by the 'operations' argument in a future release.\\")
+      @deprecated(reason: "The 'mutations' argument will be replaced by the 'operations' argument in a future release.")
   }
   enum AuthStrategy {
     owner
@@ -113,11 +113,11 @@ Object {
     delete
     read
   }
-  enum ModelQuery @deprecated(reason: \\"ModelQuery will be replaced by the 'ModelOperation' in a future release.\\") {
+  enum ModelQuery @deprecated(reason: "ModelQuery will be replaced by the 'ModelOperation' in a future release.") {
     get
     list
   }
-  enum ModelMutation @deprecated(reason: \\"ModelMutation will be replaced by the 'ModelOperation' in a future release.\\") {
+  enum ModelMutation @deprecated(reason: "ModelMutation will be replaced by the 'ModelOperation' in a future release.") {
     create
     update
     delete
@@ -128,8 +128,8 @@ Object {
 `;
 
 exports[`Directive Definitions AwsApiKeyDirective 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @aws_api_key on FIELD_DEFINITION | OBJECT
 ",
@@ -138,8 +138,8 @@ Object {
 `;
 
 exports[`Directive Definitions AwsAuthDirective 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @aws_auth(cognito_groups: [String!]!) on FIELD_DEFINITION
 ",
@@ -148,8 +148,8 @@ Object {
 `;
 
 exports[`Directive Definitions AwsCognitoUserPoolsDirective 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @aws_cognito_user_pools(cognito_groups: [String!]) on FIELD_DEFINITION | OBJECT
 ",
@@ -158,8 +158,8 @@ Object {
 `;
 
 exports[`Directive Definitions AwsIamDirective 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @aws_iam on FIELD_DEFINITION | OBJECT
 ",
@@ -168,8 +168,8 @@ Object {
 `;
 
 exports[`Directive Definitions AwsLambdaDirective 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @aws_lambda on FIELD_DEFINITION | OBJECT
 ",
@@ -178,8 +178,8 @@ Object {
 `;
 
 exports[`Directive Definitions AwsOidcDirective 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @aws_oidc on FIELD_DEFINITION | OBJECT
 ",
@@ -188,8 +188,8 @@ Object {
 `;
 
 exports[`Directive Definitions AwsSubscribeDirective 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @aws_subscribe(mutations: [String!]!) on FIELD_DEFINITION
 ",
@@ -198,8 +198,8 @@ Object {
 `;
 
 exports[`Directive Definitions BelongsToDirective 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @belongsTo(fields: [String!], references: [String!]) on FIELD_DEFINITION
 ",
@@ -208,8 +208,8 @@ Object {
 `;
 
 exports[`Directive Definitions ConnectionDirectiveV1 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @connection(
     name: String
@@ -225,8 +225,8 @@ Object {
 `;
 
 exports[`Directive Definitions DefaultDirective 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @default(value: String!) on FIELD_DEFINITION
 ",
@@ -235,8 +235,8 @@ Object {
 `;
 
 exports[`Directive Definitions DeprecatedDirective 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @deprecated(reason: String) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION | ENUM | ENUM_VALUE
 ",
@@ -245,8 +245,8 @@ Object {
 `;
 
 exports[`Directive Definitions FunctionDirective 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @function(name: String!, region: String, accountId: String) repeatable on FIELD_DEFINITION
 ",
@@ -255,8 +255,8 @@ Object {
 `;
 
 exports[`Directive Definitions FunctionDirectiveV1 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @function(name: String!, region: String) repeatable on FIELD_DEFINITION
 ",
@@ -265,8 +265,8 @@ Object {
 `;
 
 exports[`Directive Definitions HasManyDirective 1`] = `
-Object {
-  "defaults": Object {
+{
+  "defaults": {
     "limit": 100,
   },
   "definition": "
@@ -277,8 +277,8 @@ Object {
 `;
 
 exports[`Directive Definitions HasOneDirective 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @hasOne(fields: [String!], references: [String!]) on FIELD_DEFINITION
 ",
@@ -287,9 +287,9 @@ Object {
 `;
 
 exports[`Directive Definitions HttpDirective 1`] = `
-Object {
-  "defaults": Object {
-    "headers": Array [],
+{
+  "defaults": {
+    "headers": [],
     "method": "GET",
   },
   "definition": "
@@ -311,9 +311,9 @@ Object {
 `;
 
 exports[`Directive Definitions HttpDirectiveV1 1`] = `
-Object {
-  "defaults": Object {
-    "headers": Array [],
+{
+  "defaults": {
+    "headers": [],
     "method": "GET",
   },
   "definition": "
@@ -335,8 +335,8 @@ Object {
 `;
 
 exports[`Directive Definitions IndexDirective 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @index(name: String, sortKeyFields: [String], queryField: String) repeatable on FIELD_DEFINITION
 ",
@@ -345,8 +345,8 @@ Object {
 `;
 
 exports[`Directive Definitions KeyDirectiveV1 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @key(name: String, fields: [String!]!, queryField: String) repeatable on OBJECT
 ",
@@ -355,8 +355,8 @@ Object {
 `;
 
 exports[`Directive Definitions ManyToManyDirective 1`] = `
-Object {
-  "defaults": Object {
+{
+  "defaults": {
     "limit": 100,
   },
   "definition": "
@@ -367,8 +367,8 @@ Object {
 `;
 
 exports[`Directive Definitions MapsToDirective 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @mapsTo(name: String!) on OBJECT
 ",
@@ -377,8 +377,8 @@ Object {
 `;
 
 exports[`Directive Definitions ModelDirective 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @model(
     queries: ModelQueryMap
@@ -416,8 +416,8 @@ Object {
 `;
 
 exports[`Directive Definitions ModelDirectiveV1 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @model(
     queries: ModelQueryMap
@@ -455,8 +455,8 @@ Object {
 `;
 
 exports[`Directive Definitions PredictionsDirective 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @predictions(actions: [PredictionsActions!]!) on FIELD_DEFINITION
   enum PredictionsActions {
@@ -471,8 +471,8 @@ Object {
 `;
 
 exports[`Directive Definitions PredictionsDirectiveV1 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @predictions(actions: [PredictionsActions!]!) on FIELD_DEFINITION
   enum PredictionsActions {
@@ -487,8 +487,8 @@ Object {
 `;
 
 exports[`Directive Definitions PrimaryKeyDirective 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @primaryKey(sortKeyFields: [String]) on FIELD_DEFINITION
 ",
@@ -497,8 +497,8 @@ Object {
 `;
 
 exports[`Directive Definitions RefersToDirective 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @refersTo(name: String!) on OBJECT | FIELD_DEFINITION
 ",
@@ -507,8 +507,8 @@ Object {
 `;
 
 exports[`Directive Definitions SearchableDirective 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @searchable(queries: SearchableQueryMap) on OBJECT
   input SearchableQueryMap {
@@ -520,8 +520,8 @@ Object {
 `;
 
 exports[`Directive Definitions SearchableDirectiveV1 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @searchable(queries: SearchableQueryMap) on OBJECT
   input SearchableQueryMap {
@@ -533,8 +533,8 @@ Object {
 `;
 
 exports[`Directive Definitions SqlDirective 1`] = `
-Object {
-  "defaults": Object {},
+{
+  "defaults": {},
   "definition": "
   directive @sql(statement: String, reference: String) on FIELD_DEFINITION
 ",
@@ -543,20 +543,20 @@ Object {
 `;
 
 exports[`Directive Definitions VersionedDirectiveV1 1`] = `
-Object {
-  "defaults": Object {
+{
+  "defaults": {
     "versionField": "version",
     "versionInput": "expectedVersion",
   },
   "definition": "
-  directive @versioned(versionField: String = \\"version\\", versionInput: String = \\"expectedVersion\\") on OBJECT
+  directive @versioned(versionField: String = "version", versionInput: String = "expectedVersion") on OBJECT
 ",
   "name": "versioned",
 }
 `;
 
 exports[`Directive Definitions include correct directives in AppSync directives 1`] = `
-Array [
+[
   "aws_api_key",
   "aws_auth",
   "aws_cognito_user_pools",
@@ -568,7 +568,7 @@ Array [
 `;
 
 exports[`Directive Definitions include correct directives in V1 directives 1`] = `
-Array [
+[
   "auth",
   "connection",
   "function",
@@ -582,7 +582,7 @@ Array [
 `;
 
 exports[`Directive Definitions include correct directives in V2 directives 1`] = `
-Array [
+[
   "auth",
   "belongsTo",
   "default",
@@ -604,7 +604,7 @@ Array [
 `;
 
 exports[`Directive Definitions include correct directives in default directives 1`] = `
-Array [
+[
   "aws_api_key",
   "aws_auth",
   "aws_cognito_user_pools",

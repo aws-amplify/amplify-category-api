@@ -383,6 +383,13 @@ const monitorBatch = async (batchId: string, maxRetries: number = DEFAULT_MAX_RE
         return;
       }
 
+      // Skip retries if the failed build is exactly one of the specified jobs
+      const skipRetryJobs = ['build_linux', 'build_windows', 'test', 'lint'];
+      if (status.failedBuilds.length === 1 && skipRetryJobs.includes(status.failedBuilds[0].identifier)) {
+        console.log(`\n🚫 Skipping retry for ${status.failedBuilds[0].identifier} - this job type is not retried.`);
+        return;
+      }
+
       // Check if failures are retryable
       const retryableBuilds = status.failedBuilds.filter(shouldRetryBuild);
       if (retryableBuilds.length === 0) {

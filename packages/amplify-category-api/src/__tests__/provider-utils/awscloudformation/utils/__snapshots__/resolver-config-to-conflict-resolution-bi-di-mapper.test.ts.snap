@@ -1,37 +1,37 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`transform ConflictResolution to ResolverConfig maps properties correctly 1`] = `
-Object {
-  "models": Object {
-    "MyType": Object {
+{
+  "models": {
+    "MyType": {
       "ConflictDetection": "VERSION",
       "ConflictHandler": "LAMBDA",
-      "LambdaConflictHandler": Object {
+      "LambdaConflictHandler": {
         "lambdaArn": undefined,
         "name": "someLambdaName",
         "region": undefined,
       },
     },
   },
-  "project": Object {
+  "project": {
     "ConflictDetection": "VERSION",
     "ConflictHandler": "AUTOMERGE",
   },
 }
 `;
 
-exports[`transform ConflictResolution to ResolverConfig throws when trying to convert new lambda resolution strategy 1`] = `"Tried to convert LambdaResolutionStrategy \\"NEW\\" to SyncConfig. New resources must be generated prior to this conversion and then replaced with a LambdaResolutionStrategy of type \\"EXISTING\\""`;
+exports[`transform ConflictResolution to ResolverConfig throws when trying to convert new lambda resolution strategy 1`] = `"Tried to convert LambdaResolutionStrategy "NEW" to SyncConfig. New resources must be generated prior to this conversion and then replaced with a LambdaResolutionStrategy of type "EXISTING""`;
 
 exports[`transform ResolverConfig to ConflictResolution maps properties correctly 1`] = `
-Object {
-  "defaultResolutionStrategy": Object {
+{
+  "defaultResolutionStrategy": {
     "type": "AUTOMERGE",
   },
-  "perModelResolutionStrategy": Array [
-    Object {
+  "perModelResolutionStrategy": [
+    {
       "entityName": "MyType",
-      "resolutionStrategy": Object {
-        "resolver": Object {
+      "resolutionStrategy": {
+        "resolver": {
           "arn": undefined,
           "name": "myLambdaConflictHandler",
           "region": undefined,

@@ -1,9 +1,9 @@
-const NodeEnvironment = require('jest-environment-node');
+const { TestEnvironment } = require('jest-environment-node');
 
 /**
  * NOTE: Any fixes in this file should also be ported to packages/amplify-e2e-core/src/cli-test-environment.js
  */
-class FixJestEnvironment extends NodeEnvironment {
+class FixJestEnvironment extends TestEnvironment {
   constructor(...args) {
     super(...args);
     // https://github.com/jestjs/jest/issues/12628

@@ -57,8 +57,8 @@ describe('set field mapping resolver reference', () => {
       addResolverReference: mockAddResolverRef,
     });
     setFieldMappingResolverReference(mockContext, modelName, typeName, fieldName, true);
-    expect(mockAddResolverRef).toBeCalledTimes(1);
-    expect(mockAddResolverRef).toBeCalledWith({
+    expect(mockAddResolverRef).toHaveBeenCalledTimes(1);
+    expect(mockAddResolverRef).toHaveBeenCalledWith({
       typeName: typeName,
       fieldName: fieldName,
       isList: true,
@@ -72,6 +72,6 @@ describe('set field mapping resolver reference', () => {
       addResolverReference: mockAddResolverRef,
     });
     setFieldMappingResolverReference(mockContext, modelName, typeName, fieldName, true);
-    expect(mockAddResolverRef).toBeCalledTimes(0);
+    expect(mockAddResolverRef).toHaveBeenCalledTimes(0);
   });
 });

@@ -12,9 +12,15 @@ const tableAName = 'a';
 const tableBName = 'b';
 const tableCName = 'c';
 const tableDName = 'd';
-const aws = require('aws-sdk');
+const mockAwsConfig = {
+  region: 'us-east-1',
+  credentials: {
+    accessKeyId: 'test',
+    secretAccessKey: 'test',
+  },
+};
 
-const dummyReader = new AuroraServerlessMySQLDatabaseReader(dbRegion, secretStoreArn, clusterArn, testDBName, aws);
+const dummyReader = new AuroraServerlessMySQLDatabaseReader(dbRegion, secretStoreArn, clusterArn, testDBName, mockAwsConfig);
 
 test('describe table', async () => {
   const MockAuroraClient = jest.fn<AuroraDataAPIClient>(() => ({

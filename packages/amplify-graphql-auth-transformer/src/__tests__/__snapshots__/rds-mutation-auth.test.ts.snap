@@ -1,38 +1,38 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 1`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"private\\",
-  \\"provider\\": \\"iam\\",
-  \\"roleArn\\": $ctx.stash.authRole,
-  \\"cognitoIdentityPoolId\\": $ctx.stash.identityPoolId,
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "private",
+  "provider": "iam",
+  "roleArn": $ctx.stash.authRole,
+  "cognitoIdentityPoolId": $ctx.stash.identityPoolId,
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "create", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 2`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -43,9 +43,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostPrivate\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostPrivate" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -55,46 +55,46 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 4`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"private\\",
-  \\"provider\\": \\"iam\\",
-  \\"roleArn\\": $ctx.stash.authRole,
-  \\"cognitoIdentityPoolId\\": $ctx.stash.identityPoolId,
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "private",
+  "provider": "iam",
+  "roleArn": $ctx.stash.authRole,
+  "cognitoIdentityPoolId": $ctx.stash.identityPoolId,
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "update", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 5`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -105,9 +105,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostPrivate\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostPrivate" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -117,46 +117,46 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 7`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"private\\",
-  \\"provider\\": \\"iam\\",
-  \\"roleArn\\": $ctx.stash.authRole,
-  \\"cognitoIdentityPoolId\\": $ctx.stash.identityPoolId,
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "private",
+  "provider": "iam",
+  "roleArn": $ctx.stash.authRole,
+  "cognitoIdentityPoolId": $ctx.stash.identityPoolId,
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "delete", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 8`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -165,36 +165,36 @@ $util.toJson({})
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 9`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"public\\",
-  \\"provider\\": \\"iam\\",
-  \\"roleArn\\": $ctx.stash.unauthRole,
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "public",
+  "provider": "iam",
+  "roleArn": $ctx.stash.unauthRole,
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "create", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 10`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -205,9 +205,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostPublic\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostPublic" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -217,45 +217,45 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 12`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"public\\",
-  \\"provider\\": \\"iam\\",
-  \\"roleArn\\": $ctx.stash.unauthRole,
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "public",
+  "provider": "iam",
+  "roleArn": $ctx.stash.unauthRole,
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "update", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 13`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -266,9 +266,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostPublic\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostPublic" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -278,45 +278,45 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 15`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"public\\",
-  \\"provider\\": \\"iam\\",
-  \\"roleArn\\": $ctx.stash.unauthRole,
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "public",
+  "provider": "iam",
+  "roleArn": $ctx.stash.unauthRole,
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "delete", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 16`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -325,35 +325,35 @@ $util.toJson({})
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform apiKey auth rule 1`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"public\\",
-  \\"provider\\": \\"apiKey\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "public",
+  "provider": "apiKey",
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "create", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform apiKey auth rule 2`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -364,9 +364,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"Post\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "Post" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -376,44 +376,44 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform apiKey auth rule 4`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"public\\",
-  \\"provider\\": \\"apiKey\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "public",
+  "provider": "apiKey",
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "update", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform apiKey auth rule 5`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -424,9 +424,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"Post\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "Post" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -436,44 +436,44 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform apiKey auth rule 7`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"public\\",
-  \\"provider\\": \\"apiKey\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "public",
+  "provider": "apiKey",
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "delete", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform apiKey auth rule 8`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -482,35 +482,35 @@ $util.toJson({})
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 1`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"private\\",
-  \\"provider\\": \\"userPools\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "private",
+  "provider": "userPools",
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "create", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 2`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -521,9 +521,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostPrivate\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostPrivate" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -533,44 +533,44 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 4`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"private\\",
-  \\"provider\\": \\"userPools\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "private",
+  "provider": "userPools",
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "update", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 5`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -581,9 +581,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostPrivate\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostPrivate" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -593,44 +593,44 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 7`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"private\\",
-  \\"provider\\": \\"userPools\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "private",
+  "provider": "userPools",
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "delete", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 8`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -639,37 +639,37 @@ $util.toJson({})
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 9`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"owner\\",
-  \\"provider\\": \\"userPools\\",
-  \\"ownerFieldName\\": \\"owner\\",
-  \\"ownerFieldType\\": \\"string\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "owner",
+  "provider": "userPools",
+  "ownerFieldName": "owner",
+  "ownerFieldType": "string",
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "create", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 10`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -680,9 +680,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostSingleOwner\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostSingleOwner" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -692,46 +692,46 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 12`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"owner\\",
-  \\"provider\\": \\"userPools\\",
-  \\"ownerFieldName\\": \\"owner\\",
-  \\"ownerFieldType\\": \\"string\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "owner",
+  "provider": "userPools",
+  "ownerFieldName": "owner",
+  "ownerFieldType": "string",
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "update", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 13`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -742,9 +742,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostSingleOwner\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostSingleOwner" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -754,46 +754,46 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 15`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"owner\\",
-  \\"provider\\": \\"userPools\\",
-  \\"ownerFieldName\\": \\"owner\\",
-  \\"ownerFieldType\\": \\"string\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "owner",
+  "provider": "userPools",
+  "ownerFieldName": "owner",
+  "ownerFieldType": "string",
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "delete", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 16`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -802,37 +802,37 @@ $util.toJson({})
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 17`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"owner\\",
-  \\"provider\\": \\"userPools\\",
-  \\"ownerFieldName\\": \\"owners\\",
-  \\"ownerFieldType\\": \\"string[]\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"owners\\"]
+  "type": "owner",
+  "provider": "userPools",
+  "ownerFieldName": "owners",
+  "ownerFieldType": "string[]",
+  "allowedFields":   ["id", "title", "owners"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "create", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 18`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -843,58 +843,58 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostOwners\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostOwners" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"owners\\"] )
-#set( $lambdaInput.args.metadata.arrayFields = [\\"owners\\"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["owners"] )
+#set( $lambdaInput.args.metadata.arrayFields = ["owners"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 20`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"owner\\",
-  \\"provider\\": \\"userPools\\",
-  \\"ownerFieldName\\": \\"owners\\",
-  \\"ownerFieldType\\": \\"string[]\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"owners\\"]
+  "type": "owner",
+  "provider": "userPools",
+  "ownerFieldName": "owners",
+  "ownerFieldType": "string[]",
+  "allowedFields":   ["id", "title", "owners"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "update", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 21`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -905,58 +905,58 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostOwners\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostOwners" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"owners\\"] )
-#set( $lambdaInput.args.metadata.arrayFields = [\\"owners\\"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["owners"] )
+#set( $lambdaInput.args.metadata.arrayFields = ["owners"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 23`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"owner\\",
-  \\"provider\\": \\"userPools\\",
-  \\"ownerFieldName\\": \\"owners\\",
-  \\"ownerFieldType\\": \\"string[]\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"owners\\"]
+  "type": "owner",
+  "provider": "userPools",
+  "ownerFieldName": "owners",
+  "ownerFieldType": "string[]",
+  "allowedFields":   ["id", "title", "owners"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "delete", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 24`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -965,44 +965,44 @@ $util.toJson({})
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 25`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"groups\\",
-  \\"provider\\": \\"userPools\\",
-  \\"allowedGroups\\":   [\\"Admin\\"],
-  \\"groupClaim\\": \\"cognito:groups\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "groups",
+  "provider": "userPools",
+  "allowedGroups":   ["Admin"],
+  "groupClaim": "cognito:groups",
+  "allowedFields":   ["id", "title"]
 }))
 $util.qr($authRules.add({
-  \\"type\\": \\"groups\\",
-  \\"provider\\": \\"userPools\\",
-  \\"allowedGroups\\":   [\\"Moderator\\"],
-  \\"groupClaim\\": \\"cognito:groups\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "groups",
+  "provider": "userPools",
+  "allowedGroups":   ["Moderator"],
+  "groupClaim": "cognito:groups",
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "create", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 26`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -1013,9 +1013,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostStaticGroups\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostStaticGroups" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -1025,53 +1025,53 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 28`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"groups\\",
-  \\"provider\\": \\"userPools\\",
-  \\"allowedGroups\\":   [\\"Admin\\"],
-  \\"groupClaim\\": \\"cognito:groups\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "groups",
+  "provider": "userPools",
+  "allowedGroups":   ["Admin"],
+  "groupClaim": "cognito:groups",
+  "allowedFields":   ["id", "title"]
 }))
 $util.qr($authRules.add({
-  \\"type\\": \\"groups\\",
-  \\"provider\\": \\"userPools\\",
-  \\"allowedGroups\\":   [\\"Moderator\\"],
-  \\"groupClaim\\": \\"cognito:groups\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "groups",
+  "provider": "userPools",
+  "allowedGroups":   ["Moderator"],
+  "groupClaim": "cognito:groups",
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "update", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 29`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -1082,9 +1082,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostStaticGroups\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostStaticGroups" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -1094,53 +1094,53 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 31`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"groups\\",
-  \\"provider\\": \\"userPools\\",
-  \\"allowedGroups\\":   [\\"Admin\\"],
-  \\"groupClaim\\": \\"cognito:groups\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "groups",
+  "provider": "userPools",
+  "allowedGroups":   ["Admin"],
+  "groupClaim": "cognito:groups",
+  "allowedFields":   ["id", "title"]
 }))
 $util.qr($authRules.add({
-  \\"type\\": \\"groups\\",
-  \\"provider\\": \\"userPools\\",
-  \\"allowedGroups\\":   [\\"Moderator\\"],
-  \\"groupClaim\\": \\"cognito:groups\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "groups",
+  "provider": "userPools",
+  "allowedGroups":   ["Moderator"],
+  "groupClaim": "cognito:groups",
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "delete", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 32`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -1149,38 +1149,38 @@ $util.toJson({})
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 33`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"groups\\",
-  \\"provider\\": \\"userPools\\",
-  \\"groupsFieldName\\": \\"group\\",
-  \\"groupsFieldType\\": \\"string\\",
-  \\"groupClaim\\": \\"cognito:groups\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"group\\"]
+  "type": "groups",
+  "provider": "userPools",
+  "groupsFieldName": "group",
+  "groupsFieldType": "string",
+  "groupClaim": "cognito:groups",
+  "allowedFields":   ["id", "title", "group"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "create", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 34`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -1191,9 +1191,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostSingleGroup\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostSingleGroup" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -1203,47 +1203,47 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 36`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"groups\\",
-  \\"provider\\": \\"userPools\\",
-  \\"groupsFieldName\\": \\"group\\",
-  \\"groupsFieldType\\": \\"string\\",
-  \\"groupClaim\\": \\"cognito:groups\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"group\\"]
+  "type": "groups",
+  "provider": "userPools",
+  "groupsFieldName": "group",
+  "groupsFieldType": "string",
+  "groupClaim": "cognito:groups",
+  "allowedFields":   ["id", "title", "group"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "update", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 37`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -1254,9 +1254,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostSingleGroup\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostSingleGroup" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -1266,47 +1266,47 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 39`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"groups\\",
-  \\"provider\\": \\"userPools\\",
-  \\"groupsFieldName\\": \\"group\\",
-  \\"groupsFieldType\\": \\"string\\",
-  \\"groupClaim\\": \\"cognito:groups\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"group\\"]
+  "type": "groups",
+  "provider": "userPools",
+  "groupsFieldName": "group",
+  "groupsFieldType": "string",
+  "groupClaim": "cognito:groups",
+  "allowedFields":   ["id", "title", "group"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "delete", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 40`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -1315,38 +1315,38 @@ $util.toJson({})
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 41`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"groups\\",
-  \\"provider\\": \\"userPools\\",
-  \\"groupsFieldName\\": \\"groups\\",
-  \\"groupsFieldType\\": \\"string[]\\",
-  \\"groupClaim\\": \\"cognito:groups\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"groups\\"]
+  "type": "groups",
+  "provider": "userPools",
+  "groupsFieldName": "groups",
+  "groupsFieldType": "string[]",
+  "groupClaim": "cognito:groups",
+  "allowedFields":   ["id", "title", "groups"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "create", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 42`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -1357,59 +1357,59 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostGroups\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostGroups" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"groups\\"] )
-#set( $lambdaInput.args.metadata.arrayFields = [\\"groups\\"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["groups"] )
+#set( $lambdaInput.args.metadata.arrayFields = ["groups"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 44`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"groups\\",
-  \\"provider\\": \\"userPools\\",
-  \\"groupsFieldName\\": \\"groups\\",
-  \\"groupsFieldType\\": \\"string[]\\",
-  \\"groupClaim\\": \\"cognito:groups\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"groups\\"]
+  "type": "groups",
+  "provider": "userPools",
+  "groupsFieldName": "groups",
+  "groupsFieldType": "string[]",
+  "groupClaim": "cognito:groups",
+  "allowedFields":   ["id", "title", "groups"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "update", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 45`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -1420,59 +1420,59 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostGroups\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostGroups" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"groups\\"] )
-#set( $lambdaInput.args.metadata.arrayFields = [\\"groups\\"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["groups"] )
+#set( $lambdaInput.args.metadata.arrayFields = ["groups"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 47`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"groups\\",
-  \\"provider\\": \\"userPools\\",
-  \\"groupsFieldName\\": \\"groups\\",
-  \\"groupsFieldType\\": \\"string[]\\",
-  \\"groupClaim\\": \\"cognito:groups\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"groups\\"]
+  "type": "groups",
+  "provider": "userPools",
+  "groupsFieldName": "groups",
+  "groupsFieldType": "string[]",
+  "groupClaim": "cognito:groups",
+  "allowedFields":   ["id", "title", "groups"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "delete", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 48`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -1481,35 +1481,35 @@ $util.toJson({})
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform function auth rule 1`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"custom\\",
-  \\"provider\\": \\"function\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "custom",
+  "provider": "function",
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "create", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform function auth rule 2`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -1520,9 +1520,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"Post\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "Post" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -1532,44 +1532,44 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform function auth rule 4`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"custom\\",
-  \\"provider\\": \\"function\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "custom",
+  "provider": "function",
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "update", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform function auth rule 5`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -1580,9 +1580,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"Post\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "Post" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -1592,44 +1592,44 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform function auth rule 7`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"custom\\",
-  \\"provider\\": \\"function\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "custom",
+  "provider": "function",
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "delete", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform function auth rule 8`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -1638,37 +1638,37 @@ $util.toJson({})
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform iam auth rules 1`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"private\\",
-  \\"provider\\": \\"iam\\",
-  \\"roleArn\\": $ctx.stash.authRole,
-  \\"cognitoIdentityPoolId\\": $ctx.stash.identityPoolId,
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "private",
+  "provider": "iam",
+  "roleArn": $ctx.stash.authRole,
+  "cognitoIdentityPoolId": $ctx.stash.identityPoolId,
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "create", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform iam auth rules 2`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -1679,9 +1679,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostPrivate\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostPrivate" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -1691,46 +1691,46 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform iam auth rules 4`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"private\\",
-  \\"provider\\": \\"iam\\",
-  \\"roleArn\\": $ctx.stash.authRole,
-  \\"cognitoIdentityPoolId\\": $ctx.stash.identityPoolId,
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "private",
+  "provider": "iam",
+  "roleArn": $ctx.stash.authRole,
+  "cognitoIdentityPoolId": $ctx.stash.identityPoolId,
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "update", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform iam auth rules 5`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -1741,9 +1741,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostPrivate\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostPrivate" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -1753,46 +1753,46 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform iam auth rules 7`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"private\\",
-  \\"provider\\": \\"iam\\",
-  \\"roleArn\\": $ctx.stash.authRole,
-  \\"cognitoIdentityPoolId\\": $ctx.stash.identityPoolId,
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "private",
+  "provider": "iam",
+  "roleArn": $ctx.stash.authRole,
+  "cognitoIdentityPoolId": $ctx.stash.identityPoolId,
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "delete", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform iam auth rules 8`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -1801,36 +1801,36 @@ $util.toJson({})
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform iam auth rules 9`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"public\\",
-  \\"provider\\": \\"iam\\",
-  \\"roleArn\\": $ctx.stash.unauthRole,
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "public",
+  "provider": "iam",
+  "roleArn": $ctx.stash.unauthRole,
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "create", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform iam auth rules 10`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -1841,9 +1841,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostPublic\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostPublic" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -1853,45 +1853,45 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform iam auth rules 12`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"public\\",
-  \\"provider\\": \\"iam\\",
-  \\"roleArn\\": $ctx.stash.unauthRole,
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "public",
+  "provider": "iam",
+  "roleArn": $ctx.stash.unauthRole,
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "update", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform iam auth rules 13`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -1902,9 +1902,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostPublic\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostPublic" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -1914,45 +1914,45 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform iam auth rules 15`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"public\\",
-  \\"provider\\": \\"iam\\",
-  \\"roleArn\\": $ctx.stash.unauthRole,
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "public",
+  "provider": "iam",
+  "roleArn": $ctx.stash.unauthRole,
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "delete", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform iam auth rules 16`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -1961,35 +1961,35 @@ $util.toJson({})
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 1`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"private\\",
-  \\"provider\\": \\"oidc\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "private",
+  "provider": "oidc",
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "create", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 2`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -2000,9 +2000,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostPrivate\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostPrivate" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -2012,44 +2012,44 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 4`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"private\\",
-  \\"provider\\": \\"oidc\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "private",
+  "provider": "oidc",
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "update", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 5`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -2060,9 +2060,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostPrivate\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostPrivate" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -2072,44 +2072,44 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 7`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"private\\",
-  \\"provider\\": \\"oidc\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "private",
+  "provider": "oidc",
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "delete", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 8`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -2118,38 +2118,38 @@ $util.toJson({})
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 9`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"owner\\",
-  \\"provider\\": \\"oidc\\",
-  \\"ownerFieldName\\": \\"owner\\",
-  \\"ownerFieldType\\": \\"string\\",
-  \\"identityClaim\\": \\"sub::username\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "owner",
+  "provider": "oidc",
+  "ownerFieldName": "owner",
+  "ownerFieldType": "string",
+  "identityClaim": "sub::username",
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "create", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 10`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -2160,9 +2160,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostSingleOwner\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostSingleOwner" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -2172,47 +2172,47 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 12`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"owner\\",
-  \\"provider\\": \\"oidc\\",
-  \\"ownerFieldName\\": \\"owner\\",
-  \\"ownerFieldType\\": \\"string\\",
-  \\"identityClaim\\": \\"sub::username\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "owner",
+  "provider": "oidc",
+  "ownerFieldName": "owner",
+  "ownerFieldType": "string",
+  "identityClaim": "sub::username",
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "update", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 13`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -2223,9 +2223,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostSingleOwner\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostSingleOwner" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -2235,47 +2235,47 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 15`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"owner\\",
-  \\"provider\\": \\"oidc\\",
-  \\"ownerFieldName\\": \\"owner\\",
-  \\"ownerFieldType\\": \\"string\\",
-  \\"identityClaim\\": \\"sub::username\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "owner",
+  "provider": "oidc",
+  "ownerFieldName": "owner",
+  "ownerFieldType": "string",
+  "identityClaim": "sub::username",
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "delete", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 16`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -2284,38 +2284,38 @@ $util.toJson({})
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 17`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"owner\\",
-  \\"provider\\": \\"oidc\\",
-  \\"ownerFieldName\\": \\"owners\\",
-  \\"ownerFieldType\\": \\"string[]\\",
-  \\"identityClaim\\": \\"sub::username\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"owners\\"]
+  "type": "owner",
+  "provider": "oidc",
+  "ownerFieldName": "owners",
+  "ownerFieldType": "string[]",
+  "identityClaim": "sub::username",
+  "allowedFields":   ["id", "title", "owners"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "create", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 18`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -2326,59 +2326,59 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostOwners\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostOwners" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"owners\\"] )
-#set( $lambdaInput.args.metadata.arrayFields = [\\"owners\\"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["owners"] )
+#set( $lambdaInput.args.metadata.arrayFields = ["owners"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 20`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"owner\\",
-  \\"provider\\": \\"oidc\\",
-  \\"ownerFieldName\\": \\"owners\\",
-  \\"ownerFieldType\\": \\"string[]\\",
-  \\"identityClaim\\": \\"sub::username\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"owners\\"]
+  "type": "owner",
+  "provider": "oidc",
+  "ownerFieldName": "owners",
+  "ownerFieldType": "string[]",
+  "identityClaim": "sub::username",
+  "allowedFields":   ["id", "title", "owners"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "update", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 21`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -2389,59 +2389,59 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostOwners\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostOwners" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"owners\\"] )
-#set( $lambdaInput.args.metadata.arrayFields = [\\"owners\\"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["owners"] )
+#set( $lambdaInput.args.metadata.arrayFields = ["owners"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 23`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"owner\\",
-  \\"provider\\": \\"oidc\\",
-  \\"ownerFieldName\\": \\"owners\\",
-  \\"ownerFieldType\\": \\"string[]\\",
-  \\"identityClaim\\": \\"sub::username\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"owners\\"]
+  "type": "owner",
+  "provider": "oidc",
+  "ownerFieldName": "owners",
+  "ownerFieldType": "string[]",
+  "identityClaim": "sub::username",
+  "allowedFields":   ["id", "title", "owners"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "delete", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 24`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -2450,44 +2450,44 @@ $util.toJson({})
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 25`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"groups\\",
-  \\"provider\\": \\"oidc\\",
-  \\"allowedGroups\\":   [\\"Admin\\"],
-  \\"groupClaim\\": \\"cognito:groups\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "groups",
+  "provider": "oidc",
+  "allowedGroups":   ["Admin"],
+  "groupClaim": "cognito:groups",
+  "allowedFields":   ["id", "title"]
 }))
 $util.qr($authRules.add({
-  \\"type\\": \\"groups\\",
-  \\"provider\\": \\"oidc\\",
-  \\"allowedGroups\\":   [\\"Moderator\\"],
-  \\"groupClaim\\": \\"cognito:groups\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "groups",
+  "provider": "oidc",
+  "allowedGroups":   ["Moderator"],
+  "groupClaim": "cognito:groups",
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "create", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 26`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -2498,9 +2498,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostStaticGroups\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostStaticGroups" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -2510,53 +2510,53 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 28`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"groups\\",
-  \\"provider\\": \\"oidc\\",
-  \\"allowedGroups\\":   [\\"Admin\\"],
-  \\"groupClaim\\": \\"cognito:groups\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "groups",
+  "provider": "oidc",
+  "allowedGroups":   ["Admin"],
+  "groupClaim": "cognito:groups",
+  "allowedFields":   ["id", "title"]
 }))
 $util.qr($authRules.add({
-  \\"type\\": \\"groups\\",
-  \\"provider\\": \\"oidc\\",
-  \\"allowedGroups\\":   [\\"Moderator\\"],
-  \\"groupClaim\\": \\"cognito:groups\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "groups",
+  "provider": "oidc",
+  "allowedGroups":   ["Moderator"],
+  "groupClaim": "cognito:groups",
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "update", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 29`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -2567,9 +2567,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostStaticGroups\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostStaticGroups" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -2579,53 +2579,53 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 31`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"groups\\",
-  \\"provider\\": \\"oidc\\",
-  \\"allowedGroups\\":   [\\"Admin\\"],
-  \\"groupClaim\\": \\"cognito:groups\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "groups",
+  "provider": "oidc",
+  "allowedGroups":   ["Admin"],
+  "groupClaim": "cognito:groups",
+  "allowedFields":   ["id", "title"]
 }))
 $util.qr($authRules.add({
-  \\"type\\": \\"groups\\",
-  \\"provider\\": \\"oidc\\",
-  \\"allowedGroups\\":   [\\"Moderator\\"],
-  \\"groupClaim\\": \\"cognito:groups\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+  "type": "groups",
+  "provider": "oidc",
+  "allowedGroups":   ["Moderator"],
+  "groupClaim": "cognito:groups",
+  "allowedFields":   ["id", "title"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "delete", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 32`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -2634,38 +2634,38 @@ $util.toJson({})
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 33`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"groups\\",
-  \\"provider\\": \\"oidc\\",
-  \\"groupsFieldName\\": \\"group\\",
-  \\"groupsFieldType\\": \\"string\\",
-  \\"groupClaim\\": \\"cognito:groups\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"group\\"]
+  "type": "groups",
+  "provider": "oidc",
+  "groupsFieldName": "group",
+  "groupsFieldType": "string",
+  "groupClaim": "cognito:groups",
+  "allowedFields":   ["id", "title", "group"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "create", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 34`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -2676,9 +2676,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostSingleGroup\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostSingleGroup" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -2688,47 +2688,47 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 36`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"groups\\",
-  \\"provider\\": \\"oidc\\",
-  \\"groupsFieldName\\": \\"group\\",
-  \\"groupsFieldType\\": \\"string\\",
-  \\"groupClaim\\": \\"cognito:groups\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"group\\"]
+  "type": "groups",
+  "provider": "oidc",
+  "groupsFieldName": "group",
+  "groupsFieldType": "string",
+  "groupClaim": "cognito:groups",
+  "allowedFields":   ["id", "title", "group"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "update", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 37`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -2739,9 +2739,9 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostSingleGroup\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostSingleGroup" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
@@ -2751,47 +2751,47 @@ $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 39`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"groups\\",
-  \\"provider\\": \\"oidc\\",
-  \\"groupsFieldName\\": \\"group\\",
-  \\"groupsFieldType\\": \\"string\\",
-  \\"groupClaim\\": \\"cognito:groups\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"group\\"]
+  "type": "groups",
+  "provider": "oidc",
+  "groupsFieldName": "group",
+  "groupsFieldType": "string",
+  "groupClaim": "cognito:groups",
+  "allowedFields":   ["id", "title", "group"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "delete", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 40`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -2800,38 +2800,38 @@ $util.toJson({})
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 41`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"groups\\",
-  \\"provider\\": \\"oidc\\",
-  \\"groupsFieldName\\": \\"groups\\",
-  \\"groupsFieldType\\": \\"string[]\\",
-  \\"groupClaim\\": \\"cognito:groups\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"groups\\"]
+  "type": "groups",
+  "provider": "oidc",
+  "groupsFieldName": "groups",
+  "groupsFieldType": "string[]",
+  "groupClaim": "cognito:groups",
+  "allowedFields":   ["id", "title", "groups"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "create", $ctx.args.input, null) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 42`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -2842,59 +2842,59 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostGroups\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostGroups" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"groups\\"] )
-#set( $lambdaInput.args.metadata.arrayFields = [\\"groups\\"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["groups"] )
+#set( $lambdaInput.args.metadata.arrayFields = ["groups"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 44`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"groups\\",
-  \\"provider\\": \\"oidc\\",
-  \\"groupsFieldName\\": \\"groups\\",
-  \\"groupsFieldType\\": \\"string[]\\",
-  \\"groupClaim\\": \\"cognito:groups\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"groups\\"]
+  "type": "groups",
+  "provider": "oidc",
+  "groupsFieldName": "groups",
+  "groupsFieldType": "string[]",
+  "groupClaim": "cognito:groups",
+  "allowedFields":   ["id", "title", "groups"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "update", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 45`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})
@@ -2905,59 +2905,59 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 "## [Start] Get existing record. **
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"PostGroups\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.table = "PostGroups" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "GET_EXISTING_RECORD" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"groups\\"] )
-#set( $lambdaInput.args.metadata.arrayFields = [\\"groups\\"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["groups"] )
+#set( $lambdaInput.args.metadata.arrayFields = ["groups"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
 #set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Get existing record. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 47`] = `
 "## [Start] Authorization rules. **
-$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+$util.qr($ctx.stash.put("hasAuth", true))
 #set( $authRules = [] )
 #if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
   $util.qr($authRules.add({
-  \\"provider\\": \\"iam\\",
-  \\"type\\": \\"admin\\",
-  \\"strict\\": false,
-  \\"roles\\": $ctx.stash.adminRoles
+  "provider": "iam",
+  "type": "admin",
+  "strict": false,
+  "roles": $ctx.stash.adminRoles
 }))
 #end
 $util.qr($authRules.add({
-  \\"type\\": \\"groups\\",
-  \\"provider\\": \\"oidc\\",
-  \\"groupsFieldName\\": \\"groups\\",
-  \\"groupsFieldType\\": \\"string[]\\",
-  \\"groupClaim\\": \\"cognito:groups\\",
-  \\"allowedFields\\":   [\\"id\\", \\"title\\", \\"groups\\"]
+  "type": "groups",
+  "provider": "oidc",
+  "groupsFieldName": "groups",
+  "groupsFieldType": "string[]",
+  "groupClaim": "cognito:groups",
+  "allowedFields":   ["id", "title", "groups"]
 }))
-#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
+#set( $authResult = $util.authRules.mutationAuth($authRules, "delete", $ctx.args.input, $ctx.result) )
 #if( !$authResult || ($authResult && !$authResult.authorized) )
   $util.unauthorized()
 #end
 #if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
   #set( $ctx.args.input = $authResult.authorizedInput )
 #end
-$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+$util.toJson({"version":"2018-05-29","payload":{}})
 ## [End] Authorization rules. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 48`] = `
 "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
+#if( !$ctx.stash.get("hasAuth") )
   $util.unauthorized()
 #end
 $util.toJson({})

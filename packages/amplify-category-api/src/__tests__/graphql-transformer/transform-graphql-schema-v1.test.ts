@@ -56,7 +56,7 @@ describe('transformGraphQLSchemaV1', () => {
         success: jest.fn(),
       },
     } as unknown as $TSContext;
-    await expect(() => transformGraphQLSchemaV1(contextMock, { dryRun: true, parameters: {} })).rejects.toThrowError(
+    await expect(() => transformGraphQLSchemaV1(contextMock, { dryRun: true, parameters: {} })).rejects.toThrow(
       'V1 transformer is not supported for Amplify Gen 2 migrations. Migrate to V2 transformer first.',
     );
 

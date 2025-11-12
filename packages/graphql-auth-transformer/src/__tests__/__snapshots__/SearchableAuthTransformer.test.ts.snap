@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`auth logic is enabled for iam/apiKey auth rules in response es resolver 1`] = `
 "type Post @aws_api_key @aws_iam {
@@ -108,9 +108,9 @@ type Mutation {
 }
 
 type Subscription {
-  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"]) @aws_api_key @aws_iam
-  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"]) @aws_api_key @aws_iam
-  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"]) @aws_api_key @aws_iam
+  onCreatePost: Post @aws_subscribe(mutations: ["createPost"]) @aws_api_key @aws_iam
+  onUpdatePost: Post @aws_subscribe(mutations: ["updatePost"]) @aws_api_key @aws_iam
+  onDeletePost: Post @aws_subscribe(mutations: ["deletePost"]) @aws_api_key @aws_iam
 }
 
 input SearchableStringFilterInput {

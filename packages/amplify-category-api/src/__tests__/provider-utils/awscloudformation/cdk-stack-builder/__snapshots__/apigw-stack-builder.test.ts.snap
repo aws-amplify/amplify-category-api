@@ -1,37 +1,37 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`AmplifyApigwResourceStack addIamPolicyResourceForUserPoolGroup should generate correct IAM policies when {} is used in path 1`] = `
-Object {
-  "adminGroupbookisbnPolicy": Object {
-    "Properties": Object {
-      "PolicyDocument": Object {
-        "Statement": Array [
-          Object {
+{
+  "adminGroupbookisbnPolicy": {
+    "Properties": {
+      "PolicyDocument": {
+        "Statement": [
+          {
             "Action": "execute-api:Invoke",
             "Effect": "Allow",
-            "Resource": Array [
-              Object {
-                "Fn::Join": Array [
+            "Resource": [
+              {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:execute-api:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "mockRestAPIName",
                     },
                     "/",
-                    Object {
-                      "Fn::If": Array [
+                    {
+                      "Fn::If": [
                         "ShouldNotCreateEnvResources",
                         "Prod",
-                        Object {
+                        {
                           "Ref": "env",
                         },
                       ],
@@ -40,28 +40,28 @@ Object {
                   ],
                 ],
               },
-              Object {
-                "Fn::Join": Array [
+              {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:execute-api:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "mockRestAPIName",
                     },
                     "/",
-                    Object {
-                      "Fn::If": Array [
+                    {
+                      "Fn::If": [
                         "ShouldNotCreateEnvResources",
                         "Prod",
-                        Object {
+                        {
                           "Ref": "env",
                         },
                       ],
@@ -70,28 +70,28 @@ Object {
                   ],
                 ],
               },
-              Object {
-                "Fn::Join": Array [
+              {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:execute-api:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "mockRestAPIName",
                     },
                     "/",
-                    Object {
-                      "Fn::If": Array [
+                    {
+                      "Fn::If": [
                         "ShouldNotCreateEnvResources",
                         "Prod",
-                        Object {
+                        {
                           "Ref": "env",
                         },
                       ],
@@ -100,28 +100,28 @@ Object {
                   ],
                 ],
               },
-              Object {
-                "Fn::Join": Array [
+              {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:execute-api:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "mockRestAPIName",
                     },
                     "/",
-                    Object {
-                      "Fn::If": Array [
+                    {
+                      "Fn::If": [
                         "ShouldNotCreateEnvResources",
                         "Prod",
-                        Object {
+                        {
                           "Ref": "env",
                         },
                       ],
@@ -130,28 +130,28 @@ Object {
                   ],
                 ],
               },
-              Object {
-                "Fn::Join": Array [
+              {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:execute-api:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "mockRestAPIName",
                     },
                     "/",
-                    Object {
-                      "Fn::If": Array [
+                    {
+                      "Fn::If": [
                         "ShouldNotCreateEnvResources",
                         "Prod",
-                        Object {
+                        {
                           "Ref": "env",
                         },
                       ],
@@ -160,28 +160,28 @@ Object {
                   ],
                 ],
               },
-              Object {
-                "Fn::Join": Array [
+              {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:execute-api:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "mockRestAPIName",
                     },
                     "/",
-                    Object {
-                      "Fn::If": Array [
+                    {
+                      "Fn::If": [
                         "ShouldNotCreateEnvResources",
                         "Prod",
-                        Object {
+                        {
                           "Ref": "env",
                         },
                       ],
@@ -190,28 +190,28 @@ Object {
                   ],
                 ],
               },
-              Object {
-                "Fn::Join": Array [
+              {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:execute-api:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "mockRestAPIName",
                     },
                     "/",
-                    Object {
-                      "Fn::If": Array [
+                    {
+                      "Fn::If": [
                         "ShouldNotCreateEnvResources",
                         "Prod",
-                        Object {
+                        {
                           "Ref": "env",
                         },
                       ],
@@ -220,28 +220,28 @@ Object {
                   ],
                 ],
               },
-              Object {
-                "Fn::Join": Array [
+              {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:execute-api:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "mockRestAPIName",
                     },
                     "/",
-                    Object {
-                      "Fn::If": Array [
+                    {
+                      "Fn::If": [
                         "ShouldNotCreateEnvResources",
                         "Prod",
-                        Object {
+                        {
                           "Ref": "env",
                         },
                       ],
@@ -250,28 +250,28 @@ Object {
                   ],
                 ],
               },
-              Object {
-                "Fn::Join": Array [
+              {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:execute-api:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "mockRestAPIName",
                     },
                     "/",
-                    Object {
-                      "Fn::If": Array [
+                    {
+                      "Fn::If": [
                         "ShouldNotCreateEnvResources",
                         "Prod",
-                        Object {
+                        {
                           "Ref": "env",
                         },
                       ],
@@ -280,28 +280,28 @@ Object {
                   ],
                 ],
               },
-              Object {
-                "Fn::Join": Array [
+              {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:execute-api:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "mockRestAPIName",
                     },
                     "/",
-                    Object {
-                      "Fn::If": Array [
+                    {
+                      "Fn::If": [
                         "ShouldNotCreateEnvResources",
                         "Prod",
-                        Object {
+                        {
                           "Ref": "env",
                         },
                       ],
@@ -316,12 +316,12 @@ Object {
         "Version": "2012-10-17",
       },
       "PolicyName": "mockRestAPIName-bookisbn-admin-group-policy",
-      "Roles": Array [
-        Object {
-          "Fn::Join": Array [
+      "Roles": [
+        {
+          "Fn::Join": [
             "-",
-            Array [
-              Object {
+            [
+              {
                 "Ref": "mockAuthRoleLogicalId",
               },
               "adminGroupRole",
@@ -332,36 +332,36 @@ Object {
     },
     "Type": "AWS::IAM::Policy",
   },
-  "adminGroupitemsidfoobarPolicy": Object {
-    "Properties": Object {
-      "PolicyDocument": Object {
-        "Statement": Array [
-          Object {
+  "adminGroupitemsidfoobarPolicy": {
+    "Properties": {
+      "PolicyDocument": {
+        "Statement": [
+          {
             "Action": "execute-api:Invoke",
             "Effect": "Allow",
-            "Resource": Array [
-              Object {
-                "Fn::Join": Array [
+            "Resource": [
+              {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:execute-api:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "mockRestAPIName",
                     },
                     "/",
-                    Object {
-                      "Fn::If": Array [
+                    {
+                      "Fn::If": [
                         "ShouldNotCreateEnvResources",
                         "Prod",
-                        Object {
+                        {
                           "Ref": "env",
                         },
                       ],
@@ -370,28 +370,28 @@ Object {
                   ],
                 ],
               },
-              Object {
-                "Fn::Join": Array [
+              {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:execute-api:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "mockRestAPIName",
                     },
                     "/",
-                    Object {
-                      "Fn::If": Array [
+                    {
+                      "Fn::If": [
                         "ShouldNotCreateEnvResources",
                         "Prod",
-                        Object {
+                        {
                           "Ref": "env",
                         },
                       ],
@@ -400,28 +400,28 @@ Object {
                   ],
                 ],
               },
-              Object {
-                "Fn::Join": Array [
+              {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:execute-api:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "mockRestAPIName",
                     },
                     "/",
-                    Object {
-                      "Fn::If": Array [
+                    {
+                      "Fn::If": [
                         "ShouldNotCreateEnvResources",
                         "Prod",
-                        Object {
+                        {
                           "Ref": "env",
                         },
                       ],
@@ -430,28 +430,28 @@ Object {
                   ],
                 ],
               },
-              Object {
-                "Fn::Join": Array [
+              {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:execute-api:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "mockRestAPIName",
                     },
                     "/",
-                    Object {
-                      "Fn::If": Array [
+                    {
+                      "Fn::If": [
                         "ShouldNotCreateEnvResources",
                         "Prod",
-                        Object {
+                        {
                           "Ref": "env",
                         },
                       ],
@@ -460,28 +460,28 @@ Object {
                   ],
                 ],
               },
-              Object {
-                "Fn::Join": Array [
+              {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:execute-api:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "mockRestAPIName",
                     },
                     "/",
-                    Object {
-                      "Fn::If": Array [
+                    {
+                      "Fn::If": [
                         "ShouldNotCreateEnvResources",
                         "Prod",
-                        Object {
+                        {
                           "Ref": "env",
                         },
                       ],
@@ -490,28 +490,28 @@ Object {
                   ],
                 ],
               },
-              Object {
-                "Fn::Join": Array [
+              {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:execute-api:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "mockRestAPIName",
                     },
                     "/",
-                    Object {
-                      "Fn::If": Array [
+                    {
+                      "Fn::If": [
                         "ShouldNotCreateEnvResources",
                         "Prod",
-                        Object {
+                        {
                           "Ref": "env",
                         },
                       ],
@@ -520,28 +520,28 @@ Object {
                   ],
                 ],
               },
-              Object {
-                "Fn::Join": Array [
+              {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:execute-api:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "mockRestAPIName",
                     },
                     "/",
-                    Object {
-                      "Fn::If": Array [
+                    {
+                      "Fn::If": [
                         "ShouldNotCreateEnvResources",
                         "Prod",
-                        Object {
+                        {
                           "Ref": "env",
                         },
                       ],
@@ -550,28 +550,28 @@ Object {
                   ],
                 ],
               },
-              Object {
-                "Fn::Join": Array [
+              {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:execute-api:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "mockRestAPIName",
                     },
                     "/",
-                    Object {
-                      "Fn::If": Array [
+                    {
+                      "Fn::If": [
                         "ShouldNotCreateEnvResources",
                         "Prod",
-                        Object {
+                        {
                           "Ref": "env",
                         },
                       ],
@@ -580,28 +580,28 @@ Object {
                   ],
                 ],
               },
-              Object {
-                "Fn::Join": Array [
+              {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:execute-api:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "mockRestAPIName",
                     },
                     "/",
-                    Object {
-                      "Fn::If": Array [
+                    {
+                      "Fn::If": [
                         "ShouldNotCreateEnvResources",
                         "Prod",
-                        Object {
+                        {
                           "Ref": "env",
                         },
                       ],
@@ -610,28 +610,28 @@ Object {
                   ],
                 ],
               },
-              Object {
-                "Fn::Join": Array [
+              {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:execute-api:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "mockRestAPIName",
                     },
                     "/",
-                    Object {
-                      "Fn::If": Array [
+                    {
+                      "Fn::If": [
                         "ShouldNotCreateEnvResources",
                         "Prod",
-                        Object {
+                        {
                           "Ref": "env",
                         },
                       ],
@@ -646,12 +646,12 @@ Object {
         "Version": "2012-10-17",
       },
       "PolicyName": "mockRestAPIName-itemsidfoobar-admin-group-policy",
-      "Roles": Array [
-        Object {
-          "Fn::Join": Array [
+      "Roles": [
+        {
+          "Fn::Join": [
             "-",
-            Array [
-              Object {
+            [
+              {
                 "Ref": "mockAuthRoleLogicalId",
               },
               "adminGroupRole",
@@ -662,36 +662,36 @@ Object {
     },
     "Type": "AWS::IAM::Policy",
   },
-  "memberGroupbookisbnPolicy": Object {
-    "Properties": Object {
-      "PolicyDocument": Object {
-        "Statement": Array [
-          Object {
+  "memberGroupbookisbnPolicy": {
+    "Properties": {
+      "PolicyDocument": {
+        "Statement": [
+          {
             "Action": "execute-api:Invoke",
             "Effect": "Allow",
-            "Resource": Array [
-              Object {
-                "Fn::Join": Array [
+            "Resource": [
+              {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:execute-api:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "mockRestAPIName",
                     },
                     "/",
-                    Object {
-                      "Fn::If": Array [
+                    {
+                      "Fn::If": [
                         "ShouldNotCreateEnvResources",
                         "Prod",
-                        Object {
+                        {
                           "Ref": "env",
                         },
                       ],
@@ -700,28 +700,28 @@ Object {
                   ],
                 ],
               },
-              Object {
-                "Fn::Join": Array [
+              {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:execute-api:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "mockRestAPIName",
                     },
                     "/",
-                    Object {
-                      "Fn::If": Array [
+                    {
+                      "Fn::If": [
                         "ShouldNotCreateEnvResources",
                         "Prod",
-                        Object {
+                        {
                           "Ref": "env",
                         },
                       ],
@@ -736,12 +736,12 @@ Object {
         "Version": "2012-10-17",
       },
       "PolicyName": "mockRestAPIName-bookisbn-member-group-policy",
-      "Roles": Array [
-        Object {
-          "Fn::Join": Array [
+      "Roles": [
+        {
+          "Fn::Join": [
             "-",
-            Array [
-              Object {
+            [
+              {
                 "Ref": "mockAuthRoleLogicalId",
               },
               "memberGroupRole",
@@ -752,36 +752,36 @@ Object {
     },
     "Type": "AWS::IAM::Policy",
   },
-  "memberGroupitemsidfoobarPolicy": Object {
-    "Properties": Object {
-      "PolicyDocument": Object {
-        "Statement": Array [
-          Object {
+  "memberGroupitemsidfoobarPolicy": {
+    "Properties": {
+      "PolicyDocument": {
+        "Statement": [
+          {
             "Action": "execute-api:Invoke",
             "Effect": "Allow",
-            "Resource": Array [
-              Object {
-                "Fn::Join": Array [
+            "Resource": [
+              {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:execute-api:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "mockRestAPIName",
                     },
                     "/",
-                    Object {
-                      "Fn::If": Array [
+                    {
+                      "Fn::If": [
                         "ShouldNotCreateEnvResources",
                         "Prod",
-                        Object {
+                        {
                           "Ref": "env",
                         },
                       ],
@@ -790,28 +790,28 @@ Object {
                   ],
                 ],
               },
-              Object {
-                "Fn::Join": Array [
+              {
+                "Fn::Join": [
                   "",
-                  Array [
+                  [
                     "arn:aws:execute-api:",
-                    Object {
+                    {
                       "Ref": "AWS::Region",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "AWS::AccountId",
                     },
                     ":",
-                    Object {
+                    {
                       "Ref": "mockRestAPIName",
                     },
                     "/",
-                    Object {
-                      "Fn::If": Array [
+                    {
+                      "Fn::If": [
                         "ShouldNotCreateEnvResources",
                         "Prod",
-                        Object {
+                        {
                           "Ref": "env",
                         },
                       ],
@@ -826,12 +826,12 @@ Object {
         "Version": "2012-10-17",
       },
       "PolicyName": "mockRestAPIName-itemsidfoobar-member-group-policy",
-      "Roles": Array [
-        Object {
-          "Fn::Join": Array [
+      "Roles": [
+        {
+          "Fn::Join": [
             "-",
-            Array [
-              Object {
+            [
+              {
                 "Ref": "mockAuthRoleLogicalId",
               },
               "memberGroupRole",

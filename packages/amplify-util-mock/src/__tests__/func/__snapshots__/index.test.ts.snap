@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`function start times out function execution at the default time 2`] = `
 [Error: Lambda execution timed out after 10 seconds. Press ctrl + C to exit the process.

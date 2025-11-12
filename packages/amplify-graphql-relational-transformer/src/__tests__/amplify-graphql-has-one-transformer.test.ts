@@ -30,7 +30,7 @@ test('fails if @hasOne was used on an object that is not a model type', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasOneTransformer()],
     }),
-  ).toThrowError('@hasOne must be on an @model object type field.');
+  ).toThrow('@hasOne must be on an @model object type field.');
 });
 
 test('fails if @hasOne was used with a related type that is not a model', () => {
@@ -55,7 +55,7 @@ test('fails if @hasOne was used with a related type that is not a model', () => 
         Test1: DDB_DEFAULT_DATASOURCE_STRATEGY,
       },
     }),
-  ).toThrowError('Object type Test1 must be annotated with @model.');
+  ).toThrow('Object type Test1 must be annotated with @model.');
 });
 
 test('fails if the related type does not exist', () => {
@@ -76,7 +76,7 @@ test('fails if the related type does not exist', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasOneTransformer()],
     }),
-  ).toThrowError('Unknown type "Test2". Did you mean "Test" or "Test1"?');
+  ).toThrow('Unknown type "Test2". Did you mean "Test" or "Test1"?');
 });
 
 test('fails if an empty list of fields is passed in', () => {
@@ -97,7 +97,7 @@ test('fails if an empty list of fields is passed in', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasOneTransformer()],
     }),
-  ).toThrowError('No fields passed to @hasOne directive.');
+  ).toThrow('No fields passed to @hasOne directive.');
 });
 
 test('fails if any of the fields passed in are not in the parent model', () => {
@@ -119,7 +119,7 @@ test('fails if any of the fields passed in are not in the parent model', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
     }),
-  ).toThrowError('name is not a field in Test');
+  ).toThrow('name is not a field in Test');
 });
 
 test('fails if @hasOne field does not match related type primary key', () => {
@@ -141,7 +141,7 @@ test('fails if @hasOne field does not match related type primary key', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasOneTransformer()],
     }),
-  ).toThrowError('email field is not of type ID');
+  ).toThrow('email field is not of type ID');
 });
 
 test('fails if sort key type does not match related type sort key', () => {
@@ -163,7 +163,7 @@ test('fails if sort key type does not match related type sort key', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
     }),
-  ).toThrowError('email field is not of type ID');
+  ).toThrow('email field is not of type ID');
 });
 
 test('fails if partial sort key is provided', () => {
@@ -185,7 +185,7 @@ test('fails if partial sort key is provided', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
     }),
-  ).toThrowError('Invalid @hasOne directive on testObj. Partial sort keys are not accepted.');
+  ).toThrow('Invalid @hasOne directive on testObj. Partial sort keys are not accepted.');
 });
 
 test('accepts @hasOne without a sort key', () => {
@@ -208,7 +208,7 @@ test('accepts @hasOne without a sort key', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
     }),
-  ).not.toThrowError();
+  ).not.toThrow();
 });
 
 test('fails if used as a has many relation', () => {
@@ -229,7 +229,7 @@ test('fails if used as a has many relation', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
     }),
-  ).toThrowError('@hasOne cannot be used with lists. Use @hasMany instead.');
+  ).toThrow('@hasOne cannot be used with lists. Use @hasMany instead.');
 });
 
 test('fails if object type fields are provided', () => {
@@ -250,7 +250,7 @@ test('fails if object type fields are provided', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer()],
     }),
-  ).toThrowError('All fields provided to @hasOne must be scalar or enum fields.');
+  ).toThrow('All fields provided to @hasOne must be scalar or enum fields.');
 });
 
 test('creates has one relationship with explicit fields', () => {
@@ -449,7 +449,7 @@ test('@hasOne and @hasMany cannot point at each other if DataStore is enabled', 
       },
       transformers: [new ModelTransformer(), new HasOneTransformer(), new HasManyTransformer()],
     }),
-  ).toThrowError('Post and Blog cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.');
+  ).toThrow('Post and Blog cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.');
 });
 
 test('@hasOne and @hasOne cannot point at each other if DataStore is enabled', () => {
@@ -475,7 +475,7 @@ test('@hasOne and @hasOne cannot point at each other if DataStore is enabled', (
       },
       transformers: [new ModelTransformer(), new HasOneTransformer()],
     }),
-  ).toThrowError('Blog and Post cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.');
+  ).toThrow('Blog and Post cannot refer to each other via @hasOne or @hasMany when DataStore is in use. Use @belongsTo instead.');
 });
 
 test('recursive @hasOne relationships are supported if DataStore is enabled', () => {

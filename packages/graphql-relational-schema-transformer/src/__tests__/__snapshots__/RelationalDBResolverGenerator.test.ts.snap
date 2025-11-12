@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`verify generated templates 1`] = `"testFilePath/Mutation.createTomatoes.req.vtl"`;
 
@@ -8,15 +8,15 @@ exports[`verify generated templates 2`] = `
 #set( $variableMap = {} )
 #foreach( $entry in $ctx.args.createTomatoesInput.keySet() )
   #set( $discard = $cols.add($entry) )
-  #set( $discard = $vals.add(\\":$entry\\") )
-  $util.qr($variableMap.put(\\":$entry\\", $ctx.args.createTomatoesInput[$entry]))
+  #set( $discard = $vals.add(":$entry") )
+  $util.qr($variableMap.put(":$entry", $ctx.args.createTomatoesInput[$entry]))
 #end
-#set( $valStr = $vals.toString().replace(\\"[\\",\\"(\\").replace(\\"]\\",\\")\\") )
-#set( $colStr = $cols.toString().replace(\\"[\\",\\"(\\").replace(\\"]\\",\\")\\") )
+#set( $valStr = $vals.toString().replace("[","(").replace("]",")") )
+#set( $colStr = $cols.toString().replace("[","(").replace("]",")") )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"INSERT INTO Tomatoes $colStr VALUES $valStr\\", \\"SELECT * FROM Tomatoes WHERE Id=:Id\\"],
-  \\"variableMap\\":   $util.toJson($variableMap)
+  "version": "2018-05-29",
+  "statements":   ["INSERT INTO Tomatoes $colStr VALUES $valStr", "SELECT * FROM Tomatoes WHERE Id=:Id"],
+  "variableMap":   $util.toJson($variableMap)
 }"
 `;
 
@@ -28,11 +28,11 @@ exports[`verify generated templates 5`] = `"testFilePath/Query.getTomatoes.req.v
 
 exports[`verify generated templates 6`] = `
 "#set( $variableMap = {} )
-$util.qr($variableMap.put(\\":Id\\", \\"$ctx.args.Id\\"))
+$util.qr($variableMap.put(":Id", "$ctx.args.Id"))
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"SELECT * FROM Tomatoes WHERE Id=:Id\\"],
-  \\"variableMap\\":   $util.toJson($variableMap)
+  "version": "2018-05-29",
+  "statements":   ["SELECT * FROM Tomatoes WHERE Id=:Id"],
+  "variableMap":   $util.toJson($variableMap)
 }"
 `;
 
@@ -41,7 +41,7 @@ exports[`verify generated templates 7`] = `"testFilePath/Query.getTomatoes.res.v
 exports[`verify generated templates 8`] = `
 "#set( $output = $utils.rds.toJsonObject($ctx.result) )
 #if( $output.isEmpty() )
-  $util.error(\\"Invalid response from RDS DataSource. See info for the full response.\\", \\"InvalidResponse\\", {}, $output)
+  $util.error("Invalid response from RDS DataSource. See info for the full response.", "InvalidResponse", {}, $output)
 #end
 #set( $output = $output[0] )
 #if( $output.isEmpty() )
@@ -56,14 +56,14 @@ exports[`verify generated templates 10`] = `
 "#set( $updateList = {} )
 #set( $variableMap = {} )
 #foreach( $entry in $ctx.args.updateTomatoesInput.keySet() )
-  $util.qr($variableMap.put(\\":$entry\\", $ctx.args.updateTomatoesInput[$entry]))
-  #set( $discard = $updateList.put($entry, \\":$entry\\") )
+  $util.qr($variableMap.put(":$entry", $ctx.args.updateTomatoesInput[$entry]))
+  #set( $discard = $updateList.put($entry, ":$entry") )
 #end
-#set( $update = $updateList.toString().replace(\\"{\\",\\"\\").replace(\\"}\\",\\"\\") )
+#set( $update = $updateList.toString().replace("{","").replace("}","") )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"UPDATE Tomatoes SET $update WHERE Id=:Id\\", \\"SELECT * FROM Tomatoes WHERE Id=:Id\\"],
-  \\"variableMap\\":   $util.toJson($variableMap)
+  "version": "2018-05-29",
+  "statements":   ["UPDATE Tomatoes SET $update WHERE Id=:Id", "SELECT * FROM Tomatoes WHERE Id=:Id"],
+  "variableMap":   $util.toJson($variableMap)
 }"
 `;
 
@@ -72,7 +72,7 @@ exports[`verify generated templates 11`] = `"testFilePath/Mutation.updateTomatoe
 exports[`verify generated templates 12`] = `
 "#set( $output = $utils.rds.toJsonObject($ctx.result) )
 #if( $output.length() < 2 )
-  $util.error(\\"Invalid response from RDS DataSource. See info for the full response.\\", \\"InvalidResponse\\", {}, $output)
+  $util.error("Invalid response from RDS DataSource. See info for the full response.", "InvalidResponse", {}, $output)
 #end
 #set( $output = $output[1] )
 #if( $output.isEmpty() )
@@ -85,11 +85,11 @@ exports[`verify generated templates 13`] = `"testFilePath/Mutation.deleteTomatoe
 
 exports[`verify generated templates 14`] = `
 "#set( $variableMap = {} )
-$util.qr($variableMap.put(\\":Id\\", \\"$ctx.args.Id\\"))
+$util.qr($variableMap.put(":Id", "$ctx.args.Id"))
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"SELECT * FROM Tomatoes WHERE Id=:Id\\", \\"DELETE FROM Tomatoes WHERE Id=:Id\\"],
-  \\"variableMap\\":   $util.toJson($variableMap)
+  "version": "2018-05-29",
+  "statements":   ["SELECT * FROM Tomatoes WHERE Id=:Id", "DELETE FROM Tomatoes WHERE Id=:Id"],
+  "variableMap":   $util.toJson($variableMap)
 }"
 `;
 
@@ -98,7 +98,7 @@ exports[`verify generated templates 15`] = `"testFilePath/Mutation.deleteTomatoe
 exports[`verify generated templates 16`] = `
 "#set( $output = $utils.rds.toJsonObject($ctx.result) )
 #if( $output.isEmpty() )
-  $util.error(\\"Invalid response from RDS DataSource. See info for the full response.\\", \\"InvalidResponse\\", {}, $output)
+  $util.error("Invalid response from RDS DataSource. See info for the full response.", "InvalidResponse", {}, $output)
 #end
 #set( $output = $output[0] )
 #if( $output.isEmpty() )
@@ -111,9 +111,9 @@ exports[`verify generated templates 17`] = `"testFilePath/Query.listTomatoes.req
 
 exports[`verify generated templates 18`] = `
 "{
-  \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"SELECT * FROM Tomatoes\\"],
-  \\"variableMap\\": {}
+  "version": "2018-05-29",
+  "statements":   ["SELECT * FROM Tomatoes"],
+  "variableMap": {}
 }"
 `;
 
@@ -129,15 +129,15 @@ exports[`verify generated templates using a Int primary key 2`] = `
 #set( $variableMap = {} )
 #foreach( $entry in $ctx.args.createApplesInput.keySet() )
   #set( $discard = $cols.add($entry) )
-  #set( $discard = $vals.add(\\":$entry\\") )
-  $util.qr($variableMap.put(\\":$entry\\", $ctx.args.createApplesInput[$entry]))
+  #set( $discard = $vals.add(":$entry") )
+  $util.qr($variableMap.put(":$entry", $ctx.args.createApplesInput[$entry]))
 #end
-#set( $valStr = $vals.toString().replace(\\"[\\",\\"(\\").replace(\\"]\\",\\")\\") )
-#set( $colStr = $cols.toString().replace(\\"[\\",\\"(\\").replace(\\"]\\",\\")\\") )
+#set( $valStr = $vals.toString().replace("[","(").replace("]",")") )
+#set( $colStr = $cols.toString().replace("[","(").replace("]",")") )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"INSERT INTO Apples $colStr VALUES $valStr\\", \\"SELECT * FROM Apples WHERE Id=:Id\\"],
-  \\"variableMap\\":   $util.toJson($variableMap)
+  "version": "2018-05-29",
+  "statements":   ["INSERT INTO Apples $colStr VALUES $valStr", "SELECT * FROM Apples WHERE Id=:Id"],
+  "variableMap":   $util.toJson($variableMap)
 }"
 `;
 
@@ -149,11 +149,11 @@ exports[`verify generated templates using a Int primary key 5`] = `"testFilePath
 
 exports[`verify generated templates using a Int primary key 6`] = `
 "#set( $variableMap = {} )
-$util.qr($variableMap.put(\\":Id\\", $ctx.args.Id))
+$util.qr($variableMap.put(":Id", $ctx.args.Id))
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"SELECT * FROM Apples WHERE Id=:Id\\"],
-  \\"variableMap\\":   $util.toJson($variableMap)
+  "version": "2018-05-29",
+  "statements":   ["SELECT * FROM Apples WHERE Id=:Id"],
+  "variableMap":   $util.toJson($variableMap)
 }"
 `;
 
@@ -162,7 +162,7 @@ exports[`verify generated templates using a Int primary key 7`] = `"testFilePath
 exports[`verify generated templates using a Int primary key 8`] = `
 "#set( $output = $utils.rds.toJsonObject($ctx.result) )
 #if( $output.isEmpty() )
-  $util.error(\\"Invalid response from RDS DataSource. See info for the full response.\\", \\"InvalidResponse\\", {}, $output)
+  $util.error("Invalid response from RDS DataSource. See info for the full response.", "InvalidResponse", {}, $output)
 #end
 #set( $output = $output[0] )
 #if( $output.isEmpty() )
@@ -177,14 +177,14 @@ exports[`verify generated templates using a Int primary key 10`] = `
 "#set( $updateList = {} )
 #set( $variableMap = {} )
 #foreach( $entry in $ctx.args.updateApplesInput.keySet() )
-  $util.qr($variableMap.put(\\":$entry\\", $ctx.args.updateApplesInput[$entry]))
-  #set( $discard = $updateList.put($entry, \\":$entry\\") )
+  $util.qr($variableMap.put(":$entry", $ctx.args.updateApplesInput[$entry]))
+  #set( $discard = $updateList.put($entry, ":$entry") )
 #end
-#set( $update = $updateList.toString().replace(\\"{\\",\\"\\").replace(\\"}\\",\\"\\") )
+#set( $update = $updateList.toString().replace("{","").replace("}","") )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"UPDATE Apples SET $update WHERE Id=:Id\\", \\"SELECT * FROM Apples WHERE Id=:Id\\"],
-  \\"variableMap\\":   $util.toJson($variableMap)
+  "version": "2018-05-29",
+  "statements":   ["UPDATE Apples SET $update WHERE Id=:Id", "SELECT * FROM Apples WHERE Id=:Id"],
+  "variableMap":   $util.toJson($variableMap)
 }"
 `;
 
@@ -193,7 +193,7 @@ exports[`verify generated templates using a Int primary key 11`] = `"testFilePat
 exports[`verify generated templates using a Int primary key 12`] = `
 "#set( $output = $utils.rds.toJsonObject($ctx.result) )
 #if( $output.length() < 2 )
-  $util.error(\\"Invalid response from RDS DataSource. See info for the full response.\\", \\"InvalidResponse\\", {}, $output)
+  $util.error("Invalid response from RDS DataSource. See info for the full response.", "InvalidResponse", {}, $output)
 #end
 #set( $output = $output[1] )
 #if( $output.isEmpty() )
@@ -206,11 +206,11 @@ exports[`verify generated templates using a Int primary key 13`] = `"testFilePat
 
 exports[`verify generated templates using a Int primary key 14`] = `
 "#set( $variableMap = {} )
-$util.qr($variableMap.put(\\":Id\\", $ctx.args.Id))
+$util.qr($variableMap.put(":Id", $ctx.args.Id))
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"SELECT * FROM Apples WHERE Id=:Id\\", \\"DELETE FROM Apples WHERE Id=:Id\\"],
-  \\"variableMap\\":   $util.toJson($variableMap)
+  "version": "2018-05-29",
+  "statements":   ["SELECT * FROM Apples WHERE Id=:Id", "DELETE FROM Apples WHERE Id=:Id"],
+  "variableMap":   $util.toJson($variableMap)
 }"
 `;
 
@@ -219,7 +219,7 @@ exports[`verify generated templates using a Int primary key 15`] = `"testFilePat
 exports[`verify generated templates using a Int primary key 16`] = `
 "#set( $output = $utils.rds.toJsonObject($ctx.result) )
 #if( $output.isEmpty() )
-  $util.error(\\"Invalid response from RDS DataSource. See info for the full response.\\", \\"InvalidResponse\\", {}, $output)
+  $util.error("Invalid response from RDS DataSource. See info for the full response.", "InvalidResponse", {}, $output)
 #end
 #set( $output = $output[0] )
 #if( $output.isEmpty() )
@@ -232,9 +232,9 @@ exports[`verify generated templates using a Int primary key 17`] = `"testFilePat
 
 exports[`verify generated templates using a Int primary key 18`] = `
 "{
-  \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"SELECT * FROM Apples\\"],
-  \\"variableMap\\": {}
+  "version": "2018-05-29",
+  "statements":   ["SELECT * FROM Apples"],
+  "variableMap": {}
 }"
 `;
 
@@ -250,15 +250,15 @@ exports[`verify generated templates with non-id named primary key 2`] = `
 #set( $variableMap = {} )
 #foreach( $entry in $ctx.args.createTomatoesInput.keySet() )
   #set( $discard = $cols.add($entry) )
-  #set( $discard = $vals.add(\\":$entry\\") )
-  $util.qr($variableMap.put(\\":$entry\\", $ctx.args.createTomatoesInput[$entry]))
+  #set( $discard = $vals.add(":$entry") )
+  $util.qr($variableMap.put(":$entry", $ctx.args.createTomatoesInput[$entry]))
 #end
-#set( $valStr = $vals.toString().replace(\\"[\\",\\"(\\").replace(\\"]\\",\\")\\") )
-#set( $colStr = $cols.toString().replace(\\"[\\",\\"(\\").replace(\\"]\\",\\")\\") )
+#set( $valStr = $vals.toString().replace("[","(").replace("]",")") )
+#set( $colStr = $cols.toString().replace("[","(").replace("]",")") )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"INSERT INTO Tomatoes $colStr VALUES $valStr\\", \\"SELECT * FROM Tomatoes WHERE tomatoId=:tomatoId\\"],
-  \\"variableMap\\":   $util.toJson($variableMap)
+  "version": "2018-05-29",
+  "statements":   ["INSERT INTO Tomatoes $colStr VALUES $valStr", "SELECT * FROM Tomatoes WHERE tomatoId=:tomatoId"],
+  "variableMap":   $util.toJson($variableMap)
 }"
 `;
 
@@ -270,11 +270,11 @@ exports[`verify generated templates with non-id named primary key 5`] = `"testFi
 
 exports[`verify generated templates with non-id named primary key 6`] = `
 "#set( $variableMap = {} )
-$util.qr($variableMap.put(\\":tomatoId\\", \\"$ctx.args.tomatoId\\"))
+$util.qr($variableMap.put(":tomatoId", "$ctx.args.tomatoId"))
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"SELECT * FROM Tomatoes WHERE tomatoId=:tomatoId\\"],
-  \\"variableMap\\":   $util.toJson($variableMap)
+  "version": "2018-05-29",
+  "statements":   ["SELECT * FROM Tomatoes WHERE tomatoId=:tomatoId"],
+  "variableMap":   $util.toJson($variableMap)
 }"
 `;
 
@@ -283,7 +283,7 @@ exports[`verify generated templates with non-id named primary key 7`] = `"testFi
 exports[`verify generated templates with non-id named primary key 8`] = `
 "#set( $output = $utils.rds.toJsonObject($ctx.result) )
 #if( $output.isEmpty() )
-  $util.error(\\"Invalid response from RDS DataSource. See info for the full response.\\", \\"InvalidResponse\\", {}, $output)
+  $util.error("Invalid response from RDS DataSource. See info for the full response.", "InvalidResponse", {}, $output)
 #end
 #set( $output = $output[0] )
 #if( $output.isEmpty() )
@@ -298,14 +298,14 @@ exports[`verify generated templates with non-id named primary key 10`] = `
 "#set( $updateList = {} )
 #set( $variableMap = {} )
 #foreach( $entry in $ctx.args.updateTomatoesInput.keySet() )
-  $util.qr($variableMap.put(\\":$entry\\", $ctx.args.updateTomatoesInput[$entry]))
-  #set( $discard = $updateList.put($entry, \\":$entry\\") )
+  $util.qr($variableMap.put(":$entry", $ctx.args.updateTomatoesInput[$entry]))
+  #set( $discard = $updateList.put($entry, ":$entry") )
 #end
-#set( $update = $updateList.toString().replace(\\"{\\",\\"\\").replace(\\"}\\",\\"\\") )
+#set( $update = $updateList.toString().replace("{","").replace("}","") )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"UPDATE Tomatoes SET $update WHERE tomatoId=:tomatoId\\", \\"SELECT * FROM Tomatoes WHERE tomatoId=:tomatoId\\"],
-  \\"variableMap\\":   $util.toJson($variableMap)
+  "version": "2018-05-29",
+  "statements":   ["UPDATE Tomatoes SET $update WHERE tomatoId=:tomatoId", "SELECT * FROM Tomatoes WHERE tomatoId=:tomatoId"],
+  "variableMap":   $util.toJson($variableMap)
 }"
 `;
 
@@ -314,7 +314,7 @@ exports[`verify generated templates with non-id named primary key 11`] = `"testF
 exports[`verify generated templates with non-id named primary key 12`] = `
 "#set( $output = $utils.rds.toJsonObject($ctx.result) )
 #if( $output.length() < 2 )
-  $util.error(\\"Invalid response from RDS DataSource. See info for the full response.\\", \\"InvalidResponse\\", {}, $output)
+  $util.error("Invalid response from RDS DataSource. See info for the full response.", "InvalidResponse", {}, $output)
 #end
 #set( $output = $output[1] )
 #if( $output.isEmpty() )
@@ -327,11 +327,11 @@ exports[`verify generated templates with non-id named primary key 13`] = `"testF
 
 exports[`verify generated templates with non-id named primary key 14`] = `
 "#set( $variableMap = {} )
-$util.qr($variableMap.put(\\":tomatoId\\", \\"$ctx.args.tomatoId\\"))
+$util.qr($variableMap.put(":tomatoId", "$ctx.args.tomatoId"))
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"SELECT * FROM Tomatoes WHERE tomatoId=:tomatoId\\", \\"DELETE FROM Tomatoes WHERE tomatoId=:tomatoId\\"],
-  \\"variableMap\\":   $util.toJson($variableMap)
+  "version": "2018-05-29",
+  "statements":   ["SELECT * FROM Tomatoes WHERE tomatoId=:tomatoId", "DELETE FROM Tomatoes WHERE tomatoId=:tomatoId"],
+  "variableMap":   $util.toJson($variableMap)
 }"
 `;
 
@@ -340,7 +340,7 @@ exports[`verify generated templates with non-id named primary key 15`] = `"testF
 exports[`verify generated templates with non-id named primary key 16`] = `
 "#set( $output = $utils.rds.toJsonObject($ctx.result) )
 #if( $output.isEmpty() )
-  $util.error(\\"Invalid response from RDS DataSource. See info for the full response.\\", \\"InvalidResponse\\", {}, $output)
+  $util.error("Invalid response from RDS DataSource. See info for the full response.", "InvalidResponse", {}, $output)
 #end
 #set( $output = $output[0] )
 #if( $output.isEmpty() )
@@ -353,9 +353,9 @@ exports[`verify generated templates with non-id named primary key 17`] = `"testF
 
 exports[`verify generated templates with non-id named primary key 18`] = `
 "{
-  \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"SELECT * FROM Tomatoes\\"],
-  \\"variableMap\\": {}
+  "version": "2018-05-29",
+  "statements":   ["SELECT * FROM Tomatoes"],
+  "variableMap": {}
 }"
 `;
 
@@ -371,15 +371,15 @@ exports[`verify generated templates with old pluralization 2`] = `
 #set( $variableMap = {} )
 #foreach( $entry in $ctx.args.createApplesInput.keySet() )
   #set( $discard = $cols.add($entry) )
-  #set( $discard = $vals.add(\\":$entry\\") )
-  $util.qr($variableMap.put(\\":$entry\\", $ctx.args.createApplesInput[$entry]))
+  #set( $discard = $vals.add(":$entry") )
+  $util.qr($variableMap.put(":$entry", $ctx.args.createApplesInput[$entry]))
 #end
-#set( $valStr = $vals.toString().replace(\\"[\\",\\"(\\").replace(\\"]\\",\\")\\") )
-#set( $colStr = $cols.toString().replace(\\"[\\",\\"(\\").replace(\\"]\\",\\")\\") )
+#set( $valStr = $vals.toString().replace("[","(").replace("]",")") )
+#set( $colStr = $cols.toString().replace("[","(").replace("]",")") )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"INSERT INTO Apples $colStr VALUES $valStr\\", \\"SELECT * FROM Apples WHERE Id=:Id\\"],
-  \\"variableMap\\":   $util.toJson($variableMap)
+  "version": "2018-05-29",
+  "statements":   ["INSERT INTO Apples $colStr VALUES $valStr", "SELECT * FROM Apples WHERE Id=:Id"],
+  "variableMap":   $util.toJson($variableMap)
 }"
 `;
 
@@ -391,11 +391,11 @@ exports[`verify generated templates with old pluralization 5`] = `"testFilePath/
 
 exports[`verify generated templates with old pluralization 6`] = `
 "#set( $variableMap = {} )
-$util.qr($variableMap.put(\\":Id\\", $ctx.args.Id))
+$util.qr($variableMap.put(":Id", $ctx.args.Id))
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"SELECT * FROM Apples WHERE Id=:Id\\"],
-  \\"variableMap\\":   $util.toJson($variableMap)
+  "version": "2018-05-29",
+  "statements":   ["SELECT * FROM Apples WHERE Id=:Id"],
+  "variableMap":   $util.toJson($variableMap)
 }"
 `;
 
@@ -404,7 +404,7 @@ exports[`verify generated templates with old pluralization 7`] = `"testFilePath/
 exports[`verify generated templates with old pluralization 8`] = `
 "#set( $output = $utils.rds.toJsonObject($ctx.result) )
 #if( $output.isEmpty() )
-  $util.error(\\"Invalid response from RDS DataSource. See info for the full response.\\", \\"InvalidResponse\\", {}, $output)
+  $util.error("Invalid response from RDS DataSource. See info for the full response.", "InvalidResponse", {}, $output)
 #end
 #set( $output = $output[0] )
 #if( $output.isEmpty() )
@@ -419,14 +419,14 @@ exports[`verify generated templates with old pluralization 10`] = `
 "#set( $updateList = {} )
 #set( $variableMap = {} )
 #foreach( $entry in $ctx.args.updateApplesInput.keySet() )
-  $util.qr($variableMap.put(\\":$entry\\", $ctx.args.updateApplesInput[$entry]))
-  #set( $discard = $updateList.put($entry, \\":$entry\\") )
+  $util.qr($variableMap.put(":$entry", $ctx.args.updateApplesInput[$entry]))
+  #set( $discard = $updateList.put($entry, ":$entry") )
 #end
-#set( $update = $updateList.toString().replace(\\"{\\",\\"\\").replace(\\"}\\",\\"\\") )
+#set( $update = $updateList.toString().replace("{","").replace("}","") )
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"UPDATE Apples SET $update WHERE Id=:Id\\", \\"SELECT * FROM Apples WHERE Id=:Id\\"],
-  \\"variableMap\\":   $util.toJson($variableMap)
+  "version": "2018-05-29",
+  "statements":   ["UPDATE Apples SET $update WHERE Id=:Id", "SELECT * FROM Apples WHERE Id=:Id"],
+  "variableMap":   $util.toJson($variableMap)
 }"
 `;
 
@@ -435,7 +435,7 @@ exports[`verify generated templates with old pluralization 11`] = `"testFilePath
 exports[`verify generated templates with old pluralization 12`] = `
 "#set( $output = $utils.rds.toJsonObject($ctx.result) )
 #if( $output.length() < 2 )
-  $util.error(\\"Invalid response from RDS DataSource. See info for the full response.\\", \\"InvalidResponse\\", {}, $output)
+  $util.error("Invalid response from RDS DataSource. See info for the full response.", "InvalidResponse", {}, $output)
 #end
 #set( $output = $output[1] )
 #if( $output.isEmpty() )
@@ -448,11 +448,11 @@ exports[`verify generated templates with old pluralization 13`] = `"testFilePath
 
 exports[`verify generated templates with old pluralization 14`] = `
 "#set( $variableMap = {} )
-$util.qr($variableMap.put(\\":Id\\", $ctx.args.Id))
+$util.qr($variableMap.put(":Id", $ctx.args.Id))
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"SELECT * FROM Apples WHERE Id=:Id\\", \\"DELETE FROM Apples WHERE Id=:Id\\"],
-  \\"variableMap\\":   $util.toJson($variableMap)
+  "version": "2018-05-29",
+  "statements":   ["SELECT * FROM Apples WHERE Id=:Id", "DELETE FROM Apples WHERE Id=:Id"],
+  "variableMap":   $util.toJson($variableMap)
 }"
 `;
 
@@ -461,7 +461,7 @@ exports[`verify generated templates with old pluralization 15`] = `"testFilePath
 exports[`verify generated templates with old pluralization 16`] = `
 "#set( $output = $utils.rds.toJsonObject($ctx.result) )
 #if( $output.isEmpty() )
-  $util.error(\\"Invalid response from RDS DataSource. See info for the full response.\\", \\"InvalidResponse\\", {}, $output)
+  $util.error("Invalid response from RDS DataSource. See info for the full response.", "InvalidResponse", {}, $output)
 #end
 #set( $output = $output[0] )
 #if( $output.isEmpty() )
@@ -474,9 +474,9 @@ exports[`verify generated templates with old pluralization 17`] = `"testFilePath
 
 exports[`verify generated templates with old pluralization 18`] = `
 "{
-  \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"SELECT * FROM Apples\\"],
-  \\"variableMap\\": {}
+  "version": "2018-05-29",
+  "statements":   ["SELECT * FROM Apples"],
+  "variableMap": {}
 }"
 `;
 

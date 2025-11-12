@@ -112,7 +112,7 @@ test('allow: custom error out when there is no lambda auth mode defined', () => 
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
     }),
-  ).toThrowError("@auth directive with 'function' provider found, but the project has no Lambda authentication provider configured.");
+  ).toThrow("@auth directive with 'function' provider found, but the project has no Lambda authentication provider configured.");
 });
 
 test('allow: custom and provider: iam error out for invalid combination', () => {
@@ -139,7 +139,7 @@ test('allow: custom and provider: iam error out for invalid combination', () => 
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
     }),
-  ).toThrowError("@auth directive with 'custom' strategy only supports 'function' (default) provider, but found 'iam' assigned.");
+  ).toThrow("@auth directive with 'custom' strategy only supports 'function' (default) provider, but found 'iam' assigned.");
 });
 
 test('allow: custom and provider: identityPool error out for invalid combination', () => {
@@ -166,7 +166,7 @@ test('allow: custom and provider: identityPool error out for invalid combination
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
     }),
-  ).toThrowError("@auth directive with 'custom' strategy only supports 'function' (default) provider, but found 'identityPool' assigned.");
+  ).toThrow("@auth directive with 'custom' strategy only supports 'function' (default) provider, but found 'identityPool' assigned.");
 });
 
 test('allow: non-custom and provider: function error out for invalid combination', () => {
@@ -193,7 +193,7 @@ test('allow: non-custom and provider: function error out for invalid combination
       authConfig,
       transformers: [new ModelTransformer(), new AuthTransformer()],
     }),
-  ).toThrowError(
+  ).toThrow(
     "@auth directive with 'public' strategy only supports 'apiKey' (default) and 'identityPool' providers, but found 'function' assigned.",
   );
 });

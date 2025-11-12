@@ -43,7 +43,7 @@ test('Throws error for Searchable RDS Models', () => {
         Post: mockSqlDataSourceStrategy(),
       },
     }),
-  ).toThrowErrorMatchingInlineSnapshot(`"@searchable is not supported on \\"Post\\" model as it uses RDS datasource."`);
+  ).toThrowErrorMatchingInlineSnapshot(`"@searchable is not supported on "Post" model as it uses RDS datasource."`);
 });
 
 test('SearchableModelTransformer vtl', () => {

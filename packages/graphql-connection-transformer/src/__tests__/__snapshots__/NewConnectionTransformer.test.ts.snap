@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Many-to-many with conflict resolution generates correct schema 1`] = `
 "type Post {
@@ -188,15 +188,15 @@ input ModelPostConditionInput {
 }
 
 type Subscription {
-  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
-  onCreatePostEditor: PostEditor @aws_subscribe(mutations: [\\"createPostEditor\\"])
-  onUpdatePostEditor: PostEditor @aws_subscribe(mutations: [\\"updatePostEditor\\"])
-  onDeletePostEditor: PostEditor @aws_subscribe(mutations: [\\"deletePostEditor\\"])
-  onCreateUser: User @aws_subscribe(mutations: [\\"createUser\\"])
-  onUpdateUser: User @aws_subscribe(mutations: [\\"updateUser\\"])
-  onDeleteUser: User @aws_subscribe(mutations: [\\"deleteUser\\"])
+  onCreatePost: Post @aws_subscribe(mutations: ["createPost"])
+  onUpdatePost: Post @aws_subscribe(mutations: ["updatePost"])
+  onDeletePost: Post @aws_subscribe(mutations: ["deletePost"])
+  onCreatePostEditor: PostEditor @aws_subscribe(mutations: ["createPostEditor"])
+  onUpdatePostEditor: PostEditor @aws_subscribe(mutations: ["updatePostEditor"])
+  onDeletePostEditor: PostEditor @aws_subscribe(mutations: ["deletePostEditor"])
+  onCreateUser: User @aws_subscribe(mutations: ["createUser"])
+  onUpdateUser: User @aws_subscribe(mutations: ["updateUser"])
+  onDeleteUser: User @aws_subscribe(mutations: ["deleteUser"])
 }
 
 type ModelPostEditorConnection {
@@ -463,15 +463,15 @@ input ModelPostConditionInput {
 }
 
 type Subscription {
-  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
-  onCreatePostEditor: PostEditor @aws_subscribe(mutations: [\\"createPostEditor\\"])
-  onUpdatePostEditor: PostEditor @aws_subscribe(mutations: [\\"updatePostEditor\\"])
-  onDeletePostEditor: PostEditor @aws_subscribe(mutations: [\\"deletePostEditor\\"])
-  onCreateUser: User @aws_subscribe(mutations: [\\"createUser\\"])
-  onUpdateUser: User @aws_subscribe(mutations: [\\"updateUser\\"])
-  onDeleteUser: User @aws_subscribe(mutations: [\\"deleteUser\\"])
+  onCreatePost: Post @aws_subscribe(mutations: ["createPost"])
+  onUpdatePost: Post @aws_subscribe(mutations: ["updatePost"])
+  onDeletePost: Post @aws_subscribe(mutations: ["deletePost"])
+  onCreatePostEditor: PostEditor @aws_subscribe(mutations: ["createPostEditor"])
+  onUpdatePostEditor: PostEditor @aws_subscribe(mutations: ["updatePostEditor"])
+  onDeletePostEditor: PostEditor @aws_subscribe(mutations: ["deletePostEditor"])
+  onCreateUser: User @aws_subscribe(mutations: ["createUser"])
+  onUpdateUser: User @aws_subscribe(mutations: ["updateUser"])
+  onDeleteUser: User @aws_subscribe(mutations: ["deleteUser"])
 }
 
 input CreatePostEditorInput {

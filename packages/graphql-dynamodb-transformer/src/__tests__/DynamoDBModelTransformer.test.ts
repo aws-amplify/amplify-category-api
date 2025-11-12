@@ -692,7 +692,7 @@ test('DynamoDB transformer should throw for reserved type name usage', () => {
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
   });
-  expect(() => transformer.transform(invalidSchema)).toThrowError(
+  expect(() => transformer.transform(invalidSchema)).toThrow(
     "Subscription' is a reserved type name and currently in use within the default schema element.",
   );
 });

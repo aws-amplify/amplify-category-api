@@ -1,13 +1,13 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`legacy update resource sets policy resource name in paths object before copying template 1`] = `
-Object {
-  "paths": Array [
-    Object {
+{
+  "paths": [
+    {
       "name": "/some/{path}/with/{params}",
       "policyResourceName": "/some/*/with/*",
     },
-    Object {
+    {
       "name": "another/path/without/params",
       "policyResourceName": "another/path/without/params",
     },

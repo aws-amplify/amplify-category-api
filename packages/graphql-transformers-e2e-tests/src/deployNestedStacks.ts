@@ -215,11 +215,11 @@ export const cleanupStackAfterTest = async (
       await cf.deleteStack(stackName);
     }
 
-    if (identityParams) {
+    if (identityParams && identityParams.identityPoolId) {
       await deleteIdentityPool(identityParams.identityClient, identityParams.identityPoolId);
     }
 
-    if (cognitoParams) {
+    if (cognitoParams && cognitoParams.userPoolId) {
       await deleteUserPool(cognitoParams.cognitoClient, cognitoParams.userPoolId);
     }
 

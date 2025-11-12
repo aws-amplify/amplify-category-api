@@ -107,7 +107,7 @@ test('fails if reference field has different type than primary key with implicit
     schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
   };
-  expect(() => testTransform(transformOptions)).toThrowError(
+  expect(() => testTransform(transformOptions)).toThrow(
     'Type mismatch between primary key field(s) of Team and reference fields of Member. Type of Team.id does not match type of Member.teamID',
   );
 });
@@ -129,7 +129,7 @@ test('fails if reference field has different type than primary key with explicit
     schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
   };
-  expect(() => testTransform(transformOptions)).toThrowError(
+  expect(() => testTransform(transformOptions)).toThrow(
     'Type mismatch between primary key field(s) of Team and reference fields of Member. Type of Team.id does not match type of Member.teamID',
   );
 });
@@ -151,7 +151,7 @@ test('fails if reference field has different type than primary key with explicit
     schema: inputSchema,
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
   };
-  expect(() => testTransform(transformOptions)).toThrowError(
+  expect(() => testTransform(transformOptions)).toThrow(
     'Type mismatch between primary key field(s) of Team and reference fields of Member. Type of Team.id does not match type of Member.teamID',
   );
 });
@@ -174,7 +174,7 @@ test('fails if indexName is provided with references', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new IndexTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('Invalid @hasMany directive on Team.members - indexName is not supported with DynamoDB references.');
+  ).toThrow('Invalid @hasMany directive on Team.members - indexName is not supported with DynamoDB references.');
 });
 
 test('fails if property does not exist on related type with references', () => {
@@ -194,7 +194,7 @@ test('fails if property does not exist on related type with references', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new IndexTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('teamID is not a field in Member');
+  ).toThrow('teamID is not a field in Member');
 });
 
 test('fails if an empty list of references is passed in', () => {
@@ -214,7 +214,7 @@ test('fails if an empty list of references is passed in', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('Invalid @hasMany directive on members - empty references list');
+  ).toThrow('Invalid @hasMany directive on members - empty references list');
 });
 
 test('fails if related type does not exist', () => {
@@ -235,7 +235,7 @@ test('fails if related type does not exist', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('Schema validation failed.');
+  ).toThrow('Schema validation failed.');
 });
 
 test('fails if hasMany related type is not an array', () => {
@@ -256,7 +256,7 @@ test('fails if hasMany related type is not an array', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('@hasMany must be used with a list. Use @hasOne for non-list types.');
+  ).toThrow('@hasMany must be used with a list. Use @hasOne for non-list types.');
 });
 
 test('fails if uni-directional hasMany', () => {
@@ -277,7 +277,7 @@ test('fails if uni-directional hasMany', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError(
+  ).toThrow(
     'Uni-directional relationships are not supported. Add a @belongsTo field in Member to match the @hasMany field Team.members, and ensure the number and type of reference fields match the number and type of primary key fields in Team.',
   );
 });
@@ -300,7 +300,7 @@ test('fails if used as a has one relationship', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('@hasMany must be used with a list. Use @hasOne for non-list types.');
+  ).toThrow('@hasMany must be used with a list. Use @hasOne for non-list types.');
 });
 
 test('fails if primary relational field list type is required', () => {
@@ -321,7 +321,7 @@ test('fails if primary relational field list type is required', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError("@hasMany fields must not be required. Change 'Team.members: [Member]!' to 'Team.members: [Member]'");
+  ).toThrow("@hasMany fields must not be required. Change 'Team.members: [Member]!' to 'Team.members: [Member]'");
 });
 
 test('fails if primary relational field element type required', () => {
@@ -342,7 +342,7 @@ test('fails if primary relational field element type required', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError("@hasMany fields must not be required. Change 'Team.members: [Member!]' to 'Team.members: [Member]'");
+  ).toThrow("@hasMany fields must not be required. Change 'Team.members: [Member!]' to 'Team.members: [Member]'");
 });
 
 test('fails if primary relational field list type and element type are required', () => {
@@ -363,7 +363,7 @@ test('fails if primary relational field list type and element type are required'
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError("@hasMany fields must not be required. Change 'Team.members: [Member]!' to 'Team.members: [Member]'");
+  ).toThrow("@hasMany fields must not be required. Change 'Team.members: [Member]!' to 'Team.members: [Member]'");
 });
 
 test('fails if related relational field is required', () => {
@@ -384,7 +384,7 @@ test('fails if related relational field is required', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError("@belongsTo fields must not be required. Change 'Member.team: Team!' to 'Member.team: Team'");
+  ).toThrow("@belongsTo fields must not be required. Change 'Member.team: Team!' to 'Member.team: Team'");
 });
 
 test('fails with inconsistent nullability of reference fields', () => {
@@ -407,7 +407,7 @@ test('fails with inconsistent nullability of reference fields', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError(
+  ).toThrow(
     "Reference fields defined on related type: 'Member' for @hasMany(references: ['teamId', 'teamMantra']) Team.members relationship have inconsistent nullability." +
       "\nRequired fields: 'teamId'" +
       "\nNullable fields: 'teamMantra'" +
@@ -606,7 +606,7 @@ test('fails to validate if reference lengths do not match', () => {
     transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
   };
 
-  expect(() => testTransform(transformParams)).toThrowError(
+  expect(() => testTransform(transformParams)).toThrow(
     'Uni-directional relationships are not supported. Add a @belongsTo field in Related to match the @hasMany field Primary.related, and ' +
       'ensure the number and type of reference fields match the number and type of primary key fields in Primary.',
   );

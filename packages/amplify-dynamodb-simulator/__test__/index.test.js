@@ -7,6 +7,8 @@ jest.mock('@aws-amplify/amplify-cli-core', () => ({
   },
 }));
 
+jest.setTimeout(40 * 1000);
+
 describe('emulator operations', () => {
   const dbPath = `${__dirname}/dynamodb-data/${process.pid}`;
   // taken from dynamodb examples.
@@ -51,7 +53,6 @@ describe('emulator operations', () => {
   beforeEach(async () => {
     ensureNoDbPath();
     emulators = [];
-    jest.setTimeout(40 * 1000);
   });
 
   afterEach(async () => {

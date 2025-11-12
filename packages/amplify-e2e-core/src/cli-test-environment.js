@@ -1,4 +1,4 @@
-const NodeEnvironment = require('jest-environment-node');
+const { default: NodeEnvironment } = require('jest-environment-node');
 
 class CLIEnvironment extends NodeEnvironment {
   constructor(config, context) {

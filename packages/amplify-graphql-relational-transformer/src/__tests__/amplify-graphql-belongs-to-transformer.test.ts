@@ -23,7 +23,7 @@ test('fails if @belongsTo was used on an object that is not a model type', () =>
       schema: inputSchema,
       transformers: [new ModelTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('@belongsTo must be on an @model object type field.');
+  ).toThrow('@belongsTo must be on an @model object type field.');
 });
 
 test('fails if @belongsTo was used with a related type that is not a model', () => {
@@ -44,7 +44,7 @@ test('fails if @belongsTo was used with a related type that is not a model', () 
       schema: inputSchema,
       transformers: [new ModelTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('Object type Test1 must be annotated with @model.');
+  ).toThrow('Object type Test1 must be annotated with @model.');
 });
 
 test('fails if the related type does not exist', () => {
@@ -65,7 +65,7 @@ test('fails if the related type does not exist', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('Unknown type "Test2". Did you mean "Test" or "Test1"?');
+  ).toThrow('Unknown type "Test2". Did you mean "Test" or "Test1"?');
 });
 
 test('fails if an empty list of fields is passed in', () => {
@@ -86,7 +86,7 @@ test('fails if an empty list of fields is passed in', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('No fields passed to @belongsTo directive.');
+  ).toThrow('No fields passed to @belongsTo directive.');
 });
 
 test('fails if any of the fields passed in are not in the parent model', () => {
@@ -108,7 +108,7 @@ test('fails if any of the fields passed in are not in the parent model', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('name is not a field in Test');
+  ).toThrow('name is not a field in Test');
 });
 
 test('fails if @belongsTo field does not match related type primary key', () => {
@@ -131,7 +131,7 @@ test('fails if @belongsTo field does not match related type primary key', () => 
       schema: inputSchema,
       transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('email field is not of type ID');
+  ).toThrow('email field is not of type ID');
 });
 
 test('fails if sort key type does not match related type sort key', () => {
@@ -154,7 +154,7 @@ test('fails if sort key type does not match related type sort key', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('email field is not of type ID');
+  ).toThrow('email field is not of type ID');
 });
 
 test('fails if partial sort key is provided', () => {
@@ -177,7 +177,7 @@ test('fails if partial sort key is provided', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('Invalid @belongsTo directive on testObj. Partial sort keys are not accepted.');
+  ).toThrow('Invalid @belongsTo directive on testObj. Partial sort keys are not accepted.');
 });
 
 test('accepts @belongsTo without a sort key', () => {
@@ -201,7 +201,7 @@ test('accepts @belongsTo without a sort key', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     }),
-  ).not.toThrowError();
+  ).not.toThrow();
 });
 
 test('fails if used on a list field', () => {
@@ -223,7 +223,7 @@ test('fails if used on a list field', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('@belongsTo cannot be used with lists.');
+  ).toThrow('@belongsTo cannot be used with lists.');
 });
 
 test('fails if object type fields are provided', () => {
@@ -244,7 +244,7 @@ test('fails if object type fields are provided', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('All fields provided to @belongsTo must be scalar or enum fields.');
+  ).toThrow('All fields provided to @belongsTo must be scalar or enum fields.');
 });
 
 test('fails if a bidirectional relationship does not exist', () => {
@@ -266,7 +266,7 @@ test('fails if a bidirectional relationship does not exist', () => {
       schema: inputSchema,
       transformers: [new ModelTransformer(), new BelongsToTransformer()],
     }),
-  ).toThrowError('Test must have a relationship with Test1 in order to use @belongsTo.');
+  ).toThrow('Test must have a relationship with Test1 in order to use @belongsTo.');
 });
 
 test('creates belongs to relationship with implicit fields', () => {

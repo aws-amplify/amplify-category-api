@@ -1,63 +1,63 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`it overrides expected resources 1`] = `
-Object {
-  "Properties": Object {
-    "ApiId": Object {
+{
+  "Properties": {
+    "ApiId": {
       "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
     },
     "FieldName": "createTest",
     "Kind": "PIPELINE",
-    "PipelineConfig": Object {
-      "Functions": Array [
-        Object {
-          "Fn::GetAtt": Array [
+    "PipelineConfig": {
+      "Functions": [
+        {
+          "Fn::GetAtt": [
             "MutationcreateTestinit0FunctionMutationcreateTestinit0FunctionAppSyncFunction82753130",
             "FunctionId",
           ],
         },
-        Object {
-          "Fn::GetAtt": Array [
+        {
+          "Fn::GetAtt": [
             "MutationcreateTestpreAuth0FunctionMutationcreateTestpreAuth0FunctionAppSyncFunctionC0EB74A1",
             "FunctionId",
           ],
         },
-        Object {
-          "Fn::GetAtt": Array [
+        {
+          "Fn::GetAtt": [
             "QuerygetTestpostAuth0FunctionQuerygetTestpostAuth0FunctionAppSyncFunctionE9BFAF7A",
             "FunctionId",
           ],
         },
-        Object {
-          "Fn::GetAtt": Array [
+        {
+          "Fn::GetAtt": [
             "MutationCreateTestDataResolverFnMutationCreateTestDataResolverFnAppSyncFunction005BA3A1",
             "FunctionId",
           ],
         },
       ],
     },
-    "RequestMappingTemplate": Object {
-      "Fn::Join": Array [
+    "RequestMappingTemplate": {
+      "Fn::Join": [
         "",
-        Array [
-          "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"createTest\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-          Object {
+        [
+          "$util.qr($ctx.stash.put("typeName", "Mutation"))
+$util.qr($ctx.stash.put("fieldName", "createTest"))
+$util.qr($ctx.stash.put("conditions", []))
+$util.qr($ctx.stash.put("metadata", {}))
+$util.qr($ctx.stash.metadata.put("dataSourceType", "AMAZON_DYNAMODB"))
+$util.qr($ctx.stash.metadata.put("apiId", "",
+          {
             "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
           },
-          "\\"))
-$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
-$util.qr($ctx.stash.put(\\"tableName\\", \\"",
-          Object {
+          ""))
+$util.qr($ctx.stash.put("connectionAttributes", {}))
+$util.qr($ctx.stash.put("tableName", "",
+          {
             "Ref": "TestTable",
           },
-          "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", 25))
-$util.qr($ctx.stash.put(\\"adminRoles\\", []))
+          ""))
+$util.qr($ctx.stash.put("deltaSyncTableTtl", 25))
+$util.qr($ctx.stash.put("adminRoles", []))
 $util.toJson({})",
         ],
       ],
@@ -70,57 +70,57 @@ $util.toJson({})",
 `;
 
 exports[`it overrides expected resources 2`] = `
-Object {
-  "Properties": Object {
-    "ApiId": Object {
+{
+  "Properties": {
+    "ApiId": {
       "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
     },
     "FieldName": "getTest",
     "Kind": "PIPELINE",
-    "PipelineConfig": Object {
-      "Functions": Array [
-        Object {
-          "Fn::GetAtt": Array [
+    "PipelineConfig": {
+      "Functions": [
+        {
+          "Fn::GetAtt": [
             "QuerygetTestpreAuth0FunctionQuerygetTestpreAuth0FunctionAppSyncFunction7DE868FF",
             "FunctionId",
           ],
         },
-        Object {
-          "Fn::GetAtt": Array [
+        {
+          "Fn::GetAtt": [
             "QuerygetTestpostAuth0FunctionQuerygetTestpostAuth0FunctionAppSyncFunctionE9BFAF7A",
             "FunctionId",
           ],
         },
-        Object {
-          "Fn::GetAtt": Array [
+        {
+          "Fn::GetAtt": [
             "QueryGetTestDataResolverFnQueryGetTestDataResolverFnAppSyncFunctionCB6458E5",
             "FunctionId",
           ],
         },
       ],
     },
-    "RequestMappingTemplate": Object {
-      "Fn::Join": Array [
+    "RequestMappingTemplate": {
+      "Fn::Join": [
         "",
-        Array [
-          "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"getTest\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-          Object {
+        [
+          "$util.qr($ctx.stash.put("typeName", "Query"))
+$util.qr($ctx.stash.put("fieldName", "getTest"))
+$util.qr($ctx.stash.put("conditions", []))
+$util.qr($ctx.stash.put("metadata", {}))
+$util.qr($ctx.stash.metadata.put("dataSourceType", "AMAZON_DYNAMODB"))
+$util.qr($ctx.stash.metadata.put("apiId", "",
+          {
             "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
           },
-          "\\"))
-$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
-$util.qr($ctx.stash.put(\\"tableName\\", \\"",
-          Object {
+          ""))
+$util.qr($ctx.stash.put("connectionAttributes", {}))
+$util.qr($ctx.stash.put("tableName", "",
+          {
             "Ref": "TestTable",
           },
-          "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", 25))
-$util.qr($ctx.stash.put(\\"adminRoles\\", []))
+          ""))
+$util.qr($ctx.stash.put("deltaSyncTableTtl", 25))
+$util.qr($ctx.stash.put("adminRoles", []))
 $util.toJson({})",
         ],
       ],
@@ -133,57 +133,57 @@ $util.toJson({})",
 `;
 
 exports[`it overrides expected resources 3`] = `
-Object {
-  "Properties": Object {
-    "ApiId": Object {
+{
+  "Properties": {
+    "ApiId": {
       "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
     },
     "FieldName": "listTests",
     "Kind": "PIPELINE",
-    "PipelineConfig": Object {
-      "Functions": Array [
-        Object {
-          "Fn::GetAtt": Array [
+    "PipelineConfig": {
+      "Functions": [
+        {
+          "Fn::GetAtt": [
             "QuerylistTestspreAuth0FunctionQuerylistTestspreAuth0FunctionAppSyncFunction3CA4A90C",
             "FunctionId",
           ],
         },
-        Object {
-          "Fn::GetAtt": Array [
+        {
+          "Fn::GetAtt": [
             "QuerygetTestpostAuth0FunctionQuerygetTestpostAuth0FunctionAppSyncFunctionE9BFAF7A",
             "FunctionId",
           ],
         },
-        Object {
-          "Fn::GetAtt": Array [
+        {
+          "Fn::GetAtt": [
             "QueryListTestsDataResolverFnQueryListTestsDataResolverFnAppSyncFunction177A117F",
             "FunctionId",
           ],
         },
       ],
     },
-    "RequestMappingTemplate": Object {
-      "Fn::Join": Array [
+    "RequestMappingTemplate": {
+      "Fn::Join": [
         "",
-        Array [
-          "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"listTests\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-          Object {
+        [
+          "$util.qr($ctx.stash.put("typeName", "Query"))
+$util.qr($ctx.stash.put("fieldName", "listTests"))
+$util.qr($ctx.stash.put("conditions", []))
+$util.qr($ctx.stash.put("metadata", {}))
+$util.qr($ctx.stash.metadata.put("dataSourceType", "AMAZON_DYNAMODB"))
+$util.qr($ctx.stash.metadata.put("apiId", "",
+          {
             "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
           },
-          "\\"))
-$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
-$util.qr($ctx.stash.put(\\"tableName\\", \\"",
-          Object {
+          ""))
+$util.qr($ctx.stash.put("connectionAttributes", {}))
+$util.qr($ctx.stash.put("tableName", "",
+          {
             "Ref": "TestTable",
           },
-          "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", 25))
-$util.qr($ctx.stash.put(\\"adminRoles\\", []))
+          ""))
+$util.qr($ctx.stash.put("deltaSyncTableTtl", 25))
+$util.qr($ctx.stash.put("adminRoles", []))
 $util.toJson({})",
         ],
       ],
@@ -196,57 +196,57 @@ $util.toJson({})",
 `;
 
 exports[`it overrides expected resources 4`] = `
-Object {
-  "Properties": Object {
-    "ApiId": Object {
+{
+  "Properties": {
+    "ApiId": {
       "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
     },
     "FieldName": "deleteTest",
     "Kind": "PIPELINE",
-    "PipelineConfig": Object {
-      "Functions": Array [
-        Object {
-          "Fn::GetAtt": Array [
+    "PipelineConfig": {
+      "Functions": [
+        {
+          "Fn::GetAtt": [
             "MutationdeleteTestpreAuth0FunctionMutationdeleteTestpreAuth0FunctionAppSyncFunctionC68C5724",
             "FunctionId",
           ],
         },
-        Object {
-          "Fn::GetAtt": Array [
+        {
+          "Fn::GetAtt": [
             "QuerygetTestpostAuth0FunctionQuerygetTestpostAuth0FunctionAppSyncFunctionE9BFAF7A",
             "FunctionId",
           ],
         },
-        Object {
-          "Fn::GetAtt": Array [
+        {
+          "Fn::GetAtt": [
             "MutationDeleteTestDataResolverFnMutationDeleteTestDataResolverFnAppSyncFunction9230CF9A",
             "FunctionId",
           ],
         },
       ],
     },
-    "RequestMappingTemplate": Object {
-      "Fn::Join": Array [
+    "RequestMappingTemplate": {
+      "Fn::Join": [
         "",
-        Array [
-          "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"deleteTest\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-          Object {
+        [
+          "$util.qr($ctx.stash.put("typeName", "Mutation"))
+$util.qr($ctx.stash.put("fieldName", "deleteTest"))
+$util.qr($ctx.stash.put("conditions", []))
+$util.qr($ctx.stash.put("metadata", {}))
+$util.qr($ctx.stash.metadata.put("dataSourceType", "AMAZON_DYNAMODB"))
+$util.qr($ctx.stash.metadata.put("apiId", "",
+          {
             "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
           },
-          "\\"))
-$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
-$util.qr($ctx.stash.put(\\"tableName\\", \\"",
-          Object {
+          ""))
+$util.qr($ctx.stash.put("connectionAttributes", {}))
+$util.qr($ctx.stash.put("tableName", "",
+          {
             "Ref": "TestTable",
           },
-          "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", 25))
-$util.qr($ctx.stash.put(\\"adminRoles\\", []))
+          ""))
+$util.qr($ctx.stash.put("deltaSyncTableTtl", 25))
+$util.qr($ctx.stash.put("adminRoles", []))
 $util.toJson({})",
         ],
       ],
@@ -259,63 +259,63 @@ $util.toJson({})",
 `;
 
 exports[`it overrides expected resources 5`] = `
-Object {
-  "Properties": Object {
-    "ApiId": Object {
+{
+  "Properties": {
+    "ApiId": {
       "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
     },
     "FieldName": "updateTest",
     "Kind": "PIPELINE",
-    "PipelineConfig": Object {
-      "Functions": Array [
-        Object {
-          "Fn::GetAtt": Array [
+    "PipelineConfig": {
+      "Functions": [
+        {
+          "Fn::GetAtt": [
             "MutationupdateTestinit0FunctionMutationupdateTestinit0FunctionAppSyncFunctionC2375285",
             "FunctionId",
           ],
         },
-        Object {
-          "Fn::GetAtt": Array [
+        {
+          "Fn::GetAtt": [
             "MutationcreateTestpreAuth0FunctionMutationcreateTestpreAuth0FunctionAppSyncFunctionC0EB74A1",
             "FunctionId",
           ],
         },
-        Object {
-          "Fn::GetAtt": Array [
+        {
+          "Fn::GetAtt": [
             "QuerygetTestpostAuth0FunctionQuerygetTestpostAuth0FunctionAppSyncFunctionE9BFAF7A",
             "FunctionId",
           ],
         },
-        Object {
-          "Fn::GetAtt": Array [
+        {
+          "Fn::GetAtt": [
             "MutationUpdateTestDataResolverFnMutationUpdateTestDataResolverFnAppSyncFunction161162F8",
             "FunctionId",
           ],
         },
       ],
     },
-    "RequestMappingTemplate": Object {
-      "Fn::Join": Array [
+    "RequestMappingTemplate": {
+      "Fn::Join": [
         "",
-        Array [
-          "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"updateTest\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-          Object {
+        [
+          "$util.qr($ctx.stash.put("typeName", "Mutation"))
+$util.qr($ctx.stash.put("fieldName", "updateTest"))
+$util.qr($ctx.stash.put("conditions", []))
+$util.qr($ctx.stash.put("metadata", {}))
+$util.qr($ctx.stash.metadata.put("dataSourceType", "AMAZON_DYNAMODB"))
+$util.qr($ctx.stash.metadata.put("apiId", "",
+          {
             "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
           },
-          "\\"))
-$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
-$util.qr($ctx.stash.put(\\"tableName\\", \\"",
-          Object {
+          ""))
+$util.qr($ctx.stash.put("connectionAttributes", {}))
+$util.qr($ctx.stash.put("tableName", "",
+          {
             "Ref": "TestTable",
           },
-          "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", 25))
-$util.qr($ctx.stash.put(\\"adminRoles\\", []))
+          ""))
+$util.qr($ctx.stash.put("deltaSyncTableTtl", 25))
+$util.qr($ctx.stash.put("adminRoles", []))
 $util.toJson({})",
         ],
       ],
@@ -328,57 +328,57 @@ $util.toJson({})",
 `;
 
 exports[`it overrides expected resources 6`] = `
-Object {
-  "Properties": Object {
-    "ApiId": Object {
+{
+  "Properties": {
+    "ApiId": {
       "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
     },
     "FieldName": "syncTests",
     "Kind": "PIPELINE",
-    "PipelineConfig": Object {
-      "Functions": Array [
-        Object {
-          "Fn::GetAtt": Array [
+    "PipelineConfig": {
+      "Functions": [
+        {
+          "Fn::GetAtt": [
             "QuerysyncTestspreAuth0FunctionQuerysyncTestspreAuth0FunctionAppSyncFunction6F326BAB",
             "FunctionId",
           ],
         },
-        Object {
-          "Fn::GetAtt": Array [
+        {
+          "Fn::GetAtt": [
             "QuerygetTestpostAuth0FunctionQuerygetTestpostAuth0FunctionAppSyncFunctionE9BFAF7A",
             "FunctionId",
           ],
         },
-        Object {
-          "Fn::GetAtt": Array [
+        {
+          "Fn::GetAtt": [
             "QuerySyncTestsDataResolverFnQuerySyncTestsDataResolverFnAppSyncFunction95B4DA0E",
             "FunctionId",
           ],
         },
       ],
     },
-    "RequestMappingTemplate": Object {
-      "Fn::Join": Array [
+    "RequestMappingTemplate": {
+      "Fn::Join": [
         "",
-        Array [
-          "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"syncTests\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-          Object {
+        [
+          "$util.qr($ctx.stash.put("typeName", "Query"))
+$util.qr($ctx.stash.put("fieldName", "syncTests"))
+$util.qr($ctx.stash.put("conditions", []))
+$util.qr($ctx.stash.put("metadata", {}))
+$util.qr($ctx.stash.metadata.put("dataSourceType", "AMAZON_DYNAMODB"))
+$util.qr($ctx.stash.metadata.put("apiId", "",
+          {
             "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
           },
-          "\\"))
-$util.qr($ctx.stash.put(\\"connectionAttributes\\", {}))
-$util.qr($ctx.stash.put(\\"tableName\\", \\"",
-          Object {
+          ""))
+$util.qr($ctx.stash.put("connectionAttributes", {}))
+$util.qr($ctx.stash.put("tableName", "",
+          {
             "Ref": "TestTable",
           },
-          "\\"))
-$util.qr($ctx.stash.put(\\"deltaSyncTableTtl\\", 25))
-$util.qr($ctx.stash.put(\\"adminRoles\\", []))
+          ""))
+$util.qr($ctx.stash.put("deltaSyncTableTtl", 25))
+$util.qr($ctx.stash.put("adminRoles", []))
 $util.toJson({})",
         ],
       ],
@@ -391,31 +391,31 @@ $util.toJson({})",
 `;
 
 exports[`it overrides expected resources 7`] = `
-Object {
-  "DependsOn": Array [
+{
+  "DependsOn": [
     "TestIAMRoleB964910C",
   ],
-  "Properties": Object {
-    "ApiId": Object {
+  "Properties": {
+    "ApiId": {
       "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
     },
-    "DynamoDBConfig": Object {
-      "AwsRegion": Object {
+    "DynamoDBConfig": {
+      "AwsRegion": {
         "Ref": "AWS::Region",
       },
-      "DeltaSyncConfig": Object {
+      "DeltaSyncConfig": {
         "BaseTableTTL": "20",
         "DeltaSyncTableName": "TestTable",
         "DeltaSyncTableTTL": "25",
       },
-      "TableName": Object {
+      "TableName": {
         "Ref": "TestTable",
       },
       "Versioned": true,
     },
     "Name": "TestTable",
-    "ServiceRoleArn": Object {
-      "Fn::GetAtt": Array [
+    "ServiceRoleArn": {
+      "Fn::GetAtt": [
         "TestIAMRoleB964910C",
         "Arn",
       ],

@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`DefaultValueModelTransformer: should be supported on a required field. 1`] = `
 "type Test {
@@ -217,17 +217,17 @@ input ModelSubscriptionTestFilterInput {
 }
 
 type Subscription {
-  onCreateTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: [\\"createTest\\"])
-  onUpdateTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: [\\"updateTest\\"])
-  onDeleteTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: [\\"deleteTest\\"])
+  onCreateTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: ["createTest"])
+  onUpdateTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: ["updateTest"])
+  onDeleteTest(filter: ModelSubscriptionTestFilterInput): Test @aws_subscribe(mutations: ["deleteTest"])
 }
 "
 `;
 
 exports[`DefaultValueModelTransformer: should successfully set the default values when model name starts with lowercase 1`] = `
-"## [Start] Setting \\"stringValue\\" to default value of \\"hello world\\". **
-$util.qr($context.args.input.put(\\"stringValue\\", $util.defaultIfNull($ctx.args.input.stringValue, \\"hello world\\")))
-## [End] Setting \\"stringValue\\" to default value of \\"hello world\\". **
+"## [Start] Setting "stringValue" to default value of "hello world". **
+$util.qr($context.args.input.put("stringValue", $util.defaultIfNull($ctx.args.input.stringValue, "hello world")))
+## [End] Setting "stringValue" to default value of "hello world". **
 {}"
 `;
 
@@ -542,9 +542,9 @@ input ModelSubscriptionPostFilterInput {
 }
 
 type Subscription {
-  onCreatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: ["createPost"])
+  onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: ["updatePost"])
+  onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: ["deletePost"])
 }
 "
 `;

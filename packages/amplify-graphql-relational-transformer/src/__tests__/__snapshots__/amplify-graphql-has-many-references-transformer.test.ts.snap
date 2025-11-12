@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`has many query 1`] = `
 "type Team {
@@ -231,12 +231,12 @@ input ModelSubscriptionTeamFilterInput {
 }
 
 type Subscription {
-  onCreateTeam(filter: ModelSubscriptionTeamFilterInput): Team @aws_subscribe(mutations: [\\"createTeam\\"])
-  onUpdateTeam(filter: ModelSubscriptionTeamFilterInput): Team @aws_subscribe(mutations: [\\"updateTeam\\"])
-  onDeleteTeam(filter: ModelSubscriptionTeamFilterInput): Team @aws_subscribe(mutations: [\\"deleteTeam\\"])
-  onCreateMember(filter: ModelSubscriptionMemberFilterInput): Member @aws_subscribe(mutations: [\\"createMember\\"])
-  onUpdateMember(filter: ModelSubscriptionMemberFilterInput): Member @aws_subscribe(mutations: [\\"updateMember\\"])
-  onDeleteMember(filter: ModelSubscriptionMemberFilterInput): Member @aws_subscribe(mutations: [\\"deleteMember\\"])
+  onCreateTeam(filter: ModelSubscriptionTeamFilterInput): Team @aws_subscribe(mutations: ["createTeam"])
+  onUpdateTeam(filter: ModelSubscriptionTeamFilterInput): Team @aws_subscribe(mutations: ["updateTeam"])
+  onDeleteTeam(filter: ModelSubscriptionTeamFilterInput): Team @aws_subscribe(mutations: ["deleteTeam"])
+  onCreateMember(filter: ModelSubscriptionMemberFilterInput): Member @aws_subscribe(mutations: ["createMember"])
+  onUpdateMember(filter: ModelSubscriptionMemberFilterInput): Member @aws_subscribe(mutations: ["updateMember"])
+  onDeleteMember(filter: ModelSubscriptionMemberFilterInput): Member @aws_subscribe(mutations: ["deleteMember"])
 }
 
 type ModelMemberConnection {
@@ -291,25 +291,25 @@ input ModelSubscriptionMemberFilterInput {
 exports[`has many query 2`] = `
 "#if( $ctx.stash.deniedField )
   #set( $result = {
-  \\"items\\":   []
+  "items":   []
 } )
   #return($result)
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get("id"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
   #set( $result = {
-  \\"items\\":   []
+  "items":   []
 } )
   #return($result)
 #else
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
   #set( $query = {
-  \\"expression\\": \\"#partitionKey = :partitionKey\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"teamID\\"
+  "expression": "#partitionKey = :partitionKey",
+  "expressionNames": {
+      "#partitionKey": "teamID"
   },
-  \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue)
+  "expressionValues": {
+      ":partitionKey": $util.dynamodb.toDynamoDB($partitionKeyValue)
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -317,7 +317,7 @@ exports[`has many query 2`] = `
     #set( $filter = $ctx.stash.authFilter )
     #if( !$util.isNullOrEmpty($args.filter) )
       #set( $filter = {
-  \\"and\\":   [$filter, $args.filter]
+  "and":   [$filter, $args.filter]
 } )
     #end
   #else
@@ -329,17 +329,17 @@ exports[`has many query 2`] = `
     #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
     #if( !$util.isNullOrBlank($filterExpression.expression) )
       #if( $filterExpression.expressionValues.size() == 0 )
-        $util.qr($filterExpression.remove(\\"expressionValues\\"))
+        $util.qr($filterExpression.remove("expressionValues"))
       #end
       #set( $filter = $filterExpression )
     #end
   #end
 {
-      \\"version\\": \\"2018-05-29\\",
-      \\"operation\\": \\"Query\\",
-      \\"query\\":     $util.toJson($query),
-      \\"scanIndexForward\\":     #if( $context.args.sortDirection )
-      #if( $context.args.sortDirection == \\"ASC\\" )
+      "version": "2018-05-29",
+      "operation": "Query",
+      "query":     $util.toJson($query),
+      "scanIndexForward":     #if( $context.args.sortDirection )
+      #if( $context.args.sortDirection == "ASC" )
 true
       #else
 false
@@ -347,18 +347,18 @@ false
     #else
 true
     #end,
-      \\"filter\\":     #if( $filter )
+      "filter":     #if( $filter )
 $util.toJson($filter)
     #else
 null
     #end,
-      \\"limit\\": $limit,
-      \\"nextToken\\":     #if( $context.args.nextToken )
+      "limit": $limit,
+      "nextToken":     #if( $context.args.nextToken )
 $util.toJson($context.args.nextToken)
     #else
 null
     #end,
-      \\"index\\": \\"gsi-Team.members\\"
+      "index": "gsi-Team.members"
   }
 #end"
 `;
@@ -367,25 +367,25 @@ exports[`has many query 3`] = `
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"teamID\\"), $ctx.source.teamID) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("teamID"), $ctx.source.teamID) )
 #if( $util.isNull($partitionKeyValue) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\"
+  "version": "2018-05-29",
+  "operation": "Query"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"id\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue",
+  "expressionNames": {
+      "#partitionKey": "id"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -622,12 +622,12 @@ input ModelSubscriptionTeamFilterInput {
 }
 
 type Subscription {
-  onCreateTeam(filter: ModelSubscriptionTeamFilterInput): Team @aws_subscribe(mutations: [\\"createTeam\\"])
-  onUpdateTeam(filter: ModelSubscriptionTeamFilterInput): Team @aws_subscribe(mutations: [\\"updateTeam\\"])
-  onDeleteTeam(filter: ModelSubscriptionTeamFilterInput): Team @aws_subscribe(mutations: [\\"deleteTeam\\"])
-  onCreateMember(filter: ModelSubscriptionMemberFilterInput): Member @aws_subscribe(mutations: [\\"createMember\\"])
-  onUpdateMember(filter: ModelSubscriptionMemberFilterInput): Member @aws_subscribe(mutations: [\\"updateMember\\"])
-  onDeleteMember(filter: ModelSubscriptionMemberFilterInput): Member @aws_subscribe(mutations: [\\"deleteMember\\"])
+  onCreateTeam(filter: ModelSubscriptionTeamFilterInput): Team @aws_subscribe(mutations: ["createTeam"])
+  onUpdateTeam(filter: ModelSubscriptionTeamFilterInput): Team @aws_subscribe(mutations: ["updateTeam"])
+  onDeleteTeam(filter: ModelSubscriptionTeamFilterInput): Team @aws_subscribe(mutations: ["deleteTeam"])
+  onCreateMember(filter: ModelSubscriptionMemberFilterInput): Member @aws_subscribe(mutations: ["createMember"])
+  onUpdateMember(filter: ModelSubscriptionMemberFilterInput): Member @aws_subscribe(mutations: ["updateMember"])
+  onDeleteMember(filter: ModelSubscriptionMemberFilterInput): Member @aws_subscribe(mutations: ["deleteMember"])
 }
 
 type ModelMemberConnection {
@@ -682,25 +682,25 @@ input ModelSubscriptionMemberFilterInput {
 exports[`has many query with implicit IDs 2`] = `
 "#if( $ctx.stash.deniedField )
   #set( $result = {
-  \\"items\\":   []
+  "items":   []
 } )
   #return($result)
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get("id"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
   #set( $result = {
-  \\"items\\":   []
+  "items":   []
 } )
   #return($result)
 #else
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
   #set( $query = {
-  \\"expression\\": \\"#partitionKey = :partitionKey\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"teamID\\"
+  "expression": "#partitionKey = :partitionKey",
+  "expressionNames": {
+      "#partitionKey": "teamID"
   },
-  \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue)
+  "expressionValues": {
+      ":partitionKey": $util.dynamodb.toDynamoDB($partitionKeyValue)
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -708,7 +708,7 @@ exports[`has many query with implicit IDs 2`] = `
     #set( $filter = $ctx.stash.authFilter )
     #if( !$util.isNullOrEmpty($args.filter) )
       #set( $filter = {
-  \\"and\\":   [$filter, $args.filter]
+  "and":   [$filter, $args.filter]
 } )
     #end
   #else
@@ -720,17 +720,17 @@ exports[`has many query with implicit IDs 2`] = `
     #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
     #if( !$util.isNullOrBlank($filterExpression.expression) )
       #if( $filterExpression.expressionValues.size() == 0 )
-        $util.qr($filterExpression.remove(\\"expressionValues\\"))
+        $util.qr($filterExpression.remove("expressionValues"))
       #end
       #set( $filter = $filterExpression )
     #end
   #end
 {
-      \\"version\\": \\"2018-05-29\\",
-      \\"operation\\": \\"Query\\",
-      \\"query\\":     $util.toJson($query),
-      \\"scanIndexForward\\":     #if( $context.args.sortDirection )
-      #if( $context.args.sortDirection == \\"ASC\\" )
+      "version": "2018-05-29",
+      "operation": "Query",
+      "query":     $util.toJson($query),
+      "scanIndexForward":     #if( $context.args.sortDirection )
+      #if( $context.args.sortDirection == "ASC" )
 true
       #else
 false
@@ -738,18 +738,18 @@ false
     #else
 true
     #end,
-      \\"filter\\":     #if( $filter )
+      "filter":     #if( $filter )
 $util.toJson($filter)
     #else
 null
     #end,
-      \\"limit\\": $limit,
-      \\"nextToken\\":     #if( $context.args.nextToken )
+      "limit": $limit,
+      "nextToken":     #if( $context.args.nextToken )
 $util.toJson($context.args.nextToken)
     #else
 null
     #end,
-      \\"index\\": \\"gsi-Team.members\\"
+      "index": "gsi-Team.members"
   }
 #end"
 `;
@@ -758,25 +758,25 @@ exports[`has many query with implicit IDs 3`] = `
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"teamID\\"), $ctx.source.teamID) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("teamID"), $ctx.source.teamID) )
 #if( $util.isNull($partitionKeyValue) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\"
+  "version": "2018-05-29",
+  "operation": "Query"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"id\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue",
+  "expressionNames": {
+      "#partitionKey": "id"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -785,25 +785,25 @@ exports[`has many query with implicit IDs 3`] = `
 exports[`has many references with multiple relationships to the same model 1`] = `
 "#if( $ctx.stash.deniedField )
   #set( $result = {
-  \\"items\\":   []
+  "items":   []
 } )
   #return($result)
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get("id"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
   #set( $result = {
-  \\"items\\":   []
+  "items":   []
 } )
   #return($result)
 #else
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
   #set( $query = {
-  \\"expression\\": \\"#partitionKey = :partitionKey\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"primaryId1\\"
+  "expression": "#partitionKey = :partitionKey",
+  "expressionNames": {
+      "#partitionKey": "primaryId1"
   },
-  \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue)
+  "expressionValues": {
+      ":partitionKey": $util.dynamodb.toDynamoDB($partitionKeyValue)
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -811,7 +811,7 @@ exports[`has many references with multiple relationships to the same model 1`] =
     #set( $filter = $ctx.stash.authFilter )
     #if( !$util.isNullOrEmpty($args.filter) )
       #set( $filter = {
-  \\"and\\":   [$filter, $args.filter]
+  "and":   [$filter, $args.filter]
 } )
     #end
   #else
@@ -823,17 +823,17 @@ exports[`has many references with multiple relationships to the same model 1`] =
     #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
     #if( !$util.isNullOrBlank($filterExpression.expression) )
       #if( $filterExpression.expressionValues.size() == 0 )
-        $util.qr($filterExpression.remove(\\"expressionValues\\"))
+        $util.qr($filterExpression.remove("expressionValues"))
       #end
       #set( $filter = $filterExpression )
     #end
   #end
 {
-      \\"version\\": \\"2018-05-29\\",
-      \\"operation\\": \\"Query\\",
-      \\"query\\":     $util.toJson($query),
-      \\"scanIndexForward\\":     #if( $context.args.sortDirection )
-      #if( $context.args.sortDirection == \\"ASC\\" )
+      "version": "2018-05-29",
+      "operation": "Query",
+      "query":     $util.toJson($query),
+      "scanIndexForward":     #if( $context.args.sortDirection )
+      #if( $context.args.sortDirection == "ASC" )
 true
       #else
 false
@@ -841,18 +841,18 @@ false
     #else
 true
     #end,
-      \\"filter\\":     #if( $filter )
+      "filter":     #if( $filter )
 $util.toJson($filter)
     #else
 null
     #end,
-      \\"limit\\": $limit,
-      \\"nextToken\\":     #if( $context.args.nextToken )
+      "limit": $limit,
+      "nextToken":     #if( $context.args.nextToken )
 $util.toJson($context.args.nextToken)
     #else
 null
     #end,
-      \\"index\\": \\"gsi-Primary.related1\\"
+      "index": "gsi-Primary.related1"
   }
 #end"
 `;
@@ -860,25 +860,25 @@ null
 exports[`has many references with multiple relationships to the same model 2`] = `
 "#if( $ctx.stash.deniedField )
   #set( $result = {
-  \\"items\\":   []
+  "items":   []
 } )
   #return($result)
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get("id"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
   #set( $result = {
-  \\"items\\":   []
+  "items":   []
 } )
   #return($result)
 #else
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
   #set( $query = {
-  \\"expression\\": \\"#partitionKey = :partitionKey\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"primaryId2\\"
+  "expression": "#partitionKey = :partitionKey",
+  "expressionNames": {
+      "#partitionKey": "primaryId2"
   },
-  \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue)
+  "expressionValues": {
+      ":partitionKey": $util.dynamodb.toDynamoDB($partitionKeyValue)
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -886,7 +886,7 @@ exports[`has many references with multiple relationships to the same model 2`] =
     #set( $filter = $ctx.stash.authFilter )
     #if( !$util.isNullOrEmpty($args.filter) )
       #set( $filter = {
-  \\"and\\":   [$filter, $args.filter]
+  "and":   [$filter, $args.filter]
 } )
     #end
   #else
@@ -898,17 +898,17 @@ exports[`has many references with multiple relationships to the same model 2`] =
     #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
     #if( !$util.isNullOrBlank($filterExpression.expression) )
       #if( $filterExpression.expressionValues.size() == 0 )
-        $util.qr($filterExpression.remove(\\"expressionValues\\"))
+        $util.qr($filterExpression.remove("expressionValues"))
       #end
       #set( $filter = $filterExpression )
     #end
   #end
 {
-      \\"version\\": \\"2018-05-29\\",
-      \\"operation\\": \\"Query\\",
-      \\"query\\":     $util.toJson($query),
-      \\"scanIndexForward\\":     #if( $context.args.sortDirection )
-      #if( $context.args.sortDirection == \\"ASC\\" )
+      "version": "2018-05-29",
+      "operation": "Query",
+      "query":     $util.toJson($query),
+      "scanIndexForward":     #if( $context.args.sortDirection )
+      #if( $context.args.sortDirection == "ASC" )
 true
       #else
 false
@@ -916,18 +916,18 @@ false
     #else
 true
     #end,
-      \\"filter\\":     #if( $filter )
+      "filter":     #if( $filter )
 $util.toJson($filter)
     #else
 null
     #end,
-      \\"limit\\": $limit,
-      \\"nextToken\\":     #if( $context.args.nextToken )
+      "limit": $limit,
+      "nextToken":     #if( $context.args.nextToken )
 $util.toJson($context.args.nextToken)
     #else
 null
     #end,
-      \\"index\\": \\"gsi-Primary.related2\\"
+      "index": "gsi-Primary.related2"
   }
 #end"
 `;
@@ -936,25 +936,25 @@ exports[`has many references with multiple relationships to the same model 3`] =
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"primaryId1\\"), $ctx.source.primaryId1) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("primaryId1"), $ctx.source.primaryId1) )
 #if( $util.isNull($partitionKeyValue) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\"
+  "version": "2018-05-29",
+  "operation": "Query"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"id\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue",
+  "expressionNames": {
+      "#partitionKey": "id"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -964,25 +964,25 @@ exports[`has many references with multiple relationships to the same model 4`] =
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"primaryId2\\"), $ctx.source.primaryId2) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("primaryId2"), $ctx.source.primaryId2) )
 #if( $util.isNull($partitionKeyValue) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\"
+  "version": "2018-05-29",
+  "operation": "Query"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"id\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue",
+  "expressionNames": {
+      "#partitionKey": "id"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -991,29 +991,29 @@ exports[`has many references with multiple relationships to the same model 4`] =
 exports[`has many references with multiple relationships to the same model with composite primary key 1`] = `
 "#if( $ctx.stash.deniedField )
   #set( $result = {
-  \\"items\\":   []
+  "items":   []
 } )
   #return($result)
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"pk\\"), $ctx.source.pk) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get("pk"), $ctx.source.pk) )
 #if( $util.isNull($partitionKeyValue) )
   #set( $result = {
-  \\"items\\":   []
+  "items":   []
 } )
   #return($result)
 #else
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
-  #set( $sortKeyValue0 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"sk1\\"), $ctx.source.sk1) )
-  #set( $sortKeyValue1 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"sk2\\"), $ctx.source.sk2) )
+  #set( $sortKeyValue0 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("sk1"), $ctx.source.sk1) )
+  #set( $sortKeyValue1 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("sk2"), $ctx.source.sk2) )
   #set( $query = {
-  \\"expression\\": \\"#partitionKey = :partitionKey AND #sortKey = :sortKey\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"primaryPk1\\",
-      \\"#sortKey\\": \\"primarySk11#primarySk12\\"
+  "expression": "#partitionKey = :partitionKey AND #sortKey = :sortKey",
+  "expressionNames": {
+      "#partitionKey": "primaryPk1",
+      "#sortKey": "primarySk11#primarySk12"
   },
-  \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue),
-      \\":sortKey\\": $util.dynamodb.toDynamoDB(\\"\${sortKeyValue0}#\${sortKeyValue1}\\")
+  "expressionValues": {
+      ":partitionKey": $util.dynamodb.toDynamoDB($partitionKeyValue),
+      ":sortKey": $util.dynamodb.toDynamoDB("\${sortKeyValue0}#\${sortKeyValue1}")
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -1021,7 +1021,7 @@ exports[`has many references with multiple relationships to the same model with 
     #set( $filter = $ctx.stash.authFilter )
     #if( !$util.isNullOrEmpty($args.filter) )
       #set( $filter = {
-  \\"and\\":   [$filter, $args.filter]
+  "and":   [$filter, $args.filter]
 } )
     #end
   #else
@@ -1033,17 +1033,17 @@ exports[`has many references with multiple relationships to the same model with 
     #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
     #if( !$util.isNullOrBlank($filterExpression.expression) )
       #if( $filterExpression.expressionValues.size() == 0 )
-        $util.qr($filterExpression.remove(\\"expressionValues\\"))
+        $util.qr($filterExpression.remove("expressionValues"))
       #end
       #set( $filter = $filterExpression )
     #end
   #end
 {
-      \\"version\\": \\"2018-05-29\\",
-      \\"operation\\": \\"Query\\",
-      \\"query\\":     $util.toJson($query),
-      \\"scanIndexForward\\":     #if( $context.args.sortDirection )
-      #if( $context.args.sortDirection == \\"ASC\\" )
+      "version": "2018-05-29",
+      "operation": "Query",
+      "query":     $util.toJson($query),
+      "scanIndexForward":     #if( $context.args.sortDirection )
+      #if( $context.args.sortDirection == "ASC" )
 true
       #else
 false
@@ -1051,18 +1051,18 @@ false
     #else
 true
     #end,
-      \\"filter\\":     #if( $filter )
+      "filter":     #if( $filter )
 $util.toJson($filter)
     #else
 null
     #end,
-      \\"limit\\": $limit,
-      \\"nextToken\\":     #if( $context.args.nextToken )
+      "limit": $limit,
+      "nextToken":     #if( $context.args.nextToken )
 $util.toJson($context.args.nextToken)
     #else
 null
     #end,
-      \\"index\\": \\"gsi-Primary.related1\\"
+      "index": "gsi-Primary.related1"
   }
 #end"
 `;
@@ -1070,29 +1070,29 @@ null
 exports[`has many references with multiple relationships to the same model with composite primary key 2`] = `
 "#if( $ctx.stash.deniedField )
   #set( $result = {
-  \\"items\\":   []
+  "items":   []
 } )
   #return($result)
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"pk\\"), $ctx.source.pk) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get("pk"), $ctx.source.pk) )
 #if( $util.isNull($partitionKeyValue) )
   #set( $result = {
-  \\"items\\":   []
+  "items":   []
 } )
   #return($result)
 #else
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
-  #set( $sortKeyValue0 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"sk1\\"), $ctx.source.sk1) )
-  #set( $sortKeyValue1 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"sk2\\"), $ctx.source.sk2) )
+  #set( $sortKeyValue0 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("sk1"), $ctx.source.sk1) )
+  #set( $sortKeyValue1 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("sk2"), $ctx.source.sk2) )
   #set( $query = {
-  \\"expression\\": \\"#partitionKey = :partitionKey AND #sortKey = :sortKey\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"primaryPk2\\",
-      \\"#sortKey\\": \\"primarySk21#primarySk22\\"
+  "expression": "#partitionKey = :partitionKey AND #sortKey = :sortKey",
+  "expressionNames": {
+      "#partitionKey": "primaryPk2",
+      "#sortKey": "primarySk21#primarySk22"
   },
-  \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue),
-      \\":sortKey\\": $util.dynamodb.toDynamoDB(\\"\${sortKeyValue0}#\${sortKeyValue1}\\")
+  "expressionValues": {
+      ":partitionKey": $util.dynamodb.toDynamoDB($partitionKeyValue),
+      ":sortKey": $util.dynamodb.toDynamoDB("\${sortKeyValue0}#\${sortKeyValue1}")
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -1100,7 +1100,7 @@ exports[`has many references with multiple relationships to the same model with 
     #set( $filter = $ctx.stash.authFilter )
     #if( !$util.isNullOrEmpty($args.filter) )
       #set( $filter = {
-  \\"and\\":   [$filter, $args.filter]
+  "and":   [$filter, $args.filter]
 } )
     #end
   #else
@@ -1112,17 +1112,17 @@ exports[`has many references with multiple relationships to the same model with 
     #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
     #if( !$util.isNullOrBlank($filterExpression.expression) )
       #if( $filterExpression.expressionValues.size() == 0 )
-        $util.qr($filterExpression.remove(\\"expressionValues\\"))
+        $util.qr($filterExpression.remove("expressionValues"))
       #end
       #set( $filter = $filterExpression )
     #end
   #end
 {
-      \\"version\\": \\"2018-05-29\\",
-      \\"operation\\": \\"Query\\",
-      \\"query\\":     $util.toJson($query),
-      \\"scanIndexForward\\":     #if( $context.args.sortDirection )
-      #if( $context.args.sortDirection == \\"ASC\\" )
+      "version": "2018-05-29",
+      "operation": "Query",
+      "query":     $util.toJson($query),
+      "scanIndexForward":     #if( $context.args.sortDirection )
+      #if( $context.args.sortDirection == "ASC" )
 true
       #else
 false
@@ -1130,18 +1130,18 @@ false
     #else
 true
     #end,
-      \\"filter\\":     #if( $filter )
+      "filter":     #if( $filter )
 $util.toJson($filter)
     #else
 null
     #end,
-      \\"limit\\": $limit,
-      \\"nextToken\\":     #if( $context.args.nextToken )
+      "limit": $limit,
+      "nextToken":     #if( $context.args.nextToken )
 $util.toJson($context.args.nextToken)
     #else
 null
     #end,
-      \\"index\\": \\"gsi-Primary.related2\\"
+      "index": "gsi-Primary.related2"
   }
 #end"
 `;
@@ -1150,27 +1150,27 @@ exports[`has many references with multiple relationships to the same model with 
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"primaryPk1\\"), $ctx.source.primaryPk1) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("primaryPk1"), $ctx.source.primaryPk1) )
 #if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.primarySk11) || $util.isNull($ctx.source.primarySk12) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\"
+  "version": "2018-05-29",
+  "operation": "Query"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"pk\\",
-      \\"#sortKeyName\\": \\"sk1#sk2\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName",
+  "expressionNames": {
+      "#partitionKey": "pk",
+      "#sortKeyName": "sk1#sk2"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\"))),
-      \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.primarySk11}#\${ctx.source.primarySk12}\\", \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____"))),
+      ":sortKeyName": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank("\${ctx.source.primarySk11}#\${ctx.source.primarySk12}", "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -1180,27 +1180,27 @@ exports[`has many references with multiple relationships to the same model with 
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"primaryPk2\\"), $ctx.source.primaryPk2) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("primaryPk2"), $ctx.source.primaryPk2) )
 #if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.primarySk21) || $util.isNull($ctx.source.primarySk22) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\"
+  "version": "2018-05-29",
+  "operation": "Query"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"pk\\",
-      \\"#sortKeyName\\": \\"sk1#sk2\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName",
+  "expressionNames": {
+      "#partitionKey": "pk",
+      "#sortKeyName": "sk1#sk2"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\"))),
-      \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.primarySk21}#\${ctx.source.primarySk22}\\", \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____"))),
+      ":sortKeyName": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank("\${ctx.source.primarySk21}#\${ctx.source.primarySk22}", "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -1213,23 +1213,23 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
 ## [Start] Validate create mutation for global secondary index 'gsi-Team.members'. **
 #set( $hasSeenSomeKeyArg = false )
-#set( $keyFieldNames = [\\"teamMantra\\", \\"teamOrganization\\"] )
+#set( $keyFieldNames = ["teamMantra", "teamOrganization"] )
 #foreach( $keyFieldName in $keyFieldNames )
-#if( $mergedValues.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
+#if( $mergedValues.containsKey("$keyFieldName") ) #set( $hasSeenSomeKeyArg = true ) #end
 #end
 #foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey(\\"$keyFieldName\\") )
-    $util.error(\\"When creating any part of the composite sort key for global secondary index 'gsi-Team.members', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
+  #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey("$keyFieldName") )
+    $util.error("When creating any part of the composite sort key for global secondary index 'gsi-Team.members', you must provide all fields for the key. Missing key: '$keyFieldName'.")
   #end
 #end
 ## [End] Validate create mutation for global secondary index 'gsi-Team.members'. **
 #if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", { 'teamMantra#teamOrganization': \\"teamMantraTeamOrganization\\" }))
+  $util.qr($ctx.stash.metadata.put("dynamodbNameOverrideMap", { 'teamMantra#teamOrganization': "teamMantraTeamOrganization" }))
 #else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('teamMantra#teamOrganization', \\"teamMantraTeamOrganization\\"))
+  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('teamMantra#teamOrganization', "teamMantraTeamOrganization"))
 #end
 #if( $hasSeenSomeKeyArg )
-  $util.qr($ctx.args.input.put('teamMantra#teamOrganization',\\"\${mergedValues.teamMantra}#\${mergedValues.teamOrganization}\\"))
+  $util.qr($ctx.args.input.put('teamMantra#teamOrganization',"\${mergedValues.teamMantra}#\${mergedValues.teamOrganization}"))
 #end
 {}"
 `;
@@ -1237,29 +1237,29 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 exports[`has many references with multiple sort keys 2`] = `
 "#if( $ctx.stash.deniedField )
   #set( $result = {
-  \\"items\\":   []
+  "items":   []
 } )
   #return($result)
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get("id"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
   #set( $result = {
-  \\"items\\":   []
+  "items":   []
 } )
   #return($result)
 #else
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
-  #set( $sortKeyValue0 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"mantra\\"), $ctx.source.mantra) )
-  #set( $sortKeyValue1 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"organization\\"), $ctx.source.organization) )
+  #set( $sortKeyValue0 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("mantra"), $ctx.source.mantra) )
+  #set( $sortKeyValue1 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("organization"), $ctx.source.organization) )
   #set( $query = {
-  \\"expression\\": \\"#partitionKey = :partitionKey AND #sortKey = :sortKey\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"teamId\\",
-      \\"#sortKey\\": \\"teamMantra#teamOrganization\\"
+  "expression": "#partitionKey = :partitionKey AND #sortKey = :sortKey",
+  "expressionNames": {
+      "#partitionKey": "teamId",
+      "#sortKey": "teamMantra#teamOrganization"
   },
-  \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue),
-      \\":sortKey\\": $util.dynamodb.toDynamoDB(\\"\${sortKeyValue0}#\${sortKeyValue1}\\")
+  "expressionValues": {
+      ":partitionKey": $util.dynamodb.toDynamoDB($partitionKeyValue),
+      ":sortKey": $util.dynamodb.toDynamoDB("\${sortKeyValue0}#\${sortKeyValue1}")
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -1267,7 +1267,7 @@ exports[`has many references with multiple sort keys 2`] = `
     #set( $filter = $ctx.stash.authFilter )
     #if( !$util.isNullOrEmpty($args.filter) )
       #set( $filter = {
-  \\"and\\":   [$filter, $args.filter]
+  "and":   [$filter, $args.filter]
 } )
     #end
   #else
@@ -1279,17 +1279,17 @@ exports[`has many references with multiple sort keys 2`] = `
     #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
     #if( !$util.isNullOrBlank($filterExpression.expression) )
       #if( $filterExpression.expressionValues.size() == 0 )
-        $util.qr($filterExpression.remove(\\"expressionValues\\"))
+        $util.qr($filterExpression.remove("expressionValues"))
       #end
       #set( $filter = $filterExpression )
     #end
   #end
 {
-      \\"version\\": \\"2018-05-29\\",
-      \\"operation\\": \\"Query\\",
-      \\"query\\":     $util.toJson($query),
-      \\"scanIndexForward\\":     #if( $context.args.sortDirection )
-      #if( $context.args.sortDirection == \\"ASC\\" )
+      "version": "2018-05-29",
+      "operation": "Query",
+      "query":     $util.toJson($query),
+      "scanIndexForward":     #if( $context.args.sortDirection )
+      #if( $context.args.sortDirection == "ASC" )
 true
       #else
 false
@@ -1297,18 +1297,18 @@ false
     #else
 true
     #end,
-      \\"filter\\":     #if( $filter )
+      "filter":     #if( $filter )
 $util.toJson($filter)
     #else
 null
     #end,
-      \\"limit\\": $limit,
-      \\"nextToken\\":     #if( $context.args.nextToken )
+      "limit": $limit,
+      "nextToken":     #if( $context.args.nextToken )
 $util.toJson($context.args.nextToken)
     #else
 null
     #end,
-      \\"index\\": \\"gsi-Team.members\\"
+      "index": "gsi-Team.members"
   }
 #end"
 `;
@@ -1317,27 +1317,27 @@ exports[`has many references with multiple sort keys 3`] = `
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"teamId\\"), $ctx.source.teamId) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("teamId"), $ctx.source.teamId) )
 #if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.teamMantra) || $util.isNull($ctx.source.teamOrganization) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\"
+  "version": "2018-05-29",
+  "operation": "Query"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"id\\",
-      \\"#sortKeyName\\": \\"mantra#organization\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName",
+  "expressionNames": {
+      "#partitionKey": "id",
+      "#sortKeyName": "mantra#organization"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\"))),
-      \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.teamMantra}#\${ctx.source.teamOrganization}\\", \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____"))),
+      ":sortKeyName": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank("\${ctx.source.teamMantra}#\${ctx.source.teamOrganization}", "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -1346,28 +1346,28 @@ exports[`has many references with multiple sort keys 3`] = `
 exports[`has many references with partition key + sort key 1`] = `
 "#if( $ctx.stash.deniedField )
   #set( $result = {
-  \\"items\\":   []
+  "items":   []
 } )
   #return($result)
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get("id"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
   #set( $result = {
-  \\"items\\":   []
+  "items":   []
 } )
   #return($result)
 #else
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
-  #set( $sortKeyValue0 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"mantra\\"), $ctx.source.mantra) )
+  #set( $sortKeyValue0 = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("mantra"), $ctx.source.mantra) )
   #set( $query = {
-  \\"expression\\": \\"#partitionKey = :partitionKey AND #sortKey = :sortKey\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"teamId\\",
-      \\"#sortKey\\": \\"teamMantra\\"
+  "expression": "#partitionKey = :partitionKey AND #sortKey = :sortKey",
+  "expressionNames": {
+      "#partitionKey": "teamId",
+      "#sortKey": "teamMantra"
   },
-  \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue),
-      \\":sortKey\\": $util.dynamodb.toDynamoDB(\\"\${sortKeyValue0}\\")
+  "expressionValues": {
+      ":partitionKey": $util.dynamodb.toDynamoDB($partitionKeyValue),
+      ":sortKey": $util.dynamodb.toDynamoDB("\${sortKeyValue0}")
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -1375,7 +1375,7 @@ exports[`has many references with partition key + sort key 1`] = `
     #set( $filter = $ctx.stash.authFilter )
     #if( !$util.isNullOrEmpty($args.filter) )
       #set( $filter = {
-  \\"and\\":   [$filter, $args.filter]
+  "and":   [$filter, $args.filter]
 } )
     #end
   #else
@@ -1387,17 +1387,17 @@ exports[`has many references with partition key + sort key 1`] = `
     #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
     #if( !$util.isNullOrBlank($filterExpression.expression) )
       #if( $filterExpression.expressionValues.size() == 0 )
-        $util.qr($filterExpression.remove(\\"expressionValues\\"))
+        $util.qr($filterExpression.remove("expressionValues"))
       #end
       #set( $filter = $filterExpression )
     #end
   #end
 {
-      \\"version\\": \\"2018-05-29\\",
-      \\"operation\\": \\"Query\\",
-      \\"query\\":     $util.toJson($query),
-      \\"scanIndexForward\\":     #if( $context.args.sortDirection )
-      #if( $context.args.sortDirection == \\"ASC\\" )
+      "version": "2018-05-29",
+      "operation": "Query",
+      "query":     $util.toJson($query),
+      "scanIndexForward":     #if( $context.args.sortDirection )
+      #if( $context.args.sortDirection == "ASC" )
 true
       #else
 false
@@ -1405,18 +1405,18 @@ false
     #else
 true
     #end,
-      \\"filter\\":     #if( $filter )
+      "filter":     #if( $filter )
 $util.toJson($filter)
     #else
 null
     #end,
-      \\"limit\\": $limit,
-      \\"nextToken\\":     #if( $context.args.nextToken )
+      "limit": $limit,
+      "nextToken":     #if( $context.args.nextToken )
 $util.toJson($context.args.nextToken)
     #else
 null
     #end,
-      \\"index\\": \\"gsi-Team.members\\"
+      "index": "gsi-Team.members"
   }
 #end"
 `;
@@ -1425,27 +1425,27 @@ exports[`has many references with partition key + sort key 2`] = `
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"teamId\\"), $ctx.source.teamId) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("teamId"), $ctx.source.teamId) )
 #if( $util.isNull($partitionKeyValue) || $util.isNull($ctx.source.teamMantra) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\"
+  "version": "2018-05-29",
+  "operation": "Query"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"id\\",
-      \\"#sortKeyName\\": \\"mantra\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName",
+  "expressionNames": {
+      "#partitionKey": "id",
+      "#sortKeyName": "mantra"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\"))),
-      \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.teamMantra, \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____"))),
+      ":sortKeyName": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.teamMantra, "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -1455,26 +1455,26 @@ exports[`hasMany / hasOne - belongsTo across data source type boundary 1`] = `
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"id\\"), $ctx.source.id) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("id"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\",
-  \\"index\\": \\"gsi-Team.project\\"
+  "version": "2018-05-29",
+  "operation": "Query",
+  "index": "gsi-Team.project"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"teamId\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue",
+  "expressionNames": {
+      "#partitionKey": "teamId"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -1483,25 +1483,25 @@ exports[`hasMany / hasOne - belongsTo across data source type boundary 1`] = `
 exports[`hasMany / hasOne - belongsTo across data source type boundary 2`] = `
 "#if( $ctx.stash.deniedField )
   #set( $result = {
-  \\"items\\":   []
+  "items":   []
 } )
   #return($result)
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get("id"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
   #set( $result = {
-  \\"items\\":   []
+  "items":   []
 } )
   #return($result)
 #else
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
   #set( $query = {
-  \\"expression\\": \\"#partitionKey = :partitionKey\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"teamId\\"
+  "expression": "#partitionKey = :partitionKey",
+  "expressionNames": {
+      "#partitionKey": "teamId"
   },
-  \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue)
+  "expressionValues": {
+      ":partitionKey": $util.dynamodb.toDynamoDB($partitionKeyValue)
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -1509,7 +1509,7 @@ exports[`hasMany / hasOne - belongsTo across data source type boundary 2`] = `
     #set( $filter = $ctx.stash.authFilter )
     #if( !$util.isNullOrEmpty($args.filter) )
       #set( $filter = {
-  \\"and\\":   [$filter, $args.filter]
+  "and":   [$filter, $args.filter]
 } )
     #end
   #else
@@ -1521,17 +1521,17 @@ exports[`hasMany / hasOne - belongsTo across data source type boundary 2`] = `
     #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
     #if( !$util.isNullOrBlank($filterExpression.expression) )
       #if( $filterExpression.expressionValues.size() == 0 )
-        $util.qr($filterExpression.remove(\\"expressionValues\\"))
+        $util.qr($filterExpression.remove("expressionValues"))
       #end
       #set( $filter = $filterExpression )
     #end
   #end
 {
-      \\"version\\": \\"2018-05-29\\",
-      \\"operation\\": \\"Query\\",
-      \\"query\\":     $util.toJson($query),
-      \\"scanIndexForward\\":     #if( $context.args.sortDirection )
-      #if( $context.args.sortDirection == \\"ASC\\" )
+      "version": "2018-05-29",
+      "operation": "Query",
+      "query":     $util.toJson($query),
+      "scanIndexForward":     #if( $context.args.sortDirection )
+      #if( $context.args.sortDirection == "ASC" )
 true
       #else
 false
@@ -1539,18 +1539,18 @@ false
     #else
 true
     #end,
-      \\"filter\\":     #if( $filter )
+      "filter":     #if( $filter )
 $util.toJson($filter)
     #else
 null
     #end,
-      \\"limit\\": $limit,
-      \\"nextToken\\":     #if( $context.args.nextToken )
+      "limit": $limit,
+      "nextToken":     #if( $context.args.nextToken )
 $util.toJson($context.args.nextToken)
     #else
 null
     #end,
-      \\"index\\": \\"gsi-Team.members\\"
+      "index": "gsi-Team.members"
   }
 #end"
 `;
@@ -1562,13 +1562,13 @@ exports[`hasMany / hasOne - belongsTo across data source type boundary 3`] = `
 #end
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"Team\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"BelongsToConnectionQuery\\" )
+#set( $lambdaInput.table = "Team" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "BelongsToConnectionQuery" )
 #set( $lambdaInput.args.metadata = {} )
-#set( $lambdaInput.args.metadata.keys = [\\"id\\"] )
+#set( $lambdaInput.args.metadata.keys = ["id"] )
 #set( $lambdaInput.args.metadata.arrayFields = [] )
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"members\\", \\"project\\"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["members", "project"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
@@ -1578,11 +1578,11 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
 #end
-$util.qr($lambdaInput.args.input.put(\\"id\\", $ctx.source.teamId))
+$util.qr($lambdaInput.args.input.put("id", $ctx.source.teamId))
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Invoke RDS Lambda data source. **"
 `;
@@ -1594,13 +1594,13 @@ exports[`hasMany / hasOne - belongsTo across data source type boundary 4`] = `
 #end
 #set( $lambdaInput = {} )
 #set( $lambdaInput.args = {} )
-#set( $lambdaInput.table = \\"Team\\" )
-#set( $lambdaInput.operation = \\"GET\\" )
-#set( $lambdaInput.operationName = \\"BelongsToConnectionQuery\\" )
+#set( $lambdaInput.table = "Team" )
+#set( $lambdaInput.operation = "GET" )
+#set( $lambdaInput.operationName = "BelongsToConnectionQuery" )
 #set( $lambdaInput.args.metadata = {} )
-#set( $lambdaInput.args.metadata.keys = [\\"id\\"] )
+#set( $lambdaInput.args.metadata.keys = ["id"] )
 #set( $lambdaInput.args.metadata.arrayFields = [] )
-#set( $lambdaInput.args.metadata.nonScalarFields = [\\"members\\", \\"project\\"] )
+#set( $lambdaInput.args.metadata.nonScalarFields = ["members", "project"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
@@ -1610,11 +1610,11 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
 #end
-$util.qr($lambdaInput.args.input.put(\\"id\\", $ctx.source.teamId))
+$util.qr($lambdaInput.args.input.put("id", $ctx.source.teamId))
 {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Invoke\\",
-  \\"payload\\":   $util.toJson($lambdaInput)
+  "version": "2018-05-29",
+  "operation": "Invoke",
+  "payload":   $util.toJson($lambdaInput)
 }
 ## [End] Invoke RDS Lambda data source. **"
 `;
@@ -1881,15 +1881,15 @@ input ModelSubscriptionPostFilterInput {
 }
 
 type Subscription {
-  onCreatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"createPost\\"])
-  onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: [\\"deletePost\\"])
-  onCreatePostEditor(filter: ModelSubscriptionPostEditorFilterInput): PostEditor @aws_subscribe(mutations: [\\"createPostEditor\\"])
-  onUpdatePostEditor(filter: ModelSubscriptionPostEditorFilterInput): PostEditor @aws_subscribe(mutations: [\\"updatePostEditor\\"])
-  onDeletePostEditor(filter: ModelSubscriptionPostEditorFilterInput): PostEditor @aws_subscribe(mutations: [\\"deletePostEditor\\"])
-  onCreateUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: [\\"createUser\\"])
-  onUpdateUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: [\\"updateUser\\"])
-  onDeleteUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: [\\"deleteUser\\"])
+  onCreatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: ["createPost"])
+  onUpdatePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: ["updatePost"])
+  onDeletePost(filter: ModelSubscriptionPostFilterInput): Post @aws_subscribe(mutations: ["deletePost"])
+  onCreatePostEditor(filter: ModelSubscriptionPostEditorFilterInput): PostEditor @aws_subscribe(mutations: ["createPostEditor"])
+  onUpdatePostEditor(filter: ModelSubscriptionPostEditorFilterInput): PostEditor @aws_subscribe(mutations: ["updatePostEditor"])
+  onDeletePostEditor(filter: ModelSubscriptionPostEditorFilterInput): PostEditor @aws_subscribe(mutations: ["deletePostEditor"])
+  onCreateUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: ["createUser"])
+  onUpdateUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: ["updateUser"])
+  onDeleteUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: ["deleteUser"])
 }
 
 input ModelPostEditorConditionInput {
@@ -2007,25 +2007,25 @@ input ModelPostEditorFilterInput {
 exports[`supports recursive schemas 1`] = `
 "#if( $ctx.stash.deniedField )
   #set( $result = {
-  \\"items\\":   []
+  "items":   []
 } )
   #return($result)
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get(\\"id\\"), $ctx.source.id) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttributes.get("id"), $ctx.source.id) )
 #if( $util.isNull($partitionKeyValue) )
   #set( $result = {
-  \\"items\\":   []
+  "items":   []
 } )
   #return($result)
 #else
   #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
   #set( $query = {
-  \\"expression\\": \\"#partitionKey = :partitionKey\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"parentId\\"
+  "expression": "#partitionKey = :partitionKey",
+  "expressionNames": {
+      "#partitionKey": "parentId"
   },
-  \\"expressionValues\\": {
-      \\":partitionKey\\": $util.dynamodb.toDynamoDB($partitionKeyValue)
+  "expressionValues": {
+      ":partitionKey": $util.dynamodb.toDynamoDB($partitionKeyValue)
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
@@ -2033,7 +2033,7 @@ exports[`supports recursive schemas 1`] = `
     #set( $filter = $ctx.stash.authFilter )
     #if( !$util.isNullOrEmpty($args.filter) )
       #set( $filter = {
-  \\"and\\":   [$filter, $args.filter]
+  "and":   [$filter, $args.filter]
 } )
     #end
   #else
@@ -2045,17 +2045,17 @@ exports[`supports recursive schemas 1`] = `
     #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
     #if( !$util.isNullOrBlank($filterExpression.expression) )
       #if( $filterExpression.expressionValues.size() == 0 )
-        $util.qr($filterExpression.remove(\\"expressionValues\\"))
+        $util.qr($filterExpression.remove("expressionValues"))
       #end
       #set( $filter = $filterExpression )
     #end
   #end
 {
-      \\"version\\": \\"2018-05-29\\",
-      \\"operation\\": \\"Query\\",
-      \\"query\\":     $util.toJson($query),
-      \\"scanIndexForward\\":     #if( $context.args.sortDirection )
-      #if( $context.args.sortDirection == \\"ASC\\" )
+      "version": "2018-05-29",
+      "operation": "Query",
+      "query":     $util.toJson($query),
+      "scanIndexForward":     #if( $context.args.sortDirection )
+      #if( $context.args.sortDirection == "ASC" )
 true
       #else
 false
@@ -2063,18 +2063,18 @@ false
     #else
 true
     #end,
-      \\"filter\\":     #if( $filter )
+      "filter":     #if( $filter )
 $util.toJson($filter)
     #else
 null
     #end,
-      \\"limit\\": $limit,
-      \\"nextToken\\":     #if( $context.args.nextToken )
+      "limit": $limit,
+      "nextToken":     #if( $context.args.nextToken )
 $util.toJson($context.args.nextToken)
     #else
 null
     #end,
-      \\"index\\": \\"gsi-TreeNode.children\\"
+      "index": "gsi-TreeNode.children"
   }
 #end"
 `;
@@ -2083,25 +2083,25 @@ exports[`supports recursive schemas 2`] = `
 "#if( $ctx.stash.deniedField )
   #return($util.toJson(null))
 #end
-#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get(\\"parentId\\"), $ctx.source.parentId) )
+#set( $partitionKeyValue = $util.defaultIfNull($ctx.stash.connectionAttibutes.get("parentId"), $ctx.source.parentId) )
 #if( $util.isNull($partitionKeyValue) )
   #return
 #else
   #set( $GetRequest = {
-  \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\"
+  "version": "2018-05-29",
+  "operation": "Query"
 } )
-  $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"#partitionKey = :partitionValue\\",
-  \\"expressionNames\\": {
-      \\"#partitionKey\\": \\"id\\"
+  $util.qr($GetRequest.put("query", {
+  "expression": "#partitionKey = :partitionValue",
+  "expressionNames": {
+      "#partitionKey": "id"
   },
-  \\"expressionValues\\": {
-      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
+  "expressionValues": {
+      ":partitionValue": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, "___xamznone____")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    $util.qr($GetRequest.put("filter", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
   #end
   $util.toJson($GetRequest)
 #end"

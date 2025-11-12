@@ -55,7 +55,7 @@ describe('graphql schema checks', () => {
     getParamMock.mockReturnValueOnce(undefined);
     const map = { Post: ['model', 'searchable'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');
-    expect(printerMock.warn).lastCalledWith(printerWarning);
+    expect(printerMock.warn).toHaveBeenLastCalledWith(printerWarning);
   });
 
   it('should warn users if they use not recommended open search instance with overrides', async () => {
@@ -63,7 +63,7 @@ describe('graphql schema checks', () => {
     stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'test' });
     const map = { Post: ['model', 'searchable'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');
-    expect(printerMock.warn).lastCalledWith(printerWarning);
+    expect(printerMock.warn).toHaveBeenLastCalledWith(printerWarning);
   });
 
   it('should warn users if they use not recommended elastic search instance with overrides', async () => {
@@ -71,7 +71,7 @@ describe('graphql schema checks', () => {
     stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'test' });
     const map = { Post: ['model', 'searchable'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');
-    expect(printerMock.warn).lastCalledWith(printerWarning);
+    expect(printerMock.warn).toHaveBeenLastCalledWith(printerWarning);
   });
 
   it('should NOT warn users if they use recommended open search instance', async () => {
@@ -79,7 +79,7 @@ describe('graphql schema checks', () => {
     stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'test' });
     const map = { Post: ['model', 'searchable'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');
-    expect(printerMock.warn).not.toBeCalled();
+    expect(printerMock.warn).not.toHaveBeenCalled();
   });
 
   it('should NOT warn users if they use recommended elastic search instance', async () => {
@@ -87,7 +87,7 @@ describe('graphql schema checks', () => {
     stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'test' });
     const map = { Post: ['model', 'searchable'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');
-    expect(printerMock.warn).not.toBeCalled();
+    expect(printerMock.warn).not.toHaveBeenCalled();
   });
 
   it('should NOT warn users if they use recommended open search instance on the environment', async () => {
@@ -95,7 +95,7 @@ describe('graphql schema checks', () => {
     stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'prod' });
     const map = { Post: ['model', 'searchable'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');
-    expect(printerMock.warn).not.toBeCalled();
+    expect(printerMock.warn).not.toHaveBeenCalled();
   });
 
   it('should NOT warn users if they use recommended elastic search instance on the environment', async () => {
@@ -103,7 +103,7 @@ describe('graphql schema checks', () => {
     stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'prod' });
     const map = { Post: ['model', 'searchable'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');
-    expect(printerMock.warn).not.toBeCalled();
+    expect(printerMock.warn).not.toHaveBeenCalled();
   });
 
   it('should NOT warn users if they do NOT use searchable', async () => {
@@ -111,7 +111,7 @@ describe('graphql schema checks', () => {
     stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'test' });
     const map = { Post: ['model'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');
-    expect(printerMock.warn).not.toBeCalled();
+    expect(printerMock.warn).not.toHaveBeenCalled();
   });
 
   it('should warn users if they use not recommended open search instance with overrides', async () => {
@@ -119,6 +119,6 @@ describe('graphql schema checks', () => {
     stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'test' });
     const map = { Post: ['model', 'searchable'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');
-    expect(printerMock.warn).lastCalledWith(printerWarning);
+    expect(printerMock.warn).toHaveBeenLastCalledWith(printerWarning);
   });
 });

@@ -148,17 +148,17 @@ describe('TransformerOutput', () => {
 
     test('does not overwrite existing query operation', () => {
       const output = new TransformerOutput(inputDocumentWithAllOperations);
-      expect(() => output.addDefaultQuery()).toThrowError('Conflicting query operation found.');
+      expect(() => output.addDefaultQuery()).toThrow('Conflicting query operation found.');
     });
 
     test('does not overwrite existing mutation operation', () => {
       const output = new TransformerOutput(inputDocumentWithAllOperations);
-      expect(() => output.addDefaultMutation()).toThrowError('Conflicting mutation operation found.');
+      expect(() => output.addDefaultMutation()).toThrow('Conflicting mutation operation found.');
     });
 
     test('does not overwrite existing subscription operation', () => {
       const output = new TransformerOutput(inputDocumentWithAllOperations);
-      expect(() => output.addDefaultSubscription()).toThrowError('Conflicting subscription operation found.');
+      expect(() => output.addDefaultSubscription()).toThrow('Conflicting subscription operation found.');
     });
 
     test('does not remove other operations', () => {

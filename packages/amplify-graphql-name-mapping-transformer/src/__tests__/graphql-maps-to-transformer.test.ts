@@ -108,7 +108,7 @@ describe('@mapsTo directive', () => {
     stubDirective.arguments![0].value.kind = 'ListValue';
     expect(() =>
       mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
-    ).toThrowErrorMatchingInlineSnapshot('"A single string must be provided for \\"name\\" in @mapsTo directive"');
+    ).toThrowErrorMatchingInlineSnapshot(`"A single string must be provided for "name" in @mapsTo directive"`);
   });
 
   it('registers the rename mapping', () => {
@@ -122,7 +122,7 @@ describe('@mapsTo directive', () => {
     expect(() =>
       mapsToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
     ).toThrowErrorMatchingInlineSnapshot(
-      '"Cannot apply @mapsTo with name \\"OriginalName\\" on type \\"TestName\\" because \\"OriginalName\\" model already exists in the schema."',
+      `"Cannot apply @mapsTo with name "OriginalName" on type "TestName" because "OriginalName" model already exists in the schema."`,
     );
   });
 
@@ -160,15 +160,15 @@ describe('@mapsTo directive', () => {
     mapsToTransformer.after(transformerContext as unknown as TransformerContextProvider);
 
     // assert
-    expect(attachInputMappingSlot_mock).toBeCalledTimes(1);
-    expect(attachInputMappingSlot_mock).toBeCalledWith({
+    expect(attachInputMappingSlot_mock).toHaveBeenCalledTimes(1);
+    expect(attachInputMappingSlot_mock).toHaveBeenCalledWith({
       resolver: dummyResolver,
       resolverFieldName: `create${modelName}`,
       resolverTypeName: 'Mutation',
       fieldMap: testFieldMap,
     });
-    expect(attachResponseMappingSlot_mock).toBeCalledTimes(1);
-    expect(attachResponseMappingSlot_mock).toBeCalledWith({
+    expect(attachResponseMappingSlot_mock).toHaveBeenCalledTimes(1);
+    expect(attachResponseMappingSlot_mock).toHaveBeenCalledWith({
       slotName: 'postUpdate',
       resolver: dummyResolver,
       resolverFieldName: `create${modelName}`,
@@ -176,8 +176,8 @@ describe('@mapsTo directive', () => {
       fieldMap: testFieldMap,
       isList: false,
     });
-    expect(attachFilterAndConditionInputMappingSlot_mock).toBeCalledTimes(1);
-    expect(attachFilterAndConditionInputMappingSlot_mock).toBeCalledWith({
+    expect(attachFilterAndConditionInputMappingSlot_mock).toHaveBeenCalledTimes(1);
+    expect(attachFilterAndConditionInputMappingSlot_mock).toHaveBeenCalledWith({
       slotName: 'preUpdate',
       resolver: dummyResolver,
       resolverTypeName: 'Mutation',
@@ -221,9 +221,9 @@ describe('@mapsTo directive', () => {
     mapsToTransformer.after(transformerContext as unknown as TransformerContextProvider);
 
     // assert
-    expect(attachInputMappingSlot_mock).not.toBeCalled();
-    expect(attachResponseMappingSlot_mock).toBeCalledTimes(1);
-    expect(attachResponseMappingSlot_mock).toBeCalledWith({
+    expect(attachInputMappingSlot_mock).not.toHaveBeenCalled();
+    expect(attachResponseMappingSlot_mock).toHaveBeenCalledTimes(1);
+    expect(attachResponseMappingSlot_mock).toHaveBeenCalledWith({
       slotName: 'postDataLoad',
       resolver: dummyResolver,
       resolverFieldName: `get${modelName}`,
@@ -231,8 +231,8 @@ describe('@mapsTo directive', () => {
       fieldMap: testFieldMap,
       isList: false,
     });
-    expect(attachFilterAndConditionInputMappingSlot_mock).toBeCalledTimes(1);
-    expect(attachFilterAndConditionInputMappingSlot_mock).toBeCalledWith({
+    expect(attachFilterAndConditionInputMappingSlot_mock).toHaveBeenCalledTimes(1);
+    expect(attachFilterAndConditionInputMappingSlot_mock).toHaveBeenCalledWith({
       slotName: 'preDataLoad',
       resolver: dummyResolver,
       resolverTypeName: 'Query',
@@ -273,8 +273,8 @@ describe('@mapsTo directive', () => {
     mapsToTransformer.after(transformerContext as unknown as TransformerContextProvider);
 
     // assert
-    expect(attachInputMappingSlot_mock).not.toBeCalled();
-    expect(attachResponseMappingSlot_mock).not.toBeCalled();
+    expect(attachInputMappingSlot_mock).not.toHaveBeenCalled();
+    expect(attachResponseMappingSlot_mock).not.toHaveBeenCalled();
   });
 
   it('does not attach resolvers if no mappings defined', () => {
@@ -303,8 +303,8 @@ describe('@mapsTo directive', () => {
     mapsToTransformer.after(transformerContext as unknown as TransformerContextProvider);
 
     // assert
-    expect(attachInputMappingSlot_mock).not.toBeCalled();
-    expect(attachResponseMappingSlot_mock).not.toBeCalled();
+    expect(attachInputMappingSlot_mock).not.toHaveBeenCalled();
+    expect(attachResponseMappingSlot_mock).not.toHaveBeenCalled();
   });
 
   it('pre-mutates the schema to reassign type mappings', () => {
