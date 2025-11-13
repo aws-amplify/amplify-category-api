@@ -4,6 +4,7 @@ env:
 phases:
   build:
     commands:
+      - source ./shared-scripts.sh && _setupNodeVersion 20
       - source ./shared-scripts.sh && _installLinux
 artifacts:
   files:
