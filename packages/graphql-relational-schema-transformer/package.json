@@ -1,6 +1,6 @@
 {
   "name": "graphql-relational-schema-transformer",
-  "version": "2.21.39",
+  "version": "2.21.40",
   "description": "An AppSync model transform that takes a relational database and turns that into a GraphQL API.",
   "repository": {
     "type": "git",

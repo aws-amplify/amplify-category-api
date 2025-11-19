@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-test-utils@0.6.8...@aws-amplify/graphql-transformer-test-utils@0.6.9) (2025-11-19)
+
+### Bug Fixes
+
+- update Lambda Python version 3.8 -> 3.12 ([#3340](https://github.com/aws-amplify/amplify-category-api/issues/3340)) ([ba4c15a](https://github.com/aws-amplify/amplify-category-api/commit/ba4c15a8e08062594861b1b859509e354a028ad1))
+
 ## [0.6.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-test-utils@0.6.7...@aws-amplify/graphql-transformer-test-utils@0.6.8) (2025-09-25)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-test-utils

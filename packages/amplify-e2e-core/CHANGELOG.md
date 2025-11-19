@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.9.11](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.9.10...amplify-category-api-e2e-core@4.9.11) (2025-11-19)
+
+### Bug Fixes
+
+- update Lambda Python version 3.8 -> 3.12 ([#3340](https://github.com/aws-amplify/amplify-category-api/issues/3340)) ([ba4c15a](https://github.com/aws-amplify/amplify-category-api/commit/ba4c15a8e08062594861b1b859509e354a028ad1))
+
 ## [4.9.10](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.9.9...amplify-category-api-e2e-core@4.9.10) (2025-04-03)
 
 **Note:** Version bump only for package amplify-category-api-e2e-core

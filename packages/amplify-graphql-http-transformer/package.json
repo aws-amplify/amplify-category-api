@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-http-transformer",
-  "version": "2.1.33",
+  "version": "2.1.34",
   "description": "Amplify GraphQL @http transformer",
   "repository": {
     "type": "git",
@@ -28,15 +28,15 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-directives": "1.1.0",
-    "@aws-amplify/graphql-transformer-core": "2.11.2",
+    "@aws-amplify/graphql-directives": "1.1.1",
+    "@aws-amplify/graphql-transformer-core": "2.11.3",
     "@aws-amplify/graphql-transformer-interfaces": "3.12.1",
     "graphql": "^15.5.0",
     "graphql-mapping-template": "4.20.16",
     "graphql-transformer-common": "4.34.0"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-test-utils": "0.6.8"
+    "@aws-amplify/graphql-transformer-test-utils": "0.6.9"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.187.0",
