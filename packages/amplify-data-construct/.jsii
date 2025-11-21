@@ -295,19 +295,6 @@
             }
           }
         },
-        "aws-cdk-lib.aws_aiops": {
-          "targets": {
-            "dotnet": {
-              "package": "Amazon.CDK.AWS.AIOps"
-            },
-            "java": {
-              "package": "software.amazon.awscdk.services.aiops"
-            },
-            "python": {
-              "module": "aws_cdk.aws_aiops"
-            }
-          }
-        },
         "aws-cdk-lib.aws_amazonmq": {
           "targets": {
             "dotnet": {
@@ -552,19 +539,6 @@
             },
             "python": {
               "module": "aws_cdk.aws_aps"
-            }
-          }
-        },
-        "aws-cdk-lib.aws_arcregionswitch": {
-          "targets": {
-            "dotnet": {
-              "package": "Amazon.CDK.AWS.ARCRegionSwitch"
-            },
-            "java": {
-              "package": "software.amazon.awscdk.services.arcregionswitch"
-            },
-            "python": {
-              "module": "aws_cdk.aws_arcregionswitch"
             }
           }
         },
@@ -1713,19 +1687,6 @@
             }
           }
         },
-        "aws-cdk-lib.aws_evs": {
-          "targets": {
-            "dotnet": {
-              "package": "Amazon.CDK.AWS.EVS"
-            },
-            "java": {
-              "package": "software.amazon.awscdk.services.evs"
-            },
-            "python": {
-              "module": "aws_cdk.aws_evs"
-            }
-          }
-        },
         "aws-cdk-lib.aws_finspace": {
           "targets": {
             "dotnet": {
@@ -2662,19 +2623,6 @@
             }
           }
         },
-        "aws-cdk-lib.aws_mpa": {
-          "targets": {
-            "dotnet": {
-              "package": "Amazon.CDK.AWS.MPA"
-            },
-            "java": {
-              "package": "software.amazon.awscdk.services.mpa"
-            },
-            "python": {
-              "module": "aws_cdk.aws_mpa"
-            }
-          }
-        },
         "aws-cdk-lib.aws_msk": {
           "targets": {
             "dotnet": {
@@ -2802,32 +2750,6 @@
             },
             "python": {
               "module": "aws_cdk.aws_oam"
-            }
-          }
-        },
-        "aws-cdk-lib.aws_observabilityadmin": {
-          "targets": {
-            "dotnet": {
-              "package": "Amazon.CDK.AWS.ObservabilityAdmin"
-            },
-            "java": {
-              "package": "software.amazon.awscdk.services.observabilityadmin"
-            },
-            "python": {
-              "module": "aws_cdk.aws_observabilityadmin"
-            }
-          }
-        },
-        "aws-cdk-lib.aws_odb": {
-          "targets": {
-            "dotnet": {
-              "package": "Amazon.CDK.AWS.ODB"
-            },
-            "java": {
-              "package": "software.amazon.awscdk.services.odb"
-            },
-            "python": {
-              "module": "aws_cdk.aws_odb"
             }
           }
         },
@@ -3975,19 +3897,6 @@
             }
           }
         },
-        "aws-cdk-lib.aws_workspacesinstances": {
-          "targets": {
-            "dotnet": {
-              "package": "Amazon.CDK.AWS.WorkspacesInstances"
-            },
-            "java": {
-              "package": "software.amazon.awscdk.services.workspacesinstances"
-            },
-            "python": {
-              "module": "aws_cdk.aws_workspacesinstances"
-            }
-          }
-        },
         "aws-cdk-lib.aws_workspacesthinclient": {
           "targets": {
             "dotnet": {
@@ -4226,5 +4135,5 @@
   },
   "types": {},
   "version": "1.16.3",
-  "fingerprint": "HTOsJxkNU8L6RCYxGgyH9u3mGcqEGwe0olj0Gkklq+g="
+  "fingerprint": "fzGBCKNwHwuPMXWS1xoNXBM2atwR4IUBCU8MceERXbE="
 }
