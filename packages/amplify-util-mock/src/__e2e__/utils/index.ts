@@ -51,6 +51,11 @@ export const transformAndSynth = (
   return transformManager.generateDeploymentResources();
 };
 
+/**
+ * Default transform params for some E2E tests
+ *
+ * (This gets actually deployed)
+ */
 export const defaultTransformParams: Pick<ExecuteTransformConfig, 'transformersFactoryArgs' | 'transformParameters'> = {
   transformersFactoryArgs: {},
   transformParameters: {
@@ -65,6 +70,7 @@ export const defaultTransformParams: Pick<ExecuteTransformConfig, 'transformersF
     enableAutoIndexQueryNames: true,
     respectPrimaryKeyAttributesOnConnectionField: true,
     enableSearchNodeToNodeEncryption: false,
+    enableSearchEncryptionAtRest: false,
     enableTransformerCfnOutputs: true,
     allowDestructiveGraphqlSchemaUpdates: false,
     replaceTableUponGsiUpdate: false,

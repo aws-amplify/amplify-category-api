@@ -286,6 +286,7 @@ const generateTransformParameters = (
       pathManager.findProjectRoot(),
       pathManager.getCurrentCloudBackendDirPath(),
     ),
+    enableSearchEncryptionAtRest: featureFlagProvider.getBoolean('enableSearchEncryptionAtRest'),
     sandboxModeEnabled,
     enableTransformerCfnOutputs: true,
     allowDestructiveGraphqlSchemaUpdates: false,
