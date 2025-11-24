@@ -81,25 +81,25 @@ batch:
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        api_5_schema_function_1_generate_ts_data_schema_resolvers_sync_query_datastore
+        api_5_schema_function_1_generate_ts_data_schema_index_projection_resolvers
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
           TEST_SUITE: >-
-            src/__tests__/api_5.test.ts|src/__tests__/schema-function-1.test.ts|src/__tests__/generate_ts_data_schema.test.ts|src/__tests__/resolvers.test.ts|src/__tests__/graphql-v2/sync_query_datastore.test.ts
-          CLI_REGION: ap-northeast-1
+            src/__tests__/api_5.test.ts|src/__tests__/schema-function-1.test.ts|src/__tests__/generate_ts_data_schema.test.ts|src/__tests__/graphql-v2/index-projection.test.ts|src/__tests__/resolvers.test.ts
+          CLI_REGION: ap-east-1
       depend-on:
         - publish_to_local_registry
-    - identifier: api_6_api_lambda_auth
+    - identifier: sync_query_datastore_api_6_api_lambda_auth
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
           TEST_SUITE: >-
-            src/__tests__/api_6.test.ts|src/__tests__/graphql-v2/api_lambda_auth.test.ts
+            src/__tests__/graphql-v2/sync_query_datastore.test.ts|src/__tests__/api_6.test.ts|src/__tests__/graphql-v2/api_lambda_auth.test.ts
           CLI_REGION: ca-central-1
       depend-on:
         - publish_to_local_registry
@@ -680,7 +680,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/schema-auth-5.test.ts
-          CLI_REGION: ap-northeast-1
+          CLI_REGION: ap-northeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: schema_searchable

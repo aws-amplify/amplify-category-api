@@ -49,7 +49,7 @@ export class IndexTransformer extends TransformerPluginBase {
         object: parent as ObjectTypeDefinitionNode,
         field: definition,
         directive,
-      } as IndexDirectiveConfiguration,
+      } as Required<IndexDirectiveConfiguration>,
       generateGetArgumentsInput(context.transformParameters),
     );
 

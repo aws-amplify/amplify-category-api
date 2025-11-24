@@ -1045,7 +1045,7 @@ const usePascalCaseForObjectKeys = (obj: { [key: string]: any }): { [key: string
       const value = obj[key];
 
       if (Array.isArray(value)) {
-        result[capitalizedKey] = value.map((v) => usePascalCaseForObjectKeys(v));
+        result[capitalizedKey] = value.map((v) => (typeof v === 'object' && v !== null ? usePascalCaseForObjectKeys(v) : v));
       } else if (typeof value === 'object' && value !== null) {
         // If the value is an object, recursively capitalize its keys
         result[capitalizedKey] = usePascalCaseForObjectKeys(value);
