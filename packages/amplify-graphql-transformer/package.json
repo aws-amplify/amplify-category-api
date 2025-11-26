@@ -38,6 +38,7 @@
     "@aws-amplify/graphql-index-transformer": "3.0.19",
     "@aws-amplify/graphql-maps-to-transformer": "4.0.19",
     "@aws-amplify/graphql-model-transformer": "3.3.1",
+    "@aws-amplify/graphql-multitenant-transformer": "1.0.0",
     "@aws-amplify/graphql-predictions-transformer": "3.0.19",
     "@aws-amplify/graphql-relational-transformer": "3.1.11",
     "@aws-amplify/graphql-searchable-transformer": "3.0.19",
