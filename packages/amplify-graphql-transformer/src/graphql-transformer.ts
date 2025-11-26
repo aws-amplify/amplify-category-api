@@ -5,6 +5,7 @@ import { HttpTransformer } from '@aws-amplify/graphql-http-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { MapsToTransformer, RefersToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { MultiTenantTransformer } from '@aws-amplify/graphql-multitenant-transformer';
 import { SqlTransformer } from '@aws-amplify/graphql-sql-transformer';
 import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
 import {
@@ -78,6 +79,7 @@ export const constructTransformerChain = (options?: TransformerFactoryArgs): Tra
     new PredictionsTransformer(options?.storageConfig),
     new PrimaryKeyTransformer(),
     indexTransformer,
+    new MultiTenantTransformer(),
     hasManyTransformer,
     hasOneTransformer,
     new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
