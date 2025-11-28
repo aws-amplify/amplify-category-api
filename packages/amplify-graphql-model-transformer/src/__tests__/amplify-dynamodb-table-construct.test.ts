@@ -259,4 +259,138 @@ describe('Amplify DynamoDB Table Construct Tests', () => {
       }),
     });
   });
+
+  describe('tableFromAttr', () => {
+    describe('grantReadData', () => {
+      it('grants read access to table and indexes', () => {
+        const stack = new cdk.Stack();
+        const table = new AmplifyDynamoDBTable(stack, 'MockTable', {
+          customResourceServiceToken: 'mockResourceServiceToken',
+          tableName: 'mockTableName',
+          partitionKey: {
+            name: 'id',
+            type: AttributeType.STRING,
+          },
+        });
+        table.addGlobalSecondaryIndex({
+          indexName: 'gsi1',
+          partitionKey: {
+            name: 'name',
+            type: AttributeType.STRING,
+          },
+        });
+
+        table.tableFromAttr.grantReadData(
+          new Role(stack, 'MockRole', {
+            assumedBy: new ArnPrincipal('mock_principal'),
+          }),
+        );
+
+        const template = Template.fromStack(stack);
+        template.hasResourceProperties('AWS::IAM::Policy', {
+          PolicyDocument: Match.objectLike({
+            Statement: Match.arrayWith([
+              Match.objectLike({
+                Action: [
+                  'dynamodb:BatchGetItem',
+                  'dynamodb:GetRecords',
+                  'dynamodb:GetShardIterator',
+                  'dynamodb:Query',
+                  'dynamodb:GetItem',
+                  'dynamodb:Scan',
+                  'dynamodb:ConditionCheckItem',
+                  'dynamodb:DescribeTable',
+                ],
+                Effect: 'Allow',
+                Resource: Match.arrayWith([
+                  {
+                    'Fn::GetAtt': ['MockTable', 'TableArn'],
+                  },
+                  {
+                    'Fn::Join': [
+                      '',
+                      [
+                        {
+                          'Fn::GetAtt': ['MockTable', 'TableArn'],
+                        },
+                        '/index/*',
+                      ],
+                    ],
+                  },
+                ]),
+              }),
+            ]),
+          }),
+        });
+      });
+    });
+
+    describe('grantReadWriteData', () => {
+      it('grants read and write access to table and indexes', () => {
+        const stack = new cdk.Stack();
+        const table = new AmplifyDynamoDBTable(stack, 'MockTable', {
+          customResourceServiceToken: 'mockResourceServiceToken',
+          tableName: 'mockTableName',
+          partitionKey: {
+            name: 'id',
+            type: AttributeType.STRING,
+          },
+        });
+        table.addGlobalSecondaryIndex({
+          indexName: 'gsi1',
+          partitionKey: {
+            name: 'name',
+            type: AttributeType.STRING,
+          },
+        });
+
+        table.tableFromAttr.grantReadWriteData(
+          new Role(stack, 'MockRole', {
+            assumedBy: new ArnPrincipal('mock_principal'),
+          }),
+        );
+
+        const template = Template.fromStack(stack);
+        template.hasResourceProperties('AWS::IAM::Policy', {
+          PolicyDocument: Match.objectLike({
+            Statement: Match.arrayWith([
+              Match.objectLike({
+                Action: [
+                  'dynamodb:BatchGetItem',
+                  'dynamodb:GetRecords',
+                  'dynamodb:GetShardIterator',
+                  'dynamodb:Query',
+                  'dynamodb:GetItem',
+                  'dynamodb:Scan',
+                  'dynamodb:ConditionCheckItem',
+                  'dynamodb:BatchWriteItem',
+                  'dynamodb:PutItem',
+                  'dynamodb:UpdateItem',
+                  'dynamodb:DeleteItem',
+                  'dynamodb:DescribeTable',
+                ],
+                Effect: 'Allow',
+                Resource: Match.arrayWith([
+                  {
+                    'Fn::GetAtt': ['MockTable', 'TableArn'],
+                  },
+                  {
+                    'Fn::Join': [
+                      '',
+                      [
+                        {
+                          'Fn::GetAtt': ['MockTable', 'TableArn'],
+                        },
+                        '/index/*',
+                      ],
+                    ],
+                  },
+                ]),
+              }),
+            ]),
+          }),
+        });
+      });
+    });
+  });
 });

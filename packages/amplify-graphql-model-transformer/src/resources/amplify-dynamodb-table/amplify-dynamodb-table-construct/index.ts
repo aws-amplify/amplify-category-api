@@ -110,6 +110,7 @@ export class AmplifyDynamoDBTable extends Resource {
     this.tableFromAttr = Table.fromTableAttributes(scope, `CustomTable${id}`, {
       tableArn: this.tableArn,
       tableStreamArn: this.tableStreamArn,
+      grantIndexPermissions: true,
     });
 
     this.addKey(props.partitionKey, HASH_KEY_TYPE);
