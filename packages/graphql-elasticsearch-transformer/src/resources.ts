@@ -47,7 +47,7 @@ export class ResourceFactory {
         Description:
           'The lambda runtime \
                 (https://docs.aws.amazon.com/lambda/latest/dg/API_CreateFunction.html#SSS-CreateFunction-request-Runtime)',
-        Default: 'python3.9',
+        Default: 'python3.12',
       }),
       [ResourceConstants.PARAMETERS.ElasticsearchStreamingFunctionName]: new StringParameter({
         Description: 'The name of the streaming lambda function.',

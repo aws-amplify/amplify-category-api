@@ -10,7 +10,7 @@ from urllib.parse import urlparse, quote
 from botocore.auth import SigV4Auth
 from botocore.awsrequest import AWSRequest
 from botocore.credentials import get_credentials
-from botocore.endpoint import BotocoreHTTPSession
+from botocore.httpsession import URLLib3Session
 from botocore.session import Session
 from boto3.dynamodb.types import TypeDeserializer
 
@@ -68,7 +68,7 @@ def post_data_to_es(payload, region, creds, host, path, method='POST', proto='ht
     req = AWSRequest(method=method, url=proto + host +
                     quote(path), data=payload, headers={'Host': host, 'Content-Type': 'application/json'})
     SigV4Auth(creds, 'es', region).add_auth(req)
-    http_session = BotocoreHTTPSession()
+    http_session = URLLib3Session()
     res = http_session.send(req.prepare())
     if res.status_code >= 200 and res.status_code <= 299:
         return res._content
@@ -83,7 +83,8 @@ def post_to_es(payload):
 
     # Get aws_region and credentials to post signed URL to ES
     es_region = ES_REGION or os.environ['AWS_REGION']
-    session = Session({'region': es_region})
+    session = Session()
+    session.set_config_variable('region', es_region)
     creds = get_credentials(session)
     es_url = urlparse(ES_ENDPOINT)
     # Extract the domain name in ES_ENDPOINT
