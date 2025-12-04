@@ -42,7 +42,7 @@ export const createParametersStack = (scope: Construct): Map<string, CfnParamete
         description:
           'The lambda runtime \
                 (https://docs.aws.amazon.com/lambda/latest/dg/API_CreateFunction.html#SSS-CreateFunction-request-Runtime)',
-        default: 'python3.12',
+        default: 'python3.13',
       }),
     ],
 
