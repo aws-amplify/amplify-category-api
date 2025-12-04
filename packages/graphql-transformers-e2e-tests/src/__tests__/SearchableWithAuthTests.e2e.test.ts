@@ -328,7 +328,8 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await cleanupStackAfterTest(BUCKET_NAME, STACK_NAME, cf, { cognitoClient, userPoolId: USER_POOL_ID });
+  // TEMP: skipping cleanup so i can review the stack, logs, etc.
+  // await cleanupStackAfterTest(BUCKET_NAME, STACK_NAME, cf, { cognitoClient, userPoolId: USER_POOL_ID });
 });
 
 /**

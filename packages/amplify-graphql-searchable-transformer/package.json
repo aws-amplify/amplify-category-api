@@ -21,9 +21,9 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc && cd streaming-lambda && bestzip --force node ../lib/streaming-lambda.zip python_streaming_function.py",
+    "build": "tsc && cd streaming-lambda && rm -rf dist && mkdir -p dist && cp python_streaming_function.py dist/ && pip3 install -r requirements.txt -t dist/ --upgrade && cd dist && bestzip --force node ../../lib/streaming-lambda.zip . && cd .. && rm -rf dist",
     "watch": "tsc -w",
-    "clean": "rimraf ./lib",
+    "clean": "rimraf ./lib ./streaming-lambda/dist",
     "test": "jest",
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
