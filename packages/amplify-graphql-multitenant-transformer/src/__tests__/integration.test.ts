@@ -294,4 +294,76 @@ describe('MultiTenant Integration Tests', () => {
     expect(orgIdField).toBeDefined();
     expect(orgIdField.type.kind).toBe('NonNullType');
   });
+
+  it('should support advanced configuration: indexName, sortKeyFields, bypassAuthTypes', () => {
+    const schema = `
+      type Order @model 
+      @multiTenant(
+        tenantField: "organizationId", 
+        indexName: "byOrganization",
+        bypassAuthTypes: ["IAM", "AWS_LAMBDA"],
+        sortKeyFields: ["createdAt"]
+      ) {
+        id: ID!
+        description: String
+        createdAt: AWSDateTime
+      }
+    `;
+
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new MultiTenantTransformer()],
+    });
+
+    expect(out).toBeDefined();
+
+    // Check GSI
+    const orderStack = out.stacks.Order;
+    const template = Template.fromJSON(orderStack);
+    template.hasResourceProperties('AWS::DynamoDB::Table', {
+      GlobalSecondaryIndexes: [
+        {
+          IndexName: 'byOrganization',
+          KeySchema: [
+            { AttributeName: 'organizationId', KeyType: 'HASH' },
+            { AttributeName: 'createdAt', KeyType: 'RANGE' },
+          ],
+          Projection: { ProjectionType: 'ALL' },
+        },
+      ],
+    });
+
+    // Check VTL for bypass check
+    // Note: The resolver file name might be slightly different depending on transformer implementation
+    // mutation.ts: generateCreateMutationRequestTemplate -> preAuth slot
+    const createResolver = out.resolvers['Mutation.createOrder.preAuth.req.vtl'];
+    expect(createResolver).toBeDefined();
+    expect(createResolver).toContain('$util.authType() == "IAM Authorization"');
+    expect(createResolver).toContain('$util.authType() == "Lambda Authorization"');
+    expect(createResolver).toContain('#return');
+  });
+
+  it('should not create GSI when createIndex is false', () => {
+    const schema = `
+      type Product @model @multiTenant(createIndex: false) {
+        id: ID!
+        name: String
+      }
+    `;
+
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new MultiTenantTransformer()],
+    });
+
+    expect(out).toBeDefined();
+    const productStack = out.stacks.Product;
+    
+    const template = Template.fromJSON(productStack);
+    const tables = template.findResources('AWS::DynamoDB::Table');
+    const table = Object.values(tables)[0];
+    const gsis = table.Properties.GlobalSecondaryIndexes || [];
+    const tenantGsi = gsis.find((g: any) => g.IndexName === 'byTenant');
+    expect(tenantGsi).toBeUndefined();
+  });
 });

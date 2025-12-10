@@ -53,13 +53,17 @@ export class MultiTenantTransformer extends TransformerPluginBase {
     }
 
     const directiveWrapped = new DirectiveWrapper(directive);
-    const args = directiveWrapped.getArguments(
+    const args = directiveWrapped.getArguments<MultiTenantDirectiveConfiguration>(
       {
         object: objectDef,
         directive,
         tenantField: DEFAULT_TENANT_FIELD,
         tenantIdClaim: DEFAULT_TENANT_ID_CLAIM,
-      } as MultiTenantDirectiveConfiguration,
+        createIndex: true,
+        indexName: '',
+        bypassAuthTypes: [],
+        sortKeyFields: [],
+      },
       generateGetArgumentsInput(context.transformParameters),
     );
 
@@ -69,8 +73,8 @@ export class MultiTenantTransformer extends TransformerPluginBase {
       typeName: objectDef.name.value,
       tenantField: args.tenantField,
       tenantIdClaim: args.tenantIdClaim,
-      hasIndex: true,
-      indexName: 'byTenant',
+      hasIndex: args.createIndex !== false,
+      indexName: args.indexName || 'byTenant',
     };
     this.metadataMap.set(objectDef.name.value, metadata);
   };
@@ -96,7 +100,9 @@ export class MultiTenantTransformer extends TransformerPluginBase {
   generateResolvers = (context: TransformerContextProvider): void => {
     for (const config of this.directiveList) {
       const usesPrimaryKeyWithTenantId = this.hasPrimaryKeyWithTenantId(config);
-      addTenantGSI(config, context);
+      if (config.createIndex !== false) {
+        addTenantGSI(config, context);
+      }
       applyMultiTenantResolvers(config, context, usesPrimaryKeyWithTenantId);
     }
   };
