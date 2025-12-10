@@ -3,13 +3,19 @@ import { MultiTenantDirectiveConfiguration } from '../types';
 import { generateTenantIndexName } from '../utils/helpers';
 import { generateVTL } from '../utils/helpers';
 import { VTL_TENANT_VALIDATION_TEMPLATE } from '../utils/constants';
+import { getBypassAuthTypeCheck } from '../utils/helpers';
 
 export function generateListQueryRequestTemplate(config: MultiTenantDirectiveConfiguration): string {
-  const { tenantField, tenantIdClaim } = config;
-  const indexName = generateTenantIndexName(config.object.name.value, tenantField);
+  const { tenantField, tenantIdClaim, bypassAuthTypes } = config;
+  const indexName = config.indexName || generateTenantIndexName(config.object.name.value, tenantField);
+  const bypassCheck = getBypassAuthTypeCheck(bypassAuthTypes);
 
   return `
 ## Multi-tenant list query - Inject query expression into stash
+#if(${bypassCheck})
+  #return
+#end
+
 #set($tenantId = $ctx.identity.claims.get("${tenantIdClaim}"))
 
 #if(!$tenantId || $tenantId == "")
@@ -62,10 +68,15 @@ export function generateGetQueryRequestTemplate(config: MultiTenantDirectiveConf
 }
 
 export function generateGetQueryResponseTemplate(config: MultiTenantDirectiveConfiguration): string {
-  const { tenantField, tenantIdClaim } = config;
+  const { tenantField, tenantIdClaim, bypassAuthTypes } = config;
+  const bypassCheck = getBypassAuthTypeCheck(bypassAuthTypes);
 
   return `
 ## Multi-tenant validation - Ensure item belongs to requester's tenant
+#if(${bypassCheck})
+  #return($util.toJson($ctx.result))
+#end
+
 #set($tenantId = $ctx.identity.claims.get("${tenantIdClaim}"))
 
 #if($ctx.result && $ctx.result.${tenantField})

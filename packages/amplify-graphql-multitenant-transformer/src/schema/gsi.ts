@@ -12,7 +12,7 @@ export function addTenantGlobalSecondaryIndex(
   config: MultiTenantDirectiveConfiguration,
   context: TransformerContextProvider,
 ): void {
-  const { object, tenantField } = config;
+  const { object, tenantField, indexName, sortKeyFields } = config;
   const typeName = object.name.value;
   
   const table = getTable(context, object);
@@ -24,24 +24,25 @@ export function addTenantGlobalSecondaryIndex(
     );
   }
 
-  const indexName = generateTenantIndexName(typeName, tenantField);
+  const gsiName = indexName || generateTenantIndexName(typeName, tenantField);
+  const sortKeyName = sortKeyFields?.[0] || TENANT_INDEX_SORT_KEY;
 
   try {
     table.addGlobalSecondaryIndex({
-      indexName,
+      indexName: gsiName,
       projectionType: ProjectionType.ALL,
       partitionKey: {
         name: tenantField,
         type: AttributeType.STRING,
       },
       sortKey: {
-        name: TENANT_INDEX_SORT_KEY,
+        name: sortKeyName,
         type: AttributeType.STRING,
       },
     });
   } catch (error) {
     throw new Error(
-      `Failed to add GSI '${indexName}' to table for type '${typeName}'. ` +
+      `Failed to add GSI '${gsiName}' to table for type '${typeName}'. ` +
       `This is required for multi-tenant data isolation. ` +
       `Error: ${error instanceof Error ? error.message : String(error)}`
     );

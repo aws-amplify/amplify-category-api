@@ -1,11 +1,17 @@
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { MultiTenantDirectiveConfiguration } from '../types';
+import { getBypassAuthTypeCheck } from '../utils/helpers';
 
 export function generateCreateMutationRequestTemplate(config: MultiTenantDirectiveConfiguration): string {
-  const { tenantField, tenantIdClaim } = config;
+  const { tenantField, tenantIdClaim, bypassAuthTypes } = config;
+  const bypassCheck = getBypassAuthTypeCheck(bypassAuthTypes);
 
   return `
 ## Multi-tenant create mutation - Auto-assign tenantId (preAuth slot)
+#if(${bypassCheck})
+  #return
+#end
+
 #set($tenantId = $ctx.identity.claims.get("${tenantIdClaim}"))
 
 ## Validate tenantId exists
@@ -33,10 +39,15 @@ $util.toJson($ctx.result)
 }
 
 export function generateUpdateMutationRequestTemplate(config: MultiTenantDirectiveConfiguration): string {
-  const { tenantField, tenantIdClaim } = config;
+  const { tenantField, tenantIdClaim, bypassAuthTypes } = config;
+  const bypassCheck = getBypassAuthTypeCheck(bypassAuthTypes);
 
   return `
 ## Multi-tenant update - preAuth: Complete protection with ConditionExpression
+#if(${bypassCheck})
+  #return
+#end
+
 #set($tenantId = $ctx.identity.claims.get("${tenantIdClaim}"))
 
 ## Validate tenantId exists
@@ -76,10 +87,15 @@ $util.toJson($ctx.result)
 }
 
 export function generateDeleteMutationRequestTemplate(config: MultiTenantDirectiveConfiguration): string {
-  const { tenantField, tenantIdClaim } = config;
+  const { tenantField, tenantIdClaim, bypassAuthTypes } = config;
+  const bypassCheck = getBypassAuthTypeCheck(bypassAuthTypes);
 
   return `
 ## Multi-tenant delete - preAuth: Complete protection with ConditionExpression
+#if(${bypassCheck})
+  #return
+#end
+
 #set($tenantId = $ctx.identity.claims.get("${tenantIdClaim}"))
 
 ## Validate tenantId exists

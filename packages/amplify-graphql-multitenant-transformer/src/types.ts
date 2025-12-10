@@ -5,6 +5,10 @@ export interface MultiTenantDirectiveConfiguration {
   directive: DirectiveNode;
   tenantField: string;
   tenantIdClaim: string;
+  indexName?: string;
+  createIndex?: boolean;
+  bypassAuthTypes?: string[];
+  sortKeyFields?: string[];
 }
 
 export enum MultiTenantError {

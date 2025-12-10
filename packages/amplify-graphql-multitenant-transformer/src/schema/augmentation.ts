@@ -92,27 +92,30 @@ export function addTenantGSI(
   config: MultiTenantDirectiveConfiguration,
   context: TransformerContextProvider,
 ): void {
-  const { object } = config;
+  const { object, sortKeyFields } = config;
   const typeName = object.name.value;
 
-  const createdAtField = object.fields?.find((f) => f.name.value === TENANT_INDEX_SORT_KEY);
-  
-  if (!createdAtField) {
-    const outputType = context.output.getType(typeName) as ObjectTypeDefinitionNode;
+  // Only check/add default sort key if no custom sort keys are provided
+  if (!sortKeyFields || sortKeyFields.length === 0) {
+    const createdAtField = object.fields?.find((f) => f.name.value === TENANT_INDEX_SORT_KEY);
     
-    if (outputType) {
-      const createdAtFieldDef: FieldDefinitionNode = makeField(
-        TENANT_INDEX_SORT_KEY,
-        [],
-        makeNonNullType(makeNamedType('AWSDateTime')),
-      );
+    if (!createdAtField) {
+      const outputType = context.output.getType(typeName) as ObjectTypeDefinitionNode;
+      
+      if (outputType) {
+        const createdAtFieldDef: FieldDefinitionNode = makeField(
+          TENANT_INDEX_SORT_KEY,
+          [],
+          makeNonNullType(makeNamedType('AWSDateTime')),
+        );
 
-      const updatedType: ObjectTypeDefinitionNode = {
-        ...outputType,
-        fields: [...(outputType.fields || []), createdAtFieldDef],
-      };
+        const updatedType: ObjectTypeDefinitionNode = {
+          ...outputType,
+          fields: [...(outputType.fields || []), createdAtFieldDef],
+        };
 
-      context.output.putType(updatedType);
+        context.output.putType(updatedType);
+      }
     }
   }
 

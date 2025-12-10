@@ -74,3 +74,28 @@ export function getMultiTenantTypes(context: TransformerContextProvider): Object
 export function getResolverResourceId(typeName: string, fieldName: string): string {
   return `${typeName}${fieldName}Resolver`;
 }
+
+export function getBypassAuthTypeCheck(bypassAuthTypes?: string[]): string {
+  if (!bypassAuthTypes || bypassAuthTypes.length === 0) {
+    return 'false';
+  }
+
+  const checks = bypassAuthTypes.map((authType) => {
+    switch (authType) {
+      case 'IAM':
+        return '$util.authType() == "IAM Authorization"';
+      case 'API_KEY':
+        return '$util.authType() == "API Key Authorization"';
+      case 'AMAZON_COGNITO_USER_POOLS':
+        return '$util.authType() == "User Pool Authorization"';
+      case 'AWS_LAMBDA':
+        return '$util.authType() == "Lambda Authorization"';
+      case 'OPENID_CONNECT':
+        return '$util.authType() == "OpenID Connect Authorization"';
+      default:
+        return `$util.authType() == "${authType}"`;
+    }
+  });
+
+  return checks.join(' || ');
+}
