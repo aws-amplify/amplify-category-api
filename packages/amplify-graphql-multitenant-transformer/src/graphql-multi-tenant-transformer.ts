@@ -63,6 +63,8 @@ export class MultiTenantTransformer extends TransformerPluginBase {
         indexName: '',
         bypassAuthTypes: [],
         sortKeyFields: [],
+        projectionType: 'ALL',
+        projectionKeys: [],
       },
       generateGetArgumentsInput(context.transformParameters),
     );

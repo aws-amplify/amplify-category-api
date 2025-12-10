@@ -9,6 +9,8 @@ const definition = /* GraphQL */ `
     createIndex: Boolean = true
     bypassAuthTypes: [String]
     sortKeyFields: [String]
+    projectionType: String
+    projectionKeys: [String]
   ) on OBJECT
 `;
 const defaults = {
