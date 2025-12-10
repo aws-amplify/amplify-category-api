@@ -9,6 +9,8 @@ export interface MultiTenantDirectiveConfiguration {
   createIndex?: boolean;
   bypassAuthTypes?: string[];
   sortKeyFields?: string[];
+  projectionType?: 'ALL' | 'KEYS_ONLY' | 'INCLUDE';
+  projectionKeys?: string[];
 }
 
 export enum MultiTenantError {

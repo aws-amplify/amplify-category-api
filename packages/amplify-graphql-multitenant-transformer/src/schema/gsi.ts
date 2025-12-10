@@ -27,10 +27,37 @@ export function addTenantGlobalSecondaryIndex(
   const gsiName = indexName || generateTenantIndexName(typeName, tenantField);
   const sortKeyName = sortKeyFields?.[0] || TENANT_INDEX_SORT_KEY;
 
+  let projectionType: ProjectionType = ProjectionType.ALL;
+  let nonKeyAttributes: string[] | undefined = undefined;
+
+  if (config.projectionType) {
+    switch (config.projectionType.toUpperCase()) {
+      case 'ALL':
+        projectionType = ProjectionType.ALL;
+        break;
+      case 'KEYS_ONLY':
+        projectionType = ProjectionType.KEYS_ONLY;
+        break;
+      case 'INCLUDE':
+        projectionType = ProjectionType.INCLUDE;
+        nonKeyAttributes = config.projectionKeys;
+        if (!nonKeyAttributes || nonKeyAttributes.length === 0) {
+          throw new Error(
+            `When using projectionType "INCLUDE", you must provide "projectionKeys" in @multiTenant directive on type '${typeName}'.`
+          );
+        }
+        break;
+      default:
+        throw new Error(
+          `Invalid projectionType '${config.projectionType}' on type '${typeName}'. Allowed values: ALL, KEYS_ONLY, INCLUDE.`
+        );
+    }
+  }
+
   try {
     table.addGlobalSecondaryIndex({
       indexName: gsiName,
-      projectionType: ProjectionType.ALL,
+      projectionType,
       partitionKey: {
         name: tenantField,
         type: AttributeType.STRING,
@@ -39,6 +66,7 @@ export function addTenantGlobalSecondaryIndex(
         name: sortKeyName,
         type: AttributeType.STRING,
       },
+      nonKeyAttributes,
     });
   } catch (error) {
     throw new Error(
