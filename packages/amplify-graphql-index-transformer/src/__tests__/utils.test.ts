@@ -42,7 +42,7 @@ const generateIndexDirectiveConfiguration = ({
       name: { kind: 'Name', value: '' },
     },
   },
-	projection: null
+  projection: null,
 });
 
 describe('generateKeyAndQueryNameForConfig', () => {

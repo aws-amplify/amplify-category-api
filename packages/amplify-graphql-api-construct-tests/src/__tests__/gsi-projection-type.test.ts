@@ -31,7 +31,7 @@ describe('GSI Projection Type', () => {
     const { awsAppsyncApiId: apiId, awsAppsyncRegion: region } = outputs[name];
     const tableName = `Product-${apiId}-NONE`;
     const table = await getDDBTable(tableName, region);
-    
+
     expect(table.Table.GlobalSecondaryIndexes).toBeDefined();
     expect(table.Table.GlobalSecondaryIndexes.length).toBe(1);
     expect(table.Table.GlobalSecondaryIndexes[0].IndexName).toBe('byCategory');
@@ -45,14 +45,12 @@ describe('GSI Projection Type', () => {
     const { awsAppsyncApiId: apiId, awsAppsyncRegion: region } = outputs[name];
     const tableName = `Product-${apiId}-NONE`;
     const table = await getDDBTable(tableName, region);
-    
+
     expect(table.Table.GlobalSecondaryIndexes).toBeDefined();
     expect(table.Table.GlobalSecondaryIndexes.length).toBe(1);
     expect(table.Table.GlobalSecondaryIndexes[0].IndexName).toBe('byCategory');
     expect(table.Table.GlobalSecondaryIndexes[0].Projection.ProjectionType).toBe('INCLUDE');
-    expect(table.Table.GlobalSecondaryIndexes[0].Projection.NonKeyAttributes).toEqual(
-      expect.arrayContaining(['name', 'price'])
-    );
+    expect(table.Table.GlobalSecondaryIndexes[0].Projection.NonKeyAttributes).toEqual(expect.arrayContaining(['name', 'price']));
   });
 
   test('creates GSI with ALL projection', async () => {
@@ -62,7 +60,7 @@ describe('GSI Projection Type', () => {
     const { awsAppsyncApiId: apiId, awsAppsyncRegion: region } = outputs[name];
     const tableName = `Product-${apiId}-NONE`;
     const table = await getDDBTable(tableName, region);
-    
+
     expect(table.Table.GlobalSecondaryIndexes).toBeDefined();
     expect(table.Table.GlobalSecondaryIndexes.length).toBe(1);
     expect(table.Table.GlobalSecondaryIndexes[0].IndexName).toBe('byCategory');
