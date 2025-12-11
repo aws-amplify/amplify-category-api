@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-searchable-transformer",
-  "version": "2.7.19",
+  "version": "2.7.18",
   "description": "Amplfy GraphQL @searchable transformer",
   "repository": {
     "type": "git",
