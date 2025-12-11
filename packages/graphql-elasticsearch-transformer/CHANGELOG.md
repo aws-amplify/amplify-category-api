@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.88](https://github.com/aws-amplify/amplify-category-api/compare/graphql-elasticsearch-transformer@5.2.87...graphql-elasticsearch-transformer@5.2.88) (2025-12-11)
+
+### Bug Fixes
+
+- gen 1 update python to 3.12 for searchable lambda ([#3373](https://github.com/aws-amplify/amplify-category-api/issues/3373)) ([81581dc](https://github.com/aws-amplify/amplify-category-api/commit/81581dc8e3a770eddb13ab7a250c24e6f8f97262))
+
 ## [5.2.87](https://github.com/aws-amplify/amplify-category-api/compare/graphql-elasticsearch-transformer@5.2.86...graphql-elasticsearch-transformer@5.2.87) (2025-11-19)
 
 **Note:** Version bump only for package graphql-elasticsearch-transformer

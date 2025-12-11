@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.19](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@2.7.18...@aws-amplify/graphql-searchable-transformer@2.7.19) (2025-12-11)
+
+### Bug Fixes
+
+- gen 1 update python to 3.12 for searchable lambda ([#3373](https://github.com/aws-amplify/amplify-category-api/issues/3373)) ([81581dc](https://github.com/aws-amplify/amplify-category-api/commit/81581dc8e3a770eddb13ab7a250c24e6f8f97262))
+
 ## [2.7.18](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@2.7.17...@aws-amplify/graphql-searchable-transformer@2.7.18) (2025-11-19)
 
 ### Bug Fixes
