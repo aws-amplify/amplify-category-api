@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/amplify-category-api",
-  "version": "5.15.2",
+  "version": "5.15.3",
   "description": "Amplify CLI API Category Plugin",
   "repository": {
     "type": "git",
@@ -29,9 +29,9 @@
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/graphql-auth-transformer": "3.6.14",
+    "@aws-amplify/graphql-auth-transformer": "3.6.15",
     "@aws-amplify/graphql-schema-generator": "^0.9.4",
-    "@aws-amplify/graphql-transformer": "1.8.3",
+    "@aws-amplify/graphql-transformer": "1.8.4",
     "@aws-amplify/graphql-transformer-core": "2.11.3",
     "@aws-amplify/graphql-transformer-interfaces": "3.12.1",
     "@aws-amplify/graphql-transformer-migrator": "2.2.34",
@@ -49,10 +49,10 @@
     "cloudform-types": "^4.2.0",
     "fs-extra": "^8.1.0",
     "graphql": "^15.5.0",
-    "graphql-auth-transformer": "7.2.88",
+    "graphql-auth-transformer": "7.2.89",
     "graphql-connection-transformer": "5.2.85",
     "graphql-dynamodb-transformer": "7.2.85",
-    "graphql-elasticsearch-transformer": "5.2.87",
+    "graphql-elasticsearch-transformer": "5.2.88",
     "graphql-function-transformer": "3.3.76",
     "graphql-http-transformer": "5.2.85",
     "graphql-key-transformer": "3.2.85",

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.8.3...@aws-amplify/graphql-transformer@1.8.4) (2025-12-12)
+
+### Reverts
+
+- Revert "chore(release): Publish [ci skip]" ([bfddd64](https://github.com/aws-amplify/amplify-category-api/commit/bfddd6472336bc1bec09a4e31f29169c2575ab38))
+
 ## [1.8.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.8.2...@aws-amplify/graphql-transformer@1.8.3) (2025-11-19)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer

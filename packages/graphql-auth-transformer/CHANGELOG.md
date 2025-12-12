@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.2.89](https://github.com/aws-amplify/amplify-category-api/compare/graphql-auth-transformer@7.2.88...graphql-auth-transformer@7.2.89) (2025-12-12)
+
+### Reverts
+
+- Revert "chore(release): Publish [ci skip]" ([bfddd64](https://github.com/aws-amplify/amplify-category-api/commit/bfddd6472336bc1bec09a4e31f29169c2575ab38))
+
 ## [7.2.88](https://github.com/aws-amplify/amplify-category-api/compare/graphql-auth-transformer@7.2.87...graphql-auth-transformer@7.2.88) (2025-11-19)
 
 **Note:** Version bump only for package graphql-auth-transformer

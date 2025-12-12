@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.9.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.9.2...amplify-category-api-graphql-transformers-e2e-tests@8.9.3) (2025-12-12)
+
+### Reverts
+
+- Revert "chore(release): Publish [ci skip]" ([bfddd64](https://github.com/aws-amplify/amplify-category-api/commit/bfddd6472336bc1bec09a4e31f29169c2575ab38))
+
 ## [8.9.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.9.1...amplify-category-api-graphql-transformers-e2e-tests@8.9.2) (2025-11-19)
 
 ### Bug Fixes
