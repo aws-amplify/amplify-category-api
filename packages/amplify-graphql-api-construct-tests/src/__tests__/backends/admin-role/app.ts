@@ -36,7 +36,7 @@ executionRole.applyRemovalPolicy(RemovalPolicy.DESTROY);
 
 const apiInvoker = new NodejsFunction(stack, 'ApiInvoker', {
   entry: path.join(__dirname, 'apiInvoker.ts'),
-  runtime: Runtime.NODEJS_24_X,
+  runtime: new Runtime('nodejs24.x'),
   role: executionRole,
   bundling: {
     nodeModules: ['@smithy/util-utf8'], // Force inclusion

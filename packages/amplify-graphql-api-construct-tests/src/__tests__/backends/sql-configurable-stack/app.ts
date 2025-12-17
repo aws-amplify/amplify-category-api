@@ -213,7 +213,7 @@ const createUserPoolTriggers = (triggers: Record<string, string>): UserPoolTrigg
 
 const createLambdaFunction = (name: string, code: string): Function => {
   return new Function(stack, `${name}Lambda`, {
-    runtime: Runtime.NODEJS_24_X,
+    runtime: new Runtime('nodejs24.x'),
     handler: 'index.handler',
     code: Code.fromInline(code),
   });
