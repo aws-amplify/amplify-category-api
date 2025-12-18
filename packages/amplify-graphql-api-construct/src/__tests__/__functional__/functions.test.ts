@@ -183,7 +183,7 @@ describe('function directive', () => {
   it('supports passing in a function defined in-stack', () => {
     const stack = new cdk.Stack();
     const referencedFunction = new lambda.Function(stack, 'Createdfunction', {
-      runtime: new lambda.Runtime('nodejs24.x'),
+      runtime: new lambda.Runtime('nodejs24.x', lambda.RuntimeFamily.NODEJS, { supportsInlineCode: true }),
       code: lambda.Code.fromInline('I am code'),
       handler: 'index.main',
     });
@@ -237,7 +237,7 @@ describe('function directive', () => {
   it('wires through a function from the definition', () => {
     const stack = new cdk.Stack();
     const referencedFunction = new lambda.Function(stack, 'Createdfunction', {
-      runtime: new lambda.Runtime('nodejs24.x'),
+      runtime: new lambda.Runtime('nodejs24.x', lambda.RuntimeFamily.NODEJS, { supportsInlineCode: true }),
       code: lambda.Code.fromInline('I am code'),
       handler: 'index.main',
     });

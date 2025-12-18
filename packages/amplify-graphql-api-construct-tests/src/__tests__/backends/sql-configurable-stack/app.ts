@@ -13,7 +13,7 @@ import {
 } from '@aws-amplify/graphql-api-construct';
 import { AccountPrincipal, Effect, PolicyDocument, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
 import { CfnUserPoolGroup, UserPool, UserPoolClient, UserPoolTriggers } from 'aws-cdk-lib/aws-cognito';
-import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
+import { Function, Runtime, Code, RuntimeFamily } from 'aws-cdk-lib/aws-lambda';
 
 // #region Utilities
 
@@ -213,7 +213,7 @@ const createUserPoolTriggers = (triggers: Record<string, string>): UserPoolTrigg
 
 const createLambdaFunction = (name: string, code: string): Function => {
   return new Function(stack, `${name}Lambda`, {
-    runtime: new Runtime('nodejs24.x'),
+    runtime: new Runtime('nodejs24.x', RuntimeFamily.NODEJS, { supportsInlineCode: true }),
     handler: 'index.handler',
     code: Code.fromInline(code),
   });

@@ -403,7 +403,7 @@ function createPredictionsLambda(context: TransformerContextProvider, stack: cdk
     `functions/${functionId}.zip`,
     PredictionsResourceIDs.lambdaHandlerName,
     path.join(__dirname, '..', 'lib', 'predictionsLambdaFunction.zip'),
-    new lambda.Runtime('nodejs24.x'),
+    new lambda.Runtime('nodejs24.x', lambda.RuntimeFamily.NODEJS, { supportsInlineCode: true }),
     [],
     role,
     {},
