@@ -6,7 +6,7 @@ env:
 phases:
   pre_build:
     commands:
-      - choco install -fy nodejs-lts --version=24.12.0
+      - choco install -fy nodejs-lts --version=20.9.0
       - |
         $nodeVersion = node -v
         Write-Host "Node version: $nodeVersion"
