@@ -203,6 +203,9 @@ beforeAll(async () => {
     const params = {
       CreateAPIKey: '1',
       AuthCognitoUserPoolId: USER_POOL_ID,
+      // Cheapest instance type that supports encryption at rest, and is available in
+      // most regions (m4 is not everywhere)
+      [ResourceConstants.PARAMETERS.OpenSearchInstanceType]: 'm5.large.elasticsearch',
     };
 
     const finishedStack = await deploy(

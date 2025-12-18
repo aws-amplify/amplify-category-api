@@ -101,7 +101,11 @@ beforeAll(async () => {
       cf,
       STACK_NAME,
       out,
-      {},
+      {
+        // Cheapest instance type that supports encryption at rest, and is available in
+        // most regions (m4 is not everywhere)
+        [ResourceConstants.PARAMETERS.OpenSearchInstanceType]: 'm5.large.elasticsearch',
+      },
       LOCAL_FS_BUILD_DIR,
       BUCKET_NAME,
       S3_ROOT_DIR_KEY,
