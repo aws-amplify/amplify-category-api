@@ -17,7 +17,7 @@
 [![Feature Requests](https://img.shields.io/github/issues/aws-amplify/amplify-category-api/feature-request?color=ff9001&label=feature%20requests)](https://github.com/aws-amplify/amplify-category-api/issues?q=is%3Aissue+label%3Afeature-request+is%3Aopen)
 [![Closed Issues](https://img.shields.io/github/issues-closed/aws-amplify/amplify-category-api?color=%2325CC00&label=issues%20closed)](https://github.com/aws-amplify/amplify-category-api/issues?q=is%3Aissue+is%3Aclosed+)
 
-# AWS Amplify Gen 2 Data
+# AWS Amplify Gen 2 Data Hello
 
 This next generation of Amplify’s backend building experience lets you author your frontend and backend definition completely with TypeScript, a file convention, and Git branch-based environments. To learn more, visit [AWS Amplify Gen 2](https://docs.amplify.aws).
 
