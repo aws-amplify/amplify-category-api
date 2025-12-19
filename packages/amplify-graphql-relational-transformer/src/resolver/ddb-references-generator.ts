@@ -114,13 +114,24 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
       set(ref('query'), this.makeQueryExpression(references)),
     ];
 
-    // add setup filter to query
+    // Filter out authFilter fields already in key condition to avoid DynamoDB error
     setup.push(
       setArgs,
-      ifElse(
+      set(ref('keyFields'), list(references.map((f) => str(f)))),
+      set(ref('filteredAuthFilter'), obj({})),
+      iff(
         not(isNullOrEmpty(authFilter)),
+        forEach(ref('authKey'), ref('ctx.stash.authFilter.keySet()'), [
+          iff(
+            not(ref('keyFields.contains($authKey)')),
+            qref(methodCall(ref('filteredAuthFilter.put'), ref('authKey'), methodCall(ref('ctx.stash.authFilter.get'), ref('authKey')))),
+          ),
+        ]),
+      ),
+      ifElse(
+        not(isNullOrEmpty(ref('filteredAuthFilter'))),
         compoundExpression([
-          set(ref('filter'), authFilter),
+          set(ref('filter'), ref('filteredAuthFilter')),
           iff(not(isNullOrEmpty(ref('args.filter'))), set(ref('filter'), obj({ and: list([ref('filter'), ref('args.filter')]) }))),
         ]),
         iff(not(isNullOrEmpty(ref('args.filter'))), set(ref('filter'), ref('args.filter'))),
@@ -291,13 +302,34 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
                     }),
                   ),
                 ),
+                // Filter out authFilter fields already in key condition to avoid DynamoDB error
+                set(ref('keyFields'), list(references.map((f) => str(f)))),
+                set(ref('filteredAuthFilter'), obj({})),
                 iff(
                   not(isNullOrEmpty(authFilter)),
+                  forEach(ref('authKey'), ref('ctx.stash.authFilter.keySet()'), [
+                    iff(
+                      not(ref('keyFields.contains($authKey)')),
+                      qref(
+                        methodCall(
+                          ref('filteredAuthFilter.put'),
+                          ref('authKey'),
+                          methodCall(ref('ctx.stash.authFilter.get'), ref('authKey')),
+                        ),
+                      ),
+                    ),
+                  ]),
+                ),
+                iff(
+                  not(isNullOrEmpty(ref('filteredAuthFilter'))),
                   qref(
                     methodCall(
                       ref('GetRequest.put'),
                       str('filter'),
-                      methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), authFilter)),
+                      methodCall(
+                        ref('util.parseJson'),
+                        methodCall(ref('util.transform.toDynamoDBFilterExpression'), ref('filteredAuthFilter')),
+                      ),
                     ),
                   ),
                 ),
@@ -418,13 +450,34 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
                     }),
                   ),
                 ),
+                // Filter out authFilter fields already in key condition to avoid DynamoDB error
+                set(ref('keyFields'), list(references.map((f) => str(f)))),
+                set(ref('filteredAuthFilter'), obj({})),
                 iff(
                   not(isNullOrEmpty(authFilter)),
+                  forEach(ref('authKey'), ref('ctx.stash.authFilter.keySet()'), [
+                    iff(
+                      not(ref('keyFields.contains($authKey)')),
+                      qref(
+                        methodCall(
+                          ref('filteredAuthFilter.put'),
+                          ref('authKey'),
+                          methodCall(ref('ctx.stash.authFilter.get'), ref('authKey')),
+                        ),
+                      ),
+                    ),
+                  ]),
+                ),
+                iff(
+                  not(isNullOrEmpty(ref('filteredAuthFilter'))),
                   qref(
                     methodCall(
                       ref('GetRequest.put'),
                       str('filter'),
-                      methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), authFilter)),
+                      methodCall(
+                        ref('util.parseJson'),
+                        methodCall(ref('util.transform.toDynamoDBFilterExpression'), ref('filteredAuthFilter')),
+                      ),
                     ),
                   ),
                 ),
