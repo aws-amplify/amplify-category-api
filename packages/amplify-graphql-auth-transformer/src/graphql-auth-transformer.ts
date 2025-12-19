@@ -749,6 +749,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       def.fields ?? [],
       def,
       undefined,
+      'get',
     );
     resolver.addVtlFunctionToSlot(
       'auth',
@@ -773,6 +774,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       def.fields ?? [],
       def,
       indexName,
+      'list',
     );
     resolver.addVtlFunctionToSlot(
       'auth',
@@ -819,6 +821,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         this.configuredAuthProviders,
         roleDefinitions,
         relatedModelObject.fields ?? [],
+        'list',
       );
 
       // When the default redaction is false, it means no field resolver is involved
@@ -933,6 +936,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
         def.fields ?? [],
         def,
         undefined,
+        'sync',
       );
       resolver.addVtlFunctionToSlot(
         'auth',
@@ -1207,7 +1211,61 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   ): void {
     authRules.forEach((rule) => {
       const operations: ModelOperation[] = overrideOperations || rule.operations || MODEL_OPERATIONS;
-      if (rule.groups && !rule.groupsField) {
+      // Check if this is an owner.inGroup() rule (owner rule with static groups for AND logic)
+      // Note: owner rules default to 'userPools' provider if not specified
+      const effectiveProvider = rule.provider || (rule.allow === 'owner' ? 'userPools' : undefined);
+      const isOwnerInGroupRule =
+        rule.allow === 'owner' && rule.groups && !rule.groupsField && (effectiveProvider === 'oidc' || effectiveProvider === 'userPools');
+
+      if (isOwnerInGroupRule) {
+        // For owner.inGroup() - create owner role with operationGroups for AND logic
+        // Do NOT create static group roles (they give OR behavior)
+        const ownerField = rule.ownerField || DEFAULT_OWNER_FIELD;
+        const fieldType = (context!.output.getType(acm.getName()) as any).fields.find((f: any) => f.name.value === ownerField);
+        const isOwnerFieldList = fieldType ? isListType(fieldType.type) : false;
+        const useSub = context!.transformParameters.useSubUsernameForDefaultIdentityClaim;
+        const ownerClaim = rule.identityClaim || (useSub ? DEFAULT_UNIQUE_IDENTITY_CLAIM : DEFAULT_IDENTITY_CLAIM);
+        const groupClaim = rule.groupClaim || DEFAULT_GROUP_CLAIM;
+        const ownerRoleName = `${acm.getName()}:${effectiveProvider}:owner:${ownerField}:${ownerClaim}`;
+
+        if (!this.roleMap.has(ownerRoleName)) {
+          this.roleMap.set(ownerRoleName, {
+            provider: effectiveProvider!,
+            strategy: rule.allow,
+            static: false,
+            claim: ownerClaim,
+            entity: ownerField,
+            isEntityList: isOwnerFieldList,
+            // Store groups per operation for VTL to check cognito:groups claim
+            operationGroups: {},
+            groupClaim,
+          });
+        }
+
+        // Add this rule's groups to each operation it covers
+        const existingRole = this.roleMap.get(ownerRoleName)!;
+        operations.forEach((op) => {
+          if (!existingRole.operationGroups) {
+            existingRole.operationGroups = {};
+          }
+          if (!existingRole.operationGroups[op]) {
+            existingRole.operationGroups[op] = [];
+          }
+          existingRole.operationGroups[op] = [...new Set([...existingRole.operationGroups[op]!, ...rule.groups!])];
+        });
+
+        // Get all operations that have groups defined (accumulated from all rules)
+        // This ensures we don't lose operations when multiple owner.inGroup rules exist
+        const allOperationsWithGroups = Object.keys(existingRole.operationGroups) as ModelOperation[];
+
+        acm.setRole({
+          role: ownerRoleName,
+          resource: field,
+          operations: allOperationsWithGroups,
+          allowRoleOverwrite: true,
+        });
+      } else if (rule.groups && !rule.groupsField) {
+        // Regular static groups rule - create static group roles (OR logic)
         rule.groups.forEach((group) => {
           const groupClaim = rule.groupClaim || DEFAULT_GROUP_CLAIM;
           const roleName = `${acm.getName()}:${rule.provider}:staticGroup:${group}:${groupClaim}`;

@@ -1,7 +1,7 @@
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { aws_dynamodb as dynamodb } from 'aws-cdk-lib';
-import { ConfiguredAuthProviders, RelationalPrimaryMapConfig, RoleDefinition } from '../utils';
+import { ConfiguredAuthProviders, ModelOperation, RelationalPrimaryMapConfig, RoleDefinition } from '../utils';
 
 export interface AuthVTLGenerator {
   generateAuthExpressionForCreate: (
@@ -41,6 +41,7 @@ export interface AuthVTLGenerator {
     fields: ReadonlyArray<FieldDefinitionNode>,
     def: ObjectTypeDefinitionNode,
     indexName: string | undefined, // Default 'undefined'
+    operation: ModelOperation,
   ) => string;
 
   generateAuthExpressionForSearchQueries: (
@@ -62,6 +63,7 @@ export interface AuthVTLGenerator {
     providers: ConfiguredAuthProviders,
     roles: Array<RoleDefinition>,
     fields: ReadonlyArray<FieldDefinitionNode>,
+    operation: ModelOperation,
   ) => string;
 
   generateFieldResolverForOwner: (entity: string) => string;

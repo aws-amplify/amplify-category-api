@@ -17,6 +17,7 @@ import {
   nul,
   ifElse,
   or,
+  and,
 } from 'graphql-mapping-template';
 import {
   API_KEY_AUTH_TYPE,
@@ -41,6 +42,7 @@ import {
   generateOwnerMultiClaimExpression,
   generateInvalidClaimsCondition,
   generateIAMAccessCheck,
+  generateGroupCheckExpressions,
 } from './helpers';
 
 /**
@@ -128,7 +130,11 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
   roles.forEach((role, idx) => {
     const entityIsList = fieldIsList(fields, role.entity!);
     if (role.strategy === 'owner') {
+      // AND logic: check if user is in required groups before authorizing owner
+      const { groupCheck, groupCondition } = generateGroupCheckExpressions(role.operationGroups?.delete, role.groupClaim, idx);
+
       ownerExpression.push(
+        ...groupCheck,
         iff(
           not(ref(IS_AUTHORIZED_FLAG)),
           compoundExpression([
@@ -143,20 +149,24 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
                   ? [
                       forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
                         iff(
-                          or([
-                            equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
-                            methodCall(ref(`ownerClaimsList${idx}.contains`), ref('allowedOwner')),
-                          ]),
+                          groupCondition(
+                            or([
+                              equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
+                              methodCall(ref(`ownerClaimsList${idx}.contains`), ref('allowedOwner')),
+                            ]),
+                          ),
                           set(ref(IS_AUTHORIZED_FLAG), bool(true)),
                         ),
                       ]),
                     ]
                   : [
                       iff(
-                        or([
-                          equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
-                          methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
-                        ]),
+                        groupCondition(
+                          or([
+                            equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
+                            methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
+                          ]),
+                        ),
                         set(ref(IS_AUTHORIZED_FLAG), bool(true)),
                       ),
                     ]),

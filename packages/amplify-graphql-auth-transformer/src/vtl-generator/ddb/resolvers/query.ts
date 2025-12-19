@@ -35,6 +35,7 @@ import {
   IDENTITY_CLAIM_DELIMITER,
   getPartitionKey,
   getRelationalPrimaryMap,
+  ModelOperation,
 } from '../../../utils';
 import { setHasAuthExpression } from '../../common';
 import {
@@ -48,6 +49,7 @@ import {
   generateOwnerClaimListExpression,
   generateOwnerMultiClaimExpression,
   generateInvalidClaimsCondition,
+  generateGroupCheckExpressions,
 } from './helpers';
 import { InvalidDirectiveError, getKeySchema, getTable } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -404,7 +406,11 @@ const generateAuthOnModelQueryExpression = (
   return [];
 };
 
-const generateAuthFilter = (roles: Array<RoleDefinition>, fields: ReadonlyArray<FieldDefinitionNode>): Array<Expression> => {
+const generateAuthFilter = (
+  roles: Array<RoleDefinition>,
+  fields: ReadonlyArray<FieldDefinitionNode>,
+  operation: ModelOperation,
+): Array<Expression> => {
   const authCollectionExp = new Array<Expression>();
   const groupMap = new Map<string, Array<string>>();
   const groupContainsExpression = new Array<Expression>();
@@ -425,11 +431,14 @@ const generateAuthFilter = (roles: Array<RoleDefinition>, fields: ReadonlyArray<
   roles.forEach((role, idx) => {
     const entityIsList = fieldIsList(fields, role.entity);
     if (role.strategy === 'owner') {
+      // AND logic: check if user is in required groups before adding owner filter
+      const { groupCheck, groupIff } = generateGroupCheckExpressions(role.operationGroups?.[operation], role.groupClaim, idx);
       const claims = role.claim!.split(IDENTITY_CLAIM_DELIMITER);
       const hasMultiClaims = claims.length > 1;
       const ownerCondition = entityIsList ? 'contains' : 'eq';
 
       if (hasMultiClaims) {
+        authCollectionExp.push(...groupCheck);
         authCollectionExp.push(
           ...[
             generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`),
@@ -437,9 +446,11 @@ const generateAuthFilter = (roles: Array<RoleDefinition>, fields: ReadonlyArray<
               generateInvalidClaimsCondition(role.claim!, `ownerClaim${idx}`),
               compoundExpression([
                 generateOwnerMultiClaimExpression(role.claim!, `ownerClaim${idx}`),
-                iff(
-                  not(methodCall(ref('util.isNull'), ref(`ownerClaim${idx}`))),
-                  qref(methodCall(ref('authFilter.add'), raw(`{"${role.entity}": { "${ownerCondition}": $ownerClaim${idx} }}`))),
+                groupIff(
+                  iff(
+                    not(methodCall(ref('util.isNull'), ref(`ownerClaim${idx}`))),
+                    qref(methodCall(ref('authFilter.add'), raw(`{"${role.entity}": { "${ownerCondition}": $ownerClaim${idx} }}`))),
+                  ),
                 ),
               ]),
             ),
@@ -450,20 +461,25 @@ const generateAuthFilter = (roles: Array<RoleDefinition>, fields: ReadonlyArray<
           authCollectionExp.push(
             ...[
               set(ref(`role${idx}_${secIdx}`), getOwnerClaim(claim)),
-              iff(
-                not(methodCall(ref('util.isNull'), ref(`role${idx}_${secIdx}`))),
-                qref(methodCall(ref('authFilter.add'), raw(`{"${role.entity}": { "${ownerCondition}": $role${idx}_${secIdx} }}`))),
+              groupIff(
+                iff(
+                  not(methodCall(ref('util.isNull'), ref(`role${idx}_${secIdx}`))),
+                  qref(methodCall(ref('authFilter.add'), raw(`{"${role.entity}": { "${ownerCondition}": $role${idx}_${secIdx} }}`))),
+                ),
               ),
             ],
           );
         });
       } else {
+        authCollectionExp.push(...groupCheck);
         authCollectionExp.push(
           ...[
             set(ref(`role${idx}`), getOwnerClaim(role.claim!)),
-            iff(
-              not(methodCall(ref('util.isNull'), ref(`role${idx}`))),
-              qref(methodCall(ref('authFilter.add'), raw(`{"${role.entity}": { "${ownerCondition}": $role${idx} }}`))),
+            groupIff(
+              iff(
+                not(methodCall(ref('util.isNull'), ref(`role${idx}`))),
+                qref(methodCall(ref('authFilter.add'), raw(`{"${role.entity}": { "${ownerCondition}": $role${idx} }}`))),
+              ),
             ),
           ],
         );
@@ -534,6 +550,7 @@ export const generateAuthExpressionForQueries = (
   fields: ReadonlyArray<FieldDefinitionNode>,
   def: ObjectTypeDefinitionNode,
   indexName: string | undefined = undefined,
+  operation: ModelOperation,
 ): string => {
   const { cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles } =
     splitRoles(roles);
@@ -570,7 +587,7 @@ export const generateAuthExpressionForQueries = (
         equals(ref('util.authType()'), str(COGNITO_AUTH_TYPE)),
         compoundExpression([
           ...generateStaticRoleExpression(cognitoStaticRoles),
-          ...generateAuthFilter(getNonPrimaryFieldRoles(cognitoDynamicRoles), fields),
+          ...generateAuthFilter(getNonPrimaryFieldRoles(cognitoDynamicRoles), fields, operation),
           ...generateAuthOnModelQueryExpression(cognitoDynamicRoles, primaryFields, isIndexQuery, primaryKey, sortKeyFields),
         ]),
       ),
@@ -582,7 +599,7 @@ export const generateAuthExpressionForQueries = (
         equals(ref('util.authType()'), str(OIDC_AUTH_TYPE)),
         compoundExpression([
           ...generateStaticRoleExpression(oidcStaticRoles),
-          ...generateAuthFilter(getNonPrimaryFieldRoles(oidcDynamicRoles), fields),
+          ...generateAuthFilter(getNonPrimaryFieldRoles(oidcDynamicRoles), fields, operation),
           ...generateAuthOnModelQueryExpression(oidcDynamicRoles, primaryFields, isIndexQuery, primaryKey, sortKeyFields),
         ]),
       ),
@@ -636,6 +653,7 @@ export const generateAuthExpressionForRelationQuery = (
   providers: ConfiguredAuthProviders,
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
+  operation: ModelOperation,
 ): string => {
   const { cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles } =
     splitRoles(roles);
@@ -665,7 +683,7 @@ export const generateAuthExpressionForRelationQuery = (
         equals(ref('util.authType()'), str(COGNITO_AUTH_TYPE)),
         compoundExpression([
           ...generateStaticRoleExpression(cognitoStaticRoles),
-          ...generateAuthFilter(getNonPrimaryFieldRoles(cognitoDynamicRoles), fields),
+          ...generateAuthFilter(getNonPrimaryFieldRoles(cognitoDynamicRoles), fields, operation),
           ...generateAuthOnRelationalModelQueryExpression(cognitoDynamicRoles, primaryFieldMap),
         ]),
       ),
@@ -677,7 +695,7 @@ export const generateAuthExpressionForRelationQuery = (
         equals(ref('util.authType()'), str(OIDC_AUTH_TYPE)),
         compoundExpression([
           ...generateStaticRoleExpression(oidcStaticRoles),
-          ...generateAuthFilter(getNonPrimaryFieldRoles(oidcDynamicRoles), fields),
+          ...generateAuthFilter(getNonPrimaryFieldRoles(oidcDynamicRoles), fields, operation),
           ...generateAuthOnRelationalModelQueryExpression(oidcDynamicRoles, primaryFieldMap),
         ]),
       ),
