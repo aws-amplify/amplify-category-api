@@ -84,23 +84,15 @@ export class SqlDatatabaseController {
     if (this.useDataAPI) {
       const preProvisionedClusterInfo = await getPreProvisionedClusterInfo(this.options.region, this.options.engine);
       this.usePreProvisionedCluster = preProvisionedClusterInfo !== undefined;
-
       if (this.enableLocalTesting || this.usePreProvisionedCluster) {
-        try {
-          const identifier = this.usePreProvisionedCluster
-            ? preProvisionedClusterInfo.clusterIdentifier
-            : getClusterIdFromLocalConfig(this.options.region, this.options.engine);
-          dbConfig = await setupDataInExistingCluster(identifier, this.options, this.setupQueries, preProvisionedClusterInfo?.secretArn);
-          this.clusterInfo = dbConfig;
-          this.options.username = dbConfig.username;
-          this.options.dbname = dbConfig.dbName;
-        } catch (error) {
-          console.warn('Attempted to use existing cluster and failed. Time to update the pre-existing RDS cluster file?');
-          console.log('Falling back to new cluster.');
-        }
-      }
-
-      if (!dbConfig) {
+        const identifier = this.usePreProvisionedCluster
+          ? preProvisionedClusterInfo.clusterIdentifier
+          : getClusterIdFromLocalConfig(this.options.region, this.options.engine);
+        dbConfig = await setupDataInExistingCluster(identifier, this.options, this.setupQueries, preProvisionedClusterInfo?.secretArn);
+        this.clusterInfo = dbConfig;
+        this.options.username = dbConfig.username;
+        this.options.dbname = dbConfig.dbName;
+      } else {
         dbConfig = await setupRDSClusterAndData(this.options, this.setupQueries);
         this.clusterInfo = dbConfig;
       }
