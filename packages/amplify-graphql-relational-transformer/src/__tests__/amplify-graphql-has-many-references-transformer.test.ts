@@ -1,6 +1,8 @@
+import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ConflictHandlerType, DDB_DEFAULT_DATASOURCE_STRATEGY, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { Kind, parse } from 'graphql';
 import { mockSqlDataSourceStrategy, testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '..';
@@ -739,4 +741,105 @@ test('supports recursive schemas', () => {
   expect(out.resolvers['TreeNode.parent.req.vtl']).toBeDefined();
   expect(out.resolvers['TreeNode.parent.req.vtl']).toMatchSnapshot();
   expect(out.resolvers['TreeNode.parent.req.vtl']).toContain('connectionAttibutes.get("parentId")');
+});
+
+describe('hasMany with owner in composite primary key', () => {
+  const cognitoUserPoolsAuthConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    },
+    additionalAuthenticationProviders: [],
+  };
+
+  test('filters out owner from authFilter when owner is part of hasMany references', () => {
+    const inputSchema = `
+      type ParentModel @model @auth(rules: [{ allow: owner, ownerField: "owner" }]) {
+        owner: String! @primaryKey(sortKeyFields: ["parentId"])
+        parentId: ID!
+        children: [ChildModel] @hasMany(references: ["owner", "parentId"])
+      }
+
+      type ChildModel @model @auth(rules: [{ allow: owner, ownerField: "owner" }]) {
+        owner: String! @primaryKey(sortKeyFields: ["parentId", "childId"])
+        parentId: ID!
+        childId: ID!
+        name: String
+        parent: ParentModel @belongsTo(references: ["owner", "parentId"])
+      }
+    `;
+
+    const out = testTransform({
+      schema: inputSchema,
+      authConfig: cognitoUserPoolsAuthConfig,
+      transformers: [
+        new ModelTransformer(),
+        new PrimaryKeyTransformer(),
+        new HasManyTransformer(),
+        new BelongsToTransformer(),
+        new AuthTransformer(),
+      ],
+    });
+
+    expect(out).toBeDefined();
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
+
+    expect(out.resolvers['ParentModel.children.req.vtl']).toBeDefined();
+    expect(out.resolvers['ParentModel.children.req.vtl']).toMatchSnapshot();
+
+    const hasManyResolver = out.resolvers['ParentModel.children.req.vtl'];
+    expect(hasManyResolver).toContain('#set( $keyFields = ["owner", "parentId"] )');
+    expect(hasManyResolver).toContain('#set( $filteredAuthFilter = {} )');
+    expect(hasManyResolver).toContain('#if( !$keyFields.contains($authKey) )');
+    expect(hasManyResolver).toContain('#if( !$util.isNullOrEmpty($filteredAuthFilter) )');
+    expect(hasManyResolver).toContain('#set( $filter = $filteredAuthFilter )');
+
+    expect(out.resolvers['ChildModel.parent.req.vtl']).toBeDefined();
+    expect(out.resolvers['ChildModel.parent.req.vtl']).toMatchSnapshot();
+    const belongsToResolver = out.resolvers['ChildModel.parent.req.vtl'];
+    expect(belongsToResolver).toContain('#set( $keyFields = ["owner", "parentId"] )');
+    expect(belongsToResolver).toContain('#set( $filteredAuthFilter = {} )');
+  });
+
+  test('preserves non-key auth fields in filter when owner is in references', () => {
+    const inputSchema = `
+      type Tenant @model @auth(rules: [{ allow: owner, ownerField: "owner" }, { allow: groups, groups: ["Admin"] }]) {
+        owner: String! @primaryKey(sortKeyFields: ["tenantId"])
+        tenantId: ID!
+        projects: [Project] @hasMany(references: ["owner", "tenantId"])
+      }
+
+      type Project @model @auth(rules: [{ allow: owner, ownerField: "owner" }, { allow: groups, groups: ["Admin"] }]) {
+        owner: String! @primaryKey(sortKeyFields: ["tenantId", "projectId"])
+        tenantId: ID!
+        projectId: ID!
+        name: String
+        tenant: Tenant @belongsTo(references: ["owner", "tenantId"])
+      }
+    `;
+
+    const out = testTransform({
+      schema: inputSchema,
+      authConfig: cognitoUserPoolsAuthConfig,
+      transformers: [
+        new ModelTransformer(),
+        new PrimaryKeyTransformer(),
+        new HasManyTransformer(),
+        new BelongsToTransformer(),
+        new AuthTransformer(),
+      ],
+    });
+
+    expect(out).toBeDefined();
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
+
+    expect(out.resolvers['Tenant.projects.req.vtl']).toBeDefined();
+    expect(out.resolvers['Tenant.projects.req.vtl']).toMatchSnapshot();
+
+    const hasManyResolver = out.resolvers['Tenant.projects.req.vtl'];
+    expect(hasManyResolver).toContain('#set( $keyFields = ["owner", "tenantId"] )');
+    expect(hasManyResolver).toContain('#foreach( $authKey in $ctx.stash.authFilter.keySet() )');
+    expect(hasManyResolver).toContain('$filteredAuthFilter.put($authKey, $ctx.stash.authFilter.get($authKey))');
+  });
 });
