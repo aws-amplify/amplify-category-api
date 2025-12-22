@@ -52,7 +52,7 @@
     "@aws-sdk/client-sfn": "^3.624.0",
     "@types/aws-lambda": "8.10.119",
     "@types/lodash.isequal": "^4.5.8",
-    "@types/node": "^20.0.0",
+    "@types/node": "^24.0.0",
     "lodash.isequal": "^4.5.0"
   }
 }
