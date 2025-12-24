@@ -59,11 +59,11 @@ function applyQueryResolvers(
       
       const requestTemplate = MappingTemplate.s3MappingTemplateFromString(
         requestTemplateStr,
-        `Query.${getFieldName}.req.vtl`,
+        `Query.${getFieldName}.multiTenant.req.vtl`,
       );
       const responseTemplate = MappingTemplate.s3MappingTemplateFromString(
         responseTemplateStr,
-        `Query.${getFieldName}.res.vtl`,
+        `Query.${getFieldName}.multiTenant.res.vtl`,
       );
 
     getResolver.addVtlFunctionToSlot(
@@ -75,10 +75,25 @@ function applyQueryResolvers(
 
   const listResolver = context.resolvers.getResolver('Query', listFieldName);
   if (listResolver) {
+    if (config.lookupModel) {
+      const dataSource = context.api.host.getDataSource(`${config.lookupModel}Table`);
+      if (dataSource) {
+        const lookupRequest = generateLookupRequestTemplate(config);
+        const lookupResponse = generateLookupResponseTemplate(config);
+        
+        listResolver.addVtlFunctionToSlot(
+          'preAuth',
+          MappingTemplate.s3MappingTemplateFromString(lookupRequest, `Query.${listFieldName}.lookup.req.vtl`),
+          MappingTemplate.s3MappingTemplateFromString(lookupResponse, `Query.${listFieldName}.lookup.res.vtl`),
+          dataSource as any
+        );
+      }
+    }
+
     const requestTemplateStr = generateListQueryRequestTemplate(config);
     const requestTemplate = MappingTemplate.s3MappingTemplateFromString(
       requestTemplateStr,
-      `Query.${listFieldName}.req.vtl`,
+      `Query.${listFieldName}.multiTenant.req.vtl`,
     );
     listResolver.addVtlFunctionToSlot('preAuth', requestTemplate);
   }
