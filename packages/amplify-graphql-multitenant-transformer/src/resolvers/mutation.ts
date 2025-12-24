@@ -14,6 +14,10 @@ export function generateCreateMutationRequestTemplate(config: MultiTenantDirecti
 
 #if($ctx.stash.allowedTenants)
   ## Lookup mode: Validate input tenantId against allowed list
+  #if($ctx.stash.allowedTenants.isEmpty())
+     $util.error("Unauthorized: No tenant access rights found", "Unauthorized")
+  #end
+
   #if(!$ctx.args.input.${tenantField})
     $util.error("Unauthorized: ${tenantField} is required when multiple tenants are allowed", "Unauthorized")
   #end
@@ -30,7 +34,8 @@ export function generateCreateMutationRequestTemplate(config: MultiTenantDirecti
     $util.error("Unauthorized: tenantId claim not found", "Unauthorized")
   #end
 
-  ## Auto-assign tenantId to the input
+  ## Auto-assign tenantId to the input (prevent spoofing)
+  $util.qr($ctx.args.input.remove("${tenantField}"))
   $util.qr($ctx.args.input.put("${tenantField}", $tenantId))
 #end
 
