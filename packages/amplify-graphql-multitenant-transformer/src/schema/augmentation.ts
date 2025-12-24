@@ -143,6 +143,53 @@ export function ensureListQueryField(
 }
 
 /**
+ * Add tenant argument to subscription fields
+ */
+export function addTenantArgumentToSubscription(
+  config: MultiTenantDirectiveConfiguration,
+  context: TransformerContextProvider,
+): void {
+  const { object, tenantField } = config;
+  const typeName = object.name.value;
+  const subscriptionTypeName = 'Subscription';
+
+  const subscriptionType = context.output.getType(subscriptionTypeName) as ObjectTypeDefinitionNode;
+  if (!subscriptionType) {
+    return;
+  }
+
+  // Identify subscription fields for this model
+  const ops = ['onCreate', 'onUpdate', 'onDelete'];
+  const subscriptionFields = ops.map(op => `${op}${typeName}`);
+
+  const updatedFields = (subscriptionType.fields || []).map(field => {
+    if (subscriptionFields.includes(field.name.value)) {
+      // Check if tenant argument already exists
+      const argExists = field.arguments?.some(a => a.name.value === tenantField);
+      if (argExists) return field;
+
+      const tenantArg = makeInputValueDefinition(
+        tenantField,
+        makeNamedType('String')
+      );
+
+      return {
+        ...field,
+        arguments: [...(field.arguments || []), tenantArg],
+      };
+    }
+    return field;
+  });
+
+  const updatedSubscriptionType: ObjectTypeDefinitionNode = {
+    ...subscriptionType,
+    fields: updatedFields,
+  };
+
+  context.output.putType(updatedSubscriptionType);
+}
+
+/**
  * Augment schema with all necessary changes for multi-tenant support
  * Note: GSI creation is NOT done here because data sources don't exist yet
  */
@@ -155,6 +202,9 @@ export function augmentSchemaForMultiTenant(
 
   // Add tenant field to input types
   addTenantFieldToInputTypes(config, context);
+  
+  // Add tenant argument to subscriptions
+  addTenantArgumentToSubscription(config, context);
 
   // Note: GSI is added in generateResolvers phase when data sources exist
   // See: addTenantGSI() is called from graphql-multi-tenant-transformer.ts
