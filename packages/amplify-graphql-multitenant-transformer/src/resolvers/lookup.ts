@@ -18,8 +18,10 @@ export function generateLookupResponseTemplate(config: MultiTenantDirectiveConfi
   const { lookupOutputField } = config;
   return `
 ## Multi-tenant lookup - Stash allowed tenants
-#if($ctx.result)
+#if($ctx.result && $ctx.result.${lookupOutputField})
   $util.qr($ctx.stash.put("allowedTenants", $ctx.result.${lookupOutputField}))
+#else
+  $util.qr($ctx.stash.put("allowedTenants", []))
 #end
 $util.toJson($ctx.result)
   `;

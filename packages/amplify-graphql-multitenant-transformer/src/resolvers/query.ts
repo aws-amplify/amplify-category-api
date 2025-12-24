@@ -33,7 +33,7 @@ export function generateListQueryRequestTemplate(config: MultiTenantDirectiveCon
       $util.error("Please provide a specific '${tenantField}' in the filter when you have access to multiple tenants.")
    #end
 
-   #if(!$allowed.contains($requestedTenant))
+   #if($util.isNull($allowed) || $allowed.isEmpty() || !$allowed.contains($requestedTenant))
       $util.error("Unauthorized: Access denied for tenant $requestedTenant")
    #end
 
@@ -150,7 +150,7 @@ export function generateTenantFilterTemplate(config: MultiTenantDirectiveConfigu
       $util.error("Please provide a specific '${tenantField}' in the filter when you have access to multiple tenants.")
    #end
 
-   #if(!$allowed.contains($requestedTenant))
+   #if($util.isNull($allowed) || $allowed.isEmpty() || !$allowed.contains($requestedTenant))
       $util.error("Unauthorized: Access denied for tenant $requestedTenant")
    #end
 
