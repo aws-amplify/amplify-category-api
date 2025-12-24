@@ -12,15 +12,27 @@ export function generateCreateMutationRequestTemplate(config: MultiTenantDirecti
   #return
 #end
 
-#set($tenantId = $ctx.identity.claims.get("${tenantIdClaim}"))
+#if($ctx.stash.allowedTenants)
+  ## Lookup mode: Validate input tenantId against allowed list
+  #if(!$ctx.args.input.${tenantField})
+    $util.error("Unauthorized: ${tenantField} is required when multiple tenants are allowed", "Unauthorized")
+  #end
+  
+  #if(!$ctx.stash.allowedTenants.contains($ctx.args.input.${tenantField}))
+    $util.error("Unauthorized: Access denied for tenant", "Unauthorized")
+  #end
+#else
+  ## Standard mode: Auto-assign from JWT claim
+  #set($tenantId = $ctx.identity.claims.get("${tenantIdClaim}"))
 
-## Validate tenantId exists
-#if(!$tenantId || $tenantId == "")
-  $util.error("Unauthorized: tenantId claim not found", "Unauthorized")
+  ## Validate tenantId exists
+  #if(!$tenantId || $tenantId == "")
+    $util.error("Unauthorized: tenantId claim not found", "Unauthorized")
+  #end
+
+  ## Auto-assign tenantId to the input
+  $util.qr($ctx.args.input.put("${tenantField}", $tenantId))
 #end
-
-## Auto-assign tenantId to the input
-$util.qr($ctx.args.input.put("${tenantField}", $tenantId))
 
 ## Return empty object - let ModelTransformer handle the actual DynamoDB operation
 {}
@@ -48,27 +60,37 @@ export function generateUpdateMutationRequestTemplate(config: MultiTenantDirecti
   #return
 #end
 
-#set($tenantId = $ctx.identity.claims.get("${tenantIdClaim}"))
+#if($ctx.stash.allowedTenants)
+  ## Lookup mode: Allow update if item's tenantId is in allowed list
+  #set($tenantCondition = {
+    "${tenantField}": {
+      "in": $ctx.stash.allowedTenants
+    }
+  })
+  $util.qr($ctx.stash.conditions.add($tenantCondition))
+#else
+  #set($tenantId = $ctx.identity.claims.get("${tenantIdClaim}"))
 
-## Validate tenantId exists
-#if(!$tenantId || $tenantId == "")
-  $util.error("Unauthorized: tenantId claim not found", "Unauthorized")
+  ## Validate tenantId exists
+  #if(!$tenantId || $tenantId == "")
+    $util.error("Unauthorized: tenantId claim not found", "Unauthorized")
+  #end
+
+  ## Initialize conditions list if not exists
+  #if(!$ctx.stash.conditions)
+    $util.qr($ctx.stash.put("conditions", []))
+  #end
+
+  ## Add tenant ownership condition
+  ## ModelTransformer will convert this to DynamoDB ConditionExpression
+  ## This ensures the item belongs to the requester's tenant BEFORE update
+  #set($tenantCondition = {
+    "${tenantField}": {
+      "eq": $tenantId
+    }
+  })
+  $util.qr($ctx.stash.conditions.add($tenantCondition))
 #end
-
-## Initialize conditions list if not exists
-#if(!$ctx.stash.conditions)
-  $util.qr($ctx.stash.put("conditions", []))
-#end
-
-## Add tenant ownership condition
-## ModelTransformer will convert this to DynamoDB ConditionExpression
-## This ensures the item belongs to the requester's tenant BEFORE update
-#set($tenantCondition = {
-  "${tenantField}": {
-    "eq": $tenantId
-  }
-})
-$util.qr($ctx.stash.conditions.add($tenantCondition))
 
 ## Prevent updating tenantId field (security measure)
 $util.qr($ctx.args.input.remove("${tenantField}"))
@@ -96,27 +118,37 @@ export function generateDeleteMutationRequestTemplate(config: MultiTenantDirecti
   #return
 #end
 
-#set($tenantId = $ctx.identity.claims.get("${tenantIdClaim}"))
+#if($ctx.stash.allowedTenants)
+  ## Lookup mode: Allow delete if item's tenantId is in allowed list
+  #set($tenantCondition = {
+    "${tenantField}": {
+      "in": $ctx.stash.allowedTenants
+    }
+  })
+  $util.qr($ctx.stash.conditions.add($tenantCondition))
+#else
+  #set($tenantId = $ctx.identity.claims.get("${tenantIdClaim}"))
 
-## Validate tenantId exists
-#if(!$tenantId || $tenantId == "")
-  $util.error("Unauthorized: tenantId claim not found", "Unauthorized")
+  ## Validate tenantId exists
+  #if(!$tenantId || $tenantId == "")
+    $util.error("Unauthorized: tenantId claim not found", "Unauthorized")
+  #end
+
+  ## Initialize conditions list if not exists
+  #if(!$ctx.stash.conditions)
+    $util.qr($ctx.stash.put("conditions", []))
+  #end
+
+  ## Add tenant ownership condition for delete
+  ## ModelTransformer will convert this to DynamoDB ConditionExpression
+  ## This ensures only tenant-owned items can be deleted
+  #set($tenantCondition = {
+    "${tenantField}": {
+      "eq": $tenantId
+    }
+  })
+  $util.qr($ctx.stash.conditions.add($tenantCondition))
 #end
-
-## Initialize conditions list if not exists
-#if(!$ctx.stash.conditions)
-  $util.qr($ctx.stash.put("conditions", []))
-#end
-
-## Add tenant ownership condition for delete
-## ModelTransformer will convert this to DynamoDB ConditionExpression
-## This ensures only tenant-owned items can be deleted
-#set($tenantCondition = {
-  "${tenantField}": {
-    "eq": $tenantId
-  }
-})
-$util.qr($ctx.stash.conditions.add($tenantCondition))
 
 {}
 `;

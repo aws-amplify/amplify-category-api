@@ -5,12 +5,16 @@ export interface MultiTenantDirectiveConfiguration {
   directive: DirectiveNode;
   tenantField: string;
   tenantIdClaim: string;
+  createIndex: boolean;
   indexName?: string;
-  createIndex?: boolean;
   bypassAuthTypes?: string[];
   sortKeyFields?: string[];
-  projectionType?: 'ALL' | 'KEYS_ONLY' | 'INCLUDE';
+  projectionType?: string;
   projectionKeys?: string[];
+  lookupModel?: string;
+  lookupKey?: string;
+  lookupClaim?: string;
+  lookupOutputField?: string;
 }
 
 export enum MultiTenantError {

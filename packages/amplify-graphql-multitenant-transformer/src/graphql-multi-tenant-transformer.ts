@@ -65,6 +65,10 @@ export class MultiTenantTransformer extends TransformerPluginBase {
         sortKeyFields: [],
         projectionType: 'ALL',
         projectionKeys: [],
+        lookupModel: undefined as any,
+        lookupKey: undefined as any,
+        lookupClaim: undefined as any,
+        lookupOutputField: undefined as any,
       },
       generateGetArgumentsInput(context.transformParameters),
     );

@@ -77,12 +77,21 @@ export function generateGetQueryResponseTemplate(config: MultiTenantDirectiveCon
   #return($util.toJson($ctx.result))
 #end
 
-#set($tenantId = $ctx.identity.claims.get("${tenantIdClaim}"))
+#if($ctx.stash.allowedTenants)
+  #if($ctx.result && $ctx.result.${tenantField})
+    #if(!$ctx.stash.allowedTenants.contains($ctx.result.${tenantField}))
+      ## Cross-tenant access attempt - return null
+      $util.unauthorized()
+    #end
+  #end
+#else
+  #set($tenantId = $ctx.identity.claims.get("${tenantIdClaim}"))
 
-#if($ctx.result && $ctx.result.${tenantField})
-  #if($ctx.result.${tenantField} != $tenantId)
-    ## Cross-tenant access attempt - return null
-    $util.unauthorized()
+  #if($ctx.result && $ctx.result.${tenantField})
+    #if($ctx.result.${tenantField} != $tenantId)
+      ## Cross-tenant access attempt - return null
+      $util.unauthorized()
+    #end
   #end
 #end
 

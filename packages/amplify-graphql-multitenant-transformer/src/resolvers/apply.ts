@@ -15,6 +15,7 @@ import {
   generateDeleteMutationRequestTemplate,
   generateDeleteMutationResponseTemplate,
 } from './mutation';
+import { generateLookupRequestTemplate, generateLookupResponseTemplate } from './lookup';
 
 export function applyMultiTenantResolvers(
   config: MultiTenantDirectiveConfiguration,
@@ -38,6 +39,21 @@ function applyQueryResolvers(
 
   const getResolver = context.resolvers.getResolver('Query', getFieldName);
   if (getResolver && !usesPrimaryKeyWithTenantId) {
+    if (config.lookupModel) {
+      const dataSource = context.api.host.getDataSource(`${config.lookupModel}Table`);
+      if (dataSource) {
+        const lookupRequest = generateLookupRequestTemplate(config);
+        const lookupResponse = generateLookupResponseTemplate(config);
+        
+        getResolver.addVtlFunctionToSlot(
+          'preAuth',
+          MappingTemplate.s3MappingTemplateFromString(lookupRequest, `Query.${getFieldName}.lookup.req.vtl`),
+          MappingTemplate.s3MappingTemplateFromString(lookupResponse, `Query.${getFieldName}.lookup.res.vtl`),
+          dataSource as any
+        );
+      }
+    }
+
     const requestTemplateStr = generateGetQueryRequestTemplate(config);
     const responseTemplateStr = generateGetQueryResponseTemplate(config);
       
@@ -80,6 +96,22 @@ function applyMutationResolvers(
 
   const createResolver = context.resolvers.getResolver('Mutation', createFieldName);
   if (createResolver) {
+    // If lookup is configured, add the lookup function first
+    if (config.lookupModel) {
+      const dataSource = context.api.host.getDataSource(`${config.lookupModel}Table`);
+      if (dataSource) {
+        const lookupRequest = generateLookupRequestTemplate(config);
+        const lookupResponse = generateLookupResponseTemplate(config);
+        
+        createResolver.addVtlFunctionToSlot(
+          'preAuth',
+          MappingTemplate.s3MappingTemplateFromString(lookupRequest, `Mutation.${createFieldName}.lookup.req.vtl`),
+          MappingTemplate.s3MappingTemplateFromString(lookupResponse, `Mutation.${createFieldName}.lookup.res.vtl`),
+          dataSource as any
+        );
+      }
+    }
+
     const requestTemplateStr = generateCreateMutationRequestTemplate(config);
     const requestTemplate = MappingTemplate.s3MappingTemplateFromString(
       requestTemplateStr,
@@ -90,6 +122,21 @@ function applyMutationResolvers(
 
   const updateResolver = context.resolvers.getResolver('Mutation', updateFieldName);
   if (updateResolver) {
+    if (config.lookupModel) {
+      const dataSource = context.api.host.getDataSource(`${config.lookupModel}Table`);
+      if (dataSource) {
+        const lookupRequest = generateLookupRequestTemplate(config);
+        const lookupResponse = generateLookupResponseTemplate(config);
+        
+        updateResolver.addVtlFunctionToSlot(
+          'preAuth',
+          MappingTemplate.s3MappingTemplateFromString(lookupRequest, `Mutation.${updateFieldName}.lookup.req.vtl`),
+          MappingTemplate.s3MappingTemplateFromString(lookupResponse, `Mutation.${updateFieldName}.lookup.res.vtl`),
+          dataSource as any
+        );
+      }
+    }
+
     const requestTemplateStr = generateUpdateMutationRequestTemplate(config);
     const requestTemplate = MappingTemplate.s3MappingTemplateFromString(
       requestTemplateStr,
@@ -100,6 +147,21 @@ function applyMutationResolvers(
 
   const deleteResolver = context.resolvers.getResolver('Mutation', deleteFieldName);
   if (deleteResolver) {
+    if (config.lookupModel) {
+      const dataSource = context.api.host.getDataSource(`${config.lookupModel}Table`);
+      if (dataSource) {
+        const lookupRequest = generateLookupRequestTemplate(config);
+        const lookupResponse = generateLookupResponseTemplate(config);
+        
+        deleteResolver.addVtlFunctionToSlot(
+          'preAuth',
+          MappingTemplate.s3MappingTemplateFromString(lookupRequest, `Mutation.${deleteFieldName}.lookup.req.vtl`),
+          MappingTemplate.s3MappingTemplateFromString(lookupResponse, `Mutation.${deleteFieldName}.lookup.res.vtl`),
+          dataSource as any
+        );
+      }
+    }
+
     const requestTemplateStr = generateDeleteMutationRequestTemplate(config);
     const requestTemplate = MappingTemplate.s3MappingTemplateFromString(
       requestTemplateStr,

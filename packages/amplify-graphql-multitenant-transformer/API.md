@@ -31,9 +31,29 @@ export function hasMultiTenantDirective(type: ObjectTypeDefinitionNode): boolean
 // @public (undocumented)
 export interface MultiTenantDirectiveConfiguration {
     // (undocumented)
+    bypassAuthTypes?: string[];
+    // (undocumented)
+    createIndex: boolean;
+    // (undocumented)
     directive: DirectiveNode;
     // (undocumented)
+    indexName?: string;
+    // (undocumented)
+    lookupClaim?: string;
+    // (undocumented)
+    lookupKey?: string;
+    // (undocumented)
+    lookupModel?: string;
+    // (undocumented)
+    lookupOutputField?: string;
+    // (undocumented)
     object: ObjectTypeDefinitionNode;
+    // (undocumented)
+    projectionKeys?: string[];
+    // (undocumented)
+    projectionType?: string;
+    // (undocumented)
+    sortKeyFields?: string[];
     // (undocumented)
     tenantField: string;
     // (undocumented)

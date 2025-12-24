@@ -3,16 +3,19 @@ import { Directive } from './directive';
 const name = 'multiTenant';
 const definition = /* GraphQL */ `
   directive @${name}(
-    tenantField: String = "tenantId"
-    tenantIdClaim: String = "custom:tenantId"
-    indexName: String
-    createIndex: Boolean = true
-    bypassAuthTypes: [String]
-    sortKeyFields: [String]
-    projectionType: String
-    projectionKeys: [String]
-  ) on OBJECT
-`;
+      tenantField: String = "tenantId"
+      tenantIdClaim: String = "custom:tenantId"
+      createIndex: Boolean = true
+      indexName: String
+      bypassAuthTypes: [String]
+      sortKeyFields: [String]
+      projectionType: String
+      projectionKeys: [String]
+      lookupModel: String
+      lookupKey: String
+      lookupClaim: String
+      lookupOutputField: String
+    ) on OBJECT`;
 const defaults = {
   tenantField: 'tenantId',
   tenantIdClaim: 'custom:tenantId',
