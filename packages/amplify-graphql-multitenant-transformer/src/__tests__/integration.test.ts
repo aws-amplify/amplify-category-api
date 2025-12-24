@@ -5,7 +5,80 @@ import { MultiTenantTransformer } from '../graphql-multi-tenant-transformer';
 import { parse } from 'graphql';
 import { Template } from 'aws-cdk-lib/assertions';
 
+import { IndexTransformer } from '@aws-amplify/graphql-index-transformer';
+
 describe('MultiTenant Integration Tests', () => {
+  it('should protect secondary index queries', () => {
+    const schema = `
+      type Todo @model @multiTenant {
+        id: ID!
+        title: String!
+        category: String! @index(name: "byCategory", queryField: "todosByCategory")
+      }
+    `;
+
+    const out = testTransform({
+      schema,
+      transformers: [
+        new ModelTransformer(),
+        new IndexTransformer(),
+        new MultiTenantTransformer(),
+      ],
+    });
+
+    // Check custom query resolver slot
+    const filterSlot = 'Query.todosByCategory.tenantFilter.req.vtl';
+    expect(out.resolvers[filterSlot]).toBeDefined();
+    expect(out.resolvers[filterSlot]).toContain('tenantId');
+    expect(out.resolvers[filterSlot]).toContain('authFilter');
+  });
+
+  it('should protect subscriptions', () => {
+    const schema = `
+      type Post @model @multiTenant {
+        id: ID!
+        title: String!
+      }
+    `;
+
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new MultiTenantTransformer()],
+    });
+
+    const parsed = parse(out.schema);
+    const subscriptionType = parsed.definitions.find(
+      (d: any) => d.kind === 'ObjectTypeDefinition' && d.name.value === 'Subscription'
+    ) as any;
+
+    const onCreate = subscriptionType.fields.find((f: any) => f.name.value === 'onCreatePost');
+    const tenantArg = onCreate.arguments.find((a: any) => a.name.value === 'tenantId');
+    expect(tenantArg).toBeDefined();
+
+    const slotName = 'Subscription.onCreatePost.tenant.req.vtl';
+    expect(out.resolvers[slotName]).toBeDefined();
+    expect(out.resolvers[slotName]).toContain('Unauthorized');
+  });
+
+  it('should protect sync queries', () => {
+    const schema = `
+      type Post @model @multiTenant {
+        id: ID!
+        title: String!
+      }
+    `;
+
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new MultiTenantTransformer()],
+    });
+
+    // Check sync query resolver slot
+    const syncSlot = 'Query.syncPosts.tenantFilter.req.vtl';
+    expect(out.resolvers[syncSlot]).toBeDefined();
+    expect(out.resolvers[syncSlot]).toContain('authFilter');
+  });
+
   it('should transform schema with @multiTenant directive', () => {
     const schema = `
       type Company @model @multiTenant {
@@ -190,6 +263,10 @@ describe('MultiTenant Integration Tests', () => {
     
     // Verify resolvers still exist (integration successful)
     expect(out.resolvers['Query.getCompany.req.vtl']).toBeDefined();
+    expect(out.resolvers['Query.getCompany.res.vtl']).toBeDefined();
+    // Ensure security validation is present in the response
+    expect(out.resolvers['Query.getCompany.res.vtl']).toContain('Multi-tenant validation');
+    
     expect(out.resolvers['Mutation.updateCompany.req.vtl']).toBeDefined();
     expect(out.resolvers['Mutation.deleteCompany.req.vtl']).toBeDefined();
   });
@@ -233,6 +310,10 @@ describe('MultiTenant Integration Tests', () => {
     });
 
     expect(out.resolvers['Query.getCompany.req.vtl']).toBeDefined();
+    expect(out.resolvers['Query.getCompany.res.vtl']).toBeDefined();
+    // Ensure security validation is present in the response
+    expect(out.resolvers['Query.getCompany.res.vtl']).toContain('Multi-tenant validation');
+    
     expect(out.resolvers['Mutation.updateCompany.req.vtl']).toBeDefined();
     expect(out.resolvers['Mutation.deleteCompany.req.vtl']).toBeDefined();
   });

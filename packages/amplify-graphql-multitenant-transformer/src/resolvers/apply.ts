@@ -1,3 +1,5 @@
+import { ObjectTypeDefinitionNode } from 'graphql';
+import { getBaseType } from 'graphql-transformer-common';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { MappingTemplate } from '@aws-amplify/graphql-transformer-core';
 import { MultiTenantDirectiveConfiguration } from '../types';
@@ -6,6 +8,7 @@ import {
   generateListQueryResponseTemplate,
   generateGetQueryRequestTemplate,
   generateGetQueryResponseTemplate,
+  generateTenantFilterTemplate,
 } from './query';
 import {
   generateCreateMutationRequestTemplate,
@@ -15,6 +18,7 @@ import {
   generateDeleteMutationRequestTemplate,
   generateDeleteMutationResponseTemplate,
 } from './mutation';
+import { generateSubscriptionRequestTemplate } from './subscription';
 import { generateLookupRequestTemplate, generateLookupResponseTemplate } from './lookup';
 
 export function applyMultiTenantResolvers(
@@ -26,6 +30,7 @@ export function applyMultiTenantResolvers(
 
   applyQueryResolvers(config, context, typeName, usesPrimaryKeyWithTenantId);
   applyMutationResolvers(config, context, typeName, usesPrimaryKeyWithTenantId);
+  applySubscriptionResolvers(config, context, typeName);
 }
 
 function applyQueryResolvers(
@@ -38,39 +43,87 @@ function applyQueryResolvers(
   const listFieldName = `list${typeName}s`;
 
   const getResolver = context.resolvers.getResolver('Query', getFieldName);
-  if (getResolver && !usesPrimaryKeyWithTenantId) {
-    if (config.lookupModel) {
-      const dataSource = context.api.host.getDataSource(`${config.lookupModel}Table`);
-      if (dataSource) {
-        const lookupRequest = generateLookupRequestTemplate(config);
-        const lookupResponse = generateLookupResponseTemplate(config);
-        
-        getResolver.addVtlFunctionToSlot(
-          'preAuth',
-          MappingTemplate.s3MappingTemplateFromString(lookupRequest, `Query.${getFieldName}.lookup.req.vtl`),
-          MappingTemplate.s3MappingTemplateFromString(lookupResponse, `Query.${getFieldName}.lookup.res.vtl`),
-          dataSource as any
-        );
+  if (getResolver) {
+    if (!usesPrimaryKeyWithTenantId) {
+      if (config.lookupModel) {
+        const dataSource = context.api.host.getDataSource(`${config.lookupModel}Table`);
+        if (dataSource) {
+          const lookupRequest = generateLookupRequestTemplate(config);
+          const lookupResponse = generateLookupResponseTemplate(config);
+          
+          getResolver.addVtlFunctionToSlot(
+            'preAuth',
+            MappingTemplate.s3MappingTemplateFromString(lookupRequest, `Query.${getFieldName}.lookup.req.vtl`),
+            MappingTemplate.s3MappingTemplateFromString(lookupResponse, `Query.${getFieldName}.lookup.res.vtl`),
+            dataSource as any
+          );
+        }
       }
-    }
 
-    const requestTemplateStr = generateGetQueryRequestTemplate(config);
-    const responseTemplateStr = generateGetQueryResponseTemplate(config);
-      
-      const requestTemplate = MappingTemplate.s3MappingTemplateFromString(
-        requestTemplateStr,
-        `Query.${getFieldName}.multiTenant.req.vtl`,
+      const requestTemplateStr = generateGetQueryRequestTemplate(config);
+      const responseTemplateStr = generateGetQueryResponseTemplate(config);
+        
+        const requestTemplate = MappingTemplate.s3MappingTemplateFromString(
+          requestTemplateStr,
+          `Query.${getFieldName}.multiTenant.req.vtl`,
+        );
+        const responseTemplate = MappingTemplate.s3MappingTemplateFromString(
+          responseTemplateStr,
+          `Query.${getFieldName}.multiTenant.res.vtl`,
+        );
+
+      getResolver.addVtlFunctionToSlot(
+        'auth',
+        MappingTemplate.s3MappingTemplateFromString('{}', `Query.${getFieldName}.auth.req.vtl`),
+        responseTemplate,
       );
+    } else {
+      // If using primary key, we still need to validate the result in the response
+      // to ensure the tenantId matches the requester's tenant.
+      const responseTemplateStr = generateGetQueryResponseTemplate(config);
       const responseTemplate = MappingTemplate.s3MappingTemplateFromString(
         responseTemplateStr,
         `Query.${getFieldName}.multiTenant.res.vtl`,
       );
 
-    getResolver.addVtlFunctionToSlot(
-      'auth',
-      MappingTemplate.s3MappingTemplateFromString('{}', `Query.${getFieldName}.auth.req.vtl`),
-      responseTemplate,
-    );
+      getResolver.addVtlFunctionToSlot(
+        'auth',
+        MappingTemplate.s3MappingTemplateFromString('{}', `Query.${getFieldName}.auth.req.vtl`),
+        responseTemplate,
+      );
+    }
+  }
+
+  // Iterate over all Query fields to protect secondary indexes and custom queries
+  const queryType = context.output.getType('Query') as ObjectTypeDefinitionNode;
+  if (queryType) {
+    const fields = queryType.fields || [];
+    const connectionTypeName = `Model${typeName}Connection`;
+    
+    for (const field of fields) {
+      const fieldName = field.name.value;
+      const returnType = getBaseType(field.type);
+      
+      // Check if it returns a connection to our type or the type itself (list)
+      if (returnType === connectionTypeName || returnType === typeName || returnType === `[${typeName}]`) {
+         // Skip if it is the default list query (handled separately below with optimization)
+         if (fieldName === listFieldName) continue;
+         
+         // Skip if it is the default get query (handled above)
+         if (fieldName === getFieldName) continue;
+
+         const resolver = context.resolvers.getResolver('Query', fieldName);
+         if (resolver) {
+            // Inject tenant filter into preAuth slot
+            // This ensures ctx.stash.authFilter is populated with tenant check
+            const filterTemplate = generateTenantFilterTemplate(config);
+            resolver.addVtlFunctionToSlot(
+                'preAuth',
+                MappingTemplate.s3MappingTemplateFromString(filterTemplate, `Query.${fieldName}.tenantFilter.req.vtl`)
+            );
+         }
+      }
+    }
   }
 
   const listResolver = context.resolvers.getResolver('Query', listFieldName);
@@ -183,5 +236,41 @@ function applyMutationResolvers(
       `Mutation.${deleteFieldName}.preAuth.req.vtl`,
     );
     deleteResolver.addVtlFunctionToSlot('preAuth', requestTemplate);
+  }
+}
+
+function applySubscriptionResolvers(
+  config: MultiTenantDirectiveConfiguration,
+  context: TransformerContextProvider,
+  typeName: string,
+): void {
+  const ops = ['onCreate', 'onUpdate', 'onDelete'];
+  
+  for (const op of ops) {
+    const fieldName = `${op}${typeName}`;
+    const resolver = context.resolvers.getResolver('Subscription', fieldName);
+    
+    if (resolver) {
+      if (config.lookupModel) {
+        const dataSource = context.api.host.getDataSource(`${config.lookupModel}Table`);
+        if (dataSource) {
+            const lookupRequest = generateLookupRequestTemplate(config);
+            const lookupResponse = generateLookupResponseTemplate(config);
+            
+            resolver.addVtlFunctionToSlot(
+              'preAuth',
+              MappingTemplate.s3MappingTemplateFromString(lookupRequest, `Subscription.${fieldName}.lookup.req.vtl`),
+              MappingTemplate.s3MappingTemplateFromString(lookupResponse, `Subscription.${fieldName}.lookup.res.vtl`),
+              dataSource as any
+            );
+        }
+      }
+      
+      const requestTemplateStr = generateSubscriptionRequestTemplate(config);
+      resolver.addVtlFunctionToSlot(
+        'preAuth',
+        MappingTemplate.s3MappingTemplateFromString(requestTemplateStr, `Subscription.${fieldName}.tenant.req.vtl`)
+      );
+    }
   }
 }

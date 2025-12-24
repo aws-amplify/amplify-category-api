@@ -123,4 +123,54 @@ $util.toJson($ctx.result)
 `;
 }
 
+export function generateTenantFilterTemplate(config: MultiTenantDirectiveConfiguration): string {
+  const { tenantField, tenantIdClaim, bypassAuthTypes } = config;
+  const bypassCheck = getBypassAuthTypeCheck(bypassAuthTypes);
+
+  return `
+## Multi-tenant filter - Inject tenant filter into stash
+#if(${bypassCheck})
+  #return
+#end
+
+#set($isMultiTenant = false)
+#if($ctx.stash.allowedTenants)
+   #set($allowed = $ctx.stash.allowedTenants)
+   #set($isMultiTenant = true)
+#elseif($util.isList($ctx.identity.claims.get("${tenantIdClaim}")))
+   #set($allowed = $ctx.identity.claims.get("${tenantIdClaim}"))
+   #set($isMultiTenant = true)
+#end
+
+#if($isMultiTenant)
+   ## Look for tenantId in filter
+   #set($requestedTenant = $util.defaultIfNull($ctx.args.filter.${tenantField}.eq, null))
+
+   #if(!$requestedTenant)
+      $util.error("Please provide a specific '${tenantField}' in the filter when you have access to multiple tenants.")
+   #end
+
+   #if(!$allowed.contains($requestedTenant))
+      $util.error("Unauthorized: Access denied for tenant $requestedTenant")
+   #end
+
+   #set($tenantId = $requestedTenant)
+#else
+  #set($tenantId = $ctx.identity.claims.get("${tenantIdClaim}"))
+
+  #if(!$tenantId || $tenantId == "")
+    $util.error("Unauthorized: tenantId claim not found", "Unauthorized")
+  #end
+#end
+
+#set($tenantFilter = { "${tenantField}": { "eq": $tenantId } })
+
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $ctx.stash.authFilter = { "and": [$ctx.stash.authFilter, $tenantFilter] } )
+#else
+  #set( $ctx.stash.authFilter = $tenantFilter )
+#end
+`;
+}
+
 
