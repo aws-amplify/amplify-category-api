@@ -10,6 +10,12 @@ type TestRegion = {
   betaLayerDeployed: boolean; // is the beta layer deployed in this region
 };
 
+const DEFAULT_VARIABLES = {
+  // The tests are using deprecated CDK APIs and the constant complaints
+  // about it are making it hard to read logs.
+  JSII_DEPRECATED: 'quiet',
+};
+
 const REPO_ROOT = join(__dirname, '..');
 
 const supportedRegionsPath = join(REPO_ROOT, 'scripts', 'e2e-test-regions.json');
@@ -42,7 +48,7 @@ type BatchBuildJob = {
   buildspec: string;
   env: {
     'compute-type': ComputeType;
-    variables?: [string: string];
+    variables?: { [string: string]: string };
   };
   'depend-on': string[] | string;
 };
@@ -54,7 +60,7 @@ type ConfigBase = {
   env: {
     'compute-type': ComputeType;
     shell: 'bash';
-    variables: [string: string];
+    variables: { [string: string]: string };
   };
 };
 
@@ -462,6 +468,9 @@ const main = (): void => {
     buildspec: 'codebuild_specs/cleanup_e2e_resources.yml',
     env: {
       'compute-type': 'BUILD_GENERAL1_SMALL',
+      variables: {
+        ...DEFAULT_VARIABLES,
+      },
     },
     'depend-on': builds.length > 0 ? [builds[0].identifier] : 'publish_to_local_registry',
   };

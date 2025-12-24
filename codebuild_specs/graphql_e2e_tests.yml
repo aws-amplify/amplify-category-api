@@ -8,6 +8,7 @@ env:
     CODEBUILD: true
     NODE_OPTIONS: --max-old-space-size=8096
     AMPLIFY_CLI_DISABLE_LOGGING: 'true'
+    JSII_DEPRECATED: 'quiet'
 phases:
   build:
     commands:

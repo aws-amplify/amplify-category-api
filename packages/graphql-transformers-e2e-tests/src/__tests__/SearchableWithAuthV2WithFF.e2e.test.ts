@@ -1,12 +1,14 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { Output } from 'aws-sdk/clients/cloudformation';
 import moment from 'moment';
-import { S3, CognitoIdentityServiceProvider as CognitoClient, CognitoIdentity } from 'aws-sdk';
+import { Output } from '@aws-sdk/client-cloudformation';
+import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
+import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
 import { AWS } from '@aws-amplify/core';
 import { Auth } from 'aws-amplify';
 import gql from 'graphql-tag';
@@ -43,9 +45,8 @@ jest.setTimeout(60000 * 60);
 
 const cf = new CloudFormationClient(AWS_REGION);
 const customS3Client = new S3Client(AWS_REGION);
-const awsS3Client = new S3({ region: AWS_REGION });
-const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: AWS_REGION });
-const identityClient = new CognitoIdentity({ apiVersion: '2014-06-30', region: AWS_REGION });
+const cognitoClient = new CognitoIdentityProviderClient({ region: AWS_REGION });
+const identityClient = new CognitoIdentityClient({ region: AWS_REGION });
 const iamHelper = new IAMHelper(AWS_REGION);
 
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
@@ -177,9 +178,10 @@ beforeAll(async () => {
   });
 
   try {
-    await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
+    await customS3Client.createBucket(BUCKET_NAME);
   } catch (e) {
     console.error(`Failed to create bucket: ${e}`);
+    throw e;
   }
   try {
     const out = testTransform({
@@ -211,7 +213,14 @@ beforeAll(async () => {
       cf,
       STACK_NAME,
       out,
-      { AuthCognitoUserPoolId: USER_POOL_ID, authRoleName: authRole.RoleName, unauthRoleName: unauthRole.RoleName },
+      {
+        [ResourceConstants.PARAMETERS.AuthCognitoUserPoolId]: USER_POOL_ID,
+        [ResourceConstants.PARAMETERS.AuthRoleName]: authRole.RoleName ?? '',
+        [ResourceConstants.PARAMETERS.UnauthRoleName]: unauthRole.RoleName ?? '',
+        // Cheapest instance type that supports encryption at rest, and is available in
+        // most regions (m4 is not everywhere)
+        [ResourceConstants.PARAMETERS.OpenSearchInstanceType]: 'm5.large.elasticsearch',
+      },
       LOCAL_FS_BUILD_DIR,
       BUCKET_NAME,
       S3_ROOT_DIR_KEY,

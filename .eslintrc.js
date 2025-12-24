@@ -35,9 +35,11 @@ module.exports = {
     },
   },
   rules: {
+    // NOTE: This config should only specify rules as "errors" or "off". Over time "warnings" invariably become the same as "off".
     '@typescript-eslint/no-floating-promises': 'error',
     '@typescript-eslint/no-misused-promises': 'error',
-    // NOTE: This config should only specify rules as "errors" or "off". Over time "warnings" invariably become the same as "off".
+
+    '@typescript-eslint/return-await': ['error', 'error-handling-correctness-only'], // Make sure that inside try/catch blocks, promises are 'return await'ed
 
     // Disables double quote error when using single quotes within string for readability
     // https://eslint.org/docs/rules/quotes#avoidescape
@@ -62,7 +64,6 @@ module.exports = {
         format: null,
       },
     ],
-    '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],
     '@typescript-eslint/no-explicit-any': 'warn',
     '@typescript-eslint/method-signature-style': ['error', 'property'],
 
@@ -167,8 +168,6 @@ module.exports = {
 
     // function style
     'arrow-parens': ['error', 'always'],
-    'func-style': ['error', 'expression'],
-    'prefer-arrow/prefer-arrow-functions': ['error', { disallowPrototype: true }],
     // yes I know these are all supposed to be errors, but this one requires too much functional refactoring at the moment
     // we should still aim to keep functions small moving forward
     'max-lines-per-function': [

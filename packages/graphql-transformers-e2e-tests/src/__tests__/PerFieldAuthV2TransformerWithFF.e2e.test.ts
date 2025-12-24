@@ -1,10 +1,11 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import * as fs from 'fs';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { Output } from 'aws-sdk/clients/cloudformation';
-import { CognitoIdentityServiceProvider as CognitoClient, S3 } from 'aws-sdk';
+import { Output } from '@aws-sdk/client-cloudformation';
+import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 import { default as moment } from 'moment';
 import { GraphQLClient } from '../GraphQLClient';
 import { S3Client } from '../S3Client';
@@ -67,9 +68,8 @@ const PARTICIPANT_GROUP_NAME = 'Participant';
 const WATCHER_GROUP_NAME = 'Watcher';
 const INSTRUCTOR_GROUP_NAME = 'Instructor';
 
-const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: region });
+const cognitoClient = new CognitoIdentityProviderClient({ region: region });
 const customS3Client = new S3Client(region);
-const awsS3Client = new S3({ region: region });
 
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {
@@ -84,7 +84,7 @@ beforeAll(async () => {
     fs.mkdirSync(LOCAL_BUILD_ROOT);
   }
   try {
-    await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
+    await customS3Client.createBucket(BUCKET_NAME);
   } catch (e) {
     console.warn(`Could not create bucket: ${e}`);
   }
@@ -243,8 +243,7 @@ beforeAll(async () => {
     // "The security token included in the request is invalid" errors
     await new Promise<void>((res) => setTimeout(() => res(), 5000));
   } catch (e) {
-    console.error(e);
-    expect(true).toEqual(false);
+    throw new Error(`${e}`);
   }
 });
 

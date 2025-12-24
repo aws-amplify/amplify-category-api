@@ -2,23 +2,18 @@
 
 scriptDir=$(dirname -- "$(readlink -f -- "$BASH_SOURCE")")
 source $scriptDir/.env set
+source $scriptDir/cloud-utils.sh
 
-printf 'What is your PR number ? '
-read PR_NUMBER
+CURR_BRANCH=$(git branch --show-current)
 
-if [[ -n $USE_FIDO_KEY ]] ; then
-  mwinit -s -f
-else
-  mwinit
-fi
-
-ada cred update --profile=AmplifyAPIE2EProd --account=$E2E_ACCOUNT_PROD --role=CodebuildDeveloper --provider=isengard --once
+profile=AmplifyAPIE2EProd
+authenticate "$E2E_ACCOUNT_PROD" CodebuildDeveloper "$profile"
 RESULT=$(aws codebuild start-build-batch \
---profile=AmplifyAPIE2EProd \
+--profile="$profile" \
 --region us-east-1 \
 --project-name amplify-category-api-pr-workflow \
 --build-timeout-in-minutes-override 180 \
---source-version "pr/$PR_NUMBER" \
+--source-version "$CURR_BRANCH" \
 --debug-session-enabled \
 --git-clone-depth-override=1000 \
 --environment-variables-override name=AMPLIFY_CI_MANUAL_PR_BUILD,value=true,type=PLAINTEXT \
