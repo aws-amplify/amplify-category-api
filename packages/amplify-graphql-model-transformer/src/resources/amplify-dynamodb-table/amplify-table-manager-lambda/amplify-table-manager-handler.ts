@@ -157,7 +157,7 @@ async function isCompleteHandler(event: AWSCDKAsyncCustomResource.IsCompleteRequ
  * @param event CFN event
  * @returns Response object which is sent back to CFN
  */
-const processOnEvent = async (
+export const processOnEvent = async (
   event: AWSCDKAsyncCustomResource.OnEventRequest,
   context: TableManagerContext,
 ): Promise<AWSCDKAsyncCustomResource.OnEventResponse> => {
@@ -191,7 +191,7 @@ const processOnEvent = async (
       }
       const oldTableDef = extractOldTableInputFromEvent(event);
       console.log('Fetching current table state');
-      const describeTableResult = await ddbClient.describeTable({ TableName: event.PhysicalResourceId });
+      let describeTableResult = await ddbClient.describeTable({ TableName: event.PhysicalResourceId });
       if (!describeTableResult.Table) {
         throw new Error(`Could not find ${event.PhysicalResourceId} to update`);
       }
@@ -314,6 +314,10 @@ const processOnEvent = async (
           (res) => res === true,
         );
         console.log(`Table '${event.PhysicalResourceId}' is ready after the update of stream specificaion.`);
+        describeTableResult = await ddbClient.describeTable({ TableName: event.PhysicalResourceId });
+        if (!describeTableResult.Table) {
+          throw new Error(`Could not find ${event.PhysicalResourceId} to update`);
+        }
       }
 
       // determine if ttl is changed -> describeTimeToLive & updateTimeToLive
