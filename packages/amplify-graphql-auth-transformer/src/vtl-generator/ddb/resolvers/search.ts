@@ -43,6 +43,7 @@ import {
   generateOwnerMultiClaimExpression,
   generateInvalidClaimsCondition,
   generateIAMAccessCheck,
+  generateGroupCheckExpressions,
 } from './helpers';
 
 const allowedAggFieldsList = 'allowedAggFields';
@@ -183,7 +184,10 @@ const generateAuthFilter = (
     const entityIsList = fieldIsList(fields, role.entity);
     const roleKey = entityIsList ? role.entity : `${role.entity}.keyword`;
     if (role.strategy === 'owner') {
+      // AND logic: check if user is in required groups before adding owner filter
+      const { groupCheck, groupIff } = generateGroupCheckExpressions(role.operationGroups?.search, role.groupClaim, idx);
       filterExpression.push(
+        ...groupCheck,
         generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`),
         iff(
           generateInvalidClaimsCondition(role.claim!, `ownerClaim${idx}`),
@@ -202,7 +206,7 @@ const generateAuthFilter = (
                 }),
               }),
             ),
-            qref(methodCall(ref(`${authFilterConditionsRefName}.add`), ref(`owner${idx}`))),
+            groupIff(qref(methodCall(ref(`${authFilterConditionsRefName}.add`), ref(`owner${idx}`)))),
           ]),
         ),
       );

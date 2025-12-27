@@ -1,6 +1,6 @@
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
-import { ConfiguredAuthProviders, RoleDefinition } from '../../utils';
+import { ConfiguredAuthProviders, ModelOperation, RoleDefinition } from '../../utils';
 import { AuthVTLGenerator } from '../vtl-generator';
 import {
   generateAuthExpressionForCreate,
@@ -58,7 +58,8 @@ export class RDSAuthVTLGenerator implements AuthVTLGenerator {
     fields: ReadonlyArray<FieldDefinitionNode>,
     def: ObjectTypeDefinitionNode,
     indexName: string | undefined,
-  ): string => generateAuthExpressionForQueries(ctx, providers, roles, fields, def, indexName);
+    operation: ModelOperation,
+  ): string => generateAuthExpressionForQueries(ctx, providers, roles, fields, def, indexName, operation);
 
   generateAuthExpressionForSearchQueries = (
     providers: ConfiguredAuthProviders,
@@ -80,7 +81,8 @@ export class RDSAuthVTLGenerator implements AuthVTLGenerator {
     providers: ConfiguredAuthProviders,
     roles: Array<RoleDefinition>,
     fields: ReadonlyArray<FieldDefinitionNode>,
-  ): string => generateAuthExpressionForRelationQuery(ctx, def, field, relatedModelObject, providers, roles, fields);
+    operation: ModelOperation,
+  ): string => generateAuthExpressionForRelationQuery(ctx, def, field, relatedModelObject, providers, roles, fields, operation);
 
   generateFieldResolverForOwner = (entity: string): string => generateFieldResolverForOwner(entity);
 

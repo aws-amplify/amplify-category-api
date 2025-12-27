@@ -35,6 +35,8 @@ import {
   generateInvalidClaimsCondition,
   getIdentityClaimExp,
   getOwnerClaimReference,
+  generateGroupCheckExpressions,
+  getSubscriptionGroups,
 } from './helpers';
 
 const HAS_VALID_OWNER_ARGUMENT_FLAG = 'hasValidOwnerArgument';
@@ -50,31 +52,56 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
   roles.forEach((role, idx) => {
     if (role.strategy === 'owner') {
       const ownerClaimRef = getOwnerClaimReference(role.claim!, `ownerClaim${idx}`);
+
+      // Check if this owner role has required groups (AND logic from owner.inGroup())
+      const subscriptionGroups = getSubscriptionGroups(role.operationGroups);
+      const { groupCheck, hasGroups, groupIff, groupRef } = generateGroupCheckExpressions(
+        subscriptionGroups.length > 0 ? subscriptionGroups : undefined,
+        role.groupClaim,
+        idx,
+      );
+
       ownerExpression.push(
+        ...groupCheck,
         generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`),
         iff(
           generateInvalidClaimsCondition(role.claim!, `ownerClaim${idx}`),
           compoundExpression([
             generateOwnerMultiClaimExpression(role.claim!, `ownerClaim${idx}`),
             generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
-            qref(
-              methodCall(
-                ref('authOwnerRuntimeFilter.add'),
-                raw(`{ "${role.entity}": { "${role.isEntityList ? 'contains' : 'eq'}": $${ownerClaimRef} } }`),
+            groupIff(
+              qref(
+                methodCall(
+                  ref('authOwnerRuntimeFilter.add'),
+                  raw(`{ "${role.entity}": { "${role.isEntityList ? 'contains' : 'eq'}": $${ownerClaimRef} } }`),
+                ),
               ),
             ),
             set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.args.${role.entity!}`), nul())),
             iff(
               and([not(ref(IS_AUTHORIZED_FLAG)), not(methodCall(ref('util.isNullOrEmpty'), ref(`ownerEntity${idx}`)))]),
               compoundExpression([
-                ifElse(
-                  or([
-                    equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
-                    methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
-                  ]),
-                  compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), set(ref(HAS_VALID_OWNER_ARGUMENT_FLAG), bool(true))]),
-                  methodCall(ref('util.unauthorized')),
-                ),
+                // For AND logic, we need to check group membership AND ownership
+                hasGroups
+                  ? ifElse(
+                      and([
+                        ref(groupRef),
+                        or([
+                          equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
+                          methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
+                        ]),
+                      ]),
+                      compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), set(ref(HAS_VALID_OWNER_ARGUMENT_FLAG), bool(true))]),
+                      methodCall(ref('util.unauthorized')),
+                    )
+                  : ifElse(
+                      or([
+                        equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
+                        methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
+                      ]),
+                      compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), set(ref(HAS_VALID_OWNER_ARGUMENT_FLAG), bool(true))]),
+                      methodCall(ref('util.unauthorized')),
+                    ),
               ]),
             ),
           ]),

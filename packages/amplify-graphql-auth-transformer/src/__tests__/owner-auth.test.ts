@@ -1323,4 +1323,372 @@ describe('owner based @auth', () => {
       expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toMatchSnapshot();
     });
   });
+
+  describe('owner with groups (AND logic - owner.inGroup())', () => {
+    test('owner with groups generates VTL with group membership check', () => {
+      const authConfig: AppSyncAuthConfiguration = {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [],
+      };
+      const validSchema = `
+        type Post @model @auth(rules: [{allow: owner, groups: ["Admin", "Moderator"]}]) {
+          id: ID!
+          title: String!
+          owner: String
+        }`;
+      const out = testTransform({
+        schema: validSchema,
+        authConfig,
+        transformers: [new ModelTransformer(), new AuthTransformer()],
+      });
+      expect(out).toBeDefined();
+
+      // Verify VTL contains group membership check for create (auth logic in req.vtl)
+      const createVtl = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
+      expect(createVtl).toContain('isInRequiredGroup');
+      expect(createVtl).toContain('cognito:groups');
+      expect(createVtl).toMatchSnapshot();
+
+      // Verify VTL contains group membership check for update (auth logic in res.vtl after fetching record)
+      const updateVtl = out.resolvers['Mutation.updatePost.auth.1.res.vtl'];
+      expect(updateVtl).toContain('isInRequiredGroup');
+      expect(updateVtl).toMatchSnapshot();
+
+      // Verify VTL contains group membership check for delete (auth logic in res.vtl after fetching record)
+      const deleteVtl = out.resolvers['Mutation.deletePost.auth.1.res.vtl'];
+      expect(deleteVtl).toContain('isInRequiredGroup');
+      expect(deleteVtl).toMatchSnapshot();
+
+      // Verify VTL contains group membership check for queries (auth logic in req.vtl)
+      const getVtl = out.resolvers['Query.getPost.auth.1.req.vtl'];
+      expect(getVtl).toContain('isInRequiredGroup');
+      expect(getVtl).toMatchSnapshot();
+
+      const listVtl = out.resolvers['Query.listPosts.auth.1.req.vtl'];
+      expect(listVtl).toContain('isInRequiredGroup');
+      expect(listVtl).toMatchSnapshot();
+    });
+
+    test('owner with groups for specific operations', () => {
+      const authConfig: AppSyncAuthConfiguration = {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [],
+      };
+      const validSchema = `
+        type Post @model @auth(rules: [{allow: owner, groups: ["Admin"], operations: [create, update]}]) {
+          id: ID!
+          title: String!
+          owner: String
+        }`;
+      const out = testTransform({
+        schema: validSchema,
+        authConfig,
+        transformers: [new ModelTransformer(), new AuthTransformer()],
+      });
+      expect(out).toBeDefined();
+
+      // Create should have group check (auth logic in req.vtl)
+      const createVtl = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
+      expect(createVtl).toContain('isInRequiredGroup');
+      expect(createVtl).toMatchSnapshot();
+
+      // Update should have group check (auth logic in res.vtl after fetching record)
+      const updateVtl = out.resolvers['Mutation.updatePost.auth.1.res.vtl'];
+      expect(updateVtl).toContain('isInRequiredGroup');
+      expect(updateVtl).toMatchSnapshot();
+    });
+
+    test('owner with groups for read operations (expanded from read alias)', () => {
+      const authConfig: AppSyncAuthConfiguration = {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [],
+      };
+      const validSchema = `
+        type Post @model @auth(rules: [{allow: owner, groups: ["Readers"], operations: [read]}]) {
+          id: ID!
+          title: String!
+          owner: String
+        }`;
+      const out = testTransform({
+        schema: validSchema,
+        authConfig,
+        transformers: [new ModelTransformer(), new AuthTransformer()],
+      });
+      expect(out).toBeDefined();
+
+      // Get and list should have group check (read expands to get, list, listen, search, sync)
+      const getVtl = out.resolvers['Query.getPost.auth.1.req.vtl'];
+      expect(getVtl).toContain('isInRequiredGroup');
+      expect(getVtl).toMatchSnapshot();
+
+      const listVtl = out.resolvers['Query.listPosts.auth.1.req.vtl'];
+      expect(listVtl).toContain('isInRequiredGroup');
+      expect(listVtl).toMatchSnapshot();
+    });
+
+    test('owner with groups throws error for SQL data sources', () => {
+      const authConfig: AppSyncAuthConfiguration = {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [],
+      };
+      const validSchema = `
+        type Post @model @auth(rules: [{allow: owner, groups: ["Admin"]}]) {
+          id: ID! @primaryKey
+          title: String!
+          owner: String
+        }`;
+      expect(() =>
+        testTransform({
+          schema: validSchema,
+          authConfig,
+          transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new AuthTransformer()],
+          dataSourceStrategies: constructDataSourceStrategies(validSchema, mockSqlDataSourceStrategy()),
+        }),
+      ).toThrow("cannot use owner-based auth with 'groups' (AND logic) as it is not supported for SQL data sources");
+    });
+
+    test('owner with groups in subscriptions', () => {
+      const authConfig: AppSyncAuthConfiguration = {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [],
+      };
+      const validSchema = `
+        type Post @model @auth(rules: [{allow: owner, groups: ["Subscribers"], operations: [create, listen]}]) {
+          id: ID!
+          title: String!
+          owner: String
+        }`;
+      const out = testTransform({
+        schema: validSchema,
+        authConfig,
+        transformers: [new ModelTransformer(), new AuthTransformer()],
+      });
+      expect(out).toBeDefined();
+
+      // Subscription should have group check
+      const onCreateVtl = out.resolvers['Subscription.onCreatePost.auth.1.req.vtl'];
+      expect(onCreateVtl).toContain('isInRequiredGroup');
+      expect(onCreateVtl).toMatchSnapshot();
+    });
+
+    test('owner with different groups for different operations', () => {
+      const authConfig: AppSyncAuthConfiguration = {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [],
+      };
+      // Readers group can read, Writers group can create/update, Admins can delete
+      const validSchema = `
+        type Post @model @auth(rules: [
+          {allow: owner, groups: ["Readers"], operations: [read]},
+          {allow: owner, groups: ["Writers"], operations: [create, update]},
+          {allow: owner, groups: ["Admins"], operations: [delete]}
+        ]) {
+          id: ID!
+          title: String!
+          owner: String
+        }`;
+      const out = testTransform({
+        schema: validSchema,
+        authConfig,
+        transformers: [new ModelTransformer(), new AuthTransformer()],
+      });
+      expect(out).toBeDefined();
+
+      // Create should check for Writers group
+      const createVtl = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
+      expect(createVtl).toContain('Writers');
+      expect(createVtl).toMatchSnapshot();
+
+      // Update should check for Writers group
+      const updateVtl = out.resolvers['Mutation.updatePost.auth.1.res.vtl'];
+      expect(updateVtl).toContain('Writers');
+      expect(updateVtl).toMatchSnapshot();
+
+      // Delete should check for Admins group
+      const deleteVtl = out.resolvers['Mutation.deletePost.auth.1.res.vtl'];
+      expect(deleteVtl).toContain('Admins');
+      expect(deleteVtl).toMatchSnapshot();
+
+      // Get should check for Readers group
+      const getVtl = out.resolvers['Query.getPost.auth.1.req.vtl'];
+      expect(getVtl).toContain('Readers');
+      expect(getVtl).toMatchSnapshot();
+
+      // List should check for Readers group
+      const listVtl = out.resolvers['Query.listPosts.auth.1.req.vtl'];
+      expect(listVtl).toContain('Readers');
+      expect(listVtl).toMatchSnapshot();
+    });
+
+    test('owner.inGroup combined with regular groups rule (OR logic between rules)', () => {
+      const authConfig: AppSyncAuthConfiguration = {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [],
+      };
+      // Owner must be in "Premium" group, OR anyone in "Admin" group can access
+      const validSchema = `
+        type Post @model @auth(rules: [
+          {allow: owner, groups: ["Premium"]},
+          {allow: groups, groups: ["Admin"]}
+        ]) {
+          id: ID!
+          title: String!
+          owner: String
+        }`;
+      const out = testTransform({
+        schema: validSchema,
+        authConfig,
+        transformers: [new ModelTransformer(), new AuthTransformer()],
+      });
+      expect(out).toBeDefined();
+
+      // Should have both owner+group check (AND) and static group check (OR between rules)
+      const createVtl = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
+      expect(createVtl).toContain('Premium'); // owner.inGroup check
+      expect(createVtl).toContain('Admin'); // static group check
+      expect(createVtl).toMatchSnapshot();
+
+      const getVtl = out.resolvers['Query.getPost.auth.1.req.vtl'];
+      expect(getVtl).toContain('Premium');
+      expect(getVtl).toContain('Admin');
+      expect(getVtl).toMatchSnapshot();
+    });
+
+    test('owner.inGroup with OIDC provider', () => {
+      const authConfig: AppSyncAuthConfiguration = {
+        defaultAuthentication: {
+          authenticationType: 'OPENID_CONNECT',
+          openIDConnectConfig: {
+            name: 'myOIDC',
+            issuerUrl: 'https://example.com',
+          },
+        },
+        additionalAuthenticationProviders: [],
+      };
+      const validSchema = `
+        type Post @model @auth(rules: [{allow: owner, groups: ["Admin"], provider: oidc}]) {
+          id: ID!
+          title: String!
+          owner: String
+        }`;
+      const out = testTransform({
+        schema: validSchema,
+        authConfig,
+        transformers: [new ModelTransformer(), new AuthTransformer()],
+      });
+      expect(out).toBeDefined();
+
+      const createVtl = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
+      expect(createVtl).toContain('isInRequiredGroup');
+      expect(createVtl).toContain('Open ID Connect Authorization'); // Should check for OIDC auth type
+      expect(createVtl).toMatchSnapshot();
+    });
+
+    test('owner.inGroup with custom ownerField', () => {
+      const authConfig: AppSyncAuthConfiguration = {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [],
+      };
+      const validSchema = `
+        type Post @model @auth(rules: [{allow: owner, ownerField: "author", groups: ["Writers"]}]) {
+          id: ID!
+          title: String!
+          author: String
+        }`;
+      const out = testTransform({
+        schema: validSchema,
+        authConfig,
+        transformers: [new ModelTransformer(), new AuthTransformer()],
+      });
+      expect(out).toBeDefined();
+
+      const createVtl = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
+      expect(createVtl).toContain('isInRequiredGroup');
+      expect(createVtl).toContain('author'); // Should use custom owner field
+      expect(createVtl).toMatchSnapshot();
+    });
+
+    test('owner.inGroup combined with public API key access', () => {
+      const authConfig: AppSyncAuthConfiguration = {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [{ authenticationType: 'API_KEY' }],
+      };
+      // API key can read, but mutations require owner in group
+      const validSchema = `
+        type Post @model @auth(rules: [
+          {allow: public, provider: apiKey, operations: [read]},
+          {allow: owner, groups: ["Writers"], operations: [create, update, delete]}
+        ]) {
+          id: ID!
+          title: String!
+          owner: String
+        }`;
+      const out = testTransform({
+        schema: validSchema,
+        authConfig,
+        transformers: [new ModelTransformer(), new AuthTransformer()],
+      });
+      expect(out).toBeDefined();
+
+      // Create should have owner.inGroup check
+      const createVtl = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
+      expect(createVtl).toContain('isInRequiredGroup');
+      expect(createVtl).toContain('Writers');
+      expect(createVtl).toMatchSnapshot();
+
+      // Get should allow API key (no group check for API key)
+      const getVtl = out.resolvers['Query.getPost.auth.1.req.vtl'];
+      expect(getVtl).toContain('API Key');
+      expect(getVtl).toMatchSnapshot();
+    });
+
+    test('multiple owner.inGroup rules with same operation accumulate groups', () => {
+      const authConfig: AppSyncAuthConfiguration = {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [],
+      };
+      // Both rules apply to create - groups should be accumulated
+      const validSchema = `
+        type Post @model @auth(rules: [
+          {allow: owner, groups: ["GroupA"], operations: [create]},
+          {allow: owner, groups: ["GroupB"], operations: [create]}
+        ]) {
+          id: ID!
+          title: String!
+          owner: String
+        }`;
+      const out = testTransform({
+        schema: validSchema,
+        authConfig,
+        transformers: [new ModelTransformer(), new AuthTransformer()],
+      });
+      expect(out).toBeDefined();
+
+      // Create should check for both GroupA and GroupB
+      const createVtl = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
+      expect(createVtl).toContain('GroupA');
+      expect(createVtl).toContain('GroupB');
+      expect(createVtl).toMatchSnapshot();
+    });
+  });
 });

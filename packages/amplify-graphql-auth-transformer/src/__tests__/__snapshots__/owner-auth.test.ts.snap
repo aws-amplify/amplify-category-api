@@ -600,6 +600,1374 @@ exports[`owner based @auth owner where field is "::" delimited with only mutatio
 ## [End] Parse owner field auth for Get. **"
 `;
 
+exports[`owner based @auth owner with groups (AND logic - owner.inGroup()) multiple owner.inGroup rules with same operation accumulate groups 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #set( $requiredGroups0 = [\\"GroupA\\",\\"GroupB\\"] )
+  #set( $userGroups0 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #if( $util.isString($userGroups0) )
+    #if( $util.isList($util.parseJson($userGroups0)) )
+      #set( $userGroups0 = $util.parseJson($userGroups0) )
+    #else
+      #set( $userGroups0 = [$userGroups0] )
+    #end
+  #end
+  #set( $isInRequiredGroup0 = false )
+  #foreach( $reqGroup in $requiredGroups0 )
+    #if( $userGroups0.contains($reqGroup) )
+      #set( $isInRequiredGroup0 = true )
+      #break
+    #end
+  #end
+  #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.owner, null) )
+  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+  #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+  #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+    #if( $isAuthorized && $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+      $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+    #end
+    #if( !$isAuthorized )
+      #set( $ownerClaimsList0 = [] )
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+      #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"owner\\"] )
+      #set( $isAuthorizedOnAllFields0 = true )
+      #if( $isInRequiredGroup0 && $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
+      #end
+      #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+        $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #set( $deniedFields = $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+  #if( $deniedFields.size() > 0 )
+    $util.error(\\"Unauthorized on \${deniedFields}\\", \\"Unauthorized\\")
+  #end
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth owner with groups (AND logic - owner.inGroup()) owner with different groups for different operations 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #set( $requiredGroups0 = [\\"Writers\\"] )
+  #set( $userGroups0 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #if( $util.isString($userGroups0) )
+    #if( $util.isList($util.parseJson($userGroups0)) )
+      #set( $userGroups0 = $util.parseJson($userGroups0) )
+    #else
+      #set( $userGroups0 = [$userGroups0] )
+    #end
+  #end
+  #set( $isInRequiredGroup0 = false )
+  #foreach( $reqGroup in $requiredGroups0 )
+    #if( $userGroups0.contains($reqGroup) )
+      #set( $isInRequiredGroup0 = true )
+      #break
+    #end
+  #end
+  #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.owner, null) )
+  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+  #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+  #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+    #if( $isAuthorized && $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+      $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+    #end
+    #if( !$isAuthorized )
+      #set( $ownerClaimsList0 = [] )
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+      #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"owner\\"] )
+      #set( $isAuthorizedOnAllFields0 = true )
+      #if( $isInRequiredGroup0 && $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
+      #end
+      #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+        $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #set( $deniedFields = $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+  #if( $deniedFields.size() > 0 )
+    $util.error(\\"Unauthorized on \${deniedFields}\\", \\"Unauthorized\\")
+  #end
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth owner with groups (AND logic - owner.inGroup()) owner with different groups for different operations 2`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#set( $nullAllowedFields = [] )
+#set( $deniedFields = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #set( $requiredGroups0 = [\\"Writers\\"] )
+  #set( $userGroups0 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #if( $util.isString($userGroups0) )
+    #if( $util.isList($util.parseJson($userGroups0)) )
+      #set( $userGroups0 = $util.parseJson($userGroups0) )
+    #else
+      #set( $userGroups0 = [$userGroups0] )
+    #end
+  #end
+  #set( $isInRequiredGroup0 = false )
+  #foreach( $reqGroup in $requiredGroups0 )
+    #if( $userGroups0.contains($reqGroup) )
+      #set( $isInRequiredGroup0 = true )
+      #break
+    #end
+  #end
+  #if( !$isAuthorized )
+    #set( $ownerEntity0 = $util.defaultIfNull($ctx.result.owner, null) )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #set( $ownerClaimsList0 = [] )
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+      #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"owner\\"] )
+      #set( $ownerNullAllowedFields0 = [\\"id\\",\\"title\\",\\"owner\\"] )
+      #set( $isAuthorizedOnAllFields0 = true )
+      #if( $isInRequiredGroup0 && $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+          $util.qr($nullAllowedFields.addAll($ownerNullAllowedFields0))
+        #end
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() && $nullAllowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #foreach( $entry in $util.map.copyAndRetainAllKeys($ctx.args.input, $inputFields).entrySet() )
+    #if( $util.isNull($entry.value) && !$nullAllowedFields.contains($entry.key) )
+      $util.qr($deniedFields.put($entry.key, \\"\\"))
+    #end
+  #end
+  #foreach( $deniedField in $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+    $util.qr($deniedFields.put($deniedField, \\"\\"))
+  #end
+#end
+#if( $deniedFields.keySet().size() > 0 )
+  $util.error(\\"Unauthorized on \${deniedFields.keySet()}\\", \\"Unauthorized\\")
+#end
+$util.toJson({})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth owner with groups (AND logic - owner.inGroup()) owner with different groups for different operations 3`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #set( $requiredGroups0 = [\\"Admins\\"] )
+  #set( $userGroups0 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #if( $util.isString($userGroups0) )
+    #if( $util.isList($util.parseJson($userGroups0)) )
+      #set( $userGroups0 = $util.parseJson($userGroups0) )
+    #else
+      #set( $userGroups0 = [$userGroups0] )
+    #end
+  #end
+  #set( $isInRequiredGroup0 = false )
+  #foreach( $reqGroup in $requiredGroups0 )
+    #if( $userGroups0.contains($reqGroup) )
+      #set( $isInRequiredGroup0 = true )
+      #break
+    #end
+  #end
+  #if( !$isAuthorized )
+    #set( $ownerEntity0 = $util.defaultIfNull($ctx.result.owner, null) )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #set( $ownerClaimsList0 = [] )
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+      #if( $isInRequiredGroup0 && $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #set( $isAuthorized = true )
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth owner with groups (AND logic - owner.inGroup()) owner with different groups for different operations 4`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $authFilter = [] )
+    #set( $requiredGroups0 = [\\"Readers\\"] )
+    #set( $userGroups0 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+    #if( $util.isString($userGroups0) )
+      #if( $util.isList($util.parseJson($userGroups0)) )
+        #set( $userGroups0 = $util.parseJson($userGroups0) )
+      #else
+        #set( $userGroups0 = [$userGroups0] )
+      #end
+    #end
+    #set( $isInRequiredGroup0 = false )
+    #foreach( $reqGroup in $requiredGroups0 )
+      #if( $userGroups0.contains($reqGroup) )
+        #set( $isInRequiredGroup0 = true )
+        #break
+      #end
+    #end
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #if( $isInRequiredGroup0 )
+        #if( !$util.isNull($ownerClaim0) )
+          $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $ownerClaim0 }}))
+        #end
+      #end
+    #end
+    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #if( $isInRequiredGroup0 )
+      #if( !$util.isNull($role0_0) )
+        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_0 }}))
+      #end
+    #end
+    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( $isInRequiredGroup0 )
+      #if( !$util.isNull($role0_1) )
+        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_1 }}))
+      #end
+    #end
+    #if( !$authFilter.isEmpty() )
+      $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth owner with groups (AND logic - owner.inGroup()) owner with different groups for different operations 5`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $authFilter = [] )
+    #set( $requiredGroups0 = [\\"Readers\\"] )
+    #set( $userGroups0 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+    #if( $util.isString($userGroups0) )
+      #if( $util.isList($util.parseJson($userGroups0)) )
+        #set( $userGroups0 = $util.parseJson($userGroups0) )
+      #else
+        #set( $userGroups0 = [$userGroups0] )
+      #end
+    #end
+    #set( $isInRequiredGroup0 = false )
+    #foreach( $reqGroup in $requiredGroups0 )
+      #if( $userGroups0.contains($reqGroup) )
+        #set( $isInRequiredGroup0 = true )
+        #break
+      #end
+    #end
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #if( $isInRequiredGroup0 )
+        #if( !$util.isNull($ownerClaim0) )
+          $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $ownerClaim0 }}))
+        #end
+      #end
+    #end
+    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #if( $isInRequiredGroup0 )
+      #if( !$util.isNull($role0_0) )
+        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_0 }}))
+      #end
+    #end
+    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( $isInRequiredGroup0 )
+      #if( !$util.isNull($role0_1) )
+        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_1 }}))
+      #end
+    #end
+    #if( !$authFilter.isEmpty() )
+      $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth owner with groups (AND logic - owner.inGroup()) owner with groups for read operations (expanded from read alias) 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $authFilter = [] )
+    #set( $requiredGroups0 = [\\"Readers\\"] )
+    #set( $userGroups0 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+    #if( $util.isString($userGroups0) )
+      #if( $util.isList($util.parseJson($userGroups0)) )
+        #set( $userGroups0 = $util.parseJson($userGroups0) )
+      #else
+        #set( $userGroups0 = [$userGroups0] )
+      #end
+    #end
+    #set( $isInRequiredGroup0 = false )
+    #foreach( $reqGroup in $requiredGroups0 )
+      #if( $userGroups0.contains($reqGroup) )
+        #set( $isInRequiredGroup0 = true )
+        #break
+      #end
+    #end
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #if( $isInRequiredGroup0 )
+        #if( !$util.isNull($ownerClaim0) )
+          $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $ownerClaim0 }}))
+        #end
+      #end
+    #end
+    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #if( $isInRequiredGroup0 )
+      #if( !$util.isNull($role0_0) )
+        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_0 }}))
+      #end
+    #end
+    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( $isInRequiredGroup0 )
+      #if( !$util.isNull($role0_1) )
+        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_1 }}))
+      #end
+    #end
+    #if( !$authFilter.isEmpty() )
+      $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth owner with groups (AND logic - owner.inGroup()) owner with groups for read operations (expanded from read alias) 2`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $authFilter = [] )
+    #set( $requiredGroups0 = [\\"Readers\\"] )
+    #set( $userGroups0 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+    #if( $util.isString($userGroups0) )
+      #if( $util.isList($util.parseJson($userGroups0)) )
+        #set( $userGroups0 = $util.parseJson($userGroups0) )
+      #else
+        #set( $userGroups0 = [$userGroups0] )
+      #end
+    #end
+    #set( $isInRequiredGroup0 = false )
+    #foreach( $reqGroup in $requiredGroups0 )
+      #if( $userGroups0.contains($reqGroup) )
+        #set( $isInRequiredGroup0 = true )
+        #break
+      #end
+    #end
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #if( $isInRequiredGroup0 )
+        #if( !$util.isNull($ownerClaim0) )
+          $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $ownerClaim0 }}))
+        #end
+      #end
+    #end
+    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #if( $isInRequiredGroup0 )
+      #if( !$util.isNull($role0_0) )
+        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_0 }}))
+      #end
+    #end
+    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( $isInRequiredGroup0 )
+      #if( !$util.isNull($role0_1) )
+        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_1 }}))
+      #end
+    #end
+    #if( !$authFilter.isEmpty() )
+      $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth owner with groups (AND logic - owner.inGroup()) owner with groups for specific operations 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #set( $requiredGroups0 = [\\"Admin\\"] )
+  #set( $userGroups0 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #if( $util.isString($userGroups0) )
+    #if( $util.isList($util.parseJson($userGroups0)) )
+      #set( $userGroups0 = $util.parseJson($userGroups0) )
+    #else
+      #set( $userGroups0 = [$userGroups0] )
+    #end
+  #end
+  #set( $isInRequiredGroup0 = false )
+  #foreach( $reqGroup in $requiredGroups0 )
+    #if( $userGroups0.contains($reqGroup) )
+      #set( $isInRequiredGroup0 = true )
+      #break
+    #end
+  #end
+  #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.owner, null) )
+  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+  #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+  #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+    #if( $isAuthorized && $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+      $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+    #end
+    #if( !$isAuthorized )
+      #set( $ownerClaimsList0 = [] )
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+      #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"owner\\"] )
+      #set( $isAuthorizedOnAllFields0 = true )
+      #if( $isInRequiredGroup0 && $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
+      #end
+      #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+        $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #set( $deniedFields = $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+  #if( $deniedFields.size() > 0 )
+    $util.error(\\"Unauthorized on \${deniedFields}\\", \\"Unauthorized\\")
+  #end
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth owner with groups (AND logic - owner.inGroup()) owner with groups for specific operations 2`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#set( $nullAllowedFields = [] )
+#set( $deniedFields = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #set( $requiredGroups0 = [\\"Admin\\"] )
+  #set( $userGroups0 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #if( $util.isString($userGroups0) )
+    #if( $util.isList($util.parseJson($userGroups0)) )
+      #set( $userGroups0 = $util.parseJson($userGroups0) )
+    #else
+      #set( $userGroups0 = [$userGroups0] )
+    #end
+  #end
+  #set( $isInRequiredGroup0 = false )
+  #foreach( $reqGroup in $requiredGroups0 )
+    #if( $userGroups0.contains($reqGroup) )
+      #set( $isInRequiredGroup0 = true )
+      #break
+    #end
+  #end
+  #if( !$isAuthorized )
+    #set( $ownerEntity0 = $util.defaultIfNull($ctx.result.owner, null) )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #set( $ownerClaimsList0 = [] )
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+      #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"owner\\"] )
+      #set( $ownerNullAllowedFields0 = [] )
+      #set( $isAuthorizedOnAllFields0 = false )
+      #if( $isInRequiredGroup0 && $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+          $util.qr($nullAllowedFields.addAll($ownerNullAllowedFields0))
+        #end
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() && $nullAllowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #foreach( $entry in $util.map.copyAndRetainAllKeys($ctx.args.input, $inputFields).entrySet() )
+    #if( $util.isNull($entry.value) && !$nullAllowedFields.contains($entry.key) )
+      $util.qr($deniedFields.put($entry.key, \\"\\"))
+    #end
+  #end
+  #foreach( $deniedField in $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+    $util.qr($deniedFields.put($deniedField, \\"\\"))
+  #end
+#end
+#if( $deniedFields.keySet().size() > 0 )
+  $util.error(\\"Unauthorized on \${deniedFields.keySet()}\\", \\"Unauthorized\\")
+#end
+$util.toJson({})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth owner with groups (AND logic - owner.inGroup()) owner with groups generates VTL with group membership check 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #set( $requiredGroups0 = [\\"Admin\\",\\"Moderator\\"] )
+  #set( $userGroups0 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #if( $util.isString($userGroups0) )
+    #if( $util.isList($util.parseJson($userGroups0)) )
+      #set( $userGroups0 = $util.parseJson($userGroups0) )
+    #else
+      #set( $userGroups0 = [$userGroups0] )
+    #end
+  #end
+  #set( $isInRequiredGroup0 = false )
+  #foreach( $reqGroup in $requiredGroups0 )
+    #if( $userGroups0.contains($reqGroup) )
+      #set( $isInRequiredGroup0 = true )
+      #break
+    #end
+  #end
+  #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.owner, null) )
+  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+  #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+  #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+    #if( $isAuthorized && $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+      $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+    #end
+    #if( !$isAuthorized )
+      #set( $ownerClaimsList0 = [] )
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+      #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"owner\\"] )
+      #set( $isAuthorizedOnAllFields0 = true )
+      #if( $isInRequiredGroup0 && $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
+      #end
+      #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+        $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #set( $deniedFields = $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+  #if( $deniedFields.size() > 0 )
+    $util.error(\\"Unauthorized on \${deniedFields}\\", \\"Unauthorized\\")
+  #end
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth owner with groups (AND logic - owner.inGroup()) owner with groups generates VTL with group membership check 2`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#set( $nullAllowedFields = [] )
+#set( $deniedFields = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #set( $requiredGroups0 = [\\"Admin\\",\\"Moderator\\"] )
+  #set( $userGroups0 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #if( $util.isString($userGroups0) )
+    #if( $util.isList($util.parseJson($userGroups0)) )
+      #set( $userGroups0 = $util.parseJson($userGroups0) )
+    #else
+      #set( $userGroups0 = [$userGroups0] )
+    #end
+  #end
+  #set( $isInRequiredGroup0 = false )
+  #foreach( $reqGroup in $requiredGroups0 )
+    #if( $userGroups0.contains($reqGroup) )
+      #set( $isInRequiredGroup0 = true )
+      #break
+    #end
+  #end
+  #if( !$isAuthorized )
+    #set( $ownerEntity0 = $util.defaultIfNull($ctx.result.owner, null) )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #set( $ownerClaimsList0 = [] )
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+      #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"owner\\"] )
+      #set( $ownerNullAllowedFields0 = [\\"id\\",\\"title\\",\\"owner\\"] )
+      #set( $isAuthorizedOnAllFields0 = true )
+      #if( $isInRequiredGroup0 && $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+          $util.qr($nullAllowedFields.addAll($ownerNullAllowedFields0))
+        #end
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() && $nullAllowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #foreach( $entry in $util.map.copyAndRetainAllKeys($ctx.args.input, $inputFields).entrySet() )
+    #if( $util.isNull($entry.value) && !$nullAllowedFields.contains($entry.key) )
+      $util.qr($deniedFields.put($entry.key, \\"\\"))
+    #end
+  #end
+  #foreach( $deniedField in $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+    $util.qr($deniedFields.put($deniedField, \\"\\"))
+  #end
+#end
+#if( $deniedFields.keySet().size() > 0 )
+  $util.error(\\"Unauthorized on \${deniedFields.keySet()}\\", \\"Unauthorized\\")
+#end
+$util.toJson({})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth owner with groups (AND logic - owner.inGroup()) owner with groups generates VTL with group membership check 3`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #set( $requiredGroups0 = [\\"Admin\\",\\"Moderator\\"] )
+  #set( $userGroups0 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #if( $util.isString($userGroups0) )
+    #if( $util.isList($util.parseJson($userGroups0)) )
+      #set( $userGroups0 = $util.parseJson($userGroups0) )
+    #else
+      #set( $userGroups0 = [$userGroups0] )
+    #end
+  #end
+  #set( $isInRequiredGroup0 = false )
+  #foreach( $reqGroup in $requiredGroups0 )
+    #if( $userGroups0.contains($reqGroup) )
+      #set( $isInRequiredGroup0 = true )
+      #break
+    #end
+  #end
+  #if( !$isAuthorized )
+    #set( $ownerEntity0 = $util.defaultIfNull($ctx.result.owner, null) )
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #set( $ownerClaimsList0 = [] )
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+      #if( $isInRequiredGroup0 && $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #set( $isAuthorized = true )
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth owner with groups (AND logic - owner.inGroup()) owner with groups generates VTL with group membership check 4`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $authFilter = [] )
+    #set( $requiredGroups0 = [\\"Admin\\",\\"Moderator\\"] )
+    #set( $userGroups0 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+    #if( $util.isString($userGroups0) )
+      #if( $util.isList($util.parseJson($userGroups0)) )
+        #set( $userGroups0 = $util.parseJson($userGroups0) )
+      #else
+        #set( $userGroups0 = [$userGroups0] )
+      #end
+    #end
+    #set( $isInRequiredGroup0 = false )
+    #foreach( $reqGroup in $requiredGroups0 )
+      #if( $userGroups0.contains($reqGroup) )
+        #set( $isInRequiredGroup0 = true )
+        #break
+      #end
+    #end
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #if( $isInRequiredGroup0 )
+        #if( !$util.isNull($ownerClaim0) )
+          $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $ownerClaim0 }}))
+        #end
+      #end
+    #end
+    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #if( $isInRequiredGroup0 )
+      #if( !$util.isNull($role0_0) )
+        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_0 }}))
+      #end
+    #end
+    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( $isInRequiredGroup0 )
+      #if( !$util.isNull($role0_1) )
+        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_1 }}))
+      #end
+    #end
+    #if( !$authFilter.isEmpty() )
+      $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth owner with groups (AND logic - owner.inGroup()) owner with groups generates VTL with group membership check 5`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $authFilter = [] )
+    #set( $requiredGroups0 = [\\"Admin\\",\\"Moderator\\"] )
+    #set( $userGroups0 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+    #if( $util.isString($userGroups0) )
+      #if( $util.isList($util.parseJson($userGroups0)) )
+        #set( $userGroups0 = $util.parseJson($userGroups0) )
+      #else
+        #set( $userGroups0 = [$userGroups0] )
+      #end
+    #end
+    #set( $isInRequiredGroup0 = false )
+    #foreach( $reqGroup in $requiredGroups0 )
+      #if( $userGroups0.contains($reqGroup) )
+        #set( $isInRequiredGroup0 = true )
+        #break
+      #end
+    #end
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #if( $isInRequiredGroup0 )
+        #if( !$util.isNull($ownerClaim0) )
+          $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $ownerClaim0 }}))
+        #end
+      #end
+    #end
+    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #if( $isInRequiredGroup0 )
+      #if( !$util.isNull($role0_0) )
+        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_0 }}))
+      #end
+    #end
+    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( $isInRequiredGroup0 )
+      #if( !$util.isNull($role0_1) )
+        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_1 }}))
+      #end
+    #end
+    #if( !$authFilter.isEmpty() )
+      $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth owner with groups (AND logic - owner.inGroup()) owner with groups in subscriptions 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #set( $hasValidOwnerArgument = false )
+  #set( $authRuntimeFilter = [] )
+  #set( $authOwnerRuntimeFilter = [] )
+  #set( $authGroupRuntimeFilter = [] )
+  #set( $requiredGroups0 = [\\"Subscribers\\"] )
+  #set( $userGroups0 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #if( $util.isString($userGroups0) )
+    #if( $util.isList($util.parseJson($userGroups0)) )
+      #set( $userGroups0 = $util.parseJson($userGroups0) )
+    #else
+      #set( $userGroups0 = [$userGroups0] )
+    #end
+  #end
+  #set( $isInRequiredGroup0 = false )
+  #foreach( $reqGroup in $requiredGroups0 )
+    #if( $userGroups0.contains($reqGroup) )
+      #set( $isInRequiredGroup0 = true )
+      #break
+    #end
+  #end
+  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+  #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+  #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+    #set( $ownerClaimsList0 = [] )
+    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+    $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+    #if( $isInRequiredGroup0 )
+      $util.qr($authOwnerRuntimeFilter.add({ \\"owner\\": { \\"eq\\": $currentClaim1 } }))
+    #end
+    #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.owner, null) )
+    #if( !$isAuthorized && !$util.isNullOrEmpty($ownerEntity0) )
+      #if( $isInRequiredGroup0 && $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #set( $isAuthorized = true )
+        #set( $hasValidOwnerArgument = true )
+      #else
+        $util.unauthorized()
+      #end
+    #end
+  #end
+  ## Apply dynamic roles auth if not previously authorized by static groups and owner argument **
+  #if( $authOwnerRuntimeFilter.size() > 0 )
+    $util.qr($authRuntimeFilter.addAll($authOwnerRuntimeFilter))
+  #end
+  #if( $authGroupRuntimeFilter.size() > 0 )
+    $util.qr($authRuntimeFilter.addAll($authGroupRuntimeFilter))
+  #end
+  #set( $filterArgsSize = 0 )
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filterArgsSize = $ctx.args.filter.size() )
+  #end
+  #set( $isOwnerAuthAuthorizedAndNoOtherFilters = $hasValidOwnerArgument && $authRuntimeFilter.size() == 1 && $filterArgsSize == 0 )
+  #set( $isOwnerOrDynamicAuthAuthorizedWithFilters = (!$isAuthorized || $hasValidOwnerArgument) && $authRuntimeFilter.size() > 0 )
+  #if( !$isOwnerAuthAuthorizedAndNoOtherFilters && $isOwnerOrDynamicAuthAuthorizedWithFilters )
+    #if( $util.isNullOrEmpty($ctx.args.filter) )
+      #set( $ctx.args.filter = { \\"or\\": $authRuntimeFilter } )
+    #else
+      #set( $ctx.args.filter = { \\"and\\": [ { \\"or\\": $authRuntimeFilter }, $ctx.args.filter ]} )
+    #end
+    #set( $isAuthorized = true )
+  #end
+#end
+#if( !$isAuthorized )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth owner with groups (AND logic - owner.inGroup()) owner.inGroup combined with public API key access 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#if( $util.authType() == \\"API Key Authorization\\" )
+$util.unauthorized()
+#end
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #set( $requiredGroups0 = [\\"Writers\\"] )
+  #set( $userGroups0 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #if( $util.isString($userGroups0) )
+    #if( $util.isList($util.parseJson($userGroups0)) )
+      #set( $userGroups0 = $util.parseJson($userGroups0) )
+    #else
+      #set( $userGroups0 = [$userGroups0] )
+    #end
+  #end
+  #set( $isInRequiredGroup0 = false )
+  #foreach( $reqGroup in $requiredGroups0 )
+    #if( $userGroups0.contains($reqGroup) )
+      #set( $isInRequiredGroup0 = true )
+      #break
+    #end
+  #end
+  #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.owner, null) )
+  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+  #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+  #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+    #if( $isAuthorized && $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+      $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+    #end
+    #if( !$isAuthorized )
+      #set( $ownerClaimsList0 = [] )
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+      #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"owner\\"] )
+      #set( $isAuthorizedOnAllFields0 = true )
+      #if( $isInRequiredGroup0 && $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
+      #end
+      #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+        $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #set( $deniedFields = $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+  #if( $deniedFields.size() > 0 )
+    $util.error(\\"Unauthorized on \${deniedFields}\\", \\"Unauthorized\\")
+  #end
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth owner with groups (AND logic - owner.inGroup()) owner.inGroup combined with public API key access 2`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"API Key Authorization\\" )
+  #set( $isAuthorized = true )
+#end
+#if( $util.authType() == \\"User Pool Authorization\\" )
+
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth owner with groups (AND logic - owner.inGroup()) owner.inGroup combined with regular groups rule (OR logic between rules) 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $staticGroupRoles = [{\\"claim\\":\\"cognito:groups\\",\\"entity\\":\\"Admin\\",\\"allowedFields\\":[\\"id\\",\\"title\\",\\"owner\\"],\\"isAuthorizedOnAllFields\\":true}] )
+    #foreach( $groupRole in $staticGroupRoles )
+      #set( $groupsInToken = $util.defaultIfNull($ctx.identity.claims.get($groupRole.claim), []) )
+      #if( $groupsInToken.contains($groupRole.entity) )
+        #if( $groupRole.isAuthorizedOnAllFields )
+          #set( $isAuthorized = true )
+          #break
+        #else
+          $util.qr($allowedFields.addAll($groupRole.allowedFields))
+        #end
+      #end
+    #end
+  #end
+  #set( $requiredGroups0 = [\\"Premium\\"] )
+  #set( $userGroups0 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #if( $util.isString($userGroups0) )
+    #if( $util.isList($util.parseJson($userGroups0)) )
+      #set( $userGroups0 = $util.parseJson($userGroups0) )
+    #else
+      #set( $userGroups0 = [$userGroups0] )
+    #end
+  #end
+  #set( $isInRequiredGroup0 = false )
+  #foreach( $reqGroup in $requiredGroups0 )
+    #if( $userGroups0.contains($reqGroup) )
+      #set( $isInRequiredGroup0 = true )
+      #break
+    #end
+  #end
+  #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.owner, null) )
+  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+  #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+  #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+    #if( $isAuthorized && $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+      $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+    #end
+    #if( !$isAuthorized )
+      #set( $ownerClaimsList0 = [] )
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+      #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"owner\\"] )
+      #set( $isAuthorizedOnAllFields0 = true )
+      #if( $isInRequiredGroup0 && $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
+      #end
+      #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+        $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #set( $deniedFields = $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+  #if( $deniedFields.size() > 0 )
+    $util.error(\\"Unauthorized on \${deniedFields}\\", \\"Unauthorized\\")
+  #end
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth owner with groups (AND logic - owner.inGroup()) owner.inGroup combined with regular groups rule (OR logic between rules) 2`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #if( !$isAuthorized )
+    #set( $staticGroupRoles = [{\\"claim\\":\\"cognito:groups\\",\\"entity\\":\\"Admin\\"}] )
+    #foreach( $groupRole in $staticGroupRoles )
+      #set( $groupsInToken = $util.defaultIfNull($ctx.identity.claims.get($groupRole.claim), []) )
+      #if( $groupsInToken.contains($groupRole.entity) )
+        #set( $isAuthorized = true )
+        #break
+      #end
+    #end
+  #end
+  #if( !$isAuthorized )
+    #set( $authFilter = [] )
+    #set( $requiredGroups0 = [\\"Premium\\"] )
+    #set( $userGroups0 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+    #if( $util.isString($userGroups0) )
+      #if( $util.isList($util.parseJson($userGroups0)) )
+        #set( $userGroups0 = $util.parseJson($userGroups0) )
+      #else
+        #set( $userGroups0 = [$userGroups0] )
+      #end
+    #end
+    #set( $isInRequiredGroup0 = false )
+    #foreach( $reqGroup in $requiredGroups0 )
+      #if( $userGroups0.contains($reqGroup) )
+        #set( $isInRequiredGroup0 = true )
+        #break
+      #end
+    #end
+    #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+      #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+      #if( $isInRequiredGroup0 )
+        #if( !$util.isNull($ownerClaim0) )
+          $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $ownerClaim0 }}))
+        #end
+      #end
+    #end
+    #set( $role0_0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+    #if( $isInRequiredGroup0 )
+      #if( !$util.isNull($role0_0) )
+        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_0 }}))
+      #end
+    #end
+    #set( $role0_1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+    #if( $isInRequiredGroup0 )
+      #if( !$util.isNull($role0_1) )
+        $util.qr($authFilter.add({\\"owner\\": { \\"eq\\": $role0_1 }}))
+      #end
+    #end
+    #if( !$authFilter.isEmpty() )
+      $util.qr($ctx.stash.put(\\"authFilter\\", { \\"or\\": $authFilter }))
+    #end
+  #end
+#end
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) )
+$util.unauthorized()
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth owner with groups (AND logic - owner.inGroup()) owner.inGroup with OIDC provider 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#if( $util.authType() == \\"Open ID Connect Authorization\\" )
+  #set( $requiredGroups0 = [\\"Admin\\"] )
+  #set( $userGroups0 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #if( $util.isString($userGroups0) )
+    #if( $util.isList($util.parseJson($userGroups0)) )
+      #set( $userGroups0 = $util.parseJson($userGroups0) )
+    #else
+      #set( $userGroups0 = [$userGroups0] )
+    #end
+  #end
+  #set( $isInRequiredGroup0 = false )
+  #foreach( $reqGroup in $requiredGroups0 )
+    #if( $userGroups0.contains($reqGroup) )
+      #set( $isInRequiredGroup0 = true )
+      #break
+    #end
+  #end
+  #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.owner, null) )
+  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+  #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+  #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+    #if( $isAuthorized && $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+      $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+    #end
+    #if( !$isAuthorized )
+      #set( $ownerClaimsList0 = [] )
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+      #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"owner\\"] )
+      #set( $isAuthorizedOnAllFields0 = true )
+      #if( $isInRequiredGroup0 && $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
+      #end
+      #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"owner\\") )
+        $util.qr($ctx.args.input.put(\\"owner\\", $ownerClaim0))
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #set( $deniedFields = $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+  #if( $deniedFields.size() > 0 )
+    $util.error(\\"Unauthorized on \${deniedFields}\\", \\"Unauthorized\\")
+  #end
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
+exports[`owner based @auth owner with groups (AND logic - owner.inGroup()) owner.inGroup with custom ownerField 1`] = `
+"## [Start] Authorization Steps. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $inputFields = $util.parseJson($util.toJson($ctx.args.input.keySet())) )
+#set( $isAuthorized = false )
+#set( $allowedFields = [] )
+#if( $util.authType() == \\"User Pool Authorization\\" )
+  #set( $requiredGroups0 = [\\"Writers\\"] )
+  #set( $userGroups0 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #if( $util.isString($userGroups0) )
+    #if( $util.isList($util.parseJson($userGroups0)) )
+      #set( $userGroups0 = $util.parseJson($userGroups0) )
+    #else
+      #set( $userGroups0 = [$userGroups0] )
+    #end
+  #end
+  #set( $isInRequiredGroup0 = false )
+  #foreach( $reqGroup in $requiredGroups0 )
+    #if( $userGroups0.contains($reqGroup) )
+      #set( $isInRequiredGroup0 = true )
+      #break
+    #end
+  #end
+  #set( $ownerEntity0 = $util.defaultIfNull($ctx.args.input.author, null) )
+  #set( $ownerClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null) )
+  #set( $currentClaim1 = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null)) )
+  #if( !$util.isNull($ownerClaim0) && !$util.isNull($currentClaim1) )
+    #set( $ownerClaim0 = \\"$ownerClaim0::$currentClaim1\\" )
+    #if( $isAuthorized && $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"author\\") )
+      $util.qr($ctx.args.input.put(\\"author\\", $ownerClaim0))
+    #end
+    #if( !$isAuthorized )
+      #set( $ownerClaimsList0 = [] )
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"sub\\"), null)))
+      $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
+      #set( $ownerAllowedFields0 = [\\"id\\",\\"title\\",\\"author\\"] )
+      #set( $isAuthorizedOnAllFields0 = true )
+      #if( $isInRequiredGroup0 && $ownerClaim0 == $ownerEntity0 || $ownerClaimsList0.contains($ownerEntity0) )
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
+      #end
+      #if( $util.isNull($ownerEntity0) && !$ctx.args.input.containsKey(\\"author\\") )
+        $util.qr($ctx.args.input.put(\\"author\\", $ownerClaim0))
+        #if( $isAuthorizedOnAllFields0 )
+          #set( $isAuthorized = true )
+        #else
+          $util.qr($allowedFields.addAll($ownerAllowedFields0))
+        #end
+      #end
+    #end
+  #end
+#end
+#if( !$isAuthorized && $allowedFields.isEmpty() )
+$util.unauthorized()
+#end
+#if( !$isAuthorized )
+  #set( $deniedFields = $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
+  #if( $deniedFields.size() > 0 )
+    $util.error(\\"Unauthorized on \${deniedFields}\\", \\"Unauthorized\\")
+  #end
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization Steps. **"
+`;
+
 exports[`owner based @auth should not add duplicate implicit field when already included 1`] = `
 "type Todo {
   owner: String

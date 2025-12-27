@@ -16,7 +16,7 @@ import {
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
-import { ConfiguredAuthProviders, RoleDefinition } from '../../../utils';
+import { ConfiguredAuthProviders, ModelOperation, RoleDefinition } from '../../../utils';
 import { constructAuthFilter, emptyPayload, generateAuthRulesFromRoles, generateIAMAccessCheck, validateAuthResult } from './common';
 
 export const generateAuthExpressionForQueries = (
@@ -29,6 +29,8 @@ export const generateAuthExpressionForQueries = (
   def: ObjectTypeDefinitionNode,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   indexName: string | undefined,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  operation: ModelOperation,
 ): string => {
   const expressions = [];
   expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, fields, providers.hasIdentityPoolId, true)));
@@ -85,6 +87,8 @@ export const generateAuthExpressionForRelationQuery = (
   providers: ConfiguredAuthProviders,
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  operation: ModelOperation,
 ): string => {
   const expressions = [];
   expressions.push(compoundExpression(generateAuthRulesFromRoles(roles, fields, providers.hasIdentityPoolId, true)));
