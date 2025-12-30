@@ -37,6 +37,7 @@ const DEFAULT_NO_OUTPUT_TIMEOUT = process.env.AMPLIFY_TEST_TIMEOUT_SEC
   : 5 * 60 * 1000; // 5 Minutes
 const EXIT_CODE_TIMEOUT = 2;
 const EXIT_CODE_GENERIC_ERROR = 3;
+const EXIT_CODE_TOTAL_TIMEOUT = 4;
 const LOG_DUMP_FILE = process.env.LOG_DUMP_FILE;
 
 // https://notes.burke.libbey.me/ansi-escape-codes/
@@ -66,6 +67,7 @@ export type Context = {
   stripColors: boolean;
   process: Recorder | undefined;
   noOutputTimeout: number;
+  totalDurationTimeout?: number;
   getRecording: () => string;
 };
 
@@ -102,6 +104,7 @@ export type ExecutionContext = {
 
 export type SpawnOptions = {
   noOutputTimeout?: number;
+  totalDurationTimeout?: number;
   cwd?: string | undefined;
   env?: object | any;
   stripColors?: boolean;
@@ -373,6 +376,7 @@ function chain(context: Context): ExecutionContext {
     let stdout: string[] = [];
     let options;
     let noOutputTimer;
+    let totalDurationTimer;
 
     let logDumpFile: fs.WriteStream;
 
@@ -387,6 +391,7 @@ function chain(context: Context): ExecutionContext {
 
     const exitHandler = (code: number, signal: any) => {
       noOutputTimer.clear();
+      totalDurationTimer?.clear();
       context.process.removeOnExitHandlers(exitHandler);
       if (logDumpFile) {
         logDumpFile.close();
@@ -406,6 +411,14 @@ function chain(context: Context): ExecutionContext {
             `Killed the process as no output received for ${context.noOutputTimeout / 1000} Sec. The no output timeout is set to ${
               context.noOutputTimeout / 1000
             } seconds.\n\nLast 10 lines:👇🏽👇🏽👇🏽👇🏽\n\n\n\n\n${lastScreen}\n\n\n👆🏼👆🏼👆🏼👆🏼`,
+          );
+          err.stack = undefined;
+          return onError(err, true);
+        } else if (code === EXIT_CODE_TOTAL_TIMEOUT) {
+          const err = new Error(
+            `Killed the process since it took longer than ${
+              context.totalDurationTimeout / 1000
+            } Sec to finish.\n\nLast 10 lines:👇🏽👇🏽👇🏽👇🏽\n\n\n\n\n${lastScreen}\n\n\n👆🏼👆🏼👆🏼👆🏼`,
           );
           err.stack = undefined;
           return onError(err, true);
@@ -641,6 +654,11 @@ function chain(context: Context): ExecutionContext {
       noOutputTimer = retimer(() => {
         exitHandler(EXIT_CODE_TIMEOUT, 'SIGTERM');
       }, context.noOutputTimeout);
+      if (context.totalDurationTimeout) {
+        totalDurationTimer = retimer(() => {
+          exitHandler(EXIT_CODE_TOTAL_TIMEOUT, 'SIGTERM');
+        }, context.totalDurationTimeout);
+      }
       return chain(context);
     } catch (e) {
       onError(e, true);
@@ -755,6 +773,7 @@ export const nspawn = (command: string | string[], params: string[] = [], option
     env: childEnv || undefined,
     ignoreCase: options.ignoreCase || true,
     noOutputTimeout: options.noOutputTimeout || DEFAULT_NO_OUTPUT_TIMEOUT,
+    totalDurationTimeout: options.totalDurationTimeout,
     params: params,
     queue: [],
     stripColors: options.stripColors,

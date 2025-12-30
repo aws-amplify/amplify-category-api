@@ -58,6 +58,7 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
       env,
       disableCIDetection: s.disableCIDetection,
       noOutputTimeout: 10 * 60 * 1000,
+      totalDurationTimeout: 30 * 60 * 1000,
     })
       .wait('Do you want to continue with Amplify Gen 1?')
       .sendConfirmYes()
