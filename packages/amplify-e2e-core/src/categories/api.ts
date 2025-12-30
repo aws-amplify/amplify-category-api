@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 /* eslint-disable func-style */
 import * as path from 'path';
@@ -76,9 +77,14 @@ export const addApiWithoutSchema = async (
   cwd: string,
   opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {},
 ): Promise<void> => {
+  console.log('► addApiWithoutSchema()');
   const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(options.testingWithLatestCodebase), ['add', 'api'], { cwd, stripColors: true })
+    spawn(getCLIPath(options.testingWithLatestCodebase), ['add', 'api'], {
+      cwd,
+      stripColors: true,
+      noOutputTimeout: 10 * 60 * 1000,
+    })
       .wait('Select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
@@ -397,6 +403,7 @@ export function addApiWithApiKeyAndLambda(cwd: string, opts: Partial<AddApiOptio
 }
 
 export function updateApiSchema(cwd: string, projectName: string, schemaName: string, forceUpdate: boolean = false) {
+  console.log('► updateApiSchema()');
   const testSchemaPath = getSchemaPath(schemaName);
   let schemaText = fs.readFileSync(testSchemaPath).toString();
   if (forceUpdate) {

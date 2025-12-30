@@ -40,6 +40,7 @@ export function amplifyPush(
     useBetaSqlLayer?: boolean;
   },
 ): Promise<void> {
+  console.log('► amplifyPush()');
   return new Promise((resolve, reject) => {
     // Test detailed status
     spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })

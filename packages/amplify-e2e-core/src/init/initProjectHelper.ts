@@ -1,3 +1,5 @@
+/* eslint-disable func-style */
+/* eslint-disable prefer-arrow/prefer-arrow-functions */
 import { EOL } from 'os';
 import { v4 as uuid } from 'uuid';
 import { nspawn as spawn, getCLIPath, singleSelect, addCITags } from '..';
@@ -25,6 +27,7 @@ const defaultSettings = {
 };
 
 export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void> {
+  console.log('► initJSProjectWithProfile()');
   const s = { ...defaultSettings, ...settings };
   let env;
 
