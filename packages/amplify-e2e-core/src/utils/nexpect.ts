@@ -644,6 +644,7 @@ function chain(context: Context): ExecutionContext {
     };
 
     try {
+      console.log(`► ${context.command} ${context.params.map((x) => JSON.stringify(x)).join(' ')}`);
       context.process = new Recorder(context.command, context.params, options);
 
       context.process.addOnDataHandler(onLine);
