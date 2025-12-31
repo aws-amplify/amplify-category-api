@@ -12,6 +12,9 @@ import {
   getProjectMeta,
   getDDBTable,
 } from 'amplify-category-api-e2e-core';
+import { STS } from '@aws-sdk/client-sts';
+import { fromIni } from '@aws-sdk/credential-provider-ini';
+import { fromCognitoIdentity } from '@aws-sdk/credential-providers';
 
 describe('amplify add api (GraphQL)', () => {
   let projRoot: string;
@@ -32,6 +35,15 @@ describe('amplify add api (GraphQL)', () => {
   it('init a project and add the simple_model api', async () => {
     const envName = 'devtest';
     const projName = 'simplemodel';
+
+    // 100% confirm what account we have credentials for
+    const sts = new STS({
+      credentials: fromIni({
+        profile: 'amplify-integ-test-user',
+      }),
+    });
+    console.log(await sts.getCallerIdentity());
+
     await initJSProjectWithProfile(projRoot, { name: projName, envName });
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, projName, 'simple_model.graphql');
