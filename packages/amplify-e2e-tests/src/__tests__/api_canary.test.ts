@@ -18,7 +18,6 @@ import { fromIni } from '@aws-sdk/credential-provider-ini';
 import { fromCognitoIdentity } from '@aws-sdk/credential-providers';
 import { loadSharedConfigFiles } from '@aws-sdk/shared-ini-file-loader';
 
-
 describe('amplify add api (GraphQL)', () => {
   let projRoot: string;
   let projFolderName: string;
@@ -50,6 +49,14 @@ describe('amplify add api (GraphQL)', () => {
     });
     console.log(await sts.getCallerIdentity());
     console.log({ amplifyRegion });
+
+    // We can't select this region because it's not in the Amplify CLI dropdown list.
+    // The `amplify configure` command has already run and it probably picked a
+    // default region like `us-east-1`. No matter, we won't use the config file it produced.
+    if (!amplifyRegions.includes(amplifyRegion)) {
+      console.log(`🌐 THIS REGION (${amplifyRegion}) IS NOT SELECTABLE IN THE AMPLIFY CLI, SO SKIPPING TEST 🌐`);
+      return;
+    }
 
     await initJSProjectWithProfile(projRoot, { name: projName, envName });
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
