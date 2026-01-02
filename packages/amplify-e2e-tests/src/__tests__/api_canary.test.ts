@@ -11,6 +11,7 @@ import {
   getAppSyncApi,
   getProjectMeta,
   getDDBTable,
+  amplifyRegions,
 } from 'amplify-category-api-e2e-core';
 import { STS } from '@aws-sdk/client-sts';
 import { fromIni } from '@aws-sdk/credential-provider-ini';
@@ -43,7 +44,15 @@ describe('amplify add api (GraphQL)', () => {
       }),
     });
     console.log(await sts.getCallerIdentity());
-    console.log({ region: await sts.config.region() });
+
+    const awsRegion = await sts.config.region();
+    console.log({ region: awsRegion });
+
+    // We can't select this region because it's
+    if (!amplifyRegions.includes(awsRegion)) {
+      console.log(`THIS REGION (${awsRegion}) IS NOT SELECTABLE, SO SKIPPING TEST`);
+      return;
+    }
 
     await initJSProjectWithProfile(projRoot, { name: projName, envName });
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
@@ -54,7 +63,7 @@ describe('amplify add api (GraphQL)', () => {
     const region = meta.providers.awscloudformation.Region;
     const { output } = meta.api.simplemodel;
     const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
-    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, region);
+    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, awsRegion);
 
     expect(GraphQLAPIIdOutput).toBeDefined();
     expect(GraphQLAPIEndpointOutput).toBeDefined();
@@ -65,7 +74,7 @@ describe('amplify add api (GraphQL)', () => {
     const tableName = `AmplifyDataStore-${graphqlApi.apiId}-${envName}`;
     const error = { message: null };
     try {
-      const table = await getDDBTable(tableName, region);
+      const table = await getDDBTable(tableName, awsRegion);
       expect(table).toBeUndefined();
     } catch (ex) {
       Object.assign(error, ex);
