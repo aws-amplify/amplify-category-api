@@ -16,6 +16,8 @@ import {
 import { STS } from '@aws-sdk/client-sts';
 import { fromIni } from '@aws-sdk/credential-provider-ini';
 import { fromCognitoIdentity } from '@aws-sdk/credential-providers';
+import { loadSharedConfigFiles } from '@aws-sdk/shared-ini-file-loader';
+
 
 describe('amplify add api (GraphQL)', () => {
   let projRoot: string;
@@ -38,21 +40,16 @@ describe('amplify add api (GraphQL)', () => {
     const projName = 'simplemodel';
 
     // 100% confirm what account we have credentials for
+    const profile = 'amplify-integ-test-user';
+    const amplifyRegion = (await loadSharedConfigFiles()).configFile?.[profile]?.region;
     const sts = new STS({
       credentials: fromIni({
-        profile: 'amplify-integ-test-user',
+        profile,
       }),
+      region: amplifyRegion,
     });
     console.log(await sts.getCallerIdentity());
-
-    const awsRegion = await sts.config.region();
-    console.log({ region: awsRegion });
-
-    // We can't select this region because it's
-    if (!amplifyRegions.includes(awsRegion)) {
-      console.log(`THIS REGION (${awsRegion}) IS NOT SELECTABLE, SO SKIPPING TEST`);
-      return;
-    }
+    console.log({ amplifyRegion });
 
     await initJSProjectWithProfile(projRoot, { name: projName, envName });
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
@@ -63,7 +60,7 @@ describe('amplify add api (GraphQL)', () => {
     const region = meta.providers.awscloudformation.Region;
     const { output } = meta.api.simplemodel;
     const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
-    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, awsRegion);
+    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, amplifyRegion);
 
     expect(GraphQLAPIIdOutput).toBeDefined();
     expect(GraphQLAPIEndpointOutput).toBeDefined();
@@ -74,7 +71,7 @@ describe('amplify add api (GraphQL)', () => {
     const tableName = `AmplifyDataStore-${graphqlApi.apiId}-${envName}`;
     const error = { message: null };
     try {
-      const table = await getDDBTable(tableName, awsRegion);
+      const table = await getDDBTable(tableName, amplifyRegion);
       expect(table).toBeUndefined();
     } catch (ex) {
       Object.assign(error, ex);

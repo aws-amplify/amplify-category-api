@@ -14,12 +14,6 @@ const defaultSettings = {
   userName: EOL,
 };
 
-// NOTE: This list MUST EXACTLY MATCH the list of regions that the Amplify CLI
-// shows in an interactive select list. The reason is that the region will be
-// selected by pressing ARROW DOWN a number of times that matches the index in this list.
-//
-// If a region is not in this list, it cannot be selected in the Amplify CLI,
-// and therefore cannot be deployed to!
 export const amplifyRegions = [
   'us-east-1',
   'us-east-2',
@@ -37,6 +31,7 @@ export const amplifyRegions = [
   'ap-southeast-1',
   'ap-southeast-2',
   'ap-south-1',
+  'ap-east-1',
   'ca-central-1',
   'me-south-1',
   'sa-east-1',
