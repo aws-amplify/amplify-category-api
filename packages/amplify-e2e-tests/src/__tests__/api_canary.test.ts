@@ -43,6 +43,7 @@ describe('amplify add api (GraphQL)', () => {
       }),
     });
     console.log(await sts.getCallerIdentity());
+    console.log({ region: await sts.config.region() });
 
     await initJSProjectWithProfile(projRoot, { name: projName, envName });
     await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
