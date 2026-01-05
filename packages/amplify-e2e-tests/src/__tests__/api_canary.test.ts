@@ -53,7 +53,7 @@ describe('amplify add api (GraphQL)', () => {
     // We can't select this region because it's not in the Amplify CLI dropdown list.
     // The `amplify configure` command has already run and it probably picked a
     // default region like `us-east-1`. No matter, we won't use the config file it produced.
-    if (!amplifyRegions.includes(amplifyRegion)) {
+    if (process.env.CLI_REGION && !amplifyRegions.includes(process.env.CLI_REGION)) {
       console.log(`🌐 THIS REGION (${amplifyRegion}) IS NOT SELECTABLE IN THE AMPLIFY CLI, SO SKIPPING TEST 🌐`);
       return;
     }
