@@ -5,7 +5,7 @@ on:
 
 permissions:
   issues: write
-  
+
 jobs:
   auto_comment:
     runs-on: ubuntu-latest
