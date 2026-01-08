@@ -22,6 +22,8 @@
     "jest-dev-server": "~9.0.1",
     "jest-junit": "^14.0.1",
     "lodash": "^4.17.21",
+    "node-pty": "^1.0.0",
+    "node-gyp": "^11.0.0",
     "pluralize": "^8.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -70,9 +72,5 @@
     "moduleNameMapper": {
       "axios": "axios/dist/node/axios.cjs"
     }
-  },
-  "optionalDependencies": {
-    "node-pty": "^1.0.0",
-    "node-gyp": "^11.0.0"
   }
 }

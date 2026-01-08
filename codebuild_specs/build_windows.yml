@@ -12,6 +12,9 @@ phases:
         Write-Host "Node version: $nodeVersion"
   build:
     commands:
+      # Disable Spectre mitigation requirement for native module compilation (MSB8040 fix)
+      - $env:GYP_MSVS_SPECTRE_LIBS = "false"
+      - $env:npm_config_msbuild_args = "/p:SpectreMitigation=false"
       - yarn run production-build
       - yarn build-tests
 artifacts:
