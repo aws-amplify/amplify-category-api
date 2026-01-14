@@ -9,6 +9,9 @@ env:
     NODE_OPTIONS: --max-old-space-size=8096
     JSII_DEPRECATED: 'quiet'
 phases:
+  install:
+    commands:
+      - yum install -y python3 make gcc-c++
   build:
     commands:
       - source ./shared-scripts.sh && _runCanaryTest
