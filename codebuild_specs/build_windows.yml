@@ -5,8 +5,8 @@ phases:
   build:
     commands:
       - |
-        Write-Host "Installing Node.js 20 via Chocolatey..."
-        choco install nodejs --version=20.18.0 -y --force
+        Write-Host "Installing Node.js 24 via Chocolatey..."
+        choco install nodejs --version=24.12.0 -y --force
         refreshenv
         node --version
         npm --version
