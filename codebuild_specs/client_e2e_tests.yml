@@ -9,13 +9,9 @@ env:
     NODE_OPTIONS: --max-old-space-size=8096
     JSII_DEPRECATED: 'quiet'
 phases:
-  install:
-    commands:
-      - echo "Installing build tools for node-pty native compilation"
-      - apt-get update
-      - apt-get install -y python3 make g++
   build:
     commands:
+      - python3 --version && make --version && g++ --version
       - source ./shared-scripts.sh && _runCanaryTest
   post_build:
     commands:
