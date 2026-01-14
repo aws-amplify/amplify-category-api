@@ -187,6 +187,7 @@
     "@octokit/request-error": "^5.1.1",
     "@octokit/request": "^8.4.1",
     "@octokit/plugin-paginate-rest": "^9.2.2",
-    "aws-cdk-lib": "2.129.0"
+    "aws-cdk-lib": "2.129.0",
+    "node-gyp": "^11.0.0"
   }
 }
