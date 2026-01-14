@@ -11,7 +11,9 @@ env:
 phases:
   install:
     commands:
-      - yum install -y python3 make gcc-c++
+      - echo "Installing build tools for node-pty native compilation"
+      - apt-get update
+      - apt-get install -y python3 make g++
   build:
     commands:
       - source ./shared-scripts.sh && _runCanaryTest
