@@ -112,6 +112,9 @@ export class AmplifyDynamoDBTable extends Resource {
       tableStreamArn: this.tableStreamArn,
     });
 
+    if (!props.partitionKey) {
+      throw new Error('partitionKey is required');
+    }
     this.addKey(props.partitionKey, HASH_KEY_TYPE);
     this.tablePartitionKey = props.partitionKey;
 
