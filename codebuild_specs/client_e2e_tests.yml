@@ -11,7 +11,6 @@ env:
 phases:
   build:
     commands:
-      - python3 --version && make --version && g++ --version
       - source ./shared-scripts.sh && _runCanaryTest
   post_build:
     commands:
