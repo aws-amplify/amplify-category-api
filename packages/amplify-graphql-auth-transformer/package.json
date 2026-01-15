@@ -50,7 +50,7 @@
     "@types/node": "^24.0.0"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.187.0",
+    "aws-cdk-lib": "^2.235.0",
     "constructs": "^10.3.0"
   }
 }
