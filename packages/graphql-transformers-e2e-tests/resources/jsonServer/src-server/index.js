@@ -28,4 +28,6 @@ app.use(router);
 
 const server = awsServerlessExpress.createServer(app);
 
-exports.handler = (event, context) => awsServerlessExpress.proxy(server, event, context);
+exports.handler = async (event, context) => {
+  return awsServerlessExpress.proxy(server, event, context, 'PROMISE');
+};
