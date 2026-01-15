@@ -42,7 +42,7 @@ import {
   RDSSNSTopicMapping,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { IFunction, LayerVersion, Runtime, Alias, Function as LambdaFunction, RuntimeFamily } from 'aws-cdk-lib/aws-lambda';
+import { IFunction, LayerVersion, Runtime, Alias, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { CfnVPCEndpoint } from 'aws-cdk-lib/aws-ec2';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';

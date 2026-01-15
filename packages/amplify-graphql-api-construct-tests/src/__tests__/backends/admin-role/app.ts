@@ -8,7 +8,7 @@ import { IdentityPool, UserPoolAuthenticationProvider } from 'aws-cdk-lib/aws-co
 // @ts-ignore
 import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';
 import * as path from 'path';
-import { Runtime, RuntimeFamily } from 'aws-cdk-lib/aws-lambda';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
 
 const packageJson = require('../package.json');
 

@@ -6,7 +6,7 @@ import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aw
 import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration, ModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-interfaces';
 import { DeploymentResources, testTransform, TransformManager } from '@aws-amplify/graphql-transformer-test-utils';
-import { Code, Function, IFunction, Runtime, RuntimeFamily } from 'aws-cdk-lib/aws-lambda';
+import { Code, Function, IFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as fs from 'fs-extra';
 import { parse } from 'graphql';
 import { toUpper } from 'graphql-transformer-common';
