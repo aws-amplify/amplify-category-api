@@ -432,7 +432,18 @@ exports[`Directive Definitions IndexDirective 1`] = `
 Object {
   "defaults": Object {},
   "definition": "
-  directive @index(name: String, sortKeyFields: [String], queryField: String) repeatable on FIELD_DEFINITION
+  directive @index(name: String, sortKeyFields: [String], queryField: String, projection: ProjectionInput) repeatable on FIELD_DEFINITION
+  
+  input ProjectionInput {
+    type: ProjectionType
+    nonKeyAttributes: [String]
+  }
+  
+  enum ProjectionType {
+    ALL
+    KEYS_ONLY
+    INCLUDE
+  }
 ",
   "name": "index",
 }

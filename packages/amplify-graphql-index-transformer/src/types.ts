@@ -13,4 +13,8 @@ export type IndexDirectiveConfiguration = PrimaryKeyDirectiveConfiguration & {
   name: string | null;
   queryField: string | null;
   primaryKeyField: FieldDefinitionNode;
+  projection: {
+    type: 'ALL' | 'KEYS_ONLY' | 'INCLUDE';
+    nonKeyAttributes?: string[];
+  } | null;
 };
