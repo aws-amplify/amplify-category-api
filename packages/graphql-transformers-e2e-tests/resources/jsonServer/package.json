@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "devDependencies": {
-    "aws-cdk": "~2.235.0",
+    "aws-cdk": "~2.1101.0",
     "@types/node": "*",
     "typescript": "*"
   },
