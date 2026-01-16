@@ -26,4 +26,8 @@ app.use('/config/:region/:env/:commentId', (req, res) => {
 app.use(middlewares);
 app.use(router);
 
-exports.handler = configure({ app });
+const handler = configure({ app });
+
+exports.handler = async (event, context) => {
+  return handler(event, context);
+};
