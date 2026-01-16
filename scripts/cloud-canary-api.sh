@@ -18,13 +18,10 @@ fi
 RESULT=$(aws codebuild start-build-batch \
 --profile="$profile" \
 --region us-east-1 \
---project-name amplify-category-api-pr-workflow \
---build-timeout-in-minutes-override 180 \
+--project-name amplify-category-api-canary-workflow \
 --source-version "$CURR_BRANCH" \
---debug-session-enabled \
---git-clone-depth-override=1000 \
 $IMAGE_OVERRIDE_FLAG \
---environment-variables-override name=AMPLIFY_CI_MANUAL_PR_BUILD,value=true,type=PLAINTEXT \
+--environment-variables-override name=BRANCH_NAME,value=$CURR_BRANCH,type=PLAINTEXT \
 --query 'buildBatch.id' --output text)
 
-echo "https://us-east-1.console.aws.amazon.com/codesuite/codebuild/$E2E_ACCOUNT_PROD/projects/amplify-category-api-pr-workflow/batch/$RESULT?region=us-east-1"
+echo "https://us-east-1.console.aws.amazon.com/codesuite/codebuild/$E2E_ACCOUNT_PROD/projects/amplify-category-api-canary-workflow/batch/$RESULT?region=us-east-1"

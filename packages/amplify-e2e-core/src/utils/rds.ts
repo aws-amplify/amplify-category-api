@@ -325,7 +325,12 @@ export const setupDataInExistingCluster = async (
       username: dbClusterObj.MasterUsername,
     };
   } catch (error) {
-    console.log('Error while setting up the test data in existing cluster: ', JSON.stringify(error));
+    console.log(
+      'Error while setting up the test data in existing cluster: ',
+      (error as Error).name,
+      (error as Error).message,
+      (error as Error).stack,
+    );
   }
 };
 

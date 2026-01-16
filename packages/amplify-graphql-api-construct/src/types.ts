@@ -353,7 +353,7 @@ export type ConflictResolutionStrategy =
  * @deprecated use DataStoreConfiguration instead.
  */
 /* c8 ignore start */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/no-empty-object-type
 export interface ConflictResolution extends DataStoreConfiguration {}
 /* c8 ignore stop */
 
@@ -548,7 +548,19 @@ export interface TranslationBehavior {
    */
   readonly respectPrimaryKeyAttributesOnConnectionField: boolean;
 
+  /**
+   * Whether Node to Node encryption is enabled on the ElasticSearch cluster
+   *
+   * @default false
+   */
   readonly enableSearchNodeToNodeEncryption: boolean;
+
+  /**
+   * Whether server-side encryption is enabled on the ElasticSearch cluster
+   *
+   * @default false
+   */
+  readonly enableSearchEncryptionAtRest: boolean;
 
   /**
    * When enabled, internal cfn outputs which existed in Amplify-generated apps will continue to be emitted.
@@ -583,7 +595,11 @@ export interface TranslationBehavior {
 /* c8 ignore stop */
 
 /**
- * A utility interface equivalent to Partial<TranslationBehavior>.
+ * A utility interface equivalent to Partial<TranslationBehavior>, plus
+ * some additional private fields.
+ *
+ * It's not a mapped type because this file is compiled using jsii which
+ * doesn't support that.
  */
 /* c8 ignore start */
 export interface PartialTranslationBehavior {
@@ -652,13 +668,18 @@ export interface PartialTranslationBehavior {
   readonly respectPrimaryKeyAttributesOnConnectionField?: boolean;
 
   /**
-   * If enabled, set nodeToNodeEncryption on the searchable domain (if one exists). Not recommended for use, prefer
-   * to use `Object.values(resources.additionalResources['AWS::Elasticsearch::Domain']).forEach((domain: CfnDomain) => {
-   *   domain.NodeToNodeEncryptionOptions = { Enabled: True };
-   * });
+   * Whether Node to Node encryption is enabled on the ElasticSearch cluster
+   *
    * @default false
    */
   readonly enableSearchNodeToNodeEncryption?: boolean;
+
+  /**
+   * Whether server-side encryption is enabled on the ElasticSearch cluster
+   *
+   * @default false
+   */
+  readonly enableSearchEncryptionAtRest?: boolean;
 
   /**
    * When enabled, internal cfn outputs which existed in Amplify-generated apps will continue to be emitted.
@@ -683,13 +704,12 @@ export interface PartialTranslationBehavior {
   /**
    * This behavior will only come into effect when both "allowDestructiveGraphqlSchemaUpdates" and this value are set to true
    *
-   * When enabled, any global secondary index update operation will replace the table instead of iterative deployment, which will WIPE ALL
-   * EXISTING DATA but cost much less time for deployment This will only affect DynamoDB tables with provision strategy "AMPLIFY_TABLE".
+   * When enabled, any GSI update operation will replace the table instead of iterative deployment, which will WIPE ALL EXISTING DATA but
+   * cost much less time for deployment This will only affect DynamoDB tables with provision strategy "AMPLIFY_TABLE".
    * @default false
    * @experimental
    */
   readonly replaceTableUponGsiUpdate?: boolean;
-
   /**
    * When enabled, sandbox deployment will be faster by skipping the creation of the Hotswap friendly resources.
    *

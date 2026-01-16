@@ -48,8 +48,7 @@ const getAccountId = async (): Promise<string> => {
     const accountDetails = await sts.getCallerIdentity({}).promise();
     return accountDetails?.Account;
   } catch (e) {
-    console.warn(`Could not get current AWS account ID: ${e}`);
-    expect(true).toEqual(false);
+    throw new Error(`Could not get current AWS account ID: ${e}`);
   }
 };
 

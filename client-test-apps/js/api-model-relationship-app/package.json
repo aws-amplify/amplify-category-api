@@ -48,7 +48,7 @@
     "test:execute": "cross-env TEST_HARNESS_STAGE=execute yarn test",
     "test:watch": "cross-env TEST_HARNESS_STAGE=watch yarn test",
     "test:teardown": "cross-env TEST_HARNESS_STAGE=teardown yarn test",
-    "test:ci": "yarn test --testResultsProcessor=\"jest-junit\""
+    "test:ci": "CI=true yarn test --testResultsProcessor=\"jest-junit\""
   },
   "eslintConfig": {
     "extends": [

@@ -78,6 +78,7 @@ describe('@mapsTo transformer', () => {
 
     // update schema to rename Post => Article
     graphqlClient = await testSchemaDeployer.deploy(updatedSchema);
+    console.log(`[${new Date().toISOString()}] Updated schema`, transform(updatedSchema).schema);
 
     // expect listing articles to get existing posts with comments
     const listArticles = /* GraphQL */ `
