@@ -34,7 +34,7 @@ export class LambdaHelper {
         Code: {
           ZipFile: zipContents,
         },
-        Runtime: 'nodejs20.x',
+        Runtime: 'nodejs24.x',
         Handler: `${filePrefix}.handler`,
         Role: roleArn,
       }),

@@ -49,12 +49,12 @@
   },
   "devDependencies": {
     "@aws-amplify/graphql-transformer-test-utils": "1.0.18",
-    "@types/node": "^20.0.0",
+    "@types/node": "^24.0.0",
     "fs-extra": "^8.1.0",
     "rimraf": "^3.0.0"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.187.0",
+    "aws-cdk-lib": "^2.224.0",
     "constructs": "^10.3.0"
   }
 }
