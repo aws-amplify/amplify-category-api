@@ -112,9 +112,6 @@ export class AmplifyDynamoDBTable extends Resource {
       tableStreamArn: this.tableStreamArn,
     });
 
-    if (!props.partitionKey) {
-      throw new Error('partitionKey is required');
-    }
     this.addKey(props.partitionKey, HASH_KEY_TYPE);
     this.tablePartitionKey = props.partitionKey;
 
@@ -135,9 +132,6 @@ export class AmplifyDynamoDBTable extends Resource {
     this.validateProvisioning(props);
     this.validateIndexName(props.indexName);
 
-    if (!props.partitionKey) {
-      throw new Error('partitionKey is required');
-    }
     // build key schema and projection for index
     const gsiKeySchema = this.buildIndexKeySchema(props.partitionKey, props.sortKey);
     const gsiProjection = this.buildIndexProjection(props);
