@@ -80,7 +80,7 @@ export type InitCDKProjectProps = {
  * @returns a promise which resolves to the stack name
  */
 export const initCDKProject = async (cwd: string, templatePath: string, props?: InitCDKProjectProps): Promise<string> => {
-  const { cdkVersion = '2.187.0', additionalDependencies = [] } = props ?? {};
+  const { cdkVersion = '2.235.1', additionalDependencies = [] } = props ?? {};
 
   await spawn(getNpxPath(), ['cdk', 'init', 'app', '--language', 'typescript'], {
     cwd,
