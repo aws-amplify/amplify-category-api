@@ -582,7 +582,7 @@ function createActionFunction(context: TransformerContextProvider, stack: cdk.St
               ]),
               ref('util.toJson($finalResult.trim())'),
             ]),
-            ref('utils.error($ctx.result.body)'),
+            ref('util.error($ctx.result.body)'),
           ),
         ]),
       };

@@ -261,7 +261,7 @@ const createResolver = (
   }
 
   reqCompoundExpr.push(
-    set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
+    set(ref('headers'), ref('util.http.copyHeaders($ctx.request.headers)')),
     qref('$headers.put("accept-encoding", "application/json")'),
   );
 
@@ -317,7 +317,7 @@ const createResolver = (
           supportsBody ? raw('$ctx.result.statusCode == 200 || $ctx.result.statusCode == 201') : raw('$ctx.result.statusCode == 200'),
           ifElse(
             ref('ctx.result.headers.get("Content-Type").toLowerCase().contains("xml")'),
-            ref('utils.xml.toJsonString($ctx.result.body)'),
+            ref('util.xml.toJsonString($ctx.result.body)'),
             ref('ctx.result.body'),
           ),
           ref('util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))'),
