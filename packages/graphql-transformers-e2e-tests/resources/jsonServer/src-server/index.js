@@ -2,7 +2,7 @@
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
-const awsServerlessExpress = require('aws-serverless-express');
+const { configure } = require('@codegenie/serverless-express');
 const jsonServer = require('json-server');
 const db = require('db.json');
 
@@ -26,8 +26,4 @@ app.use('/config/:region/:env/:commentId', (req, res) => {
 app.use(middlewares);
 app.use(router);
 
-const server = awsServerlessExpress.createServer(app);
-
-exports.handler = async (event, context) => {
-  return awsServerlessExpress.proxy(server, event, context, 'PROMISE');
-};
+exports.handler = configure({ app });
