@@ -292,11 +292,11 @@
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
     "@types/node": "^24.0.0",
-    "aws-cdk-lib": "2.235.1",
+    "aws-cdk-lib": "2.235.0",
     "constructs": "10.3.0",
-    "jsii": "^5.4.23",
+    "jsii": "^5.7.0",
     "jsii-pacmak": "^1.84.0",
-    "jsii-rosetta": "^5.4.23",
+    "jsii-rosetta": "^5.7.0",
     "rimraf": "^3.0.0",
     "ts-node": "^8.10.1"
   },
