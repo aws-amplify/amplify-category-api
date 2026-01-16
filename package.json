@@ -12,6 +12,7 @@
     "check-version-conflicts:release": "yarn ts-node ./scripts/check-version.ts",
     "clean": "lerna run clean && lerna exec yarn rimraf tsconfig.tsbuildinfo && lerna clean --yes && yarn rimraf node_modules",
     "cleanup-stale-resources": "source ./scripts/cloud-utils.sh && cleanupStaleResources",
+    "cloud-canary-api": "./scripts/cloud-canary-api.sh",
     "cloud-e2e-beta": "source scripts/cloud-utils.sh && cloudE2EBeta",
     "cloud-e2e-debug": "source scripts/cloud-utils.sh && cloudE2EDebug",
     "cloud-e2e": "source scripts/cloud-utils.sh && cloudE2E",
