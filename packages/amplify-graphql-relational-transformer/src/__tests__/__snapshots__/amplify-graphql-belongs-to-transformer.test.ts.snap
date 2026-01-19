@@ -686,8 +686,17 @@ exports[`@belongsTo directive with RDS datasource set custom index name for hasM
   }
 } )
   #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
+  #set( $keyFields = [\\"blogId\\"] )
+  #set( $filteredAuthFilter = {} )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    #set( $filter = $ctx.stash.authFilter )
+    #foreach( $authKey in $ctx.stash.authFilter.keySet() )
+      #if( !$keyFields.contains($authKey) )
+        $util.qr($filteredAuthFilter.put($authKey, $ctx.stash.authFilter.get($authKey)))
+      #end
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filteredAuthFilter) )
+    #set( $filter = $filteredAuthFilter )
     #if( !$util.isNullOrEmpty($args.filter) )
       #set( $filter = {
   \\"and\\":   [$filter, $args.filter]
@@ -791,8 +800,17 @@ exports[`@belongsTo directive with RDS datasource set custom index name for hasO
       \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
   }
 }))
+  #set( $keyFields = [\\"blogId\\"] )
+  #set( $filteredAuthFilter = {} )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    #foreach( $authKey in $ctx.stash.authFilter.keySet() )
+      #if( !$keyFields.contains($authKey) )
+        $util.qr($filteredAuthFilter.put($authKey, $ctx.stash.authFilter.get($authKey)))
+      #end
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filteredAuthFilter) )
+    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($filteredAuthFilter))))
   #end
   $util.toJson($GetRequest)
 #end"

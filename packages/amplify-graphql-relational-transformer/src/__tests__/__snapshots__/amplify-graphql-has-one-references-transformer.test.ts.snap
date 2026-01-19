@@ -310,8 +310,17 @@ exports[`has one query with implicit IDs 2`] = `
       \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
   }
 }))
+  #set( $keyFields = [\\"teamID\\"] )
+  #set( $filteredAuthFilter = {} )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    #foreach( $authKey in $ctx.stash.authFilter.keySet() )
+      #if( !$keyFields.contains($authKey) )
+        $util.qr($filteredAuthFilter.put($authKey, $ctx.stash.authFilter.get($authKey)))
+      #end
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filteredAuthFilter) )
+    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($filteredAuthFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -338,8 +347,17 @@ exports[`has one query with implicit IDs 3`] = `
       \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
   }
 }))
+  #set( $keyFields = [\\"teamID\\"] )
+  #set( $filteredAuthFilter = {} )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    #foreach( $authKey in $ctx.stash.authFilter.keySet() )
+      #if( !$keyFields.contains($authKey) )
+        $util.qr($filteredAuthFilter.put($authKey, $ctx.stash.authFilter.get($authKey)))
+      #end
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filteredAuthFilter) )
+    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($filteredAuthFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -367,8 +385,17 @@ exports[`has one references single partition key 1`] = `
       \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
   }
 }))
+  #set( $keyFields = [\\"teamId\\"] )
+  #set( $filteredAuthFilter = {} )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    #foreach( $authKey in $ctx.stash.authFilter.keySet() )
+      #if( !$keyFields.contains($authKey) )
+        $util.qr($filteredAuthFilter.put($authKey, $ctx.stash.authFilter.get($authKey)))
+      #end
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filteredAuthFilter) )
+    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($filteredAuthFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -395,8 +422,17 @@ exports[`has one references single partition key 2`] = `
       \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
   }
 }))
+  #set( $keyFields = [\\"teamId\\"] )
+  #set( $filteredAuthFilter = {} )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    #foreach( $authKey in $ctx.stash.authFilter.keySet() )
+      #if( !$keyFields.contains($authKey) )
+        $util.qr($filteredAuthFilter.put($authKey, $ctx.stash.authFilter.get($authKey)))
+      #end
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filteredAuthFilter) )
+    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($filteredAuthFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -424,8 +460,17 @@ exports[`has one references with multiple relationships to the same model 1`] = 
       \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
   }
 }))
+  #set( $keyFields = [\\"primaryId1\\"] )
+  #set( $filteredAuthFilter = {} )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    #foreach( $authKey in $ctx.stash.authFilter.keySet() )
+      #if( !$keyFields.contains($authKey) )
+        $util.qr($filteredAuthFilter.put($authKey, $ctx.stash.authFilter.get($authKey)))
+      #end
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filteredAuthFilter) )
+    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($filteredAuthFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -453,8 +498,17 @@ exports[`has one references with multiple relationships to the same model 2`] = 
       \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
   }
 }))
+  #set( $keyFields = [\\"primaryId2\\"] )
+  #set( $filteredAuthFilter = {} )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    #foreach( $authKey in $ctx.stash.authFilter.keySet() )
+      #if( !$keyFields.contains($authKey) )
+        $util.qr($filteredAuthFilter.put($authKey, $ctx.stash.authFilter.get($authKey)))
+      #end
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filteredAuthFilter) )
+    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($filteredAuthFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -481,8 +535,17 @@ exports[`has one references with multiple relationships to the same model 3`] = 
       \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
   }
 }))
+  #set( $keyFields = [\\"primaryId1\\"] )
+  #set( $filteredAuthFilter = {} )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    #foreach( $authKey in $ctx.stash.authFilter.keySet() )
+      #if( !$keyFields.contains($authKey) )
+        $util.qr($filteredAuthFilter.put($authKey, $ctx.stash.authFilter.get($authKey)))
+      #end
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filteredAuthFilter) )
+    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($filteredAuthFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -509,8 +572,17 @@ exports[`has one references with multiple relationships to the same model 4`] = 
       \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
   }
 }))
+  #set( $keyFields = [\\"primaryId2\\"] )
+  #set( $filteredAuthFilter = {} )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    #foreach( $authKey in $ctx.stash.authFilter.keySet() )
+      #if( !$keyFields.contains($authKey) )
+        $util.qr($filteredAuthFilter.put($authKey, $ctx.stash.authFilter.get($authKey)))
+      #end
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filteredAuthFilter) )
+    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($filteredAuthFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -540,8 +612,17 @@ exports[`has one references with multiple relationships to the same model with c
       \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.sk1}#\${ctx.source.sk2}\\", \\"___xamznone____\\")))
   }
 }))
+  #set( $keyFields = [\\"primaryPk1\\", \\"primarySk11\\", \\"primarySk12\\"] )
+  #set( $filteredAuthFilter = {} )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    #foreach( $authKey in $ctx.stash.authFilter.keySet() )
+      #if( !$keyFields.contains($authKey) )
+        $util.qr($filteredAuthFilter.put($authKey, $ctx.stash.authFilter.get($authKey)))
+      #end
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filteredAuthFilter) )
+    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($filteredAuthFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -571,8 +652,17 @@ exports[`has one references with multiple relationships to the same model with c
       \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.sk1}#\${ctx.source.sk2}\\", \\"___xamznone____\\")))
   }
 }))
+  #set( $keyFields = [\\"primaryPk2\\", \\"primarySk21\\", \\"primarySk22\\"] )
+  #set( $filteredAuthFilter = {} )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    #foreach( $authKey in $ctx.stash.authFilter.keySet() )
+      #if( !$keyFields.contains($authKey) )
+        $util.qr($filteredAuthFilter.put($authKey, $ctx.stash.authFilter.get($authKey)))
+      #end
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filteredAuthFilter) )
+    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($filteredAuthFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -601,8 +691,17 @@ exports[`has one references with multiple relationships to the same model with c
       \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.primarySk11}#\${ctx.source.primarySk12}\\", \\"___xamznone____\\")))
   }
 }))
+  #set( $keyFields = [\\"primaryPk1\\", \\"primarySk11\\", \\"primarySk12\\"] )
+  #set( $filteredAuthFilter = {} )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    #foreach( $authKey in $ctx.stash.authFilter.keySet() )
+      #if( !$keyFields.contains($authKey) )
+        $util.qr($filteredAuthFilter.put($authKey, $ctx.stash.authFilter.get($authKey)))
+      #end
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filteredAuthFilter) )
+    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($filteredAuthFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -631,8 +730,17 @@ exports[`has one references with multiple relationships to the same model with c
       \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.primarySk21}#\${ctx.source.primarySk22}\\", \\"___xamznone____\\")))
   }
 }))
+  #set( $keyFields = [\\"primaryPk2\\", \\"primarySk21\\", \\"primarySk22\\"] )
+  #set( $filteredAuthFilter = {} )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    #foreach( $authKey in $ctx.stash.authFilter.keySet() )
+      #if( !$keyFields.contains($authKey) )
+        $util.qr($filteredAuthFilter.put($authKey, $ctx.stash.authFilter.get($authKey)))
+      #end
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filteredAuthFilter) )
+    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($filteredAuthFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -1389,8 +1497,17 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
       \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.teamMantra}#\${ctx.source.teamOrganization}\\", \\"___xamznone____\\")))
   }
 }))
+  #set( $keyFields = [\\"teamId\\", \\"teamMantra\\", \\"teamOrganization\\"] )
+  #set( $filteredAuthFilter = {} )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    #foreach( $authKey in $ctx.stash.authFilter.keySet() )
+      #if( !$keyFields.contains($authKey) )
+        $util.qr($filteredAuthFilter.put($authKey, $ctx.stash.authFilter.get($authKey)))
+      #end
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filteredAuthFilter) )
+    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($filteredAuthFilter))))
   #end
   $util.toJson($GetRequest)
 #end",
@@ -1889,8 +2006,17 @@ $util.toJson(null)
       \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.mantra}#\${ctx.source.organization}\\", \\"___xamznone____\\")))
   }
 }))
+  #set( $keyFields = [\\"teamId\\", \\"teamMantra\\", \\"teamOrganization\\"] )
+  #set( $filteredAuthFilter = {} )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    #foreach( $authKey in $ctx.stash.authFilter.keySet() )
+      #if( !$keyFields.contains($authKey) )
+        $util.qr($filteredAuthFilter.put($authKey, $ctx.stash.authFilter.get($authKey)))
+      #end
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filteredAuthFilter) )
+    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($filteredAuthFilter))))
   #end
   $util.toJson($GetRequest)
 #end",
@@ -1938,8 +2064,17 @@ exports[`has one references with multiple sort keys 2`] = `
       \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.mantra}#\${ctx.source.organization}\\", \\"___xamznone____\\")))
   }
 }))
+  #set( $keyFields = [\\"teamId\\", \\"teamMantra\\", \\"teamOrganization\\"] )
+  #set( $filteredAuthFilter = {} )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    #foreach( $authKey in $ctx.stash.authFilter.keySet() )
+      #if( !$keyFields.contains($authKey) )
+        $util.qr($filteredAuthFilter.put($authKey, $ctx.stash.authFilter.get($authKey)))
+      #end
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filteredAuthFilter) )
+    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($filteredAuthFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -1968,8 +2103,17 @@ exports[`has one references with multiple sort keys 3`] = `
       \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.teamMantra}#\${ctx.source.teamOrganization}\\", \\"___xamznone____\\")))
   }
 }))
+  #set( $keyFields = [\\"teamId\\", \\"teamMantra\\", \\"teamOrganization\\"] )
+  #set( $filteredAuthFilter = {} )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    #foreach( $authKey in $ctx.stash.authFilter.keySet() )
+      #if( !$keyFields.contains($authKey) )
+        $util.qr($filteredAuthFilter.put($authKey, $ctx.stash.authFilter.get($authKey)))
+      #end
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filteredAuthFilter) )
+    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($filteredAuthFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -1999,8 +2143,17 @@ exports[`has one references with partition key + sort key 1`] = `
       \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.mantra, \\"___xamznone____\\")))
   }
 }))
+  #set( $keyFields = [\\"teamId\\", \\"teamMantra\\"] )
+  #set( $filteredAuthFilter = {} )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    #foreach( $authKey in $ctx.stash.authFilter.keySet() )
+      #if( !$keyFields.contains($authKey) )
+        $util.qr($filteredAuthFilter.put($authKey, $ctx.stash.authFilter.get($authKey)))
+      #end
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filteredAuthFilter) )
+    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($filteredAuthFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -2029,8 +2182,17 @@ exports[`has one references with partition key + sort key 2`] = `
       \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.teamMantra, \\"___xamznone____\\")))
   }
 }))
+  #set( $keyFields = [\\"teamId\\", \\"teamMantra\\"] )
+  #set( $filteredAuthFilter = {} )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    #foreach( $authKey in $ctx.stash.authFilter.keySet() )
+      #if( !$keyFields.contains($authKey) )
+        $util.qr($filteredAuthFilter.put($authKey, $ctx.stash.authFilter.get($authKey)))
+      #end
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filteredAuthFilter) )
+    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($filteredAuthFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -2058,8 +2220,17 @@ exports[`supports recursive schemas 1`] = `
       \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
   }
 }))
+  #set( $keyFields = [\\"parentId\\"] )
+  #set( $filteredAuthFilter = {} )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    #foreach( $authKey in $ctx.stash.authFilter.keySet() )
+      #if( !$keyFields.contains($authKey) )
+        $util.qr($filteredAuthFilter.put($authKey, $ctx.stash.authFilter.get($authKey)))
+      #end
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filteredAuthFilter) )
+    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($filteredAuthFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
@@ -2086,8 +2257,17 @@ exports[`supports recursive schemas 2`] = `
       \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($partitionKeyValue, \\"___xamznone____\\")))
   }
 }))
+  #set( $keyFields = [\\"parentId\\"] )
+  #set( $filteredAuthFilter = {} )
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+    #foreach( $authKey in $ctx.stash.authFilter.keySet() )
+      #if( !$keyFields.contains($authKey) )
+        $util.qr($filteredAuthFilter.put($authKey, $ctx.stash.authFilter.get($authKey)))
+      #end
+    #end
+  #end
+  #if( !$util.isNullOrEmpty($filteredAuthFilter) )
+    $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($filteredAuthFilter))))
   #end
   $util.toJson($GetRequest)
 #end"
