@@ -49,6 +49,7 @@ import {
   generateOwnerMultiClaimExpression,
   generateInvalidClaimsCondition,
   generateIAMAccessCheck,
+  generateGroupCheckExpressions,
 } from './helpers';
 
 /**
@@ -172,6 +173,9 @@ const dynamicRoleExpression = (
   roles.forEach((role, idx) => {
     const entityIsList = fieldIsList(fields, role.entity!);
     if (role.strategy === 'owner') {
+      // AND logic: check if user is in required groups before authorizing owner
+      const { groupCheck, groupCondition } = generateGroupCheckExpressions(role.operationGroups?.create, role.groupClaim, idx);
+
       const ownerEntityClaimExpressions = new Array<Expression>();
       // get current owner entity
       ownerEntityClaimExpressions.push(
@@ -181,6 +185,7 @@ const dynamicRoleExpression = (
       ownerEntityClaimExpressions.push(generateOwnerClaimExpression(role.claim!, `ownerClaim${idx}`));
 
       ownerExpression.push(
+        ...groupCheck,
         compoundExpression(ownerEntityClaimExpressions),
         iff(
           generateInvalidClaimsCondition(role.claim!, `ownerClaim${idx}`),
@@ -200,20 +205,24 @@ const dynamicRoleExpression = (
                   ? [
                       forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
                         iff(
-                          or([
-                            equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
-                            methodCall(ref(`ownerClaimsList${idx}.contains`), ref('allowedOwner')),
-                          ]),
+                          groupCondition(
+                            or([
+                              equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
+                              methodCall(ref(`ownerClaimsList${idx}.contains`), ref('allowedOwner')),
+                            ]),
+                          ),
                           addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`, true),
                         ),
                       ]),
                     ]
                   : [
                       iff(
-                        or([
-                          equals(ref(`ownerClaim${idx}`), ref(`ownerEntity${idx}`)),
-                          methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
-                        ]),
+                        groupCondition(
+                          or([
+                            equals(ref(`ownerClaim${idx}`), ref(`ownerEntity${idx}`)),
+                            methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
+                          ]),
+                        ),
                         addAllowedFieldsIfElse(`ownerAllowedFields${idx}`, `isAuthorizedOnAllFields${idx}`),
                       ),
                     ]),

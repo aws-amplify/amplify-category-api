@@ -1,4 +1,11 @@
-import { AuthProvider, AuthStrategy } from './definitions';
+import { AuthProvider, AuthStrategy, ModelOperation } from './definitions';
+
+/**
+ * Maps operations to their required groups for AND logic auth rules.
+ * When present, the owner must ALSO be in one of the specified groups
+ * for that operation to be authorized.
+ */
+export type OperationGroups = Partial<Record<ModelOperation, string[]>>;
 
 /**
  * RoleDefinition
@@ -15,6 +22,17 @@ export interface RoleDefinition {
   areAllFieldsAllowed?: boolean;
   areAllFieldsNullAllowed?: boolean;
   isEntityList?: boolean;
+  /**
+   * Groups required per operation for AND logic (owner.inGroup()).
+   * When set, owner auth requires membership in at least one of the
+   * groups specified for that operation.
+   */
+  operationGroups?: OperationGroups;
+  /**
+   * The claim used to retrieve user's groups (e.g., 'cognito:groups').
+   * Used with operationGroups for AND logic checks.
+   */
+  groupClaim?: string;
 }
 
 /**

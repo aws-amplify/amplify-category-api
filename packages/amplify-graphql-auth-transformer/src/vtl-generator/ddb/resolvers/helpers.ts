@@ -383,3 +383,90 @@ export const generateFieldResolverForOwner = (entity: string): string => {
 
   return printBlock('Parse owner field auth for Get')(compoundExpression(expressions));
 };
+
+/**
+ * Result type for generateGroupCheckExpressions
+ */
+export type GroupCheckResult = {
+  /** Expressions to set up group variables and check membership */
+  groupCheck: Expression[];
+  /** Whether there are required groups to check */
+  hasGroups: boolean;
+  /** Wraps a condition with AND group membership check (for use in iff conditions) */
+  groupCondition: (condition: Expression) => Expression;
+  /** Wraps an expression to only execute if user is in required group (for use with expressions like qref) */
+  groupIff: (expression: Expression) => Expression;
+  /** Reference to the isInRequiredGroup variable for this index */
+  groupRef: string;
+};
+
+/**
+ * Generates expressions for AND group membership check on owner authorization.
+ * Used when owner rules have operationGroups that require the user to be in specific groups
+ * in addition to being the owner.
+ *
+ * @param groups - Array of group names the user must be a member of (at least one)
+ * @param groupClaim - The claim to read groups from (defaults to 'cognito:groups')
+ * @param idx - Index for unique variable naming when multiple roles exist
+ * @returns GroupCheckResult containing setup expressions and condition wrapper
+ */
+export const generateGroupCheckExpressions = (
+  groups: string[] | undefined,
+  groupClaim: string | undefined,
+  idx: number,
+): GroupCheckResult => {
+  const hasGroups = groups !== undefined && groups.length > 0;
+  const groupRef = `isInRequiredGroup${idx}`;
+
+  const groupCheck: Expression[] = hasGroups
+    ? [
+        set(ref(`requiredGroups${idx}`), raw(JSON.stringify(groups))),
+        set(ref(`userGroups${idx}`), getIdentityClaimExp(str(groupClaim || 'cognito:groups'), list([]))),
+        iff(
+          methodCall(ref('util.isString'), ref(`userGroups${idx}`)),
+          ifElse(
+            methodCall(ref('util.isList'), methodCall(ref('util.parseJson'), ref(`userGroups${idx}`))),
+            set(ref(`userGroups${idx}`), methodCall(ref('util.parseJson'), ref(`userGroups${idx}`))),
+            set(ref(`userGroups${idx}`), list([ref(`userGroups${idx}`)])),
+          ),
+        ),
+        set(ref(groupRef), bool(false)),
+        forEach(ref('reqGroup'), ref(`requiredGroups${idx}`), [
+          iff(
+            methodCall(ref(`userGroups${idx}.contains`), ref('reqGroup')),
+            compoundExpression([set(ref(groupRef), bool(true)), raw('#break')]),
+          ),
+        ]),
+      ]
+    : [];
+
+  const groupCondition = (condition: Expression): Expression => {
+    if (!hasGroups) return condition;
+    return and([ref(groupRef), condition]);
+  };
+
+  const groupIff = (expression: Expression): Expression => {
+    if (!hasGroups) return expression;
+    return iff(ref(groupRef), expression);
+  };
+
+  return { groupCheck, hasGroups, groupCondition, groupIff, groupRef };
+};
+
+/**
+ * For subscriptions, get the groups required for the 'listen' operation.
+ * If 'listen' groups are explicitly specified, use those.
+ * Otherwise, fall back to union of write operation groups (create, update, delete)
+ * for backwards compatibility when only mutation operations have groups.
+ */
+export const getSubscriptionGroups = (operationGroups: RoleDefinition['operationGroups']): string[] => {
+  if (!operationGroups) return [];
+  // Prefer explicit 'listen' operation groups
+  if (operationGroups.listen && operationGroups.listen.length > 0) {
+    return operationGroups.listen;
+  }
+  // Fall back to union of mutation groups
+  const groups = [...(operationGroups.create || []), ...(operationGroups.update || []), ...(operationGroups.delete || [])];
+  // Deduplicate
+  return [...new Set(groups)];
+};

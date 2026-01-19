@@ -132,6 +132,15 @@ const validateRuleOperations = (
   if (!isModelType(dataSourceStrategies, typeName) || !isSqlModel(dataSourceStrategies, typeName)) {
     return;
   }
+  // Validate owner.inGroup() (owner with static groups for AND logic) is not supported for SQL
+  if (rule.allow === 'owner' && rule.groups && !rule.groupsField) {
+    throw new InvalidDirectiveError(
+      `@auth on ${typeName}${
+        fieldName ? `.${fieldName}` : ''
+      } cannot use owner-based auth with 'groups' (AND logic) as it is not supported for SQL data sources. ` +
+        `Use separate 'allow: owner' and 'allow: groups' rules instead for OR logic.`,
+    );
+  }
   if (!rule.operations || rule.operations.length === 0) {
     return;
   }
