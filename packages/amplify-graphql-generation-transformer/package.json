@@ -36,7 +36,7 @@
     "@aws-amplify/graphql-transformer-test-utils": "1.0.18"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.187.0",
+    "aws-cdk-lib": "^2.224.0",
     "constructs": "^10.3.0"
   }
 }

@@ -134,7 +134,7 @@
     "zod": "^3.22.2"
   },
   "dependencies": {
-    "aws-cdk-lib": "^2.187.0",
+    "aws-cdk-lib": "^2.224.0",
     "constructs": "^10.3.0"
   },
   "dependencyClosure": {
