@@ -965,6 +965,7 @@ export type TransformParameters = {
     enableAutoIndexQueryNames: boolean;
     respectPrimaryKeyAttributesOnConnectionField: boolean;
     enableSearchNodeToNodeEncryption: boolean;
+    enableSearchEncryptionAtRest: boolean;
 };
 
 // @public (undocumented)

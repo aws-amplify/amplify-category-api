@@ -61,6 +61,7 @@ export class IndexTransformer extends TransformerPluginBase {
     args.name = getOrGenerateDefaultName(args);
     args.queryField = getOrGenerateDefaultQueryField(context, args);
     args.sortKey = [];
+    args.projection = getOrGenerateDefaultProjection(args);
 
     validate(args, context as TransformerContextProvider);
     this.directiveList.push(args);
@@ -115,6 +116,23 @@ const getOrGenerateDefaultName = (config: IndexDirectiveConfiguration): string =
   }
 
   return generateKeyAndQueryNameForConfig(config);
+};
+
+/**
+ * Return the projection if provided in our args, else
+ * set it to 'ALL'
+ */
+const getOrGenerateDefaultProjection = (
+  config: IndexDirectiveConfiguration,
+): {
+  type: 'ALL' | 'KEYS_ONLY' | 'INCLUDE';
+  nonKeyAttributes?: string[];
+} | null => {
+  const { projection } = config;
+  if (projection) {
+    return projection;
+  }
+  return { type: 'ALL' };
 };
 
 /**

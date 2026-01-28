@@ -392,15 +392,16 @@ function chain(context: Context): ExecutionContext {
         logDumpFile.close();
       }
       if (code !== 0) {
+        const recordings = context.process?.getRecordingFrames() || [];
+        const lastScreen = recordings.length
+          ? recordings
+              .filter((f) => f[1] === 'o')
+              .map((f) => f[2])
+              .slice(-10)
+              .join('\n')
+          : 'No output';
+
         if (code === EXIT_CODE_TIMEOUT) {
-          const recordings = context.process?.getRecordingFrames() || [];
-          const lastScreen = recordings.length
-            ? recordings
-                .filter((f) => f[1] === 'o')
-                .map((f) => f[2])
-                .slice(-10)
-                .join('\n')
-            : 'No output';
           const err = new Error(
             `Killed the process as no output received for ${context.noOutputTimeout / 1000} Sec. The no output timeout is set to ${
               context.noOutputTimeout / 1000
@@ -418,7 +419,10 @@ function chain(context: Context): ExecutionContext {
           //
           return onError(new Error('Command not found: ' + context.command), false);
         }
-        return onError(new Error(`Process exited with non zero exit code ${code}`), false);
+        return onError(
+          new Error(`Process exited with non zero exit code ${code}.\n\nLast 10 lines: 👇🏽👇🏽👇🏽👇🏽\n\n\n\n\n${lastScreen}\n\n\n👆🏼👆🏼👆🏼👆🏼`),
+          false,
+        );
       } else {
         if (context.queue.length && !flushQueue()) {
           // if flushQueue returned false, onError was called

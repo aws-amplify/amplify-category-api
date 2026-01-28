@@ -36,7 +36,7 @@ executionRole.applyRemovalPolicy(RemovalPolicy.DESTROY);
 
 const apiInvoker = new NodejsFunction(stack, 'ApiInvoker', {
   entry: path.join(__dirname, 'apiInvoker.ts'),
-  runtime: Runtime.NODEJS_20_X,
+  runtime: Runtime.NODEJS_24_X,
   role: executionRole,
   bundling: {
     nodeModules: ['@smithy/util-utf8'], // Force inclusion
@@ -49,7 +49,9 @@ new CfnOutput(stack, 'ApiInvokerFunctionName', {
   value: apiInvoker.functionName,
 });
 
-const userPool = new UserPool(stack, 'Userpool');
+const userPool = new UserPool(stack, 'Userpool', {
+  selfSignUpEnabled: false,
+});
 const userPoolClient = new UserPoolClient(stack, 'UserpoolClient', { userPool });
 const identityPool = new IdentityPool(stack, 'Identitypool', {
   authenticationProviders: {

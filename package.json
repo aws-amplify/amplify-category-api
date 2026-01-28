@@ -12,6 +12,7 @@
     "check-version-conflicts:release": "yarn ts-node ./scripts/check-version.ts",
     "clean": "lerna run clean && lerna exec yarn rimraf tsconfig.tsbuildinfo && lerna clean --yes && yarn rimraf node_modules",
     "cleanup-stale-resources": "source ./scripts/cloud-utils.sh && cleanupStaleResources",
+    "cloud-canary-api": "./scripts/cloud-canary-api.sh",
     "cloud-e2e-beta": "source scripts/cloud-utils.sh && cloudE2EBeta",
     "cloud-e2e-debug": "source scripts/cloud-utils.sh && cloudE2EDebug",
     "cloud-e2e": "source scripts/cloud-utils.sh && cloudE2E",
@@ -379,8 +380,8 @@
     "@types/glob": "^7.1.1",
     "@types/jest": "^29.0.0",
     "@types/js-yaml": "^4.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.59.2",
-    "@typescript-eslint/parser": "^5.59.2",
+    "@typescript-eslint/eslint-plugin": "^8",
+    "@typescript-eslint/parser": "^8",
     "@yarnpkg/lockfile": "^1.1.0",
     "@zkochan/cmd-shim": "^5.1.0",
     "babel-eslint": "^10.1.0",
@@ -418,7 +419,7 @@
     "**/istanbul/async": "^2.6.4",
     "**/jake/async": "^2.6.4",
     "**/nth-check": "^2.0.1",
-    "aws-cdk-lib": "^2.187.0",
+    "aws-cdk-lib": "2.224.0",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
     "cross-fetch": "^2.2.6",
@@ -436,6 +437,7 @@
     "cookie": "^0.7.0",
     "@octokit/request-error": "^5.1.1",
     "@octokit/request": "^8.4.1",
-    "@octokit/plugin-paginate-rest": "^9.2.2"
+    "@octokit/plugin-paginate-rest": "^9.2.2",
+    "node-gyp": "^11.0.0"
   }
 }

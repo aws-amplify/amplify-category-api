@@ -28,7 +28,15 @@ function triggerProjectBatch {
     echo AWS Account: $account_number
     echo Project: $project_name 
     echo Target Branch: $target_branch
+    
+    IMAGE_OVERRIDE_FLAG=""
+    if [ -n "$CODEBUILD_IMAGE_OVERRIDE" ]; then
+      IMAGE_OVERRIDE_FLAG="--image-override $CODEBUILD_IMAGE_OVERRIDE"
+      echo "Using image override: $CODEBUILD_IMAGE_OVERRIDE"
+    fi
+    
     RESULT=$(aws codebuild start-build-batch --region=$REGION --profile="${profile_name}" --project-name $project_name --source-version=$target_branch \
+     $IMAGE_OVERRIDE_FLAG \
      --environment-variables-override name=BRANCH_NAME,value=$target_branch,type=PLAINTEXT \
      --query 'buildBatch.id' --output text)
     echo "https://$REGION.console.aws.amazon.com/codesuite/codebuild/$account_number/projects/$project_name/batch/$RESULT?region=$REGION"
@@ -45,9 +53,17 @@ function triggerProjectBatchWithDebugSession {
     echo Project: $project_name 
     echo Target Branch: $target_branch
     debug_spec=$(cat codebuild_specs/debug_workflow.yml)
+    
+    IMAGE_OVERRIDE_FLAG=""
+    if [ -n "$CODEBUILD_IMAGE_OVERRIDE" ]; then
+      IMAGE_OVERRIDE_FLAG="--image-override $CODEBUILD_IMAGE_OVERRIDE"
+      echo "Using image override: $CODEBUILD_IMAGE_OVERRIDE"
+    fi
+    
     RESULT=$(aws codebuild start-build-batch --region=$REGION --profile="${profile_name}" --project-name $project_name --source-version=$target_branch \
      --debug-session-enabled \
      --buildspec-override "$debug_spec" \
+     $IMAGE_OVERRIDE_FLAG \
      --environment-variables-override name=BRANCH_NAME,value=$target_branch,type=PLAINTEXT \
      --query 'buildBatch.id' --output text)
     echo "https://$REGION.console.aws.amazon.com/codesuite/codebuild/$account_number/projects/$project_name/batch/$RESULT?region=$REGION"
@@ -64,7 +80,15 @@ function triggerProjectBatchWithEnvOverrides {
     echo AWS Account: $account_number
     echo Project: $project_name
     echo Target Branch: $target_branch
+    
+    IMAGE_OVERRIDE_FLAG=""
+    if [ -n "$CODEBUILD_IMAGE_OVERRIDE" ]; then
+      IMAGE_OVERRIDE_FLAG="--image-override $CODEBUILD_IMAGE_OVERRIDE"
+      echo "Using image override: $CODEBUILD_IMAGE_OVERRIDE"
+    fi
+    
     RESULT=$(aws codebuild start-build-batch --region=$REGION --profile="${profile_name}" --project-name $project_name --source-version=$target_branch \
+     $IMAGE_OVERRIDE_FLAG \
      --environment-variables-override name=BRANCH_NAME,value=$target_branch,type=PLAINTEXT "$@" \
      --query 'buildBatch.id' --output text)
     echo "https://$REGION.console.aws.amazon.com/codesuite/codebuild/$account_number/projects/$project_name/batch/$RESULT?region=$REGION"
@@ -80,7 +104,15 @@ function triggerProject {
     echo AWS Account: $account_number
     echo Project: $project_name 
     echo Target Branch: $target_branch
+    
+    IMAGE_OVERRIDE_FLAG=""
+    if [ -n "$CODEBUILD_IMAGE_OVERRIDE" ]; then
+      IMAGE_OVERRIDE_FLAG="--image-override $CODEBUILD_IMAGE_OVERRIDE"
+      echo "Using image override: $CODEBUILD_IMAGE_OVERRIDE"
+    fi
+    
     RESULT=$(aws codebuild start-build --profile="${profile_name}" --project-name $project_name --source-version=$target_branch \
+     $IMAGE_OVERRIDE_FLAG \
      --environment-variables-override name=BRANCH_NAME,value=$target_branch,type=PLAINTEXT \
      --query 'build.id' --output text)
     echo "https://$REGION.console.aws.amazon.com/codesuite/codebuild/$account_number/projects/$project_name/build/$RESULT?region=$REGION"

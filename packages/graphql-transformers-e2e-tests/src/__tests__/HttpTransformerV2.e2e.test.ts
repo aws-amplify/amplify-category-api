@@ -1,8 +1,10 @@
+/* eslint-disable jest/no-standalone-expect */
+/* eslint-disable import/no-extraneous-dependencies */
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { HttpTransformer } from '@aws-amplify/graphql-http-transformer';
-import { Output } from 'aws-sdk/clients/cloudformation';
+import { Output } from '@aws-sdk/client-cloudformation';
 import { default as moment } from 'moment';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { GraphQLClient } from '../GraphQLClient';
@@ -137,8 +139,7 @@ beforeAll(async () => {
   try {
     await customS3Client.createBucket(BUCKET_NAME);
   } catch (e) {
-    console.error(`Failed to create bucket: ${e}`);
-    expect(true).toEqual(false);
+    throw new Error(`Failed to create bucket: ${e}`);
   }
 
   const out = testTransform({
@@ -177,8 +178,7 @@ beforeAll(async () => {
 
     GRAPHQL_CLIENT = new GraphQLClient(endpoint, { 'x-api-key': apiKey });
   } catch (e) {
-    console.error(e);
-    expect(true).toEqual(false);
+    throw new Error(`${e}`);
   }
 });
 

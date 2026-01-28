@@ -1,11 +1,11 @@
 const { Polly } = require('@aws-sdk/client-polly');
 const { getSynthesizeSpeechUrl } = require('@aws-sdk/polly-request-presigner');
 
-exports.handler = function (event, context, callback) {
+exports.handler = async function (event, context) {
   if (event && event.action === 'convertTextToSpeech') {
-    convertTextToSpeech(event, callback);
+    return await convertTextToSpeech(event);
   } else {
-    callback(Error('Action not configured.'));
+    throw new Error('Action not configured.');
   }
 };
 
@@ -14,9 +14,8 @@ exports.handler = function (event, context, callback) {
  * - Synthesize Speech
  * - Get a presigned url for that synthesized speech
  * @param {*} event
- * @param {*} callback
  */
-async function convertTextToSpeech(event, callback) {
+async function convertTextToSpeech(event) {
   try {
     const params = {
       OutputFormat: 'mp3',
@@ -27,9 +26,9 @@ async function convertTextToSpeech(event, callback) {
     };
     const client = new Polly();
     const url = await getSynthesizeSpeechUrl({ client, params });
-    callback(null, { url: url });
+    return { url: url };
   } catch (err) {
     console.log(err, err.stack);
-    callback(Error(err));
+    throw err;
   }
 }
