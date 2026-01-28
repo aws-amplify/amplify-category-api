@@ -368,7 +368,7 @@ export const validateSortDirectionInput = (config: PrimaryKeyDirectiveConfigurat
  * appendSecondaryIndex
  */
 export const appendSecondaryIndex = (config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-  const { name, object, primaryKeyField } = config;
+  const { name, object, primaryKeyField, projection } = config;
   if (isSqlModel(ctx, object.name.value)) {
     return;
   }
@@ -382,11 +382,19 @@ export const appendSecondaryIndex = (config: IndexDirectiveConfiguration, ctx: T
   const partitionKeyType = attrDefs.find((attr) => attr.attributeName === partitionKeyName)?.attributeType ?? 'S';
   const sortKeyType = sortKeyName ? attrDefs.find((attr) => attr.attributeName === sortKeyName)?.attributeType ?? 'S' : undefined;
 
+  const projectionType = projection?.type || 'ALL';
+  const nonKeyAttributes = projection?.nonKeyAttributes || [];
+
+  if (projectionType === 'INCLUDE' && (!nonKeyAttributes || nonKeyAttributes.length === 0)) {
+    throw new Error(`@index '${name}': nonKeyAttributes must be specified when projection type is INCLUDE`);
+  }
+
   if (!ctx.transformParameters.secondaryKeyAsGSI && primaryKeyPartitionKeyName === partitionKeyName) {
     // Create an LSI.
     table.addLocalSecondaryIndex({
       indexName: name,
-      projectionType: 'ALL',
+      projectionType,
+      ...(projectionType === 'INCLUDE' ? { nonKeyAttributes } : {}),
       sortKey: sortKeyName
         ? {
             name: sortKeyName,
@@ -398,7 +406,8 @@ export const appendSecondaryIndex = (config: IndexDirectiveConfiguration, ctx: T
     // Create a GSI.
     table.addGlobalSecondaryIndex({
       indexName: name,
-      projectionType: 'ALL',
+      projectionType,
+      ...(projectionType === 'INCLUDE' ? { nonKeyAttributes } : {}),
       partitionKey: {
         name: partitionKeyName,
         type: partitionKeyType,
@@ -419,7 +428,7 @@ export const appendSecondaryIndex = (config: IndexDirectiveConfiguration, ctx: T
     const newIndex = {
       indexName: name,
       keySchema,
-      projection: { projectionType: 'ALL' },
+      projection: { projectionType, ...(projectionType === 'INCLUDE' ? { nonKeyAttributes } : {}) },
       provisionedThroughput: cdk.Fn.conditionIf(ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling, cdk.Fn.ref('AWS::NoValue'), {
         ReadCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
         WriteCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
