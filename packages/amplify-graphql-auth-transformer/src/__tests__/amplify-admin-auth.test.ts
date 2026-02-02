@@ -249,7 +249,19 @@ test('simple model with private IAM auth rule, few operations, and amplify admin
 
   expect(out.schema).toContain('getPost(id: ID!): Post @aws_iam');
   expect(out.schema).toContain('listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection @aws_iam');
-
+  const policyResources = _.filter(out.rootStack.Resources, (r) => r.Type === 'AWS::IAM::ManagedPolicy');
+  expect(policyResources).toHaveLength(1);
+  const resources = _.get(policyResources, '[0].Properties.PolicyDocument.Statement[0].Resource');
+  const typeFieldList = _.map(resources, (r) => _.get(r, 'Fn::Sub[1]')).map((r) => `${_.get(r, 'typeName')}.${_.get(r, 'fieldName', '*')}`);
+  expect(typeFieldList).toEqual([
+    'Post.*',
+    'Query.getPost',
+    'Query.listPosts',
+    'Mutation.updatePost',
+    'Subscription.onCreatePost',
+    'Subscription.onUpdatePost',
+    'Subscription.onDeletePost',
+  ]);
   expect(out.resolvers['Mutation.updatePost.auth.1.res.vtl']).toMatchSnapshot();
   expect(out.resolvers['Mutation.updatePost.auth.1.res.vtl']).toContain(
     '#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == $ctx.stash.identityPoolId && $ctx.identity.cognitoIdentityAuthType == "authenticated") )',
@@ -354,9 +366,6 @@ test('simple model with AdminUI enabled should add IAM policy only for fields th
     'Post.*',
     'Query.getPost',
     'Query.listPosts',
-    'Mutation.createPost',
-    'Mutation.updatePost',
-    'Mutation.deletePost',
     'Subscription.onCreatePost',
     'Subscription.onUpdatePost',
     'Subscription.onDeletePost',
