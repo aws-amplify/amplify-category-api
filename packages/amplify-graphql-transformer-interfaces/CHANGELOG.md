@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.3.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@4.2.6...@aws-amplify/graphql-transformer-interfaces@4.3.0) (2026-02-05)
+
+### Features
+
+- ElasticSearch server-side encryption ([#3339](https://github.com/aws-amplify/amplify-category-api/issues/3339)) ([51b67e0](https://github.com/aws-amplify/amplify-category-api/commit/51b67e063b1cd0c83578b50c5aacfe5bdbfc8dc6))
+
 ## [4.2.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@4.2.5...@aws-amplify/graphql-transformer-interfaces@4.2.6) (2025-04-17)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-interfaces
