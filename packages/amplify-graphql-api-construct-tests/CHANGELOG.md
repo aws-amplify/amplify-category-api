@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.15.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.14.5...amplify-graphql-api-construct-tests@1.15.0) (2026-02-05)
+
+### Features
+
+- add projection support for [@index](https://github.com/index) directive ([#3359](https://github.com/aws-amplify/amplify-category-api/issues/3359)) ([d986592](https://github.com/aws-amplify/amplify-category-api/commit/d986592f8ce8503e2c3f37dcaf0443bf7436baf7))
+
 ## [1.14.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.14.4...amplify-graphql-api-construct-tests@1.14.5) (2025-06-17)
 
 **Note:** Version bump only for package amplify-graphql-api-construct-tests

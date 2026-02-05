@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.21.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.20.3...@aws-amplify/graphql-api-construct@1.21.0) (2026-02-05)
+
+### Features
+
+- add projection support for [@index](https://github.com/index) directive ([#3359](https://github.com/aws-amplify/amplify-category-api/issues/3359)) ([d986592](https://github.com/aws-amplify/amplify-category-api/commit/d986592f8ce8503e2c3f37dcaf0443bf7436baf7))
+- ElasticSearch server-side encryption ([#3339](https://github.com/aws-amplify/amplify-category-api/issues/3339)) ([51b67e0](https://github.com/aws-amplify/amplify-category-api/commit/51b67e063b1cd0c83578b50c5aacfe5bdbfc8dc6))
+
 ## [1.20.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.20.2...@aws-amplify/graphql-api-construct@1.20.3) (2025-06-17)
 
 **Note:** Version bump only for package @aws-amplify/graphql-api-construct
