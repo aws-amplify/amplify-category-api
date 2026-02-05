@@ -1,14 +1,15 @@
+/* eslint-disable jest/no-standalone-expect */
+/* eslint-disable import/no-extraneous-dependencies */
 import { ResourceConstants } from 'graphql-transformer-common';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
-import { Output } from 'aws-sdk/clients/cloudformation';
 import { default as moment } from 'moment';
-import { default as S3 } from 'aws-sdk/clients/s3';
-import { default as STS } from 'aws-sdk/clients/sts';
-import { default as Organizations } from 'aws-sdk/clients/organizations';
-import AWS from 'aws-sdk';
+import { AwsCredentialIdentity } from '@aws-sdk/types';
+import { Output } from '@aws-sdk/client-cloudformation';
+import { STSClient, AssumeRoleCommand, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
+import { OrganizationsClient, ListAccountsCommand } from '@aws-sdk/client-organizations';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { GraphQLClient } from '../GraphQLClient';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
@@ -23,9 +24,8 @@ jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient(region);
 const customS3Client = new S3Client(region);
-const awsS3Client = new S3({ region: region });
-const sts = new STS();
-const organizations = new Organizations({ region: 'us-east-1' });
+const sts = new STSClient();
+const organizations = new OrganizationsClient({ region: 'us-east-1' });
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `FunctionTransformerTestsV2-${BUILD_TIMESTAMP}`;
 const BUCKET_NAME = `appsync-function-transformer-test-bucket-v2-${BUILD_TIMESTAMP}`;
@@ -52,46 +52,60 @@ function outputValueSelector(key: string) {
   };
 }
 
+/**
+ * Return a random other account in the organization, other than ourselves and the root account.
+ */
+async function randomOtherAccount(currentAccountId: string) {
+  const childAccounts = (await organizations.send(new ListAccountsCommand()))?.Accounts ?? [];
+
+  // Eliminate the current
+
+  const eligibleAccounts = childAccounts
+    // Eliminate the current account
+    .filter((a) => a.Id !== currentAccountId)
+    // Eliminate the root account. Every ARN will look `arn:aws:organizations::${root}:account/${org}/${account}` like,
+    // only for the root account will it be $root == $account.
+    .filter((a) => !a.Arn!.startsWith(`arn:aws:organizations::${a.Id}:`));
+
+  if (eligibleAccounts.length === 0) {
+    throw new Error(`Could not find any eligible accounts in organization (found ${childAccounts.map((a) => a.Id)})`);
+  }
+
+  const randIx = Math.floor(Math.random() * eligibleAccounts.length);
+  const otherAccountId = eligibleAccounts[randIx].Id;
+
+  const childAccountRoleARN = `arn:aws:iam::${otherAccountId}:role/OrganizationAccountAccessRole`;
+  const accountCredentials = (
+    await sts.send(
+      new AssumeRoleCommand({
+        RoleArn: childAccountRoleARN,
+        RoleSessionName: `testCrossAccountFunction${BUILD_TIMESTAMP}`,
+        DurationSeconds: 900,
+      }),
+    )
+  )?.Credentials;
+  if (!accountCredentials?.AccessKeyId || !accountCredentials?.SecretAccessKey || !accountCredentials?.SessionToken) {
+    throw new Error('Could not assume role to access child account');
+  }
+
+  return { otherAccountId, accountCredentials };
+}
+
 const createEchoFunctionInOtherAccount = async (currentAccountId?: string) => {
   if (!currentAccountId) {
     return;
   }
   try {
-    const childAccounts = (await organizations.listAccounts({}).promise())?.Accounts;
-    if (!childAccounts || childAccounts?.length < 1) {
-      console.warn('Could not find any child accounts attached to current account');
-      expect(true).toEqual(false);
-      return;
-    }
-    const otherAccountId = childAccounts.find((account) => account.Id !== currentAccountId)?.Id;
-    if (!otherAccountId) {
-      console.warn('Could not choose other account to create lambda function');
-      expect(true).toEqual(false);
-      return;
-    }
-    const childAccountRoleARN = `arn:aws:iam::${otherAccountId}:role/OrganizationAccountAccessRole`;
-    const accountCredentials = (
-      await sts
-        .assumeRole({
-          RoleArn: childAccountRoleARN,
-          RoleSessionName: `testCrossAccountFunction${BUILD_TIMESTAMP}`,
-          DurationSeconds: 900,
-        })
-        .promise()
-    )?.Credentials;
-    if (!accountCredentials?.AccessKeyId || !accountCredentials?.SecretAccessKey || !accountCredentials?.SessionToken) {
-      console.warn('Could not assume role to access child account');
-      expect(true).toEqual(false);
-      return;
-    }
-    const crossAccountLambdaHelper = new LambdaHelper(
-      region,
-      new AWS.Credentials(accountCredentials.AccessKeyId, accountCredentials.SecretAccessKey, accountCredentials.SessionToken),
-    );
-    const crossAccountIAMHelper = new IAMHelper(
-      region,
-      new AWS.Credentials(accountCredentials.AccessKeyId, accountCredentials.SecretAccessKey, accountCredentials.SessionToken),
-    );
+    const { otherAccountId, accountCredentials } = await randomOtherAccount(currentAccountId);
+
+    const credentials: AwsCredentialIdentity = {
+      accessKeyId: accountCredentials.AccessKeyId!,
+      secretAccessKey: accountCredentials.SecretAccessKey!,
+      sessionToken: accountCredentials.SessionToken,
+    };
+
+    const crossAccountLambdaHelper = new LambdaHelper(region, credentials);
+    const crossAccountIAMHelper = new IAMHelper(region, credentials);
     const role = await crossAccountIAMHelper.createLambdaExecutionRole(LAMBDA_EXECUTION_ROLE_NAME);
     await wait(shortWaitForResource);
     const policy = await crossAccountIAMHelper.createLambdaExecutionPolicy(LAMBDA_EXECUTION_POLICY_NAME);
@@ -103,9 +117,7 @@ const createEchoFunctionInOtherAccount = async (currentAccountId?: string) => {
     await crossAccountLambdaHelper.addAppSyncCrossAccountAccess(currentAccountId, ECHO_FUNCTION_NAME);
     return otherAccountId;
   } catch (e) {
-    console.warn(`Could not create echo function in other account: ${e}`);
-    expect(true).toEqual(false);
-    return;
+    throw new Error(`Could not create echo function in other account: ${e}`);
   }
 };
 
@@ -113,46 +125,42 @@ const deleteEchoFunctionInOtherAccount = async (accountId: string) => {
   try {
     const childAccountRoleARN = `arn:aws:iam::${accountId}:role/OrganizationAccountAccessRole`;
     const accountCredentials = (
-      await sts
-        .assumeRole({
+      await sts.send(
+        new AssumeRoleCommand({
           RoleArn: childAccountRoleARN,
           RoleSessionName: `testCrossAccountFunction${BUILD_TIMESTAMP}`,
           DurationSeconds: 900,
-        })
-        .promise()
+        }),
+      )
     )?.Credentials;
     if (!accountCredentials?.AccessKeyId || !accountCredentials?.SecretAccessKey || !accountCredentials?.SessionToken) {
-      console.warn('Could not assume role to access child account');
-      expect(true).toEqual(false);
-      return;
+      throw new Error('Could not assume role to access child account');
     }
-    const crossAccountLambdaHelper = new LambdaHelper(
-      region,
-      new AWS.Credentials(accountCredentials.AccessKeyId, accountCredentials.SecretAccessKey, accountCredentials.SessionToken),
-    );
-    const crossAccountIAMHelper = new IAMHelper(
-      region,
-      new AWS.Credentials(accountCredentials.AccessKeyId, accountCredentials.SecretAccessKey, accountCredentials.SessionToken),
-    );
+    const credentials: AwsCredentialIdentity = {
+      accessKeyId: accountCredentials.AccessKeyId,
+      secretAccessKey: accountCredentials.SecretAccessKey,
+      sessionToken: accountCredentials.SessionToken,
+    };
+    const crossAccountLambdaHelper = new LambdaHelper(region, credentials);
+    const crossAccountIAMHelper = new IAMHelper(region, credentials);
 
     await crossAccountLambdaHelper.deleteFunction(ECHO_FUNCTION_NAME);
     await crossAccountIAMHelper.detachPolicy(CROSS_ACCOUNT_LAMBDA_EXECUTION_POLICY_ARN, LAMBDA_EXECUTION_ROLE_NAME);
     await crossAccountIAMHelper.deleteRole(LAMBDA_EXECUTION_ROLE_NAME);
     await crossAccountIAMHelper.deletePolicy(CROSS_ACCOUNT_LAMBDA_EXECUTION_POLICY_ARN);
   } catch (e) {
-    console.warn(`Could not delete echo function in other account: ${e}`);
-    expect(true).toEqual(false);
-    return;
+    throw new Error(`Could not delete echo function in other account: ${e}`);
   }
 };
 
-const getCurrentAccountId = async () => {
+// eslint doesn't see `exect` as a throw.
+// eslint-disable-next-line consistent-return
+const getCurrentAccountId = async (): Promise<string | undefined> => {
   try {
-    const accountDetails = await sts.getCallerIdentity({}).promise();
+    const accountDetails = await sts.send(new GetCallerIdentityCommand());
     return accountDetails?.Account;
   } catch (e) {
-    console.warn(`Could not get current AWS account ID: ${e}`);
-    expect(true).toEqual(false);
+    throw new Error(`Could not get current AWS account ID: ${e}`);
   }
 };
 
@@ -205,10 +213,9 @@ beforeAll(async () => {
     }
     `;
   try {
-    await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
+    await customS3Client.createBucket(BUCKET_NAME);
   } catch (e) {
-    console.warn(`Could not create bucket: ${e}`);
-    expect(true).toEqual(false);
+    throw new Error(`Could not create bucket: ${e}`);
   }
   try {
     const role = await IAM_HELPER.createLambdaExecutionRole(LAMBDA_EXECUTION_ROLE_NAME);
@@ -221,8 +228,7 @@ beforeAll(async () => {
     await LAMBDA_HELPER.createFunction(ECHO_FUNCTION_NAME, role.Role.Arn, 'echoFunction');
     await LAMBDA_HELPER.createFunction(HELLO_FUNCTION_NAME, role.Role.Arn, 'hello');
   } catch (e) {
-    console.warn(`Could not setup function: ${e}`);
-    expect(true).toEqual(false);
+    throw new Error(`Could not setup function: ${e}`);
   }
   const out = testTransform({
     schema: validSchema,

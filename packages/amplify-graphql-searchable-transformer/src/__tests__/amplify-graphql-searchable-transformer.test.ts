@@ -415,7 +415,9 @@ describe('nodeToNodeEncryption transformParameter', () => {
       content: String!
     }
   `;
-  it('synthesizes w/ nodeToNodeEncryption disabled by default', () => {
+  it('synthesizes w/ nodeToNodeEncryption enabled by default', () => {
+    // A security scanner wants this set to 'true'; this is just for the test transformer,
+    // not the customer defaults.
     const out = testTransform({
       schema,
       transformers: [new ModelTransformer(), new SearchableModelTransformer()],
@@ -424,7 +426,7 @@ describe('nodeToNodeEncryption transformParameter', () => {
     const searchableStack = out.stacks.SearchableStack;
     Template.fromJSON(searchableStack).hasResourceProperties('AWS::Elasticsearch::Domain', {
       NodeToNodeEncryptionOptions: {
-        Enabled: false,
+        Enabled: true,
       },
     });
   });
@@ -441,6 +443,23 @@ describe('nodeToNodeEncryption transformParameter', () => {
     const searchableStack = out.stacks.SearchableStack;
     Template.fromJSON(searchableStack).hasResourceProperties('AWS::Elasticsearch::Domain', {
       NodeToNodeEncryptionOptions: {
+        Enabled: true,
+      },
+    });
+  });
+
+  it('synthesizes w/ serverSideEncryption enabled if specified', () => {
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+      transformParameters: {
+        enableSearchEncryptionAtRest: true,
+      },
+    });
+    expect(out).toBeDefined();
+    const searchableStack = out.stacks.SearchableStack;
+    Template.fromJSON(searchableStack).hasResourceProperties('AWS::Elasticsearch::Domain', {
+      EncryptionAtRestOptions: {
         Enabled: true,
       },
     });

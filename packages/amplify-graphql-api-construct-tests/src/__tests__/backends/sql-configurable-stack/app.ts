@@ -169,7 +169,7 @@ const createUserPool = (prefix: string, triggers?: Record<string, string>): { us
       username: true,
       email: false,
     },
-    selfSignUpEnabled: true,
+    selfSignUpEnabled: false,
     autoVerify: { email: true },
     standardAttributes: {
       email: {
@@ -213,7 +213,7 @@ const createUserPoolTriggers = (triggers: Record<string, string>): UserPoolTrigg
 
 const createLambdaFunction = (name: string, code: string): Function => {
   return new Function(stack, `${name}Lambda`, {
-    runtime: Runtime.NODEJS_20_X,
+    runtime: Runtime.NODEJS_24_X,
     handler: 'index.handler',
     code: Code.fromInline(code),
   });

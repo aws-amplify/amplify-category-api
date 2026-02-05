@@ -9,7 +9,7 @@ if [ -z "$PR_NUM" ]; then
   exit
 fi
 
-export NODE_OPTIONS=--max-old-space-size=4096
+export NODE_OPTIONS=--max-old-space-size=8192
 
 # get PR file list, filter out removed files, filter only JS/TS files, then pass to the linter
 # The linter will print the errors but the build will still pass.
