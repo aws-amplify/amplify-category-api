@@ -1,6 +1,6 @@
 #!/bin/bash
 
-AMPLIFY_NODE_VERSION=20.9.0
+AMPLIFY_NODE_VERSION=24.12.0
 
 # set exit on error to true
 set -e
@@ -363,6 +363,7 @@ function _runCanaryTest {
     _loadTestAccountCredentials
     _setShell
     cd client-test-apps/js/api-model-relationship-app
+    npm install -g node-gyp
     yarn --network-timeout 180000
     retry yarn test:ci
 }

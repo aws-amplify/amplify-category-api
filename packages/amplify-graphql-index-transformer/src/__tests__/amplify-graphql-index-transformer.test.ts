@@ -1607,3 +1607,124 @@ describe('auth', () => {
     expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toMatchSnapshot();
   });
 });
+
+test('@index with KEYS_ONLY projection creates GSI with correct projection type', () => {
+  const inputSchema = `
+    type Product @model {
+      id: ID!
+      name: String! @index(name: "byName", queryField: "productsByName", projection: { type: KEYS_ONLY })
+      category: String!
+      price: Float!
+    }`;
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new IndexTransformer()],
+  });
+  const stack = out.stacks.Product;
+
+  AssertionTemplate.fromJSON(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'byName',
+        Projection: {
+          ProjectionType: 'KEYS_ONLY',
+        },
+      },
+    ],
+  });
+});
+
+test('@index with INCLUDE projection creates GSI with nonKeyAttributes', () => {
+  const inputSchema = `
+    type Product @model {
+      id: ID!
+      name: String!
+      category: String! @index(name: "byCategory", queryField: "productsByCategory", projection: { type: INCLUDE, nonKeyAttributes: ["name", "price"] })
+      price: Float!
+      inStock: Boolean!
+    }`;
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new IndexTransformer()],
+  });
+  const stack = out.stacks.Product;
+
+  AssertionTemplate.fromJSON(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'byCategory',
+        Projection: {
+          ProjectionType: 'INCLUDE',
+          NonKeyAttributes: ['name', 'price'],
+        },
+      },
+    ],
+  });
+});
+
+test('@index with ALL projection creates GSI with ALL projection type', () => {
+  const inputSchema = `
+    type Product @model {
+      id: ID!
+      name: String!
+      category: String! @index(name: "byCategory", queryField: "productsByCategory", projection: { type: ALL })
+      price: Float!
+    }`;
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new IndexTransformer()],
+  });
+  const stack = out.stacks.Product;
+
+  AssertionTemplate.fromJSON(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'byCategory',
+        Projection: {
+          ProjectionType: 'ALL',
+        },
+      },
+    ],
+  });
+});
+
+test('@index throws error when INCLUDE projection has no nonKeyAttributes', () => {
+  const inputSchema = `
+    type Product @model {
+      id: ID!
+      category: String! @index(name: "byCategory", projection: { type: INCLUDE })
+    }`;
+
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+    }),
+  ).toThrow("@index 'byCategory': nonKeyAttributes must be specified when projection type is INCLUDE");
+});
+
+test('@index without projection defaults to ALL projection type', () => {
+  const inputSchema = `
+    type Product @model {
+      id: ID!
+      name: String!
+      category: String! @index(name: "byCategory", queryField: "productsByCategory")
+      price: Float!
+    }`;
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new IndexTransformer()],
+  });
+  const stack = out.stacks.Product;
+
+  AssertionTemplate.fromJSON(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'byCategory',
+        Projection: {
+          ProjectionType: 'ALL',
+        },
+      },
+    ],
+  });
+});

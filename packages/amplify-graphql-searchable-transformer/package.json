@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-searchable-transformer",
-  "version": "3.0.19",
+  "version": "3.1.0",
   "description": "Amplfy GraphQL @searchable transformer",
   "repository": {
     "type": "git",
@@ -22,27 +22,27 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc && cd streaming-lambda && bestzip --force node ../lib/streaming-lambda.zip python_streaming_function.py",
+    "build": "tsc && cd streaming-lambda && rm -rf dist && mkdir -p dist && cp python_streaming_function.py dist/ && pip3 install -r requirements.txt -t dist/ --upgrade && cd dist && bestzip --force node ../../lib/streaming-lambda.zip . && cd .. && rm -rf dist",
     "watch": "tsc -w",
-    "clean": "rimraf ./lib",
+    "clean": "rimraf ./lib ./streaming-lambda/dist",
     "test": "jest",
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-directives": "2.7.1",
-    "@aws-amplify/graphql-model-transformer": "3.3.1",
-    "@aws-amplify/graphql-transformer-core": "3.4.4",
-    "@aws-amplify/graphql-transformer-interfaces": "4.2.6",
+    "@aws-amplify/graphql-directives": "2.8.0",
+    "@aws-amplify/graphql-model-transformer": "3.4.0",
+    "@aws-amplify/graphql-transformer-core": "3.5.0",
+    "@aws-amplify/graphql-transformer-interfaces": "4.3.0",
     "graphql": "^15.5.0",
     "graphql-mapping-template": "5.0.2",
-    "graphql-transformer-common": "5.1.3"
+    "graphql-transformer-common": "5.1.4"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.187.0",
+    "aws-cdk-lib": "^2.224.0",
     "constructs": "^10.3.0"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-test-utils": "1.0.18",
-    "@types/node": "^20.0.0"
+    "@aws-amplify/graphql-transformer-test-utils": "1.1.0",
+    "@types/node": "^24.0.0"
   }
 }

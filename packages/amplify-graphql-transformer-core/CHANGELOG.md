@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.5.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.4.4...@aws-amplify/graphql-transformer-core@3.5.0) (2026-02-05)
+
+### Features
+
+- ElasticSearch server-side encryption ([#3339](https://github.com/aws-amplify/amplify-category-api/issues/3339)) ([51b67e0](https://github.com/aws-amplify/amplify-category-api/commit/51b67e063b1cd0c83578b50c5aacfe5bdbfc8dc6))
+
 ## [3.4.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.4.3...@aws-amplify/graphql-transformer-core@3.4.4) (2025-06-09)
 
 ### Bug Fixes

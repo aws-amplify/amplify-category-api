@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.17.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.16.3...@aws-amplify/data-construct@1.17.0) (2026-02-05)
+
+### Features
+
+- ElasticSearch server-side encryption ([#3339](https://github.com/aws-amplify/amplify-category-api/issues/3339)) ([51b67e0](https://github.com/aws-amplify/amplify-category-api/commit/51b67e063b1cd0c83578b50c5aacfe5bdbfc8dc6))
+
 ## [1.16.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.16.2...@aws-amplify/data-construct@1.16.3) (2025-06-17)
 
 **Note:** Version bump only for package @aws-amplify/data-construct

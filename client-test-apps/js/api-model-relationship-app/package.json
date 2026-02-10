@@ -11,7 +11,7 @@
     "@types/ini": "^1.3.31",
     "@types/jest": "^27.5.2",
     "@types/jest-dev-server": "^5.0.0",
-    "@types/node": "^20.0.0",
+    "@types/node": "^24.0.0",
     "@types/react": "18.2.42",
     "@types/react-dom": "^18.0.6",
     "aws-amplify": "^4.3.30",
@@ -48,7 +48,7 @@
     "test:execute": "cross-env TEST_HARNESS_STAGE=execute yarn test",
     "test:watch": "cross-env TEST_HARNESS_STAGE=watch yarn test",
     "test:teardown": "cross-env TEST_HARNESS_STAGE=teardown yarn test",
-    "test:ci": "yarn test --testResultsProcessor=\"jest-junit\""
+    "test:ci": "CI=true yarn test --testResultsProcessor=\"jest-junit\""
   },
   "eslintConfig": {
     "extends": [
