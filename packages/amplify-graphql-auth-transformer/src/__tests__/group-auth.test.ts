@@ -3,6 +3,7 @@ import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-in
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
+import { HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { AuthTransformer } from '../graphql-auth-transformer';
 
 test('happy case with static groups', () => {
@@ -447,5 +448,51 @@ describe('Group field as part of secondary index', () => {
 
     expect(out).toBeDefined();
     expect(out.resolvers['Query.notesByGroup.auth.1.req.vtl']).toMatchSnapshot();
+  });
+  /**
+   * This test case validates that linking between models using the @hasMany directive while the parent
+   * model's primary key is used as the groupsField value in the child model's @auth directive works
+   * correctly.  This fixes a previous issue where the authorisation logic was not parsing the cognito:groups
+   * claim correctly, resulting in the database query failing, followed by an incorrect response to AppSync,
+   * throwing an error because the result did not match the schema.
+   */
+  test('correct generation of auth rules using @hasMany directive linking parent to child where GSI is also auth groupField', () => {
+    const authConfig: AppSyncAuthConfiguration = {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [],
+    };
+    const validSchema = `
+      type Tenant @model
+      @auth(rules: [{allow: groups, groupsField: "id"}])
+      {
+          id: ID!
+          name: String!
+          notes: [Note] @hasMany(indexName: "byTenantId", fields: ["id"])
+      }
+      
+      type Note @model
+      @auth(rules: [{allow: groups, groupsField: "tenantId"}])
+      {
+          id: ID!
+          tenantId: ID! @index(name: "byTenantId")
+          noteType: String!
+      }
+      `;
+    const out = testTransform({
+      schema: validSchema,
+      authConfig,
+      transformers: [
+        new ModelTransformer(),
+        new AuthTransformer(),
+        new PrimaryKeyTransformer(),
+        new IndexTransformer(),
+        new HasManyTransformer(),
+      ],
+    });
+
+    expect(out).toBeDefined();
+    expect(out.resolvers['Tenant.notes.auth.1.req.vtl']).toMatchSnapshot();
   });
 });
