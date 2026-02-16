@@ -76,7 +76,7 @@ const getBatchStatus = async (batchId: string): Promise<BatchStatus> => {
   };
 };
 
-const printStatus = (status: BatchStatus, compact: boolean = false): void => {
+const printStatus = (status: BatchStatus, compactInProgress: boolean = false): void => {
   console.log(`\n=== Batch Status: ${status.batchId} ===`);
   console.log(`Batch Status: ${status.batchStatus}`);
   console.log(`Total Builds: ${status.builds.length}`);
@@ -84,24 +84,22 @@ const printStatus = (status: BatchStatus, compact: boolean = false): void => {
   console.log(`In Progress: ${status.inProgressBuilds.length}`);
   console.log(`Succeeded: ${status.builds.filter((b) => b.buildStatus === 'SUCCEEDED').length}`);
 
+  // Always show all failed builds (never summarize)
   if (status.failedBuilds.length > 0) {
     console.log('\n❌ Failed Builds:');
-    const displayCount = compact ? Math.min(5, status.failedBuilds.length) : status.failedBuilds.length;
-    status.failedBuilds.slice(0, displayCount).forEach((build) => {
+    status.failedBuilds.forEach((build) => {
       console.log(`  - ${build.identifier}: ${build.buildStatus}`);
     });
-    if (compact && status.failedBuilds.length > 5) {
-      console.log(`  ... and ${status.failedBuilds.length - 5} more`);
-    }
   }
 
+  // Summarize in-progress builds only during monitoring
   if (status.inProgressBuilds.length > 0) {
     console.log('\n🏃 In Progress:');
-    const displayCount = compact ? Math.min(5, status.inProgressBuilds.length) : status.inProgressBuilds.length;
+    const displayCount = compactInProgress ? Math.min(5, status.inProgressBuilds.length) : status.inProgressBuilds.length;
     status.inProgressBuilds.slice(0, displayCount).forEach((build) => {
       console.log(`  - ${build.identifier}`);
     });
-    if (compact && status.inProgressBuilds.length > 5) {
+    if (compactInProgress && status.inProgressBuilds.length > 5) {
       console.log(`  ... and ${status.inProgressBuilds.length - 5} more`);
     }
   }
@@ -377,12 +375,22 @@ const monitorBatch = async (batchId: string, maxRetries: number = DEFAULT_MAX_RE
   while (retryCount <= maxRetries) {
     const status = await getBatchStatus(batchId);
     console.log(`\n🔄 Retry attempt: ${retryCount}/${maxRetries}`);
-    printStatus(status, true); // Use compact mode for monitoring
+    printStatus(status, true); // Compact in-progress during monitoring
 
     // Check if batch is complete
     if (!['IN_PROGRESS', 'SUBMITTED'].includes(status.batchStatus)) {
       if (status.failedBuilds.length === 0) {
         console.log('\n✅ All builds succeeded!');
+        return;
+      }
+
+      // Calculate failure rate
+      const failureRate = status.failedBuilds.length / status.builds.length;
+      if (failureRate > 0.5) {
+        console.log(
+          `\n🚫 Failure rate too high (${(failureRate * 100).toFixed(1)}% - ${status.failedBuilds.length}/${status.builds.length})`,
+        );
+        console.log('Skipping retries - this likely requires investigation.');
         return;
       }
 
