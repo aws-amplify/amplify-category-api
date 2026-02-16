@@ -7,7 +7,6 @@ Quick reference for AI agents working in this repository.
 - `packages/` - Lerna monorepo packages
 - `scripts/` - Build, test, and deployment utilities
 - `codebuild_specs/` - CI/CD configuration
-- `Q_TODO.md` - Task tracking (use `.q/` for large task-specific context)
 
 ## Essential Commands
 
@@ -85,13 +84,6 @@ yarn e2e-logs {buildId}      # View build logs
 
 ## Development Workflow
 
-### Task Management
-
-- Check `Q_TODO.md` for current state before starting
-- Break large features into discrete, deliverable chunks
-- Commit logical units of work frequently
-- Update `Q_TODO.md` with progress and blockers
-
 ### Code Quality
 
 - Follow existing code patterns and conventions
@@ -122,7 +114,6 @@ Before marking tasks complete:
 - [ ] Tests are written and passing
 - [ ] Linting passes (`yarn lint`)
 - [ ] Documentation is updated
-- [ ] `Q_TODO.md` is current
 - [ ] All code committed and pushed before e2e tests
 - [ ] E2E tests passing
 
@@ -132,5 +123,4 @@ When approaching context limits:
 
 1. Summarize current work and decisions
 2. Commit current changes
-3. Update `Q_TODO.md` with detailed next steps
-4. Provide handoff summary for next session
+3. Provide handoff summary for next session
