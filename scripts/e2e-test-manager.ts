@@ -368,6 +368,7 @@ const monitorBatch = async (batchId: string, maxRetries: number = DEFAULT_MAX_RE
 
   while (retryCount <= maxRetries) {
     const status = await getBatchStatus(batchId);
+    console.log(`\n🔄 Retry attempt: ${retryCount}/${maxRetries}`);
     printStatus(status);
 
     // Check if batch is complete

@@ -318,3 +318,32 @@ We may ask you to sign a [Contributor License Agreement (CLA)](http://en.wikiped
 ## Common Tasks
 
 - [How to write a transformer](https://docs.amplify.aws/cli/plugins/authoring/#authoring-custom-graphql-transformers--directives)
+
+### E2E Test Management
+
+E2E tests run in AWS CodeBuild against pushed code. All changes must be committed and pushed before running e2e tests.
+
+```sh
+# Trigger e2e test suite (requires pushed code)
+yarn cloud-e2e
+
+# Monitor batch with auto-retry (polls every 5 min)
+yarn e2e-monitor {batchId}
+
+# Check status once
+yarn e2e-status {batchId}
+
+# Retry failed builds
+yarn e2e-retry {batchId}
+
+# List recent batches
+yarn e2e-list [limit] [e2e|canary]
+
+# Show failed builds with log commands
+yarn e2e-failed {batchId}
+
+# View build logs
+yarn e2e-logs {buildId}
+```
+
+**Note:** Batch IDs have format `amplify-category-api-e2e-workflow:{UUID}`. Use the full ID with all commands.
