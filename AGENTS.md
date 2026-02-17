@@ -19,6 +19,16 @@ yarn lint               # Check linting
 yarn setup-dev          # Setup local CLI (amplify-dev)
 ```
 
+### Dependabot & Security Fixes
+
+See [.agent-docs/DEPENDABOT.md](./.agent-docs/DEPENDABOT.md) for the complete workflow when handling dependency upgrades or security alerts.
+
+Quick check:
+
+```sh
+npx ts-node scripts/check-dependabot.ts
+```
+
 ### E2E Testing
 
 **Critical:** E2E tests run against pushed code in AWS CodeBuild, not local changes.
