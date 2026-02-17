@@ -21,7 +21,7 @@
     "ini": "^3.0.1",
     "jest-dev-server": "~9.0.1",
     "jest-junit": "^14.0.1",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "node-pty": "^1.0.0",
     "node-gyp": "^11.0.0",
     "pluralize": "^8.0.0",
@@ -36,7 +36,7 @@
   },
   "resolutions": {
     "joi": "17.7.0",
-    "glob": "10.4.5",
+    "glob": "10.5.0",
     "rimraf": "5.0.10"
   },
   "scripts": {
