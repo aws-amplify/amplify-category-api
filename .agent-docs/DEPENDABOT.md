@@ -4,11 +4,32 @@ Guide for handling Dependabot alerts, dependency upgrades, and security fixes.
 
 ## Checking Dependabot Alerts
 
+**Prerequisites:** GitHub CLI (`gh`) must be installed and authenticated.
+
+Install:
+
+```bash
+# macOS
+brew install gh
+
+# Windows
+winget install GitHub.cli
+
+# Linux
+# See https://github.com/cli/cli#installation
+```
+
+Authenticate:
+
+```bash
+gh auth login
+```
+
+Check alerts:
+
 ```bash
 npx ts-node scripts/check-dependabot.ts
 ```
-
-**Prerequisites:** GitHub CLI (`gh`) must be installed and authenticated. The script will provide setup instructions if needed.
 
 ## Workflow for Agents
 
