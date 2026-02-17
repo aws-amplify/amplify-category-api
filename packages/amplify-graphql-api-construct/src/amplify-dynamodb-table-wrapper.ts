@@ -136,6 +136,13 @@ export class AmplifyDynamoDbTableWrapper {
   }
 
   /**
+   * Enforces a particular physical table name.
+   */
+  set tableName(tableName: string) {
+    this.resource.addPropertyOverride('tableName', tableName);
+  }
+
+  /**
    * Specify how you are charged for read and write throughput and how you manage capacity.
    */
   set billingMode(billingMode: BillingMode) {
