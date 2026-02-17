@@ -119,9 +119,6 @@ const retryFailedBuilds = async (batchId: string): Promise<string | undefined> =
 
   console.log(`Retrying ${failedBuildIds.length} failed builds using retry-build-batch`);
 
-  // Use AWS CLI retry-build-batch command for the entire batch
-  const { execSync } = require('child_process');
-
   try {
     const result = execSync(`aws codebuild retry-build-batch --region=${REGION} --profile=${E2E_PROFILE_NAME} --id="${batchId}"`, {
       encoding: 'utf8',
@@ -146,9 +143,6 @@ const retryFailedBuilds = async (batchId: string): Promise<string | undefined> =
 };
 
 const shouldRetryBuild = (build: BuildSummary): boolean => {
-  // Don't retry if it's clearly a code bug (these patterns indicate infrastructure/test issues)
-  const retryablePatterns = ['timeout', 'network', 'throttl', 'rate limit', 'service unavailable', 'internal error'];
-
   // For now, retry all failed builds - we can add more sophisticated logic later
   return ['FAILED', 'FAULT', 'TIMED_OUT'].includes(build.buildStatus);
 };
@@ -344,8 +338,6 @@ const getBuildLogs = async (buildId: string): Promise<void> => {
       console.log('❌ Could not fetch log content via SDK:', error.message);
       console.log(`\nFalling back to AWS CLI...`);
 
-      // Fallback to CLI approach but get more logs
-      const { execSync } = require('child_process');
       try {
         const logOutput = execSync(
           `aws logs get-log-events --region=${REGION} --profile=${E2E_PROFILE_NAME} --log-group-name="${logGroup}" --log-stream-name="${logStream}" --limit=10000 --query="events[*].message" --output=text`,
