@@ -111,10 +111,21 @@ yarn e2e-logs {buildId}      # View build logs
 
 ## Testing Requirements
 
+**CRITICAL: Test Success Criteria**
+
+- **Tests MUST pass with zero errors and zero failures to be considered successful**
+- **ANY test errors, failures, or exceptions mean the tests have FAILED**
+- **Exit code 0 with error output still means FAILURE - always check the actual test results**
+- **Do NOT declare success if tests show errors, even if some tests passed**
+- **"Tests passed" only means 100% success with no errors whatsoever**
+
+Requirements:
+
 - All code changes require passing tests
 - Follow existing test patterns in the repository
 - Test edge cases, error conditions, and boundary values
 - Run full test suite before marking tasks complete
+- Verify test output shows no errors, failures, or exceptions
 
 ## Quality Gates
 
