@@ -33,6 +33,8 @@ npx ts-node scripts/check-dependabot.ts
 
 **Critical:** E2E tests run against pushed code in AWS CodeBuild, not local changes.
 
+**Documentation:** See [.agent-docs/LOCAL_E2E_TESTING.md](./.agent-docs/LOCAL_E2E_TESTING.md) for detailed guide on running e2e tests and build steps locally.
+
 **When to Run E2E Tests:**
 
 - User explicitly requests e2e tests
