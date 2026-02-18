@@ -31,7 +31,7 @@
     "glob": "^10.3.0",
     "graphql": "^15.5.0",
     "graphql-transformer-common": "5.1.4",
-    "lodash": "^4.17.23"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@aws-amplify/amplify-cli-core": "^4.4.0",
