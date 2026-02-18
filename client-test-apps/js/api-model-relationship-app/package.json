@@ -36,7 +36,7 @@
   },
   "resolutions": {
     "joi": "17.7.0",
-    "glob": "10.5.0",
+    "glob": "10.4.5",
     "rimraf": "5.0.10"
   },
   "scripts": {
