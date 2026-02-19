@@ -10,25 +10,20 @@ E2E tests run in AWS CodeBuild with specific build steps defined in `codebuild_s
 
 ### Authentication
 
-Most e2e operations require AWS credentials. The repository uses `ada` (Amazon's credential management tool) for authentication.
+Most e2e operations require AWS credentials. The repository uses `ada` (Amazon's credential management tool) for authentication, which is called automatically by the scripts.
 
 **Setup:**
 
-1. Ensure you have `ada` installed and configured
-2. Set up your `.env` file in `scripts/` directory with account details:
+1. Ensure you have `ada` and `mwinit` installed
+2. Create `scripts/.env` file with account details:
    ```bash
    # scripts/.env
    E2E_ACCOUNT_PROD=<account-id>
    E2E_ACCOUNT_BETA=<account-id>
    ```
-3. Authenticate in a separate terminal:
-   ```bash
-   # For production e2e account
-   source ./scripts/.env
-   ada cred update --profile=AmplifyAPIE2EProd --account=$E2E_ACCOUNT_PROD --role=CodebuildDeveloper --provider=isengard
-   ```
+3. If you see authentication errors, run `mwinit` in your terminal
 
-**Note:** Authentication expires periodically. If you see credential errors, re-run the `ada cred update` command.
+**Note:** The scripts automatically call `ada` for credential refresh. You don't need to run `ada` commands manually.
 
 ## Common Build Steps
 
