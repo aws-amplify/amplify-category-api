@@ -121,31 +121,6 @@ yarn e2e-logs {buildId}      # View build logs
 - **Do NOT declare success if tests show errors, even if some tests passed**
 - **"Tests passed" only means 100% success with no errors whatsoever**
 
-**CRITICAL: Efficient Test Execution**
-
-- **ALWAYS redirect test output to a file for analysis**: `yarn test 2>&1 > /tmp/test-output.log`
-- **Tests take MINUTES to run and are CPU-intensive** - avoid repeated runs
-- **Analyze the full output file to find ALL issues before making changes**
-- **Fix issues in batches, not one at a time**
-- **Use grep/search on the output file instead of re-running tests**
-
-Example workflow:
-
-```bash
-# Run tests once, save output
-yarn test-ci 2>&1 > /tmp/test-ci.log
-
-# Analyze all failures
-grep "Jest: \"global\" coverage threshold" /tmp/test-ci.log
-grep "lerna ERR!" /tmp/test-ci.log
-
-# Fix all issues found
-# ... make changes ...
-
-# Re-run tests once
-yarn test-ci 2>&1 > /tmp/test-ci-2.log
-```
-
 Requirements:
 
 - All code changes require passing tests
