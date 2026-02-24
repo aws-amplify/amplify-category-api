@@ -36,7 +36,7 @@
     "graphql-mapping-template": "5.0.2",
     "graphql-transformer-common": "5.1.4",
     "hjson": "^3.2.2",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "md5": "^2.3.0",
     "object-hash": "^3.0.0",
     "ts-dedent": "^2.0.0"
