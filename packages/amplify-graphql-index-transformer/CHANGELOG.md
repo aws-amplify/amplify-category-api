@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.0.19...@aws-amplify/graphql-index-transformer@3.1.0) (2026-02-05)
+
+### Features
+
+- add projection support for [@index](https://github.com/index) directive ([#3359](https://github.com/aws-amplify/amplify-category-api/issues/3359)) ([d986592](https://github.com/aws-amplify/amplify-category-api/commit/d986592f8ce8503e2c3f37dcaf0443bf7436baf7))
+
 ## [3.0.19](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.0.18...@aws-amplify/graphql-index-transformer@3.0.19) (2025-06-09)
 
 **Note:** Version bump only for package @aws-amplify/graphql-index-transformer
