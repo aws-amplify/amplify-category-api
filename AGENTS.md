@@ -19,9 +19,21 @@ yarn lint               # Check linting
 yarn setup-dev          # Setup local CLI (amplify-dev)
 ```
 
+### Dependabot & Security Fixes
+
+See [.agent-docs/DEPENDABOT.md](./.agent-docs/DEPENDABOT.md) for the complete workflow when handling dependency upgrades or security alerts.
+
+Quick check:
+
+```sh
+npx ts-node scripts/check-dependabot.ts
+```
+
 ### E2E Testing
 
 **Critical:** E2E tests run against pushed code in AWS CodeBuild, not local changes.
+
+**Documentation:** See [.agent-docs/LOCAL_E2E_TESTING.md](./.agent-docs/LOCAL_E2E_TESTING.md) for detailed guide on running e2e tests and build steps locally.
 
 **When to Run E2E Tests:**
 
@@ -101,10 +113,21 @@ yarn e2e-logs {buildId}      # View build logs
 
 ## Testing Requirements
 
+**CRITICAL: Test Success Criteria**
+
+- **Tests MUST pass with zero errors and zero failures to be considered successful**
+- **ANY test errors, failures, or exceptions mean the tests have FAILED**
+- **Exit code 0 with error output still means FAILURE - always check the actual test results**
+- **Do NOT declare success if tests show errors, even if some tests passed**
+- **"Tests passed" only means 100% success with no errors whatsoever**
+
+Requirements:
+
 - All code changes require passing tests
 - Follow existing test patterns in the repository
 - Test edge cases, error conditions, and boundary values
 - Run full test suite before marking tasks complete
+- Verify test output shows no errors, failures, or exceptions
 
 ## Quality Gates
 
