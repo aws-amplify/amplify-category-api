@@ -45,7 +45,7 @@
     "amplify-category-api-e2e-core": "5.0.10",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
-    "axios": "^1.13.5",
+    "axios": "^1.13.6",
     "circleci-api": "^4.1.4",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
