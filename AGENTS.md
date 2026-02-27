@@ -104,6 +104,13 @@ yarn e2e-logs {buildId}      # View build logs
 - Prefer minimal implementations
 - Ask for clarification rather than making assumptions
 
+### Dependency Updates
+
+- When updating dependencies, always regenerate lockfiles with `yarn install`
+- After committing dependency changes, check for and commit license file changes (`dependency_licenses.txt`)
+- The pre-commit hook automatically runs `./scripts/extract-dependency-licenses.sh`
+- License file changes should be committed separately with message: `chore: update dependency licenses`
+
 ### Security
 
 - Never hardcode AWS account IDs (use `./scripts/.env`)
