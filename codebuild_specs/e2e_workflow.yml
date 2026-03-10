@@ -1678,7 +1678,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/deploy-velocity/single-gsi-100k-records.test.ts
-          CLI_REGION: us-west-2
+          CLI_REGION: eu-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: replace_2_gsis_update_attr_100k_records
