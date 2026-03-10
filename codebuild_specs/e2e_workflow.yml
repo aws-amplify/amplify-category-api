@@ -781,6 +781,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
+          MAX_WORKERS: '3'
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-empty-table.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-10k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-empty-table.test.ts
           CLI_REGION: ap-southeast-2
@@ -1677,7 +1678,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/deploy-velocity/single-gsi-100k-records.test.ts
-          CLI_REGION: eu-south-1
+          CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: replace_2_gsis_update_attr_100k_records
