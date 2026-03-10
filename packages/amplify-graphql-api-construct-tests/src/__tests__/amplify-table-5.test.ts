@@ -39,7 +39,8 @@ describe('CDK amplify table 5', () => {
     // deploy with modified attribute type
     const updateTemplatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', 'simple-todo', 'attributeTypeChange'));
     updateCDKAppWithTemplate(projRoot, updateTemplatePath);
-    await expect(cdkDeploy(projRoot, '--all')).resolves.not.toThrow();
+    // GSI replacement with attribute type change on Custom::AmplifyDynamoDBTable can take >10 min; increase no-output timeout to 20 min
+    await expect(cdkDeploy(projRoot, '--all', { timeoutMs: 20 * 60 * 1000 })).resolves.not.toThrow();
     const modifiedTable = await getDDBTable(tableName, region);
     expect(modifiedTable.Table.AttributeDefinitions).toHaveLength(3);
     const modifiedNameAttr = modifiedTable.Table.AttributeDefinitions.find((attr) => attr.AttributeName === 'name');

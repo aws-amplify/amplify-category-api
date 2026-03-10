@@ -524,6 +524,7 @@ function runE2eTest {
 
 function runCDKTest {
     FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
+    CDK_MAX_WORKERS=${MAX_WORKERS:-5}
 
     if [ -z "$FIRST_RUN" ] || [ "$FIRST_RUN" == "true" ]; then
         cd $(pwd)/packages/amplify-graphql-api-construct-tests
@@ -532,9 +533,9 @@ function runCDKTest {
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then
         # read the content of failed tests
         failedTests=$(<$FAILED_TEST_REGEX_FILE)
-        yarn run e2e --maxWorkers=5 $TEST_SUITE -t "$failedTests"
+        yarn run e2e --maxWorkers=$CDK_MAX_WORKERS $TEST_SUITE -t "$failedTests"
     else
-        yarn run e2e --maxWorkers=5 $TEST_SUITE
+        yarn run e2e --maxWorkers=$CDK_MAX_WORKERS $TEST_SUITE
     fi
 }
 
