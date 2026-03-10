@@ -5,7 +5,7 @@ import {
   SCHEMA_FOUR_FIELDS_FINAL_TWO_INDEXED,
   SCHEMA_FOUR_FIELDS_INITIAL_TWO_INDEXED,
 } from '../deploy-velocity/deploy-velocity-constants';
-import { DURATION_35_MINUTES } from '../../utils/duration-constants';
+import { DURATION_30_MINUTES } from '../../utils/duration-constants';
 import {
   recordCountDataProvider,
   recordCountDataValidator,
@@ -14,7 +14,7 @@ import {
 
 testManagedTableDeployment({
   name: 'Replace 2 GSIs updated w/ attr update - 1k Records',
-  maxDeployDurationMs: DURATION_35_MINUTES,
+  maxDeployDurationMs: DURATION_30_MINUTES,
   initialSchema: SCHEMA_FOUR_FIELDS_INITIAL_TWO_INDEXED,
   updatedSchema: SCHEMA_FOUR_FIELDS_FINAL_TWO_INDEXED,
   dataSetup: recordCountDataProvider(COUNT_1_THOUSAND, MUTATION_FOUR_FIELD_CREATE),
