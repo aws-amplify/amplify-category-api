@@ -173,12 +173,9 @@ const RUN_IN_ALL_REGIONS = [
 ];
 
 const RUN_IN_NON_OPT_IN_REGIONS: (string | RegExp)[] = [
-  // SQL tests (top-level and nested under auth/relationships directories)
+  // SQL tests
   /src\/__tests__\/rds-.*\.test\.ts/,
   /src\/__tests__\/sql-.*\.test\.ts/,
-  /src\/__tests__\/.*sql.*\.test\.ts/,
-  // Restricted field auth gen2 tests also create RDS instances
-  /src\/__tests__\/restricted-field-auth\/.*gen2.*\.test\.ts/,
   // Searchable tests
   /src\/__tests__\/.*searchable.*\.test\.ts/,
   // Tests that use Auth Construct
