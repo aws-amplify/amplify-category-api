@@ -1,8 +1,9 @@
 import * as path from 'path';
 import { createNewProjectDir, deleteProjectDir, getDDBTable } from 'amplify-category-api-e2e-core';
 import { cdkDestroy, initCDKProject, cdkDeploy, updateCDKAppWithTemplate } from '../commands';
+import { DURATION_1_HOUR, DURATION_30_MINUTES, DURATION_45_MINUTES } from '../utils/duration-constants';
 
-jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
+jest.setTimeout(DURATION_1_HOUR);
 
 describe('CDK amplify table 5', () => {
   let projRoot: string;
@@ -39,7 +40,7 @@ describe('CDK amplify table 5', () => {
     // deploy with modified attribute type
     const updateTemplatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', 'simple-todo', 'attributeTypeChange'));
     updateCDKAppWithTemplate(projRoot, updateTemplatePath);
-    await expect(cdkDeploy(projRoot, '--all')).resolves.not.toThrow();
+    await cdkDeploy(projRoot, '--all', { timeoutMs: DURATION_30_MINUTES });
     const modifiedTable = await getDDBTable(tableName, region);
     expect(modifiedTable.Table.AttributeDefinitions).toHaveLength(3);
     const modifiedNameAttr = modifiedTable.Table.AttributeDefinitions.find((attr) => attr.AttributeName === 'name');
@@ -55,5 +56,5 @@ describe('CDK amplify table 5', () => {
         }),
       ]),
     );
-  });
+  }, DURATION_45_MINUTES);
 });
