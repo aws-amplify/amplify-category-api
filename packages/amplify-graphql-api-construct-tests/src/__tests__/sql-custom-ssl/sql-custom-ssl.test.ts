@@ -114,7 +114,7 @@ describe('Custom SSL certificates', () => {
     writeTestDefinitions(testDefinitions, projRoot);
 
     // const outputs = await cdkDeploy(projRoot, '--all', { postDeployWaitMs: 2 * ONE_MINUTE });
-    const outputs = await cdkDeploy(projRoot, '--all', { postDeployWaitMs: 0 });
+    const outputs = await cdkDeploy(projRoot, '--all', { postDeployWaitMs: ONE_MINUTE });
     const { awsAppsyncApiEndpoint, awsAppsyncApiKey } = outputs[name];
 
     const result = await queryCustomSslField(awsAppsyncApiEndpoint, awsAppsyncApiKey);

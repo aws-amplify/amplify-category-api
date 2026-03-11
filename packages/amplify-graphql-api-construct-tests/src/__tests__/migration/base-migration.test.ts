@@ -1,11 +1,12 @@
 import * as path from 'path';
-import { createNewProjectDir, deleteProjectDir, deleteProject } from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir, deleteProject, tryScheduleCredentialRefresh } from 'amplify-category-api-e2e-core';
 import { initCDKProject, cdkDeploy, cdkDestroy, createGen1ProjectForMigration, deleteDDBTables } from '../../commands';
 import { graphql } from '../../graphql-request';
 import { TestDefinition, writeStackConfig, writeTestDefinitions, writeOverrides } from '../../utils';
-import { DURATION_20_MINUTES } from '../../utils/duration-constants';
+import { DURATION_30_MINUTES } from '../../utils/duration-constants';
 
-jest.setTimeout(DURATION_20_MINUTES);
+jest.setTimeout(DURATION_30_MINUTES);
+tryScheduleCredentialRefresh();
 
 describe('Migration with basic schema', () => {
   let gen1ProjRoot: string;
