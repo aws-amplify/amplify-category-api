@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { createNewProjectDir, deleteProjectDir, getDDBTable, getDDBTableTags } from 'amplify-category-api-e2e-core';
 import { cdkDestroy, initCDKProject, cdkDeploy, updateCDKAppWithTemplate } from '../commands';
-import { DURATION_1_HOUR, DURATION_45_MINUTES } from '../utils/duration-constants';
+import { DURATION_1_HOUR, DURATION_30_MINUTES, DURATION_45_MINUTES } from '../utils/duration-constants';
 
 jest.setTimeout(DURATION_1_HOUR);
 
@@ -53,7 +53,7 @@ describe('CDK amplify table 1', () => {
 
     const updateTemplatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', 'simple-todo', 'updateIndex'));
     updateCDKAppWithTemplate(projRoot, updateTemplatePath);
-    await cdkDeploy(projRoot, '--all');
+    await cdkDeploy(projRoot, '--all', { timeoutMs: DURATION_30_MINUTES });
     const updatedTable = await getDDBTable(tableName, region);
     expect(updatedTable).toBeDefined();
     expect(updatedTable.Table.BillingModeSummary.BillingMode).toBe('PROVISIONED');
