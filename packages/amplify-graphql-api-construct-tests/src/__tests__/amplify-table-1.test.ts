@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { createNewProjectDir, deleteProjectDir, getDDBTable, getDDBTableTags } from 'amplify-category-api-e2e-core';
 import { cdkDestroy, initCDKProject, cdkDeploy, updateCDKAppWithTemplate } from '../commands';
-import { DURATION_1_HOUR } from '../utils/duration-constants';
+import { DURATION_1_HOUR, DURATION_45_MINUTES } from '../utils/duration-constants';
 
 jest.setTimeout(DURATION_1_HOUR);
 
@@ -74,5 +74,5 @@ describe('CDK amplify table 1', () => {
         { Key: 'created-by', Value: 'amplify-updated' },
       ]),
     );
-  });
+  }, DURATION_45_MINUTES);
 });

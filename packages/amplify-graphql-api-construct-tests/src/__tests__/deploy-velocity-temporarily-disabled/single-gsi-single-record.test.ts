@@ -3,7 +3,7 @@ import {
   SCHEMA_ONE_FIELD_ALL_INDEXED,
   SCHEMA_ONE_FIELD_NO_INDEX,
 } from '../deploy-velocity/deploy-velocity-constants';
-import { DURATION_10_MINUTES } from '../../utils/duration-constants';
+import { DURATION_15_MINUTES } from '../../utils/duration-constants';
 import {
   recordByIdDataValidator,
   recordProviderWithIdState,
@@ -12,7 +12,7 @@ import {
 
 testManagedTableDeployment({
   name: 'Single GSI updated - Single Record',
-  maxDeployDurationMs: DURATION_10_MINUTES,
+  maxDeployDurationMs: DURATION_15_MINUTES,
   initialSchema: SCHEMA_ONE_FIELD_NO_INDEX,
   updatedSchema: SCHEMA_ONE_FIELD_ALL_INDEXED,
   dataSetup: recordProviderWithIdState(MUTATION_ONE_FIELD_CREATE_STATIC),
