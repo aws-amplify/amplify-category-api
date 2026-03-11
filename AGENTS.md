@@ -121,6 +121,12 @@ yarn e2e-logs {buildId}      # View build logs
 - **Do NOT declare success if tests show errors, even if some tests passed**
 - **"Tests passed" only means 100% success with no errors whatsoever**
 
+**CRITICAL: Failure Attribution**
+
+- **NEVER assume a failure is pre-existing unless the user explicitly tells you so**
+- **If a build, test, or lint step fails after your changes, assume YOUR changes broke it**
+- **Investigate the failure and fix it — do not dismiss or hand-wave it away**
+
 Requirements:
 
 - All code changes require passing tests
