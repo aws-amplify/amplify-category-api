@@ -743,7 +743,6 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
-          MAX_WORKERS: '3'
           TEST_SUITE: >-
             src/__tests__/utils.test.ts|src/__tests__/log-config.test.ts|src/__tests__/gsi-projection-type.test.ts|src/__tests__/ddb-iam-access.test.ts|src/__tests__/data-construct.test.ts
           CLI_REGION: eu-west-3
@@ -756,7 +755,6 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
-          MAX_WORKERS: '3'
           TEST_SUITE: >-
             src/__tests__/custom-logic.test.ts|src/__tests__/amplify-table-5.test.ts|src/__tests__/add-resources.test.ts|src/__tests__/validate-transformer/validate-transformer-evaluate-mapping-template.test.ts|src/__tests__/validate-transformer/validate-transformer-e2e.test.ts
           CLI_REGION: ap-northeast-2
@@ -781,7 +779,6 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
-          MAX_WORKERS: '3'
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-empty-table.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-10k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-empty-table.test.ts
           CLI_REGION: ap-southeast-2
@@ -1678,7 +1675,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: src/__tests__/deploy-velocity/single-gsi-100k-records.test.ts
-          CLI_REGION: eu-west-1
+          CLI_REGION: eu-south-1
       depend-on:
         - publish_to_local_registry
     - identifier: replace_2_gsis_update_attr_100k_records
