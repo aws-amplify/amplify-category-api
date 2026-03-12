@@ -42,6 +42,13 @@ export const setupTest = async (input: TestConfigInput): Promise<TestConfigOutpu
     additionalDependencies = [],
   } = input;
 
+  // Clear any residual data from previous test suites sharing this database
+  try {
+    await dbController.clearDatabase();
+  } catch (err) {
+    console.log(`Warning: Could not clear database before test setup: ${err}`);
+  }
+
   const templatePath = path.resolve(path.join(__dirname, '..', '__tests__', 'backends', 'sql-configurable-stack'));
   const projRoot = await createNewProjectDir(projFolderName);
   const name = await initCDKProject(projRoot, templatePath, { additionalDependencies });
