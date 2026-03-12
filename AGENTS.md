@@ -141,7 +141,7 @@ Before marking tasks complete:
 
 - [ ] Code follows repository patterns
 - [ ] Tests are written and passing
-- [ ] Linting passes (`yarn lint`)
+- [ ] Linting: `yarn lint` does NOT pass on the full repo (OOM + thousands of existing errors). CI only lints PR-changed files and treats eslint failures as non-blocking (`|| true`). `prettier-check` and `depcheck` DO block in CI.
 - [ ] Documentation is updated
 - [ ] All code committed and pushed before e2e tests
 - [ ] E2E tests passing
