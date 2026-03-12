@@ -769,6 +769,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
+          MAX_WORKERS: '3'
           TEST_SUITE: >-
             src/__tests__/migration/references-migration.test.ts|src/__tests__/migration/migration-validation.test.ts|src/__tests__/migration/many-to-many-migration.test.ts|src/__tests__/migration/base-migration.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-single-record.test.ts
           CLI_REGION: ap-southeast-1
@@ -794,6 +795,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
+          MAX_WORKERS: '3'
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-10k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-empty-table.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-1k-records.test.ts
           CLI_REGION: ca-central-1
@@ -806,6 +808,7 @@ batch:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
+          MAX_WORKERS: '3'
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-10k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-single-record.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-empty-table.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-1k-records.test.ts|src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-10k-records.test.ts
           CLI_REGION: eu-central-1

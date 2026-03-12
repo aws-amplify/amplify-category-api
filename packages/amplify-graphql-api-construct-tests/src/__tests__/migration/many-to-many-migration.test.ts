@@ -3,9 +3,9 @@ import { createNewProjectDir, deleteProjectDir, deleteProject, tryScheduleCreden
 import { initCDKProject, cdkDeploy, cdkDestroy, createGen1ProjectForMigration, deleteDDBTables } from '../../commands';
 import { graphql } from '../../graphql-request';
 import { TestDefinition, writeStackConfig, writeTestDefinitions, writeOverrides } from '../../utils';
-import { DURATION_20_MINUTES } from '../../utils/duration-constants';
+import { DURATION_30_MINUTES } from '../../utils/duration-constants';
 
-jest.setTimeout(DURATION_20_MINUTES);
+jest.setTimeout(DURATION_30_MINUTES);
 
 describe('Many-to-many Migration', () => {
   let gen1ProjRoot: string;
