@@ -1096,7 +1096,7 @@ export const importRDSDatabase = (cwd: string, opts: ImportApiOptions & { apiExi
     promptDBInformation(importCommands, options);
 
     if (options.useVpc) {
-      importCommands.optionalWaitAndSend(/.*Unable to connect to the database from this machine. Would you like to try from VPC.*/, 'Y');
+      importCommands.wait(/.*Unable to connect to the database from this machine. Would you like to try from VPC.*/).sendYes();
     }
 
     importCommands.wait(/.*Successfully imported the database schema into.*/).run((err: Error) => {
@@ -1162,7 +1162,7 @@ export function apiGenerateSchema(cwd: string, opts: ImportApiOptions & { validC
       promptDBInformation(generateSchemaCommands, options);
     }
     if (options.useVpc) {
-      generateSchemaCommands.optionalWaitAndSend(/.*Unable to connect to the database from this machine. Would you like to try from VPC.*/, 'Y');
+      generateSchemaCommands.wait(/.*Unable to connect to the database from this machine. Would you like to try from VPC.*/).sendYes();
     }
     generateSchemaCommands.run((err: Error) => {
       if (!err) {
@@ -1186,7 +1186,7 @@ export function apiGenerateSchemaWithError(cwd: string, opts: ImportApiOptions &
       promptDBInformation(generateSchemaCommands, options);
     }
     if (options.useVpc) {
-      generateSchemaCommands.optionalWaitAndSend(/.*Unable to connect to the database from this machine. Would you like to try from VPC.*/, 'Y');
+      generateSchemaCommands.wait(/.*Unable to connect to the database from this machine. Would you like to try from VPC.*/).sendYes();
     }
     generateSchemaCommands.wait(options.errMessage);
     generateSchemaCommands.run((err: Error) => {

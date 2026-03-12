@@ -332,7 +332,6 @@ export const testRDSGenerateSchema = (engine: ImportedRDSType, queries: string[]
         username,
         password,
         validCredentials: true,
-        useVpc: true,
       });
 
       // The re-generated schema preserves the edits that were made

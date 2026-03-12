@@ -54,11 +54,6 @@ type ExecutionStep = {
   requiresInput: boolean;
   name: string;
   expectation?: any;
-  /**
-   * For _optionalWait steps: the number of follow-up steps (e.g., sendYes) that should be
-   * skipped if the optional pattern is not matched and a subsequent _wait matches instead.
-   */
-  optionalFollowUpCount?: number;
 };
 
 export type Context = {
@@ -98,13 +93,6 @@ export type ExecutionContext = {
   sendCtrlA: () => ExecutionContext;
   sendEof: () => ExecutionContext;
   delay: (milliseconds: number) => ExecutionContext;
-  /**
-   * Waits for an optional prompt and sends a response if it appears. If the prompt does not appear
-   * and the next wait in the queue matches instead, the optional wait and its response are skipped.
-   * This is useful for handling prompts that may or may not appear depending on runtime conditions
-   * (e.g., VPC connection fallback prompts).
-   */
-  optionalWaitAndSend: (expectation: string | RegExp, response: string) => ExecutionContext;
   /**
    * @deprecated Use runAsync
    */
@@ -185,35 +173,6 @@ function chain(context: Context): ExecutionContext {
         expectation: expectation,
       };
       context.queue.push(_wait);
-      return chain(context);
-    },
-    optionalWaitAndSend: function (expectation: string | RegExp, response: string): ExecutionContext {
-      // Push the optional wait step. The _optionalWait step will match the expectation, and if matched,
-      // send the response and shift the queue forward. If the expectation is not matched but the next
-      // _wait in the queue does match, the _optionalWait and its follow-up _optionalSend are skipped.
-      let _optionalWait: ExecutionStep = {
-        fn: (data) => {
-          return testExpectation(data, expectation, context);
-        },
-        name: '_optionalWait',
-        shift: false,
-        description: `[optionalWait] ${expectation}`,
-        requiresInput: true,
-        expectation: expectation,
-        optionalFollowUpCount: 1, // the _optionalSend that follows
-      };
-      let _optionalSend: ExecutionStep = {
-        fn: () => {
-          context.process.write(response);
-          return true;
-        },
-        name: '_optionalSend',
-        shift: true,
-        description: `[optionalSend] ${response}`,
-        requiresInput: false,
-      };
-      context.queue.push(_optionalWait);
-      context.queue.push(_optionalSend);
       return chain(context);
     },
     sendLine: function (line: string): ExecutionContext {
@@ -513,7 +472,7 @@ function chain(context: Context): ExecutionContext {
         onError(new Error('Cannot process non-function on nexpect stack.'), true);
         return false;
       } else if (
-        ['_expect', '_sendline', '_send', '_wait', '_sendEof', '_delay', '_pauseRecording', '_resumeRecording', '_optionalWait', '_optionalSend'].indexOf(currentFnName) ===
+        ['_expect', '_sendline', '_send', '_wait', '_sendEof', '_delay', '_pauseRecording', '_resumeRecording'].indexOf(currentFnName) ===
         -1
       ) {
         //
@@ -569,31 +528,6 @@ function chain(context: Context): ExecutionContext {
           context.queue.shift();
           evalContext(data, '_expect');
         }
-      } else if (currentFnName === '_optionalWait') {
-        //
-        // If this is an `_optionalWait` function, evaluate it. If matched, shift
-        // and process the follow-up steps. If not matched, look ahead in the queue
-        // for the next `_wait` step. If that `_wait` matches, skip the optional
-        // steps and process the `_wait` instead.
-        //
-        if (currentFn(data) === true) {
-          // Optional pattern matched — shift and process follow-up steps
-          context.queue.shift();
-          evalContext(data, '_expect');
-        } else {
-          // Optional pattern not matched — check if a subsequent _wait matches
-          const followUpCount = step.optionalFollowUpCount || 0;
-          const nextWaitIndex = 1 + followUpCount; // skip _optionalWait (already at [0]) + follow-ups
-          const nextWaitStep = context.queue[nextWaitIndex];
-          if (nextWaitStep && (nextWaitStep.name === '_wait' || nextWaitStep.name === '_expect') && nextWaitStep.fn(data) === true) {
-            // The next _wait matched — skip the optional steps entirely
-            context.queue.splice(0, nextWaitIndex); // remove _optionalWait + follow-ups
-            // Now the matched _wait is at the front — process it
-            context.queue.shift(); // shift the matched _wait
-            evalContext(data, '_expect');
-          }
-          // else: neither matched, do nothing (stay in queue like a regular _wait)
-        }
       } else if (currentFn(data)) {
         //
         // If the `currentFn` is any other function then evaluate it
@@ -644,22 +578,8 @@ function chain(context: Context): ExecutionContext {
     // `context.queue` and responds to the `callback` accordingly.
     //
     function flushQueue() {
-      // Skip any remaining _optionalWait steps and their follow-ups at the front of the queue.
-      // These are optional prompts that never appeared, which is a valid scenario.
-      while (context.queue.length > 0 && context.queue[0].name === '_optionalWait') {
-        const optionalStep = context.queue[0];
-        const followUpCount = optionalStep.optionalFollowUpCount || 0;
-        // Remove the _optionalWait step and its follow-ups
-        context.queue.splice(0, 1 + followUpCount);
-      }
-
-      // If queue is now empty after removing optional steps, we're done successfully
-      if (context.queue.length === 0) {
-        return true;
-      }
-
       const remainingQueue = context.queue.slice().map((item) => {
-        const description = ['_sendline', '_send', '_optionalSend'].includes(item.name) ? `[${item.name}] **redacted**` : item.description;
+        const description = ['_sendline', '_send'].includes(item.name) ? `[${item.name}] **redacted**` : item.description;
         return {
           ...item,
           description,
