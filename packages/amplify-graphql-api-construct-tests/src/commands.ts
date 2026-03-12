@@ -124,9 +124,9 @@ export type CdkDeployProps = {
  * @returns the generated outputs file as a JSON object
  */
 export const cdkDeploy = async (cwd: string, option: string, props?: CdkDeployProps): Promise<any> => {
-  // The CodegenAssets BucketDeployment resource takes a while. Set the timeout to 10m account for that. (Note that this is the "no output
-  // timeout"--the overall deployment is still allowed to take longer than 10m)
-  const noOutputTimeout = props?.timeoutMs ?? 10 * 60 * 1000;
+  // The CodegenAssets BucketDeployment resource takes a while. Set the timeout to 15m account for that. (Note that this is the "no output
+  // timeout"--the overall deployment is still allowed to take longer than 15m)
+  const noOutputTimeout = props?.timeoutMs ?? 15 * 60 * 1000;
   const commandOptions = {
     cwd,
     stripColors: true,
@@ -156,7 +156,7 @@ export const cdkDeploy = async (cwd: string, option: string, props?: CdkDeployPr
  * @returns a promise which resolves after teardown of the stack
  */
 export const cdkDestroy = async (cwd: string, option: string): Promise<void> => {
-  return spawn(getNpxPath(), ['cdk', 'destroy', '--force', option], { cwd, stripColors: true }).runAsync();
+  return spawn(getNpxPath(), ['cdk', 'destroy', '--force', option], { cwd, stripColors: true, noOutputTimeout: 15 * 60 * 1000 }).runAsync();
 };
 
 /**

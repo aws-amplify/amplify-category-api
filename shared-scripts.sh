@@ -281,6 +281,24 @@ function _generateChangeLog {
     # copy [changelog] to s3
     storeCacheFile $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md UNIFIED_CHANGELOG.md
 }
+function retry_with_backoff {
+    local max_attempts=$1
+    shift
+    local attempt=1
+    while [ $attempt -le $max_attempts ]; do
+        if "$@"; then
+            return 0
+        fi
+        if [ $attempt -eq $max_attempts ]; then
+            break
+        fi
+        echo "Attempt $attempt/$max_attempts failed. Retrying in $((attempt * 15)) seconds..."
+        sleep $((attempt * 15))
+        attempt=$((attempt + 1))
+    done
+    echo "All $max_attempts attempts failed for: $*"
+    return 1
+}
 function _installCLIFromLocalRegistry {
     echo "Start verdaccio, install CLI"
     source codebuild_specs/scripts/local_publish_helpers.sh
@@ -293,7 +311,7 @@ function _installCLIFromLocalRegistry {
     npm config set fetch-retry-mintimeout 40000
     npm config set fetch-retry-maxtimeout 240000
     npm config set maxsockets 1
-    npm install -g @aws-amplify/cli-internal
+    retry_with_backoff 3 npm install -g @aws-amplify/cli-internal
     echo "using Amplify CLI version: "$(amplify --version)
     npm list -g --depth=1 | grep -e '@aws-amplify/amplify-category-api' -e 'amplify-codegen'
     unsetNpmRegistryUrl
@@ -524,6 +542,7 @@ function runE2eTest {
 
 function runCDKTest {
     FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
+    CDK_MAX_WORKERS=${MAX_WORKERS:-5}
 
     if [ -z "$FIRST_RUN" ] || [ "$FIRST_RUN" == "true" ]; then
         cd $(pwd)/packages/amplify-graphql-api-construct-tests
@@ -532,9 +551,9 @@ function runCDKTest {
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then
         # read the content of failed tests
         failedTests=$(<$FAILED_TEST_REGEX_FILE)
-        yarn run e2e --maxWorkers=5 $TEST_SUITE -t "$failedTests"
+        yarn run e2e --maxWorkers=$CDK_MAX_WORKERS $TEST_SUITE -t "$failedTests"
     else
-        yarn run e2e --maxWorkers=5 $TEST_SUITE
+        yarn run e2e --maxWorkers=$CDK_MAX_WORKERS $TEST_SUITE
     fi
 }
 

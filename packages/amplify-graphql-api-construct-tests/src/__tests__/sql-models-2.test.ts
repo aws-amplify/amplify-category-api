@@ -4,8 +4,10 @@ import { SqlDatatabaseController } from '../sql-datatabase-controller';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
 import { testGraphQLAPI } from '../sql-tests-common/sql-models';
 import { sqlCreateStatements } from '../sql-tests-common/tests-sources/sql-models/provider';
+import { tryScheduleCredentialRefresh } from 'amplify-category-api-e2e-core';
 
 jest.setTimeout(DURATION_1_HOUR);
+tryScheduleCredentialRefresh();
 
 describe('CDK GraphQL Transformer deployments with SQL datasources', () => {
   const projFolderName = 'sqlmodels2';

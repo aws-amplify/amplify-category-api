@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 
-import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir, tryScheduleCredentialRefresh } from 'amplify-category-api-e2e-core';
 import * as generator from 'generate-password';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../../../commands';
@@ -45,6 +45,7 @@ import {
 } from './test-implementations';
 
 jest.setTimeout(DURATION_1_HOUR);
+tryScheduleCredentialRefresh();
 
 // Each of these tests asserts that restricted fields in associated types are properly redacted. To assert this, we create the relationship
 // records in an order so that the type we're asserting on comes LAST. By "prepopulating" the associated records before creating the source

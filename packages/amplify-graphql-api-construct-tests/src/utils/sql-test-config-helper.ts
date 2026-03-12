@@ -69,9 +69,14 @@ export const setupTest = async (input: TestConfigInput): Promise<TestConfigOutpu
 export const cleanupTest = async (testConfigOutput: TestConfigOutput): Promise<void> => {
   try {
     await cdkDestroy(testConfigOutput.projRoot, '--all');
-    await testConfigOutput.dbController.clearDatabase();
   } catch (err) {
     console.log(`Error invoking 'cdk destroy': ${err}`);
+  }
+
+  try {
+    await testConfigOutput.dbController.clearDatabase();
+  } catch (err) {
+    console.log(`Error clearing database: ${err}`);
   }
 
   deleteProjectDir(testConfigOutput.projRoot);
