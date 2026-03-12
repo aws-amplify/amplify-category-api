@@ -15,7 +15,13 @@ import {
 } from '@aws-sdk/client-rds';
 import { RDSDataClient, ExecuteStatementCommand, ExecuteStatementCommandInput, Field } from '@aws-sdk/client-rds-data';
 import generator from 'generate-password';
-import { EC2Client, AuthorizeSecurityGroupIngressCommand, RevokeSecurityGroupIngressCommand } from '@aws-sdk/client-ec2';
+import {
+  EC2Client,
+  AuthorizeSecurityGroupIngressCommand,
+  RevokeSecurityGroupIngressCommand,
+  DescribeSecurityGroupsCommand,
+} from '@aws-sdk/client-ec2';
+import * as net from 'net';
 import {
   SSMClient,
   DeleteParametersCommand,
@@ -386,8 +392,27 @@ export const setupRDSInstanceAndData = async (
       ),
     );
 
-    console.log('Waiting for the security rules to be disabled');
-    await sleep(1 * 60 * 1000);
+    // First verify the SG rules are removed at the API level
+    await verifySGRulesRemoved({
+      region: config.region,
+      port: dbConfig.port,
+      cidrIps: ipAddresses,
+    });
+
+    // Then actively verify that TCP connections are refused rather than relying on a fixed sleep.
+    // AWS security group rule changes can take variable time to propagate (sometimes >60s).
+    // This polling approach is both more reliable and faster on average than a fixed sleep.
+    console.log('Verifying security group rules have fully propagated (connection must be refused)');
+    const connectionRefused = await waitForConnectionRefused({
+      host: dbConfig.endpoint,
+      port: dbConfig.port,
+      maxWaitMs: 3 * 60 * 1000,
+      pollIntervalMs: 10_000,
+    });
+
+    if (!connectionRefused) {
+      console.warn('WARNING: Could not confirm connection is blocked. The CLI may still be able to connect directly, which would skip the VPC prompt.');
+    }
   }
 
   return dbConfig;
@@ -576,8 +601,26 @@ export const clearTestDataUsingDirectConnection = async (config: RDSConfig, endp
       }),
     ),
   );
-  console.log('Waiting for the security rules to be disabled');
-  await sleep(1 * 60 * 1000);
+
+  // First verify the SG rules are removed at the API level
+  await verifySGRulesRemoved({
+    region: config.region,
+    port: port,
+    cidrIps: ipAddresses,
+  });
+
+  // Actively verify that TCP connections are refused rather than relying on a fixed sleep
+  console.log('Verifying security group rules have fully propagated (connection must be refused)');
+  const connectionRefused = await waitForConnectionRefused({
+    host: endpoint,
+    port: port,
+    maxWaitMs: 3 * 60 * 1000,
+    pollIntervalMs: 10_000,
+  });
+
+  if (!connectionRefused) {
+    console.warn('WARNING: Could not confirm connection is blocked. The CLI may still be able to connect directly, which would skip the VPC prompt.');
+  }
 
   console.log(`[MySQL] Database [${config.dbname}] - data cleared and all tables truncated`);
 };
@@ -745,6 +788,116 @@ export const removeRDSPortInboundRule = async (config: {
     // Ignore this error
     // It usually throws error if the security group rule is a duplicate
     // If the rule is not added, we will get an error while establishing connection to the database
+  }
+};
+
+/**
+ * Attempts a TCP connection to the given host:port and returns true if it succeeds, false if it fails.
+ */
+const tryTcpConnect = (host: string, port: number, timeoutMs: number = 5000): Promise<boolean> => {
+  return new Promise<boolean>((resolve) => {
+    const socket = new net.Socket();
+    const cleanup = () => {
+      socket.removeAllListeners();
+      socket.destroy();
+    };
+    socket.setTimeout(timeoutMs);
+    socket.once('connect', () => {
+      cleanup();
+      resolve(true);
+    });
+    socket.once('timeout', () => {
+      cleanup();
+      resolve(false);
+    });
+    socket.once('error', () => {
+      cleanup();
+      resolve(false);
+    });
+    socket.connect(port, host);
+  });
+};
+
+/**
+ * Waits until a TCP connection to host:port is refused (i.e., security group rules have fully propagated).
+ * Polls every `pollIntervalMs` until connection fails or `maxWaitMs` is exceeded.
+ * Returns true if connection was confirmed refused, false if timed out (connection still succeeds).
+ */
+export const waitForConnectionRefused = async (config: {
+  host: string;
+  port: number;
+  maxWaitMs?: number;
+  pollIntervalMs?: number;
+}): Promise<boolean> => {
+  const { host, port, maxWaitMs = 3 * 60 * 1000, pollIntervalMs = 10_000 } = config;
+  const startTime = Date.now();
+  let attempts = 0;
+
+  console.log(`Verifying connection to ${host}:${port} is refused (max wait: ${maxWaitMs / 1000}s, poll interval: ${pollIntervalMs / 1000}s)`);
+
+  while (Date.now() - startTime < maxWaitMs) {
+    attempts++;
+    const canConnect = await tryTcpConnect(host, port);
+
+    if (!canConnect) {
+      console.log(`Connection to ${host}:${port} refused after ${attempts} attempt(s) (${Math.round((Date.now() - startTime) / 1000)}s elapsed). Security group rules have propagated.`);
+      return true;
+    }
+
+    const elapsed = Math.round((Date.now() - startTime) / 1000);
+    console.log(`Attempt ${attempts}: Connection to ${host}:${port} still succeeds (${elapsed}s elapsed). Waiting ${pollIntervalMs / 1000}s before retry...`);
+    await sleep(pollIntervalMs);
+  }
+
+  console.warn(`WARNING: Connection to ${host}:${port} still succeeds after ${attempts} attempts (${maxWaitMs / 1000}s). Security group rules may not have fully propagated.`);
+  return false;
+};
+
+/**
+ * Verifies that security group ingress rules for the given port/CIDRs have been removed from the security group.
+ * This provides an API-level check to complement the TCP connection check.
+ */
+export const verifySGRulesRemoved = async (config: {
+  region: string;
+  port: number;
+  securityGroup?: string;
+  cidrIps: string[];
+}): Promise<boolean> => {
+  const ec2Client = new EC2Client({ region: config.region });
+  const groupName = config.securityGroup ?? DEFAULT_SECURITY_GROUP;
+
+  try {
+    const describeResult = await ec2Client.send(
+      new DescribeSecurityGroupsCommand({
+        GroupNames: [groupName],
+      }),
+    );
+
+    const sg = describeResult.SecurityGroups?.[0];
+    if (!sg) {
+      console.warn(`Security group ${groupName} not found`);
+      return false;
+    }
+
+    // Check if any of the revoked CIDRs still have an ingress rule for the target port
+    const matchingRules = (sg.IpPermissions ?? []).filter(
+      (perm) =>
+        perm.FromPort === config.port &&
+        perm.ToPort === config.port &&
+        perm.IpProtocol?.toLowerCase() === 'tcp' &&
+        (perm.IpRanges ?? []).some((range) => config.cidrIps.includes(range.CidrIp ?? '')),
+    );
+
+    if (matchingRules.length > 0) {
+      console.log(`Security group ${groupName} still has ${matchingRules.length} matching ingress rule(s) for port ${config.port}`);
+      return false;
+    }
+
+    console.log(`Confirmed: No ingress rules for port ${config.port} with CIDRs [${config.cidrIps.join(', ')}] in security group ${groupName}`);
+    return true;
+  } catch (error) {
+    console.warn(`Error checking security group rules: ${(error as Error).message}`);
+    return false;
   }
 };
 
