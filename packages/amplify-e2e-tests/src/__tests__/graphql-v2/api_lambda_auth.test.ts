@@ -1,5 +1,4 @@
 import {
-  addFeatureFlag,
   checkIfBucketExists,
   createNewProjectDir,
   deleteProject,
@@ -15,12 +14,48 @@ import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { addEnvironment, checkoutEnvironment, listEnvironment } from '../../environment/env';
 
-const providerName = 'awscloudformation';
-
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 // to deal with subscriptions in node env
 (global as any).WebSocket = require('ws');
+
+/**
+ * Validates that the Amplify project metadata contains the expected provider and function resources.
+ * This was moved out of afterEach so that assertion failures don't prevent resource cleanup.
+ */
+const validateProjectMeta = async (projRoot: string): Promise<void> => {
+  const meta = getProjectMeta(projRoot);
+  expect(meta.providers.awscloudformation).toBeDefined();
+  const {
+    AuthRoleArn: authRoleArn,
+    UnauthRoleArn: unauthRoleArn,
+    DeploymentBucketName: bucketName,
+    Region: region,
+    StackId: stackId,
+  } = meta.providers.awscloudformation;
+  expect(authRoleArn).toBeDefined();
+  expect(unauthRoleArn).toBeDefined();
+  expect(region).toBeDefined();
+  expect(stackId).toBeDefined();
+  const bucketExists = await checkIfBucketExists(bucketName, region);
+  expect(bucketExists).toMatchObject({});
+
+  expect(meta.function).toBeDefined();
+  let seenAtLeastOneFunc = false;
+  for (let key of Object.keys(meta.function)) {
+    const { service, build, lastBuildTimeStamp, lastPackageTimeStamp, distZipFilename, lastPushTimeStamp, lastPushDirHash } =
+      meta.function[key];
+    expect(service).toBe('Lambda');
+    expect(build).toBeTruthy();
+    expect(lastBuildTimeStamp).toBeDefined();
+    expect(lastPackageTimeStamp).toBeDefined();
+    expect(distZipFilename).toBeDefined();
+    expect(lastPushTimeStamp).toBeDefined();
+    expect(lastPushDirHash).toBeDefined();
+    seenAtLeastOneFunc = true;
+  }
+  expect(seenAtLeastOneFunc).toBeTruthy();
+};
 
 describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
   let projRoot: string;
@@ -29,39 +64,12 @@ describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
   });
 
   afterEach(async () => {
-    const meta = getProjectMeta(projRoot);
-    expect(meta.providers.awscloudformation).toBeDefined();
-    const {
-      AuthRoleArn: authRoleArn,
-      UnauthRoleArn: unauthRoleArn,
-      DeploymentBucketName: bucketName,
-      Region: region,
-      StackId: stackId,
-    } = meta.providers.awscloudformation;
-    expect(authRoleArn).toBeDefined();
-    expect(unauthRoleArn).toBeDefined();
-    expect(region).toBeDefined();
-    expect(stackId).toBeDefined();
-    const bucketExists = await checkIfBucketExists(bucketName, region);
-    expect(bucketExists).toMatchObject({});
-
-    expect(meta.function).toBeDefined();
-    let seenAtLeastOneFunc = false;
-    for (let key of Object.keys(meta.function)) {
-      const { service, build, lastBuildTimeStamp, lastPackageTimeStamp, distZipFilename, lastPushTimeStamp, lastPushDirHash } =
-        meta.function[key];
-      expect(service).toBe('Lambda');
-      expect(build).toBeTruthy();
-      expect(lastBuildTimeStamp).toBeDefined();
-      expect(lastPackageTimeStamp).toBeDefined();
-      expect(distZipFilename).toBeDefined();
-      expect(lastPushTimeStamp).toBeDefined();
-      expect(lastPushDirHash).toBeDefined();
-      seenAtLeastOneFunc = true;
+    try {
+      await deleteProject(projRoot);
+    } catch (err) {
+      // Best-effort cleanup — don't let cleanup failures mask the real test error
+      console.warn(`afterEach cleanup deleteProject failed: ${err}`);
     }
-    expect(seenAtLeastOneFunc).toBeTruthy();
-
-    await deleteProject(projRoot);
     deleteProjectDir(projRoot);
   });
 
@@ -105,6 +113,8 @@ describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
 
     expect(graphqlApi).toBeDefined();
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
+
+    await validateProjectMeta(projRoot);
   });
 
   it('init a project and add the simple_model api include lambda auth', async () => {
@@ -194,6 +204,8 @@ describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
     expect(updateResultData.updateNote.noteId).toEqual(createResultData.createNote.noteId);
     expect(updateResultData.updateNote.note).not.toEqual(createResultData.createNote.note);
     expect(updateResultData.updateNote.note).toEqual(updateInput.input.note);
+
+    await validateProjectMeta(projRoot);
   });
 
   it('lambda auth must fail when missing read access on a field or invalid token', async () => {
@@ -283,6 +295,8 @@ describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
         fetchPolicy: 'no-cache',
       }),
     ).rejects.toThrow(`Network error: Response not successful: Received status code 401`);
+
+    await validateProjectMeta(projRoot);
   });
 
   it('lambda auth with no create access', async () => {
@@ -341,5 +355,7 @@ describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
         variables: createInput,
       }),
     ).rejects.toThrow(`GraphQL error: Unauthorized on [note]`);
+
+    await validateProjectMeta(projRoot);
   });
 });
