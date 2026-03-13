@@ -64,12 +64,7 @@ describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
   });
 
   afterEach(async () => {
-    try {
-      await deleteProject(projRoot);
-    } catch (err) {
-      // Best-effort cleanup — don't let cleanup failures mask the real test error
-      console.warn(`afterEach cleanup deleteProject failed: ${err}`);
-    }
+    await deleteProject(projRoot);
     deleteProjectDir(projRoot);
   });
 
