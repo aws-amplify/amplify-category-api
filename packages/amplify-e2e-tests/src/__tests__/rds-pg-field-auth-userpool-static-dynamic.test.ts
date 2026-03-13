@@ -5,7 +5,7 @@ import { testRdsUserpoolStaticAndDynamicFieldAuth } from '../rds-v2-tests-common
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 
-jest.setTimeout(2 * 60 * 60 * 1000); // 2 hours — RDS+VPC+2×amplifyPush is extremely heavy
+jest.setTimeout(90 * 60 * 1000); // 90 minutes
 tryScheduleCredentialRefresh();
 
 describe('RDS Postgres userpool static & dynamic field auth rules', () => {

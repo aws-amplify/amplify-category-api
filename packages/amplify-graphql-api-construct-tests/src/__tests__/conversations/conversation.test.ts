@@ -260,64 +260,47 @@ describe('conversation', () => {
           ],
         };
 
-        // Retry loop: LLM may not always invoke the tool on the first attempt
-        const maxToolInvocationAttempts = 3;
-        let conversationId: string;
-        let message1: any;
-        let events: AmplifyAIConversationMessageStreamPart[] = [];
-        let eventWithToolUse: AmplifyAIConversationMessageStreamPart | undefined;
-        let subscription: any;
+        // create a conversation
+        const conversationResult = await doCreateConversationPirateChat(apiEndpoint, accessToken);
+        const conversationId = conversationResult.body.data.createConversationPirateChat.id;
 
-        for (let attempt = 1; attempt <= maxToolInvocationAttempts; attempt++) {
-          // create a fresh conversation for each attempt
-          const conversationResult = await doCreateConversationPirateChat(apiEndpoint, accessToken);
-          conversationId = conversationResult.body.data.createConversationPirateChat.id;
+        // subscribe to the conversation
+        const client = new AppSyncSubscriptionClient(realtimeEndpoint, apiEndpoint);
+        const connection = await client.connect({ accessToken });
+        const subscription = connection.subscribe({
+          query: onCreateAssistantResponsePirateChat,
+          variables: { conversationId },
+          auth: { accessToken },
+        });
 
-          // subscribe to the conversation
-          const client = new AppSyncSubscriptionClient(realtimeEndpoint, apiEndpoint);
-          const connection = await client.connect({ accessToken });
-          subscription = connection.subscribe({
-            query: onCreateAssistantResponsePirateChat,
-            variables: { conversationId },
-            auth: { accessToken },
-          });
+        // send a message with the tool configuration and a forceful prompt to trigger tool use.
+        const sendMessageResult = await doSendMessagePirateChat({
+          apiEndpoint,
+          accessToken,
+          conversationId,
+          content: [
+            {
+              text: 'You MUST use the GetWeather tool now to get the current temperature in Charleston, SC. Do not respond with text, only invoke the tool.',
+            },
+          ],
+          toolConfiguration,
+        });
 
-          // send a message with the tool configuration and a forceful prompt to trigger tool use.
-          const sendMessageResult = await doSendMessagePirateChat({
-            apiEndpoint,
-            accessToken,
-            conversationId,
-            content: [
-              {
-                text: 'You MUST use the GetWeather tool now to get the current temperature in Charleston, SC. Do not respond with text, only invoke the tool.',
-              },
-            ],
-            toolConfiguration,
-          });
+        // assert that the returned user message has the expected values.
+        const message1 = sendMessageResult.body.data.pirateChat;
+        expect(message1).toBeDefined();
+        expect(message1.content).toHaveLength(1);
+        expect(message1.conversationId).toEqual(conversationId);
+        expect(message1.toolConfiguration).toEqual(toolConfiguration);
 
-          // assert that the returned user message has the expected values.
-          message1 = sendMessageResult.body.data.pirateChat;
-          expect(message1).toBeDefined();
-          expect(message1.content).toHaveLength(1);
-          expect(message1.conversationId).toEqual(conversationId);
-          expect(message1.toolConfiguration).toEqual(toolConfiguration);
-
-          // collect the assistant response events
-          events = [];
-          for await (const event of subscription) {
-            events.push(event.onCreateAssistantResponsePirateChat);
-            if (event.onCreateAssistantResponsePirateChat.stopReason) break;
-          }
-
-          eventWithToolUse = events.find((event) => event.contentBlockToolUse);
-          if (eventWithToolUse) {
-            break; // LLM invoked the tool, proceed
-          }
-
-          console.log(`Attempt ${attempt}/${maxToolInvocationAttempts}: LLM did not invoke tool, retrying with new conversation...`);
+        // collect the assistant response events
+        const events: AmplifyAIConversationMessageStreamPart[] = [];
+        for await (const event of subscription) {
+          events.push(event.onCreateAssistantResponsePirateChat);
+          if (event.onCreateAssistantResponsePirateChat.stopReason) break;
         }
 
-        // assert that the event has the expected toolUse block (after retries)
+        const eventWithToolUse = events.find((event) => event.contentBlockToolUse);
         expect(eventWithToolUse).toBeDefined();
         expect(eventWithToolUse.contentBlockToolUse.name).toEqual('GetWeather');
         expect(eventWithToolUse.contentBlockToolUse.toolUseId).toBeDefined();
