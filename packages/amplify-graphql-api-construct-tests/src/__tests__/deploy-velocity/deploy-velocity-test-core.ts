@@ -1,13 +1,14 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { faker } from '@faker-js/faker';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir, tryScheduleCredentialRefresh } from 'amplify-category-api-e2e-core';
 import { AmplifyGraphqlApi } from '@aws-amplify/graphql-api-construct';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../../commands';
 import { ValidateGraphqlOptions, validateGraphql } from '../../graphql-request';
 import { DURATION_90_MINUTES } from '../../utils/duration-constants';
 
 jest.setTimeout(DURATION_90_MINUTES);
+tryScheduleCredentialRefresh();
 
 export type EndpointConfig = Pick<ValidateGraphqlOptions, 'apiEndpoint' | 'apiKey'>;
 

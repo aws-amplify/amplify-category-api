@@ -137,7 +137,7 @@ const RUN_SOLO: (string | RegExp)[] = [
   'src/__tests__/HttpTransformer.e2e.test.ts',
   'src/__tests__/HttpTransformerV2.e2e.test.ts',
   // Deploy Velocity tests
-  /src\/__tests__\/deploy-velocity\/.*\.test\.ts/,
+  /src\/__tests__\/deploy-velocity(-temporarily-disabled)?\/.*\.test\.ts/,
   // SQL tests
   /src\/__tests__\/rds-.*\.test\.ts/,
   /src\/__tests__\/sql-.*\.test\.ts/,

@@ -1,9 +1,10 @@
 import * as path from 'path';
-import { createNewProjectDir, deleteProjectDir, getDDBTable } from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir, getDDBTable, tryScheduleCredentialRefresh } from 'amplify-category-api-e2e-core';
 import { cdkDestroy, initCDKProject, cdkDeploy } from '../commands';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
 
 jest.setTimeout(DURATION_1_HOUR);
+tryScheduleCredentialRefresh();
 
 describe('GSI Projection Type', () => {
   let projRoot: string;
