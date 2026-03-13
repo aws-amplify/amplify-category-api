@@ -15,6 +15,10 @@ describe('References Migration', () => {
   let gen2ProjFolderName: string;
   let dataSourceMapping: Record<string, string>;
 
+  beforeAll(() => {
+    tryScheduleCredentialRefresh();
+  });
+
   beforeEach(async () => {
     gen1ProjFolderName = 'referencesgen1';
     gen2ProjFolderName = 'referencesgen2';

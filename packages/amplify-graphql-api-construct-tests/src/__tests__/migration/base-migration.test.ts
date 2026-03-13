@@ -15,6 +15,10 @@ describe('Migration with basic schema', () => {
   let gen2ProjFolderName: string;
   let dataSourceMapping: Record<string, string>;
 
+  beforeAll(() => {
+    tryScheduleCredentialRefresh();
+  });
+
   beforeEach(async () => {
     gen1ProjFolderName = 'basemigrationgen1';
     gen2ProjFolderName = 'basemigrationgen2';
