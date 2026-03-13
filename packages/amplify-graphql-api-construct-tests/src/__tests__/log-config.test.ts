@@ -7,12 +7,13 @@ import {
   StartLiveTailCommand,
 } from '@aws-sdk/client-cloudwatch-logs';
 import { default as STS } from 'aws-sdk/clients/sts';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir, tryScheduleCredentialRefresh } from 'amplify-category-api-e2e-core';
 import { GraphQLClient } from 'graphql-request';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { DURATION_30_MINUTES } from '../utils/duration-constants';
 
 jest.setTimeout(DURATION_30_MINUTES);
+tryScheduleCredentialRefresh();
 
 // AWS client initialization
 const region = process.env.CLI_REGION;

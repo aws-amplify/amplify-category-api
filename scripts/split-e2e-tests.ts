@@ -137,7 +137,7 @@ const RUN_SOLO: (string | RegExp)[] = [
   'src/__tests__/HttpTransformer.e2e.test.ts',
   'src/__tests__/HttpTransformerV2.e2e.test.ts',
   // Deploy Velocity tests
-  /src\/__tests__\/deploy-velocity\/.*\.test\.ts/,
+  /src\/__tests__\/deploy-velocity(-temporarily-disabled)?\/.*\.test\.ts/,
   // SQL tests
   /src\/__tests__\/rds-.*\.test\.ts/,
   /src\/__tests__\/sql-.*\.test\.ts/,
@@ -173,9 +173,12 @@ const RUN_IN_ALL_REGIONS = [
 ];
 
 const RUN_IN_NON_OPT_IN_REGIONS: (string | RegExp)[] = [
-  // SQL tests
+  // SQL tests (top-level and nested under auth/relationships directories)
   /src\/__tests__\/rds-.*\.test\.ts/,
   /src\/__tests__\/sql-.*\.test\.ts/,
+  /src\/__tests__\/.*sql.*\.test\.ts/,
+  // Restricted field auth gen2 tests also create RDS instances
+  /src\/__tests__\/restricted-field-auth\/.*gen2.*\.test\.ts/,
   // Searchable tests
   /src\/__tests__\/.*searchable.*\.test\.ts/,
   // Tests that use Auth Construct
