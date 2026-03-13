@@ -15,11 +15,7 @@ import {
 } from '@aws-sdk/client-rds';
 import { RDSDataClient, ExecuteStatementCommand, ExecuteStatementCommandInput, Field } from '@aws-sdk/client-rds-data';
 import generator from 'generate-password';
-import {
-  EC2Client,
-  AuthorizeSecurityGroupIngressCommand,
-  RevokeSecurityGroupIngressCommand,
-} from '@aws-sdk/client-ec2';
+import { EC2Client, AuthorizeSecurityGroupIngressCommand, RevokeSecurityGroupIngressCommand } from '@aws-sdk/client-ec2';
 import {
   SSMClient,
   DeleteParametersCommand,

@@ -606,10 +606,7 @@ const reconcileStreamEvents = (events: AmplifyAIConversationMessageStreamPart[])
  * - For toolUse blocks: exact match
  * - For text blocks: only verifies presence (non-empty), not exact character match
  */
-const assertContentBlocksStructurallyMatch = (
-  storedBlocks: Record<string, unknown>[],
-  streamedBlocks: AmplifyAIContentBlock[],
-): void => {
+const assertContentBlocksStructurallyMatch = (storedBlocks: Record<string, unknown>[], streamedBlocks: AmplifyAIContentBlock[]): void => {
   expect(storedBlocks).toHaveLength(streamedBlocks.length);
 
   for (let i = 0; i < storedBlocks.length; i++) {
