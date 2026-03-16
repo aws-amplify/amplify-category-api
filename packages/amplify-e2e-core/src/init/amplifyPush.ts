@@ -29,10 +29,15 @@ export type LayerPushSettings = {
   usePreviousPermissions?: boolean;
 };
 
-/**
- * Function to test amplify push with verbose status
- */
-export function amplifyPush(
+const RETRY_DELAY_MS = 60_000;
+const MAX_RETRIES = 2;
+
+function isApiLimitExceeded(err: any): boolean {
+  const msg = err?.message || String(err);
+  return /ApiLimitExceeded|service limit for number of GraphQL APIs|Too Many/i.test(msg);
+}
+
+function amplifyPushCore(
   cwd: string,
   testingWithLatestCodebase = false,
   settings?: {
@@ -40,7 +45,6 @@ export function amplifyPush(
     useBetaSqlLayer?: boolean;
   },
 ): Promise<void> {
-  console.log('► amplifyPush()');
   return new Promise((resolve, reject) => {
     // Test detailed status
     spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
@@ -82,31 +86,42 @@ export function amplifyPush(
 }
 
 /**
- * Wrapper around amplifyPush that retries on ApiLimitExceededException with exponential backoff.
+ * Function to test amplify push with verbose status.
+ * Automatically retries on ApiLimitExceededException (AppSync quota) with a 60s backoff, up to 2 retries.
  */
-export async function amplifyPushWithRetry(
+export async function amplifyPush(
   cwd: string,
   testingWithLatestCodebase = false,
-  settings?: { skipCodegen?: boolean; useBetaSqlLayer?: boolean },
-  maxRetries = 2,
-  retryDelayMs = 60000,
+  settings?: {
+    skipCodegen?: boolean;
+    useBetaSqlLayer?: boolean;
+  },
 ): Promise<void> {
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+  console.log('► amplifyPush()');
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     try {
-      await amplifyPush(cwd, testingWithLatestCodebase, settings);
+      await amplifyPushCore(cwd, testingWithLatestCodebase, settings);
       return;
     } catch (err: any) {
-      const errMsg = err?.message || String(err);
-      const isQuotaError = /ApiLimitExceeded|limit.*GraphQL|Too Many/i.test(errMsg);
-      if (isQuotaError && attempt < maxRetries) {
-        const delay = retryDelayMs * (attempt + 1);
-        console.warn(`[amplifyPushWithRetry] ApiLimitExceededException detected, retrying in ${delay / 1000}s (attempt ${attempt + 1}/${maxRetries})...`);
-        await new Promise(r => setTimeout(r, delay));
+      if (isApiLimitExceeded(err) && attempt < MAX_RETRIES) {
+        console.warn(`[amplifyPush] ApiLimitExceededException detected, retrying in ${RETRY_DELAY_MS / 1000}s (attempt ${attempt + 1}/${MAX_RETRIES + 1})...`);
+        await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
         continue;
       }
       throw err;
     }
   }
+}
+
+/**
+ * @deprecated Retry logic is now built into amplifyPush. This function is kept for backward compatibility.
+ */
+export async function amplifyPushWithRetry(
+  cwd: string,
+  testingWithLatestCodebase = false,
+  settings?: { skipCodegen?: boolean; useBetaSqlLayer?: boolean },
+): Promise<void> {
+  return amplifyPush(cwd, testingWithLatestCodebase, settings);
 }
 
 /**

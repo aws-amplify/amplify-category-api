@@ -105,6 +105,7 @@ const RUN_SOLO: (string | RegExp)[] = [
   'src/__tests__/api_11.test.ts',
   'src/__tests__/containers-api-1.test.ts',
   'src/__tests__/containers-api-2.test.ts',
+  'src/__tests__/containers-api-secrets.test.ts',
   'src/__tests__/graphql-v2/searchable-datastore.test.ts',
   'src/__tests__/migration/api.key.migration1.test.ts',
   'src/__tests__/migration/api.key.migration2.test.ts',
