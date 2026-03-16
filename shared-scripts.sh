@@ -220,7 +220,7 @@ function _publishToLocalRegistry {
     if [ -z $NPM_TAG ]; then
       yarn publish-to-verdaccio
     else
-      yarn lerna publish --exact --dist-tag=latest --preid=$NPM_TAG --conventional-commits --conventional-prerelease --no-verify-access --yes --no-commit-hooks --no-push --no-git-tag-version
+      yarn lerna publish --exact --dist-tag=latest --preid=$NPM_TAG --conventional-commits --conventional-prerelease --no-verify-access --yes --no-commit-hooks --no-push --no-git-tag-version --force-publish=graphql-elasticsearch-transformer
     fi
     unsetNpmRegistryUrl
 
