@@ -3,6 +3,34 @@
 # set exit on error to true
 set -e
 
+# retry_with_backoff <max_retries> <command...>
+# Retries a command with exponential backoff (10s, 20s, 40s, ...)
+function retry_with_backoff {
+    local max_retries=$1
+    shift
+    local cmd=("$@")
+    local attempt=1
+    local delay=10
+
+    while true; do
+        echo "Attempt $attempt/$max_retries: ${cmd[*]}"
+        if "${cmd[@]}"; then
+            echo "Command succeeded on attempt $attempt"
+            return 0
+        fi
+
+        if (( attempt >= max_retries )); then
+            echo "Command failed after $max_retries attempts: ${cmd[*]}"
+            return 1
+        fi
+
+        echo "Command failed. Retrying in ${delay}s..."
+        sleep $delay
+        delay=$((delay * 2))
+        attempt=$((attempt + 1))
+    done
+}
+
 # storeCache <local path> <cache location>
 function storeCache {
   localPath="$1"
@@ -229,7 +257,7 @@ function _installCLIFromLocalRegistry {
     npm config set fetch-retry-mintimeout 30000
     npm config set fetch-retry-maxtimeout 180000
     npm config set maxsockets 1
-    npm install -g @aws-amplify/cli-internal
+    retry_with_backoff 3 npm install -g @aws-amplify/cli-internal
     echo "using Amplify CLI version: "$(amplify --version)
     npm list -g --depth=1 | grep -e '@aws-amplify/amplify-category-api' -e 'amplify-codegen'
     unsetNpmRegistryUrl
