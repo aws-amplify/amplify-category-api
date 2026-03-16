@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 
-import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir, tryScheduleCredentialRefresh } from 'amplify-category-api-e2e-core';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../../../commands';
 import {
@@ -29,6 +29,7 @@ import {
 } from '../graphql-schemas/gen1-ddb-only/graphql/mutations';
 
 jest.setTimeout(DURATION_1_HOUR);
+tryScheduleCredentialRefresh();
 
 describe('Associated type fields with more restrictive auth rules than the model are redacted using gen1 fields-based connections subscriptions off', () => {
   const region = process.env.CLI_REGION ?? 'us-west-2';
