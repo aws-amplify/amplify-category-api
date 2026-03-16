@@ -132,11 +132,8 @@ const computeDepsClosure = (deps: string[]): DepsClosure => {
  * @returns the value without semver string segment
  */
 const stripSemver = (val: string): string => {
-  // Handle npm: alias format, e.g. "string-width-cjs@npm:string-width@^4.2.3" => "string-width-cjs"
-  // or "@scope/pkg@npm:other-pkg@^1.0.0" => "@scope/pkg"
-  const npmAliasIdx = val.indexOf('@npm:');
-  if (npmAliasIdx > 0) {
-    return val.substring(0, npmAliasIdx);
+  if (val.includes('@npm:')) {
+    return val.split('@npm:')[0];
   }
   return val.split('@').slice(0, -1).join('@');
 };
