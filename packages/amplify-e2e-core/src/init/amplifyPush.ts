@@ -82,6 +82,34 @@ export function amplifyPush(
 }
 
 /**
+ * Wrapper around amplifyPush that retries on ApiLimitExceededException with exponential backoff.
+ */
+export async function amplifyPushWithRetry(
+  cwd: string,
+  testingWithLatestCodebase = false,
+  settings?: { skipCodegen?: boolean; useBetaSqlLayer?: boolean },
+  maxRetries = 2,
+  retryDelayMs = 60000,
+): Promise<void> {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      await amplifyPush(cwd, testingWithLatestCodebase, settings);
+      return;
+    } catch (err: any) {
+      const errMsg = err?.message || String(err);
+      const isQuotaError = /ApiLimitExceeded|limit.*GraphQL|Too Many/i.test(errMsg);
+      if (isQuotaError && attempt < maxRetries) {
+        const delay = retryDelayMs * (attempt + 1);
+        console.warn(`[amplifyPushWithRetry] ApiLimitExceededException detected, retrying in ${delay / 1000}s (attempt ${attempt + 1}/${maxRetries})...`);
+        await new Promise(r => setTimeout(r, delay));
+        continue;
+      }
+      throw err;
+    }
+  }
+}
+
+/**
  * Function to test amplify push with codegen for graphql API
  */
 export function amplifyPushGraphQlWithCognitoPrompt(cwd: string, testingWithLatestCodebase = false): Promise<void> {

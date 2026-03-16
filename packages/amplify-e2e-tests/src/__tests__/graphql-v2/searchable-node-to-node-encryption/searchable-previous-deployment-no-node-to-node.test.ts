@@ -157,9 +157,10 @@ describe('searchable deployment when previous deployed state had node to node en
     expect(response.data).toBeDefined();
     expect(response.data.createTodo).toBeDefined();
 
-    await waitForOSPropagate();
+    await waitForOSPropagate(expectedRowCount);
     const searchResponse = await searchTodos();
 
+    expect(searchResponse).not.toBeNull();
     expect(searchResponse).toBeDefined();
     expect(searchResponse.errors).toBeUndefined();
     expect(searchResponse.data).toBeDefined();
@@ -167,8 +168,7 @@ describe('searchable deployment when previous deployed state had node to node en
     expect(searchResponse.data.searchTodos.items).toHaveLength(expectedRowCount);
   };
 
-  const waitForOSPropagate = async (initialWaitSeconds = 5, maxRetryCount = 5) => {
-    const expectedCount = 1;
+  const waitForOSPropagate = async (expectedCount = 1, initialWaitSeconds = 10, maxRetryCount = 10) => {
     let waitInMilliseconds = initialWaitSeconds * 1000;
     let currentRetryCount = 0;
     let searchResponse;
@@ -177,7 +177,10 @@ describe('searchable deployment when previous deployed state had node to node en
       await new Promise((r) => setTimeout(r, waitInMilliseconds));
       searchResponse = await searchTodos();
       currentRetryCount += 1;
-      waitInMilliseconds = waitInMilliseconds * 2;
-    } while (searchResponse.data.searchTodos?.items?.length < expectedCount && currentRetryCount <= maxRetryCount);
+      waitInMilliseconds = Math.min(waitInMilliseconds * 2, 60000);
+    } while (
+      (searchResponse === null || (searchResponse.data.searchTodos?.items?.length ?? 0) < expectedCount) &&
+      currentRetryCount <= maxRetryCount
+    );
   };
 });
