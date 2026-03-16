@@ -131,7 +131,15 @@ const computeDepsClosure = (deps: string[]): DepsClosure => {
  * @param val value which we're going to remove semver string segment
  * @returns the value without semver string segment
  */
-const stripSemver = (val: string): string => val.split('@').slice(0, -1).join('@');
+const stripSemver = (val: string): string => {
+  // Handle npm: alias format, e.g. "string-width-cjs@npm:string-width@^4.2.3" => "string-width-cjs"
+  // or "@scope/pkg@npm:other-pkg@^1.0.0" => "@scope/pkg"
+  const npmAliasIdx = val.indexOf('@npm:');
+  if (npmAliasIdx > 0) {
+    return val.substring(0, npmAliasIdx);
+  }
+  return val.split('@').slice(0, -1).join('@');
+};
 
 /**
  * Remove semver portion from package descriptors
@@ -139,7 +147,7 @@ const stripSemver = (val: string): string => val.split('@').slice(0, -1).join('@
  * @param vals values which we're going to remove semver string segments
  * @returns the values without semver string segments
  */
-const stripSemverString = (vals: string[]): string[] => vals.map((val: string) => val.split('@').slice(0, -1).join('@'));
+const stripSemverString = (vals: string[]): string[] => vals.map(stripSemver);
 
 /**
  * Return the package.json file for the cdk construct.
