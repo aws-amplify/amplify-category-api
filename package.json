@@ -787,6 +787,7 @@
     "js-yaml": "^4.1.1",
     "diff": "^8.0.3",
     "tmp": "^0.2.5",
-    "basic-ftp": "^5.2.0"
+    "basic-ftp": "^5.2.0",
+    "@aws-amplify/plugin-types": "1.12.0"
   }
 }
