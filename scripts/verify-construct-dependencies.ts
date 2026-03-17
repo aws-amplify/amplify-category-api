@@ -114,7 +114,7 @@ const computeDepsClosure = (deps: string[]): DepsClosure => {
       repoPackageClosures[currDep].forEach((nextDep) => traverse(newPath, nextDep));
     } else {
       closure.registryDeps.push(currDep);
-      const dependencies = lockfileContents[currDep].dependencies ?? {};
+      const dependencies = lockfileContents[currDep]?.dependencies ?? {};
       Object.entries(dependencies)
         .map(([name, version]) => `${name}@${version}`)
         .forEach((nextDep) => traverse(newPath, nextDep));
@@ -214,6 +214,36 @@ const validateConstructBundledDependenciesAreConfigured = (constructPackageDir: 
 };
 
 /**
+ * Compute the set of registry dep names that are transitively required by repo (monorepo) packages.
+ * These deps are included in the tarball via the bundled repo packages' own node_modules trees,
+ * so they do not need to be listed explicitly in the construct's dependencies or bundledDependencies.
+ */
+const computeRepoTransitiveRegistryDeps = (repoDeps: string[]): Set<string> => {
+  const repoPackageClosures = getRepoPackages();
+  const lockfileContents = lockfile.parse(fs.readFileSync('yarn.lock', 'utf8')).object;
+  const seen = new Set<string>();
+  const transitiveDeps = new Set<string>();
+
+  const traverse = (dep: string): void => {
+    if (seen.has(dep)) return;
+    seen.add(dep);
+
+    if (repoPackageClosures[dep]) {
+      repoPackageClosures[dep].forEach(traverse);
+    } else if (lockfileContents[dep]) {
+      transitiveDeps.add(stripSemver(dep));
+      const dependencies = lockfileContents[dep].dependencies ?? {};
+      Object.entries(dependencies)
+        .map(([name, version]) => `${name}@${version}`)
+        .forEach(traverse);
+    }
+  };
+
+  repoDeps.forEach(traverse);
+  return transitiveDeps;
+};
+
+/**
  * Main entry point, this will invoke the following steps.
  * FYI: This is pretty silly, but I think we need to feed the versions BACK form the construct package.json in order for
  * lerna versioning to keep from blowing us up.
@@ -231,11 +261,18 @@ const main = (): void => {
       const dedupedDepListWithoutSemver: string[] = Array.from(
         new Set([...stripSemverString(fullDepsClosure.repoDeps), ...stripSemverString(fullDepsClosure.registryDeps)]),
       );
+
+      // Registry deps that are transitive through bundled repo packages do not need to be
+      // listed explicitly in the construct's dependencies/bundledDependencies — they are
+      // included in the tarball via the repo packages' own node_modules trees.
+      const repoTransitiveDeps = computeRepoTransitiveRegistryDeps(fullDepsClosure.repoDeps);
+      const depsRequiringExplicitBundling = dedupedDepListWithoutSemver.filter((dep) => !repoTransitiveDeps.has(dep));
+
       validationErrors.push(
         ...validateNohoistsAreConfigured(packageName, dedupedDepListWithoutSemver),
-        ...validateConstructDependenciesAreConfigured(packageDir, dedupedDepListWithoutSemver),
-        ...validateConstructBundledDependenciesAreConfigured(packageDir, dedupedDepListWithoutSemver),
-        ...validateConstructDevDependenciesAreConfigured(packageDir, dedupedDepListWithoutSemver),
+        ...validateConstructDependenciesAreConfigured(packageDir, depsRequiringExplicitBundling),
+        ...validateConstructBundledDependenciesAreConfigured(packageDir, depsRequiringExplicitBundling),
+        ...validateConstructDevDependenciesAreConfigured(packageDir, depsRequiringExplicitBundling),
       );
     });
 
