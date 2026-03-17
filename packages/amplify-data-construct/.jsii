@@ -107,7 +107,8 @@
     "charenc": "^0.0.2",
     "ci-info": "^3.2.0",
     "crypt": "^0.0.2",
-    "fast-xml-parser": "5.3.6",
+    "fast-xml-builder": "1.1.1",
+    "fast-xml-parser": "5.5.2",
     "fs-extra": "^8.1.0",
     "graceful-fs": "^4.2.0",
     "graphql": "^15.5.0",
@@ -124,6 +125,7 @@
     "lodash.snakecase": "^4.1.1",
     "md5": "^2.2.1",
     "object-hash": "^3.0.0",
+    "path-expression-matcher": "1.1.3",
     "pluralize": "8.0.0",
     "semver": "^7.6.3",
     "strnum": "^1.0.5",
@@ -8582,5 +8584,5 @@
   },
   "types": {},
   "version": "1.17.0",
-  "fingerprint": "dpYd5XWtMv0bHg5jq2KJngULs8C4b1cLIMdN8zl+yb8="
+  "fingerprint": "J3Y4JpqrI4tmhMen7ZT5ssYTtUBvTBnsa4IbU7i9v5A="
 }
