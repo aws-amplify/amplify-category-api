@@ -220,7 +220,7 @@ function _publishToLocalRegistry {
     if [ -z $NPM_TAG ]; then
       yarn publish-to-verdaccio
     else
-      yarn lerna publish --exact --dist-tag=latest --preid=$NPM_TAG --conventional-commits --conventional-prerelease --no-verify-access --yes --no-commit-hooks --no-push --no-git-tag-version --force-publish=graphql-elasticsearch-transformer,@aws-amplify/amplify-category-api,graphql-auth-transformer,graphql-transformers-e2e-tests
+      yarn lerna publish --exact --dist-tag=latest --preid=$NPM_TAG --conventional-commits --conventional-prerelease --no-verify-access --yes --no-commit-hooks --no-push --no-git-tag-version
     fi
     unsetNpmRegistryUrl
 
@@ -258,6 +258,21 @@ function _installCLIFromLocalRegistry {
     npm config set fetch-retry-maxtimeout 180000
     npm config set maxsockets 1
     retry_with_backoff 3 npm install -g @aws-amplify/cli-internal
+    # Patch deprecated t2.small/t2.medium.elasticsearch instance types in the installed
+    # graphql-elasticsearch-transformer package. The npm-published version still references
+    # t2 instances which are no longer available in newer AWS regions/accounts.
+    _GLOBAL_ROOT=$(npm root -g)
+    _ES_RESOURCES="$_GLOBAL_ROOT/graphql-elasticsearch-transformer/lib/resources.js"
+    if [ -f "$_ES_RESOURCES" ]; then
+        echo "Patching graphql-elasticsearch-transformer t2 -> t3 instance types"
+        sed -i 's/t2\.small\.elasticsearch/t3.small.elasticsearch/g' "$_ES_RESOURCES"
+        sed -i 's/t2\.medium\.elasticsearch/t3.medium.elasticsearch/g' "$_ES_RESOURCES"
+    else
+        echo "WARNING: graphql-elasticsearch-transformer resources.js not found at $_ES_RESOURCES"
+        # Try a broader search as fallback
+        find "$_GLOBAL_ROOT" -path "*/graphql-elasticsearch-transformer/lib/resources.js" -exec sed -i 's/t2\.small\.elasticsearch/t3.small.elasticsearch/g' {} + 2>/dev/null
+        find "$_GLOBAL_ROOT" -path "*/graphql-elasticsearch-transformer/lib/resources.js" -exec sed -i 's/t2\.medium\.elasticsearch/t3.medium.elasticsearch/g' {} + 2>/dev/null
+    fi
     echo "using Amplify CLI version: "$(amplify --version)
     npm list -g --depth=1 | grep -e '@aws-amplify/amplify-category-api' -e 'amplify-codegen'
     unsetNpmRegistryUrl
