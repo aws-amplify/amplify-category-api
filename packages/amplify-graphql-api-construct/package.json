@@ -13,7 +13,7 @@
   "scripts": {
     "build": "jsii",
     "watch": "jsii -w",
-    "package": "jsii-pacmak",
+    "package": "../../scripts/resolve-bundled-symlinks.sh . && jsii-pacmak",
     "clean": "rimraf lib dist tsconfig.json tsconfig.tsbuildinfo node_modules",
     "test": "jest",
     "test-watch": "jest --watch",
