@@ -1,5 +1,5 @@
 # set base image (host OS)
-FROM public.ecr.aws/bitnami/python:3.8-prod-debian-10
+FROM public.ecr.aws/bitnami/python:3.12-prod
 
 # set the working directory in the container
 WORKDIR /code
