@@ -34214,7 +34214,7 @@ The following software may be included in this product: zod. A copy of the sourc
 
 MIT License
 
-Copyright (c) 2020 Colin McDonnell
+Copyright (c) 2025 Colin McDonnell
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34240,7 +34240,7 @@ The following software may be included in this product: zod. A copy of the sourc
 
 MIT License
 
-Copyright (c) 2025 Colin McDonnell
+Copyright (c) 2020 Colin McDonnell
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
