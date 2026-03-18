@@ -93,7 +93,6 @@ Example: a schema with `Todo`, `Note`, `Comment` (3 models × ~7 resolvers each 
 1. Deploy with partitioning ON
 2. Re-deploy with zero schema changes
 3. Assert: CloudFormation changeset is empty (no updates to any stack)
-4. Repeat 2-3 times to confirm determinism
 
 **Case 6: Stable assignment across schema additions (anti-churn)**
 
