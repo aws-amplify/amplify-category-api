@@ -2,6 +2,14 @@
 
 This is the central index for all agent-operational documentation. Before starting any task, find the relevant doc here. If a doc doesn't exist for what you need, create one and add it to this index.
 
+## Active Work
+
+Files prefixed with `ACTIVE_` track in-progress projects that span multiple sessions. Check these before starting related work.
+
+| Document                                                           | Summary                                                     |
+| ------------------------------------------------------------------ | ----------------------------------------------------------- |
+| [Nested Stack Partitioning](./ACTIVE_nested-stack-partitioning.md) | Solving CloudFormation 1MB template limit for large schemas |
+
 ## Documentation Map
 
 | Document                                                       | When to Use                                                                     |

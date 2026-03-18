@@ -60,6 +60,26 @@ When approaching context limits:
 2. Commit current changes.
 3. Provide handoff summary for next session.
 
+## Active Work Tracking
+
+Multi-session projects are tracked in `.agent-docs/` with the `ACTIVE_` prefix (e.g., `ACTIVE_nested-stack-partitioning.md`). These files exist only while work is in progress.
+
+**Starting a session:**
+
+- Check `.agent-docs/README.md` for any `ACTIVE_` files relevant to your task.
+- Read the active work file for context, decisions, and next steps.
+- Do NOT treat active work files as authoritative about the current state of the code — always verify against the actual codebase, commit history, and branch state. The code is the source of truth.
+
+**During a session:**
+
+- Update the active work file as you make progress (check off items, add decisions, note blockers).
+- Keep it concise — just enough for the next session to pick up without re-discovering everything.
+
+**Finishing work:**
+
+- When the work is merged or abandoned, **delete the `ACTIVE_` file** and remove it from the README index.
+- Any durable knowledge (architecture decisions, patterns discovered) should be captured in the appropriate permanent doc, not left in an active work file.
+
 ## Documentation Stewardship
 
 Agents are responsible for maintaining `.agent-docs/`. Every session should leave the docs better than it found them:
