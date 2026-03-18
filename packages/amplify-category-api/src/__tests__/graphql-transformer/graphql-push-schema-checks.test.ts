@@ -43,7 +43,7 @@ describe('graphql schema checks', () => {
   } as unknown as $TSContext;
 
   const printerWarning =
-    'Your instance type for OpenSearch is t2.small.elasticsearch, you may experience performance issues or data loss.' +
+    'Your instance type for OpenSearch is t3.small.elasticsearch, you may experience performance issues or data loss.' +
     ' Consider reconfiguring with the instructions here mockDocsLink';
 
   beforeEach(() => {
@@ -59,7 +59,7 @@ describe('graphql schema checks', () => {
   });
 
   it('should warn users if they use not recommended open search instance with overrides', async () => {
-    getParamMock.mockReturnValueOnce('t2.small.elasticsearch');
+    getParamMock.mockReturnValueOnce('t3.small.elasticsearch');
     stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'test' });
     const map = { Post: ['model', 'searchable'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');
@@ -67,7 +67,7 @@ describe('graphql schema checks', () => {
   });
 
   it('should warn users if they use not recommended elastic search instance with overrides', async () => {
-    getParamMock.mockReturnValueOnce('t2.small.elasticsearch');
+    getParamMock.mockReturnValueOnce('t3.small.elasticsearch');
     stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'test' });
     const map = { Post: ['model', 'searchable'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');
@@ -75,7 +75,7 @@ describe('graphql schema checks', () => {
   });
 
   it('should NOT warn users if they use recommended open search instance', async () => {
-    getParamMock.mockReturnValueOnce('t2.medium.elasticsearch');
+    getParamMock.mockReturnValueOnce('t3.medium.elasticsearch');
     stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'test' });
     const map = { Post: ['model', 'searchable'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');
@@ -83,7 +83,7 @@ describe('graphql schema checks', () => {
   });
 
   it('should NOT warn users if they use recommended elastic search instance', async () => {
-    getParamMock.mockReturnValueOnce('t2.medium.elasticsearch');
+    getParamMock.mockReturnValueOnce('t3.medium.elasticsearch');
     stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'test' });
     const map = { Post: ['model', 'searchable'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');
@@ -91,7 +91,7 @@ describe('graphql schema checks', () => {
   });
 
   it('should NOT warn users if they use recommended open search instance on the environment', async () => {
-    getParamMock.mockReturnValueOnce('t2.medium.elasticsearch');
+    getParamMock.mockReturnValueOnce('t3.medium.elasticsearch');
     stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'prod' });
     const map = { Post: ['model', 'searchable'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');
@@ -99,7 +99,7 @@ describe('graphql schema checks', () => {
   });
 
   it('should NOT warn users if they use recommended elastic search instance on the environment', async () => {
-    getParamMock.mockReturnValueOnce('t2.medium.elasticsearch');
+    getParamMock.mockReturnValueOnce('t3.medium.elasticsearch');
     stateManagerMock.getLocalEnvInfo.mockReturnValue({ envName: 'prod' });
     const map = { Post: ['model', 'searchable'] };
     await searchablePushChecks(contextMock, map, 'test_api_name');

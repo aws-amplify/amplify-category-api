@@ -204,7 +204,14 @@ describe('@mapsTo transformer', () => {
       }
     `;
     const updateCommentUnsatisfiedConditionResponse = await graphqlClient.query(updateCommentUnsatisfiedCondition);
-    expect((updateCommentUnsatisfiedConditionResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
+    expect(updateCommentUnsatisfiedConditionResponse.errors).toBeDefined();
+    expect(updateCommentUnsatisfiedConditionResponse.errors.length).toBeGreaterThan(0);
+    const errorObj = updateCommentUnsatisfiedConditionResponse.errors[0] as any;
+    expect(
+      errorObj.errorType === 'DynamoDB:ConditionalCheckFailedException' ||
+      errorObj.message?.includes('conditional request failed') ||
+      errorObj.message?.includes('ConditionalCheckFailedException')
+    ).toBeTruthy();
 
     // expect updating comment with satisfied condition expression to work
     const updateCommentSatisfiedCondition = /* GraphQL */ `

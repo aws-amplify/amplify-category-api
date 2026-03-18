@@ -16,8 +16,8 @@ export async function searchablePushChecks(context: $TSContext, map: Record<stri
     const instanceType =
       getInstanceType(ResourceConstants.PARAMETERS.OpenSearchInstanceType) ??
       getInstanceType(ResourceConstants.PARAMETERS.ElasticsearchInstanceType) ??
-      't2.small.elasticsearch';
-    if (instanceType === 't2.small.elasticsearch' || instanceType === 't3.small.elasticsearch') {
+      't3.small.elasticsearch';
+    if (instanceType === 't3.small.elasticsearch') {
       const version = await ApiCategoryFacade.getTransformerVersion(context);
       const docLink = getGraphQLTransformerOpenSearchProductionDocLink(version);
       printer.warn(

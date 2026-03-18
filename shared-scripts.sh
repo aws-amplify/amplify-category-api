@@ -3,6 +3,34 @@
 # set exit on error to true
 set -e
 
+# retry_with_backoff <max_retries> <command...>
+# Retries a command with exponential backoff (10s, 20s, 40s, ...)
+function retry_with_backoff {
+    local max_retries=$1
+    shift
+    local cmd=("$@")
+    local attempt=1
+    local delay=10
+
+    while true; do
+        echo "Attempt $attempt/$max_retries: ${cmd[*]}"
+        if "${cmd[@]}"; then
+            echo "Command succeeded on attempt $attempt"
+            return 0
+        fi
+
+        if (( attempt >= max_retries )); then
+            echo "Command failed after $max_retries attempts: ${cmd[*]}"
+            return 1
+        fi
+
+        echo "Command failed. Retrying in ${delay}s..."
+        sleep $delay
+        delay=$((delay * 2))
+        attempt=$((attempt + 1))
+    done
+}
+
 # storeCache <local path> <cache location>
 function storeCache {
   localPath="$1"
@@ -229,7 +257,45 @@ function _installCLIFromLocalRegistry {
     npm config set fetch-retry-mintimeout 30000
     npm config set fetch-retry-maxtimeout 180000
     npm config set maxsockets 1
-    npm install -g @aws-amplify/cli-internal
+    retry_with_backoff 3 npm install -g @aws-amplify/cli-internal
+    # Patch deprecated t2.small/t2.medium.elasticsearch instance types in the installed
+    # graphql-elasticsearch-transformer package. The npm-published version still references
+    # t2 instances which are no longer available in newer AWS regions/accounts.
+    _GLOBAL_ROOT=$(npm root -g)
+    _ES_RESOURCES="$_GLOBAL_ROOT/graphql-elasticsearch-transformer/lib/resources.js"
+    if [ -f "$_ES_RESOURCES" ]; then
+        echo "Patching graphql-elasticsearch-transformer t2 -> t3 instance types"
+        sed -i 's/t2\.small\.elasticsearch/t3.small.elasticsearch/g' "$_ES_RESOURCES"
+        sed -i 's/t2\.medium\.elasticsearch/t3.medium.elasticsearch/g' "$_ES_RESOURCES"
+    else
+        echo "WARNING: graphql-elasticsearch-transformer resources.js not found at $_ES_RESOURCES"
+        # Try a broader search as fallback
+        find "$_GLOBAL_ROOT" -path "*/graphql-elasticsearch-transformer/lib/resources.js" -exec sed -i 's/t2\.small\.elasticsearch/t3.small.elasticsearch/g' {} + 2>/dev/null
+        find "$_GLOBAL_ROOT" -path "*/graphql-elasticsearch-transformer/lib/resources.js" -exec sed -i 's/t2\.medium\.elasticsearch/t3.medium.elasticsearch/g' {} + 2>/dev/null
+    fi
+    # Patch t2.small -> t3.small in amplify-graphql-searchable-transformer (V2)
+    # During V1->V2 migration, OpenSearchInstanceType is a NEW CFN parameter
+    # that uses the default from create-cfnParameters.js. The npm-installed version
+    # still has t2.small which is no longer valid in many regions.
+    local v2SearchableDir
+    v2SearchableDir="$_GLOBAL_ROOT/amplify-graphql-searchable-transformer/lib/cdk"
+    if [ -f "$v2SearchableDir/create-cfnParameters.js" ]; then
+        echo "Patching amplify-graphql-searchable-transformer t2->t3 instance types..."
+        sed -i "s/t2\.small\.elasticsearch/t3.small.elasticsearch/g" "$v2SearchableDir/create-cfnParameters.js"
+        sed -i "s/t2\.medium\.elasticsearch/t3.medium.elasticsearch/g" "$v2SearchableDir/create-cfnParameters.js"
+    else
+        echo "WARNING: Could not find amplify-graphql-searchable-transformer/lib/cdk/create-cfnParameters.js"
+        echo "Searching for it..."
+        local v2File
+        v2File=$(find "$_GLOBAL_ROOT" -path "*/amplify-graphql-searchable-transformer/lib/cdk/create-cfnParameters.js" -print -quit 2>/dev/null)
+        if [ -n "$v2File" ]; then
+            echo "Found at: $v2File — patching..."
+            sed -i "s/t2\.small\.elasticsearch/t3.small.elasticsearch/g" "$v2File"
+            sed -i "s/t2\.medium\.elasticsearch/t3.medium.elasticsearch/g" "$v2File"
+        else
+            echo "WARNING: V2 searchable transformer file not found anywhere under npm root"
+        fi
+    fi
     echo "using Amplify CLI version: "$(amplify --version)
     npm list -g --depth=1 | grep -e '@aws-amplify/amplify-category-api' -e 'amplify-codegen'
     unsetNpmRegistryUrl

@@ -103,7 +103,7 @@ export const createParametersStack = (scope: Construct): Map<string, CfnParamete
       OpenSearchInstanceType,
       new CfnParameter(scope, OpenSearchInstanceType, {
         description: 'The type of instance to launch into the OpenSearch domain.',
-        default: 't2.small.elasticsearch',
+        default: 't3.small.elasticsearch',
         allowedValues: ALLOWABLE_SEARCHABLE_INSTANCE_TYPES,
       }),
     ],
