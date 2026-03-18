@@ -51,6 +51,23 @@ The unit tests call `provide()` directly with synthetic names like `"QueryGetTod
 
 There is already a `stackMappings` feature that does exactly the resource-to-stack routing we need. It's the right foundation to build on.
 
+### History and why it was never automated
+
+`stackMappings` has existed since the very beginning of the CDK construct — added by Al Harris in the initial `feat: add graphql api cdk construct` commit (June 2023, `681939d26`). It was carried over from the Gen 1 transformer's `StackMapping` concept, which dates to the transformer redesign in Nov 2020 (`a93c6852f`, by Yuth).
+
+In Gen 1, `stackMappings` was exposed via `transform.conf.json` and documented as a manual workaround: [Place AppSync Resolvers in Custom-named Stacks](https://docs.amplify.aws/gen1/flutter/build-a-backend/graphqlapi/modify-amplify-generated-resources/#place-appsync-resolvers-in-custom-named-stacks). Customers could manually specify which resolvers go to which stacks.
+
+In Gen 2, `stackMappings` is exposed on the CDK construct (`AmplifyGraphqlApiProps.stackMappings`) but was **never exposed through `defineData`** in `amplify-backend`. The `DataProps` type in `amplify-backend/packages/backend-data/src/types.ts` has no `stackMappings` field. This means Gen 2 `defineData` users have no workaround at all — they can't manually split stacks, and there's no automatic splitting.
+
+This is exactly the gap [issue #2550](https://github.com/aws-amplify/amplify-category-api/issues/2550) describes: a customer with 60 models who fixed the problem in Gen 1 using custom stacks and `amplify push --minify`, but says "I couldn't do these in Gen 2."
+
+The feature was likely never automated because:
+
+1. In Gen 1, the manual `StackMapping` in `transform.conf.json` was "good enough" for the few customers who hit the limit
+2. The CDK construct inherited it as a manual prop for power users
+3. Gen 2's `defineData` abstraction intentionally hides CDK-level knobs — `stackMappings` was one of many props that didn't get surfaced
+4. Nobody built the automatic computation layer that would make it work transparently
+
 ### How it works today
 
 `stackMappings` is a `Record<string, string>` mapping `{ resolverLogicalId: stackName }`. It's a **manual** override — users specify which resolvers go to which stacks.
@@ -118,6 +135,12 @@ This means:
 - We build on a mechanism that already has e2e test coverage
 
 ## E2E Test Plan: Data Loss & Migration Safety
+
+### Existing Coverage
+
+The `stackMappings` mechanism already has an e2e test: [index-with-stack-mappings.test.ts](https://github.com/aws-amplify/amplify-category-api/blob/main/packages/amplify-e2e-tests/src/__tests__/graphql-v2/index-with-stack-mappings.test.ts). It deploys a schema, moves index resolvers to a custom `MappedResolvers` stack via `setStackMapping`, and validates queries still work. This proves the underlying plumbing works — resolvers function correctly from non-default stacks.
+
+What we still need to test: the automatic computation layer, migration safety (toggling on/off), and churn behavior. But we don't need to re-prove that resolvers work from custom stacks — that's already covered.
 
 ### Testing Strategy: Low Thresholds for Fast Feedback
 
