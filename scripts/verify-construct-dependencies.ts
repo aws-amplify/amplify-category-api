@@ -135,7 +135,10 @@ const stripSemver = (val: string): string => {
   if (val.includes('@npm:')) {
     return val.split('@npm:')[0];
   }
-  return val.split('@').slice(0, -1).join('@');
+  // If no version suffix (no @ after position 0 for scoped packages), return as-is
+  const lastAt = val.lastIndexOf('@');
+  if (lastAt <= 0) return val;
+  return val.substring(0, lastAt);
 };
 
 /**
@@ -265,8 +268,12 @@ const main = (): void => {
       // Registry deps that are transitive through bundled repo packages do not need to be
       // listed explicitly in the construct's dependencies/bundledDependencies — they are
       // included in the tarball via the repo packages' own node_modules trees.
+      // However, deps that are also DIRECT dependencies of the construct must still be
+      // explicitly bundled, even if they also appear transitively through repo packages.
       const repoTransitiveDeps = computeRepoTransitiveRegistryDeps(fullDepsClosure.repoDeps);
-      const depsRequiringExplicitBundling = dedupedDepListWithoutSemver.filter((dep) => !repoTransitiveDeps.has(dep));
+      const directDeps = new Set<string>(nonJsiiDeps);
+      const safeToExclude = new Set(Array.from(repoTransitiveDeps).filter((dep) => !directDeps.has(dep)));
+      const depsRequiringExplicitBundling = dedupedDepListWithoutSemver.filter((dep) => !safeToExclude.has(dep));
 
       validationErrors.push(
         ...validateNohoistsAreConfigured(packageName, dedupedDepListWithoutSemver),
