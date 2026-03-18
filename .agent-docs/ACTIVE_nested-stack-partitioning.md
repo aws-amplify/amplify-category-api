@@ -1,7 +1,7 @@
 # Active Work: Nested Stack Partitioning
 
-**Status:** Design  
-**Branch:** `wirej/nested-stack-partitioning`  
+**Status:** Design
+**Branch:** `wirej/nested-stack-partitioning`
 **Supersedes:** [PR #3437](https://github.com/aws-amplify/amplify-category-api/pull/3437) (external, will not merge)
 
 ## Problem
@@ -10,24 +10,86 @@ Customers with large schemas (100+ types) hit CloudFormation's 1MB template size
 
 ## Why PR #3437 Won't Work
 
-PR #3437 adds a `PartitioningNestedStackProvider` that tries to route resources by inspecting the `name` parameter in `provide(scope, name)`. The fatal flaw:
+PR #3437 adds a `PartitioningNestedStackProvider` that tries to route resources by inspecting the `name` parameter in `provide(scope, name)`. The fatal flaw is a misunderstanding of how `provide()` is called.
 
-- `StackManager` calls `provide()` once per **stack name** (e.g., `"Todo"`, `"ConnectionStack"`), not once per resource
-- `StackManager` caches the returned stack — all resources for that stack name reuse the cached result
-- The PR's `categorizeResource()` checks for patterns like `'resolver'`, `'table'`, `'datasource'` — but it receives model names like `"Todo"`, which match none of those patterns
-- Everything falls through to `OTHER` category → single stack → no partitioning
+### The actual call chain
 
-The unit tests pass because they call `provide()` directly with synthetic names like `"QueryGetTodoResolver"`, which never happen in real usage.
+1. Transformers call `stackManager.getScopeFor(resourceId, defaultStackName)` — e.g., `getScopeFor('GetTodoResolver', 'Todo')`
 
-## Correct Integration Point
+   - [model-resource-generator.ts:135](https://github.com/aws-amplify/amplify-category-api/blob/main/packages/amplify-graphql-model-transformer/src/resources/model-resource-generator.ts#L135): `resolver.setScope(context.stackManager.getScopeFor(query.resolverLogicalId, def!.name.value))`
+   - [model-resource-generator.ts:169](https://github.com/aws-amplify/amplify-category-api/blob/main/packages/amplify-graphql-model-transformer/src/resources/model-resource-generator.ts#L169): same for mutations
+   - [model-resource-generator.ts:216](https://github.com/aws-amplify/amplify-category-api/blob/main/packages/amplify-graphql-model-transformer/src/resources/model-resource-generator.ts#L216): same for subscriptions
 
-The partitioning logic must live at the `StackManager` level (`packages/amplify-graphql-transformer-core/src/transformer-context/stack-manager.ts`), not the `NestedStackProvider` level. `StackManager` is where stack assignment decisions are made — it knows about resource IDs and default stack names.
+2. `StackManager.getScopeFor` resolves the stack name (usually the model name like `"Todo"`) and **caches** the result:
 
-Key files:
+   - [stack-manager.ts:38-48](https://github.com/aws-amplify/amplify-category-api/blob/main/packages/amplify-graphql-transformer-core/src/transformer-context/stack-manager.ts#L38-L48): if the stack exists, return cached; otherwise call `createStack` once
 
-- `packages/amplify-graphql-transformer-core/src/transformer-context/stack-manager.ts` — stack assignment logic
-- `packages/amplify-graphql-transformer-interfaces/src/nested-stack-provider.ts` — `NestedStackProvider` type (thin, just creates stacks)
-- `packages/amplify-graphql-model-transformer/src/resources/model-resource-generator.ts` — how resolvers get assigned to stacks (via `getScopeFor(resolverLogicalId, modelName)`)
+3. `createStack` calls `nestedStackProvider.provide(this.scope, stackName)` **once per unique stack name**, then caches:
+   - [stack-manager.ts:24-28](https://github.com/aws-amplify/amplify-category-api/blob/main/packages/amplify-graphql-transformer-core/src/transformer-context/stack-manager.ts#L24-L28)
+
+### What `provide()` actually receives
+
+The `name` parameter is a **stack name**, not a resource name:
+
+- Model stacks: `"Todo"`, `"Note"`, `"Comment"` (from `def!.name.value`)
+- Relational resolvers: `"ConnectionStack"` ([ddb-generator.ts:47](https://github.com/aws-amplify/amplify-category-api/blob/main/packages/amplify-graphql-relational-transformer/src/resolver/ddb-generator.ts#L47))
+- Function resolvers: `"FunctionDirectiveStack"` ([graphql-function-transformer.ts:39](https://github.com/aws-amplify/amplify-category-api/blob/main/packages/amplify-graphql-function-transformer/src/graphql-function-transformer.ts#L39))
+- SQL resolvers: `"CustomSQLStack"` ([graphql-sql-transformer.ts:41](https://github.com/aws-amplify/amplify-category-api/blob/main/packages/amplify-graphql-sql-transformer/src/graphql-sql-transformer.ts#L41))
+- Table manager: `"AmplifyTableManager"` ([amplify-dynamo-model-resource-generator.ts:20](https://github.com/aws-amplify/amplify-category-api/blob/main/packages/amplify-graphql-model-transformer/src/resources/amplify-dynamodb-table/amplify-dynamo-model-resource-generator.ts#L20))
+
+### Why the PR's categorization fails
+
+The PR's `categorizeResource()` checks for patterns like `'resolver'`, `'table'`, `'datasource'`, `'graphqlapi'` — but it receives model names like `"Todo"`, which match **none** of those patterns. Everything falls through to `ResourceCategory.OTHER` → single `"DataOther"` stack → no partitioning.
+
+The one accidental match: `"FunctionDirectiveStack"` contains `"function"` and would be categorized as `RESOLVERS`, but that stack also contains Lambda data sources, IAM roles, and conditions — not just resolvers.
+
+### Why the PR's tests pass anyway
+
+The unit tests call `provide()` directly with synthetic names like `"QueryGetTodoResolver"` and `"TodoTable"` — names that never occur in real usage. The integration tests create real `AmplifyGraphqlApi` instances but only assert on nested stack counts, which may pass for the wrong reasons.
+
+## Existing Infrastructure: `stackMappings`
+
+There is already a `stackMappings` feature that does exactly the resource-to-stack routing we need. It's the right foundation to build on.
+
+### How it works today
+
+`stackMappings` is a `Record<string, string>` mapping `{ resolverLogicalId: stackName }`. It's a **manual** override — users specify which resolvers go to which stacks.
+
+**User-facing prop:**
+
+- [types.ts:836-842](https://github.com/aws-amplify/amplify-category-api/blob/main/packages/amplify-graphql-api-construct/src/types.ts#L836-L842): `readonly stackMappings?: Record<string, string>` on `AmplifyGraphqlApiProps`
+- JSDoc warns: "after initial deployment AppSync resolvers cannot be moved between nested stacks, they will need to be removed from the app, then re-added from a new stack"
+
+**Flow through the system:**
+
+1. [amplify-graphql-api.ts:237](https://github.com/aws-amplify/amplify-category-api/blob/main/packages/amplify-graphql-api-construct/src/amplify-graphql-api.ts#L237): `stackMapping: stackMappings ?? {}` passed to `ExecuteTransformConfig`
+2. [graphql-transformer.ts:111-117](https://github.com/aws-amplify/amplify-category-api/blob/main/packages/amplify-graphql-transformer/src/graphql-transformer.ts#L111-L117): destructured and passed to `GraphQLTransform` constructor
+3. [transform.ts:145](https://github.com/aws-amplify/amplify-category-api/blob/main/packages/amplify-graphql-transformer-core/src/transformation/transform.ts#L145): stored as `this.stackMappingOverrides`
+4. [transform.ts:217](https://github.com/aws-amplify/amplify-category-api/blob/main/packages/amplify-graphql-transformer-core/src/transformation/transform.ts#L217): passed to `TransformerContext`
+5. [index.ts:142](https://github.com/aws-amplify/amplify-category-api/blob/main/packages/amplify-graphql-transformer-core/src/transformer-context/index.ts#L142): `new StackManager(scope, nestedStackProvider, parameterProvider, stackMapping)`
+6. [stack-manager.ts:21](https://github.com/aws-amplify/amplify-category-api/blob/main/packages/amplify-graphql-transformer-core/src/transformer-context/stack-manager.ts#L21): stored as `this.resourceToStackMap`
+7. [stack-manager.ts:39](https://github.com/aws-amplify/amplify-category-api/blob/main/packages/amplify-graphql-transformer-core/src/transformer-context/stack-manager.ts#L39): **checked first** in `getScopeFor` — if a resource has a mapping, it overrides the default stack
+
+**Resolver logical ID format** (the keys for `stackMappings`):
+
+- [ResolverResourceIDs.ts:4-22](https://github.com/aws-amplify/amplify-category-api/blob/main/packages/graphql-transformer-common/src/ResolverResourceIDs.ts#L4-L22): `Create${typeName}Resolver`, `Update${typeName}Resolver`, `Delete${typeName}Resolver`, `Get${typeName}Resolver`, `List${typeName}Resolver`
+- Example: for a `Todo` model → `GetTodoResolver`, `ListTodoResolver`, `CreateTodoResolver`, `UpdateTodoResolver`, `DeleteTodoResolver`
+
+**Existing e2e test:**
+
+- [index-with-stack-mappings.test.ts](https://github.com/aws-amplify/amplify-category-api/blob/main/packages/amplify-e2e-tests/src/__tests__/graphql-v2/index-with-stack-mappings.test.ts): tests moving index resolvers to a `MappedResolvers` stack, deploys, and validates queries still work
+
+### Why this is the right foundation
+
+The `stackMappings` mechanism already:
+
+- Routes individual resolvers to named stacks via `resourceToStackMap`
+- Is checked **first** in `getScopeFor` (overrides the default model-name stack)
+- Creates stacks lazily on first use
+- Has an existing e2e test proving resolvers work from non-default stacks
+- Doesn't touch tables or data sources (they stay in their default stacks)
+
+**Our job is to compute the `stackMappings` automatically** instead of requiring users to specify them manually. The partitioning logic generates a `Record<string, string>` and passes it as `stackMappings`. No changes needed to `StackManager`, `NestedStackProvider`, or any transformer.
 
 ## How Stacks Are Assigned Today
 
@@ -46,7 +108,14 @@ Key files:
 
 ## Design Direction
 
-Split model stacks: keep table + data source in the model's stack, but allow resolvers to overflow into numbered resolver stacks. Use deterministic assignment (e.g., hash of resolver logical ID mod N) rather than sequential bin-packing.
+**Compute `stackMappings` automatically.** Given the schema, enumerate all resolver logical IDs and assign them to overflow stacks using deterministic hashing. Pass the result as `stackMappings` into the existing pipeline. Tables and data sources stay in their default model stacks untouched.
+
+This means:
+
+- Zero changes to `StackManager` or `NestedStackProvider`
+- Zero changes to any transformer
+- The only new code is the mapping computation + the opt-in prop on `AmplifyGraphqlApiProps`
+- We build on a mechanism that already has e2e test coverage
 
 ## E2E Test Plan: Data Loss & Migration Safety
 
@@ -133,12 +202,13 @@ CDK context keys (e.g., `amplify-data-max-resolvers-per-stack`) would let e2e te
 - [x] Analyzed PR #3437 and identified architectural issues
 - [x] Mapped the real call flow through StackManager → NestedStackProvider
 - [x] Identified all stack assignment patterns across transformers
+- [x] Found existing `stackMappings` infrastructure to build on
 
 ## What's Next
 
-- [ ] Design the StackManager-level partitioning approach
-- [ ] Prototype in `stack-manager.ts`
-- [ ] Unit tests against real transformer flow (not synthetic `provide()` calls)
+- [ ] Design the automatic `stackMappings` computation (deterministic hash of resolver logical ID → overflow stack name)
+- [ ] Implement in `amplify-graphql-api-construct` (compute mapping, pass as `stackMappings`)
+- [ ] Unit tests against real transformer flow
 - [ ] Integration tests with actual large schemas
-- [ ] E2E tests with deployment
+- [ ] E2E tests per the plan above
 - [ ] Migration safety testing (enable → deploy → disable → deploy)
