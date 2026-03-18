@@ -375,6 +375,55 @@ export interface DataStoreConfiguration {
 /* c8 ignore stop */
 
 /**
+ * Configuration for automatic resolver partitioning across nested stacks.
+ *
+ * Manages CloudFormation limits:
+ * - Template size: 1MB per stack
+ * - Resources: 500 per stack
+ * - Outputs: 200 per stack (cross-stack references)
+ */
+/* c8 ignore start */
+export interface PartitioningConfig {
+  /**
+   * Maximum estimated template size per stack in bytes.
+   * When a stack approaches this size, new resources are placed in a new stack.
+   *
+   * @default 750000 (750KB - leaves 250KB safety margin)
+   */
+  readonly stackSizeThreshold?: number;
+
+  /**
+   * Maximum number of resolvers per stack.
+   * CloudFormation has a 500 resource limit per stack.
+   * Each resolver = 1-5 resources depending on complexity.
+   *
+   * @default 200 (conservative for ~250 resources with overhead)
+   */
+  readonly maxResolversPerStack?: number;
+
+  /**
+   * Whether to group related resolvers (same GraphQL type) together.
+   * This can improve deployment performance by reducing cross-stack references.
+   *
+   * @default true
+   */
+  readonly groupRelatedResolvers?: boolean;
+
+  /**
+   * Maximum number of cross-stack references (outputs) allowed per stack.
+   * CloudFormation has a 200 output limit per stack. We enforce a lower
+   * threshold to prevent hitting this ceiling.
+   *
+   * Note: Our architecture minimizes cross-stack refs by keeping tables
+   * and data sources in the primary stack with the API.
+   *
+   * @default 150 (leaves safety margin for 200 limit)
+   */
+  readonly maxCrossStackReferences?: number;
+}
+/* c8 ignore stop */
+
+/**
  * Params exposed to support configuring and overriding pipelined slots. This allows configuration of the underlying function,
  * including the request and response mapping templates.
  */
@@ -880,6 +929,45 @@ export interface AmplifyGraphqlApiProps {
    * Specifies the logging configuration when writing GraphQL operations and tracing to Amazon CloudWatch for an AWS AppSync GraphQL API.
    */
   readonly logging?: Logging;
+
+  /**
+   * Enable automatic partitioning of resolvers across multiple nested stacks
+   * to avoid CloudFormation 1MB template size limit.
+   *
+   * When enabled, Amplify automatically distributes resolvers across
+   * multiple nested stacks, each with its own 1MB limit. This prevents
+   * deployment failures when schemas grow large.
+   *
+   * Can also be enabled via CDK context: `cdk deploy --context amplify-data-auto-partition=true`
+   *
+   * @default false
+   * @example
+   *
+   * new AmplifyGraphqlApi(stack, 'api', {
+   *   definition,
+   *   authorizationModes,
+   *   enableAutoPartitioning: true,
+   * });
+   */
+  readonly enableAutoPartitioning?: boolean;
+
+  /**
+   * Advanced configuration for partitioning behavior.
+   * Only applicable when `enableAutoPartitioning` is true.
+   *
+   * @default { stackSizeThreshold: 750000, maxResolversPerStack: 200, groupRelatedResolvers: true, maxCrossStackReferences: 150 }
+   * @example
+   *
+   * new AmplifyGraphqlApi(stack, 'api', {
+   *   definition,
+   *   enableAutoPartitioning: true,
+   *   partitioningConfig: {
+   *     maxResolversPerStack: 150,
+   *     groupRelatedResolvers: false,
+   *   },
+   * });
+   */
+  readonly partitioningConfig?: PartitioningConfig;
 }
 /* c8 ignore stop */
 
