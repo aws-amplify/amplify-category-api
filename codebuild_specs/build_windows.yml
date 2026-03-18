@@ -8,7 +8,6 @@ phases:
     commands:
       - choco install -fy nodejs-lts --version=24.12.0
       - choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --quiet" -y --force
-      - refreshenv
       - cmd /c "vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath"
       - |
         $nodeVersion = node -v
