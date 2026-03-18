@@ -1,7 +1,7 @@
 'use strict';
 const PORT = 3000;
 var express = require('express');
-var { graphqlHTTP } = require('express-graphql');
+var { createHandler } = require('graphql-http/lib/use/express');
 var { buildSchema } = require('graphql');
 var Query = require('./schema.js');
 var root = require('./resolvers.js');
@@ -12,10 +12,9 @@ app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
     next()
 });
-app.use('/graphql', graphqlHTTP({
+app.all('/graphql', createHandler({
     schema: buildSchema(Query),
     rootValue: root,
-    graphiql: true
 }));
 app.get('/', (req, res, next) => {
     try {
