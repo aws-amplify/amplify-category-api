@@ -134,6 +134,14 @@ This means:
 - The only new code is the mapping computation + the opt-in prop on `AmplifyGraphqlApiProps`
 - We build on a mechanism that already has e2e test coverage
 
+### Two repos, two layers
+
+1. **`amplify-category-api` (this repo)**: Add `enableAutoPartitioning` prop to `AmplifyGraphqlApiProps`. When enabled, compute `stackMappings` automatically before passing to the transform pipeline. This is the CDK construct layer — usable by anyone using the construct directly.
+
+2. **`amplify-backend` (separate repo)**: Surface the feature through `defineData` in `DataProps` so Gen 2 users get it. This is where the actual customer pain is — `defineData` users have zero workaround today. The `amplify-backend` change is a thin pass-through: add a prop to `DataProps`, wire it to `AmplifyGraphqlApiProps.enableAutoPartitioning` in the factory.
+
+The `amplify-backend` PR depends on the `amplify-category-api` PR being published first (or using a linked local build for testing).
+
 ## E2E Test Plan: Data Loss & Migration Safety
 
 ### Existing Coverage
