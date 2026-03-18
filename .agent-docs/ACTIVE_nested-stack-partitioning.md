@@ -1,7 +1,7 @@
 # Active Work: Nested Stack Partitioning
 
 **Status:** Design  
-**Branch:** (not yet created)  
+**Branch:** `wirej/nested-stack-partitioning`  
 **Supersedes:** [PR #3437](https://github.com/aws-amplify/amplify-category-api/pull/3437) (external, will not merge)
 
 ## Problem
@@ -47,6 +47,87 @@ Key files:
 ## Design Direction
 
 Split model stacks: keep table + data source in the model's stack, but allow resolvers to overflow into numbered resolver stacks. Use deterministic assignment (e.g., hash of resolver logical ID mod N) rather than sequential bin-packing.
+
+## E2E Test Plan: Data Loss & Migration Safety
+
+### Testing Strategy: Low Thresholds for Fast Feedback
+
+Expose a `maxResolversPerStack` parameter (and/or CDK context key) that controls when overflow stacks are created. In e2e tests, set this to an absurdly low value (e.g., 2-3 resolvers per stack) so that even a 3-model schema forces partitioning. This lets us exercise all redistribution logic with single-digit model counts and ~2-minute deployments instead of needing 100+ models.
+
+Example: a schema with `Todo`, `Note`, `Comment` (3 models × ~7 resolvers each = ~21 resolvers). With `maxResolversPerStack: 3`, that forces 7 resolver overflow stacks — enough to exercise every code path without a massive schema.
+
+### Critical Test Cases
+
+**Case 1: Enable partitioning on existing deployment (the migration case)**
+
+1. Deploy schema with 3+ models, partitioning OFF (baseline — single stack per model)
+2. Write test data to each DynamoDB table
+3. Re-deploy same schema with partitioning ON (low threshold to force redistribution)
+4. Assert: zero tables replaced (CloudFormation changeset should show no table deletes)
+5. Assert: test data still present and readable in every table
+6. Assert: all CRUD operations still work (create, read, update, delete via AppSync)
+
+**Case 2: Disable partitioning on partitioned deployment (rollback)**
+
+1. Deploy schema with partitioning ON (low threshold)
+2. Write test data
+3. Re-deploy same schema with partitioning OFF
+4. Assert: zero tables replaced, data intact, CRUD works
+
+**Case 3: Enable → deploy → add model → deploy (schema evolution)**
+
+1. Deploy with partitioning ON, 3 models
+2. Write test data
+3. Add a 4th model, re-deploy
+4. Assert: original 3 tables untouched, data intact, new table created, all CRUD works
+
+**Case 4: Enable → deploy → remove model → deploy (schema shrink)**
+
+1. Deploy with partitioning ON, 4 models
+2. Write test data to all 4
+3. Remove 1 model, re-deploy
+4. Assert: removed table is deleted (expected), remaining 3 tables untouched with data intact
+
+**Case 5: Stable assignment across no-op deploys (churn detection)**
+
+1. Deploy with partitioning ON
+2. Re-deploy with zero schema changes
+3. Assert: CloudFormation changeset is empty (no updates to any stack)
+4. Repeat 2-3 times to confirm determinism
+
+**Case 6: Stable assignment across schema additions (anti-churn)**
+
+1. Deploy with partitioning ON, 3 models
+2. Add a 4th model, re-deploy
+3. Assert: resolvers for original 3 models did NOT move between stacks (check CloudFormation events — no resolver deletes/creates in existing stacks)
+
+**Case 7: Relationships across partition boundaries**
+
+1. Deploy with partitioning ON (low threshold), schema with `@hasMany`/`@belongsTo` across models that land in different stacks
+2. Write parent + child records
+3. Assert: relational queries work (nested resolvers can reach tables in other stacks)
+
+**Case 8: @function and @sql directives with partitioning**
+
+1. Deploy schema with `@function` directive + partitioning ON
+2. Assert: Lambda data source and resolver both work correctly
+3. Same for `@sql` if applicable
+
+### How to Validate "Zero Tables Replaced"
+
+Two complementary approaches:
+
+- **CloudFormation changeset inspection**: Before executing the update, create a changeset and inspect it programmatically. Any `AWS::DynamoDB::Table` with action `Remove` or `Replace` is a test failure.
+- **Table ARN stability**: Record table ARNs before and after deployment. ARNs include the physical table name — if a table is deleted and recreated, the ARN changes. Compare before/after.
+
+### Parameterization for Speed
+
+The implementation should accept these as tunable parameters (not just for testing — they're useful for users too):
+
+- `maxResolversPerStack` — primary lever for forcing overflow in tests
+- Possibly `stackSizeThreshold` — but resolver count is more predictable for testing
+
+CDK context keys (e.g., `amplify-data-max-resolvers-per-stack`) would let e2e tests pass config without code changes.
 
 ## What's Done
 
