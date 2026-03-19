@@ -28,6 +28,9 @@ const EXCLUSION_PATHS: string[][] = [
   // Dependencies of ai-constructs below are only used for typings (compile time).
   // They are not active at runtime. Therefore, can be skipped at bundling.
   ['@aws-amplify/ai-constructs', '@aws-amplify/plugin-types', '@aws-cdk/toolkit-lib'],
+  // plugin-types@1.12.0+ depends on @aws-cdk/toolkit-lib, but toolkit-lib is a dev/CLI
+  // tool not needed at construct runtime. Exclude from bundling regardless of path.
+  ['@aws-amplify/plugin-types', '@aws-cdk/toolkit-lib'],
   ['@aws-amplify/graphql-conversation-transformer', '@aws-amplify/ai-constructs', 'json-schema-to-ts'],
 ];
 
