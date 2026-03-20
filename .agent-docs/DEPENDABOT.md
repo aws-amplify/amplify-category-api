@@ -102,3 +102,8 @@ yarn e2e-monitor {batchId}
 - Group related updates together when possible
 - Document breaking changes in commit messages
 - Check for peer dependency conflicts after updates
+- Git commit hooks (husky pre-commit) run `yarn extract-dependency-licenses` which updates `dependency_licenses.txt`. Because the hook runs after staging, the updated file may not be included in the commit. **Always check `git status` after committing** for unstaged changes to `dependency_licenses.txt` and amend the commit if needed:
+  ```bash
+  git add dependency_licenses.txt
+  git commit --amend --no-edit
+  ```
