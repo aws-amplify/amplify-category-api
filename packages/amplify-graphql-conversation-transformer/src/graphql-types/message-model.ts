@@ -141,6 +141,8 @@ export const createAssistantResponseStreamingMutationInput = (messageModelName: 
       makeInputValueDefinition('accumulatedTurnContent', makeListType(makeNamedType('AmplifyAIContentBlockInput'))),
       makeInputValueDefinition('errors', makeListType(makeNamedType('AmplifyAIConversationTurnErrorInput'))),
       makeInputValueDefinition('p', makeNamedType('String')),
+      makeInputValueDefinition('metrics', makeNamedType('AWSJSON')),
+      makeInputValueDefinition('usage', makeNamedType('AWSJSON')),
     ],
   };
 };
@@ -282,11 +284,13 @@ const constructConversationMessageModel = (
   const context = makeField('aiContext', [], makeNamedType('AWSJSON'));
   const uiComponents = makeField('toolConfiguration', [], makeNamedType('AmplifyAIToolConfiguration'));
   const associatedUserMessageId = makeField('associatedUserMessageId', [], makeNamedType('ID'));
+  const metrics = makeField('metrics', [], makeNamedType('AmplifyAIMetrics'));
+  const usage = makeField('usage', [], makeNamedType('AmplifyAIUsage'));
 
   const object = {
     ...blankObject(modelName),
     interfaces: [conversationMessageInterface],
-    fields: [id, conversationId, conversationField, role, content, context, uiComponents, associatedUserMessageId],
+    fields: [id, conversationId, conversationField, role, content, context, uiComponents, associatedUserMessageId, metrics, usage],
     directives: typeDirectives,
   };
 
