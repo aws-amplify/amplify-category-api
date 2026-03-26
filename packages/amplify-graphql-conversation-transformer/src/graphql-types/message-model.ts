@@ -158,6 +158,24 @@ export const createConversationTurnErrorInput = (): InputObjectTypeDefinitionNod
   };
 };
 
+export const constructMetricsType = (): ObjectTypeDefinitionNode => ({
+  kind: 'ObjectTypeDefinition',
+  name: { kind: 'Name', value: 'AmplifyAIMetrics' },
+  fields: [makeField('latencyMs', [], makeNamedType('Int'))],
+  directives: [],
+});
+
+export const constructUsageType = (): ObjectTypeDefinitionNode => ({
+  kind: 'ObjectTypeDefinition',
+  name: { kind: 'Name', value: 'AmplifyAIUsage' },
+  fields: [
+    makeField('inputTokens', [], makeNamedType('Int')),
+    makeField('outputTokens', [], makeNamedType('Int')),
+    makeField('totalTokens', [], makeNamedType('Int')),
+  ],
+  directives: [],
+});
+
 export const createAssistantStreamingMutationField = (fieldName: string, inputTypeName: string): FieldDefinitionNode => {
   const args = [makeInputValueDefinition('input', makeNonNullType(makeNamedType(inputTypeName)))];
   const cognitoAuthDirective = makeDirective('aws_cognito_user_pools', []);
@@ -319,6 +337,8 @@ export const constructStreamResponseType = (): ObjectTypeDefinitionNode => {
       makeField('contentBlockDoneAtIndex', [], makeNamedType('Int')),
 
       makeField('stopReason', [], makeNamedType('String')),
+      makeField('metrics', [], makeNamedType('AmplifyAIMetrics')),
+      makeField('usage', [], makeNamedType('AmplifyAIUsage')),
     ],
   };
 };

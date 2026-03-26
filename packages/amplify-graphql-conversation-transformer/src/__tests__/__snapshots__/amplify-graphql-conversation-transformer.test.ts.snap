@@ -214,6 +214,8 @@ export function request(ctx) {
     associatedUserMessageId,
     accumulatedTurnContent,
     errors,
+    metrics,
+    usage,
   } = ctx.args.input;
 
   const { owner } = ctx.args;
@@ -230,7 +232,7 @@ export function request(ctx) {
   const { createdAt, updatedAt } = ctx.stash.defaultValues;
 
   const assistantResponseId = \`\${associatedUserMessageId}#response\`;
-  const expression = 'SET #typename = :typename, #conversationId = :conversationId, #associatedUserMessageId = :associatedUserMessageId, #role = :role, #content = :content, #owner = :owner, #createdAt = if_not_exists(#createdAt, :createdAt), #updatedAt = :updatedAt';
+  const expression = 'SET #typename = :typename, #conversationId = :conversationId, #associatedUserMessageId = :associatedUserMessageId, #role = :role, #content = :content, #owner = :owner, #createdAt = if_not_exists(#createdAt, :createdAt), #updatedAt = :updatedAt, #metrics = :metrics, #usage = :usage';
 
   const expressionValues = util.dynamodb.toMapValues({
     ':typename': 'ConversationMessagePirateChat',
@@ -241,6 +243,8 @@ export function request(ctx) {
     ':owner': owner,
     ':createdAt': createdAt,
     ':updatedAt': updatedAt,
+    ':metrics': metrics,
+    ':usage': usage,
   });
 
   // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ReservedWords.html
@@ -253,6 +257,8 @@ export function request(ctx) {
     '#owner': 'owner',
     '#createdAt': 'createdAt',
     '#updatedAt': 'updatedAt',
+    '#metrics': 'metrics',
+    '#usage': 'usage',
   };
 
   return {
@@ -676,7 +682,7 @@ export function request(ctx) {
   const { graphqlApiEndpoint } = ctx.stash;
   const userAgent = createUserAgent(request);
 
-  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message } p';
+  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message } p metrics { latencyMs } usage { inputTokens outputTokens totalTokens }';
 
   const streamingResponseMutation = {
     name: 'createAssistantResponseStreamPirateChat',
@@ -1078,6 +1084,8 @@ export function request(ctx) {
     associatedUserMessageId,
     accumulatedTurnContent,
     errors,
+    metrics,
+    usage,
   } = ctx.args.input;
 
   const { owner } = ctx.args;
@@ -1094,7 +1102,7 @@ export function request(ctx) {
   const { createdAt, updatedAt } = ctx.stash.defaultValues;
 
   const assistantResponseId = \`\${associatedUserMessageId}#response\`;
-  const expression = 'SET #typename = :typename, #conversationId = :conversationId, #associatedUserMessageId = :associatedUserMessageId, #role = :role, #content = :content, #owner = :owner, #createdAt = if_not_exists(#createdAt, :createdAt), #updatedAt = :updatedAt';
+  const expression = 'SET #typename = :typename, #conversationId = :conversationId, #associatedUserMessageId = :associatedUserMessageId, #role = :role, #content = :content, #owner = :owner, #createdAt = if_not_exists(#createdAt, :createdAt), #updatedAt = :updatedAt, #metrics = :metrics, #usage = :usage';
 
   const expressionValues = util.dynamodb.toMapValues({
     ':typename': 'ConversationMessagePirateChat',
@@ -1105,6 +1113,8 @@ export function request(ctx) {
     ':owner': owner,
     ':createdAt': createdAt,
     ':updatedAt': updatedAt,
+    ':metrics': metrics,
+    ':usage': usage,
   });
 
   // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ReservedWords.html
@@ -1117,6 +1127,8 @@ export function request(ctx) {
     '#owner': 'owner',
     '#createdAt': 'createdAt',
     '#updatedAt': 'updatedAt',
+    '#metrics': 'metrics',
+    '#usage': 'usage',
   };
 
   return {
@@ -1540,7 +1552,7 @@ export function request(ctx) {
   const { graphqlApiEndpoint } = ctx.stash;
   const userAgent = createUserAgent(request);
 
-  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message } p';
+  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message } p metrics { latencyMs } usage { inputTokens outputTokens totalTokens }';
 
   const streamingResponseMutation = {
     name: 'createAssistantResponseStreamPirateChat',
@@ -1942,6 +1954,8 @@ export function request(ctx) {
     associatedUserMessageId,
     accumulatedTurnContent,
     errors,
+    metrics,
+    usage,
   } = ctx.args.input;
 
   const { owner } = ctx.args;
@@ -1958,7 +1972,7 @@ export function request(ctx) {
   const { createdAt, updatedAt } = ctx.stash.defaultValues;
 
   const assistantResponseId = \`\${associatedUserMessageId}#response\`;
-  const expression = 'SET #typename = :typename, #conversationId = :conversationId, #associatedUserMessageId = :associatedUserMessageId, #role = :role, #content = :content, #owner = :owner, #createdAt = if_not_exists(#createdAt, :createdAt), #updatedAt = :updatedAt';
+  const expression = 'SET #typename = :typename, #conversationId = :conversationId, #associatedUserMessageId = :associatedUserMessageId, #role = :role, #content = :content, #owner = :owner, #createdAt = if_not_exists(#createdAt, :createdAt), #updatedAt = :updatedAt, #metrics = :metrics, #usage = :usage';
 
   const expressionValues = util.dynamodb.toMapValues({
     ':typename': 'ConversationMessagePirateChat',
@@ -1969,6 +1983,8 @@ export function request(ctx) {
     ':owner': owner,
     ':createdAt': createdAt,
     ':updatedAt': updatedAt,
+    ':metrics': metrics,
+    ':usage': usage,
   });
 
   // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ReservedWords.html
@@ -1981,6 +1997,8 @@ export function request(ctx) {
     '#owner': 'owner',
     '#createdAt': 'createdAt',
     '#updatedAt': 'updatedAt',
+    '#metrics': 'metrics',
+    '#usage': 'usage',
   };
 
   return {
@@ -2404,7 +2422,7 @@ export function request(ctx) {
   const { graphqlApiEndpoint } = ctx.stash;
   const userAgent = createUserAgent(request);
 
-  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message } p';
+  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message } p metrics { latencyMs } usage { inputTokens outputTokens totalTokens }';
 
   const streamingResponseMutation = {
     name: 'createAssistantResponseStreamPirateChat',
@@ -2806,6 +2824,8 @@ export function request(ctx) {
     associatedUserMessageId,
     accumulatedTurnContent,
     errors,
+    metrics,
+    usage,
   } = ctx.args.input;
 
   const { owner } = ctx.args;
@@ -2822,7 +2842,7 @@ export function request(ctx) {
   const { createdAt, updatedAt } = ctx.stash.defaultValues;
 
   const assistantResponseId = \`\${associatedUserMessageId}#response\`;
-  const expression = 'SET #typename = :typename, #conversationId = :conversationId, #associatedUserMessageId = :associatedUserMessageId, #role = :role, #content = :content, #owner = :owner, #createdAt = if_not_exists(#createdAt, :createdAt), #updatedAt = :updatedAt';
+  const expression = 'SET #typename = :typename, #conversationId = :conversationId, #associatedUserMessageId = :associatedUserMessageId, #role = :role, #content = :content, #owner = :owner, #createdAt = if_not_exists(#createdAt, :createdAt), #updatedAt = :updatedAt, #metrics = :metrics, #usage = :usage';
 
   const expressionValues = util.dynamodb.toMapValues({
     ':typename': 'ConversationMessagePirateChat',
@@ -2833,6 +2853,8 @@ export function request(ctx) {
     ':owner': owner,
     ':createdAt': createdAt,
     ':updatedAt': updatedAt,
+    ':metrics': metrics,
+    ':usage': usage,
   });
 
   // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ReservedWords.html
@@ -2845,6 +2867,8 @@ export function request(ctx) {
     '#owner': 'owner',
     '#createdAt': 'createdAt',
     '#updatedAt': 'updatedAt',
+    '#metrics': 'metrics',
+    '#usage': 'usage',
   };
 
   return {
@@ -3268,7 +3292,7 @@ export function request(ctx) {
   const { graphqlApiEndpoint } = ctx.stash;
   const userAgent = createUserAgent(request);
 
-  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message } p';
+  const selectionSet = 'associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message } p metrics { latencyMs } usage { inputTokens outputTokens totalTokens }';
 
   const streamingResponseMutation = {
     name: 'createAssistantResponseStreamPirateChat',
