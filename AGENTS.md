@@ -121,6 +121,12 @@ yarn e2e-logs {buildId}      # View build logs
 - **Do NOT declare success if tests show errors, even if some tests passed**
 - **"Tests passed" only means 100% success with no errors whatsoever**
 
+**CRITICAL: Failure Attribution**
+
+- **NEVER assume a failure is pre-existing unless the user explicitly tells you so**
+- **If a build, test, or lint step fails after your changes, assume YOUR changes broke it**
+- **Investigate the failure and fix it — do not dismiss or hand-wave it away**
+
 Requirements:
 
 - All code changes require passing tests
@@ -135,7 +141,7 @@ Before marking tasks complete:
 
 - [ ] Code follows repository patterns
 - [ ] Tests are written and passing
-- [ ] Linting passes (`yarn lint`)
+- [ ] Linting: `yarn lint` does NOT pass on the full repo (OOM + thousands of existing errors). CI only lints PR-changed files and treats eslint failures as non-blocking (`|| true`). `prettier-check` and `depcheck` DO block in CI.
 - [ ] Documentation is updated
 - [ ] All code committed and pushed before e2e tests
 - [ ] E2E tests passing
