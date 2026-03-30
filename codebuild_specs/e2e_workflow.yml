@@ -12,6 +12,10 @@ batch:
       buildspec: codebuild_specs/build_linux.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
+    - identifier: cleanup_stale_resources
+      buildspec: codebuild_specs/cleanup_stale_resources.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
     - identifier: build_windows
       buildspec: codebuild_specs/build_windows.yml
       env:

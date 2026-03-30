@@ -74,8 +74,15 @@ yarn e2e-logs {buildId}      # View build logs
 **Common E2E Issues:**
 
 - Timeouts/expired credentials: Retry the build
-- Quota errors: Retry and notify user about cleanup needs
+- Quota errors (IAM policies, AppSync APIs, Lambda functions): Run cleanup, see [Resource Cleanup Guide](./.agent-docs/RESOURCE_CLEANUP.md)
 - Code-related errors: Investigate and fix, don't retry
+
+**Resource Cleanup:** See [.agent-docs/RESOURCE_CLEANUP.md](./.agent-docs/RESOURCE_CLEANUP.md) for the complete guide on discovering and cleaning up orphaned test resources.
+
+```sh
+yarn cloud-find-garbage [accountId]    # Discover orphaned resources
+yarn cloud-cleanup [accountId]         # Clean up (add --dry-run to preview)
+```
 
 **Note:** Monitor script skips retrying: `build_linux`, `build_windows`, `test`, `lint`
 

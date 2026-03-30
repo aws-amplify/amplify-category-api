@@ -14,8 +14,13 @@ import {
   DeleteRoleCommand,
   DetachRolePolicyCommand,
   DeleteRolePolicyCommand,
+  ListPoliciesCommand,
+  ListPolicyVersionsCommand,
+  DeletePolicyVersionCommand,
+  DeletePolicyCommand,
   Role,
   AttachedPolicy,
+  Policy,
 } from '@aws-sdk/client-iam';
 import { RDSClient, DescribeDBInstancesCommand, DeleteDBInstanceCommand, DBInstance } from '@aws-sdk/client-rds';
 import {
@@ -99,6 +104,11 @@ type IamRoleInfo = {
   cbInfo?: Build;
 };
 
+type IamPolicyInfo = {
+  name: string;
+  arn: string;
+};
+
 type RdsInstanceInfo = {
   identifier: string;
   region: string;
@@ -114,6 +124,7 @@ type ReportEntry = {
   stacks: Record<string, StackInfo>;
   buckets: Record<string, S3BucketInfo>;
   roles: Record<string, IamRoleInfo>;
+  policies: Record<string, IamPolicyInfo>;
   instances: Record<string, RdsInstanceInfo>;
 };
 
@@ -135,6 +146,8 @@ type AWSAccountInfo = {
 const BUCKET_TEST_REGEX = /test/;
 const IAM_TEST_REGEX =
   /!RotateE2eAwsToken-e2eTestContextRole|-integtest$|^amplify-|^eu-|^us-|^ap-|^auth-exhaustive-tests|rds-schema-inspector-integtest|^amplify_e2e_tests_lambda|^JsonMockStack-jsonMockApi|^SubscriptionAuth|^cdkamplifytable[0-9]*-|^MutationConditionTest-|^SearchableAuth|^SubscriptionRTFTests-|^NonModelAuthV2FunctionTransformerTests-|^MultiAuthV2Transformer|^FunctionTransformerTests|-integtest-/;
+const IAM_POLICY_TEST_REGEX =
+  /^amplify-|^auth-exhaustive|^MultiAuth|^SearchableAuth|^SubscriptionAuth|^NonModelAuth|^FunctionTransformer|^MutationCondition|^JsonMockStack|^SubscriptionRTF|^cdkamplifytable|^HttpTransformer|-integtest/;
 const RDS_TEST_REGEX = /integtest/;
 const STALE_DURATION_MS = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
 
@@ -173,6 +186,12 @@ const testRoleStalenessFilter = (resource: Role): boolean => {
   return !!isTestResource && !!isStaleResource;
 };
 
+const testPolicyStalenessFilter = (resource: Policy): boolean => {
+  const isTestResource = resource.PolicyName?.match(IAM_POLICY_TEST_REGEX);
+  const isStaleResource = resource.CreateDate && before(resource.CreateDate, staleHorizonDate);
+  return !!isTestResource && !!isStaleResource;
+};
+
 const testInstanceStalenessFilter = (resource: DBInstance): boolean => {
   const isTestResource = resource.DBInstanceIdentifier?.match(RDS_TEST_REGEX);
   const isStaleResource =
@@ -205,9 +224,25 @@ const getOrphanS3TestBuckets = async (account: AWSAccountInfo): Promise<S3Bucket
  */
 const getOrphanTestIamRoles = async (account: AWSAccountInfo): Promise<IamRoleInfo[]> => {
   const iamClient = new IAMClient({ credentials: account.credentials });
-  const listRoleResponse = await iamClient.send(new ListRolesCommand({}));
-  const staleRoles = listRoleResponse.Roles.filter(testRoleStalenessFilter);
+  const allRoles = await paginate(async (token) => {
+    const resp = await iamClient.send(new ListRolesCommand({ Marker: token, MaxItems: 100 }));
+    return { nextPage: resp.IsTruncated ? resp.Marker : undefined, items: resp.Roles ?? [] };
+  });
+  const staleRoles = allRoles.filter(testRoleStalenessFilter);
   return staleRoles.map((it) => ({ name: it.RoleName }));
+};
+
+/**
+ * Get all customer-managed IAM policies in the account, and filter down to the ones we consider stale.
+ */
+const getOrphanTestIamPolicies = async (account: AWSAccountInfo): Promise<IamPolicyInfo[]> => {
+  const iamClient = new IAMClient({ credentials: account.credentials });
+  const allPolicies = await paginate(async (token) => {
+    const resp = await iamClient.send(new ListPoliciesCommand({ Scope: 'Local', Marker: token, MaxItems: 100 }));
+    return { nextPage: resp.IsTruncated ? resp.Marker : undefined, items: resp.Policies ?? [] };
+  });
+  const stalePolicies = allPolicies.filter(testPolicyStalenessFilter);
+  return stalePolicies.map((p) => ({ name: p.PolicyName, arn: p.Arn }));
 };
 
 /**
@@ -721,6 +756,33 @@ const deleteIamRolePolicy = async (account: AWSAccountInfo, accountIndex: number
   }
 };
 
+const deleteIamPolicies = async (account: AWSAccountInfo, accountIndex: number, policies: IamPolicyInfo[]): Promise<void> => {
+  let deleted = 0;
+  for (const policy of policies) {
+    try {
+      await deleteIamPolicy(account, accountIndex, policy);
+      deleted++;
+      if (deleted % 100 === 0)
+        console.log(`${generateAccountInfo(account, accountIndex)} Deleted ${deleted}/${policies.length} IAM policies...`);
+    } catch (e) {
+      console.log(`${generateAccountInfo(account, accountIndex)} Failed to delete policy ${policy.name}: ${e}`);
+    }
+  }
+  if (policies.length > 0) console.log(`${generateAccountInfo(account, accountIndex)} Deleted ${deleted}/${policies.length} IAM policies.`);
+};
+
+const deleteIamPolicy = async (account: AWSAccountInfo, accountIndex: number, policy: IamPolicyInfo): Promise<void> => {
+  const iamClient = new IAMClient({ credentials: account.credentials });
+  // Delete all non-default versions first
+  const versions = await iamClient.send(new ListPolicyVersionsCommand({ PolicyArn: policy.arn }));
+  for (const v of versions.Versions ?? []) {
+    if (!v.IsDefaultVersion) {
+      await iamClient.send(new DeletePolicyVersionCommand({ PolicyArn: policy.arn, VersionId: v.VersionId }));
+    }
+  }
+  await iamClient.send(new DeletePolicyCommand({ PolicyArn: policy.arn }));
+};
+
 const deleteBuckets = async (account: AWSAccountInfo, accountIndex: number, buckets: S3BucketInfo[]): Promise<void> => {
   await Promise.all(buckets.map((bucket) => deleteBucket(account, accountIndex, bucket)));
 };
@@ -821,6 +883,10 @@ const deleteResources = async (
       await deleteIamRoles(account, accountIndex, Object.values(resources.roles));
     }
 
+    if (resources.policies) {
+      await deleteIamPolicies(account, accountIndex, Object.values(resources.policies));
+    }
+
     if (resources.instances) {
       await deleteRdsInstances(account, accountIndex, Object.values(resources.instances));
     }
@@ -917,6 +983,7 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const bucketPromise = getS3Buckets(account);
   const orphanBucketPromise = getOrphanS3TestBuckets(account);
   const orphanIamRolesPromise = getOrphanTestIamRoles(account);
+  const orphanIamPoliciesPromise = getOrphanTestIamPolicies(account);
   const orphanRdsInstancesPromise = testRegions.map((region) => getOrphanRdsInstances(account, region));
   const cfnResourcesPromise = testRegions.map((region) => getAllCfnManagedResources(account, region));
 
@@ -927,11 +994,30 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const buckets = (await bucketPromise).filter((x) => !cfnManaged.has(resourceId('AWS::S3::Bucket', x.name)));
   const orphanBuckets = (await orphanBucketPromise).filter((x) => !cfnManaged.has(resourceId('AWS::S3::Bucket', x.name)));
   const orphanIamRoles = (await orphanIamRolesPromise).filter((x) => !cfnManaged.has(resourceId('AWS::IAM::Role', x.name)));
+  const orphanIamPolicies = (await orphanIamPoliciesPromise).filter((x) => !cfnManaged.has(resourceId('AWS::IAM::ManagedPolicy', x.arn)));
   const orphanRdsInstances = (await Promise.all(orphanRdsInstancesPromise))
     .flat()
     .filter((b) => !cfnManaged.has(resourceId('AWS::RDS::DBInstance', b.identifier)));
 
   const allResources = await mergeResourcesByCCIJob(apps, stacks, buckets, orphanBuckets, orphanIamRoles, orphanRdsInstances);
+
+  // Add orphan policies to the ORPHAN job entry (they aren't tracked by CodeBuild job)
+  const orphanKey = ORPHAN;
+  if (!allResources[orphanKey]) {
+    allResources[orphanKey] = { amplifyApps: {}, stacks: {}, buckets: {}, roles: {}, policies: {}, instances: {}, jobId: ORPHAN };
+  }
+  if (!allResources[orphanKey].policies) {
+    allResources[orphanKey].policies = {};
+  }
+  for (const policy of orphanIamPolicies) {
+    allResources[orphanKey].policies[policy.arn] = policy;
+  }
+
+  // Ensure all entries have a policies field
+  for (const entry of Object.values(allResources)) {
+    if (!entry.policies) entry.policies = {};
+  }
+
   const staleResources = _.pickBy(allResources, filterPredicate);
 
   generateReport(staleResources, accountIndex);

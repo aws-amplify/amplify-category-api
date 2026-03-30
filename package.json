@@ -16,6 +16,8 @@
     "cloud-e2e-beta": "source scripts/cloud-utils.sh && cloudE2EBeta",
     "cloud-e2e-debug": "source scripts/cloud-utils.sh && cloudE2EDebug",
     "cloud-e2e": "source scripts/cloud-utils.sh && cloudE2E",
+    "cloud-find-garbage": "source scripts/.env && ada cred update --profile=AmplifyAPIE2ETest --account=$E2E_TEST_ACCOUNT --role=Admin --provider=isengard --once && yarn ts-node scripts/e2e-resource-manager.ts discover",
+    "cloud-cleanup": "source scripts/.env && ada cred update --profile=AmplifyAPIE2ETest --account=$E2E_TEST_ACCOUNT --role=Admin --provider=isengard --once && yarn ts-node scripts/e2e-resource-manager.ts cleanup",
     "cloud-pr": "./scripts/cloud-pr.sh",
     "e2e-status": "yarn ts-node scripts/e2e-test-manager.ts status",
     "e2e-retry": "yarn ts-node scripts/e2e-test-manager.ts retry",
