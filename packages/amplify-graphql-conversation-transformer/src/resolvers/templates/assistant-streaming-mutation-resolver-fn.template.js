@@ -30,7 +30,7 @@ export function request(ctx) {
   const { createdAt, updatedAt } = ctx.stash.defaultValues;
 
   const assistantResponseId = `${associatedUserMessageId}#response`;
-  const expression = 'SET #typename = :typename, #conversationId = :conversationId, #associatedUserMessageId = :associatedUserMessageId, #role = :role, #content = :content, #owner = :owner, #createdAt = if_not_exists(#createdAt, :createdAt), #updatedAt = :updatedAt, #metrics = :metrics, #usage = :usage';
+  let expression = 'SET #typename = :typename, #conversationId = :conversationId, #associatedUserMessageId = :associatedUserMessageId, #role = :role, #content = :content, #owner = :owner, #createdAt = if_not_exists(#createdAt, :createdAt), #updatedAt = :updatedAt';
 
   const expressionValues = util.dynamodb.toMapValues({
     ':typename': '[[CONVERSATION_MESSAGE_TYPE_NAME]]',
@@ -41,8 +41,6 @@ export function request(ctx) {
     ':owner': owner,
     ':createdAt': createdAt,
     ':updatedAt': updatedAt,
-    ':metrics': metrics,
-    ':usage': usage,
   });
 
   // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ReservedWords.html
@@ -55,9 +53,19 @@ export function request(ctx) {
     '#owner': 'owner',
     '#createdAt': 'createdAt',
     '#updatedAt': 'updatedAt',
-    '#metrics': 'metrics',
-    '#usage': 'usage',
   };
+
+  if (metrics) {
+    expression += ', #metrics = :metrics';
+    expressionValues[':metrics'] = metrics;
+    expressionNames['#metrics'] = 'metrics';
+  }
+
+  if (usage) {
+    expression += ', #usage = :usage';
+    expressionValues[':usage'] = usage;
+    expressionNames['#usage'] = 'usage';
+  }
 
   return {
     operation: 'UpdateItem',

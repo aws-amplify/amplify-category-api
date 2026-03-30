@@ -232,7 +232,7 @@ export function request(ctx) {
   const { createdAt, updatedAt } = ctx.stash.defaultValues;
 
   const assistantResponseId = \`\${associatedUserMessageId}#response\`;
-  const expression = 'SET #typename = :typename, #conversationId = :conversationId, #associatedUserMessageId = :associatedUserMessageId, #role = :role, #content = :content, #owner = :owner, #createdAt = if_not_exists(#createdAt, :createdAt), #updatedAt = :updatedAt, #metrics = :metrics, #usage = :usage';
+  let expression = 'SET #typename = :typename, #conversationId = :conversationId, #associatedUserMessageId = :associatedUserMessageId, #role = :role, #content = :content, #owner = :owner, #createdAt = if_not_exists(#createdAt, :createdAt), #updatedAt = :updatedAt';
 
   const expressionValues = util.dynamodb.toMapValues({
     ':typename': 'ConversationMessagePirateChat',
@@ -243,8 +243,6 @@ export function request(ctx) {
     ':owner': owner,
     ':createdAt': createdAt,
     ':updatedAt': updatedAt,
-    ':metrics': metrics,
-    ':usage': usage,
   });
 
   // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ReservedWords.html
@@ -257,9 +255,19 @@ export function request(ctx) {
     '#owner': 'owner',
     '#createdAt': 'createdAt',
     '#updatedAt': 'updatedAt',
-    '#metrics': 'metrics',
-    '#usage': 'usage',
   };
+
+  if (metrics) {
+    expression += ', #metrics = :metrics';
+    expressionValues[':metrics'] = metrics;
+    expressionNames['#metrics'] = 'metrics';
+  }
+
+  if (usage) {
+    expression += ', #usage = :usage';
+    expressionValues[':usage'] = usage;
+    expressionNames['#usage'] = 'usage';
+  }
 
   return {
     operation: 'UpdateItem',
@@ -306,7 +314,8 @@ function generateRandomPadding() {
   const base = 'abcdefghijklmnopqrstuvwxyz0123456789';
   const rand = Math.floor(Math.random() * 36);
   return base.slice(0, rand);
-}"
+}
+"
 `;
 
 exports[`ConversationTransformer valid schemas should transform conversation route with inference configuration: AssistantResponseStreamMutation init slot function code 1`] = `
@@ -1102,7 +1111,7 @@ export function request(ctx) {
   const { createdAt, updatedAt } = ctx.stash.defaultValues;
 
   const assistantResponseId = \`\${associatedUserMessageId}#response\`;
-  const expression = 'SET #typename = :typename, #conversationId = :conversationId, #associatedUserMessageId = :associatedUserMessageId, #role = :role, #content = :content, #owner = :owner, #createdAt = if_not_exists(#createdAt, :createdAt), #updatedAt = :updatedAt, #metrics = :metrics, #usage = :usage';
+  let expression = 'SET #typename = :typename, #conversationId = :conversationId, #associatedUserMessageId = :associatedUserMessageId, #role = :role, #content = :content, #owner = :owner, #createdAt = if_not_exists(#createdAt, :createdAt), #updatedAt = :updatedAt';
 
   const expressionValues = util.dynamodb.toMapValues({
     ':typename': 'ConversationMessagePirateChat',
@@ -1113,8 +1122,6 @@ export function request(ctx) {
     ':owner': owner,
     ':createdAt': createdAt,
     ':updatedAt': updatedAt,
-    ':metrics': metrics,
-    ':usage': usage,
   });
 
   // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ReservedWords.html
@@ -1127,9 +1134,19 @@ export function request(ctx) {
     '#owner': 'owner',
     '#createdAt': 'createdAt',
     '#updatedAt': 'updatedAt',
-    '#metrics': 'metrics',
-    '#usage': 'usage',
   };
+
+  if (metrics) {
+    expression += ', #metrics = :metrics';
+    expressionValues[':metrics'] = metrics;
+    expressionNames['#metrics'] = 'metrics';
+  }
+
+  if (usage) {
+    expression += ', #usage = :usage';
+    expressionValues[':usage'] = usage;
+    expressionNames['#usage'] = 'usage';
+  }
 
   return {
     operation: 'UpdateItem',
@@ -1176,7 +1193,8 @@ function generateRandomPadding() {
   const base = 'abcdefghijklmnopqrstuvwxyz0123456789';
   const rand = Math.floor(Math.random() * 36);
   return base.slice(0, rand);
-}"
+}
+"
 `;
 
 exports[`ConversationTransformer valid schemas should transform conversation route with model query tool including relationships: AssistantResponseStreamMutation init slot function code 1`] = `
@@ -1972,7 +1990,7 @@ export function request(ctx) {
   const { createdAt, updatedAt } = ctx.stash.defaultValues;
 
   const assistantResponseId = \`\${associatedUserMessageId}#response\`;
-  const expression = 'SET #typename = :typename, #conversationId = :conversationId, #associatedUserMessageId = :associatedUserMessageId, #role = :role, #content = :content, #owner = :owner, #createdAt = if_not_exists(#createdAt, :createdAt), #updatedAt = :updatedAt, #metrics = :metrics, #usage = :usage';
+  let expression = 'SET #typename = :typename, #conversationId = :conversationId, #associatedUserMessageId = :associatedUserMessageId, #role = :role, #content = :content, #owner = :owner, #createdAt = if_not_exists(#createdAt, :createdAt), #updatedAt = :updatedAt';
 
   const expressionValues = util.dynamodb.toMapValues({
     ':typename': 'ConversationMessagePirateChat',
@@ -1983,8 +2001,6 @@ export function request(ctx) {
     ':owner': owner,
     ':createdAt': createdAt,
     ':updatedAt': updatedAt,
-    ':metrics': metrics,
-    ':usage': usage,
   });
 
   // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ReservedWords.html
@@ -1997,9 +2013,19 @@ export function request(ctx) {
     '#owner': 'owner',
     '#createdAt': 'createdAt',
     '#updatedAt': 'updatedAt',
-    '#metrics': 'metrics',
-    '#usage': 'usage',
   };
+
+  if (metrics) {
+    expression += ', #metrics = :metrics';
+    expressionValues[':metrics'] = metrics;
+    expressionNames['#metrics'] = 'metrics';
+  }
+
+  if (usage) {
+    expression += ', #usage = :usage';
+    expressionValues[':usage'] = usage;
+    expressionNames['#usage'] = 'usage';
+  }
 
   return {
     operation: 'UpdateItem',
@@ -2046,7 +2072,8 @@ function generateRandomPadding() {
   const base = 'abcdefghijklmnopqrstuvwxyz0123456789';
   const rand = Math.floor(Math.random() * 36);
   return base.slice(0, rand);
-}"
+}
+"
 `;
 
 exports[`ConversationTransformer valid schemas should transform conversation route with model query tool: AssistantResponseStreamMutation init slot function code 1`] = `
@@ -2842,7 +2869,7 @@ export function request(ctx) {
   const { createdAt, updatedAt } = ctx.stash.defaultValues;
 
   const assistantResponseId = \`\${associatedUserMessageId}#response\`;
-  const expression = 'SET #typename = :typename, #conversationId = :conversationId, #associatedUserMessageId = :associatedUserMessageId, #role = :role, #content = :content, #owner = :owner, #createdAt = if_not_exists(#createdAt, :createdAt), #updatedAt = :updatedAt, #metrics = :metrics, #usage = :usage';
+  let expression = 'SET #typename = :typename, #conversationId = :conversationId, #associatedUserMessageId = :associatedUserMessageId, #role = :role, #content = :content, #owner = :owner, #createdAt = if_not_exists(#createdAt, :createdAt), #updatedAt = :updatedAt';
 
   const expressionValues = util.dynamodb.toMapValues({
     ':typename': 'ConversationMessagePirateChat',
@@ -2853,8 +2880,6 @@ export function request(ctx) {
     ':owner': owner,
     ':createdAt': createdAt,
     ':updatedAt': updatedAt,
-    ':metrics': metrics,
-    ':usage': usage,
   });
 
   // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ReservedWords.html
@@ -2867,9 +2892,19 @@ export function request(ctx) {
     '#owner': 'owner',
     '#createdAt': 'createdAt',
     '#updatedAt': 'updatedAt',
-    '#metrics': 'metrics',
-    '#usage': 'usage',
   };
+
+  if (metrics) {
+    expression += ', #metrics = :metrics';
+    expressionValues[':metrics'] = metrics;
+    expressionNames['#metrics'] = 'metrics';
+  }
+
+  if (usage) {
+    expression += ', #usage = :usage';
+    expressionValues[':usage'] = usage;
+    expressionNames['#usage'] = 'usage';
+  }
 
   return {
     operation: 'UpdateItem',
@@ -2916,7 +2951,8 @@ function generateRandomPadding() {
   const base = 'abcdefghijklmnopqrstuvwxyz0123456789';
   const rand = Math.floor(Math.random() * 36);
   return base.slice(0, rand);
-}"
+}
+"
 `;
 
 exports[`ConversationTransformer valid schemas should transform conversation route with query tools: AssistantResponseStreamMutation init slot function code 1`] = `
