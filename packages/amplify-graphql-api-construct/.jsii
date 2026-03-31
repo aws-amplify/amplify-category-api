@@ -6,7 +6,7 @@
     ]
   },
   "bundled": {
-    "@aws-amplify/ai-constructs": "^1.5.3",
+    "@aws-amplify/ai-constructs": "^1.6.1",
     "@aws-amplify/backend-output-schemas": "^1.0.0",
     "@aws-amplify/backend-output-storage": "^1.0.0",
     "@aws-amplify/graphql-auth-transformer": "4.2.5",
@@ -42,6 +42,7 @@
     "@aws-sdk/credential-provider-env": "3.620.1",
     "@aws-sdk/credential-provider-http": "3.635.0",
     "@aws-sdk/credential-provider-ini": "3.637.0",
+    "@aws-sdk/credential-provider-login": "3.955.0",
     "@aws-sdk/credential-provider-node": "3.637.0",
     "@aws-sdk/credential-provider-process": "3.620.1",
     "@aws-sdk/credential-provider-sso": "3.637.0",
@@ -58,6 +59,13 @@
     "@aws-sdk/util-locate-window": "^3.0.0",
     "@aws-sdk/util-user-agent-browser": "3.609.0",
     "@aws-sdk/util-user-agent-node": "3.614.0",
+    "@aws-sdk/xml-builder": "3.804.0",
+    "@aws/lambda-invoke-store": "^0.2.2",
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/core": "^2.0.0",
+    "@opentelemetry/resources": "2.0.0",
+    "@opentelemetry/sdk-trace-base": "^2.0.0",
+    "@opentelemetry/semantic-conventions": "^1.29.0",
     "@smithy/abort-controller": "^3.1.1",
     "@smithy/config-resolver": "^3.0.5",
     "@smithy/core": "^2.4.0",
@@ -102,6 +110,7 @@
     "@smithy/util-stream": "^3.1.3",
     "@smithy/util-uri-escape": "^3.0.0",
     "@smithy/util-utf8": "^3.0.0",
+    "@smithy/uuid": "^1.1.0",
     "@types/uuid": "^9.0.8",
     "bowser": "^2.11.0",
     "charenc": "^0.0.2",
@@ -14025,5 +14034,5 @@
     }
   },
   "version": "1.21.0",
-  "fingerprint": "ewtXxIF9ezdlp9yoPtnZ8iZNMSZns5AFGZLvohdjrRc="
+  "fingerprint": "4x8f7uqenX1q+wnkRPknz5Gn9xs7egdc1SoUjo0pcOE="
 }
