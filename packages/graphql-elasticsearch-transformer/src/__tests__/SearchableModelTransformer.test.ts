@@ -145,3 +145,35 @@ test('SearchableModelTransformer with external versioning', () => {
   expect(out.resolvers[expectedSearchResponseResolver]).toBeDefined();
   expect(out.resolvers[expectedSearchResponseResolver]).toMatchSnapshot();
 });
+
+describe('Elasticsearch domain TLS configuration', () => {
+  test('enforces HTTPS with TLS 1.2 on the Elasticsearch domain', () => {
+    const validSchema = `
+      type Post @model @searchable {
+        id: ID!
+        title: String!
+        createdAt: String
+        updatedAt: String
+      }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new DynamoDBModelTransformer(), new SearchableModelTransformer()],
+      featureFlags,
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    const searchableStack = out.stacks['SearchableStack'];
+    expect(searchableStack).toBeDefined();
+    expect(searchableStack.Resources).toBeDefined();
+
+    const esDomain = searchableStack.Resources!['ElasticSearchDomain'];
+    expect(esDomain).toBeDefined();
+    expect(esDomain.Type).toEqual('AWS::Elasticsearch::Domain');
+
+    const domainEndpointOptions = esDomain.Properties.DomainEndpointOptions;
+    expect(domainEndpointOptions).toBeDefined();
+    expect(domainEndpointOptions.EnforceHTTPS).toBeUndefined();
+    expect(domainEndpointOptions.TLSSecurityPolicy).toBe('Policy-Min-TLS-1-2-2019-07');
+  });
+});

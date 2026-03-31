@@ -494,6 +494,9 @@ export class ResourceFactory {
     return new Elasticsearch.Domain({
       DomainName: this.domainName(),
       ElasticsearchVersion: '6.2',
+      DomainEndpointOptions: {
+        TLSSecurityPolicy: 'Policy-Min-TLS-1-2-2019-07',
+      },
       ElasticsearchClusterConfig: {
         ZoneAwarenessEnabled: false,
         InstanceCount: Fn.Ref(ResourceConstants.PARAMETERS.ElasticsearchInstanceCount),
@@ -504,7 +507,7 @@ export class ResourceFactory {
         VolumeType: 'gp2',
         VolumeSize: Fn.Ref(ResourceConstants.PARAMETERS.ElasticsearchEBSVolumeGB),
       },
-    });
+    } as any);
   }
 
   /**
