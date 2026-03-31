@@ -233,6 +233,7 @@ test('it generates expected resources', () => {
     ElasticsearchVersion: '7.10',
     DomainEndpointOptions: {
       EnforceHTTPS: true,
+      TLSSecurityPolicy: 'Policy-Min-TLS-1-2-2019-07',
     },
   });
   Template.fromJSON(searchableStack).hasResource('AWS::Elasticsearch::Domain', {
@@ -461,6 +462,29 @@ describe('nodeToNodeEncryption transformParameter', () => {
     Template.fromJSON(searchableStack).hasResourceProperties('AWS::Elasticsearch::Domain', {
       EncryptionAtRestOptions: {
         Enabled: true,
+      },
+    });
+  });
+});
+
+describe('TLS security policy', () => {
+  const schema = /* GraphQL */ `
+    type Todo @model @searchable {
+      content: String!
+    }
+  `;
+
+  it('synthesizes w/ TLS 1.2 security policy on the OpenSearch domain', () => {
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+    });
+    expect(out).toBeDefined();
+    const searchableStack = out.stacks.SearchableStack;
+    Template.fromJSON(searchableStack).hasResourceProperties('AWS::Elasticsearch::Domain', {
+      DomainEndpointOptions: {
+        EnforceHTTPS: true,
+        TLSSecurityPolicy: 'Policy-Min-TLS-1-2-2019-07',
       },
     });
   });
