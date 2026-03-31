@@ -10,6 +10,12 @@ import {
   Policy,
   CreatePolicyCommandOutput,
   AttachRolePolicyCommand,
+  DetachRolePolicyCommand,
+  ListAttachedRolePoliciesCommand,
+  DeleteRoleCommand,
+  DeletePolicyCommand,
+  ListRolePoliciesCommand,
+  DeleteRolePolicyCommand,
   waitUntilPolicyExists,
   waitUntilRoleExists,
 } from '@aws-sdk/client-iam';
@@ -124,13 +130,55 @@ const getSchemaInspectorLambda = async (lambdaName: string, region: string): Pro
 };
 
 const deleteSchemaInspectorLambdaRole = async (lambdaName: string, region: string): Promise<void> => {
-  const lambdaClient = new LambdaClient({ region });
-  const params = {
-    FunctionName: lambdaName,
-  };
-  const FUNCTION_DELETE_DELAY = 10000;
+  const roleName = `${lambdaName}-execution-role`;
+  const iamClient = new IAMClient({ region });
 
-  await lambdaClient.send(new DeleteFunctionCommand(params));
+  // Step 1: Detach managed policies from the role and delete them
+  try {
+    const listAttachedRes = await iamClient.send(new ListAttachedRolePoliciesCommand({ RoleName: roleName }));
+    const attachedPolicies = listAttachedRes.AttachedPolicies ?? [];
+    for (const policy of attachedPolicies) {
+      try {
+        await iamClient.send(new DetachRolePolicyCommand({ RoleName: roleName, PolicyArn: policy.PolicyArn }));
+      } catch (detachErr) {
+        console.warn(`Warning: Failed to detach policy ${policy.PolicyArn} from role ${roleName}: ${detachErr}`);
+      }
+      try {
+        await iamClient.send(new DeletePolicyCommand({ PolicyArn: policy.PolicyArn }));
+      } catch (deletePolicyErr) {
+        console.warn(`Warning: Failed to delete policy ${policy.PolicyArn}: ${deletePolicyErr}`);
+      }
+    }
+  } catch (listAttachedErr) {
+    console.warn(`Warning: Failed to list attached policies for role ${roleName}: ${listAttachedErr}`);
+  }
+
+  // Step 2: Delete inline policies from the role
+  try {
+    const listInlineRes = await iamClient.send(new ListRolePoliciesCommand({ RoleName: roleName }));
+    const inlinePolicyNames = listInlineRes.PolicyNames ?? [];
+    for (const policyName of inlinePolicyNames) {
+      try {
+        await iamClient.send(new DeleteRolePolicyCommand({ RoleName: roleName, PolicyName: policyName }));
+      } catch (deleteInlineErr) {
+        console.warn(`Warning: Failed to delete inline policy ${policyName} from role ${roleName}: ${deleteInlineErr}`);
+      }
+    }
+  } catch (listInlineErr) {
+    console.warn(`Warning: Failed to list inline policies for role ${roleName}: ${listInlineErr}`);
+  }
+
+  // Step 3: Delete the IAM role
+  try {
+    await iamClient.send(new DeleteRoleCommand({ RoleName: roleName }));
+  } catch (deleteRoleErr) {
+    console.warn(`Warning: Failed to delete role ${roleName}: ${deleteRoleErr}`);
+  }
+
+  // Step 4: Delete the Lambda function
+  const lambdaClient = new LambdaClient({ region });
+  const FUNCTION_DELETE_DELAY = 10000;
+  await lambdaClient.send(new DeleteFunctionCommand({ FunctionName: lambdaName }));
   // Wait for the lambda to be deleted. This is required when the lambda is deleted and recreated with the same name when there is a VPC
   // change.
   await sleep(FUNCTION_DELETE_DELAY);
