@@ -11,9 +11,13 @@ import {
   ListRolesCommand,
   ListAttachedRolePoliciesCommand,
   ListRolePoliciesCommand,
+  ListPoliciesCommand,
+  ListPolicyVersionsCommand,
   DeleteRoleCommand,
   DetachRolePolicyCommand,
   DeleteRolePolicyCommand,
+  DeletePolicyCommand,
+  DeletePolicyVersionCommand,
   Role,
   AttachedPolicy,
 } from '@aws-sdk/client-iam';
@@ -99,6 +103,13 @@ type IamRoleInfo = {
   cbInfo?: Build;
 };
 
+type IamPolicyInfo = {
+  name: string;
+  arn: string;
+  createDate: Date;
+  attachmentCount: number;
+};
+
 type RdsInstanceInfo = {
   identifier: string;
   region: string;
@@ -114,6 +125,7 @@ type ReportEntry = {
   stacks: Record<string, StackInfo>;
   buckets: Record<string, S3BucketInfo>;
   roles: Record<string, IamRoleInfo>;
+  policies?: IamPolicyInfo[];
   instances: Record<string, RdsInstanceInfo>;
 };
 
@@ -136,6 +148,7 @@ const BUCKET_TEST_REGEX = /test/;
 const IAM_TEST_REGEX =
   /!RotateE2eAwsToken-e2eTestContextRole|-integtest$|^amplify-|^eu-|^us-|^ap-|^auth-exhaustive-tests|rds-schema-inspector-integtest|^amplify_e2e_tests_lambda|^JsonMockStack-jsonMockApi|^SubscriptionAuth|^cdkamplifytable[0-9]*-|^MutationConditionTest-|^SearchableAuth|^SubscriptionRTFTests-|^NonModelAuthV2FunctionTransformerTests-|^MultiAuthV2Transformer|^FunctionTransformerTests|-integtest-/;
 const RDS_TEST_REGEX = /integtest/;
+const IAM_POLICY_TEST_REGEX = /rds-schema-inspector|integtest-execution-role-policy/;
 const STALE_DURATION_MS = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
 
 const staleHorizonDate = new Date(Date.now() - STALE_DURATION_MS);
@@ -146,6 +159,29 @@ const staleHorizonDate = new Date(Date.now() - STALE_DURATION_MS);
 const handleExpiredTokenException = (): void => {
   console.log('Token expired. Exiting...');
   process.exit();
+};
+
+/**
+ * Check if a region is enabled for the given account. Uses STS GetCallerIdentity as a lightweight check.
+ * Disabled opt-in regions will throw UnrecognizedClientException or InvalidClientTokenId.
+ */
+const isRegionEnabled = async (region: string, account: AWSAccountInfo): Promise<boolean> => {
+  try {
+    const sts = new STSClient({ region, credentials: account.credentials });
+    await sts.send(new GetCallerIdentityCommand({}));
+    return true;
+  } catch (e: any) {
+    if (
+      e.name === 'UnrecognizedClientException' ||
+      e.name === 'InvalidClientTokenId' ||
+      e.message?.includes('not enabled') ||
+      e.message?.includes('not opted in')
+    ) {
+      return false;
+    }
+    // Other errors (network, throttling) — assume region is enabled
+    return true;
+  }
 };
 
 /**
@@ -211,6 +247,42 @@ const getOrphanTestIamRoles = async (account: AWSAccountInfo): Promise<IamRoleIn
 };
 
 /**
+ * Get all customer-managed IAM policies in the account that match test patterns and are stale.
+ * Paginates through all policies using Marker-based pagination.
+ */
+const getOrphanTestIamPolicies = async (account: AWSAccountInfo): Promise<IamPolicyInfo[]> => {
+  const iamClient = new IAMClient({ credentials: account.credentials });
+  const policies: IamPolicyInfo[] = [];
+  let marker: string | undefined;
+
+  do {
+    const response = await iamClient.send(
+      new ListPoliciesCommand({
+        Scope: 'Local',
+        ...(marker ? { Marker: marker } : {}),
+      }),
+    );
+
+    for (const policy of response.Policies ?? []) {
+      const isTestPolicy = policy.PolicyName?.match(IAM_POLICY_TEST_REGEX);
+      const isStale = policy.CreateDate && before(policy.CreateDate, staleHorizonDate);
+      if (isTestPolicy && isStale) {
+        policies.push({
+          name: policy.PolicyName,
+          arn: policy.Arn,
+          createDate: policy.CreateDate,
+          attachmentCount: policy.AttachmentCount ?? 0,
+        });
+      }
+    }
+
+    marker = response.IsTruncated ? response.Marker : undefined;
+  } while (marker);
+
+  return policies;
+};
+
+/**
  * Get all RDS instances in the account, and filter down to the ones we consider stale.
  */
 const getOrphanRdsInstances = async (account: AWSAccountInfo, region: string): Promise<RdsInstanceInfo[]> => {
@@ -220,7 +292,7 @@ const getOrphanRdsInstances = async (account: AWSAccountInfo, region: string): P
     const staleInstances = listRdsInstanceResponse.DBInstances.filter(testInstanceStalenessFilter);
     return staleInstances.map((i) => ({ identifier: i.DBInstanceIdentifier, region }));
   } catch (e) {
-    if (e?.name === 'InvalidClientTokenId') {
+    if (e?.name === 'InvalidClientTokenId' || e?.name === 'UnrecognizedClientException') {
       // Do not fail the cleanup and continue
       // This is due to either child account or parent account not available in that region
       console.log(
@@ -371,7 +443,7 @@ const listStacks = async (client: CloudFormationClient, stackStatusFilter: Stack
       return { token: response.NextToken, items: response.StackSummaries };
     });
   } catch (e: any) {
-    if (e?.name === 'InvalidClientTokenId') {
+    if (e?.name === 'InvalidClientTokenId' || e?.name === 'UnrecognizedClientException') {
       console.log(`(opt-in region failure) Listing stacks failed with error with code ${e?.name}. Skipping.`);
       return [];
     }
@@ -693,6 +765,23 @@ const detachIamAttachedRolePolicy = async (
     console.log(`${generateAccountInfo(account, accountIndex)} Detach Iam Attached Role Policy ${policy.PolicyName}`);
     const iamClient = new IAMClient({ credentials: account.credentials });
     await iamClient.send(new DetachRolePolicyCommand({ RoleName: roleName, PolicyArn: policy.PolicyArn }));
+
+    // Also delete the policy after detaching to prevent orphaned policies
+    try {
+      const versionsResponse = await iamClient.send(new ListPolicyVersionsCommand({ PolicyArn: policy.PolicyArn }));
+      for (const version of versionsResponse.Versions ?? []) {
+        if (!version.IsDefaultVersion) {
+          await iamClient.send(new DeletePolicyVersionCommand({ PolicyArn: policy.PolicyArn, VersionId: version.VersionId }));
+        }
+      }
+      await iamClient.send(new DeletePolicyCommand({ PolicyArn: policy.PolicyArn }));
+      console.log(`${generateAccountInfo(account, accountIndex)} Deleted detached policy ${policy.PolicyName}`);
+    } catch (deleteErr) {
+      // Policy might be shared across roles or already deleted — continue gracefully
+      console.log(
+        `${generateAccountInfo(account, accountIndex)} Could not delete policy ${policy.PolicyName} after detach: ${deleteErr.message}`,
+      );
+    }
   } catch (e) {
     console.log(`${generateAccountInfo(account, accountIndex)} Detach iam role policy ${policy.PolicyName} failed with error ${e.message}`);
     if (e.name === 'ExpiredTokenException') {
@@ -715,6 +804,43 @@ const deleteIamRolePolicy = async (account: AWSAccountInfo, accountIndex: number
   } catch (e) {
     console.log('Error', JSON.stringify(e));
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting iam role policy ${policyName} failed with error ${e.message}`);
+    if (e.name === 'ExpiredTokenException') {
+      handleExpiredTokenException();
+    }
+  }
+};
+
+/**
+ * Delete orphaned IAM policies. For each policy, first delete all non-default policy versions,
+ * then delete the policy itself.
+ */
+const deleteIamPolicies = async (account: AWSAccountInfo, accountIndex: number, policies: IamPolicyInfo[]): Promise<void> => {
+  const batchSize = 20;
+  for (let i = 0; i < policies.length; i += batchSize) {
+    const policiesToDelete = policies.slice(i, i + batchSize);
+    await Promise.all(policiesToDelete.map((policy) => deleteIamPolicy(account, accountIndex, policy)));
+    await sleep(5000);
+  }
+  console.log(`${generateAccountInfo(account, accountIndex)} Deleted ${policies.length} IAM policies`);
+};
+
+const deleteIamPolicy = async (account: AWSAccountInfo, accountIndex: number, policy: IamPolicyInfo): Promise<void> => {
+  try {
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleting IAM Policy ${policy.name} (${policy.arn})`);
+    const iamClient = new IAMClient({ credentials: account.credentials });
+
+    // Delete all non-default policy versions first (required before policy deletion)
+    const versionsResponse = await iamClient.send(new ListPolicyVersionsCommand({ PolicyArn: policy.arn }));
+    for (const version of versionsResponse.Versions ?? []) {
+      if (!version.IsDefaultVersion) {
+        await iamClient.send(new DeletePolicyVersionCommand({ PolicyArn: policy.arn, VersionId: version.VersionId }));
+      }
+    }
+
+    await iamClient.send(new DeletePolicyCommand({ PolicyArn: policy.arn }));
+  } catch (e) {
+    console.log('Error', JSON.stringify(e));
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleting IAM policy ${policy.name} failed with error ${e.message}`);
     if (e.name === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
@@ -821,6 +947,10 @@ const deleteResources = async (
       await deleteIamRoles(account, accountIndex, Object.values(resources.roles));
     }
 
+    if (resources.policies) {
+      await deleteIamPolicies(account, accountIndex, resources.policies);
+    }
+
     if (resources.instances) {
       await deleteRdsInstances(account, accountIndex, Object.values(resources.instances));
     }
@@ -912,13 +1042,29 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
 };
 
 const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, filterPredicate: JobFilterPredicate): Promise<void> => {
-  const appPromises = testRegions.map((region) => getAmplifyApps(account, region));
-  const stackPromises = testRegions.map((region) => getStacks(account, region));
+  // Pre-filter regions: skip disabled opt-in regions to avoid crashes
+  const regionChecks = await Promise.all(
+    testRegions.map(async (region) => ({
+      region,
+      enabled: await isRegionEnabled(region, account),
+    })),
+  );
+  const enabledRegions = regionChecks.filter((r) => r.enabled).map((r) => r.region);
+  const disabledRegions = regionChecks.filter((r) => !r.enabled).map((r) => r.region);
+  if (disabledRegions.length > 0) {
+    console.log(
+      `${generateAccountInfo(account, accountIndex)} Skipping disabled regions: ${disabledRegions.join(', ')}`,
+    );
+  }
+
+  const appPromises = enabledRegions.map((region) => getAmplifyApps(account, region));
+  const stackPromises = enabledRegions.map((region) => getStacks(account, region));
   const bucketPromise = getS3Buckets(account);
   const orphanBucketPromise = getOrphanS3TestBuckets(account);
   const orphanIamRolesPromise = getOrphanTestIamRoles(account);
-  const orphanRdsInstancesPromise = testRegions.map((region) => getOrphanRdsInstances(account, region));
-  const cfnResourcesPromise = testRegions.map((region) => getAllCfnManagedResources(account, region));
+  const orphanIamPoliciesPromise = getOrphanTestIamPolicies(account);
+  const orphanRdsInstancesPromise = enabledRegions.map((region) => getOrphanRdsInstances(account, region));
+  const cfnResourcesPromise = enabledRegions.map((region) => getAllCfnManagedResources(account, region));
 
   const cfnManaged = setUnion(...(await Promise.all(cfnResourcesPromise)).flat());
 
@@ -927,12 +1073,32 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const buckets = (await bucketPromise).filter((x) => !cfnManaged.has(resourceId('AWS::S3::Bucket', x.name)));
   const orphanBuckets = (await orphanBucketPromise).filter((x) => !cfnManaged.has(resourceId('AWS::S3::Bucket', x.name)));
   const orphanIamRoles = (await orphanIamRolesPromise).filter((x) => !cfnManaged.has(resourceId('AWS::IAM::Role', x.name)));
+  const orphanIamPolicies = await orphanIamPoliciesPromise;
   const orphanRdsInstances = (await Promise.all(orphanRdsInstancesPromise))
     .flat()
     .filter((b) => !cfnManaged.has(resourceId('AWS::RDS::DBInstance', b.identifier)));
 
+  console.log(
+    `${generateAccountInfo(account, accountIndex)} Found ${orphanIamPolicies.length} orphaned IAM policies matching test patterns`,
+  );
+
   const allResources = await mergeResourcesByCCIJob(apps, stacks, buckets, orphanBuckets, orphanIamRoles, orphanRdsInstances);
   const staleResources = _.pickBy(allResources, filterPredicate);
+
+  // Attach orphaned IAM policies to the ORPHAN report entry for cleanup
+  if (orphanIamPolicies.length > 0) {
+    if (!staleResources[ORPHAN]) {
+      staleResources[ORPHAN] = {
+        jobId: ORPHAN,
+        amplifyApps: {},
+        stacks: {},
+        buckets: {},
+        roles: {},
+        instances: {},
+      };
+    }
+    staleResources[ORPHAN].policies = orphanIamPolicies;
+  }
 
   generateReport(staleResources, accountIndex);
   if (process.env.SKIP_DELETE) {
