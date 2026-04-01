@@ -204,20 +204,18 @@ const withRetry = async <T>(fn: () => Promise<T>, label: string, maxRetries = 3,
       throw e;
     }
   }
+  // Unreachable — last attempt always throws in catch block above. Kept to satisfy TypeScript return type.
   throw new Error(`withRetry: ${label} exhausted all ${maxRetries} attempts`);
 };
 
 /**
  * Wrap a resource-gathering function so transient errors return empty results instead of throwing.
- * Auth errors are still rethrown.
+ * Auth errors are rethrown by withRetry before they reach this function.
  */
 const safeGather = async <T>(fn: () => Promise<T[]>, label: string, maxRetries = 3): Promise<T[]> => {
   try {
     return await withRetry(fn, label, maxRetries);
   } catch (e: any) {
-    if (isAuthError(e)) {
-      throw e;
-    }
     console.warn(`[WARN] ${label} failed after ${maxRetries} retries, returning empty results: ${e.message}`);
     return [];
   }
@@ -1143,7 +1141,6 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
     try {
       return await withRetry(() => getAllCfnManagedResources(account, region), `${prefix} getAllCfnManagedResources(${region})`);
     } catch (e: any) {
-      if (isAuthError(e)) throw e;
       console.warn(`[WARN] ${prefix} getAllCfnManagedResources(${region}) failed, returning empty set: ${e.message}`);
       return new Set<string>();
     }
