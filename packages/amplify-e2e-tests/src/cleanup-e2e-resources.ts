@@ -24,7 +24,7 @@ import {
   Role,
   AttachedPolicy,
 } from '@aws-sdk/client-iam';
-import { RDSClient, DescribeDBInstancesCommand, DeleteDBInstanceCommand, DBInstance } from '@aws-sdk/client-rds';
+import { RDSClient, DescribeDBInstancesCommand, DeleteDBInstanceCommand, DBInstance, DescribeDBClustersCommand, DeleteDBClusterCommand, DBCluster } from '@aws-sdk/client-rds';
 import {
   CloudFormationClient,
   DescribeStacksCommand,
@@ -119,6 +119,11 @@ type RdsInstanceInfo = {
   region: string;
 };
 
+type RdsClusterInfo = {
+  identifier: string;
+  region: string;
+};
+
 type ReportEntry = {
   jobId?: string;
   buildBatchArn?: string;
@@ -131,6 +136,7 @@ type ReportEntry = {
   roles: Record<string, IamRoleInfo>;
   policies?: IamPolicyInfo[];
   instances: Record<string, RdsInstanceInfo>;
+  clusters?: RdsClusterInfo[];
 };
 
 type JobFilterPredicate = (job: ReportEntry) => boolean;
@@ -373,6 +379,32 @@ const getOrphanRdsInstances = async (account: AWSAccountInfo, region: string): P
       return [];
     } else {
       console.log('Irrecoverable error in getOrphanedRdsInstances', JSON.stringify(e));
+      throw e;
+    }
+  }
+};
+
+/**
+ * Get all Aurora DB clusters in the account/region that match test patterns and are stale.
+ */
+const getOrphanRdsClusters = async (account: AWSAccountInfo, region: string): Promise<RdsClusterInfo[]> => {
+  try {
+    const rdsClient = new RDSClient({ credentials: account.credentials, region });
+    const response = await rdsClient.send(new DescribeDBClustersCommand({}));
+    const staleClusters = (response.DBClusters ?? []).filter((cluster) => {
+      const isTestResource = cluster.DBClusterIdentifier?.match(RDS_TEST_REGEX);
+      const isStale = cluster.Status === 'available' && cluster.ClusterCreateTime && before(cluster.ClusterCreateTime, staleHorizonDate);
+      return !!isTestResource && !!isStale;
+    });
+    return staleClusters.map((c) => ({ identifier: c.DBClusterIdentifier!, region }));
+  } catch (e: any) {
+    if (e?.name === 'InvalidClientTokenId' || e?.name === 'UnrecognizedClientException') {
+      console.log(
+        `(opt-in region failure) Listing RDS clusters for account ${account.accountId}-${region} failed with code ${e?.name}. Skipping.`,
+      );
+      return [];
+    } else {
+      console.log('Irrecoverable error in getOrphanRdsClusters', JSON.stringify(e));
       throw e;
     }
   }
@@ -977,6 +1009,24 @@ const deleteRdsInstance = async (account: AWSAccountInfo, accountIndex: number, 
   }
 };
 
+const deleteRdsClusters = async (account: AWSAccountInfo, accountIndex: number, clusters: RdsClusterInfo[]): Promise<void> => {
+  await Promise.all(clusters.map((cluster) => deleteRdsCluster(account, accountIndex, cluster)));
+};
+
+const deleteRdsCluster = async (account: AWSAccountInfo, accountIndex: number, cluster: RdsClusterInfo): Promise<void> => {
+  const { identifier, region } = cluster;
+  console.log(`${generateAccountInfo(account, accountIndex)} Deleting Aurora cluster ${identifier}`);
+  try {
+    const rdsClient = new RDSClient({ credentials: account.credentials, region });
+    await rdsClient.send(new DeleteDBClusterCommand({ DBClusterIdentifier: identifier, SkipFinalSnapshot: true }));
+  } catch (e: any) {
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleting Aurora cluster ${identifier} failed: ${e.message}`);
+    if (e.name === 'ExpiredTokenException') {
+      handleExpiredTokenException();
+    }
+  }
+};
+
 const deleteCfnStacks = async (account: AWSAccountInfo, accountIndex: number, stacks: StackInfo[]): Promise<void> => {
   await Promise.all(stacks.map((stack) => deleteCfnStack(account, accountIndex, stack)));
 };
@@ -1025,6 +1075,7 @@ const deleteResources = async (
   let rolesDeleted = 0;
   let policiesDeleted = 0;
   let instancesDeleted = 0;
+  let clustersDeleted = 0;
   const cap = MAX_DELETIONS_PER_ACCOUNT_PER_RESOURCE;
 
   for (const jobId of Object.keys(staleResources)) {
@@ -1065,11 +1116,17 @@ const deleteResources = async (
       await deleteRdsInstances(account, accountIndex, instances);
       instancesDeleted += instances.length;
     }
+
+    if (resources.clusters && clustersDeleted < cap) {
+      const clusters = resources.clusters.slice(0, cap - clustersDeleted);
+      await deleteRdsClusters(account, accountIndex, clusters);
+      clustersDeleted += clusters.length;
+    }
   }
 
   const prefix = generateAccountInfo(account, accountIndex);
   console.log(
-    `${prefix} Deletion caps: apps=${appsDeleted}/${cap}, stacks=${stacksDeleted}/${cap}, buckets=${bucketsDeleted}/${cap}, roles=${rolesDeleted}/${cap}, policies=${policiesDeleted}/${cap}, instances=${instancesDeleted}/${cap}`,
+    `${prefix} Deletion caps: apps=${appsDeleted}/${cap}, stacks=${stacksDeleted}/${cap}, buckets=${bucketsDeleted}/${cap}, roles=${rolesDeleted}/${cap}, policies=${policiesDeleted}/${cap}, instances=${instancesDeleted}/${cap}, clusters=${clustersDeleted}/${cap}`,
   );
 };
 
@@ -1185,6 +1242,9 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const orphanRdsInstancesPromise = enabledRegions.map((region) =>
     safeGather(() => getOrphanRdsInstances(account, region), `${prefix} getOrphanRdsInstances(${region})`),
   );
+  const orphanRdsClustersPromise = enabledRegions.map((region) =>
+    safeGather(() => getOrphanRdsClusters(account, region), `${prefix} getOrphanRdsClusters(${region})`),
+  );
   const cfnResourcesPromise = enabledRegions.map(async (region) => {
     try {
       return await withRetry(() => getAllCfnManagedResources(account, region), `${prefix} getAllCfnManagedResources(${region})`);
@@ -1220,8 +1280,16 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
     .flatMap((r) => r.value)
     .filter((b) => !cfnManaged.has(resourceId('AWS::RDS::DBInstance', b.identifier)));
 
+  const orphanRdsClusters = (await Promise.allSettled(orphanRdsClustersPromise))
+    .filter((r): r is PromiseFulfilledResult<RdsClusterInfo[]> => r.status === 'fulfilled')
+    .flatMap((r) => r.value)
+    .filter((c) => !cfnManaged.has(resourceId('AWS::RDS::DBCluster', c.identifier)));
+
   console.log(
     `${prefix} Found ${orphanIamPolicies.length} orphaned IAM policies matching test patterns`,
+  );
+  console.log(
+    `${prefix} Found ${orphanRdsClusters.length} orphaned Aurora clusters matching test patterns`,
   );
 
   const allResources = await mergeResourcesByCCIJob(apps, stacks, buckets, orphanBuckets, orphanIamRoles, orphanRdsInstances);
@@ -1240,6 +1308,21 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
       };
     }
     staleResources[ORPHAN].policies = orphanIamPolicies;
+  }
+
+  // Attach orphaned Aurora clusters to the ORPHAN report entry for cleanup
+  if (orphanRdsClusters.length > 0) {
+    if (!staleResources[ORPHAN]) {
+      staleResources[ORPHAN] = {
+        jobId: ORPHAN,
+        amplifyApps: {},
+        stacks: {},
+        buckets: {},
+        roles: {},
+        instances: {},
+      };
+    }
+    staleResources[ORPHAN].clusters = orphanRdsClusters;
   }
 
   generateReport(staleResources, accountIndex);
