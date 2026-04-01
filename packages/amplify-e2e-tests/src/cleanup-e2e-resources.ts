@@ -151,6 +151,7 @@ const IAM_TEST_REGEX =
 const RDS_TEST_REGEX = /integtest/;
 const IAM_POLICY_TEST_REGEX = /rds-schema-inspector|integtest-execution-role-policy/;
 const STALE_DURATION_MS = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
+const MAX_DELETIONS_PER_ACCOUNT_PER_RESOURCE = 100;
 
 // Account 921844522651 is an OPS test account not in the AWS Organization.
 // Include it explicitly so the reaper cleans it up.
@@ -1001,32 +1002,58 @@ const deleteResources = async (
   accountIndex: number,
   staleResources: Record<string, ReportEntry>,
 ): Promise<void> => {
+  let appsDeleted = 0;
+  let stacksDeleted = 0;
+  let bucketsDeleted = 0;
+  let rolesDeleted = 0;
+  let policiesDeleted = 0;
+  let instancesDeleted = 0;
+  const cap = MAX_DELETIONS_PER_ACCOUNT_PER_RESOURCE;
+
   for (const jobId of Object.keys(staleResources)) {
     const resources = staleResources[jobId];
-    if (resources.amplifyApps) {
-      await deleteAmplifyApps(account, accountIndex, Object.values(resources.amplifyApps));
+
+    if (resources.amplifyApps && appsDeleted < cap) {
+      const apps = Object.values(resources.amplifyApps).slice(0, cap - appsDeleted);
+      await deleteAmplifyApps(account, accountIndex, apps);
+      appsDeleted += apps.length;
     }
 
-    if (resources.stacks) {
-      await deleteCfnStacks(account, accountIndex, Object.values(resources.stacks));
+    if (resources.stacks && stacksDeleted < cap) {
+      const stacks = Object.values(resources.stacks).slice(0, cap - stacksDeleted);
+      await deleteCfnStacks(account, accountIndex, stacks);
+      stacksDeleted += stacks.length;
     }
 
-    if (resources.buckets) {
-      await deleteBuckets(account, accountIndex, Object.values(resources.buckets));
+    if (resources.buckets && bucketsDeleted < cap) {
+      const buckets = Object.values(resources.buckets).slice(0, cap - bucketsDeleted);
+      await deleteBuckets(account, accountIndex, buckets);
+      bucketsDeleted += buckets.length;
     }
 
-    if (resources.roles) {
-      await deleteIamRoles(account, accountIndex, Object.values(resources.roles));
+    if (resources.roles && rolesDeleted < cap) {
+      const roles = Object.values(resources.roles).slice(0, cap - rolesDeleted);
+      await deleteIamRoles(account, accountIndex, roles);
+      rolesDeleted += roles.length;
     }
 
-    if (resources.policies) {
-      await deleteIamPolicies(account, accountIndex, resources.policies);
+    if (resources.policies && policiesDeleted < cap) {
+      const policies = resources.policies.slice(0, cap - policiesDeleted);
+      await deleteIamPolicies(account, accountIndex, policies);
+      policiesDeleted += policies.length;
     }
 
-    if (resources.instances) {
-      await deleteRdsInstances(account, accountIndex, Object.values(resources.instances));
+    if (resources.instances && instancesDeleted < cap) {
+      const instances = Object.values(resources.instances).slice(0, cap - instancesDeleted);
+      await deleteRdsInstances(account, accountIndex, instances);
+      instancesDeleted += instances.length;
     }
   }
+
+  const prefix = generateAccountInfo(account, accountIndex);
+  console.log(
+    `${prefix} Deletion caps: apps=${appsDeleted}/${cap}, stacks=${stacksDeleted}/${cap}, buckets=${bucketsDeleted}/${cap}, roles=${rolesDeleted}/${cap}, policies=${policiesDeleted}/${cap}, instances=${instancesDeleted}/${cap}`,
+  );
 };
 
 /**
