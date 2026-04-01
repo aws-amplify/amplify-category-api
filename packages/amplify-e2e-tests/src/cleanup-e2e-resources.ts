@@ -797,7 +797,7 @@ const deleteIamRoles = async (account: AWSAccountInfo, accountIndex: number, rol
   for (let i = 0; i < roles.length; i += batchSize) {
     const rolesToDelete = roles.slice(i, i + batchSize);
     await Promise.all(rolesToDelete.map((role) => deleteIamRole(account, accountIndex, role)));
-    await sleep(5000);
+    await sleep(1000);
   }
 };
 
@@ -888,7 +888,7 @@ const deleteIamPolicies = async (account: AWSAccountInfo, accountIndex: number, 
   for (let i = 0; i < policies.length; i += batchSize) {
     const policiesToDelete = policies.slice(i, i + batchSize);
     await Promise.all(policiesToDelete.map((policy) => deleteIamPolicy(account, accountIndex, policy)));
-    await sleep(5000);
+    await sleep(1000);
   }
   console.log(`${generateAccountInfo(account, accountIndex)} Deleted ${policies.length} IAM policies`);
 };
@@ -1008,6 +1008,11 @@ const deleteResources = async (
 
   for (const jobId of Object.keys(staleResources)) {
     const resources = staleResources[jobId];
+    if (resources.policies && policiesDeleted < cap) {
+      const policies = resources.policies.slice(0, cap - policiesDeleted);
+      await deleteIamPolicies(account, accountIndex, policies);
+      policiesDeleted += policies.length;
+    }
 
     if (resources.amplifyApps && appsDeleted < cap) {
       const apps = Object.values(resources.amplifyApps).slice(0, cap - appsDeleted);
@@ -1033,11 +1038,6 @@ const deleteResources = async (
       rolesDeleted += roles.length;
     }
 
-    if (resources.policies && policiesDeleted < cap) {
-      const policies = resources.policies.slice(0, cap - policiesDeleted);
-      await deleteIamPolicies(account, accountIndex, policies);
-      policiesDeleted += policies.length;
-    }
 
     if (resources.instances && instancesDeleted < cap) {
       const instances = Object.values(resources.instances).slice(0, cap - instancesDeleted);
@@ -1185,13 +1185,15 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
     .flatMap((r) => r.value);
 
   console.log(`${prefix} Gathering account-level resources...`);
-  const buckets = (await safeGather(() => getS3Buckets(account), `${prefix} getS3Buckets`))
-    .filter((x) => !cfnManaged.has(resourceId('AWS::S3::Bucket', x.name)));
-  const orphanBuckets = (await safeGather(() => getOrphanS3TestBuckets(account), `${prefix} getOrphanS3TestBuckets`))
-    .filter((x) => !cfnManaged.has(resourceId('AWS::S3::Bucket', x.name)));
-  const orphanIamRoles = (await safeGather(() => getOrphanTestIamRoles(account), `${prefix} getOrphanTestIamRoles`))
-    .filter((x) => !cfnManaged.has(resourceId('AWS::IAM::Role', x.name)));
-  const orphanIamPolicies = await safeGather(() => getOrphanTestIamPolicies(account), `${prefix} getOrphanTestIamPolicies`);
+  const [bucketsRaw, orphanBucketsRaw, orphanIamRolesRaw, orphanIamPolicies] = await Promise.all([
+    safeGather(() => getS3Buckets(account), `${prefix} getS3Buckets`),
+    safeGather(() => getOrphanS3TestBuckets(account), `${prefix} getOrphanS3TestBuckets`),
+    safeGather(() => getOrphanTestIamRoles(account), `${prefix} getOrphanTestIamRoles`),
+    safeGather(() => getOrphanTestIamPolicies(account), `${prefix} getOrphanTestIamPolicies`),
+  ]);
+  const buckets = bucketsRaw.filter((x) => !cfnManaged.has(resourceId('AWS::S3::Bucket', x.name)));
+  const orphanBuckets = orphanBucketsRaw.filter((x) => !cfnManaged.has(resourceId('AWS::S3::Bucket', x.name)));
+  const orphanIamRoles = orphanIamRolesRaw.filter((x) => !cfnManaged.has(resourceId('AWS::IAM::Role', x.name)));
   const orphanRdsInstances = (await Promise.allSettled(orphanRdsInstancesPromise))
     .filter((r): r is PromiseFulfilledResult<RdsInstanceInfo[]> => r.status === 'fulfilled')
     .flatMap((r) => r.value)
@@ -1268,7 +1270,7 @@ const cleanup = async (): Promise<void> => {
   const succeededAccounts: string[] = [];
   let hasAuthError = false;
 
-  for (const batch of chunk(2, accounts)) {
+  for (const batch of chunk(4, accounts)) {
     const batchResults = await Promise.allSettled(
       batch.map(async (account, i) => {
         console.log(`${generateAccountInfo(account, i)} is under cleanup`);
