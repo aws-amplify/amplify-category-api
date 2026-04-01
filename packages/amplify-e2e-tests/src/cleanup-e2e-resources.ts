@@ -13,8 +13,11 @@ import {
   ListRolePoliciesCommand,
   ListPoliciesCommand,
   ListPolicyVersionsCommand,
+  ListEntitiesForPolicyCommand,
   DeleteRoleCommand,
   DetachRolePolicyCommand,
+  DetachUserPolicyCommand,
+  DetachGroupPolicyCommand,
   DeleteRolePolicyCommand,
   DeletePolicyCommand,
   DeletePolicyVersionCommand,
@@ -895,8 +898,26 @@ const deleteIamPolicies = async (account: AWSAccountInfo, accountIndex: number, 
 
 const deleteIamPolicy = async (account: AWSAccountInfo, accountIndex: number, policy: IamPolicyInfo): Promise<void> => {
   try {
-    console.log(`${generateAccountInfo(account, accountIndex)} Deleting IAM Policy ${policy.name} (${policy.arn})`);
+    const prefix = generateAccountInfo(account, accountIndex);
+    console.log(`${prefix} Deleting IAM Policy ${policy.name} (${policy.arn})`);
     const iamClient = new IAMClient({ credentials: account.credentials });
+
+    // Detach from all attached entities first to avoid DeleteConflictException
+    if (policy.attachmentCount > 0) {
+      const entities = await iamClient.send(new ListEntitiesForPolicyCommand({ PolicyArn: policy.arn }));
+      for (const role of entities.PolicyRoles ?? []) {
+        console.log(`${prefix} Detaching policy ${policy.name} from role ${role.RoleName}`);
+        await iamClient.send(new DetachRolePolicyCommand({ RoleName: role.RoleName, PolicyArn: policy.arn }));
+      }
+      for (const user of entities.PolicyUsers ?? []) {
+        console.log(`${prefix} Detaching policy ${policy.name} from user ${user.UserName}`);
+        await iamClient.send(new DetachUserPolicyCommand({ UserName: user.UserName, PolicyArn: policy.arn }));
+      }
+      for (const group of entities.PolicyGroups ?? []) {
+        console.log(`${prefix} Detaching policy ${policy.name} from group ${group.GroupName}`);
+        await iamClient.send(new DetachGroupPolicyCommand({ GroupName: group.GroupName, PolicyArn: policy.arn }));
+      }
+    }
 
     // Delete all non-default policy versions first (required before policy deletion)
     const versionsResponse = await iamClient.send(new ListPolicyVersionsCommand({ PolicyArn: policy.arn }));
