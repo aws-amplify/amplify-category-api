@@ -53,6 +53,7 @@ import { ConfiguredRetryStrategy } from '@smithy/util-retry';
 import { paginate } from './utils/retries';
 
 type TestRegion = {
+  disabled?: boolean;
   name: string;
   optIn: boolean;
 };
@@ -60,7 +61,7 @@ type TestRegion = {
 const repoRoot = path.join(__dirname, '..', '..', '..');
 const supportedRegionsPath = path.join(repoRoot, 'scripts', 'e2e-test-regions.json');
 const suportedRegions: TestRegion[] = JSON.parse(fs.readFileSync(supportedRegionsPath, 'utf-8'));
-const testRegions = suportedRegions.map((region) => region.name);
+const testRegions = suportedRegions.filter((region) => !region.disabled).map((region) => region.name);
 
 const retryStrategy = new ConfiguredRetryStrategy(
   10, // max attempts.
