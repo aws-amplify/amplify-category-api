@@ -153,10 +153,6 @@ const IAM_POLICY_TEST_REGEX = /rds-schema-inspector|integtest-execution-role-pol
 const STALE_DURATION_MS = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
 const MAX_DELETIONS_PER_ACCOUNT_PER_RESOURCE = 100;
 
-// Account 921844522651 is an OPS test account not in the AWS Organization.
-// Include it explicitly so the reaper cleans it up.
-const ADDITIONAL_CLEANUP_ACCOUNTS = ['921844522651'];
-
 const staleHorizonDate = new Date(Date.now() - STALE_DURATION_MS);
 
 /**
@@ -1103,7 +1099,6 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
 
   try {
     const orgAccounts = await orgApi.send(new ListAccountsCommand({}));
-    const orgAccountIds = new Set(orgAccounts.Accounts.map((a) => a.Id));
     const accountCredentialPromises = orgAccounts.Accounts.map(async (account) => {
       if (account.Id === parentAccountIdentity.Account) {
         return {
@@ -1125,30 +1120,7 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
         }),
       };
     });
-    const accounts = await Promise.all(accountCredentialPromises);
-
-    // Merge in any additional hardcoded accounts not already discovered via the org
-    const additionalAccountIds = ADDITIONAL_CLEANUP_ACCOUNTS.filter((id) => !orgAccountIds.has(id));
-    if (additionalAccountIds.length > 0) {
-      console.log(`[INFO] Adding additional cleanup accounts not in org: ${additionalAccountIds.join(', ')}`);
-      for (const accountId of additionalAccountIds) {
-        accounts.push({
-          accountId,
-          credentials: fromTemporaryCredentials({
-            params: {
-              RoleArn: `arn:aws:iam::${accountId}:role/OrganizationAccountAccessRole`,
-              RoleSessionName: `cleanupSession${cleanupTag}`,
-            },
-            masterCredentials: parentAccountCreds,
-            clientConfig: {
-              region: 'us-east-1',
-            },
-          }),
-        });
-      }
-    }
-
-    return accounts;
+    return await Promise.all(accountCredentialPromises);
   } catch (e) {
     console.log('Error', JSON.stringify(e));
     console.error(e);
