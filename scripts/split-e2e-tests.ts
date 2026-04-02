@@ -475,11 +475,17 @@ const main = (): void => {
         ...DEFAULT_VARIABLES,
       },
     },
-    'depend-on': builds.length > 0 ? [builds[0].identifier] : 'publish_to_local_registry',
+    'depend-on': ['build_linux'],
   };
 
+  // Make test jobs depend on cleanup so cleanup runs before any tests start
+  builds = builds.map((build) => {
+    const existingDeps = Array.isArray(build['depend-on']) ? build['depend-on'] : build['depend-on'] ? [build['depend-on']] : [];
+    return { ...build, 'depend-on': [...existingDeps, 'cleanup_e2e_resources'] };
+  });
+
   console.log(`Total number of splitted jobs: ${builds.length}`);
-  const currentBatch = [...baseBuildGraph, ...builds, cleanupResources];
+  const currentBatch = [...baseBuildGraph, cleanupResources, ...builds];
   configBase.batch['build-graph'] = currentBatch;
 
   const outputPath = filteredTests.includes(DEBUG_FLAG) ? CODEBUILD_DEBUG_CONFIG_PATH : CODEBUILD_GENERATE_CONFIG_PATH;
