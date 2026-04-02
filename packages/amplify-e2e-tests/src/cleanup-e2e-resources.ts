@@ -544,7 +544,7 @@ const listStacks = async (client: CloudFormationClient, stackStatusFilter: Stack
           StackStatusFilter: stackStatusFilter,
         }),
       );
-      return { token: response.NextToken, items: response.StackSummaries };
+      return { nextPage: response.NextToken, items: response.StackSummaries };
     });
   } catch (e: any) {
     if (e?.name === 'InvalidClientTokenId' || e?.name === 'UnrecognizedClientException') {
@@ -559,14 +559,16 @@ const getStacks = async (account: AWSAccountInfo, region: string): Promise<Stack
   const cfnClient = new CloudFormationClient({ credentials: account.credentials, region, retryStrategy });
   const stacks = await listStacks(cfnClient, STABLE_STATUSES);
   const results: StackInfo[] = [];
+  const seen = new Set<string>();
 
   // We are interested in only the root stacks that are deployed by amplify-cli
   const rootStacks = (stacks ?? []).filter((stack) => !stack.RootId).filter(testStackStalenessFilter);
   for (const stack of rootStacks) {
     try {
       const details = await getStackDetails(stack.StackName, account, region);
-      if (details) {
-        results[details.stackId] = details;
+      if (details && !seen.has(details.stackId)) {
+        seen.add(details.stackId);
+        results.push(details);
       }
     } catch {
       // don't want to barf and fail e2e tests
