@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.16.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.15.0...amplify-graphql-api-construct-tests@1.16.0) (2026-03-24)
+
+### Bug Fixes
+
+- add credential refresh to migration/deploy-velocity tests, rebalance e2e workflow batches ([45c9ce0](https://github.com/aws-amplify/amplify-category-api/commit/45c9ce075254516cef22223fc44d83c918a7c926))
+- address all e2e test failures - credential refresh, cleanup error handling, OOM, timeouts, region assignments ([b2b0446](https://github.com/aws-amplify/amplify-category-api/commit/b2b044627fce327df5b5e4e2cc6967c3cb9f1fe9))
+- bump deploy velocity thresholds and test timeouts for flaky GSI tests ([a7a8717](https://github.com/aws-amplify/amplify-category-api/commit/a7a871704896f416a46a5525ade47490383de5f9))
+- bump single-gsi-single-record deploy velocity threshold to 20 minutes ([ba2fb3d](https://github.com/aws-amplify/amplify-category-api/commit/ba2fb3db5cb1403ad9276bb70b2826ce940cf497))
+- comprehensive e2e reliability improvements ([a0d71e2](https://github.com/aws-amplify/amplify-category-api/commit/a0d71e2e1b3fb20b7ffe1a1a5b72655179d1f6c8))
+- **e2e:** add credential refresh to long-running tests to prevent ExpiredToken failures ([300b453](https://github.com/aws-amplify/amplify-category-api/commit/300b453c7f1cb696807a14b094d04dc16364a53a))
+- **e2e:** fix e2e rds tests, conversation tests and sql tests ([#3431](https://github.com/aws-amplify/amplify-category-api/issues/3431)) ([43ef58e](https://github.com/aws-amplify/amplify-category-api/commit/43ef58e5c0867035dfc674aa1851ed13f19393d9))
+- increase cdkDeploy noOutputTimeout for amplify-table-1 GSI update ([3390b13](https://github.com/aws-amplify/amplify-category-api/commit/3390b13c9afbd2d63d8ec1993561dbece363650a))
+- increase cdkDeploy noOutputTimeout for amplify-table-5 GSI replacement ([5399866](https://github.com/aws-amplify/amplify-category-api/commit/53998668879058d2e4c1e7b5da79e4bc39f477f9))
+- run prettier on amplify-table test files ([04b5928](https://github.com/aws-amplify/amplify-category-api/commit/04b59288c5c75dbe6434fcb6a50f434ef9590ceb))
+- separate cdkDestroy and clearDatabase error handling to prevent data leaks between test suites ([44cbbf1](https://github.com/aws-amplify/amplify-category-api/commit/44cbbf1a0814e634e4f284656bf3d670926e6354))
+
+### Features
+
+- restore region rebalancing, increase cdkDeploy/cdkDestroy default no-output timeout to 15 min ([ffb5dd2](https://github.com/aws-amplify/amplify-category-api/commit/ffb5dd29f97dcf1de485fe5f3bccc3d5dffb6bc0))
+
+### Reverts
+
+- Revert "chore(release): Publish [ci skip]" ([dd1f693](https://github.com/aws-amplify/amplify-category-api/commit/dd1f693d8ad6059d6a53af117b16505f40e1e657))
+- remove DURATION_35_MINUTES and custom timeout overrides for amplify-table-5 and replace-2-gsis ([3522225](https://github.com/aws-amplify/amplify-category-api/commit/352222575857ed5494edcc1d8295b3be70f51355))
+
 # [1.15.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.14.5...amplify-graphql-api-construct-tests@1.15.0) (2026-02-05)
 
 ### Features
