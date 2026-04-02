@@ -69,7 +69,6 @@ export type InitCDKProjectProps = {
   construct?: CdkConstruct;
   cdkContext?: Record<string, string>;
   cdkVersion?: string;
-  cdkCliVersion?: string;
   additionalDependencies?: Array<string>;
 };
 
@@ -81,7 +80,7 @@ export type InitCDKProjectProps = {
  * @returns a promise which resolves to the stack name
  */
 export const initCDKProject = async (cwd: string, templatePath: string, props?: InitCDKProjectProps): Promise<string> => {
-  const { cdkVersion = '2.224.0', cdkCliVersion = '2.1112.0', additionalDependencies = [] } = props ?? {};
+  const { cdkVersion = '2.224.0', additionalDependencies = [] } = props ?? {};
 
   await spawn(getNpxPath(), ['cdk', 'init', 'app', '--language', 'typescript'], {
     cwd,
@@ -100,7 +99,7 @@ export const initCDKProject = async (cwd: string, templatePath: string, props?: 
 
   copyTemplateDirectory(cwd, templatePath);
 
-  const deps = [getPackagedConstructPath(props?.construct ?? 'GraphqlApi'), `aws-cdk-lib@${cdkVersion}`, `aws-cdk@${cdkCliVersion}`, ...additionalDependencies];
+  const deps = [getPackagedConstructPath(props?.construct ?? 'GraphqlApi'), `aws-cdk-lib@${cdkVersion}`, ...additionalDependencies];
   await spawn('npm', ['install', ...deps], { cwd, stripColors: true }).runAsync();
 
   return JSON.parse(readFileSync(path.join(cwd, 'package.json'), 'utf8')).name.replace(/_/g, '-');
