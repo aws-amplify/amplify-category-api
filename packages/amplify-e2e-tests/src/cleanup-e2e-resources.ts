@@ -132,6 +132,87 @@ type AWSAccountInfo = {
   credentials: ReturnType<typeof fromTemporaryCredentials>;
 };
 
+/**
+ * Determines if an error is transient and should be retried.
+ * Covers HTTP 5xx responses (which may return HTML bodies causing JSON parse errors),
+ * network timeouts, and throttling.
+ */
+const isTransientError = (e: any): boolean => {
+  // SyntaxError from JSON parsing an HTML error page (e.g., 504 Gateway Timeout)
+  if (e instanceof SyntaxError && (
+    e.message?.includes('Unexpected token') ||
+    e.message?.includes('Unexpected end of JSON')
+  )) {
+    return true;
+  }
+  // AWS SDK wraps 5xx status codes in errors with these properties
+  const statusCode = e?.$metadata?.httpStatusCode ?? e?.statusCode;
+  if (statusCode && statusCode >= 500) {
+    return true;
+  }
+  // Explicit error names for transient failures
+  const transientErrorNames = [
+    'TimeoutError',
+    'NetworkingError',
+    'ECONNRESET',
+    'ETIMEDOUT',
+    'InternalServerException',
+    'ServiceUnavailableException',
+    'TooManyRequestsException',
+    'ThrottlingException',
+    'Throttling',
+  ];
+  if (transientErrorNames.includes(e?.name)) {
+    return true;
+  }
+  // Check error message for common transient patterns
+  const msg = e?.message ?? '';
+  if (/socket hang up|ECONNREFUSED|network|timeout/i.test(msg)) {
+    return true;
+  }
+  return false;
+};
+
+/**
+ * Retry an async operation with exponential backoff for transient errors.
+ * @param fn The async function to retry
+ * @param label A descriptive label for logging
+ * @param maxRetries Maximum number of retry attempts (default: 3)
+ */
+const withRetry = async <T>(fn: () => Promise<T>, label: string, maxRetries: number = 3): Promise<T> => {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (e: any) {
+      const isLastAttempt = attempt === maxRetries - 1;
+      if (!isLastAttempt && isTransientError(e)) {
+        const delayMs = Math.pow(2, attempt) * 1000;
+        console.log(`[withRetry] ${label}: transient error on attempt ${attempt + 1}/${maxRetries} (${e?.name ?? e?.message}), retrying in ${delayMs}ms...`);
+        await sleep(delayMs);
+      } else {
+        throw e;
+      }
+    }
+  }
+  throw new Error(`[withRetry] ${label}: exhausted all retries`);
+};
+
+/**
+ * Safely gather resources, returning a default value if the operation fails.
+ * This prevents a single account/region failure from crashing the entire cleanup.
+ * @param fn The async function to execute
+ * @param defaultValue The value to return on failure
+ * @param label A descriptive label for logging
+ */
+const safeGather = async <T>(fn: () => Promise<T>, defaultValue: T, label: string): Promise<T> => {
+  try {
+    return await fn();
+  } catch (e: any) {
+    console.error(`[safeGather] ${label}: failed after retries, continuing with default. Error: ${e?.name ?? 'unknown'} - ${e?.message ?? JSON.stringify(e)}`);
+    return defaultValue;
+  }
+};
+
 const BUCKET_TEST_REGEX = /test/;
 const IAM_TEST_REGEX =
   /!RotateE2eAwsToken-e2eTestContextRole|-integtest$|^amplify-|^eu-|^us-|^ap-|^auth-exhaustive-tests|rds-schema-inspector-integtest|^amplify_e2e_tests_lambda|^JsonMockStack-jsonMockApi|^SubscriptionAuth|^cdkamplifytable[0-9]*-|^MutationConditionTest-|^SearchableAuth|^SubscriptionRTFTests-|^NonModelAuthV2FunctionTransformerTests-|^MultiAuthV2Transformer|^FunctionTransformerTests|-integtest-/;
@@ -185,7 +266,10 @@ const testInstanceStalenessFilter = (resource: DBInstance): boolean => {
  */
 const getOrphanS3TestBuckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> => {
   const s3Client = new S3Client({ credentials: account.credentials });
-  const listBucketResponse = await s3Client.send(new ListBucketsCommand({}));
+  const listBucketResponse = await withRetry(
+    () => s3Client.send(new ListBucketsCommand({})),
+    `ListBuckets(${account.accountId})`,
+  );
   const staleBuckets = listBucketResponse.Buckets.filter(testBucketStalenessFilter);
 
   const bucketInfos = await Promise.all(
@@ -205,7 +289,10 @@ const getOrphanS3TestBuckets = async (account: AWSAccountInfo): Promise<S3Bucket
  */
 const getOrphanTestIamRoles = async (account: AWSAccountInfo): Promise<IamRoleInfo[]> => {
   const iamClient = new IAMClient({ credentials: account.credentials });
-  const listRoleResponse = await iamClient.send(new ListRolesCommand({}));
+  const listRoleResponse = await withRetry(
+    () => iamClient.send(new ListRolesCommand({})),
+    `ListRoles(${account.accountId})`,
+  );
   const staleRoles = listRoleResponse.Roles.filter(testRoleStalenessFilter);
   return staleRoles.map((it) => ({ name: it.RoleName }));
 };
@@ -216,7 +303,10 @@ const getOrphanTestIamRoles = async (account: AWSAccountInfo): Promise<IamRoleIn
 const getOrphanRdsInstances = async (account: AWSAccountInfo, region: string): Promise<RdsInstanceInfo[]> => {
   try {
     const rdsClient = new RDSClient({ credentials: account.credentials, region });
-    const listRdsInstanceResponse = await rdsClient.send(new DescribeDBInstancesCommand({}));
+    const listRdsInstanceResponse = await withRetry(
+      () => rdsClient.send(new DescribeDBInstancesCommand({})),
+      `DescribeDBInstances(${account.accountId}/${region})`,
+    );
     const staleInstances = listRdsInstanceResponse.DBInstances.filter(testInstanceStalenessFilter);
     return staleInstances.map((i) => ({ identifier: i.DBInstanceIdentifier, region }));
   } catch (e) {
@@ -251,7 +341,10 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
   try {
     console.log(`Listing apps for ${account.accountId} in ${region}.`);
     const listAppsCommand = new ListAppsCommand({ maxResults: 50 });
-    amplifyApps = await amplifyClient.send(listAppsCommand);
+    amplifyApps = await withRetry(
+      () => amplifyClient.send(listAppsCommand),
+      `ListApps(${account.accountId}/${region})`,
+    );
   } catch (e) {
     if (e?.name === 'UnrecognizedClientException' || e?.name === 'InvalidClientTokenId') {
       // Do not fail the cleanup and continue
@@ -269,7 +362,10 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
     const backends: Record<string, StackInfo> = {};
     try {
       const listBackendEnvironments = new ListBackendEnvironmentsCommand({ appId: app.appId, maxResults: 50 });
-      const backendEnvironments = await amplifyClient.send(listBackendEnvironments);
+      const backendEnvironments = await withRetry(
+        () => amplifyClient.send(listBackendEnvironments),
+        `ListBackendEnvironments(${account.accountId}/${region}/${app.appId})`,
+      );
       for (const backendEnv of backendEnvironments.backendEnvironments) {
         const buildInfo = await getStackDetails(backendEnv.stackName, account, region);
         if (buildInfo) {
@@ -312,13 +408,19 @@ const getJobId = (tags: CFNTag[] = []): string | undefined => {
  */
 const getStackDetails = async (stackName: string, account: AWSAccountInfo, region: string): Promise<StackInfo | void> => {
   const cfnClient = new CloudFormationClient({ credentials: account.credentials, region, retryStrategy });
-  const stack = await cfnClient.send(new DescribeStacksCommand({ StackName: stackName }));
+  const stack = await withRetry(
+    () => cfnClient.send(new DescribeStacksCommand({ StackName: stackName })),
+    `DescribeStacks(${account.accountId}/${region}/${stackName})`,
+  );
   const tags = stack.Stacks.length && stack.Stacks[0].Tags;
   const stackStatus = stack.Stacks[0].StackStatus;
   let resourcesFailedToDelete: string[] = [];
   if (stackStatus === 'DELETE_FAILED') {
     // TODO: We need to investigate if we should go ahead and remove the resources to prevent account getting cluttered
-    const resources = await cfnClient.send(new ListStackResourcesCommand({ StackName: stackName }));
+    const resources = await withRetry(
+      () => cfnClient.send(new ListStackResourcesCommand({ StackName: stackName })),
+      `ListStackResources(${account.accountId}/${region}/${stackName})`,
+    );
     resourcesFailedToDelete = resources.StackResourceSummaries.filter((r) => r.ResourceStatus === 'DELETE_FAILED').map(
       (r) => r.LogicalResourceId,
     );
@@ -464,14 +566,20 @@ const getJobCodeBuildDetails = async (jobIds: string[]): Promise<Build[]> => {
 
 const getBucketRegion = async (account: AWSAccountInfo, bucketName: string): Promise<string> => {
   const s3Client = new S3Client({ credentials: account.credentials });
-  const location = await s3Client.send(new GetBucketLocationCommand({ Bucket: bucketName }));
+  const location = await withRetry(
+    () => s3Client.send(new GetBucketLocationCommand({ Bucket: bucketName })),
+    `GetBucketLocation(${account.accountId}/${bucketName})`,
+  );
   const region = location.LocationConstraint ?? 'us-east-1';
   return region;
 };
 
 const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> => {
   const s3Client = new S3Client({ credentials: account.credentials });
-  const buckets = await s3Client.send(new ListBucketsCommand({}));
+  const buckets = await withRetry(
+    () => s3Client.send(new ListBucketsCommand({})),
+    `ListBuckets-getS3Buckets(${account.accountId})`,
+  );
   const result: S3BucketInfo[] = [];
   for (const bucket of buckets.Buckets.filter(testBucketStalenessFilter)) {
     let region: string | undefined;
@@ -483,7 +591,10 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
         credentials: account.credentials,
       });
       const getBucketTaggingCommand = new GetBucketTaggingCommand({ Bucket: bucket.Name });
-      const bucketDetails = await regionalizedClient.send(getBucketTaggingCommand);
+      const bucketDetails = await withRetry(
+        () => regionalizedClient.send(getBucketTaggingCommand),
+        `GetBucketTagging(${account.accountId}/${bucket.Name})`,
+      );
       const jobId = getJobId(bucketDetails.TagSet);
       if (jobId) {
         result.push({
@@ -912,13 +1023,30 @@ const getAccountsToCleanup = async (): Promise<AWSAccountInfo[]> => {
 };
 
 const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, filterPredicate: JobFilterPredicate): Promise<void> => {
-  const appPromises = testRegions.map((region) => getAmplifyApps(account, region));
-  const stackPromises = testRegions.map((region) => getStacks(account, region));
-  const bucketPromise = getS3Buckets(account);
-  const orphanBucketPromise = getOrphanS3TestBuckets(account);
-  const orphanIamRolesPromise = getOrphanTestIamRoles(account);
-  const orphanRdsInstancesPromise = testRegions.map((region) => getOrphanRdsInstances(account, region));
-  const cfnResourcesPromise = testRegions.map((region) => getAllCfnManagedResources(account, region));
+  const accountLabel = generateAccountInfo(account, accountIndex);
+
+  // Wrap each region-level gather in safeGather so one region failure doesn't crash the whole cleanup.
+  const appPromises = testRegions.map((region) =>
+    safeGather(() => getAmplifyApps(account, region), [] as AmplifyAppInfo[], `${accountLabel} getAmplifyApps(${region})`),
+  );
+  const stackPromises = testRegions.map((region) =>
+    safeGather(() => getStacks(account, region), [] as StackInfo[], `${accountLabel} getStacks(${region})`),
+  );
+  const bucketPromise = safeGather(
+    () => getS3Buckets(account), [] as S3BucketInfo[], `${accountLabel} getS3Buckets`,
+  );
+  const orphanBucketPromise = safeGather(
+    () => getOrphanS3TestBuckets(account), [] as S3BucketInfo[], `${accountLabel} getOrphanS3TestBuckets`,
+  );
+  const orphanIamRolesPromise = safeGather(
+    () => getOrphanTestIamRoles(account), [] as IamRoleInfo[], `${accountLabel} getOrphanTestIamRoles`,
+  );
+  const orphanRdsInstancesPromise = testRegions.map((region) =>
+    safeGather(() => getOrphanRdsInstances(account, region), [] as RdsInstanceInfo[], `${accountLabel} getOrphanRdsInstances(${region})`),
+  );
+  const cfnResourcesPromise = testRegions.map((region) =>
+    safeGather(() => getAllCfnManagedResources(account, region), new Set<string>(), `${accountLabel} getAllCfnManagedResources(${region})`),
+  );
 
   const cfnManaged = setUnion(...(await Promise.all(cfnResourcesPromise)).flat());
 
