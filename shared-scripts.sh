@@ -364,6 +364,10 @@ function _runE2ETestsLinux {
 
 function _runCDKTestsLinux {
     echo "RUN CDK Tests Linux"
+    # Refresh parent account credentials before running tests to prevent expiry.
+    # Credentials are initially loaded during setup (_setupCDKTestsLinux), but if
+    # setup + test execution exceeds the 1-hour STS session limit, they expire.
+    _loadTestAccountCredentials
     retry runCDKTest
 }
 
