@@ -614,6 +614,10 @@ export const deleteDBInstance = async (identifier: string, region: string): Prom
     //   },
     // );
   } catch (error) {
+    if ((error as any).name === 'DBInstanceNotFoundFault' || (error as any).name === 'DBInstanceNotFound') {
+      console.log(`RDS instance ${identifier} not found, skipping deletion.`);
+      return;
+    }
     console.log(error);
     throw new Error(`Error in deleting RDS instance: ${JSON.stringify(error)}`);
   }
@@ -641,6 +645,10 @@ export const deleteDBCluster = async (identifier: string, region: string): Promi
   try {
     await client.send(command);
   } catch (error) {
+    if ((error as any).name === 'DBClusterNotFoundFault' || (error as any).name === 'DBClusterNotFound') {
+      console.log(`RDS cluster ${identifier} not found, skipping deletion.`);
+      return;
+    }
     console.log(error);
     throw new Error(`Error in deleting RDS cluster ${identifier}: ${JSON.stringify(error)}`);
   }
