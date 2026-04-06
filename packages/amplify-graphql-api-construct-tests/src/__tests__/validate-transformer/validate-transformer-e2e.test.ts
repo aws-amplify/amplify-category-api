@@ -1,10 +1,11 @@
 import * as path from 'path';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir, tryScheduleCredentialRefresh } from 'amplify-category-api-e2e-core';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../../commands';
 import { DURATION_30_MINUTES } from '../../utils/duration-constants';
 import { E2ETestCase, createE2ETestCases, runE2eTest } from '../../utils/validate-transformer-helper';
 
 jest.setTimeout(DURATION_30_MINUTES);
+tryScheduleCredentialRefresh();
 
 /**
  * End-to-end tests for the Validate Transformer functionality.
@@ -40,6 +41,7 @@ describe('Validate Transformer E2E', () => {
   let apiKey: string;
 
   beforeAll(async () => {
+    tryScheduleCredentialRefresh();
     projRoot = await createNewProjectDir('validate-transformer-e2e');
     const templatePath = path.resolve(path.join(__dirname, '..', 'backends', 'validate-transformer'));
     const name = await initCDKProject(projRoot, templatePath);
