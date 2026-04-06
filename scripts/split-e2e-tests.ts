@@ -19,6 +19,8 @@ const DEFAULT_VARIABLES = {
 const REPO_ROOT = join(__dirname, '..');
 
 const supportedRegionsPath = join(REPO_ROOT, 'scripts', 'e2e-test-regions.json');
+// Note: me-south-1 (BAH) and me-central-1 (DXB) are excluded from e2e-test-regions.json
+// due to persistent network/CDK bootstrap issues in those regions.
 const supportedRegions: TestRegion[] = JSON.parse(fs.readFileSync(supportedRegionsPath, 'utf-8'));
 const testRegions = supportedRegions.map((region) => region.name);
 const supportedRegionsByRegionName: Record<string, TestRegion> = supportedRegions.reduce(

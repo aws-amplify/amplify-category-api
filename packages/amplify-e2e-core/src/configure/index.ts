@@ -32,7 +32,7 @@ export const amplifyRegions = [
   'ap-southeast-2',
   'ap-south-1',
   'ca-central-1',
-  'me-south-1',
+  // Excluded: me-south-1 (BAH) and me-central-1 (DXB) due to persistent network/CDK bootstrap issues
   'sa-east-1',
 ];
 
