@@ -334,17 +334,17 @@ function _setupE2ETestsLinux {
     echo "Setup E2E Tests Linux"
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
-    # Ignore engines while we're still on Node 18.x
-    yarn config set ignore-engines true
+    _setupNodeVersion $AMPLIFY_NODE_VERSION
     _installCLIFromLocalRegistry
     _loadTestAccountCredentials
     _setShell
 }
 
 function _setupCDKTestsLinux {
-    echo "Setup E2E Tests Linux"
+    echo "Setup CDK Tests Linux"
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+    _setupNodeVersion $AMPLIFY_NODE_VERSION
     _installCLIFromLocalRegistry
     yarn package
     _loadTestAccountCredentials
