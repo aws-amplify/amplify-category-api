@@ -115,6 +115,7 @@ const RUN_SOLO: (string | RegExp)[] = [
   'src/__tests__/schema-auth-3.test.ts',
   'src/__tests__/schema-auth-4.test.ts',
   'src/__tests__/schema-auth-4b.test.ts',
+  'src/__tests__/schema-auth-4c.test.ts',
   'src/__tests__/schema-auth-5.test.ts',
   'src/__tests__/schema-auth-6.test.ts',
   'src/__tests__/schema-auth-7.test.ts',
@@ -472,9 +473,9 @@ const main = (): void => {
     builds = builds.filter((build) => !EXCLUDE_TEST_IDS.includes(build.identifier));
   }
 
-  // Mark all test builds with ignore-failure so that cleanup_e2e_resources
-  // still runs even when individual test jobs fail. CodeBuild's ignore-failure
-  // is a top-level property on the build task, not on depend-on entries.
+  // Mark all test builds with ignore-failure so that the batch continues
+  // even when individual test jobs fail. Without this, any single test
+  // failure would stop the entire batch.
   builds = builds.map((build) => ({ ...build, 'ignore-failure': true }));
 
   const cleanupResources: BatchBuildJob = {
@@ -486,10 +487,7 @@ const main = (): void => {
         ...DEFAULT_VARIABLES,
       },
     },
-    'depend-on':
-      builds.length > 0
-        ? builds.map((build) => build.identifier)
-        : ['publish_to_local_registry'],
+    'depend-on': ['publish_to_local_registry'],
   };
 
   console.log(`Total number of splitted jobs: ${builds.length}`);
