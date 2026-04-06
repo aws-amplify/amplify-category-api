@@ -41,6 +41,12 @@ import {
   ListBackendEnvironmentsCommand,
 } from '@aws-sdk/client-amplify';
 import { BatchGetBuildsCommand, Build, CodeBuildClient } from '@aws-sdk/client-codebuild';
+import {
+  AppSyncClient,
+  GraphqlApi,
+  ListGraphqlApisCommand,
+  DeleteGraphqlApiCommand,
+} from '@aws-sdk/client-appsync';
 import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import { OrganizationsClient, ListAccountsCommand } from '@aws-sdk/client-organizations';
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
@@ -104,6 +110,12 @@ type RdsInstanceInfo = {
   region: string;
 };
 
+type AppSyncApiInfo = {
+  apiId: string;
+  name: string;
+  region: string;
+};
+
 type ReportEntry = {
   jobId?: string;
   buildBatchArn?: string;
@@ -115,6 +127,7 @@ type ReportEntry = {
   buckets: Record<string, S3BucketInfo>;
   roles: Record<string, IamRoleInfo>;
   instances: Record<string, RdsInstanceInfo>;
+  appSyncApis: Record<string, AppSyncApiInfo>;
 };
 
 type JobFilterPredicate = (job: ReportEntry) => boolean;
@@ -319,6 +332,47 @@ const getOrphanRdsInstances = async (account: AWSAccountInfo, region: string): P
       return [];
     } else {
       console.log('Irrecoverable error in getOrphanedRdsInstances', JSON.stringify(e));
+      throw e;
+    }
+  }
+};
+
+/**
+ * Get all AppSync GraphQL APIs in a region that are not managed by any active CloudFormation stack.
+ * These are orphaned APIs left behind after test stacks have been deleted. We identify test-created
+ * APIs by the presence of a `codebuild:build_id` tag (set by CodeBuild on resources created during
+ * test runs). APIs that are still managed by an active CFN stack are excluded via the cfnManaged set.
+ */
+const getOrphanAppSyncApis = async (account: AWSAccountInfo, region: string): Promise<AppSyncApiInfo[]> => {
+  try {
+    const appSyncClient = new AppSyncClient({ credentials: account.credentials, region });
+    const allApis = await paginate<GraphqlApi>(async (token) => {
+      const response = await withRetry(
+        () => appSyncClient.send(new ListGraphqlApisCommand({ nextToken: token, maxResults: 25 })),
+        `ListGraphqlApis(${account.accountId}/${region})`,
+      );
+      return { nextPage: response.nextToken, items: response.graphqlApis };
+    });
+
+    // Filter to APIs that were created by test CodeBuild jobs (have codebuild:build_id tag)
+    const testApis = allApis.filter((api) => {
+      const tags = api.tags ?? {};
+      return !!tags['codebuild:build_id'];
+    });
+
+    return testApis.map((api) => ({
+      apiId: api.apiId,
+      name: api.name ?? '<unnamed>',
+      region,
+    }));
+  } catch (e: any) {
+    if (e?.name === 'UnrecognizedClientException' || e?.name === 'InvalidClientTokenId') {
+      console.log(
+        `(opt-in region failure) Listing AppSync APIs for account ${account.accountId}-${region} failed with error with code ${e?.name}. Skipping.`,
+      );
+      return [];
+    } else {
+      console.log('Irrecoverable error in getOrphanAppSyncApis', JSON.stringify(e));
       throw e;
     }
   }
@@ -651,6 +705,7 @@ const mergeResourcesByCCIJob = async (
   orphanS3Buckets: S3BucketInfo[],
   orphanIamRoles: IamRoleInfo[],
   orphanRdsInstances: RdsInstanceInfo[],
+  orphanAppSyncApis: AppSyncApiInfo[],
 ): Promise<Record<string, ReportEntry>> => {
   const result: Record<string, ReportEntry> = {};
 
@@ -735,6 +790,16 @@ const mergeResourcesByCCIJob = async (
     ...val,
     jobId: key,
     instances: src,
+  }));
+
+  const orphanAppSyncApisGroup = {
+    [ORPHAN]: orphanAppSyncApis,
+  };
+
+  _.mergeWith(result, orphanAppSyncApisGroup, (val, src, key) => ({
+    ...val,
+    jobId: key,
+    appSyncApis: src,
   }));
 
   return result;
@@ -872,6 +937,28 @@ const deleteRdsInstance = async (account: AWSAccountInfo, accountIndex: number, 
   }
 };
 
+const deleteAppSyncApis = async (account: AWSAccountInfo, accountIndex: number, apis: AppSyncApiInfo[]): Promise<void> => {
+  await Promise.all(apis.map((api) => deleteAppSyncApi(account, accountIndex, api)));
+};
+
+const deleteAppSyncApi = async (account: AWSAccountInfo, accountIndex: number, api: AppSyncApiInfo): Promise<void> => {
+  const { apiId, name, region } = api;
+  console.log(`${generateAccountInfo(account, accountIndex)} Deleting AppSync API ${name}(${apiId})`);
+  try {
+    const appSyncClient = new AppSyncClient({ credentials: account.credentials, region });
+    await withRetry(
+      () => appSyncClient.send(new DeleteGraphqlApiCommand({ apiId })),
+      `DeleteGraphqlApi(${account.accountId}/${region}/${apiId})`,
+    );
+  } catch (e) {
+    console.log('Error', JSON.stringify(e));
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleting AppSync API ${name}(${apiId}) failed with error ${e.message}`);
+    if (e.name === 'ExpiredTokenException') {
+      handleExpiredTokenException();
+    }
+  }
+};
+
 const deleteCfnStacks = async (account: AWSAccountInfo, accountIndex: number, stacks: StackInfo[]): Promise<void> => {
   await Promise.all(stacks.map((stack) => deleteCfnStack(account, accountIndex, stack)));
 };
@@ -934,6 +1021,10 @@ const deleteResources = async (
 
     if (resources.instances) {
       await deleteRdsInstances(account, accountIndex, Object.values(resources.instances));
+    }
+
+    if (resources.appSyncApis) {
+      await deleteAppSyncApis(account, accountIndex, Object.values(resources.appSyncApis));
     }
   }
 };
@@ -1044,6 +1135,9 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const orphanRdsInstancesPromise = testRegions.map((region) =>
     safeGather(() => getOrphanRdsInstances(account, region), [] as RdsInstanceInfo[], `${accountLabel} getOrphanRdsInstances(${region})`),
   );
+  const orphanAppSyncApisPromise = testRegions.map((region) =>
+    safeGather(() => getOrphanAppSyncApis(account, region), [] as AppSyncApiInfo[], `${accountLabel} getOrphanAppSyncApis(${region})`),
+  );
   const cfnResourcesPromise = testRegions.map((region) =>
     safeGather(() => getAllCfnManagedResources(account, region), new Set<string>(), `${accountLabel} getAllCfnManagedResources(${region})`),
   );
@@ -1058,8 +1152,11 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const orphanRdsInstances = (await Promise.all(orphanRdsInstancesPromise))
     .flat()
     .filter((b) => !cfnManaged.has(resourceId('AWS::RDS::DBInstance', b.identifier)));
+  const orphanAppSyncApis = (await Promise.all(orphanAppSyncApisPromise))
+    .flat()
+    .filter((api) => !cfnManaged.has(resourceId('AWS::AppSync::GraphQLApi', api.apiId)));
 
-  const allResources = await mergeResourcesByCCIJob(apps, stacks, buckets, orphanBuckets, orphanIamRoles, orphanRdsInstances);
+  const allResources = await mergeResourcesByCCIJob(apps, stacks, buckets, orphanBuckets, orphanIamRoles, orphanRdsInstances, orphanAppSyncApis);
   const staleResources = _.pickBy(allResources, filterPredicate);
 
   generateReport(staleResources, accountIndex);
