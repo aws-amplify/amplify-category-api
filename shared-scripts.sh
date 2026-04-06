@@ -324,12 +324,34 @@ function _installCLIFromLocalRegistry {
 }
 function _loadTestAccountCredentials {
     echo ASSUMING PARENT TEST ACCOUNT credentials
+
+    # Save original CodeBuild credentials on first call (before any assume-role)
+    if [ -z "${_ORIGINAL_AWS_ACCESS_KEY_ID:-}" ]; then
+        export _ORIGINAL_AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID:-}"
+        export _ORIGINAL_AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY:-}"
+        export _ORIGINAL_AWS_SESSION_TOKEN="${AWS_SESSION_TOKEN:-}"
+    fi
+
+    # Temporarily restore original credentials for the assume-role call
+    # so re-assumes use the CodeBuild identity, not the already-assumed role
+    local saved_key="${AWS_ACCESS_KEY_ID:-}"
+    local saved_secret="${AWS_SECRET_ACCESS_KEY:-}"
+    local saved_token="${AWS_SESSION_TOKEN:-}"
+
+    export AWS_ACCESS_KEY_ID="${_ORIGINAL_AWS_ACCESS_KEY_ID}"
+    export AWS_SECRET_ACCESS_KEY="${_ORIGINAL_AWS_SECRET_ACCESS_KEY}"
+    export AWS_SESSION_TOKEN="${_ORIGINAL_AWS_SESSION_TOKEN}"
+
     session_id=$((1 + $RANDOM % 10000))
     # Use longer time for parent account role
     creds=$(aws sts assume-role --role-arn $TEST_ACCOUNT_ROLE --role-session-name testSession${session_id} --duration-seconds 3600)
     if [ -z $(echo $creds | jq -c -r '.AssumedRoleUser.Arn') ]; then
-        echo "Unable to assume parent e2e account role."
-        return
+        # Restore previous credentials on failure
+        export AWS_ACCESS_KEY_ID="$saved_key"
+        export AWS_SECRET_ACCESS_KEY="$saved_secret"
+        export AWS_SESSION_TOKEN="$saved_token"
+        echo "Warning: Failed to refresh credentials, continuing with existing ones"
+        return 0
     fi
     echo "Using account credentials for $(echo $creds | jq -c -r '.AssumedRoleUser.Arn')"
     export AWS_ACCESS_KEY_ID=$(echo $creds | jq -c -r ".Credentials.AccessKeyId")
