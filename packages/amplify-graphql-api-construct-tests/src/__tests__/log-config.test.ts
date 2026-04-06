@@ -10,9 +10,9 @@ import { default as STS } from 'aws-sdk/clients/sts';
 import { createNewProjectDir, deleteProjectDir, tryScheduleCredentialRefresh } from 'amplify-category-api-e2e-core';
 import { GraphQLClient } from 'graphql-request';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
-import { DURATION_30_MINUTES } from '../utils/duration-constants';
+import { DURATION_1_HOUR } from '../utils/duration-constants';
 
-jest.setTimeout(DURATION_30_MINUTES);
+jest.setTimeout(DURATION_1_HOUR);
 tryScheduleCredentialRefresh();
 
 // AWS client initialization
@@ -119,15 +119,16 @@ const verifyLogGroupDoesNotExist = async (logGroupName: string): Promise<void> =
  * - logging: '{"fieldLogLevel": "ERROR"}' is parsed to { fieldLogLevel: FieldLogLevel.ERROR }
  */
 describe('Log Config Tests', () => {
-  const projRoots: string[] = [];
+  let projRoot: string;
 
-  afterAll(async () => {
-    const destroyCDKProjectAndDeleteProjectDir = async (projRoot: string): Promise<void> => {
+  afterEach(async () => {
+    try {
       await cdkDestroy(projRoot, '--all');
-      deleteProjectDir(projRoot);
-    };
-    const cleanupTasks = projRoots.map((projRoot) => destroyCDKProjectAndDeleteProjectDir(projRoot));
-    await Promise.all(cleanupTasks);
+    } catch (_) {
+      /* No-op */
+    }
+    deleteProjectDir(projRoot);
+    if (global.gc) global.gc();
   });
 
   const testCases: [
@@ -174,9 +175,8 @@ describe('Log Config Tests', () => {
     ],
   ];
 
-  test.concurrent.each(testCases)('Log Config is enabled with: %s', async (_, { logging, expectedLogConfig }) => {
-    const projRoot = await createNewProjectDir('log-config');
-    projRoots.push(projRoot);
+  test.each(testCases)('Log Config is enabled with: %s', async (_, { logging, expectedLogConfig }) => {
+    projRoot = await createNewProjectDir('log-config');
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'log-config'));
 
     // Initialize CDK project
@@ -212,8 +212,7 @@ describe('Log Config Tests', () => {
   });
 
   test('Logging is disabled', async () => {
-    const projRoot = await createNewProjectDir('log-config');
-    projRoots.push(projRoot);
+    projRoot = await createNewProjectDir('log-config');
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'log-config'));
 
     // Initialize CDK project

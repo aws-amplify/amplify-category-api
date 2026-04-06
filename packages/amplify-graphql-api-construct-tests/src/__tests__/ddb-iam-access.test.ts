@@ -45,7 +45,7 @@ describe('CDK DDB Iam Access', () => {
         'enable-iam-authorization-mode': 'true',
       },
     });
-    [outputs, outputsWithIam] = await Promise.all([cdkDeploy(projRoot, '--all'), cdkDeploy(projRootWithIam, '--all')]);
+    [outputs, outputsWithIam] = [await cdkDeploy(projRoot, '--all'), await cdkDeploy(projRootWithIam, '--all')];
     outputs = outputs[name];
     outputsWithIam = outputsWithIam[nameWithIam];
 
@@ -149,13 +149,19 @@ describe('CDK DDB Iam Access', () => {
 
   afterAll(async () => {
     try {
-      await Promise.all([cdkDestroy(projRoot, '--all'), cdkDestroy(projRootWithIam, '--all')]);
+      await cdkDestroy(projRoot, '--all');
+    } catch (err) {
+      console.log(`Error invoking 'cdk destroy': ${err}`);
+    }
+    try {
+      await cdkDestroy(projRootWithIam, '--all');
     } catch (err) {
       console.log(`Error invoking 'cdk destroy': ${err}`);
     }
 
     deleteProjectDir(projRoot);
     deleteProjectDir(projRootWithIam);
+    if (global.gc) global.gc();
   });
 
   it('can access TodoWithPrivateIam', async () => {

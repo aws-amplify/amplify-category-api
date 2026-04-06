@@ -24,6 +24,7 @@ describe('Data Construct', () => {
     }
 
     deleteProjectDir(projRoot);
+    if (global.gc) global.gc();
   });
 
   ['2.224.0', 'latest'].forEach((cdkVersion) => {
