@@ -45,6 +45,11 @@ type TestTiming = {
 
 type ComputeType = 'BUILD_GENERAL1_SMALL' | 'BUILD_GENERAL1_MEDIUM' | 'BUILD_GENERAL1_LARGE';
 
+type DependencyWithIgnoreFailure = {
+  identifier: string;
+  'ignore-failure': boolean;
+};
+
 type BatchBuildJob = {
   identifier: string;
   buildspec: string;
@@ -52,7 +57,7 @@ type BatchBuildJob = {
     'compute-type': ComputeType;
     variables?: { [string: string]: string };
   };
-  'depend-on': string[] | string;
+  'depend-on': (string | DependencyWithIgnoreFailure)[] | string;
 };
 
 type ConfigBase = {
@@ -480,7 +485,10 @@ const main = (): void => {
         ...DEFAULT_VARIABLES,
       },
     },
-    'depend-on': builds.length > 0 ? [builds[0].identifier] : 'publish_to_local_registry',
+    'depend-on':
+      builds.length > 0
+        ? builds.map((build) => ({ identifier: build.identifier, 'ignore-failure': true }))
+        : [{ identifier: 'publish_to_local_registry', 'ignore-failure': true }],
   };
 
   console.log(`Total number of splitted jobs: ${builds.length}`);

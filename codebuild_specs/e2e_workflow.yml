@@ -2012,5 +2012,387 @@ batch:
         variables:
           JSII_DEPRECATED: quiet
       depend-on:
-        - >-
-          custom_transformers_invalid_input_arguments_schema_data_access_patterns_schema_predictions_function_10
+        - identifier: >-
+            custom_transformers_invalid_input_arguments_schema_data_access_patterns_schema_predictions_function_10
+          ignore-failure: true
+        - identifier: >-
+            api_7_schema_function_2_global_sandbox_lambda_conflict_handler_index_with_stack_mappings
+          ignore-failure: true
+        - identifier: >-
+            api_5_schema_function_1_generate_ts_data_schema_resolvers_sync_query_datastore
+          ignore-failure: true
+        - identifier: api_6_api_lambda_auth
+          ignore-failure: true
+        - identifier: rds_v2
+          ignore-failure: true
+        - identifier: schema_iterative_update_5
+          ignore-failure: true
+        - identifier: schema_auth_2
+          ignore-failure: true
+        - identifier: schema_auth_10
+          ignore-failure: true
+        - identifier: schema_auth_1
+          ignore-failure: true
+        - identifier: schema_auth_13
+          ignore-failure: true
+        - identifier: schema_auth_12
+          ignore-failure: true
+        - identifier: schema_auth_3
+          ignore-failure: true
+        - identifier: schema_auth_15
+          ignore-failure: true
+        - identifier: schema_auth_8
+          ignore-failure: true
+        - identifier: schema_auth_4
+          ignore-failure: true
+        - identifier: schema_auth_11
+          ignore-failure: true
+        - identifier: sql_generate_unauth
+          ignore-failure: true
+        - identifier: schema_model
+          ignore-failure: true
+        - identifier: schema_auth_4b
+          ignore-failure: true
+        - identifier: rds_v2_test_utils
+          ignore-failure: true
+        - identifier: rds_relational_directives
+          ignore-failure: true
+        - identifier: rds_pg_v2_generate_schema
+          ignore-failure: true
+        - identifier: rds_pg_userpool_auth
+          ignore-failure: true
+        - identifier: rds_pg_userpool_auth_fields
+          ignore-failure: true
+        - identifier: rds_pg_relational_directives
+          ignore-failure: true
+        - identifier: rds_pg_refers_to
+          ignore-failure: true
+        - identifier: rds_pg_refers_to_fields
+          ignore-failure: true
+        - identifier: rds_pg_oidc_auth_fields
+          ignore-failure: true
+        - identifier: rds_pg_model_v2
+          ignore-failure: true
+        - identifier: rds_pg_import
+          ignore-failure: true
+        - identifier: rds_pg_field_auth_userpool_static_dynamic
+          ignore-failure: true
+        - identifier: rds_pg_field_auth_userpool_iam
+          ignore-failure: true
+        - identifier: rds_pg_field_auth_lambda
+          ignore-failure: true
+        - identifier: rds_pg_field_auth_identityPool
+          ignore-failure: true
+        - identifier: rds_pg_field_auth_iam
+          ignore-failure: true
+        - identifier: rds_pg_field_auth_apikey
+          ignore-failure: true
+        - identifier: rds_pg_custom_claims_refersto_auth
+          ignore-failure: true
+        - identifier: rds_pg_auth_iam
+          ignore-failure: true
+        - identifier: rds_pg_auth_iam_apikey_lambda_subscription
+          ignore-failure: true
+        - identifier: rds_pg_auth_apikey_lambda
+          ignore-failure: true
+        - identifier: rds_pg_array_objects
+          ignore-failure: true
+        - identifier: rds_mysql_v2_generate_schema
+          ignore-failure: true
+        - identifier: rds_mysql_userpool_auth
+          ignore-failure: true
+        - identifier: rds_mysql_userpool_auth_fields
+          ignore-failure: true
+        - identifier: rds_mysql_refers_to
+          ignore-failure: true
+        - identifier: rds_mysql_refers_to_fields
+          ignore-failure: true
+        - identifier: rds_mysql_oidc_auth_fields
+          ignore-failure: true
+        - identifier: rds_mysql_multi_auth_1
+          ignore-failure: true
+        - identifier: rds_mysql_model_v2
+          ignore-failure: true
+        - identifier: rds_mysql_field_auth_userpool_static_dynamic
+          ignore-failure: true
+        - identifier: rds_mysql_field_auth_userpool_iam
+          ignore-failure: true
+        - identifier: rds_mysql_field_auth_lambda
+          ignore-failure: true
+        - identifier: rds_mysql_field_auth_identityPool
+          ignore-failure: true
+        - identifier: rds_mysql_field_auth_iam
+          ignore-failure: true
+        - identifier: rds_mysql_field_auth_apikey
+          ignore-failure: true
+        - identifier: rds_mysql_custom_claims_refersto_auth
+          ignore-failure: true
+        - identifier: rds_mysql_auth_iam
+          ignore-failure: true
+        - identifier: rds_mysql_auth_iam_apikey_lambda_subscription
+          ignore-failure: true
+        - identifier: rds_mysql_auth_apikey_lambda
+          ignore-failure: true
+        - identifier: schema_auth_9
+          ignore-failure: true
+        - identifier: schema_auth_7
+          ignore-failure: true
+        - identifier: schema_auth_14
+          ignore-failure: true
+        - identifier: schema_auth_5
+          ignore-failure: true
+        - identifier: schema_searchable
+          ignore-failure: true
+        - identifier: searchable_datastore
+          ignore-failure: true
+        - identifier: schema_auth_6
+          ignore-failure: true
+        - identifier: searchable_previous_deployment_had_node_to_node
+          ignore-failure: true
+        - identifier: searchable_previous_deployment_no_node_to_node
+          ignore-failure: true
+        - identifier: >-
+            utils_gsi_projection_type_data_construct_custom_logic_amplify_table_5
+          ignore-failure: true
+        - identifier: >-
+            add_resources_validate_transformer_evaluate_mapping_template_validate_transformer_e2e_references_migration_migration_validation
+          ignore-failure: true
+        - identifier: many_to_many_migration_base_migration
+          ignore-failure: true
+        - identifier: sql_pg_userpool_auth
+          ignore-failure: true
+        - identifier: sql_pg_oidc_auth
+          ignore-failure: true
+        - identifier: sql_pg_models
+          ignore-failure: true
+        - identifier: sql_pg_canary
+          ignore-failure: true
+        - identifier: sql_pg_auto_increment
+          ignore-failure: true
+        - identifier: sql_pg_array_objects
+          ignore-failure: true
+        - identifier: sql_mysql_oidc_auth
+          ignore-failure: true
+        - identifier: sql_mysql_canary
+          ignore-failure: true
+        - identifier: sql_models_2
+          ignore-failure: true
+        - identifier: sql_models_1
+          ignore-failure: true
+        - identifier: sql_iam_access
+          ignore-failure: true
+        - identifier: log_config
+          ignore-failure: true
+        - identifier: default_ddb_canary
+          ignore-failure: true
+        - identifier: ddb_iam_access
+          ignore-failure: true
+        - identifier: custom_query_mutation_extension
+          ignore-failure: true
+        - identifier: base_cdk_ap_east_1
+          ignore-failure: true
+        - identifier: base_cdk_ap_northeast_1
+          ignore-failure: true
+        - identifier: base_cdk_ap_northeast_2
+          ignore-failure: true
+        - identifier: base_cdk_ap_northeast_3
+          ignore-failure: true
+        - identifier: base_cdk_ap_south_1
+          ignore-failure: true
+        - identifier: base_cdk_ap_southeast_1
+          ignore-failure: true
+        - identifier: base_cdk_ap_southeast_2
+          ignore-failure: true
+        - identifier: base_cdk_ca_central_1
+          ignore-failure: true
+        - identifier: base_cdk_eu_central_1
+          ignore-failure: true
+        - identifier: base_cdk_eu_north_1
+          ignore-failure: true
+        - identifier: base_cdk_eu_south_1
+          ignore-failure: true
+        - identifier: base_cdk_eu_west_1
+          ignore-failure: true
+        - identifier: base_cdk_eu_west_2
+          ignore-failure: true
+        - identifier: base_cdk_eu_west_3
+          ignore-failure: true
+        - identifier: base_cdk_sa_east_1
+          ignore-failure: true
+        - identifier: base_cdk_us_east_1
+          ignore-failure: true
+        - identifier: base_cdk_us_east_2
+          ignore-failure: true
+        - identifier: base_cdk_us_west_1
+          ignore-failure: true
+        - identifier: base_cdk_us_west_2
+          ignore-failure: true
+        - identifier: amplify_table_4
+          ignore-failure: true
+        - identifier: amplify_table_3
+          ignore-failure: true
+        - identifier: amplify_table_2
+          ignore-failure: true
+        - identifier: amplify_table_1
+          ignore-failure: true
+        - identifier: amplify_ddb_canary
+          ignore-failure: true
+        - identifier: all_auth_modes
+          ignore-failure: true
+        - identifier: admin_role
+          ignore-failure: true
+        - identifier: sql_custom_ssl
+          ignore-failure: true
+        - identifier: restricted_field_auth_gen2
+          ignore-failure: true
+        - identifier: restricted_field_auth_gen1
+          ignore-failure: true
+        - identifier: restricted_field_auth_gen2_subscriptions_off
+          ignore-failure: true
+        - identifier: restricted_field_auth_gen1_subscriptions_off
+          ignore-failure: true
+        - identifier: references_sqlprimary_sqlrelated
+          ignore-failure: true
+        - identifier: references_sqlprimary_ddbrelated
+          ignore-failure: true
+        - identifier: references_ddbprimary_sqlrelated
+          ignore-failure: true
+        - identifier: references_ddbprimary_ddbrelated
+          ignore-failure: true
+        - identifier: recursive_relationships_sql
+          ignore-failure: true
+        - identifier: recursive_relationships_ddb
+          ignore-failure: true
+        - identifier: uuid_pk_sqlprimary_sqlrelated
+          ignore-failure: true
+        - identifier: uuid_pk_sqlprimary_ddbrelated
+          ignore-failure: true
+        - identifier: uuid_pk_ddbprimary_sqlrelated
+          ignore-failure: true
+        - identifier: multi_relationship_sqlprimary_sqlrelated
+          ignore-failure: true
+        - identifier: multi_relationship_sqlprimary_ddbrelated
+          ignore-failure: true
+        - identifier: multi_relationship_ddbprimary_sqlrelated
+          ignore-failure: true
+        - identifier: multi_relationship_ddbprimary_ddbrelated
+          ignore-failure: true
+        - identifier: relationships_gen1
+          ignore-failure: true
+        - identifier: assoc_field_subscriptions_off
+          ignore-failure: true
+        - identifier: bind_sql_ids
+          ignore-failure: true
+        - identifier: assoc_field_sqlprimary_sqlrelated
+          ignore-failure: true
+        - identifier: assoc_field_sqlprimary_ddbrelated
+          ignore-failure: true
+        - identifier: assoc_field_ddbprimary_sqlrelated
+          ignore-failure: true
+        - identifier: assoc_field_ddbprimary_ddbrelated
+          ignore-failure: true
+        - identifier: static_group_auth_sqlprimary_sqlrelated_subscriptions_off
+          ignore-failure: true
+        - identifier: static_group_auth_sqlprimary_ddbrelated_subscriptions_off
+          ignore-failure: true
+        - identifier: static_group_auth_ddbprimary_sqlrelated_subscriptions_off
+          ignore-failure: true
+        - identifier: static_group_auth_ddbprimary_ddbrelated_subscriptions_off
+          ignore-failure: true
+        - identifier: dynamic_group_auth_sqlprimary_sqlrelated_subscriptions_off
+          ignore-failure: true
+        - identifier: dynamic_group_auth_sqlprimary_ddbrelated_subscriptions_off
+          ignore-failure: true
+        - identifier: dynamic_group_auth_ddbprimary_sqlrelated_subscriptions_off
+          ignore-failure: true
+        - identifier: dynamic_group_auth_ddbprimary_ddbrelated_subscriptions_off
+          ignore-failure: true
+        - identifier: static_group_auth_sqlprimary_sqlrelated
+          ignore-failure: true
+        - identifier: static_group_auth_sqlprimary_ddbrelated
+          ignore-failure: true
+        - identifier: static_group_auth_ddbprimary_sqlrelated
+          ignore-failure: true
+        - identifier: static_group_auth_ddbprimary_ddbrelated
+          ignore-failure: true
+        - identifier: dynamic_group_auth_sqlprimary_sqlrelated
+          ignore-failure: true
+        - identifier: dynamic_group_auth_sqlprimary_ddbrelated
+          ignore-failure: true
+        - identifier: dynamic_group_auth_ddbprimary_sqlrelated
+          ignore-failure: true
+        - identifier: dynamic_group_auth_ddbprimary_ddbrelated
+          ignore-failure: true
+        - identifier: generation
+          ignore-failure: true
+        - identifier: single_gsi_single_record
+          ignore-failure: true
+        - identifier: single_gsi_empty_table
+          ignore-failure: true
+        - identifier: single_gsi_1k_records
+          ignore-failure: true
+        - identifier: single_gsi_10k_records
+          ignore-failure: true
+        - identifier: replace_2_gsis_update_attr_single_record
+          ignore-failure: true
+        - identifier: replace_2_gsis_update_attr_empty_table
+          ignore-failure: true
+        - identifier: replace_2_gsis_update_attr_1k_records
+          ignore-failure: true
+        - identifier: replace_2_gsis_update_attr_10k_records
+          ignore-failure: true
+        - identifier: replace_2_gsis_single_record
+          ignore-failure: true
+        - identifier: replace_2_gsis_empty_table
+          ignore-failure: true
+        - identifier: replace_2_gsis_1k_records
+          ignore-failure: true
+        - identifier: replace_2_gsis_10k_records
+          ignore-failure: true
+        - identifier: 3_gsis_single_record
+          ignore-failure: true
+        - identifier: 3_gsis_empty_table
+          ignore-failure: true
+        - identifier: 3_gsis_1k_records
+          ignore-failure: true
+        - identifier: 3_gsis_10k_records
+          ignore-failure: true
+        - identifier: single_gsi_100k_records
+          ignore-failure: true
+        - identifier: replace_2_gsis_update_attr_100k_records
+          ignore-failure: true
+        - identifier: replace_2_gsis_100k_records
+          ignore-failure: true
+        - identifier: 3_gsis_100k_records
+          ignore-failure: true
+        - identifier: conversation
+          ignore-failure: true
+        - identifier: >-
+            NonModelAuthV2Function_TransformerOptionsV2_DefaultValueTransformer_PerFieldAuthV2TransformerWithFF_PerFieldAuthV2Transformer
+          ignore-failure: true
+        - identifier: >-
+            BelongsToTransformerV2_RelationalWithAuthV2WithFF_IndexWithAuthV2_IndexWithAuthV2WithFF_SubscriptionsWithAuthV2WithFF
+          ignore-failure: true
+        - identifier: >-
+            MultiAuthV2Transformer_ModelTransformer_SubscriptionsWithAuthV2_RelationalWithAuthV2_MapsToTransformer
+          ignore-failure: true
+        - identifier: >-
+            MultiAuthV2TransformerWithFF_AuthV2Transformer_AuthV2ExhaustiveT1B_AuthV2ExhaustiveT1A_AuthV2TransformerWithFF
+          ignore-failure: true
+        - identifier: >-
+            SubscriptionsRuntimeFiltering_AuthV2ExhaustiveT2A_AuthV2ExhaustiveT1C_AuthV2ExhaustiveT1D_AuthV2ExhaustiveT2B
+          ignore-failure: true
+        - identifier: >-
+            AuthV2ExhaustiveT2D_AuthV2ExhaustiveT2C_RelationalWithAuthV2Redacted_RelationalWithAuthV2NonRedacted_AuthV2TransformerIAM
+          ignore-failure: true
+        - identifier: >-
+            AuthV2ExhaustiveT3D_AuthV2ExhaustiveT3C_AuthV2ExhaustiveT3B_AuthV2ExhaustiveT3A_SearchableModelTransformerV2
+          ignore-failure: true
+        - identifier: SearchableWithAuthV2WithFF_SearchableWithAuthV2
+          ignore-failure: true
+        - identifier: PredictionsTransformerV2Tests
+          ignore-failure: true
+        - identifier: FunctionTransformerTestsV2
+          ignore-failure: true
+        - identifier: HttpTransformerV2
+          ignore-failure: true
