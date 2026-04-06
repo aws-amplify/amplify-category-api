@@ -1,11 +1,11 @@
 import { initJSProjectWithProfile, deleteProject, createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
 import { testSchema } from '../schema-api-directives';
 
-describe('api directives @auth batch 4', () => {
+describe('api directives @auth batch 4b', () => {
   let projectDir: string;
 
   beforeEach(async () => {
-    projectDir = await createNewProjectDir('auth4');
+    projectDir = await createNewProjectDir('auth4b');
     await initJSProjectWithProfile(projectDir, {});
   });
 
@@ -14,13 +14,13 @@ describe('api directives @auth batch 4', () => {
     deleteProjectDir(projectDir);
   });
 
-  it('auth public1', async () => {
-    const testresult = await testSchema(projectDir, 'auth', 'public1');
+  it('auth private1', async () => {
+    const testresult = await testSchema(projectDir, 'auth', 'private1');
     expect(testresult).toBeTruthy();
   });
 
-  it('auth public2', async () => {
-    const testresult = await testSchema(projectDir, 'auth', 'public2');
+  it('auth private2', async () => {
+    const testresult = await testSchema(projectDir, 'auth', 'private2');
     expect(testresult).toBeTruthy();
   });
 });
