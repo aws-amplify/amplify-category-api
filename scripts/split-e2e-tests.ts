@@ -45,11 +45,6 @@ type TestTiming = {
 
 type ComputeType = 'BUILD_GENERAL1_SMALL' | 'BUILD_GENERAL1_MEDIUM' | 'BUILD_GENERAL1_LARGE';
 
-type DependencyWithIgnoreFailure = {
-  identifier: string;
-  'ignore-failure': boolean;
-};
-
 type BatchBuildJob = {
   identifier: string;
   buildspec: string;
@@ -57,7 +52,8 @@ type BatchBuildJob = {
     'compute-type': ComputeType;
     variables?: { [string: string]: string };
   };
-  'depend-on': (string | DependencyWithIgnoreFailure)[] | string;
+  'depend-on': string[] | string;
+  'ignore-failure'?: boolean;
 };
 
 type ConfigBase = {
@@ -476,6 +472,11 @@ const main = (): void => {
     builds = builds.filter((build) => !EXCLUDE_TEST_IDS.includes(build.identifier));
   }
 
+  // Mark all test builds with ignore-failure so that cleanup_e2e_resources
+  // still runs even when individual test jobs fail. CodeBuild's ignore-failure
+  // is a top-level property on the build task, not on depend-on entries.
+  builds = builds.map((build) => ({ ...build, 'ignore-failure': true }));
+
   const cleanupResources: BatchBuildJob = {
     identifier: 'cleanup_e2e_resources',
     buildspec: 'codebuild_specs/cleanup_e2e_resources.yml',
@@ -487,8 +488,8 @@ const main = (): void => {
     },
     'depend-on':
       builds.length > 0
-        ? builds.map((build) => ({ identifier: build.identifier, 'ignore-failure': true }))
-        : [{ identifier: 'publish_to_local_registry', 'ignore-failure': true }],
+        ? builds.map((build) => build.identifier)
+        : ['publish_to_local_registry'],
   };
 
   console.log(`Total number of splitted jobs: ${builds.length}`);
