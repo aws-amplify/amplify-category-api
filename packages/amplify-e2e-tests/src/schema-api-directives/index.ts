@@ -47,12 +47,13 @@ export async function testSchema(projectDir: string, directive: string, section:
     }
     return true;
   } catch (err) {
-    console.log(`Test failed for ${directive}-${section}`);
-    if (testModule && testModule.schema) {
-      console.log(`Input schema: ${testModule.schema}`);
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    const schemaInfo = testModule && testModule.schema ? `\nInput schema: ${testModule.schema}` : '';
+    console.error(`Test failed for ${directive}-${section}: ${errorMessage}${schemaInfo}`);
+    if (err instanceof Error && err.stack) {
+      console.error(err.stack);
     }
-    console.log(err);
-    return false;
+    throw new Error(`Schema directive test '${directive}-${section}' failed: ${errorMessage}${schemaInfo}`);
   }
 }
 

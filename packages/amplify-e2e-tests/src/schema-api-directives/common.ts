@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import _ from 'lodash';
 import gql from 'graphql-tag';
-import { addApi, amplifyPush, updateAuthAddUserGroups } from 'amplify-category-api-e2e-core';
+import { addApi, amplifyPush, amplifyPushWithRetry, updateAuthAddUserGroups } from 'amplify-category-api-e2e-core';
 
 import {
   setupUser,
@@ -22,7 +22,7 @@ const PASSWORD = 'user1Password';
 export async function runTest(projectDir: string, testModule: any) {
   await addApi(projectDir, { transformerVersion: 1 });
   updateSchemaInTestProject(projectDir, testModule.schema);
-  await amplifyPush(projectDir);
+  await amplifyPushWithRetry(projectDir);
 
   const awsconfig = configureAmplify(projectDir);
   const apiKey = getApiKey(projectDir);
@@ -40,7 +40,7 @@ export async function runAuthTest(projectDir: string, testModule: any) {
   updateSchemaInTestProject(projectDir, testModule.schema);
 
   await updateAuthAddUserGroups(projectDir, [GROUPNAME]);
-  await amplifyPush(projectDir);
+  await amplifyPushWithRetry(projectDir);
   const awsconfig = configureAmplify(projectDir);
 
   const userPoolId = getUserPoolId(projectDir);
@@ -64,7 +64,7 @@ export async function runMultiAutTest(projectDir: string, testModule: any) {
   updateSchemaInTestProject(projectDir, testModule.schema);
 
   await updateAuthAddUserGroups(projectDir, [GROUPNAME]);
-  await amplifyPush(projectDir);
+  await amplifyPushWithRetry(projectDir);
   const awsconfig = configureAmplify(projectDir);
 
   const userPoolId = getUserPoolId(projectDir);

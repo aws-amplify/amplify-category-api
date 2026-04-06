@@ -15,9 +15,40 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 
-import { getCLIPath, nspawn as spawn } from '..';
+import { getCLIPath, nspawn as spawn, sleep } from '..';
 
 const pushTimeoutMS = 1000 * 60 * 75; // 75 minutes;
+
+const PUSH_RETRY_DELAY_MS = 1000 * 60; // 1 minute between retries
+const PUSH_MAX_RETRIES = 2; // up to 2 retries (3 total attempts)
+
+/**
+ * Wraps amplifyPush with retry logic for transient failures (e.g., CFN throttling, service limits).
+ * Retries up to PUSH_MAX_RETRIES times with a delay between attempts.
+ */
+export async function amplifyPushWithRetry(
+  cwd: string,
+  testingWithLatestCodebase = false,
+  settings?: {
+    skipCodegen?: boolean;
+    useBetaSqlLayer?: boolean;
+  },
+): Promise<void> {
+  let lastError: Error | undefined;
+  for (let attempt = 0; attempt <= PUSH_MAX_RETRIES; attempt++) {
+    try {
+      await amplifyPush(cwd, testingWithLatestCodebase, settings);
+      return;
+    } catch (err) {
+      lastError = err instanceof Error ? err : new Error(String(err));
+      if (attempt < PUSH_MAX_RETRIES) {
+        console.warn(`amplifyPush attempt ${attempt + 1} failed: ${lastError.message}. Retrying in ${PUSH_RETRY_DELAY_MS / 1000}s...`);
+        await sleep(PUSH_RETRY_DELAY_MS);
+      }
+    }
+  }
+  throw lastError;
+}
 
 /**
  * Data structure defined for Layer Push

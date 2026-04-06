@@ -5,7 +5,7 @@ import {
   addAuthWithPreTokenGenerationTrigger,
   addApiWithCognitoUserPoolAuthTypeWhenAuthExists,
   updateAuthAddUserGroups,
-  amplifyPush,
+  amplifyPushWithRetry,
 } from 'amplify-category-api-e2e-core';
 
 import { getUserPoolId, configureAmplify, setupUser, signInUser, getConfiguredAppsyncClientCognitoAuth } from '../authHelper';
@@ -22,7 +22,7 @@ export async function runTest(projectDir: string, testModule: any) {
   await updateAuthAddUserGroups(projectDir, [GROUPNAME]);
   await addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectDir, { transformerVersion: 2 });
   updateSchemaInTestProject(projectDir, testModule.schema);
-  await amplifyPush(projectDir);
+  await amplifyPushWithRetry(projectDir);
 
   const awsconfig = configureAmplify(projectDir);
   const userPoolId = getUserPoolId(projectDir);

@@ -1,7 +1,7 @@
 import path from 'path';
 import { v4 as uuid } from 'uuid';
 import fs from 'fs-extra';
-import { amplifyPush, addFunction, addApi } from 'amplify-category-api-e2e-core';
+import { amplifyPushWithRetry, addFunction, addApi } from 'amplify-category-api-e2e-core';
 
 import { configureAmplify, getApiKey, getConfiguredAppsyncClientAPIKeyAuth } from './authHelper';
 
@@ -12,7 +12,7 @@ export async function runFunctionTest(projectDir: string, testModule: any) {
   await addApi(projectDir, { transformerVersion: 1 });
   updateSchemaInTestProject(projectDir, testModule.schema);
   updateFunctionNameInSchema(projectDir, '<function-name>', functionName);
-  await amplifyPush(projectDir);
+  await amplifyPushWithRetry(projectDir);
 
   const awsconfig = configureAmplify(projectDir);
   const apiKey = getApiKey(projectDir);

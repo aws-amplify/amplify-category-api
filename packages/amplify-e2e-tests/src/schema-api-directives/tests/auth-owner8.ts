@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { addApi, amplifyPush, updateAuthAddUserGroups } from 'amplify-category-api-e2e-core';
+import { addApi, amplifyPushWithRetry, updateAuthAddUserGroups } from 'amplify-category-api-e2e-core';
 import { setupUser, getUserPoolId, configureAmplify, signInUser, getConfiguredAppsyncClientCognitoAuth } from '../authHelper';
 import { updateSchemaInTestProject, testMutations, testQueries, testSubscriptions } from '../common';
 
@@ -15,7 +15,7 @@ export async function runTest(projectDir: string, testModule: any) {
   updateSchemaInTestProject(projectDir, testModule.schema);
 
   await updateAuthAddUserGroups(projectDir, [GROUPNAME]);
-  await amplifyPush(projectDir);
+  await amplifyPushWithRetry(projectDir);
   const awsconfig = configureAmplify(projectDir);
 
   const userPoolId = getUserPoolId(projectDir);
