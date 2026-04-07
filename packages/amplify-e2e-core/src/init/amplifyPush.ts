@@ -87,13 +87,28 @@ export async function amplifyPushWithRetry(
       } catch (logErr) {
         console.log(`[amplifyPushWithRetry] Could not serialize error properties: ${logErr}`);
       }
-      // Check for AWS SDK raw response
+      // Check for AWS SDK raw response — log body and full response
       if ((err as any)?.$response) {
         try {
-          console.log(`[amplifyPushWithRetry] Raw $response: ${JSON.stringify((err as any).$response, null, 2)}`);
+          console.log(`[amplifyPushWithRetry] Raw $response body: ${JSON.stringify((err as any).$response.body || (err as any).$response, null, 2)}`);
         } catch (logErr) {
           console.log(`[amplifyPushWithRetry] $response present but not serializable: ${logErr}`);
         }
+      }
+      // Also try the httpResponse path that AWS SDK v3 uses
+      if ((err as any)?.$metadata) {
+        try {
+          console.log(`[amplifyPushWithRetry] Error $metadata: ${JSON.stringify((err as any).$metadata, null, 2)}`);
+        } catch (logErr) {
+          console.log(`[amplifyPushWithRetry] $metadata present but not serializable: ${logErr}`);
+        }
+      }
+      // Log ALL enumerable and own properties of the error for full diagnostics
+      try {
+        console.log(`[amplifyPushWithRetry] Full error keys: ${JSON.stringify(Object.keys(err as any))}`);
+        console.log(`[amplifyPushWithRetry] Full error JSON: ${JSON.stringify(err, Object.getOwnPropertyNames(err as any), 2)}`);
+      } catch (logErr) {
+        console.log(`[amplifyPushWithRetry] Could not serialize full error: ${logErr}`);
       }
       // If the error contains HTML content, highlight it for debugging
       if (isTransient && /<!DOCTYPE|<html|<body/i.test(lastError.message)) {
