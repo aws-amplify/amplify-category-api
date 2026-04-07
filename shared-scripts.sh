@@ -364,7 +364,43 @@ function _runE2ETestsLinux {
 
 function _runCDKTestsLinux {
     echo "RUN CDK Tests Linux"
-    retry runCDKTest
+    MAX_ATTEMPTS=2
+    SLEEP_DURATION=5
+    FIRST_RUN=true
+    RUN_INDEX=0
+    FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
+    if [ -f  $FAILED_TEST_REGEX_FILE ]; then
+        rm -f $FAILED_TEST_REGEX_FILE
+    fi
+    until [ $RUN_INDEX -ge $MAX_ATTEMPTS ]
+    do
+        echo "Attempting runCDKTest with max retries $MAX_ATTEMPTS"
+        if [ "$FIRST_RUN" != "true" ]; then
+            # Unset expired assumed-role credentials so _loadTestAccountCredentials
+            # can re-assume from the CodeBuild instance profile (not nested AssumeRole)
+            unset AWS_ACCESS_KEY_ID
+            unset AWS_SECRET_ACCESS_KEY
+            unset AWS_SESSION_TOKEN
+            unset AWS_DEFAULT_REGION
+            _loadTestAccountCredentials
+        fi
+        setAwsAccountCredentials
+        RUN_INDEX="$RUN_INDEX" runCDKTest && break
+        RUN_INDEX=$[$RUN_INDEX+1]
+        FIRST_RUN=false
+        echo "Attempt $RUN_INDEX completed."
+        sleep $SLEEP_DURATION
+    done
+    if [ $RUN_INDEX -ge $MAX_ATTEMPTS ]; then
+        echo "failed: runCDKTest" >&2
+        exit 1
+    fi
+
+    resetAwsAccountCredentials
+    TEST_SUITE=${TEST_SUITE:-"TestSuiteNotSet"}
+    aws cloudwatch put-metric-data --metric-name FlakyE2ETests --namespace amplify-category-api-e2e-tests --unit Count --value $RUN_INDEX --dimensions testFile=$TEST_SUITE --profile amplify-integ-test-user || true
+    echo "Attempt $RUN_INDEX succeeded."
+    exit 0 # don't fail the step if putting the metric fails
 }
 
 function _runGqlE2ETests {

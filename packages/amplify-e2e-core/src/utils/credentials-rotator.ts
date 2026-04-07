@@ -50,6 +50,7 @@ const tryRefreshCredentials = async (parentRoleArn: string, childRoleArn?: strin
 };
 
 let isRotationBackgroundTaskAlreadyScheduled = false;
+let credentialRefreshTimer: ReturnType<typeof setInterval> | undefined;
 
 /**
  * Schedules a background task that attempts to refresh test account credentials
@@ -66,20 +67,34 @@ export const tryScheduleCredentialRefresh = () => {
 
   if (process.env.CHILD_ACCOUNT_ROLE) {
     // Attempts to refresh credentials in background every 10 minutes.
-    setInterval(() => {
+    credentialRefreshTimer = setInterval(() => {
       void tryRefreshCredentials(process.env.TEST_ACCOUNT_ROLE, process.env.CHILD_ACCOUNT_ROLE);
     }, 10 * 60 * 1000);
+    credentialRefreshTimer.unref();
 
     console.log('Test profile credentials refresh was scheduled for child account');
   } else {
     // CDK tests and tests with USE_PARENT_ACCOUNT only use the parent account role.
     // Refresh the parent account credentials to prevent expiration during long-running tests.
-    setInterval(() => {
+    credentialRefreshTimer = setInterval(() => {
       void tryRefreshCredentials(process.env.TEST_ACCOUNT_ROLE);
     }, 10 * 60 * 1000);
+    credentialRefreshTimer.unref();
 
     console.log('Test profile credentials refresh was scheduled for parent account');
   }
 
   isRotationBackgroundTaskAlreadyScheduled = true;
+};
+
+/**
+ * Stops the credential refresh timer. Call this in afterAll to prevent
+ * "Cannot log after tests are done" warnings from Jest.
+ */
+export const stopCredentialRefresh = () => {
+  if (credentialRefreshTimer) {
+    clearInterval(credentialRefreshTimer);
+    credentialRefreshTimer = undefined;
+  }
+  isRotationBackgroundTaskAlreadyScheduled = false;
 };
