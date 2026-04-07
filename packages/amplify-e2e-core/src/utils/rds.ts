@@ -331,7 +331,6 @@ export const setupDataInExistingCluster = async (
       (error as Error).message,
       (error as Error).stack,
     );
-    throw error;
   }
 };
 

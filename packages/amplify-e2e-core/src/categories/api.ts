@@ -1125,7 +1125,7 @@ export const generateUnauthSQL = (
     },
   );
   if (opts.expectMessage) {
-    generateCommand.wait(opts.expectMessage);
+    generateCommand.expect(opts.expectMessage);
   }
 
   return generateCommand.runAsync();

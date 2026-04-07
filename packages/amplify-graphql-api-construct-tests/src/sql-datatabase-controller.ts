@@ -76,12 +76,6 @@ export class SqlDatatabaseController {
     if (!options.dbname || options.dbname.length == 0 || this.enableLocalTesting) {
       this.options.dbname = generateDBName().replace(/[^a-zA-Z0-9_]/g, '');
     }
-
-    // Ensure the identifier has the 'integtest' prefix so the reaper can find and clean up orphaned RDS instances.
-    // The reaper uses a /integtest/ regex to identify test resources eligible for cleanup.
-    if (!this.options.identifier.startsWith('integtest')) {
-      this.options.identifier = `integtest${this.options.identifier}`.substring(0, 63);
-    }
   }
 
   setupDatabase = async (): Promise<SqlDatabaseDetails> => {
