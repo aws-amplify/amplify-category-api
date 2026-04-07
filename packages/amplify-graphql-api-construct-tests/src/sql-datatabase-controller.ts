@@ -94,10 +94,17 @@ export class SqlDatatabaseController {
         const identifier = this.usePreProvisionedCluster
           ? preProvisionedClusterInfo.clusterIdentifier
           : getClusterIdFromLocalConfig(this.options.region, this.options.engine);
-        dbConfig = await setupDataInExistingCluster(identifier, this.options, this.setupQueries, preProvisionedClusterInfo?.secretArn);
-        this.clusterInfo = dbConfig;
-        this.options.username = dbConfig.username;
-        this.options.dbname = dbConfig.dbName;
+        try {
+          dbConfig = await setupDataInExistingCluster(identifier, this.options, this.setupQueries, preProvisionedClusterInfo?.secretArn);
+          this.clusterInfo = dbConfig;
+          this.options.username = dbConfig.username;
+          this.options.dbname = dbConfig.dbName;
+        } catch (err) {
+          console.log(`Pre-provisioned cluster setup failed, falling back to creating new cluster: ${err}`);
+          this.usePreProvisionedCluster = false;
+          dbConfig = await setupRDSClusterAndData(this.options, this.setupQueries);
+          this.clusterInfo = dbConfig;
+        }
       } else {
         dbConfig = await setupRDSClusterAndData(this.options, this.setupQueries);
         this.clusterInfo = dbConfig;
