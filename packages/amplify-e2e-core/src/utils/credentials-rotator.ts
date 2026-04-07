@@ -5,29 +5,6 @@ import * as fs from 'fs-extra';
 import { pathManager } from '@aws-amplify/amplify-cli-core';
 import { generateRandomShortId, TEST_PROFILE_NAME } from './index';
 
-const DEFAULT_REGION = 'us-east-1';
-
-/**
- * Ensures the test profile has a region set in ~/.aws/config.
- * This prevents the Amplify CLI from prompting for a region during `amplify init`,
- * which would cause the nexpect chain to hang.
- */
-const ensureProfileRegion = async () => {
-  const region = process.env.CLI_REGION || DEFAULT_REGION;
-  const configFilePath = pathManager.getAWSConfigFilePath();
-
-  await fs.ensureFile(configFilePath);
-  const existingContent = (await fs.readFile(configFilePath)).toString();
-  const configContents = existingContent.trim() ? ini.parse(existingContent) : {};
-
-  // In ~/.aws/config, non-default profiles use "profile <name>" as the section key
-  const profileKey = `profile ${TEST_PROFILE_NAME}`;
-  configContents[profileKey] = configContents[profileKey] || {};
-  configContents[profileKey].region = region;
-
-  await fs.writeFile(configFilePath, ini.stringify(configContents));
-};
-
 const refreshCredentials = async (roleArn: string, useCurrentCreds: boolean = false) => {
   let credentials = undefined;
   if (!useCurrentCreds) {
@@ -54,7 +31,6 @@ const refreshCredentials = async (roleArn: string, useCurrentCreds: boolean = fa
   process.env.AWS_SECRET_ACCESS_KEY = response.Credentials.SecretAccessKey;
   process.env.AWS_SESSION_TOKEN = response.Credentials.SessionToken;
   await fs.writeFile(pathManager.getAWSCredentialsFilePath(), ini.stringify(credentialsContents));
-  await ensureProfileRegion();
 };
 
 /**

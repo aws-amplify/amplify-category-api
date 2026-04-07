@@ -1,7 +1,7 @@
 import path from 'path';
 import {
   addApiWithoutSchema,
-  amplifyPushWithRetry,
+  amplifyPush,
   createNewProjectDir,
   deleteDBInstance,
   deleteProject,
@@ -61,7 +61,7 @@ export const testRDSModel = (engine: ImportedRDSType, queries: string[]): void =
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projName);
       await initProjectAndImportSchema();
-      await amplifyPushWithRetry(projRoot, false, {
+      await amplifyPush(projRoot, false, {
         useBetaSqlLayer: SQL_TESTS_USE_BETA,
       });
       await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.

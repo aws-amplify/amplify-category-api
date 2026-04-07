@@ -1,7 +1,7 @@
 import path from 'path';
 import {
   addApiWithAllAuthModes,
-  amplifyPushWithRetry,
+  amplifyPush,
   createNewProjectDir,
   deleteDBInstance,
   deleteProject,
@@ -159,7 +159,7 @@ export const testRdsIamAuth = (engine: ImportedRDSType, queries: string[]): void
         useVpc: true,
         apiExists: true,
       });
-      await amplifyPushWithRetry(projRoot, false, {
+      await amplifyPush(projRoot, false, {
         useBetaSqlLayer: SQL_TESTS_USE_BETA,
       });
 
@@ -195,7 +195,7 @@ export const testRdsIamAuth = (engine: ImportedRDSType, queries: string[]): void
 
       // Enable unauthenticated access to the Cognito resource and push again
       await enableUserPoolUnauthenticatedAccess(projRoot);
-      await amplifyPushWithRetry(projRoot, false, {
+      await amplifyPush(projRoot, false, {
         skipCodegen: true,
         useBetaSqlLayer: SQL_TESTS_USE_BETA,
       });

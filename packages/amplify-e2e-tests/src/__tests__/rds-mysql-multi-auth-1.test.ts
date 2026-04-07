@@ -1,6 +1,6 @@
 import {
   addApi,
-  amplifyPushWithRetry,
+  amplifyPush,
   createNewProjectDir,
   deleteDBInstance,
   deleteProject,
@@ -124,7 +124,7 @@ describe('RDS Cognito userpool provider Auth tests', () => {
     writeFileSync(rdsSchemaFilePath, appendAmplifyInput(schema, ImportedRDSType.MYSQL), 'utf8');
 
     await updateAuthAddUserGroups(projRoot, [adminGroupName, devGroupName, moderatorGroupName]);
-    await amplifyPushWithRetry(projRoot, false, {
+    await amplifyPush(projRoot, false, {
       useBetaSqlLayer: SQL_TESTS_USE_BETA,
     });
     await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.
