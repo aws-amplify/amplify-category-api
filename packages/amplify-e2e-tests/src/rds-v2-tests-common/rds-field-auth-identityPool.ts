@@ -1,6 +1,6 @@
 import {
   addApiWithAllAuthModes,
-  amplifyPush,
+  amplifyPushWithRetry,
   apiGqlCompile,
   createNewProjectDir,
   deleteDBInstance,
@@ -60,7 +60,7 @@ export const testRdsIdentityPoolFieldAuth = (engine: ImportedRDSType, queries: s
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projName);
       await initProjectAndImportSchema();
-      await amplifyPush(projRoot, false, {
+      await amplifyPushWithRetry(projRoot, false, {
         useBetaSqlLayer: SQL_TESTS_USE_BETA,
       });
 
@@ -68,7 +68,7 @@ export const testRdsIdentityPoolFieldAuth = (engine: ImportedRDSType, queries: s
       await apiGqlCompile(projRoot, false, {
         forceCompile: true,
       });
-      await amplifyPush(projRoot, false, {
+      await amplifyPushWithRetry(projRoot, false, {
         skipCodegen: true,
         useBetaSqlLayer: SQL_TESTS_USE_BETA,
       });

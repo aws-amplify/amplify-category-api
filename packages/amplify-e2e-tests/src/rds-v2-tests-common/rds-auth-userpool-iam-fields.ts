@@ -1,6 +1,6 @@
 import {
   addApiWithAllAuthModes,
-  amplifyPush,
+  amplifyPushWithRetry,
   createNewProjectDir,
   deleteDBInstance,
   deleteProject,
@@ -190,13 +190,13 @@ export const testRdsUserpoolIAMFieldAuth = (engine: ImportedRDSType, queries: st
       writeFileSync(rdsSchemaFilePath, rdsSchema, 'utf8');
       // Enable unauthenticated access to the Cognito resource and push again
       await enableUserPoolUnauthenticatedAccess(projRoot);
-      await amplifyPush(projRoot, false, {
+      await amplifyPushWithRetry(projRoot, false, {
         useBetaSqlLayer: SQL_TESTS_USE_BETA,
       });
       // Make a dummy edit for schema and re-push
       // This is a known bug in which deploying the userpool auth with sql schema cannot be done within one push
       writeFileSync(rdsSchemaFilePath, `${rdsSchema}\n`, 'utf8');
-      await amplifyPush(projRoot, false, {
+      await amplifyPushWithRetry(projRoot, false, {
         skipCodegen: true,
         useBetaSqlLayer: SQL_TESTS_USE_BETA,
       });

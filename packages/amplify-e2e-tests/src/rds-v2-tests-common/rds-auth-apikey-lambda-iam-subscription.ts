@@ -1,6 +1,6 @@
 import {
   addApiWithAllAuthModes,
-  amplifyPush,
+  amplifyPushWithRetry,
   createNewProjectDir,
   deleteDBInstance,
   deleteProject,
@@ -71,14 +71,14 @@ export const testApiKeyLambdaIamAuthSubscription = (engine: ImportedRDSType, que
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projName);
       await initProjectAndImportSchema();
-      await amplifyPush(projRoot, false, {
+      await amplifyPushWithRetry(projRoot, false, {
         useBetaSqlLayer: SQL_TESTS_USE_BETA,
       });
 
       await apiGqlCompile(projRoot, false, {
         forceCompile: true,
       });
-      await amplifyPush(projRoot, false, {
+      await amplifyPushWithRetry(projRoot, false, {
         skipCodegen: true,
         useBetaSqlLayer: SQL_TESTS_USE_BETA,
       });

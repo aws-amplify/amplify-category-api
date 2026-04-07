@@ -1,6 +1,6 @@
 import {
   addApiWithoutSchema,
-  amplifyPush,
+  amplifyPushWithRetry,
   createNewProjectDir,
   deleteDBInstance,
   deleteProject,
@@ -53,7 +53,7 @@ describe('RDS Model Directive', () => {
     projRoot = await createNewProjectDir('rdsmodelapi');
     await initProjectAndImportSchema();
 
-    await amplifyPush(projRoot);
+    await amplifyPushWithRetry(projRoot);
     await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.
     await verifyApiEndpointAndCreateClient();
 

@@ -1,7 +1,7 @@
 import path from 'path';
 import {
   addApiWithoutSchema,
-  amplifyPush,
+  amplifyPushWithRetry,
   apiGenerateSchema,
   createNewProjectDir,
   deleteDBInstance,
@@ -44,7 +44,7 @@ describe('RDS Relational Directives', () => {
   beforeAll(async () => {
     projRoot = await createNewProjectDir('rdsmodelapi');
     await initProjectAndImportSchema();
-    await amplifyPush(projRoot, false, {
+    await amplifyPushWithRetry(projRoot, false, {
       useBetaSqlLayer: SQL_TESTS_USE_BETA,
     });
     await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.

@@ -19,12 +19,37 @@ import { getCLIPath, nspawn as spawn, sleep } from '..';
 
 const pushTimeoutMS = 1000 * 60 * 75; // 75 minutes;
 
-const PUSH_RETRY_DELAY_MS = 1000 * 60; // 1 minute between retries
-const PUSH_MAX_RETRIES = 2; // up to 2 retries (3 total attempts)
+const PUSH_RETRY_BASE_DELAY_MS = 1000 * 30; // 30s base delay (30s, 60s, 120s with exponential backoff)
+const PUSH_MAX_RETRIES = 3; // up to 3 retries (4 total attempts)
 
 /**
- * Wraps amplifyPush with retry logic for transient failures (e.g., CFN throttling, service limits).
- * Retries up to PUSH_MAX_RETRIES times with a delay between attempts.
+ * Patterns that indicate transient AWS service errors worth retrying.
+ * These include HTML error pages (503/504), throttling, and CFN service limits.
+ */
+const TRANSIENT_ERROR_PATTERNS = [
+  /Unexpected token '<'/i, // HTML error page returned instead of JSON (503/504)
+  /<!DOCTYPE/i, // HTML error page content
+  /is not valid JSON/i, // JSON parse failure from HTML response
+  /ETIMEDOUT/i,
+  /ECONNRESET/i,
+  /socket hang up/i,
+  /Rate exceeded/i,
+  /Throttling/i,
+  /TooManyRequestsException/i,
+  /ServiceUnavailable/i,
+  /Internal ?Server ?Error/i,
+  /EPIPE/i,
+];
+
+const isTransientError = (error: Error): boolean => {
+  const message = error.message || '';
+  return TRANSIENT_ERROR_PATTERNS.some((pattern) => pattern.test(message));
+};
+
+/**
+ * Wraps amplifyPush with retry logic for transient failures.
+ * Handles HTML error responses (503/504), CFN throttling, and service limits.
+ * Uses exponential backoff: 30s, 60s, 120s between retries.
  */
 export async function amplifyPushWithRetry(
   cwd: string,
@@ -42,8 +67,12 @@ export async function amplifyPushWithRetry(
     } catch (err) {
       lastError = err instanceof Error ? err : new Error(String(err));
       if (attempt < PUSH_MAX_RETRIES) {
-        console.warn(`amplifyPush attempt ${attempt + 1} failed: ${lastError.message}. Retrying in ${PUSH_RETRY_DELAY_MS / 1000}s...`);
-        await sleep(PUSH_RETRY_DELAY_MS);
+        const delayMs = PUSH_RETRY_BASE_DELAY_MS * Math.pow(2, attempt);
+        const isTransient = isTransientError(lastError);
+        console.warn(
+          `amplifyPush attempt ${attempt + 1}/${PUSH_MAX_RETRIES + 1} failed${isTransient ? ' (transient error)' : ''}: ${lastError.message}. Retrying in ${delayMs / 1000}s...`,
+        );
+        await sleep(delayMs);
       }
     }
   }

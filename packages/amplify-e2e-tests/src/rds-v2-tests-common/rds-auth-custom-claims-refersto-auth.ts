@@ -1,6 +1,6 @@
 import {
   addApi,
-  amplifyPush,
+  amplifyPushWithRetry,
   createNewProjectDir,
   deleteDBInstance,
   deleteProject,
@@ -130,7 +130,7 @@ export const testCustomClaimsRefersTo = (engine: ImportedRDSType): void => {
       writeFileSync(rdsSchemaFilePath, appendAmplifyInput(schema, engine), 'utf8');
 
       await updateAuthAddUserGroups(projRoot, [adminGroupName, devGroupName]);
-      await amplifyPush(projRoot, false, {
+      await amplifyPushWithRetry(projRoot, false, {
         useBetaSqlLayer: SQL_TESTS_USE_BETA,
       });
       await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.

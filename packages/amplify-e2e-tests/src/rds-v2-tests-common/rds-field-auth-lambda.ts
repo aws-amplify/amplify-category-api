@@ -1,6 +1,6 @@
 import {
   addApiWithAllAuthModes,
-  amplifyPush,
+  amplifyPushWithRetry,
   createNewProjectDir,
   deleteDBInstance,
   deleteProject,
@@ -59,7 +59,7 @@ export const testRdsLambdaAuthorizerFieldAuth = (engine: ImportedRDSType, querie
     beforeAll(async () => {
       projRoot = await createNewProjectDir(projName);
       await initProjectAndImportSchema();
-      await amplifyPush(projRoot, false, {
+      await amplifyPushWithRetry(projRoot, false, {
         useBetaSqlLayer: SQL_TESTS_USE_BETA,
       });
       await sleep(2 * 60 * 1000); // Wait for 2 minutes for the VPC endpoints to be live.
