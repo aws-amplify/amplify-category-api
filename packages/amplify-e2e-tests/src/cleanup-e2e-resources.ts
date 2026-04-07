@@ -146,6 +146,89 @@ type AWSAccountInfo = {
 };
 
 /**
+ * Resource types tracked in the cleanup summary.
+ */
+type CleanupResourceType = 'S3 buckets' | 'CFN stacks' | 'Amplify apps' | 'IAM roles' | 'RDS instances' | 'AppSync APIs';
+
+/**
+ * Per-region counters for successful and failed deletions, keyed by resource type.
+ */
+type RegionCleanupCounts = Record<CleanupResourceType, { success: number; failure: number }>;
+
+/**
+ * Summary of cleanup operations across all regions for a single account.
+ * Keyed by region name (or 'global' for region-less resources like IAM roles).
+ */
+type CleanupSummary = Record<string, RegionCleanupCounts>;
+
+const ALL_RESOURCE_TYPES: CleanupResourceType[] = ['S3 buckets', 'CFN stacks', 'Amplify apps', 'IAM roles', 'RDS instances', 'AppSync APIs'];
+
+const createEmptyRegionCounts = (): RegionCleanupCounts => {
+  const counts = {} as RegionCleanupCounts;
+  for (const rt of ALL_RESOURCE_TYPES) {
+    counts[rt] = { success: 0, failure: 0 };
+  }
+  return counts;
+};
+
+const createCleanupSummary = (): CleanupSummary => ({});
+
+const recordCleanupResult = (
+  summary: CleanupSummary,
+  region: string,
+  resourceType: CleanupResourceType,
+  succeeded: boolean,
+): void => {
+  if (!summary[region]) {
+    summary[region] = createEmptyRegionCounts();
+  }
+  if (succeeded) {
+    summary[region][resourceType].success++;
+  } else {
+    summary[region][resourceType].failure++;
+  }
+};
+
+const printCleanupSummary = (summary: CleanupSummary, accountLabel: string): void => {
+  const regions = Object.keys(summary).sort();
+  if (regions.length === 0) {
+    console.log(`\n${accountLabel} === CLEANUP SUMMARY ===`);
+    console.log(`${accountLabel} No resources were processed.`);
+    return;
+  }
+
+  const totals = createEmptyRegionCounts();
+
+  console.log(`\n${accountLabel} === CLEANUP SUMMARY ===`);
+  for (const region of regions) {
+    const counts = summary[region];
+    const parts: string[] = [];
+    for (const rt of ALL_RESOURCE_TYPES) {
+      const { success, failure } = counts[rt];
+      if (success > 0 || failure > 0) {
+        const failSuffix = failure > 0 ? ` (${failure} failed)` : '';
+        parts.push(`${success} ${rt}${failSuffix}`);
+      }
+      totals[rt].success += success;
+      totals[rt].failure += failure;
+    }
+    if (parts.length > 0) {
+      console.log(`${accountLabel} ${region}: ${parts.join(', ')}`);
+    }
+  }
+
+  const totalParts: string[] = [];
+  for (const rt of ALL_RESOURCE_TYPES) {
+    const { success, failure } = totals[rt];
+    if (success > 0 || failure > 0) {
+      const failSuffix = failure > 0 ? ` (${failure} failed)` : '';
+      totalParts.push(`${success} ${rt}${failSuffix}`);
+    }
+  }
+  console.log(`${accountLabel} TOTAL: ${totalParts.length > 0 ? totalParts.join(', ') : 'nothing deleted'}`);
+};
+
+/**
  * Determines if an error is transient and should be retried.
  * Covers HTTP 5xx responses (which may return HTML bodies causing JSON parse errors),
  * network timeouts, and throttling.
@@ -805,38 +888,40 @@ const mergeResourcesByCCIJob = async (
   return result;
 };
 
-const deleteAmplifyApps = async (account: AWSAccountInfo, accountIndex: number, apps: AmplifyAppInfo[]): Promise<void> => {
-  await Promise.all(apps.map((app) => deleteAmplifyApp(account, accountIndex, app)));
+const deleteAmplifyApps = async (account: AWSAccountInfo, accountIndex: number, apps: AmplifyAppInfo[], summary: CleanupSummary): Promise<void> => {
+  await Promise.all(apps.map((app) => deleteAmplifyApp(account, accountIndex, app, summary)));
 };
 
-const deleteAmplifyApp = async (account: AWSAccountInfo, accountIndex: number, app: AmplifyAppInfo): Promise<void> => {
+const deleteAmplifyApp = async (account: AWSAccountInfo, accountIndex: number, app: AmplifyAppInfo, summary: CleanupSummary): Promise<void> => {
   const { name, appId, region } = app;
   console.log(`${generateAccountInfo(account, accountIndex)} Deleting App ${name}(${appId})`);
   const amplifyClient = new AmplifyClient({ credentials: account.credentials, region });
   try {
     const deleteAppCommand = new DeleteAppCommand({ appId });
     await amplifyClient.send(deleteAppCommand);
+    recordCleanupResult(summary, region, 'Amplify apps', true);
   } catch (e) {
     console.log('Error', JSON.stringify(e));
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting Amplify App ${appId} failed with the following error`, e);
+    recordCleanupResult(summary, region, 'Amplify apps', false);
     if (e.name === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
   }
 };
 
-const deleteIamRoles = async (account: AWSAccountInfo, accountIndex: number, roles: IamRoleInfo[]): Promise<void> => {
+const deleteIamRoles = async (account: AWSAccountInfo, accountIndex: number, roles: IamRoleInfo[], summary: CleanupSummary): Promise<void> => {
   // Sending consecutive delete role requests is throwing Rate limit exceeded exception.
   // We introduce a brief delay between batches
   const batchSize = 20;
   for (let i = 0; i < roles.length; i += batchSize) {
     const rolesToDelete = roles.slice(i, i + batchSize);
-    await Promise.all(rolesToDelete.map((role) => deleteIamRole(account, accountIndex, role)));
+    await Promise.all(rolesToDelete.map((role) => deleteIamRole(account, accountIndex, role, summary)));
     await sleep(5000);
   }
 };
 
-const deleteIamRole = async (account: AWSAccountInfo, accountIndex: number, role: IamRoleInfo): Promise<void> => {
+const deleteIamRole = async (account: AWSAccountInfo, accountIndex: number, role: IamRoleInfo, summary: CleanupSummary): Promise<void> => {
   const { name: roleName } = role;
   try {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting Iam Role ${roleName}`);
@@ -844,9 +929,11 @@ const deleteIamRole = async (account: AWSAccountInfo, accountIndex: number, role
     await deleteAttachedRolePolicies(account, accountIndex, roleName);
     await deleteRolePolicies(account, accountIndex, roleName);
     await iamClient.send(new DeleteRoleCommand({ RoleName: roleName }));
+    recordCleanupResult(summary, 'global', 'IAM roles', true);
   } catch (e) {
     console.log('Error', JSON.stringify(e));
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting iam role ${roleName} failed with error ${e.message}`);
+    recordCleanupResult(summary, 'global', 'IAM roles', false);
     if (e.name === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
@@ -897,11 +984,11 @@ const deleteIamRolePolicy = async (account: AWSAccountInfo, accountIndex: number
   }
 };
 
-const deleteBuckets = async (account: AWSAccountInfo, accountIndex: number, buckets: S3BucketInfo[]): Promise<void> => {
-  await Promise.all(buckets.map((bucket) => deleteBucket(account, accountIndex, bucket)));
+const deleteBuckets = async (account: AWSAccountInfo, accountIndex: number, buckets: S3BucketInfo[], summary: CleanupSummary): Promise<void> => {
+  await Promise.all(buckets.map((bucket) => deleteBucket(account, accountIndex, bucket, summary)));
 };
 
-const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucket: S3BucketInfo): Promise<void> => {
+const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucket: S3BucketInfo, summary: CleanupSummary): Promise<void> => {
   const { name } = bucket;
   try {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting S3 Bucket ${name}`);
@@ -910,38 +997,42 @@ const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucke
       credentials: account.credentials,
     });
     await deleteS3Bucket(name, regionalizedS3Client);
+    recordCleanupResult(summary, bucket.region, 'S3 buckets', true);
   } catch (e) {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting bucket ${name} failed with error ${e.message}`);
+    recordCleanupResult(summary, bucket.region, 'S3 buckets', false);
     if (e.name === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
   }
 };
 
-const deleteRdsInstances = async (account: AWSAccountInfo, accountIndex: number, instances: RdsInstanceInfo[]): Promise<void> => {
-  await Promise.all(instances.map((instance) => deleteRdsInstance(account, accountIndex, instance)));
+const deleteRdsInstances = async (account: AWSAccountInfo, accountIndex: number, instances: RdsInstanceInfo[], summary: CleanupSummary): Promise<void> => {
+  await Promise.all(instances.map((instance) => deleteRdsInstance(account, accountIndex, instance, summary)));
 };
 
-const deleteRdsInstance = async (account: AWSAccountInfo, accountIndex: number, instance: RdsInstanceInfo): Promise<void> => {
+const deleteRdsInstance = async (account: AWSAccountInfo, accountIndex: number, instance: RdsInstanceInfo, summary: CleanupSummary): Promise<void> => {
   const { identifier, region } = instance;
   console.log(`${generateAccountInfo(account, accountIndex)} Deleting RDS instance ${identifier}`);
   try {
     const rdsClient = new RDSClient({ credentials: account.credentials, region });
     await rdsClient.send(new DeleteDBInstanceCommand({ DBInstanceIdentifier: identifier, SkipFinalSnapshot: true }));
+    recordCleanupResult(summary, region, 'RDS instances', true);
   } catch (e) {
     console.log('Error', JSON.stringify(e));
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting instance ${identifier} failed with error ${e.message}`);
+    recordCleanupResult(summary, region, 'RDS instances', false);
     if (e.name === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
   }
 };
 
-const deleteAppSyncApis = async (account: AWSAccountInfo, accountIndex: number, apis: AppSyncApiInfo[]): Promise<void> => {
-  await Promise.all(apis.map((api) => deleteAppSyncApi(account, accountIndex, api)));
+const deleteAppSyncApis = async (account: AWSAccountInfo, accountIndex: number, apis: AppSyncApiInfo[], summary: CleanupSummary): Promise<void> => {
+  await Promise.all(apis.map((api) => deleteAppSyncApi(account, accountIndex, api, summary)));
 };
 
-const deleteAppSyncApi = async (account: AWSAccountInfo, accountIndex: number, api: AppSyncApiInfo): Promise<void> => {
+const deleteAppSyncApi = async (account: AWSAccountInfo, accountIndex: number, api: AppSyncApiInfo, summary: CleanupSummary): Promise<void> => {
   const { apiId, name, region } = api;
   console.log(`${generateAccountInfo(account, accountIndex)} Deleting AppSync API ${name}(${apiId})`);
   try {
@@ -950,20 +1041,22 @@ const deleteAppSyncApi = async (account: AWSAccountInfo, accountIndex: number, a
       () => appSyncClient.send(new DeleteGraphqlApiCommand({ apiId })),
       `DeleteGraphqlApi(${account.accountId}/${region}/${apiId})`,
     );
+    recordCleanupResult(summary, region, 'AppSync APIs', true);
   } catch (e) {
     console.log('Error', JSON.stringify(e));
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting AppSync API ${name}(${apiId}) failed with error ${e.message}`);
+    recordCleanupResult(summary, region, 'AppSync APIs', false);
     if (e.name === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
   }
 };
 
-const deleteCfnStacks = async (account: AWSAccountInfo, accountIndex: number, stacks: StackInfo[]): Promise<void> => {
-  await Promise.all(stacks.map((stack) => deleteCfnStack(account, accountIndex, stack)));
+const deleteCfnStacks = async (account: AWSAccountInfo, accountIndex: number, stacks: StackInfo[], summary: CleanupSummary): Promise<void> => {
+  await Promise.all(stacks.map((stack) => deleteCfnStack(account, accountIndex, stack, summary)));
 };
 
-const deleteCfnStack = async (account: AWSAccountInfo, accountIndex: number, stack: StackInfo): Promise<void> => {
+const deleteCfnStack = async (account: AWSAccountInfo, accountIndex: number, stack: StackInfo, summary: CleanupSummary): Promise<void> => {
   const { stackName, region, resourcesFailedToDelete } = stack;
   const resourceToRetain = resourcesFailedToDelete && resourcesFailedToDelete.length ? resourcesFailedToDelete : undefined;
   console.log(`${generateAccountInfo(account, accountIndex)} Deleting CloudFormation stack ${stackName}`);
@@ -977,9 +1070,11 @@ const deleteCfnStack = async (account: AWSAccountInfo, accountIndex: number, sta
       }),
     );
     await waitUntilStackDeleteComplete({ client: cfnClient, maxWaitTime: 600 }, { StackName: stackName });
+    recordCleanupResult(summary, region, 'CFN stacks', true);
   } catch (e) {
     console.log('Error', JSON.stringify(e));
     console.log(`Deleting CloudFormation stack ${stackName} failed with error ${e.message}`);
+    recordCleanupResult(summary, region, 'CFN stacks', false);
     if (e.name === 'ExpiredTokenException') {
       handleExpiredTokenException();
     }
@@ -1000,31 +1095,32 @@ const deleteResources = async (
   account: AWSAccountInfo,
   accountIndex: number,
   staleResources: Record<string, ReportEntry>,
+  summary: CleanupSummary,
 ): Promise<void> => {
   for (const jobId of Object.keys(staleResources)) {
     const resources = staleResources[jobId];
     if (resources.amplifyApps) {
-      await deleteAmplifyApps(account, accountIndex, Object.values(resources.amplifyApps));
+      await deleteAmplifyApps(account, accountIndex, Object.values(resources.amplifyApps), summary);
     }
 
     if (resources.stacks) {
-      await deleteCfnStacks(account, accountIndex, Object.values(resources.stacks));
+      await deleteCfnStacks(account, accountIndex, Object.values(resources.stacks), summary);
     }
 
     if (resources.buckets) {
-      await deleteBuckets(account, accountIndex, Object.values(resources.buckets));
+      await deleteBuckets(account, accountIndex, Object.values(resources.buckets), summary);
     }
 
     if (resources.roles) {
-      await deleteIamRoles(account, accountIndex, Object.values(resources.roles));
+      await deleteIamRoles(account, accountIndex, Object.values(resources.roles), summary);
     }
 
     if (resources.instances) {
-      await deleteRdsInstances(account, accountIndex, Object.values(resources.instances));
+      await deleteRdsInstances(account, accountIndex, Object.values(resources.instances), summary);
     }
 
     if (resources.appSyncApis) {
-      await deleteAppSyncApis(account, accountIndex, Object.values(resources.appSyncApis));
+      await deleteAppSyncApis(account, accountIndex, Object.values(resources.appSyncApis), summary);
     }
   }
 };
@@ -1160,12 +1256,14 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const staleResources = _.pickBy(allResources, filterPredicate);
 
   generateReport(staleResources, accountIndex);
+  const summary = createCleanupSummary();
   if (process.env.SKIP_DELETE) {
     console.log('🧸 Skipping delete ($SKIP_DELETE)');
   } else {
-    await deleteResources(account, accountIndex, staleResources);
+    await deleteResources(account, accountIndex, staleResources, summary);
   }
-  console.log(`${generateAccountInfo(account, accountIndex)} Cleanup done!`);
+  printCleanupSummary(summary, accountLabel);
+  console.log(`${accountLabel} Cleanup done!`);
 };
 
 const generateAccountInfo = (account: AWSAccountInfo, accountIndex: number): string => {
