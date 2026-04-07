@@ -66,9 +66,42 @@ export async function amplifyPushWithRetry(
       return;
     } catch (err) {
       lastError = err instanceof Error ? err : new Error(String(err));
+      const isTransient = isTransientError(lastError);
+
+      // Log full error details for debugging HTML/transient errors
+      console.log(`[amplifyPushWithRetry] Attempt ${attempt + 1}/${PUSH_MAX_RETRIES + 1} failed.`);
+      console.log(`[amplifyPushWithRetry] Error message: ${lastError.message}`);
+      if (lastError.stack) {
+        console.log(`[amplifyPushWithRetry] Stack trace: ${lastError.stack}`);
+      }
+      // Log additional error properties (e.g. AssertionError actual/expected, AWS $response)
+      try {
+        const errKeys = Object.keys(lastError).filter((k) => !['message', 'stack'].includes(k));
+        if (errKeys.length > 0) {
+          const extras: Record<string, any> = {};
+          for (const key of errKeys) {
+            extras[key] = (lastError as any)[key];
+          }
+          console.log(`[amplifyPushWithRetry] Additional error properties: ${JSON.stringify(extras, null, 2)}`);
+        }
+      } catch (logErr) {
+        console.log(`[amplifyPushWithRetry] Could not serialize error properties: ${logErr}`);
+      }
+      // Check for AWS SDK raw response
+      if ((err as any)?.$response) {
+        try {
+          console.log(`[amplifyPushWithRetry] Raw $response: ${JSON.stringify((err as any).$response, null, 2)}`);
+        } catch (logErr) {
+          console.log(`[amplifyPushWithRetry] $response present but not serializable: ${logErr}`);
+        }
+      }
+      // If the error contains HTML content, highlight it for debugging
+      if (isTransient && /<!DOCTYPE|<html|<body/i.test(lastError.message)) {
+        console.log(`[amplifyPushWithRetry] ⚠️  HTML error page detected in CLI output. Full error body above.`);
+      }
+
       if (attempt < PUSH_MAX_RETRIES) {
         const delayMs = PUSH_RETRY_BASE_DELAY_MS * Math.pow(2, attempt);
-        const isTransient = isTransientError(lastError);
         console.warn(
           `amplifyPush attempt ${attempt + 1}/${PUSH_MAX_RETRIES + 1} failed${isTransient ? ' (transient error)' : ''}: ${lastError.message}. Retrying in ${delayMs / 1000}s...`,
         );
@@ -134,6 +167,11 @@ export function amplifyPush(
       if (!err) {
         resolve();
       } else {
+        // Log full CLI output for debugging transient HTML errors (503/504)
+        console.log(`[amplifyPush] Push failed. Full error message:\n${err.message}`);
+        if (/<!DOCTYPE|<html|<body|Unexpected token '<'/i.test(err.message)) {
+          console.log(`[amplifyPush] ⚠️  HTML error page detected in CLI output — likely a transient AWS service error (503/504/rate limit).`);
+        }
         reject(err);
       }
     });
