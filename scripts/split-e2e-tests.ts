@@ -473,11 +473,6 @@ const main = (): void => {
     builds = builds.filter((build) => !EXCLUDE_TEST_IDS.includes(build.identifier));
   }
 
-  // Mark all test builds with ignore-failure so that the batch continues
-  // even when individual test jobs fail. Without this, any single test
-  // failure would stop the entire batch.
-  builds = builds.map((build) => ({ ...build, 'ignore-failure': true }));
-
   const cleanupResources: BatchBuildJob = {
     identifier: 'cleanup_e2e_resources',
     buildspec: 'codebuild_specs/cleanup_e2e_resources.yml',
