@@ -607,7 +607,7 @@ const listStacks = async (client: CloudFormationClient, stackStatusFilter: Stack
           StackStatusFilter: stackStatusFilter,
         }),
       );
-      return { token: response.NextToken, items: response.StackSummaries };
+      return { nextPage: response.NextToken, items: response.StackSummaries };
     });
   } catch (e: any) {
     if (e?.name === 'InvalidClientTokenId') {
@@ -1131,7 +1131,8 @@ const deleteResources = async (
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getFilterPredicate = (args: any): JobFilterPredicate => {
   const filterByJobId = (jobId: string) => (job: ReportEntry) => job.jobId === jobId;
-  const filterByBuildBatchArn = (buildBatchArn: string) => (job: ReportEntry) => job.buildBatchArn === buildBatchArn;
+  const filterByBuildBatchArn = (buildBatchArn: string) => (job: ReportEntry) =>
+    job.buildBatchArn === buildBatchArn || job.jobId === ORPHAN;
   const filterAllStaleResources = () => (job: ReportEntry) => job.buildComplete || job.jobId === ORPHAN;
 
   if (args._.length === 0) {
