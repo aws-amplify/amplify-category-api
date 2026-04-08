@@ -140,15 +140,6 @@ batch:
           CANARY_METRIC_NAME: DefaultDynamoDbModelDataSourceStrategySuccessRate
       depend-on:
         - publish_to_local_registry
-    - identifier: default_ddb_canary_me_south_1
-      buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
-      env:
-        variables:
-          TEST_SUITE: src/__tests__/default-ddb-canary.test.ts
-          CLI_REGION: me-south-1
-          CANARY_METRIC_NAME: DefaultDynamoDbModelDataSourceStrategySuccessRate
-      depend-on:
-        - publish_to_local_registry
     - identifier: default_ddb_canary_sa_east_1
       buildspec: codebuild_specs/run_cdk_canary_e2e_tests.yml
       env:
