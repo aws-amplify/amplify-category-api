@@ -1,12 +1,6 @@
 #!/bin/bash
 
 AMPLIFY_NODE_VERSION=24.12.0
-# The externally-published Amplify CLI (@aws-amplify/cli-internal) was built
-# and tested on Node 22. Running it on Node 24 causes "error adding the
-# function resource" failures because the CLI has not been updated for Node 24
-# breaking changes (url.parse removal, fs constant deprecations, etc.).
-# Use Node 22 LTS for E2E/CDK tests that exercise the CLI.
-E2E_NODE_VERSION=22
 
 # set exit on error to true
 set -e
@@ -340,17 +334,17 @@ function _setupE2ETestsLinux {
     echo "Setup E2E Tests Linux"
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
-    _setupNodeVersion $E2E_NODE_VERSION
+    _setupNodeVersion $AMPLIFY_NODE_VERSION
     _installCLIFromLocalRegistry
     _loadTestAccountCredentials
     _setShell
 }
 
 function _setupCDKTestsLinux {
-    echo "Setup CDK Tests Linux"
+    echo "Setup E2E Tests Linux"
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
-    _setupNodeVersion $E2E_NODE_VERSION
+    _setupNodeVersion $AMPLIFY_NODE_VERSION
     _installCLIFromLocalRegistry
     yarn package
     _loadTestAccountCredentials
@@ -406,8 +400,8 @@ function _runCDKTestsLinux {
 function _runGqlE2ETests {
     echo "RUN GraphQL E2E tests"
 
-    # Use E2E Node version for CLI compatibility (requires >= 18.18.0)
-    _setupNodeVersion $E2E_NODE_VERSION
+    # Set Node.js version to $AMPLIFY_NODE_VERSION as one of the package requires version ">= 18.18.0"
+    _setupNodeVersion $AMPLIFY_NODE_VERSION
 
     loadCacheFromBuildJob
     _loadTestAccountCredentials
@@ -417,8 +411,8 @@ function _runCanaryTest {
     echo RUN Canary Test
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
-    # Use E2E Node version for CLI compatibility (requires >= 18.18.0)
-    _setupNodeVersion $E2E_NODE_VERSION
+    # Set Node.js version to $AMPLIFY_NODE_VERSION as one of the package requires version ">= 18.18.0"
+    _setupNodeVersion $AMPLIFY_NODE_VERSION
     _installCLIFromLocalRegistry
     _loadTestAccountCredentials
     _setShell
