@@ -167,3 +167,24 @@ batch:
           CANARY_METRIC_NAME: MySQLLambdaModelDataSourceStrategySuccessRate
       depend-on:
         - publish_to_local_registry
+    - identifier: cleanup_e2e_resources
+      buildspec: codebuild_specs/cleanup_e2e_resources.yml
+      env:
+        compute-type: BUILD_GENERAL1_SMALL
+      depend-on:
+        - sql_mysql_canary_ap_northeast_1
+        - sql_mysql_canary_ap_northeast_2
+        - sql_mysql_canary_ap_south_1
+        - sql_mysql_canary_ap_southeast_1
+        - sql_mysql_canary_ap_southeast_2
+        - sql_mysql_canary_ca_central_1
+        - sql_mysql_canary_eu_central_1
+        - sql_mysql_canary_eu_north_1
+        - sql_mysql_canary_eu_west_1
+        - sql_mysql_canary_eu_west_2
+        - sql_mysql_canary_eu_west_3
+        - sql_mysql_canary_sa_east_1
+        - sql_mysql_canary_us_east_1
+        - sql_mysql_canary_us_east_2
+        - sql_mysql_canary_us_west_1
+        - sql_mysql_canary_us_west_2

@@ -8,6 +8,8 @@ type TestRegion = {
   optIn: boolean;
   cognitoSupported: boolean;
   betaLayerDeployed: boolean; // is the beta layer deployed in this region
+  disabled?: boolean;
+  disabledReason?: string;
 };
 
 const DEFAULT_VARIABLES = {
@@ -20,7 +22,7 @@ const REPO_ROOT = join(__dirname, '..');
 
 const supportedRegionsPath = join(REPO_ROOT, 'scripts', 'e2e-test-regions.json');
 const supportedRegions: TestRegion[] = JSON.parse(fs.readFileSync(supportedRegionsPath, 'utf-8'));
-const testRegions = supportedRegions.map((region) => region.name);
+const testRegions = supportedRegions.filter((region) => !(region as any).disabled).map((region) => region.name);
 const supportedRegionsByRegionName: Record<string, TestRegion> = supportedRegions.reduce(
   (acc, region) => ({ ...acc, [region.name]: region }),
   {},
