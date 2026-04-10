@@ -55,7 +55,7 @@ export const amplifyPull = (
         .wait('Local changes detected')
         .wait('Pulling changes from the cloud will override your local changes')
         .wait('Are you sure you would like to continue')
-        .sendConfirmYes();
+        .sendYes();
     }
 
     if (settings.noUpdateBackend) {

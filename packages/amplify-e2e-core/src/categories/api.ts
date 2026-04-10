@@ -89,7 +89,7 @@ export const addApiWithoutSchema = async (
       .wait('Choose a schema template:')
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
-      .sendConfirmNo()
+      .sendNo()
       .wait(
         '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud',
       )
@@ -116,7 +116,7 @@ export function addApiWithOneModel(cwd: string, opts: Partial<AddApiOptions & { 
       .wait('Choose a schema template:')
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
-      .sendConfirmNo()
+      .sendNo()
       .wait(
         '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud',
       )
@@ -145,7 +145,7 @@ export function addApiWithThreeModels(cwd: string, opts: Partial<AddApiOptions &
       .sendKeyDown(1)
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
-      .sendConfirmNo()
+      .sendNo()
       .wait(
         '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud',
       )
@@ -235,7 +235,7 @@ export function addApiWithBlankSchemaAndConflictDetection(
       .sendKeyUp()
       .sendCarriageReturn()
       .wait(/.*Enable conflict detection.*/)
-      .sendConfirmYes()
+      .sendYes()
       .wait(/.*Select the default resolution strategy.*/);
 
     selectConflictHandlerType(chain, { conflictHandlerType: opts.conflictHandlerType || ConflictHandlerType.AUTOMERGE, isUpdate: false });
@@ -288,7 +288,7 @@ export function addApiWithAllAuthModes(cwd: string, opts: Partial<AddApiOptions 
       .wait(/.*After how many days from now the API key should expire.*/)
       .sendLine('300')
       .wait(/.*Configure additional auth types.*/)
-      .sendConfirmYes()
+      .sendYes()
       .wait(/.*Choose the additional authorization types you want to configure for the API.*/)
       .sendLine('a\r') // All items
       // Cognito
@@ -313,7 +313,7 @@ export function addApiWithAllAuthModes(cwd: string, opts: Partial<AddApiOptions 
       .wait(/.*Choose a Lambda authorization function*/)
       .sendCarriageReturn()
       .wait(/.*Do you want to edit the local lambda function now*/)
-      .sendConfirmNo()
+      .sendNo()
       .wait(/.*How long should the authorization response be cached in seconds.*/)
       .sendLine('600')
       .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
@@ -323,7 +323,7 @@ export function addApiWithAllAuthModes(cwd: string, opts: Partial<AddApiOptions 
       .sendKeyDown(2)
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
-      .sendConfirmNo()
+      .sendNo()
       .wait('"amplify publish" will build all your local backend and frontend resources')
       .run((err: Error) => {
         if (!err) {
@@ -355,9 +355,9 @@ export function updateApiWithMultiAuth(cwd: string, settings?: { testingWithLate
     if (testingWithLatestCodebase) {
       chain.wait('Do you want to migrate api resource');
       if (doMigrate) {
-        chain.sendConfirmYes();
+        chain.sendYes();
       } else {
-        chain.sendConfirmNo();
+        chain.sendNo();
       }
     }
     chain
@@ -370,7 +370,7 @@ export function updateApiWithMultiAuth(cwd: string, settings?: { testingWithLate
       .wait(/.*After how many days from now the API key should expire.*/)
       .sendLine('300')
       .wait(/.*Configure additional auth types.*/)
-      .sendConfirmYes()
+      .sendYes()
       .wait(/.*Choose the additional authorization types you want to configure for the API.*/)
       .sendLine('a') // All items
       // Cognito
@@ -438,7 +438,7 @@ export function updateApiConflictHandlerTypePerModel(cwd: string, opts?: Partial
       .wait(/.*Select the default resolution strategy.*/)
       .sendCarriageReturn() // Select Automerge Handler for project
       .wait(/.*Do you want to override default per model settings*/)
-      .sendConfirmYes()
+      .sendYes()
       .wait('Select the models from below:')
       .send('a')
       .sendCarriageReturn()
@@ -471,7 +471,7 @@ export function apiEnableDataStore(cwd: string, settings: any) {
       .wait(/.*Select the default resolution strategy.*/)
       .sendCarriageReturn()
       .wait(/.*Do you want to override default per model settings?.*/)
-      .sendConfirmNo()
+      .sendNo()
       .wait(/.*Successfully updated resource.*/)
       .sendEof()
       .run((err: Error) => {
@@ -543,7 +543,7 @@ export function updateAPIWithResolutionStrategyWithModels(cwd: string, settings:
       .sendKeyDown()
       .sendCarriageReturn()
       .wait(/.*Do you want to override default per model settings?.*/)
-      .sendConfirmNo()
+      .sendNo()
       .wait(/.*Successfully updated resource.*/)
       .sendEof()
       .run((err: Error) => {
@@ -685,11 +685,7 @@ function chooseLambdaFunctionForRestApi(chain: ExecutionContext, settings: { pro
       .sendCarriageReturn(); // Use first one in the list
   }
 
-  chain
-    .wait('Do you want to configure advanced settings?')
-    .sendConfirmNo()
-    .wait('Do you want to edit the local lambda function now')
-    .sendConfirmNo();
+  chain.wait('Do you want to configure advanced settings?').sendNo().wait('Do you want to edit the local lambda function now').sendNo();
 }
 
 const updateRestApiDefaultSettings = {
@@ -756,7 +752,7 @@ export function addApi(projectDir: string, settings?: any) {
       if (authTypesToAdd.length > 1) {
         authTypesToAdd.shift();
 
-        chain.wait('Configure additional auth types?').sendConfirmYes();
+        chain.wait('Configure additional auth types?').sendYes();
 
         authTypesToSelectFrom = authTypesToSelectFrom.filter((x) => x !== defaultType);
 
@@ -780,7 +776,7 @@ export function addApi(projectDir: string, settings?: any) {
       .wait('Choose a schema template:')
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
-      .sendConfirmNo()
+      .sendNo()
       .wait('"amplify publish" will build all your local backend and frontend resources')
       .run((err: Error) => {
         if (!err) {
@@ -903,7 +899,7 @@ export function addApiWithCognitoUserPoolAuthTypeWhenAuthExists(
       .wait('Choose a schema template:')
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
-      .sendConfirmNo()
+      .sendNo()
       .wait('"amplify publish" will build all your local backend and frontend resources')
       .run((err: Error) => {
         if (!err) {
@@ -935,7 +931,7 @@ export function addRestContainerApi(projectDir: string, opts: Partial<AddApiOpti
       .wait('When do you want to build & deploy the Fargate task')
       .sendCarriageReturn()
       .wait('Do you want to restrict API access')
-      .sendConfirmNo()
+      .sendNo()
       .wait('Select which container is the entrypoint')
       .sendCarriageReturn()
       .wait('"amplify publish" will build all your local backend and frontend resources')
@@ -976,7 +972,7 @@ export function addRestContainerApiForCustomPolicies(projectDir: string, setting
       .wait('When do you want to build & deploy the Fargate task')
       .sendCarriageReturn()
       .wait('Do you want to restrict API access')
-      .sendConfirmNo()
+      .sendNo()
       .wait('Select which container is the entrypoint')
       .sendCarriageReturn()
       .wait('"amplify publish" will build all your local backend and frontend resources')
