@@ -397,7 +397,6 @@ function chain(context: Context): ExecutionContext {
           ? recordings
               .filter((f) => f[1] === 'o')
               .map((f) => f[2])
-              .slice(-60)
               .join('\n')
           : 'No output';
 
@@ -405,7 +404,7 @@ function chain(context: Context): ExecutionContext {
           const err = new Error(
             `Killed the process as no output received for ${context.noOutputTimeout / 1000} Sec. The no output timeout is set to ${
               context.noOutputTimeout / 1000
-            } seconds.\n\nLast 60 lines:👇🏽👇🏽👇🏽👇🏽\n\n\n\n\n${lastScreen}\n\n\n👆🏼👆🏼👆🏼👆🏼`,
+            } seconds.\n\nFull output:👇🏽👇🏽👇🏽👇🏽\n\n\n\n\n${lastScreen}\n\n\n👆🏼👆🏼👆🏼👆🏼`,
           );
           err.stack = undefined;
           return onError(err, true);
@@ -420,7 +419,7 @@ function chain(context: Context): ExecutionContext {
           return onError(new Error('Command not found: ' + context.command), false);
         }
         return onError(
-          new Error(`Process exited with non zero exit code ${code}.\n\nLast 60 lines: 👇🏽👇🏽👇🏽👇🏽\n\n\n\n\n${lastScreen}\n\n\n👆🏼👆🏼👆🏼👆🏼`),
+          new Error(`Process exited with non zero exit code ${code}.\n\nFull output: 👇🏽👇🏽👇🏽👇🏽\n\n\n\n\n${lastScreen}\n\n\n👆🏼👆🏼👆🏼👆🏼`),
           false,
         );
       } else {
