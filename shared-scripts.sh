@@ -1,5 +1,6 @@
 #!/bin/bash
 
+AMPLIFY_NODE_VERSION=24.12.0
 # set exit on error to true
 set -e
 
