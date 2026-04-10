@@ -87,7 +87,7 @@ export const removeImportedAuthWithDefault = (cwd: string) => {
       .wait('Choose the resource you would want to remove')
       .sendCarriageReturn()
       .wait('Are you sure you want to unlink this imported resource')
-      .sendYes()
+      .sendConfirmYes()
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -113,7 +113,7 @@ export const addS3WithAuthConfigurationMismatchErrorExit = (cwd: string, setting
       .wait('What kind of access do you want')
       .sendLine(' ')
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
-      .sendNo()
+      .sendConfirmNo()
       .wait('Current auth configuration is: userPoolOnly, but identityPoolAndUserPool was required.')
       .sendEof()
       .run((err: Error) => {
@@ -228,7 +228,7 @@ export const removeImportedS3WithDefault = (cwd: string): Promise<void> => {
       .wait('Choose the resource you would want to remove')
       .sendCarriageReturn()
       .wait('Are you sure you want to unlink this imported resource')
-      .sendYes()
+      .sendConfirmYes()
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -270,7 +270,7 @@ export const removeImportedDynamoDBWithDefault = (cwd: string): Promise<void> =>
       .wait('Choose the resource you would want to remove')
       .sendCarriageReturn()
       .wait('Are you sure you want to unlink this imported resource')
-      .sendYes()
+      .sendConfirmYes()
       .sendEof()
       .run((err: Error) => {
         if (!err) {

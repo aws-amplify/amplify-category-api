@@ -63,7 +63,7 @@ export function addEnvironmentWithImportedAuth(cwd: string, settings: { envName:
       .wait('Please choose the profile you want to use')
       .sendCarriageReturn()
       .wait(`already imported to '${settings.currentEnvName}' environment, do you want to import it to the new environment`)
-      .sendYes()
+      .sendConfirmYes()
       .wait('Initialized your environment successfully.')
       .run((err: Error) => {
         if (!err) {
@@ -189,7 +189,7 @@ export function removeEnvironment(cwd: string, settings: { envName: string }): P
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'remove', settings.envName], { cwd, stripColors: true })
       .wait(`Are you sure you want to continue?`)
-      .sendYes()
+      .sendConfirmYes()
       .wait('Successfully removed environment from your project locally')
       .run((err: Error) => {
         if (!err) {
