@@ -1,6 +1,6 @@
 #!/bin/bash
 
-AMPLIFY_NODE_VERSION=24.12.0
+AMPLIFY_NODE_VERSION=22
 
 # set exit on error to true
 set -e
@@ -311,7 +311,7 @@ function _installCLIFromLocalRegistry {
     npm config set fetch-retry-mintimeout 40000
     npm config set fetch-retry-maxtimeout 240000
     npm config set maxsockets 1
-    retry_with_backoff 3 npm install -g @aws-amplify/cli-internal@14.2.5
+    retry_with_backoff 3 npm install -g @aws-amplify/cli-internal
     echo "using Amplify CLI version: "$(amplify --version)
     npm list -g --depth=1 | grep -e '@aws-amplify/amplify-category-api' -e 'amplify-codegen'
     unsetNpmRegistryUrl
