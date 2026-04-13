@@ -123,8 +123,16 @@ describe('Log Config Tests', () => {
 
   afterAll(async () => {
     const destroyCDKProjectAndDeleteProjectDir = async (projRoot: string): Promise<void> => {
-      await cdkDestroy(projRoot, '--all');
-      deleteProjectDir(projRoot);
+      try {
+        await cdkDestroy(projRoot, '--all');
+      } catch (err) {
+        console.error(`Failed to destroy CDK project ${projRoot}:`, err);
+      }
+      try {
+        deleteProjectDir(projRoot);
+      } catch (err) {
+        console.error(`Failed to delete project dir ${projRoot}:`, err);
+      }
     };
     const cleanupTasks = projRoots.map((projRoot) => destroyCDKProjectAndDeleteProjectDir(projRoot));
     await Promise.all(cleanupTasks);

@@ -153,9 +153,16 @@ describe('CDK DDB Iam Access', () => {
     } catch (err) {
       console.log(`Error invoking 'cdk destroy': ${err}`);
     }
-
-    deleteProjectDir(projRoot);
-    deleteProjectDir(projRootWithIam);
+    try {
+      deleteProjectDir(projRoot);
+    } catch (e) {
+      console.error(`Cleanup failed: ${e}`);
+    }
+    try {
+      deleteProjectDir(projRootWithIam);
+    } catch (e) {
+      console.error(`Cleanup failed: ${e}`);
+    }
   });
 
   it('can access TodoWithPrivateIam', async () => {

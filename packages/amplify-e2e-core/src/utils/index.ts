@@ -33,7 +33,22 @@ export function deleteProjectDir(root: string) {
     console.warn(`🌋 Did not delete project dir: ${root}`);
     return;
   }
-  rimraf.sync(root);
+  // Retry up to 3 times with 1s delay to handle Node 22 + rimraf v3
+  // ENOTEMPTY race conditions during parallel test cleanup
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      rimraf.sync(root);
+      return;
+    } catch (err: any) {
+      if (attempt === 2) {
+        console.error(`Failed to delete project dir after 3 attempts: ${root}`, err.message);
+        return; // Don't throw — cleanup failures shouldn't fail tests
+      }
+      // Wait 1s before retry
+      const { execSync } = require('child_process');
+      execSync('sleep 1');
+    }
+  }
 }
 
 export function deleteAmplifyDir(root: string) {

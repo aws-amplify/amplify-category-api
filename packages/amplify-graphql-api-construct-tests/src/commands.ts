@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs';
-import { copySync, moveSync, readFileSync, writeFileSync } from 'fs-extra';
+import { copySync, moveSync, readFileSync, removeSync, writeFileSync } from 'fs-extra';
 import {
   addApiWithoutSchema,
   amplifyPush,
@@ -98,6 +98,14 @@ export const initCDKProject = async (cwd: string, templatePath: string, props?: 
   }
 
   copyTemplateDirectory(cwd, templatePath);
+
+  // Remove the auto-generated lib/ directory from `cdk init` — it contains
+  // dead code that references potentially incompatible aws-cdk-lib imports
+  // and causes TypeScript compilation failures during `cdk destroy`
+  const libDir = path.join(cwd, 'lib');
+  if (fs.existsSync(libDir)) {
+    removeSync(libDir);
+  }
 
   const deps = [getPackagedConstructPath(props?.construct ?? 'GraphqlApi'), `aws-cdk-lib@${cdkVersion}`, ...additionalDependencies];
   await spawn('npm', ['install', ...deps], { cwd, stripColors: true }).runAsync();
