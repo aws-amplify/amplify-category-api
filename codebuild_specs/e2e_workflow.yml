@@ -723,7 +723,7 @@ batch:
           NODE_OPTIONS: '--max-old-space-size=6656'
           TEST_SUITE: >-
             src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-had-node-to-node.test.ts
-          CLI_REGION: ap-northeast-3
+          CLI_REGION: us-west-1
       depend-on:
         - publish_to_local_registry
     - identifier: searchable_previous_deployment_no_node_to_node
