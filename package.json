@@ -450,7 +450,7 @@
     "**/jake/async": "^2.6.4",
     "**/nth-check": "^2.0.1",
     "aws-cdk-lib": "2.224.0",
-    "lodash": "^4.17.23",
+    "lodash": "^4.18.1",
     "node-fetch": "^2.6.7",
     "cross-fetch": "^2.2.6",
     "trim-newlines": "^3.0.1",
@@ -461,7 +461,7 @@
     "ejs": "^3.1.7",
     "json5": "^2.2.3",
     "semver": "^7.5.2",
-    "axios": "^1.13.5",
+    "axios": "^1.15.0",
     "braces": "^3.0.3",
     "**/aws-amplify/**/fast-xml-parser": "^5.5.7",
     "fast-xml-parser": "^5.5.7",
@@ -477,8 +477,13 @@
     "js-yaml": "^4.1.1",
     "diff": "^8.0.3",
     "tmp": "^0.2.5",
-    "basic-ftp": "^5.2.0",
-    "lodash-es": "^4.17.23",
-    "minimatch": "^3.1.5"
-  }
+    "basic-ftp": "^5.2.2",
+    "lodash-es": "^4.18.1",
+    "minimatch": "^3.1.5",
+    "handlebars": "^4.7.9",
+    "@xmldom/xmldom": "^0.9.9",
+    "path-to-regexp": "^0.1.13",
+    "brace-expansion": "^1.1.13"
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

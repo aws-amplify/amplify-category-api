@@ -83,6 +83,7 @@ const FORCE_REGION_MAP = {
   conversation: 'us-west-2',
   custom_policies_container: 'us-east-1',
   'sql-pg-canary': 'us-east-1',
+  'searchable-previous-deployment-had-node-to-node': 'us-west-1',
 };
 
 // some tests require additional time, the parent account can handle longer tests (up to 90 minutes)
