@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-conversation-transformer",
-  "version": "1.1.13",
+  "version": "1.1.14",
   "description": "Amplify GraphQL @conversation transformer",
   "repository": {
     "type": "git",
@@ -26,10 +26,10 @@
   "dependencies": {
     "@aws-amplify/ai-constructs": "^1.6.1",
     "@aws-amplify/graphql-directives": "2.8.0",
-    "@aws-amplify/graphql-index-transformer": "3.1.0",
-    "@aws-amplify/graphql-model-transformer": "3.4.0",
-    "@aws-amplify/graphql-relational-transformer": "3.1.12",
-    "@aws-amplify/graphql-transformer-core": "3.5.0",
+    "@aws-amplify/graphql-index-transformer": "3.1.1",
+    "@aws-amplify/graphql-model-transformer": "3.4.1",
+    "@aws-amplify/graphql-relational-transformer": "3.1.13",
+    "@aws-amplify/graphql-transformer-core": "3.5.1",
     "@aws-amplify/graphql-transformer-interfaces": "4.3.0",
     "@aws-amplify/plugin-types": "^1.0.0",
     "graphql": "^15.5.0",
@@ -39,7 +39,7 @@
     "semver": "^7.6.3"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-test-utils": "1.1.0",
+    "@aws-amplify/graphql-transformer-test-utils": "1.1.1",
     "esbuild": "^0.25.0"
   },
   "peerDependencies": {
