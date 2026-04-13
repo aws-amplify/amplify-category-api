@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as glob from 'glob';
 import _ from 'lodash';
+import { execSync } from 'child_process';
 import { nspawn as spawn, ExecutionContext, getCLIPath, getBackendAmplifyMeta } from '..';
 import { singleSelect, multiSelect, moveUp, moveDown } from '../utils/selectors';
 import { loadFeatureFlags } from '../utils/feature-flags';
@@ -303,6 +304,12 @@ export const addFunction = (
   runtime: FunctionRuntimes,
   functionConfigCallback: FunctionCallback = undefined,
 ) => {
+  try {
+    const cliVersion = execSync(`${getCLIPath()} --version`, { cwd, timeout: 10000 }).toString().trim();
+    console.log('Amplify CLI version:', cliVersion);
+  } catch (e) {
+    console.log('Failed to retrieve Amplify CLI version:', e.message);
+  }
   return coreFunction(cwd, settings, 'create', runtime, functionConfigCallback);
 };
 
