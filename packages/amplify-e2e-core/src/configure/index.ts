@@ -32,7 +32,6 @@ export const amplifyRegions = [
   'ap-southeast-2',
   'ap-south-1',
   'ca-central-1',
-  'sa-east-1',
 ];
 
 const configurationOptions = ['Project information', 'AWS Profile setting', 'Advanced: Container-based deployments'];
