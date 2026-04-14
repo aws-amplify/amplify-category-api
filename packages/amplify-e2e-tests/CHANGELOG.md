@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.22.23](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.22...amplify-category-api-e2e-tests@3.22.23) (2026-04-14)
+
+### Bug Fixes
+
+- make test no-op if we pick a wrong region ([aca14e5](https://github.com/aws-amplify/amplify-category-api/commit/aca14e5068920a250f941cf7d83ea8a9b101b2c1))
+- remove ap-east-1 from the list of possible regions to select ([9baab01](https://github.com/aws-amplify/amplify-category-api/commit/9baab0146fe3699b89b3f58cd197529edda28657))
+
 ## [3.22.22](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.21...amplify-category-api-e2e-tests@3.22.22) (2025-11-19)
 
 ### Bug Fixes

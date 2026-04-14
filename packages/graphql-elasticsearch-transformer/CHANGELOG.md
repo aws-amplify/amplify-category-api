@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.89](https://github.com/aws-amplify/amplify-category-api/compare/graphql-elasticsearch-transformer@5.2.88...graphql-elasticsearch-transformer@5.2.89) (2026-04-14)
+
+### Bug Fixes
+
+- **searchable:** enforce TLS 1.2 on Elasticsearch domains (v1 transformer) ([#3456](https://github.com/aws-amplify/amplify-category-api/issues/3456)) ([e5c320f](https://github.com/aws-amplify/amplify-category-api/commit/e5c320fdfc490879b5edf818cd299ae49d65fa6d)), closes [aws-amplify/amplify-cli#14329](https://github.com/aws-amplify/amplify-cli/issues/14329)
+
 ## [5.2.88](https://github.com/aws-amplify/amplify-category-api/compare/graphql-elasticsearch-transformer@5.2.87...graphql-elasticsearch-transformer@5.2.88) (2025-12-12)
 
 ### Bug Fixes

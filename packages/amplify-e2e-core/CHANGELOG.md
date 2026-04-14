@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.9.12](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.9.11...amplify-category-api-e2e-core@4.9.12) (2026-04-14)
+
+### Bug Fixes
+
+- remove ap-east-1 from the list of possible regions to select ([9baab01](https://github.com/aws-amplify/amplify-category-api/commit/9baab0146fe3699b89b3f58cd197529edda28657))
+
 ## [4.9.11](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.9.10...amplify-category-api-e2e-core@4.9.11) (2025-11-19)
 
 ### Bug Fixes
