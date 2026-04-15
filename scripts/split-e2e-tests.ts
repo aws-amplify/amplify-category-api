@@ -178,7 +178,10 @@ const RUN_IN_COGNITO_REGIONS: (string | RegExp)[] = [
   /src\/__tests__\/AuthV2ExhaustiveT3C.test.ts/,
 ];
 
-const RUN_IN_V1_TRANSFORMER_REGIONS = ['src/__tests__/schema-searchable.test.ts'];
+const RUN_IN_V1_TRANSFORMER_REGIONS = [
+  'src/__tests__/schema-searchable.test.ts',
+  'src/__tests__/transformer-migrations/searchable-migration.test.ts',
+];
 
 const DEBUG_FLAG = '--debug';
 
