@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';
 
