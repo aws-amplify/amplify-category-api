@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.20](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@2.7.19...@aws-amplify/graphql-searchable-transformer@2.7.20) (2026-04-15)
+
+### Bug Fixes
+
+- **graphql-searchable-transformer:** enforce TLS 1.2 on OpenSearch domains (v2 transformer) ([#3472](https://github.com/aws-amplify/amplify-category-api/issues/3472)) ([e37b630](https://github.com/aws-amplify/amplify-category-api/commit/e37b630e19e72aee07a99e5318e20926af334b3f))
+
 ## [2.7.19](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@2.7.18...@aws-amplify/graphql-searchable-transformer@2.7.19) (2025-12-12)
 
 ### Bug Fixes
