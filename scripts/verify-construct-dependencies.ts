@@ -31,7 +31,6 @@ const EXCLUSION_PATHS: string[][] = [
   // plugin-types@1.12.0+ depends on @aws-cdk/toolkit-lib, but toolkit-lib is a dev/CLI
   // tool not needed at construct runtime. Exclude from bundling regardless of path.
   ['@aws-amplify/plugin-types', '@aws-cdk/toolkit-lib'],
-  ['@aws-amplify/graphql-conversation-transformer', '@aws-amplify/ai-constructs', 'json-schema-to-ts'],
 ];
 
 const PACKAGES_DIR = 'packages';
