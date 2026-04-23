@@ -117,7 +117,7 @@
     "ci-info": "^3.2.0",
     "crypt": "^0.0.2",
     "fast-xml-builder": "1.1.1",
-    "fast-xml-parser": "5.5.2",
+    "fast-xml-parser": "~5.5.12",
     "fs-extra": "^8.1.0",
     "graceful-fs": "^4.2.0",
     "graphql": "^15.5.0",
@@ -14034,5 +14034,5 @@
     }
   },
   "version": "1.21.2",
-  "fingerprint": "Fj0ZrujYgXvanPVPYhWdXIeKmPAK5V6P1qhDk/iHRQ0="
+  "fingerprint": "UsAYzKSafzbJbAPO2+jAQWIDgpVX+fJ+ufti795dG6A="
 }
