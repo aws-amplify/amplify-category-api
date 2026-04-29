@@ -21,6 +21,16 @@ beforeEach(() => {
 
 /** True iff all three sync fields are present with correct scalar types. */
 /* eslint-disable @typescript-eslint/no-var-requires, global-require */
+
+/** Recursively unwrap NonNullType / ListType wrappers to find the underlying NamedType scalar. */
+const unwrapScalarName = (typeNode: { kind: string; name?: { value: string }; type?: unknown }): string => {
+  if (typeNode.kind === 'NamedType' && typeNode.name) return typeNode.name.value;
+  if ((typeNode.kind === 'NonNullType' || typeNode.kind === 'ListType') && typeNode.type) {
+    return unwrapScalarName(typeNode.type as { kind: string; name?: { value: string }; type?: unknown });
+  }
+  return '';
+};
+
 const hasAllSyncFields = (schema: string, typeName: string): boolean => {
   const { parse, visit } = require('graphql');
   const ast = parse(schema, { noLocation: true });
@@ -30,12 +40,12 @@ const hasAllSyncFields = (schema: string, typeName: string): boolean => {
       name: { value: string };
       fields?: ReadonlyArray<{
         name: { value: string };
-        type: { kind: string; name?: { value: string } };
+        type: { kind: string; name?: { value: string }; type?: unknown };
       }>;
     }) => {
       if (node.name.value !== typeName) return undefined;
       for (const field of node.fields ?? []) {
-        const scalar = field.type.kind === 'NamedType' && field.type.name ? field.type.name.value : '';
+        const scalar = unwrapScalarName(field.type);
         if (field.name.value === '_version' && scalar === 'Int') found._version = true;
         if (field.name.value === '_deleted' && scalar === 'Boolean') found._deleted = true;
         if (field.name.value === '_lastChangedAt' && scalar === 'AWSTimestamp') found._lastChangedAt = true;
@@ -86,6 +96,21 @@ describe('injectSyncFields', () => {
     `;
     const result = injectSyncFields(schema);
     expect(result.modifiedModels).toEqual([]);
+  });
+
+  it('recognises existing sync fields declared with NonNullType wrappers (e.g. Int!)', () => {
+    const schema = `
+      type Todo @model {
+        id: ID!
+        title: String!
+        _version: Int!
+        _deleted: Boolean!
+        _lastChangedAt: AWSTimestamp!
+      }
+    `;
+    const result = injectSyncFields(schema);
+    expect(result.modifiedModels).toEqual([]);
+    expect(hasAllSyncFields(result.updated, 'Todo')).toBe(true);
   });
 
   it.each([
