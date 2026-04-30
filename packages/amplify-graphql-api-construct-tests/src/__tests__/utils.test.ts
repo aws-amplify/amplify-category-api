@@ -1,4 +1,7 @@
 import { isOperationAuthInputApiKey } from '../utils';
+import { tryScheduleCredentialRefresh } from 'amplify-category-api-e2e-core';
+
+tryScheduleCredentialRefresh();
 
 describe('test utilities', () => {
   describe('appsync-graphql', () => {

@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { SSMClient, PutParameterCommand, DeleteParameterCommand } from '@aws-sdk/client-ssm';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir, tryScheduleCredentialRefresh } from 'amplify-category-api-e2e-core';
 import * as generator from 'generate-password';
 import { initCDKProject, cdkDestroy, cdkDeploy } from '../../commands';
 import { SqlDatabaseDetails, SqlDatatabaseController } from '../../sql-datatabase-controller';
@@ -16,6 +16,7 @@ import {
 import { DURATION_1_HOUR, ONE_MINUTE } from '../../utils/duration-constants';
 
 jest.setTimeout(DURATION_1_HOUR);
+tryScheduleCredentialRefresh();
 
 const schema = /* GraphQL */ `
   type CustomSelectResult {
@@ -113,7 +114,7 @@ describe('Custom SSL certificates', () => {
     writeTestDefinitions(testDefinitions, projRoot);
 
     // const outputs = await cdkDeploy(projRoot, '--all', { postDeployWaitMs: 2 * ONE_MINUTE });
-    const outputs = await cdkDeploy(projRoot, '--all', { postDeployWaitMs: 0 });
+    const outputs = await cdkDeploy(projRoot, '--all', { postDeployWaitMs: ONE_MINUTE });
     const { awsAppsyncApiEndpoint, awsAppsyncApiKey } = outputs[name];
 
     const result = await queryCustomSslField(awsAppsyncApiEndpoint, awsAppsyncApiKey);

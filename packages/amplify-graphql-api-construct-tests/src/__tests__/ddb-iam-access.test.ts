@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir, tryScheduleCredentialRefresh } from 'amplify-category-api-e2e-core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { AuthConstructStackOutputs } from '../types';
@@ -10,6 +10,7 @@ import { DURATION_1_HOUR } from '../utils/duration-constants';
 import { authConstructDependency } from './additional-dependencies';
 
 jest.setTimeout(DURATION_1_HOUR);
+tryScheduleCredentialRefresh();
 
 describe('CDK DDB Iam Access', () => {
   let projRoot: string;

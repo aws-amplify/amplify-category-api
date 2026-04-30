@@ -64,15 +64,7 @@ export const tryScheduleCredentialRefresh = () => {
     return;
   }
 
-  if (process.env.USE_PARENT_ACCOUNT) {
-    // Attempts to refresh credentials in background every 10 minutes.
-    setInterval(() => {
-      void tryRefreshCredentials(process.env.TEST_ACCOUNT_ROLE);
-    }, 10 * 60 * 1000);
-
-    console.log('Test profile credentials refresh was scheduled for parent account');
-    return;
-  } else if (process.env.CHILD_ACCOUNT_ROLE) {
+  if (process.env.CHILD_ACCOUNT_ROLE) {
     // Attempts to refresh credentials in background every 10 minutes.
     setInterval(() => {
       void tryRefreshCredentials(process.env.TEST_ACCOUNT_ROLE, process.env.CHILD_ACCOUNT_ROLE);
@@ -80,7 +72,13 @@ export const tryScheduleCredentialRefresh = () => {
 
     console.log('Test profile credentials refresh was scheduled for child account');
   } else {
-    throw new Error('Credentials rotator could not find any role to rotate credentials for');
+    // CDK tests and tests with USE_PARENT_ACCOUNT only use the parent account role.
+    // Refresh the parent account credentials to prevent expiration during long-running tests.
+    setInterval(() => {
+      void tryRefreshCredentials(process.env.TEST_ACCOUNT_ROLE);
+    }, 10 * 60 * 1000);
+
+    console.log('Test profile credentials refresh was scheduled for parent account');
   }
 
   isRotationBackgroundTaskAlreadyScheduled = true;

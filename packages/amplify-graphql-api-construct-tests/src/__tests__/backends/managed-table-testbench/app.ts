@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 // @ts-ignore
 import * as graphql from '@aws-amplify/graphql-api-construct';

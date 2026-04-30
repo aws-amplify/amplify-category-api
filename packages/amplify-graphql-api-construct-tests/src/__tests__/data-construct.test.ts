@@ -1,10 +1,11 @@
 import * as path from 'path';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir, tryScheduleCredentialRefresh } from 'amplify-category-api-e2e-core';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { graphql } from '../graphql-request';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
 
 jest.setTimeout(DURATION_1_HOUR);
+tryScheduleCredentialRefresh();
 
 describe('Data Construct', () => {
   let projRoot: string;

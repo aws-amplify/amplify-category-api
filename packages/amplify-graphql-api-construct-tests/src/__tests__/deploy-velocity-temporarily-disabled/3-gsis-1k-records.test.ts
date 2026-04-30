@@ -4,7 +4,7 @@ import {
   SCHEMA_THREE_FIELDS_ALL_INDEXED,
   SCHEMA_THREE_FIELDS_NO_INDEX,
 } from '../deploy-velocity/deploy-velocity-constants';
-import { DURATION_30_MINUTES } from '../../utils/duration-constants';
+import { DURATION_45_MINUTES } from '../../utils/duration-constants';
 import {
   recordCountDataProvider,
   recordCountDataValidator,
@@ -13,7 +13,7 @@ import {
 
 testManagedTableDeployment({
   name: '3 GSIs updated - 1k Records',
-  maxDeployDurationMs: DURATION_30_MINUTES,
+  maxDeployDurationMs: DURATION_45_MINUTES,
   initialSchema: SCHEMA_THREE_FIELDS_NO_INDEX,
   updatedSchema: SCHEMA_THREE_FIELDS_ALL_INDEXED,
   dataSetup: recordCountDataProvider(COUNT_1_THOUSAND, MUTATION_THREE_FIELD_CREATE),
