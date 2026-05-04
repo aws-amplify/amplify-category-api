@@ -30,6 +30,7 @@ import { authConfigToAppSyncAuthType } from '../utils/auth-config-to-app-sync-au
 import { checkAppsyncApiResourceMigration } from '../utils/check-appsync-api-migration';
 import { defineGlobalSandboxMode } from '../utils/global-sandbox-mode';
 import { resolverConfigToConflictResolution } from '../utils/resolver-config-to-conflict-resolution-bi-di-mapper';
+import { preserveSyncFieldsOnDisable, MIGRATION_GUIDE_URL } from '../utils/preserve-sync-fields';
 
 const serviceName = 'AppSync';
 const elasticContainerServiceName = 'ElasticContainer';
@@ -340,7 +341,13 @@ export const serviceApiInputWalkthrough = async (context: $TSContext, serviceMet
   };
 };
 
-const updateApiInputWalkthrough = async (context: $TSContext, project: Record<string, any>, resolverConfig, modelTypes) => {
+const updateApiInputWalkthrough = async (
+  context: $TSContext,
+  project: Record<string, any>,
+  resolverConfig,
+  modelTypes,
+  resourceDir: string,
+) => {
   let authConfig;
   let defaultAuthType;
   const updateChoices = [
@@ -379,6 +386,17 @@ const updateApiInputWalkthrough = async (context: $TSContext, project: Record<st
     resolverConfig = await askResolverConflictHandlerQuestion(context, modelTypes);
   } else if (updateOption === 'DISABLE_CONFLICT') {
     resolverConfig = {};
+    const shouldPreserveSyncFields = await prompter.yesOrNo(
+      'Preserve _version, _deleted, and _lastChangedAt fields on each @model? ' +
+        '(Recommended — keeps existing DataStore client code working after conflict detection is disabled)',
+      true,
+    );
+    if (shouldPreserveSyncFields) {
+      await preserveSyncFieldsOnDisable(resourceDir);
+    } else {
+      printer.info('Skipped sync field preservation. Clients that still send _version / _deleted / _lastChangedAt will break.');
+      printer.info(`Migration guide: ${MIGRATION_GUIDE_URL}`);
+    }
   } else if (updateOption === 'AUTH_MODE') {
     ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context));
     authConfig = await askAdditionalAuthQuestions(context, authConfig, defaultAuthType);
@@ -483,7 +501,7 @@ export const updateWalkthrough = async (context: $TSContext): Promise<UpdateApiR
     });
   }
 
-  ({ authConfig, resolverConfig } = await updateApiInputWalkthrough(context, project, resolverConfig, modelTypes));
+  ({ authConfig, resolverConfig } = await updateApiInputWalkthrough(context, project, resolverConfig, modelTypes, resourceDir));
 
   return {
     version: 1,
