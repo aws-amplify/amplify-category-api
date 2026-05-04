@@ -36,11 +36,11 @@ export function addSimpleDDB(cwd: string, settings: any): Promise<void> {
       .wait('Choose partition key for the table')
       .sendCarriageReturn()
       .wait('Do you want to add a sort key to your table')
-      .sendNo()
+      .sendConfirmNo()
       .wait('Do you want to add global secondary indexes to your table')
-      .sendNo()
+      .sendConfirmNo()
       .wait('Do you want to add a Lambda Trigger for your Table')
-      .sendNo()
+      .sendConfirmNo()
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -66,7 +66,7 @@ export function addS3(cwd: string, settings: any): Promise<void> {
       .wait('What kind of access do you want')
       .sendLine(' ')
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
-      .sendNo()
+      .sendConfirmNo()
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -85,7 +85,7 @@ export function addS3AndAuthWithAuthOnlyAccess(cwd: string, settings: any): Prom
       .wait('Select from one of the below mentioned services')
       .sendCarriageReturn() // Content
       .wait('You need to add auth (Amazon Cognito) to your project in order to add storage')
-      .sendYes()
+      .sendConfirmYes()
       .wait('Do you want to use the default authentication and security configuration')
       .sendCarriageReturn() // Default config
       .wait('How do you want users to be able to sign in')
@@ -102,7 +102,7 @@ export function addS3AndAuthWithAuthOnlyAccess(cwd: string, settings: any): Prom
       .sendCtrlA()
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
-      .sendNo()
+      .sendConfirmNo()
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -135,7 +135,7 @@ export function addS3Storage(projectDir: string): Promise<void> {
       .sendCtrlA()
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket?')
-      .sendNo()
+      .sendConfirmNo()
       .run((err: Error) => {
         if (!err) {
           resolve();

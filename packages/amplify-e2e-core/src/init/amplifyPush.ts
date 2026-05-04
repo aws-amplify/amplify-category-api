@@ -61,14 +61,14 @@ export function amplifyPush(
       noOutputTimeout: pushTimeoutMS,
     })
       .wait('Are you sure you want to continue?')
-      .sendYes();
+      .sendConfirmYes();
 
     if (!settings?.skipCodegen) {
       pushCommands
         .wait('Do you want to generate code for your newly created GraphQL API')
-        .sendNo()
+        .sendConfirmNo()
         .wait('Do you want to generate code for your newly created GraphQL API')
-        .sendNo();
+        .sendConfirmNo();
     }
 
     pushCommands.wait(/.*/).run((err: Error) => {
@@ -97,7 +97,7 @@ export function amplifyPushGraphQlWithCognitoPrompt(cwd: string, testingWithLate
     // Test amplify push
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
-      .sendYes()
+      .sendConfirmYes()
       .wait(/.*Do you want to use the default authentication and security configuration.*/)
       .sendCarriageReturn()
       .wait(/.*How do you want users to be able to sign in.*/)
@@ -105,7 +105,7 @@ export function amplifyPushGraphQlWithCognitoPrompt(cwd: string, testingWithLate
       .wait(/.*Do you want to configure advanced settings.*/)
       .sendCarriageReturn()
       .wait('Do you want to generate code for your newly created GraphQL API')
-      .sendNo()
+      .sendConfirmNo()
       .wait(/.*/)
       .run((err: Error) => {
         if (!err) {
@@ -124,7 +124,7 @@ export function amplifyPushForce(cwd: string, testingWithLatestCodebase = false)
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['push', '--force'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
-      .sendYes()
+      .sendConfirmYes()
       .wait(/.*/)
       .run((err: Error) => {
         if (!err) {
@@ -148,7 +148,7 @@ export function cancelIterativeAmplifyPush(
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
-      .sendYes()
+      .sendConfirmYes()
       .wait(`Deploying iterative update ${idx.current} of ${idx.max} into`)
       .wait(/.*AWS::AppSync::GraphQLSchema.*UPDATE_IN_PROGRESS.*/)
       .sendCtrlC()
@@ -201,7 +201,7 @@ export function amplifyPushSecretsWithoutCodegen(cwd: string, testingWithLatestC
       .wait('Are you sure you want to continue?')
       .sendCarriageReturn()
       .wait('Secret configuration detected. Do you wish to store new values in the cloud?')
-      .sendYes()
+      .sendConfirmYes()
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -228,7 +228,7 @@ export function amplifyPushUpdate(
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), args, { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
-      .sendYes()
+      .sendConfirmYes()
       .wait(waitForText || /.*/)
       .run((err: Error) => {
         if (!err) {
@@ -247,7 +247,7 @@ export function amplifyPushAuth(cwd: string, testingWithLatestCodebase = false):
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
-      .sendYes()
+      .sendConfirmYes()
       .wait(/.*/)
       .run((err: Error) => {
         if (!err) {
@@ -287,10 +287,10 @@ export function amplifyPushUpdateForDependentModel(
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), args, { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
-      .sendYes()
+      .sendConfirmYes()
       .wait(/.*/)
       .wait('Do you want to remove the GraphQL model access on these affected functions?')
-      .sendYes()
+      .sendConfirmYes()
       .wait(/.*/)
       .run((err: Error) => {
         if (!err) {
@@ -309,7 +309,7 @@ export function amplifyPushIterativeRollback(cwd: string, testingWithLatestCodeb
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['push', '--iterative-rollback'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue?')
-      .sendYes()
+      .sendConfirmYes()
       .run((err: Error) => {
         if (!err) {
           resolve({});
@@ -354,7 +354,7 @@ export function amplifyPushOverride(cwd: string, testingWithLatestCodebase = fal
     // Test amplify push
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
-      .sendYes()
+      .sendConfirmYes()
       .wait(/.*/)
       .run((err: Error) => {
         if (!err) {
