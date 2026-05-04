@@ -101,7 +101,7 @@ export function amplifyConfigureProject(settings: {
 
     if (enableContainers) {
       singleSelect(chain, configurationOptions[2], configurationOptions);
-      chain.wait('Do you want to enable container-based deployments?').sendConfirmYes();
+      chain.wait('Do you want to enable container-based deployments?').sendYes();
     } else {
       singleSelect(chain, configurationOptions[1], configurationOptions);
 
@@ -109,7 +109,7 @@ export function amplifyConfigureProject(settings: {
         chain.wait('Do you want to update or remove the project level AWS profile?');
         singleSelect(chain, profileOption, profileOptions);
       } else {
-        chain.wait('Do you want to set the project level configuration').sendConfirmYes();
+        chain.wait('Do you want to set the project level configuration').sendYes();
       }
 
       if (profileOption === profileOptions[1] || configLevel === 'general') {

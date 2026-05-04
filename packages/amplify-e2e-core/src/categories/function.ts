@@ -101,16 +101,16 @@ const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: Core
     } else {
       chain.wait(`Do you want to update or remove the function's schedule?`);
     }
-    chain.sendConfirmYes();
+    chain.sendYes();
     cronWalkthrough(chain, settings, settings.schedulePermissions.noScheduleAdded ? 'create' : 'update');
   }
   if (settings.layerOptions) {
     // update layers
     chain.wait('Do you want to enable Lambda layers for this function?');
     if (settings.layerOptions === undefined) {
-      chain.sendConfirmNo();
+      chain.sendNo();
     } else {
-      chain.sendConfirmYes();
+      chain.sendYes();
       addLayerWalkthrough(chain, settings.layerOptions);
     }
   }
@@ -211,52 +211,52 @@ const coreFunction = (
         settings.environmentVariables ||
         settings.secretsConfig
       ) {
-        chain.sendConfirmYes().wait('Do you want to access other resources in this project from your Lambda function?');
+        chain.sendYes().wait('Do you want to access other resources in this project from your Lambda function?');
         if (settings.additionalPermissions) {
           // other permissions flow
-          chain.sendConfirmYes();
+          chain.sendYes();
           additionalPermissions(cwd, chain, settings.additionalPermissions);
         } else {
-          chain.sendConfirmNo();
+          chain.sendNo();
         }
 
         // scheduling questions
         chain.wait('Do you want to invoke this function on a recurring schedule?');
 
         if (settings.schedulePermissions === undefined) {
-          chain.sendConfirmNo();
+          chain.sendNo();
         } else {
-          chain.sendConfirmYes();
+          chain.sendYes();
           cronWalkthrough(chain, settings, action);
         }
 
         // lambda layers question
         chain.wait('Do you want to enable Lambda layers for this function?');
         if (settings.layerOptions === undefined) {
-          chain.sendConfirmNo();
+          chain.sendNo();
         } else {
-          chain.sendConfirmYes();
+          chain.sendYes();
           addLayerWalkthrough(chain, settings.layerOptions);
         }
 
         // environment variable question
         chain.wait('Do you want to configure environment variables for this function?');
         if (settings.environmentVariables === undefined) {
-          chain.sendConfirmNo();
+          chain.sendNo();
         } else {
-          chain.sendConfirmYes();
+          chain.sendYes();
           addEnvVarWalkthrough(chain, settings.environmentVariables);
         }
 
         // secrets config
         chain.wait('Do you want to configure secret values this function can access?');
         if (settings.secretsConfig === undefined) {
-          chain.sendConfirmNo();
+          chain.sendNo();
         } else {
           if (settings.secretsConfig.operation !== 'add') {
             throw new Error('add walkthrough only supports add secrets operation');
           }
-          chain.sendConfirmYes();
+          chain.sendYes();
           addSecretWalkthrough(chain, settings.secretsConfig);
         }
 
@@ -274,14 +274,14 @@ const coreFunction = (
           }
         }
       } else {
-        chain.sendConfirmNo();
+        chain.sendNo();
       }
     } else {
       updateFunctionCore(cwd, chain, settings);
     }
 
     // edit function question
-    chain.wait('Do you want to edit the local lambda function now?').sendConfirmNo().sendEof();
+    chain.wait('Do you want to edit the local lambda function now?').sendNo().sendEof();
 
     runChain(chain, resolve, reject);
   });
