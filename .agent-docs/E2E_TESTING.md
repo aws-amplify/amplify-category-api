@@ -98,6 +98,10 @@ git checkout <your-branch>
 git stash pop
 ```
 
+## Success Criteria
+
+A passing e2e run means **100% of tests pass with zero failures**. There is no "close enough" — if any test fails, the run has failed and the failures must be investigated and fixed. Do not dismiss failures as pre-existing or infrastructure-related without verifying on main and fixing them.
+
 ## Common Failure Patterns
 
 | Pattern                  | Symptoms                                           | Action                                            |

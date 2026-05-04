@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 // eslint-disable-next-line import/no-extraneous-dependencies
-import 'source-map-support/register';
 import * as path from 'path';
 import { App, Stack, Duration } from 'aws-cdk-lib';
 import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';
