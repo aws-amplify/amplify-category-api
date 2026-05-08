@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-e2e-tests",
-  "version": "4.1.13",
+  "version": "4.1.14",
   "description": "E2e test suite",
   "repository": {
     "type": "git",
@@ -42,7 +42,7 @@
     "@aws-sdk/credential-provider-node": "^3.972.0",
     "@aws-sdk/credential-providers": "^3.973.0",
     "@smithy/util-retry": "^4.1.2",
-    "amplify-category-api-e2e-core": "5.0.11",
+    "amplify-category-api-e2e-core": "5.0.12",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "axios": "^1.13.5",
