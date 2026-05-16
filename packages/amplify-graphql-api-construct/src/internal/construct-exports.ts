@@ -130,8 +130,13 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
     throw new Error('Expected to find AWS::AppSync::GraphQLSchema in the generated resource scope.');
   }
 
-  const nestedStacks: Record<string, NestedStack> = Object.fromEntries(
-    scope.node.children.filter(NestedStack.isNestedStack).map((nestedStack: NestedStack) => [nestedStack.node.id, nestedStack]),
+  const nestedStacks: Record<string, NestedStack> = {};
+  scope.node.children.forEach((child) =>
+    walkAndProcessNodes(child, (currentScope: Construct) => {
+      if (NestedStack.isNestedStack(currentScope)) {
+        nestedStacks[currentScope.node.id] = currentScope;
+      }
+    }),
   );
 
   const proxiedApiAttributes = graphqlApiAttributesFromCfnGraphQLApi(cfnGraphqlApi);
@@ -255,5 +260,5 @@ export const getGeneratedFunctionSlots = (generatedResolvers: Record<string, str
           ...(templateType === 'req' ? { requestMappingTemplate: resolverCode } : {}),
           ...(templateType === 'res' ? { responseMappingTemplate: resolverCode } : {}),
         },
-      } as FunctionSlot;
+      } as unknown as FunctionSlot;
     });
