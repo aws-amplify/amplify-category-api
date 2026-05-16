@@ -1,11 +1,13 @@
-import { CfnParameter, CfnParameterProps, Fn, NestedStack, Stack } from 'aws-cdk-lib';
+import { CfnParameter, CfnParameterProps, Fn, NestedStack, Stack, StackProps, Token } from 'aws-cdk-lib';
 import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Construct } from 'constructs';
 
-// Keep parent templates small and reduce the resource count pressure of each generated stack group.
+// Keep parent templates small and deploy overflow groups as separate CloudFormation stack operations.
 const MAX_DIRECT_NESTED_STACKS = 50;
 const MAX_GROUPED_NESTED_STACKS = 50;
+const MAX_CLOUDFORMATION_STACK_NAME_LENGTH = 128;
 const GROUP_STACK_PREFIX = 'AmplifyGraphqlApiStackGroup';
+export const GRAPHQL_API_STACK_GROUP_METADATA = 'aws-amplify:graphql-api-stack-group-root';
 
 const DYNAMO_DB_PASSTHROUGH_PARAMETERS: Array<{ name: string; props: CfnParameterProps }> = [
   {
@@ -54,18 +56,27 @@ const DYNAMO_DB_PASSTHROUGH_PARAMETERS: Array<{ name: string; props: CfnParamete
 ];
 
 /**
- * Keeps large generated APIs from overflowing the parent CloudFormation template with nested stack declarations.
+ * Keeps large generated APIs from overflowing CloudFormation template and stack operation limits.
  */
 export class ShardedNestedStackProvider implements NestedStackProvider {
   private directNestedStackCount = 0;
 
-  private currentGroupStack: NestedStack | undefined;
+  private currentGroupStack: Stack | undefined;
+
+  private previousGroupStack: Stack | undefined;
 
   private currentGroupNestedStackCount = 0;
 
   private nextGroupStackIndex = 1;
 
-  constructor(private readonly rootScope: Construct) {}
+  private readonly topLevelStack: Stack;
+
+  private readonly stackGroupScope: Construct;
+
+  constructor(private readonly rootScope: Construct) {
+    this.topLevelStack = getTopLevelStack(rootScope);
+    this.stackGroupScope = (this.topLevelStack.node.scope ?? this.topLevelStack.node.root) as Construct;
+  }
 
   provide = (scope: Construct, name: string): Stack => {
     return new NestedStack(this.getParentScope(scope), name);
@@ -82,7 +93,7 @@ export class ShardedNestedStackProvider implements NestedStackProvider {
     }
 
     if (!this.currentGroupStack || this.currentGroupNestedStackCount >= MAX_GROUPED_NESTED_STACKS) {
-      this.currentGroupStack = new NestedStack(scope, `${GROUP_STACK_PREFIX}${this.nextGroupStackIndex}`);
+      this.currentGroupStack = this.createGroupStack();
       this.addDynamoDBParameterPassthrough(this.currentGroupStack);
       this.nextGroupStackIndex += 1;
       this.currentGroupNestedStackCount = 0;
@@ -92,10 +103,65 @@ export class ShardedNestedStackProvider implements NestedStackProvider {
     return this.currentGroupStack;
   };
 
-  private addDynamoDBParameterPassthrough = (groupStack: NestedStack): void => {
+  private createGroupStack = (): Stack => {
+    const groupStackIndex = this.nextGroupStackIndex;
+    const groupStackEnv =
+      !Token.isUnresolved(this.topLevelStack.account) && !Token.isUnresolved(this.topLevelStack.region)
+        ? {
+            account: this.topLevelStack.account,
+            region: this.topLevelStack.region,
+          }
+        : undefined;
+    const stackProps: StackProps = {
+      ...(groupStackEnv ? { env: groupStackEnv } : {}),
+      stackName: this.createGroupStackName(groupStackIndex),
+    };
+
+    const groupStack = new Stack(
+      this.stackGroupScope,
+      `${GROUP_STACK_PREFIX}${this.rootScope.node.addr.slice(-8)}${groupStackIndex}`,
+      stackProps,
+    );
+
+    groupStack.node.addMetadata(GRAPHQL_API_STACK_GROUP_METADATA, this.rootScope.node.addr);
+    groupStack.addDependency(this.topLevelStack);
+
+    if (this.previousGroupStack) {
+      groupStack.addDependency(this.previousGroupStack);
+    }
+
+    this.previousGroupStack = groupStack;
+
+    return groupStack;
+  };
+
+  private createGroupStackName = (groupStackIndex: number): string | undefined => {
+    const rootStackName = this.topLevelStack.stackName;
+    if (Token.isUnresolved(rootStackName)) {
+      return undefined;
+    }
+
+    const suffix = `${GROUP_STACK_PREFIX}${groupStackIndex}`;
+    const maxRootStackNameLength = MAX_CLOUDFORMATION_STACK_NAME_LENGTH - suffix.length - 1;
+    return `${rootStackName.slice(0, maxRootStackNameLength)}-${suffix}`;
+  };
+
+  private addDynamoDBParameterPassthrough = (groupStack: Stack): void => {
     DYNAMO_DB_PASSTHROUGH_PARAMETERS.forEach(({ name, props }) => {
       new CfnParameter(groupStack, name, props);
-      groupStack.setParameter(name, Fn.ref(name));
+      if (NestedStack.isNestedStack(groupStack)) {
+        groupStack.setParameter(name, Fn.ref(name));
+      }
     });
   };
 }
+
+export const getTopLevelStack = (scope: Construct): Stack => {
+  let currentStack = Stack.of(scope);
+
+  while (currentStack.nestedStackResource && currentStack.node.scope) {
+    currentStack = Stack.of(currentStack.node.scope);
+  }
+
+  return currentStack;
+};

@@ -13,11 +13,12 @@ import {
 } from 'aws-cdk-lib/aws-appsync';
 import { CfnTable, Table, ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { CfnRole, Role } from 'aws-cdk-lib/aws-iam';
-import { CfnResource, isResolvableObject, NestedStack } from 'aws-cdk-lib';
+import { CfnResource, isResolvableObject, NestedStack, Stack } from 'aws-cdk-lib';
 import { getResourceName } from '@aws-amplify/graphql-transformer-core';
 import { CfnFunction, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
 import { AmplifyGraphqlApiResources, FunctionSlot } from '../types';
 import { AmplifyDynamoDbTableWrapper } from '../amplify-dynamodb-table-wrapper';
+import { GRAPHQL_API_STACK_GROUP_METADATA, getTopLevelStack } from './nested-stack-provider';
 import { walkAndProcessNodes } from './construct-tree';
 
 /**
@@ -120,7 +121,7 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
     }
   };
 
-  scope.node.children.forEach((child) => walkAndProcessNodes(child, classifyConstruct));
+  walkGeneratedResourceScopes(scope, classifyConstruct);
 
   if (!cfnGraphqlApi) {
     throw new Error('Expected to find AWS::AppSync::GraphQLApi in the generated resource scope.');
@@ -131,13 +132,11 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
   }
 
   const nestedStacks: Record<string, NestedStack> = {};
-  scope.node.children.forEach((child) =>
-    walkAndProcessNodes(child, (currentScope: Construct) => {
-      if (NestedStack.isNestedStack(currentScope)) {
-        nestedStacks[currentScope.node.id] = currentScope;
-      }
-    }),
-  );
+  walkGeneratedResourceScopes(scope, (currentScope: Construct) => {
+    if (NestedStack.isNestedStack(currentScope)) {
+      nestedStacks[currentScope.node.id] = currentScope;
+    }
+  });
 
   const proxiedApiAttributes = graphqlApiAttributesFromCfnGraphQLApi(cfnGraphqlApi);
 
@@ -161,6 +160,25 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
       additionalCfnResources,
     },
   };
+};
+
+const walkGeneratedResourceScopes = (scope: Construct, processNode: (scope: Construct) => void): void => {
+  scope.node.children.forEach((child) => walkAndProcessNodes(child, processNode));
+  getGeneratedStackGroups(scope).forEach((stackGroup) => walkAndProcessNodes(stackGroup, processNode));
+};
+
+const getGeneratedStackGroups = (scope: Construct): Stack[] => {
+  const topLevelStack = getTopLevelStack(scope);
+  const stackGroupScope = (topLevelStack.node.scope ?? topLevelStack.node.root) as Construct;
+
+  return stackGroupScope.node.children.filter(
+    (child): child is Stack =>
+      Stack.isStack(child) &&
+      child !== topLevelStack &&
+      child.node.metadata.some(
+        (metadataEntry) => metadataEntry.type === GRAPHQL_API_STACK_GROUP_METADATA && metadataEntry.data === scope.node.addr,
+      ),
+  );
 };
 
 /**
