@@ -1200,10 +1200,10 @@ public readonly stackMappings: {[ key: string ]: string};
 
 - *Type:* {[ key: string ]: string}
 
-StackMappings override the assigned nested stack on a per-resource basis.
-
-Only applies to resolvers, and takes the form
+StackMappings override the assigned nested stack on a per-resource basis and take the form
 { <logicalId>: <stackName> }
+Generated resources are automatically sharded when a default nested stack approaches CloudFormation resource limits; explicit mappings
+take precedence over automatic placement.
 It is not recommended to use this parameter unless you are encountering stack resource count limits, and worth noting that
 after initial deployment AppSync resolvers cannot be moved between nested stacks, they will need to be removed from the app,
 then re-added from a new stack.

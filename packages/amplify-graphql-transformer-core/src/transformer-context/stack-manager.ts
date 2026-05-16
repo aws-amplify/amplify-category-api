@@ -4,6 +4,14 @@ import { Construct } from 'constructs';
 
 export type ResourceToStackMap = Record<string, string>;
 
+// Keep generated nested stacks below CloudFormation's 500 resource limit. Some logical transformer resources synthesize
+// multiple CloudFormation resources, so this budget intentionally leaves headroom for metadata and helper resources.
+const MAX_AUTO_STACK_RESOURCE_ESTIMATE = 400;
+const DEFAULT_RESOURCE_ESTIMATE = 1;
+const PIPELINE_RESOLVER_RESOURCE_ESTIMATE = 4;
+const LAMBDA_DATA_SOURCE_RESOURCE_ESTIMATE = 3;
+const FIRST_OVERFLOW_STACK_INDEX = 2;
+
 /**
  * StackManager
  */
@@ -11,6 +19,14 @@ export class StackManager implements StackManagerProvider {
   private stacks: Map<string, Stack> = new Map();
 
   private resourceToStackMap: Map<string, string>;
+
+  private autoResourceToStackMap: Map<string, string> = new Map();
+
+  private stackResourceEstimates: Map<string, number> = new Map();
+
+  private currentStackNameByDefaultStackName: Map<string, string> = new Map();
+
+  private nextStackIndexByDefaultStackName: Map<string, number> = new Map();
 
   constructor(
     public readonly scope: Construct,
@@ -22,6 +38,10 @@ export class StackManager implements StackManagerProvider {
   }
 
   createStack = (stackName: string): Stack => {
+    if (this.hasStack(stackName)) {
+      return this.getStack(stackName);
+    }
+
     const newStack = this.nestedStackProvider.provide(this.scope, stackName);
     this.stacks.set(stackName, newStack);
     return newStack;
@@ -36,7 +56,7 @@ export class StackManager implements StackManagerProvider {
    * @returns the stack, or a new one if not yet defined.
    */
   getScopeFor = (resourceId: string, defaultStackName?: string): Construct => {
-    const stackName = this.resourceToStackMap.has(resourceId) ? this.resourceToStackMap.get(resourceId) : defaultStackName;
+    const stackName = this.getStackNameFor(resourceId, defaultStackName);
     if (!stackName) {
       return this.scope;
     }
@@ -68,5 +88,57 @@ export class StackManager implements StackManagerProvider {
       return this.stacks.get(stackName)!;
     }
     throw new Error(`Stack ${stackName} is not created`);
+  };
+
+  private getStackNameFor = (resourceId: string, defaultStackName?: string): string | undefined => {
+    if (this.resourceToStackMap.has(resourceId)) {
+      return this.resourceToStackMap.get(resourceId);
+    }
+
+    if (!defaultStackName) {
+      return defaultStackName;
+    }
+
+    if (this.autoResourceToStackMap.has(resourceId)) {
+      return this.autoResourceToStackMap.get(resourceId);
+    }
+
+    const stackName = this.getStackNameWithinResourceBudget(defaultStackName, this.getEstimatedResourceCount(resourceId));
+    this.autoResourceToStackMap.set(resourceId, stackName);
+    return stackName;
+  };
+
+  private getStackNameWithinResourceBudget = (defaultStackName: string, resourceEstimate: number): string => {
+    const currentStackName = this.currentStackNameByDefaultStackName.get(defaultStackName) ?? defaultStackName;
+    const currentResourceEstimate = this.stackResourceEstimates.get(currentStackName) ?? 0;
+
+    if (currentResourceEstimate > 0 && currentResourceEstimate + resourceEstimate > MAX_AUTO_STACK_RESOURCE_ESTIMATE) {
+      const nextStackIndex = this.nextStackIndexByDefaultStackName.get(defaultStackName) ?? FIRST_OVERFLOW_STACK_INDEX;
+      const nextStackName = `${defaultStackName}${nextStackIndex}`;
+      this.nextStackIndexByDefaultStackName.set(defaultStackName, nextStackIndex + 1);
+      this.currentStackNameByDefaultStackName.set(defaultStackName, nextStackName);
+      this.stackResourceEstimates.set(nextStackName, resourceEstimate);
+      return nextStackName;
+    }
+
+    this.currentStackNameByDefaultStackName.set(defaultStackName, currentStackName);
+    this.stackResourceEstimates.set(currentStackName, currentResourceEstimate + resourceEstimate);
+    return currentStackName;
+  };
+
+  private getEstimatedResourceCount = (resourceId: string): number => {
+    if (resourceId.startsWith('Invoke') && resourceId.endsWith('LambdaDataSource')) {
+      return DEFAULT_RESOURCE_ESTIMATE;
+    }
+
+    if (resourceId.endsWith('LambdaDataSource')) {
+      return LAMBDA_DATA_SOURCE_RESOURCE_ESTIMATE;
+    }
+
+    if (resourceId.endsWith('Resolver')) {
+      return PIPELINE_RESOLVER_RESOURCE_ESTIMATE;
+    }
+
+    return DEFAULT_RESOURCE_ESTIMATE;
   };
 }
