@@ -390,7 +390,19 @@
       "@aws-amplify/graphql-api-construct/uuid",
       "@aws-amplify/graphql-api-construct/zod",
       "@aws-amplify/platform-core",
-      "@aws-amplify/plugin-types"
+      "@aws-amplify/plugin-types",
+      "@aws-amplify/graphql-api-construct/@nodable/entities",
+      "@aws-amplify/graphql-api-construct/xml-naming",
+      "@aws-amplify/graphql-api-construct/json-schema-to-ts",
+      "@aws-amplify/graphql-api-construct/@babel/runtime",
+      "@aws-amplify/graphql-api-construct/regenerator-runtime",
+      "@aws-amplify/graphql-api-construct/ts-algebra",
+      "@aws-amplify/data-construct/@nodable/entities",
+      "@aws-amplify/data-construct/xml-naming",
+      "@aws-amplify/data-construct/json-schema-to-ts",
+      "@aws-amplify/data-construct/@babel/runtime",
+      "@aws-amplify/data-construct/regenerator-runtime",
+      "@aws-amplify/data-construct/ts-algebra"
     ]
   },
   "devDependencies": {
