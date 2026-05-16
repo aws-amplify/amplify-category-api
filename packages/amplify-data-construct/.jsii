@@ -47,6 +47,8 @@
     "@aws-sdk/credential-provider-process": "3.620.1",
     "@aws-sdk/credential-provider-sso": "3.637.0",
     "@aws-sdk/credential-provider-web-identity": "3.621.0",
+    "@aws-sdk/eventstream-handler-node": "^3.821.0",
+    "@aws-sdk/middleware-eventstream": "^3.821.0",
     "@aws-sdk/middleware-host-header": "3.620.0",
     "@aws-sdk/middleware-logger": "3.609.0",
     "@aws-sdk/middleware-recursion-detection": "3.620.0",
@@ -61,13 +63,15 @@
     "@aws-sdk/util-user-agent-node": "3.614.0",
     "@aws-sdk/xml-builder": "3.804.0",
     "@aws/lambda-invoke-store": "^0.2.2",
+    "@babel/runtime": "^7.18.3",
+    "@nodable/entities": "2.1.0",
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/core": "^2.0.0",
     "@opentelemetry/resources": "2.0.0",
     "@opentelemetry/sdk-trace-base": "^2.0.0",
     "@opentelemetry/semantic-conventions": "^1.29.0",
     "@smithy/abort-controller": "^3.1.1",
-    "@smithy/config-resolver": "^3.0.5",
+    "@smithy/config-resolver": "^4.4.0",
     "@smithy/core": "^2.4.0",
     "@smithy/credential-provider-imds": "^3.2.0",
     "@smithy/eventstream-codec": "^3.1.2",
@@ -127,6 +131,7 @@
     "immer": "^9.0.12",
     "is-buffer": "~1.1.6",
     "is-ci": "^3.0.1",
+    "json-schema-to-ts": "^3.1.1",
     "jsonfile": "^4.0.0",
     "libphonenumber-js": "1.9.47",
     "lodash": "^4.17.23",
@@ -136,16 +141,19 @@
     "object-hash": "^3.0.0",
     "path-expression-matcher": "1.1.3",
     "pluralize": "8.0.0",
+    "regenerator-runtime": "^0.14.0",
     "semver": "^7.6.3",
     "strnum": "^1.0.5",
+    "ts-algebra": "^2.0.0",
     "ts-dedent": "^2.0.0",
     "tslib": "^2.6.2",
     "universalify": "^0.1.0",
     "uuid": "^9.0.1",
+    "xml-naming": "0.1.0",
     "zod": "^3.22.2"
   },
   "dependencies": {
-    "@aws-amplify/graphql-api-construct": "1.21.2",
+    "@aws-amplify/graphql-api-construct": "1.21.3",
     "aws-cdk-lib": "^2.224.0",
     "constructs": "^10.3.0"
   },
@@ -8592,6 +8600,6 @@
     }
   },
   "types": {},
-  "version": "1.17.2",
-  "fingerprint": "CjaXiYUP5ydMk5+Q2+ANminVCU4VrEaFAfud5KNeIwY="
+  "version": "1.17.3",
+  "fingerprint": "zQx6v+02yNAlCqbiTb8D/oZOG3VY9BInFhQt7CP8hME="
 }
