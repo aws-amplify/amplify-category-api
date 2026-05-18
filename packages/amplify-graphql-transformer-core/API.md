@@ -850,6 +850,8 @@ export class TransformerResolver implements TransformerResolverProvider {
     // (undocumented)
     mapToStack: (stack: Stack) => void;
     // (undocumented)
+    readonly resolverLogicalId: string;
+    // (undocumented)
     setScope: (scope: Construct) => void;
     // Warning: (ae-forgotten-export) The symbol "FunctionRuntimeTemplatePartialVTL" needs to be exported by the entry point index.d.ts
     //
