@@ -3,8 +3,8 @@ import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces
 import { Construct } from 'constructs';
 
 // Keep parent templates small and deploy overflow groups as separate CloudFormation stack operations.
-const MAX_DIRECT_NESTED_STACKS = 50;
-const MAX_GROUPED_NESTED_STACKS = 50;
+const MAX_DIRECT_NESTED_STACKS = 5;
+const MAX_GROUPED_NESTED_STACKS = 5;
 const MAX_CLOUDFORMATION_STACK_NAME_LENGTH = 128;
 const GROUP_STACK_PREFIX = 'AmplifyGraphqlApiStackGroup';
 export const GRAPHQL_API_STACK_GROUP_METADATA = 'aws-amplify:graphql-api-stack-group-root';
