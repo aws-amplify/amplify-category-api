@@ -62,6 +62,18 @@ export interface ImportedAmplifyDynamoDbModelDataSourceStrategy {
 }
 
 /**
+ * Authentication strategy for RDS IAM database authentication.
+ */
+export interface SqlModelDataSourceRdsIamAuthenticationConfig {
+  readonly strategy: 'rdsIam';
+}
+
+/**
+ * The authentication configuration for an SQL data source. Currently only RDS IAM database authentication is supported.
+ */
+export type SqlModelDataSourceAuthentication = SqlModelDataSourceRdsIamAuthenticationConfig;
+
+/**
  * A strategy that creates a Lambda to connect to a pre-existing SQL table to resolve model data.
  */
 export interface SQLLambdaModelDataSourceStrategy {
@@ -96,6 +108,13 @@ export interface SQLLambdaModelDataSourceStrategy {
    * The configuration for the provisioned concurrency of the Lambda.
    */
   readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
+
+  /**
+   * The authentication configuration for the SQL data source. When set to RDS IAM authentication, the Lambda will generate an IAM
+   * authentication token at runtime instead of using a static password. This is required for Aurora PostgreSQL Express configurations
+   * that use RDS IAM database authentication.
+   */
+  readonly authentication?: SqlModelDataSourceAuthentication;
 }
 
 /**

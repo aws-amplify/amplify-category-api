@@ -1,5 +1,6 @@
 import { SSMClient, GetParameterCommand, GetParameterCommandOutput } from '@aws-sdk/client-ssm';
 import { GetSecretValueCommand, SecretsManagerClient, GetSecretValueCommandOutput } from '@aws-sdk/client-secrets-manager';
+import { Signer } from '@aws-sdk/rds-signer';
 // @ts-ignore
 import { DBAdapter, DBConfig, getDBAdapter } from 'rds-query-processor';
 
@@ -16,6 +17,7 @@ const WAIT_COMPLETE = 'WAIT_COMPLETE';
 enum CredentialStorageMethod {
   SSM = 'SSM',
   SECRETS_MANAGER = 'SECRETS_MANAGER',
+  RDS_IAM_AUTH = 'RDS_IAM_AUTH',
 }
 
 export const run = async (event: any): Promise<any> => {
@@ -27,7 +29,7 @@ export const run = async (event: any): Promise<any> => {
   try {
     return await adapter.executeRequest(event, debugMode);
   } catch (e) {
-    if (isRetryableError(e)) {
+    if (isRetryableError(e as Error)) {
       return await retryWithRefreshedCredentials(event, debugMode)
     }
     throw e;
@@ -179,7 +181,22 @@ const retrieveSsmValueFromEnvPaths = async (path: string): Promise<string> => {
   }
 };
 
-const getDBConfig = async (): DBConfig => {
+const generateRdsIamAuthToken = async (hostname: string, port: number, username: string): Promise<string> => {
+  const region = process.env.AWS_REGION;
+  const signer = new Signer({ hostname, port, region, username });
+  return signer.getAuthToken();
+};
+
+const parseConnectionUri = (uri: string): { hostname: string; port: number; username: string; database: string } => {
+  const url = new URL(uri);
+  const hostname = url.hostname;
+  const port = url.port ? parseInt(url.port, 10) : 5432;
+  const username = url.username ? decodeURIComponent(url.username) : '';
+  const database = url.pathname.replace(/^\//, '');
+  return { hostname, port, username, database };
+};
+
+const getDBConfig = async (): Promise<DBConfig> => {
   const config: DBConfig = {};
 
   const sslCertificate = await getCustomSslCert();
@@ -219,6 +236,29 @@ const getDBConfig = async (): DBConfig => {
     const secrets = await getSecretManagerValue(process.env.secretArn);
     config.username = secrets.username;
     config.password = secrets.password;
+  } else if (credentialStorageMethod === CredentialStorageMethod.RDS_IAM_AUTH) {
+    if (!ssmClient) {
+      createSSMClient();
+    }
+
+    config.engine = getDBEngine();
+
+    const jsonConnectionString = process.env.connectionString;
+    if (jsonConnectionString) {
+      const uri = await retrieveSsmValueFromEnvPaths(jsonConnectionString);
+      const { hostname, port, username, database } = parseConnectionUri(uri);
+      config.host = hostname;
+      config.port = port;
+      config.username = username;
+      config.database = database;
+    } else {
+      config.host = await getSSMValue(process.env.host);
+      config.port = Number.parseInt(await getSSMValue(process.env.port)) || 5432;
+      config.username = await getSSMValue(process.env.username);
+      config.database = await getSSMValue(process.env.database);
+    }
+
+    config.password = await generateRdsIamAuthToken(config.host!, config.port!, config.username!);
   } else {
     throw new Error('Unable to determine credentials storage method (SSM or SECRETS_MANAGER).');
   }

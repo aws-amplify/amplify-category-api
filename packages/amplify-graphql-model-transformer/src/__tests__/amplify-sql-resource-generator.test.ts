@@ -1,6 +1,7 @@
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
 import {
   MYSQL_DB_TYPE,
+  POSTGRES_DB_TYPE,
   constructDataSourceStrategies,
   getResourceNamesForStrategy,
   validateModelSchema,
@@ -366,6 +367,168 @@ describe('ModelTransformer with SQL data sources:', () => {
     expect(tags.length).toEqual(1);
     expect(tags[0].Key).toEqual('amplify:function-type');
     expect(tags[0].Value).toEqual('sql-data-source');
+  });
+
+  describe('RDS IAM authentication', () => {
+    const postgresStrategyBase: SQLLambdaModelDataSourceStrategy = {
+      name: 'postgresStrategy',
+      dbType: POSTGRES_DB_TYPE,
+      dbConnectionConfig: {
+        connectionUriSsmPath: '/test/connectionUri',
+      },
+    };
+
+    const getPolicy = (out: ReturnType<typeof testTransform>, strategy: SQLLambdaModelDataSourceStrategy) => {
+      const resourceNames = getResourceNamesForStrategy(strategy);
+      const sqlApiStack = out.stacks[resourceNames.sqlStack];
+      const [, policy] =
+        Object.entries(sqlApiStack.Resources!).find(([resourceName]) =>
+          resourceName.startsWith(resourceNames.sqlLambdaExecutionRolePolicy),
+        ) || [];
+      return { sqlApiStack, policy };
+    };
+
+    const getSqlLambdaEnvVars = (out: ReturnType<typeof testTransform>, strategy: SQLLambdaModelDataSourceStrategy) => {
+      const resourceNames = getResourceNamesForStrategy(strategy);
+      const sqlApiStack = out.stacks[resourceNames.sqlStack];
+      const [, sqlLambda] =
+        Object.entries(sqlApiStack.Resources!).find(([resourceName]) => resourceName.startsWith(resourceNames.sqlLambdaFunction)) || [];
+      return sqlLambda?.Properties?.Environment?.Variables;
+    };
+
+    it('should assign rds-db:connect and SSM permissions when using connection URI with rdsIam auth', () => {
+      const strategy: SQLLambdaModelDataSourceStrategy = {
+        ...postgresStrategyBase,
+        authentication: { strategy: 'rdsIam' },
+      };
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        dataSourceStrategies: constructDataSourceStrategies(validSchema, strategy),
+      });
+
+      const { policy } = getPolicy(out, strategy);
+      expect(policy).toBeDefined();
+      const { PolicyDocument } = policy.Properties;
+
+      // CloudWatch + SSM + rds-db:connect = 3 statements
+      expect(PolicyDocument.Statement.length).toEqual(3);
+
+      const ssmStatements = PolicyDocument.Statement.filter(
+        (statement: any) => JSON.stringify(statement.Action) === JSON.stringify(['ssm:GetParameter', 'ssm:GetParameters']),
+      );
+      expect(ssmStatements.length).toEqual(1);
+      expect(ssmStatements[0].Resource).toEqual('arn:aws:ssm:*:*:parameter/test/connectionUri');
+
+      const rdsIamStatements = PolicyDocument.Statement.filter((statement: any) => statement.Action === 'rds-db:connect');
+      expect(rdsIamStatements.length).toEqual(1);
+      expect(rdsIamStatements[0].Resource).toEqual('*');
+
+      const secretsManagerStatements = PolicyDocument.Statement.filter(
+        (statement: any) => statement.Action === 'secretsmanager:GetSecretValue',
+      );
+      expect(secretsManagerStatements.length).toEqual(0);
+
+      expect(PolicyDocument).toMatchSnapshot();
+    });
+
+    it('should set CREDENTIAL_STORAGE_METHOD to RDS_IAM_AUTH and pass connection string env var when using connection URI', () => {
+      const strategy: SQLLambdaModelDataSourceStrategy = {
+        ...postgresStrategyBase,
+        authentication: { strategy: 'rdsIam' },
+      };
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        dataSourceStrategies: constructDataSourceStrategies(validSchema, strategy),
+      });
+
+      const envVars = getSqlLambdaEnvVars(out, strategy);
+      expect(envVars).toBeDefined();
+      expect(envVars.CREDENTIAL_STORAGE_METHOD).toEqual('RDS_IAM_AUTH');
+      expect(envVars.connectionString).toBeDefined();
+      expect(envVars.SSM_ENDPOINT).toBeDefined();
+      expect(envVars.username).toBeUndefined();
+      expect(envVars.password).toBeUndefined();
+    });
+
+    it('should assign rds-db:connect and SSM permissions when using individual SSM params with rdsIam auth', () => {
+      const strategy: SQLLambdaModelDataSourceStrategy = {
+        ...postgresStrategyBase,
+        dbConnectionConfig: {
+          hostnameSsmPath: '/test/hostname',
+          portSsmPath: '/test/port',
+          usernameSsmPath: '/test/username',
+          passwordSsmPath: '/test/password',
+          databaseNameSsmPath: '/test/databaseName',
+        },
+        authentication: { strategy: 'rdsIam' },
+      };
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        dataSourceStrategies: constructDataSourceStrategies(validSchema, strategy),
+      });
+
+      const { policy } = getPolicy(out, strategy);
+      expect(policy).toBeDefined();
+      const { PolicyDocument } = policy.Properties;
+
+      // CloudWatch + SSM (5 paths) + rds-db:connect = 3 statements
+      expect(PolicyDocument.Statement.length).toEqual(3);
+
+      const rdsIamStatements = PolicyDocument.Statement.filter((statement: any) => statement.Action === 'rds-db:connect');
+      expect(rdsIamStatements.length).toEqual(1);
+      expect(rdsIamStatements[0].Resource).toEqual('*');
+
+      expect(PolicyDocument).toMatchSnapshot();
+    });
+
+    it('should set CREDENTIAL_STORAGE_METHOD to RDS_IAM_AUTH and pass host/port/username/database env vars without password when using individual SSM params', () => {
+      const strategy: SQLLambdaModelDataSourceStrategy = {
+        ...postgresStrategyBase,
+        dbConnectionConfig: {
+          hostnameSsmPath: '/test/hostname',
+          portSsmPath: '/test/port',
+          usernameSsmPath: '/test/username',
+          passwordSsmPath: '/test/password',
+          databaseNameSsmPath: '/test/databaseName',
+        },
+        authentication: { strategy: 'rdsIam' },
+      };
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        dataSourceStrategies: constructDataSourceStrategies(validSchema, strategy),
+      });
+
+      const envVars = getSqlLambdaEnvVars(out, strategy);
+      expect(envVars).toBeDefined();
+      expect(envVars.CREDENTIAL_STORAGE_METHOD).toEqual('RDS_IAM_AUTH');
+      expect(envVars.host).toEqual('/test/hostname');
+      expect(envVars.port).toEqual('/test/port');
+      expect(envVars.username).toEqual('/test/username');
+      expect(envVars.database).toEqual('/test/databaseName');
+      expect(envVars.password).toBeUndefined();
+    });
+
+    it('should not assign rds-db:connect permission when authentication is not configured', () => {
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        dataSourceStrategies: constructDataSourceStrategies(validSchema, postgresStrategyBase),
+      });
+
+      const { policy } = getPolicy(out, postgresStrategyBase);
+      expect(policy).toBeDefined();
+      const { PolicyDocument } = policy.Properties;
+
+      const rdsIamStatements = PolicyDocument.Statement.filter((statement: any) => statement.Action === 'rds-db:connect');
+      expect(rdsIamStatements.length).toEqual(0);
+
+      const envVars = getSqlLambdaEnvVars(out, postgresStrategyBase);
+      expect(envVars.CREDENTIAL_STORAGE_METHOD).toEqual('SSM');
+    });
   });
 
   it('should add a description to the SQL function', async () => {
