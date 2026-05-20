@@ -11,8 +11,8 @@ import { getModelDataSourceStrategy } from './model-datasource-strategy-utils';
  */
 export const getKeySchema = (table: any, indexName?: string): any =>
   (
-    table.globalSecondaryIndexes.find((gsi: any) => gsi.indexName === indexName) ??
-    table.localSecondaryIndexes.find((gsi: any) => gsi.indexName === indexName)
+    (table.globalSecondaryIndexes ?? []).find((gsi: any) => gsi.indexName === indexName) ??
+    (table.localSecondaryIndexes ?? []).find((gsi: any) => gsi.indexName === indexName)
   )?.keySchema ?? table.keySchema;
 
 /**

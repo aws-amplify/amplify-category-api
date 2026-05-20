@@ -54,7 +54,7 @@ export const updateTableForReferencesConnection = (
   }
 
   const relatedTable = getTable(ctx, relatedType);
-  const gsis = relatedTable.globalSecondaryIndexes;
+  const gsis = relatedTable.globalSecondaryIndexes ?? [];
   if (gsis.some((gsi: any) => gsi.indexName === indexName)) {
     // We create a GSI on the Related model's table for querying
     // relationships using the format 'gsi-{PrimaryModelName}.{PrimaryModelConnectionField}'
@@ -136,7 +136,7 @@ export const updateTableForConnection = (config: HasManyDirectiveConfiguration, 
   const { field, object, relatedType } = config;
   const mappedObjectName = ctx.resourceHelper.getModelNameMapping(object.name.value);
   const table = getTable(ctx, relatedType) as any;
-  const gsis = table.globalSecondaryIndexes;
+  const gsis = table.globalSecondaryIndexes ?? [];
 
   const indexName = `gsi-${mappedObjectName}.${field.name.value}`;
   config.indexName = indexName;
@@ -202,11 +202,15 @@ const addGlobalSecondaryIndex = (
   // At the L2 level, the CDK does not handle the way Amplify sets GSI read and write capacity
   // very well. At the L1 level, the CDK does not create the correct IAM policy for accessing the
   // GSI. To get around these issues, keep the L1 and L2 GSI list in sync.
-  const gsi = table.globalSecondaryIndexes.find((g: any) => g.indexName === indexName);
+  const gsi = (table.globalSecondaryIndexes ?? []).find((g: any) => g.indexName === indexName);
+  const keySchema = gsi?.keySchema ?? [
+    { attributeName: partitionKey.name, keyType: 'HASH' },
+    ...(sortKey ? [{ attributeName: sortKey.name, keyType: 'RANGE' }] : []),
+  ];
 
   const newIndex = {
     indexName,
-    keySchema: gsi.keySchema,
+    keySchema,
     projection: { projectionType: 'ALL' },
     provisionedThroughput: cdk.Fn.conditionIf(ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling, cdk.Fn.ref('AWS::NoValue'), {
       ReadCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
