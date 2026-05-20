@@ -961,6 +961,7 @@ export interface AmplifyGraphqlApiResources {
 
   /**
    * The Generated DynamoDB Table L2 Resources, keyed by logicalId.
+   * Use these references for grants. Use cfnResources when overriding generated table properties.
    */
   readonly tables: Record<string, ITable>;
 

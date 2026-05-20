@@ -81,6 +81,8 @@ import { ShardedNestedStackProvider } from './internal/nested-stack-provider';
  *     table.pointInTimeRecoverySpecification = { pointInTimeRecoveryEnabled: false };
  *   });
  * ```
+ * `resources.tables` is safe for grants against generated DynamoDB tables. Use `resources.cfnResources` when overriding generated table properties.
+ *
  * `resources.<ResourceType>.<ResourceName>` - you can then perform any CDK action on these resulting resoureces.
  */
 export class AmplifyGraphqlApi extends Construct {

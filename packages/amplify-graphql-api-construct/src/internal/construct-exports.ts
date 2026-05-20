@@ -48,7 +48,8 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
   const cfnResolvers: Record<string, CfnResolver> = {};
   const cfnFunctionConfigurations: Record<string, CfnFunctionConfiguration> = {};
   const cfnDataSources: Record<string, CfnDataSource> = {};
-  const tables: Record<string, ITable> = {};
+  const generatedTables: Record<string, ITable> = {};
+  const generatedTableNames: Record<string, string> = {};
   const cfnTables: Record<string, CfnTable> = {};
   const amplifyDynamoDbTables: Record<string, AmplifyDynamoDbTableWrapper> = {};
   const roles: Record<string, Role> = {};
@@ -88,11 +89,18 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
       return;
     }
     if (currentScope instanceof Table || isITable(currentScope)) {
-      tables[resourceName] = currentScope;
+      generatedTables[resourceName] = currentScope;
+      const tableName = getConfiguredTableName(currentScope);
+      if (tableName) {
+        generatedTableNames[resourceName] = tableName;
+      }
       return;
     }
     if (currentScope instanceof CfnTable) {
       cfnTables[resourceName] = currentScope;
+      if (currentScope.tableName) {
+        generatedTableNames[resourceName] = currentScope.tableName;
+      }
       return;
     }
     if (AmplifyDynamoDbTableWrapper.isAmplifyDynamoDbTableResource(currentScope)) {
@@ -139,6 +147,7 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
   });
 
   const proxiedApiAttributes = graphqlApiAttributesFromCfnGraphQLApi(cfnGraphqlApi);
+  const tables = createGrantSafeTableReferences(scope, generatedTables, generatedTableNames);
 
   return {
     graphqlApi: GraphqlApi.fromGraphqlApiAttributes(scope, 'L2GraphqlApi', proxiedApiAttributes),
@@ -160,6 +169,49 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
       additionalCfnResources,
     },
   };
+};
+
+const createGrantSafeTableReferences = (
+  scope: Construct,
+  generatedTables: Record<string, ITable>,
+  generatedTableNames: Record<string, string>,
+): Record<string, ITable> => {
+  return Object.fromEntries(
+    Object.entries(generatedTables).map(([resourceName, table]) => [
+      resourceName,
+      isInGeneratedStackGroup(scope, table)
+        ? Table.fromTableAttributes(scope, `GrantSafe${resourceName}Table`, {
+            tableName: generatedTableNames[resourceName] ?? table.tableName,
+            grantIndexPermissions: true,
+          })
+        : table,
+    ]),
+  );
+};
+
+const getConfiguredTableName = (table: ITable): string | undefined => {
+  const defaultChild = table.node.defaultChild;
+  if (defaultChild instanceof CfnTable) {
+    return defaultChild.tableName;
+  }
+
+  if (defaultChild) {
+    return table.tableName;
+  }
+
+  return undefined;
+};
+
+const isInGeneratedStackGroup = (rootScope: Construct, construct: Construct): boolean => {
+  const rootTopLevelStack = getTopLevelStack(rootScope);
+  const constructTopLevelStack = getTopLevelStack(construct);
+
+  return (
+    constructTopLevelStack !== rootTopLevelStack &&
+    constructTopLevelStack.node.metadata.some(
+      (metadataEntry) => metadataEntry.type === GRAPHQL_API_STACK_GROUP_METADATA && metadataEntry.data === rootScope.node.addr,
+    )
+  );
 };
 
 const walkGeneratedResourceScopes = (scope: Construct, processNode: (scope: Construct) => void): void => {

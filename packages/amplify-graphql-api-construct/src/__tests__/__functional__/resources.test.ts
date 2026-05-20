@@ -1,9 +1,12 @@
 import * as cdk from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
 import { AuthorizationType, Visibility } from 'aws-cdk-lib/aws-appsync';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
+import { GRAPHQL_API_STACK_GROUP_METADATA, getTopLevelStack } from '../../internal/nested-stack-provider';
 
 describe('generated resource access', () => {
   describe('l1 resources', () => {
@@ -387,6 +390,68 @@ describe('generated resource access', () => {
         expect(Object.values(cfnTables).length).toEqual(2);
         expect(cfnTables.Todo).toBeDefined();
         expect(cfnTables.AmplifyDataStore).toBeDefined();
+      });
+
+      it('grants access to grouped table references without adding grouped stack output dependencies', () => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'RootStack');
+        const api = new AmplifyGraphqlApi(stack, 'TestApi', {
+          definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+            type Model1 @model @auth(rules: [{ allow: public }]) {
+              description: String!
+            }
+
+            type Model2 @model @auth(rules: [{ allow: public }]) {
+              description: String!
+            }
+
+            type Model3 @model @auth(rules: [{ allow: public }]) {
+              description: String!
+            }
+
+            type Model4 @model @auth(rules: [{ allow: public }]) {
+              description: String!
+            }
+
+            type Model5 @model @auth(rules: [{ allow: public }]) {
+              description: String!
+            }
+
+            type Model6 @model @auth(rules: [{ allow: public }]) {
+              description: String!
+            }
+          `),
+          authorizationModes: {
+            apiKeyConfig: { expires: cdk.Duration.days(7) },
+          },
+        });
+        const groupedModelName = Object.entries(api.resources.cfnResources.cfnTables).find(([, table]) =>
+          getTopLevelStack(table).node.metadata.some(
+            (metadataEntry) => metadataEntry.type === GRAPHQL_API_STACK_GROUP_METADATA && metadataEntry.data === api.node.addr,
+          ),
+        )?.[0];
+        if (!groupedModelName) {
+          throw new Error('Expected at least one generated model table to be placed in a generated stack group.');
+        }
+
+        const grantRole = new iam.Role(stack, 'GrantRole', {
+          assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        });
+        api.resources.tables[groupedModelName].grantReadWriteData(grantRole);
+
+        const rootTemplate = Template.fromStack(stack).toJSON();
+        const grantPolicy = Object.values(rootTemplate.Resources).find((resource: any) =>
+          JSON.stringify(resource).includes('dynamodb:BatchGetItem'),
+        );
+        const grantPolicyText = JSON.stringify(grantPolicy);
+
+        expect(api.resources.cfnResources.cfnTables[groupedModelName]).toBeDefined();
+        expect(api.resources.tables[groupedModelName]).toBeDefined();
+        expect(Object.values(api.resources.cfnResources.cfnTables)).toHaveLength(6);
+        expect(grantPolicyText).toContain(':table/');
+        expect(grantPolicyText).toContain('/index/*');
+        expect(grantPolicyText).not.toContain('Fn::ImportValue');
+        expect(grantPolicyText).not.toContain('Outputs');
       });
     });
 
