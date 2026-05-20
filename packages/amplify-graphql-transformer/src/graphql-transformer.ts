@@ -31,7 +31,7 @@ import type {
   TransformParameters,
   LogConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { GraphQLTransform, ResolverConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
+import { GraphQLTransform, ResolverConfig, StackManagerOptions, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 import { Construct } from 'constructs';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { GenerationTransformer } from '@aws-amplify/graphql-generation-transformer';
@@ -134,6 +134,7 @@ export type ExecuteTransformConfig = TransformConfig &
     assetProvider: AssetProvider;
     synthParameters: SynthParameters;
     logging?: true | LogConfig;
+    stackManagerOptions?: StackManagerOptions;
   };
 
 /**
@@ -176,6 +177,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
     schema,
     scope,
     sqlDirectiveDataSourceStrategies,
+    stackManagerOptions,
     synthParameters,
     logging,
   } = config;
@@ -193,6 +195,7 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
       schema,
       scope,
       sqlDirectiveDataSourceStrategies,
+      stackManagerOptions,
       synthParameters,
       logging,
     });

@@ -13,6 +13,12 @@ type ConstructPackageConfiguration = {
   packageDir: string;
 };
 
+type YarnLockfileEntry = {
+  dependencies?: Record<string, unknown>;
+};
+
+type YarnLockfileContents = Record<string, YarnLockfileEntry | undefined>;
+
 const CONSTRUCT_PACKAGE_CONFIGURATIONS: ConstructPackageConfiguration[] = [
   {
     packageName: '@aws-amplify/graphql-api-construct',
@@ -97,9 +103,12 @@ const getRepoPackages = (): Record<string, Array<string>> =>
  * @param deps the input deps
  * @returns the full set of registry and repo deps.
  */
-const computeDepsClosure = (deps: string[]): DepsClosure => {
-  const repoPackageClosures = getRepoPackages();
-  const lockfileContents = lockfile.parse(fs.readFileSync('yarn.lock', 'utf8')).object;
+export const computeDepsClosure = (
+  deps: string[],
+  options: { repoPackageClosures?: Record<string, Array<string>>; lockfileContents?: YarnLockfileContents } = {},
+): DepsClosure => {
+  const repoPackageClosures = options.repoPackageClosures ?? getRepoPackages();
+  const lockfileContents = options.lockfileContents ?? getLockfileContents();
   const seenDeps = new Set<string>();
   const closure: DepsClosure = { repoDeps: [], registryDeps: [] };
 
@@ -116,7 +125,7 @@ const computeDepsClosure = (deps: string[]): DepsClosure => {
       repoPackageClosures[currDep].forEach((nextDep) => traverse(newPath, nextDep));
     } else {
       closure.registryDeps.push(currDep);
-      const dependencies = lockfileContents[currDep].dependencies ?? {};
+      const dependencies = getLockfileDependencies(lockfileContents, currDep, newPath);
       Object.entries(dependencies)
         .map(([name, version]) => `${name}@${version}`)
         .forEach((nextDep) => traverse(newPath, nextDep));
@@ -125,6 +134,54 @@ const computeDepsClosure = (deps: string[]): DepsClosure => {
 
   deps.forEach((dep) => traverse([], dep));
   return closure;
+};
+
+export const getLockfileDependencies = (
+  lockfileContents: YarnLockfileContents,
+  descriptor: string,
+  dependencyPath: string[],
+): Record<string, string> => {
+  const lockfileEntry = lockfileContents[descriptor];
+  if (!lockfileEntry) {
+    throw new Error(createMissingLockfileResolutionMessage(descriptor, dependencyPath));
+  }
+
+  const dependencies = lockfileEntry.dependencies ?? {};
+  if (typeof dependencies !== 'object' || Array.isArray(dependencies)) {
+    throw new Error(createMalformedLockfileResolutionMessage(descriptor, 'dependencies must be an object'));
+  }
+
+  Object.entries(dependencies).forEach(([dependencyName, dependencyVersion]) => {
+    if (typeof dependencyVersion !== 'string') {
+      throw new Error(
+        createMalformedLockfileResolutionMessage(
+          descriptor,
+          `dependency "${dependencyName}" must resolve to a string version descriptor`,
+        ),
+      );
+    }
+  });
+
+  return dependencies as Record<string, string>;
+};
+
+export const createMissingLockfileResolutionMessage = (descriptor: string, dependencyPath: string[]): string =>
+  `Missing yarn.lock resolution for package descriptor "${descriptor}" while traversing "${dependencyPath.join(' -> ')}". ` +
+  'Run `yarn` to refresh yarn.lock and commit the updated yarn.lock with this change.';
+
+export const createMalformedLockfileResolutionMessage = (descriptor: string, reason: string): string =>
+  `Malformed yarn.lock resolution for package descriptor "${descriptor}": ${reason}. ` +
+  'Run `yarn` to refresh yarn.lock and commit the updated yarn.lock with this change.';
+
+const getLockfileContents = (): YarnLockfileContents => {
+  const parsedLockfile = lockfile.parse(fs.readFileSync('yarn.lock', 'utf8'));
+  if (parsedLockfile.type !== 'success') {
+    throw new Error(
+      `Malformed yarn.lock: parser returned "${parsedLockfile.type}". ` +
+        'Run `yarn` to refresh yarn.lock and commit the updated yarn.lock with this change.',
+    );
+  }
+  return parsedLockfile.object;
 };
 
 /**
@@ -219,7 +276,7 @@ const validateConstructBundledDependenciesAreConfigured = (constructPackageDir: 
  * 3. Ensure that the cdk construct package.json's dependencies include all of these libraries.
  * 3. Ensure that the cdk construct package.json's bundledDependencies include all of these libraries.
  */
-const main = (): void => {
+export const main = (): void => {
   try {
     const validationErrors: string[] = [];
     CONSTRUCT_PACKAGE_CONFIGURATIONS.forEach(({ packageName, packageDir }) => {
@@ -243,9 +300,11 @@ const main = (): void => {
     console.log('Validated nohoist, package dependencies, and package bundled depencies were configured correctly.');
     process.exit(0);
   } catch (e) {
-    console.error('Caught exception while computing deps closure.', e);
+    console.error(`Caught exception while computing deps closure. ${e instanceof Error ? e.message : e}`);
     process.exit(1);
   }
 };
 
-main();
+if (require.main === module) {
+  main();
+}

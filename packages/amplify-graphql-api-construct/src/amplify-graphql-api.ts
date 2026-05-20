@@ -52,6 +52,7 @@ import { getDataSourceStrategiesProvider } from './internal/data-source-config';
 import { getMetadataDataSources, getMetadataAuthorizationModes, getMetadataCustomOperations } from './internal/metadata';
 import { BackendOutputStorageStrategy, BackendOutputEntry } from '@aws-amplify/plugin-types';
 import { ShardedNestedStackProvider } from './internal/nested-stack-provider';
+import { AdaptiveSizingConfig, createAdaptiveStackSizingPlan } from './internal/adaptive-sizer';
 
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.
@@ -213,10 +214,7 @@ export class AmplifyGraphqlApi extends Construct {
       ...(translationBehavior ?? {}),
       allowGen1Patterns: false,
     };
-    const executeTransformConfig: ExecuteTransformConfig = {
-      scope: this,
-      nestedStackProvider: new ShardedNestedStackProvider(this),
-      assetProvider,
+    const adaptiveSizingConfig: AdaptiveSizingConfig = {
       synthParameters: {
         amplifyEnvironmentName: amplifyEnvironmentName,
         apiName: props.apiName ?? id,
@@ -244,6 +242,15 @@ export class AmplifyGraphqlApi extends Construct {
       rdsSnsTopicMapping: undefined,
       ...getDataSourceStrategiesProvider(definition),
       logging,
+    };
+
+    const adaptiveStackSizingPlan = createAdaptiveStackSizingPlan(adaptiveSizingConfig);
+    const executeTransformConfig: ExecuteTransformConfig = {
+      ...adaptiveSizingConfig,
+      scope: this,
+      nestedStackProvider: new ShardedNestedStackProvider(this, adaptiveStackSizingPlan.nestedStackProviderOptions),
+      assetProvider,
+      stackManagerOptions: adaptiveStackSizingPlan.stackManagerOptions,
     };
 
     executeTransform(executeTransformConfig);

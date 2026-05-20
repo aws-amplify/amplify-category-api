@@ -92,7 +92,14 @@ export {
   TransformerPluginBase,
   TransformerAuthBase,
 } from './transformation/transformer-plugin-base';
-export { TransformerResolver, StackManager } from './transformer-context';
+export {
+  TransformerResolver,
+  StackManager,
+  DEFAULT_AUTO_STACK_RESOURCE_ESTIMATE,
+  STACK_MANAGER_DEFAULT_STACK_NAME_METADATA,
+  STACK_MANAGER_STACK_RESOURCE_ESTIMATE_METADATA,
+} from './transformer-context';
+export type { StackManagerOptions } from './transformer-context';
 export {
   DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
   DDB_DB_TYPE,

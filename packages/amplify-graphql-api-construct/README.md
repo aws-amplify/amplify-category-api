@@ -6,6 +6,12 @@ This package vends an L3 CDK Construct wrapping the behavior of the Amplify Grap
 
 The primary way to use this construct is to invoke it with a provided schema (either as an inline graphql string, or as one or more `appsync.SchemaFile`) objects, and with authorization config provided. There are 5 supported methods for authorization of an AppSync API, all of which are supported by this construct. For more information on authorization rule definitions in Amplify, refer to the [authorization docs](https://docs.amplify.aws/cli/graphql/authorization-rules/). Note: currently at least one authorization rule is required, and if multiple are specified, a `defaultAuthorizationMode` must be specified on the api as well. Specified authorization modes must be a superset of those configured in the graphql schema.
 
+## Troubleshooting
+
+### CDK deploy fails with `ROLLBACK_COMPLETE`
+
+CloudFormation cannot update a stack once it is in `ROLLBACK_COMPLETE`. The construct does not delete stacks automatically because a failed stack can still reference stateful resources. Review the failed deployment, then either delete the failed stack intentionally or deploy with a new stack name/environment.
+
 ## Examples
 
 ### Simple Todo List With Cognito Userpool-based Owner Authorization
@@ -4145,4 +4151,3 @@ The key is stored in your account and is managed by KMS (AWS KMS charges apply).
 ##### `KMS` <a name="KMS" id="@aws-amplify/graphql-api-construct.SSEType.KMS"></a>
 
 ---
-

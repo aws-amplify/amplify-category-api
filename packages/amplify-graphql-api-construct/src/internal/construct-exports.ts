@@ -180,13 +180,24 @@ const createGrantSafeTableReferences = (
     Object.entries(generatedTables).map(([resourceName, table]) => [
       resourceName,
       isInGeneratedStackGroup(scope, table)
-        ? Table.fromTableAttributes(scope, `GrantSafe${resourceName}Table`, {
-            tableName: generatedTableNames[resourceName] ?? table.tableName,
-            grantIndexPermissions: true,
-          })
+        ? createGrantSafeGroupedTableReference(scope, resourceName, generatedTableNames[resourceName])
         : table,
     ]),
   );
+};
+
+const createGrantSafeGroupedTableReference = (scope: Construct, resourceName: string, tableName: string | undefined): ITable => {
+  if (!tableName) {
+    throw new Error(
+      `Unable to create a grant-safe table reference for grouped generated table ${resourceName}. ` +
+        'The generated table name could not be resolved without creating a cross-stack reference.',
+    );
+  }
+
+  return Table.fromTableAttributes(scope, `GrantSafe${resourceName}Table`, {
+    tableName,
+    grantIndexPermissions: true,
+  });
 };
 
 const getConfiguredTableName = (table: ITable): string | undefined => {

@@ -32,6 +32,6 @@ export {
 export { TransformHostProvider, DynamoDbDataSourceOptions } from './transform-host-provider';
 export { TransformerLog, TransformerLogLevel } from './transformer-log';
 export type { TransformParameters } from './transformer-context/transform-parameters';
-export type { NestedStackProvider } from './nested-stack-provider';
+export type { NestedStackProvider, NestedStackProviderOptions } from './nested-stack-provider';
 export type { AssetProps, AssetProvider, S3Asset } from './asset-provider';
 export * from './model-datasource';

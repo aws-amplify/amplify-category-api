@@ -14,6 +14,7 @@ import {
   amplifyPushForce,
 } from 'amplify-category-api-e2e-core';
 import { DynamoDBClient, DeleteTableCommand, ListTablesCommand, UpdateTableCommand } from '@aws-sdk/client-dynamodb';
+import { assertStackCanBeUpdated } from './cdk-deploy-preflight';
 
 /**
  * Retrieve the path to the `npx` executable for interacting with the aws-cdk cli.
@@ -134,6 +135,7 @@ export const cdkDeploy = async (cwd: string, option: string, props?: CdkDeployPr
     env: { npm_config_registry: 'https://registry.npmjs.org/' },
     noOutputTimeout,
   };
+  await assertStackCanBeUpdated(resolveDeployStackName(cwd, option));
 
   await spawn(
     getNpxPath(),
@@ -147,6 +149,13 @@ export const cdkDeploy = async (cwd: string, option: string, props?: CdkDeployPr
   }
 
   return JSON.parse(readFileSync(path.join(cwd, 'outputs.json'), 'utf8'));
+};
+
+const resolveDeployStackName = (cwd: string, option: string): string => {
+  if (option && !option.startsWith('-')) {
+    return option;
+  }
+  return JSON.parse(readFileSync(path.join(cwd, 'package.json'), 'utf8')).name.replace(/_/g, '-');
 };
 
 /**

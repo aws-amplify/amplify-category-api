@@ -3,10 +3,18 @@ import { CfnParameter, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 export type ResourceToStackMap = Record<string, string>;
+export type StackManagerOptions = {
+  defaultStackResourceEstimateLimit?: number;
+  stackResourceEstimateLimits?: Record<string, number>;
+  stackResourceCountOverrides?: Record<string, number>;
+  resourceEstimateOverrides?: Record<string, number>;
+};
 
 // Keep generated nested stacks below CloudFormation's 500 resource limit. Some logical transformer resources synthesize
 // multiple CloudFormation resources, so this budget intentionally leaves headroom for metadata and helper resources.
-const MAX_AUTO_STACK_RESOURCE_ESTIMATE = 400;
+export const DEFAULT_AUTO_STACK_RESOURCE_ESTIMATE = 400;
+export const STACK_MANAGER_DEFAULT_STACK_NAME_METADATA = 'aws-amplify:graphql-default-stack-name';
+export const STACK_MANAGER_STACK_RESOURCE_ESTIMATE_METADATA = 'aws-amplify:graphql-stack-resource-estimate';
 const DEFAULT_RESOURCE_ESTIMATE = 1;
 const PIPELINE_RESOLVER_RESOURCE_ESTIMATE = 4;
 const LAMBDA_DATA_SOURCE_RESOURCE_ESTIMATE = 3;
@@ -24,6 +32,8 @@ export class StackManager implements StackManagerProvider {
 
   private stackResourceEstimates: Map<string, number> = new Map();
 
+  private stackDefaultStackNames: Map<string, string> = new Map();
+
   private currentStackNameByDefaultStackName: Map<string, string> = new Map();
 
   private nextStackIndexByDefaultStackName: Map<string, number> = new Map();
@@ -33,6 +43,7 @@ export class StackManager implements StackManagerProvider {
     private readonly nestedStackProvider: NestedStackProvider,
     private readonly parameterProvider: TransformParameterProvider | undefined,
     resourceMapping: ResourceToStackMap,
+    private readonly options: StackManagerOptions = {},
   ) {
     this.resourceToStackMap = new Map(Object.entries(resourceMapping));
   }
@@ -42,7 +53,13 @@ export class StackManager implements StackManagerProvider {
       return this.getStack(stackName);
     }
 
-    const newStack = this.nestedStackProvider.provide(this.scope, stackName);
+    const estimatedResourceCount = this.getProviderResourceEstimate(stackName);
+    const newStack = this.nestedStackProvider.provide(this.scope, stackName, { estimatedResourceCount });
+    const defaultStackName = this.stackDefaultStackNames.get(stackName);
+    if (defaultStackName) {
+      newStack.node.addMetadata(STACK_MANAGER_DEFAULT_STACK_NAME_METADATA, defaultStackName);
+    }
+    newStack.node.addMetadata(STACK_MANAGER_STACK_RESOURCE_ESTIMATE_METADATA, estimatedResourceCount);
     this.stacks.set(stackName, newStack);
     return newStack;
   };
@@ -111,22 +128,30 @@ export class StackManager implements StackManagerProvider {
   private getStackNameWithinResourceBudget = (defaultStackName: string, resourceEstimate: number): string => {
     const currentStackName = this.currentStackNameByDefaultStackName.get(defaultStackName) ?? defaultStackName;
     const currentResourceEstimate = this.stackResourceEstimates.get(currentStackName) ?? 0;
+    const stackResourceEstimateLimit = this.getStackResourceEstimateLimit(defaultStackName);
 
-    if (currentResourceEstimate > 0 && currentResourceEstimate + resourceEstimate > MAX_AUTO_STACK_RESOURCE_ESTIMATE) {
+    if (currentResourceEstimate > 0 && currentResourceEstimate + resourceEstimate > stackResourceEstimateLimit) {
       const nextStackIndex = this.nextStackIndexByDefaultStackName.get(defaultStackName) ?? FIRST_OVERFLOW_STACK_INDEX;
       const nextStackName = `${defaultStackName}${nextStackIndex}`;
       this.nextStackIndexByDefaultStackName.set(defaultStackName, nextStackIndex + 1);
       this.currentStackNameByDefaultStackName.set(defaultStackName, nextStackName);
       this.stackResourceEstimates.set(nextStackName, resourceEstimate);
+      this.stackDefaultStackNames.set(nextStackName, defaultStackName);
       return nextStackName;
     }
 
     this.currentStackNameByDefaultStackName.set(defaultStackName, currentStackName);
     this.stackResourceEstimates.set(currentStackName, currentResourceEstimate + resourceEstimate);
+    this.stackDefaultStackNames.set(currentStackName, defaultStackName);
     return currentStackName;
   };
 
   private getEstimatedResourceCount = (resourceId: string): number => {
+    const estimateOverride = this.options.resourceEstimateOverrides?.[resourceId];
+    if (estimateOverride !== undefined) {
+      return normalizeResourceEstimate(estimateOverride);
+    }
+
     if (resourceId.startsWith('Invoke') && resourceId.endsWith('LambdaDataSource')) {
       return DEFAULT_RESOURCE_ESTIMATE;
     }
@@ -141,4 +166,19 @@ export class StackManager implements StackManagerProvider {
 
     return DEFAULT_RESOURCE_ESTIMATE;
   };
+
+  private getStackResourceEstimateLimit = (defaultStackName: string): number =>
+    normalizeResourceEstimate(
+      this.options.stackResourceEstimateLimits?.[defaultStackName] ??
+        this.options.defaultStackResourceEstimateLimit ??
+        DEFAULT_AUTO_STACK_RESOURCE_ESTIMATE,
+    );
+
+  private getProviderResourceEstimate = (stackName: string): number =>
+    normalizeResourceEstimate(
+      this.options.stackResourceCountOverrides?.[stackName] ??
+        this.getStackResourceEstimateLimit(this.stackDefaultStackNames.get(stackName) ?? stackName),
+    );
 }
+
+const normalizeResourceEstimate = (estimate: number): number => Math.max(1, Math.ceil(estimate));

@@ -17,6 +17,7 @@ import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces
 import type { RDSLayerMappingProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import type { RDSSNSTopicMappingProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResolverConfig } from '@aws-amplify/graphql-transformer-core';
+import { StackManagerOptions } from '@aws-amplify/graphql-transformer-core';
 import { SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
@@ -43,6 +44,7 @@ export type ExecuteTransformConfig = TransformConfig & DataSourceStrategiesProvi
     assetProvider: AssetProvider;
     synthParameters: SynthParameters;
     logging?: true | LogConfig;
+    stackManagerOptions?: StackManagerOptions;
 };
 
 // @public (undocumented)

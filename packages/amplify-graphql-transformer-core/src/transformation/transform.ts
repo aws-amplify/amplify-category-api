@@ -46,6 +46,7 @@ import { adoptAuthModes } from '../utils/authType';
 import { MappingTemplate } from '../cdk-compat';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
 import { defaultTransformParameters } from '../transformer-context/transform-parameters';
+import { StackManagerOptions } from '../transformer-context/stack-manager';
 import { isBuiltInGraphqlNode } from '../utils';
 import * as SyncUtils from './sync-utils';
 import { UserDefinedSlot } from './types';
@@ -98,6 +99,7 @@ export interface TransformOption extends DataSourceStrategiesProvider, RDSLayerM
   synthParameters: SynthParameters;
   schema: string;
   logging?: true | LogConfig;
+  stackManagerOptions?: StackManagerOptions;
 }
 
 export type StackMapping = { [resourceId: string]: string };
@@ -197,6 +199,7 @@ export class GraphQLTransform {
     schema,
     scope,
     sqlDirectiveDataSourceStrategies,
+    stackManagerOptions,
     synthParameters,
     logging,
   }: TransformOption): void {
@@ -214,6 +217,7 @@ export class GraphQLTransform {
       resolverConfig: this.resolverConfig,
       scope,
       sqlDirectiveDataSourceStrategies: sqlDirectiveDataSourceStrategies ?? [],
+      stackManagerOptions,
       stackMapping: this.stackMappingOverrides,
       synthParameters,
       transformParameters: this.transformParameters,

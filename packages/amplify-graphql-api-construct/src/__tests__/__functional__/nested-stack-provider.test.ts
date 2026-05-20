@@ -78,4 +78,60 @@ describe('ShardedNestedStackProvider', () => {
     expect(Math.max(...operationResourceEstimates)).toBeLessThan(CLOUDFORMATION_STACK_OPERATION_RESOURCE_LIMIT);
     expect(groupStacks).toHaveLength(2);
   });
+
+  it('places nested stacks using provided resource estimates instead of stack count', () => {
+    const app = new App();
+    const stack = new Stack(app, 'RootStack');
+    const provider = new ShardedNestedStackProvider(stack);
+
+    provider.provide(stack, 'GeneratedNestedStack1', { estimatedResourceCount: 900 });
+    provider.provide(stack, 'GeneratedNestedStack2', { estimatedResourceCount: 900 });
+    provider.provide(stack, 'GeneratedNestedStack3', { estimatedResourceCount: 900 });
+
+    const directNestedStacks = stack.node.children.filter(NestedStack.isNestedStack);
+    const groupStacks = app.node.children.filter(
+      (child): child is Stack =>
+        Stack.isStack(child) &&
+        child.node.metadata.some(
+          (metadataEntry) => metadataEntry.type === GRAPHQL_API_STACK_GROUP_METADATA && metadataEntry.data === stack.node.addr,
+        ),
+    );
+
+    expect(directNestedStacks.map((nestedStack) => nestedStack.node.id)).toEqual(['GeneratedNestedStack1', 'GeneratedNestedStack2']);
+    expect(groupStacks).toHaveLength(1);
+    expect(groupStacks[0].node.children.filter(NestedStack.isNestedStack).map((nestedStack) => nestedStack.node.id)).toEqual([
+      'GeneratedNestedStack3',
+    ]);
+  });
+
+  it('creates a new group stack only when the current group resource budget would be exceeded', () => {
+    const app = new App();
+    const stack = new Stack(app, 'RootStack');
+    const provider = new ShardedNestedStackProvider(stack);
+
+    for (let index = 0; index < 5; index += 1) {
+      provider.provide(stack, `DirectNestedStack${index}`);
+    }
+    provider.provide(stack, 'GroupedNestedStack1', { estimatedResourceCount: 900 });
+    provider.provide(stack, 'GroupedNestedStack2', { estimatedResourceCount: 900 });
+    provider.provide(stack, 'GroupedNestedStack3', { estimatedResourceCount: 900 });
+
+    const groupStacks = app.node.children.filter(
+      (child): child is Stack =>
+        Stack.isStack(child) &&
+        child.node.metadata.some(
+          (metadataEntry) => metadataEntry.type === GRAPHQL_API_STACK_GROUP_METADATA && metadataEntry.data === stack.node.addr,
+        ),
+    );
+
+    expect(groupStacks).toHaveLength(2);
+    expect(groupStacks[0].node.children.filter(NestedStack.isNestedStack).map((nestedStack) => nestedStack.node.id)).toEqual([
+      'GroupedNestedStack1',
+      'GroupedNestedStack2',
+    ]);
+    expect(groupStacks[1].node.children.filter(NestedStack.isNestedStack).map((nestedStack) => nestedStack.node.id)).toEqual([
+      'GroupedNestedStack3',
+    ]);
+    expect(groupStacks[1].dependencies).toEqual(expect.arrayContaining([stack, groupStacks[0]]));
+  });
 });

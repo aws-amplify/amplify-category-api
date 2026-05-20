@@ -1,13 +1,19 @@
 import { CfnParameter, CfnParameterProps, Fn, NestedStack, Stack, StackProps, Token } from 'aws-cdk-lib';
-import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { NestedStackProvider, NestedStackProviderOptions } from '@aws-amplify/graphql-transformer-interfaces';
 import { Construct } from 'constructs';
 
 // Keep parent templates small and deploy overflow groups as separate CloudFormation stack operations.
-const MAX_DIRECT_NESTED_STACKS = 5;
-const MAX_GROUPED_NESTED_STACKS = 5;
+export const DEFAULT_NESTED_STACK_RESOURCE_ESTIMATE = 400;
+export const DEFAULT_STACK_OPERATION_RESOURCE_BUDGET = 2000;
 const MAX_CLOUDFORMATION_STACK_NAME_LENGTH = 128;
 const GROUP_STACK_PREFIX = 'AmplifyGraphqlApiStackGroup';
 export const GRAPHQL_API_STACK_GROUP_METADATA = 'aws-amplify:graphql-api-stack-group-root';
+
+export type ShardedNestedStackProviderOptions = {
+  directOperationResourceBudget?: number;
+  groupedOperationResourceBudget?: number;
+  defaultNestedStackResourceEstimate?: number;
+};
 
 const DYNAMO_DB_PASSTHROUGH_PARAMETERS: Array<{ name: string; props: CfnParameterProps }> = [
   {
@@ -59,13 +65,13 @@ const DYNAMO_DB_PASSTHROUGH_PARAMETERS: Array<{ name: string; props: CfnParamete
  * Keeps large generated APIs from overflowing CloudFormation template and stack operation limits.
  */
 export class ShardedNestedStackProvider implements NestedStackProvider {
-  private directNestedStackCount = 0;
+  private directOperationResourceEstimate = 0;
 
   private currentGroupStack: Stack | undefined;
 
   private previousGroupStack: Stack | undefined;
 
-  private currentGroupNestedStackCount = 0;
+  private currentGroupOperationResourceEstimate = 0;
 
   private nextGroupStackIndex = 1;
 
@@ -73,35 +79,61 @@ export class ShardedNestedStackProvider implements NestedStackProvider {
 
   private readonly stackGroupScope: Construct;
 
-  constructor(private readonly rootScope: Construct) {
+  private readonly directOperationResourceBudget: number;
+
+  private readonly groupedOperationResourceBudget: number;
+
+  private readonly defaultNestedStackResourceEstimate: number;
+
+  constructor(private readonly rootScope: Construct, options: ShardedNestedStackProviderOptions = {}) {
     this.topLevelStack = getTopLevelStack(rootScope);
     this.stackGroupScope = (this.topLevelStack.node.scope ?? this.topLevelStack.node.root) as Construct;
+    this.directOperationResourceBudget = normalizeResourceEstimate(
+      options.directOperationResourceBudget ?? DEFAULT_STACK_OPERATION_RESOURCE_BUDGET,
+    );
+    this.groupedOperationResourceBudget = normalizeResourceEstimate(
+      options.groupedOperationResourceBudget ?? DEFAULT_STACK_OPERATION_RESOURCE_BUDGET,
+    );
+    this.defaultNestedStackResourceEstimate = normalizeResourceEstimate(
+      options.defaultNestedStackResourceEstimate ?? DEFAULT_NESTED_STACK_RESOURCE_ESTIMATE,
+    );
   }
 
-  provide = (scope: Construct, name: string): Stack => {
-    return new NestedStack(this.getParentScope(scope), name);
+  provide = (scope: Construct, name: string, options?: NestedStackProviderOptions): Stack => {
+    return new NestedStack(this.getParentScope(scope, options?.estimatedResourceCount), name);
   };
 
-  private getParentScope = (scope: Construct): Construct => {
+  private getParentScope = (scope: Construct, estimatedResourceCount?: number): Construct => {
     if (scope !== this.rootScope) {
       return scope;
     }
 
-    if (this.directNestedStackCount < MAX_DIRECT_NESTED_STACKS) {
-      this.directNestedStackCount += 1;
+    const nestedStackResourceEstimate = normalizeResourceEstimate(estimatedResourceCount ?? this.defaultNestedStackResourceEstimate);
+    if (this.canAddToOperation(this.directOperationResourceEstimate, nestedStackResourceEstimate, this.directOperationResourceBudget)) {
+      this.directOperationResourceEstimate += nestedStackResourceEstimate;
       return scope;
     }
 
-    if (!this.currentGroupStack || this.currentGroupNestedStackCount >= MAX_GROUPED_NESTED_STACKS) {
+    if (
+      !this.currentGroupStack ||
+      !this.canAddToOperation(
+        this.currentGroupOperationResourceEstimate,
+        nestedStackResourceEstimate,
+        this.groupedOperationResourceBudget,
+      )
+    ) {
       this.currentGroupStack = this.createGroupStack();
       this.addDynamoDBParameterPassthrough(this.currentGroupStack);
       this.nextGroupStackIndex += 1;
-      this.currentGroupNestedStackCount = 0;
+      this.currentGroupOperationResourceEstimate = 0;
     }
 
-    this.currentGroupNestedStackCount += 1;
+    this.currentGroupOperationResourceEstimate += nestedStackResourceEstimate;
     return this.currentGroupStack;
   };
+
+  private canAddToOperation = (currentResourceEstimate: number, nextResourceEstimate: number, operationBudget: number): boolean =>
+    currentResourceEstimate === 0 || currentResourceEstimate + nextResourceEstimate <= operationBudget;
 
   private createGroupStack = (): Stack => {
     const groupStackIndex = this.nextGroupStackIndex;
@@ -165,3 +197,5 @@ export const getTopLevelStack = (scope: Construct): Stack => {
 
   return currentStack;
 };
+
+const normalizeResourceEstimate = (estimate: number): number => Math.max(1, Math.ceil(estimate));

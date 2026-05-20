@@ -315,7 +315,12 @@ export enum MutationFieldType {
 
 // @public (undocumented)
 export type NestedStackProvider = {
-    provide: (scope: Construct, name: string) => Stack;
+    provide: (scope: Construct, name: string, options?: NestedStackProviderOptions) => Stack;
+};
+
+// @public (undocumented)
+export type NestedStackProviderOptions = {
+    estimatedResourceCount?: number;
 };
 
 // @public (undocumented)
