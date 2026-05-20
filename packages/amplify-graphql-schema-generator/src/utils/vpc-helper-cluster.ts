@@ -9,8 +9,20 @@ import { VpcConfig, SubnetAvailabilityZone } from '@aws-amplify/graphql-transfor
 import { DB_ENGINES } from './supported-db-engines';
 import { filterSubnetAvailabilityZones } from './filter-subnet-availability-zones';
 
-// When region is not provided, it will use the region configured in the AWS profile.
-export const checkHostInDBClusters = async (hostname: string, region?: string): Promise<VpcConfig | undefined> => {
+/**
+ * The result of searching for a hostname in DB Clusters.
+ * - `undefined` means no matching cluster was found; the caller should continue searching elsewhere.
+ * - `{ vpcConfig: VpcConfig }` means the cluster was found with VPC configuration.
+ * - `{ vpcConfig: undefined }` means the cluster was found but has no VPC configuration
+ *   (e.g. Aurora PostgreSQL Express), so no VPC setup is needed.
+ */
+export type ClusterVpcResult = { vpcConfig: VpcConfig | undefined } | undefined;
+
+/**
+ * Searches for the hostname in DB Clusters. See {@link ClusterVpcResult} for return value semantics.
+ * When region is not provided, it will use the region configured in the AWS profile.
+ */
+export const checkHostInDBClusters = async (hostname: string, region?: string): Promise<ClusterVpcResult> => {
   const client = new RDSClient({ region });
   const params: DescribeDBClustersCommandInput = {
     Filters: [
@@ -33,13 +45,19 @@ export const checkHostInDBClusters = async (hostname: string, region?: string): 
     return undefined;
   }
 
+  if (!cluster.DBSubnetGroup || !cluster.VpcSecurityGroups?.length) {
+    return { vpcConfig: undefined };
+  }
+
   const { subnetAvailabilityZoneConfig, vpcId } = await getSubnetAvailabilityZonesFromSubnetGroup(cluster.DBSubnetGroup, region);
 
   const securityGroupIds = cluster.VpcSecurityGroups.map((securityGroup) => securityGroup.VpcSecurityGroupId);
   return {
-    vpcId,
-    subnetAvailabilityZoneConfig,
-    securityGroupIds,
+    vpcConfig: {
+      vpcId,
+      subnetAvailabilityZoneConfig,
+      securityGroupIds,
+    },
   };
 };
 const getSubnetAvailabilityZonesFromSubnetGroup = async (

@@ -112,6 +112,28 @@ describe('detect VPC settings', () => {
 
     expect(result).toBeUndefined();
   });
+
+  it('should return undefined without checking DB instances when cluster is found but has no DBSubnetGroup (e.g. Aurora PostgreSQL Express)', async () => {
+    rdsClientSendSpy
+      .mockResolvedValueOnce(emptyProxyResponse as never)
+      .mockResolvedValueOnce(clusterWithoutSubnetGroupResponse as never)
+      .mockRejectedValue('Should not check DB instances for a cluster without VPC config' as never);
+
+    const result = await getHostVpc('mock-rds-cluster-no-vpc.cluster-abc123.us-west-2.rds.amazonaws.com', 'us-west-2');
+
+    expect(result).toBeUndefined();
+  });
+
+  it('should return undefined without checking DB instances when cluster is found but has no VPC security groups', async () => {
+    rdsClientSendSpy
+      .mockResolvedValueOnce(emptyProxyResponse as never)
+      .mockResolvedValueOnce(clusterWithoutSecurityGroupsResponse as never)
+      .mockRejectedValue('Should not check DB instances for a cluster without VPC config' as never);
+
+    const result = await getHostVpc('mock-rds-cluster-no-sg.cluster-abc123.us-west-2.rds.amazonaws.com', 'us-west-2');
+
+    expect(result).toBeUndefined();
+  });
 });
 
 const instanceResponse: DescribeDBInstancesCommandOutput = {
@@ -319,6 +341,28 @@ const describeDbSubnetGroupsResponse: DescribeDBSubnetGroupsCommandOutput = {
       ],
       DBSubnetGroupArn: 'arn:aws:rds:us-west-2:123456789012:subgrp:default-vpc-abc123',
       SupportedNetworkTypes: ['IPV4'],
+    },
+  ],
+};
+
+const clusterWithoutSubnetGroupResponse: DescribeDBClustersCommandOutput = {
+  $metadata: {},
+  DBClusters: [
+    {
+      ...clusterResponse.DBClusters[0],
+      Endpoint: 'mock-rds-cluster-no-vpc.cluster-abc123.us-west-2.rds.amazonaws.com',
+      DBSubnetGroup: undefined,
+    },
+  ],
+};
+
+const clusterWithoutSecurityGroupsResponse: DescribeDBClustersCommandOutput = {
+  $metadata: {},
+  DBClusters: [
+    {
+      ...clusterResponse.DBClusters[0],
+      Endpoint: 'mock-rds-cluster-no-sg.cluster-abc123.us-west-2.rds.amazonaws.com',
+      VpcSecurityGroups: [],
     },
   ],
 };

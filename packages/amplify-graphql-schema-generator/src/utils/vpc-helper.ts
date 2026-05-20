@@ -59,8 +59,10 @@ export const getHostVpc = async (hostname: string, region?: string): Promise<Vpc
 
   const clusterResult = await checkHostInDBClusters(hostname, region);
   if (clusterResult) {
-    console.warn(warning('cluster'));
-    return clusterResult;
+    if (clusterResult.vpcConfig) {
+      console.warn(warning('cluster'));
+    }
+    return clusterResult.vpcConfig;
   }
 
   const instanceResult = await checkHostInDBInstances(hostname, region);
