@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Construct } from 'constructs';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
@@ -84,6 +85,56 @@ describe('basic functionality', () => {
         },
       ],
     });
+  });
+
+  it('does not auto-synth the adaptive planning app when consumer app references are used', () => {
+    const beforeExitListeners = process.listeners('beforeExit');
+    const app = new cdk.App({ autoSynth: false });
+    const stack = new cdk.Stack(app, 'RootStack');
+    const userPool = new cognito.UserPool(stack, 'UserPool');
+    const echoFunction = new lambda.Function(stack, 'EchoFunction', {
+      runtime: lambda.Runtime.NODEJS_24_X,
+      code: lambda.Code.fromInline('exports.handler = async (event) => event.arguments.message;'),
+      handler: 'index.handler',
+    });
+
+    new AmplifyGraphqlApi(stack, 'TestApi', {
+      definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+        type Todo
+          @model
+          @auth(
+            rules: [
+              { allow: owner }
+              { allow: public, provider: apiKey, operations: [read] }
+              { allow: private, provider: iam, operations: [read] }
+            ]
+          ) {
+          description: String!
+        }
+
+        type Query {
+          echo(message: String!): String! @function(name: "echo")
+        }
+      `),
+      functionNameMap: {
+        echo: echoFunction,
+      },
+      authorizationModes: {
+        defaultAuthorizationMode: 'AMAZON_COGNITO_USER_POOLS',
+        userPoolConfig: { userPool },
+        apiKeyConfig: { expires: cdk.Duration.days(7) },
+        iamConfig: { enableIamAuthorizationMode: true },
+      },
+      dataStoreConfiguration: {
+        project: {
+          handlerType: 'AUTOMERGE',
+          detectionType: 'VERSION',
+        },
+      },
+    });
+
+    expect(process.listeners('beforeExit')).toEqual(beforeExitListeners);
+    expect(() => app.synth()).not.toThrow();
   });
 
   it('uses the id in place of apiName when not specified', () => {

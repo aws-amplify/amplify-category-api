@@ -44,16 +44,17 @@ export type AdaptiveSizingMeasurement = {
   operations: StackOperationResourceMeasurement[];
 };
 
-type PlanningTransformRunner = (config: AdaptiveSizingConfig, plan: AdaptiveStackSizingPlan, iteration: number) => AdaptiveSizingMeasurement;
+type PlanningTransformRunner = (
+  config: AdaptiveSizingConfig,
+  plan: AdaptiveStackSizingPlan,
+  iteration: number,
+) => AdaptiveSizingMeasurement;
 
 type AdaptiveSizingProps = {
   runPlanningTransform?: PlanningTransformRunner;
 };
 
-export const createAdaptiveStackSizingPlan = (
-  config: AdaptiveSizingConfig,
-  props: AdaptiveSizingProps = {},
-): AdaptiveStackSizingPlan => {
+export const createAdaptiveStackSizingPlan = (config: AdaptiveSizingConfig, props: AdaptiveSizingProps = {}): AdaptiveStackSizingPlan => {
   const runPlanningTransform = props.runPlanningTransform ?? runIsolatedPlanningTransform;
   let plan = createDefaultSizingPlan();
 
@@ -101,7 +102,7 @@ export const measureGeneratedStackOperations = (rootScope: Construct): AdaptiveS
 };
 
 const runIsolatedPlanningTransform: PlanningTransformRunner = (config, plan, iteration) => {
-  const app = new App();
+  const app = new App({ autoSynth: false });
   const stack = new Stack(app, `GraphqlApiSizingPlanningStack${iteration}`);
   const planningScope = new Construct(stack, 'GraphqlApiSizingPlanningScope');
 
