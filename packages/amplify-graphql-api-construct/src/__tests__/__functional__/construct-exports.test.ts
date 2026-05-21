@@ -1,4 +1,4 @@
-import { App, CfnResource, NestedStack, Stack } from 'aws-cdk-lib';
+import { App, CfnOutput, CfnResource, NestedStack, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { CfnGraphQLApi, CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
 import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb';
@@ -38,7 +38,7 @@ describe('getGeneratedResources', () => {
     expect(resources.cfnResources.additionalCfnResources.GroupedResource).toBe(groupedResource);
   });
 
-  it('returns grant-safe imported table references for tables in generated stack groups', () => {
+  it('returns reference-safe imported table references for generated tables outside the root stack', () => {
     const app = new App();
     const stack = new Stack(app, 'RootStack');
     const scope = new Construct(stack, 'GeneratedApi');
@@ -73,15 +73,26 @@ describe('getGeneratedResources', () => {
     const grantRole = new Role(stack, 'GrantRole', {
       assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
     });
+    new CfnOutput(stack, 'DirectTableName', {
+      value: resources.tables.DirectModel.tableName,
+    });
+    new CfnOutput(stack, 'GroupedTableName', {
+      value: resources.tables.GroupedModel.tableName,
+    });
     resources.tables.GroupedModel.grantReadWriteData(grantRole);
 
     const rootTemplateText = JSON.stringify(Template.fromStack(stack).toJSON());
+    const directNestedTemplate = Template.fromStack(directStack).toJSON();
+    const groupedNestedTemplate = Template.fromStack(groupedStack).toJSON();
 
-    expect(resources.tables.DirectModel).toBe(directTable);
+    expect(resources.tables.DirectModel).not.toBe(directTable);
     expect(resources.tables.GroupedModel).not.toBe(groupedTable);
+    expect(rootTemplateText).toContain('DirectModel-testapi-NONE');
     expect(rootTemplateText).toContain('table/GroupedModel-testapi-NONE');
     expect(rootTemplateText).toContain('table/GroupedModel-testapi-NONE/index/*');
     expect(rootTemplateText).not.toContain('GroupedGeneratedStack');
     expect(rootTemplateText).not.toContain('Outputs.');
+    expect(Object.keys(directNestedTemplate.Outputs ?? {})).toHaveLength(0);
+    expect(Object.keys(groupedNestedTemplate.Outputs ?? {})).toHaveLength(0);
   });
 });

@@ -147,7 +147,7 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
   });
 
   const proxiedApiAttributes = graphqlApiAttributesFromCfnGraphQLApi(cfnGraphqlApi);
-  const tables = createGrantSafeTableReferences(scope, generatedTables, generatedTableNames);
+  const tables = createReferenceSafeTableReferences(scope, generatedTables, generatedTableNames);
 
   return {
     graphqlApi: GraphqlApi.fromGraphqlApiAttributes(scope, 'L2GraphqlApi', proxiedApiAttributes),
@@ -171,7 +171,7 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
   };
 };
 
-const createGrantSafeTableReferences = (
+const createReferenceSafeTableReferences = (
   scope: Construct,
   generatedTables: Record<string, ITable>,
   generatedTableNames: Record<string, string>,
@@ -179,17 +179,17 @@ const createGrantSafeTableReferences = (
   return Object.fromEntries(
     Object.entries(generatedTables).map(([resourceName, table]) => [
       resourceName,
-      isInGeneratedStackGroup(scope, table)
-        ? createGrantSafeGroupedTableReference(scope, resourceName, generatedTableNames[resourceName])
-        : table,
+      Stack.of(table) === Stack.of(scope)
+        ? table
+        : createReferenceSafeGeneratedTableReference(scope, resourceName, generatedTableNames[resourceName]),
     ]),
   );
 };
 
-const createGrantSafeGroupedTableReference = (scope: Construct, resourceName: string, tableName: string | undefined): ITable => {
+const createReferenceSafeGeneratedTableReference = (scope: Construct, resourceName: string, tableName: string | undefined): ITable => {
   if (!tableName) {
     throw new Error(
-      `Unable to create a grant-safe table reference for grouped generated table ${resourceName}. ` +
+      `Unable to create a reference-safe table reference for generated table ${resourceName}. ` +
         'The generated table name could not be resolved without creating a cross-stack reference.',
     );
   }
@@ -211,18 +211,6 @@ const getConfiguredTableName = (table: ITable): string | undefined => {
   }
 
   return undefined;
-};
-
-const isInGeneratedStackGroup = (rootScope: Construct, construct: Construct): boolean => {
-  const rootTopLevelStack = getTopLevelStack(rootScope);
-  const constructTopLevelStack = getTopLevelStack(construct);
-
-  return (
-    constructTopLevelStack !== rootTopLevelStack &&
-    constructTopLevelStack.node.metadata.some(
-      (metadataEntry) => metadataEntry.type === GRAPHQL_API_STACK_GROUP_METADATA && metadataEntry.data === rootScope.node.addr,
-    )
-  );
 };
 
 const walkGeneratedResourceScopes = (scope: Construct, processNode: (scope: Construct) => void): void => {
