@@ -15,11 +15,20 @@ const stack = new Stack(app, packageJson.name.replace(/_/g, '-'), {
 });
 const schema =
   `input AMPLIFY { globalAuthRule: AuthRule = { allow: public } }\n` +
-  Array.from({ length: 60 }, (_, i) => i + 1)
+  Array.from({ length: 40 }, (_, i) => i + 1)
     .map(
       (number) =>
-        `type Todo${number} @model {
+        `type Parent${number} @model {
     id: ID!
+    name: String
+    children: [Child${number}] @hasMany(indexName: "byParent${number}", fields: ["id"])
+  }
+
+  type Child${number} @model {
+    id: ID!
+    name: String
+    parentID: ID! @index(name: "byParent${number}")
+    parent: Parent${number} @belongsTo(fields: ["parentID"])
   }
   `,
     )
@@ -36,15 +45,15 @@ const api = new AmplifyGraphqlApi(stack, 'GraphqlApi', {
   },
 });
 
-const streamTable = api.resources.cfnResources.amplifyDynamoDbTables.Todo1;
+const streamTable = api.resources.cfnResources.amplifyDynamoDbTables.Parent1;
 streamTable.streamSpecification = { streamViewType: StreamViewType.NEW_IMAGE };
 
-const streamSourceTable = Table.fromTableAttributes(stack, 'Todo1StreamSourceTable', {
+const streamSourceTable = Table.fromTableAttributes(stack, 'Parent1StreamSourceTable', {
   tableName: streamTable.tableName,
   tableStreamArn: streamTable.tableStreamArn,
 });
 
-const streamHandler = new Function(stack, 'Todo1StreamHandler', {
+const streamHandler = new Function(stack, 'Parent1StreamHandler', {
   code: Code.fromInline('exports.handler = async () => {};'),
   handler: 'index.handler',
   runtime: Runtime.NODEJS_18_X,

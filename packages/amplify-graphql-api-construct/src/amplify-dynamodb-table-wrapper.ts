@@ -1,7 +1,9 @@
-import { CfnResource, RemovalPolicy } from 'aws-cdk-lib';
+import { CfnResource, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { BillingMode, StreamViewType } from 'aws-cdk-lib/aws-dynamodb';
+import { Construct } from 'constructs';
 
 const AMPLIFY_DYNAMODB_TABLE_RESOURCE_TYPE = 'Custom::AmplifyDynamoDBTable';
+const referenceScopes = new WeakMap<AmplifyDynamoDbTableWrapper, Construct>();
 
 /**
  * Shape for TTL config.
@@ -139,6 +141,16 @@ export class AmplifyDynamoDbTableWrapper {
    * The ARN of the generated DynamoDB table.
    */
   get tableArn(): string {
+    const tableName = this.referenceSafeTableName;
+    const referenceScope = referenceScopes.get(this);
+    if (tableName && referenceScope) {
+      return Stack.of(referenceScope).formatArn({
+        service: 'dynamodb',
+        resource: 'table',
+        resourceName: tableName,
+      });
+    }
+
     return this.resource.getAtt('TableArn').toString();
   }
 
@@ -146,6 +158,10 @@ export class AmplifyDynamoDbTableWrapper {
    * The name of the generated DynamoDB table.
    */
   get tableName(): string {
+    if (this.referenceSafeTableName) {
+      return this.referenceSafeTableName;
+    }
+
     return this.resource.getAtt('TableName').toString();
   }
 
@@ -228,4 +244,33 @@ export class AmplifyDynamoDbTableWrapper {
   set deletionProtectionEnabled(deletionProtectionEnabled: boolean) {
     this.resource.addPropertyOverride('deletionProtectionEnabled', deletionProtectionEnabled);
   }
+
+  private get referenceSafeTableName(): string | undefined {
+    const referenceScope = referenceScopes.get(this);
+    if (!referenceScope || getTopLevelStack(referenceScope) === getTopLevelStack(this.resource)) {
+      return undefined;
+    }
+
+    return getConfiguredTableName(this.resource);
+  }
 }
+
+export const setAmplifyDynamoDbTableWrapperReferenceScope = (wrapper: AmplifyDynamoDbTableWrapper, referenceScope: Construct): void => {
+  referenceScopes.set(wrapper, referenceScope);
+};
+
+const getConfiguredTableName = (resource: CfnResource): string | undefined => {
+  const cfnProperties = (resource as any).cfnProperties ?? {};
+  const rawProperties = (resource as any).rawOverrides?.Properties ?? {};
+  return rawProperties.tableName ?? cfnProperties.tableName;
+};
+
+const getTopLevelStack = (scope: Construct): Stack => {
+  let currentStack = Stack.of(scope);
+
+  while (currentStack.nestedStackResource && currentStack.node.scope) {
+    currentStack = Stack.of(currentStack.node.scope);
+  }
+
+  return currentStack;
+};

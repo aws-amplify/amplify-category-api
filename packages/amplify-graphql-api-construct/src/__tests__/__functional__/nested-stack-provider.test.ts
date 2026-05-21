@@ -104,6 +104,31 @@ describe('ShardedNestedStackProvider', () => {
     ]);
   });
 
+  it('can place all generated root nested stacks in generated stack groups', () => {
+    const app = new App();
+    const stack = new Stack(app, 'RootStack');
+    const provider = new ShardedNestedStackProvider(stack, { groupAllRootNestedStacks: true });
+
+    provider.provide(stack, 'GeneratedNestedStack1');
+    provider.provide(stack, 'GeneratedNestedStack2');
+
+    const directNestedStacks = stack.node.children.filter(NestedStack.isNestedStack);
+    const groupStacks = app.node.children.filter(
+      (child): child is Stack =>
+        Stack.isStack(child) &&
+        child.node.metadata.some(
+          (metadataEntry) => metadataEntry.type === GRAPHQL_API_STACK_GROUP_METADATA && metadataEntry.data === stack.node.addr,
+        ),
+    );
+
+    expect(directNestedStacks).toHaveLength(0);
+    expect(groupStacks).toHaveLength(1);
+    expect(groupStacks[0].node.children.filter(NestedStack.isNestedStack).map((nestedStack) => nestedStack.node.id)).toEqual([
+      'GeneratedNestedStack1',
+      'GeneratedNestedStack2',
+    ]);
+  });
+
   it('creates a new group stack only when the current group resource budget would be exceeded', () => {
     const app = new App();
     const stack = new Stack(app, 'RootStack');

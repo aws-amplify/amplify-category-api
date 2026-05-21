@@ -17,7 +17,7 @@ import { CfnResource, isResolvableObject, NestedStack, Stack } from 'aws-cdk-lib
 import { getResourceName } from '@aws-amplify/graphql-transformer-core';
 import { CfnFunction, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
 import { AmplifyGraphqlApiResources, FunctionSlot } from '../types';
-import { AmplifyDynamoDbTableWrapper } from '../amplify-dynamodb-table-wrapper';
+import { AmplifyDynamoDbTableWrapper, setAmplifyDynamoDbTableWrapperReferenceScope } from '../amplify-dynamodb-table-wrapper';
 import { GRAPHQL_API_STACK_GROUP_METADATA, getTopLevelStack } from './nested-stack-provider';
 import { walkAndProcessNodes } from './construct-tree';
 
@@ -104,7 +104,9 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
       return;
     }
     if (AmplifyDynamoDbTableWrapper.isAmplifyDynamoDbTableResource(currentScope)) {
-      amplifyDynamoDbTables[resourceName] = new AmplifyDynamoDbTableWrapper(currentScope);
+      const tableWrapper = new AmplifyDynamoDbTableWrapper(currentScope);
+      setAmplifyDynamoDbTableWrapperReferenceScope(tableWrapper, scope);
+      amplifyDynamoDbTables[resourceName] = tableWrapper;
       return;
     }
     if (currentScope instanceof Role) {

@@ -13,6 +13,7 @@ export type ShardedNestedStackProviderOptions = {
   directOperationResourceBudget?: number;
   groupedOperationResourceBudget?: number;
   defaultNestedStackResourceEstimate?: number;
+  groupAllRootNestedStacks?: boolean;
 };
 
 const DYNAMO_DB_PASSTHROUGH_PARAMETERS: Array<{ name: string; props: CfnParameterProps }> = [
@@ -85,6 +86,8 @@ export class ShardedNestedStackProvider implements NestedStackProvider {
 
   private readonly defaultNestedStackResourceEstimate: number;
 
+  private readonly groupAllRootNestedStacks: boolean;
+
   constructor(private readonly rootScope: Construct, options: ShardedNestedStackProviderOptions = {}) {
     this.topLevelStack = getTopLevelStack(rootScope);
     this.stackGroupScope = (this.topLevelStack.node.scope ?? this.topLevelStack.node.root) as Construct;
@@ -97,6 +100,7 @@ export class ShardedNestedStackProvider implements NestedStackProvider {
     this.defaultNestedStackResourceEstimate = normalizeResourceEstimate(
       options.defaultNestedStackResourceEstimate ?? DEFAULT_NESTED_STACK_RESOURCE_ESTIMATE,
     );
+    this.groupAllRootNestedStacks = options.groupAllRootNestedStacks ?? false;
   }
 
   provide = (scope: Construct, name: string, options?: NestedStackProviderOptions): Stack => {
@@ -109,18 +113,17 @@ export class ShardedNestedStackProvider implements NestedStackProvider {
     }
 
     const nestedStackResourceEstimate = normalizeResourceEstimate(estimatedResourceCount ?? this.defaultNestedStackResourceEstimate);
-    if (this.canAddToOperation(this.directOperationResourceEstimate, nestedStackResourceEstimate, this.directOperationResourceBudget)) {
+    if (
+      !this.groupAllRootNestedStacks &&
+      this.canAddToOperation(this.directOperationResourceEstimate, nestedStackResourceEstimate, this.directOperationResourceBudget)
+    ) {
       this.directOperationResourceEstimate += nestedStackResourceEstimate;
       return scope;
     }
 
     if (
       !this.currentGroupStack ||
-      !this.canAddToOperation(
-        this.currentGroupOperationResourceEstimate,
-        nestedStackResourceEstimate,
-        this.groupedOperationResourceBudget,
-      )
+      !this.canAddToOperation(this.currentGroupOperationResourceEstimate, nestedStackResourceEstimate, this.groupedOperationResourceBudget)
     ) {
       this.currentGroupStack = this.createGroupStack();
       this.addDynamoDBParameterPassthrough(this.currentGroupStack);
@@ -137,15 +140,12 @@ export class ShardedNestedStackProvider implements NestedStackProvider {
 
   private createGroupStack = (): Stack => {
     const groupStackIndex = this.nextGroupStackIndex;
-    const groupStackEnv =
-      !Token.isUnresolved(this.topLevelStack.account) && !Token.isUnresolved(this.topLevelStack.region)
-        ? {
-            account: this.topLevelStack.account,
-            region: this.topLevelStack.region,
-          }
-        : undefined;
+    const groupStackEnv = {
+      ...(!Token.isUnresolved(this.topLevelStack.account) ? { account: this.topLevelStack.account } : {}),
+      ...(!Token.isUnresolved(this.topLevelStack.region) ? { region: this.topLevelStack.region } : {}),
+    };
     const stackProps: StackProps = {
-      ...(groupStackEnv ? { env: groupStackEnv } : {}),
+      ...(Object.keys(groupStackEnv).length > 0 ? { env: groupStackEnv } : {}),
       stackName: this.createGroupStackName(groupStackIndex),
     };
 

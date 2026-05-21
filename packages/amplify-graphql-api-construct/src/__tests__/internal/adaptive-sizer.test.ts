@@ -20,6 +20,7 @@ describe('adaptive stack sizing', () => {
         { operationName: 'direct', resourceCount: 1200 },
         { operationName: 'AmplifyGraphqlApiStackGroup1', resourceCount: 2400 },
       ],
+      topLevelOutputCount: 150,
     };
     const thirdMeasurement: AdaptiveSizingMeasurement = {
       nestedStacks: firstMeasurement.nestedStacks,
@@ -43,8 +44,54 @@ describe('adaptive stack sizing', () => {
       ModelB: 1200,
       ModelC: 1200,
     });
+    expect(plan.nestedStackProviderOptions.groupAllRootNestedStacks).toBeUndefined();
     expect(plan.nestedStackProviderOptions.directOperationResourceBudget).toBeLessThan(2000);
     expect(plan.nestedStackProviderOptions.groupedOperationResourceBudget).toBeLessThan(2000);
+  });
+
+  it('reduces direct root stack placement once top-level generated outputs need headroom', () => {
+    const directOnlyMeasurement: AdaptiveSizingMeasurement = {
+      nestedStacks: [
+        { stackName: 'ModelA', defaultStackName: 'ModelA', resourceCount: 1200 },
+        { stackName: 'ModelB', defaultStackName: 'ModelB', resourceCount: 1200 },
+        { stackName: 'ModelC', defaultStackName: 'ModelC', resourceCount: 1200 },
+      ],
+      operations: [{ operationName: 'direct', resourceCount: 3600 }],
+    };
+    const shardedMeasurement: AdaptiveSizingMeasurement = {
+      nestedStacks: directOnlyMeasurement.nestedStacks,
+      operations: [
+        { operationName: 'direct', resourceCount: 1200 },
+        { operationName: 'AmplifyGraphqlApiStackGroup1', resourceCount: 2400 },
+      ],
+      topLevelOutputCount: 150,
+    };
+    const outputSafeMeasurement: AdaptiveSizingMeasurement = {
+      nestedStacks: directOnlyMeasurement.nestedStacks,
+      operations: [
+        { operationName: 'direct', resourceCount: 1200 },
+        { operationName: 'AmplifyGraphqlApiStackGroup1', resourceCount: 1200 },
+        { operationName: 'AmplifyGraphqlApiStackGroup2', resourceCount: 1200 },
+      ],
+    };
+    const runPlanningTransform = jest
+      .fn()
+      .mockReturnValueOnce(directOnlyMeasurement)
+      .mockImplementationOnce((_config, plan) => {
+        expect(plan.nestedStackProviderOptions.groupAllRootNestedStacks).toBeUndefined();
+        return shardedMeasurement;
+      })
+      .mockImplementationOnce((_config, plan) => {
+        expect(plan.nestedStackProviderOptions.groupAllRootNestedStacks).toBeUndefined();
+        expect(plan.nestedStackProviderOptions.directOperationResourceBudget).toBeLessThan(2000);
+        return outputSafeMeasurement;
+      });
+
+    const plan = createAdaptiveStackSizingPlan({} as any, { runPlanningTransform });
+
+    expect(runPlanningTransform).toHaveBeenCalledTimes(3);
+    expect(plan.nestedStackProviderOptions.groupAllRootNestedStacks).toBeUndefined();
+    expect(plan.nestedStackProviderOptions.directOperationResourceBudget).toBeLessThan(2000);
   });
 
   it('fails with an actionable error when one nested stack is irreducibly over the hard limit', () => {

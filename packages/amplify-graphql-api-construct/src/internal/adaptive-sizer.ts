@@ -7,6 +7,9 @@ import {
 import { App, CfnResource, NestedStack, Stack } from 'aws-cdk-lib';
 import { Function as LambdaFunction, IFunction } from 'aws-cdk-lib/aws-lambda';
 import { Construct, IConstruct } from 'constructs';
+import { mkdtempSync, rmSync } from 'fs';
+import { tmpdir } from 'os';
+import { join } from 'path';
 import { AssetProvider } from './asset-provider';
 import {
   DEFAULT_NESTED_STACK_RESOURCE_ESTIMATE,
@@ -18,6 +21,7 @@ import {
 } from './nested-stack-provider';
 
 export const CLOUDFORMATION_STACK_OPERATION_RESOURCE_LIMIT = 2500;
+const CLOUDFORMATION_OUTPUT_SAFETY_THRESHOLD = 50;
 const MAX_ADAPTIVE_PLANNING_ITERATIONS = 3;
 const RESOURCE_BUDGET_ADJUSTMENT_THRESHOLD = 1.1;
 
@@ -42,6 +46,7 @@ export type StackOperationResourceMeasurement = {
 export type AdaptiveSizingMeasurement = {
   nestedStacks: NestedStackResourceMeasurement[];
   operations: StackOperationResourceMeasurement[];
+  topLevelOutputCount?: number;
 };
 
 type PlanningTransformRunner = (
@@ -98,28 +103,34 @@ export const measureGeneratedStackOperations = (rootScope: Construct): AdaptiveS
   return {
     nestedStacks,
     operations,
+    topLevelOutputCount: countTopLevelCfnOutputs(rootScope),
   };
 };
 
 const runIsolatedPlanningTransform: PlanningTransformRunner = (config, plan, iteration) => {
-  const app = new App({ autoSynth: false });
-  const stack = new Stack(app, `GraphqlApiSizingPlanningStack${iteration}`);
-  const planningScope = new Construct(stack, 'GraphqlApiSizingPlanningScope');
+  const planningOutdir = mkdtempSync(join(tmpdir(), 'amplify-graphql-api-sizing-'));
+  try {
+    const app = new App({ autoSynth: false, outdir: planningOutdir });
+    const stack = new Stack(app, `GraphqlApiSizingPlanningStack${iteration}`);
+    const planningScope = new Construct(stack, 'GraphqlApiSizingPlanningScope');
 
-  executeTransform({
-    ...config,
-    transformersFactoryArgs: {
-      ...config.transformersFactoryArgs,
-      functionNameMap: cloneFunctionNameMap(planningScope, config.transformersFactoryArgs.functionNameMap),
-    },
-    scope: planningScope,
-    nestedStackProvider: new ShardedNestedStackProvider(planningScope, plan.nestedStackProviderOptions),
-    assetProvider: new AssetProvider(planningScope),
-    stackManagerOptions: plan.stackManagerOptions,
-    printTransformerLog: () => undefined,
-  });
+    executeTransform({
+      ...config,
+      transformersFactoryArgs: {
+        ...config.transformersFactoryArgs,
+        functionNameMap: cloneFunctionNameMap(planningScope, config.transformersFactoryArgs.functionNameMap),
+      },
+      scope: planningScope,
+      nestedStackProvider: new ShardedNestedStackProvider(planningScope, plan.nestedStackProviderOptions),
+      assetProvider: new AssetProvider(planningScope),
+      stackManagerOptions: plan.stackManagerOptions,
+      printTransformerLog: () => undefined,
+    });
 
-  return measureGeneratedStackOperations(planningScope);
+    return measureGeneratedStackOperations(planningScope);
+  } finally {
+    rmSync(planningOutdir, { recursive: true, force: true });
+  }
 };
 
 const createDefaultSizingPlan = (): AdaptiveStackSizingPlan => ({
@@ -141,6 +152,13 @@ const refineSizingPlan = (
   const stackResourceCountOverrides = Object.fromEntries(
     measurement.nestedStacks.map(({ stackName, resourceCount }) => [stackName, normalizeResourceEstimate(resourceCount)]),
   );
+  const existingStackResourceCountOverrides = currentPlan.stackManagerOptions.stackResourceCountOverrides ?? {};
+  if (
+    usesGeneratedStackGroups(measurement) &&
+    !resourceEstimateMapsEqual(existingStackResourceCountOverrides, stackResourceCountOverrides)
+  ) {
+    changed = true;
+  }
   const stackResourceEstimateLimits = { ...(currentPlan.stackManagerOptions.stackResourceEstimateLimits ?? {}) };
   const defaultStackResourceEstimateLimit =
     currentPlan.stackManagerOptions.defaultStackResourceEstimateLimit ?? DEFAULT_AUTO_STACK_RESOURCE_ESTIMATE;
@@ -163,6 +181,17 @@ const refineSizingPlan = (
 
   const maxOperationCount = maxOperationResourceCount(measurement);
   const nextNestedStackProviderOptions = { ...currentPlan.nestedStackProviderOptions };
+  if ((measurement.topLevelOutputCount ?? 0) > CLOUDFORMATION_OUTPUT_SAFETY_THRESHOLD) {
+    const topLevelOutputScale = CLOUDFORMATION_OUTPUT_SAFETY_THRESHOLD / measurement.topLevelOutputCount!;
+    const directOperationBudget = normalizeResourceEstimate(
+      nextNestedStackProviderOptions.directOperationResourceBudget ?? DEFAULT_STACK_OPERATION_RESOURCE_BUDGET,
+    );
+    const adjustedDirectOperationBudget = Math.max(1, Math.floor(directOperationBudget * topLevelOutputScale));
+    if (adjustedDirectOperationBudget < directOperationBudget) {
+      nextNestedStackProviderOptions.directOperationResourceBudget = adjustedDirectOperationBudget;
+      changed = true;
+    }
+  }
   if (maxOperationCount > DEFAULT_STACK_OPERATION_RESOURCE_BUDGET) {
     const scale = DEFAULT_STACK_OPERATION_RESOURCE_BUDGET / maxOperationCount;
     const directOperationBudget = normalizeResourceEstimate(
@@ -229,6 +258,22 @@ const countCfnResources = (scope: Construct): number => {
   return resourceCount;
 };
 
+const countTopLevelCfnOutputs = (scope: Construct): number => {
+  const topLevelStack = getTopLevelStack(scope);
+  const root = topLevelStack.node.root;
+  try {
+    if (root instanceof App) {
+      root.synth();
+    }
+    const template = (
+      topLevelStack as unknown as { _toCloudFormation?: () => { Outputs?: Record<string, unknown> } }
+    )._toCloudFormation?.();
+    return Object.keys(template?.Outputs ?? {}).length;
+  } catch {
+    return 0;
+  }
+};
+
 const visitConstructTree = (scope: IConstruct, visit: (construct: IConstruct) => void): void => {
   visit(scope);
   scope.node.children.forEach((child) => visitConstructTree(child, visit));
@@ -255,6 +300,15 @@ const getGeneratedStackGroups = (scope: Construct): Stack[] => {
 
 const maxOperationResourceCount = (measurement: AdaptiveSizingMeasurement): number =>
   Math.max(0, ...measurement.operations.map(({ resourceCount }) => resourceCount));
+
+const usesGeneratedStackGroups = (measurement: AdaptiveSizingMeasurement): boolean =>
+  measurement.operations.some(({ operationName }) => operationName !== 'direct');
+
+const resourceEstimateMapsEqual = (left: Record<string, number>, right: Record<string, number>): boolean => {
+  const leftKeys = Object.keys(left);
+  const rightKeys = Object.keys(right);
+  return leftKeys.length === rightKeys.length && leftKeys.every((key) => left[key] === right[key]);
+};
 
 const normalizeResourceEstimate = (estimate: number): number => Math.max(1, Math.ceil(estimate));
 
