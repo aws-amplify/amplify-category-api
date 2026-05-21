@@ -33,7 +33,7 @@ describe('CDK amplify table 4', () => {
   test('should support a stream event source on a large amplify table backend', async () => {
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', 'rate-limit', 'streamEventSource'));
     await initCDKProject(projRoot, templatePath, {
-      additionalDependencies: ['@aws-amplify/graphql-api-construct@1.21.4-pr-3484.0'],
+      additionalDependencies: ['@aws-amplify/graphql-api-construct@npm:@marlonjd/graphql-api-construct@1.21.4-auto-shard-transformer-stacks.3'],
     });
     await expect(cdkDeploy(projRoot, '--all')).resolves.not.toThrow();
   });
