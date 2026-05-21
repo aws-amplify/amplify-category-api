@@ -113,19 +113,34 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
 
     const layerVersionArn = resolveLayerVersion(lambdaScope, context, resourceNames);
 
+    const authentication = strategy.authentication;
+
     const role = createRdsLambdaRole(
       context.resourceHelper.generateIAMRoleName(resourceNames.sqlLambdaExecutionRole),
       lambdaRoleScope,
       dbConnectionConfig,
       resourceNames,
       sslCertSsmPath,
+      authentication,
     );
 
     const environment: { [key: string]: string } = {
       engine,
     };
     let credentialStorageMethod;
-    if (isSqlModelDataSourceSsmDbConnectionConfig(secretEntry)) {
+    if (authentication?.strategy === 'rdsIam') {
+      if (isSqlModelDataSourceSsmDbConnectionStringConfig(secretEntry)) {
+        environment.connectionString = JSON.stringify(secretEntry.connectionUriSsmPath);
+      } else if (isSqlModelDataSourceSsmDbConnectionConfig(secretEntry)) {
+        environment.host = secretEntry.hostnameSsmPath;
+        environment.port = secretEntry.portSsmPath;
+        environment.username = secretEntry.usernameSsmPath;
+        environment.database = secretEntry.databaseNameSsmPath;
+      } else {
+        throw new Error('RDS IAM authentication is only supported with SSM-based connection configurations.');
+      }
+      credentialStorageMethod = CredentialStorageMethod.RDS_IAM_AUTH;
+    } else if (isSqlModelDataSourceSsmDbConnectionConfig(secretEntry)) {
       environment.CREDENTIAL_STORAGE_METHOD = 'SSM';
       environment.username = secretEntry.usernameSsmPath;
       environment.password = secretEntry.passwordSsmPath;

@@ -1,5 +1,71 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`ModelTransformer with SQL data sources: RDS IAM authentication should assign rds-db:connect and SSM permissions when using connection URI with rdsIam auth 1`] = `
+Object {
+  "Statement": Array [
+    Object {
+      "Action": Array [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+      ],
+      "Effect": "Allow",
+      "Resource": "arn:aws:logs:*:*:*",
+    },
+    Object {
+      "Action": Array [
+        "ssm:GetParameter",
+        "ssm:GetParameters",
+      ],
+      "Effect": "Allow",
+      "Resource": "arn:aws:ssm:*:*:parameter/test/connectionUri",
+    },
+    Object {
+      "Action": "rds-db:connect",
+      "Effect": "Allow",
+      "Resource": "*",
+    },
+  ],
+  "Version": "2012-10-17",
+}
+`;
+
+exports[`ModelTransformer with SQL data sources: RDS IAM authentication should assign rds-db:connect and SSM permissions when using individual SSM params with rdsIam auth 1`] = `
+Object {
+  "Statement": Array [
+    Object {
+      "Action": Array [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+      ],
+      "Effect": "Allow",
+      "Resource": "arn:aws:logs:*:*:*",
+    },
+    Object {
+      "Action": Array [
+        "ssm:GetParameter",
+        "ssm:GetParameters",
+      ],
+      "Effect": "Allow",
+      "Resource": Array [
+        "arn:aws:ssm:*:*:parameter/test/username",
+        "arn:aws:ssm:*:*:parameter/test/password",
+        "arn:aws:ssm:*:*:parameter/test/hostname",
+        "arn:aws:ssm:*:*:parameter/test/databaseName",
+        "arn:aws:ssm:*:*:parameter/test/port",
+      ],
+    },
+    Object {
+      "Action": "rds-db:connect",
+      "Effect": "Allow",
+      "Resource": "*",
+    },
+  ],
+  "Version": "2012-10-17",
+}
+`;
+
 exports[`ModelTransformer with SQL data sources: should accept multiple connection uris as input 1`] = `
 Object {
   "Statement": Array [

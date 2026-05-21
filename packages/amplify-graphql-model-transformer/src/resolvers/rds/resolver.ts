@@ -36,6 +36,7 @@ import {
   VpcConfig,
   ProvisionedConcurrencyConfig,
   SqlModelDataSourceDbConnectionConfig,
+  SqlModelDataSourceAuthentication,
   isSqlModelDataSourceSsmDbConnectionConfig,
   isSqlModelDataSourceSecretsManagerDbConnectionConfig,
   isSqlModelDataSourceSsmDbConnectionStringConfig,
@@ -59,6 +60,7 @@ export type OPERATIONS = 'CREATE' | 'UPDATE' | 'DELETE' | 'GET' | 'LIST' | 'SYNC
 export enum CredentialStorageMethod {
   SSM = 'SSM',
   SECRETS_MANAGER = 'SECRETS_MANAGER',
+  RDS_IAM_AUTH = 'RDS_IAM_AUTH',
 }
 
 const OPERATION_KEY = '__operation';
@@ -150,6 +152,11 @@ export const createRdsLambda = (
     }
     lambdaEnvironment.SECRETS_MANAGER_ENDPOINT = secretsManagerEndpoint;
     lambdaEnvironment.CREDENTIAL_STORAGE_METHOD = CredentialStorageMethod.SECRETS_MANAGER;
+  } else if (credentialStorageMethod === CredentialStorageMethod.RDS_IAM_AUTH) {
+    lambdaEnvironment.CREDENTIAL_STORAGE_METHOD = CredentialStorageMethod.RDS_IAM_AUTH;
+    if (!lambdaEnvironment.SSM_ENDPOINT) {
+      lambdaEnvironment.SSM_ENDPOINT = getSsmEndpoint(scope, resourceNames, sqlLambdaVpcConfig);
+    }
   } else {
     throw new Error('Unable to determine if SSM or Secrets Manager should be used for credentials.');
   }
@@ -386,6 +393,7 @@ export const createRdsLambdaRole = (
   secretEntry: SqlModelDataSourceDbConnectionConfig,
   resourceNames: SQLLambdaResourceNames,
   sslCertSsmPath?: string | string[],
+  authentication?: SqlModelDataSourceAuthentication,
 ): IRole => {
   const role = new Role(scope, resourceNames.sqlLambdaExecutionRole, {
     assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
@@ -453,6 +461,16 @@ export const createRdsLambdaRole = (
           actions: ['ssm:GetParameter', 'ssm:GetParameters'],
           effect: Effect.ALLOW,
           resources: ssmPaths.map((ssmPath) => `arn:aws:ssm:*:*:parameter${ssmPath}`),
+        }),
+      );
+    }
+
+    if (authentication?.strategy === 'rdsIam') {
+      policyStatements.push(
+        new PolicyStatement({
+          actions: ['rds-db:connect'],
+          effect: Effect.ALLOW,
+          resources: ['*'],
         }),
       );
     }

@@ -8,7 +8,29 @@ const ssmMockReturnValues: Record<string, string> = {
   '/amplify/shared/amplify-test/SQL_CONNECTION_STRING': 'mysql://SHARED:password@localhost:3306/database',
   '/amplify/sandbox/user-sandbox-hash/CUSTOM_SSL_CERT': 'SANDBOX SSL CERT',
   '/amplify/shared/amplify-test/CUSTOM_SSL_CERT': 'SHARED SSL CERT',
+  '/amplify/sandbox/user-sandbox-hash/PG_CONNECTION_STRING':
+    'postgres://pguser@my-cluster.cluster-xxxx.us-east-1.rds.amazonaws.com:5432/mydb',
+  '/amplify/sandbox/user-sandbox-hash/PG_HOST': 'my-cluster.cluster-xxxx.us-east-1.rds.amazonaws.com',
+  '/amplify/sandbox/user-sandbox-hash/PG_PORT': '5432',
+  '/amplify/sandbox/user-sandbox-hash/PG_USER': 'pguser',
+  '/amplify/sandbox/user-sandbox-hash/PG_DATABASE': 'mydb',
 };
+
+const MOCK_IAM_TOKEN = 'mock-iam-auth-token';
+
+// Mock @aws-sdk/rds-signer (virtual: true because the package lives in rds-lambda/node_modules, not this package)
+jest.mock(
+  '@aws-sdk/rds-signer',
+  () => {
+    return {
+      __esModule: true,
+      Signer: jest.fn().mockImplementation(() => ({
+        getAuthToken: jest.fn().mockResolvedValue(MOCK_IAM_TOKEN),
+      })),
+    };
+  },
+  { virtual: true },
+);
 
 // Mock client-ssm
 jest.mock('@aws-sdk/client-ssm', () => {
@@ -180,5 +202,50 @@ describe('rds-lambda', () => {
     const payload = getEventPayload();
     process.env.SSL_CERT_SSM_PATH = 'NON-EXISTENT';
     await expect(run(payload)).rejects.toThrow('Unable to get the custom SSL certificate. Check the logs for more details.');
+  });
+
+  describe('RDS IAM authentication', () => {
+    beforeEach(() => {
+      process.env.CREDENTIAL_STORAGE_METHOD = 'RDS_IAM_AUTH';
+      process.env.engine = 'POSTGRES';
+      delete process.env.connectionString;
+    });
+
+    it('generates an IAM auth token from a connection string URI stored in SSM', async () => {
+      process.env.connectionString = '"/amplify/sandbox/user-sandbox-hash/PG_CONNECTION_STRING"';
+      const payload = getEventPayload();
+
+      const result = await run(payload);
+      expect(result).toBeDefined();
+      expect(result._config).toEqual({
+        engine: 'POSTGRES',
+        host: 'my-cluster.cluster-xxxx.us-east-1.rds.amazonaws.com',
+        port: 5432,
+        username: 'pguser',
+        database: 'mydb',
+        password: MOCK_IAM_TOKEN,
+      });
+      expect(result._event).toEqual(payload);
+    });
+
+    it('generates an IAM auth token from individual SSM parameters', async () => {
+      process.env.host = '/amplify/sandbox/user-sandbox-hash/PG_HOST';
+      process.env.port = '/amplify/sandbox/user-sandbox-hash/PG_PORT';
+      process.env.username = '/amplify/sandbox/user-sandbox-hash/PG_USER';
+      process.env.database = '/amplify/sandbox/user-sandbox-hash/PG_DATABASE';
+      const payload = getEventPayload();
+
+      const result = await run(payload);
+      expect(result).toBeDefined();
+      expect(result._config).toEqual({
+        engine: 'POSTGRES',
+        host: 'my-cluster.cluster-xxxx.us-east-1.rds.amazonaws.com',
+        port: 5432,
+        username: 'pguser',
+        database: 'mydb',
+        password: MOCK_IAM_TOKEN,
+      });
+      expect(result._event).toEqual(payload);
+    });
   });
 });
