@@ -3697,6 +3697,9 @@ the object to check.
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.provisionedThroughput">provisionedThroughput</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.ProvisionedThroughput">ProvisionedThroughput</a></code> | Update the provisioned throughput for the base table. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.sseSpecification">sseSpecification</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.SSESpecification">SSESpecification</a></code> | Set the ddb server-side encryption specification on the table. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.streamSpecification">streamSpecification</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.StreamSpecification">StreamSpecification</a></code> | Set the ddb stream specification on the table. |
+| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.tableArn">tableArn</a></code> | <code>string</code> | The ARN of the generated DynamoDB table. |
+| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.tableName">tableName</a></code> | <code>string</code> | The name of the generated DynamoDB table. |
+| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.tableStreamArn">tableStreamArn</a></code> | <code>string</code> | The stream ARN of the generated DynamoDB table. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.timeToLiveAttribute">timeToLiveAttribute</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.TimeToLiveSpecification">TimeToLiveSpecification</a></code> | The name of TTL attribute. |
 
 ---
@@ -3770,6 +3773,44 @@ public readonly streamSpecification: StreamSpecification;
 - *Type:* <a href="#@aws-amplify/graphql-api-construct.StreamSpecification">StreamSpecification</a>
 
 Set the ddb stream specification on the table.
+
+---
+
+##### `tableArn`<sup>Required</sup> <a name="tableArn" id="@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.tableArn"></a>
+
+```typescript
+public readonly tableArn: string;
+```
+
+- *Type:* string
+
+The ARN of the generated DynamoDB table.
+
+---
+
+##### `tableName`<sup>Required</sup> <a name="tableName" id="@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.tableName"></a>
+
+```typescript
+public readonly tableName: string;
+```
+
+- *Type:* string
+
+The name of the generated DynamoDB table.
+
+---
+
+##### `tableStreamArn`<sup>Required</sup> <a name="tableStreamArn" id="@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.tableStreamArn"></a>
+
+```typescript
+public readonly tableStreamArn: string;
+```
+
+- *Type:* string
+
+The stream ARN of the generated DynamoDB table.
+
+The table must have streams enabled for this value to resolve.
 
 ---
 

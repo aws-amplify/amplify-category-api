@@ -75,6 +75,9 @@ export interface AmplifyDynamoDbModelDataSourceStrategy {
 export class AmplifyDynamoDbTableWrapper {
     constructor(resource: CfnResource);
     applyRemovalPolicy(policy: RemovalPolicy): void;
+    readonly tableArn: string;
+    readonly tableName: string;
+    readonly tableStreamArn: string;
     set billingMode(billingMode: BillingMode);
     set deletionProtectionEnabled(deletionProtectionEnabled: boolean);
     static isAmplifyDynamoDbTableResource(x: any): x is CfnResource;

@@ -136,6 +136,27 @@ export class AmplifyDynamoDbTableWrapper {
   }
 
   /**
+   * The ARN of the generated DynamoDB table.
+   */
+  get tableArn(): string {
+    return this.resource.getAtt('TableArn').toString();
+  }
+
+  /**
+   * The name of the generated DynamoDB table.
+   */
+  get tableName(): string {
+    return this.resource.getAtt('TableName').toString();
+  }
+
+  /**
+   * The stream ARN of the generated DynamoDB table. The table must have streams enabled for this value to resolve.
+   */
+  get tableStreamArn(): string {
+    return this.resource.getAtt('TableStreamArn').toString();
+  }
+
+  /**
    * Specify how you are charged for read and write throughput and how you manage capacity.
    */
   set billingMode(billingMode: BillingMode) {

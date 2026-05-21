@@ -1,4 +1,4 @@
-import { CfnResource, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { CfnOutput, CfnResource, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import { BillingMode, StreamViewType } from 'aws-cdk-lib/aws-dynamodb';
 import { Match, Template } from 'aws-cdk-lib/assertions';
@@ -84,6 +84,25 @@ describe('AmplifyDynamoDbTable', () => {
       stack = new Stack();
       testResource = new CfnResource(stack, 'TestResources', { type: 'Custom::AmplifyDynamoDBTable' });
       tableWrapper = new AmplifyDynamoDbTableWrapper(testResource);
+    });
+
+    describe('attributes', () => {
+      it('exposes custom resource attributes', () => {
+        new CfnOutput(stack, 'TableArn', { value: tableWrapper.tableArn });
+        new CfnOutput(stack, 'TableName', { value: tableWrapper.tableName });
+        new CfnOutput(stack, 'TableStreamArn', { value: tableWrapper.tableStreamArn });
+
+        const template = Template.fromStack(stack);
+        template.hasOutput('TableArn', {
+          Value: { 'Fn::GetAtt': ['TestResources', 'TableArn'] },
+        });
+        template.hasOutput('TableName', {
+          Value: { 'Fn::GetAtt': ['TestResources', 'TableName'] },
+        });
+        template.hasOutput('TableStreamArn', {
+          Value: { 'Fn::GetAtt': ['TestResources', 'TableStreamArn'] },
+        });
+      });
     });
 
     describe('billingMode', () => {
