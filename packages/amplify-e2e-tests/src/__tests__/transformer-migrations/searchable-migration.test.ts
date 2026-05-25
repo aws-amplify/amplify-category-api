@@ -18,7 +18,7 @@ import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 
 (global as any).fetch = require('node-fetch');
 
-jest.setTimeout(120 * 60 * 1000); // Set timeout to 2 hour because of creating/deleting searchable instance
+jest.setTimeout(150 * 60 * 1000); // 2.5 hours — searchable tests create ES domains which take 20-30 min each
 
 describe('transformer model searchable migration test', () => {
   let projRoot: string;
@@ -39,7 +39,11 @@ describe('transformer model searchable migration test', () => {
   });
 
   afterEach(async () => {
-    await deleteProject(projRoot);
+    try {
+      await deleteProject(projRoot);
+    } catch (e) {
+      console.error(`Error deleting project: ${e.message}`);
+    }
     deleteProjectDir(projRoot);
   });
 
@@ -66,12 +70,27 @@ describe('transformer model searchable migration test', () => {
 
   const getAppSyncClientFromProj = (projRoot: string) => {
     const meta = getProjectMeta(projRoot);
-    const region = meta['providers']['awscloudformation']['Region'] as string;
+    if (!meta?.providers?.awscloudformation?.Region) {
+      throw new Error(`Project metadata missing region. Meta keys: ${JSON.stringify(Object.keys(meta || {}))}`);
+    }
+    const region = meta.providers.awscloudformation.Region;
+
+    if (!meta.api) {
+      throw new Error(`Project metadata has no 'api' section. Meta keys: ${JSON.stringify(Object.keys(meta))}`);
+    }
+    if (!meta.api[projectName]) {
+      const availableApis = Object.keys(meta.api);
+      throw new Error(`API '${projectName}' not found in metadata. Available APIs: [${availableApis.join(', ')}]`);
+    }
+
     const { output } = meta.api[projectName];
+    if (!output?.GraphQLAPIEndpointOutput || !output?.GraphQLAPIKeyOutput) {
+      throw new Error(`API output missing endpoint or key. Output: ${JSON.stringify(output)}`);
+    }
+
     const url = output.GraphQLAPIEndpointOutput as string;
     const apiKey = output.GraphQLAPIKeyOutput as string;
-
-    return new AWSAppSyncClient({
+    const appSyncClient = new AWSAppSyncClient({
       url,
       region,
       disableOffline: true,
@@ -80,6 +99,7 @@ describe('transformer model searchable migration test', () => {
         apiKey,
       },
     });
+    return appSyncClient;
   };
 
   const fragments = [`fragment FullTodo on Todo { id name description count }`];
