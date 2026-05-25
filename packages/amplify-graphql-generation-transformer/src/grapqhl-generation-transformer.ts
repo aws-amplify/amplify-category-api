@@ -43,6 +43,20 @@ export type GenerationConfigurationWithToolConfig = GenerationDirectiveConfigura
 export class GenerationTransformer extends TransformerPluginBase {
   private directives: GenerationDirectiveConfiguration[] = [];
 
+  private static readonly KNOWN_PROVIDERS = new Set([
+    'amazon',
+    'anthropic',
+    'cohere',
+    'deepseek',
+    'meta',
+    'mistral',
+    'stability',
+    'twelvelabs',
+    'writer',
+  ]);
+
+  private static readonly INFERENCE_PROFILE_PREFIXES = new Set(['global', 'us', 'eu', 'apac', 'au', 'ca', 'jp', 'us-gov']);
+
   constructor() {
     super('amplify-generation-transformer', GenerationDirective.definition);
   }
@@ -183,9 +197,44 @@ export class GenerationTransformer extends TransformerPluginBase {
   }
 
   /**
+   * Checks if the given model ID is an inference profile (prefixed with a known region/global prefix).
+   * @param {string} modelId - The Bedrock model ID.
+   * @returns {boolean} True if the model ID is an inference profile.
+   */
+  private static isInferenceProfile(modelId: string): boolean {
+    const firstSegment = modelId.split('.')[0];
+    return GenerationTransformer.INFERENCE_PROFILE_PREFIXES.has(firstSegment);
+  }
+
+  /**
+   * Checks if the given model ID is a global inference profile.
+   * @param {string} modelId - The Bedrock model ID.
+   * @returns {boolean} True if the model ID is a global inference profile.
+   */
+  private static isGlobalInferenceProfile(modelId: string): boolean {
+    return modelId.startsWith('global.');
+  }
+
+  /**
+   * Extracts the foundation model ID from an inference profile ID by finding the first known provider segment.
+   * Falls back to stripping the first segment if no known provider is found.
+   * @param {string} inferenceProfileId - The inference profile ID.
+   * @returns {string} The extracted foundation model ID.
+   */
+  private static extractFoundationModelId(inferenceProfileId: string): string {
+    const segments = inferenceProfileId.split('.');
+    const providerIndex = segments.findIndex((segment) => GenerationTransformer.KNOWN_PROVIDERS.has(segment));
+    if (providerIndex !== -1) {
+      return segments.slice(providerIndex).join('.');
+    }
+    // Fallback: strip first segment
+    return segments.slice(1).join('.');
+  }
+
+  /**
    * Creates an IAM role for the Bedrock service.
    * @param {Construct} dataSourceScope - The construct scope for the IAM role.
-   * @param {string} fieldName - The name of the field.
+   * @param {string} roleLogicalId - The logical ID for the IAM role.
    * @param {string} roleName - The name of the IAM role.
    * @param {string} region - The AWS region for the Bedrock service.
    * @param {string} bedrockModelId - The ID for the Bedrock model.
@@ -198,18 +247,63 @@ export class GenerationTransformer extends TransformerPluginBase {
     region: string,
     bedrockModelId: string,
   ): cdk.aws_iam.Role {
+    const partition = cdk.Stack.of(dataSourceScope).partition;
+    const statements: iam.PolicyStatement[] = [];
+
+    if (GenerationTransformer.isInferenceProfile(bedrockModelId)) {
+      const account = cdk.Stack.of(dataSourceScope).account;
+      const foundationModelId = GenerationTransformer.extractFoundationModelId(bedrockModelId);
+
+      // Statement 1: inference-profile ARN (with account)
+      statements.push(
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: ['bedrock:InvokeModel'],
+          resources: [`arn:${partition}:bedrock:${region}:${account}:inference-profile/${bedrockModelId}`],
+        }),
+      );
+
+      // Statement 2: regional foundation-model ARN
+      statements.push(
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: ['bedrock:InvokeModel'],
+          resources: [`arn:${partition}:bedrock:${region}::foundation-model/${foundationModelId}`],
+        }),
+      );
+
+      // Statement 3 (global only): global foundation-model ARN (no region)
+      if (GenerationTransformer.isGlobalInferenceProfile(bedrockModelId)) {
+        statements.push(
+          new iam.PolicyStatement({
+            effect: iam.Effect.ALLOW,
+            actions: ['bedrock:InvokeModel'],
+            resources: [`arn:${partition}:bedrock:::foundation-model/${foundationModelId}`],
+          }),
+        );
+      }
+
+      cdk.Annotations.of(dataSourceScope).addWarning(
+        `The model ID "${bedrockModelId}" appears to be an inference profile. ` +
+          'IAM policies have been configured to allow access to both the inference profile and the underlying foundation model.',
+      );
+    } else {
+      // Foundation model: single statement (existing behavior)
+      statements.push(
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: ['bedrock:InvokeModel'],
+          resources: [`arn:${partition}:bedrock:${region}::foundation-model/${bedrockModelId}`],
+        }),
+      );
+    }
+
     return new iam.Role(dataSourceScope, roleLogicalId, {
       roleName,
       assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
       inlinePolicies: {
         BedrockRuntimeAccess: new iam.PolicyDocument({
-          statements: [
-            new iam.PolicyStatement({
-              effect: iam.Effect.ALLOW,
-              actions: ['bedrock:InvokeModel'],
-              resources: [`arn:${cdk.Stack.of(dataSourceScope).partition}:bedrock:${region}::foundation-model/${bedrockModelId}`],
-            }),
-          ],
+          statements,
         }),
       },
     });
