@@ -456,7 +456,7 @@
     "zod": "3.25.17"
   },
   "resolutions": {
-    "@aws-amplify/plugin-types": "1.12.0",
+    "@aws-amplify/plugin-types": "1.12.1",
     "**/glob-parent": "^6.0.2",
     "**/istanbul/async": "^2.6.4",
     "**/jake/async": "^2.6.4",
@@ -473,9 +473,9 @@
     "ejs": "^3.1.7",
     "json5": "^2.2.3",
     "semver": "^7.5.2",
-    "axios": "^1.15.0",
+    "axios": "^1.16.1",
     "braces": "^3.0.3",
-    "@aws-sdk/core/@aws-sdk/xml-builder": "^3.972.15",
+    "@aws-sdk/core/@aws-sdk/xml-builder": "^3.972.22",
     "cookie": "^0.7.0",
     "@octokit/request-error": "^5.1.1",
     "@octokit/request": "^8.4.1",
@@ -486,15 +486,18 @@
     "qs": "^6.15.0",
     "js-yaml": "^4.1.1",
     "diff": "^8.0.3",
-    "tmp": "^0.2.5",
-    "basic-ftp": "^5.2.2",
+    "tmp": "^0.2.6",
+    "basic-ftp": ">=5.3.1",
     "lodash-es": "^4.18.1",
     "minimatch": "^3.1.5",
     "handlebars": "^4.7.9",
-    "@xmldom/xmldom": "^0.9.9",
+    "@xmldom/xmldom": ">=0.9.10",
     "path-to-regexp": "^0.1.13",
     "brace-expansion": "^1.1.13",
-    "**/fast-xml-parser": "~5.5.12"
+    "fast-uri": ">=3.1.2",
+    "flatted": ">=3.4.2",
+    "**/fast-xml-parser": "~5.7.2",
+    "**/fast-xml-builder": ">=1.1.7"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
