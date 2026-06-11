@@ -45,7 +45,11 @@ const api = new AmplifyGraphqlApi(stack, 'GraphqlApi', {
   },
 });
 
-const streamTable = api.resources.cfnResources.amplifyDynamoDbTables.Parent1;
+const streamTable = api.resources.cfnResources.amplifyDynamoDbTables.Parent1 as unknown as {
+  streamSpecification: { streamViewType: StreamViewType };
+  tableName: string;
+  tableStreamArn: string;
+};
 streamTable.streamSpecification = { streamViewType: StreamViewType.NEW_IMAGE };
 
 const streamSourceTable = Table.fromTableAttributes(stack, 'Parent1StreamSourceTable', {
