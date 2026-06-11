@@ -1,7 +1,11 @@
 import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { App, NestedStack, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { StackManager, StackManagerOptions } from '../../transformer-context/stack-manager';
+import {
+  STACK_MANAGER_DEFAULT_STACK_NAME_METADATA,
+  StackManager,
+  StackManagerOptions,
+} from '../../transformer-context/stack-manager';
 
 const createStackManager = (
   resourceMapping: Record<string, string> = {},
@@ -44,6 +48,22 @@ describe('StackManager', () => {
     }
 
     expect(stackId(stackManager.getScopeFor('Function133LambdaDataSource', 'FunctionDirectiveStack'))).toBe('FunctionDirectiveStack2');
+  });
+
+  it('adds default-stack metadata when an existing stack becomes auto-sharded', () => {
+    const { stackManager } = createStackManager();
+    const stack = stackManager.createStack('FunctionDirectiveStack');
+
+    stackManager.getScopeFor('Function0LambdaDataSource', 'FunctionDirectiveStack');
+
+    expect(stack.node.metadata).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: STACK_MANAGER_DEFAULT_STACK_NAME_METADATA,
+          data: 'FunctionDirectiveStack',
+        }),
+      ]),
+    );
   });
 
   it('keeps automatic stack assignment stable for repeated resource lookups', () => {

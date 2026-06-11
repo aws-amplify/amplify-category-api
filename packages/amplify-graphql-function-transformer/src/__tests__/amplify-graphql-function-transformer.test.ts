@@ -306,6 +306,47 @@ test('two @function directives for the same lambda should produce a single datas
   Template.fromJSON(stack).resourceCountIs('AWS::AppSync::Resolver', 2);
 });
 
+test('shards large @function directive stacks with field auth below the CloudFormation resource limit', () => {
+  const functionFields = Array.from(
+    { length: 86 },
+    (_, index) => `field${index}: String @function(name: "function${index}-\${env}") @auth(rules: [{ allow: private, provider: iam }])`,
+  ).join('\n');
+  const validSchema = `
+    type Query {
+      ${functionFields}
+    }
+    `;
+
+  const warn = jest.spyOn(console, 'warn').mockImplementation();
+  try {
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new AuthTransformer(), new FunctionTransformer()],
+      authConfig: {
+        defaultAuthentication: {
+          authenticationType: 'AWS_IAM',
+        },
+        additionalAuthenticationProviders: [],
+      },
+    });
+
+    const functionDirectiveStacks = Object.entries(out.stacks)
+      .filter(([stackName]) => stackName.startsWith('FunctionDirectiveStack'))
+      .map(([stackName, stack]) => {
+        const template = stack as { Resources?: Record<string, unknown> };
+        return {
+          stackName,
+          resourceCount: Object.keys(template.Resources ?? {}).length,
+        };
+      });
+
+    expect(functionDirectiveStacks.length).toBeGreaterThan(1);
+    expect(Math.max(...functionDirectiveStacks.map(({ resourceCount }) => resourceCount))).toBeLessThan(500);
+  } finally {
+    warn.mockRestore();
+  }
+});
+
 test('two @function directives for the same field should be valid', () => {
   const validSchema = `
     type Query {

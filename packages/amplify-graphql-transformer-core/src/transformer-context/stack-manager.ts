@@ -78,7 +78,9 @@ export class StackManager implements StackManagerProvider {
       return this.scope;
     }
     if (this.hasStack(stackName)) {
-      return this.getStack(stackName);
+      const stack = this.getStack(stackName);
+      this.addDefaultStackNameMetadata(stackName, stack);
+      return stack;
     }
     return this.createStack(stackName);
   };
@@ -179,6 +181,20 @@ export class StackManager implements StackManagerProvider {
       this.options.stackResourceCountOverrides?.[stackName] ??
         this.getStackResourceEstimateLimit(this.stackDefaultStackNames.get(stackName) ?? stackName),
     );
+
+  private addDefaultStackNameMetadata = (stackName: string, stack: Stack): void => {
+    const defaultStackName = this.stackDefaultStackNames.get(stackName);
+    if (!defaultStackName) {
+      return;
+    }
+
+    const hasDefaultStackNameMetadata = stack.node.metadata.some(
+      (entry) => entry.type === STACK_MANAGER_DEFAULT_STACK_NAME_METADATA && entry.data === defaultStackName,
+    );
+    if (!hasDefaultStackNameMetadata) {
+      stack.node.addMetadata(STACK_MANAGER_DEFAULT_STACK_NAME_METADATA, defaultStackName);
+    }
+  };
 }
 
 const normalizeResourceEstimate = (estimate: number): number => Math.max(1, Math.ceil(estimate));
