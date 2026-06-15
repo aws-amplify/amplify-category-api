@@ -18,8 +18,10 @@ const appsync = new ServicePrincipal('appsync.amazonaws.com');
 const authenticatedUserRole = new Role(stack, 'TestAuthRole', { assumedBy: appsync });
 const unauthenticatedUserRole = new Role(stack, 'TestUnauthRole', { assumedBy: appsync });
 
+const functionFieldCount = Number(process.env.FUNCTION_DIRECTIVE_FIELD_COUNT ?? '86');
+
 const functionFields = Array.from(
-  { length: 86 },
+  { length: functionFieldCount },
   (_, index) => `field${index}: String @function(name: "function${index}-\${env}") @auth(rules: [{ allow: private, provider: iam }])`,
 ).join('\n');
 

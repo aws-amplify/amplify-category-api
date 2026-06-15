@@ -9,10 +9,10 @@ jest.setTimeout(DURATION_1_HOUR);
 
 type CloudFormationTemplate = {
   Description?: string;
-  Resources?: Record<string, unknown>;
+  Resources?: Record<string, { Type?: string }>;
 };
 
-const FUNCTION_DIRECTIVE_STACK_TEMPLATE_PATTERN = /FunctionDirectiveStack[0-9A-Fa-f]*\.nested\.template\.json$/;
+const FUNCTION_DIRECTIVE_STACK_TEMPLATE_PATTERN = /FunctionDirectiveStack(?:Iam)?[0-9A-Fa-f]*\.nested\.template\.json$/;
 
 const findTemplatePaths = (directoryPath: string): string[] => {
   const pendingPaths = [directoryPath];
@@ -33,7 +33,61 @@ const findTemplatePaths = (directoryPath: string): string[] => {
   return templatePaths;
 };
 
-const readTemplate = (templatePath: string): CloudFormationTemplate => JSON.parse(fs.readFileSync(templatePath, 'utf8')) as CloudFormationTemplate;
+const readTemplate = (templatePath: string): CloudFormationTemplate =>
+  JSON.parse(fs.readFileSync(templatePath, 'utf8')) as CloudFormationTemplate;
+
+const synthFunctionDirectiveFixture = async (projRoot: string, fieldCount: number): Promise<string> => {
+  const templatePath = path.resolve(path.join(__dirname, 'backends', 'function-directive-stack-limits'));
+  await initMinimalCDKProject(projRoot, templatePath, { construct: 'Data' });
+  const previousFunctionFieldCount = process.env.FUNCTION_DIRECTIVE_FIELD_COUNT;
+  process.env.FUNCTION_DIRECTIVE_FIELD_COUNT = String(fieldCount);
+  try {
+    return await cdkSynth(projRoot);
+  } finally {
+    if (previousFunctionFieldCount === undefined) {
+      delete process.env.FUNCTION_DIRECTIVE_FIELD_COUNT;
+    } else {
+      process.env.FUNCTION_DIRECTIVE_FIELD_COUNT = previousFunctionFieldCount;
+    }
+  }
+};
+
+const resourceCountsByType = (templates: CloudFormationTemplate[]): Map<string, number> => {
+  const countsByType = new Map<string, number>();
+
+  templates.forEach((template) => {
+    Object.values(template.Resources ?? {}).forEach((resource) => {
+      if (!resource.Type) {
+        return;
+      }
+
+      countsByType.set(resource.Type, (countsByType.get(resource.Type) ?? 0) + 1);
+    });
+  });
+
+  return countsByType;
+};
+
+const resourceTemplateNamesByType = (templatePaths: string[]): Map<string, Set<string>> => {
+  const templatesByType = new Map<string, Set<string>>();
+
+  templatePaths.forEach((templatePath) => {
+    const template = readTemplate(templatePath);
+    const templateName = path.basename(templatePath);
+
+    Object.values(template.Resources ?? {}).forEach((resource) => {
+      if (!resource.Type) {
+        return;
+      }
+
+      const templateNames = templatesByType.get(resource.Type) ?? new Set<string>();
+      templateNames.add(templateName);
+      templatesByType.set(resource.Type, templateNames);
+    });
+  });
+
+  return templatesByType;
+};
 
 describe('Function directive stack limits', () => {
   let projRoot: string;
@@ -49,17 +103,59 @@ describe('Function directive stack limits', () => {
   });
 
   test('shards large Data construct @function stacks with IAM field auth during CDK synth', async () => {
-    const templatePath = path.resolve(path.join(__dirname, 'backends', 'function-directive-stack-limits'));
-    await initMinimalCDKProject(projRoot, templatePath, { construct: 'Data' });
-
-    const synthOutputPath = await cdkSynth(projRoot);
-    const functionDirectiveTemplates = findTemplatePaths(synthOutputPath)
-      .filter((templatePath) => FUNCTION_DIRECTIVE_STACK_TEMPLATE_PATTERN.test(path.basename(templatePath)))
-      .map(readTemplate);
+    const synthOutputPath = await synthFunctionDirectiveFixture(projRoot, 86);
+    const functionDirectiveTemplatePaths = findTemplatePaths(synthOutputPath).filter((templatePath) =>
+      FUNCTION_DIRECTIVE_STACK_TEMPLATE_PATTERN.test(path.basename(templatePath)),
+    );
+    const functionDirectiveTemplates = functionDirectiveTemplatePaths.map(readTemplate);
     const functionDirectiveResourceCounts = functionDirectiveTemplates.map((template) => Object.keys(template.Resources ?? {}).length);
+    const templateNamesByType = resourceTemplateNamesByType(functionDirectiveTemplatePaths);
+    const dataSourceTemplateNames = templateNamesByType.get('AWS::AppSync::DataSource') ?? new Set<string>();
+    const iamRoleTemplateNames = templateNamesByType.get('AWS::IAM::Role') ?? new Set<string>();
+    const iamPolicyTemplateNames = templateNamesByType.get('AWS::IAM::Policy') ?? new Set<string>();
 
     expect(functionDirectiveTemplates.length).toBeGreaterThan(1);
     expect(functionDirectiveResourceCounts.reduce((sum, resourceCount) => sum + resourceCount, 0)).toBeGreaterThan(500);
     expect(Math.max(...functionDirectiveResourceCounts)).toBeLessThan(500);
+    expect(dataSourceTemplateNames.size).toBe(1);
+    expect(templateNamesByType.get('AWS::AppSync::FunctionConfiguration')).toEqual(dataSourceTemplateNames);
+    expect(templateNamesByType.get('AWS::AppSync::Resolver')).toEqual(dataSourceTemplateNames);
+    expect(iamRoleTemplateNames.size).toBeGreaterThanOrEqual(1);
+    expect(iamPolicyTemplateNames.size).toBeGreaterThanOrEqual(1);
+    expect([...iamRoleTemplateNames].some((templateName) => dataSourceTemplateNames.has(templateName))).toBe(false);
+    expect([...iamPolicyTemplateNames].some((templateName) => dataSourceTemplateNames.has(templateName))).toBe(false);
+  });
+
+  test('keeps pinned @function AppSync resources under the stack limit while moving IAM resources separately', async () => {
+    const synthOutputPath = await synthFunctionDirectiveFixture(projRoot, 124);
+    const functionDirectiveTemplatePaths = findTemplatePaths(synthOutputPath).filter((templatePath) =>
+      FUNCTION_DIRECTIVE_STACK_TEMPLATE_PATTERN.test(path.basename(templatePath)),
+    );
+    const functionDirectiveTemplates = functionDirectiveTemplatePaths.map(readTemplate);
+    const functionDirectiveResourceCounts = functionDirectiveTemplates.map((template) => Object.keys(template.Resources ?? {}).length);
+    const templateNamesByType = resourceTemplateNamesByType(functionDirectiveTemplatePaths);
+    const functionDirectiveResourceCountsByType = resourceCountsByType(functionDirectiveTemplates);
+    const dataSourceTemplateNames = templateNamesByType.get('AWS::AppSync::DataSource') ?? new Set<string>();
+    const iamRoleTemplateNames = templateNamesByType.get('AWS::IAM::Role') ?? new Set<string>();
+    const iamPolicyTemplateNames = templateNamesByType.get('AWS::IAM::Policy') ?? new Set<string>();
+
+    expect(functionDirectiveTemplates.length).toBeGreaterThan(1);
+    expect(Math.max(...functionDirectiveResourceCounts)).toBeLessThanOrEqual(500);
+    expect(functionDirectiveResourceCountsByType.get('AWS::AppSync::DataSource')).toBe(124);
+    expect(functionDirectiveResourceCountsByType.get('AWS::AppSync::FunctionConfiguration')).toBe(248);
+    expect(functionDirectiveResourceCountsByType.get('AWS::AppSync::Resolver')).toBe(124);
+    expect(dataSourceTemplateNames.size).toBe(1);
+    expect(templateNamesByType.get('AWS::AppSync::FunctionConfiguration')).toEqual(dataSourceTemplateNames);
+    expect(templateNamesByType.get('AWS::AppSync::Resolver')).toEqual(dataSourceTemplateNames);
+    expect(iamRoleTemplateNames.size).toBeGreaterThanOrEqual(1);
+    expect(iamPolicyTemplateNames.size).toBeGreaterThanOrEqual(1);
+    expect([...iamRoleTemplateNames].some((templateName) => dataSourceTemplateNames.has(templateName))).toBe(false);
+    expect([...iamPolicyTemplateNames].some((templateName) => dataSourceTemplateNames.has(templateName))).toBe(false);
+  });
+
+  test('reports when pinned @function AppSync resources cannot be safely sharded', async () => {
+    await expect(synthFunctionDirectiveFixture(projRoot, 125)).rejects.toThrow(
+      /pinned AppSync resources.*Automatic sharding cannot safely move AppSync/,
+    );
   });
 });

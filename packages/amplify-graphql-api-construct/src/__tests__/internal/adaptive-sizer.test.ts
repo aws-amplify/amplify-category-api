@@ -8,9 +8,9 @@ describe('adaptive stack sizing', () => {
   it('retries planning with measured stack counts when the first operation is over budget', () => {
     const firstMeasurement: AdaptiveSizingMeasurement = {
       nestedStacks: [
-        { stackName: 'ModelA', defaultStackName: 'ModelA', resourceCount: 1200 },
-        { stackName: 'ModelB', defaultStackName: 'ModelB', resourceCount: 1200 },
-        { stackName: 'ModelC', defaultStackName: 'ModelC', resourceCount: 1200 },
+        { stackName: 'ModelA', defaultStackName: 'ModelA', resourceCount: 1200, resourceTypeCounts: {} },
+        { stackName: 'ModelB', defaultStackName: 'ModelB', resourceCount: 1200, resourceTypeCounts: {} },
+        { stackName: 'ModelC', defaultStackName: 'ModelC', resourceCount: 1200, resourceTypeCounts: {} },
       ],
       operations: [{ operationName: 'direct', resourceCount: 3600 }],
     };
@@ -52,9 +52,9 @@ describe('adaptive stack sizing', () => {
   it('reduces direct root stack placement once top-level generated outputs need headroom', () => {
     const directOnlyMeasurement: AdaptiveSizingMeasurement = {
       nestedStacks: [
-        { stackName: 'ModelA', defaultStackName: 'ModelA', resourceCount: 1200 },
-        { stackName: 'ModelB', defaultStackName: 'ModelB', resourceCount: 1200 },
-        { stackName: 'ModelC', defaultStackName: 'ModelC', resourceCount: 1200 },
+        { stackName: 'ModelA', defaultStackName: 'ModelA', resourceCount: 1200, resourceTypeCounts: {} },
+        { stackName: 'ModelB', defaultStackName: 'ModelB', resourceCount: 1200, resourceTypeCounts: {} },
+        { stackName: 'ModelC', defaultStackName: 'ModelC', resourceCount: 1200, resourceTypeCounts: {} },
       ],
       operations: [{ operationName: 'direct', resourceCount: 3600 }],
     };
@@ -101,6 +101,7 @@ describe('adaptive stack sizing', () => {
           stackName: 'OversizedModel',
           defaultStackName: 'OversizedModel',
           resourceCount: CLOUDFORMATION_STACK_OPERATION_RESOURCE_LIMIT + 1,
+          resourceTypeCounts: {},
         },
       ],
       operations: [{ operationName: 'direct', resourceCount: CLOUDFORMATION_STACK_OPERATION_RESOURCE_LIMIT + 1 }],
@@ -108,6 +109,28 @@ describe('adaptive stack sizing', () => {
 
     expect(() => createAdaptiveStackSizingPlan({} as any, { runPlanningTransform })).toThrow(
       /OversizedModel.*cannot be fixed by automatic stack placement/,
+    );
+  });
+
+  it('fails with an actionable error when pinned @function AppSync resources leave no nested stack headroom', () => {
+    const runPlanningTransform = jest.fn().mockReturnValue({
+      nestedStacks: [
+        {
+          stackName: 'FunctionDirectiveStack',
+          defaultStackName: 'FunctionDirectiveStack',
+          resourceCount: 500,
+          resourceTypeCounts: {
+            'AWS::AppSync::DataSource': 125,
+            'AWS::AppSync::FunctionConfiguration': 250,
+            'AWS::AppSync::Resolver': 125,
+          },
+        },
+      ],
+      operations: [{ operationName: 'direct', resourceCount: 500 }],
+    } satisfies AdaptiveSizingMeasurement);
+
+    expect(() => createAdaptiveStackSizingPlan({} as any, { runPlanningTransform })).toThrow(
+      /pinned AppSync resources.*Automatic sharding cannot safely move AppSync.*explicit migration flow.*non-production/s,
     );
   });
 });

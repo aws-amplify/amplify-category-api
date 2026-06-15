@@ -6,7 +6,6 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import { Construct } from 'constructs';
-import { ResolverResourceIDs } from 'graphql-transformer-common';
 import { MODEL_OPERATIONS, READ_MODEL_OPERATIONS } from './constants';
 import { AuthProvider, AuthRule, ConfiguredAuthProviders, GetAuthRulesOptions, ModelOperation } from './definitions';
 import { RoleDefinition, RolesByProvider } from './role-definition';
@@ -125,7 +124,7 @@ export const getScopeForField = (
   const fieldNode = obj.fields.find((f) => f.name.value === fieldName);
   const fieldDirectives = fieldNode.directives.map((d) => d.name.value);
   if (fieldDirectives.includes('function')) {
-    return ctx.stackManager.getScopeFor(ResolverResourceIDs.ResolverResourceID(obj.name.value, fieldName), 'FunctionDirectiveStack');
+    return ctx.stackManager.getStack('FunctionDirectiveStack');
   }
   if (fieldDirectives.includes('predictions')) {
     return ctx.stackManager.getStack('PredictionsDirectiveStack');

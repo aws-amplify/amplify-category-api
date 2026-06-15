@@ -6,6 +6,18 @@ import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { FunctionTransformer } from '..';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 
+const getFunctionDirectiveStackSummaries = (stacks: Record<string, any>): Array<{ stackName: string; byType: Record<string, number> }> =>
+  Object.entries(stacks)
+    .filter(([stackName]) => stackName.startsWith('FunctionDirectiveStack'))
+    .map(([stackName, stack]) => ({
+      stackName,
+      byType: Object.values(stack.Resources ?? {}).reduce((acc: Record<string, number>, resource: any) => {
+        const type = resource.Type ?? '<unknown>';
+        acc[type] = (acc[type] ?? 0) + 1;
+        return acc;
+      }, {}),
+    }));
+
 test('for @function with only name, it generates the expected resources', () => {
   const validSchema = `
     type Query {
@@ -21,13 +33,17 @@ test('for @function with only name, it generates the expected resources', () => 
   expect(out.stacks).toBeDefined();
   parse(out.schema);
   const stack = out.stacks.FunctionDirectiveStack;
+  const iamStack = out.stacks.FunctionDirectiveStackIam;
   expect(stack).toBeDefined();
-  Template.fromJSON(stack).resourceCountIs('AWS::IAM::Role', 1);
-  Template.fromJSON(stack).resourceCountIs('AWS::IAM::Policy', 1);
+  expect(iamStack).toBeDefined();
+  Template.fromJSON(stack).resourceCountIs('AWS::IAM::Role', 0);
+  Template.fromJSON(stack).resourceCountIs('AWS::IAM::Policy', 0);
   Template.fromJSON(stack).resourceCountIs('AWS::AppSync::DataSource', 1);
   Template.fromJSON(stack).resourceCountIs('AWS::AppSync::FunctionConfiguration', 1);
   Template.fromJSON(stack).resourceCountIs('AWS::AppSync::Resolver', 1);
-  Template.fromJSON(stack).hasResourceProperties('AWS::IAM::Role', {
+  Template.fromJSON(iamStack).resourceCountIs('AWS::IAM::Role', 1);
+  Template.fromJSON(iamStack).resourceCountIs('AWS::IAM::Policy', 1);
+  Template.fromJSON(iamStack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Statement: [
         {
@@ -41,7 +57,7 @@ test('for @function with only name, it generates the expected resources', () => 
       Version: '2012-10-17',
     },
   });
-  Template.fromJSON(stack).hasResourceProperties('AWS::IAM::Policy', {
+  Template.fromJSON(iamStack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -104,7 +120,9 @@ test('for @function with only name, it generates the expected resources', () => 
       },
     },
     ServiceRoleArn: {
-      'Fn::GetAtt': ['EchofunctionLambdaDataSourceServiceRole3BE2FA57', 'Arn'],
+      Ref: Match.stringLikeRegexp(
+        'FunctionDirectiveStackIamNestedStack.*Outputs.*FunctionDirectiveStackIamEchofunctionLambdaDataSourceServiceRole[A-Z0-9]+Arn$',
+      ),
     },
   });
   Template.fromJSON(stack).hasResourceProperties('AWS::AppSync::FunctionConfiguration', {
@@ -156,13 +174,17 @@ test('for @function with account ID, it generates the expected resources', () =>
   expect(out.stacks).toBeDefined();
   parse(out.schema);
   const stack = out.stacks.FunctionDirectiveStack;
+  const iamStack = out.stacks.FunctionDirectiveStackIam;
   expect(stack).toBeDefined();
-  Template.fromJSON(stack).resourceCountIs('AWS::IAM::Role', 1);
-  Template.fromJSON(stack).resourceCountIs('AWS::IAM::Policy', 1);
+  expect(iamStack).toBeDefined();
+  Template.fromJSON(stack).resourceCountIs('AWS::IAM::Role', 0);
+  Template.fromJSON(stack).resourceCountIs('AWS::IAM::Policy', 0);
   Template.fromJSON(stack).resourceCountIs('AWS::AppSync::DataSource', 1);
   Template.fromJSON(stack).resourceCountIs('AWS::AppSync::FunctionConfiguration', 1);
   Template.fromJSON(stack).resourceCountIs('AWS::AppSync::Resolver', 1);
-  Template.fromJSON(stack).hasResourceProperties('AWS::IAM::Role', {
+  Template.fromJSON(iamStack).resourceCountIs('AWS::IAM::Role', 1);
+  Template.fromJSON(iamStack).resourceCountIs('AWS::IAM::Policy', 1);
+  Template.fromJSON(iamStack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Statement: [
         {
@@ -176,7 +198,7 @@ test('for @function with account ID, it generates the expected resources', () =>
       Version: '2012-10-17',
     },
   });
-  Template.fromJSON(stack).hasResourceProperties('AWS::IAM::Policy', {
+  Template.fromJSON(iamStack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -233,7 +255,9 @@ test('for @function with account ID, it generates the expected resources', () =>
       },
     },
     ServiceRoleArn: {
-      'Fn::GetAtt': ['Echofunction123123456456LambdaDataSourceServiceRole0B60B47E', 'Arn'],
+      Ref: Match.stringLikeRegexp(
+        'FunctionDirectiveStackIamNestedStack.*Outputs.*FunctionDirectiveStackIamEchofunction123123456456LambdaDataSourceServiceRole[A-Z0-9]+Arn$',
+      ),
     },
   });
   Template.fromJSON(stack).hasResourceProperties('AWS::AppSync::FunctionConfiguration', {
@@ -298,12 +322,16 @@ test('two @function directives for the same lambda should produce a single datas
   parse(out.schema);
   expect(out.stacks).toBeDefined();
   const stack = out.stacks.FunctionDirectiveStack;
+  const iamStack = out.stacks.FunctionDirectiveStackIam;
   expect(stack).toBeDefined();
-  Template.fromJSON(stack).resourceCountIs('AWS::IAM::Role', 1);
-  Template.fromJSON(stack).resourceCountIs('AWS::IAM::Policy', 1);
+  expect(iamStack).toBeDefined();
+  Template.fromJSON(stack).resourceCountIs('AWS::IAM::Role', 0);
+  Template.fromJSON(stack).resourceCountIs('AWS::IAM::Policy', 0);
   Template.fromJSON(stack).resourceCountIs('AWS::AppSync::DataSource', 1);
   Template.fromJSON(stack).resourceCountIs('AWS::AppSync::FunctionConfiguration', 1);
   Template.fromJSON(stack).resourceCountIs('AWS::AppSync::Resolver', 2);
+  Template.fromJSON(iamStack).resourceCountIs('AWS::IAM::Role', 1);
+  Template.fromJSON(iamStack).resourceCountIs('AWS::IAM::Policy', 1);
 });
 
 test('shards large @function directive stacks with field auth below the CloudFormation resource limit', () => {
@@ -330,18 +358,14 @@ test('shards large @function directive stacks with field auth below the CloudFor
       },
     });
 
-    const functionDirectiveStacks = Object.entries(out.stacks)
-      .filter(([stackName]) => stackName.startsWith('FunctionDirectiveStack'))
-      .map(([stackName, stack]) => {
-        const template = stack as { Resources?: Record<string, unknown> };
-        return {
-          stackName,
-          resourceCount: Object.keys(template.Resources ?? {}).length,
-        };
-      });
+    const summaries = getFunctionDirectiveStackSummaries(out.stacks);
+    const appSyncStacks = summaries.filter(({ byType }) => Object.keys(byType).some((type) => type.startsWith('AWS::AppSync::')));
+    const iamStacks = summaries.filter(({ byType }) => (byType['AWS::IAM::Role'] ?? 0) > 0 || (byType['AWS::IAM::Policy'] ?? 0) > 0);
 
-    expect(functionDirectiveStacks.length).toBeGreaterThan(1);
-    expect(Math.max(...functionDirectiveStacks.map(({ resourceCount }) => resourceCount))).toBeLessThan(500);
+    expect(appSyncStacks).toHaveLength(1);
+    expect(iamStacks.length).toBeGreaterThan(0);
+    expect(summaries.length).toBeGreaterThan(1);
+    expect(Math.max(...summaries.map(({ byType }) => Object.values(byType).reduce((total, count) => total + count, 0)))).toBeLessThan(500);
   } finally {
     warn.mockRestore();
   }

@@ -1,14 +1,14 @@
 import { parse, ObjectTypeDefinitionNode } from 'graphql';
-import { ResolverResourceIDs } from 'graphql-transformer-common';
 import { getScopeForField } from '../utils';
 
 const getObjectType = (schema: string): ObjectTypeDefinitionNode => parse(schema).definitions[0] as ObjectTypeDefinitionNode;
 
 describe('getScopeForField', () => {
-  it('uses resource-aware stack sharding for function fields', () => {
+  it('keeps function field auth resources in the original function stack after resource-aware sizing', () => {
     const functionScope = {};
+    const originalFunctionStack = {};
     const getScopeFor = jest.fn(() => functionScope);
-    const getStack = jest.fn();
+    const getStack = jest.fn(() => originalFunctionStack);
     const ctx = {
       stackManager: {
         getScopeFor,
@@ -21,8 +21,8 @@ describe('getScopeForField', () => {
       }
     `);
 
-    expect(getScopeForField(ctx as any, objectType, 'movie', false)).toBe(functionScope);
-    expect(getScopeFor).toHaveBeenCalledWith(ResolverResourceIDs.ResolverResourceID('Query', 'movie'), 'FunctionDirectiveStack');
-    expect(getStack).not.toHaveBeenCalledWith('FunctionDirectiveStack');
+    expect(getScopeForField(ctx as any, objectType, 'movie', false)).toBe(originalFunctionStack);
+    expect(getScopeFor).not.toHaveBeenCalled();
+    expect(getStack).toHaveBeenCalledWith('FunctionDirectiveStack');
   });
 });

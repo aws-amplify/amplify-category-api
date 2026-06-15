@@ -3,6 +3,7 @@ import {
   DynamoDbDataSourceOptions,
   FunctionRuntimeTemplate,
   JSRuntimeTemplate,
+  LambdaDataSourceOptions,
   MappingTemplateProvider,
   SearchableDataSourceOptions,
   TransformHostProvider,
@@ -129,7 +130,7 @@ export class DefaultTransformHost implements TransformHostProvider {
   public addLambdaDataSource = (
     name: string,
     lambdaFunction: IFunction,
-    options?: DataSourceOptions,
+    options?: LambdaDataSourceOptions,
     scope?: Construct,
   ): LambdaDataSource => {
     if (!Token.isUnresolved(name) && this.dataSources.has(name)) {
@@ -443,12 +444,13 @@ export class DefaultTransformHost implements TransformHostProvider {
    * @param options The optional configuration for this data source
    * @param scope cdk scope to which this datasource needs to mapped to
    */
-  protected doAddLambdaDataSource(id: string, lambdaFunction: IFunction, options?: DataSourceOptions, scope?: Construct): LambdaDataSource {
+  protected doAddLambdaDataSource(id: string, lambdaFunction: IFunction, options?: LambdaDataSourceOptions, scope?: Construct): LambdaDataSource {
     const ds = new LambdaDataSource(scope || this.api, id, {
       api: this.api,
       lambdaFunction,
       name: options?.name,
       description: options?.description,
+      serviceRole: options?.serviceRole,
     });
 
     const cfnDataSource: CfnDataSource = (ds as any).node.defaultChild;

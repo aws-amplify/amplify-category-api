@@ -21,9 +21,17 @@ import {
 } from './nested-stack-provider';
 
 export const CLOUDFORMATION_STACK_OPERATION_RESOURCE_LIMIT = 2500;
+export const CLOUDFORMATION_NESTED_STACK_RESOURCE_LIMIT = 500;
 const CLOUDFORMATION_OUTPUT_SAFETY_THRESHOLD = 50;
 const MAX_ADAPTIVE_PLANNING_ITERATIONS = 3;
 const RESOURCE_BUDGET_ADJUSTMENT_THRESHOLD = 1.1;
+const FUNCTION_DIRECTIVE_STACK = 'FunctionDirectiveStack';
+const FUNCTION_DIRECTIVE_PINNED_APPSYNC_RESOURCE_TYPES = [
+  'AWS::AppSync::DataSource',
+  'AWS::AppSync::FunctionConfiguration',
+  'AWS::AppSync::Resolver',
+];
+const FUNCTION_DIRECTIVE_PINNED_RESOURCE_HEADROOM = 1;
 
 export type AdaptiveStackSizingPlan = {
   nestedStackProviderOptions: ShardedNestedStackProviderOptions;
@@ -35,6 +43,7 @@ export type AdaptiveSizingConfig = Omit<ExecuteTransformConfig, 'assetProvider' 
 export type NestedStackResourceMeasurement = {
   stackName: string;
   resourceCount: number;
+  resourceTypeCounts: Record<string, number>;
   defaultStackName?: string;
 };
 
@@ -65,6 +74,7 @@ export const createAdaptiveStackSizingPlan = (config: AdaptiveSizingConfig, prop
 
   for (let iteration = 0; iteration < MAX_ADAPTIVE_PLANNING_ITERATIONS; iteration += 1) {
     const measurement = runPlanningTransform(config, plan, iteration);
+    assertNoFunctionDirectivePinnedOverflow(measurement);
     assertNoIrreducibleNestedStack(measurement);
 
     const nextPlan = refineSizingPlan(plan, measurement);
@@ -242,9 +252,35 @@ const assertNoIrreducibleNestedStack = (measurement: AdaptiveSizingMeasurement):
   );
 };
 
+const assertNoFunctionDirectivePinnedOverflow = (measurement: AdaptiveSizingMeasurement): void => {
+  const functionDirectiveStack = measurement.nestedStacks.find(({ stackName }) => stackName === FUNCTION_DIRECTIVE_STACK);
+  if (!functionDirectiveStack) {
+    return;
+  }
+
+  const pinnedAppSyncResourceCount = FUNCTION_DIRECTIVE_PINNED_APPSYNC_RESOURCE_TYPES.reduce(
+    (sum, resourceType) => sum + (functionDirectiveStack.resourceTypeCounts[resourceType] ?? 0),
+    0,
+  );
+  const pinnedResourceCountWithHeadroom = pinnedAppSyncResourceCount + FUNCTION_DIRECTIVE_PINNED_RESOURCE_HEADROOM;
+  if (pinnedResourceCountWithHeadroom <= CLOUDFORMATION_NESTED_STACK_RESOURCE_LIMIT) {
+    return;
+  }
+
+  throw new Error(
+    `Generated nested stack ${FUNCTION_DIRECTIVE_STACK} contains ${pinnedAppSyncResourceCount} pinned AppSync resources, ` +
+      `which leaves insufficient headroom for CDK metadata and the ${CLOUDFORMATION_NESTED_STACK_RESOURCE_LIMIT} resource nested stack limit. ` +
+      'Automatic sharding cannot safely move AppSync resources created for @function because DataSource, ' +
+      'FunctionConfiguration, and Resolver resources must stay together in FunctionDirectiveStack. ' +
+      'Reduce the number of @function fields, reuse Lambda data sources where possible, split part of the API into a separate backend, ' +
+      'or use an explicit migration flow after reviewing the generated CloudFormation changes in a non-production environment.',
+  );
+};
+
 const measureNestedStack = (nestedStack: NestedStack): NestedStackResourceMeasurement => ({
   stackName: nestedStack.node.id,
   resourceCount: countCfnResources(nestedStack),
+  resourceTypeCounts: countCfnResourcesByType(nestedStack),
   defaultStackName: getDefaultStackName(nestedStack),
 });
 
@@ -256,6 +292,16 @@ const countCfnResources = (scope: Construct): number => {
     }
   });
   return resourceCount;
+};
+
+const countCfnResourcesByType = (scope: Construct): Record<string, number> => {
+  const resourceTypeCounts: Record<string, number> = {};
+  visitConstructTree(scope, (construct) => {
+    if (construct instanceof CfnResource) {
+      resourceTypeCounts[construct.cfnResourceType] = (resourceTypeCounts[construct.cfnResourceType] ?? 0) + 1;
+    }
+  });
+  return resourceTypeCounts;
 };
 
 const countTopLevelCfnOutputs = (scope: Construct): number => {

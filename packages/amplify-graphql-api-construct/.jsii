@@ -8793,7 +8793,7 @@
         },
         "locationInModule": {
           "filename": "src/amplify-dynamodb-table-wrapper.ts",
-          "line": 124
+          "line": 126
         },
         "parameters": [
           {
@@ -8810,7 +8810,7 @@
       "kind": "class",
       "locationInModule": {
         "filename": "src/amplify-dynamodb-table-wrapper.ts",
-        "line": 110
+        "line": 112
       },
       "methods": [
         {
@@ -8821,7 +8821,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 116
+            "line": 118
           },
           "name": "isAmplifyDynamoDbTableResource",
           "parameters": [
@@ -8849,7 +8849,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 134
+            "line": 136
           },
           "name": "applyRemovalPolicy",
           "parameters": [
@@ -8871,7 +8871,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 200
+            "line": 216
           },
           "name": "setGlobalSecondaryIndexProvisionedThroughput",
           "parameters": [
@@ -8906,7 +8906,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 141
+            "line": 143
           },
           "name": "tableArn",
           "type": {
@@ -8921,7 +8921,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 148
+            "line": 160
           },
           "name": "tableName",
           "type": {
@@ -8937,7 +8937,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 155
+            "line": 171
           },
           "name": "tableStreamArn",
           "type": {
@@ -8951,7 +8951,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 162
+            "line": 178
           },
           "name": "billingMode",
           "type": {
@@ -8965,7 +8965,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 228
+            "line": 244
           },
           "name": "deletionProtectionEnabled",
           "type": {
@@ -8979,7 +8979,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 176
+            "line": 192
           },
           "name": "pointInTimeRecoveryEnabled",
           "type": {
@@ -8993,7 +8993,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 184
+            "line": 200
           },
           "name": "pointInTimeRecoverySpecification",
           "type": {
@@ -9007,7 +9007,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 191
+            "line": 207
           },
           "name": "provisionedThroughput",
           "type": {
@@ -9021,7 +9021,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 221
+            "line": 237
           },
           "name": "sseSpecification",
           "type": {
@@ -9035,7 +9035,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 214
+            "line": 230
           },
           "name": "streamSpecification",
           "type": {
@@ -9049,7 +9049,7 @@
           },
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 169
+            "line": 185
           },
           "name": "timeToLiveAttribute",
           "type": {
@@ -12472,7 +12472,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/amplify-dynamodb-table-wrapper.ts",
-        "line": 25
+        "line": 27
       },
       "name": "PointInTimeRecoverySpecification",
       "properties": [
@@ -12485,7 +12485,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 29
+            "line": 31
           },
           "name": "pointInTimeRecoveryEnabled",
           "type": {
@@ -12502,7 +12502,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 35
+            "line": 37
           },
           "name": "recoveryPeriodInDays",
           "optional": true,
@@ -12559,7 +12559,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/amplify-dynamodb-table-wrapper.ts",
-        "line": 41
+        "line": 43
       },
       "name": "ProvisionedThroughput",
       "properties": [
@@ -12572,7 +12572,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 45
+            "line": 47
           },
           "name": "readCapacityUnits",
           "type": {
@@ -12588,7 +12588,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 50
+            "line": 52
           },
           "name": "writeCapacityUnits",
           "type": {
@@ -13042,7 +13042,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/amplify-dynamodb-table-wrapper.ts",
-        "line": 64
+        "line": 66
       },
       "name": "SSESpecification",
       "properties": [
@@ -13056,7 +13056,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 70
+            "line": 72
           },
           "name": "sseEnabled",
           "type": {
@@ -13073,7 +13073,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 77
+            "line": 79
           },
           "name": "kmsMasterKeyId",
           "optional": true,
@@ -13091,7 +13091,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 84
+            "line": 86
           },
           "name": "sseType",
           "optional": true,
@@ -13113,7 +13113,7 @@
       "kind": "enum",
       "locationInModule": {
         "filename": "src/amplify-dynamodb-table-wrapper.ts",
-        "line": 57
+        "line": 59
       },
       "members": [
         {
@@ -13507,7 +13507,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/amplify-dynamodb-table-wrapper.ts",
-        "line": 90
+        "line": 92
       },
       "name": "StreamSpecification",
       "properties": [
@@ -13521,7 +13521,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 99
+            "line": 101
           },
           "name": "streamViewType",
           "type": {
@@ -13647,7 +13647,7 @@
       "kind": "interface",
       "locationInModule": {
         "filename": "src/amplify-dynamodb-table-wrapper.ts",
-        "line": 9
+        "line": 11
       },
       "name": "TimeToLiveSpecification",
       "properties": [
@@ -13660,7 +13660,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 13
+            "line": 15
           },
           "name": "enabled",
           "type": {
@@ -13676,7 +13676,7 @@
           "immutable": true,
           "locationInModule": {
             "filename": "src/amplify-dynamodb-table-wrapper.ts",
-            "line": 18
+            "line": 20
           },
           "name": "attributeName",
           "optional": true,
@@ -14087,5 +14087,5 @@
     }
   },
   "version": "1.21.4-pr-3484.0",
-  "fingerprint": "2Kxp8hAKEWs+HOtpT9P84T3+BhE1Te2ME7yfZdtqTwc="
+  "fingerprint": "zJiIRKNo1f0ORqUR6iGbI1nFUQhc/BX5mc+DnYBlU/o="
 }
