@@ -10,7 +10,7 @@ import { getResourceName } from '@aws-amplify/graphql-transformer-core';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 import { CLOUDFORMATION_STACK_OPERATION_RESOURCE_LIMIT } from '../../internal/adaptive-sizer';
-import { GRAPHQL_API_STACK_GROUP_METADATA } from '../../internal/nested-stack-provider';
+import { getGeneratedStackGroups } from '../../internal/generated-stack-helpers';
 import { walkAndProcessNodes } from '../../internal/construct-tree';
 
 const makePublicModelsSchema = (modelCount: number): string =>
@@ -45,18 +45,9 @@ const makePairedRelationshipModelsSchema = (pairCount: number): string =>
     }),
   ].join('\n');
 
-const getGeneratedStackGroups = (app: cdk.App, api: AmplifyGraphqlApi): cdk.Stack[] =>
-  app.node.children.filter(
-    (child): child is cdk.Stack =>
-      cdk.Stack.isStack(child) &&
-      child.node.metadata.some(
-        (metadataEntry) => metadataEntry.type === GRAPHQL_API_STACK_GROUP_METADATA && metadataEntry.data === api.node.addr,
-      ),
-  );
-
-const findGroupedTableResourceName = (app: cdk.App, api: AmplifyGraphqlApi): string | undefined => {
+const findGroupedTableResourceName = (api: AmplifyGraphqlApi): string | undefined => {
   let groupedResourceName: string | undefined;
-  getGeneratedStackGroups(app, api).forEach((groupStack) => {
+  getGeneratedStackGroups(api).forEach((groupStack) => {
     walkAndProcessNodes(groupStack, (scope) => {
       const resourceName = getResourceName(scope);
       if (
@@ -72,11 +63,11 @@ const findGroupedTableResourceName = (app: cdk.App, api: AmplifyGraphqlApi): str
   return groupedResourceName;
 };
 
-const expectGeneratedOperationsUnderLimit = (app: cdk.App, api: AmplifyGraphqlApi): void => {
+const expectGeneratedOperationsUnderLimit = (api: AmplifyGraphqlApi): void => {
   const directNestedStacks = api.node.children.filter(cdk.NestedStack.isNestedStack);
   const operationResourceCounts = [
     directNestedStacks.reduce((sum, nestedStack) => sum + countCfnResources(nestedStack), 0),
-    ...getGeneratedStackGroups(app, api).map((groupStack) =>
+    ...getGeneratedStackGroups(api).map((groupStack) =>
       groupStack.node.children.filter(cdk.NestedStack.isNestedStack).reduce((sum, nestedStack) => sum + countCfnResources(nestedStack), 0),
     ),
   ];
@@ -497,7 +488,7 @@ describe('generated resource access', () => {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         });
-        const groupedModelName = findGroupedTableResourceName(app, api);
+        const groupedModelName = findGroupedTableResourceName(api);
         if (!groupedModelName) {
           throw new Error('Expected at least one generated model table to be placed in a generated stack group.');
         }
@@ -522,7 +513,7 @@ describe('generated resource access', () => {
         expect(grantPolicyText).toContain('/index/*');
         expect(grantPolicyText).not.toContain('Fn::ImportValue');
         expect(grantPolicyText).not.toContain('Outputs');
-        expectGeneratedOperationsUnderLimit(app, api);
+        expectGeneratedOperationsUnderLimit(api);
       });
 
       it('grants access to grouped AMPLIFY_TABLE references without adding grouped stack output dependencies', () => {
@@ -538,7 +529,7 @@ describe('generated resource access', () => {
             apiKeyConfig: { expires: cdk.Duration.days(7) },
           },
         });
-        const groupedModelName = findGroupedTableResourceName(app, api);
+        const groupedModelName = findGroupedTableResourceName(api);
         if (!groupedModelName) {
           throw new Error('Expected at least one generated Amplify-managed model table to be placed in a generated stack group.');
         }
@@ -579,7 +570,7 @@ describe('generated resource access', () => {
         expect(cfnWrapperPolicyText).not.toContain('Fn::ImportValue');
         expect(cfnWrapperPolicyText).not.toContain('Outputs');
         expect(() => app.synth()).not.toThrow();
-        expectGeneratedOperationsUnderLimit(app, api);
+        expectGeneratedOperationsUnderLimit(api);
       });
 
       it('keeps relationship cross-stack exports under the root output limit when generated stack groups are needed', () => {
@@ -614,13 +605,13 @@ describe('generated resource access', () => {
           }),
         );
 
-        const groupStacks = getGeneratedStackGroups(app, api);
+        const groupStacks = getGeneratedStackGroups(api);
         const rootOutputNames = Object.keys(Template.fromStack(stack).toJSON().Outputs ?? {});
 
         expect(groupStacks.length).toBeGreaterThan(0);
         expect(rootOutputNames.length).toBeLessThanOrEqual(200);
         expectStackOutputsUnderLimit([stack, ...groupStacks]);
-        expectGeneratedOperationsUnderLimit(app, api);
+        expectGeneratedOperationsUnderLimit(api);
         expect(() => app.synth()).not.toThrow();
       });
     });

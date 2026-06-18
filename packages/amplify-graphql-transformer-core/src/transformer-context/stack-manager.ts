@@ -3,11 +3,14 @@ import { CfnParameter, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 export type ResourceToStackMap = Record<string, string>;
+export type ResourcePlacement = 'pinned' | 'movable' | 'unclassified-api-scoped';
 export type StackManagerOptions = {
   defaultStackResourceEstimateLimit?: number;
   stackResourceEstimateLimits?: Record<string, number>;
   stackResourceCountOverrides?: Record<string, number>;
   resourceEstimateOverrides?: Record<string, number>;
+  resourcePlacementOverrides?: Record<string, ResourcePlacement>;
+  defaultResourcePlacementByStack?: Record<string, ResourcePlacement>;
 };
 
 // Keep generated nested stacks below CloudFormation's 500 resource limit. Some logical transformer resources synthesize
@@ -122,10 +125,29 @@ export class StackManager implements StackManagerProvider {
       return this.autoResourceToStackMap.get(resourceId);
     }
 
+    const resourcePlacement = this.getResourcePlacement(resourceId, defaultStackName);
+    if (resourcePlacement === 'unclassified-api-scoped') {
+      throw new Error(
+        `Automatic stack sharding cannot determine whether API-scoped AppSync resource ${resourceId} in ${defaultStackName} ` +
+          'already exists in a successful deployment. Refusing to re-parent it because that can cause AlreadyExists, replacement, or data-loss risk. ' +
+          'Provide baseline placement metadata or split the API with an explicit migration plan.',
+      );
+    }
+
+    if (resourcePlacement === 'pinned') {
+      this.stackDefaultStackNames.set(defaultStackName, defaultStackName);
+      return defaultStackName;
+    }
+
     const stackName = this.getStackNameWithinResourceBudget(defaultStackName, this.getEstimatedResourceCount(resourceId));
     this.autoResourceToStackMap.set(resourceId, stackName);
     return stackName;
   };
+
+  private getResourcePlacement = (resourceId: string, defaultStackName: string): ResourcePlacement =>
+    this.options.resourcePlacementOverrides?.[resourceId] ??
+    this.options.defaultResourcePlacementByStack?.[defaultStackName] ??
+    'movable';
 
   private getStackNameWithinResourceBudget = (defaultStackName: string, resourceEstimate: number): string => {
     const currentStackName = this.currentStackNameByDefaultStackName.get(defaultStackName) ?? defaultStackName;

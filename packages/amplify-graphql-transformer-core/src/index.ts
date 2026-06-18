@@ -99,7 +99,7 @@ export {
   STACK_MANAGER_DEFAULT_STACK_NAME_METADATA,
   STACK_MANAGER_STACK_RESOURCE_ESTIMATE_METADATA,
 } from './transformer-context';
-export type { StackManagerOptions } from './transformer-context';
+export type { ResourcePlacement, StackManagerOptions } from './transformer-context';
 export {
   DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY,
   DDB_DB_TYPE,

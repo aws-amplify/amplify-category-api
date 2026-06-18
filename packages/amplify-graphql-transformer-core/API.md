@@ -606,6 +606,9 @@ export type ResolverConfig = {
 };
 
 // @public (undocumented)
+export type ResourcePlacement = 'pinned' | 'movable' | 'unclassified-api-scoped';
+
+// @public (undocumented)
 export class SchemaValidationError extends Error {
     constructor(errors: Readonly<GraphQLError[]>);
 }
@@ -694,6 +697,8 @@ export type StackManagerOptions = {
     stackResourceEstimateLimits?: Record<string, number>;
     stackResourceCountOverrides?: Record<string, number>;
     resourceEstimateOverrides?: Record<string, number>;
+    resourcePlacementOverrides?: Record<string, ResourcePlacement>;
+    defaultResourcePlacementByStack?: Record<string, ResourcePlacement>;
 };
 
 // @public (undocumented)

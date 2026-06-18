@@ -18,8 +18,7 @@ import { getResourceName } from '@aws-amplify/graphql-transformer-core';
 import { CfnFunction, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
 import { AmplifyGraphqlApiResources, FunctionSlot } from '../types';
 import { AmplifyDynamoDbTableWrapper, setAmplifyDynamoDbTableWrapperReferenceScope } from '../amplify-dynamodb-table-wrapper';
-import { GRAPHQL_API_STACK_GROUP_METADATA, getTopLevelStack } from './nested-stack-provider';
-import { walkAndProcessNodes } from './construct-tree';
+import { walkGeneratedResourceScopes } from './generated-stack-helpers';
 
 /**
  * Check if a resource is implementing table interface
@@ -213,25 +212,6 @@ const getConfiguredTableName = (table: ITable): string | undefined => {
   }
 
   return undefined;
-};
-
-const walkGeneratedResourceScopes = (scope: Construct, processNode: (scope: Construct) => void): void => {
-  scope.node.children.forEach((child) => walkAndProcessNodes(child, processNode));
-  getGeneratedStackGroups(scope).forEach((stackGroup) => walkAndProcessNodes(stackGroup, processNode));
-};
-
-const getGeneratedStackGroups = (scope: Construct): Stack[] => {
-  const topLevelStack = getTopLevelStack(scope);
-  const stackGroupScope = (topLevelStack.node.scope ?? topLevelStack.node.root) as Construct;
-
-  return stackGroupScope.node.children.filter(
-    (child): child is Stack =>
-      Stack.isStack(child) &&
-      child !== topLevelStack &&
-      child.node.metadata.some(
-        (metadataEntry) => metadataEntry.type === GRAPHQL_API_STACK_GROUP_METADATA && metadataEntry.data === scope.node.addr,
-      ),
-  );
 };
 
 /**

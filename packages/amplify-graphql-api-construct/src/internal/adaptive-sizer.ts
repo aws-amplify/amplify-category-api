@@ -6,7 +6,7 @@ import {
 } from '@aws-amplify/graphql-transformer-core';
 import { App, CfnResource, NestedStack, Stack } from 'aws-cdk-lib';
 import { Function as LambdaFunction, IFunction } from 'aws-cdk-lib/aws-lambda';
-import { Construct, IConstruct } from 'constructs';
+import { Construct } from 'constructs';
 import { mkdtempSync, rmSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
@@ -14,11 +14,10 @@ import { AssetProvider } from './asset-provider';
 import {
   DEFAULT_NESTED_STACK_RESOURCE_ESTIMATE,
   DEFAULT_STACK_OPERATION_RESOURCE_BUDGET,
-  GRAPHQL_API_STACK_GROUP_METADATA,
   ShardedNestedStackProvider,
   ShardedNestedStackProviderOptions,
-  getTopLevelStack,
 } from './nested-stack-provider';
+import { getGeneratedStackGroups, getTopLevelStack, visitConstructTree } from './generated-stack-helpers';
 
 export const CLOUDFORMATION_STACK_OPERATION_RESOURCE_LIMIT = 2500;
 export const CLOUDFORMATION_NESTED_STACK_RESOURCE_LIMIT = 500;
@@ -45,6 +44,7 @@ export type NestedStackResourceMeasurement = {
   resourceCount: number;
   resourceTypeCounts: Record<string, number>;
   defaultStackName?: string;
+  operationName?: string;
 };
 
 export type StackOperationResourceMeasurement = {
@@ -79,8 +79,16 @@ export const createAdaptiveStackSizingPlan = (config: AdaptiveSizingConfig, prop
 
     const nextPlan = refineSizingPlan(plan, measurement);
     const operationOverflow = maxOperationResourceCount(measurement) > CLOUDFORMATION_STACK_OPERATION_RESOURCE_LIMIT;
-    if (!operationOverflow && (!nextPlan.changed || iteration === MAX_ADAPTIVE_PLANNING_ITERATIONS - 1)) {
+    const nestedOverflow = maxNestedStackResourceCount(measurement) > CLOUDFORMATION_NESTED_STACK_RESOURCE_LIMIT;
+    assertPreservedRootOperationUnderLimit(measurement, nextPlan.plan.nestedStackProviderOptions.preserveRootNestedStackNames);
+
+    if (!operationOverflow && !nestedOverflow && (!nextPlan.changed || iteration === MAX_ADAPTIVE_PLANNING_ITERATIONS - 1)) {
       return nextPlan.plan;
+    }
+
+    if ((operationOverflow || nestedOverflow) && (!nextPlan.changed || iteration === MAX_ADAPTIVE_PLANNING_ITERATIONS - 1)) {
+      assertNoOversizedNestedStack(measurement);
+      assertNoIrreducibleNestedStack(measurement);
     }
 
     plan = nextPlan.plan;
@@ -95,8 +103,12 @@ export const createAdaptiveStackSizingPlan = (config: AdaptiveSizingConfig, prop
 export const measureGeneratedStackOperations = (rootScope: Construct): AdaptiveSizingMeasurement => {
   const directNestedStacks = rootScope.node.children.filter(NestedStack.isNestedStack);
   const groupStacks = getGeneratedStackGroups(rootScope);
-  const groupedNestedStacks = groupStacks.flatMap((groupStack) => groupStack.node.children.filter(NestedStack.isNestedStack));
-  const nestedStacks = [...directNestedStacks, ...groupedNestedStacks].map(measureNestedStack);
+  const nestedStacks = [
+    ...directNestedStacks.map((nestedStack) => measureNestedStack(nestedStack, 'direct')),
+    ...groupStacks.flatMap((groupStack) =>
+      groupStack.node.children.filter(NestedStack.isNestedStack).map((nestedStack) => measureNestedStack(nestedStack, groupStack.node.id)),
+    ),
+  ];
   const operations = [
     {
       operationName: 'direct',
@@ -148,6 +160,7 @@ const createDefaultSizingPlan = (): AdaptiveStackSizingPlan => ({
     directOperationResourceBudget: DEFAULT_STACK_OPERATION_RESOURCE_BUDGET,
     groupedOperationResourceBudget: DEFAULT_STACK_OPERATION_RESOURCE_BUDGET,
     defaultNestedStackResourceEstimate: DEFAULT_NESTED_STACK_RESOURCE_ESTIMATE,
+    preserveRootNestedStackNames: [],
   },
   stackManagerOptions: {
     defaultStackResourceEstimateLimit: DEFAULT_AUTO_STACK_RESOURCE_ESTIMATE,
@@ -178,6 +191,9 @@ const refineSizingPlan = (
       return;
     }
     const currentLimit = stackResourceEstimateLimits[defaultStackName] ?? defaultStackResourceEstimateLimit;
+    if (resourceCount <= CLOUDFORMATION_NESTED_STACK_RESOURCE_LIMIT) {
+      return;
+    }
     if (resourceCount <= currentLimit * RESOURCE_BUDGET_ADJUSTMENT_THRESHOLD) {
       return;
     }
@@ -191,6 +207,17 @@ const refineSizingPlan = (
 
   const maxOperationCount = maxOperationResourceCount(measurement);
   const nextNestedStackProviderOptions = { ...currentPlan.nestedStackProviderOptions };
+  const statefulDefaultStackNames = getStatefulDefaultStackNames(measurement);
+  if (statefulDefaultStackNames.length > 0) {
+    const preserveRootNestedStackNames = Array.from(
+      new Set([...(nextNestedStackProviderOptions.preserveRootNestedStackNames ?? []), ...statefulDefaultStackNames]),
+    );
+    if (!stringArraysEqual(nextNestedStackProviderOptions.preserveRootNestedStackNames ?? [], preserveRootNestedStackNames)) {
+      nextNestedStackProviderOptions.preserveRootNestedStackNames = preserveRootNestedStackNames;
+      changed = true;
+    }
+  }
+
   if ((measurement.topLevelOutputCount ?? 0) > CLOUDFORMATION_OUTPUT_SAFETY_THRESHOLD) {
     const topLevelOutputScale = CLOUDFORMATION_OUTPUT_SAFETY_THRESHOLD / measurement.topLevelOutputCount!;
     const directOperationBudget = normalizeResourceEstimate(
@@ -252,6 +279,52 @@ const assertNoIrreducibleNestedStack = (measurement: AdaptiveSizingMeasurement):
   );
 };
 
+const assertNoOversizedNestedStack = (measurement: AdaptiveSizingMeasurement): void => {
+  const oversizedNestedStack = measurement.nestedStacks.find(
+    ({ resourceCount }) => resourceCount > CLOUDFORMATION_NESTED_STACK_RESOURCE_LIMIT,
+  );
+  if (!oversizedNestedStack) {
+    return;
+  }
+
+  throw new Error(
+    `Generated nested stack ${oversizedNestedStack.stackName} contains ${oversizedNestedStack.resourceCount} CloudFormation resources, ` +
+      `which exceeds the ${CLOUDFORMATION_NESTED_STACK_RESOURCE_LIMIT} resource nested stack limit. ` +
+      'Automatic stack sizing could not split this stack under the nested stack limit. ' +
+      'Reduce generated resources, mark only safe resources as movable, or split the API.',
+  );
+};
+
+const assertPreservedRootOperationUnderLimit = (
+  measurement: AdaptiveSizingMeasurement,
+  preserveRootNestedStackNames: string[] | undefined,
+): void => {
+  const preservedNames = new Set(preserveRootNestedStackNames ?? []);
+  const preservedRootResourceCount = measurement.nestedStacks
+    .filter(({ stackName, defaultStackName }) => preservedNames.has(defaultStackName ?? stackName))
+    .reduce((sum, { resourceCount }) => sum + resourceCount, 0);
+
+  if (preservedRootResourceCount <= CLOUDFORMATION_STACK_OPERATION_RESOURCE_LIMIT) {
+    return;
+  }
+
+  throw new Error(
+    `Generated stateful nested stacks require ${preservedRootResourceCount} root-operation resources, ` +
+      `which exceeds the ${CLOUDFORMATION_STACK_OPERATION_RESOURCE_LIMIT} resource operation limit. ` +
+      'Automatic sharding will not re-parent previously deployable stateful stacks because that can delete and recreate data resources. ' +
+      'Split the API or use an explicit migration flow after reviewing CloudFormation changes.',
+  );
+};
+
+const getStatefulDefaultStackNames = (measurement: AdaptiveSizingMeasurement): string[] =>
+  measurement.nestedStacks
+    .filter(
+      ({ operationName, resourceTypeCounts }) =>
+        (operationName === undefined || operationName === 'direct') &&
+        ((resourceTypeCounts['AWS::DynamoDB::Table'] ?? 0) > 0 || (resourceTypeCounts['Custom::AmplifyDynamoDBTable'] ?? 0) > 0),
+    )
+    .map(({ defaultStackName, stackName }) => defaultStackName ?? stackName);
+
 const assertNoFunctionDirectivePinnedOverflow = (measurement: AdaptiveSizingMeasurement): void => {
   const functionDirectiveStack = measurement.nestedStacks.find(({ stackName }) => stackName === FUNCTION_DIRECTIVE_STACK);
   if (!functionDirectiveStack) {
@@ -277,11 +350,12 @@ const assertNoFunctionDirectivePinnedOverflow = (measurement: AdaptiveSizingMeas
   );
 };
 
-const measureNestedStack = (nestedStack: NestedStack): NestedStackResourceMeasurement => ({
+const measureNestedStack = (nestedStack: NestedStack, operationName?: string): NestedStackResourceMeasurement => ({
   stackName: nestedStack.node.id,
   resourceCount: countCfnResources(nestedStack),
   resourceTypeCounts: countCfnResourcesByType(nestedStack),
   defaultStackName: getDefaultStackName(nestedStack),
+  operationName,
 });
 
 const countCfnResources = (scope: Construct): number => {
@@ -320,32 +394,16 @@ const countTopLevelCfnOutputs = (scope: Construct): number => {
   }
 };
 
-const visitConstructTree = (scope: IConstruct, visit: (construct: IConstruct) => void): void => {
-  visit(scope);
-  scope.node.children.forEach((child) => visitConstructTree(child, visit));
-};
-
 const getDefaultStackName = (nestedStack: NestedStack): string | undefined => {
   const metadataEntry = nestedStack.node.metadata.find((entry) => entry.type === STACK_MANAGER_DEFAULT_STACK_NAME_METADATA);
   return typeof metadataEntry?.data === 'string' ? metadataEntry.data : undefined;
 };
 
-const getGeneratedStackGroups = (scope: Construct): Stack[] => {
-  const topLevelStack = getTopLevelStack(scope);
-  const stackGroupScope = (topLevelStack.node.scope ?? topLevelStack.node.root) as Construct;
-
-  return stackGroupScope.node.children.filter(
-    (child): child is Stack =>
-      Stack.isStack(child) &&
-      child !== topLevelStack &&
-      child.node.metadata.some(
-        (metadataEntry) => metadataEntry.type === GRAPHQL_API_STACK_GROUP_METADATA && metadataEntry.data === scope.node.addr,
-      ),
-  );
-};
-
 const maxOperationResourceCount = (measurement: AdaptiveSizingMeasurement): number =>
   Math.max(0, ...measurement.operations.map(({ resourceCount }) => resourceCount));
+
+const maxNestedStackResourceCount = (measurement: AdaptiveSizingMeasurement): number =>
+  Math.max(0, ...measurement.nestedStacks.map(({ resourceCount }) => resourceCount));
 
 const usesGeneratedStackGroups = (measurement: AdaptiveSizingMeasurement): boolean =>
   measurement.operations.some(({ operationName }) => operationName !== 'direct');
@@ -355,6 +413,9 @@ const resourceEstimateMapsEqual = (left: Record<string, number>, right: Record<s
   const rightKeys = Object.keys(right);
   return leftKeys.length === rightKeys.length && leftKeys.every((key) => left[key] === right[key]);
 };
+
+const stringArraysEqual = (left: string[], right: string[]): boolean =>
+  left.length === right.length && left.every((value, index) => value === right[index]);
 
 const normalizeResourceEstimate = (estimate: number): number => Math.max(1, Math.ceil(estimate));
 

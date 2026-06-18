@@ -38,7 +38,7 @@ export {
   STACK_MANAGER_DEFAULT_STACK_NAME_METADATA,
   STACK_MANAGER_STACK_RESOURCE_ESTIMATE_METADATA,
 } from './stack-manager';
-export type { StackManagerOptions } from './stack-manager';
+export type { ResourcePlacement, StackManagerOptions } from './stack-manager';
 export class TransformerContextMetadata implements TransformerContextMetadataProvider {
   /**
    * Used by transformers to pass information between one another.

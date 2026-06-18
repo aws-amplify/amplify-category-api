@@ -168,7 +168,7 @@ export const initCDKProject = async (cwd: string, templatePath: string, props?: 
   copyTemplateDirectory(cwd, templatePath);
 
   const deps = [...getPackagedConstructDependencies(props?.construct ?? 'GraphqlApi'), `aws-cdk-lib@${cdkVersion}`, ...additionalDependencies];
-  await spawn('npm', ['install', ...deps], { cwd, stripColors: true }).runAsync();
+  await spawn('npm', ['install', ...deps, '--no-audit', '--no-fund'], { cwd, stripColors: true }).runAsync();
 
   return JSON.parse(readFileSync(path.join(cwd, 'package.json'), 'utf8')).name.replace(/_/g, '-');
 };
@@ -202,7 +202,7 @@ export const initMinimalCDKProject = async (cwd: string, templatePath: string, p
     '@types/node@24.0.0',
     ...additionalDependencies,
   ];
-  await spawn('npm', ['install', ...deps], { cwd, stripColors: true }).runAsync();
+  await spawn('npm', ['install', ...deps, '--no-audit', '--no-fund'], { cwd, stripColors: true }).runAsync();
 
   return JSON.parse(readFileSync(path.join(cwd, 'package.json'), 'utf8')).name.replace(/_/g, '-');
 };
@@ -267,6 +267,20 @@ export const cdkSynth = async (cwd: string, option = '--all'): Promise<string> =
   }).runAsync();
 
   return path.join(cwd, 'cdk.out');
+};
+
+export const cdkPrepareChangeSet = async (cwd: string, option: string, changeSetName: string, props?: CdkDeployProps): Promise<void> => {
+  const noOutputTimeout = props?.timeoutMs ?? 15 * 60 * 1000;
+  await spawn(
+    getNpxPath(),
+    ['cdk', 'deploy', '--method', 'prepare-change-set', '--change-set-name', changeSetName, '--require-approval', 'never', option],
+    {
+      cwd,
+      stripColors: true,
+      env: { npm_config_registry: 'https://registry.npmjs.org/' },
+      noOutputTimeout,
+    },
+  ).runAsync();
 };
 
 const resolveDeployStackName = (cwd: string, option: string): string => {

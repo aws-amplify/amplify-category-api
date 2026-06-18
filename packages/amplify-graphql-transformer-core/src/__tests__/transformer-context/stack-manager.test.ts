@@ -96,6 +96,40 @@ describe('StackManager', () => {
     expect(stackId(stackManager.getScopeFor('Field101Resolver', 'ConnectionStack'))).toBe('ConnectionStack2');
   });
 
+  it('keeps pinned resources in the original default stack even after the auto-shard budget is full', () => {
+    const { stackManager } = createStackManager(
+      {},
+      {
+        defaultStackResourceEstimateLimit: 2,
+        resourcePlacementOverrides: {
+          ExistingResolver: 'pinned',
+        },
+      } as any,
+    );
+
+    stackManager.getScopeFor('WarmupResolverA', 'ConnectionStack');
+    stackManager.getScopeFor('WarmupResolverB', 'ConnectionStack');
+
+    expect(stackId(stackManager.getScopeFor('ExistingResolver', 'ConnectionStack'))).toBe('ConnectionStack');
+  });
+
+  it('moves resources marked movable into overflow stacks when the default stack budget is full', () => {
+    const { stackManager } = createStackManager(
+      {},
+      {
+        defaultStackResourceEstimateLimit: 2,
+        resourcePlacementOverrides: {
+          NewIamPolicy: 'movable',
+        },
+      } as any,
+    );
+
+    stackManager.getScopeFor('WarmupResolverA', 'ConnectionStack');
+    stackManager.getScopeFor('WarmupResolverB', 'ConnectionStack');
+
+    expect(stackId(stackManager.getScopeFor('NewIamPolicy', 'ConnectionStack'))).toBe('ConnectionStack2');
+  });
+
   it('uses configurable stack resource budgets for automatic sharding', () => {
     const { stackManager } = createStackManager({}, { defaultStackResourceEstimateLimit: 200 });
 

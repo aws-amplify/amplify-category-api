@@ -1,6 +1,7 @@
 import { CfnResource, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { BillingMode, StreamViewType } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
+import { getTopLevelStack } from './internal/generated-stack-helpers';
 
 const AMPLIFY_DYNAMODB_TABLE_RESOURCE_TYPE = 'Custom::AmplifyDynamoDBTable';
 const referenceScopes = new WeakMap<AmplifyDynamoDbTableWrapper, Construct>();
@@ -263,14 +264,4 @@ const getConfiguredTableName = (resource: CfnResource): string | undefined => {
   const cfnProperties = (resource as any).cfnProperties ?? {};
   const rawProperties = (resource as any).rawOverrides?.Properties ?? {};
   return rawProperties.tableName ?? cfnProperties.tableName;
-};
-
-const getTopLevelStack = (scope: Construct): Stack => {
-  let currentStack = Stack.of(scope);
-
-  while (currentStack.nestedStackResource && currentStack.node.scope) {
-    currentStack = Stack.of(currentStack.node.scope);
-  }
-
-  return currentStack;
 };

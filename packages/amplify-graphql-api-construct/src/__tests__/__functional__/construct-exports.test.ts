@@ -6,7 +6,7 @@ import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { setResourceName } from '@aws-amplify/graphql-transformer-core';
 import { Construct } from 'constructs';
 import { getGeneratedResources } from '../../internal/construct-exports';
-import { GRAPHQL_API_STACK_GROUP_METADATA } from '../../internal/nested-stack-provider';
+import { GRAPHQL_API_STACK_GROUP_METADATA } from '../../internal/generated-stack-helpers';
 
 describe('getGeneratedResources', () => {
   it('returns nested stacks from generated stack groups', () => {

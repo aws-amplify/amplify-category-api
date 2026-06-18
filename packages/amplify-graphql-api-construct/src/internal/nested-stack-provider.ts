@@ -1,19 +1,20 @@
 import { CfnParameter, CfnParameterProps, Fn, NestedStack, Stack, StackProps, Token } from 'aws-cdk-lib';
 import { NestedStackProvider, NestedStackProviderOptions } from '@aws-amplify/graphql-transformer-interfaces';
 import { Construct } from 'constructs';
+import { GRAPHQL_API_STACK_GROUP_METADATA, getTopLevelStack } from './generated-stack-helpers';
 
 // Keep parent templates small and deploy overflow groups as separate CloudFormation stack operations.
 export const DEFAULT_NESTED_STACK_RESOURCE_ESTIMATE = 400;
 export const DEFAULT_STACK_OPERATION_RESOURCE_BUDGET = 2000;
 const MAX_CLOUDFORMATION_STACK_NAME_LENGTH = 128;
 const GROUP_STACK_PREFIX = 'AmplifyGraphqlApiStackGroup';
-export const GRAPHQL_API_STACK_GROUP_METADATA = 'aws-amplify:graphql-api-stack-group-root';
 
 export type ShardedNestedStackProviderOptions = {
   directOperationResourceBudget?: number;
   groupedOperationResourceBudget?: number;
   defaultNestedStackResourceEstimate?: number;
   groupAllRootNestedStacks?: boolean;
+  preserveRootNestedStackNames?: string[];
 };
 
 const DYNAMO_DB_PASSTHROUGH_PARAMETERS: Array<{ name: string; props: CfnParameterProps }> = [
@@ -88,6 +89,8 @@ export class ShardedNestedStackProvider implements NestedStackProvider {
 
   private readonly groupAllRootNestedStacks: boolean;
 
+  private readonly preserveRootNestedStackNames: Set<string>;
+
   constructor(private readonly rootScope: Construct, options: ShardedNestedStackProviderOptions = {}) {
     this.topLevelStack = getTopLevelStack(rootScope);
     this.stackGroupScope = (this.topLevelStack.node.scope ?? this.topLevelStack.node.root) as Construct;
@@ -101,18 +104,26 @@ export class ShardedNestedStackProvider implements NestedStackProvider {
       options.defaultNestedStackResourceEstimate ?? DEFAULT_NESTED_STACK_RESOURCE_ESTIMATE,
     );
     this.groupAllRootNestedStacks = options.groupAllRootNestedStacks ?? false;
+    this.preserveRootNestedStackNames = new Set(options.preserveRootNestedStackNames ?? []);
   }
 
   provide = (scope: Construct, name: string, options?: NestedStackProviderOptions): Stack => {
-    return new NestedStack(this.getParentScope(scope, options?.estimatedResourceCount), name);
+    return new NestedStack(this.getParentScope(scope, name, options), name);
   };
 
-  private getParentScope = (scope: Construct, estimatedResourceCount?: number): Construct => {
+  private getParentScope = (scope: Construct, name: string, options?: NestedStackProviderOptions): Construct => {
     if (scope !== this.rootScope) {
       return scope;
     }
 
-    const nestedStackResourceEstimate = normalizeResourceEstimate(estimatedResourceCount ?? this.defaultNestedStackResourceEstimate);
+    const nestedStackResourceEstimate = normalizeResourceEstimate(options?.estimatedResourceCount ?? this.defaultNestedStackResourceEstimate);
+    const shouldPreserveInRoot = options?.preserveInRootStack === true || this.preserveRootNestedStackNames.has(name);
+
+    if (shouldPreserveInRoot) {
+      this.directOperationResourceEstimate += nestedStackResourceEstimate;
+      return scope;
+    }
+
     if (
       !this.groupAllRootNestedStacks &&
       this.canAddToOperation(this.directOperationResourceEstimate, nestedStackResourceEstimate, this.directOperationResourceBudget)
@@ -187,15 +198,5 @@ export class ShardedNestedStackProvider implements NestedStackProvider {
     });
   };
 }
-
-export const getTopLevelStack = (scope: Construct): Stack => {
-  let currentStack = Stack.of(scope);
-
-  while (currentStack.nestedStackResource && currentStack.node.scope) {
-    currentStack = Stack.of(currentStack.node.scope);
-  }
-
-  return currentStack;
-};
 
 const normalizeResourceEstimate = (estimate: number): number => Math.max(1, Math.ceil(estimate));

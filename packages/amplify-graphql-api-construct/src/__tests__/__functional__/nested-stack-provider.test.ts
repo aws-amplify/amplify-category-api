@@ -1,5 +1,6 @@
 import { App, CfnParameter, CfnResource, NestedStack, Stack } from 'aws-cdk-lib';
-import { GRAPHQL_API_STACK_GROUP_METADATA, ShardedNestedStackProvider } from '../../internal/nested-stack-provider';
+import { ShardedNestedStackProvider } from '../../internal/nested-stack-provider';
+import { GRAPHQL_API_STACK_GROUP_METADATA } from '../../internal/generated-stack-helpers';
 
 const ESTIMATED_RESOURCES_PER_GENERATED_NESTED_STACK = 400;
 const CLOUDFORMATION_STACK_OPERATION_RESOURCE_LIMIT = 2500;
@@ -102,6 +103,35 @@ describe('ShardedNestedStackProvider', () => {
     expect(groupStacks[0].node.children.filter(NestedStack.isNestedStack).map((nestedStack) => nestedStack.node.id)).toEqual([
       'GeneratedNestedStack3',
     ]);
+  });
+
+  it('keeps preserved root nested stacks under the root even when the adaptive direct budget shrinks', () => {
+    const app = new App();
+    const stack = new Stack(app, 'RootStack');
+    const provider = new ShardedNestedStackProvider(stack, {
+      directOperationResourceBudget: 800,
+      preserveRootNestedStackNames: ['ExistingModelA', 'ExistingModelB', 'ExistingModelC'],
+    } as any);
+
+    provider.provide(stack, 'ExistingModelA', { estimatedResourceCount: 400 });
+    provider.provide(stack, 'ExistingModelB', { estimatedResourceCount: 400 });
+    provider.provide(stack, 'ExistingModelC', { estimatedResourceCount: 400 });
+    provider.provide(stack, 'NewOverflowModel', { estimatedResourceCount: 400 });
+
+    const directNestedStackNames = stack.node.children.filter(NestedStack.isNestedStack).map((nestedStack) => nestedStack.node.id);
+    const groupStacks = app.node.children.filter(
+      (child): child is Stack =>
+        Stack.isStack(child) &&
+        child.node.metadata.some(
+          (metadataEntry) => metadataEntry.type === GRAPHQL_API_STACK_GROUP_METADATA && metadataEntry.data === stack.node.addr,
+        ),
+    );
+    const groupedNestedStackNames = groupStacks.flatMap((groupStack) =>
+      groupStack.node.children.filter(NestedStack.isNestedStack).map((nestedStack) => nestedStack.node.id),
+    );
+
+    expect(directNestedStackNames).toEqual(['ExistingModelA', 'ExistingModelB', 'ExistingModelC']);
+    expect(groupedNestedStackNames).toEqual(['NewOverflowModel']);
   });
 
   it('can place all generated root nested stacks in generated stack groups', () => {

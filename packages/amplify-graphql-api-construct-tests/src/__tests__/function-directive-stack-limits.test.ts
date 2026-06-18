@@ -1,11 +1,15 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import { execFile } from 'child_process';
 import { removeSync } from 'fs-extra';
+import { promisify } from 'util';
 import { cdkSynth, initMinimalCDKProject } from '../commands';
 import { DURATION_1_HOUR } from '../utils/duration-constants';
 
 jest.setTimeout(DURATION_1_HOUR);
+
+const execFileAsync = promisify(execFile);
 
 type CloudFormationTemplate = {
   Description?: string;
@@ -36,9 +40,12 @@ const findTemplatePaths = (directoryPath: string): string[] => {
 const readTemplate = (templatePath: string): CloudFormationTemplate =>
   JSON.parse(fs.readFileSync(templatePath, 'utf8')) as CloudFormationTemplate;
 
-const synthFunctionDirectiveFixture = async (projRoot: string, fieldCount: number): Promise<string> => {
+const initFunctionDirectiveFixture = async (projRoot: string): Promise<void> => {
   const templatePath = path.resolve(path.join(__dirname, 'backends', 'function-directive-stack-limits'));
   await initMinimalCDKProject(projRoot, templatePath, { construct: 'Data' });
+};
+
+const synthFunctionDirectiveFixture = async (projRoot: string, fieldCount: number): Promise<string> => {
   const previousFunctionFieldCount = process.env.FUNCTION_DIRECTIVE_FIELD_COUNT;
   process.env.FUNCTION_DIRECTIVE_FIELD_COUNT = String(fieldCount);
   try {
@@ -50,6 +57,25 @@ const synthFunctionDirectiveFixture = async (projRoot: string, fieldCount: numbe
       process.env.FUNCTION_DIRECTIVE_FIELD_COUNT = previousFunctionFieldCount;
     }
   }
+};
+
+const synthFunctionDirectiveFixtureFailure = async (projRoot: string, fieldCount: number): Promise<string> => {
+  try {
+    await execFileAsync('npx', ['cdk', 'synth', '--all', '--quiet'], {
+      cwd: projRoot,
+      env: {
+        ...process.env,
+        FUNCTION_DIRECTIVE_FIELD_COUNT: String(fieldCount),
+        npm_config_registry: 'https://registry.npmjs.org/',
+      },
+      maxBuffer: 20 * 1024 * 1024,
+    });
+  } catch (error) {
+    const execError = error as Error & { stdout?: string; stderr?: string };
+    return [execError.message, execError.stdout, execError.stderr].filter(Boolean).join('\n');
+  }
+
+  throw new Error('Expected CDK synth to fail for pinned @function AppSync resources over the stack limit.');
 };
 
 const resourceCountsByType = (templates: CloudFormationTemplate[]): Map<string, number> => {
@@ -92,11 +118,12 @@ const resourceTemplateNamesByType = (templatePaths: string[]): Map<string, Set<s
 describe('Function directive stack limits', () => {
   let projRoot: string;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     projRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'functionstacklimits-'));
+    await initFunctionDirectiveFixture(projRoot);
   });
 
-  afterEach(() => {
+  afterAll(() => {
     if (projRoot) {
       removeSync(projRoot);
     }
@@ -122,8 +149,8 @@ describe('Function directive stack limits', () => {
     expect(templateNamesByType.get('AWS::AppSync::Resolver')).toEqual(dataSourceTemplateNames);
     expect(iamRoleTemplateNames.size).toBeGreaterThanOrEqual(1);
     expect(iamPolicyTemplateNames.size).toBeGreaterThanOrEqual(1);
-    expect([...iamRoleTemplateNames].some((templateName) => dataSourceTemplateNames.has(templateName))).toBe(false);
-    expect([...iamPolicyTemplateNames].some((templateName) => dataSourceTemplateNames.has(templateName))).toBe(false);
+    expect(Array.from(iamRoleTemplateNames).some((templateName) => dataSourceTemplateNames.has(templateName))).toBe(false);
+    expect(Array.from(iamPolicyTemplateNames).some((templateName) => dataSourceTemplateNames.has(templateName))).toBe(false);
   });
 
   test('keeps pinned @function AppSync resources under the stack limit while moving IAM resources separately', async () => {
@@ -149,13 +176,14 @@ describe('Function directive stack limits', () => {
     expect(templateNamesByType.get('AWS::AppSync::Resolver')).toEqual(dataSourceTemplateNames);
     expect(iamRoleTemplateNames.size).toBeGreaterThanOrEqual(1);
     expect(iamPolicyTemplateNames.size).toBeGreaterThanOrEqual(1);
-    expect([...iamRoleTemplateNames].some((templateName) => dataSourceTemplateNames.has(templateName))).toBe(false);
-    expect([...iamPolicyTemplateNames].some((templateName) => dataSourceTemplateNames.has(templateName))).toBe(false);
+    expect(Array.from(iamRoleTemplateNames).some((templateName) => dataSourceTemplateNames.has(templateName))).toBe(false);
+    expect(Array.from(iamPolicyTemplateNames).some((templateName) => dataSourceTemplateNames.has(templateName))).toBe(false);
   });
 
   test('reports when pinned @function AppSync resources cannot be safely sharded', async () => {
-    await expect(synthFunctionDirectiveFixture(projRoot, 125)).rejects.toThrow(
-      /pinned AppSync resources.*Automatic sharding cannot safely move AppSync/,
-    );
+    const synthOutput = await synthFunctionDirectiveFixtureFailure(projRoot, 125);
+
+    expect(synthOutput).toMatch(/pinned AppSync resources/);
+    expect(synthOutput).toMatch(/Automatic sharding cannot safely move AppSync/);
   });
 });

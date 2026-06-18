@@ -327,6 +327,7 @@ export type NestedStackProvider = {
 // @public (undocumented)
 export type NestedStackProviderOptions = {
     estimatedResourceCount?: number;
+    preserveInRootStack?: boolean;
 };
 
 // @public (undocumented)

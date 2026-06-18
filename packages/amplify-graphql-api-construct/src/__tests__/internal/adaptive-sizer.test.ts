@@ -1,4 +1,5 @@
 import {
+  CLOUDFORMATION_NESTED_STACK_RESOURCE_LIMIT,
   CLOUDFORMATION_STACK_OPERATION_RESOURCE_LIMIT,
   AdaptiveSizingMeasurement,
   createAdaptiveStackSizingPlan,
@@ -7,27 +8,29 @@ import {
 describe('adaptive stack sizing', () => {
   it('retries planning with measured stack counts when the first operation is over budget', () => {
     const firstMeasurement: AdaptiveSizingMeasurement = {
-      nestedStacks: [
-        { stackName: 'ModelA', defaultStackName: 'ModelA', resourceCount: 1200, resourceTypeCounts: {} },
-        { stackName: 'ModelB', defaultStackName: 'ModelB', resourceCount: 1200, resourceTypeCounts: {} },
-        { stackName: 'ModelC', defaultStackName: 'ModelC', resourceCount: 1200, resourceTypeCounts: {} },
-      ],
-      operations: [{ operationName: 'direct', resourceCount: 3600 }],
+      nestedStacks: ['ModelA', 'ModelB', 'ModelC', 'ModelD', 'ModelE', 'ModelF'].map((modelName) => ({
+        stackName: modelName,
+        defaultStackName: modelName,
+        resourceCount: 450,
+        resourceTypeCounts: {},
+      })),
+      operations: [{ operationName: 'direct', resourceCount: 2700 }],
     };
     const secondMeasurement: AdaptiveSizingMeasurement = {
       nestedStacks: firstMeasurement.nestedStacks,
       operations: [
-        { operationName: 'direct', resourceCount: 1200 },
-        { operationName: 'AmplifyGraphqlApiStackGroup1', resourceCount: 2400 },
+        { operationName: 'direct', resourceCount: 900 },
+        { operationName: 'AmplifyGraphqlApiStackGroup1', resourceCount: 1800 },
       ],
       topLevelOutputCount: 150,
     };
     const thirdMeasurement: AdaptiveSizingMeasurement = {
       nestedStacks: firstMeasurement.nestedStacks,
       operations: [
-        { operationName: 'direct', resourceCount: 1200 },
-        { operationName: 'AmplifyGraphqlApiStackGroup1', resourceCount: 1200 },
-        { operationName: 'AmplifyGraphqlApiStackGroup2', resourceCount: 1200 },
+        { operationName: 'direct', resourceCount: 450 },
+        { operationName: 'AmplifyGraphqlApiStackGroup1', resourceCount: 900 },
+        { operationName: 'AmplifyGraphqlApiStackGroup2', resourceCount: 900 },
+        { operationName: 'AmplifyGraphqlApiStackGroup3', resourceCount: 450 },
       ],
     };
     const runPlanningTransform = jest
@@ -40,9 +43,12 @@ describe('adaptive stack sizing', () => {
 
     expect(runPlanningTransform).toHaveBeenCalledTimes(3);
     expect(plan.stackManagerOptions.stackResourceCountOverrides).toMatchObject({
-      ModelA: 1200,
-      ModelB: 1200,
-      ModelC: 1200,
+      ModelA: 450,
+      ModelB: 450,
+      ModelC: 450,
+      ModelD: 450,
+      ModelE: 450,
+      ModelF: 450,
     });
     expect(plan.nestedStackProviderOptions.groupAllRootNestedStacks).toBeUndefined();
     expect(plan.nestedStackProviderOptions.directOperationResourceBudget).toBeLessThan(2000);
@@ -51,27 +57,29 @@ describe('adaptive stack sizing', () => {
 
   it('reduces direct root stack placement once top-level generated outputs need headroom', () => {
     const directOnlyMeasurement: AdaptiveSizingMeasurement = {
-      nestedStacks: [
-        { stackName: 'ModelA', defaultStackName: 'ModelA', resourceCount: 1200, resourceTypeCounts: {} },
-        { stackName: 'ModelB', defaultStackName: 'ModelB', resourceCount: 1200, resourceTypeCounts: {} },
-        { stackName: 'ModelC', defaultStackName: 'ModelC', resourceCount: 1200, resourceTypeCounts: {} },
-      ],
-      operations: [{ operationName: 'direct', resourceCount: 3600 }],
+      nestedStacks: ['ModelA', 'ModelB', 'ModelC', 'ModelD', 'ModelE', 'ModelF'].map((modelName) => ({
+        stackName: modelName,
+        defaultStackName: modelName,
+        resourceCount: 450,
+        resourceTypeCounts: {},
+      })),
+      operations: [{ operationName: 'direct', resourceCount: 2700 }],
     };
     const shardedMeasurement: AdaptiveSizingMeasurement = {
       nestedStacks: directOnlyMeasurement.nestedStacks,
       operations: [
-        { operationName: 'direct', resourceCount: 1200 },
-        { operationName: 'AmplifyGraphqlApiStackGroup1', resourceCount: 2400 },
+        { operationName: 'direct', resourceCount: 900 },
+        { operationName: 'AmplifyGraphqlApiStackGroup1', resourceCount: 1800 },
       ],
       topLevelOutputCount: 150,
     };
     const outputSafeMeasurement: AdaptiveSizingMeasurement = {
       nestedStacks: directOnlyMeasurement.nestedStacks,
       operations: [
-        { operationName: 'direct', resourceCount: 1200 },
-        { operationName: 'AmplifyGraphqlApiStackGroup1', resourceCount: 1200 },
-        { operationName: 'AmplifyGraphqlApiStackGroup2', resourceCount: 1200 },
+        { operationName: 'direct', resourceCount: 450 },
+        { operationName: 'AmplifyGraphqlApiStackGroup1', resourceCount: 900 },
+        { operationName: 'AmplifyGraphqlApiStackGroup2', resourceCount: 900 },
+        { operationName: 'AmplifyGraphqlApiStackGroup3', resourceCount: 450 },
       ],
     };
     const runPlanningTransform = jest
@@ -110,6 +118,63 @@ describe('adaptive stack sizing', () => {
     expect(() => createAdaptiveStackSizingPlan({} as any, { runPlanningTransform })).toThrow(
       /OversizedModel.*cannot be fixed by automatic stack placement/,
     );
+  });
+
+  it('fails when any generated nested stack remains over the 500 resource nested stack limit', () => {
+    const runPlanningTransform = jest.fn().mockReturnValue({
+      nestedStacks: [
+        {
+          stackName: 'LargeModel',
+          defaultStackName: 'LargeModel',
+          resourceCount: CLOUDFORMATION_NESTED_STACK_RESOURCE_LIMIT + 1,
+          resourceTypeCounts: {
+            'AWS::AppSync::Resolver': CLOUDFORMATION_NESTED_STACK_RESOURCE_LIMIT + 1,
+          },
+        },
+      ],
+      operations: [{ operationName: 'direct', resourceCount: CLOUDFORMATION_NESTED_STACK_RESOURCE_LIMIT + 1 }],
+    } satisfies AdaptiveSizingMeasurement);
+
+    expect(() => createAdaptiveStackSizingPlan({} as any, { runPlanningTransform })).toThrow(
+      /LargeModel.*501.*500 resource nested stack limit/,
+    );
+  });
+
+  it('continues planning when oversized stacks can be split by reducing the resource estimate budget', () => {
+    const oversizedMeasurement: AdaptiveSizingMeasurement = {
+      nestedStacks: [
+        {
+          stackName: 'ModelA',
+          defaultStackName: 'ModelA',
+          resourceCount: 650,
+          resourceTypeCounts: { 'AWS::AppSync::Resolver': 650 },
+        },
+      ],
+      operations: [{ operationName: 'direct', resourceCount: 650 }],
+    };
+    const splitMeasurement: AdaptiveSizingMeasurement = {
+      nestedStacks: [
+        {
+          stackName: 'ModelA',
+          defaultStackName: 'ModelA',
+          resourceCount: 325,
+          resourceTypeCounts: { 'AWS::AppSync::Resolver': 325 },
+        },
+        {
+          stackName: 'ModelA2',
+          defaultStackName: 'ModelA',
+          resourceCount: 325,
+          resourceTypeCounts: { 'AWS::AppSync::Resolver': 325 },
+        },
+      ],
+      operations: [{ operationName: 'direct', resourceCount: 650 }],
+    };
+    const runPlanningTransform = jest.fn().mockReturnValueOnce(oversizedMeasurement).mockReturnValueOnce(splitMeasurement);
+
+    const plan = createAdaptiveStackSizingPlan({} as any, { runPlanningTransform });
+
+    expect(runPlanningTransform).toHaveBeenCalledTimes(2);
+    expect(plan.stackManagerOptions.stackResourceEstimateLimits?.ModelA).toBeLessThan(400);
   });
 
   it('fails with an actionable error when pinned @function AppSync resources leave no nested stack headroom', () => {
