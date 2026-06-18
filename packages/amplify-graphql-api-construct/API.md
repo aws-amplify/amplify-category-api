@@ -84,6 +84,9 @@ export class AmplifyDynamoDbTableWrapper {
     setGlobalSecondaryIndexProvisionedThroughput(indexName: string, provisionedThroughput: ProvisionedThroughput): void;
     set sseSpecification(sseSpecification: SSESpecification);
     set streamSpecification(streamSpecification: StreamSpecification);
+    get tableArn(): string;
+    get tableName(): string;
+    get tableStreamArn(): string;
     set timeToLiveAttribute(timeToLiveSpecification: TimeToLiveSpecification);
 }
 

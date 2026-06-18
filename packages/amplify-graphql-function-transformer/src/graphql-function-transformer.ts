@@ -9,6 +9,7 @@ import {
 import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { FunctionDirective } from '@aws-amplify/graphql-directives';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import * as cdk from 'aws-cdk-lib';
 import { obj, str, ref, printBlock, compoundExpression, qref, raw, iff, Expression, set, bool } from 'graphql-mapping-template';
@@ -37,6 +38,7 @@ type FunctionDirectiveConfiguration = {
 };
 
 const FUNCTION_DIRECTIVE_STACK = 'FunctionDirectiveStack';
+const FUNCTION_DIRECTIVE_IAM_STACK = 'FunctionDirectiveStackIam';
 
 export class FunctionTransformer extends TransformerPluginBase {
   private resolverGroups: Map<FieldDefinitionNode, FunctionDirectiveConfiguration[]> = new Map();
@@ -109,8 +111,17 @@ export class FunctionTransformer extends TransformerPluginBase {
               : lambda.Function.fromFunctionAttributes(stack, `${dataSourceId}Function`, {
                   functionArn: lambdaArnResource(env, config.name, config.region, config.accountId),
                 });
-          const dataSourceScope = context.stackManager.getScopeFor(dataSourceId, FUNCTION_DIRECTIVE_STACK);
-          const dataSource = context.api.host.addLambdaDataSource(dataSourceId, referencedFunction, {}, dataSourceScope);
+          const dataSourceRoleScope = context.stackManager.getScopeFor(dataSourceId, FUNCTION_DIRECTIVE_IAM_STACK);
+          const dataSource = context.api.host.addLambdaDataSource(
+            dataSourceId,
+            referencedFunction,
+            {
+              serviceRole: new Role(dataSourceRoleScope, `${dataSourceId}ServiceRole`, {
+                assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
+              }),
+            },
+            stack,
+          );
           createdResources.set(dataSourceId, dataSource);
         }
 
@@ -119,7 +130,6 @@ export class FunctionTransformer extends TransformerPluginBase {
         let func = createdResources.get(functionId);
 
         if (func === undefined) {
-          const funcScope = context.stackManager.getScopeFor(functionId, FUNCTION_DIRECTIVE_STACK);
           func = context.api.host.addAppSyncVtlRuntimeFunction(
             functionId,
             MappingTemplate.s3MappingTemplateFromString(
@@ -143,7 +153,7 @@ export class FunctionTransformer extends TransformerPluginBase {
             ),
             MappingTemplate.s3MappingTemplateFromString(responseMappingTemplate(config), `${functionId}.res.vtl`),
             dataSourceId,
-            funcScope,
+            stack,
           );
 
           createdResources.set(functionId, func);
@@ -180,7 +190,6 @@ export class FunctionTransformer extends TransformerPluginBase {
 
         if (resolver === undefined) {
           // TODO: update function to use resolver manager.
-          const resolverScope = context.stackManager.getScopeFor(resolverId, FUNCTION_DIRECTIVE_STACK);
           resolver = context.api.host.addVtlRuntimeResolver(
             config.resolverTypeName,
             config.resolverFieldName,
@@ -192,7 +201,7 @@ export class FunctionTransformer extends TransformerPluginBase {
             resolverId,
             undefined,
             [],
-            resolverScope,
+            stack,
           );
           createdResources.set(resolverId, resolver);
         }

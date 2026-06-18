@@ -260,6 +260,12 @@ export type JSRuntimeTemplate = {
 };
 
 // @public (undocumented)
+export interface LambdaDataSourceOptions extends DataSourceOptions {
+    // (undocumented)
+    readonly serviceRole?: IRole;
+}
+
+// @public (undocumented)
 export interface LogConfig {
     // (undocumented)
     excludeVerboseContent?: boolean;
@@ -315,7 +321,13 @@ export enum MutationFieldType {
 
 // @public (undocumented)
 export type NestedStackProvider = {
-    provide: (scope: Construct, name: string) => Stack;
+    provide: (scope: Construct, name: string, options?: NestedStackProviderOptions) => Stack;
+};
+
+// @public (undocumented)
+export type NestedStackProviderOptions = {
+    estimatedResourceCount?: number;
+    preserveInRootStack?: boolean;
 };
 
 // @public (undocumented)
@@ -917,7 +929,7 @@ export interface TransformHostProvider {
     // (undocumented)
     addJsRuntimeResolver: (typeName: string, fieldName: string, codeMappingTemplate: MappingTemplateProvider, resolverLogicalId?: string, dataSourceName?: string, pipelineConfig?: string[], scope?: Construct) => CfnResolver;
     // (undocumented)
-    addLambdaDataSource(name: string, lambdaFunction: IFunction, options?: DataSourceOptions, scope?: Construct): LambdaDataSource;
+    addLambdaDataSource(name: string, lambdaFunction: IFunction, options?: LambdaDataSourceOptions, scope?: Construct): LambdaDataSource;
     // (undocumented)
     addLambdaFunction: (functionName: string, functionKey: string, handlerName: string, filePath: string, runtime: Runtime, layers?: ILayerVersion[], role?: IRole, environment?: {
         [key: string]: string;

@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { Construct } from 'constructs';
 import { ExecuteTransformConfig, executeTransform } from '@aws-amplify/graphql-transformer';
-import { NestedStack, Stack, FeatureFlags } from 'aws-cdk-lib';
+import { Stack, FeatureFlags } from 'aws-cdk-lib';
 import { AttributionMetadataStorage, StackMetadataBackendOutputStorageStrategy } from '@aws-amplify/backend-output-storage';
 import { graphqlOutputKey } from '@aws-amplify/backend-output-schemas';
 import type { GraphqlOutput, AwsAppsyncAuthenticationType } from '@aws-amplify/backend-output-schemas';
@@ -51,6 +51,8 @@ import { getStackForScope, walkAndProcessNodes } from './internal/construct-tree
 import { getDataSourceStrategiesProvider } from './internal/data-source-config';
 import { getMetadataDataSources, getMetadataAuthorizationModes, getMetadataCustomOperations } from './internal/metadata';
 import { BackendOutputStorageStrategy, BackendOutputEntry } from '@aws-amplify/plugin-types';
+import { ShardedNestedStackProvider } from './internal/nested-stack-provider';
+import { AdaptiveSizingConfig, createAdaptiveStackSizingPlan } from './internal/adaptive-sizer';
 
 /**
  * L3 Construct which invokes the Amplify Transformer Pattern over an input Graphql Schema.
@@ -80,6 +82,8 @@ import { BackendOutputStorageStrategy, BackendOutputEntry } from '@aws-amplify/p
  *     table.pointInTimeRecoverySpecification = { pointInTimeRecoveryEnabled: false };
  *   });
  * ```
+ * `resources.tables` is safe for grants against generated DynamoDB tables. Use `resources.cfnResources` when overriding generated table properties.
+ *
  * `resources.<ResourceType>.<ResourceName>` - you can then perform any CDK action on these resulting resoureces.
  */
 export class AmplifyGraphqlApi extends Construct {
@@ -210,12 +214,7 @@ export class AmplifyGraphqlApi extends Construct {
       ...(translationBehavior ?? {}),
       allowGen1Patterns: false,
     };
-    const executeTransformConfig: ExecuteTransformConfig = {
-      scope: this,
-      nestedStackProvider: {
-        provide: (nestedStackScope: Construct, name: string) => new NestedStack(nestedStackScope, name),
-      },
-      assetProvider,
+    const adaptiveSizingConfig: AdaptiveSizingConfig = {
       synthParameters: {
         amplifyEnvironmentName: amplifyEnvironmentName,
         apiName: props.apiName ?? id,
@@ -243,6 +242,15 @@ export class AmplifyGraphqlApi extends Construct {
       rdsSnsTopicMapping: undefined,
       ...getDataSourceStrategiesProvider(definition),
       logging,
+    };
+
+    const adaptiveStackSizingPlan = createAdaptiveStackSizingPlan(adaptiveSizingConfig);
+    const executeTransformConfig: ExecuteTransformConfig = {
+      ...adaptiveSizingConfig,
+      scope: this,
+      nestedStackProvider: new ShardedNestedStackProvider(this, adaptiveStackSizingPlan.nestedStackProviderOptions),
+      assetProvider,
+      stackManagerOptions: adaptiveStackSizingPlan.stackManagerOptions,
     };
 
     executeTransform(executeTransformConfig);

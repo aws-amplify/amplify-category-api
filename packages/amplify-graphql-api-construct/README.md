@@ -1200,10 +1200,10 @@ public readonly stackMappings: {[ key: string ]: string};
 
 - *Type:* {[ key: string ]: string}
 
-StackMappings override the assigned nested stack on a per-resource basis.
-
-Only applies to resolvers, and takes the form
+StackMappings override the assigned nested stack on a per-resource basis and take the form
 { <logicalId>: <stackName> }
+Generated resources are automatically sharded when a default nested stack approaches CloudFormation resource limits; explicit mappings
+take precedence over automatic placement.
 It is not recommended to use this parameter unless you are encountering stack resource count limits, and worth noting that
 after initial deployment AppSync resolvers cannot be moved between nested stacks, they will need to be removed from the app,
 then re-added from a new stack.
@@ -3691,6 +3691,9 @@ the object to check.
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.provisionedThroughput">provisionedThroughput</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.ProvisionedThroughput">ProvisionedThroughput</a></code> | Update the provisioned throughput for the base table. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.sseSpecification">sseSpecification</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.SSESpecification">SSESpecification</a></code> | Set the ddb server-side encryption specification on the table. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.streamSpecification">streamSpecification</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.StreamSpecification">StreamSpecification</a></code> | Set the ddb stream specification on the table. |
+| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.tableArn">tableArn</a></code> | <code>string</code> | The ARN of the generated DynamoDB table. |
+| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.tableName">tableName</a></code> | <code>string</code> | The name of the generated DynamoDB table. |
+| <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.tableStreamArn">tableStreamArn</a></code> | <code>string</code> | The stream ARN of the generated DynamoDB table. |
 | <code><a href="#@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.timeToLiveAttribute">timeToLiveAttribute</a></code> | <code><a href="#@aws-amplify/graphql-api-construct.TimeToLiveSpecification">TimeToLiveSpecification</a></code> | The name of TTL attribute. |
 
 ---
@@ -3764,6 +3767,44 @@ public readonly streamSpecification: StreamSpecification;
 - *Type:* <a href="#@aws-amplify/graphql-api-construct.StreamSpecification">StreamSpecification</a>
 
 Set the ddb stream specification on the table.
+
+---
+
+##### `tableArn`<sup>Required</sup> <a name="tableArn" id="@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.tableArn"></a>
+
+```typescript
+public readonly tableArn: string;
+```
+
+- *Type:* string
+
+The ARN of the generated DynamoDB table.
+
+---
+
+##### `tableName`<sup>Required</sup> <a name="tableName" id="@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.tableName"></a>
+
+```typescript
+public readonly tableName: string;
+```
+
+- *Type:* string
+
+The name of the generated DynamoDB table.
+
+---
+
+##### `tableStreamArn`<sup>Required</sup> <a name="tableStreamArn" id="@aws-amplify/graphql-api-construct.AmplifyDynamoDbTableWrapper.property.tableStreamArn"></a>
+
+```typescript
+public readonly tableStreamArn: string;
+```
+
+- *Type:* string
+
+The stream ARN of the generated DynamoDB table.
+
+The table must have streams enabled for this value to resolve.
 
 ---
 
@@ -4145,4 +4186,3 @@ The key is stored in your account and is managed by KMS (AWS KMS charges apply).
 ##### `KMS` <a name="KMS" id="@aws-amplify/graphql-api-construct.SSEType.KMS"></a>
 
 ---
-

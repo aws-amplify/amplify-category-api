@@ -14,6 +14,7 @@ import {
   amplifyPushForce,
 } from 'amplify-category-api-e2e-core';
 import { DynamoDBClient, DeleteTableCommand, ListTablesCommand, UpdateTableCommand } from '@aws-sdk/client-dynamodb';
+import { assertStackCanBeUpdated } from './cdk-deploy-preflight';
 
 /**
  * Retrieve the path to the `npx` executable for interacting with the aws-cdk cli.
@@ -41,11 +42,17 @@ const getPackagedConstructPath = (cdkConstruct: CdkConstruct): string => {
   return path.join(packagedConstructDirectory, packagedConstructTarballs[0]);
 };
 
+const getPackagedConstructDependencies = (cdkConstruct: CdkConstruct): Array<string> =>
+  cdkConstruct === 'Data'
+    ? [getPackagedConstructPath('GraphqlApi'), getPackagedConstructPath('Data')]
+    : [getPackagedConstructPath('GraphqlApi')];
+
 /**
  * Copy the backend snapshot into the generated app location.
  */
 const copyTemplateDirectory = (projectPath: string, templatePath: string): void => {
   const binDir = path.join(projectPath, 'bin');
+  fs.mkdirSync(binDir, { recursive: true });
   copySync(templatePath, binDir, { overwrite: true });
   moveSync(path.join(binDir, 'app.ts'), path.join(binDir, `${path.basename(projectPath)}.ts`), { overwrite: true });
 };
@@ -70,6 +77,67 @@ export type InitCDKProjectProps = {
   cdkContext?: Record<string, string>;
   cdkVersion?: string;
   additionalDependencies?: Array<string>;
+};
+
+const writeMinimalCDKProjectFiles = (projectPath: string): void => {
+  const projectName = path.basename(projectPath);
+  writeFileSync(
+    path.join(projectPath, 'package.json'),
+    JSON.stringify(
+      {
+        name: projectName,
+        version: '0.1.0',
+        bin: {
+          [projectName]: `bin/${projectName}.js`,
+        },
+        scripts: {
+          cdk: 'cdk',
+        },
+      },
+      null,
+      2,
+    ),
+  );
+  writeFileSync(
+    path.join(projectPath, 'cdk.json'),
+    JSON.stringify(
+      {
+        app: `npx ts-node --prefer-ts-exts bin/${projectName}.ts`,
+      },
+      null,
+      2,
+    ),
+  );
+  writeFileSync(
+    path.join(projectPath, 'tsconfig.json'),
+    JSON.stringify(
+      {
+        compilerOptions: {
+          target: 'ES2020',
+          module: 'commonjs',
+          lib: ['es2020'],
+          declaration: true,
+          strict: true,
+          noImplicitAny: true,
+          strictNullChecks: true,
+          noImplicitThis: true,
+          alwaysStrict: true,
+          noUnusedLocals: false,
+          noUnusedParameters: false,
+          noImplicitReturns: true,
+          noFallthroughCasesInSwitch: false,
+          inlineSourceMap: true,
+          inlineSources: true,
+          experimentalDecorators: true,
+          strictPropertyInitialization: false,
+          typeRoots: ['./node_modules/@types'],
+        },
+        exclude: ['node_modules', 'cdk.out'],
+      },
+      null,
+      2,
+    ),
+  );
 };
 
 /**
@@ -99,8 +167,42 @@ export const initCDKProject = async (cwd: string, templatePath: string, props?: 
 
   copyTemplateDirectory(cwd, templatePath);
 
-  const deps = [getPackagedConstructPath(props?.construct ?? 'GraphqlApi'), `aws-cdk-lib@${cdkVersion}`, ...additionalDependencies];
-  await spawn('npm', ['install', ...deps], { cwd, stripColors: true }).runAsync();
+  const deps = [...getPackagedConstructDependencies(props?.construct ?? 'GraphqlApi'), `aws-cdk-lib@${cdkVersion}`, ...additionalDependencies];
+  await spawn('npm', ['install', ...deps, '--no-audit', '--no-fund'], { cwd, stripColors: true }).runAsync();
+
+  return JSON.parse(readFileSync(path.join(cwd, 'package.json'), 'utf8')).name.replace(/_/g, '-');
+};
+
+/**
+ * Initialize a minimal CDK project without running `cdk init`.
+ * @param cwd the directory to initialize the CDK project in
+ * @param templatePath path to the project to overwrite the cdk sample code with
+ * @param props additional properties to configure the test app setup.
+ * @returns a promise which resolves to the stack name
+ */
+export const initMinimalCDKProject = async (cwd: string, templatePath: string, props?: InitCDKProjectProps): Promise<string> => {
+  const { cdkVersion = '2.224.0', additionalDependencies = [] } = props ?? {};
+
+  writeMinimalCDKProjectFiles(cwd);
+
+  if (props?.cdkContext) {
+    appendToCDKContext(cwd, props.cdkContext);
+  }
+
+  copyTemplateDirectory(cwd, templatePath);
+
+  const deps = [
+    ...getPackagedConstructDependencies(props?.construct ?? 'GraphqlApi'),
+    'aws-cdk@2.1126.0',
+    `aws-cdk-lib@${cdkVersion}`,
+    'constructs@10.3.0',
+    'source-map-support@0.5.21',
+    'ts-node@8.10.2',
+    'typescript@5.8.3',
+    '@types/node@24.0.0',
+    ...additionalDependencies,
+  ];
+  await spawn('npm', ['install', ...deps, '--no-audit', '--no-fund'], { cwd, stripColors: true }).runAsync();
 
   return JSON.parse(readFileSync(path.join(cwd, 'package.json'), 'utf8')).name.replace(/_/g, '-');
 };
@@ -134,6 +236,7 @@ export const cdkDeploy = async (cwd: string, option: string, props?: CdkDeployPr
     env: { npm_config_registry: 'https://registry.npmjs.org/' },
     noOutputTimeout,
   };
+  await assertStackCanBeUpdated(resolveDeployStackName(cwd, option));
 
   await spawn(
     getNpxPath(),
@@ -147,6 +250,44 @@ export const cdkDeploy = async (cwd: string, option: string, props?: CdkDeployPr
   }
 
   return JSON.parse(readFileSync(path.join(cwd, 'outputs.json'), 'utf8'));
+};
+
+/**
+ * Execute `cdk synth` on the project.
+ * @param cwd the cwd of the cdk project
+ * @param option additional option to pass into the synth command
+ * @returns the generated cdk.out path
+ */
+export const cdkSynth = async (cwd: string, option = '--all'): Promise<string> => {
+  await spawn(getNpxPath(), ['cdk', 'synth', option, '--quiet'], {
+    cwd,
+    stripColors: true,
+    env: { npm_config_registry: 'https://registry.npmjs.org/' },
+    noOutputTimeout: 15 * 60 * 1000,
+  }).runAsync();
+
+  return path.join(cwd, 'cdk.out');
+};
+
+export const cdkPrepareChangeSet = async (cwd: string, option: string, changeSetName: string, props?: CdkDeployProps): Promise<void> => {
+  const noOutputTimeout = props?.timeoutMs ?? 15 * 60 * 1000;
+  await spawn(
+    getNpxPath(),
+    ['cdk', 'deploy', '--method', 'prepare-change-set', '--change-set-name', changeSetName, '--require-approval', 'never', option],
+    {
+      cwd,
+      stripColors: true,
+      env: { npm_config_registry: 'https://registry.npmjs.org/' },
+      noOutputTimeout,
+    },
+  ).runAsync();
+};
+
+const resolveDeployStackName = (cwd: string, option: string): string => {
+  if (option && !option.startsWith('-')) {
+    return option;
+  }
+  return JSON.parse(readFileSync(path.join(cwd, 'package.json'), 'utf8')).name.replace(/_/g, '-');
 };
 
 /**

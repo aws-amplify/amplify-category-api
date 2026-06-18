@@ -3,6 +3,25 @@ import { CfnParameter, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 export type ResourceToStackMap = Record<string, string>;
+export type ResourcePlacement = 'pinned' | 'movable' | 'unclassified-api-scoped';
+export type StackManagerOptions = {
+  defaultStackResourceEstimateLimit?: number;
+  stackResourceEstimateLimits?: Record<string, number>;
+  stackResourceCountOverrides?: Record<string, number>;
+  resourceEstimateOverrides?: Record<string, number>;
+  resourcePlacementOverrides?: Record<string, ResourcePlacement>;
+  defaultResourcePlacementByStack?: Record<string, ResourcePlacement>;
+};
+
+// Keep generated nested stacks below CloudFormation's 500 resource limit. Some logical transformer resources synthesize
+// multiple CloudFormation resources, so this budget intentionally leaves headroom for metadata and helper resources.
+export const DEFAULT_AUTO_STACK_RESOURCE_ESTIMATE = 400;
+export const STACK_MANAGER_DEFAULT_STACK_NAME_METADATA = 'aws-amplify:graphql-default-stack-name';
+export const STACK_MANAGER_STACK_RESOURCE_ESTIMATE_METADATA = 'aws-amplify:graphql-stack-resource-estimate';
+const DEFAULT_RESOURCE_ESTIMATE = 1;
+const PIPELINE_RESOLVER_RESOURCE_ESTIMATE = 4;
+const LAMBDA_DATA_SOURCE_RESOURCE_ESTIMATE = 3;
+const FIRST_OVERFLOW_STACK_INDEX = 2;
 
 /**
  * StackManager
@@ -12,17 +31,38 @@ export class StackManager implements StackManagerProvider {
 
   private resourceToStackMap: Map<string, string>;
 
+  private autoResourceToStackMap: Map<string, string> = new Map();
+
+  private stackResourceEstimates: Map<string, number> = new Map();
+
+  private stackDefaultStackNames: Map<string, string> = new Map();
+
+  private currentStackNameByDefaultStackName: Map<string, string> = new Map();
+
+  private nextStackIndexByDefaultStackName: Map<string, number> = new Map();
+
   constructor(
     public readonly scope: Construct,
     private readonly nestedStackProvider: NestedStackProvider,
     private readonly parameterProvider: TransformParameterProvider | undefined,
     resourceMapping: ResourceToStackMap,
+    private readonly options: StackManagerOptions = {},
   ) {
     this.resourceToStackMap = new Map(Object.entries(resourceMapping));
   }
 
   createStack = (stackName: string): Stack => {
-    const newStack = this.nestedStackProvider.provide(this.scope, stackName);
+    if (this.hasStack(stackName)) {
+      return this.getStack(stackName);
+    }
+
+    const estimatedResourceCount = this.getProviderResourceEstimate(stackName);
+    const newStack = this.nestedStackProvider.provide(this.scope, stackName, { estimatedResourceCount });
+    const defaultStackName = this.stackDefaultStackNames.get(stackName);
+    if (defaultStackName) {
+      newStack.node.addMetadata(STACK_MANAGER_DEFAULT_STACK_NAME_METADATA, defaultStackName);
+    }
+    newStack.node.addMetadata(STACK_MANAGER_STACK_RESOURCE_ESTIMATE_METADATA, estimatedResourceCount);
     this.stacks.set(stackName, newStack);
     return newStack;
   };
@@ -36,12 +76,14 @@ export class StackManager implements StackManagerProvider {
    * @returns the stack, or a new one if not yet defined.
    */
   getScopeFor = (resourceId: string, defaultStackName?: string): Construct => {
-    const stackName = this.resourceToStackMap.has(resourceId) ? this.resourceToStackMap.get(resourceId) : defaultStackName;
+    const stackName = this.getStackNameFor(resourceId, defaultStackName);
     if (!stackName) {
       return this.scope;
     }
     if (this.hasStack(stackName)) {
-      return this.getStack(stackName);
+      const stack = this.getStack(stackName);
+      this.addDefaultStackNameMetadata(stackName, stack);
+      return stack;
     }
     return this.createStack(stackName);
   };
@@ -69,4 +111,112 @@ export class StackManager implements StackManagerProvider {
     }
     throw new Error(`Stack ${stackName} is not created`);
   };
+
+  private getStackNameFor = (resourceId: string, defaultStackName?: string): string | undefined => {
+    if (this.resourceToStackMap.has(resourceId)) {
+      return this.resourceToStackMap.get(resourceId);
+    }
+
+    if (!defaultStackName) {
+      return defaultStackName;
+    }
+
+    if (this.autoResourceToStackMap.has(resourceId)) {
+      return this.autoResourceToStackMap.get(resourceId);
+    }
+
+    const resourcePlacement = this.getResourcePlacement(resourceId, defaultStackName);
+    if (resourcePlacement === 'unclassified-api-scoped') {
+      throw new Error(
+        `Automatic stack sharding cannot determine whether API-scoped AppSync resource ${resourceId} in ${defaultStackName} ` +
+          'already exists in a successful deployment. Refusing to re-parent it because that can cause AlreadyExists, replacement, or data-loss risk. ' +
+          'Provide baseline placement metadata or split the API with an explicit migration plan.',
+      );
+    }
+
+    if (resourcePlacement === 'pinned') {
+      this.stackDefaultStackNames.set(defaultStackName, defaultStackName);
+      return defaultStackName;
+    }
+
+    const stackName = this.getStackNameWithinResourceBudget(defaultStackName, this.getEstimatedResourceCount(resourceId));
+    this.autoResourceToStackMap.set(resourceId, stackName);
+    return stackName;
+  };
+
+  private getResourcePlacement = (resourceId: string, defaultStackName: string): ResourcePlacement =>
+    this.options.resourcePlacementOverrides?.[resourceId] ??
+    this.options.defaultResourcePlacementByStack?.[defaultStackName] ??
+    'movable';
+
+  private getStackNameWithinResourceBudget = (defaultStackName: string, resourceEstimate: number): string => {
+    const currentStackName = this.currentStackNameByDefaultStackName.get(defaultStackName) ?? defaultStackName;
+    const currentResourceEstimate = this.stackResourceEstimates.get(currentStackName) ?? 0;
+    const stackResourceEstimateLimit = this.getStackResourceEstimateLimit(defaultStackName);
+
+    if (currentResourceEstimate > 0 && currentResourceEstimate + resourceEstimate > stackResourceEstimateLimit) {
+      const nextStackIndex = this.nextStackIndexByDefaultStackName.get(defaultStackName) ?? FIRST_OVERFLOW_STACK_INDEX;
+      const nextStackName = `${defaultStackName}${nextStackIndex}`;
+      this.nextStackIndexByDefaultStackName.set(defaultStackName, nextStackIndex + 1);
+      this.currentStackNameByDefaultStackName.set(defaultStackName, nextStackName);
+      this.stackResourceEstimates.set(nextStackName, resourceEstimate);
+      this.stackDefaultStackNames.set(nextStackName, defaultStackName);
+      return nextStackName;
+    }
+
+    this.currentStackNameByDefaultStackName.set(defaultStackName, currentStackName);
+    this.stackResourceEstimates.set(currentStackName, currentResourceEstimate + resourceEstimate);
+    this.stackDefaultStackNames.set(currentStackName, defaultStackName);
+    return currentStackName;
+  };
+
+  private getEstimatedResourceCount = (resourceId: string): number => {
+    const estimateOverride = this.options.resourceEstimateOverrides?.[resourceId];
+    if (estimateOverride !== undefined) {
+      return normalizeResourceEstimate(estimateOverride);
+    }
+
+    if (resourceId.startsWith('Invoke') && resourceId.endsWith('LambdaDataSource')) {
+      return DEFAULT_RESOURCE_ESTIMATE;
+    }
+
+    if (resourceId.endsWith('LambdaDataSource')) {
+      return LAMBDA_DATA_SOURCE_RESOURCE_ESTIMATE;
+    }
+
+    if (resourceId.endsWith('Resolver')) {
+      return PIPELINE_RESOLVER_RESOURCE_ESTIMATE;
+    }
+
+    return DEFAULT_RESOURCE_ESTIMATE;
+  };
+
+  private getStackResourceEstimateLimit = (defaultStackName: string): number =>
+    normalizeResourceEstimate(
+      this.options.stackResourceEstimateLimits?.[defaultStackName] ??
+        this.options.defaultStackResourceEstimateLimit ??
+        DEFAULT_AUTO_STACK_RESOURCE_ESTIMATE,
+    );
+
+  private getProviderResourceEstimate = (stackName: string): number =>
+    normalizeResourceEstimate(
+      this.options.stackResourceCountOverrides?.[stackName] ??
+        this.getStackResourceEstimateLimit(this.stackDefaultStackNames.get(stackName) ?? stackName),
+    );
+
+  private addDefaultStackNameMetadata = (stackName: string, stack: Stack): void => {
+    const defaultStackName = this.stackDefaultStackNames.get(stackName);
+    if (!defaultStackName) {
+      return;
+    }
+
+    const hasDefaultStackNameMetadata = stack.node.metadata.some(
+      (entry) => entry.type === STACK_MANAGER_DEFAULT_STACK_NAME_METADATA && entry.data === defaultStackName,
+    );
+    if (!hasDefaultStackNameMetadata) {
+      stack.node.addMetadata(STACK_MANAGER_DEFAULT_STACK_NAME_METADATA, defaultStackName);
+    }
+  };
 }
+
+const normalizeResourceEstimate = (estimate: number): number => Math.max(1, Math.ceil(estimate));

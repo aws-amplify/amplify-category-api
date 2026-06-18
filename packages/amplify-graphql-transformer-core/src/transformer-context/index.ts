@@ -29,10 +29,16 @@ import { TransformerOutput } from './output';
 import { TransformerContextProviderRegistry } from './provider-registry';
 import { ResolverManager } from './resolver';
 import { TransformerResourceHelper } from './resource-helper';
-import { StackManager } from './stack-manager';
+import { StackManager, StackManagerOptions } from './stack-manager';
 
 export { TransformerResolver, NONE_DATA_SOURCE_NAME } from './resolver';
-export { StackManager } from './stack-manager';
+export {
+  StackManager,
+  DEFAULT_AUTO_STACK_RESOURCE_ESTIMATE,
+  STACK_MANAGER_DEFAULT_STACK_NAME_METADATA,
+  STACK_MANAGER_STACK_RESOURCE_ESTIMATE_METADATA,
+} from './stack-manager';
+export type { ResourcePlacement, StackManagerOptions } from './stack-manager';
 export class TransformerContextMetadata implements TransformerContextMetadataProvider {
   /**
    * Used by transformers to pass information between one another.
@@ -63,6 +69,7 @@ export interface TransformerContextConstructorOptions
   parameterProvider: TransformParameterProvider | undefined;
   resolverConfig?: ResolverConfig;
   scope: Construct;
+  stackManagerOptions?: StackManagerOptions;
   stackMapping: Record<string, string>;
   synthParameters: SynthParameters;
   transformParameters: TransformParameters;
@@ -121,6 +128,7 @@ export class TransformerContext implements TransformerContextProvider {
       rdsSnsTopicMapping,
       resolverConfig,
       scope,
+      stackManagerOptions,
       stackMapping,
       synthParameters,
       transformParameters,
@@ -139,7 +147,7 @@ export class TransformerContext implements TransformerContextProvider {
     this.resolverConfig = resolverConfig;
     this.resolvers = new ResolverManager();
     this.resourceHelper = new TransformerResourceHelper(synthParameters);
-    this.stackManager = new StackManager(scope, nestedStackProvider, parameterProvider, stackMapping);
+    this.stackManager = new StackManager(scope, nestedStackProvider, parameterProvider, stackMapping, stackManagerOptions);
     this.assetProvider = assetProvider;
     this.synthParameters = synthParameters;
     this.transformParameters = transformParameters;

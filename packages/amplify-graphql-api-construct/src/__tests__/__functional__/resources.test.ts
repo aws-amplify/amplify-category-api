@@ -1,9 +1,98 @@
 import * as cdk from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
 import { AuthorizationType, Visibility } from 'aws-cdk-lib/aws-appsync';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+import { getResourceName } from '@aws-amplify/graphql-transformer-core';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
+import { CLOUDFORMATION_STACK_OPERATION_RESOURCE_LIMIT } from '../../internal/adaptive-sizer';
+import { getGeneratedStackGroups } from '../../internal/generated-stack-helpers';
+import { walkAndProcessNodes } from '../../internal/construct-tree';
+
+const makePublicModelsSchema = (modelCount: number): string =>
+  Array.from(
+    { length: modelCount },
+    (_, index) => /* GraphQL */ `
+      type Model${index} @model @auth(rules: [{ allow: public }]) {
+        description: String!
+      }
+    `,
+  ).join('\n');
+
+const makePairedRelationshipModelsSchema = (pairCount: number): string =>
+  [
+    'input AMPLIFY { globalAuthRule: AuthRule = { allow: public } }',
+    ...Array.from({ length: pairCount }, (_, index) => {
+      const modelNumber = index + 1;
+      return /* GraphQL */ `
+        type Parent${modelNumber} @model {
+          id: ID!
+          name: String
+          children: [Child${modelNumber}] @hasMany(indexName: "byParent${modelNumber}", fields: ["id"])
+        }
+
+        type Child${modelNumber} @model {
+          id: ID!
+          name: String
+          parentID: ID! @index(name: "byParent${modelNumber}")
+          parent: Parent${modelNumber} @belongsTo(fields: ["parentID"])
+        }
+      `;
+    }),
+  ].join('\n');
+
+const findGroupedTableResourceName = (api: AmplifyGraphqlApi): string | undefined => {
+  let groupedResourceName: string | undefined;
+  getGeneratedStackGroups(api).forEach((groupStack) => {
+    walkAndProcessNodes(groupStack, (scope) => {
+      const resourceName = getResourceName(scope);
+      if (
+        !groupedResourceName &&
+        resourceName &&
+        scope instanceof cdk.CfnResource &&
+        ['AWS::DynamoDB::Table', 'Custom::AmplifyDynamoDBTable'].includes(scope.cfnResourceType)
+      ) {
+        groupedResourceName = resourceName;
+      }
+    });
+  });
+  return groupedResourceName;
+};
+
+const expectGeneratedOperationsUnderLimit = (api: AmplifyGraphqlApi): void => {
+  const directNestedStacks = api.node.children.filter(cdk.NestedStack.isNestedStack);
+  const operationResourceCounts = [
+    directNestedStacks.reduce((sum, nestedStack) => sum + countCfnResources(nestedStack), 0),
+    ...getGeneratedStackGroups(api).map((groupStack) =>
+      groupStack.node.children.filter(cdk.NestedStack.isNestedStack).reduce((sum, nestedStack) => sum + countCfnResources(nestedStack), 0),
+    ),
+  ];
+
+  operationResourceCounts.forEach((resourceCount) => {
+    expect(resourceCount).toBeLessThan(CLOUDFORMATION_STACK_OPERATION_RESOURCE_LIMIT);
+  });
+};
+
+const expectStackOutputsUnderLimit = (stacks: cdk.Stack[]): void => {
+  stacks.forEach((stack) => {
+    const outputCount = Object.keys(Template.fromStack(stack).toJSON().Outputs ?? {}).length;
+    expect(outputCount).toBeLessThanOrEqual(200);
+  });
+};
+
+const countCfnResources = (scope: cdk.NestedStack): number => {
+  let resourceCount = 0;
+  walkAndProcessNodes(scope, (child) => {
+    if (child instanceof cdk.CfnResource) {
+      resourceCount += 1;
+    }
+  });
+  return resourceCount;
+};
 
 describe('generated resource access', () => {
   describe('l1 resources', () => {
@@ -387,6 +476,143 @@ describe('generated resource access', () => {
         expect(Object.values(cfnTables).length).toEqual(2);
         expect(cfnTables.Todo).toBeDefined();
         expect(cfnTables.AmplifyDataStore).toBeDefined();
+      });
+
+      it('grants access to grouped table references without adding grouped stack output dependencies', () => {
+        const modelCount = 60;
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'RootStack');
+        const api = new AmplifyGraphqlApi(stack, 'TestApi', {
+          definition: AmplifyGraphqlDefinition.fromString(makePublicModelsSchema(modelCount)),
+          authorizationModes: {
+            apiKeyConfig: { expires: cdk.Duration.days(7) },
+          },
+        });
+        const groupedModelName = findGroupedTableResourceName(api);
+        if (!groupedModelName) {
+          throw new Error('Expected at least one generated model table to be placed in a generated stack group.');
+        }
+
+        const grantRole = new iam.Role(stack, 'GrantRole', {
+          assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        });
+        api.resources.tables[groupedModelName].grantReadWriteData(grantRole);
+        expect(api.resources.tables[groupedModelName].tableStreamArn).toBeUndefined();
+        expect(() => api.resources.tables[groupedModelName].grantStreamRead(grantRole)).toThrow(/DynamoDB Streams must be enabled/);
+
+        const rootTemplate = Template.fromStack(stack).toJSON();
+        const grantPolicy = Object.values(rootTemplate.Resources).find((resource: any) =>
+          JSON.stringify(resource).includes('dynamodb:BatchGetItem'),
+        );
+        const grantPolicyText = JSON.stringify(grantPolicy);
+
+        expect(api.resources.cfnResources.cfnTables[groupedModelName]).toBeDefined();
+        expect(api.resources.tables[groupedModelName]).toBeDefined();
+        expect(Object.values(api.resources.cfnResources.cfnTables)).toHaveLength(modelCount);
+        expect(grantPolicyText).toContain(':table/');
+        expect(grantPolicyText).toContain('/index/*');
+        expect(grantPolicyText).not.toContain('Fn::ImportValue');
+        expect(grantPolicyText).not.toContain('Outputs');
+        expectGeneratedOperationsUnderLimit(api);
+      });
+
+      it('grants access to grouped AMPLIFY_TABLE references without adding grouped stack output dependencies', () => {
+        const modelCount = 60;
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'RootStack');
+        const api = new AmplifyGraphqlApi(stack, 'TestApi', {
+          definition: AmplifyGraphqlDefinition.fromString(makePublicModelsSchema(modelCount), {
+            dbType: 'DYNAMODB',
+            provisionStrategy: 'AMPLIFY_TABLE',
+          }),
+          authorizationModes: {
+            apiKeyConfig: { expires: cdk.Duration.days(7) },
+          },
+        });
+        const groupedModelName = findGroupedTableResourceName(api);
+        if (!groupedModelName) {
+          throw new Error('Expected at least one generated Amplify-managed model table to be placed in a generated stack group.');
+        }
+
+        const grantRole = new iam.Role(stack, 'GrantRole', {
+          assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        });
+        api.resources.tables[groupedModelName].grantReadWriteData(grantRole);
+        const cfnWrapperPolicy = new iam.Policy(stack, 'CfnWrapperGrantPolicy', {
+          statements: [
+            new iam.PolicyStatement({
+              actions: ['dynamodb:GetItem'],
+              resources: [api.resources.cfnResources.amplifyDynamoDbTables[groupedModelName].tableArn],
+            }),
+          ],
+        });
+        grantRole.attachInlinePolicy(cfnWrapperPolicy);
+
+        const rootTemplate = Template.fromStack(stack).toJSON();
+        const grantPolicy = Object.values(rootTemplate.Resources).find((resource: any) =>
+          JSON.stringify(resource).includes('dynamodb:BatchGetItem'),
+        );
+        const grantPolicyText = JSON.stringify(grantPolicy);
+        const cfnWrapperPolicyResource = Object.values(rootTemplate.Resources).find((resource: any) =>
+          JSON.stringify(resource).includes('CfnWrapperGrantPolicy'),
+        );
+        const cfnWrapperPolicyText = JSON.stringify(cfnWrapperPolicyResource);
+
+        expect(api.resources.cfnResources.amplifyDynamoDbTables[groupedModelName]).toBeDefined();
+        expect(api.resources.tables[groupedModelName]).toBeDefined();
+        expect(Object.values(api.resources.cfnResources.amplifyDynamoDbTables)).toHaveLength(modelCount);
+        expect(api.resources.cfnResources.cfnTables[groupedModelName]).toBeUndefined();
+        expect(grantPolicyText).toContain(':table/');
+        expect(grantPolicyText).toContain('/index/*');
+        expect(grantPolicyText).not.toContain('Fn::ImportValue');
+        expect(grantPolicyText).not.toContain('Outputs');
+        expect(cfnWrapperPolicyText).toContain('CfnWrapperGrantPolicy');
+        expect(cfnWrapperPolicyText).not.toContain('Fn::ImportValue');
+        expect(cfnWrapperPolicyText).not.toContain('Outputs');
+        expect(() => app.synth()).not.toThrow();
+        expectGeneratedOperationsUnderLimit(api);
+      });
+
+      it('keeps relationship cross-stack exports under the root output limit when generated stack groups are needed', () => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'RootStack', { env: { region: 'us-west-2' } });
+        const api = new AmplifyGraphqlApi(stack, 'TestApi', {
+          definition: AmplifyGraphqlDefinition.fromString(makePairedRelationshipModelsSchema(40), {
+            dbType: 'DYNAMODB',
+            provisionStrategy: 'AMPLIFY_TABLE',
+          }),
+          authorizationModes: {
+            apiKeyConfig: { expires: cdk.Duration.days(7) },
+          },
+        });
+        const streamTable = api.resources.cfnResources.amplifyDynamoDbTables.Parent1;
+        streamTable.streamSpecification = { streamViewType: dynamodb.StreamViewType.NEW_IMAGE };
+
+        const streamSourceTable = dynamodb.Table.fromTableAttributes(stack, 'Parent1StreamSourceTable', {
+          tableName: streamTable.tableName,
+          tableStreamArn: streamTable.tableStreamArn,
+        });
+        const streamHandler = new lambda.Function(stack, 'Parent1StreamHandler', {
+          code: lambda.Code.fromInline('exports.handler = async () => {};'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.NODEJS_18_X,
+        });
+
+        streamHandler.addEventSource(
+          new DynamoEventSource(streamSourceTable, {
+            batchSize: 1,
+            startingPosition: lambda.StartingPosition.LATEST,
+          }),
+        );
+
+        const groupStacks = getGeneratedStackGroups(api);
+        const rootOutputNames = Object.keys(Template.fromStack(stack).toJSON().Outputs ?? {});
+
+        expect(groupStacks.length).toBeGreaterThan(0);
+        expect(rootOutputNames.length).toBeLessThanOrEqual(200);
+        expectStackOutputsUnderLimit([stack, ...groupStacks]);
+        expectGeneratedOperationsUnderLimit(api);
+        expect(() => app.synth()).not.toThrow();
       });
     });
 

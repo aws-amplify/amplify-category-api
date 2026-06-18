@@ -171,6 +171,9 @@ export const DDB_DB_TYPE: ModelDataSourceStrategyDbType;
 export const DDB_DEFAULT_DATASOURCE_STRATEGY: ModelDataSourceStrategy;
 
 // @public (undocumented)
+export const DEFAULT_AUTO_STACK_RESOURCE_ESTIMATE = 400;
+
+// @public (undocumented)
 export class DirectiveWrapper {
     constructor(node: DirectiveNode);
     // (undocumented)
@@ -340,7 +343,7 @@ export class GraphQLTransform {
     // Warning: (ae-forgotten-export) The symbol "TransformOption" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    transform({ assetProvider, dataSourceStrategies, nestedStackProvider, parameterProvider, rdsLayerMapping, rdsSnsTopicMapping, schema, scope, sqlDirectiveDataSourceStrategies, synthParameters, logging, }: TransformOption): void;
+    transform({ assetProvider, dataSourceStrategies, nestedStackProvider, parameterProvider, rdsLayerMapping, rdsSnsTopicMapping, schema, scope, sqlDirectiveDataSourceStrategies, stackManagerOptions, synthParameters, logging, }: TransformOption): void;
 }
 
 // @public (undocumented)
@@ -603,6 +606,9 @@ export type ResolverConfig = {
 };
 
 // @public (undocumented)
+export type ResourcePlacement = 'pinned' | 'movable' | 'unclassified-api-scoped';
+
+// @public (undocumented)
 export class SchemaValidationError extends Error {
     constructor(errors: Readonly<GraphQLError[]>);
 }
@@ -660,9 +666,15 @@ export interface SQLLambdaResourceNames {
 }
 
 // @public (undocumented)
+export const STACK_MANAGER_DEFAULT_STACK_NAME_METADATA = "aws-amplify:graphql-default-stack-name";
+
+// @public (undocumented)
+export const STACK_MANAGER_STACK_RESOURCE_ESTIMATE_METADATA = "aws-amplify:graphql-stack-resource-estimate";
+
+// @public (undocumented)
 export class StackManager implements StackManagerProvider {
     // Warning: (ae-forgotten-export) The symbol "ResourceToStackMap" needs to be exported by the entry point index.d.ts
-    constructor(scope: Construct, nestedStackProvider: NestedStackProvider, parameterProvider: TransformParameterProvider | undefined, resourceMapping: ResourceToStackMap);
+    constructor(scope: Construct, nestedStackProvider: NestedStackProvider, parameterProvider: TransformParameterProvider | undefined, resourceMapping: ResourceToStackMap, options?: StackManagerOptions);
     // (undocumented)
     createStack: (stackName: string) => Stack;
     // (undocumented)
@@ -678,6 +690,16 @@ export class StackManager implements StackManagerProvider {
     // (undocumented)
     readonly scope: Construct;
 }
+
+// @public (undocumented)
+export type StackManagerOptions = {
+    defaultStackResourceEstimateLimit?: number;
+    stackResourceEstimateLimits?: Record<string, number>;
+    stackResourceCountOverrides?: Record<string, number>;
+    resourceEstimateOverrides?: Record<string, number>;
+    resourcePlacementOverrides?: Record<string, ResourcePlacement>;
+    defaultResourcePlacementByStack?: Record<string, ResourcePlacement>;
+};
 
 // @public (undocumented)
 export const supportedScalarTypes: string[];

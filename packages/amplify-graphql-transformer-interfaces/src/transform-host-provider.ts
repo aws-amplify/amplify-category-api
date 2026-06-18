@@ -30,13 +30,20 @@ export interface DynamoDbDataSourceOptions extends DataSourceOptions {
   readonly serviceRole: IRole;
 }
 
+export interface LambdaDataSourceOptions extends DataSourceOptions {
+  /**
+   * ServiceRole for the AWS Lambda data source.
+   */
+  readonly serviceRole?: IRole;
+}
+
 export interface TransformHostProvider {
   setAPI(api: GraphqlApiBase): void;
 
   addHttpDataSource(name: string, endpoint: string, options?: HttpDataSourceOptions, scope?: Construct): HttpDataSource;
   addDynamoDbDataSource(name: string, table: ITable, options?: DynamoDbDataSourceOptions, scope?: Construct): DynamoDbDataSource;
   addNoneDataSource(name: string, options?: DataSourceOptions, scope?: Construct): NoneDataSource;
-  addLambdaDataSource(name: string, lambdaFunction: IFunction, options?: DataSourceOptions, scope?: Construct): LambdaDataSource;
+  addLambdaDataSource(name: string, lambdaFunction: IFunction, options?: LambdaDataSourceOptions, scope?: Construct): LambdaDataSource;
   addSearchableDataSource(
     name: string,
     endpoint: string,

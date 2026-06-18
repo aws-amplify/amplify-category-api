@@ -749,26 +749,26 @@ batch:
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        custom_logic_amplify_table_5_add_resources_validate_transformer_evaluate_mapping_template_validate_transformer_e2e
+        custom_logic_commands_amplify_table_5_add_resources_validate_transformer_evaluate_mapping_template
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
           TEST_SUITE: >-
-            src/__tests__/custom-logic.test.ts|src/__tests__/amplify-table-5.test.ts|src/__tests__/add-resources.test.ts|src/__tests__/validate-transformer/validate-transformer-evaluate-mapping-template.test.ts|src/__tests__/validate-transformer/validate-transformer-e2e.test.ts
+            src/__tests__/custom-logic.test.ts|src/__tests__/commands.test.ts|src/__tests__/amplify-table-5.test.ts|src/__tests__/add-resources.test.ts|src/__tests__/validate-transformer/validate-transformer-evaluate-mapping-template.test.ts
           CLI_REGION: ap-northeast-3
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        references_migration_migration_validation_many_to_many_migration_base_migration
+        validate_transformer_e2e_references_migration_migration_validation_many_to_many_migration_base_migration
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848'
           TEST_SUITE: >-
-            src/__tests__/migration/references-migration.test.ts|src/__tests__/migration/migration-validation.test.ts|src/__tests__/migration/many-to-many-migration.test.ts|src/__tests__/migration/base-migration.test.ts
+            src/__tests__/validate-transformer/validate-transformer-e2e.test.ts|src/__tests__/migration/references-migration.test.ts|src/__tests__/migration/migration-validation.test.ts|src/__tests__/migration/many-to-many-migration.test.ts|src/__tests__/migration/base-migration.test.ts
           CLI_REGION: eu-south-1
       depend-on:
         - publish_to_local_registry

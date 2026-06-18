@@ -105,7 +105,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
         new cdk.CfnOutput(cdk.Stack.of(scope), streamArnOutputId, {
           value: table.tableStreamArn,
           description: 'Your DynamoDB table StreamArn.',
-          exportName: cdk.Fn.join(':', [context.api.apiId, 'GetAtt', tableLogicalName, 'StreamArn']),
+          exportName: createModelOutputExportName(scope, context, tableLogicalName, 'StreamArn'),
         });
       }
 
@@ -113,7 +113,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
       new cdk.CfnOutput(cdk.Stack.of(scope), tableNameOutputId, {
         value: table.tableName,
         description: 'Your DynamoDB table name.',
-        exportName: cdk.Fn.join(':', [context.api.apiId, 'GetAtt', tableLogicalName, 'Name']),
+        exportName: createModelOutputExportName(scope, context, tableLogicalName, 'Name'),
       });
     }
 
@@ -157,7 +157,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
       new cdk.CfnOutput(cdk.Stack.of(scope), datasourceOutputId, {
         value: dataSource.ds.attrName,
         description: 'Your model DataSource name.',
-        exportName: cdk.Fn.join(':', [context.api.apiId, 'GetAtt', datasourceRoleLogicalID, 'Name']),
+        exportName: createModelOutputExportName(scope, context, datasourceRoleLogicalID, 'Name'),
       });
     }
 
@@ -300,3 +300,30 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     return role.withoutPolicyUpdates();
   };
 }
+
+export const createModelOutputExportName = (
+  scope: Construct,
+  context: TransformerContextProvider,
+  resourceLogicalName: string,
+  attributeName: string,
+): string | undefined => {
+  const exportName = cdk.Fn.join(':', [context.api.apiId, 'GetAtt', resourceLogicalName, attributeName]);
+  const resolvedExportName = cdk.Stack.of(scope).resolve(exportName);
+
+  return containsForbiddenExportNameReference(resolvedExportName) ? undefined : exportName;
+};
+
+const containsForbiddenExportNameReference = (value: unknown): boolean => {
+  if (Array.isArray(value)) {
+    return value.some(containsForbiddenExportNameReference);
+  }
+
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  return Object.entries(value).some(
+    ([key, nestedValue]) =>
+      key === 'Fn::ImportValue' || key === 'Fn::GetAtt' || key === 'Fn::GetAZs' || containsForbiddenExportNameReference(nestedValue),
+  );
+};

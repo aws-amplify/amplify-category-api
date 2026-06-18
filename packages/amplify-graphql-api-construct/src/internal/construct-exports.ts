@@ -13,12 +13,12 @@ import {
 } from 'aws-cdk-lib/aws-appsync';
 import { CfnTable, Table, ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { CfnRole, Role } from 'aws-cdk-lib/aws-iam';
-import { CfnResource, isResolvableObject, NestedStack } from 'aws-cdk-lib';
+import { CfnResource, isResolvableObject, NestedStack, Stack } from 'aws-cdk-lib';
 import { getResourceName } from '@aws-amplify/graphql-transformer-core';
 import { CfnFunction, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
 import { AmplifyGraphqlApiResources, FunctionSlot } from '../types';
-import { AmplifyDynamoDbTableWrapper } from '../amplify-dynamodb-table-wrapper';
-import { walkAndProcessNodes } from './construct-tree';
+import { AmplifyDynamoDbTableWrapper, setAmplifyDynamoDbTableWrapperReferenceScope } from '../amplify-dynamodb-table-wrapper';
+import { walkGeneratedResourceScopes } from './generated-stack-helpers';
 
 /**
  * Check if a resource is implementing table interface
@@ -47,7 +47,8 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
   const cfnResolvers: Record<string, CfnResolver> = {};
   const cfnFunctionConfigurations: Record<string, CfnFunctionConfiguration> = {};
   const cfnDataSources: Record<string, CfnDataSource> = {};
-  const tables: Record<string, ITable> = {};
+  const generatedTables: Record<string, ITable> = {};
+  const generatedTableNames: Record<string, string> = {};
   const cfnTables: Record<string, CfnTable> = {};
   const amplifyDynamoDbTables: Record<string, AmplifyDynamoDbTableWrapper> = {};
   const roles: Record<string, Role> = {};
@@ -87,15 +88,24 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
       return;
     }
     if (currentScope instanceof Table || isITable(currentScope)) {
-      tables[resourceName] = currentScope;
+      generatedTables[resourceName] = currentScope;
+      const tableName = getConfiguredTableName(currentScope);
+      if (tableName) {
+        generatedTableNames[resourceName] = tableName;
+      }
       return;
     }
     if (currentScope instanceof CfnTable) {
       cfnTables[resourceName] = currentScope;
+      if (currentScope.tableName) {
+        generatedTableNames[resourceName] = currentScope.tableName;
+      }
       return;
     }
     if (AmplifyDynamoDbTableWrapper.isAmplifyDynamoDbTableResource(currentScope)) {
-      amplifyDynamoDbTables[resourceName] = new AmplifyDynamoDbTableWrapper(currentScope);
+      const tableWrapper = new AmplifyDynamoDbTableWrapper(currentScope);
+      setAmplifyDynamoDbTableWrapperReferenceScope(tableWrapper, scope);
+      amplifyDynamoDbTables[resourceName] = tableWrapper;
       return;
     }
     if (currentScope instanceof Role) {
@@ -120,7 +130,7 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
     }
   };
 
-  scope.node.children.forEach((child) => walkAndProcessNodes(child, classifyConstruct));
+  walkGeneratedResourceScopes(scope, classifyConstruct);
 
   if (!cfnGraphqlApi) {
     throw new Error('Expected to find AWS::AppSync::GraphQLApi in the generated resource scope.');
@@ -130,11 +140,15 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
     throw new Error('Expected to find AWS::AppSync::GraphQLSchema in the generated resource scope.');
   }
 
-  const nestedStacks: Record<string, NestedStack> = Object.fromEntries(
-    scope.node.children.filter(NestedStack.isNestedStack).map((nestedStack: NestedStack) => [nestedStack.node.id, nestedStack]),
-  );
+  const nestedStacks: Record<string, NestedStack> = {};
+  walkGeneratedResourceScopes(scope, (currentScope: Construct) => {
+    if (NestedStack.isNestedStack(currentScope)) {
+      nestedStacks[currentScope.node.id] = currentScope;
+    }
+  });
 
   const proxiedApiAttributes = graphqlApiAttributesFromCfnGraphQLApi(cfnGraphqlApi);
+  const tables = createReferenceSafeTableReferences(scope, generatedTables, generatedTableNames);
 
   return {
     graphqlApi: GraphqlApi.fromGraphqlApiAttributes(scope, 'L2GraphqlApi', proxiedApiAttributes),
@@ -156,6 +170,48 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
       additionalCfnResources,
     },
   };
+};
+
+const createReferenceSafeTableReferences = (
+  scope: Construct,
+  generatedTables: Record<string, ITable>,
+  generatedTableNames: Record<string, string>,
+): Record<string, ITable> => {
+  return Object.fromEntries(
+    Object.entries(generatedTables).map(([resourceName, table]) => [
+      resourceName,
+      Stack.of(table) === Stack.of(scope)
+        ? table
+        : createReferenceSafeGeneratedTableReference(scope, resourceName, generatedTableNames[resourceName]),
+    ]),
+  );
+};
+
+const createReferenceSafeGeneratedTableReference = (scope: Construct, resourceName: string, tableName: string | undefined): ITable => {
+  if (!tableName) {
+    throw new Error(
+      `Unable to create a reference-safe table reference for generated table ${resourceName}. ` +
+        'The generated table name could not be resolved without creating a cross-stack reference.',
+    );
+  }
+
+  return Table.fromTableAttributes(scope, `GrantSafe${resourceName}Table`, {
+    tableName,
+    grantIndexPermissions: true,
+  });
+};
+
+const getConfiguredTableName = (table: ITable): string | undefined => {
+  const defaultChild = table.node.defaultChild;
+  if (defaultChild instanceof CfnTable) {
+    return defaultChild.tableName;
+  }
+
+  if (defaultChild) {
+    return table.tableName;
+  }
+
+  return undefined;
 };
 
 /**
@@ -255,5 +311,5 @@ export const getGeneratedFunctionSlots = (generatedResolvers: Record<string, str
           ...(templateType === 'req' ? { requestMappingTemplate: resolverCode } : {}),
           ...(templateType === 'res' ? { responseMappingTemplate: resolverCode } : {}),
         },
-      } as FunctionSlot;
+      } as unknown as FunctionSlot;
     });

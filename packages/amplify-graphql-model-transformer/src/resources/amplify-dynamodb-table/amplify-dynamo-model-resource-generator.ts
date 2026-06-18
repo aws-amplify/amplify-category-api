@@ -6,7 +6,7 @@ import { setResourceName, isImportedAmplifyDynamoDbModelDataSourceStrategy } fro
 import { AttributeType, StreamViewType, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 import { Duration, aws_iam, aws_lambda } from 'aws-cdk-lib';
-import { DynamoModelResourceGenerator } from '../dynamo-model-resource-generator';
+import { createModelOutputExportName, DynamoModelResourceGenerator } from '../dynamo-model-resource-generator';
 import * as path from 'path';
 import { AmplifyDynamoDBTable } from './amplify-dynamodb-table-construct';
 import { WaiterStateMachine } from './waiter-state-machine';
@@ -234,7 +234,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
       new cdk.CfnOutput(cdk.Stack.of(scope), streamArnOutputId, {
         value: table.tableStreamArn,
         description: 'Your DynamoDB table StreamArn.',
-        exportName: cdk.Fn.join(':', [context.api.apiId, 'GetAtt', tableLogicalName, 'StreamArn']),
+        exportName: createModelOutputExportName(scope, context, tableLogicalName, 'StreamArn'),
       });
     }
 
@@ -242,7 +242,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
     new cdk.CfnOutput(cdk.Stack.of(scope), tableNameOutputId, {
       value: table.tableName,
       description: 'Your DynamoDB table name.',
-      exportName: cdk.Fn.join(':', [context.api.apiId, 'GetAtt', tableLogicalName, 'Name']),
+      exportName: createModelOutputExportName(scope, context, tableLogicalName, 'Name'),
     });
 
     const role = this.createIAMRole(context, def, scope, tableName);

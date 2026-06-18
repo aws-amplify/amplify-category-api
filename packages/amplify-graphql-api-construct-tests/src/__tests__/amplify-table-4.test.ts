@@ -30,6 +30,12 @@ describe('CDK amplify table 4', () => {
     await expect(cdkDeploy(projRoot, '--all')).resolves.not.toThrow();
   });
 
+  test('should support a stream event source on a large amplify table backend', async () => {
+    const templatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', 'rate-limit', 'streamEventSource'));
+    await initCDKProject(projRoot, templatePath);
+    await expect(cdkDeploy(projRoot, '--all')).resolves.not.toThrow();
+  });
+
   test('should not throw limit exceed error when creating a large number of tables with datastore disabled at first and enabled in second deployment', async () => {
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'amplify-table', 'rate-limit', 'updateTableTtl', 'disabled'));
     const name = await initCDKProject(projRoot, templatePath);
