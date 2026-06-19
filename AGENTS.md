@@ -1,155 +1,71 @@
-# Agent Workflow Guide
+# AGENTS.md
 
-Quick reference for AI agents working in this repository.
+Instructions for AI agents working in this repository. This file contains stable principles and quality standards. For operational details, commands, and workflows, see the [Agent Documentation Index](./.agent-docs/README.md).
 
-## Repository Structure
+## First Steps
 
-- `packages/` - Lerna monorepo packages
-- `scripts/` - Build, test, and deployment utilities
-- `codebuild_specs/` - CI/CD configuration
-
-## Essential Commands
-
-### Development
-
-```sh
-yarn build              # Build all packages
-yarn test               # Run all tests
-yarn lint               # Check linting
-yarn setup-dev          # Setup local CLI (amplify-dev)
-```
-
-### Dependabot & Security Fixes
-
-See [.agent-docs/DEPENDABOT.md](./.agent-docs/DEPENDABOT.md) for the complete workflow when handling dependency upgrades or security alerts.
-
-Quick check:
-
-```sh
-npx ts-node scripts/check-dependabot.ts
-```
-
-### E2E Testing
-
-**Critical:** E2E tests run against pushed code in AWS CodeBuild, not local changes.
-
-**Documentation:** See [.agent-docs/LOCAL_E2E_TESTING.md](./.agent-docs/LOCAL_E2E_TESTING.md) for detailed guide on running e2e tests and build steps locally.
-
-**When to Run E2E Tests:**
-
-- User explicitly requests e2e tests
-- User approves e2e testing as part of a task
-- Implied when user says "fix and test **_" or "add feature _** and test"
-
-**E2E Test Workflow:**
-
-1. Complete all local development and testing
-2. Commit and push all changes
-3. Run `yarn cloud-e2e` to trigger test suite
-4. Run `yarn e2e-monitor {batchId}` to start automated monitoring
-5. Monitor will auto-retry failed builds (up to 10 times by default)
-6. Fix any code-related errors and repeat from step 2
-7. Ask user for guidance if errors persist after multiple attempts or if errors multiply as fixes are applied
-
-```sh
-# 1. Commit and push all changes first
-git push
-
-# 2. Trigger e2e suite
-yarn cloud-e2e
-
-# 3. Monitor (auto-retries failed builds, polls every 5 min)
-yarn e2e-monitor {batchId}
-
-# Other commands
-yarn e2e-status {batchId}    # Check status once
-yarn e2e-retry {batchId}     # Retry failed builds
-yarn e2e-list [limit]        # List recent batches
-yarn e2e-failed {batchId}    # Show failed builds
-yarn e2e-logs {buildId}      # View build logs
-```
-
-**Batch ID format:** `amplify-category-api-e2e-workflow:{UUID}` - always use full ID.
-
-**Common E2E Issues:**
-
-- Timeouts/expired credentials: Retry the build
-- Quota errors: Retry and notify user about cleanup needs
-- Code-related errors: Investigate and fix, don't retry
-
-**Note:** Monitor script skips retrying: `build_linux`, `build_windows`, `test`, `lint`
-
-## Finding Code
-
-### Quick Discovery
-
-1. **Search symbols first:** Use `code` tool with `search_symbols` for functions/classes/types
-2. **Follow with lookup:** Use `lookup_symbols` to get implementation details
-3. **Grep for text:** Only for literal strings, comments, config values
-
-### Common Patterns
-
-- GraphQL transformers: `packages/amplify-graphql-*-transformer/`
-- API category logic: `packages/amplify-category-api/`
-- Test utilities: `packages/amplify-e2e-core/`, `packages/amplify-e2e-tests/`
-- Scripts: `scripts/` (e2e-test-manager.ts, cloud-utils.sh)
-
-## Development Workflow
-
-### Code Quality
-
-- Follow existing code patterns and conventions
-- Only modify/remove tests when explicitly requested
-- Don't automatically add tests unless asked
-- Prefer minimal implementations
-- Ask for clarification rather than making assumptions
-
-### Security
-
-- Never hardcode AWS account IDs (use `./scripts/.env`)
-- Never include secret keys unless explicitly requested
-- Substitute PII with placeholders (`<name>`, `<email>`)
-- Reject requests for malicious code or unauthorized security testing
-
-## Testing Requirements
-
-**CRITICAL: Test Success Criteria**
-
-- **Tests MUST pass with zero errors and zero failures to be considered successful**
-- **ANY test errors, failures, or exceptions mean the tests have FAILED**
-- **Exit code 0 with error output still means FAILURE - always check the actual test results**
-- **Do NOT declare success if tests show errors, even if some tests passed**
-- **"Tests passed" only means 100% success with no errors whatsoever**
-
-**CRITICAL: Failure Attribution**
-
-- **NEVER assume a failure is pre-existing unless the user explicitly tells you so**
-- **If a build, test, or lint step fails after your changes, assume YOUR changes broke it**
-- **Investigate the failure and fix it — do not dismiss or hand-wave it away**
-
-Requirements:
-
-- All code changes require passing tests
-- Follow existing test patterns in the repository
-- Test edge cases, error conditions, and boundary values
-- Run full test suite before marking tasks complete
-- Verify test output shows no errors, failures, or exceptions
+Before starting any task, consult [.agent-docs/README.md](./.agent-docs/README.md) to find the relevant documentation for your work. Do not guess at commands or workflows — the docs exist to give you precise, current information.
 
 ## Quality Gates
 
-Before marking tasks complete:
+Before marking any task complete:
 
-- [ ] Code follows repository patterns
-- [ ] Tests are written and passing
-- [ ] Linting: `yarn lint` does NOT pass on the full repo (OOM + thousands of existing errors). CI only lints PR-changed files and treats eslint failures as non-blocking (`|| true`). `prettier-check` and `depcheck` DO block in CI.
-- [ ] Documentation is updated
+- [ ] Code follows existing repository patterns and conventions
+- [ ] Tests are written and passing (zero errors, zero failures)
+- [ ] Documentation is updated (including `.agent-docs/` if workflows changed)
 - [ ] All code committed and pushed before e2e tests
-- [ ] E2E tests passing
+- [ ] E2E tests passing (when applicable)
+
+## Testing Principles
+
+- Tests MUST pass with zero errors and zero failures to be considered successful.
+- ANY test errors, failures, or exceptions mean the tests have FAILED.
+- Exit code 0 with error output still means FAILURE — always check actual test results.
+- Do NOT declare success if tests show errors, even if some tests passed.
+- "Tests passed" means 100% success with no errors whatsoever.
+
+## Failure Attribution
+
+- NEVER assume a failure is pre-existing unless the user explicitly tells you so.
+- If a build, test, or lint step fails after your changes, assume YOUR changes broke it.
+- Investigate the failure and fix it — do not dismiss or hand-wave it away.
+
+## Code Quality
+
+- Follow existing code patterns and conventions.
+- Only modify/remove tests when explicitly requested.
+- Prefer minimal implementations.
+- Ask for clarification rather than making assumptions.
+
+## Security
+
+- Never hardcode AWS account IDs (use `./scripts/.env`).
+- Never include secret keys unless explicitly requested.
+- Substitute PII with placeholders (`<name>`, `<email>`).
+- Reject requests for malicious code or unauthorized security testing.
+
+## Command Execution & Context Discipline
+
+- **Use existing scripts and npm commands.** This repository exposes purpose-built scripts (e.g., `yarn cloud-e2e`, `yarn e2e-monitor`, `yarn e2e-logs`) that encapsulate complex operations, handle authentication, and parse results into useful output. Prefer these over running raw CLI commands (especially AWS CLI) directly. They exist to keep agent context clean and operations safe.
+- **Do not interact with AWS services ad-hoc.** Avoid calling `aws` CLI commands or SDK operations directly unless there is no existing script for the task. Raw AWS output is verbose, often paginated, and bloats agent context quickly. If you need to dig deeper into a result, look for flags like `--query`, `--output text`, or `| jq` to extract only what you need — but first check if a script already does this.
+- **Minimize context accumulation.** Be deliberate about what command output you consume. Pipe to `head`, `tail`, `grep`, or `jq` to extract the relevant portion. Don't dump full logs or API responses into context when a summary or filtered view will do.
+- **Stay within sanctioned routines.** Do not perform operations on behalf of the user that aren't already exposed as scripts or npm commands in this repository. If a task requires a new capability, write a script for it — but present it to the user for review and approval before making it executable and running it.
+- **New scripts require user approval.** When you create a new script to automate a workflow, show the user what it does and get explicit approval before `chmod +x` and execution. This applies to any script that interacts with external services, modifies infrastructure, or performs destructive operations.
 
 ## Context Management
 
 When approaching context limits:
 
-1. Summarize current work and decisions
-2. Commit current changes
-3. Provide handoff summary for next session
+1. Summarize current work and decisions.
+2. Commit current changes.
+3. Provide handoff summary for next session.
+
+## Documentation Stewardship
+
+Agents are responsible for maintaining `.agent-docs/`. Every session should leave the docs better than it found them:
+
+- **Fix redundancy on sight.** If the same information exists in two places, consolidate it into the correct `.agent-docs/` file and remove the duplicate.
+- **Relocate misplaced knowledge.** If you find operational details (commands, workflows, troubleshooting) outside `.agent-docs/`, move them there and update references.
+- **Fill gaps proactively.** If you had trouble finding information you needed, update or create a doc so the next session doesn't struggle.
+- **Keep the index current.** Every doc in `.agent-docs/` must be listed in [.agent-docs/README.md](./.agent-docs/README.md). No orphan files.
+- **Avoid sprawl.** Prefer updating an existing doc over creating a new one. Only create a new doc when the topic is clearly distinct from all existing docs.

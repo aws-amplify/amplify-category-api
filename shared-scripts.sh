@@ -1,6 +1,6 @@
 #!/bin/bash
 
-AMPLIFY_NODE_VERSION=24.12.0
+AMPLIFY_NODE_VERSION=22
 
 # set exit on error to true
 set -e
@@ -191,6 +191,49 @@ function _verifyAmplifyBackendCompatability {
   npm update
   # Verify that the package-lock.json contains the updated version with localhost tarballs
   git diff package-lock.json | grep -Pz '@aws-amplify\/(graphql-api-construct|data-construct)[\s\S]*localhost:4873[\s\S]*tgz'
+
+  # Verify bundled dependency completeness (regression test for #3158)
+  # Check that bundledDependencies includes all transitive deps of bundled packages
+  echo "Verifying bundled dependency completeness..."
+  node -e "
+const path = require('path');
+const fs = require('fs');
+
+const constructs = [
+  'node_modules/@aws-amplify/data-construct',
+  'node_modules/@aws-amplify/graphql-api-construct'
+];
+const exclude = new Set(['aws-cdk-lib', 'constructs', '@aws-cdk/toolkit-lib']);
+
+let missing = [];
+for (const constructPath of constructs) {
+  if (!fs.existsSync(constructPath)) continue;
+  const pkg = JSON.parse(fs.readFileSync(path.join(constructPath, 'package.json'), 'utf8'));
+  const bundled = new Set(pkg.bundledDependencies || []);
+  const nm = path.join(constructPath, 'node_modules');
+  if (!fs.existsSync(nm)) continue;
+
+  for (const dep of bundled) {
+    const depPkgPath = path.join(nm, dep, 'package.json');
+    if (!fs.existsSync(depPkgPath)) continue;
+    const depJson = JSON.parse(fs.readFileSync(depPkgPath, 'utf8'));
+    for (const transitive of Object.keys(depJson.dependencies || {})) {
+      if (!bundled.has(transitive) && !exclude.has(transitive)) {
+        missing.push(pkg.name + ': ' + dep + ' requires ' + transitive + ' (not bundled)');
+      }
+    }
+  }
+}
+
+if (missing.length > 0) {
+  console.error('ERROR: Missing bundled transitive dependencies:');
+  missing.forEach(m => console.error('  ' + m));
+  process.exit(1);
+} else {
+  console.log('All bundled transitive dependencies are present.');
+}
+"
+
   # Build and test the backend
   npm run build && npm run test
 
@@ -334,8 +377,7 @@ function _setupE2ETestsLinux {
     echo "Setup E2E Tests Linux"
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
-    # Ignore engines while we're still on Node 18.x
-    yarn config set ignore-engines true
+    _setupNodeVersion $AMPLIFY_NODE_VERSION
     _installCLIFromLocalRegistry
     _loadTestAccountCredentials
     _setShell
@@ -345,6 +387,7 @@ function _setupCDKTestsLinux {
     echo "Setup E2E Tests Linux"
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+    _setupNodeVersion $AMPLIFY_NODE_VERSION
     _installCLIFromLocalRegistry
     yarn package
     _loadTestAccountCredentials
