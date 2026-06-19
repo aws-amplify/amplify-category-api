@@ -136,6 +136,16 @@ const BUCKET_TEST_REGEX = /test/;
 const IAM_TEST_REGEX =
   /!RotateE2eAwsToken-e2eTestContextRole|-integtest$|^amplify-|^eu-|^us-|^ap-|^auth-exhaustive-tests|rds-schema-inspector-integtest|^amplify_e2e_tests_lambda|^JsonMockStack-jsonMockApi|^SubscriptionAuth|^cdkamplifytable[0-9]*-|^MutationConditionTest-|^SearchableAuth|^SubscriptionRTFTests-|^NonModelAuthV2FunctionTransformerTests-|^MultiAuthV2Transformer|^FunctionTransformerTests|-integtest-/;
 const RDS_TEST_REGEX = /integtest/;
+/**
+ * Seed apps provisioned to satisfy the Gen1 new-customer restriction.
+ * amplify-provider-awscloudformation enforces that an account must have at least one
+ * Amplify app with a backend environment before `amplify init` is allowed (Gen1
+ * entered maintenance mode and blocks new customers). These seed apps are intentionally
+ * long-lived and MUST NOT be deleted by the cleanup workflow, or every canary that
+ * calls `amplify init` will fail with ProjectInitError.
+ * See: P457496122
+ */
+const GEN1_SEED_APP_NAME_PREFIX = 'DoNotDelete';
 const STALE_DURATION_MS = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
 
 const staleHorizonDate = new Date(Date.now() - STALE_DURATION_MS);
@@ -163,6 +173,10 @@ const testStackStalenessFilter = (resource: Stack): boolean => {
 };
 
 const testAppStalenessFilter = (resource: App): boolean => {
+  // Never delete Gen1 seed apps — they satisfy the Gen1 new-customer restriction so
+  // canaries can run `amplify init`. Deleting them causes ProjectInitError on every run.
+  const isSeedApp = resource.name?.startsWith(GEN1_SEED_APP_NAME_PREFIX);
+  if (isSeedApp) return false;
   const isStaleResource = before(resource.createTime, staleHorizonDate);
   return !!isStaleResource;
 };
