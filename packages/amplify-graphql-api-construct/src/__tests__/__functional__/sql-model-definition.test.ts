@@ -97,8 +97,8 @@ describe('sql-bound API generated resource access', () => {
             (resource) => resource.cfnResourceType === 'AWS::EC2::VPCEndpoint',
           );
 
-          // 5 endpoints per SQL Lambda function. Update this test accordingly as we add additional data sources bound to separate functions.
-          expect(endpoints.length).toBe(5);
+          // Only the `ssm` endpoint is created per SQL Lambda function. Update this test accordingly as we add additional data sources bound to separate functions.
+          expect(endpoints.length).toBe(1);
         });
 
         it('secrets manager as credentials store', () => {
