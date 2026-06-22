@@ -210,6 +210,16 @@ const EXCLUDE_TEST_IDS: string[] = [];
 
 const MAX_WORKERS = 5;
 
+// Number of e2e jobs released per "wave" when staggering the batch fan-out.
+//
+// CodeBuild's batch orchestrator FAULTs ("Internal Service Error") when a single
+// dependency (publish_to_local_registry) completes and releases the entire e2e
+// fan-out (~184 jobs) in one simultaneous burst. To stay well under that
+// threshold we partition the generated jobs into sequential waves of at most
+// WAVE_SIZE jobs each (see applyFanOutWaves). ~184 jobs / 46 => 4 waves, so no
+// single completion event ever releases more than ~46 jobs at once.
+const WAVE_SIZE = 46;
+
 // eslint-disable-next-line import/namespace
 const loadConfigBase = (): ConfigBase => yaml.load(fs.readFileSync(CODEBUILD_CONFIG_BASE_PATH, 'utf8')) as ConfigBase;
 
@@ -400,6 +410,44 @@ const filterCandidateRegions = (test: string, candidateRegions: string[], useBet
   return resolvedRegions;
 };
 
+/**
+ * Staggers the generated e2e jobs into sequential "waves" to avoid overwhelming
+ * CodeBuild's batch orchestrator with a single large fan-out.
+ *
+ * Every generated job originally depends only on `publish_to_local_registry`, so
+ * when that build completes the orchestrator tries to release all ~184 jobs at
+ * once, which deterministically triggers an "Internal Service Error" FAULT.
+ *
+ * Instead, we chain each job to the job WAVE_SIZE positions earlier:
+ *   - jobs in wave 0 (index < WAVE_SIZE) depend on `publish_to_local_registry`
+ *   - every later job (index i) depends on the job at index (i - WAVE_SIZE)
+ *
+ * Because each dependency edge points to a strictly smaller index, the graph is
+ * acyclic. With `fast-fail: false`, a dependent job is released once its single
+ * predecessor completes (regardless of pass/fail), so this only staggers the
+ * release timing — it does not change which tests run or their isolation. The
+ * most jobs released by any single completion event is therefore WAVE_SIZE
+ * (when `publish_to_local_registry` finishes), instead of the full ~184.
+ *
+ * Tradeoff: waves serialize, adding some wall-clock latency, but the orchestrator
+ * never sees the >150-job single-wave burst that caused the fault.
+ *
+ * Returns the identifiers of the "leaf" jobs (those nothing else depends on, i.e.
+ * the last WAVE_SIZE jobs) so downstream jobs (e.g. cleanup) can wait for the
+ * entire fan-out to finish.
+ */
+const applyFanOutWaves = (builds: BatchBuildJob[]): string[] => {
+  builds.forEach((build, index) => {
+    build['depend-on'] = index < WAVE_SIZE ? ['publish_to_local_registry'] : [builds[index - WAVE_SIZE].identifier];
+  });
+
+  // A job at index i is a leaf when no later job chains off it, i.e. when
+  // (i + WAVE_SIZE) >= builds.length. That is exactly the final WAVE_SIZE jobs.
+  // Every earlier job is an ancestor of one of these leaves, so waiting on the
+  // leaves transitively waits for the whole fan-out.
+  return builds.slice(Math.max(0, builds.length - WAVE_SIZE)).map((build) => build.identifier);
+};
+
 const main = (): void => {
   const useBetaLayer = process.argv[2] === 'beta';
   const filteredTests = process.argv.slice(3);
@@ -467,6 +515,11 @@ const main = (): void => {
     builds = builds.filter((build) => !EXCLUDE_TEST_IDS.includes(build.identifier));
   }
 
+  // Stagger the e2e fan-out into waves so the batch orchestrator is never asked
+  // to release the entire fan-out at once. Returns the leaf job identifiers so
+  // cleanup can wait for every test job to finish.
+  const leafJobIdentifiers = applyFanOutWaves(builds);
+
   const cleanupResources: BatchBuildJob = {
     identifier: 'cleanup_e2e_resources',
     buildspec: 'codebuild_specs/cleanup_e2e_resources.yml',
@@ -476,7 +529,7 @@ const main = (): void => {
         ...DEFAULT_VARIABLES,
       },
     },
-    'depend-on': builds.length > 0 ? [builds[0].identifier] : 'publish_to_local_registry',
+    'depend-on': builds.length > 0 ? leafJobIdentifiers : 'publish_to_local_registry',
   };
 
   console.log(`Total number of splitted jobs: ${builds.length}`);
