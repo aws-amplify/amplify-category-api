@@ -216,9 +216,14 @@ const MAX_WORKERS = 5;
 // dependency (publish_to_local_registry) completes and releases the entire e2e
 // fan-out (~184 jobs) in one simultaneous burst. To stay well under that
 // threshold we partition the generated jobs into sequential waves of at most
-// WAVE_SIZE jobs each (see applyFanOutWaves). ~184 jobs / 46 => 4 waves, so no
-// single completion event ever releases more than ~46 jobs at once.
-const WAVE_SIZE = 46;
+// WAVE_SIZE jobs each (see applyFanOutWaves). ~184 jobs / 90 => 2 waves, so no
+// single completion event ever releases more than ~90 jobs at once.
+//
+// CodeBuild concurrency quotas (Medium=1200, Large=500) far exceed the fan-out,
+// so concurrency is not the constraint. WAVE_SIZE is sized to the largest wave
+// that still avoids the batch-orchestration FAULT (184 faults, 46 works); 90
+// uses 2 waves to cut the wall-clock latency from serializing into 4 waves.
+const WAVE_SIZE = 90;
 
 // eslint-disable-next-line import/namespace
 const loadConfigBase = (): ConfigBase => yaml.load(fs.readFileSync(CODEBUILD_CONFIG_BASE_PATH, 'utf8')) as ConfigBase;
