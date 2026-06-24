@@ -210,6 +210,20 @@ const EXCLUDE_TEST_IDS: string[] = [];
 
 const MAX_WORKERS = 5;
 
+/**
+ * Maximum number of e2e CodeBuild shards allowed to be in-flight at once.
+ *
+ * Every shard used to depend only on `publish_to_local_registry`, so the whole
+ * suite became runnable simultaneously and overran the CodeBuild project's
+ * concurrent-build limit. The shards are instead chained into a sliding window:
+ * the first `E2E_WAVE_SIZE` shards depend on the upstream build, and each later
+ * shard `i` depends on shard `i - E2E_WAVE_SIZE`. This caps concurrency at
+ * `E2E_WAVE_SIZE` while preserving the deterministic shard ordering.
+ *
+ * Tune this single constant to change the concurrency cap.
+ */
+const E2E_WAVE_SIZE = 90;
+
 // eslint-disable-next-line import/namespace
 const loadConfigBase = (): ConfigBase => yaml.load(fs.readFileSync(CODEBUILD_CONFIG_BASE_PATH, 'utf8')) as ConfigBase;
 
@@ -400,6 +414,27 @@ const filterCandidateRegions = (test: string, candidateRegions: string[], useBet
   return resolvedRegions;
 };
 
+/**
+ * Caps concurrent e2e shards at {@link E2E_WAVE_SIZE} by chaining them into a
+ * sliding window. Shards keep their deterministic order: the first
+ * `E2E_WAVE_SIZE` shards retain their existing upstream dependency
+ * (`publish_to_local_registry`), and every later shard `i` is rewired to depend
+ * on the shard `E2E_WAVE_SIZE` positions earlier, so at most `E2E_WAVE_SIZE`
+ * shards are runnable at any time.
+ *
+ * Note: CodeBuild `depend-on` starts a successor only after its predecessor
+ * SUCCEEDS, so a failed shard skips the shard `E2E_WAVE_SIZE` positions later in
+ * the chain. Each shard buildspec therefore emits a primary artifact so it can
+ * be a valid predecessor.
+ *
+ * @param builds Ordered e2e shard jobs; their `depend-on` is rewired in place.
+ */
+const applyWaveStaggering = (builds: BatchBuildJob[]): void => {
+  for (let i = E2E_WAVE_SIZE; i < builds.length; i++) {
+    builds[i]['depend-on'] = [builds[i - E2E_WAVE_SIZE].identifier];
+  }
+};
+
 const main = (): void => {
   const useBetaLayer = process.argv[2] === 'beta';
   const filteredTests = process.argv.slice(3);
@@ -466,6 +501,9 @@ const main = (): void => {
   if (EXCLUDE_TEST_IDS.length > 0) {
     builds = builds.filter((build) => !EXCLUDE_TEST_IDS.includes(build.identifier));
   }
+
+  // Cap concurrent e2e shards with a chained sliding window (see E2E_WAVE_SIZE).
+  applyWaveStaggering(builds);
 
   const cleanupResources: BatchBuildJob = {
     identifier: 'cleanup_e2e_resources',
