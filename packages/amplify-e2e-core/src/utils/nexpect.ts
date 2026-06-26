@@ -432,8 +432,18 @@ function chain(context: Context): ExecutionContext {
           //
           return onError(new Error('Command not found: ' + context.command), false);
         }
+        const fullOutput = recordings.length
+          ? recordings
+              .filter((f) => f[1] === 'o')
+              .map((f) => f[2])
+              .join('')
+          : 'No output';
         return onError(
-          new Error(`Process exited with non zero exit code ${code}.\n\nLast 10 lines: 👇🏽👇🏽👇🏽👇🏽\n\n\n\n\n${lastScreen}\n\n\n👆🏼👆🏼👆🏼👆🏼`),
+          new Error(
+            `Process exited with non zero exit code ${code}${
+              signal ? ` (signal ${signal})` : ''
+            }.\n\nFull output:👇🏽👇🏽👇🏽👇🏽\n\n${fullOutput}\n\n👆🏼👆🏼👆🏼👆🏼`,
+          ),
           false,
         );
       } else {

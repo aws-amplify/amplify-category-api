@@ -99,10 +99,11 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
       .sendYes()
       .wait(/Try "amplify add api" to create a backend API and then "amplify (push|publish)" to deploy everything/)
       .run((err: Error) => {
-        console.error(`Result of initJSProjectWithProfile: ${err}`);
         if (err) {
+          console.error(`initJSProjectWithProfile FAILED: ${err}`);
           reject(err);
         } else {
+          console.log('initJSProjectWithProfile SUCCESS');
           resolve();
         }
       });
