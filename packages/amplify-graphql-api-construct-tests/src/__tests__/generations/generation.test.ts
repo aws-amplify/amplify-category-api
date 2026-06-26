@@ -63,7 +63,9 @@ describe('generation', () => {
         };
 
         const generateRecipeResult = await doAppSyncGraphqlQuery({ ...args, query: generateRecipe, variables });
+        expect(generateRecipeResult.body.errors).toBeUndefined();
         const recipe = generateRecipeResult.body.data.generateRecipe;
+        expect(recipe).not.toBeNull();
         expect(recipe.name).toBeDefined();
       });
     });
