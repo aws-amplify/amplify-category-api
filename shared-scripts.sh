@@ -1,6 +1,11 @@
 #!/bin/bash
 
-AMPLIFY_NODE_VERSION=24.12.0
+# Gen1 CLI (cli-internal, maintenance mode, EOL 2027-05-01) is not compatible
+# with Node.js 24 in the `amplify add function` finalize path, which breaks the
+# function_migration and http_migration (schema-function-2) e2e suites. Pin the
+# e2e Node.js version to 20 to match the build/install/deploy stages
+# (_setupNodeVersion 20) and the version the Gen1 CLI supports.
+AMPLIFY_NODE_VERSION=20
 # set exit on error to true
 set -e
 
