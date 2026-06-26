@@ -22,6 +22,7 @@
     "clean": "rimraf ./lib"
   },
   "dependencies": {
+    "@aws-sdk/client-amplify": "^3.973.0",
     "@aws-sdk/client-amplifybackend": "^3.973.0",
     "@aws-sdk/client-appsync": "^3.973.0",
     "@aws-sdk/client-cloudformation": "^3.973.0",
