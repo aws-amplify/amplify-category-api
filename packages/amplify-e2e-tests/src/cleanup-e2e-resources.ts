@@ -69,6 +69,14 @@ const MULTI_JOB_APP = '<Amplify App reused by multiple apps>';
 const ORPHAN = '<orphan>';
 const UNKNOWN = '<unknown>';
 
+/**
+ * Name of the placeholder Amplify app that must never be deleted. Keeping this app
+ * (with a backend environment) present in each account/region satisfies the
+ * `isExistingGen1Customer` check, allowing `amplify init` to continue creating Gen1
+ * apps and bypassing the Gen1 deprecation gate.
+ */
+const GEN1_DEPRECATION_BYPASS_APP_NAME = 'DoNotDeleteAppToBypassGen1Deprecation';
+
 type StackInfo = {
   stackId: string;
   stackName: string;
@@ -266,6 +274,11 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
   }
 
   for (const app of (amplifyApps?.apps ?? []).filter(testAppStalenessFilter)) {
+    if (app.name === GEN1_DEPRECATION_BYPASS_APP_NAME) {
+      // Never delete the Gen1 deprecation bypass placeholder app. It must persist across
+      // runs so the account/region stays eligible to create Gen1 apps.
+      continue;
+    }
     const backends: Record<string, StackInfo> = {};
     try {
       const listBackendEnvironments = new ListBackendEnvironmentsCommand({ appId: app.appId, maxResults: 50 });

@@ -61,6 +61,7 @@
     "preset": "ts-jest",
     "testRunner": "amplify-category-api-e2e-core/runner",
     "testEnvironment": "amplify-category-api-e2e-core/environment",
+    "globalSetup": "amplify-category-api-e2e-core/global-setup",
     "transform": {
       "^.+\\.tsx?$": [
         "ts-jest",
