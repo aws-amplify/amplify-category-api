@@ -20,7 +20,9 @@ const REPO_ROOT = join(__dirname, '..');
 
 const supportedRegionsPath = join(REPO_ROOT, 'scripts', 'e2e-test-regions.json');
 const supportedRegions: TestRegion[] = JSON.parse(fs.readFileSync(supportedRegionsPath, 'utf-8'));
-const testRegions = supportedRegions.map((region) => region.name);
+// limited service coverage (RDS/OpenSearch); excluded from e2e shard assignment
+const EXCLUDED_REGIONS = ['sa-east-1'];
+const testRegions = supportedRegions.map((region) => region.name).filter((name) => !EXCLUDED_REGIONS.includes(name));
 const supportedRegionsByRegionName: Record<string, TestRegion> = supportedRegions.reduce(
   (acc, region) => ({ ...acc, [region.name]: region }),
   {},
@@ -99,6 +101,14 @@ const TEST_TIMINGS_PATH = join(REPO_ROOT, 'scripts', 'test-timings.data.json');
 const CODEBUILD_CONFIG_BASE_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_base.yml');
 const CODEBUILD_GENERATE_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow.yml');
 const CODEBUILD_DEBUG_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'debug_workflow.yml');
+// Split-batch outputs. These are generated alongside (not instead of) the combined
+// e2e_workflow.yml above. Each is a self-contained batchspec carrying the full prep/build
+// chain plus a disjoint subset of the e2e shards, so the two can be fired as separate
+// CodeBuild batches that each stay under the orchestrator's in-flight ceiling.
+// Batch A ("api+gql"): amplify-e2e-tests + graphql-transformers-e2e-tests shards.
+// Batch B ("cdk"): amplify-graphql-api-construct-tests shards.
+const CODEBUILD_GENERATE_API_GQL_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_api_gql.yml');
+const CODEBUILD_GENERATE_CDK_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_cdk.yml');
 
 const RUN_SOLO: (string | RegExp)[] = [
   'src/__tests__/apigw.test.ts',
@@ -144,6 +154,14 @@ const RUN_SOLO: (string | RegExp)[] = [
   /src\/__tests__\/sql-.*\.test\.ts/,
   // CDK tests
   /src\/__tests__\/base-cdk.*\.test\.ts/,
+  // Heavy CDK construct-deploy suites: each performs full CDK deploys and, when bin-packed
+  // together (MAX_WORKERS per shard), exhausts the shard's heap and times out. Run each solo
+  // so a single deploy never shares a shard with another.
+  'src/__tests__/utils.test.ts',
+  'src/__tests__/log-config.test.ts',
+  'src/__tests__/gsi-projection-type.test.ts',
+  'src/__tests__/ddb-iam-access.test.ts',
+  'src/__tests__/data-construct.test.ts',
   'src/__tests__/admin-role.test.ts',
   'src/__tests__/all-auth-modes.test.ts',
   'src/__tests__/amplify-ddb-canary.test.ts',
@@ -209,6 +227,34 @@ const DEBUG_FLAG = '--debug';
 const EXCLUDE_TEST_IDS: string[] = [];
 
 const MAX_WORKERS = 5;
+
+/**
+ * Maximum number of e2e CodeBuild shards allowed to be in-flight at once.
+ *
+ * Every shard used to depend only on `publish_to_local_registry`, so the whole
+ * suite became runnable simultaneously and overran the CodeBuild project's
+ * concurrent-build limit. The shards are instead chained into a sliding window:
+ * the first `E2E_WAVE_SIZE` shards depend on the upstream build, and each later
+ * shard `i` depends on shard `i - E2E_WAVE_SIZE`. This caps concurrency at
+ * `E2E_WAVE_SIZE` while preserving the deterministic shard ordering.
+ *
+ * Tune this single constant to change the concurrency cap.
+ */
+const E2E_WAVE_SIZE = 90;
+
+/**
+ * In-flight shard cap applied INDEPENDENTLY within each split batch (see
+ * {@link CODEBUILD_GENERATE_API_GQL_CONFIG_PATH} / {@link CODEBUILD_GENERATE_CDK_CONFIG_PATH}).
+ *
+ * This is the peak number of simultaneously in-flight shards per batch: within a batch the first
+ * `SPLIT_E2E_WAVE_SIZE` shards run off `publish_to_local_registry` and each later shard is chained
+ * `SPLIT_E2E_WAVE_SIZE` positions back, so at most this many shards are ever runnable at once. 95 is
+ * the intended cap — just under the ~100 simultaneously-in-progress builds at which the CodeBuild
+ * batch orchestrator faults materially. With this window the ~105-shard cdk batch peaks at exactly
+ * 95. The combined batch uses {@link E2E_WAVE_SIZE}; each batch is staggered over its own shard
+ * array, never across the combined list.
+ */
+const SPLIT_E2E_WAVE_SIZE = 95;
 
 // eslint-disable-next-line import/namespace
 const loadConfigBase = (): ConfigBase => yaml.load(fs.readFileSync(CODEBUILD_CONFIG_BASE_PATH, 'utf8')) as ConfigBase;
@@ -400,63 +446,112 @@ const filterCandidateRegions = (test: string, candidateRegions: string[], useBet
   return resolvedRegions;
 };
 
-const main = (): void => {
-  const useBetaLayer = process.argv[2] === 'beta';
-  const filteredTests = process.argv.slice(3);
+/**
+ * Caps concurrent e2e shards at {@link E2E_WAVE_SIZE} by chaining them into a
+ * sliding window. Shards keep their deterministic order: the first
+ * `E2E_WAVE_SIZE` shards retain their existing upstream dependency
+ * (`publish_to_local_registry`), and every later shard `i` is rewired to depend
+ * on the shard `E2E_WAVE_SIZE` positions earlier, so at most `E2E_WAVE_SIZE`
+ * shards are runnable at any time.
+ *
+ * Note: CodeBuild `depend-on` starts a successor only after its predecessor
+ * SUCCEEDS, so a failed shard skips the shard `E2E_WAVE_SIZE` positions later in
+ * the chain. Each shard buildspec therefore emits a primary artifact so it can
+ * be a valid predecessor.
+ *
+ * @param builds Ordered e2e shard jobs; their `depend-on` is rewired in place.
+ * @param windowSize Maximum number of shards allowed to be in-flight at once.
+ */
+const applyWaveStaggering = (builds: BatchBuildJob[], windowSize: number = E2E_WAVE_SIZE): void => {
+  builds.forEach((build, i) => {
+    build['depend-on'] = i < windowSize ? ['publish_to_local_registry'] : [builds[i - windowSize].identifier];
+  });
+};
+
+/** The e2e shard jobs grouped by the test package (family) they were generated from. */
+type ShardFamilies = {
+  /** amplify-e2e-tests shards (`run_e2e_tests`). */
+  api: BatchBuildJob[];
+  /** amplify-graphql-api-construct-tests shards (`run_cdk_tests`). */
+  cdk: BatchBuildJob[];
+  /** graphql-transformers-e2e-tests shards (`gql_e2e_tests`). */
+  gql: BatchBuildJob[];
+};
+
+/** Builds the base shard template shared by every e2e family (LARGE compute, high heap). */
+const makeShardTemplate = (identifier: string, buildspec: string): BatchBuildJob => ({
+  identifier,
+  buildspec,
+  env: {
+    'compute-type': 'BUILD_GENERAL1_LARGE',
+    variables: {
+      // BUILD_GENERAL1_LARGE has 15GB of memory. 14848MB = 14.5GB. Leave 0.5GB for the OS and other processes.
+      NODE_OPTIONS: '--max-old-space-size=14848',
+    },
+  },
+  'depend-on': ['publish_to_local_registry'],
+});
+
+/** Generates the e2e shard jobs for all three test families from the filesystem. */
+const buildShardFamilies = (useBetaLayer: boolean): ShardFamilies => ({
+  api: splitTests(
+    makeShardTemplate('run_e2e_tests', 'codebuild_specs/run_e2e_tests.yml'),
+    join(REPO_ROOT, 'packages', 'amplify-e2e-tests'),
+    useBetaLayer,
+  ),
+  cdk: splitTests(
+    makeShardTemplate('run_cdk_tests', 'codebuild_specs/run_cdk_tests.yml'),
+    join(REPO_ROOT, 'packages', 'amplify-graphql-api-construct-tests'),
+    useBetaLayer,
+  ),
+  gql: splitTests(
+    makeShardTemplate('gql_e2e_tests', 'codebuild_specs/graphql_e2e_tests.yml'),
+    join(REPO_ROOT, 'packages', 'graphql-transformers-e2e-tests'),
+    useBetaLayer,
+  ),
+});
+
+/** Builds the per-batch resource-cleanup job, gated on the batch's first shard. */
+const createCleanupJob = (builds: BatchBuildJob[]): BatchBuildJob => ({
+  identifier: 'cleanup_e2e_resources',
+  buildspec: 'codebuild_specs/cleanup_e2e_resources.yml',
+  env: {
+    'compute-type': 'BUILD_GENERAL1_SMALL',
+    variables: {
+      ...DEFAULT_VARIABLES,
+    },
+  },
+  'depend-on': builds.length > 0 ? [builds[0].identifier] : 'publish_to_local_registry',
+});
+
+/** Deep-clones a shard array so per-batch `depend-on` rewrites never leak across batches. */
+const cloneBuilds = (builds: BatchBuildJob[]): BatchBuildJob[] => JSON.parse(JSON.stringify(builds));
+
+// Non-test prep/build jobs the e2e shards transitively require. Every split batch loads the full
+// base graph (which provides all of these), so the assertion below guards against the base graph
+// drifting out from under the split batches.
+const ESSENTIAL_NON_TEST_IDENTIFIERS = [
+  'build_linux',
+  'build_windows',
+  'test',
+  'verify_cdk_version',
+  'verify_api_extract',
+  'verify_yarn_lock',
+  'verify_dependency_licenses_extract',
+  'publish_to_local_registry',
+  'cleanup_e2e_resources',
+];
+
+/**
+ * Generates the legacy single-batch graph at {@link CODEBUILD_GENERATE_CONFIG_PATH} (or the debug
+ * spec). This preserves the original behavior so flows that still consume e2e_workflow.yml — the
+ * project's default buildspec and the pre-commit hook — keep working.
+ */
+const generateCombinedConfig = (allShards: BatchBuildJob[], filteredTests: string[]): void => {
   const configBase: ConfigBase = loadConfigBase();
   const baseBuildGraph = configBase.batch['build-graph'];
 
-  let builds = [
-    ...splitTests(
-      {
-        identifier: 'run_e2e_tests',
-        buildspec: 'codebuild_specs/run_e2e_tests.yml',
-        env: {
-          'compute-type': 'BUILD_GENERAL1_LARGE',
-          variables: {
-            // BUILD_GENERAL1_LARGE has 15GB of memory. 14848MB = 14.5GB. Leave 0.5GB for the OS and other processes.
-            NODE_OPTIONS: '--max-old-space-size=14848',
-          },
-        },
-        'depend-on': ['publish_to_local_registry'],
-      },
-      join(REPO_ROOT, 'packages', 'amplify-e2e-tests'),
-      useBetaLayer,
-    ),
-    ...splitTests(
-      {
-        identifier: 'run_cdk_tests',
-        buildspec: 'codebuild_specs/run_cdk_tests.yml',
-        env: {
-          'compute-type': 'BUILD_GENERAL1_LARGE',
-          variables: {
-            // BUILD_GENERAL1_LARGE has 15GB of memory. 14848MB = 14.5GB. Leave 0.5GB for the OS and other processes.
-            NODE_OPTIONS: '--max-old-space-size=14848',
-          },
-        },
-        'depend-on': ['publish_to_local_registry'],
-      },
-      join(REPO_ROOT, 'packages', 'amplify-graphql-api-construct-tests'),
-      useBetaLayer,
-    ),
-    ...splitTests(
-      {
-        identifier: 'gql_e2e_tests',
-        buildspec: 'codebuild_specs/graphql_e2e_tests.yml',
-        env: {
-          'compute-type': 'BUILD_GENERAL1_LARGE',
-          variables: {
-            // BUILD_GENERAL1_LARGE has 15GB of memory. 14848MB = 14.5GB. Leave 0.5GB for the OS and other processes.
-            NODE_OPTIONS: '--max-old-space-size=14848',
-          },
-        },
-        'depend-on': ['publish_to_local_registry'],
-      },
-      join(REPO_ROOT, 'packages', 'graphql-transformers-e2e-tests'),
-      useBetaLayer,
-    ),
-  ];
-
+  let builds = cloneBuilds(allShards);
   if (filteredTests.length > 0) {
     builds = builds.filter((build) => filteredTests.includes(build.identifier));
     if (filteredTests.includes(DEBUG_FLAG)) {
@@ -467,25 +562,112 @@ const main = (): void => {
     builds = builds.filter((build) => !EXCLUDE_TEST_IDS.includes(build.identifier));
   }
 
-  const cleanupResources: BatchBuildJob = {
-    identifier: 'cleanup_e2e_resources',
-    buildspec: 'codebuild_specs/cleanup_e2e_resources.yml',
-    env: {
-      'compute-type': 'BUILD_GENERAL1_SMALL',
-      variables: {
-        ...DEFAULT_VARIABLES,
-      },
-    },
-    'depend-on': builds.length > 0 ? [builds[0].identifier] : 'publish_to_local_registry',
-  };
+  // Cap concurrent e2e shards with a chained sliding window (see E2E_WAVE_SIZE).
+  applyWaveStaggering(builds);
 
   console.log(`Total number of splitted jobs: ${builds.length}`);
-  const currentBatch = [...baseBuildGraph, ...builds, cleanupResources];
-  configBase.batch['build-graph'] = currentBatch;
+  configBase.batch['build-graph'] = [...baseBuildGraph, ...builds, createCleanupJob(builds)];
 
   const outputPath = filteredTests.includes(DEBUG_FLAG) ? CODEBUILD_DEBUG_CONFIG_PATH : CODEBUILD_GENERATE_CONFIG_PATH;
   saveConfig(configBase, outputPath);
   console.log(`Successfully generated the buildspec at ${outputPath}`);
+};
+
+/**
+ * Writes one self-contained split batch: the full base prep/build graph + the given (already
+ * cloned) shards staggered at {@link SPLIT_E2E_WAVE_SIZE} + the batch's own cleanup job.
+ *
+ * @returns The staggered shard jobs (test shards only) for reconciliation.
+ */
+const writeBatchConfig = (label: string, shards: BatchBuildJob[], outputPath: string): BatchBuildJob[] => {
+  const configBase: ConfigBase = loadConfigBase();
+  const baseBuildGraph = configBase.batch['build-graph'];
+
+  applyWaveStaggering(shards, SPLIT_E2E_WAVE_SIZE);
+  configBase.batch['build-graph'] = [...baseBuildGraph, ...shards, createCleanupJob(shards)];
+
+  saveConfig(configBase, outputPath);
+  console.log(`Generated "${label}" batch (${shards.length} shards) at ${outputPath}`);
+  return shards;
+};
+
+/**
+ * Generates the two self-contained split batches and runs the reconciliation self-check:
+ * Batch A ("api+gql") = api + gql shards, Batch B ("cdk") = cdk shards.
+ */
+const generateSplitConfigs = (families: ShardFamilies): void => {
+  const apiGqlShards = writeBatchConfig('api+gql', cloneBuilds([...families.api, ...families.gql]), CODEBUILD_GENERATE_API_GQL_CONFIG_PATH);
+  const cdkShards = writeBatchConfig('cdk', cloneBuilds(families.cdk), CODEBUILD_GENERATE_CDK_CONFIG_PATH);
+
+  assertReconciliation(families, apiGqlShards, cdkShards);
+};
+
+/**
+ * Programmatic guarantee that splitting dropped nothing: the union of test-shard identifiers across
+ * the two split batches must exactly equal the full combined set, with no shard in both batches.
+ * Also asserts each batch carries the essential non-test jobs. Prints a report and throws on FAIL.
+ */
+const assertReconciliation = (families: ShardFamilies, apiGqlShards: BatchBuildJob[], cdkShards: BatchBuildJob[]): void => {
+  const combinedIds = [...families.api, ...families.cdk, ...families.gql].map((b) => b.identifier).sort();
+  const splitIds = [...apiGqlShards, ...cdkShards].map((b) => b.identifier).sort();
+
+  const combinedSet = new Set(combinedIds);
+  const splitSet = new Set(splitIds);
+  const missing = combinedIds.filter((id) => !splitSet.has(id));
+  const extra = splitIds.filter((id) => !combinedSet.has(id));
+  const duplicates = splitIds.filter((id, idx) => splitIds.indexOf(id) !== idx);
+
+  const cdkSet = new Set(cdkShards.map((b) => b.identifier));
+  const overlap = apiGqlShards.map((b) => b.identifier).filter((id) => cdkSet.has(id));
+
+  const missingEssential = ESSENTIAL_NON_TEST_IDENTIFIERS.filter(
+    (id) => !batchContainsJob(CODEBUILD_GENERATE_API_GQL_CONFIG_PATH, id) || !batchContainsJob(CODEBUILD_GENERATE_CDK_CONFIG_PATH, id),
+  );
+
+  const pass =
+    missing.length === 0 && extra.length === 0 && duplicates.length === 0 && overlap.length === 0 && missingEssential.length === 0;
+
+  console.log('\n===== e2e split reconciliation =====');
+  console.log(`combined shards : ${combinedIds.length}`);
+  console.log(`api+gql batch   : ${apiGqlShards.length} shards`);
+  console.log(`cdk batch       : ${cdkShards.length} shards`);
+  console.log(`split total     : ${splitIds.length}`);
+  if (missing.length > 0) console.log(`MISSING shards  : ${JSON.stringify(missing)}`);
+  if (extra.length > 0) console.log(`EXTRA shards    : ${JSON.stringify(extra)}`);
+  if (duplicates.length > 0) console.log(`DUPLICATE shards: ${JSON.stringify(duplicates)}`);
+  if (overlap.length > 0) console.log(`OVERLAP shards  : ${JSON.stringify(overlap)}`);
+  if (missingEssential.length > 0) console.log(`MISSING non-test jobs in a batch: ${JSON.stringify(missingEssential)}`);
+  console.log(`result          : ${pass ? 'PASS' : 'FAIL'}`);
+  console.log('====================================\n');
+
+  if (!pass) {
+    throw new Error('e2e split reconciliation FAILED: the two batches do not exactly cover the combined shard set.');
+  }
+};
+
+/** Reads a generated batchspec from disk and reports whether it contains a job with `identifier`. */
+const batchContainsJob = (configPath: string, identifier: string): boolean => {
+  // eslint-disable-next-line import/namespace
+  const config = yaml.load(fs.readFileSync(configPath, 'utf8')) as ConfigBase;
+  return config.batch['build-graph'].some((job) => job.identifier === identifier);
+};
+
+const main = (): void => {
+  const useBetaLayer = process.argv[2] === 'beta';
+  const filteredTests = process.argv.slice(3);
+  const isDebug = filteredTests.includes(DEBUG_FLAG);
+
+  const families = buildShardFamilies(useBetaLayer);
+
+  // Combined batch: the legacy single-batch graph (filter/exclude/debug paths preserved).
+  generateCombinedConfig([...families.api, ...families.cdk, ...families.gql], filteredTests);
+
+  // Split batches: two self-contained graphs, each independently waved. The debug and
+  // single-test filtering flows only target the combined/debug spec, so skip the split
+  // generation in those modes.
+  if (!isDebug && filteredTests.length === 0) {
+    generateSplitConfigs(families);
+  }
 };
 
 main();
