@@ -148,6 +148,62 @@ function createUserAgent(request) {
 }
 `;
 
+exports[`generation route bedrock InvokeModel IAM resources cross-region inference profile id grants the profile ARN and wildcard-region foundation-model ARN 1`] = `
+[
+  {
+    "Fn::Join": [
+      "",
+      [
+        "arn:",
+        {
+          "Ref": "AWS::Partition",
+        },
+        ":bedrock:",
+        {
+          "Ref": "AWS::Region",
+        },
+        ":",
+        {
+          "Ref": "AWS::AccountId",
+        },
+        ":inference-profile/us.anthropic.claude-haiku-4-5-20251001-v1:0",
+      ],
+    ],
+  },
+  {
+    "Fn::Join": [
+      "",
+      [
+        "arn:",
+        {
+          "Ref": "AWS::Partition",
+        },
+        ":bedrock:*::foundation-model/anthropic.claude-haiku-4-5-20251001-v1:0",
+      ],
+    ],
+  },
+]
+`;
+
+exports[`generation route bedrock InvokeModel IAM resources plain foundation-model id grants the foundation-model ARN only 1`] = `
+{
+  "Fn::Join": [
+    "",
+    [
+      "arn:",
+      {
+        "Ref": "AWS::Partition",
+      },
+      ":bedrock:",
+      {
+        "Ref": "AWS::Region",
+      },
+      "::foundation-model/anthropic.claude-3-haiku-20240307-v1:0",
+    ],
+  ],
+}
+`;
+
 exports[`generation route custom query 1`] = `
 {
   "Fn::Join": [

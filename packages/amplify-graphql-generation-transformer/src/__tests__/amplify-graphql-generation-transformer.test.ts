@@ -326,6 +326,55 @@ describe('generation route invalid inference configuration', () => {
 });
 // });
 
+describe('generation route bedrock InvokeModel IAM resources', () => {
+  const generationRoute = (aiModel: string): string => `
+    type Query {
+        generate(description: String!): String
+        @generation(
+          aiModel: "${aiModel}",
+          systemPrompt: "Make a string based on the description."
+        )
+    }
+  `;
+
+  const getBedrockInvokeResources = (out: DeploymentResources, fieldName: string): unknown => {
+    const stackName = `GenerationBedrockDataSource${fieldName}Stack`;
+    const stack = out.stacks[stackName];
+    expect(stack).toBeDefined();
+
+    const role = Object.values(stack.Resources ?? {}).find(
+      (resource: any) => resource.Type === 'AWS::IAM::Role' && resource.Properties?.Policies,
+    ) as any;
+    expect(role).toBeDefined();
+
+    const statement = role.Properties.Policies[0].PolicyDocument.Statement.find(
+      (s: any) => Array.isArray(s.Action) ? s.Action.includes('bedrock:InvokeModel') : s.Action === 'bedrock:InvokeModel',
+    );
+    expect(statement).toBeDefined();
+    return statement.Resource;
+  };
+
+  test('plain foundation-model id grants the foundation-model ARN only', () => {
+    const out = transform(generationRoute('anthropic.claude-3-haiku-20240307-v1:0'));
+    const resources = getBedrockInvokeResources(out, 'Generate');
+    const serialized = JSON.stringify(resources);
+
+    expect(serialized).toContain('foundation-model/anthropic.claude-3-haiku-20240307-v1:0');
+    expect(serialized).not.toContain('inference-profile');
+    expect(resources).toMatchSnapshot();
+  });
+
+  test('cross-region inference profile id grants the profile ARN and wildcard-region foundation-model ARN', () => {
+    const out = transform(generationRoute('us.anthropic.claude-haiku-4-5-20251001-v1:0'));
+    const resources = getBedrockInvokeResources(out, 'Generate');
+    const serialized = JSON.stringify(resources);
+
+    expect(serialized).toContain('inference-profile/us.anthropic.claude-haiku-4-5-20251001-v1:0');
+    expect(serialized).toContain('foundation-model/anthropic.claude-haiku-4-5-20251001-v1:0');
+    expect(resources).toMatchSnapshot();
+  });
+});
+
 const getResolverResource = (queryName: string, resources?: Record<string, any>): Record<string, any> => {
   const resolverName = `Query${queryName}Resolver`;
   return resources?.[resolverName];

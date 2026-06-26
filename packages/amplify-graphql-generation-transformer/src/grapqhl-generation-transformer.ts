@@ -207,12 +207,45 @@ export class GenerationTransformer extends TransformerPluginBase {
             new iam.PolicyStatement({
               effect: iam.Effect.ALLOW,
               actions: ['bedrock:InvokeModel'],
-              resources: [`arn:${cdk.Stack.of(dataSourceScope).partition}:bedrock:${region}::foundation-model/${bedrockModelId}`],
+              resources: this.bedrockInvokeModelResources(dataSourceScope, region, bedrockModelId),
             }),
           ],
         }),
       },
     });
+  }
+
+  /**
+   * Builds the list of resource ARNs that `bedrock:InvokeModel` is granted on for a given model id.
+   *
+   * For a plain foundation-model id (e.g. `anthropic.claude-3-haiku-20240307-v1:0`) this is the
+   * single regional foundation-model ARN, preserving the original behavior.
+   *
+   * For a cross-region inference profile id (prefixed with `us.`, `eu.`, or `apac.`) invoking the
+   * profile requires `bedrock:InvokeModel` on BOTH the inference-profile ARN AND the underlying
+   * regional foundation-model ARNs the profile routes to. The underlying model id is the profile id
+   * with the region prefix stripped, and the foundation-model ARN is granted with a wildcard region
+   * so it covers every region the profile may dispatch to. Without this, customers using a
+   * cross-region profile with `@generation` hit runtime AccessDenied.
+   *
+   * @param {Construct} scope - The construct scope used to resolve account/partition tokens.
+   * @param {string} region - The AWS region for the Bedrock service.
+   * @param {string} bedrockModelId - The foundation-model id or cross-region inference profile id.
+   * @returns {string[]} The resource ARNs to grant `bedrock:InvokeModel` on.
+   */
+  private bedrockInvokeModelResources(scope: Construct, region: string, bedrockModelId: string): string[] {
+    const { partition, account } = cdk.Stack.of(scope);
+    const inferenceProfileMatch = bedrockModelId.match(/^(us|eu|apac)\.(.+)$/);
+
+    if (inferenceProfileMatch) {
+      const foundationModelId = inferenceProfileMatch[2];
+      return [
+        `arn:${partition}:bedrock:${region}:${account}:inference-profile/${bedrockModelId}`,
+        `arn:${partition}:bedrock:*::foundation-model/${foundationModelId}`,
+      ];
+    }
+
+    return [`arn:${partition}:bedrock:${region}::foundation-model/${bedrockModelId}`];
   }
 
   private bedrockDataSourceName(fieldName: string): string {
