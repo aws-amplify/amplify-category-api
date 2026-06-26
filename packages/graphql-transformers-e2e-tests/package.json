@@ -119,6 +119,7 @@
       "^axios$": "<rootDir>/../../node_modules/axios/dist/node/axios.cjs"
     },
     "testEnvironment": "../../FixJestEnvironment.js",
+    "globalSetup": "amplify-category-api-e2e-core/global-setup",
     "coveragePathIgnorePatterns": [
       "/node_modules",
       "/__tests__/"

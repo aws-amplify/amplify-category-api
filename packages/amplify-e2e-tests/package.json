@@ -69,6 +69,7 @@
   "jest": {
     "verbose": false,
     "preset": "ts-jest",
+    "globalSetup": "amplify-category-api-e2e-core/global-setup",
     "testRunner": "amplify-category-api-e2e-core/runner",
     "testEnvironment": "amplify-category-api-e2e-core/environment",
     "transform": {
