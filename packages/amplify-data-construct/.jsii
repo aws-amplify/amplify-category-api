@@ -52,18 +52,24 @@
     "@aws-sdk/middleware-host-header": "^3.972.0",
     "@aws-sdk/middleware-logger": "^3.972.0",
     "@aws-sdk/middleware-recursion-detection": "^3.972.0",
+    "@aws-sdk/middleware-sdk-s3": "^3.972.37",
     "@aws-sdk/middleware-user-agent": "^3.972.0",
+    "@aws-sdk/middleware-websocket": "^3.972.16",
     "@aws-sdk/nested-clients": "^3.973.0",
     "@aws-sdk/region-config-resolver": "^3.972.0",
+    "@aws-sdk/signature-v4-multi-region": "^3.996.25",
     "@aws-sdk/token-providers": "^3.973.0",
     "@aws-sdk/types": "^3.973.0",
+    "@aws-sdk/util-arn-parser": "^3.972.3",
     "@aws-sdk/util-endpoints": "^3.973.0",
+    "@aws-sdk/util-format-url": "^3.972.10",
     "@aws-sdk/util-locate-window": "^3.0.0",
     "@aws-sdk/util-user-agent-browser": "^3.972.0",
     "@aws-sdk/util-user-agent-node": "^3.973.0",
-    "@aws-sdk/xml-builder": "^3.972.0",
+    "@aws-sdk/xml-builder": "^3.972.31",
     "@aws/lambda-invoke-store": "^0.2.2",
     "@babel/runtime": "^7.18.3",
+    "@nodable/entities": "^2.1.0",
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/core": "^2.0.0",
     "@opentelemetry/resources": "2.0.0",
@@ -147,7 +153,8 @@
     "ts-dedent": "^2.0.0",
     "tslib": "^2.6.2",
     "universalify": "^0.1.0",
-    "uuid": "^9.0.1",
+    "uuid": "^11.1.1",
+    "xml-naming": "^0.1.0",
     "zod": "^3.22.2"
   },
   "dependencies": {
@@ -8599,5 +8606,5 @@
   },
   "types": {},
   "version": "1.17.3",
-  "fingerprint": "iuzz4IUbOgNmqpOvRjeUAFrasiVbfNFtgl4wkq3gH1c="
+  "fingerprint": "nfltHpQ6XgO+xOf6i/vn2aOW2tQ1Fc+YAjbBHKo+lJY="
 }
