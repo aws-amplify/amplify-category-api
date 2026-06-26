@@ -173,7 +173,7 @@ describe('Elasticsearch domain TLS configuration', () => {
 
     const domainEndpointOptions = esDomain.Properties.DomainEndpointOptions;
     expect(domainEndpointOptions).toBeDefined();
-    expect(domainEndpointOptions.EnforceHTTPS).toBeUndefined();
+    expect(domainEndpointOptions.EnforceHTTPS).toBe(true);
     expect(domainEndpointOptions.TLSSecurityPolicy).toBe('Policy-Min-TLS-1-2-2019-07');
   });
 });
