@@ -20,7 +20,9 @@ const REPO_ROOT = join(__dirname, '..');
 
 const supportedRegionsPath = join(REPO_ROOT, 'scripts', 'e2e-test-regions.json');
 const supportedRegions: TestRegion[] = JSON.parse(fs.readFileSync(supportedRegionsPath, 'utf-8'));
-const testRegions = supportedRegions.map((region) => region.name);
+// limited service coverage (RDS/OpenSearch); excluded from e2e shard assignment
+const EXCLUDED_REGIONS = ['sa-east-1'];
+const testRegions = supportedRegions.map((region) => region.name).filter((name) => !EXCLUDED_REGIONS.includes(name));
 const supportedRegionsByRegionName: Record<string, TestRegion> = supportedRegions.reduce(
   (acc, region) => ({ ...acc, [region.name]: region }),
   {},
