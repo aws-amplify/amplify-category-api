@@ -1,8 +1,27 @@
 import { EOL } from 'os';
 import { v4 as uuid } from 'uuid';
+import {
+  AmplifyClient,
+  CreateAppCommand,
+  CreateBackendEnvironmentCommand,
+  ListBackendEnvironmentsCommand,
+  paginateListApps,
+} from '@aws-sdk/client-amplify';
 import { nspawn as spawn, getCLIPath, singleSelect, addCITags } from '..';
 import { KEY_DOWN_ARROW } from '../utils';
 import { amplifyRegions } from '../configure';
+
+/**
+ * Name of the placeholder Amplify app that keeps an account/region eligible to run
+ * Gen1 `amplify init`. Must match the name skipped by the e2e cleanup job.
+ */
+export const GEN1_DEPRECATION_BYPASS_APP_NAME = 'DoNotDeleteAppToBypassGen1Deprecation';
+
+/**
+ * Name of the backend environment created under the placeholder app. The Gen1
+ * new-customer gate only passes when the app has at least one backend environment.
+ */
+export const GEN1_DEPRECATION_BYPASS_ENV_NAME = 'test';
 
 const defaultSettings = {
   name: EOL,
@@ -316,4 +335,55 @@ export function initProjectWithAccessKey(
         }
       });
   });
+}
+
+/**
+ * Idempotently ensure the Gen1 deprecation-bypass placeholder app (and its backend
+ * environment) exists in the given region, so that `amplify init` is not blocked by
+ * the Gen1 new-customer restriction.
+ *
+ * Self-healing: safe to call at the start of every e2e shard. If the placeholder was
+ * deleted by cleanup, it is recreated; if it already exists, this is a no-op. All
+ * errors are swallowed and logged so a transient failure never fails the test run.
+ *
+ * @param region the AWS region to ensure the placeholder in (defaults to `process.env.CLI_REGION`)
+ */
+export async function ensureGen1PlaceholderApp(region: string | undefined = process.env.CLI_REGION): Promise<void> {
+  if (!region) {
+    console.log('[ensureGen1PlaceholderApp] No region provided (CLI_REGION unset); skipping placeholder app check.');
+    return;
+  }
+
+  const client = new AmplifyClient({ region });
+
+  try {
+    let existingAppId: string | undefined;
+    for await (const page of paginateListApps({ client }, {})) {
+      const match = page.apps?.find((a) => a.name === GEN1_DEPRECATION_BYPASS_APP_NAME);
+      if (match) {
+        existingAppId = match.appId;
+        break;
+      }
+    }
+
+    let appId = existingAppId;
+    if (!appId) {
+      const createResponse = await client.send(new CreateAppCommand({ name: GEN1_DEPRECATION_BYPASS_APP_NAME }));
+      appId = createResponse.app?.appId;
+      if (!appId) {
+        console.log('[ensureGen1PlaceholderApp] CreateApp returned no appId; skipping backend environment creation.');
+        return;
+      }
+      console.log(`[ensureGen1PlaceholderApp] Created placeholder app ${GEN1_DEPRECATION_BYPASS_APP_NAME} (${appId}) in ${region}.`);
+    }
+
+    const backendEnvs = await client.send(new ListBackendEnvironmentsCommand({ appId, maxResults: 50 }));
+    const hasEnv = backendEnvs.backendEnvironments?.some((e) => e.environmentName === GEN1_DEPRECATION_BYPASS_ENV_NAME);
+    if (!hasEnv) {
+      await client.send(new CreateBackendEnvironmentCommand({ appId, environmentName: GEN1_DEPRECATION_BYPASS_ENV_NAME }));
+      console.log(`[ensureGen1PlaceholderApp] Created backend environment '${GEN1_DEPRECATION_BYPASS_ENV_NAME}' for app ${appId} in ${region}.`);
+    }
+  } catch (e) {
+    console.log(`[ensureGen1PlaceholderApp] Non-fatal error ensuring placeholder app in ${region}: ${(e as Error)?.message ?? e}`);
+  }
 }
