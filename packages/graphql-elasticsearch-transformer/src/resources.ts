@@ -495,6 +495,7 @@ export class ResourceFactory {
       DomainName: this.domainName(),
       ElasticsearchVersion: '6.2',
       DomainEndpointOptions: {
+        EnforceHTTPS: true,
         TLSSecurityPolicy: 'Policy-Min-TLS-1-2-2019-07',
       },
       ElasticsearchClusterConfig: {
