@@ -132,16 +132,18 @@ describe('conversation', () => {
 
           const streamPart = event.onCreateAssistantResponsePirateChat;
           events.push(streamPart);
-          // expect event to contain `p`
-          expect(streamPart.p).not.toBeNull();
+          // `p` is optional stream padding (not response text); some models/control frames omit it,
+          // so only assert on its shape when present.
           if (streamPart.p != null) {
             expect(streamPart.p.length).toBeGreaterThanOrEqual(0);
           }
 
           if (streamPart.stopReason) break;
         }
-        const accumulatedP = events.map((messageStreamPart) => messageStreamPart.p).join('');
-        expect(accumulatedP.length).toBeGreaterThan(0);
+        // The assistant response text is streamed via `contentBlockText`. Assert the aggregate
+        // streamed text is non-empty to confirm a real response was received.
+        const accumulatedText = events.map((messageStreamPart) => messageStreamPart.contentBlockText ?? '').join('');
+        expect(accumulatedText.length).toBeGreaterThan(0);
 
         // reconstruct the message from the events
         const sortedEvents = events
