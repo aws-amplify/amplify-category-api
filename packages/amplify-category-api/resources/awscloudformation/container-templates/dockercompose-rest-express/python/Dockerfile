@@ -1,5 +1,5 @@
 # set base image (host OS)
-FROM public.ecr.aws/bitnami/python:3.12-prod
+FROM public.ecr.aws/docker/library/python:3.12
 
 # set the working directory in the container
 WORKDIR /code
