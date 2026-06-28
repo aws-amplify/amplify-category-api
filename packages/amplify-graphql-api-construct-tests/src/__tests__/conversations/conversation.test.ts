@@ -317,9 +317,19 @@ describe('conversation', () => {
 
         // collect the assistant response events
         const events: AmplifyAIConversationMessageStreamPart[] = [];
+        const toolUseDeadline = Date.now() + ONE_MINUTE;
         for await (const event of subscription) {
-          events.push(event.onCreateAssistantResponsePirateChat);
-          if (event.onCreateAssistantResponsePirateChat.stopReason) break;
+          const streamPart = event.onCreateAssistantResponsePirateChat;
+          events.push(streamPart);
+          // The handler emits an event with `errors` set (and no `stopReason`) when the turn fails.
+          // Surface it immediately instead of looping until the jest timeout hides the real cause.
+          if (streamPart?.errors?.length) {
+            throw new Error(`Assistant turn returned errors (no stopReason): ${JSON.stringify(streamPart.errors)}`);
+          }
+          if (Date.now() > toolUseDeadline) {
+            throw new Error(`Conversation stream deadline exceeded after ${events.length} events with no stopReason`);
+          }
+          if (streamPart?.stopReason) break;
         }
 
         const eventWithToolUse = events.find((event) => event.contentBlockToolUse);
@@ -355,9 +365,19 @@ describe('conversation', () => {
         expect(message2.content[0].toolResult.content[0].json).toEqual(JSON.stringify(toolResultContent));
 
         // expect to receive the assistant response in the subscription
+        const toolResultDeadline = Date.now() + ONE_MINUTE;
         for await (const event of subscription) {
-          events.push(event.onCreateAssistantResponsePirateChat);
-          if (event.onCreateAssistantResponsePirateChat.stopReason) break;
+          const streamPart = event.onCreateAssistantResponsePirateChat;
+          events.push(streamPart);
+          // The handler emits an event with `errors` set (and no `stopReason`) when the turn fails.
+          // Surface it immediately instead of looping until the jest timeout hides the real cause.
+          if (streamPart?.errors?.length) {
+            throw new Error(`Assistant turn returned errors (no stopReason): ${JSON.stringify(streamPart.errors)}`);
+          }
+          if (Date.now() > toolResultDeadline) {
+            throw new Error(`Conversation stream deadline exceeded after ${events.length} events with no stopReason`);
+          }
+          if (streamPart?.stopReason) break;
         }
 
         // list messages to get the full assistant message
