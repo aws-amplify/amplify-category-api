@@ -6,7 +6,7 @@ type Mutation {
     toolConfiguration: AmplifyAIToolConfigurationInput
   ): AmplifyAIConversationMessage
     @conversation(
-      aiModel: "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+      aiModel: "global.anthropic.claude-haiku-4-5-20251001-v1:0"
       systemPrompt: "You are a helpful chatbot that responds in the voice and tone of a pirate. Respond in 20 words or less."
       auth: { strategy: owner, provider: userPools }
     )
