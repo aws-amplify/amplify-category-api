@@ -148,6 +148,10 @@ const STALE_DURATION_MS = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
 
 const staleHorizonDate = new Date(Date.now() - STALE_DURATION_MS);
 
+const isNetworkError = (e: any): boolean => {
+  return e?.name === 'TimeoutError' || e?.code === 'ETIMEDOUT' || e?.code === 'ECONNRESET' || e?.code === 'ECONNREFUSED';
+};
+
 /*
  * Exit on expired token as all future requests will fail.
  */
@@ -192,30 +196,48 @@ const testInstanceStalenessFilter = (resource: DBInstance): boolean => {
  * Get all S3 buckets in the account, and filter down to the ones we consider stale.
  */
 const getOrphanS3TestBuckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> => {
-  const s3Client = new S3Client({ credentials: account.credentials });
-  const listBucketResponse = await s3Client.send(new ListBucketsCommand({}));
-  const staleBuckets = listBucketResponse.Buckets.filter(testBucketStalenessFilter);
+  try {
+    const s3Client = new S3Client({ credentials: account.credentials, retryStrategy });
+    const listBucketResponse = await s3Client.send(new ListBucketsCommand({}));
+    const staleBuckets = listBucketResponse.Buckets.filter(testBucketStalenessFilter);
 
-  const bucketInfos = await Promise.all(
-    staleBuckets.map(async (staleBucket): Promise<S3BucketInfo> => {
-      const region = await getBucketRegion(account, staleBucket.Name);
-      return {
-        name: staleBucket.Name,
-        region,
-      };
-    }),
-  );
-  return bucketInfos;
+    const bucketInfos = await Promise.all(
+      staleBuckets.map(async (staleBucket): Promise<S3BucketInfo> => {
+        const region = await getBucketRegion(account, staleBucket.Name);
+        return {
+          name: staleBucket.Name,
+          region,
+        };
+      }),
+    );
+    return bucketInfos;
+  } catch (e) {
+    if (isNetworkError(e)) {
+      console.log(`Network error in getOrphanS3TestBuckets for account ${account.accountId}, skipping: ${e.name} ${e.code ?? ''}`);
+      return [];
+    }
+    console.log('Irrecoverable error in getOrphanS3TestBuckets', JSON.stringify(e));
+    throw e;
+  }
 };
 
 /**
  * Get all iam roles in the account, and filter down to the ones we consider stale.
  */
 const getOrphanTestIamRoles = async (account: AWSAccountInfo): Promise<IamRoleInfo[]> => {
-  const iamClient = new IAMClient({ credentials: account.credentials });
-  const listRoleResponse = await iamClient.send(new ListRolesCommand({}));
-  const staleRoles = listRoleResponse.Roles.filter(testRoleStalenessFilter);
-  return staleRoles.map((it) => ({ name: it.RoleName }));
+  try {
+    const iamClient = new IAMClient({ credentials: account.credentials, retryStrategy });
+    const listRoleResponse = await iamClient.send(new ListRolesCommand({}));
+    const staleRoles = listRoleResponse.Roles.filter(testRoleStalenessFilter);
+    return staleRoles.map((it) => ({ name: it.RoleName }));
+  } catch (e) {
+    if (isNetworkError(e)) {
+      console.log(`Network error in getOrphanTestIamRoles for account ${account.accountId}, skipping: ${e.name} ${e.code ?? ''}`);
+      return [];
+    }
+    console.log('Irrecoverable error in getOrphanTestIamRoles', JSON.stringify(e));
+    throw e;
+  }
 };
 
 /**
@@ -381,7 +403,7 @@ const listStacks = async (client: CloudFormationClient, stackStatusFilter: Stack
           StackStatusFilter: stackStatusFilter,
         }),
       );
-      return { token: response.NextToken, items: response.StackSummaries };
+      return { nextPage: response.NextToken, items: response.StackSummaries };
     });
   } catch (e: any) {
     if (e?.name === 'InvalidClientTokenId') {
@@ -476,15 +498,25 @@ const getJobCodeBuildDetails = async (jobIds: string[]): Promise<Build[]> => {
 };
 
 const getBucketRegion = async (account: AWSAccountInfo, bucketName: string): Promise<string> => {
-  const s3Client = new S3Client({ credentials: account.credentials });
+  const s3Client = new S3Client({ credentials: account.credentials, retryStrategy });
   const location = await s3Client.send(new GetBucketLocationCommand({ Bucket: bucketName }));
   const region = location.LocationConstraint ?? 'us-east-1';
   return region;
 };
 
 const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> => {
-  const s3Client = new S3Client({ credentials: account.credentials });
-  const buckets = await s3Client.send(new ListBucketsCommand({}));
+  const s3Client = new S3Client({ credentials: account.credentials, retryStrategy });
+  let buckets;
+  try {
+    buckets = await s3Client.send(new ListBucketsCommand({}));
+  } catch (e) {
+    if (isNetworkError(e)) {
+      console.log(`Network error listing S3 buckets for account ${account.accountId}, skipping: ${e.name} ${e.code ?? ''}`);
+      return [];
+    }
+    console.log('Irrecoverable error in getS3Buckets (ListBuckets)', JSON.stringify(e));
+    throw e;
+  }
   const result: S3BucketInfo[] = [];
   for (const bucket of buckets.Buckets.filter(testBucketStalenessFilter)) {
     let region: string | undefined;
@@ -494,6 +526,7 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
       const regionalizedClient = new S3Client({
         region,
         credentials: account.credentials,
+        retryStrategy,
       });
       const getBucketTaggingCommand = new GetBucketTaggingCommand({ Bucket: bucket.Name });
       const bucketDetails = await regionalizedClient.send(getBucketTaggingCommand);
@@ -517,6 +550,8 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
         // actually opted in. We don't quite know how this happened, but for now, we'll make a note of the inconsistency and continue
         // processing the rest of the buckets.
         console.error(`Skipping processing ${account.accountId}, bucket ${bucket.Name}`, e);
+      } else if (isNetworkError(e)) {
+        console.log(`Network error processing bucket ${bucket.Name} for account ${account.accountId}, skipping: ${e.name} ${e.code ?? ''}`);
       } else {
         console.log('Irrecoverable error in getS3Buckets', JSON.stringify(e));
         throw e;

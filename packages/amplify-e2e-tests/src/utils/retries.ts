@@ -26,7 +26,10 @@ export async function retry<A>(block: () => Promise<A>) {
 }
 
 function isRetryableError(e: Error) {
-  if (['Throttling'].includes(e.name)) {
+  if (['Throttling', 'TimeoutError'].includes(e.name)) {
+    return true;
+  }
+  if ((e as any).code === 'ETIMEDOUT' || (e as any).code === 'ECONNRESET') {
     return true;
   }
 
