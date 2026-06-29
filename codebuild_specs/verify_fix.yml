@@ -1,0 +1,45 @@
+# Throwaway verification batch spec. Runs ONLY the two groups affected by the
+# e2e CDK resource fixes (custom_logic at XLARGE compute, log_config per-test
+# try/finally teardown) plus the minimal build/publish prerequisites they need.
+# To be removed once the fix is verified.
+version: 0.2
+env:
+  shell: bash
+  compute-type: BUILD_GENERAL1_MEDIUM
+  variables:
+    JSII_DEPRECATED: quiet
+batch:
+  fast-fail: false
+  build-graph:
+    - identifier: build_linux
+      buildspec: codebuild_specs/build_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+    - identifier: publish_to_local_registry
+      buildspec: codebuild_specs/publish_to_local_registry.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+      depend-on:
+        - build_linux
+    - identifier: >-
+        custom_logic_amplify_table_5_add_resources_validate_transformer_evaluate_mapping_template_validate_transformer_e2e
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_XLARGE
+        variables:
+          NODE_OPTIONS: '--max-old-space-size=12000'
+          TEST_SUITE: >-
+            src/__tests__/custom-logic.test.ts|src/__tests__/amplify-table-5.test.ts|src/__tests__/add-resources.test.ts|src/__tests__/validate-transformer/validate-transformer-evaluate-mapping-template.test.ts|src/__tests__/validate-transformer/validate-transformer-e2e.test.ts
+          CLI_REGION: eu-central-1
+      depend-on:
+        - publish_to_local_registry
+    - identifier: log_config
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          NODE_OPTIONS: '--max-old-space-size=6656'
+          TEST_SUITE: src/__tests__/log-config.test.ts
+          CLI_REGION: us-east-1
+      depend-on:
+        - publish_to_local_registry
