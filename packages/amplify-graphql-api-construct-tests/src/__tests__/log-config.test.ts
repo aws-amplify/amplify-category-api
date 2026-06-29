@@ -111,6 +111,33 @@ const verifyLogGroupDoesNotExist = async (logGroupName: string): Promise<void> =
 };
 
 /**
+ * File-scoped concurrency limiter. Running every log-config case's `initCDKProject`
+ * npm install simultaneously triggers a TS2307 "Cannot find module
+ * @aws-amplify/graphql-api-construct" race on heavy dependency bundles, because the
+ * concurrent installs do not reliably complete. Cap concurrent CDK lifecycles
+ * (install + deploy + destroy) to MAX_CONCURRENT_CASES so at most that many run at
+ * once. Scoped to this file only — other CDK e2e groups are unaffected.
+ */
+const MAX_CONCURRENT_CASES = 3;
+let activeCases = 0;
+const waiters: Array<() => void> = [];
+const acquireSlot = (): Promise<void> => {
+  if (activeCases < MAX_CONCURRENT_CASES) {
+    activeCases++;
+    return Promise.resolve();
+  }
+  return new Promise<void>((resolve) => waiters.push(resolve));
+};
+const releaseSlot = (): void => {
+  const next = waiters.shift();
+  if (next) {
+    next();
+  } else {
+    activeCases--;
+  }
+};
+
+/**
  * To pass logging config to the AmplifyGraphqlApi construct, the underlying values are used and later mapped to the corresponding
  * enum values in packages/amplify-graphql-api-construct-tests/src/__tests__/backends/log-config/app.ts.
  *
@@ -164,6 +191,7 @@ describe('Log Config Tests', () => {
   ];
 
   test.concurrent.each(testCases)('Log Config is enabled with: %s', async (_, { logging, expectedLogConfig }) => {
+    await acquireSlot();
     const projRoot = await createNewProjectDir('log-config');
     try {
       const templatePath = path.resolve(path.join(__dirname, 'backends', 'log-config'));
@@ -201,10 +229,12 @@ describe('Log Config Tests', () => {
     } finally {
       await cdkDestroy(projRoot, '--all');
       deleteProjectDir(projRoot);
+      releaseSlot();
     }
   });
 
   test('Logging is disabled', async () => {
+    await acquireSlot();
     const projRoot = await createNewProjectDir('log-config');
     try {
       const templatePath = path.resolve(path.join(__dirname, 'backends', 'log-config'));
@@ -230,6 +260,7 @@ describe('Log Config Tests', () => {
     } finally {
       await cdkDestroy(projRoot, '--all');
       deleteProjectDir(projRoot);
+      releaseSlot();
     }
   });
 });

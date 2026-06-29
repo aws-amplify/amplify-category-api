@@ -1,0 +1,35 @@
+# Throwaway verification batch spec. Runs ONLY the log_config CDK e2e group
+# (plus the minimal build/publish prerequisites it needs) to confirm the
+# in-file concurrency cap (max 3 concurrent CDK lifecycles) fixes the TS2307
+# concurrent-install race. custom_logic is intentionally omitted — it was
+# already verified and re-running it would re-enter the AppSync-quota lottery.
+# To be removed once the fix is verified.
+version: 0.2
+env:
+  shell: bash
+  compute-type: BUILD_GENERAL1_MEDIUM
+  variables:
+    JSII_DEPRECATED: quiet
+batch:
+  fast-fail: false
+  build-graph:
+    - identifier: build_linux
+      buildspec: codebuild_specs/build_linux.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+    - identifier: publish_to_local_registry
+      buildspec: codebuild_specs/publish_to_local_registry.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+      depend-on:
+        - build_linux
+    - identifier: log_config
+      buildspec: codebuild_specs/run_cdk_tests.yml
+      env:
+        compute-type: BUILD_GENERAL1_MEDIUM
+        variables:
+          NODE_OPTIONS: '--max-old-space-size=6656'
+          TEST_SUITE: src/__tests__/log-config.test.ts
+          CLI_REGION: us-east-1
+      depend-on:
+        - publish_to_local_registry
