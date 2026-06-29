@@ -231,6 +231,14 @@ function _installCLIFromLocalRegistry {
     npm config set fetch-retry-maxtimeout 180000
     npm config set maxsockets 1
     npm install -g @aws-amplify/cli-internal
+    # Patch the legacy inquirer bundled with the installed CLI so Gen 1
+    # `amplify add function` does not crash on Node 24 with
+    # ERR_USE_AFTER_CLOSE when the e2e harness sends EOF after a confirm
+    # prompt. See codebuild_specs/scripts/patch-inquirer-baseui.js for details.
+    # Root the search at the global node_modules to catch hoisted or nested
+    # inquirer installs.
+    _npm_global_root="$(npm root -g)"
+    find "$_npm_global_root" -path '*/inquirer/lib/ui/baseUI.js' -exec node "$(pwd)/codebuild_specs/scripts/patch-inquirer-baseui.js" {} +
     echo "using Amplify CLI version: "$(amplify --version)
     npm list -g --depth=1 | grep -e '@aws-amplify/amplify-category-api' -e 'amplify-codegen'
     unsetNpmRegistryUrl
