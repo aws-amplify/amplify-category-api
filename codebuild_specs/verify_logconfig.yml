@@ -28,7 +28,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/log-config.test.ts
           CLI_REGION: us-east-1
       depend-on:
