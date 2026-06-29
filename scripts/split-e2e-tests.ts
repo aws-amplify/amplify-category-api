@@ -43,7 +43,7 @@ type TestTiming = {
   medianRuntime: number;
 };
 
-type ComputeType = 'BUILD_GENERAL1_SMALL' | 'BUILD_GENERAL1_MEDIUM' | 'BUILD_GENERAL1_LARGE';
+type ComputeType = 'BUILD_GENERAL1_SMALL' | 'BUILD_GENERAL1_MEDIUM' | 'BUILD_GENERAL1_LARGE' | 'BUILD_GENERAL1_XLARGE';
 
 type BatchBuildJob = {
   identifier: string;
@@ -109,6 +109,12 @@ const CODEBUILD_DEBUG_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'debug_wo
 // Batch B ("cdk"): amplify-graphql-api-construct-tests shards.
 const CODEBUILD_GENERATE_API_GQL_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_api_gql.yml');
 const CODEBUILD_GENERATE_CDK_CONFIG_PATH = join(REPO_ROOT, 'codebuild_specs', 'e2e_workflow_cdk.yml');
+
+// Jobs whose packed tests include any of these paths run on a larger compute type with
+// extra Node heap. custom-logic performs many concurrent CDK deploys and otherwise OOMs/
+// times out on the default LARGE compute. Keyed on the member TEST PATH (the generated
+// identifier is not available at match time).
+const USE_XL_COMPUTE: (string | RegExp)[] = ['src/__tests__/custom-logic.test.ts'];
 
 const RUN_SOLO: (string | RegExp)[] = [
   'src/__tests__/apigw.test.ts',
@@ -378,6 +384,11 @@ const splitTests = (
         tmp.env['compute-type'] = 'BUILD_GENERAL1_MEDIUM';
         // BUILD_GENERAL1_MEDIUM has 7GB of memory. 6656 = 6.5GB. Leave 0.5GB for the OS and other processes.
         tmp.env.variables.NODE_OPTIONS = '--max-old-space-size=6656';
+      }
+      if (j.tests.some((t) => USE_XL_COMPUTE.some((x) => (typeof x === 'string' ? t === x : t.match(x))))) {
+        // BUILD_GENERAL1_XLARGE has 16GB of memory. 12000 = ~11.7GB. Leave headroom for the OS and other processes.
+        tmp.env['compute-type'] = 'BUILD_GENERAL1_XLARGE';
+        tmp.env.variables.NODE_OPTIONS = '--max-old-space-size=12000';
       }
       result.push(tmp);
     }

@@ -119,17 +119,6 @@ const verifyLogGroupDoesNotExist = async (logGroupName: string): Promise<void> =
  * - logging: '{"fieldLogLevel": "ERROR"}' is parsed to { fieldLogLevel: FieldLogLevel.ERROR }
  */
 describe('Log Config Tests', () => {
-  const projRoots: string[] = [];
-
-  afterAll(async () => {
-    const destroyCDKProjectAndDeleteProjectDir = async (projRoot: string): Promise<void> => {
-      await cdkDestroy(projRoot, '--all');
-      deleteProjectDir(projRoot);
-    };
-    const cleanupTasks = projRoots.map((projRoot) => destroyCDKProjectAndDeleteProjectDir(projRoot));
-    await Promise.all(cleanupTasks);
-  });
-
   const testCases: [
     string,
     {
@@ -176,63 +165,71 @@ describe('Log Config Tests', () => {
 
   test.concurrent.each(testCases)('Log Config is enabled with: %s', async (_, { logging, expectedLogConfig }) => {
     const projRoot = await createNewProjectDir('log-config');
-    projRoots.push(projRoot);
-    const templatePath = path.resolve(path.join(__dirname, 'backends', 'log-config'));
+    try {
+      const templatePath = path.resolve(path.join(__dirname, 'backends', 'log-config'));
 
-    // Initialize CDK project
-    const name = await initCDKProject(projRoot, templatePath, {
-      cdkContext: {
-        logging: JSON.stringify(logging),
-      },
-    });
+      // Initialize CDK project
+      const name = await initCDKProject(projRoot, templatePath, {
+        cdkContext: {
+          logging: JSON.stringify(logging),
+        },
+      });
 
-    // Deploy CDK stack
-    const outputs = await cdkDeploy(projRoot, '--all');
-    const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey, awsAppsyncApiId: apiId } = outputs[name];
+      // Deploy CDK stack
+      const outputs = await cdkDeploy(projRoot, '--all');
+      const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey, awsAppsyncApiId: apiId } = outputs[name];
 
-    const logGroupName = `/aws/appsync/apis/${apiId}`;
+      const logGroupName = `/aws/appsync/apis/${apiId}`;
 
-    // Create a GraphQL client
-    const client = new GraphQLClient(apiEndpoint, {
-      headers: {
-        'x-api-key': apiKey,
-      },
-    });
+      // Create a GraphQL client
+      const client = new GraphQLClient(apiEndpoint, {
+        headers: {
+          'x-api-key': apiKey,
+        },
+      });
 
-    // Run a query
-    const { headers } = await client.rawRequest(query);
-    const requestId = headers.get('x-amzn-requestid');
+      // Run a query
+      const { headers } = await client.rawRequest(query);
+      const requestId = headers.get('x-amzn-requestid');
 
-    // Verify request ID in log
-    const logEvent = await getLogEventWithRequestId(logGroupName, requestId);
-    expect(logEvent).toBeDefined();
+      // Verify request ID in log
+      const logEvent = await getLogEventWithRequestId(logGroupName, requestId);
+      expect(logEvent).toBeDefined();
 
-    // Verify logging configuration
-    await verifyLogConfig(logGroupName, apiId, expectedLogConfig);
+      // Verify logging configuration
+      await verifyLogConfig(logGroupName, apiId, expectedLogConfig);
+    } finally {
+      await cdkDestroy(projRoot, '--all');
+      deleteProjectDir(projRoot);
+    }
   });
 
   test('Logging is disabled', async () => {
     const projRoot = await createNewProjectDir('log-config');
-    projRoots.push(projRoot);
-    const templatePath = path.resolve(path.join(__dirname, 'backends', 'log-config'));
+    try {
+      const templatePath = path.resolve(path.join(__dirname, 'backends', 'log-config'));
 
-    // Initialize CDK project
-    const name = await initCDKProject(projRoot, templatePath);
+      // Initialize CDK project
+      const name = await initCDKProject(projRoot, templatePath);
 
-    // Deploy CDK stack
-    const outputs = await cdkDeploy(projRoot, '--all');
-    const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey, awsAppsyncApiId: apiId } = outputs[name];
+      // Deploy CDK stack
+      const outputs = await cdkDeploy(projRoot, '--all');
+      const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey, awsAppsyncApiId: apiId } = outputs[name];
 
-    // Run a query
-    const client = new GraphQLClient(apiEndpoint, {
-      headers: {
-        'x-api-key': apiKey,
-      },
-    });
-    await client.rawRequest(query);
+      // Run a query
+      const client = new GraphQLClient(apiEndpoint, {
+        headers: {
+          'x-api-key': apiKey,
+        },
+      });
+      await client.rawRequest(query);
 
-    // Verify that logging is disabled
-    const logGroupName = `/aws/appsync/apis/${apiId}`;
-    await verifyLogGroupDoesNotExist(logGroupName);
+      // Verify that logging is disabled
+      const logGroupName = `/aws/appsync/apis/${apiId}`;
+      await verifyLogGroupDoesNotExist(logGroupName);
+    } finally {
+      await cdkDestroy(projRoot, '--all');
+      deleteProjectDir(projRoot);
+    }
   });
 });
