@@ -741,9 +741,9 @@ batch:
         custom_logic_amplify_table_5_add_resources_validate_transformer_evaluate_mapping_template_validate_transformer_e2e
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_XLARGE
         variables:
-          NODE_OPTIONS: '--max-old-space-size=14848'
+          NODE_OPTIONS: '--max-old-space-size=12000'
           TEST_SUITE: >-
             src/__tests__/custom-logic.test.ts|src/__tests__/amplify-table-5.test.ts|src/__tests__/add-resources.test.ts|src/__tests__/validate-transformer/validate-transformer-evaluate-mapping-template.test.ts|src/__tests__/validate-transformer/validate-transformer-e2e.test.ts
           CLI_REGION: eu-central-1
