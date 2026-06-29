@@ -111,39 +111,17 @@ describe('conversation', () => {
         expect(message.conversationId).toEqual(conversationId);
 
         const events: AmplifyAIConversationMessageStreamPart[] = [];
-        // Guard against a non-streaming assistant: fail fast with a clear message instead of
-        // hanging on the subscription until the surrounding 20-minute jest timeout cascades.
-        const MAX_STREAM_EVENTS = 1000;
-        const streamDeadline = Date.now() + ONE_MINUTE;
         // expect to receive the assistant response in the subscription
         for await (const event of subscription) {
-          if (Date.now() > streamDeadline) {
-            throw new Error(
-              `Timed out waiting for a streamed assistant response with a stopReason after ${ONE_MINUTE}ms ` +
-                `(received ${events.length} events). The assistant may not be streaming a response.`,
-            );
-          }
-          if (events.length >= MAX_STREAM_EVENTS) {
-            throw new Error(
-              `Received ${events.length} stream events without a stopReason; aborting to avoid an unbounded loop. ` +
-                `The assistant may not be terminating its response.`,
-            );
-          }
+          events.push(event.onCreateAssistantResponsePirateChat);
+          // expect event to contain `p`
+          expect(event.onCreateAssistantResponsePirateChat.p).toBeDefined();
+          expect(event.onCreateAssistantResponsePirateChat.p.length).toBeGreaterThanOrEqual(0);
 
-          const streamPart = event.onCreateAssistantResponsePirateChat;
-          events.push(streamPart);
-          // `p` is optional stream padding (not response text); some models/control frames omit it,
-          // so only assert on its shape when present.
-          if (streamPart.p != null) {
-            expect(streamPart.p.length).toBeGreaterThanOrEqual(0);
-          }
-
-          if (streamPart.stopReason) break;
+          if (event.onCreateAssistantResponsePirateChat.stopReason) break;
         }
-        // The assistant response text is streamed via `contentBlockText`. Assert the aggregate
-        // streamed text is non-empty to confirm a real response was received.
-        const accumulatedText = events.map((messageStreamPart) => messageStreamPart.contentBlockText ?? '').join('');
-        expect(accumulatedText.length).toBeGreaterThan(0);
+        const accumulatedP = events.map((messageStreamPart) => messageStreamPart.p).join('');
+        expect(accumulatedP.length).toBeGreaterThan(0);
 
         // reconstruct the message from the events
         const sortedEvents = events
