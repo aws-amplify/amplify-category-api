@@ -1479,6 +1479,8 @@ describe('Index query resolver creation', () => {
       },
       output: {
         getQueryTypeName: jest.fn().mockReturnValue('Query'),
+        getObject: jest.fn().mockReturnValue(undefined),
+        getTypeDefinitionsOfKind: jest.fn().mockReturnValue([]),
       },
       resolvers: {
         generateQueryResolver: jest.fn().mockReturnValue(mockResolver),
