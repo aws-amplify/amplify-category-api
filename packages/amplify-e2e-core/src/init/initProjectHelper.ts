@@ -381,7 +381,9 @@ export async function ensureGen1PlaceholderApp(region: string | undefined = proc
     const hasEnv = backendEnvs.backendEnvironments?.some((e) => e.environmentName === GEN1_DEPRECATION_BYPASS_ENV_NAME);
     if (!hasEnv) {
       await client.send(new CreateBackendEnvironmentCommand({ appId, environmentName: GEN1_DEPRECATION_BYPASS_ENV_NAME }));
-      console.log(`[ensureGen1PlaceholderApp] Created backend environment '${GEN1_DEPRECATION_BYPASS_ENV_NAME}' for app ${appId} in ${region}.`);
+      console.log(
+        `[ensureGen1PlaceholderApp] Created backend environment '${GEN1_DEPRECATION_BYPASS_ENV_NAME}' for app ${appId} in ${region}.`,
+      );
     }
   } catch (e) {
     console.log(`[ensureGen1PlaceholderApp] Non-fatal error ensuring placeholder app in ${region}: ${(e as Error)?.message ?? e}`);
