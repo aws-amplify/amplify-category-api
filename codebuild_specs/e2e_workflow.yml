@@ -62,7 +62,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
-          NODE_OPTIONS: '--max-old-space-size=14848'
+          NODE_OPTIONS: '--max-old-space-size=14848 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/graphql-v2/custom-transformers.test.ts|src/__tests__/graphql-v2/invalid-input-arguments.test.ts|src/__tests__/schema-data-access-patterns.test.ts|src/__tests__/schema-predictions.test.ts|src/__tests__/function_10.test.ts
           CLI_REGION: ap-northeast-2
@@ -74,7 +74,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
-          NODE_OPTIONS: '--max-old-space-size=14848'
+          NODE_OPTIONS: '--max-old-space-size=14848 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/api_7.test.ts|src/__tests__/schema-function-2.test.ts|src/__tests__/global_sandbox.test.ts|src/__tests__/graphql-v2/lambda-conflict-handler.test.ts|src/__tests__/graphql-v2/index-with-stack-mappings.test.ts
           CLI_REGION: eu-west-1
@@ -86,7 +86,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
-          NODE_OPTIONS: '--max-old-space-size=14848'
+          NODE_OPTIONS: '--max-old-space-size=14848 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/api_5.test.ts|src/__tests__/schema-function-1.test.ts|src/__tests__/generate_ts_data_schema.test.ts|src/__tests__/resolvers.test.ts|src/__tests__/graphql-v2/sync_query_datastore.test.ts
           CLI_REGION: ca-central-1
@@ -97,7 +97,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
-          NODE_OPTIONS: '--max-old-space-size=14848'
+          NODE_OPTIONS: '--max-old-space-size=14848 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/api_6.test.ts|src/__tests__/graphql-v2/api_lambda_auth.test.ts
           CLI_REGION: eu-west-3
@@ -108,7 +108,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-v2.test.ts
           CLI_REGION: ap-northeast-3
       depend-on:
@@ -118,7 +118,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/schema-iterative-update-5.test.ts
           CLI_REGION: ap-south-1
       depend-on:
@@ -128,7 +128,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/schema-auth-2.test.ts
           CLI_REGION: ap-southeast-1
       depend-on:
@@ -138,7 +138,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/schema-auth-10.test.ts
           CLI_REGION: ap-southeast-2
       depend-on:
@@ -148,7 +148,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/schema-auth-1.test.ts
           CLI_REGION: ca-central-1
       depend-on:
@@ -158,7 +158,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/schema-auth-13.test.ts
           CLI_REGION: eu-central-1
       depend-on:
@@ -168,7 +168,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/schema-auth-12.test.ts
           CLI_REGION: eu-north-1
       depend-on:
@@ -178,7 +178,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/schema-auth-3.test.ts
           CLI_REGION: eu-south-1
       depend-on:
@@ -188,7 +188,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/schema-auth-15.test.ts
           CLI_REGION: eu-west-1
       depend-on:
@@ -198,7 +198,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/schema-auth-8.test.ts
           CLI_REGION: eu-west-3
       depend-on:
@@ -208,7 +208,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/schema-auth-4.test.ts
           CLI_REGION: us-east-1
       depend-on:
@@ -218,7 +218,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/schema-auth-11.test.ts
           CLI_REGION: us-east-2
       depend-on:
@@ -228,7 +228,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/sql-generate-unauth.test.ts
           CLI_REGION: ap-northeast-1
       depend-on:
@@ -238,7 +238,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/schema-model.test.ts
           CLI_REGION: us-west-2
       depend-on:
@@ -248,7 +248,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-v2-test-utils.test.ts
           CLI_REGION: ap-northeast-3
       depend-on:
@@ -258,7 +258,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-relational-directives.test.ts
           CLI_REGION: ap-south-1
       depend-on:
@@ -268,7 +268,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-pg-v2-generate-schema.test.ts
           CLI_REGION: ap-southeast-1
       depend-on:
@@ -278,7 +278,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-pg-userpool-auth.test.ts
           CLI_REGION: ap-southeast-2
       depend-on:
@@ -288,7 +288,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-pg-userpool-auth-fields.test.ts
           CLI_REGION: ca-central-1
       depend-on:
@@ -298,7 +298,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-pg-relational-directives.test.ts
           CLI_REGION: eu-central-1
       depend-on:
@@ -308,7 +308,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-pg-refers-to.test.ts
           CLI_REGION: eu-north-1
       depend-on:
@@ -318,7 +318,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-pg-refers-to-fields.test.ts
           CLI_REGION: eu-west-1
       depend-on:
@@ -328,7 +328,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-pg-oidc-auth-fields.test.ts
           CLI_REGION: eu-west-2
       depend-on:
@@ -338,7 +338,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-pg-model-v2.test.ts
           CLI_REGION: eu-west-3
       depend-on:
@@ -348,7 +348,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-pg-import.test.ts
           CLI_REGION: us-east-1
       depend-on:
@@ -358,7 +358,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-pg-field-auth-userpool-static-dynamic.test.ts
           CLI_REGION: us-east-2
       depend-on:
@@ -368,7 +368,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-pg-field-auth-userpool-iam.test.ts
           CLI_REGION: us-west-1
       depend-on:
@@ -378,7 +378,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-pg-field-auth-lambda.test.ts
           CLI_REGION: us-west-2
       depend-on:
@@ -388,7 +388,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-pg-field-auth-identityPool.test.ts
           CLI_REGION: ap-northeast-1
       depend-on:
@@ -398,7 +398,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-pg-field-auth-iam.test.ts
           CLI_REGION: ap-northeast-2
       depend-on:
@@ -408,7 +408,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-pg-field-auth-apikey.test.ts
           CLI_REGION: ap-northeast-3
       depend-on:
@@ -418,7 +418,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-pg-custom-claims-refersto-auth.test.ts
           CLI_REGION: ap-south-1
       depend-on:
@@ -428,7 +428,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-pg-auth-iam.test.ts
           CLI_REGION: ap-southeast-1
       depend-on:
@@ -438,7 +438,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-pg-auth-iam-apikey-lambda-subscription.test.ts
           CLI_REGION: ap-southeast-2
       depend-on:
@@ -448,7 +448,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-pg-auth-apikey-lambda.test.ts
           CLI_REGION: ca-central-1
       depend-on:
@@ -458,7 +458,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-pg-array-objects.test.ts
           CLI_REGION: eu-central-1
       depend-on:
@@ -468,7 +468,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-mysql-v2-generate-schema.test.ts
           CLI_REGION: eu-north-1
       depend-on:
@@ -478,7 +478,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-mysql-userpool-auth.test.ts
           CLI_REGION: eu-west-1
       depend-on:
@@ -488,7 +488,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-mysql-userpool-auth-fields.test.ts
           CLI_REGION: eu-west-2
       depend-on:
@@ -498,7 +498,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-mysql-refers-to.test.ts
           CLI_REGION: eu-west-3
       depend-on:
@@ -508,7 +508,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-mysql-refers-to-fields.test.ts
           CLI_REGION: us-east-1
       depend-on:
@@ -518,7 +518,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-mysql-oidc-auth-fields.test.ts
           CLI_REGION: us-east-2
       depend-on:
@@ -528,7 +528,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-mysql-multi-auth-1.test.ts
           CLI_REGION: us-west-1
       depend-on:
@@ -538,7 +538,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-mysql-model-v2.test.ts
           CLI_REGION: us-west-2
       depend-on:
@@ -548,7 +548,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-mysql-field-auth-userpool-static-dynamic.test.ts
           CLI_REGION: ap-northeast-1
       depend-on:
@@ -558,7 +558,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-mysql-field-auth-userpool-iam.test.ts
           CLI_REGION: ap-northeast-2
       depend-on:
@@ -568,7 +568,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-mysql-field-auth-lambda.test.ts
           CLI_REGION: ap-northeast-3
       depend-on:
@@ -578,7 +578,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-mysql-field-auth-identityPool.test.ts
           CLI_REGION: ap-south-1
       depend-on:
@@ -588,7 +588,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-mysql-field-auth-iam.test.ts
           CLI_REGION: ap-southeast-1
       depend-on:
@@ -598,7 +598,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-mysql-field-auth-apikey.test.ts
           CLI_REGION: ap-southeast-2
       depend-on:
@@ -608,7 +608,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-mysql-custom-claims-refersto-auth.test.ts
           CLI_REGION: ca-central-1
       depend-on:
@@ -618,7 +618,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-mysql-auth-iam.test.ts
           CLI_REGION: eu-central-1
       depend-on:
@@ -628,7 +628,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-mysql-auth-iam-apikey-lambda-subscription.test.ts
           CLI_REGION: eu-north-1
       depend-on:
@@ -638,7 +638,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/rds-mysql-auth-apikey-lambda.test.ts
           CLI_REGION: eu-west-1
       depend-on:
@@ -648,7 +648,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/schema-auth-9.test.ts
           CLI_REGION: ap-south-1
       depend-on:
@@ -658,7 +658,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/schema-auth-7.test.ts
           CLI_REGION: ap-southeast-1
       depend-on:
@@ -668,7 +668,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/schema-auth-14.test.ts
           CLI_REGION: ap-southeast-2
       depend-on:
@@ -678,7 +678,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/schema-auth-5.test.ts
           CLI_REGION: ca-central-1
       depend-on:
@@ -688,7 +688,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/schema-searchable.test.ts
           CLI_REGION: ap-southeast-1
           USE_PARENT_ACCOUNT: 1
@@ -699,7 +699,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/graphql-v2/searchable-datastore.test.ts
           CLI_REGION: ap-northeast-1
           USE_PARENT_ACCOUNT: 1
@@ -710,7 +710,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/schema-auth-6.test.ts
           CLI_REGION: eu-west-1
       depend-on:
@@ -720,7 +720,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-had-node-to-node.test.ts
           CLI_REGION: us-west-1
@@ -731,7 +731,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/graphql-v2/searchable-node-to-node-encryption/searchable-previous-deployment-no-node-to-node.test.ts
           CLI_REGION: ap-south-1
@@ -741,9 +741,9 @@ batch:
         custom_logic_amplify_table_5_add_resources_validate_transformer_evaluate_mapping_template_validate_transformer_e2e
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:
-        compute-type: BUILD_GENERAL1_LARGE
+        compute-type: BUILD_GENERAL1_XLARGE
         variables:
-          NODE_OPTIONS: '--max-old-space-size=14848'
+          NODE_OPTIONS: '--max-old-space-size=12000 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/custom-logic.test.ts|src/__tests__/amplify-table-5.test.ts|src/__tests__/add-resources.test.ts|src/__tests__/validate-transformer/validate-transformer-evaluate-mapping-template.test.ts|src/__tests__/validate-transformer/validate-transformer-e2e.test.ts
           CLI_REGION: eu-central-1
@@ -755,7 +755,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
-          NODE_OPTIONS: '--max-old-space-size=14848'
+          NODE_OPTIONS: '--max-old-space-size=14848 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/migration/references-migration.test.ts|src/__tests__/migration/migration-validation.test.ts|src/__tests__/migration/many-to-many-migration.test.ts|src/__tests__/migration/base-migration.test.ts
           CLI_REGION: us-west-1
@@ -766,7 +766,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/utils.test.ts
           CLI_REGION: ap-northeast-2
       depend-on:
@@ -776,7 +776,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/sql-pg-userpool-auth.test.ts
           CLI_REGION: ap-south-1
       depend-on:
@@ -786,7 +786,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/sql-pg-oidc-auth.test.ts
           CLI_REGION: ap-southeast-1
       depend-on:
@@ -796,7 +796,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/sql-pg-models.test.ts
           CLI_REGION: ap-southeast-2
       depend-on:
@@ -806,7 +806,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/sql-pg-canary.test.ts
           CLI_REGION: us-east-1
           USE_PARENT_ACCOUNT: 1
@@ -817,7 +817,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/sql-pg-auto-increment.test.ts
           CLI_REGION: eu-central-1
       depend-on:
@@ -827,7 +827,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/sql-pg-array-objects.test.ts
           CLI_REGION: eu-north-1
       depend-on:
@@ -837,7 +837,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/sql-mysql-oidc-auth.test.ts
           CLI_REGION: eu-west-1
       depend-on:
@@ -847,7 +847,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/sql-mysql-canary.test.ts
           CLI_REGION: eu-west-2
       depend-on:
@@ -857,7 +857,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/sql-models-2.test.ts
           CLI_REGION: eu-west-3
       depend-on:
@@ -867,7 +867,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/sql-models-1.test.ts
           CLI_REGION: us-east-1
       depend-on:
@@ -877,7 +877,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/sql-iam-access.test.ts
           CLI_REGION: us-east-2
       depend-on:
@@ -887,7 +887,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/log-config.test.ts
           CLI_REGION: us-east-1
       depend-on:
@@ -897,7 +897,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/gsi-projection-type.test.ts
           CLI_REGION: us-east-2
       depend-on:
@@ -907,7 +907,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/default-ddb-canary.test.ts
           CLI_REGION: us-west-1
       depend-on:
@@ -917,7 +917,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/ddb-iam-access.test.ts
           CLI_REGION: ap-northeast-2
       depend-on:
@@ -927,7 +927,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/data-construct.test.ts
           CLI_REGION: ap-east-1
       depend-on:
@@ -937,7 +937,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/custom-query-mutation-extension.test.ts
           CLI_REGION: ap-northeast-1
       depend-on:
@@ -947,7 +947,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/base-cdk.test.ts
           CLI_REGION: ap-east-1
       depend-on:
@@ -957,7 +957,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/base-cdk.test.ts
           CLI_REGION: ap-northeast-1
       depend-on:
@@ -967,7 +967,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/base-cdk.test.ts
           CLI_REGION: ap-northeast-2
       depend-on:
@@ -977,7 +977,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/base-cdk.test.ts
           CLI_REGION: ap-northeast-3
       depend-on:
@@ -988,7 +988,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/base-cdk.test.ts
           CLI_REGION: ap-south-1
       depend-on:
@@ -999,7 +999,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/base-cdk.test.ts
           CLI_REGION: ap-southeast-1
       depend-on:
@@ -1010,7 +1010,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/base-cdk.test.ts
           CLI_REGION: ap-southeast-2
       depend-on:
@@ -1020,7 +1020,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/base-cdk.test.ts
           CLI_REGION: ca-central-1
       depend-on:
@@ -1030,7 +1030,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/base-cdk.test.ts
           CLI_REGION: eu-central-1
       depend-on:
@@ -1040,7 +1040,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/base-cdk.test.ts
           CLI_REGION: eu-north-1
       depend-on:
@@ -1050,7 +1050,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/base-cdk.test.ts
           CLI_REGION: eu-south-1
       depend-on:
@@ -1060,7 +1060,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/base-cdk.test.ts
           CLI_REGION: eu-west-1
       depend-on:
@@ -1070,7 +1070,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/base-cdk.test.ts
           CLI_REGION: eu-west-2
       depend-on:
@@ -1080,7 +1080,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/base-cdk.test.ts
           CLI_REGION: eu-west-3
       depend-on:
@@ -1090,7 +1090,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/base-cdk.test.ts
           CLI_REGION: us-east-1
       depend-on:
@@ -1100,7 +1100,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/base-cdk.test.ts
           CLI_REGION: us-east-2
       depend-on:
@@ -1110,7 +1110,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/base-cdk.test.ts
           CLI_REGION: us-west-1
       depend-on:
@@ -1120,7 +1120,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/base-cdk.test.ts
           CLI_REGION: us-west-2
       depend-on:
@@ -1130,7 +1130,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/amplify-table-4.test.ts
           CLI_REGION: ap-northeast-2
       depend-on:
@@ -1140,7 +1140,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/amplify-table-3.test.ts
           CLI_REGION: ap-northeast-3
       depend-on:
@@ -1150,7 +1150,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/amplify-table-2.test.ts
           CLI_REGION: ap-south-1
       depend-on:
@@ -1160,7 +1160,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/amplify-table-1.test.ts
           CLI_REGION: ap-southeast-1
       depend-on:
@@ -1170,7 +1170,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/amplify-ddb-canary.test.ts
           CLI_REGION: ap-southeast-2
       depend-on:
@@ -1180,7 +1180,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/all-auth-modes.test.ts
           CLI_REGION: ca-central-1
       depend-on:
@@ -1190,7 +1190,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/admin-role.test.ts
           CLI_REGION: eu-central-1
       depend-on:
@@ -1200,7 +1200,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/sql-custom-ssl/sql-custom-ssl.test.ts
           CLI_REGION: us-west-1
       depend-on:
@@ -1210,7 +1210,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/restricted-field-auth/restricted-field-auth-gen2.test.ts
           CLI_REGION: us-west-2
@@ -1221,7 +1221,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/restricted-field-auth/restricted-field-auth-gen1.test.ts
           CLI_REGION: us-east-2
@@ -1232,7 +1232,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/restricted-field-auth/subscriptions-off/restricted-field-auth-gen2-subscriptions-off.test.ts
           CLI_REGION: ap-northeast-2
@@ -1243,7 +1243,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/restricted-field-auth/subscriptions-off/restricted-field-auth-gen1-subscriptions-off.test.ts
           CLI_REGION: us-west-2
@@ -1254,7 +1254,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/relationships/references/references-sqlprimary-sqlrelated.test.ts
           CLI_REGION: ap-south-1
@@ -1265,7 +1265,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/relationships/references/references-sqlprimary-ddbrelated.test.ts
           CLI_REGION: ap-southeast-1
@@ -1276,7 +1276,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/relationships/references/references-ddbprimary-sqlrelated.test.ts
           CLI_REGION: ap-southeast-2
@@ -1287,7 +1287,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/relationships/references/references-ddbprimary-ddbrelated.test.ts
           CLI_REGION: ap-east-1
@@ -1298,7 +1298,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/relationships/recursive/recursive-relationships-sql.test.ts
           CLI_REGION: eu-central-1
@@ -1309,7 +1309,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/relationships/recursive/recursive-relationships-ddb.test.ts
           CLI_REGION: ap-northeast-2
@@ -1320,7 +1320,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/relationships/postgres-uuid-pk/uuid-pk-sqlprimary-sqlrelated.test.ts
           CLI_REGION: eu-west-1
@@ -1331,7 +1331,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/relationships/postgres-uuid-pk/uuid-pk-sqlprimary-ddbrelated.test.ts
           CLI_REGION: eu-west-2
@@ -1342,7 +1342,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/relationships/postgres-uuid-pk/uuid-pk-ddbprimary-sqlrelated.test.ts
           CLI_REGION: eu-west-3
@@ -1353,7 +1353,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/relationships/multi-relationship/multi-relationship-sqlprimary-sqlrelated.test.ts
           CLI_REGION: us-east-1
@@ -1364,7 +1364,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/relationships/multi-relationship/multi-relationship-sqlprimary-ddbrelated.test.ts
           CLI_REGION: us-east-2
@@ -1375,7 +1375,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/relationships/multi-relationship/multi-relationship-ddbprimary-sqlrelated.test.ts
           CLI_REGION: us-west-1
@@ -1386,7 +1386,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/relationships/multi-relationship/multi-relationship-ddbprimary-ddbrelated.test.ts
           CLI_REGION: eu-north-1
@@ -1397,7 +1397,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/relationships/gen1/relationships-gen1.test.ts
           CLI_REGION: eu-south-1
       depend-on:
@@ -1407,7 +1407,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/owner-auth/subscriptions-off/assoc-field-subscriptions-off.test.ts
           CLI_REGION: us-east-2
@@ -1418,7 +1418,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/owner-auth/bind-sql-ids/bind-sql-ids.test.ts
           CLI_REGION: ap-northeast-3
       depend-on:
@@ -1428,7 +1428,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/owner-auth/assoc-field/assoc-field-sqlprimary-sqlrelated.test.ts
           CLI_REGION: ap-south-1
@@ -1439,7 +1439,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/owner-auth/assoc-field/assoc-field-sqlprimary-ddbrelated.test.ts
           CLI_REGION: ap-southeast-1
@@ -1450,7 +1450,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/owner-auth/assoc-field/assoc-field-ddbprimary-sqlrelated.test.ts
           CLI_REGION: ap-southeast-2
@@ -1461,7 +1461,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/owner-auth/assoc-field/assoc-field-ddbprimary-ddbrelated.test.ts
           CLI_REGION: ap-northeast-3
@@ -1472,7 +1472,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/group-auth/subscriptions-off/static-group-auth/static-group-auth-sqlprimary-sqlrelated-subscriptions-off.test.ts
           CLI_REGION: eu-central-1
@@ -1483,7 +1483,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/group-auth/subscriptions-off/static-group-auth/static-group-auth-sqlprimary-ddbrelated-subscriptions-off.test.ts
           CLI_REGION: eu-north-1
@@ -1494,7 +1494,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/group-auth/subscriptions-off/static-group-auth/static-group-auth-ddbprimary-sqlrelated-subscriptions-off.test.ts
           CLI_REGION: eu-west-1
@@ -1505,7 +1505,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/group-auth/subscriptions-off/static-group-auth/static-group-auth-ddbprimary-ddbrelated-subscriptions-off.test.ts
           CLI_REGION: ca-central-1
@@ -1516,7 +1516,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/group-auth/subscriptions-off/dynamic-group-auth/dynamic-group-auth-sqlprimary-sqlrelated-subscriptions-off.test.ts
           CLI_REGION: eu-west-3
@@ -1527,7 +1527,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/group-auth/subscriptions-off/dynamic-group-auth/dynamic-group-auth-sqlprimary-ddbrelated-subscriptions-off.test.ts
           CLI_REGION: us-east-1
@@ -1538,7 +1538,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/group-auth/subscriptions-off/dynamic-group-auth/dynamic-group-auth-ddbprimary-sqlrelated-subscriptions-off.test.ts
           CLI_REGION: us-east-2
@@ -1549,7 +1549,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/group-auth/subscriptions-off/dynamic-group-auth/dynamic-group-auth-ddbprimary-ddbrelated-subscriptions-off.test.ts
           CLI_REGION: eu-west-1
@@ -1560,7 +1560,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/group-auth/static-group-auth/static-group-auth-sqlprimary-sqlrelated.test.ts
           CLI_REGION: us-west-2
@@ -1571,7 +1571,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/group-auth/static-group-auth/static-group-auth-sqlprimary-ddbrelated.test.ts
           CLI_REGION: ap-northeast-1
@@ -1582,7 +1582,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/group-auth/static-group-auth/static-group-auth-ddbprimary-sqlrelated.test.ts
           CLI_REGION: ap-northeast-2
@@ -1593,7 +1593,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/group-auth/static-group-auth/static-group-auth-ddbprimary-ddbrelated.test.ts
           CLI_REGION: us-east-2
@@ -1604,7 +1604,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/group-auth/dynamic-group-auth/dynamic-group-auth-sqlprimary-sqlrelated.test.ts
           CLI_REGION: ap-south-1
@@ -1615,7 +1615,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/group-auth/dynamic-group-auth/dynamic-group-auth-sqlprimary-ddbrelated.test.ts
           CLI_REGION: ap-southeast-1
@@ -1626,7 +1626,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/group-auth/dynamic-group-auth/dynamic-group-auth-ddbprimary-sqlrelated.test.ts
           CLI_REGION: ap-southeast-2
@@ -1637,7 +1637,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/group-auth/dynamic-group-auth/dynamic-group-auth-ddbprimary-ddbrelated.test.ts
           CLI_REGION: ap-northeast-2
@@ -1648,7 +1648,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/generations/generation.test.ts
           CLI_REGION: us-west-2
           USE_PARENT_ACCOUNT: 1
@@ -1659,7 +1659,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-single-record.test.ts
           CLI_REGION: us-west-1
@@ -1670,7 +1670,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-empty-table.test.ts
           CLI_REGION: us-west-2
@@ -1681,7 +1681,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-1k-records.test.ts
           CLI_REGION: ap-east-1
@@ -1692,7 +1692,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/single-gsi-10k-records.test.ts
           CLI_REGION: ap-northeast-1
@@ -1704,7 +1704,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-single-record.test.ts
           CLI_REGION: ap-northeast-2
@@ -1716,7 +1716,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-empty-table.test.ts
           CLI_REGION: ap-northeast-3
@@ -1727,7 +1727,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-1k-records.test.ts
           CLI_REGION: ap-south-1
@@ -1738,7 +1738,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-update-attr-10k-records.test.ts
           CLI_REGION: ap-southeast-1
@@ -1749,7 +1749,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-single-record.test.ts
           CLI_REGION: ap-southeast-2
@@ -1760,7 +1760,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-empty-table.test.ts
           CLI_REGION: ca-central-1
@@ -1771,7 +1771,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-1k-records.test.ts
           CLI_REGION: eu-central-1
@@ -1782,7 +1782,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/replace-2-gsis-10k-records.test.ts
           CLI_REGION: eu-north-1
@@ -1793,7 +1793,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-single-record.test.ts
           CLI_REGION: eu-south-1
@@ -1804,7 +1804,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-empty-table.test.ts
           CLI_REGION: eu-west-1
@@ -1815,7 +1815,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-1k-records.test.ts
           CLI_REGION: eu-west-2
@@ -1826,7 +1826,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/deploy-velocity-temporarily-disabled/3-gsis-10k-records.test.ts
           CLI_REGION: eu-west-3
@@ -1837,7 +1837,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/deploy-velocity/single-gsi-100k-records.test.ts
           CLI_REGION: us-east-1
       depend-on:
@@ -1847,7 +1847,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/deploy-velocity/replace-2-gsis-update-attr-100k-records.test.ts
           CLI_REGION: us-east-2
@@ -1858,7 +1858,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/deploy-velocity/replace-2-gsis-100k-records.test.ts
           CLI_REGION: us-west-1
       depend-on:
@@ -1868,7 +1868,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/deploy-velocity/3-gsis-100k-records.test.ts
           CLI_REGION: us-west-2
       depend-on:
@@ -1878,7 +1878,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/conversations/conversation.test.ts
           CLI_REGION: us-west-2
           USE_PARENT_ACCOUNT: 1
@@ -1890,7 +1890,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
-          NODE_OPTIONS: '--max-old-space-size=14848'
+          NODE_OPTIONS: '--max-old-space-size=14848 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/NonModelAuthV2Function.e2e.test.ts|src/__tests__/TransformerOptionsV2.e2e.test.ts|src/__tests__/DefaultValueTransformer.e2e.test.ts|src/__tests__/PerFieldAuthV2TransformerWithFF.e2e.test.ts|src/__tests__/PerFieldAuthV2Transformer.e2e.test.ts
           CLI_REGION: ap-south-1
@@ -1902,7 +1902,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
-          NODE_OPTIONS: '--max-old-space-size=14848'
+          NODE_OPTIONS: '--max-old-space-size=14848 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/BelongsToTransformerV2.e2e.test.ts|src/__tests__/RelationalWithAuthV2WithFF.e2e.test.ts|src/__tests__/IndexWithAuthV2.e2e.test.ts|src/__tests__/IndexWithAuthV2WithFF.e2e.test.ts|src/__tests__/SubscriptionsWithAuthV2WithFF.e2e.test.ts
           CLI_REGION: ap-southeast-1
@@ -1914,7 +1914,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
-          NODE_OPTIONS: '--max-old-space-size=14848'
+          NODE_OPTIONS: '--max-old-space-size=14848 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/MultiAuthV2Transformer.e2e.test.ts|src/__tests__/ModelTransformer.e2e.test.ts|src/__tests__/SubscriptionsWithAuthV2.e2e.test.ts|src/__tests__/RelationalWithAuthV2.e2e.test.ts|src/__tests__/MapsToTransformer.e2e.test.ts
           CLI_REGION: ap-southeast-2
@@ -1926,7 +1926,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
-          NODE_OPTIONS: '--max-old-space-size=14848'
+          NODE_OPTIONS: '--max-old-space-size=14848 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/MultiAuthV2TransformerWithFF.e2e.test.ts|src/__tests__/AuthV2Transformer.e2e.test.ts|src/__tests__/AuthV2ExhaustiveT1B.test.ts|src/__tests__/AuthV2ExhaustiveT1A.test.ts|src/__tests__/AuthV2TransformerWithFF.e2e.test.ts
           CLI_REGION: ca-central-1
@@ -1938,7 +1938,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
-          NODE_OPTIONS: '--max-old-space-size=14848'
+          NODE_OPTIONS: '--max-old-space-size=14848 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/SubscriptionsRuntimeFiltering.e2e.test.ts|src/__tests__/AuthV2ExhaustiveT2A.test.ts|src/__tests__/AuthV2ExhaustiveT1C.test.ts|src/__tests__/AuthV2ExhaustiveT1D.test.ts|src/__tests__/AuthV2ExhaustiveT2B.test.ts
           CLI_REGION: eu-central-1
@@ -1950,7 +1950,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
-          NODE_OPTIONS: '--max-old-space-size=14848'
+          NODE_OPTIONS: '--max-old-space-size=14848 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/AuthV2ExhaustiveT2D.test.ts|src/__tests__/AuthV2ExhaustiveT2C.test.ts|src/__tests__/RelationalWithAuthV2Redacted.e2e.test.ts|src/__tests__/RelationalWithAuthV2NonRedacted.e2e.test.ts|src/__tests__/AuthV2TransformerIAM.test.ts
           CLI_REGION: eu-north-1
@@ -1962,7 +1962,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
-          NODE_OPTIONS: '--max-old-space-size=14848'
+          NODE_OPTIONS: '--max-old-space-size=14848 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/AuthV2ExhaustiveT3D.test.ts|src/__tests__/AuthV2ExhaustiveT3C.test.ts|src/__tests__/AuthV2ExhaustiveT3B.test.ts|src/__tests__/AuthV2ExhaustiveT3A.test.ts|src/__tests__/SearchableModelTransformerV2.e2e.test.ts
           CLI_REGION: eu-west-2
@@ -1973,7 +1973,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
-          NODE_OPTIONS: '--max-old-space-size=14848'
+          NODE_OPTIONS: '--max-old-space-size=14848 --experimental-vm-modules'
           TEST_SUITE: >-
             src/__tests__/SearchableWithAuthV2WithFF.e2e.test.ts|src/__tests__/SearchableWithAuthV2.e2e.test.ts
           CLI_REGION: eu-west-3
@@ -1984,7 +1984,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/PredictionsTransformerV2Tests.e2e.test.ts
           CLI_REGION: ap-northeast-2
       depend-on:
@@ -1994,7 +1994,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/FunctionTransformerTestsV2.e2e.test.ts
           CLI_REGION: ap-south-1
           USE_PARENT_ACCOUNT: 1
@@ -2005,7 +2005,7 @@ batch:
       env:
         compute-type: BUILD_GENERAL1_MEDIUM
         variables:
-          NODE_OPTIONS: '--max-old-space-size=6656'
+          NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/HttpTransformerV2.e2e.test.ts
           CLI_REGION: ap-south-1
       depend-on:
