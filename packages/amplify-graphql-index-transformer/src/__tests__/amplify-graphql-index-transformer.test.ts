@@ -1504,6 +1504,30 @@ describe('Index query resolver creation', () => {
   };
 });
 
+describe('RDS index query template includes authFilter', () => {
+  it('generates VTL that forwards ctx.stash.authFilter to the SQL Lambda payload', () => {
+    const { RDSIndexVTLGenerator } = require('../resolvers/generators/rds-vtl-generator');
+    const generator = new RDSIndexVTLGenerator();
+    const mockCtx: any = {
+      resourceHelper: {
+        getModelNameMapping: jest.fn().mockReturnValue('customer'),
+      },
+      output: {
+        getObject: jest.fn().mockReturnValue(undefined),
+        getTypeDefinitionsOfKind: jest.fn().mockReturnValue([]),
+      },
+    };
+    const vtl = generator.generateIndexQueryRequestTemplate(
+      { name: 'byRep', queryField: 'listByRep' } as any,
+      mockCtx,
+      'Customer',
+      'listByRep',
+    );
+    expect(vtl).toContain('$ctx.stash.authFilter');
+    expect(vtl).toContain('lambdaInput.args.metadata.authFilter');
+  });
+});
+
 describe('auth', () => {
   const API_KEY = 'API Key Authorization';
   const IAM_AUTH_TYPE = 'IAM Authorization';
