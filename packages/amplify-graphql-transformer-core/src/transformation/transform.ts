@@ -4,6 +4,7 @@ import {
   TransformerPluginProvider,
   TransformHostProvider,
   TransformerLog,
+  TransformerLogLevel,
   NestedStackProvider,
   SynthParameters,
   LogConfig,
@@ -40,7 +41,7 @@ import { Construct } from 'constructs';
 import { ResolverConfig } from '../config/transformer-config';
 import { InvalidDirectiveError, InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
-import { TransformerContext, NONE_DATA_SOURCE_NAME } from '../transformer-context';
+import { TransformerContext, NONE_DATA_SOURCE_NAME, TransformerResolver } from '../transformer-context';
 import { TransformerOutput } from '../transformer-context/output';
 import { adoptAuthModes } from '../utils/authType';
 import { MappingTemplate } from '../cdk-compat';
@@ -345,6 +346,7 @@ export class GraphQLTransform {
         this.logs.push(...logs);
       }
     }
+
     this.collectResolvers(context, context.api);
     this.ensureNoneDataSource(context.api);
   }
@@ -424,8 +426,14 @@ export class GraphQLTransform {
 
   private collectResolvers(context: TransformerContext, api: GraphQLAPIProvider): void {
     const resolverEntries = context.resolvers.collectResolvers();
+    const seenMappingKeys = new Set<string>();
 
     for (const [resolverName, resolver] of resolverEntries) {
+      const logicalId = (resolver as TransformerResolver).resolverLogicalId;
+      if (this.stackMappingOverrides[logicalId]) {
+        seenMappingKeys.add(logicalId);
+      }
+
       const userSlots = this.userDefinedSlots[resolverName] || [];
 
       userSlots.forEach((slot) => {
@@ -440,6 +448,16 @@ export class GraphQLTransform {
       });
 
       resolver.synthesize(context, api);
+    }
+
+    const unusedKeys = Object.keys(this.stackMappingOverrides).filter((key) => !seenMappingKeys.has(key));
+    if (unusedKeys.length > 0) {
+      this.logs.push({
+        level: TransformerLogLevel.WARN,
+        message: `stackMappings contains keys that don't match any generated resolver: [${unusedKeys.join(
+          ', ',
+        )}]. These keys will be ignored. You can discover valid resolver names by running \`npx ampx sandbox\` and examining the CloudFormation output, or by running \`cdk synth\` to see the generated template.`,
+      });
     }
   }
 
