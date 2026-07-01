@@ -465,7 +465,7 @@
     "**/istanbul/async": "^2.6.4",
     "**/jake/async": "^2.6.4",
     "**/nth-check": "^2.0.1",
-    "aws-cdk-lib": "2.246.0",
+    "aws-cdk-lib": "2.260.0",
     "lodash": "^4.18.1",
     "node-fetch": "^2.6.7",
     "cross-fetch": "^2.2.6",
