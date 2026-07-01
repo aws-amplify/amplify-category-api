@@ -88,12 +88,10 @@ aws-cdk-lib@~2.246.0:
     table "^6.9.0"
     yaml "1.10.3"
 
-aws-cdk@~2.1101.0:
-  version "2.1101.0"
-  resolved "https://registry.yarnpkg.com/aws-cdk/-/aws-cdk-2.1101.0.tgz#ae407986bf8d8002dbe6916ced4bb70ab0b47ecf"
-  integrity sha512-5EP+t13OFzE0SaK+KY/di9ZcXQYwnhDtM8kqEMjEvqhj+K3eqtV0DDI1YjthOoVMBAHgZK9juKPqxfwwRprBPQ==
-  optionalDependencies:
-    fsevents "2.3.2"
+aws-cdk@~2.1125.0:
+  version "2.1125.0"
+  resolved "https://registry.yarnpkg.com/aws-cdk/-/aws-cdk-2.1125.0.tgz#78760747560f38beb2cb6eb4599ae44a90c32e8b"
+  integrity sha512-QAvsE2XQMcyNOjMMqAS7eDADR9t6vcFcMQvhOmtLfDqgfJXSyTkHvzM5zgwZCdJ4FNqWr5Y/zXvL1Cv5ECKXwQ==
 
 balanced-match@^1.0.0:
   version "1.0.2"
@@ -158,11 +156,6 @@ fs-extra@^11.3.3:
     graceful-fs "^4.2.0"
     jsonfile "^6.0.1"
     universalify "^2.0.0"
-
-fsevents@2.3.2:
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.2.tgz#8a526f78b8fdf4623b709e0b975c52c24c02fd1a"
-  integrity sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==
 
 graceful-fs@^4.1.6, graceful-fs@^4.2.0:
   version "4.2.11"
