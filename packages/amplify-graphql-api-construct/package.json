@@ -329,7 +329,7 @@
     "@aws-amplify/graphql-transformer-test-utils": "1.1.1",
     "@types/fs-extra": "^8.0.1",
     "@types/node": "^24.0.0",
-    "aws-cdk-lib": "2.246.0",
+    "aws-cdk-lib": "2.260.0",
     "constructs": "10.5.0",
     "jsii": "^5.7.0",
     "jsii-docgen": "9.1.2",
