@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.13](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@5.0.12...amplify-category-api-e2e-core@5.0.13) (2026-07-01)
+
+### Bug Fixes
+
+- add sa-east-1 region back to E2E test pool ([#3480](https://github.com/aws-amplify/amplify-category-api/issues/3480)) ([9a2c742](https://github.com/aws-amplify/amplify-category-api/commit/9a2c74251a2c53471326f58dab607a9e2d4ff7ea))
+
 ## [5.0.12](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@5.0.11...amplify-category-api-e2e-core@5.0.12) (2026-05-07)
 
 ### Bug Fixes

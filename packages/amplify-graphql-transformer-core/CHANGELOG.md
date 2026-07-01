@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.6.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.5.1...@aws-amplify/graphql-transformer-core@3.6.0) (2026-07-01)
+
+### Features
+
+- **graphql-transformer:** warn on unused stackMappings keys during synthesis ([9f86f2c](https://github.com/aws-amplify/amplify-category-api/commit/9f86f2cbe34db436556f604a78672932633c063b))
+
 ## [3.5.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.5.0...@aws-amplify/graphql-transformer-core@3.5.1) (2026-03-24)
 
 ### Bug Fixes

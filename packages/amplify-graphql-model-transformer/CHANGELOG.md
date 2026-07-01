@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@3.4.1...@aws-amplify/graphql-model-transformer@3.4.2) (2026-07-01)
+
+### Bug Fixes
+
+- upgrade AWS SDK clients to eliminate fast-xml-parser vulnerabilities ([9261998](https://github.com/aws-amplify/amplify-category-api/commit/92619981d2cf15351a89ebb4b4f85ea45d6c3f65))
+
 ## [3.4.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@3.4.0...@aws-amplify/graphql-model-transformer@3.4.1) (2026-03-24)
 
 ### Reverts

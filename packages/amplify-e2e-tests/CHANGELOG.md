@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.15](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@4.1.14...amplify-category-api-e2e-tests@4.1.15) (2026-07-01)
+
+### Bug Fixes
+
+- add retry strategy and network error handling to cleanup script S3/IAM operations ([c9c4844](https://github.com/aws-amplify/amplify-category-api/commit/c9c484469f269639b47081da95f200909baf4803))
+- upgrade AWS SDK clients to eliminate fast-xml-parser vulnerabilities ([9261998](https://github.com/aws-amplify/amplify-category-api/commit/92619981d2cf15351a89ebb4b4f85ea45d6c3f65))
+
 ## [4.1.14](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@4.1.13...amplify-category-api-e2e-tests@4.1.14) (2026-05-07)
 
 ### Bug Fixes
