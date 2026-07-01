@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.16.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.16.2...amplify-graphql-api-construct-tests@1.16.3) (2026-07-01)
+
+### Bug Fixes
+
+- **conversation:** allow optional 'type' field on AmplifyAIToolUseBlockInput (ai-constructs sends SDK ToolUseBlock.type) ([227dd7e](https://github.com/aws-amplify/amplify-category-api/commit/227dd7e691460257142f3def13d8db17cf383ba6))
+- upgrade AWS SDK clients to eliminate fast-xml-parser vulnerabilities ([9261998](https://github.com/aws-amplify/amplify-category-api/commit/92619981d2cf15351a89ebb4b4f85ea45d6c3f65))
+
 ## [1.16.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.16.1...amplify-graphql-api-construct-tests@1.16.2) (2026-05-07)
 
 ### Bug Fixes

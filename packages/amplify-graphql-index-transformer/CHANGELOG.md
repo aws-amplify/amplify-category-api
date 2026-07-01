@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.1.1...@aws-amplify/graphql-index-transformer@3.1.2) (2026-07-01)
+
+### Bug Fixes
+
+- forward authFilter in RDS index query to prevent cross-tenant data exposure ([bfd5bf7](https://github.com/aws-amplify/amplify-category-api/commit/bfd5bf7141ec951532c807c26d7e280e66d80fc2))
+
 ## [3.1.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.1.0...@aws-amplify/graphql-index-transformer@3.1.1) (2026-03-24)
 
 ### Reverts
