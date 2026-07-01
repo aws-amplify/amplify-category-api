@@ -1479,6 +1479,8 @@ describe('Index query resolver creation', () => {
       },
       output: {
         getQueryTypeName: jest.fn().mockReturnValue('Query'),
+        getObject: jest.fn().mockReturnValue(undefined),
+        getTypeDefinitionsOfKind: jest.fn().mockReturnValue([]),
       },
       resolvers: {
         generateQueryResolver: jest.fn().mockReturnValue(mockResolver),
@@ -1500,6 +1502,30 @@ describe('Index query resolver creation', () => {
       synthParameters: {},
     };
   };
+});
+
+describe('RDS index query template includes authFilter', () => {
+  it('generates VTL that forwards ctx.stash.authFilter to the SQL Lambda payload', () => {
+    const { RDSIndexVTLGenerator } = require('../resolvers/generators/rds-vtl-generator');
+    const generator = new RDSIndexVTLGenerator();
+    const mockCtx: any = {
+      resourceHelper: {
+        getModelNameMapping: jest.fn().mockReturnValue('customer'),
+      },
+      output: {
+        getObject: jest.fn().mockReturnValue(undefined),
+        getTypeDefinitionsOfKind: jest.fn().mockReturnValue([]),
+      },
+    };
+    const vtl = generator.generateIndexQueryRequestTemplate(
+      { name: 'byRep', queryField: 'listByRep' } as any,
+      mockCtx,
+      'Customer',
+      'listByRep',
+    );
+    expect(vtl).toContain('$ctx.stash.authFilter');
+    expect(vtl).toContain('lambdaInput.args.metadata.authFilter');
+  });
 });
 
 describe('auth', () => {
