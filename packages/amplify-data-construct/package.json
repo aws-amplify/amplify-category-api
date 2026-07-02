@@ -328,8 +328,8 @@
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
     "@types/node": "^24.0.0",
-    "aws-cdk-lib": "2.224.0",
-    "constructs": "10.3.0",
+    "aws-cdk-lib": "2.260.0",
+    "constructs": "10.5.0",
     "jsii": "^5.7.0",
     "jsii-pacmak": "^1.84.0",
     "jsii-rosetta": "^5.7.0",
@@ -338,7 +338,7 @@
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.224.0",
-    "constructs": "^10.3.0"
+    "constructs": "^10.5.0"
   },
   "stability": "stable",
   "types": "lib/index.d.ts",
