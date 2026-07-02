@@ -98,8 +98,8 @@ export const getSsmEndpoint = (scope: Construct, resourceNames: SQLLambdaResourc
     return Fn.join('', ['ssm.', Fn.ref('AWS::Region'), '.amazonaws.com']);
   }
 
-  // Although the Lambda function will only invoke SSM directly, internally the SDK makes calls to other services as well
-  const services = ['ssm', 'ssmmessages', 'ec2', 'ec2messages', 'kms'];
+  // Only the SSM VPC endpoint is needed for Lambda to access Parameter Store
+  const services = ['ssm'];
   const endpoints = addVpcEndpoints(scope, sqlLambdaVpcConfig, resourceNames, services);
   const endpointEntries = endpoints.find((endpoint) => endpoint.service === 'ssm')?.endpoint.attrDnsEntries;
   if (!endpointEntries) {
@@ -300,7 +300,7 @@ const addVpcEndpoint = (
 ): CfnVPCEndpoint => {
   const serviceEndpointPrefix = 'com.amazonaws';
   const endpoint = new CfnVPCEndpoint(scope, `${resourceNames.sqlVpcEndpointPrefix}${serviceSuffix}`, {
-    serviceName: Fn.join('', [serviceEndpointPrefix, '.', Fn.ref('AWS::Region'), '.', serviceSuffix]), // Sample: com.amazonaws.us-east-1.ssmmessages
+    serviceName: Fn.join('', [serviceEndpointPrefix, '.', Fn.ref('AWS::Region'), '.', serviceSuffix]), // Sample: com.amazonaws.us-east-1.ssm
     vpcEndpointType: 'Interface',
     vpcId: sqlLambdaVpcConfig.vpcId,
     subnetIds: extractSubnetForVpcEndpoint(sqlLambdaVpcConfig.subnetAvailabilityZoneConfig),
