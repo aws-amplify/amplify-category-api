@@ -118,7 +118,6 @@ export const testRDSModel = (engine: ImportedRDSType, queries: string[]): void =
       expect(sqlLambdaFunction.Properties.VpcConfig.SecurityGroupIds.length).toBeGreaterThan(0);
 
       expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}ssm`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
-      // TODO(#3449): re-enable the reduced VPC-endpoint assertion (only 'ssm' expected) once graphql-model-transformer >=3.x ships in the released @aws-amplify/cli-internal that this Gen1 amplify-push e2e installs. The reduction is validated by the unit test sql-model-definition.test.ts (endpoints.length === 1).
       expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}ssmmessages`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
       expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}kms`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();
       expect(getResource(resources, `${resourceNames.sqlVpcEndpointPrefix}ec2`, CDK_VPC_ENDPOINT_TYPE)).toBeDefined();

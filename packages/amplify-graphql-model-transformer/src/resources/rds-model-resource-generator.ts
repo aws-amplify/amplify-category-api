@@ -154,7 +154,12 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
     // cert, even if the rest of the DB configuration is stored in Secrets Manager.
     if (sslCertSsmPath) {
       environment.SSL_CERT_SSM_PATH = JSON.stringify(sslCertSsmPath);
-      environment.SSM_ENDPOINT = getSsmEndpoint(lambdaScope, resourceNames, strategy.vpcConfiguration);
+      environment.SSM_ENDPOINT = getSsmEndpoint(
+        lambdaScope,
+        resourceNames,
+        strategy.vpcConfiguration,
+        context.transformParameters.minimizeRdsVpcEndpoints,
+      );
     }
 
     const lambda = createRdsLambda(
@@ -167,6 +172,7 @@ export class RdsModelResourceGenerator extends ModelResourceGenerator {
       environment,
       strategy.vpcConfiguration,
       strategy.sqlLambdaProvisionedConcurrencyConfig,
+      context.transformParameters.minimizeRdsVpcEndpoints,
     );
 
     // Note that this tag will be added to either the bare function, or the alias created to handle provisioned concurrency

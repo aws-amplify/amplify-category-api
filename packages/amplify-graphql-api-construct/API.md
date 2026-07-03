@@ -347,6 +347,7 @@ export interface PartialTranslationBehavior {
     readonly enableSearchEncryptionAtRest?: boolean;
     readonly enableSearchNodeToNodeEncryption?: boolean;
     readonly enableTransformerCfnOutputs?: boolean;
+    readonly minimizeRdsVpcEndpoints?: boolean;
     readonly populateOwnerFieldForStaticGroupAuth?: boolean;
     // @internal
     readonly _provisionHotswapFriendlyResources?: boolean;
@@ -482,6 +483,7 @@ export interface TranslationBehavior {
     readonly enableSearchEncryptionAtRest: boolean;
     readonly enableSearchNodeToNodeEncryption: boolean;
     readonly enableTransformerCfnOutputs: boolean;
+    readonly minimizeRdsVpcEndpoints: boolean;
     readonly populateOwnerFieldForStaticGroupAuth: boolean;
     readonly replaceTableUponGsiUpdate: boolean;
     readonly respectPrimaryKeyAttributesOnConnectionField: boolean;

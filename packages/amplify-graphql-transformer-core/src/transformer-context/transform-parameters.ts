@@ -25,6 +25,9 @@ export const defaultTransformParameters: TransformParameters = {
   // Relational Params
   respectPrimaryKeyAttributesOnConnectionField: true,
 
+  // SQL Params
+  minimizeRdsVpcEndpoints: false,
+
   // Search Params
   enableSearchNodeToNodeEncryption: false,
   enableSearchEncryptionAtRest: false,

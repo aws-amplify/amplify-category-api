@@ -549,6 +549,14 @@ export interface TranslationBehavior {
   readonly respectPrimaryKeyAttributesOnConnectionField: boolean;
 
   /**
+   * Opt-in optimization for SQL data sources backed by an RDS instance in a VPC. When enabled, only the `ssm` interface VPC endpoint - the
+   * sole endpoint the SQL Lambda consumes at runtime to read the database connection secret - is provisioned for the SQL Lambda's VPC. When
+   * disabled, the full set (`ssm`, `ssmmessages`, `ec2`, `ec2messages`, `kms`) is provisioned. Only affects SQL APIs configured with a VPC.
+   * @default false
+   */
+  readonly minimizeRdsVpcEndpoints: boolean;
+
+  /**
    * Whether Node to Node encryption is enabled on the ElasticSearch cluster
    *
    * @default false
@@ -666,6 +674,14 @@ export interface PartialTranslationBehavior {
    * @default true
    */
   readonly respectPrimaryKeyAttributesOnConnectionField?: boolean;
+
+  /**
+   * Opt-in optimization for SQL data sources backed by an RDS instance in a VPC. When enabled, only the `ssm` interface VPC endpoint - the
+   * sole endpoint the SQL Lambda consumes at runtime to read the database connection secret - is provisioned for the SQL Lambda's VPC. When
+   * disabled, the full set (`ssm`, `ssmmessages`, `ec2`, `ec2messages`, `kms`) is provisioned. Only affects SQL APIs configured with a VPC.
+   * @default false
+   */
+  readonly minimizeRdsVpcEndpoints?: boolean;
 
   /**
    * Whether Node to Node encryption is enabled on the ElasticSearch cluster

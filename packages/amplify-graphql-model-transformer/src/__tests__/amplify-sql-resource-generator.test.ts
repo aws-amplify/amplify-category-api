@@ -497,4 +497,57 @@ describe('ModelTransformer with SQL data sources:', () => {
     expect(envVars.SSL_CERT_SSM_PATH).toBeDefined();
     expect(envVars.SSL_CERT_SSM_PATH).toEqual('["/test/sslCert/1","/test/sslCert/2"]');
   });
+
+  describe('VPC endpoint minimization (minimizeRdsVpcEndpoints)', () => {
+    const mysqlVpcStrategy: SQLLambdaModelDataSourceStrategy = {
+      ...mysqlStrategy,
+      name: 'mysqlVpcStrategy',
+      vpcConfiguration: {
+        vpcId: 'vpc-123abc',
+        securityGroupIds: ['sg-123abc'],
+        subnetAvailabilityZoneConfig: [{ subnetId: 'subnet-123abc', availabilityZone: 'us-east-1a' }],
+      },
+    };
+
+    const getVpcEndpointResources = (out: ReturnType<typeof testTransform>): any[] => {
+      const resourceNames = getResourceNamesForStrategy(mysqlVpcStrategy);
+      const sqlApiStack = out.stacks[resourceNames.sqlStack];
+      expect(sqlApiStack).toBeDefined();
+      return Object.values(sqlApiStack.Resources!).filter((resource: any) => resource.Type === 'AWS::EC2::VPCEndpoint');
+    };
+
+    it('provisions all five VPC endpoints by default (minimizeRdsVpcEndpoints defaults to false)', () => {
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        dataSourceStrategies: constructDataSourceStrategies(validSchema, mysqlVpcStrategy),
+      });
+      expect(out).toBeDefined();
+      const endpoints = getVpcEndpointResources(out);
+      expect(endpoints.length).toEqual(5);
+      const serviceNames = JSON.stringify(endpoints.map((resource: any) => resource.Properties.ServiceName));
+      ['ssm', 'ssmmessages', 'ec2', 'ec2messages', 'kms'].forEach((service) => {
+        expect(serviceNames).toContain(service);
+      });
+    });
+
+    it('provisions only the ssm VPC endpoint when minimizeRdsVpcEndpoints is enabled', () => {
+      const out = testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+        dataSourceStrategies: constructDataSourceStrategies(validSchema, mysqlVpcStrategy),
+        transformParameters: {
+          minimizeRdsVpcEndpoints: true,
+        },
+      });
+      expect(out).toBeDefined();
+      const endpoints = getVpcEndpointResources(out);
+      expect(endpoints.length).toEqual(1);
+      const serviceName = JSON.stringify(endpoints[0].Properties.ServiceName);
+      expect(serviceName).toContain('ssm');
+      expect(serviceName).not.toContain('ssmmessages');
+      expect(serviceName).not.toContain('ec2');
+      expect(serviceName).not.toContain('kms');
+    });
+  });
 });

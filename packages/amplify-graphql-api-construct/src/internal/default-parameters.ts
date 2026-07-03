@@ -16,6 +16,7 @@ export const defaultTranslationBehavior: TranslationBehavior = {
   secondaryKeyAsGSI: true,
   enableAutoIndexQueryNames: true,
   respectPrimaryKeyAttributesOnConnectionField: true,
+  minimizeRdsVpcEndpoints: false,
   enableSearchNodeToNodeEncryption: false,
   enableSearchEncryptionAtRest: false,
   enableTransformerCfnOutputs: false,
