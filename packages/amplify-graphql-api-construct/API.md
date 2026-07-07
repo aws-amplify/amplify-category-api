@@ -347,7 +347,6 @@ export interface PartialTranslationBehavior {
     readonly enableSearchEncryptionAtRest?: boolean;
     readonly enableSearchNodeToNodeEncryption?: boolean;
     readonly enableTransformerCfnOutputs?: boolean;
-    readonly minimizeRdsVpcEndpoints?: boolean;
     readonly populateOwnerFieldForStaticGroupAuth?: boolean;
     // @internal
     readonly _provisionHotswapFriendlyResources?: boolean;
@@ -391,6 +390,7 @@ export interface SQLLambdaModelDataSourceStrategy {
     readonly customSqlStatements?: Record<string, string>;
     readonly dbConnectionConfig: SqlModelDataSourceDbConnectionConfig;
     readonly dbType: ModelDataSourceStrategySqlDbType;
+    readonly minimizeRdsVpcEndpoints?: boolean;
     readonly name: string;
     readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
     readonly vpcConfiguration?: VpcConfig;
@@ -483,7 +483,6 @@ export interface TranslationBehavior {
     readonly enableSearchEncryptionAtRest: boolean;
     readonly enableSearchNodeToNodeEncryption: boolean;
     readonly enableTransformerCfnOutputs: boolean;
-    readonly minimizeRdsVpcEndpoints: boolean;
     readonly populateOwnerFieldForStaticGroupAuth: boolean;
     readonly replaceTableUponGsiUpdate: boolean;
     readonly respectPrimaryKeyAttributesOnConnectionField: boolean;

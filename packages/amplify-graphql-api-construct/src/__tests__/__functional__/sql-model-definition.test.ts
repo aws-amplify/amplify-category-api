@@ -109,6 +109,7 @@ describe('sql-bound API generated resource access', () => {
               securityGroupIds: ['sg-123abc'],
               subnetAvailabilityZoneConfig: [{ subnetId: 'subnet-123abc', availabilityZone: 'us-east-1a' }],
             },
+            minimizeRdsVpcEndpoints: true,
           });
 
           const stack = new cdk.Stack();
@@ -117,9 +118,6 @@ describe('sql-bound API generated resource access', () => {
             definition: AmplifyGraphqlDefinition.fromString(defaultSchema, strategy),
             authorizationModes: {
               userPoolConfig: { userPool },
-            },
-            translationBehavior: {
-              minimizeRdsVpcEndpoints: true,
             },
           });
 

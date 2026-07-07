@@ -532,13 +532,14 @@ describe('ModelTransformer with SQL data sources:', () => {
     });
 
     it('provisions only the ssm VPC endpoint when minimizeRdsVpcEndpoints is enabled', () => {
+      const minimizedVpcStrategy: SQLLambdaModelDataSourceStrategy = {
+        ...mysqlVpcStrategy,
+        minimizeRdsVpcEndpoints: true,
+      };
       const out = testTransform({
         schema: validSchema,
         transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
-        dataSourceStrategies: constructDataSourceStrategies(validSchema, mysqlVpcStrategy),
-        transformParameters: {
-          minimizeRdsVpcEndpoints: true,
-        },
+        dataSourceStrategies: constructDataSourceStrategies(validSchema, minimizedVpcStrategy),
       });
       expect(out).toBeDefined();
       const endpoints = getVpcEndpointResources(out);
