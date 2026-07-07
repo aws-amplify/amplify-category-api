@@ -34,8 +34,8 @@
     "@aws-amplify/graphql-transformer-interfaces": "4.3.0"
   },
   "devDependencies": {
-    "@types/node": "^24.0.0",
-    "rimraf": "^3.0.0"
+    "@types/node": "^24.13.2",
+    "rimraf": "^3.0.2"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.224.0",

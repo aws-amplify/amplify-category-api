@@ -28,7 +28,7 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "graphql": "^15.5.0"
+    "graphql": "^15.10.2"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.224.0",

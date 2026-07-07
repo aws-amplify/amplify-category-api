@@ -32,25 +32,25 @@
     "@aws-amplify/graphql-directives": "2.8.0",
     "@aws-amplify/graphql-transformer-interfaces": "4.3.0",
     "fs-extra": "^8.1.0",
-    "graphql": "^15.5.0",
+    "graphql": "^15.10.2",
     "graphql-mapping-template": "5.0.2",
     "graphql-transformer-common": "5.1.4",
     "hjson": "^3.2.2",
-    "lodash": "^4.17.23",
+    "lodash": "^4.18.1",
     "md5": "^2.3.0",
     "object-hash": "^3.0.0",
-    "ts-dedent": "^2.0.0"
+    "ts-dedent": "^2.3.0"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.224.0",
     "constructs": "^10.3.0"
   },
   "devDependencies": {
-    "@types/fs-extra": "^8.0.1",
-    "@types/hjson": "^2.4.3",
-    "@types/md5": "^2.3.1",
-    "@types/node": "^24.0.0",
+    "@types/fs-extra": "^8.1.5",
+    "@types/hjson": "^2.4.6",
+    "@types/md5": "^2.3.6",
+    "@types/node": "^24.13.2",
     "@types/object-hash": "^2.2.1",
-    "@types/uuid": "^9.0.1"
+    "@types/uuid": "^9.0.8"
   }
 }

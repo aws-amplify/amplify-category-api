@@ -25,12 +25,12 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "graphql": "^15.5.0",
+    "graphql": "^15.10.2",
     "graphql-mapping-template": "5.0.2",
-    "md5": "^2.2.1",
+    "md5": "^2.3.0",
     "pluralize": "8.0.0"
   },
   "devDependencies": {
-    "@types/md5": "^2.3.1"
+    "@types/md5": "^2.3.6"
   }
 }
