@@ -479,7 +479,7 @@
     "semver": "^7.5.2",
     "axios": "^1.16.1",
     "braces": "^3.0.3",
-    "@aws-sdk/core": "^3.974.23",
+    "@aws-sdk/core": "3.974.26",
     "cookie": "^0.7.0",
     "@octokit/request-error": "^5.1.1",
     "@octokit/request": "^8.4.1",
