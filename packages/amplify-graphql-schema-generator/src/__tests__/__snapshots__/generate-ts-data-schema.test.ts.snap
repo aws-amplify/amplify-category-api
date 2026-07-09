@@ -7,14 +7,14 @@ import { a } from \\"@aws-amplify/data-schema\\";
 
 export const schema = a.schema({
     \\"User\\": a.model({
-        id: a.string().required(),
-        name: a.string()
+        \\"id\\": a.string().required(),
+        \\"name\\": a.string()
     }).identifier([
         \\"id\\"
     ]),
     \\"Profile\\": a.model({
-        id: a.string().required(),
-        details: a.string()
+        \\"id\\": a.string().required(),
+        \\"details\\": a.string()
     }).identifier([
         \\"id\\"
     ])
@@ -29,22 +29,22 @@ import { a } from \\"@aws-amplify/data-schema\\";
 
 export const schema = a.schema({
     \\"Table\\": a.model({
-        id: a.string().required(),
-        field1: a.string(),
-        field2: a.string(),
-        field3: a.integer(),
-        field4: a.float(),
-        field5: a.boolean(),
-        field6: a.id(),
-        field7: a.date(),
-        field8: a.time(),
-        field9: a.datetime(),
-        field10: a.timestamp(),
-        field11: a.json(),
-        field12: a.email(),
-        field13: a.phone(),
-        field14: a.url(),
-        field15: a.ipAddress()
+        \\"id\\": a.string().required(),
+        \\"field1\\": a.string(),
+        \\"field2\\": a.string(),
+        \\"field3\\": a.integer(),
+        \\"field4\\": a.float(),
+        \\"field5\\": a.boolean(),
+        \\"field6\\": a.id(),
+        \\"field7\\": a.date(),
+        \\"field8\\": a.time(),
+        \\"field9\\": a.datetime(),
+        \\"field10\\": a.timestamp(),
+        \\"field11\\": a.json(),
+        \\"field12\\": a.email(),
+        \\"field13\\": a.phone(),
+        \\"field14\\": a.url(),
+        \\"field15\\": a.ipAddress()
     }).identifier([
         \\"id\\"
     ])
@@ -67,8 +67,8 @@ export const schema = configure({
     }
 }).schema({
     \\"User\\": a.model({
-        id: a.string().required(),
-        name: a.string()
+        \\"id\\": a.string().required(),
+        \\"name\\": a.string()
     }).identifier([
         \\"id\\"
     ])
@@ -83,13 +83,13 @@ import { a } from \\"@aws-amplify/data-schema\\";
 
 export const schema = a.schema({
     \\"User\\": a.model({
-        id: a.string().required(),
-        name: a.string(),
-        status: a.ref(\\"UserStatus\\")
+        \\"id\\": a.string().required(),
+        \\"name\\": a.string(),
+        \\"status\\": a.ref(\\"UserStatus\\")
     }).identifier([
         \\"id\\"
     ]),
-    UserStatus: a.enum([
+    \\"UserStatus\\": a.enum([
         \\"ACTIVE\\",
         \\"INACTIVE\\"
     ])
@@ -104,24 +104,24 @@ import { a } from \\"@aws-amplify/data-schema\\";
 
 export const schema = a.schema({
     \\"User\\": a.model({
-        id: a.string().required(),
-        name: a.string(),
-        status: a.ref(\\"UserStatus\\").required()
+        \\"id\\": a.string().required(),
+        \\"name\\": a.string(),
+        \\"status\\": a.ref(\\"UserStatus\\").required()
     }).identifier([
         \\"id\\"
     ]),
     \\"Test\\": a.model({
-        id: a.string().required(),
-        name: a.string(),
-        age: a.ref(\\"TestAge\\").required()
+        \\"id\\": a.string().required(),
+        \\"name\\": a.string(),
+        \\"age\\": a.ref(\\"TestAge\\").required()
     }).identifier([
         \\"id\\"
     ]),
-    UserStatus: a.enum([
+    \\"UserStatus\\": a.enum([
         \\"ACTIVE\\",
         \\"INACTIVE\\"
     ]),
-    TestAge: a.enum([
+    \\"TestAge\\": a.enum([
         \\"Above18\\",
         \\"Below18\\"
     ])
@@ -136,18 +136,18 @@ import { a } from \\"@aws-amplify/data-schema\\";
 
 export const schema = a.schema({
     \\"User\\": a.model({
-        id: a.string().required(),
-        name: a.string(),
-        statsu1: a.ref(\\"UserStatus1\\"),
-        status: a.ref(\\"UserStatus\\").required()
+        \\"id\\": a.string().required(),
+        \\"name\\": a.string(),
+        \\"statsu1\\": a.ref(\\"UserStatus1\\"),
+        \\"status\\": a.ref(\\"UserStatus\\").required()
     }).identifier([
         \\"id\\"
     ]),
-    UserStatus1: a.enum([
+    \\"UserStatus1\\": a.enum([
         \\"ACTIVE\\",
         \\"INACTIVE\\"
     ]),
-    UserStatus: a.enum([
+    \\"UserStatus\\": a.enum([
         \\"ACTIVE\\",
         \\"INACTIVE\\"
     ])
@@ -162,13 +162,13 @@ import { a } from \\"@aws-amplify/data-schema\\";
 
 export const schema = a.schema({
     \\"User\\": a.model({
-        id: a.string().required(),
-        name: a.string(),
-        status: a.ref(\\"UserStatus\\").required()
+        \\"id\\": a.string().required(),
+        \\"name\\": a.string(),
+        \\"status\\": a.ref(\\"UserStatus\\").required()
     }).identifier([
         \\"id\\"
     ]),
-    UserStatus: a.enum([
+    \\"UserStatus\\": a.enum([
         \\"ACTIVE\\",
         \\"INACTIVE\\"
     ])
@@ -183,20 +183,20 @@ import { a } from \\"@aws-amplify/data-schema\\";
 
 export const schema = a.schema({
     \\"User\\": a.model({
-        id: a.string().required(),
-        name: a.string(),
-        status: a.ref(\\"UserStatus\\").required()
+        \\"id\\": a.string().required(),
+        \\"name\\": a.string(),
+        \\"status\\": a.ref(\\"UserStatus\\").required()
     }).identifier([
         \\"id\\"
     ]),
     \\"Test\\": a.model({
-        id: a.string().required(),
-        name: a.string(),
-        status: a.ref(\\"UserStatus\\").required()
+        \\"id\\": a.string().required(),
+        \\"name\\": a.string(),
+        \\"status\\": a.ref(\\"UserStatus\\").required()
     }).identifier([
         \\"id\\"
     ]),
-    UserStatus: a.enum([
+    \\"UserStatus\\": a.enum([
         \\"ACTIVE\\",
         \\"INACTIVE\\"
     ])
@@ -231,8 +231,8 @@ export const schema = configure({
     }
 }).schema({
     \\"User\\": a.model({
-        id: a.string().required(),
-        name: a.string()
+        \\"id\\": a.string().required(),
+        \\"name\\": a.string()
     }).identifier([
         \\"id\\"
     ])
@@ -277,14 +277,14 @@ export const schema = configure({
     }
 }).schema({
     \\"User\\": a.model({
-        id: a.string().required(),
-        name: a.string()
+        \\"id\\": a.string().required(),
+        \\"name\\": a.string()
     }).identifier([
         \\"id\\"
     ]),
     \\"Profile\\": a.model({
-        id: a.string().required(),
-        details: a.string()
+        \\"id\\": a.string().required(),
+        \\"details\\": a.string()
     }).identifier([
         \\"id\\"
     ])
@@ -307,14 +307,14 @@ export const schema = configure({
     }
 }).schema({
     \\"User\\": a.model({
-        id: a.string().required(),
-        name: a.string()
+        \\"id\\": a.string().required(),
+        \\"name\\": a.string()
     }).identifier([
         \\"id\\"
     ]),
     \\"Profile\\": a.model({
-        id: a.string().required(),
-        details: a.string()
+        \\"id\\": a.string().required(),
+        \\"details\\": a.string()
     }).identifier([
         \\"id\\"
     ])
@@ -338,14 +338,14 @@ export const schema = configure({
     }
 }).schema({
     \\"User\\": a.model({
-        id: a.string().required(),
-        name: a.string()
+        \\"id\\": a.string().required(),
+        \\"name\\": a.string()
     }).identifier([
         \\"id\\"
     ]),
     \\"Profile\\": a.model({
-        id: a.string().required(),
-        details: a.string()
+        \\"id\\": a.string().required(),
+        \\"details\\": a.string()
     }).identifier([
         \\"id\\"
     ])
@@ -368,9 +368,9 @@ export const schema = configure({
     }
 }).schema({
     \\"CoffeeQueue\\": a.model({
-        id: a.integer().default(),
-        name: a.string(),
-        orderNumber: a.integer().default()
+        \\"id\\": a.integer().default(),
+        \\"name\\": a.string(),
+        \\"orderNumber\\": a.integer().default()
     }).identifier([
         \\"id\\"
     ])
@@ -415,8 +415,8 @@ export const schema = configure({
     }
 }).schema({
     \\"User\\": a.model({
-        id: a.string().required(),
-        name: a.string()
+        \\"id\\": a.string().required(),
+        \\"name\\": a.string()
     }).identifier([
         \\"id\\"
     ])
@@ -462,8 +462,8 @@ export const schema = configure({
     }
 }).schema({
     \\"User\\": a.model({
-        id: a.string().required(),
-        name: a.string()
+        \\"id\\": a.string().required(),
+        \\"name\\": a.string()
     }).identifier([
         \\"id\\"
     ])
@@ -509,8 +509,8 @@ export const schema = configure({
     }
 }).schema({
     \\"Person\\": a.model({
-        id: a.string().required(),
-        name: a.string()
+        \\"id\\": a.string().required(),
+        \\"name\\": a.string()
     }).identifier([
         \\"id\\"
     ])

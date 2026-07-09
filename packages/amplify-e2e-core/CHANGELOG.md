@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.13](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@5.0.12...amplify-category-api-e2e-core@5.0.13) (2026-07-01)
+
+### Bug Fixes
+
+- add sa-east-1 region back to E2E test pool ([#3480](https://github.com/aws-amplify/amplify-category-api/issues/3480)) ([9a2c742](https://github.com/aws-amplify/amplify-category-api/commit/9a2c74251a2c53471326f58dab607a9e2d4ff7ea))
+
+## [5.0.12](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@5.0.11...amplify-category-api-e2e-core@5.0.12) (2026-05-07)
+
+### Bug Fixes
+
+- dep updates ([#3441](https://github.com/aws-amplify/amplify-category-api/issues/3441)) ([bddb2c8](https://github.com/aws-amplify/amplify-category-api/commit/bddb2c84dfb1288d45f91f852f8b48207e10aecd)), closes [#295](https://github.com/aws-amplify/amplify-category-api/issues/295) [#294](https://github.com/aws-amplify/amplify-category-api/issues/294) [#302](https://github.com/aws-amplify/amplify-category-api/issues/302) [#307-310](https://github.com/aws-amplify/amplify-category-api/issues/307-310) [#236](https://github.com/aws-amplify/amplify-category-api/issues/236) [#273-275](https://github.com/aws-amplify/amplify-category-api/issues/273-275) [#282-285](https://github.com/aws-amplify/amplify-category-api/issues/282-285) [#290](https://github.com/aws-amplify/amplify-category-api/issues/290) [#292](https://github.com/aws-amplify/amplify-category-api/issues/292)
+- stabilize E2E tests — exclude broken regions, fix Node 22 compatibility ([#3468](https://github.com/aws-amplify/amplify-category-api/issues/3468)) ([c756f3f](https://github.com/aws-amplify/amplify-category-api/commit/c756f3fc7ad5c79d37f664a1a3403c53e307bb25))
+
 ## [5.0.11](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@5.0.10...amplify-category-api-e2e-core@5.0.11) (2026-03-24)
 
 ### Bug Fixes

@@ -39,6 +39,7 @@ input AmplifyAIToolUseBlockInput {
   toolUseId: String!
   name: String!
   input: AWSJSON!
+  type: String
 }
 
 input AmplifyAIToolResultContentBlockInput {
