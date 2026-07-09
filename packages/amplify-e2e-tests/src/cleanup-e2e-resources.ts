@@ -180,7 +180,7 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
   try {
     amplifyApps = await amplifyClient.send(new ListAppsCommand({ maxResults: 50 })); // keeping it to 50 as max supported is 50
   } catch (e) {
-    if (e?.name === 'UnrecognizedClientException') {
+    if (e?.name === 'UnrecognizedClientException' || e?.name === 'InvalidClientTokenId') {
       // Do not fail the cleanup and continue
       console.log(`Listing apps for account ${account.accountId}-${region} failed with error with code ${e?.name}. Skipping.`);
       return result;
