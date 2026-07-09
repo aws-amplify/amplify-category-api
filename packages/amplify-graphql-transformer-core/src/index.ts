@@ -39,6 +39,7 @@ export {
   getDefaultStrategyNameForDbType,
   getField,
   getFilterInputName,
+  getGlobalSecondaryIndexes,
   getImportedRDSTypeFromStrategyDbType,
   getKeySchema,
   getModelDataSourceNameForTypeName,
