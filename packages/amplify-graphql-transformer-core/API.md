@@ -251,6 +251,9 @@ export const getFieldNameFor: (op: Operation, typeName: string) => string;
 export const getFilterInputName: (modelName: string) => string;
 
 // @public (undocumented)
+export const getGlobalSecondaryIndexes: (table: any) => any;
+
+// @public (undocumented)
 export const getImportedRDSTypeFromStrategyDbType: (dbType: ModelDataSourceStrategyDbType) => ImportedRDSType;
 
 // @public (undocumented)
