@@ -15,6 +15,7 @@ export { IndexDirective } from './index-directive';
 export { ManyToManyDirective, ManyToManyDirectiveDefaults } from './many-to-many';
 export { MapsToDirective } from './maps-to';
 export { ModelDirective } from './model';
+export { MultiTenantDirective } from './multi-tenant';
 export { PredictionsDirective } from './predictions';
 export { PrimaryKeyDirective } from './primary-key';
 export { RefersToDirective } from './refers-to';
