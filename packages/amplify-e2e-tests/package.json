@@ -59,7 +59,7 @@
     "node-fetch": "^2.6.7",
     "pluralize": "^8.0.0",
     "uuid": "^8.3.2",
-    "ws": "^7.5.7",
+    "ws": "^7.5.11",
     "yargs": "^15.1.0"
   },
   "peerDependencies": {

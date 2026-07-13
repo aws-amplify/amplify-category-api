@@ -465,7 +465,7 @@
     "**/istanbul/async": "^2.6.4",
     "**/jake/async": "^2.6.4",
     "**/nth-check": "^2.0.1",
-    "aws-cdk-lib": "2.224.0",
+    "aws-cdk-lib": "2.260.0",
     "lodash": "^4.18.1",
     "node-fetch": "^2.6.7",
     "cross-fetch": "^2.2.6",
@@ -479,7 +479,7 @@
     "semver": "^7.5.2",
     "axios": "^1.16.1",
     "braces": "^3.0.3",
-    "@aws-sdk/core": "^3.974.23",
+    "@aws-sdk/core": "3.974.26",
     "cookie": "^0.7.0",
     "@octokit/request-error": "^5.1.1",
     "@octokit/request": "^8.4.1",
@@ -503,7 +503,10 @@
     "**/fast-xml-parser": "~5.7.2",
     "**/fast-xml-builder": ">=1.1.7",
     "@opentelemetry/core": ">=2.8.0",
-    "uuid": "^11.1.1"
+    "uuid": "^11.1.1",
+    "ws": ">=7.5.11",
+    "form-data": ">=4.0.6",
+    "js-cookie": ">=3.0.7"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

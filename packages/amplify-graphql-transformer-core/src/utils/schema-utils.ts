@@ -9,11 +9,20 @@ import { getModelDataSourceStrategy } from './model-datasource-strategy-utils';
 /**
  * getKeySchema
  */
-export const getKeySchema = (table: any, indexName?: string): any =>
-  (
-    table.globalSecondaryIndexes.find((gsi: any) => gsi.indexName === indexName) ??
-    table.localSecondaryIndexes.find((gsi: any) => gsi.indexName === indexName)
-  )?.keySchema ?? table.keySchema;
+export const getKeySchema = (table: any, indexName?: string): any => {
+  // aws-cdk-lib 2.260 renamed the private `globalSecondaryIndexes`/`localSecondaryIndexes` arrays on the
+  // DynamoDB L2 `Table` to `_globalSecondaryIndexes`/`_localSecondaryIndexes` (now `ArrayBox`es exposing the
+  // same `find` surface and element shape). Amplify's managed-table construct keeps the public array names.
+  // Read the renamed fields first, falling back to the public ones so both table types resolve correctly.
+  const globalSecondaryIndexes = table['_globalSecondaryIndexes'] ?? table.globalSecondaryIndexes;
+  const localSecondaryIndexes = table['_localSecondaryIndexes'] ?? table.localSecondaryIndexes;
+  return (
+    (
+      globalSecondaryIndexes.find((gsi: any) => gsi.indexName === indexName) ??
+      localSecondaryIndexes.find((gsi: any) => gsi.indexName === indexName)
+    )?.keySchema ?? table.keySchema
+  );
+};
 
 /**
  * getTable
