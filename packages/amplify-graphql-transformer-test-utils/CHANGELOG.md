@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-test-utils@1.1.2...@aws-amplify/graphql-transformer-test-utils@1.2.0) (2026-07-13)
+
+### Features
+
+- add opt-in minimizeRdsVpcEndpoints to the SQL data source strategy ([#3449](https://github.com/aws-amplify/amplify-category-api/issues/3449)) ([6693c8f](https://github.com/aws-amplify/amplify-category-api/commit/6693c8f12c970e3e82cd8ab4b7acf36b0308bf87))
+
 ## [1.1.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-test-utils@1.1.1...@aws-amplify/graphql-transformer-test-utils@1.1.2) (2026-07-01)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-test-utils

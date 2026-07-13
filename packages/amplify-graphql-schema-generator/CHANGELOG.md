@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.11.16](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.11.15...@aws-amplify/graphql-schema-generator@0.11.16) (2026-07-13)
+
+### Bug Fixes
+
+- **schema-generator:** sanitize database identifiers in TypeScript output path ([#3510](https://github.com/aws-amplify/amplify-category-api/issues/3510)) ([758ab96](https://github.com/aws-amplify/amplify-category-api/commit/758ab96afc096d74a828709fd058f7ec5e96b1af))
+
 ## [0.11.15](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.11.14...@aws-amplify/graphql-schema-generator@0.11.15) (2026-07-01)
 
 ### Bug Fixes
