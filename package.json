@@ -39,7 +39,7 @@
     "link-win": "node ./scripts/link-bin.js node_modules/amplify-cli-internal/bin/amplify amplify-dev",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "package": "lerna run package",
-    "postpublish:release": "git fetch . release:main && git push origin main",
+    "postpublish:release": "echo \"Creating PR to sync release \u2192 main\" && gh pr create --head release --base main --title \"chore: merge release to main [ci skip]\" --body \"Automated post-release sync of version bump commits. Use Create a merge commit (fast-forward).\" || echo \"PR already exists or could not be created \u2014 manual sync required.\"",
     "prettier-check": "yarn prettier --check .",
     "prettier-write": "yarn prettier --write .",
     "production-install": "yarn --frozen-lockfile --cache-folder ~/.cache/yarn",
