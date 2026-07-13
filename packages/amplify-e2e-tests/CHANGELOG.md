@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.16](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@4.1.15...amplify-category-api-e2e-tests@4.1.16) (2026-07-13)
+
+### Bug Fixes
+
+- resolve high dependabot vulnerabilities ([#3505](https://github.com/aws-amplify/amplify-category-api/issues/3505)) ([ebaf1e0](https://github.com/aws-amplify/amplify-category-api/commit/ebaf1e03f4347d2abe66974dd407e57b53358414))
+
 ## [4.1.15](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@4.1.14...amplify-category-api-e2e-tests@4.1.15) (2026-07-01)
 
 ### Bug Fixes
