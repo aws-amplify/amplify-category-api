@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.90](https://github.com/aws-amplify/amplify-category-api/compare/graphql-elasticsearch-transformer@5.2.89...graphql-elasticsearch-transformer@5.2.90) (2026-07-13)
+
+### Bug Fixes
+
+- **graphql-elasticsearch-transformer:** enforce HTTPS so TLS 1.2 applies on v1 searchable ([#3498](https://github.com/aws-amplify/amplify-category-api/issues/3498)) ([e3a9718](https://github.com/aws-amplify/amplify-category-api/commit/e3a971852380b6bbdb5f317571a6eef7ca7206e3)), closes [#3456](https://github.com/aws-amplify/amplify-category-api/issues/3456) [#3456](https://github.com/aws-amplify/amplify-category-api/issues/3456) [#3472](https://github.com/aws-amplify/amplify-category-api/issues/3472) [#3494](https://github.com/aws-amplify/amplify-category-api/issues/3494)
+
 ## [5.2.89](https://github.com/aws-amplify/amplify-category-api/compare/graphql-elasticsearch-transformer@5.2.88...graphql-elasticsearch-transformer@5.2.89) (2026-04-14)
 
 ### Bug Fixes

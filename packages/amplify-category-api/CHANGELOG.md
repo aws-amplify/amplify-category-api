@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.15.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.15.5...@aws-amplify/amplify-category-api@5.15.6) (2026-07-13)
+
+### Bug Fixes
+
+- **amplify-category-api:** migrate container templates off bitnami ECR Public images ([#3496](https://github.com/aws-amplify/amplify-category-api/issues/3496)) ([42226cf](https://github.com/aws-amplify/amplify-category-api/commit/42226cf088ddc04a80fc7dcf045a4c7a8d3e7cf1)), closes [#3436](https://github.com/aws-amplify/amplify-category-api/issues/3436) [#3494](https://github.com/aws-amplify/amplify-category-api/issues/3494)
+
 ## [5.15.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.15.4...@aws-amplify/amplify-category-api@5.15.5) (2026-04-15)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api

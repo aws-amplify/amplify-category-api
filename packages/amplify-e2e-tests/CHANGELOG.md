@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.22.24](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.23...amplify-category-api-e2e-tests@3.22.24) (2026-07-13)
+
+### Bug Fixes
+
+- **amplify-e2e-tests:** handle InvalidClientTokenId in getAmplifyApps opt-in region cleanup ([#3512](https://github.com/aws-amplify/amplify-category-api/issues/3512)) ([5d1cd14](https://github.com/aws-amplify/amplify-category-api/commit/5d1cd148f7585e6de6f9337f656d36d1792b42cc)), closes [#3304](https://github.com/aws-amplify/amplify-category-api/issues/3304)
+
 ## [3.22.23](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.22...amplify-category-api-e2e-tests@3.22.23) (2026-04-14)
 
 ### Bug Fixes
