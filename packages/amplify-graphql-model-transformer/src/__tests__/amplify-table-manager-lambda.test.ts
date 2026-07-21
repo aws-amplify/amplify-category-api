@@ -19,6 +19,7 @@ import {
   extractOldTableInputFromEvent,
   isTtlModified,
   processIsComplete,
+  processOnEvent,
 } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
 import * as ddbTableManagerLambda from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
 import * as CustomDDB from '../resources/amplify-dynamodb-table/amplify-table-types';
@@ -37,6 +38,10 @@ jest.spyOn(ddbTableManagerLambda, 'getLambdaTags').mockReturnValue(
 const mockDescribeTable = jest.fn();
 const mockDescribeContinuousBackups = jest.fn();
 const mockUpdateContinuousBackups = jest.fn();
+const mockUpdateTable = jest.fn();
+const mockTagResource = jest.fn();
+const mockUntagResource = jest.fn();
+const mockSend = jest.fn();
 jest.mock('@aws-sdk/client-dynamodb', () => {
   return {
     ...jest.requireActual('@aws-sdk/client-dynamodb'),
@@ -44,6 +49,10 @@ jest.mock('@aws-sdk/client-dynamodb', () => {
       describeTable: (input: any) => mockDescribeTable(input),
       describeContinuousBackups: (input: any) => mockDescribeContinuousBackups(input),
       updateContinuousBackups: (input: any) => mockUpdateContinuousBackups(input),
+      updateTable: (input: any) => mockUpdateTable(input),
+      tagResource: (input: any) => mockTagResource(input),
+      untagResource: (input: any) => mockUntagResource(input),
+      send: (input: any) => mockSend(input),
     })),
   };
 });
@@ -1370,6 +1379,266 @@ describe('Custom Resource Lambda Tests', () => {
         invokedFunctionArn: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
       });
       expect(IsComplete).toBe(true);
+    });
+  });
+
+  describe('processOnEvent', () => {
+    describe('Update request with stream update', () => {
+      beforeEach(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should return updated TableStreamArn when stream is updated', async () => {
+        const oldStreamArn = 'arn:aws:dynamodb:ap-northeast-1:123456789100:table/mockTable/stream/2025-03-05T01:11:03.258';
+        const newStreamArn = 'arn:aws:dynamodb:ap-northeast-1:123456789100:table/mockTable/stream/2025-03-06T02:22:04.369';
+        const tableArn = 'arn:aws:dynamodb:ap-northeast-1:123456789100:table/mockTable';
+
+        const activeTableResponse = {
+          Table: {
+            TableName: 'mockTable',
+            TableArn: tableArn,
+            TableStatus: 'ACTIVE',
+            KeySchema: [
+              {
+                AttributeName: 'pk',
+                KeyType: 'HASH',
+              },
+            ],
+            AttributeDefinitions: [
+              {
+                AttributeName: 'pk',
+                AttributeType: 'S',
+              },
+            ],
+            BillingModeSummary: {
+              BillingMode: 'PAY_PER_REQUEST',
+            },
+          },
+        };
+
+        const updateEvent: AWSCDKAsyncCustomResource.OnEventRequest = {
+          RequestType: 'Update',
+          ServiceToken: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkonEvent',
+          ResponseURL: '[redacted]',
+          StackId: 'mockStackId',
+          RequestId: 'mockRequestId',
+          LogicalResourceId: 'ResourceTable',
+          ResourceType: 'Custom::AmplifyDynamoDBTable',
+          PhysicalResourceId: 'mockTable',
+          ResourceProperties: {
+            tableName: 'mockTable',
+            ServiceToken: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkonEvent',
+            attributeDefinitions: [
+              {
+                attributeName: 'pk',
+                attributeType: 'S',
+              },
+            ],
+            keySchema: [
+              {
+                attributeName: 'pk',
+                keyType: 'HASH',
+              },
+            ],
+            billingMode: 'PAY_PER_REQUEST',
+            streamSpecification: {
+              streamEnabled: true,
+              streamViewType: 'NEW_IMAGE',
+            },
+          },
+          OldResourceProperties: {
+            tableName: 'mockTable',
+            ServiceToken: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkonEvent',
+            attributeDefinitions: [
+              {
+                attributeName: 'pk',
+                attributeType: 'S',
+              },
+            ],
+            keySchema: [
+              {
+                attributeName: 'pk',
+                keyType: 'HASH',
+              },
+            ],
+            billingMode: 'PAY_PER_REQUEST',
+            streamSpecification: {
+              streamEnabled: true,
+              streamViewType: 'NEW_AND_OLD_IMAGES',
+            },
+          },
+        };
+
+        const mockContext = {
+          invokedFunctionArn: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkonEvent',
+        };
+
+        // Mock ListTagsOfResourceCommand (used by getTableTags)
+        mockSend.mockResolvedValue({
+          Tags: [
+            { Key: 'key1', Value: 'value1' },
+            { Key: 'key2', Value: 'value2' },
+            { Key: 'key3', Value: 'value3' },
+          ],
+        });
+
+        // First describeTable call - returns current state with old stream
+        mockDescribeTable.mockResolvedValueOnce({
+          Table: {
+            ...activeTableResponse.Table,
+            StreamSpecification: {
+              StreamEnabled: true,
+              StreamViewType: 'NEW_AND_OLD_IMAGES',
+            },
+            LatestStreamArn: oldStreamArn,
+          },
+        });
+
+        // Mock describeContinuousBackups
+        mockDescribeContinuousBackups.mockResolvedValue({
+          ContinuousBackupsDescription: {
+            ContinuousBackupsStatus: 'ENABLED',
+            PointInTimeRecoveryDescription: {
+              PointInTimeRecoveryStatus: 'DISABLED',
+            },
+          },
+        });
+
+        // Mock tagResource/untagResource (no tag changes)
+        mockTagResource.mockResolvedValue({});
+        mockUntagResource.mockResolvedValue({});
+
+        // Mock updateTable for stream update
+        mockUpdateTable.mockResolvedValue({});
+
+        // Mock describeTable calls for isTableReady checks after stream update
+        // These will be called by retry() after updateTable
+        mockDescribeTable.mockResolvedValue({
+          Table: {
+            ...activeTableResponse.Table,
+            StreamSpecification: {
+              StreamEnabled: true,
+              StreamViewType: 'NEW_IMAGE',
+            },
+            LatestStreamArn: newStreamArn,
+          },
+        });
+
+        const result = await processOnEvent(updateEvent, mockContext);
+
+        // Verify that TableStreamArn in the result matches the new stream ARN
+        expect(result.Data?.TableStreamArn).toBe(newStreamArn);
+        expect(result.Data?.TableArn).toBe(tableArn);
+        expect(result.Data?.TableName).toBe('mockTable');
+        expect(result.PhysicalResourceId).toBe('mockTable');
+
+        // Verify describeTable was called multiple times (initial + retry + final)
+        expect(mockDescribeTable).toHaveBeenCalledWith({ TableName: 'mockTable' });
+
+        // Verify updateTable was called for stream update
+        expect(mockUpdateTable).toHaveBeenCalledWith({
+          TableName: 'mockTable',
+          StreamSpecification: {
+            StreamEnabled: true,
+            StreamViewType: 'NEW_IMAGE',
+          },
+        });
+      });
+
+      it('should not update stream when there is no stream change', async () => {
+        const existingStreamArn = 'arn:aws:dynamodb:us-east-1:123456789012:table/mockTable/stream/2024-01-01T00:00:00.000';
+        const tableArn = 'arn:aws:dynamodb:us-east-1:123456789012:table/mockTable';
+
+        const activeTableResponse = {
+          Table: {
+            TableName: 'mockTable',
+            TableArn: tableArn,
+            TableStatus: 'ACTIVE',
+            KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
+            AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
+            BillingModeSummary: { BillingMode: 'PAY_PER_REQUEST' },
+            StreamSpecification: {
+              StreamEnabled: true,
+              StreamViewType: 'NEW_AND_OLD_IMAGES',
+            },
+            LatestStreamArn: existingStreamArn,
+          },
+        };
+
+        const updateEvent: AWSCDKAsyncCustomResource.OnEventRequest = {
+          RequestType: 'Update',
+          ServiceToken: 'test-token',
+          ResponseURL: 'test-url',
+          StackId: 'test-stack',
+          RequestId: 'test-request',
+          LogicalResourceId: 'test-resource',
+          PhysicalResourceId: 'mockTable',
+          ResourceType: 'Custom::AmplifyDynamoDBTable',
+          ResourceProperties: {
+            ServiceToken: 'test-token',
+            tableName: 'mockTable',
+            attributeDefinitions: [{ attributeName: 'id', attributeType: 'S' }],
+            keySchema: [{ attributeName: 'id', keyType: 'HASH' }],
+            billingMode: 'PAY_PER_REQUEST',
+            streamSpecification: {
+              streamEnabled: true,
+              streamViewType: 'NEW_AND_OLD_IMAGES',
+            },
+          },
+          OldResourceProperties: {
+            ServiceToken: 'test-token',
+            tableName: 'mockTable',
+            attributeDefinitions: [{ attributeName: 'id', attributeType: 'S' }],
+            keySchema: [{ attributeName: 'id', keyType: 'HASH' }],
+            billingMode: 'PAY_PER_REQUEST',
+            streamSpecification: {
+              streamEnabled: true,
+              streamViewType: 'NEW_AND_OLD_IMAGES',
+            },
+          },
+        };
+
+        const mockContext = {
+          invokedFunctionArn: 'arn:aws:lambda:us-east-1:123456789012:function:test-function',
+        };
+
+        // Mock initial describeTable
+        mockDescribeTable.mockResolvedValue(activeTableResponse);
+
+        // Mock describeContinuousBackups (no PITR change)
+        mockDescribeContinuousBackups.mockResolvedValue({
+          ContinuousBackupsDescription: {
+            ContinuousBackupsStatus: 'ENABLED',
+            PointInTimeRecoveryDescription: {
+              PointInTimeRecoveryStatus: 'DISABLED',
+            },
+          },
+        });
+
+        // Mock ListTagsOfResourceCommand (used by getTableTags)
+        mockSend.mockResolvedValue({
+          Tags: [
+            { Key: 'key1', Value: 'value1' },
+            { Key: 'key2', Value: 'value2' },
+            { Key: 'key3', Value: 'value3' },
+          ],
+        });
+
+        // Mock tagResource for adding tags
+        mockTagResource.mockResolvedValue({});
+        mockUntagResource.mockResolvedValue({});
+
+        const result = await processOnEvent(updateEvent, mockContext);
+
+        // Verify that TableStreamArn remains unchanged
+        expect(result.Data?.TableStreamArn).toBe(existingStreamArn);
+        expect(result.Data?.TableArn).toBe(tableArn);
+        expect(result.Data?.TableName).toBe('mockTable');
+        expect(result.PhysicalResourceId).toBe('mockTable');
+
+        // Verify updateTable was NOT called for stream update (no stream change)
+        expect(mockUpdateTable).not.toHaveBeenCalled();
+      });
     });
   });
 });
