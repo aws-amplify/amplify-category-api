@@ -390,6 +390,7 @@ export interface SQLLambdaModelDataSourceStrategy {
     readonly customSqlStatements?: Record<string, string>;
     readonly dbConnectionConfig: SqlModelDataSourceDbConnectionConfig;
     readonly dbType: ModelDataSourceStrategySqlDbType;
+    readonly minimizeRdsVpcEndpoints?: boolean;
     readonly name: string;
     readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
     readonly vpcConfiguration?: VpcConfig;

@@ -30,6 +30,18 @@ import { HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from './t
 import { getConnectionAttributeName, getObjectPrimaryKey } from './utils';
 
 /**
+ * Reads the list of global secondary indexes tracked on a DynamoDB L2 `Table` construct.
+ *
+ * `aws-cdk-lib` 2.260 renamed the (private) `globalSecondaryIndexes` array to `_globalSecondaryIndexes`
+ * and now backs it with an `ArrayBox`, which still exposes the array-like `some`/`find`/`length` surface
+ * and the same element shape (`{ indexName, keySchema }`). Amplify's own managed-table construct
+ * (`AmplifyDynamoDBTable`) instead keeps its indexes on a public `globalSecondaryIndexes` array. Reading
+ * `_globalSecondaryIndexes` first and falling back to `globalSecondaryIndexes` works for both table types
+ * and preserves the duplicate-index-name detection rather than silently disabling it.
+ */
+const getGlobalSecondaryIndexes = (table: any): any => table['_globalSecondaryIndexes'] ?? table.globalSecondaryIndexes;
+
+/**
  * Creates a GSI on the table of the `relatedType` based on the config's `references` / `referenceNodes`
  *
  * @remarks
@@ -54,7 +66,7 @@ export const updateTableForReferencesConnection = (
   }
 
   const relatedTable = getTable(ctx, relatedType);
-  const gsis = relatedTable.globalSecondaryIndexes;
+  const gsis = getGlobalSecondaryIndexes(relatedTable);
   if (gsis.some((gsi: any) => gsi.indexName === indexName)) {
     // We create a GSI on the Related model's table for querying
     // relationships using the format 'gsi-{PrimaryModelName}.{PrimaryModelConnectionField}'
@@ -136,7 +148,7 @@ export const updateTableForConnection = (config: HasManyDirectiveConfiguration, 
   const { field, object, relatedType } = config;
   const mappedObjectName = ctx.resourceHelper.getModelNameMapping(object.name.value);
   const table = getTable(ctx, relatedType) as any;
-  const gsis = table.globalSecondaryIndexes;
+  const gsis = getGlobalSecondaryIndexes(table);
 
   const indexName = `gsi-${mappedObjectName}.${field.name.value}`;
   config.indexName = indexName;
@@ -202,7 +214,7 @@ const addGlobalSecondaryIndex = (
   // At the L2 level, the CDK does not handle the way Amplify sets GSI read and write capacity
   // very well. At the L1 level, the CDK does not create the correct IAM policy for accessing the
   // GSI. To get around these issues, keep the L1 and L2 GSI list in sync.
-  const gsi = table.globalSecondaryIndexes.find((g: any) => g.indexName === indexName);
+  const gsi = getGlobalSecondaryIndexes(table).find((g: any) => g.indexName === indexName);
 
   const newIndex = {
     indexName,

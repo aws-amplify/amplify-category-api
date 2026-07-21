@@ -12,6 +12,7 @@ export interface MakeSqlDataSourceStrategyOptions {
   dbType?: ModelDataSourceStrategySqlDbType;
   dbConnectionConfig?: SqlModelDataSourceDbConnectionConfig;
   vpcConfiguration?: VpcConfig;
+  minimizeRdsVpcEndpoints?: boolean;
   sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
   // Note: this is only supported in the CDK Construct flavor of the SQLLambdaModelDataSourceStrategy
   customSqlStatements?: Record<string, string>;
@@ -39,6 +40,7 @@ export const MOCK_DB_CONNECTION_CONFIG: SqlModelDataSourceDbConnectionConfig = {
  * - name: `${dbType}MockStrategy`
  * - dbConnectionConfig: MOCK_DB_CONNECTION_CONFIG
  * - vpcConfiguration: undefined
+ * - minimizeRdsVpcEndpoints: undefined
  * - sqlLambdaProvisionedConcurrencyConfig: undefined
  * - customSqlStatements: undefined
  */
@@ -51,6 +53,7 @@ export const mockSqlDataSourceStrategy = (
   const name = options?.name ?? `${dbType}MockStrategy`;
   const dbConnectionConfig = options?.dbConnectionConfig ?? MOCK_DB_CONNECTION_CONFIG;
   const vpcConfiguration = options?.vpcConfiguration;
+  const minimizeRdsVpcEndpoints = options?.minimizeRdsVpcEndpoints;
   const sqlLambdaProvisionedConcurrencyConfig = options?.sqlLambdaProvisionedConcurrencyConfig;
   const customSqlStatements = options?.customSqlStatements;
   return {
@@ -58,6 +61,7 @@ export const mockSqlDataSourceStrategy = (
     dbType,
     dbConnectionConfig,
     vpcConfiguration,
+    minimizeRdsVpcEndpoints,
     sqlLambdaProvisionedConcurrencyConfig,
     customSqlStatements,
   };

@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.17.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.17.6...@aws-amplify/data-construct@1.17.7) (2026-07-13)
+
+**Note:** Version bump only for package @aws-amplify/data-construct
+
+## [1.17.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.17.5...@aws-amplify/data-construct@1.17.6) (2026-07-13)
+
+**Note:** Version bump only for package @aws-amplify/data-construct
+
+## [1.17.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.17.4...@aws-amplify/data-construct@1.17.5) (2026-07-13)
+
+### Bug Fixes
+
+- **construct:** re-pin @aws-sdk/\* exact and collapse [@smithy](https://github.com/smithy) dedupe (58k → ~15k files) ([#3508](https://github.com/aws-amplify/amplify-category-api/issues/3508)) ([51fa6e5](https://github.com/aws-amplify/amplify-category-api/commit/51fa6e5a33b24bf2964a0d33479091730f14f3f0))
+- resolve high dependabot vulnerabilities ([#3505](https://github.com/aws-amplify/amplify-category-api/issues/3505)) ([ebaf1e0](https://github.com/aws-amplify/amplify-category-api/commit/ebaf1e03f4347d2abe66974dd407e57b53358414))
+
+## [1.17.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.17.3...@aws-amplify/data-construct@1.17.4) (2026-07-01)
+
+### Bug Fixes
+
+- bump @aws-sdk/\* to 3.1074 release line, drop fast-xml-parser from constructs ([c623727](https://github.com/aws-amplify/amplify-category-api/commit/c623727d80bb8fe797f1029af372a1e7bcdb0abe))
+- bump @aws-sdk/xml-builder, @opentelemetry/core, uuid for security advisories ([23d0396](https://github.com/aws-amplify/amplify-category-api/commit/23d03961737ec4526732725ab4acd2f2eda55150)), closes [aws-sdk-js-v3#7863](https://github.com/aws-sdk-js-v3/issues/7863)
+- bundle util-format-url, middleware-sdk-s3, util-arn-parser for construct completeness ([fc78049](https://github.com/aws-amplify/amplify-category-api/commit/fc780497acb836d4c022798223e9b8103cfa8e5f))
+- declare new fast-xml-parser/aws-sdk transitive deps in constructs and update license disclaimer ([54ad56a](https://github.com/aws-amplify/amplify-category-api/commit/54ad56a425cd8cee934795d9f0efb3e30a269679))
+- resolve all HIGH/CRITICAL vulnerabilities across all lockfiles ([222f10e](https://github.com/aws-amplify/amplify-category-api/commit/222f10ec2c6922aaedec3fb77fe03e58b0fca15c))
+- upgrade AWS SDK clients to eliminate fast-xml-parser vulnerabilities ([9261998](https://github.com/aws-amplify/amplify-category-api/commit/92619981d2cf15351a89ebb4b4f85ea45d6c3f65))
+
 ## [1.17.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/data-construct@1.17.2...@aws-amplify/data-construct@1.17.3) (2026-05-07)
 
 ### Bug Fixes

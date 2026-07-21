@@ -314,6 +314,7 @@ export type AmplifyAIToolUseBlockInput = {
   input: string;
   name: string;
   toolUseId: string;
+  type?: string | null;
 };
 
 export type CreateConversationMessagePirateChatAssistantInput = {
