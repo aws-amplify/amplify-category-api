@@ -12,8 +12,6 @@
   { "name": "eu-west-1", "optIn": false, "cognitoSupported": true, "betaLayerDeployed": true },
   { "name": "eu-west-2", "optIn": false, "cognitoSupported": true, "betaLayerDeployed": true },
   { "name": "eu-west-3", "optIn": false, "cognitoSupported": true, "betaLayerDeployed": true },
-  { "name": "me-south-1", "optIn": true, "cognitoSupported": true, "betaLayerDeployed": false },
-  { "name": "sa-east-1", "optIn": false, "cognitoSupported": true, "betaLayerDeployed": true },
   { "name": "us-east-1", "optIn": false, "cognitoSupported": true, "betaLayerDeployed": true },
   { "name": "us-east-2", "optIn": false, "cognitoSupported": true, "betaLayerDeployed": true },
   { "name": "us-west-1", "optIn": false, "cognitoSupported": true, "betaLayerDeployed": true },
