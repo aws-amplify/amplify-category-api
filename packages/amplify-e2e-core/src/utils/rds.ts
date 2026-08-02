@@ -269,7 +269,7 @@ export const setupRDSInstanceAndData = async (
     );
 
     console.log('Waiting for the security rules to take effect');
-    await sleep(1 * 60 * 1000);
+    await sleep(5 * 60 * 1000);
 
     const dbAdapter = new RDSTestDataProvider({
       engine: config.engine,
@@ -295,7 +295,7 @@ export const setupRDSInstanceAndData = async (
     );
 
     console.log('Waiting for the security rules to be disabled');
-    await sleep(1 * 60 * 1000);
+    await sleep(5 * 60 * 1000);
   }
 
   return dbConfig;
