@@ -3,7 +3,24 @@ import { defaultProvider } from '@aws-sdk/credential-provider-node';
 import { SignatureV4 } from '@aws-sdk/signature-v4';
 import { HttpRequest } from '@aws-sdk/protocol-http';
 import { default as fetch, Request } from 'node-fetch';
-import type { GraphqlProxiedLambdaResponse } from '../../../lambda-request';
+
+/**
+ * Shape of the response this lambda returns to callers.
+ *
+ * Intentionally declared inline rather than imported from the test helpers: this file is bundled as a standalone lambda entry point and is
+ * copied into a scratch CDK project, so any relative import reaching outside its own directory cannot be resolved.
+ */
+export type GraphqlProxiedLambdaResponse<ResponseDataType> = {
+  statusCode: number;
+  body: {
+    errors: Array<{
+      status?: number;
+      message: string;
+      stack: string[];
+    }>;
+    data: ResponseDataType;
+  };
+};
 
 if (!process.env.GRAPHQL_URL) throw new Error('GRAPHQL_URL not found in environment variables');
 const graphqlEndpoint = new URL(process.env.GRAPHQL_URL);

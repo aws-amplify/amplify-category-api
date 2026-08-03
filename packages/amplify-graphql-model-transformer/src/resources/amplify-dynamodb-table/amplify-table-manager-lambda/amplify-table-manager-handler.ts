@@ -570,6 +570,36 @@ const defaultPhysicalResourceId = (req: AWSLambda.CloudFormationCustomResourceEv
 };
 
 /**
+ * Resolves the provisioned throughput that should be applied to a single global secondary index.
+ *
+ * Precedence is the index's own end-state throughput, falling back to the table-level end-state
+ * throughput when the index does not declare one.
+ *
+ * @param endState The input table state from user
+ * @param indexEndState The end state of the specific index, if it is present in the end state
+ * @returns the read/write capacity pair to apply, or undefined when the index must not carry a
+ * ProvisionedThroughput (table is billed PAY_PER_REQUEST, or neither source supplies a complete
+ * read/write capacity pair). DynamoDB rejects a partially populated ProvisionedThroughput, so a
+ * complete pair is the only valid non-undefined result.
+ */
+const resolveGsiProvisionedThroughput = (
+  endState: CustomDDB.Input,
+  indexEndState?: CustomDDB.GlobalSecondaryIndexProperty,
+): { readCapacityUnits: number; writeCapacityUnits: number } | undefined => {
+  if (endState.billingMode === 'PAY_PER_REQUEST') {
+    return undefined;
+  }
+  const candidate = indexEndState?.provisionedThroughput ?? endState.provisionedThroughput;
+  if (candidate?.readCapacityUnits === undefined || candidate?.writeCapacityUnits === undefined) {
+    return undefined;
+  }
+  return {
+    readCapacityUnits: candidate.readCapacityUnits,
+    writeCapacityUnits: candidate.writeCapacityUnits,
+  };
+};
+
+/**
  * You can only perform one of the following operations at once:
     - Modify the provisioned throughput settings of the table.
     - Remove a global secondary index from the table.
@@ -605,17 +635,25 @@ export const getNextAtomicUpdate = (currentState: TableDescription, endState: Cu
     // should be updated with the provisionedThroughput at the same time. Otherwise it will fail the parameter validation.
     // The table's throughput will be applied by default.
     if (isTableBillingModeModified && endState.billingMode === 'PROVISIONED') {
-      const indexToBeUpdated = currentStateGSIs.map((gsiToUpdate) => {
-        return {
+      const endStateGSIsByName = new Map((endState.globalSecondaryIndexes ?? []).map((gsi) => [gsi.indexName, gsi]));
+      const indexToBeUpdated = currentStateGSIs
+        .map((gsiToUpdate) => ({
+          indexName: gsiToUpdate.IndexName,
+          throughput: resolveGsiProvisionedThroughput(endState, endStateGSIsByName.get(gsiToUpdate.IndexName!)),
+        }))
+        .filter(
+          (gsi): gsi is { indexName: string | undefined; throughput: { readCapacityUnits: number; writeCapacityUnits: number } } =>
+            gsi.throughput !== undefined,
+        )
+        .map((gsi) => ({
           Update: {
-            IndexName: gsiToUpdate.IndexName,
+            IndexName: gsi.indexName,
             ProvisionedThroughput: {
-              ReadCapacityUnits: endState.provisionedThroughput?.readCapacityUnits,
-              WriteCapacityUnits: endState.provisionedThroughput?.writeCapacityUnits,
+              ReadCapacityUnits: gsi.throughput.readCapacityUnits,
+              WriteCapacityUnits: gsi.throughput.writeCapacityUnits,
             },
           },
-        };
-      });
+        }));
       updateInput = {
         ...updateInput,
         GlobalSecondaryIndexUpdates: indexToBeUpdated.length > 0 ? indexToBeUpdated : undefined,
@@ -678,14 +716,8 @@ const getNextGSIUpdate = (currentState: TableDescription, endState: CustomDDB.In
 
   const gsiToAdd = endStateGSIs.find(gsiRequiresCreationPredicate);
   if (gsiToAdd) {
-    let gsiProvisionThroughput: any = gsiToAdd.provisionedThroughput;
     // When table is billing at `PROVISIONED` and no throughput defined for gsi, the table's throughput will be used by default
-    if (endState.billingMode === 'PROVISIONED' && gsiToAdd.provisionedThroughput === undefined) {
-      gsiProvisionThroughput = {
-        readCapacityUnits: endState.provisionedThroughput?.readCapacityUnits,
-        writeCapacityUnits: endState.provisionedThroughput?.writeCapacityUnits,
-      };
-    }
+    const gsiProvisionThroughput: any = resolveGsiProvisionedThroughput(endState, gsiToAdd);
     const attributeNamesToInclude = gsiToAdd.keySchema.map((schema) => schema.attributeName);
     const gsiToAddAction = {
       IndexName: gsiToAdd.indexName,
@@ -708,26 +740,22 @@ const getNextGSIUpdate = (currentState: TableDescription, endState: CustomDDB.In
 
   // The major update is the index provisioned throughput
   const gsiRequiresUpdatePredicate = (endStateGSI: CustomDDB.GlobalSecondaryIndexProperty): boolean => {
-    if (
-      endState.provisionedThroughput &&
-      endState.provisionedThroughput.readCapacityUnits &&
-      endState.provisionedThroughput.writeCapacityUnits &&
-      currentStateGSINames.includes(endStateGSI.indexName)
-    ) {
-      const currentStateGSI = currentStateGSIs.find((gsi) => gsi.IndexName === endStateGSI.indexName);
-      if (currentStateGSI) {
-        if (
-          currentStateGSI.ProvisionedThroughput?.ReadCapacityUnits !== endStateGSI.provisionedThroughput?.readCapacityUnits ||
-          currentStateGSI.ProvisionedThroughput?.WriteCapacityUnits !== endStateGSI.provisionedThroughput?.writeCapacityUnits
-        ) {
-          return true;
-        }
-      }
+    const resolvedThroughput = resolveGsiProvisionedThroughput(endState, endStateGSI);
+    if (!resolvedThroughput || !currentStateGSINames.includes(endStateGSI.indexName)) {
+      return false;
     }
-    return false;
+    const currentStateGSI = currentStateGSIs.find((gsi) => gsi.IndexName === endStateGSI.indexName);
+    if (!currentStateGSI) {
+      return false;
+    }
+    return (
+      currentStateGSI.ProvisionedThroughput?.ReadCapacityUnits !== resolvedThroughput.readCapacityUnits ||
+      currentStateGSI.ProvisionedThroughput?.WriteCapacityUnits !== resolvedThroughput.writeCapacityUnits
+    );
   };
   const gsiToUpdate = endStateGSIs.find(gsiRequiresUpdatePredicate);
   if (gsiToUpdate) {
+    const resolvedThroughput = resolveGsiProvisionedThroughput(endState, gsiToUpdate)!;
     return {
       TableName: currentState.TableName!,
       GlobalSecondaryIndexUpdates: [
@@ -735,8 +763,8 @@ const getNextGSIUpdate = (currentState: TableDescription, endState: CustomDDB.In
           Update: {
             IndexName: gsiToUpdate.indexName,
             ProvisionedThroughput: {
-              ReadCapacityUnits: gsiToUpdate.provisionedThroughput?.readCapacityUnits!,
-              WriteCapacityUnits: gsiToUpdate.provisionedThroughput?.writeCapacityUnits!,
+              ReadCapacityUnits: resolvedThroughput.readCapacityUnits,
+              WriteCapacityUnits: resolvedThroughput.writeCapacityUnits,
             },
           },
         },

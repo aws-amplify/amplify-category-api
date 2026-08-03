@@ -1123,6 +1123,126 @@ describe('Custom Resource Lambda Tests', () => {
         nextUpdate = getNextAtomicUpdate(currentState, endState);
         expect(nextUpdate).toMatchSnapshot();
       });
+      describe('per-index provisioned throughput', () => {
+        const keySchemaFor = (attributeName: string) => [{ attributeName, keyType: 'HASH' }];
+        const currentGsi = (indexName: string, attributeName: string, throughput?: { read: number; write: number }) => ({
+          IndexName: indexName,
+          KeySchema: [{ AttributeName: attributeName, KeyType: 'HASH' as const }],
+          Projection: { ProjectionType: 'ALL' as const },
+          ...(throughput ? { ProvisionedThroughput: { ReadCapacityUnits: throughput.read, WriteCapacityUnits: throughput.write } } : {}),
+        });
+        const endStateGsi = (indexName: string, attributeName: string, throughput?: { read: number; write: number }) => ({
+          indexName,
+          keySchema: keySchemaFor(attributeName),
+          projection: { projectionType: 'ALL' },
+          ...(throughput ? { provisionedThroughput: { readCapacityUnits: throughput.read, writeCapacityUnits: throughput.write } } : {}),
+        });
+        const twoIndexAttributeDefinitions = [
+          { attributeName: 'pk', attributeType: 'S' },
+          { attributeName: 'sk', attributeType: 'S' },
+          { attributeName: 'name', attributeType: 'S' },
+          { attributeName: 'title', attributeType: 'S' },
+        ];
+
+        it('populates non-null capacity for every GSI when billingMode flips to PROVISIONED and only one GSI declares its own throughput', () => {
+          currentState = {
+            ...currentStateBase,
+            BillingModeSummary: { BillingMode: 'PAY_PER_REQUEST' },
+            GlobalSecondaryIndexes: [currentGsi('gsi1', 'name'), currentGsi('gsi2', 'title')],
+          };
+          endState = {
+            ...baseTableDef,
+            billingMode: 'PROVISIONED',
+            provisionedThroughput: { readCapacityUnits: 10, writeCapacityUnits: 10 },
+            attributeDefinitions: twoIndexAttributeDefinitions,
+            globalSecondaryIndexes: [endStateGsi('gsi1', 'name', { read: 3, write: 4 }), endStateGsi('gsi2', 'title')],
+          };
+
+          nextUpdate = getNextAtomicUpdate(currentState, endState);
+
+          const gsiUpdates = nextUpdate!.GlobalSecondaryIndexUpdates!;
+          expect(gsiUpdates).toHaveLength(2);
+          // gsi1 keeps its own declared throughput, gsi2 inherits the table-level default
+          expect(gsiUpdates[0].Update).toEqual({
+            IndexName: 'gsi1',
+            ProvisionedThroughput: { ReadCapacityUnits: 3, WriteCapacityUnits: 4 },
+          });
+          expect(gsiUpdates[1].Update).toEqual({
+            IndexName: 'gsi2',
+            ProvisionedThroughput: { ReadCapacityUnits: 10, WriteCapacityUnits: 10 },
+          });
+          gsiUpdates.forEach((gsiUpdate) => {
+            expect(gsiUpdate.Update!.ProvisionedThroughput!.ReadCapacityUnits).toEqual(expect.any(Number));
+            expect(gsiUpdate.Update!.ProvisionedThroughput!.WriteCapacityUnits).toEqual(expect.any(Number));
+          });
+        });
+
+        // Regression: the GSI Update action used to source capacity from the end-state index only, emitting
+        // undefined read/write capacity when the index inherited the table-level throughput. DynamoDB then
+        // rejected UpdateTable with "Value null at 'globalSecondaryIndexUpdates.1.member.update.provisionedThroughput.*'".
+        it('falls back to table-level throughput when an existing GSI does not declare its own throughput', () => {
+          currentState = {
+            ...currentStateBase,
+            BillingModeSummary: { BillingMode: 'PROVISIONED' },
+            ProvisionedThroughput: { ReadCapacityUnits: 10, WriteCapacityUnits: 10 },
+            GlobalSecondaryIndexes: [
+              currentGsi('gsi1', 'name', { read: 10, write: 10 }),
+              currentGsi('gsi2', 'title', { read: 5, write: 5 }),
+            ],
+          };
+          endState = {
+            ...baseTableDef,
+            billingMode: 'PROVISIONED',
+            provisionedThroughput: { readCapacityUnits: 10, writeCapacityUnits: 10 },
+            attributeDefinitions: twoIndexAttributeDefinitions,
+            globalSecondaryIndexes: [endStateGsi('gsi1', 'name'), endStateGsi('gsi2', 'title')],
+          };
+
+          nextUpdate = getNextAtomicUpdate(currentState, endState);
+
+          // gsi1 already matches the table-level default so only gsi2 needs an update, with real numbers
+          expect(nextUpdate!.GlobalSecondaryIndexUpdates).toEqual([
+            {
+              Update: {
+                IndexName: 'gsi2',
+                ProvisionedThroughput: { ReadCapacityUnits: 10, WriteCapacityUnits: 10 },
+              },
+            },
+          ]);
+        });
+
+        it('does not emit a GSI throughput update when no throughput can be resolved', () => {
+          currentState = {
+            ...currentStateBase,
+            BillingModeSummary: { BillingMode: 'PROVISIONED' },
+            GlobalSecondaryIndexes: [currentGsi('gsi1', 'name', { read: 5, write: 5 })],
+          };
+          endState = {
+            ...baseTableDef,
+            billingMode: 'PROVISIONED',
+            attributeDefinitions: twoIndexAttributeDefinitions,
+            globalSecondaryIndexes: [endStateGsi('gsi1', 'name')],
+          };
+
+          expect(getNextAtomicUpdate(currentState, endState)).toBeUndefined();
+        });
+
+        it('omits ProvisionedThroughput on GSI updates when the table is billed PAY_PER_REQUEST', () => {
+          currentState = {
+            ...currentStateBase,
+            BillingModeSummary: { BillingMode: 'PAY_PER_REQUEST' },
+            GlobalSecondaryIndexes: [currentGsi('gsi1', 'name', { read: 5, write: 5 })],
+          };
+          endState = {
+            ...baseTableDef,
+            billingMode: 'PAY_PER_REQUEST',
+            attributeDefinitions: twoIndexAttributeDefinitions,
+            globalSecondaryIndexes: [endStateGsi('gsi1', 'name', { read: 9, write: 9 })],
+          };
+
+          expect(getNextAtomicUpdate(currentState, endState)).toBeUndefined();
+        });
+      });
     });
   });
   describe('isTtlModified', () => {
