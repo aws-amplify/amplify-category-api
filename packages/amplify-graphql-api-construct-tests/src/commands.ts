@@ -91,6 +91,12 @@ const removeWholeProjectTypecheckFromSynth = (projectPath: string): void => {
   }
   const appWithoutTypecheck = cdkJson.app.replace(/^\s*npx\s+tsc\s*&&\s*/, '');
   if (appWithoutTypecheck === cdkJson.app) {
+    if (cdkJson.app.includes('tsc')) {
+      throw new Error(
+        `[initCDKProject] cdk.json synth command still contains 'tsc' but did not match the removal pattern (the CDK CLI template likely ` +
+          `changed): "${cdkJson.app}". Update this strip logic and/or CDK_CLI_VERSION (currently ${CDK_CLI_VERSION}).`,
+      );
+    }
     return;
   }
   cdkJson.app = appWithoutTypecheck;
