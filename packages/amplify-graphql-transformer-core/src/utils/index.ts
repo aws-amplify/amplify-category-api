@@ -20,6 +20,7 @@ export {
   getNonScalarFields,
   getParameterStoreSecretPath,
 } from './rds-util';
+export { addCfnResourceDependency } from './cfn-dependency';
 export const APICategory = 'api';
 export {
   setResourceName,

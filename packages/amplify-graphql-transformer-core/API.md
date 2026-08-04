@@ -105,6 +105,9 @@ import { Visibility } from 'aws-cdk-lib/aws-appsync';
 import { VTLRuntimeTemplate } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
+export const addCfnResourceDependency: (source: CfnResource, target: CfnResource) => void;
+
+// @public (undocumented)
 export const APICategory = "api";
 
 // @public (undocumented)
