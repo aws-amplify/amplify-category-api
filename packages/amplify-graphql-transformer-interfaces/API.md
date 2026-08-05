@@ -425,6 +425,8 @@ export interface SQLLambdaModelDataSourceStrategy extends ModelDataSourceStrateg
     // (undocumented)
     readonly dbType: ModelDataSourceStrategySqlDbType;
     // (undocumented)
+    readonly minimizeRdsVpcEndpoints?: boolean;
+    // (undocumented)
     readonly name: string;
     // (undocumented)
     readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;

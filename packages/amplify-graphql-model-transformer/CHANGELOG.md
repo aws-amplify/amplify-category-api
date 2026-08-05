@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.5.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@3.4.2...@aws-amplify/graphql-model-transformer@3.5.0) (2026-07-13)
+
+### Bug Fixes
+
+- resolve high dependabot vulnerabilities ([#3505](https://github.com/aws-amplify/amplify-category-api/issues/3505)) ([ebaf1e0](https://github.com/aws-amplify/amplify-category-api/commit/ebaf1e03f4347d2abe66974dd407e57b53358414))
+
+### Features
+
+- add opt-in minimizeRdsVpcEndpoints to the SQL data source strategy ([#3449](https://github.com/aws-amplify/amplify-category-api/issues/3449)) ([6693c8f](https://github.com/aws-amplify/amplify-category-api/commit/6693c8f12c970e3e82cd8ab4b7acf36b0308bf87))
+
+## [3.4.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@3.4.1...@aws-amplify/graphql-model-transformer@3.4.2) (2026-07-01)
+
+### Bug Fixes
+
+- upgrade AWS SDK clients to eliminate fast-xml-parser vulnerabilities ([9261998](https://github.com/aws-amplify/amplify-category-api/commit/92619981d2cf15351a89ebb4b4f85ea45d6c3f65))
+
 ## [3.4.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@3.4.0...@aws-amplify/graphql-model-transformer@3.4.1) (2026-03-24)
 
 ### Reverts

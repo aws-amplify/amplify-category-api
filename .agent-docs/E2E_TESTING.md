@@ -37,6 +37,34 @@ yarn e2e-failed {batchId}    # Show failed builds
 yarn e2e-logs {buildId}      # View build logs
 ```
 
+### Split E2E Mode (two batches)
+
+`yarn cloud-e2e` fires a single CodeBuild batch from `codebuild_specs/e2e_workflow.yml` (~183
+shards). Because the batch orchestrator faults materially above ~100 simultaneously in-flight
+builds, there is an alternative split mode that fires TWO independent, self-contained batches
+against the same `amplify-category-api-e2e-workflow` project:
+
+- **api+gql batch** — `codebuild_specs/e2e_workflow_api_gql.yml` (amplify-e2e-tests + graphql-transformers-e2e-tests, ~78 shards)
+- **cdk batch** — `codebuild_specs/e2e_workflow_cdk.yml` (amplify-graphql-api-construct-tests, ~105 shards)
+
+Each batch carries the full prep/build chain (`build_linux`, `build_windows`, `test`, all
+`verify_*`, `publish_to_local_registry`) and its own `cleanup_e2e_resources`, and is waved
+independently at `SPLIT_E2E_WAVE_SIZE` (95 — the peak in-flight shards per batch, just under the
+~100 orchestrator fault ceiling).
+
+```sh
+# Trigger BOTH batches (prints two Batch IDs)
+yarn cloud-e2e-split
+
+# Poll both to terminal state and aggregate pass/fail
+yarn wait-for-all-codebuild-split <apiGqlBatchId> <cdkBatchId>
+```
+
+All three specs are regenerated together by `yarn split-e2e-tests`, which runs a reconciliation
+self-check asserting the two split batches exactly cover the combined shard set (no missing, extra,
+or overlapping shards). The combined `e2e_workflow.yml` remains the project's default buildspec and
+is still produced for the single-batch `yarn cloud-e2e` path.
+
 ### Monitor Behavior
 
 The monitor auto-retries failed builds up to 10 times by default. It skips retrying `build_linux`, `build_windows`, `test`, and `lint` because failures in those are typically code-related and require fixes, not retries.

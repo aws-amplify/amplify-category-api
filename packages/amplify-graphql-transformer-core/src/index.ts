@@ -39,6 +39,7 @@ export {
   getDefaultStrategyNameForDbType,
   getField,
   getFilterInputName,
+  getGlobalSecondaryIndexes,
   getImportedRDSTypeFromStrategyDbType,
   getKeySchema,
   getModelDataSourceNameForTypeName,
@@ -74,6 +75,7 @@ export {
   isSqlStrategy,
   normalizeDbType,
   setResourceName,
+  addCfnResourceDependency,
   SQLLambdaResourceNames,
 } from './utils';
 export type { SetResourceNameProps } from './utils';

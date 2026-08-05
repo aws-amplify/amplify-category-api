@@ -144,7 +144,7 @@ export class TransformerResolver implements TransformerResolverProvider {
   constructor(
     private typeName: string,
     private fieldName: string,
-    private resolverLogicalId: string,
+    readonly resolverLogicalId: string,
     private mappingTemplate: FunctionRuntimeTemplate,
     private requestSlots: string[],
     private responseSlots: string[],

@@ -42,6 +42,36 @@ function triggerProjectBatch {
     echo "https://$REGION.console.aws.amazon.com/codesuite/codebuild/$account_number/projects/$project_name/batch/$RESULT?region=$REGION"
 }
 
+function triggerProjectBatchWithBuildspec {
+    account_number=$1
+    role_name=$2
+    profile_name=$3
+    project_name=$4
+    target_branch=$5
+    # Path (in the source) to a batchspec that overrides the project's default buildspec. Used by
+    # the split e2e mode to fire one batch per generated spec against the same project.
+    buildspec_override=$6
+    authenticate $account_number $role_name $profile_name
+    echo AWS Account: $account_number
+    echo Project: $project_name
+    echo Target Branch: $target_branch
+    echo Buildspec Override: $buildspec_override
+
+    IMAGE_OVERRIDE_FLAG=""
+    if [ -n "$CODEBUILD_IMAGE_OVERRIDE" ]; then
+      IMAGE_OVERRIDE_FLAG="--image-override $CODEBUILD_IMAGE_OVERRIDE"
+      echo "Using image override: $CODEBUILD_IMAGE_OVERRIDE"
+    fi
+
+    RESULT=$(aws codebuild start-build-batch --region=$REGION --profile="${profile_name}" --project-name $project_name --source-version=$target_branch \
+     --buildspec-override "$buildspec_override" \
+     $IMAGE_OVERRIDE_FLAG \
+     --environment-variables-override name=BRANCH_NAME,value=$target_branch,type=PLAINTEXT \
+     --query 'buildBatch.id' --output text)
+    echo "Batch ID: $RESULT"
+    echo "https://$REGION.console.aws.amazon.com/codesuite/codebuild/$account_number/projects/$project_name/batch/$RESULT?region=$REGION"
+}
+
 function triggerProjectBatchWithDebugSession {
     account_number=$1
     role_name=$2
@@ -134,6 +164,27 @@ function cloudE2E {
     E2E_PROJECT_NAME=amplify-category-api-e2e-workflow
     TARGET_BRANCH=$CURR_BRANCH
     triggerProjectBatch $E2E_ACCOUNT_PROD $E2E_ROLE_NAME $E2E_PROFILE_NAME $E2E_PROJECT_NAME $TARGET_BRANCH
+}
+
+# Split execution mode: fires TWO separate CodeBuild batches against the SAME
+# amplify-category-api-e2e-workflow project, each via --buildspec-override:
+#   Batch A ("api+gql"): codebuild_specs/e2e_workflow_api_gql.yml
+#   Batch B ("cdk"):     codebuild_specs/e2e_workflow_cdk.yml
+# Each batch is self-contained (carries the full prep/build chain) and independently waved, so each
+# stays under the orchestrator's in-flight ceiling. The combined-batch cloudE2E above is untouched.
+# Use the two printed Batch IDs with 'yarn wait-for-all-codebuild-split <idA> <idB>' to poll aggregate
+# pass/fail.
+function cloudE2ESplit {
+    echo Running Prod E2E Test Suite in SPLIT mode "(separate api+gql and cdk batches)"
+    E2E_ROLE_NAME=CodebuildDeveloper
+    E2E_PROFILE_NAME=AmplifyAPIE2EProd
+    E2E_PROJECT_NAME=amplify-category-api-e2e-workflow
+    TARGET_BRANCH=$CURR_BRANCH
+    echo "--- Triggering api+gql batch ---"
+    triggerProjectBatchWithBuildspec $E2E_ACCOUNT_PROD $E2E_ROLE_NAME $E2E_PROFILE_NAME $E2E_PROJECT_NAME $TARGET_BRANCH codebuild_specs/e2e_workflow_api_gql.yml
+    echo "--- Triggering cdk batch ---"
+    triggerProjectBatchWithBuildspec $E2E_ACCOUNT_PROD $E2E_ROLE_NAME $E2E_PROFILE_NAME $E2E_PROJECT_NAME $TARGET_BRANCH codebuild_specs/e2e_workflow_cdk.yml
+    echo "Both batches triggered. Use the two Batch IDs printed above with 'yarn wait-for-all-codebuild-split <apiGqlBatchId> <cdkBatchId>' to poll aggregate pass/fail."
 }
 
 function cloudE2EDebug {

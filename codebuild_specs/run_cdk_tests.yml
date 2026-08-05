@@ -6,7 +6,7 @@ env:
     AMPLIFY_PATH: /root/.npm-global/lib/node_modules/@aws-amplify/cli-internal/bin/amplify
     CI: true
     CODEBUILD: true
-    NODE_OPTIONS: --max-old-space-size=8096
+    NODE_OPTIONS: --max-old-space-size=8096 --experimental-vm-modules
     JSII_DEPRECATED: 'quiet'
 phases:
   build:

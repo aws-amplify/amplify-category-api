@@ -1,6 +1,6 @@
 import { attributeTypeFromType, overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
-import { InvalidDirectiveError, MappingTemplate, getTable } from '@aws-amplify/graphql-transformer-core';
+import { InvalidDirectiveError, MappingTemplate, getGlobalSecondaryIndexes, getTable } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
@@ -54,7 +54,7 @@ export const updateTableForReferencesConnection = (
   }
 
   const relatedTable = getTable(ctx, relatedType);
-  const gsis = relatedTable.globalSecondaryIndexes;
+  const gsis = getGlobalSecondaryIndexes(relatedTable);
   if (gsis.some((gsi: any) => gsi.indexName === indexName)) {
     // We create a GSI on the Related model's table for querying
     // relationships using the format 'gsi-{PrimaryModelName}.{PrimaryModelConnectionField}'
@@ -136,7 +136,7 @@ export const updateTableForConnection = (config: HasManyDirectiveConfiguration, 
   const { field, object, relatedType } = config;
   const mappedObjectName = ctx.resourceHelper.getModelNameMapping(object.name.value);
   const table = getTable(ctx, relatedType) as any;
-  const gsis = table.globalSecondaryIndexes;
+  const gsis = getGlobalSecondaryIndexes(table);
 
   const indexName = `gsi-${mappedObjectName}.${field.name.value}`;
   config.indexName = indexName;
@@ -202,7 +202,7 @@ const addGlobalSecondaryIndex = (
   // At the L2 level, the CDK does not handle the way Amplify sets GSI read and write capacity
   // very well. At the L1 level, the CDK does not create the correct IAM policy for accessing the
   // GSI. To get around these issues, keep the L1 and L2 GSI list in sync.
-  const gsi = table.globalSecondaryIndexes.find((g: any) => g.indexName === indexName);
+  const gsi = getGlobalSecondaryIndexes(table).find((g: any) => g.indexName === indexName);
 
   const newIndex = {
     indexName,

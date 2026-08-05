@@ -65,6 +65,44 @@ const appendToCDKContext = (projectPath: string, additionalContext: Record<strin
   writeFileSync(cdkJsonPath, JSON.stringify(cdkJson, null, 2));
 };
 
+/**
+ * Pinned version of the `aws-cdk` CLI used to scaffold e2e test projects.
+ *
+ * The CLI must be pinned independently of `aws-cdk-lib`: the two have used separate version lines since CLI v2.1000.0, so there is no
+ * `aws-cdk` release matching a modern `aws-cdk-lib` version. Leaving the CLI floating means `cdk init` silently picks up upstream template
+ * changes, which has broken e2e groups before (the template switched the synth command from `ts-node` to `tsc && tsx`, turning synth into a
+ * whole-project typecheck).
+ */
+const CDK_CLI_VERSION = '2.1134.0';
+
+/**
+ * Removes the whole-project `tsc` typecheck from the generated `cdk.json` synth command.
+ *
+ * Backend templates are copied wholesale into the scratch project's `bin/` directory, and some of those files are lambda entry points that
+ * are only ever referenced by esbuild as a path string -- they are never imported by `app.ts`. A whole-project typecheck compiles them
+ * anyway, in a directory they were never written to resolve from, failing synth before it starts. Transpiling only the import graph (the
+ * historical behavior) keeps synth scoped to code the app actually loads.
+ */
+const removeWholeProjectTypecheckFromSynth = (projectPath: string): void => {
+  const cdkJsonPath = path.join(projectPath, 'cdk.json');
+  const cdkJson = JSON.parse(readFileSync(cdkJsonPath, 'utf-8'));
+  if (typeof cdkJson.app !== 'string') {
+    return;
+  }
+  const appWithoutTypecheck = cdkJson.app.replace(/^\s*npx\s+tsc\s*&&\s*/, '');
+  if (appWithoutTypecheck === cdkJson.app) {
+    if (cdkJson.app.includes('tsc')) {
+      throw new Error(
+        `[initCDKProject] cdk.json synth command still contains 'tsc' but did not match the removal pattern (the CDK CLI template likely ` +
+          `changed): "${cdkJson.app}". Update this strip logic and/or CDK_CLI_VERSION (currently ${CDK_CLI_VERSION}).`,
+      );
+    }
+    return;
+  }
+  cdkJson.app = appWithoutTypecheck;
+  writeFileSync(cdkJsonPath, JSON.stringify(cdkJson, null, 2));
+};
+
 export type InitCDKProjectProps = {
   construct?: CdkConstruct;
   cdkContext?: Record<string, string>;
@@ -80,9 +118,9 @@ export type InitCDKProjectProps = {
  * @returns a promise which resolves to the stack name
  */
 export const initCDKProject = async (cwd: string, templatePath: string, props?: InitCDKProjectProps): Promise<string> => {
-  const { cdkVersion = '2.224.0', additionalDependencies = [] } = props ?? {};
+  const { cdkVersion = '2.260.0', additionalDependencies = [] } = props ?? {};
 
-  await spawn(getNpxPath(), ['cdk', 'init', 'app', '--language', 'typescript'], {
+  await spawn(getNpxPath(), [`aws-cdk@${CDK_CLI_VERSION}`, 'init', 'app', '--language', 'typescript'], {
     cwd,
     stripColors: true,
     // npx cdk does not work on verdaccio
@@ -92,6 +130,8 @@ export const initCDKProject = async (cwd: string, templatePath: string, props?: 
   })
     .sendYes()
     .runAsync();
+
+  removeWholeProjectTypecheckFromSynth(cwd);
 
   if (props?.cdkContext) {
     appendToCDKContext(cwd, props.cdkContext);

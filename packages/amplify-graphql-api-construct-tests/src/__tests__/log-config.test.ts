@@ -111,6 +111,33 @@ const verifyLogGroupDoesNotExist = async (logGroupName: string): Promise<void> =
 };
 
 /**
+ * File-scoped concurrency limiter. Running every log-config case's `initCDKProject`
+ * npm install simultaneously triggers a TS2307 "Cannot find module
+ * @aws-amplify/graphql-api-construct" race on heavy dependency bundles, because the
+ * concurrent installs do not reliably complete. Cap concurrent CDK lifecycles
+ * (install + deploy + destroy) to MAX_CONCURRENT_CASES so at most that many run at
+ * once. Scoped to this file only — other CDK e2e groups are unaffected.
+ */
+const MAX_CONCURRENT_CASES = 3;
+let activeCases = 0;
+const waiters: Array<() => void> = [];
+const acquireSlot = (): Promise<void> => {
+  if (activeCases < MAX_CONCURRENT_CASES) {
+    activeCases++;
+    return Promise.resolve();
+  }
+  return new Promise<void>((resolve) => waiters.push(resolve));
+};
+const releaseSlot = (): void => {
+  const next = waiters.shift();
+  if (next) {
+    next();
+  } else {
+    activeCases--;
+  }
+};
+
+/**
  * To pass logging config to the AmplifyGraphqlApi construct, the underlying values are used and later mapped to the corresponding
  * enum values in packages/amplify-graphql-api-construct-tests/src/__tests__/backends/log-config/app.ts.
  *
@@ -119,17 +146,6 @@ const verifyLogGroupDoesNotExist = async (logGroupName: string): Promise<void> =
  * - logging: '{"fieldLogLevel": "ERROR"}' is parsed to { fieldLogLevel: FieldLogLevel.ERROR }
  */
 describe('Log Config Tests', () => {
-  const projRoots: string[] = [];
-
-  afterAll(async () => {
-    const destroyCDKProjectAndDeleteProjectDir = async (projRoot: string): Promise<void> => {
-      await cdkDestroy(projRoot, '--all');
-      deleteProjectDir(projRoot);
-    };
-    const cleanupTasks = projRoots.map((projRoot) => destroyCDKProjectAndDeleteProjectDir(projRoot));
-    await Promise.all(cleanupTasks);
-  });
-
   const testCases: [
     string,
     {
@@ -175,64 +191,76 @@ describe('Log Config Tests', () => {
   ];
 
   test.concurrent.each(testCases)('Log Config is enabled with: %s', async (_, { logging, expectedLogConfig }) => {
+    await acquireSlot();
     const projRoot = await createNewProjectDir('log-config');
-    projRoots.push(projRoot);
-    const templatePath = path.resolve(path.join(__dirname, 'backends', 'log-config'));
+    try {
+      const templatePath = path.resolve(path.join(__dirname, 'backends', 'log-config'));
 
-    // Initialize CDK project
-    const name = await initCDKProject(projRoot, templatePath, {
-      cdkContext: {
-        logging: JSON.stringify(logging),
-      },
-    });
+      // Initialize CDK project
+      const name = await initCDKProject(projRoot, templatePath, {
+        cdkContext: {
+          logging: JSON.stringify(logging),
+        },
+      });
 
-    // Deploy CDK stack
-    const outputs = await cdkDeploy(projRoot, '--all');
-    const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey, awsAppsyncApiId: apiId } = outputs[name];
+      // Deploy CDK stack
+      const outputs = await cdkDeploy(projRoot, '--all');
+      const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey, awsAppsyncApiId: apiId } = outputs[name];
 
-    const logGroupName = `/aws/appsync/apis/${apiId}`;
+      const logGroupName = `/aws/appsync/apis/${apiId}`;
 
-    // Create a GraphQL client
-    const client = new GraphQLClient(apiEndpoint, {
-      headers: {
-        'x-api-key': apiKey,
-      },
-    });
+      // Create a GraphQL client
+      const client = new GraphQLClient(apiEndpoint, {
+        headers: {
+          'x-api-key': apiKey,
+        },
+      });
 
-    // Run a query
-    const { headers } = await client.rawRequest(query);
-    const requestId = headers.get('x-amzn-requestid');
+      // Run a query
+      const { headers } = await client.rawRequest(query);
+      const requestId = headers.get('x-amzn-requestid');
 
-    // Verify request ID in log
-    const logEvent = await getLogEventWithRequestId(logGroupName, requestId);
-    expect(logEvent).toBeDefined();
+      // Verify request ID in log
+      const logEvent = await getLogEventWithRequestId(logGroupName, requestId);
+      expect(logEvent).toBeDefined();
 
-    // Verify logging configuration
-    await verifyLogConfig(logGroupName, apiId, expectedLogConfig);
+      // Verify logging configuration
+      await verifyLogConfig(logGroupName, apiId, expectedLogConfig);
+    } finally {
+      await cdkDestroy(projRoot, '--all');
+      deleteProjectDir(projRoot);
+      releaseSlot();
+    }
   });
 
   test('Logging is disabled', async () => {
+    await acquireSlot();
     const projRoot = await createNewProjectDir('log-config');
-    projRoots.push(projRoot);
-    const templatePath = path.resolve(path.join(__dirname, 'backends', 'log-config'));
+    try {
+      const templatePath = path.resolve(path.join(__dirname, 'backends', 'log-config'));
 
-    // Initialize CDK project
-    const name = await initCDKProject(projRoot, templatePath);
+      // Initialize CDK project
+      const name = await initCDKProject(projRoot, templatePath);
 
-    // Deploy CDK stack
-    const outputs = await cdkDeploy(projRoot, '--all');
-    const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey, awsAppsyncApiId: apiId } = outputs[name];
+      // Deploy CDK stack
+      const outputs = await cdkDeploy(projRoot, '--all');
+      const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey, awsAppsyncApiId: apiId } = outputs[name];
 
-    // Run a query
-    const client = new GraphQLClient(apiEndpoint, {
-      headers: {
-        'x-api-key': apiKey,
-      },
-    });
-    await client.rawRequest(query);
+      // Run a query
+      const client = new GraphQLClient(apiEndpoint, {
+        headers: {
+          'x-api-key': apiKey,
+        },
+      });
+      await client.rawRequest(query);
 
-    // Verify that logging is disabled
-    const logGroupName = `/aws/appsync/apis/${apiId}`;
-    await verifyLogGroupDoesNotExist(logGroupName);
+      // Verify that logging is disabled
+      const logGroupName = `/aws/appsync/apis/${apiId}`;
+      await verifyLogGroupDoesNotExist(logGroupName);
+    } finally {
+      await cdkDestroy(projRoot, '--all');
+      deleteProjectDir(projRoot);
+      releaseSlot();
+    }
   });
 });

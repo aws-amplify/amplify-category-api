@@ -521,3 +521,78 @@ describe('Type name conversions', () => {
     );
   });
 });
+
+describe('Identifier sanitization', () => {
+  it('should sanitize column names with shell metacharacters', () => {
+    const dbschema = new Schema(new Engine('MySQL'));
+    const model = new Model('User');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field("require('child_process').execSync('echo pwned')", { kind: 'Scalar', name: 'String' }));
+    model.setPrimaryKey(['id']);
+    dbschema.addModel(model);
+
+    const graphqlSchema = generateTypescriptDataSchema(dbschema);
+    // The malicious column name with special characters must not appear verbatim in the output
+    expect(graphqlSchema).not.toContain("require('child_process')");
+    expect(graphqlSchema).not.toContain("execSync('echo pwned')");
+    // It should be sanitized: special chars replaced with underscores, safely quoted as a string literal
+    expect(graphqlSchema).toContain('"require_child_process_execSync_echo_pwned_"');
+  });
+
+  it('should sanitize column names with square brackets and special characters', () => {
+    const dbschema = new Schema(new Engine('MySQL'));
+    const model = new Model('User');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field('[malicious](injection)', { kind: 'Scalar', name: 'String' }));
+    model.setPrimaryKey(['id']);
+    dbschema.addModel(model);
+
+    const graphqlSchema = generateTypescriptDataSchema(dbschema);
+    expect(graphqlSchema).not.toContain('[malicious]');
+    expect(graphqlSchema).toContain('"malicious_injection_"');
+  });
+
+  it('should sanitize enum type names with special characters', () => {
+    const dbschema = new Schema(new Engine('Postgres'));
+    const model = new Model('User');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field('status', { kind: 'Enum', name: "evil';DROP TABLE", values: ['A', 'B'] }));
+    model.setPrimaryKey(['id']);
+    dbschema.addModel(model);
+
+    const graphqlSchema = generateTypescriptDataSchema(dbschema);
+    // The original unsanitized name should not appear
+    expect(graphqlSchema).not.toContain("evil';DROP TABLE");
+    // Sanitized and PascalCased enum name should be used as property key and ref target
+    expect(graphqlSchema).toContain('"Evil_DROP_TABLE"');
+    // The a.ref() should reference the sanitized name
+    expect(graphqlSchema).toContain('a.ref("Evil_DROP_TABLE")');
+  });
+
+  it('should produce a fallback name for column names with no alphabetic characters', () => {
+    const dbschema = new Schema(new Engine('MySQL'));
+    const model = new Model('User');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field('!@#$%^&*()', { kind: 'Scalar', name: 'String' }));
+    model.setPrimaryKey(['id']);
+    dbschema.addModel(model);
+
+    const graphqlSchema = generateTypescriptDataSchema(dbschema);
+    // Should use fallback "field" for fields with no alpha chars
+    expect(graphqlSchema).toContain('"field"');
+  });
+
+  it('should use string literals for property keys (not raw identifiers)', () => {
+    const dbschema = new Schema(new Engine('MySQL'));
+    const model = new Model('User');
+    model.addField(new Field('id', { kind: 'NonNull', type: { kind: 'Scalar', name: 'String' } }));
+    model.addField(new Field('normal_name', { kind: 'Scalar', name: 'String' }));
+    model.setPrimaryKey(['id']);
+    dbschema.addModel(model);
+
+    const graphqlSchema = generateTypescriptDataSchema(dbschema);
+    // Property keys should be string-quoted
+    expect(graphqlSchema).toContain('"normal_name"');
+    expect(graphqlSchema).toContain('"id"');
+  });
+});

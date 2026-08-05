@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.1.4](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@9.1.3...amplify-category-api-graphql-transformers-e2e-tests@9.1.4) (2026-07-13)
+
+### Bug Fixes
+
+- resolve high dependabot vulnerabilities ([#3505](https://github.com/aws-amplify/amplify-category-api/issues/3505)) ([ebaf1e0](https://github.com/aws-amplify/amplify-category-api/commit/ebaf1e03f4347d2abe66974dd407e57b53358414))
+
+## [9.1.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@9.1.2...amplify-category-api-graphql-transformers-e2e-tests@9.1.3) (2026-07-01)
+
+### Bug Fixes
+
+- resolve all HIGH/CRITICAL vulnerabilities across all lockfiles ([222f10e](https://github.com/aws-amplify/amplify-category-api/commit/222f10ec2c6922aaedec3fb77fe03e58b0fca15c))
+- upgrade AWS SDK clients to eliminate fast-xml-parser vulnerabilities ([9261998](https://github.com/aws-amplify/amplify-category-api/commit/92619981d2cf15351a89ebb4b4f85ea45d6c3f65))
+
 ## [9.1.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@9.1.1...amplify-category-api-graphql-transformers-e2e-tests@9.1.2) (2026-04-13)
 
 **Note:** Version bump only for package amplify-category-api-graphql-transformers-e2e-tests

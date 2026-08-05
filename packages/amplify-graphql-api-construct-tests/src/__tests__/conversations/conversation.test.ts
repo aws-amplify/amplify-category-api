@@ -111,17 +111,39 @@ describe('conversation', () => {
         expect(message.conversationId).toEqual(conversationId);
 
         const events: AmplifyAIConversationMessageStreamPart[] = [];
+        // Guard against a non-streaming assistant: fail fast with a clear message instead of
+        // hanging on the subscription until the surrounding 20-minute jest timeout cascades.
+        const MAX_STREAM_EVENTS = 1000;
+        const streamDeadline = Date.now() + ONE_MINUTE;
         // expect to receive the assistant response in the subscription
         for await (const event of subscription) {
-          events.push(event.onCreateAssistantResponsePirateChat);
-          // expect event to contain `p`
-          expect(event.onCreateAssistantResponsePirateChat.p).toBeDefined();
-          expect(event.onCreateAssistantResponsePirateChat.p.length).toBeGreaterThanOrEqual(0);
+          if (Date.now() > streamDeadline) {
+            throw new Error(
+              `Timed out waiting for a streamed assistant response with a stopReason after ${ONE_MINUTE}ms ` +
+                `(received ${events.length} events). The assistant may not be streaming a response.`,
+            );
+          }
+          if (events.length >= MAX_STREAM_EVENTS) {
+            throw new Error(
+              `Received ${events.length} stream events without a stopReason; aborting to avoid an unbounded loop. ` +
+                `The assistant may not be terminating its response.`,
+            );
+          }
 
-          if (event.onCreateAssistantResponsePirateChat.stopReason) break;
+          const streamPart = event.onCreateAssistantResponsePirateChat;
+          events.push(streamPart);
+          // `p` is optional stream padding (not response text); some models/control frames omit it,
+          // so only assert on its shape when present.
+          if (streamPart.p != null) {
+            expect(streamPart.p.length).toBeGreaterThanOrEqual(0);
+          }
+
+          if (streamPart.stopReason) break;
         }
-        const accumulatedP = events.map((messageStreamPart) => messageStreamPart.p).join('');
-        expect(accumulatedP.length).toBeGreaterThan(0);
+        // The assistant response text is streamed via `contentBlockText`. Assert the aggregate
+        // streamed text is non-empty to confirm a real response was received.
+        const accumulatedText = events.map((messageStreamPart) => messageStreamPart.contentBlockText ?? '').join('');
+        expect(accumulatedText.length).toBeGreaterThan(0);
 
         // reconstruct the message from the events
         const sortedEvents = events
@@ -295,9 +317,19 @@ describe('conversation', () => {
 
         // collect the assistant response events
         const events: AmplifyAIConversationMessageStreamPart[] = [];
+        const toolUseDeadline = Date.now() + ONE_MINUTE;
         for await (const event of subscription) {
-          events.push(event.onCreateAssistantResponsePirateChat);
-          if (event.onCreateAssistantResponsePirateChat.stopReason) break;
+          const streamPart = event.onCreateAssistantResponsePirateChat;
+          events.push(streamPart);
+          // The handler emits an event with `errors` set (and no `stopReason`) when the turn fails.
+          // Surface it immediately instead of looping until the jest timeout hides the real cause.
+          if (streamPart?.errors?.length) {
+            throw new Error(`Assistant turn returned errors (no stopReason): ${JSON.stringify(streamPart.errors)}`);
+          }
+          if (Date.now() > toolUseDeadline) {
+            throw new Error(`Conversation stream deadline exceeded after ${events.length} events with no stopReason`);
+          }
+          if (streamPart?.stopReason) break;
         }
 
         const eventWithToolUse = events.find((event) => event.contentBlockToolUse);
@@ -333,9 +365,19 @@ describe('conversation', () => {
         expect(message2.content[0].toolResult.content[0].json).toEqual(JSON.stringify(toolResultContent));
 
         // expect to receive the assistant response in the subscription
+        const toolResultDeadline = Date.now() + ONE_MINUTE;
         for await (const event of subscription) {
-          events.push(event.onCreateAssistantResponsePirateChat);
-          if (event.onCreateAssistantResponsePirateChat.stopReason) break;
+          const streamPart = event.onCreateAssistantResponsePirateChat;
+          events.push(streamPart);
+          // The handler emits an event with `errors` set (and no `stopReason`) when the turn fails.
+          // Surface it immediately instead of looping until the jest timeout hides the real cause.
+          if (streamPart?.errors?.length) {
+            throw new Error(`Assistant turn returned errors (no stopReason): ${JSON.stringify(streamPart.errors)}`);
+          }
+          if (Date.now() > toolResultDeadline) {
+            throw new Error(`Conversation stream deadline exceeded after ${events.length} events with no stopReason`);
+          }
+          if (streamPart?.stopReason) break;
         }
 
         // list messages to get the full assistant message

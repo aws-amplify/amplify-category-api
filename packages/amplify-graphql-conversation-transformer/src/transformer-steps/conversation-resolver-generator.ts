@@ -1,6 +1,11 @@
 import { conversation } from '@aws-amplify/ai-constructs';
 import { overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
-import { getModelDataSourceNameForTypeName, getTable, TransformerResolver } from '@aws-amplify/graphql-transformer-core';
+import {
+  getModelDataSourceNameForTypeName,
+  getGlobalSecondaryIndexes,
+  getTable,
+  TransformerResolver,
+} from '@aws-amplify/graphql-transformer-core';
 import { DataSourceProvider, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { BackendOutputEntry, BackendOutputStorageStrategy } from '@aws-amplify/plugin-types';
 import * as cdk from 'aws-cdk-lib';
@@ -331,7 +336,8 @@ export class ConversationResolverGenerator {
       writeCapacity: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
     });
 
-    const gsi = table.globalSecondaryIndexes.find((g: any) => g.indexName === indexName);
+    const globalSecondaryIndexes = getGlobalSecondaryIndexes(table);
+    const gsi = globalSecondaryIndexes.find((g: any) => g.indexName === indexName);
 
     const newIndex = {
       indexName,

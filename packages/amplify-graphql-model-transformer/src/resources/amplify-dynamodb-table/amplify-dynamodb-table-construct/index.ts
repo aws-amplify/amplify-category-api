@@ -113,8 +113,8 @@ export class AmplifyDynamoDBTable extends Resource {
       grantIndexPermissions: true,
     });
 
-    this.addKey(props.partitionKey, HASH_KEY_TYPE);
-    this.tablePartitionKey = props.partitionKey;
+    this.addKey(props.partitionKey!, HASH_KEY_TYPE);
+    this.tablePartitionKey = props.partitionKey!;
 
     if (props.sortKey) {
       this.addKey(props.sortKey, RANGE_KEY_TYPE);
@@ -134,7 +134,7 @@ export class AmplifyDynamoDBTable extends Resource {
     this.validateIndexName(props.indexName);
 
     // build key schema and projection for index
-    const gsiKeySchema = this.buildIndexKeySchema(props.partitionKey, props.sortKey);
+    const gsiKeySchema = this.buildIndexKeySchema(props.partitionKey!, props.sortKey);
     const gsiProjection = this.buildIndexProjection(props);
 
     this.globalSecondaryIndexes.push({

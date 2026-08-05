@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-validate-transformer@1.1.7...@aws-amplify/graphql-validate-transformer@1.1.8) (2026-07-13)
+
+**Note:** Version bump only for package @aws-amplify/graphql-validate-transformer
+
+## [1.1.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-validate-transformer@1.1.6...@aws-amplify/graphql-validate-transformer@1.1.7) (2026-07-01)
+
+**Note:** Version bump only for package @aws-amplify/graphql-validate-transformer
+
 ## [1.1.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-validate-transformer@1.1.5...@aws-amplify/graphql-validate-transformer@1.1.6) (2026-03-24)
 
 ### Reverts
