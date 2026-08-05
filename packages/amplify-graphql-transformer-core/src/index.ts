@@ -74,6 +74,7 @@ export {
   isSqlStrategy,
   normalizeDbType,
   setResourceName,
+  addCfnResourceDependency,
   SQLLambdaResourceNames,
 } from './utils';
 export type { SetResourceNameProps } from './utils';
