@@ -57,9 +57,10 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
       // #set( $sortKeyValue1 = <pk sk 1>
       // These variables are then used in the query object as
       // ":sortKey": $util.dynamodb.toDynamoDB("${sortKeyValue0}#${sortKeyValue1}"")
-      const condensedSortKeyValue = rangeKeyFields
-        .map((key, idx) => `\${${SORT_KEY_VALUE}${idx}}`)
-        .join(ModelResourceIDs.ModelCompositeKeySeparator());
+      const condensedSortKeyValue =
+        rangeKeyFields.length === 1
+          ? `$${SORT_KEY_VALUE}0`
+          : `"${rangeKeyFields.map((key, idx) => `\${${SORT_KEY_VALUE}${idx}}`).join(ModelResourceIDs.ModelCompositeKeySeparator())}"`;
 
       return obj({
         expression: str('#partitionKey = :partitionKey AND #sortKey = :sortKey'),
@@ -69,7 +70,7 @@ export class DDBRelationalReferencesResolverGenerator extends DDBRelationalResol
         }),
         expressionValues: obj({
           ':partitionKey': ref(`util.dynamodb.toDynamoDB($${PARTITION_KEY_VALUE})`),
-          ':sortKey': ref(`util.dynamodb.toDynamoDB("${condensedSortKeyValue}")`),
+          ':sortKey': ref(`util.dynamodb.toDynamoDB(${condensedSortKeyValue})`),
         }),
       });
     }
