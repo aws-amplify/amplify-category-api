@@ -326,6 +326,108 @@ describe('generation route invalid inference configuration', () => {
 });
 // });
 
+describe('inference profile IAM policies', () => {
+  const generationSchema = (modelId: string): string => `
+    type Query {
+      generate(description: String!): String
+      @generation(
+        aiModel: "${modelId}",
+        systemPrompt: "Generate something.",
+      )
+      @auth(rules: [{ allow: public, provider: iam }])
+    }
+  `;
+
+  const findBedrockStack = (out: DeploymentResources): Record<string, any> => {
+    const stackName = Object.keys(out.stacks).find((key) => key.includes('GenerationBedrockDataSource'));
+    expect(stackName).toBeDefined();
+    return out.stacks[stackName!];
+  };
+
+  const findCustomIamRole = (stack: Record<string, any>): Record<string, any> => {
+    const resources = stack.Resources ?? {};
+    const roleKey = Object.keys(resources).find((key) => resources[key].Type === 'AWS::IAM::Role' && key.includes('IAMRole'));
+    expect(roleKey).toBeDefined();
+    return resources[roleKey!];
+  };
+
+  const getPolicyStatements = (role: Record<string, any>): any[] => {
+    const policies = role.Properties?.Policies ?? [];
+    expect(policies.length).toBeGreaterThan(0);
+    return policies[0].PolicyDocument.Statement;
+  };
+
+  const resourceToString = (resource: any): string => {
+    if (typeof resource === 'string') return resource;
+    if (resource?.['Fn::Join']) {
+      return resource['Fn::Join'][1].map((part: any) => (typeof part === 'string' ? part : '<ref>')).join('');
+    }
+    return JSON.stringify(resource);
+  };
+
+  test('foundation model produces a single IAM policy statement with foundation-model ARN', () => {
+    const out = transform(generationSchema('anthropic.claude-3-haiku-20240307-v1:0'));
+    const stack = findBedrockStack(out);
+    const role = findCustomIamRole(stack);
+    const statements = getPolicyStatements(role);
+
+    expect(statements).toHaveLength(1);
+    expect(statements[0].Action).toEqual('bedrock:InvokeModel');
+    const resourceStr = resourceToString(statements[0].Resource);
+    expect(resourceStr).toContain('foundation-model/anthropic.claude-3-haiku-20240307-v1:0');
+  });
+
+  test('regional inference profile (us. prefix) produces 2 IAM policy statements', () => {
+    const out = transform(generationSchema('us.anthropic.claude-3-haiku-20240307-v1:0'));
+    const stack = findBedrockStack(out);
+    const role = findCustomIamRole(stack);
+    const statements = getPolicyStatements(role);
+
+    expect(statements).toHaveLength(2);
+
+    const resourceStrings = statements.map((s: any) => resourceToString(s.Resource));
+
+    // Statement 1: inference-profile ARN (with account)
+    const inferenceProfileArn = resourceStrings.find((r: string) => r.includes('inference-profile/'));
+    expect(inferenceProfileArn).toBeDefined();
+    expect(inferenceProfileArn).toContain('inference-profile/us.anthropic.claude-3-haiku-20240307-v1:0');
+
+    // Statement 2: foundation-model ARN (stripped model ID)
+    const foundationModelArn = resourceStrings.find((r: string) => r.includes('foundation-model/'));
+    expect(foundationModelArn).toBeDefined();
+    expect(foundationModelArn).toContain('foundation-model/anthropic.claude-3-haiku-20240307-v1:0');
+  });
+
+  test('global inference profile produces 3 IAM policy statements', () => {
+    const out = transform(generationSchema('global.anthropic.claude-3-haiku-20240307-v1:0'));
+    const stack = findBedrockStack(out);
+    const role = findCustomIamRole(stack);
+    const statements = getPolicyStatements(role);
+
+    expect(statements).toHaveLength(3);
+
+    const resourceStrings = statements.map((s: any) => resourceToString(s.Resource));
+
+    // Statement 1: inference-profile ARN
+    const inferenceProfileArn = resourceStrings.find((r: string) => r.includes('inference-profile/'));
+    expect(inferenceProfileArn).toBeDefined();
+    expect(inferenceProfileArn).toContain('inference-profile/global.anthropic.claude-3-haiku-20240307-v1:0');
+
+    // Statements 2 & 3: foundation-model ARNs
+    const foundationModelArns = resourceStrings.filter((r: string) => r.includes('foundation-model/'));
+    expect(foundationModelArns).toHaveLength(2);
+
+    // One should have an empty region (global ARN)
+    const hasGlobalArn = foundationModelArns.some((r: string) => r.includes(':bedrock:::'));
+    expect(hasGlobalArn).toBe(true);
+
+    // Both should reference the stripped foundation model ID
+    foundationModelArns.forEach((r: string) => {
+      expect(r).toContain('foundation-model/anthropic.claude-3-haiku-20240307-v1:0');
+    });
+  });
+});
+
 const getResolverResource = (queryName: string, resources?: Record<string, any>): Record<string, any> => {
   const resolverName = `Query${queryName}Resolver`;
   return resources?.[resolverName];
