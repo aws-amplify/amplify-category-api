@@ -189,23 +189,54 @@ const testInstanceStalenessFilter = (resource: DBInstance): boolean => {
 };
 
 /**
+ * List the stale test buckets of an account.
+ *
+ * Cleanup sweeps every e2e account in a single process, so a listing failure must stay scoped to the
+ * account it happened in: we log it as a skip and return no buckets rather than rejecting and taking
+ * the whole run down with us.
+ */
+const listStaleTestBuckets = async (account: AWSAccountInfo): Promise<Bucket[]> => {
+  try {
+    const s3Client = new S3Client({ credentials: account.credentials });
+    const listBucketResponse = await s3Client.send(new ListBucketsCommand({}));
+    return (listBucketResponse.Buckets ?? []).filter(testBucketStalenessFilter);
+  } catch (e) {
+    console.log(
+      `(opt-in region failure) Listing S3 buckets for account ${account.accountId} failed with error with code ${
+        e?.name ?? e?.code
+      }. Skipping.`,
+    );
+    return [];
+  }
+};
+
+/**
  * Get all S3 buckets in the account, and filter down to the ones we consider stale.
  */
-const getOrphanS3TestBuckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> => {
-  const s3Client = new S3Client({ credentials: account.credentials });
-  const listBucketResponse = await s3Client.send(new ListBucketsCommand({}));
-  const staleBuckets = listBucketResponse.Buckets.filter(testBucketStalenessFilter);
+export const getOrphanS3TestBuckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> => {
+  const staleBuckets = await listStaleTestBuckets(account);
 
   const bucketInfos = await Promise.all(
-    staleBuckets.map(async (staleBucket): Promise<S3BucketInfo> => {
-      const region = await getBucketRegion(account, staleBucket.Name);
-      return {
-        name: staleBucket.Name,
-        region,
-      };
+    staleBuckets.map(async (staleBucket): Promise<S3BucketInfo | undefined> => {
+      try {
+        const region = await getBucketRegion(account, staleBucket.Name);
+        return {
+          name: staleBucket.Name,
+          region,
+        };
+      } catch (e) {
+        // Resolving the region talks to the bucket's own region, so an unreachable region fails only this
+        // bucket. Skip it instead of rejecting the Promise.all and aborting cleanup for every account.
+        console.log(
+          `(opt-in region failure) Resolving the region of bucket ${staleBucket.Name} for account ${
+            account.accountId
+          } failed with error with code ${e?.name ?? e?.code}. Skipping.`,
+        );
+        return undefined;
+      }
     }),
   );
-  return bucketInfos;
+  return bucketInfos.filter((bucketInfo): bucketInfo is S3BucketInfo => !!bucketInfo);
 };
 
 /**
@@ -482,11 +513,9 @@ const getBucketRegion = async (account: AWSAccountInfo, bucketName: string): Pro
   return region;
 };
 
-const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> => {
-  const s3Client = new S3Client({ credentials: account.credentials });
-  const buckets = await s3Client.send(new ListBucketsCommand({}));
+export const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> => {
   const result: S3BucketInfo[] = [];
-  for (const bucket of buckets.Buckets.filter(testBucketStalenessFilter)) {
+  for (const bucket of await listStaleTestBuckets(account)) {
     let region: string | undefined;
     try {
       region = await getBucketRegion(account, bucket.Name);
@@ -518,8 +547,16 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
         // processing the rest of the buckets.
         console.error(`Skipping processing ${account.accountId}, bucket ${bucket.Name}`, e);
       } else {
-        console.log('Irrecoverable error in getS3Buckets', JSON.stringify(e));
-        throw e;
+        // Every remaining failure is scoped to this one bucket, and a bucket lives in exactly one region, so a
+        // region being unreachable (e.g. ETIMEDOUT) can only ever mean "this bucket is unprocessable right now".
+        // Rethrowing here used to reject cleanupAccount's Promise.all and abort the run for every account, which
+        // let stacks pile up to the CFN quota, so skip the bucket and keep sweeping the remaining regions.
+        console.log(
+          `(opt-in region failure) Describing bucket ${bucket.Name} for account ${account.accountId}-${
+            region ?? 'unknown region'
+          } failed with error with code ${e?.name ?? e?.code}. Skipping.`,
+          JSON.stringify(e),
+        );
       }
     }
   }
@@ -1026,7 +1063,11 @@ function chunk<A>(n: number, xs: A[]): A[][] {
   return ret;
 }
 
-cleanup().catch((e) => {
-  console.error(e);
-  process.exitCode = 1;
-});
+// Only sweep when invoked as a script (`yarn clean-e2e-resources`); importing this module from a unit test must not
+// start deleting real resources.
+if (require.main === module) {
+  cleanup().catch((e) => {
+    console.error(e);
+    process.exitCode = 1;
+  });
+}
