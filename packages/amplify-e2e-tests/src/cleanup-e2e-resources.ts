@@ -201,10 +201,15 @@ const listStaleTestBuckets = async (account: AWSAccountInfo): Promise<Bucket[]> 
     const listBucketResponse = await s3Client.send(new ListBucketsCommand({}));
     return (listBucketResponse.Buckets ?? []).filter(testBucketStalenessFilter);
   } catch (e) {
+    // `code` is read before `name` on purpose: a socket level failure like the ETIMEDOUT that motivated this guard
+    // carries the useful identifier on `code` and leaves `name` as the generic 'Error', so reading `name` first would
+    // log 'Error' and hide the very detail this guard exists to surface. Log the error too, since JSON.stringify drops
+    // an Error's non enumerable message and stack.
     console.log(
       `(opt-in region failure) Listing S3 buckets for account ${account.accountId} failed with error with code ${
-        e?.name ?? e?.code
+        e?.code ?? e?.name
       }. Skipping.`,
+      e,
     );
     return [];
   }
@@ -230,7 +235,8 @@ export const getOrphanS3TestBuckets = async (account: AWSAccountInfo): Promise<S
         console.log(
           `(opt-in region failure) Resolving the region of bucket ${staleBucket.Name} for account ${
             account.accountId
-          } failed with error with code ${e?.name ?? e?.code}. Skipping.`,
+          } failed with error with code ${e?.code ?? e?.name}. Skipping.`,
+          e,
         );
         return undefined;
       }
@@ -554,8 +560,8 @@ export const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInf
         console.log(
           `(opt-in region failure) Describing bucket ${bucket.Name} for account ${account.accountId}-${
             region ?? 'unknown region'
-          } failed with error with code ${e?.name ?? e?.code}. Skipping.`,
-          JSON.stringify(e),
+          } failed with error with code ${e?.code ?? e?.name}. Skipping.`,
+          e,
         );
       }
     }

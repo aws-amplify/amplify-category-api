@@ -66,7 +66,8 @@ const allBuckets = Object.keys(bucketRegions).map((Name) => ({ Name, CreationDat
 
 /**
  * The failure from ticket P492565382: a hard-down region times out at the socket level, so the error carries
- * `code: ETIMEDOUT` and a `name` that matches none of the specifically handled S3 error names.
+ * `code: ETIMEDOUT` while `name` stays the generic 'Error' that matches none of the specifically handled S3 error
+ * names. Those two properties disagreeing is what lets these tests pin the `code ?? name` ordering in the skip logs.
  */
 const timeoutError = (): Error => Object.assign(new Error('connect ETIMEDOUT 52.95.128.1:443'), { code: 'ETIMEDOUT' });
 
@@ -86,11 +87,24 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
+/**
+ * Find the skip log a guard emitted for one resource, failing loudly rather than vacuously if none was emitted.
+ */
+const skipLogFor = (fragment: string): { message: string; loggedError: unknown } => {
+  const call = logSpy.mock.calls.find(([message]) => String(message).includes(fragment));
+  if (!call) {
+    const logged = JSON.stringify(logSpy.mock.calls.map(([message]) => String(message)));
+    throw new Error(`Expected a skip log containing "${fragment}", but only these were logged: ${logged}`);
+  }
+  return { message: String(call[0]), loggedError: call[1] };
+};
+
 describe('getS3Buckets', () => {
   it('skips a bucket whose region is unreachable and still returns the buckets of every other region', async () => {
+    const thrown = timeoutError();
     mockState.getBucketTagging = (bucketName, region) => {
       if (region === 'me-south-1') {
-        throw timeoutError();
+        throw thrown;
       }
       return { TagSet: [{ Key: 'codebuild:build_id', Value: `job-${bucketName}` }] };
     };
@@ -101,16 +115,19 @@ describe('getS3Buckets', () => {
     expect(buckets.map((bucket) => bucket.region)).toEqual(['us-east-2', 'eu-west-2']);
     // The dead region really was attempted, otherwise this test would pass without exercising the guard.
     expect(mockState.calls).toContainEqual({ command: 'GetBucketTagging', bucket: 'amplify-test-bucket-dead', region: 'me-south-1' });
-    expect(logSpy).toHaveBeenCalledWith(
-      expect.stringContaining('(opt-in region failure) Describing bucket amplify-test-bucket-dead for account 123456789012-me-south-1'),
-      expect.any(String),
-    );
+    const skipLog = skipLogFor('Describing bucket amplify-test-bucket-dead for account 123456789012-me-south-1');
+    // ETIMEDOUT lives on `code` while `name` is the generic 'Error', so resolving `name` first would log 'code Error'
+    // and hide the only detail that identifies the dead region.
+    expect(skipLog.message).toContain('failed with error with code ETIMEDOUT');
+    // The Error itself reaches the log, rather than a JSON.stringify copy that would drop its message and stack.
+    expect(skipLog.loggedError).toBe(thrown);
   });
 
   it('keeps sweeping the remaining regions when resolving a bucket region times out', async () => {
+    const thrown = timeoutError();
     mockState.getBucketLocation = (bucketName) => {
       if (bucketRegions[bucketName] === 'me-south-1') {
-        throw timeoutError();
+        throw thrown;
       }
       return { LocationConstraint: bucketRegions[bucketName] };
     };
@@ -118,15 +135,21 @@ describe('getS3Buckets', () => {
     const buckets = await getS3Buckets(account);
 
     expect(buckets.map((bucket) => bucket.name)).toEqual(['amplify-test-bucket-alpha', 'amplify-test-bucket-omega']);
+    const skipLog = skipLogFor('Describing bucket amplify-test-bucket-dead');
+    expect(skipLog.message).toContain('failed with error with code ETIMEDOUT');
+    expect(skipLog.loggedError).toBe(thrown);
   });
 
   it('returns no buckets instead of rejecting when the account cannot be listed at all', async () => {
+    const thrown = timeoutError();
     mockState.listBuckets = () => {
-      throw timeoutError();
+      throw thrown;
     };
 
     await expect(getS3Buckets(account)).resolves.toEqual([]);
-    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('(opt-in region failure) Listing S3 buckets for account 123456789012'));
+    const skipLog = skipLogFor('Listing S3 buckets for account 123456789012');
+    expect(skipLog.message).toContain('failed with error with code ETIMEDOUT');
+    expect(skipLog.loggedError).toBe(thrown);
   });
 
   it('still records buckets that have no tag set, and still skips buckets with an InvalidToken failure', async () => {
@@ -155,9 +178,10 @@ describe('getS3Buckets', () => {
 
 describe('getOrphanS3TestBuckets', () => {
   it('skips the bucket in the unreachable region and still returns the others', async () => {
+    const thrown = timeoutError();
     mockState.getBucketLocation = (bucketName) => {
       if (bucketRegions[bucketName] === 'me-south-1') {
-        throw timeoutError();
+        throw thrown;
       }
       return { LocationConstraint: bucketRegions[bucketName] };
     };
@@ -168,16 +192,20 @@ describe('getOrphanS3TestBuckets', () => {
       { name: 'amplify-test-bucket-alpha', region: 'us-east-2' },
       { name: 'amplify-test-bucket-omega', region: 'eu-west-2' },
     ]);
-    expect(logSpy).toHaveBeenCalledWith(
-      expect.stringContaining('(opt-in region failure) Resolving the region of bucket amplify-test-bucket-dead for account 123456789012'),
-    );
+    const skipLog = skipLogFor('Resolving the region of bucket amplify-test-bucket-dead for account 123456789012');
+    expect(skipLog.message).toContain('failed with error with code ETIMEDOUT');
+    expect(skipLog.loggedError).toBe(thrown);
   });
 
   it('returns no buckets instead of rejecting when the account cannot be listed at all', async () => {
+    const thrown = timeoutError();
     mockState.listBuckets = () => {
-      throw timeoutError();
+      throw thrown;
     };
 
     await expect(getOrphanS3TestBuckets(account)).resolves.toEqual([]);
+    const skipLog = skipLogFor('Listing S3 buckets for account 123456789012');
+    expect(skipLog.message).toContain('failed with error with code ETIMEDOUT');
+    expect(skipLog.loggedError).toBe(thrown);
   });
 });
