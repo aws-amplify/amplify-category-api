@@ -1,8 +1,12 @@
 import * as cdk from 'aws-cdk-lib';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ModelResourceIDs, ResourceConstants } from 'graphql-transformer-common';
+import { ModelResourceIDs, ResourceConstants, attributeTypeFromScalar } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode } from 'graphql';
-import { setResourceName, isImportedAmplifyDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-core';
+import {
+  setResourceName,
+  isImportedAmplifyDynamoDbModelDataSourceStrategy,
+  getPrimaryKeyFieldNodes,
+} from '@aws-amplify/graphql-transformer-core';
 import { AttributeType, StreamViewType, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 import { Duration, aws_iam, aws_lambda } from 'aws-cdk-lib';
@@ -172,6 +176,46 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
     const isTableImported = isImportedAmplifyDynamoDbModelDataSourceStrategy(strategy);
     const tableName = isTableImported ? strategy.tableName : context.resourceHelper.generateTableName(modelName);
 
+    // Determine the table's key schema (partition key, and sort key when declared).
+    //
+    // For owned (Amplify-managed) tables we default to a `id` partition key; the `@primaryKey`
+    // transformer (see `replaceDdbPrimaryKey` in the index transformer) corrects the key schema
+    // downstream via a CloudFormation property override before the table is created.
+    //
+    // For imported tables that downstream correction does not reach the TableManager import
+    // validation, which consumes the initial construct properties directly. If we left the key
+    // schema hardcoded to `id`, any model declaring a custom `@primaryKey` (partition key other
+    // than `id`, and/or a sort key) would fail import with "Imported table properties did not
+    // match the expected table properties". So for imported tables we derive the key schema from
+    // the model definition up front, mirroring how GSIs are already derived from the model.
+    let partitionKey = {
+      name: 'id',
+      type: AttributeType.STRING,
+    };
+    let sortKey: { name: string; type: AttributeType } | undefined;
+    if (isTableImported) {
+      const [primaryKeyFieldNode, ...sortKeyFieldNodes] = getPrimaryKeyFieldNodes(def);
+      partitionKey = {
+        name: primaryKeyFieldNode.name.value,
+        type: attributeTypeFromScalar(primaryKeyFieldNode.type) === 'N' ? AttributeType.NUMBER : AttributeType.STRING,
+      };
+      if (sortKeyFieldNodes.length === 1) {
+        // A single sort key field maps directly to a sort key attribute of the field's scalar type.
+        sortKey = {
+          name: sortKeyFieldNodes[0].name.value,
+          type: attributeTypeFromScalar(sortKeyFieldNodes[0].type) === 'N' ? AttributeType.NUMBER : AttributeType.STRING,
+        };
+      } else if (sortKeyFieldNodes.length > 1) {
+        // Composite sort keys are stored as a single string attribute whose name is the sort key
+        // field names joined by the model composite key separator (matches `getSortKeyName` in the
+        // index transformer's `replaceDdbPrimaryKey`).
+        sortKey = {
+          name: sortKeyFieldNodes.map((node) => node.name.value).join(ModelResourceIDs.ModelCompositeKeySeparator()),
+          type: AttributeType.STRING,
+        };
+      }
+    }
+
     // Add parameters.
     const { readIops, writeIops, billingMode, pointInTimeRecovery } = this.createDynamoDBParameters(scope, true);
 
@@ -194,10 +238,8 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
       allowDestructiveGraphqlSchemaUpdates: context.transformParameters.allowDestructiveGraphqlSchemaUpdates,
       replaceTableUponGsiUpdate: context.transformParameters.replaceTableUponGsiUpdate,
       tableName,
-      partitionKey: {
-        name: 'id',
-        type: AttributeType.STRING,
-      },
+      partitionKey,
+      ...(sortKey ? { sortKey } : undefined),
       stream: StreamViewType.NEW_AND_OLD_IMAGES,
       encryption: TableEncryption.DEFAULT,
       removalPolicy,
