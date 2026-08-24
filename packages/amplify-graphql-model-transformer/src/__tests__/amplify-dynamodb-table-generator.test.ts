@@ -244,6 +244,110 @@ describe('ModelTransformer:', () => {
     validateModelSchema(parse(out.schema));
   });
 
+  it('derives the imported table key schema from a custom @primaryKey with a composite sort key', async () => {
+    const validSchema = `
+      type Event @model {
+        tenantId: ID! @primaryKey(sortKeyFields: ["region", "createdAt"])
+        region: String!
+        createdAt: String!
+        name: String
+      }
+    `;
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: {
+        Event: {
+          dbType: 'DYNAMODB' as const,
+          provisionStrategy: 'IMPORTED_AMPLIFY_TABLE' as const,
+          tableName: 'Event-myApiId-myEnv',
+        },
+      },
+    });
+    const table = out.stacks['Event'].Resources?.EventTable;
+    expect(table).toBeDefined();
+    expect(table.Type).toBe(CUSTOM_IMPORTED_DDB_CFN_TYPE);
+    // A composite sort key is stored as a single string attribute named by joining the fields.
+    expect(table.Properties.keySchema).toEqual([
+      { attributeName: 'tenantId', keyType: 'HASH' },
+      { attributeName: 'region#createdAt', keyType: 'RANGE' },
+    ]);
+    expect(table.Properties.attributeDefinitions).toEqual(
+      expect.arrayContaining([
+        { attributeName: 'tenantId', attributeType: 'S' },
+        { attributeName: 'region#createdAt', attributeType: 'S' },
+      ]),
+    );
+    validateModelSchema(parse(out.schema));
+  });
+
+  it('derives a numeric attribute type for an integer @primaryKey / sort key on an imported table', async () => {
+    const validSchema = `
+      type Reading @model {
+        sensorId: Int! @primaryKey(sortKeyFields: ["ts"])
+        ts: Int!
+        value: Float
+      }
+    `;
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: {
+        Reading: {
+          dbType: 'DYNAMODB' as const,
+          provisionStrategy: 'IMPORTED_AMPLIFY_TABLE' as const,
+          tableName: 'Reading-myApiId-myEnv',
+        },
+      },
+    });
+    const table = out.stacks['Reading'].Resources?.ReadingTable;
+    expect(table).toBeDefined();
+    expect(table.Type).toBe(CUSTOM_IMPORTED_DDB_CFN_TYPE);
+    expect(table.Properties.keySchema).toEqual([
+      { attributeName: 'sensorId', keyType: 'HASH' },
+      { attributeName: 'ts', keyType: 'RANGE' },
+    ]);
+    expect(table.Properties.attributeDefinitions).toEqual(
+      expect.arrayContaining([
+        { attributeName: 'sensorId', attributeType: 'N' },
+        { attributeName: 'ts', attributeType: 'N' },
+      ]),
+    );
+    validateModelSchema(parse(out.schema));
+  });
+
+  it('derives a string attribute type for an enum-typed @primaryKey on an imported table', async () => {
+    // Enum-backed key fields are stored as strings. `attributeTypeFromScalar` throws on non-scalar
+    // (enum) types, so the generator must treat enums as `S` the way the index transformer does.
+    const validSchema = `
+      enum Status {
+        ACTIVE
+        ARCHIVED
+      }
+      type Record @model {
+        status: Status! @primaryKey
+        label: String
+      }
+    `;
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: {
+        Record: {
+          dbType: 'DYNAMODB' as const,
+          provisionStrategy: 'IMPORTED_AMPLIFY_TABLE' as const,
+          tableName: 'Record-myApiId-myEnv',
+        },
+      },
+    });
+    const table = out.stacks['Record'].Resources?.RecordTable;
+    expect(table).toBeDefined();
+    expect(table.Type).toBe(CUSTOM_IMPORTED_DDB_CFN_TYPE);
+    expect(table.Properties.keySchema).toEqual([{ attributeName: 'status', keyType: 'HASH' }]);
+    expect(table.Properties.attributeDefinitions).toEqual([{ attributeName: 'status', attributeType: 'S' }]);
+    validateModelSchema(parse(out.schema));
+  });
+
   it('keeps the default id key schema for an imported table without a custom @primaryKey', async () => {
     const validSchema = `
       type Note @model {

@@ -1,13 +1,13 @@
 import * as cdk from 'aws-cdk-lib';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ModelResourceIDs, ResourceConstants, attributeTypeFromScalar } from 'graphql-transformer-common';
-import { ObjectTypeDefinitionNode } from 'graphql';
+import { ModelResourceIDs, ResourceConstants, attributeTypeFromScalar, getBaseType } from 'graphql-transformer-common';
+import { Kind, ObjectTypeDefinitionNode, TypeNode } from 'graphql';
 import {
   setResourceName,
   isImportedAmplifyDynamoDbModelDataSourceStrategy,
   getPrimaryKeyFieldNodes,
 } from '@aws-amplify/graphql-transformer-core';
-import { AttributeType, StreamViewType, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
+import { Attribute, AttributeType, StreamViewType, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 import { Duration, aws_iam, aws_lambda } from 'aws-cdk-lib';
 import { DynamoModelResourceGenerator } from '../dynamo-model-resource-generator';
@@ -188,29 +188,41 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
     // than `id`, and/or a sort key) would fail import with "Imported table properties did not
     // match the expected table properties". So for imported tables we derive the key schema from
     // the model definition up front, mirroring how GSIs are already derived from the model.
-    let partitionKey = {
+    let partitionKey: Attribute = {
       name: 'id',
       type: AttributeType.STRING,
     };
-    let sortKey: { name: string; type: AttributeType } | undefined;
+    let sortKey: Attribute | undefined;
     if (isTableImported) {
+      // Resolve a key field's DynamoDB attribute type. Enum-backed fields are stored as strings
+      // (they are not GraphQL scalars, so `attributeTypeFromScalar` would throw on them); this
+      // mirrors `attributeTypeFromType` in the index transformer.
+      const keyAttributeType = (type: TypeNode): AttributeType => {
+        const baseType = getBaseType(type);
+        const named = context.output.getType(baseType);
+        if (named?.kind === Kind.ENUM_TYPE_DEFINITION) {
+          return AttributeType.STRING;
+        }
+        return attributeTypeFromScalar(type) === 'N' ? AttributeType.NUMBER : AttributeType.STRING;
+      };
+
       const [primaryKeyFieldNode, ...sortKeyFieldNodes] = getPrimaryKeyFieldNodes(def);
       partitionKey = {
         name: primaryKeyFieldNode.name.value,
-        type: attributeTypeFromScalar(primaryKeyFieldNode.type) === 'N' ? AttributeType.NUMBER : AttributeType.STRING,
+        type: keyAttributeType(primaryKeyFieldNode.type),
       };
       if (sortKeyFieldNodes.length === 1) {
-        // A single sort key field maps directly to a sort key attribute of the field's scalar type.
+        // A single sort key field maps directly to a sort key attribute of the field's type.
         sortKey = {
           name: sortKeyFieldNodes[0].name.value,
-          type: attributeTypeFromScalar(sortKeyFieldNodes[0].type) === 'N' ? AttributeType.NUMBER : AttributeType.STRING,
+          type: keyAttributeType(sortKeyFieldNodes[0].type),
         };
       } else if (sortKeyFieldNodes.length > 1) {
         // Composite sort keys are stored as a single string attribute whose name is the sort key
-        // field names joined by the model composite key separator (matches `getSortKeyName` in the
-        // index transformer's `replaceDdbPrimaryKey`).
+        // field names joined by the model composite key separator (matches how the index
+        // transformer names composite sort keys in `replaceDdbPrimaryKey`).
         sortKey = {
-          name: sortKeyFieldNodes.map((node) => node.name.value).join(ModelResourceIDs.ModelCompositeKeySeparator()),
+          name: ModelResourceIDs.ModelCompositeAttributeName(sortKeyFieldNodes.map((node) => node.name.value)),
           type: AttributeType.STRING,
         };
       }
