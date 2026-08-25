@@ -348,6 +348,33 @@ describe('ModelTransformer:', () => {
     validateModelSchema(parse(out.schema));
   });
 
+  it('derives the implicit id key schema for an imported table whose model declares no id field', async () => {
+    // With no @primaryKey (and no explicit id), getPrimaryKeyFieldNodes falls back to the implicit
+    // id: ID! field, so the imported table must still get an `id`/HASH key schema.
+    const validSchema = `
+      type Note @model {
+        content: String
+      }
+    `;
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+      dataSourceStrategies: {
+        Note: {
+          dbType: 'DYNAMODB' as const,
+          provisionStrategy: 'IMPORTED_AMPLIFY_TABLE' as const,
+          tableName: 'Note-myApiId-myEnv',
+        },
+      },
+    });
+    const table = out.stacks['Note'].Resources?.NoteTable;
+    expect(table).toBeDefined();
+    expect(table.Type).toBe(CUSTOM_IMPORTED_DDB_CFN_TYPE);
+    expect(table.Properties.keySchema).toEqual([{ attributeName: 'id', keyType: 'HASH' }]);
+    expect(table.Properties.attributeDefinitions).toEqual([{ attributeName: 'id', attributeType: 'S' }]);
+    validateModelSchema(parse(out.schema));
+  });
+
   it('keeps the default id key schema for an imported table without a custom @primaryKey', async () => {
     const validSchema = `
       type Note @model {
