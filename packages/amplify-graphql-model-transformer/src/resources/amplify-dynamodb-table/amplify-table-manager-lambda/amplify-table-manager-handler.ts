@@ -100,13 +100,11 @@ async function onEventHandler(cfnRequest: AWSLambda.CloudFormationCustomResource
     // `isComplete` in predefined intervals.
     const waiter = {
       stateMachineArn: getEnv('WAITER_STATE_MACHINE_ARN'),
-      name: resourceEvent.RequestId,
       input: JSON.stringify(resourceEvent),
     };
 
     log('starting waiter', {
       stateMachineArn: waiter.stateMachineArn,
-      name: resourceEvent.RequestId,
     });
 
     await startExecution(waiter);
