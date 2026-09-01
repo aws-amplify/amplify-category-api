@@ -33,6 +33,7 @@ export type {
   FunctionSlotOverride,
   ConflictResolution,
   DataStoreConfiguration,
+  PartitioningConfig,
   ConflictDetectionType,
   OptimisticConflictResolutionStrategy,
   CustomConflictResolutionStrategy,
