@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { $TSContext, CloudformationProviderFacade, pathManager, JSONUtilities } from '@aws-amplify/amplify-cli-core';
+import { $TSContext, CloudformationProviderFacade, pathManager, JSONUtilities, readCFNTemplate } from '@aws-amplify/amplify-cli-core';
+import { printer } from '@aws-amplify/amplify-prompts';
 import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk, getAdminRoles } from '../../graphql-transformer/utils';
 import { TransformerProjectConfig } from '../../graphql-transformer/cdk-compat/project-config';
 import { DeploymentResources } from '../../graphql-transformer/cdk-compat/deployment-resources';
@@ -10,8 +11,12 @@ jest.mock('@aws-amplify/amplify-cli-core');
 
 const fs_mock = fs as jest.Mocked<typeof fs>;
 const prePushCfnTemplateModifier_mock = jest.fn();
+const printerWarn_mock = jest.fn();
+const readCFNTemplate_mock = readCFNTemplate as unknown as jest.Mock;
+const JSONUtilities_mock = JSONUtilities as jest.Mocked<typeof JSONUtilities>;
 
 CloudformationProviderFacade.prePushCfnTemplateModifier = prePushCfnTemplateModifier_mock;
+printer.warn = printerWarn_mock;
 
 fs_mock.readdirSync.mockReturnValue([]);
 
@@ -333,6 +338,121 @@ describe('graphql transformer utils', () => {
       fs_mock.existsSync.mockReturnValueOnce(true);
       const adminRoles = await getAdminRoles(mockContext, 'test');
       expect(adminRoles).toEqual([testRole]);
+    });
+  });
+
+  describe('admin roles for functions granted api access', () => {
+    const FUNCTION_TEMPLATE_FILE = 'myFunc-cloudformation-template.json';
+    const EXECUTION_ROLE_NAME = 'myAppLambdaRoleabc123';
+
+    const buildFunctionTemplate = (roleName: string): any => ({
+      Conditions: { ShouldNotCreateEnvResources: { 'Fn::Equals': [{ Ref: 'env' }, 'NONE'] } },
+      Resources: {
+        LambdaExecutionRole: {
+          Type: 'AWS::IAM::Role',
+          Properties: {
+            RoleName: { 'Fn::If': ['ShouldNotCreateEnvResources', roleName, { 'Fn::Join': ['', [roleName, '-', { Ref: 'env' }]] }] },
+          },
+        },
+      },
+    });
+
+    const buildContext = (envName: string, output?: Record<string, string>): $TSContext =>
+      ({
+        amplify: {
+          getEnvInfo: () => ({ envName }),
+          getResourceStatus: () => ({
+            allResources: [{ resourceName: 'myFunc', dependsOn: [{ resourceName: 'test' }], output }],
+            resourcesToBeDeleted: [],
+          }),
+        },
+      } as unknown as $TSContext);
+
+    beforeEach(() => {
+      printerWarn_mock.mockClear();
+      readCFNTemplate_mock.mockReset();
+      fs_mock.existsSync.mockReset();
+      fs_mock.existsSync.mockImplementation((filePath) => String(filePath).endsWith(FUNCTION_TEMPLATE_FILE));
+    });
+
+    it('uses the execution role name published by the deployed function stack', async () => {
+      const context = buildContext('test', { LambdaExecutionRole: `${EXECUTION_ROLE_NAME}-test` });
+      const adminRoles = await getAdminRoles(context, 'test');
+      expect(adminRoles).toEqual([`${EXECUTION_ROLE_NAME}-test`]);
+      expect(readCFNTemplate_mock).not.toHaveBeenCalled();
+    });
+
+    it('resolves the execution role name from the local template when the function is not deployed yet', async () => {
+      readCFNTemplate_mock.mockReturnValueOnce({ cfnTemplate: buildFunctionTemplate(EXECUTION_ROLE_NAME), templateFormat: 'json' });
+      const adminRoles = await getAdminRoles(buildContext('test'), 'test');
+      expect(adminRoles).toEqual([`${EXECUTION_ROLE_NAME}-test`]);
+    });
+
+    it('resolves the unsuffixed execution role name when the env does not create env specific resources', async () => {
+      readCFNTemplate_mock.mockReturnValueOnce({ cfnTemplate: buildFunctionTemplate(EXECUTION_ROLE_NAME), templateFormat: 'json' });
+      const adminRoles = await getAdminRoles(buildContext('NONE'), 'test');
+      expect(adminRoles).toEqual([EXECUTION_ROLE_NAME]);
+    });
+
+    it('warns and grants no access when the execution role name cannot be resolved', async () => {
+      readCFNTemplate_mock.mockReturnValueOnce({ cfnTemplate: { Resources: {} }, templateFormat: 'json' });
+      const adminRoles = await getAdminRoles(buildContext('test'), 'test');
+      expect(adminRoles).toEqual([]);
+      expect(printerWarn_mock).toHaveBeenCalledWith(expect.stringContaining('myFunc'));
+    });
+
+    it('does not resolve a role name guarded by a condition other than the env condition', async () => {
+      const cfnTemplate = buildFunctionTemplate(EXECUTION_ROLE_NAME);
+      cfnTemplate.Resources.LambdaExecutionRole.Properties.RoleName['Fn::If'][0] = 'SomeOtherCondition';
+      readCFNTemplate_mock.mockReturnValueOnce({ cfnTemplate, templateFormat: 'json' });
+      const adminRoles = await getAdminRoles(buildContext('test'), 'test');
+      expect(adminRoles).toEqual([]);
+      expect(printerWarn_mock).toHaveBeenCalledWith(expect.stringContaining('myFunc'));
+    });
+
+    it('never grants admin access to the deployed function name, which appears only in the session name segment', async () => {
+      readCFNTemplate_mock.mockReturnValueOnce({ cfnTemplate: buildFunctionTemplate(EXECUTION_ROLE_NAME), templateFormat: 'json' });
+      const adminRoles = await getAdminRoles(buildContext('test'), 'test');
+      expect(adminRoles).not.toContain('myFunc-test');
+      expect(adminRoles).not.toContain('myFunc');
+    });
+  });
+
+  describe('validate admin role names from custom-roles.json', () => {
+    const mockContext = {
+      amplify: {
+        getEnvInfo: () => ({ envName: 'test' }),
+        getResourceStatus: () => ({ allResources: [], resourcesToBeDeleted: [] }),
+      },
+    } as unknown as $TSContext;
+
+    beforeEach(() => {
+      printerWarn_mock.mockClear();
+      fs_mock.existsSync.mockReset();
+      fs_mock.existsSync.mockImplementation((filePath) => String(filePath).endsWith('custom-roles.json'));
+    });
+
+    it('ignores an iam role arn, which never appears in a caller identity', async () => {
+      const iamRoleArn = 'arn:aws:iam::123456789012:role/MyAdminRole';
+      JSONUtilities_mock.readJson.mockReturnValueOnce({ adminRoleNames: [iamRoleArn, 'MyOtherRole'] });
+      const adminRoles = await getAdminRoles(mockContext, 'test');
+      expect(adminRoles).toEqual(['MyOtherRole']);
+      expect(printerWarn_mock).toHaveBeenCalledWith(expect.stringContaining(iamRoleArn));
+    });
+
+    it('reduces a fully qualified assumed-role arn to its role name segments', async () => {
+      JSONUtilities_mock.readJson.mockReturnValueOnce({ adminRoleNames: 'arn:aws:sts::123456789012:assumed-role/MyAdminRole/MySession' });
+      const adminRoles = await getAdminRoles(mockContext, 'test');
+      expect(adminRoles).toEqual(['MyAdminRole/MySession']);
+      expect(printerWarn_mock).not.toHaveBeenCalled();
+    });
+
+    it('substitutes every env placeholder in a custom role name', async () => {
+      // eslint-disable-next-line no-template-curly-in-string
+      JSONUtilities_mock.readJson.mockReturnValueOnce({ adminRoleNames: 'MyAdminRole-${env}-fallback-${env}' });
+      const adminRoles = await getAdminRoles(mockContext, 'test');
+      expect(adminRoles).toEqual(['MyAdminRole-test-fallback-test']);
+      expect(printerWarn_mock).not.toHaveBeenCalled();
     });
   });
 });
