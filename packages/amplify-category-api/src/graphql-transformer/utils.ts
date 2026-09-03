@@ -7,6 +7,7 @@ import {
   CloudformationProviderFacade,
   JSONUtilities,
   pathManager,
+  readCFNTemplate,
   stateManager,
 } from '@aws-amplify/amplify-cli-core';
 import { CloudFormation, Fn } from 'cloudform-types';
@@ -21,6 +22,12 @@ const CUSTOM_ROLES_FILE_NAME = 'custom-roles.json';
 const AMPLIFY_ADMIN_ROLE = '_Full-access/CognitoIdentityCredentials';
 const AMPLIFY_MANAGE_ROLE = '_Manage-only/CognitoIdentityCredentials';
 const PROVIDER_NAME = 'awscloudformation';
+const FUNCTION_CFN_TEMPLATE_SUFFIX = '-cloudformation-template.json';
+const LAMBDA_EXECUTION_ROLE_LOGICAL_ID = 'LambdaExecutionRole';
+const NO_ENV_RESOURCES_ENV_NAME = 'NONE';
+const SHOULD_NOT_CREATE_ENV_RESOURCES_CONDITION = 'ShouldNotCreateEnvResources';
+const ENV_PLACEHOLDER_PATTERN = /\$\{env\}/g;
+const STS_ASSUMED_ROLE_ARN_PATTERN = /^arn:[^:]*:sts::[^:]*:assumed-role\/(.+)$/;
 
 interface CustomRolesConfig {
   adminRoleNames?: Array<string> | string;
@@ -33,6 +40,91 @@ export const getIdentityPoolId = async (ctx: $TSContext): Promise<string | undef
   return authResource?.output?.IdentityPoolId;
 };
 
+/**
+ * Resolves the subset of CloudFormation intrinsics used by the function template's role name into a literal string, returning
+ * `undefined` for any shape that cannot be resolved without deploying.
+ */
+const resolveStaticCfnValue = (value: unknown, currentEnv: string): string | undefined => {
+  if (typeof value === 'string') {
+    return value;
+  }
+  if (!value || typeof value !== 'object') {
+    return undefined;
+  }
+  const intrinsic = value as Record<string, unknown>;
+  if (Array.isArray(intrinsic['Fn::If'])) {
+    const [conditionName, whenTrue, whenFalse] = intrinsic['Fn::If'];
+    // `ShouldNotCreateEnvResources` is the only condition whose meaning is known here, `env === 'NONE'`; any other condition
+    // cannot be evaluated without deploying
+    if (conditionName !== SHOULD_NOT_CREATE_ENV_RESOURCES_CONDITION) {
+      return undefined;
+    }
+    return resolveStaticCfnValue(currentEnv === NO_ENV_RESOURCES_ENV_NAME ? whenTrue : whenFalse, currentEnv);
+  }
+  if (Array.isArray(intrinsic['Fn::Join'])) {
+    const [delimiter, parts] = intrinsic['Fn::Join'];
+    if (typeof delimiter !== 'string' || !Array.isArray(parts)) {
+      return undefined;
+    }
+    const resolvedParts = parts.map((part) => resolveStaticCfnValue(part, currentEnv));
+    return resolvedParts.some((part) => part === undefined) ? undefined : resolvedParts.join(delimiter);
+  }
+  if (intrinsic.Ref === 'env') {
+    return currentEnv;
+  }
+  return undefined;
+};
+
+/**
+ * Resolves the name of a function's Lambda execution role, preferring the deployed stack output and falling back to the role name
+ * declared in the local CloudFormation template so that a not-yet-deployed function resolves too.
+ */
+const getFunctionExecutionRoleName = (functionResource: any, currentEnv: string): string | undefined => {
+  const deployedRoleName = functionResource?.output?.[LAMBDA_EXECUTION_ROLE_LOGICAL_ID];
+  if (typeof deployedRoleName === 'string' && deployedRoleName.length > 0) {
+    return deployedRoleName;
+  }
+  const { resourceName } = functionResource;
+  const templatePath = path.join(
+    pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.FUNCTION, resourceName),
+    `${resourceName}${FUNCTION_CFN_TEMPLATE_SUFFIX}`,
+  );
+  if (!fs.existsSync(templatePath)) {
+    return undefined;
+  }
+  try {
+    const { cfnTemplate } = readCFNTemplate(templatePath);
+    return resolveStaticCfnValue(cfnTemplate?.Resources?.[LAMBDA_EXECUTION_ROLE_LOGICAL_ID]?.Properties?.RoleName, currentEnv);
+  } catch (err) {
+    return undefined;
+  }
+};
+
+/**
+ * Normalizes a `custom-roles.json` entry into the role-name shape the generated resolvers compare against, returning `undefined`
+ * for a value that can never match a caller identity.
+ */
+const normalizeCustomAdminRoleName = (adminRoleName: string, customRoleFile: string): string | undefined => {
+  const assumedRoleArnMatch = STS_ASSUMED_ROLE_ARN_PATTERN.exec(adminRoleName);
+  if (assumedRoleArnMatch) {
+    return assumedRoleArnMatch[1];
+  }
+  if (adminRoleName.startsWith('arn:')) {
+    printer.warn(
+      `Ignoring "${adminRoleName}" in ${customRoleFile}: an IAM role arn never appears in the caller identity that admin access is ` +
+        'checked against, so it would silently grant nothing. Use the IAM role name instead.',
+    );
+    return undefined;
+  }
+  return adminRoleName;
+};
+
+/**
+ * Collects the IAM identities that are granted admin access to the API regardless of its auth rules.
+ *
+ * Every entry is role-name shaped, either a bare `<RoleName>` or a qualified `<RoleName>/<SessionName>`, because the generated
+ * resolvers match each entry against the `assumed-role/` segment of the caller arn. A fully qualified arn is never returned.
+ */
 export const getAdminRoles = async (ctx: $TSContext, apiResourceName: string | undefined): Promise<Array<string>> => {
   let currentEnv;
   const adminRoles = new Array<string>();
@@ -60,10 +152,23 @@ export const getAdminRoles = async (ctx: $TSContext, apiResourceName: string | u
   if (apiResourceName) {
     // lambda functions which have access to the api
     const { allResources, resourcesToBeDeleted } = await ctx.amplify.getResourceStatus('function');
-    const resources = pullAllBy(allResources, resourcesToBeDeleted, 'resourceName')
-      .filter((r: any) => r.dependsOn?.some((d: any) => d?.resourceName === apiResourceName))
-      .map((r: any) => `${r.resourceName}-${currentEnv}`);
-    adminRoles.push(...resources);
+    const functionResources = pullAllBy(allResources, resourcesToBeDeleted, 'resourceName').filter((r: any) =>
+      r.dependsOn?.some((d: any) => d?.resourceName === apiResourceName),
+    );
+    functionResources.forEach((functionResource: any) => {
+      // A function's deployed name only ever appears in the session segment of the caller arn, which the caller chooses freely, so
+      // the execution role name is the only part of a function's identity that can be trusted.
+      const executionRoleName = getFunctionExecutionRoleName(functionResource, currentEnv);
+      if (executionRoleName) {
+        adminRoles.push(executionRoleName);
+        return;
+      }
+      printer.warn(
+        `Unable to determine the Lambda execution role name of function "${functionResource.resourceName}", so it is not granted ` +
+          `admin access to the "${apiResourceName}" GraphQL API. Add its execution role name to "adminRoleNames" in ` +
+          `${CUSTOM_ROLES_FILE_NAME} to grant access.`,
+      );
+    });
 
     // check for custom iam admin roles
     const customRoleFile = path.join(
@@ -77,8 +182,9 @@ export const getAdminRoles = async (ctx: $TSContext, apiResourceName: string | u
           ? customRoleConfig.adminRoleNames
           : [customRoleConfig.adminRoleNames];
         const adminRoleNames = customAdminRoles
-          // eslint-disable-next-line no-template-curly-in-string
-          .map((r) => (r.includes('${env}') ? r.replace('${env}', currentEnv) : r));
+          .map((r) => r.replace(ENV_PLACEHOLDER_PATTERN, currentEnv))
+          .map((r) => normalizeCustomAdminRoleName(r, customRoleFile))
+          .filter((r): r is string => r !== undefined);
         adminRoles.push(...adminRoleNames);
       }
     }
