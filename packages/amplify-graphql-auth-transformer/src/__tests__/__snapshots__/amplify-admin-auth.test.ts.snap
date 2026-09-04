@@ -4,8 +4,9 @@ exports[`admin roles should be return the field name inside field resolvers 1`] 
 "## [Start] Field Authorization Steps. **
 #set( $isAuthorized = false )
 #if( $util.authType() == "IAM Authorization" )
+  #set( $userArnWithTrailingSlash = "\${ctx.identity.userArn}/" )
   #foreach( $adminRole in $ctx.stash.adminRoles )
-    #if( $ctx.identity.userArn.contains($adminRole) && $ctx.identity.userArn != $ctx.stash.authRole && $ctx.identity.userArn != $ctx.stash.unauthRole )
+    #if( $userArnWithTrailingSlash.contains(":assumed-role/\${adminRole}/") && $ctx.identity.userArn != $ctx.stash.authRole && $ctx.identity.userArn != $ctx.stash.unauthRole )
       #return($context.source.secretValue)
     #end
   #end
@@ -41,8 +42,9 @@ $util.qr($ctx.stash.put("hasAuth", true))
 #set( $isAuthorized = false )
 #set( $allowedFields = [] )
 #if( $util.authType() == "IAM Authorization" )
+  #set( $userArnWithTrailingSlash = "\${ctx.identity.userArn}/" )
   #foreach( $adminRole in $ctx.stash.adminRoles )
-    #if( $ctx.identity.userArn.contains($adminRole) && $ctx.identity.userArn != $ctx.stash.authRole && $ctx.identity.userArn != $ctx.stash.unauthRole )
+    #if( $userArnWithTrailingSlash.contains(":assumed-role/\${adminRole}/") && $ctx.identity.userArn != $ctx.stash.authRole && $ctx.identity.userArn != $ctx.stash.unauthRole )
       #return($util.toJson({}))
     #end
   #end
@@ -115,8 +117,9 @@ $util.qr($ctx.stash.put("hasAuth", true))
 #set( $isAuthorized = false )
 #set( $allowedFields = [] )
 #if( $util.authType() == "IAM Authorization" )
+  #set( $userArnWithTrailingSlash = "\${ctx.identity.userArn}/" )
   #foreach( $adminRole in $ctx.stash.adminRoles )
-    #if( $ctx.identity.userArn.contains($adminRole) && $ctx.identity.userArn != $ctx.stash.authRole && $ctx.identity.userArn != $ctx.stash.unauthRole )
+    #if( $userArnWithTrailingSlash.contains(":assumed-role/\${adminRole}/") && $ctx.identity.userArn != $ctx.stash.authRole && $ctx.identity.userArn != $ctx.stash.unauthRole )
       #return($util.toJson({}))
     #end
   #end
@@ -150,8 +153,9 @@ $util.qr($ctx.stash.put("hasAuth", true))
 #set( $nullAllowedFields = [] )
 #set( $deniedFields = {} )
 #if( $util.authType() == "IAM Authorization" )
+  #set( $userArnWithTrailingSlash = "\${ctx.identity.userArn}/" )
   #foreach( $adminRole in $ctx.stash.adminRoles )
-    #if( $ctx.identity.userArn.contains($adminRole) && $ctx.identity.userArn != $ctx.stash.authRole && $ctx.identity.userArn != $ctx.stash.unauthRole )
+    #if( $userArnWithTrailingSlash.contains(":assumed-role/\${adminRole}/") && $ctx.identity.userArn != $ctx.stash.authRole && $ctx.identity.userArn != $ctx.stash.unauthRole )
       #return($util.toJson({}))
     #end
   #end
@@ -185,8 +189,9 @@ exports[`simple model with AdminUI enabled should add IAM policy only for fields
 $util.qr($ctx.stash.put("hasAuth", true))
 #set( $isAuthorized = false )
 #if( $util.authType() == "IAM Authorization" )
+  #set( $userArnWithTrailingSlash = "\${ctx.identity.userArn}/" )
   #foreach( $adminRole in $ctx.stash.adminRoles )
-    #if( $ctx.identity.userArn.contains($adminRole) && $ctx.identity.userArn != $ctx.stash.authRole && $ctx.identity.userArn != $ctx.stash.unauthRole )
+    #if( $userArnWithTrailingSlash.contains(":assumed-role/\${adminRole}/") && $ctx.identity.userArn != $ctx.stash.authRole && $ctx.identity.userArn != $ctx.stash.unauthRole )
       #return($util.toJson({}))
     #end
   #end
@@ -209,8 +214,9 @@ $util.qr($ctx.stash.put("hasAuth", true))
 #set( $isAuthorized = false )
 #set( $allowedFields = [] )
 #if( $util.authType() == "IAM Authorization" )
+  #set( $userArnWithTrailingSlash = "\${ctx.identity.userArn}/" )
   #foreach( $adminRole in $ctx.stash.adminRoles )
-    #if( $ctx.identity.userArn.contains($adminRole) && $ctx.identity.userArn != $ctx.stash.authRole && $ctx.identity.userArn != $ctx.stash.unauthRole )
+    #if( $userArnWithTrailingSlash.contains(":assumed-role/\${adminRole}/") && $ctx.identity.userArn != $ctx.stash.authRole && $ctx.identity.userArn != $ctx.stash.unauthRole )
       #return($util.toJson({}))
     #end
   #end
@@ -244,8 +250,9 @@ $util.qr($ctx.stash.put("hasAuth", true))
 #set( $nullAllowedFields = [] )
 #set( $deniedFields = {} )
 #if( $util.authType() == "IAM Authorization" )
+  #set( $userArnWithTrailingSlash = "\${ctx.identity.userArn}/" )
   #foreach( $adminRole in $ctx.stash.adminRoles )
-    #if( $ctx.identity.userArn.contains($adminRole) && $ctx.identity.userArn != $ctx.stash.authRole && $ctx.identity.userArn != $ctx.stash.unauthRole )
+    #if( $userArnWithTrailingSlash.contains(":assumed-role/\${adminRole}/") && $ctx.identity.userArn != $ctx.stash.authRole && $ctx.identity.userArn != $ctx.stash.unauthRole )
       #return($util.toJson({}))
     #end
   #end
@@ -279,8 +286,9 @@ exports[`simple model with AdminUI enabled should add IAM policy only for fields
 $util.qr($ctx.stash.put("hasAuth", true))
 #set( $isAuthorized = false )
 #if( $util.authType() == "IAM Authorization" )
+  #set( $userArnWithTrailingSlash = "\${ctx.identity.userArn}/" )
   #foreach( $adminRole in $ctx.stash.adminRoles )
-    #if( $ctx.identity.userArn.contains($adminRole) && $ctx.identity.userArn != $ctx.stash.authRole && $ctx.identity.userArn != $ctx.stash.unauthRole )
+    #if( $userArnWithTrailingSlash.contains(":assumed-role/\${adminRole}/") && $ctx.identity.userArn != $ctx.stash.authRole && $ctx.identity.userArn != $ctx.stash.unauthRole )
       #return($util.toJson({}))
     #end
   #end
