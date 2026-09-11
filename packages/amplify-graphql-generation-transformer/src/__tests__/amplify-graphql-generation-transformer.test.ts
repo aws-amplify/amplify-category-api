@@ -326,9 +326,58 @@ describe('generation route invalid inference configuration', () => {
 });
 // });
 
+test('generation route with cross-region inference profile model grants inference-profile IAM', () => {
+  const queryName = 'makeTodo';
+  const inferenceProfileModelId = 'global.anthropic.claude-haiku-4-5-20251001-v1:0';
+  const inputSchema = `
+    type Query {
+        ${queryName}(description: String!): String
+        @generation(
+          aiModel: "${inferenceProfileModelId}",
+          systemPrompt: "Make a string based on the description.",
+        )
+        @auth(rules: [{ allow: public, provider: iam }])
+    }
+  `;
+  const out = transform(inputSchema);
+  expect(out).toBeDefined();
+
+  const policyStatements = getBedrockPolicyStatements(out.stacks);
+  expect(policyStatements.length).toBeGreaterThan(0);
+
+  const grantedResources = policyStatements.flatMap((statement) =>
+    Array.isArray(statement.Resource) ? statement.Resource : [statement.Resource],
+  );
+  const grantedResourcesJson = JSON.stringify(grantedResources);
+
+  // The inference profile the request is actually routed through must be granted.
+  // Before the fix, only the bare foundation-model ARN was granted, so this fails.
+  expect(grantedResourcesJson).toContain(`inference-profile/${inferenceProfileModelId}`);
+});
+
 const getResolverResource = (queryName: string, resources?: Record<string, any>): Record<string, any> => {
   const resolverName = `Query${queryName}Resolver`;
   return resources?.[resolverName];
+};
+
+/**
+ * Collects every statement from the inline policies of the generated Bedrock
+ * data source IAM roles across all nested stacks.
+ */
+const getBedrockPolicyStatements = (stacks: Record<string, any>): any[] => {
+  const statements: any[] = [];
+  Object.values(stacks ?? {}).forEach((stack: any) => {
+    const resources: Record<string, any> = stack?.Resources ?? {};
+    Object.values(resources).forEach((resource: any) => {
+      if (resource?.Type !== 'AWS::IAM::Role') return;
+      const policies = resource?.Properties?.Policies ?? [];
+      policies.forEach((policy: any) => {
+        const policyStatements = policy?.PolicyDocument?.Statement ?? [];
+        statements.push(...policyStatements);
+      });
+    });
+  });
+  return statements;
 };
 
 const defaultAuthConfig: AppSyncAuthConfiguration = {
