@@ -1,6 +1,5 @@
 #!/usr/bin/env node
-import 'source-map-support/register';
-import { App, Stack, Duration } from 'aws-cdk-lib';
+import { App, Stack, Duration, Tags } from 'aws-cdk-lib';
 // @ts-ignore
 import { AmplifyGraphqlApi, AmplifyGraphqlDefinition } from '@aws-amplify/graphql-api-construct';
 import { BillingMode, StreamViewType } from 'aws-cdk-lib/aws-dynamodb';
@@ -30,7 +29,7 @@ const api = new AmplifyGraphqlApi(stack, 'GraphqlApi', {
   authorizationModes: {
     apiKeyConfig: { expires: Duration.days(7) },
   },
-  conflictResolution: {
+  dataStoreConfiguration: {
     project: {
       detectionType: 'VERSION',
       handlerType: 'AUTOMERGE',
@@ -38,7 +37,7 @@ const api = new AmplifyGraphqlApi(stack, 'GraphqlApi', {
   },
 });
 
-const todoTable = api.resources.amplifyDynamoDbTables['Todo'];
+const todoTable = api.resources.cfnResources.amplifyDynamoDbTables['Todo'];
 todoTable.billingMode = BillingMode.PROVISIONED;
 todoTable.provisionedThroughput = {
   readCapacityUnits: 5,
@@ -49,5 +48,11 @@ todoTable.setGlobalSecondaryIndexProvisionedThroughput('byName2', {
   writeCapacityUnits: 4,
 });
 todoTable.pointInTimeRecoveryEnabled = true;
-todoTable.sseSpecification = { sseEnabled: false };
+todoTable.sseSpecification = { sseEnabled: true };
 todoTable.streamSpecification = { streamViewType: StreamViewType.KEYS_ONLY };
+
+Tags.of(stack).add('created-by', 'amplify-updated');
+Tags.of(stack).add('amplify:deployment-type', 'pipeline-updated');
+Tags.of(stack).add('amplify:deployment-branch', 'main-updated');
+Tags.of(stack).add('amplify:appId', '123456-updated');
+Tags.of(stack).add('amplify:friendly-name', 'amplifyData-updated');

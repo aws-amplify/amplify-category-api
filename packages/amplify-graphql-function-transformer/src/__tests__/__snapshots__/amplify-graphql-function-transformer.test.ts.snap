@@ -1,5 +1,137 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Event invocation type Chained directives chained @function -- Event > Event succeeds with EventInvocationResponse 1`] = `
+"## [Start] Handle error and return result for event invocation type. **
+#set( $success = true )
+#if( $ctx.error )
+  $util.appendError($ctx.error.message, $ctx.error.type)
+  #set( $success = false )
+#end
+#set( $response = {
+  \\"success\\": $success
+} )
+$util.toJson($response)
+## [End] Handle error and return result for event invocation type. **"
+`;
+
+exports[`Event invocation type Chained directives chained @function -- Event > Event succeeds with EventInvocationResponse 2`] = `
+"## [Start] Handle error and return result for event invocation type. **
+#set( $success = true )
+#if( $ctx.error )
+  $util.appendError($ctx.error.message, $ctx.error.type)
+  #set( $success = false )
+#end
+#set( $response = {
+  \\"success\\": $success
+} )
+$util.toJson($response)
+## [End] Handle error and return result for event invocation type. **"
+`;
+
+exports[`Event invocation type Chained directives chained @function -- Event > RequestResponse succeeds without EventInvocationResponse 1`] = `undefined`;
+
+exports[`Event invocation type Chained directives chained @function -- Event > RequestResponse succeeds without EventInvocationResponse 2`] = `undefined`;
+
+exports[`Event invocation type Chained directives chained @function -- RequestResponse > Event succeeds with EventInvocationResponse 1`] = `
+"## [Start] Handle error and return result for event invocation type. **
+#set( $success = true )
+#if( $ctx.error )
+  $util.appendError($ctx.error.message, $ctx.error.type)
+  #set( $success = false )
+#end
+#set( $response = {
+  \\"success\\": $success
+} )
+$util.toJson($response)
+## [End] Handle error and return result for event invocation type. **"
+`;
+
+exports[`Event invocation type Chained directives chained @function -- RequestResponse > Event succeeds with EventInvocationResponse 2`] = `
+"## [Start] Handle error or return result for request response invocation type. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+$util.toJson($ctx.result)
+## [End] Handle error or return result for request response invocation type. **"
+`;
+
+exports[`Event invocation type Defined on Mutation succeeds 1`] = `
+"type Mutation {
+  asyncStuff(msg: String): EventInvocationResponse
+}
+
+type EventInvocationResponse {
+  success: Boolean!
+}
+"
+`;
+
+exports[`Event invocation type Defined on Mutation succeeds 2`] = `
+Object {
+  "InvokeAsyncstuffLambdaDataSource.req.vtl": "## [Start] Invoke AWS Lambda data source: AsyncstuffLambdaDataSource. **
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\": {
+      \\"typeName\\": $util.toJson($ctx.stash.get(\\"typeName\\")),
+      \\"fieldName\\": $util.toJson($ctx.stash.get(\\"fieldName\\")),
+      \\"arguments\\": $util.toJson($ctx.arguments),
+      \\"identity\\": $util.toJson($ctx.identity),
+      \\"source\\": $util.toJson($ctx.source),
+      \\"request\\": $util.toJson($ctx.request),
+      \\"prev\\": $util.toJson($ctx.prev)
+  },
+  \\"invocationType\\": \\"Event\\"
+}
+## [End] Invoke AWS Lambda data source: AsyncstuffLambdaDataSource. **",
+  "InvokeAsyncstuffLambdaDataSource.res.vtl": "## [Start] Handle error and return result for event invocation type. **
+#set( $success = true )
+#if( $ctx.error )
+  $util.appendError($ctx.error.message, $ctx.error.type)
+  #set( $success = false )
+#end
+#set( $response = {
+  \\"success\\": $success
+} )
+$util.toJson($response)
+## [End] Handle error and return result for event invocation type. **",
+  "Mutation.asyncStuff.res.vtl": "$util.toJson($ctx.prev.result)",
+}
+`;
+
+exports[`Event invocation type Defined on Query succeeds 1`] = `
+Object {
+  "InvokeAsyncstuffLambdaDataSource.req.vtl": "## [Start] Invoke AWS Lambda data source: AsyncstuffLambdaDataSource. **
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\": {
+      \\"typeName\\": $util.toJson($ctx.stash.get(\\"typeName\\")),
+      \\"fieldName\\": $util.toJson($ctx.stash.get(\\"fieldName\\")),
+      \\"arguments\\": $util.toJson($ctx.arguments),
+      \\"identity\\": $util.toJson($ctx.identity),
+      \\"source\\": $util.toJson($ctx.source),
+      \\"request\\": $util.toJson($ctx.request),
+      \\"prev\\": $util.toJson($ctx.prev)
+  },
+  \\"invocationType\\": \\"Event\\"
+}
+## [End] Invoke AWS Lambda data source: AsyncstuffLambdaDataSource. **",
+  "InvokeAsyncstuffLambdaDataSource.res.vtl": "## [Start] Handle error and return result for event invocation type. **
+#set( $success = true )
+#if( $ctx.error )
+  $util.appendError($ctx.error.message, $ctx.error.type)
+  #set( $success = false )
+#end
+#set( $response = {
+  \\"success\\": $success
+} )
+$util.toJson($response)
+## [End] Handle error and return result for event invocation type. **",
+  "Query.asyncStuff.res.vtl": "$util.toJson($ctx.prev.result)",
+}
+`;
+
 exports[`for @function with account ID, it generates the expected resources 1`] = `
 Object {
   "InvokeEchofunction123123456456LambdaDataSource.req.vtl": "## [Start] Invoke AWS Lambda data source: Echofunction123123456456LambdaDataSource. **
@@ -14,15 +146,16 @@ Object {
       \\"source\\": $util.toJson($ctx.source),
       \\"request\\": $util.toJson($ctx.request),
       \\"prev\\": $util.toJson($ctx.prev)
-  }
+  },
+  \\"invocationType\\": \\"RequestResponse\\"
 }
 ## [End] Invoke AWS Lambda data source: Echofunction123123456456LambdaDataSource. **",
-  "InvokeEchofunction123123456456LambdaDataSource.res.vtl": "## [Start] Handle error or return result. **
+  "InvokeEchofunction123123456456LambdaDataSource.res.vtl": "## [Start] Handle error or return result for request response invocation type. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #end
 $util.toJson($ctx.result)
-## [End] Handle error or return result. **",
+## [End] Handle error or return result for request response invocation type. **",
   "Query.echo.res.vtl": "$util.toJson($ctx.prev.result)",
 }
 `;
@@ -41,15 +174,16 @@ Object {
       \\"source\\": $util.toJson($ctx.source),
       \\"request\\": $util.toJson($ctx.request),
       \\"prev\\": $util.toJson($ctx.prev)
-  }
+  },
+  \\"invocationType\\": \\"RequestResponse\\"
 }
 ## [End] Invoke AWS Lambda data source: EchofunctionLambdaDataSource. **",
-  "InvokeEchofunctionLambdaDataSource.res.vtl": "## [Start] Handle error or return result. **
+  "InvokeEchofunctionLambdaDataSource.res.vtl": "## [Start] Handle error or return result for request response invocation type. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #end
 $util.toJson($ctx.result)
-## [End] Handle error or return result. **",
+## [End] Handle error or return result for request response invocation type. **",
   "Query.echo.res.vtl": "$util.toJson($ctx.prev.result)",
 }
 `;

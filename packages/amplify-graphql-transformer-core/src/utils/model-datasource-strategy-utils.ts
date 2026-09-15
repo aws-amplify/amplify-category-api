@@ -2,6 +2,7 @@ import {
   AmplifyDynamoDbModelDataSourceStrategy,
   DataSourceStrategiesProvider,
   DefaultDynamoDbModelDataSourceStrategy,
+  ImportedAmplifyDynamoDbModelDataSourceStrategy,
   ModelDataSourceStrategy,
   ModelDataSourceStrategyDbType,
   ModelDataSourceStrategySqlDbType,
@@ -58,6 +59,21 @@ export const getModelDataSourceStrategy = (ctx: DataSourceStrategiesProvider, ty
     throw new Error(`Cannot find datasource type for model ${typename}`);
   }
   return strategy;
+};
+
+/**
+ * Type predicate that returns true if `obj` is a AmplifyDynamoDbModelDataSourceStrategy
+ */
+export const isImportedAmplifyDynamoDbModelDataSourceStrategy = (
+  strategy: ModelDataSourceStrategy,
+): strategy is ImportedAmplifyDynamoDbModelDataSourceStrategy => {
+  return (
+    isDynamoDbType(strategy.dbType) &&
+    typeof (strategy as any)['provisionStrategy'] === 'string' &&
+    (strategy as any)['provisionStrategy'] === 'IMPORTED_AMPLIFY_TABLE' &&
+    typeof (strategy as any)['tableName'] === 'string' &&
+    (strategy as any)['tableName'] !== ''
+  );
 };
 
 /**
@@ -142,12 +158,46 @@ export const isSqlModel = (ctx: DataSourceStrategiesProvider, typename: string):
 };
 
 /**
+ * Checks if the given model is a PostgreSQL model
+ * @param ctx Transformer Context
+ * @param typename Model name
+ * @returns boolean
+ */
+export const isPostgresModel = (ctx: DataSourceStrategiesProvider, typename: string): boolean => {
+  if (isBuiltInGraphqlType(typename)) {
+    return false;
+  }
+  const modelDataSourceType = getModelDataSourceStrategy(ctx, typename);
+  return isPostgresDbType(modelDataSourceType.dbType);
+};
+
+/**
+ * Type predicate that returns true if `dbType` is a PostgreSQL database type
+ */
+export const isPostgresDbType = (dbType: ModelDataSourceStrategyDbType): dbType is 'POSTGRES' => {
+  return dbType === POSTGRES_DB_TYPE;
+};
+
+/**
  * Type predicate that returns true if `obj` is a SQLLambdaModelDataSourceStrategy
  */
 export const isSqlStrategy = (strategy: ModelDataSourceStrategy): strategy is SQLLambdaModelDataSourceStrategy => {
   return (
     isSqlDbType(strategy.dbType) && typeof (strategy as any).name === 'string' && typeof (strategy as any).dbConnectionConfig === 'object'
   );
+};
+
+/**
+ * Provides the data source strategy for a given model
+ * @param ctx Transformer Context
+ * @param typename Model name
+ * @returns ModelDataSourceStrategyDbType
+ */
+export const getStrategyDbTypeFromModel = (ctx: DataSourceStrategiesProvider, typename: string): ModelDataSourceStrategyDbType => {
+  if (isBuiltInGraphqlType(typename)) {
+    return DDB_DB_TYPE;
+  }
+  return getModelDataSourceStrategy(ctx, typename).dbType;
 };
 
 /**

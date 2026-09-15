@@ -30,22 +30,6 @@ export class ResourceConstants {
     OpenSearchDataSourceLogicalID: 'OpenSearchDataSource',
 
     // SQL Lambda global resources
-
-    /**
-     * The topic name to which Amplify publishes new layer notification messages. Amplify subscribes customers to this topic, which triggers
-     * the patching Lambda to update lambda versions when the new layer is published.
-     *
-     * DO NOT CHANGE THIS VALUE. It is a well-known value shared amongst multiple components of the patching infrastructure.
-     */
-    AmplifySQLLayerNotificationTopicName: 'AmplifySQLLayerNotification',
-
-    /**
-     * The Amplify AWS account that owns the Amplify Notification Topic
-     *
-     * DO NOT CHANGE THIS VALUE. It is a well-known value shared amongst multiple components of the patching infrastructure.
-     */
-    AmplifySQLLayerNotificationTopicAccount: '582037449441',
-
     // Lambda Layer version resolution. LayerVersion ARNs are stored at `{bucket}/{prefix}{region}`, as in:
     // `amplify-rds-layer-resources/sql-layer-versions/us-west-2`
 
@@ -54,21 +38,28 @@ export class ResourceConstants {
      *
      * DO NOT CHANGE THIS VALUE. It is a well-known value shared amongst multiple components of the patching infrastructure.
      */
-    SQLLayerVersionManifestBucket: 'amplify-rds-layer-resources',
+    SQLLayerManifestBucket: 'amplify-rds-layer-resources',
 
     /**
      * The region in which the version manifest bucket was created.
      *
      * DO NOT CHANGE THIS VALUE. It is a well-known value shared amongst multiple components of the patching infrastructure.
      */
-    SQLLayerVersionManifestBucketRegion: 'us-east-1',
+    SQLLayerManifestBucketRegion: 'us-east-1',
 
     /**
-     * The prefix of the manifest file
+     * The prefix of the manifest file that stores the SQL layer ARNs.
      *
      * DO NOT CHANGE THIS VALUE. It is a well-known value shared amongst multiple components of the patching infrastructure.
      */
     SQLLayerVersionManifestKeyPrefix: 'sql-layer-versions/',
+
+    /**
+     * The prefix of the manifest file that stores the SNS topic ARNs that the patching lambda subscribes to.
+     *
+     * DO NOT CHANGE THIS VALUE. It is a well-known value shared amongst multiple components of the patching infrastructure.
+     */
+    SQLSNSTopicARNManifestKeyPrefix: 'sql-sns-topic-versions/',
 
     // Local. Try not to collide with model data sources.
     NoneDataSource: 'NoneDataSource',

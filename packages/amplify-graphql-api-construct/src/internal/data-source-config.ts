@@ -6,7 +6,13 @@ import {
   isMutationNode,
   fieldsWithSqlDirective,
 } from '@aws-amplify/graphql-transformer-core';
-import { DataSourceStrategiesProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  DataSourceStrategiesProvider,
+  isSqlModelDataSourceSsmDbConnectionConfig,
+  isSqlModelDataSourceSecretsManagerDbConnectionConfig,
+  isSqlModelDataSourceSsmDbConnectionStringConfig,
+} from '@aws-amplify/graphql-transformer-interfaces';
+import { Token, Arn, ArnFormat } from 'aws-cdk-lib';
 import {
   CustomSqlDataSourceStrategy as ConstructCustomSqlDataSourceStrategy,
   ModelDataSourceStrategy as ConstructModelDataSourceStrategy,
@@ -184,19 +190,61 @@ export const schemaByMergingDefinitions = (definitions: IAmplifyGraphqlDefinitio
  * @param strategy user provided model data source strategy
  * @returns validates and throws an error if the strategy is invalid
  */
-export const validateDataSourceStrategy = (strategy: ConstructModelDataSourceStrategy) => {
+export const validateDataSourceStrategy = (strategy: ConstructModelDataSourceStrategy): void => {
   if (!isSqlStrategy(strategy)) {
     return;
   }
 
   const dbConnectionConfig = strategy.dbConnectionConfig;
-  const invalidSSMPaths = Object.values(dbConnectionConfig).filter((value) => typeof value === 'string' && !isValidSSMPath(value));
-  if (invalidSSMPaths.length > 0) {
-    throw new Error(
-      `Invalid data source strategy "${
-        strategy.name
-      }". Following SSM paths must start with '/' in dbConnectionConfig: ${invalidSSMPaths.join(', ')}.`,
-    );
+  if (
+    isSqlModelDataSourceSsmDbConnectionConfig(dbConnectionConfig) ||
+    isSqlModelDataSourceSsmDbConnectionStringConfig(dbConnectionConfig)
+  ) {
+    const ssmPaths = Object.values(dbConnectionConfig).filter((value) => typeof value === 'string');
+    if (isSqlModelDataSourceSsmDbConnectionStringConfig(dbConnectionConfig)) {
+      const hasMultipleSSMPaths = Array.isArray(dbConnectionConfig?.connectionUriSsmPath);
+      if (hasMultipleSSMPaths) {
+        if (dbConnectionConfig?.connectionUriSsmPath?.length < 1) {
+          throw new Error(`Invalid data source strategy "${strategy.name}". connectionUriSsmPath must be a string or non-empty array.`);
+        }
+        ssmPaths.push(...dbConnectionConfig.connectionUriSsmPath);
+      }
+    }
+
+    const invalidSSMPaths = ssmPaths.filter((value) => !isValidSSMPath(value));
+    if (invalidSSMPaths.length > 0) {
+      throw new Error(
+        `Invalid data source strategy "${
+          strategy.name
+        }". Following SSM paths must start with '/' in dbConnectionConfig: ${invalidSSMPaths.join(', ')}.`,
+      );
+    }
+  } else if (isSqlModelDataSourceSecretsManagerDbConnectionConfig(dbConnectionConfig)) {
+    if (!Token.isUnresolved(dbConnectionConfig.secretArn)) {
+      try {
+        const arnComponents = Arn.split(dbConnectionConfig.secretArn, ArnFormat.COLON_RESOURCE_NAME);
+        if (arnComponents.service !== 'secretsmanager' || arnComponents.resource !== 'secret') {
+          // error message does not matter because it inside try/catch
+          throw new Error();
+        }
+      } catch {
+        throw new Error(`Invalid data source strategy "${strategy.name}". The value of secretArn is not a valid Secrets Manager ARN.`);
+      }
+    }
+
+    if (dbConnectionConfig.keyArn && !Token.isUnresolved(dbConnectionConfig.keyArn)) {
+      try {
+        const arnComponents = Arn.split(dbConnectionConfig.keyArn, ArnFormat.SLASH_RESOURCE_NAME);
+        if (arnComponents.service !== 'kms' || arnComponents.resource !== 'key') {
+          // error message does not matter because it inside try/catch
+          throw new Error();
+        }
+      } catch {
+        throw new Error(`Invalid data source strategy "${strategy.name}". The value of keyArn is not a valid KMS ARN.`);
+      }
+    }
+  } else {
+    throw new Error(`Invalid data source strategy "${strategy.name}". dbConnectionConfig does not include SSM paths or Secret ARN.`);
   }
 };
 

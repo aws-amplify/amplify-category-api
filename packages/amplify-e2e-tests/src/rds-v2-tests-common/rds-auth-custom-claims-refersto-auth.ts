@@ -212,10 +212,11 @@ export const testCustomClaimsRefersTo = (engine: ImportedRDSType): void => {
         await todoHelperNonOwner.update(`update${modelName}`, todoUpdated);
       }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access updateTodoOwner on type Mutation"`);
 
-      const getResult = await todoHelperNonOwner.get({
-        id: todo['id'],
-      });
-      expect(getResult.data[`get${modelName}`]).toBeNull();
+      await expect(async () => {
+        await todoHelperNonOwner.get({
+          id: todo['id'],
+        });
+      }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoOwner on type Query"`);
 
       const listTodosResult = await todoHelperNonOwner.list();
       checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
@@ -295,10 +296,11 @@ export const testCustomClaimsRefersTo = (engine: ImportedRDSType): void => {
         `"GraphQL error: Not Authorized to access updateTodoOwnerFieldString on type Mutation"`,
       );
 
-      const getResult = await todoHelperNonOwner.get({
-        id: todo['id'],
-      });
-      expect(getResult.data[`get${modelName}`]).toBeNull();
+      await expect(async () => {
+        await todoHelperNonOwner.get({
+          id: todo['id'],
+        });
+      }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoOwnerFieldString on type Query"`);
 
       const listTodosResult = await todoHelperNonOwner.list();
       checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
@@ -375,10 +377,11 @@ export const testCustomClaimsRefersTo = (engine: ImportedRDSType): void => {
         await todoHelperNonOwner.update(`update${modelName}`, todoUpdated);
       }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access updateTodoOwnerFieldList on type Mutation"`);
 
-      const getResult = await todoHelperNonOwner.get({
-        id: todo['id'],
-      });
-      expect(getResult.data[`get${modelName}`]).toBeNull();
+      await expect(async () => {
+        await todoHelperNonOwner.get({
+          id: todo['id'],
+        });
+      }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoOwnerFieldList on type Query"`);
 
       const listTodosResult = await todoHelperNonOwner.list();
       checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
@@ -579,10 +582,11 @@ export const testCustomClaimsRefersTo = (engine: ImportedRDSType): void => {
         `"GraphQL error: Not Authorized to access updateTodoGroupFieldString on type Mutation"`,
       );
 
-      const getResult = await todoHelperNonAdmin.get({
-        id: todo['id'],
-      });
-      expect(getResult.data[`get${modelName}`]).toBeNull();
+      await expect(async () => {
+        await todoHelperNonAdmin.get({
+          id: todo['id'],
+        });
+      }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoGroupFieldString on type Query"`);
 
       const listTodosResult = await todoHelperNonAdmin.list();
       checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
@@ -659,10 +663,11 @@ export const testCustomClaimsRefersTo = (engine: ImportedRDSType): void => {
         await todoHelperNonAdmin.update(`update${modelName}`, todoUpdated);
       }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access updateTodoGroupFieldList on type Mutation"`);
 
-      const getResult = await todoHelperNonAdmin.get({
-        id: todo['id'],
-      });
-      expect(getResult.data[`get${modelName}`]).toBeNull();
+      await expect(async () => {
+        const getResult = await todoHelperNonAdmin.get({
+          id: todo['id'],
+        });
+      }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoGroupFieldList on type Query"`);
 
       const listTodosResult = await todoHelperNonAdmin.list();
       checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);

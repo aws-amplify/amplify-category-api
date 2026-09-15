@@ -13,9 +13,10 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { SearchableDirective } from '@aws-amplify/graphql-directives';
 import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
-import { ArnFormat, CfnCondition, Fn } from 'aws-cdk-lib';
+import { ArnFormat, CfnCondition, Fn, Annotations } from 'aws-cdk-lib';
 import { IConstruct } from 'constructs';
 import { DirectiveNode, InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { Expression, str } from 'graphql-mapping-template';
@@ -40,7 +41,7 @@ import {
   makeDirective,
 } from 'graphql-transformer-common';
 import { createParametersStack as createParametersInStack } from './cdk/create-cfnParameters';
-import { requestTemplate, responseTemplate, sandboxMappingTemplate } from './generate-resolver-vtl';
+import { requestTemplate, responseTemplate, postAuthMappingTemplate } from './generate-resolver-vtl';
 import {
   makeSearchableScalarInputObject,
   makeSearchableSortDirectionEnumObject,
@@ -54,7 +55,6 @@ import {
   extendTypeWithDirectives,
   DATASTORE_SYNC_FIELDS,
 } from './definitions';
-import { setMappings } from './cdk/create-layer-cfnMapping';
 import { createSearchableDomain, createSearchableDomainRole } from './cdk/create-searchable-domain';
 import { createSearchableDataSource } from './cdk/create-searchable-datasource';
 import { createEventSourceMapping, createLambda, createLambdaRole } from './cdk/create-streaming-lambda';
@@ -62,6 +62,8 @@ import { createStackOutputs } from './cdk/create-cfnOutput';
 
 const nonKeywordTypes = ['Int', 'Float', 'Boolean', 'AWSTimestamp', 'AWSDate', 'AWSDateTime'];
 const STACK_NAME = 'SearchableStack';
+const API_KEY_DIRECTIVE = 'aws_api_key';
+const AWS_IAM_DIRECTIVE = 'aws_iam';
 
 const getTable = (context: TransformerContextProvider, definition: ObjectTypeDefinitionNode): IConstruct => {
   const ddbDataSource = context.dataSources.get(definition) as DynamoDbDataSource;
@@ -265,15 +267,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
   searchableObjectNames: string[];
 
   constructor() {
-    super(
-      'amplify-searchable-transformer',
-      /* GraphQL */ `
-        directive @searchable(queries: SearchableQueryMap) on OBJECT
-        input SearchableQueryMap {
-          search: String
-        }
-      `,
-    );
+    super('amplify-searchable-transformer', SearchableDirective.definition);
     this.searchableObjectTypeDefinitions = [];
     this.searchableObjectNames = [];
   }
@@ -290,11 +284,16 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       return;
     }
 
+    // This validation can't occur in validate because the api has not been initialized until generateResolvers
+    if (!context.transformParameters.allowGen1Patterns) {
+      Annotations.of(context.api).addWarning(
+        `@${SearchableDirective.name} is deprecated. This functionality will be removed in the next major release.`,
+      );
+    }
+
     const { HasEnvironmentParameter } = ResourceConstants.CONDITIONS;
 
     const stack = context.stackManager.createStack(STACK_NAME);
-
-    setMappings(stack);
 
     new CfnCondition(stack, HasEnvironmentParameter, {
       expression: Fn.conditionNot(Fn.conditionEquals(context.synthParameters.amplifyEnvironmentName, ResourceConstants.NONE)),
@@ -312,6 +311,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       parameterMap,
       context.api.apiId,
       context.transformParameters.enableSearchNodeToNodeEncryption,
+      context.transformParameters.enableSearchEncryptionAtRest,
     );
 
     const openSearchRole = createSearchableDomainRole(context, stack, parameterMap);
@@ -377,10 +377,10 @@ export class SearchableModelTransformer extends TransformerPluginBase {
           `${typeName}.${def.fieldName}.res.vtl`,
         ),
       );
-      resolver.addToSlot(
+      resolver.addVtlFunctionToSlot(
         'postAuth',
         MappingTemplate.s3MappingTemplateFromString(
-          sandboxMappingTemplate(context.transformParameters.sandboxModeEnabled, fields),
+          postAuthMappingTemplate(context.transformParameters.sandboxModeEnabled, context.synthParameters.enableIamAccess, fields),
           `${typeName}.${def.fieldName}.{slotName}.{slotIndex}.res.vtl`,
         ),
       );
@@ -424,8 +424,17 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       generateSearchableXConnectionType(ctx, definition);
       generateSearchableAggregateTypes(ctx);
       const directives = [];
-      if (!hasAuth && ctx.transformParameters.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
-        directives.push(makeDirective('aws_api_key', []));
+      if (!hasAuth) {
+        if (ctx.transformParameters.sandboxModeEnabled && ctx.synthParameters.enableIamAccess) {
+          // If both sandbox and iam access are enabled we add service directive regardless of default.
+          // This is because any explicit directive makes default not applicable to a model.
+          directives.push(makeDirective(API_KEY_DIRECTIVE, []));
+          directives.push(makeDirective(AWS_IAM_DIRECTIVE, []));
+        } else if (ctx.transformParameters.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
+          directives.push(makeDirective(API_KEY_DIRECTIVE, []));
+        } else if (ctx.synthParameters.enableIamAccess && ctx.authConfig.defaultAuthentication.authenticationType !== 'AWS_IAM') {
+          directives.push(makeDirective(AWS_IAM_DIRECTIVE, []));
+        }
       }
       const queryField = makeField(
         fieldName,

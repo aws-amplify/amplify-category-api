@@ -102,7 +102,7 @@ Object {
           "Effect": "Allow",
           "Resource": Object {
             "Fn::Sub": Array [
-              "arn:aws:appsync:\${AWS::Region}:\${AWS::AccountId}:apis/\${apiId}/types/\${typeName}/fields/\${fieldName}",
+              "arn:\${AWS::Partition}:appsync:\${AWS::Region}:\${AWS::AccountId}:apis/\${apiId}/types/\${typeName}/fields/\${fieldName}",
               Object {
                 "apiId": Object {
                   "Fn::GetAtt": Array [
@@ -315,7 +315,7 @@ Object {
           "Effect": "Allow",
           "Resource": Object {
             "Fn::Sub": Array [
-              "arn:aws:appsync:\${AWS::Region}:\${AWS::AccountId}:apis/\${apiId}/types/\${typeName}/fields/\${fieldName}",
+              "arn:\${AWS::Partition}:appsync:\${AWS::Region}:\${AWS::AccountId}:apis/\${apiId}/types/\${typeName}/fields/\${fieldName}",
               Object {
                 "apiId": Object {
                   "Fn::GetAtt": Array [

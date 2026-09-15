@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-transformer-interfaces",
-  "version": "3.3.3",
+  "version": "4.4.0",
   "description": "Amplify GraphQL transformer interface definitions",
   "repository": {
     "type": "git",
@@ -15,7 +15,8 @@
     "graphql",
     "cloudformation",
     "aws",
-    "amplify"
+    "amplify",
+    "transformer"
   ],
   "publishConfig": {
     "access": "public"
@@ -30,28 +31,7 @@
     "graphql": "^15.5.0"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.80.0",
-    "constructs": "^10.0.5"
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testURL": "http://localhost",
-    "testRegex": "(src/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "collectCoverage": true,
-    "coverageProvider": "v8",
-    "coverageReporters": [
-      "clover",
-      "text"
-    ]
+    "aws-cdk-lib": "^2.224.0",
+    "constructs": "^10.3.0"
   }
 }

@@ -3,6 +3,199 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.11.16](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.11.15...@aws-amplify/graphql-schema-generator@0.11.16) (2026-07-13)
+
+### Bug Fixes
+
+- **schema-generator:** sanitize database identifiers in TypeScript output path ([#3510](https://github.com/aws-amplify/amplify-category-api/issues/3510)) ([758ab96](https://github.com/aws-amplify/amplify-category-api/commit/758ab96afc096d74a828709fd058f7ec5e96b1af))
+
+## [0.11.15](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.11.14...@aws-amplify/graphql-schema-generator@0.11.15) (2026-07-01)
+
+### Bug Fixes
+
+- upgrade AWS SDK clients to eliminate fast-xml-parser vulnerabilities ([9261998](https://github.com/aws-amplify/amplify-category-api/commit/92619981d2cf15351a89ebb4b4f85ea45d6c3f65))
+
+## [0.11.14](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.11.13...@aws-amplify/graphql-schema-generator@0.11.14) (2026-03-24)
+
+### Reverts
+
+- Revert "chore(release): Publish [ci skip]" ([dd1f693](https://github.com/aws-amplify/amplify-category-api/commit/dd1f693d8ad6059d6a53af117b16505f40e1e657))
+
+## [0.11.13](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.11.12...@aws-amplify/graphql-schema-generator@0.11.13) (2026-02-05)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+## [0.11.12](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.11.11...@aws-amplify/graphql-schema-generator@0.11.12) (2025-06-09)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+## [0.11.11](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.11.10...@aws-amplify/graphql-schema-generator@0.11.11) (2025-04-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+## [0.11.10](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.11.9...@aws-amplify/graphql-schema-generator@0.11.10) (2025-04-09)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+## [0.11.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.11.8...@aws-amplify/graphql-schema-generator@0.11.9) (2025-03-06)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+## [0.11.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.11.7...@aws-amplify/graphql-schema-generator@0.11.8) (2025-02-26)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+## [0.11.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.11.6...@aws-amplify/graphql-schema-generator@0.11.7) (2025-02-07)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+## [0.11.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.11.5...@aws-amplify/graphql-schema-generator@0.11.6) (2025-01-30)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+## [0.11.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.11.3...@aws-amplify/graphql-schema-generator@0.11.5) (2025-01-16)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+## [0.11.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.11.3...@aws-amplify/graphql-schema-generator@0.11.4) (2024-12-23)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+## [0.11.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.11.2...@aws-amplify/graphql-schema-generator@0.11.3) (2024-12-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+## [0.11.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.11.1...@aws-amplify/graphql-schema-generator@0.11.2) (2024-11-14)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+## [0.11.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.11.0...@aws-amplify/graphql-schema-generator@0.11.1) (2024-11-08)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+# [0.11.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.10.6...@aws-amplify/graphql-schema-generator@0.11.0) (2024-10-28)
+
+### Features
+
+- generate ts schema from pg serial field ([#2952](https://github.com/aws-amplify/amplify-category-api/issues/2952)) ([6b87331](https://github.com/aws-amplify/amplify-category-api/commit/6b873316c0af991d9f884f4006857a246eda5533))
+
+## [0.10.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.10.5...@aws-amplify/graphql-schema-generator@0.10.6) (2024-10-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+## [0.10.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.10.4...@aws-amplify/graphql-schema-generator@0.10.5) (2024-10-10)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+## [0.10.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.10.3...@aws-amplify/graphql-schema-generator@0.10.4) (2024-10-01)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+## [0.10.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.10.2...@aws-amplify/graphql-schema-generator@0.10.3) (2024-09-16)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+## [0.10.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.10.1...@aws-amplify/graphql-schema-generator@0.10.2) (2024-09-06)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+## [0.10.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.10.0...@aws-amplify/graphql-schema-generator@0.10.1) (2024-08-28)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+# [0.10.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.9.4...@aws-amplify/graphql-schema-generator@0.10.0) (2024-08-20)
+
+- feat!: bump version for v2 transformer packages ([7dac35c](https://github.com/aws-amplify/amplify-category-api/commit/7dac35cceb971b256b5688b0745ef82afc78b641))
+
+### BREAKING CHANGES
+
+- distinguish from LTS version
+
+## [0.9.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.9.3...@aws-amplify/graphql-schema-generator@0.9.4) (2024-08-12)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+## [0.9.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.9.2...@aws-amplify/graphql-schema-generator@0.9.3) (2024-07-15)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+## [0.9.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.9.1...@aws-amplify/graphql-schema-generator@0.9.2) (2024-07-02)
+
+### Bug Fixes
+
+- **amplify-category-api:** ssl cert api name change ([#2680](https://github.com/aws-amplify/amplify-category-api/issues/2680)) ([74e7d06](https://github.com/aws-amplify/amplify-category-api/commit/74e7d06f63cd9d865d01aa46be4ae7a420fc3c2f))
+
+## [0.9.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.9.0...@aws-amplify/graphql-schema-generator@0.9.1) (2024-07-01)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+# [0.9.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.8.6...@aws-amplify/graphql-schema-generator@0.9.0) (2024-06-25)
+
+### Features
+
+- **generate-schema:** custom ssl cert support to generate schema command ([#2615](https://github.com/aws-amplify/amplify-category-api/issues/2615)) ([390887f](https://github.com/aws-amplify/amplify-category-api/commit/390887ff4467baca9dad8f70071442b95bb04cf9))
+
+## [0.8.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.8.5...@aws-amplify/graphql-schema-generator@0.8.6) (2024-05-15)
+
+### Bug Fixes
+
+- yarn clean preserve cert file in schema discovery lambda ([#2548](https://github.com/aws-amplify/amplify-category-api/issues/2548)) ([7810c87](https://github.com/aws-amplify/amplify-category-api/commit/7810c87831ae8701d1d9b1029e2035ac4bccddb1))
+
+## [0.8.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.8.4...@aws-amplify/graphql-schema-generator@0.8.5) (2024-05-10)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+## [0.8.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.8.3...@aws-amplify/graphql-schema-generator@0.8.4) (2024-05-01)
+
+### Bug Fixes
+
+- enable ssl for generate schema command ([#2516](https://github.com/aws-amplify/amplify-category-api/issues/2516)) ([4e7e122](https://github.com/aws-amplify/amplify-category-api/commit/4e7e12283292cda3c485d50a657dcf82c570fd73))
+
+## [0.8.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.8.2...@aws-amplify/graphql-schema-generator@0.8.3) (2024-04-26)
+
+### Bug Fixes
+
+- **api:** add auto generated comment to the generated typescript data schema file ([#2473](https://github.com/aws-amplify/amplify-category-api/issues/2473)) ([e4dfb1f](https://github.com/aws-amplify/amplify-category-api/commit/e4dfb1ffcffd87e1da73c438fb5da0d04f07dd48))
+- **api:** handle error on generate ts data schema when no tables with primary key ([#2483](https://github.com/aws-amplify/amplify-category-api/issues/2483)) ([30a333b](https://github.com/aws-amplify/amplify-category-api/commit/30a333b97934d732c724a9e165edae278cb0c8f5))
+
+## [0.8.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.8.1...@aws-amplify/graphql-schema-generator@0.8.2) (2024-04-16)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+## [0.8.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.8.0...@aws-amplify/graphql-schema-generator@0.8.1) (2024-04-11)
+
+### Bug Fixes
+
+- **api:** add identifier to generated ts data schema ([#2440](https://github.com/aws-amplify/amplify-category-api/issues/2440)) ([aa7de30](https://github.com/aws-amplify/amplify-category-api/commit/aa7de30e4abb49e2684477607b3cadbe2fbc4e20))
+
+# [0.8.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.7.2...@aws-amplify/graphql-schema-generator@0.8.0) (2024-03-28)
+
+### Features
+
+- **api:** auto detect vpc configuration on generate typescript database schema ([#2376](https://github.com/aws-amplify/amplify-category-api/issues/2376)) ([ef6f53c](https://github.com/aws-amplify/amplify-category-api/commit/ef6f53c04bbcc50921bf20a937d1332d4597a3fa))
+
+## [0.7.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.7.1...@aws-amplify/graphql-schema-generator@0.7.2) (2024-03-13)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+## [0.7.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.7.0...@aws-amplify/graphql-schema-generator@0.7.1) (2024-02-28)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+# [0.7.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.6.4...@aws-amplify/graphql-schema-generator@0.7.0) (2024-02-05)
+
+### Features
+
+- **api:** generate typescript data schema from sql schema internal representation ([#2225](https://github.com/aws-amplify/amplify-category-api/issues/2225)) ([460b077](https://github.com/aws-amplify/amplify-category-api/commit/460b0776af82932d2b42a2b7720b49b91fdbd45c))
+
+## [0.6.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.6.3...@aws-amplify/graphql-schema-generator@0.6.4) (2024-01-30)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
+## [0.6.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.6.2...@aws-amplify/graphql-schema-generator@0.6.3) (2024-01-22)
+
+**Note:** Version bump only for package @aws-amplify/graphql-schema-generator
+
 ## [0.6.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.6.1...@aws-amplify/graphql-schema-generator@0.6.2) (2023-12-18)
 
 ### Bug Fixes

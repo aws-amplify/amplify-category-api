@@ -325,10 +325,11 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
         await todoHelperNonOwner.update(`update${modelName}`, todoUpdated);
       }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access updateTodoOwner on type Mutation"`);
 
-      const getResult = await todoHelperNonOwner.get({
-        id: todo['id'],
-      });
-      expect(getResult.data[`get${modelName}`]).toBeNull();
+      await expect(async () => {
+        const getResult = await todoHelperNonOwner.get({
+          id: todo['id'],
+        });
+      }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoOwner on type Query"`);
 
       const listTodosResult = await todoHelperNonOwner.list();
       checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
@@ -480,10 +481,11 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
         `"GraphQL error: Not Authorized to access updateTodoOwnerFieldString on type Mutation"`,
       );
 
-      const getResult = await todoHelperNonOwner.get({
-        id: todo['id'],
-      });
-      expect(getResult.data[`get${modelName}`]).toBeNull();
+      await expect(async () => {
+        const getResult = await todoHelperNonOwner.get({
+          id: todo['id'],
+        });
+      }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoOwnerFieldString on type Query"`);
 
       const listTodosResult = await todoHelperNonOwner.list();
       checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
@@ -633,10 +635,11 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
         await todoHelperNonOwner.update(`update${modelName}`, todoUpdated);
       }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access updateTodoOwnerFieldList on type Mutation"`);
 
-      const getResult = await todoHelperNonOwner.get({
-        id: todo['id'],
-      });
-      expect(getResult.data[`get${modelName}`]).toBeNull();
+      await expect(async () => {
+        const getResult = await todoHelperNonOwner.get({
+          id: todo['id'],
+        });
+      }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoOwnerFieldList on type Query"`);
 
       const listTodosResult = await todoHelperNonOwner.list();
       checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
@@ -973,10 +976,11 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
         `"GraphQL error: Not Authorized to access updateTodoGroupFieldString on type Mutation"`,
       );
 
-      const getResult = await todoHelperNonAdmin.get({
-        id: todo['id'],
-      });
-      expect(getResult.data[`get${modelName}`]).toBeNull();
+      await expect(async () => {
+        const getResult = await todoHelperNonAdmin.get({
+          id: todo['id'],
+        });
+      }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoGroupFieldString on type Query"`);
 
       const listTodosResult = await todoHelperNonAdmin.list();
       checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
@@ -1087,10 +1091,11 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
         await todoHelperNonAdmin.update(`update${modelName}`, todoUpdated);
       }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access updateTodoGroupFieldList on type Mutation"`);
 
-      const getResult = await todoHelperNonAdmin.get({
-        id: todo['id'],
-      });
-      expect(getResult.data[`get${modelName}`]).toBeNull();
+      await expect(async () => {
+        const getResult = await todoHelperNonAdmin.get({
+          id: todo['id'],
+        });
+      }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access getTodoGroupFieldList on type Query"`);
 
       const listTodosResult = await todoHelperNonAdmin.list();
       checkListItemExistence(listTodosResult, `list${modelName}s`, todo['id']);
@@ -1330,6 +1335,46 @@ export const testUserPoolAuth = (engine: ImportedRDSType): void => {
           },
         });
       }).rejects.toThrowErrorMatchingInlineSnapshot(`"GraphQL error: Not Authorized to access customGetTodoStaticGroup on type Query"`);
+    });
+
+    test('multiple dynamic auth rule model should respect owner rule when groups field is null', async () => {
+      const modelName = 'TodoOwnerAndGroup';
+      const modelHelper = createModelOperationHelpers(appSyncClients[userPoolProvider][userName1], schema)[modelName];
+      const todo = {
+        id: Date.now().toString(),
+        content: 'Todo',
+        groupsField: null,
+        owners: [userName1],
+      };
+      const createResult = await modelHelper.create(`create${modelName}`, todo);
+      expect(createResult.data.createTodoOwnerAndGroup).toBeDefined();
+      expect(createResult.data.createTodoOwnerAndGroup.id).toEqual(todo.id);
+      expect(createResult.data.createTodoOwnerAndGroup.content).toEqual(todo.content);
+      expect(createResult.data.createTodoOwnerAndGroup.groupsField).toEqual(null);
+      expect(createResult.data.createTodoOwnerAndGroup.owners).toBeDefined();
+      expect(createResult.data.createTodoOwnerAndGroup.owners).toHaveLength(1);
+
+      const updatedTodo = {
+        id: todo.id,
+        content: 'Todo-Updated',
+      };
+      const updateResult = await modelHelper.update(`update${modelName}`, updatedTodo);
+      expect(updateResult.data.updateTodoOwnerAndGroup).toBeDefined();
+      expect(updateResult.data.updateTodoOwnerAndGroup.id).toEqual(updatedTodo.id);
+      expect(updateResult.data.updateTodoOwnerAndGroup.content).toEqual(updatedTodo.content);
+      expect(updateResult.data.updateTodoOwnerAndGroup.groupsField).toEqual(null);
+      expect(updateResult.data.updateTodoOwnerAndGroup.owners).toBeDefined();
+      expect(updateResult.data.updateTodoOwnerAndGroup.owners).toHaveLength(1);
+
+      const getResult = await modelHelper.get({
+        id: updatedTodo.id,
+      });
+      expect(getResult.data.getTodoOwnerAndGroup).toBeDefined();
+      expect(getResult.data.getTodoOwnerAndGroup.id).toEqual(updatedTodo.id);
+      expect(getResult.data.getTodoOwnerAndGroup.content).toEqual(updatedTodo.content);
+      expect(getResult.data.getTodoOwnerAndGroup.groupsField).toEqual(null);
+      expect(getResult.data.getTodoOwnerAndGroup.owners).toBeDefined();
+      expect(getResult.data.getTodoOwnerAndGroup.owners).toHaveLength(1);
     });
   });
 };

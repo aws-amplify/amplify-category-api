@@ -13,8 +13,13 @@ import {
   toJson,
 } from 'graphql-mapping-template';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  constructArrayFieldsStatement,
+  constructFieldMappingInput,
+  constructNonScalarFieldsStatement,
+} from '@aws-amplify/graphql-transformer-core';
 import { ModelDirectiveConfiguration } from '../../directive';
-import { constructArrayFieldsStatement, constructFieldMappingInput, constructNonScalarFieldsStatement } from './resolver';
+import { defaultAutoId } from '../common';
 
 /**
  * Generate mapping template that sets default values for create mutation
@@ -32,11 +37,11 @@ export const generateCreateInitSlotTemplate = (modelConfig: ModelDirectiveConfig
     ),
   ];
 
+  if (initializeIdField) {
+    statements.push(defaultAutoId());
+  }
   if (modelConfig?.timestamps) {
     statements.push(set(ref('createdAt'), methodCall(ref('util.time.nowISO8601'))));
-    if (initializeIdField) {
-      statements.push(qref(methodCall(ref('ctx.stash.defaultValues.put'), str('id'), methodCall(ref('util.autoId')))));
-    }
     if (modelConfig.timestamps.createdAt) {
       statements.push(qref(methodCall(ref('ctx.stash.defaultValues.put'), str(modelConfig.timestamps.createdAt), ref('createdAt'))));
     }

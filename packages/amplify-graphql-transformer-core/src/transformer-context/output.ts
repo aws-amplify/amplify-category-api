@@ -597,6 +597,22 @@ export class TransformerOutput implements TransformerContextOutputProvider {
     this.nodeMap[inp.name.value] = inp;
   }
 
+  public updateInput(obj: InputObjectTypeDefinitionNode) {
+    if (!this.nodeMap[obj.name.value]) {
+      throw new Error(`Type ${obj.name.value} does not exist.`);
+    }
+    this.nodeMap[obj.name.value] = obj;
+  }
+
+  public getInput(name: string): InputObjectTypeDefinitionNode | undefined {
+    if (this.nodeMap[name]) {
+      const node = this.nodeMap[name];
+      if (node.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION) {
+        return node as InputObjectTypeDefinitionNode;
+      }
+    }
+  }
+
   /**
    * Add an enum type definition node to the context.
    * @param en The enum type definition node to add.

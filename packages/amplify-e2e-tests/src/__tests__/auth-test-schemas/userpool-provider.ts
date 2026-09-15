@@ -47,6 +47,13 @@ export const schema = (engine: ImportedRDSType): string => `
     content: String
   }
 
+  type TodoOwnerAndGroup @model @auth(rules: [{ allow: owner, ownerField: "owners" }, { allow: groups, groupsField: "groupsField" }]) {
+    id: ID! @primaryKey
+    content: String
+    owners: [String]
+    groupsField: [String]
+  }
+
   type Query {
     customGetTodoPrivate(id: ID!): [TodoNonModel] @sql(statement: "SELECT * FROM ${convertToDBSpecificGraphQLString(
       'TodoPrivate',

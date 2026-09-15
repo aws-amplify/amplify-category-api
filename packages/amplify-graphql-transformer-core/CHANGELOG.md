@@ -3,6 +3,210 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.6.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.6.0...@aws-amplify/graphql-transformer-core@3.6.1) (2026-07-13)
+
+### Bug Fixes
+
+- resolve high dependabot vulnerabilities ([#3505](https://github.com/aws-amplify/amplify-category-api/issues/3505)) ([ebaf1e0](https://github.com/aws-amplify/amplify-category-api/commit/ebaf1e03f4347d2abe66974dd407e57b53358414))
+
+# [3.6.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.5.1...@aws-amplify/graphql-transformer-core@3.6.0) (2026-07-01)
+
+### Features
+
+- **graphql-transformer:** warn on unused stackMappings keys during synthesis ([9f86f2c](https://github.com/aws-amplify/amplify-category-api/commit/9f86f2cbe34db436556f604a78672932633c063b))
+
+## [3.5.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.5.0...@aws-amplify/graphql-transformer-core@3.5.1) (2026-03-24)
+
+### Bug Fixes
+
+- dependabots + scripting and prompting to help with dependabots ([#3417](https://github.com/aws-amplify/amplify-category-api/issues/3417)) ([fb79e92](https://github.com/aws-amplify/amplify-category-api/commit/fb79e927edeefdca9b8388f447b6fd954b1a369a))
+
+### Reverts
+
+- Revert "chore(release): Publish [ci skip]" ([dd1f693](https://github.com/aws-amplify/amplify-category-api/commit/dd1f693d8ad6059d6a53af117b16505f40e1e657))
+
+# [3.5.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.4.4...@aws-amplify/graphql-transformer-core@3.5.0) (2026-02-05)
+
+### Features
+
+- ElasticSearch server-side encryption ([#3339](https://github.com/aws-amplify/amplify-category-api/issues/3339)) ([51b67e0](https://github.com/aws-amplify/amplify-category-api/commit/51b67e063b1cd0c83578b50c5aacfe5bdbfc8dc6))
+
+## [3.4.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.4.3...@aws-amplify/graphql-transformer-core@3.4.4) (2025-06-09)
+
+### Bug Fixes
+
+- skip location when deep cloning AST nodes ([#3280](https://github.com/aws-amplify/amplify-category-api/issues/3280)) ([06fec17](https://github.com/aws-amplify/amplify-category-api/commit/06fec17797b1b0cb642bfd3f5498fc36f8123099))
+
+## [3.4.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.4.2...@aws-amplify/graphql-transformer-core@3.4.3) (2025-04-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-core
+
+## [3.4.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.4.1...@aws-amplify/graphql-transformer-core@3.4.2) (2025-04-09)
+
+### Reverts
+
+- Revert "chore: upgrade to node 20 (#3250)" (#3255) ([a2815c7](https://github.com/aws-amplify/amplify-category-api/commit/a2815c76ee6d12e687193ca6eca84609c79ee268)), closes [#3250](https://github.com/aws-amplify/amplify-category-api/issues/3250) [#3255](https://github.com/aws-amplify/amplify-category-api/issues/3255)
+
+## [3.4.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.4.0...@aws-amplify/graphql-transformer-core@3.4.1) (2025-03-06)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-core
+
+# [3.4.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.3.6...@aws-amplify/graphql-transformer-core@3.4.0) (2025-02-26)
+
+### Features
+
+- add validate transformer ([#3172](https://github.com/aws-amplify/amplify-category-api/issues/3172)) ([b8771c1](https://github.com/aws-amplify/amplify-category-api/commit/b8771c1f782b19f653f310f0a29528dae08035dc)), closes [#3121](https://github.com/aws-amplify/amplify-category-api/issues/3121) [#3125](https://github.com/aws-amplify/amplify-category-api/issues/3125) [#3129](https://github.com/aws-amplify/amplify-category-api/issues/3129) [#3130](https://github.com/aws-amplify/amplify-category-api/issues/3130) [#3132](https://github.com/aws-amplify/amplify-category-api/issues/3132) [#3134](https://github.com/aws-amplify/amplify-category-api/issues/3134) [#3149](https://github.com/aws-amplify/amplify-category-api/issues/3149) [#3150](https://github.com/aws-amplify/amplify-category-api/issues/3150) [#3157](https://github.com/aws-amplify/amplify-category-api/issues/3157) [#3165](https://github.com/aws-amplify/amplify-category-api/issues/3165) [#3167](https://github.com/aws-amplify/amplify-category-api/issues/3167) [#3171](https://github.com/aws-amplify/amplify-category-api/issues/3171)
+- dynamic resolve partition in arn ([#3178](https://github.com/aws-amplify/amplify-category-api/issues/3178)) ([3aa98cd](https://github.com/aws-amplify/amplify-category-api/commit/3aa98cd4d02a1ae9c0c7bb615728225f20614fcc))
+
+## [3.3.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.3.5...@aws-amplify/graphql-transformer-core@3.3.6) (2025-02-07)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-core
+
+## [3.3.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.3.4...@aws-amplify/graphql-transformer-core@3.3.5) (2025-01-30)
+
+### Bug Fixes
+
+- **gen2:** transform directives on fields of supported extended types ([#3127](https://github.com/aws-amplify/amplify-category-api/issues/3127)) ([3aca7b8](https://github.com/aws-amplify/amplify-category-api/commit/3aca7b89f530c536c28a53b7290fdab877b2260b))
+
+## [3.3.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.3.2...@aws-amplify/graphql-transformer-core@3.3.4) (2025-01-16)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-core
+
+## [3.3.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.3.2...@aws-amplify/graphql-transformer-core@3.3.3) (2024-12-23)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-core
+
+## [3.3.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.3.1...@aws-amplify/graphql-transformer-core@3.3.2) (2024-12-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-core
+
+## [3.3.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.3.0...@aws-amplify/graphql-transformer-core@3.3.1) (2024-11-14)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-core
+
+# [3.3.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.2.2...@aws-amplify/graphql-transformer-core@3.3.0) (2024-11-08)
+
+### Features
+
+- add imported DDB tables for gen 2 migration in experimental state ([#2992](https://github.com/aws-amplify/amplify-category-api/issues/2992)) ([0c415b3](https://github.com/aws-amplify/amplify-category-api/commit/0c415b3eed70a567848fc661c3d4ce0ca5719e94))
+
+## [3.2.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.2.1...@aws-amplify/graphql-transformer-core@3.2.2) (2024-10-28)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-core
+
+## [3.2.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.2.0...@aws-amplify/graphql-transformer-core@3.2.1) (2024-10-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-core
+
+# [3.2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.1.2...@aws-amplify/graphql-transformer-core@3.2.0) (2024-10-10)
+
+### Bug Fixes
+
+- add aws_iam to custom operations when enableIamAuthorization is enabled; fix graphql type utils ([#2921](https://github.com/aws-amplify/amplify-category-api/issues/2921)) ([5cb5a2b](https://github.com/aws-amplify/amplify-category-api/commit/5cb5a2bcacf30ca9ff0f29fe32be57d1ffb6c1cf))
+
+### Features
+
+- auto increment support ([#2883](https://github.com/aws-amplify/amplify-category-api/issues/2883)) ([4e66ac3](https://github.com/aws-amplify/amplify-category-api/commit/4e66ac3a9d276ca063c76a97aee791618b3c71ab))
+
+## [3.1.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.1.1...@aws-amplify/graphql-transformer-core@3.1.2) (2024-10-01)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-core
+
+## [3.1.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.1.0...@aws-amplify/graphql-transformer-core@3.1.1) (2024-09-16)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-core
+
+# [3.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.0.1...@aws-amplify/graphql-transformer-core@3.1.0) (2024-09-06)
+
+### Features
+
+- **conversation:** add conversation transformer ([#2827](https://github.com/aws-amplify/amplify-category-api/issues/2827)) ([cee6aef](https://github.com/aws-amplify/amplify-category-api/commit/cee6aef1358293fe51909a64d1cf9941afc46aba))
+
+## [3.0.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.0.0...@aws-amplify/graphql-transformer-core@3.0.1) (2024-08-28)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-core
+
+# [3.0.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.9.3...@aws-amplify/graphql-transformer-core@3.0.0) (2024-08-20)
+
+- feat!: bump version for v2 transformer packages ([7dac35c](https://github.com/aws-amplify/amplify-category-api/commit/7dac35cceb971b256b5688b0745ef82afc78b641))
+
+### BREAKING CHANGES
+
+- distinguish from LTS version
+
+## [2.9.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.9.2...@aws-amplify/graphql-transformer-core@2.9.3) (2024-07-15)
+
+### Bug Fixes
+
+- add translation behavior to disable gen 1 patterns ([#2670](https://github.com/aws-amplify/amplify-category-api/issues/2670)) ([38d1a71](https://github.com/aws-amplify/amplify-category-api/commit/38d1a718ec2b0290f514780c6d1d5f0790ba7764))
+
+## [2.9.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.9.1...@aws-amplify/graphql-transformer-core@2.9.2) (2024-07-02)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-core
+
+## [2.9.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.9.0...@aws-amplify/graphql-transformer-core@2.9.1) (2024-07-01)
+
+### Bug Fixes
+
+- auth to use validateUsingSource in place of auth filter to show error message ([#2523](https://github.com/aws-amplify/amplify-category-api/issues/2523)) ([b7d83f9](https://github.com/aws-amplify/amplify-category-api/commit/b7d83f991f85eaffb2408cff98e1880c7fa680ef))
+
+# [2.9.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.8.0...@aws-amplify/graphql-transformer-core@2.9.0) (2024-06-25)
+
+### Features
+
+- allow subscriptions to inherit primary model auth rules for relational fields behind a feature flag ([#2649](https://github.com/aws-amplify/amplify-category-api/issues/2649)) ([56a853a](https://github.com/aws-amplify/amplify-category-api/commit/56a853ace0026de97395cfa17ca156cf360ac5c2))
+
+# [2.8.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.7.0...@aws-amplify/graphql-transformer-core@2.8.0) (2024-05-10)
+
+### Bug Fixes
+
+- fix reference-style relationship validation ([#2533](https://github.com/aws-amplify/amplify-category-api/issues/2533)) ([7b3cf0e](https://github.com/aws-amplify/amplify-category-api/commit/7b3cf0e6fe1d19dffd97723a57deaee693ab448b))
+
+### Features
+
+- add tag to SQL datasource function ([#2511](https://github.com/aws-amplify/amplify-category-api/issues/2511)) ([d64fc1e](https://github.com/aws-amplify/amplify-category-api/commit/d64fc1e4d19c923cf985e30e26ce95c565a8839b))
+
+# [2.7.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.6.0...@aws-amplify/graphql-transformer-core@2.7.0) (2024-04-26)
+
+### Bug Fixes
+
+- add non-scalar and array fields to SQL relations ([#2501](https://github.com/aws-amplify/amplify-category-api/issues/2501)) ([511f020](https://github.com/aws-amplify/amplify-category-api/commit/511f0202583e3e2110a2c22f3bfd24845ea038c0))
+
+### Features
+
+- allow multiple graphql APIs in a cdk app ([#2406](https://github.com/aws-amplify/amplify-category-api/issues/2406)) ([72ca6ba](https://github.com/aws-amplify/amplify-category-api/commit/72ca6ba7243d1f267d38be76e43d623d16608c14))
+
+# [2.6.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.5.1...@aws-amplify/graphql-transformer-core@2.6.0) (2024-04-11)
+
+### Features
+
+- adds a default none data source ([#2408](https://github.com/aws-amplify/amplify-category-api/issues/2408)) ([98ae284](https://github.com/aws-amplify/amplify-category-api/commit/98ae284f6af99195369eaac5e8fb0d62ebbc536d))
+- Fetch SNS topic ARN from SQL manifest ([#2345](https://github.com/aws-amplify/amplify-category-api/issues/2345)) ([fca256e](https://github.com/aws-amplify/amplify-category-api/commit/fca256e7cabf5af838b28b26c4ae0c3c8b1583eb))
+
+## [2.5.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.5.0...@aws-amplify/graphql-transformer-core@2.5.1) (2024-03-28)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-core
+
+# [2.5.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.4.5...@aws-amplify/graphql-transformer-core@2.5.0) (2024-02-28)
+
+### Features
+
+- add implicit fields to filter input ([#2236](https://github.com/aws-amplify/amplify-category-api/issues/2236)) ([f7ec601](https://github.com/aws-amplify/amplify-category-api/commit/f7ec6014d4eecfede186129a6ea19041780bafb3))
+
+## [2.4.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.4.4...@aws-amplify/graphql-transformer-core@2.4.5) (2024-02-05)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-core
+
+## [2.4.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.4.3...@aws-amplify/graphql-transformer-core@2.4.4) (2024-01-30)
+
+### Bug Fixes
+
+- deep merge default behavior ([#2212](https://github.com/aws-amplify/amplify-category-api/issues/2212)) ([fdb50e4](https://github.com/aws-amplify/amplify-category-api/commit/fdb50e42b3c6492e0e84582312e441676126466c))
+
+## [2.4.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.4.2...@aws-amplify/graphql-transformer-core@2.4.3) (2024-01-22)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-core
+
 ## [2.4.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@2.4.1...@aws-amplify/graphql-transformer-core@2.4.2) (2023-12-18)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-core

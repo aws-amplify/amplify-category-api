@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import 'source-map-support/register';
 import { App, Stack, Duration } from 'aws-cdk-lib';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { UserPool, CfnIdentityPool } from 'aws-cdk-lib/aws-cognito';
@@ -15,7 +14,9 @@ const stack = new Stack(app, packageJson.name.replace(/_/g, '-'), {
   env: { region: process.env.CLI_REGION || 'us-west-2' },
 });
 
-const userPool = new UserPool(stack, 'TestPool', {});
+const userPool = new UserPool(stack, 'TestPool', {
+  selfSignUpEnabled: false,
+});
 const identityPoolId = new CfnIdentityPool(stack, 'TestIdentityPool', { allowUnauthenticatedIdentities: true }).ref;
 const appsync = new ServicePrincipal('appsync.amazonaws.com');
 const authenticatedUserRole = new Role(stack, 'TestAuthRole', { assumedBy: appsync });

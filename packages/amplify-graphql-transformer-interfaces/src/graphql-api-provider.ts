@@ -3,6 +3,8 @@ import { Construct, IConstruct } from 'constructs';
 import { Grant, IGrantable, IRole } from 'aws-cdk-lib/aws-iam';
 // eslint-disable-next-line import/no-cycle
 import { TransformHostProvider } from './transform-host-provider';
+import { AssetProvider } from './asset-provider';
+import { IamResource } from 'aws-cdk-lib/aws-appsync';
 
 // Auth Config Modes
 export type AppSyncAuthMode = 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_IAM' | 'OPENID_CONNECT' | 'AWS_LAMBDA';
@@ -113,28 +115,30 @@ export interface InlineMappingTemplateProvider {
 
 export interface S3MappingTemplateProvider {
   type: TemplateType.S3_LOCATION;
-  bind: (scope: Construct) => string;
+  bind: (scope: Construct, assetProvider: AssetProvider) => string;
   getTemplateHash: () => string;
 }
 
 export interface S3MappingFunctionCodeProvider {
   type: TemplateType.S3_LOCATION;
-  bind: (scope: Construct) => IAsset;
+  bind: (scope: Construct, assetProvider: AssetProvider) => IAsset;
 }
 
 export type MappingTemplateProvider = InlineMappingTemplateProvider | S3MappingTemplateProvider;
 
 export interface GraphQLAPIProvider extends IConstruct {
   readonly apiId: string;
+  readonly graphqlUrl: string;
   readonly host: TransformHostProvider;
   readonly name: string;
+  readonly assetProvider: AssetProvider;
 
   // getDefaultAuthorization(): Readonly<AuthorizationMode>;
   // getAdditionalAuthorizationModes(): Readonly<AuthorizationMode[]>;
   addToSchema: (addition: string) => void;
   addSchemaDependency: (construct: CfnResource) => boolean;
 
-  grant: (grantee: IGrantable, resources: APIIAMResourceProvider, ...actions: string[]) => Grant;
+  grant: (grantee: IGrantable, resources: IamResource, ...actions: string[]) => Grant;
   // /**
   //  *  Adds an IAM policy statement for Mutation access to this GraphQLApi to an IAM principal's policy.
   //  *
@@ -156,13 +160,4 @@ export interface GraphQLAPIProvider extends IConstruct {
   //  * @param fields The fields to grant access to that are Subscriptions (leave blank for all).
   //  */
   grantSubscription: (grantee: IGrantable, ...fields: string[]) => Grant;
-}
-
-export interface APIIAMResourceProvider {
-  /**
-   * Return the Resource ARN
-   *
-   * @param api The GraphQL API to give permissions
-   */
-  resourceArns: (api: GraphQLAPIProvider) => string[];
 }

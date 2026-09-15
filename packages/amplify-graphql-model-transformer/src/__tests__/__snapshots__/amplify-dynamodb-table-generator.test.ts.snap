@@ -2,24 +2,27 @@
 
 exports[`ModelTransformer: should successfully transform simple valid schema 1`] = `
 Object {
-  "Properties": Object {
-    "PolicyDocument": Object {
-      "Statement": Array [
-        Object {
-          "Action": Array [
-            "dynamodb:CreateTable",
-            "dynamodb:UpdateTable",
-            "dynamodb:DeleteTable",
-            "dynamodb:DescribeTable",
-            "dynamodb:DescribeContinuousBackups",
-            "dynamodb:DescribeTimeToLive",
-            "dynamodb:UpdateContinuousBackups",
-            "dynamodb:UpdateTimeToLive",
-          ],
-          "Effect": "Allow",
-          "Resource": Object {
+  "PolicyDocument": Object {
+    "Statement": Array [
+      Object {
+        "Action": Array [
+          "dynamodb:CreateTable",
+          "dynamodb:UpdateTable",
+          "dynamodb:DeleteTable",
+          "dynamodb:DescribeTable",
+          "dynamodb:DescribeContinuousBackups",
+          "dynamodb:DescribeTimeToLive",
+          "dynamodb:UpdateContinuousBackups",
+          "dynamodb:UpdateTimeToLive",
+          "dynamodb:TagResource",
+          "dynamodb:UntagResource",
+          "dynamodb:ListTagsOfResource",
+        ],
+        "Effect": "Allow",
+        "Resource": Array [
+          Object {
             "Fn::Sub": Array [
-              "arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/*-\${apiId}-\${envName}",
+              "arn:\${AWS::Partition}:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/*-\${apiId}-\${envName}",
               Object {
                 "apiId": Object {
                   "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
@@ -30,20 +33,29 @@ Object {
               },
             ],
           },
-        },
-      ],
-      "Version": "2012-10-17",
-    },
-    "PolicyName": "CreateUpdateDeleteTablesPolicyB7B6ADB5",
-    "Roles": Array [
-      Object {
-        "Ref": "TableManagerOnEventHandlerServiceRoleD69E8A0C",
+          Object {
+            "Fn::Sub": Array [
+              "arn:\${AWS::Partition}:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${tableName}",
+              Object {
+                "tableName": "Author-myApiId-myEnv",
+              },
+            ],
+          },
+        ],
       },
       Object {
-        "Ref": "TableManagerIsCompleteHandlerServiceRole73EE73E4",
+        "Action": "lambda:ListTags",
+        "Effect": "Allow",
+        "Resource": Object {
+          "Fn::Sub": Array [
+            "arn:\${AWS::Partition}:lambda:\${AWS::Region}:\${AWS::AccountId}:function:*TableManager*",
+            Object {},
+          ],
+        },
       },
     ],
+    "Version": "2012-10-17",
   },
-  "Type": "AWS::IAM::Policy",
+  "PolicyName": "CreateUpdateDeleteTablesPolicy",
 }
 `;

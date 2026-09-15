@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-transformer-core",
-  "version": "2.4.2",
+  "version": "3.6.1",
   "description": "A framework to transform from GraphQL SDL to AWS CloudFormation.",
   "repository": {
     "type": "git",
@@ -15,7 +15,8 @@
     "graphql",
     "cloudformation",
     "aws",
-    "amplify"
+    "amplify",
+    "transformer"
   ],
   "publishConfig": {
     "access": "public"
@@ -28,55 +29,28 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-interfaces": "3.3.3",
+    "@aws-amplify/graphql-directives": "2.8.0",
+    "@aws-amplify/graphql-transformer-interfaces": "4.4.0",
     "fs-extra": "^8.1.0",
     "graphql": "^15.5.0",
-    "graphql-transformer-common": "4.27.1",
+    "graphql-mapping-template": "5.0.2",
+    "graphql-transformer-common": "5.1.4",
     "hjson": "^3.2.2",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "md5": "^2.3.0",
     "object-hash": "^3.0.0",
     "ts-dedent": "^2.0.0"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.80.0",
-    "constructs": "^10.0.5"
+    "aws-cdk-lib": "^2.224.0",
+    "constructs": "^10.3.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
     "@types/hjson": "^2.4.3",
     "@types/md5": "^2.3.1",
-    "@types/node": "^12.12.6",
+    "@types/node": "^24.0.0",
     "@types/object-hash": "^2.2.1",
     "@types/uuid": "^9.0.1"
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testURL": "http://localhost",
-    "testRegex": "(src/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "collectCoverage": true,
-    "coverageProvider": "v8",
-    "coverageThreshold": {
-      "global": {
-        "branches": 69,
-        "functions": 31,
-        "lines": 56
-      }
-    },
-    "coverageReporters": [
-      "clover",
-      "text"
-    ],
-    "testEnvironment": "../../FixJestEnvironment.js"
   }
 }

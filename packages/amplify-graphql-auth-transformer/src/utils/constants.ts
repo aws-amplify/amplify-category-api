@@ -16,6 +16,7 @@ export const MODEL_OPERATIONS: ModelOperation[] = ['create', 'update', 'delete',
 export const AUTH_PROVIDER_DIRECTIVE_MAP = new Map<AuthProvider, string>([
   ['apiKey', 'aws_api_key'],
   ['iam', 'aws_iam'],
+  ['identityPool', 'aws_iam'],
   ['oidc', 'aws_oidc'],
   ['userPools', 'aws_cognito_user_pools'],
   ['function', 'aws_lambda'],

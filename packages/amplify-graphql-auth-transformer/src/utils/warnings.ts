@@ -23,6 +23,22 @@ export const defaultIdentityClaimWarning = (context: TransformerContextProvider,
 };
 
 /**
+ * Displays a warning when a deprecated 'iam' auth provider is used in schema.
+ */
+export const deprecatedIAMProviderWarning = (rules: AuthRule[]): string | undefined => {
+  const hasDeprecatedIAMProvider = rules.some((rule) => rule.provider === 'iam');
+
+  if (hasDeprecatedIAMProvider) {
+    return (
+      "WARNING: Schema is using an @auth directive with deprecated provider 'iam'." +
+      " Replace 'iam' provider with 'identityPool' provider."
+    );
+  }
+
+  return undefined;
+};
+
+/**
  * Display a warning when an 'owner' has access to update their own owner field.
  * @param authModelConfig The model to ACM map we generate for the given ruleset.
  */

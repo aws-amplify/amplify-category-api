@@ -10,11 +10,13 @@ export const defaultTransformParameters: TransformParameters = {
   sandboxModeEnabled: false,
   allowDestructiveGraphqlSchemaUpdates: false,
   replaceTableUponGsiUpdate: false,
+  allowGen1Patterns: true,
 
   // Auth Params
   useSubUsernameForDefaultIdentityClaim: true,
   populateOwnerFieldForStaticGroupAuth: true,
   suppressApiKeyGeneration: false,
+  subscriptionsInheritPrimaryAuth: false,
 
   // Index Params
   secondaryKeyAsGSI: true,
@@ -25,4 +27,5 @@ export const defaultTransformParameters: TransformParameters = {
 
   // Search Params
   enableSearchNodeToNodeEncryption: false,
+  enableSearchEncryptionAtRest: false,
 };

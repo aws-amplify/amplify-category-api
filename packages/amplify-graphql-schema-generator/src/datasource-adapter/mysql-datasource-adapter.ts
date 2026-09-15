@@ -1,25 +1,18 @@
 import { knex } from 'knex';
-import { printer } from '@aws-amplify/amplify-prompts';
-import { invokeSchemaInspectorLambda } from '../utils/vpc-helper';
 import ora from 'ora';
+import { invokeSchemaInspectorLambda } from '../utils/vpc-helper';
 import { Field, Index } from '../schema-representation';
-import { DataSourceAdapter } from './datasource-adapter';
+import { getSSLConfig } from '../utils';
+import { DataSourceAdapter, DataSourceConfig } from './datasource-adapter';
 import { MySQLStringDataSourceAdapter } from './mysql-string-datasource-adapter';
 
 const spinner = ora();
-export interface MySQLDataSourceConfig {
-  host: string;
-  port: number;
-  database: string;
-  username: string;
-  password: string;
-}
 
 export class MySQLDataSourceAdapter extends DataSourceAdapter {
   private adapter: MySQLStringDataSourceAdapter;
   private dbBuilder: any;
 
-  constructor(private config: MySQLDataSourceConfig) {
+  constructor(private config: DataSourceConfig) {
     super();
   }
 
@@ -56,7 +49,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
       port: this.config.port,
       user: this.config.username,
       password: this.config.password,
-      ssl: { rejectUnauthorized: false },
+      ssl: getSSLConfig(this.config.host, this.config.sslCertificate),
     };
     try {
       this.dbBuilder = knex({
@@ -74,7 +67,7 @@ export class MySQLDataSourceAdapter extends DataSourceAdapter {
         debug: false,
       });
     } catch (err) {
-      printer.info(err);
+      console.info(err);
       throw err;
     }
   }

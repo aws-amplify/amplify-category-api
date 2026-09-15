@@ -9,6 +9,7 @@ import {
   NestedStackProvider,
   RDSLayerMapping,
   RDSLayerMappingProvider,
+  RDSSNSTopicMappingProvider,
   StackManagerProvider,
   SynthParameters,
   TransformerContextMetadataProvider,
@@ -17,6 +18,8 @@ import {
   TransformerDataSourceManagerProvider,
   TransformParameterProvider,
   TransformParameters,
+  RDSSNSTopicMapping,
+  LogConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode } from 'graphql';
 import { Construct } from 'constructs';
@@ -27,9 +30,8 @@ import { TransformerContextProviderRegistry } from './provider-registry';
 import { ResolverManager } from './resolver';
 import { TransformerResourceHelper } from './resource-helper';
 import { StackManager } from './stack-manager';
-import { assetManager } from './asset-manager';
 
-export { TransformerResolver } from './resolver';
+export { TransformerResolver, NONE_DATA_SOURCE_NAME } from './resolver';
 export { StackManager } from './stack-manager';
 export class TransformerContextMetadata implements TransformerContextMetadataProvider {
   /**
@@ -50,7 +52,10 @@ export class TransformerContextMetadata implements TransformerContextMetadataPro
   }
 }
 
-export interface TransformerContextConstructorOptions extends DataSourceStrategiesProvider, RDSLayerMappingProvider {
+export interface TransformerContextConstructorOptions
+  extends DataSourceStrategiesProvider,
+    RDSLayerMappingProvider,
+    RDSSNSTopicMappingProvider {
   assetProvider: AssetProvider;
   authConfig: AppSyncAuthConfiguration;
   inputDocument: DocumentNode;
@@ -61,6 +66,7 @@ export interface TransformerContextConstructorOptions extends DataSourceStrategi
   stackMapping: Record<string, string>;
   synthParameters: SynthParameters;
   transformParameters: TransformParameters;
+  logging?: true | LogConfig;
 }
 
 export class TransformerContext implements TransformerContextProvider {
@@ -73,6 +79,8 @@ export class TransformerContext implements TransformerContextProvider {
   public readonly providerRegistry: TransformerContextProviderRegistry;
 
   public readonly stackManager: StackManagerProvider;
+
+  public readonly assetProvider: AssetProvider;
 
   public readonly resourceHelper: TransformerResourceHelper;
 
@@ -90,11 +98,15 @@ export class TransformerContext implements TransformerContextProvider {
 
   public readonly rdsLayerMapping?: RDSLayerMapping;
 
+  public readonly rdsSnsTopicMapping?: RDSSNSTopicMapping;
+
   public metadata: TransformerContextMetadata;
 
   public readonly synthParameters: SynthParameters;
 
   public readonly inputDocument: DocumentNode;
+
+  public readonly logging?: true | LogConfig;
 
   constructor(options: TransformerContextConstructorOptions) {
     const {
@@ -106,13 +118,14 @@ export class TransformerContext implements TransformerContextProvider {
       nestedStackProvider,
       parameterProvider,
       rdsLayerMapping,
+      rdsSnsTopicMapping,
       resolverConfig,
       scope,
       stackMapping,
       synthParameters,
       transformParameters,
+      logging,
     } = options;
-    assetManager.setAssetProvider(assetProvider);
     this.authConfig = authConfig;
     this.sqlDirectiveDataSourceStrategies = sqlDirectiveDataSourceStrategies ?? [];
     this.dataSources = new TransformerDataSourceManager();
@@ -122,12 +135,15 @@ export class TransformerContext implements TransformerContextProvider {
     this.output = new TransformerOutput(inputDocument);
     this.providerRegistry = new TransformerContextProviderRegistry();
     this.rdsLayerMapping = rdsLayerMapping;
+    this.rdsSnsTopicMapping = rdsSnsTopicMapping;
     this.resolverConfig = resolverConfig;
     this.resolvers = new ResolverManager();
     this.resourceHelper = new TransformerResourceHelper(synthParameters);
     this.stackManager = new StackManager(scope, nestedStackProvider, parameterProvider, stackMapping);
+    this.assetProvider = assetProvider;
     this.synthParameters = synthParameters;
     this.transformParameters = transformParameters;
+    this.logging = logging;
   }
 
   /**

@@ -1,6 +1,6 @@
 {
   "name": "graphql-mapping-template",
-  "version": "4.20.14",
+  "version": "5.0.2",
   "description": "An AST wrapper around AWS AppSync resolvers",
   "repository": {
     "type": "git",
@@ -15,7 +15,8 @@
     "graphql",
     "appsync",
     "cloudformation",
-    "aws"
+    "aws",
+    "amplify"
   ],
   "scripts": {
     "test": "jest",
@@ -23,33 +24,5 @@
     "watch": "tsc -w",
     "clean": "rimraf ./lib",
     "extract-api": "ts-node ../../scripts/extract-api.ts"
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testURL": "http://localhost",
-    "testRegex": "(src/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "collectCoverage": true,
-    "coverageProvider": "v8",
-    "coverageThreshold": {
-      "global": {
-        "branches": 63,
-        "functions": 33,
-        "lines": 59
-      }
-    },
-    "coverageReporters": [
-      "clover",
-      "text"
-    ]
   }
 }

@@ -6,7 +6,8 @@ import {
   TransformerPluginBase,
 } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { AuthorizationType } from 'aws-cdk-lib/aws-appsync';
+import { HttpDirective } from '@aws-amplify/graphql-directives';
+import { AuthorizationType, CfnResolver } from 'aws-cdk-lib/aws-appsync';
 import * as cdk from 'aws-cdk-lib';
 import {
   DirectiveNode,
@@ -16,6 +17,7 @@ import {
   InterfaceTypeDefinitionNode,
   Kind,
   ObjectTypeDefinitionNode,
+  ObjectTypeExtensionNode,
 } from 'graphql';
 import {
   HttpResourceIDs,
@@ -24,7 +26,6 @@ import {
   makeNamedType,
   makeNonNullType,
   ModelResourceIDs,
-  ResourceConstants,
   unwrapNonNull,
 } from 'graphql-transformer-common';
 import {
@@ -69,30 +70,16 @@ const URL_REGEX = /(http(s)?:\/\/)|(\/.*)/g;
 const VALID_PROTOCOLS_REGEX = /^http(s)?:\/\//;
 const HTTP_DIRECTIVE_STACK = 'HttpStack';
 const RESOLVER_VERSION = '2018-05-29';
-const directiveDefinition = /* GraphQL */ `
-  directive @http(method: HttpMethod = GET, url: String!, headers: [HttpHeader] = []) on FIELD_DEFINITION
-  enum HttpMethod {
-    GET
-    POST
-    PUT
-    DELETE
-    PATCH
-  }
-  input HttpHeader {
-    key: String
-    value: String
-  }
-`;
 
 export class HttpTransformer extends TransformerPluginBase {
   private directiveList: HttpDirectiveConfiguration[] = [];
 
   constructor() {
-    super('amplify-http-transformer', directiveDefinition);
+    super('amplify-http-transformer', HttpDirective.definition);
   }
 
   field = (
-    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode,
     definition: FieldDefinitionNode,
     directive: DirectiveNode,
     context: TransformerSchemaVisitStepContextProvider,
@@ -128,7 +115,7 @@ export class HttpTransformer extends TransformerPluginBase {
     }
 
     const newFieldArgsArray: InputValueDefinitionNode[] = [];
-    let params = args.path.match(/:\w+/g);
+    const params = args.path.match(/:\w+/g);
 
     if (params) {
       const paramsMap = params.map((p) => p.replace(':', ''));
@@ -141,8 +128,8 @@ export class HttpTransformer extends TransformerPluginBase {
 
       // Replace each URL parameter with $ctx.args.params.parameter_name for
       // use in the resolver template.
-      args.path = args.path.replace(/:\w+/g, (str: string) => {
-        return `\$\{ctx.args.params.${str.replace(':', '')}\}`;
+      args.path = args.path.replace(/:\w+/g, (s: string) => {
+        return `\$\{ctx.args.params.${s.replace(':', '')}\}`;
       });
 
       const urlParamInputObject = makeUrlParamInputObject(args, paramsMap);
@@ -165,8 +152,8 @@ export class HttpTransformer extends TransformerPluginBase {
       newFieldArgsArray.push(makeHttpArgument('query', queryInputObject, makeNonNull));
 
       if (args.supportsBody) {
-        const name = ModelResourceIDs.HttpBodyInputObjectName(parent.name.value, definition.name.value);
-        const bodyInputObject = makeHttpInputObject(name, args.queryAndBodyArgs, true);
+        const objName = ModelResourceIDs.HttpBodyInputObjectName(parent.name.value, definition.name.value);
+        const bodyInputObject = makeHttpInputObject(objName, args.queryAndBodyArgs, true);
 
         context.output.addInput(bodyInputObject);
         newFieldArgsArray.push(makeHttpArgument('body', bodyInputObject, makeNonNull));
@@ -181,7 +168,7 @@ export class HttpTransformer extends TransformerPluginBase {
       };
 
       const mostRecentParent = context.output.getType(parent.name.value) as ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode;
-      let updatedFieldsInParent = mostRecentParent.fields!.filter((f) => f.name.value !== definition.name.value);
+      const updatedFieldsInParent = mostRecentParent.fields!.filter((f) => f.name.value !== definition.name.value);
       updatedFieldsInParent.push(updatedField);
 
       const updatedParentType = {
@@ -193,6 +180,15 @@ export class HttpTransformer extends TransformerPluginBase {
     }
 
     this.directiveList.push(args);
+  };
+
+  fieldOfExtendedType = (
+    parent: ObjectTypeExtensionNode,
+    definition: FieldDefinitionNode,
+    directive: DirectiveNode,
+    context: TransformerSchemaVisitStepContextProvider,
+  ): void => {
+    this.field(parent, definition, directive, context);
   };
 
   generateResolvers = (context: TransformerContextProvider): void => {
@@ -221,7 +217,12 @@ export class HttpTransformer extends TransformerPluginBase {
   };
 }
 
-function createResolver(stack: cdk.Stack, dataSourceId: string, context: TransformerContextProvider, config: HttpDirectiveConfiguration) {
+const createResolver = (
+  stack: cdk.Stack,
+  dataSourceId: string,
+  context: TransformerContextProvider,
+  config: HttpDirectiveConfiguration,
+): CfnResolver => {
   const env = context.synthParameters.amplifyEnvironmentName;
   const region = stack.region;
 
@@ -307,7 +308,7 @@ function createResolver(stack: cdk.Stack, dataSourceId: string, context: Transfo
         functionRequestTemplateString,
         `${config.resolverTypeName}.${config.resolverFieldName}.DataResolver.req.vtl`,
       );
-  const appsyncFunction = context.api.host.addAppSyncFunction(
+  const appsyncFunction = context.api.host.addAppSyncVtlRuntimeFunction(
     functionId,
     functionRequestMappingTemplate,
     MappingTemplate.s3MappingTemplateFromString(
@@ -328,7 +329,7 @@ function createResolver(stack: cdk.Stack, dataSourceId: string, context: Transfo
     stack,
   );
 
-  return context.api.host.addResolver(
+  return context.api.host.addVtlRuntimeResolver(
     config.resolverTypeName,
     config.resolverFieldName,
     MappingTemplate.inlineTemplateFromString(printBlock('Stash resolver specific context.')(compoundExpression(requestTemplate))),
@@ -341,17 +342,19 @@ function createResolver(stack: cdk.Stack, dataSourceId: string, context: Transfo
     [appsyncFunction.functionId],
     stack,
   );
-}
+};
 
-function replaceEnvAndRegion(env: string, region: string, value: string): string {
+const replaceEnvAndRegion = (env: string, region: string, value: string): string => {
   const vars: {
     [key: string]: string;
   } = {};
 
+  // eslint-disable-next-line no-template-curly-in-string
   if (value.includes('${env}')) {
     vars.env = env as unknown as string;
   }
 
+  // eslint-disable-next-line no-template-curly-in-string
   if (value.includes('${aws_region}')) {
     vars.aws_region = region;
   }
@@ -361,9 +364,9 @@ function replaceEnvAndRegion(env: string, region: string, value: string): string
   }
 
   return cdk.Fn.sub(value, vars);
-}
+};
 
-function makeUrlParamInputObject(directive: HttpDirectiveConfiguration, urlParams: string[]): InputObjectTypeDefinitionNode {
+const makeUrlParamInputObject = (directive: HttpDirectiveConfiguration, urlParams: string[]): InputObjectTypeDefinitionNode => {
   return {
     kind: 'InputObjectTypeDefinition',
     name: {
@@ -375,14 +378,14 @@ function makeUrlParamInputObject(directive: HttpDirectiveConfiguration, urlParam
     }),
     directives: [],
   };
-}
+};
 
-function makeHttpArgument(name: string, inputType: InputObjectTypeDefinitionNode, makeNonNull: boolean): InputValueDefinitionNode {
+const makeHttpArgument = (name: string, inputType: InputObjectTypeDefinitionNode, makeNonNull: boolean): InputValueDefinitionNode => {
   const type = makeNonNull ? makeNonNullType(makeNamedType(inputType.name.value)) : makeNamedType(inputType.name.value);
   return makeInputValueDefinition(name, type);
-}
+};
 
-function makeHttpInputObject(name: string, argArray: InputValueDefinitionNode[], makeNonNull: boolean): InputObjectTypeDefinitionNode {
+const makeHttpInputObject = (name: string, argArray: InputValueDefinitionNode[], makeNonNull: boolean): InputObjectTypeDefinitionNode => {
   // Unwrap all the non-nulls in the argument array if the flag is set.
   const fields: InputValueDefinitionNode[] = makeNonNull
     ? argArray.map((arg: InputValueDefinitionNode) => {
@@ -401,4 +404,4 @@ function makeHttpInputObject(name: string, argArray: InputValueDefinitionNode[],
     fields,
     directives: [],
   };
-}
+};

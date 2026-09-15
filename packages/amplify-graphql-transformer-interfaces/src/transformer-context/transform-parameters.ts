@@ -14,11 +14,13 @@ export type TransformParameters = {
   sandboxModeEnabled: boolean;
   allowDestructiveGraphqlSchemaUpdates: boolean;
   replaceTableUponGsiUpdate: boolean;
+  allowGen1Patterns: boolean;
 
   // Auth Params
   useSubUsernameForDefaultIdentityClaim: boolean;
   populateOwnerFieldForStaticGroupAuth: boolean;
   suppressApiKeyGeneration: boolean;
+  subscriptionsInheritPrimaryAuth: boolean;
 
   // Index Params
   secondaryKeyAsGSI: boolean;
@@ -29,4 +31,5 @@ export type TransformParameters = {
 
   // Search Params
   enableSearchNodeToNodeEncryption: boolean;
+  enableSearchEncryptionAtRest: boolean;
 };

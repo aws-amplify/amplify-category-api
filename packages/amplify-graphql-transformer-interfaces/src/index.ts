@@ -17,7 +17,6 @@ export {
   S3MappingTemplateProvider,
   S3MappingFunctionCodeProvider,
   InlineMappingTemplateProvider,
-  APIIAMResourceProvider,
   TemplateType as MappingTemplateType,
   AppSyncAuthConfiguration,
   AppSyncAuthConfigurationAPIKeyEntry,

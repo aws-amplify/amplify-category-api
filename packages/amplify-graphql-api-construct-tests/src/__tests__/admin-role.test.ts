@@ -4,9 +4,10 @@ import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { graphql } from '../graphql-request';
 import { invokeGraphqlProxyLambda } from '../lambda-request';
+import { DURATION_1_HOUR } from '../utils/duration-constants';
 import type { CreateTodoHandlerEvent, CreateTodoResponseData } from './backends/admin-role/apiInvoker';
 
-jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
+jest.setTimeout(DURATION_1_HOUR);
 
 describe('CDK Auth Modes', () => {
   let projRoot: string;
@@ -28,10 +29,9 @@ describe('CDK Auth Modes', () => {
   test('Can be invoked with Admin Roles defined', async () => {
     const templatePath = path.resolve(path.join(__dirname, 'backends', 'admin-role'));
     const name = await initCDKProject(projRoot, templatePath, {
-      cdkVersion: '2.80.0', // Explicitly declaring this, since this version needs to match cognito idp
+      cdkVersion: '2.260.0', // Explicitly declaring this, since this version needs to match cognito idp
       additionalDependencies: [
         'esbuild', // required to bundle the lambda function
-        '@aws-cdk/aws-cognito-identitypool-alpha@2.80.0-alpha.0', // using alpha cognito idp resource for auth config
         '@aws-crypto/sha256-js', // All remaining deps are required for the lambda to sign the request to appsync
         '@aws-sdk/credential-provider-node',
         '@aws-sdk/protocol-http',
@@ -40,12 +40,21 @@ describe('CDK Auth Modes', () => {
       ],
     });
     const outputs = await cdkDeploy(projRoot, '--all');
-    const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey, ApiInvokerFunctionName: functionName } = outputs[name];
+    const {
+      awsAppsyncApiEndpoint: apiEndpoint,
+      awsAppsyncApiKey: apiKey,
+      ApiInvokerFunctionName: functionName,
+      awsAppsyncRegion: region,
+    } = outputs[name];
 
     const testTitle = crypto.randomUUID();
 
     // Validate that the lambda can be invoked to create a record via signed IAM admin role.
-    const invokeResult = await invokeGraphqlProxyLambda<CreateTodoHandlerEvent, CreateTodoResponseData>(functionName, { title: testTitle });
+    const invokeResult = await invokeGraphqlProxyLambda<CreateTodoHandlerEvent, CreateTodoResponseData>(
+      functionName,
+      { title: testTitle },
+      region,
+    );
 
     // And the result object is returned
     expect(invokeResult.createTodo.title).toEqual(testTitle);

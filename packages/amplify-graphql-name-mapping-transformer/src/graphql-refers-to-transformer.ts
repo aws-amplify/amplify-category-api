@@ -5,6 +5,7 @@ import {
   TransformerPreProcessContextProvider,
   TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { RefersToDirective } from '@aws-amplify/graphql-directives';
 import {
   ObjectTypeDefinitionNode,
   DirectiveNode,
@@ -23,15 +24,9 @@ import {
 } from './graphql-name-mapping';
 import { attachFieldMappingSlot } from './field-mapping-resolvers';
 
-const directiveName = 'refersTo';
-
-const directiveDefinition = `
-  directive @${directiveName}(name: String!) on OBJECT | FIELD_DEFINITION
-`;
-
 export class RefersToTransformer extends TransformerPluginBase {
   constructor() {
-    super('amplify-refers-to-transformer', directiveDefinition, TransformerPluginType.GENERIC);
+    super('amplify-refers-to-transformer', RefersToDirective.definition, TransformerPluginType.GENERIC);
   }
 
   /**
@@ -39,10 +34,10 @@ export class RefersToTransformer extends TransformerPluginBase {
    */
   object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider): void => {
     const context = ctx as TransformerContextProvider;
-    shouldBeAppliedToModel(definition, directiveName);
+    shouldBeAppliedToModel(definition, RefersToDirective.name);
     shouldBeAppliedToRDSModels(definition, context);
     const modelName = definition.name.value;
-    const mappedName = getMappedName(definition, directive, directiveName, ctx.inputDocument);
+    const mappedName = getMappedName(definition, directive, RefersToDirective.name, ctx.inputDocument);
     updateTypeMapping(modelName, mappedName, ctx.resourceHelper.setModelNameMapping);
   };
 
@@ -62,10 +57,10 @@ export class RefersToTransformer extends TransformerPluginBase {
     }
     const context = ctx as TransformerContextProvider;
     const modelName = parent?.name?.value;
-    shouldBeAppliedToModel(parent, directiveName);
+    shouldBeAppliedToModel(parent, RefersToDirective.name);
     shouldBeAppliedToRDSModels(parent, context);
     shouldNotBeOnRelationalField(definition, modelName);
-    const mappedName = getMappedFieldName(parent, definition, directive, directiveName);
+    const mappedName = getMappedFieldName(parent, definition, directive, RefersToDirective.name);
     updateFieldMapping(modelName, definition?.name?.value, mappedName, ctx);
   };
 
@@ -103,7 +98,7 @@ export class RefersToTransformer extends TransformerPluginBase {
    * @param context The pre-processing context for the transformer, used to store type mappings
    */
   preMutateSchema = (context: TransformerPreProcessContextProvider): void => {
-    setTypeMappingInSchema(context, directiveName);
+    setTypeMappingInSchema(context, RefersToDirective.name);
   };
 }
 
@@ -113,13 +108,15 @@ export const shouldBeAppliedToRDSModels = (
 ): void => {
   const modelName = definition.name.value;
   if (!isSqlModel(ctx, modelName)) {
-    throw new Error(`@${directiveName} is only supported on RDS models. ${modelName} is not an RDS model.`);
+    throw new Error(`@${RefersToDirective.name} is only supported on SQL models. ${modelName} is not a SQL model.`);
   }
 };
 
 export const shouldNotBeOnRelationalField = (definition: FieldDefinitionNode, modelName: string): void => {
   const relationalDirectives = ['hasOne', 'hasMany', 'belongsTo', 'manyToMany'];
   if (definition?.directives?.some((directive) => relationalDirectives.includes(directive?.name?.value))) {
-    throw new Error(`@${directiveName} is not supported on "${definition?.name?.value}" relational field in "${modelName}" model.`);
+    throw new Error(
+      `@${RefersToDirective.name} is not supported on "${definition?.name?.value}" relational field in "${modelName}" model.`,
+    );
   }
 };

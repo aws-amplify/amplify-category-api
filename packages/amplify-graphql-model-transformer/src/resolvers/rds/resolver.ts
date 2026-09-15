@@ -4,10 +4,8 @@ import {
   Expression,
   compoundExpression,
   ifElse,
-  iff,
   list,
   methodCall,
-  not,
   obj,
   printBlock,
   qref,
@@ -15,9 +13,21 @@ import {
   set,
   str,
   toJson,
+  not,
+  raw,
+  or,
+  parens,
+  and,
 } from 'graphql-mapping-template';
-import { ResourceConstants, isArrayOrObject, isListType } from 'graphql-transformer-common';
-import { SQLLambdaResourceNames, setResourceName } from '@aws-amplify/graphql-transformer-core';
+import { ResourceConstants } from 'graphql-transformer-common';
+import {
+  constructArrayFieldsStatement,
+  constructAuthFilterStatement,
+  constructFieldMappingInput,
+  constructNonScalarFieldsStatement,
+  setResourceName,
+  SQLLambdaResourceNames,
+} from '@aws-amplify/graphql-transformer-core';
 import {
   GraphQLAPIProvider,
   RDSLayerMapping,
@@ -26,11 +36,14 @@ import {
   VpcConfig,
   ProvisionedConcurrencyConfig,
   SqlModelDataSourceDbConnectionConfig,
+  isSqlModelDataSourceSsmDbConnectionConfig,
+  isSqlModelDataSourceSecretsManagerDbConnectionConfig,
+  isSqlModelDataSourceSsmDbConnectionStringConfig,
+  RDSSNSTopicMapping,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IFunction, LayerVersion, Runtime, Alias, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
-import { EnumTypeDefinitionNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode } from 'graphql';
 import { CfnVPCEndpoint } from 'aws-cdk-lib/aws-ec2';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
 
@@ -38,6 +51,15 @@ import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '
  * Define RDS Lambda operations
  */
 export type OPERATIONS = 'CREATE' | 'UPDATE' | 'DELETE' | 'GET' | 'LIST' | 'SYNC';
+
+/**
+ * Available credentials storage methods for the SQL lambda.
+ * This must match enum in rds-lambda/handler.ts
+ */
+export enum CredentialStorageMethod {
+  SSM = 'SSM',
+  SECRETS_MANAGER = 'SECRETS_MANAGER',
+}
 
 const OPERATION_KEY = '__operation';
 
@@ -54,10 +76,58 @@ export const setRDSLayerMappings = (scope: Construct, mapping: RDSLayerMapping, 
   });
 
 /**
+ * Define RDS Patching SNS Topic ARN region mappings. The optional `mapping` can be specified in place of the defaults that are hardcoded at
+ * the time this package is published. For the CLI flow, the `mapping` will be downloaded at runtime during the `amplify push` flow. For the
+ * CDK, the layer version will be resolved by a custom CDK resource.
+ * @param scope Construct
+ * @param mapping an RDSSNSTopicMapping to use in place of the defaults
+ */
+export const setRDSSNSTopicMappings = (scope: Construct, mapping: RDSSNSTopicMapping, resourceNames: SQLLambdaResourceNames): CfnMapping =>
+  new CfnMapping(scope, resourceNames.sqlSNSTopicArnMapping, {
+    mapping,
+  });
+
+/**
+ * Returns an SSM Endpoint if needed by the current configuration, undefined otherwise. If the current configuration includes a VPC, the SSM
+ * endpoint will be a VPC service endpoint, otherwise it will be the standard regionalized endpoint for the service. SSM Endpoints are
+ * required if the DB connection information is stored in SSM, or if the configuration uses a custom SSL certificate.
+ * @param scope Construct
+ * @param resourceNames the SQL Lambda resource names
+ * @param sqlLambdaVpcConfig the VPC configuration for the SQL Lambda, if any
+ * @param minimizeRdsVpcEndpoints when true, only the `ssm` interface VPC endpoint is provisioned. Defaults to false, which provisions the
+ * full set (`ssm`, `ssmmessages`, `ec2`, `ec2messages`, `kms`) for backward compatibility.
+ */
+export const getSsmEndpoint = (
+  scope: Construct,
+  resourceNames: SQLLambdaResourceNames,
+  sqlLambdaVpcConfig?: VpcConfig,
+  minimizeRdsVpcEndpoints = false,
+): string => {
+  if (!sqlLambdaVpcConfig) {
+    // Default, non-VPC SSM endpoint
+    return Fn.join('', ['ssm.', Fn.ref('AWS::Region'), '.amazonaws.com']);
+  }
+
+  // Only the `ssm` endpoint is consumed at runtime to read the DB connection secret from Parameter Store. The full set is provisioned by
+  // default to preserve existing stacks; opting in to `minimizeRdsVpcEndpoints` provisions only the `ssm` endpoint.
+  const services = minimizeRdsVpcEndpoints ? ['ssm'] : ['ssm', 'ssmmessages', 'ec2', 'ec2messages', 'kms'];
+  const endpoints = addVpcEndpoints(scope, sqlLambdaVpcConfig, resourceNames, services);
+  const endpointEntries = endpoints.find((endpoint) => endpoint.service === 'ssm')?.endpoint.attrDnsEntries;
+  if (!endpointEntries) {
+    throw new Error('Failed to find SSM endpoint DNS entries');
+  }
+  // Replace the default SSM endpoint with the VPC endpoint
+  const ssmEndpoint = Fn.select(0, endpointEntries);
+  return ssmEndpoint;
+};
+
+/**
  * Create RDS Lambda function
  * @param scope Construct
  * @param apiGraphql GraphQLAPIProvider
  * @param lambdaRole IRole
+ * @param minimizeRdsVpcEndpoints when true, only the `ssm` interface VPC endpoint is provisioned for the SQL Lambda's VPC. Defaults to
+ * false, which provisions the full set for backward compatibility.
  */
 export const createRdsLambda = (
   scope: Construct,
@@ -65,17 +135,37 @@ export const createRdsLambda = (
   lambdaRole: IRole,
   layerVersionArn: string,
   resourceNames: SQLLambdaResourceNames,
+  credentialStorageMethod: CredentialStorageMethod | undefined,
   environment?: { [key: string]: string },
   sqlLambdaVpcConfig?: VpcConfig,
   sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig,
+  minimizeRdsVpcEndpoints = false,
 ): IFunction => {
-  let ssmEndpoint = Fn.join('', ['ssm.', Fn.ref('AWS::Region'), '.amazonaws.com']); // Default SSM endpoint
-  if (sqlLambdaVpcConfig) {
-    const endpoints = addVpcEndpointForSecretsManager(scope, sqlLambdaVpcConfig, resourceNames);
-    const ssmEndpointEntries = endpoints.find((endpoint) => endpoint.service === 'ssm')?.endpoint.attrDnsEntries;
-    if (ssmEndpointEntries) {
-      ssmEndpoint = Fn.select(0, ssmEndpointEntries);
+  const lambdaEnvironment = {
+    ...environment,
+  };
+
+  if (credentialStorageMethod === CredentialStorageMethod.SSM) {
+    lambdaEnvironment.CREDENTIAL_STORAGE_METHOD = CredentialStorageMethod.SSM;
+    if (!lambdaEnvironment.SSM_ENDPOINT) {
+      lambdaEnvironment.SSM_ENDPOINT = getSsmEndpoint(scope, resourceNames, sqlLambdaVpcConfig, minimizeRdsVpcEndpoints);
     }
+  } else if (credentialStorageMethod === CredentialStorageMethod.SECRETS_MANAGER) {
+    // Default Secrets Manager endpoint
+    let secretsManagerEndpoint = Fn.join('', ['secretsmanager.', Fn.ref('AWS::Region'), '.amazonaws.com']);
+    if (sqlLambdaVpcConfig) {
+      const services = ['secretsmanager'];
+      const endpoints = addVpcEndpoints(scope, sqlLambdaVpcConfig, resourceNames, services);
+      const endpointEntries = endpoints.find((endpoint) => endpoint.service === 'secretsmanager')?.endpoint.attrDnsEntries;
+      if (endpointEntries) {
+        // Replace the default Secrets Manager endpoint with the VPC endpoint
+        secretsManagerEndpoint = Fn.select(0, endpointEntries);
+      }
+    }
+    lambdaEnvironment.SECRETS_MANAGER_ENDPOINT = secretsManagerEndpoint;
+    lambdaEnvironment.CREDENTIAL_STORAGE_METHOD = CredentialStorageMethod.SECRETS_MANAGER;
+  } else {
+    throw new Error('Unable to determine if SSM or Secrets Manager should be used for credentials.');
   }
 
   const fn = apiGraphql.host.addLambdaFunction(
@@ -83,16 +173,14 @@ export const createRdsLambda = (
     `functions/${resourceNames.sqlLambdaFunction}.zip`,
     'handler.run',
     path.resolve(__dirname, '..', '..', '..', 'lib', 'rds-lambda.zip'),
-    Runtime.NODEJS_18_X,
+    Runtime.NODEJS_24_X,
     [LayerVersion.fromLayerVersionArn(scope, resourceNames.sqlLambdaLayerVersion, layerVersionArn)],
     lambdaRole,
-    {
-      ...environment,
-      SSM_ENDPOINT: ssmEndpoint,
-    },
+    lambdaEnvironment,
     Duration.seconds(30),
     scope,
     sqlLambdaVpcConfig,
+    'Amplify-managed SQL function',
   );
 
   if (sqlLambdaProvisionedConcurrencyConfig) {
@@ -122,35 +210,100 @@ export const createRdsLambda = (
  * add the name. We can figure out the right way to expose this to customers if needed, but for now we are not invoking `setResourceName`
  * because it would have no effect.
  */
-export const createLayerVersionCustomResource = (scope: Construct, resourceNames: SQLLambdaResourceNames): AwsCustomResource => {
-  const { SQLLayerVersionManifestBucket, SQLLayerVersionManifestBucketRegion, SQLLayerVersionManifestKeyPrefix } =
-    ResourceConstants.RESOURCES;
+export const createLayerVersionCustomResource = (
+  scope: Construct,
+  resourceNames: SQLLambdaResourceNames,
+  context: TransformerContextProvider,
+): AwsCustomResource => {
+  const { SQLLayerManifestBucket, SQLLayerManifestBucketRegion, SQLLayerVersionManifestKeyPrefix } = ResourceConstants.RESOURCES;
 
   const key = Fn.join('', [SQLLayerVersionManifestKeyPrefix, Fn.ref('AWS::Region')]);
 
-  const manifestArn = `arn:aws:s3:::${SQLLayerVersionManifestBucket}/${key}`;
+  const manifestArn = `arn:aws:s3:::${SQLLayerManifestBucket}/${key}`;
 
   const resourceName = resourceNames.sqlLayerVersionResolverCustomResource;
+
+  // If deploying in a sandbox, use the same physical ID to speed up deployments
+  // Otherwise, make the physical ID change each time we do a deployment, so we always check for the latest version. This means we will
+  // never have a strictly no-op deployment, but the SQL Lambda configuration won't change unless the actual layer value changes
+  let physicalResourceId;
+  if (shouldProvisionHotswapFriendlyResources(context)) {
+    physicalResourceId = PhysicalResourceId.of(resourceName);
+  } else {
+    physicalResourceId = PhysicalResourceId.of(`${resourceName}-${Date.now().toString()}`);
+  }
+
   const customResource = new AwsCustomResource(scope, resourceName, {
     resourceType: 'Custom::SQLLayerVersionCustomResource',
     onUpdate: {
       service: 'S3',
       action: 'getObject',
-      region: SQLLayerVersionManifestBucketRegion,
+      region: SQLLayerManifestBucketRegion,
       parameters: {
-        Bucket: SQLLayerVersionManifestBucket,
+        Bucket: SQLLayerManifestBucket,
         Key: key,
       },
-      // Make the physical ID change each time we do a deployment, so we always check for the latest version. This means we will never have
-      // a strictly no-op deployment, but the SQL Lambda configuration won't change unless the actual layer value changes
-      physicalResourceId: PhysicalResourceId.of(`${resourceName}-${Date.now().toString()}`),
+      physicalResourceId,
     },
     policy: AwsCustomResourcePolicy.fromSdkCalls({
       resources: [manifestArn],
     }),
+    installLatestAwsSdk: false,
   });
 
   return customResource;
+};
+
+/**
+ * Generates an AwsCustomResource to resolve the SNS Topic ARNs that the lambda used for updating the SQL Lambda Layer version installed
+ * into the customer account.
+ */
+export const createSNSTopicARNCustomResource = (
+  scope: Construct,
+  resourceNames: SQLLambdaResourceNames,
+  context: TransformerContextProvider,
+): AwsCustomResource => {
+  const { SQLLayerManifestBucket, SQLLayerManifestBucketRegion, SQLSNSTopicARNManifestKeyPrefix } = ResourceConstants.RESOURCES;
+
+  const key = Fn.join('', [SQLSNSTopicARNManifestKeyPrefix, Fn.ref('AWS::Region')]);
+
+  const manifestArn = `arn:aws:s3:::${SQLLayerManifestBucket}/${key}`;
+
+  const resourceName = resourceNames.sqlSNSTopicARNResolverCustomResource;
+
+  // If deploying in a sandbox, use the same physical ID to speed up deployments
+  // Otherwise, make the physical ID change each time we do a deployment, so we always check for the latest version. This means we will
+  // never have a strictly no-op deployment, but the SQL Lambda configuration won't change unless the actual layer value changes
+  let physicalResourceId;
+  if (shouldProvisionHotswapFriendlyResources(context)) {
+    physicalResourceId = PhysicalResourceId.of(resourceName);
+  } else {
+    physicalResourceId = PhysicalResourceId.of(`${resourceName}-${Date.now().toString()}`);
+  }
+
+  const customResource = new AwsCustomResource(scope, resourceName, {
+    resourceType: 'Custom::SQLSNSTopicARNCustomResource',
+    onUpdate: {
+      service: 'S3',
+      action: 'getObject',
+      region: SQLLayerManifestBucketRegion,
+      parameters: {
+        Bucket: SQLLayerManifestBucket,
+        Key: key,
+      },
+      physicalResourceId,
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({
+      resources: [manifestArn],
+    }),
+    installLatestAwsSdk: false,
+  });
+
+  return customResource;
+};
+
+const shouldProvisionHotswapFriendlyResources = (context: TransformerContextProvider): boolean => {
+  return context?.synthParameters?.provisionHotswapFriendlyResources === true;
 };
 
 const addVpcEndpoint = (
@@ -173,12 +326,12 @@ const addVpcEndpoint = (
   return endpoint;
 };
 
-const addVpcEndpointForSecretsManager = (
+const addVpcEndpoints = (
   scope: Construct,
   sqlLambdaVpcConfig: VpcConfig,
   resourceNames: SQLLambdaResourceNames,
+  services: string[],
 ): { service: string; endpoint: CfnVPCEndpoint }[] => {
-  const services = ['ssm', 'ssmmessages', 'ec2', 'ec2messages', 'kms'];
   return services.map((service) => {
     return {
       service,
@@ -225,7 +378,7 @@ export const createRdsPatchingLambda = (
     `functions/${resourceNames.sqlPatchingLambdaFunction}.zip`,
     'index.handler',
     path.resolve(__dirname, '..', '..', '..', 'lib', 'rds-patching-lambda.zip'),
-    Runtime.NODEJS_18_X,
+    Runtime.NODEJS_24_X,
     [],
     lambdaRole,
     environment,
@@ -246,6 +399,7 @@ export const createRdsLambdaRole = (
   scope: Construct,
   secretEntry: SqlModelDataSourceDbConnectionConfig,
   resourceNames: SQLLambdaResourceNames,
+  sslCertSsmPath?: string | string[],
 ): IRole => {
   const role = new Role(scope, resourceNames.sqlLambdaExecutionRole, {
     assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
@@ -260,19 +414,62 @@ export const createRdsLambdaRole = (
     }),
   ];
   if (secretEntry) {
-    policyStatements.push(
-      new PolicyStatement({
-        actions: ['ssm:GetParameter', 'ssm:GetParameters'],
-        effect: Effect.ALLOW,
-        resources: [
-          `arn:aws:ssm:*:*:parameter${secretEntry.usernameSsmPath}`,
-          `arn:aws:ssm:*:*:parameter${secretEntry.passwordSsmPath}`,
-          `arn:aws:ssm:*:*:parameter${secretEntry.hostnameSsmPath}`,
-          `arn:aws:ssm:*:*:parameter${secretEntry.databaseNameSsmPath}`,
-          `arn:aws:ssm:*:*:parameter${secretEntry.portSsmPath}`,
-        ],
-      }),
-    );
+    if (isSqlModelDataSourceSsmDbConnectionConfig(secretEntry)) {
+      policyStatements.push(
+        new PolicyStatement({
+          actions: ['ssm:GetParameter', 'ssm:GetParameters'],
+          effect: Effect.ALLOW,
+          resources: [
+            `arn:aws:ssm:*:*:parameter${secretEntry.usernameSsmPath}`,
+            `arn:aws:ssm:*:*:parameter${secretEntry.passwordSsmPath}`,
+            `arn:aws:ssm:*:*:parameter${secretEntry.hostnameSsmPath}`,
+            `arn:aws:ssm:*:*:parameter${secretEntry.databaseNameSsmPath}`,
+            `arn:aws:ssm:*:*:parameter${secretEntry.portSsmPath}`,
+          ],
+        }),
+      );
+    } else if (isSqlModelDataSourceSecretsManagerDbConnectionConfig(secretEntry)) {
+      policyStatements.push(
+        new PolicyStatement({
+          actions: ['secretsmanager:GetSecretValue'],
+          effect: Effect.ALLOW,
+          resources: [secretEntry.secretArn],
+        }),
+      );
+      if (secretEntry.keyArn) {
+        policyStatements.push(
+          new PolicyStatement({
+            actions: ['kms:Decrypt'],
+            effect: Effect.ALLOW,
+            resources: [secretEntry.keyArn],
+          }),
+        );
+      }
+    } else if (isSqlModelDataSourceSsmDbConnectionStringConfig(secretEntry)) {
+      const connectionUriSsmPaths = Array.isArray(secretEntry.connectionUriSsmPath)
+        ? secretEntry.connectionUriSsmPath
+        : [secretEntry.connectionUriSsmPath];
+      policyStatements.push(
+        new PolicyStatement({
+          actions: ['ssm:GetParameter', 'ssm:GetParameters'],
+          effect: Effect.ALLOW,
+          resources: connectionUriSsmPaths.map((ssmPath) => `arn:aws:ssm:*:*:parameter${ssmPath}`),
+        }),
+      );
+    } else {
+      throw new Error('Unable to determine if SSM or Secrets Manager should be used for credentials.');
+    }
+
+    if (sslCertSsmPath) {
+      const ssmPaths = Array.isArray(sslCertSsmPath) ? sslCertSsmPath : [sslCertSsmPath];
+      policyStatements.push(
+        new PolicyStatement({
+          actions: ['ssm:GetParameter', 'ssm:GetParameters'],
+          effect: Effect.ALLOW,
+          resources: ssmPaths.map((ssmPath) => `arn:aws:ssm:*:*:parameter${ssmPath}`),
+        }),
+      );
+    }
   }
 
   role.attachInlinePolicy(
@@ -357,6 +554,7 @@ export const generateLambdaRequestTemplate = (
   operation: string,
   operationName: string,
   ctx: TransformerContextProvider,
+  emptyAuthFilter: boolean = false,
 ): string => {
   const mappedTableName = ctx.resourceHelper.getModelNameMapping(tableName);
   return printBlock('Invoke RDS Lambda data source')(
@@ -368,7 +566,7 @@ export const generateLambdaRequestTemplate = (
       set(ref('lambdaInput.operationName'), str(operationName)),
       set(ref('lambdaInput.args.metadata'), obj({})),
       set(ref('lambdaInput.args.metadata.keys'), list([])),
-      constructAuthFilterStatement('lambdaInput.args.metadata.authFilter'),
+      constructAuthFilterStatement('lambdaInput.args.metadata.authFilter', emptyAuthFilter),
       constructNonScalarFieldsStatement(tableName, ctx),
       constructArrayFieldsStatement(tableName, ctx),
       constructFieldMappingInput(),
@@ -392,17 +590,32 @@ export const generateLambdaRequestTemplate = (
  */
 export const generateGetLambdaResponseTemplate = (isSyncEnabled: boolean): string => {
   const statements: Expression[] = [];
+  const resultExpression = compoundExpression([
+    ifElse(
+      not(ref('ctx.stash.authRules')),
+      toJson(ref('ctx.result')),
+      compoundExpression([
+        set(ref('authResult'), methodCall(ref('util.authRules.validateUsingSource'), ref('ctx.stash.authRules'), ref('ctx.result'))),
+        ifElse(
+          not(ref('authResult')),
+          compoundExpression([methodCall(ref('util.unauthorized')), methodCall(ref('util.toJson'), raw('null'))]),
+          toJson(ref('ctx.result')),
+        ),
+      ]),
+    ),
+  ]);
+
   if (isSyncEnabled) {
     statements.push(
       ifElse(
         ref('ctx.error'),
         methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type'), ref('ctx.result')),
-        toJson(ref('ctx.result')),
+        resultExpression,
       ),
     );
   } else {
     statements.push(
-      ifElse(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type')), toJson(ref('ctx.result'))),
+      ifElse(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type')), resultExpression),
     );
   }
 
@@ -434,39 +647,3 @@ export const generateDefaultLambdaResponseMappingTemplate = (isSyncEnabled: bool
 
   return printBlock('ResponseTemplate')(compoundExpression(statements));
 };
-
-export const getNonScalarFields = (object: ObjectTypeDefinitionNode | undefined, ctx: TransformerContextProvider): string[] => {
-  if (!object) {
-    return [];
-  }
-  const enums = ctx.output.getTypeDefinitionsOfKind(Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[];
-  return object.fields?.filter((f: FieldDefinitionNode) => isArrayOrObject(f.type, enums)).map((f) => f.name.value) || [];
-};
-
-export const getArrayFields = (object: ObjectTypeDefinitionNode | undefined, ctx: TransformerContextProvider): string[] => {
-  if (!object) {
-    return [];
-  }
-  return object.fields?.filter((f: FieldDefinitionNode) => isListType(f.type)).map((f) => f.name.value) || [];
-};
-
-export const constructNonScalarFieldsStatement = (tableName: string, ctx: TransformerContextProvider): Expression =>
-  set(ref('lambdaInput.args.metadata.nonScalarFields'), list(getNonScalarFields(ctx.output.getObject(tableName), ctx).map(str)));
-
-export const constructArrayFieldsStatement = (tableName: string, ctx: TransformerContextProvider): Expression =>
-  set(ref('lambdaInput.args.metadata.arrayFields'), list(getArrayFields(ctx.output.getObject(tableName), ctx).map(str)));
-
-export const constructFieldMappingInput = (): Expression => {
-  return compoundExpression([
-    set(ref('lambdaInput.args.metadata.fieldMap'), obj({})),
-    qref(
-      methodCall(
-        ref('lambdaInput.args.metadata.fieldMap.putAll'),
-        methodCall(ref('util.defaultIfNull'), ref('context.stash.fieldMap'), obj({})),
-      ),
-    ),
-  ]);
-};
-
-export const constructAuthFilterStatement = (keyName: string): Expression =>
-  iff(not(methodCall(ref('util.isNullOrEmpty'), ref('ctx.stash.authFilter'))), set(ref(keyName), ref('ctx.stash.authFilter')));

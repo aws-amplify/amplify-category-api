@@ -48,3 +48,5 @@ export const ATTRIBUTE_TYPES = ['binary', 'binarySet', 'bool', 'list', 'map', 'n
 export const OPERATION_KEY = '__operation';
 
 export const API_KEY_DIRECTIVE = 'aws_api_key';
+
+export const AWS_IAM_DIRECTIVE = 'aws_iam';

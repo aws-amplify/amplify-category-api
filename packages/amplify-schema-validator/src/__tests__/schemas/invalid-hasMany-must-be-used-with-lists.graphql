@@ -1,9 +1,0 @@
-type Foo @model {
-  id: ID!
-  bars: Bar @hasMany
-}
-
-type Bar @model {
-  id: ID!
-  bar: String!
-}

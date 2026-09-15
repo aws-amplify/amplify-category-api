@@ -458,7 +458,7 @@ test('Should not resolve to secondary index of connected model if the index is d
       content: String! @index
       comments: [Comment] @hasMany(indexName:"byParent", fields:["customId", "content"])
     }
-    
+
     type Comment @model {
       childId: ID! @primaryKey(sortKeyFields:["content"])
       content: String!
@@ -783,7 +783,7 @@ describe('@belongsTo directive with RDS datasource', () => {
       type Profile @model {
         profileId: String! @primaryKey
         userFirstName: String
-        userLastName: String!
+        userLastName: String
         user: User @belongsTo(references: ["userFirstName", "userLastName"])
       }
     `;
@@ -801,5 +801,85 @@ describe('@belongsTo directive with RDS datasource', () => {
     expect(out.resolvers['Profile.user.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Profile.user.res.vtl']).toBeDefined();
     expect(out.resolvers['Profile.user.res.vtl']).toMatchSnapshot();
+  });
+
+  test('set custom index name for hasOne with references', () => {
+    const inputSchema = /* GraphQL */ `
+      type Blog @model {
+        comment: Comment @hasOne(references: ["blogId"])
+      }
+
+      type Comment @model {
+        blogId: ID
+        blog: Blog @belongsTo(references: ["blogId"], overrideIndexName: "byBlog")
+      }
+    `;
+
+    const out = testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
+    });
+    expect(out.resolvers['Blog.comment.req.vtl']).toBeDefined();
+    expect(out.resolvers['Blog.comment.req.vtl']).toMatchSnapshot();
+    expect(out.stacks.Comment.Resources?.CommentTable.Properties.GlobalSecondaryIndexes).toMatchSnapshot();
+  });
+
+  test('fails if the using indexName on hasOne without references', () => {
+    const inputSchema = /* GraphQL */ `
+      type Blog @model {
+        comment: Comment @hasOne
+      }
+      type Comment @model {
+        blog: Blog @belongsTo(overrideIndexName: "byBlog")
+      }
+    `;
+    expect(() =>
+      testTransform({
+        schema: inputSchema,
+        transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
+      }),
+    ).toThrowError(
+      'overrideIndexName cannot be used on @belongsTo without references. Modify Comment.blog to use references or remove overrideIndexName.',
+    );
+  });
+
+  test('set custom index name for hasMany with references', () => {
+    const inputSchema = /* GraphQL */ `
+      type Blog @model {
+        comments: [Comment] @hasMany(references: ["blogId"])
+      }
+
+      type Comment @model {
+        blogId: ID
+        blog: Blog @belongsTo(references: ["blogId"], overrideIndexName: "byBlog")
+      }
+    `;
+
+    const out = testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+    });
+    expect(out.resolvers['Blog.comments.req.vtl']).toBeDefined();
+    expect(out.resolvers['Blog.comments.req.vtl']).toMatchSnapshot();
+    expect(out.stacks.Comment.Resources?.CommentTable.Properties.GlobalSecondaryIndexes).toMatchSnapshot();
+  });
+
+  test('fails if the using indexName on hasMany without references', () => {
+    const inputSchema = /* GraphQL */ `
+      type Blog @model {
+        comments: [Comment] @hasMany
+      }
+      type Comment @model {
+        blog: Blog @belongsTo(overrideIndexName: "byBlog")
+      }
+    `;
+    expect(() =>
+      testTransform({
+        schema: inputSchema,
+        transformers: [new ModelTransformer(), new HasManyTransformer(), new BelongsToTransformer()],
+      }),
+    ).toThrowError(
+      'overrideIndexName cannot be used on @belongsTo without references. Modify Comment.blog to use references or remove overrideIndexName.',
+    );
   });
 });

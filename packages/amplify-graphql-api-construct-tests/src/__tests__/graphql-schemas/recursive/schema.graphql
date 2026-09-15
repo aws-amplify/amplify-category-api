@@ -1,0 +1,7 @@
+type TreeNode @model {
+  id: ID! @primaryKey
+  value: String
+  parentId: ID
+  parent: TreeNode @belongsTo(references: ["parentId"])
+  children: [TreeNode] @hasMany(references: ["parentId"])
+}

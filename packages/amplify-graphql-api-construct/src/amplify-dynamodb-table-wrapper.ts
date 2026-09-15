@@ -1,4 +1,4 @@
-import { CfnResource } from 'aws-cdk-lib';
+import { CfnResource, RemovalPolicy } from 'aws-cdk-lib';
 import { BillingMode, StreamViewType } from 'aws-cdk-lib/aws-dynamodb';
 
 const AMPLIFY_DYNAMODB_TABLE_RESOURCE_TYPE = 'Custom::AmplifyDynamoDBTable';
@@ -16,6 +16,23 @@ export interface TimeToLiveSpecification {
    * Attribute name to apply to the ttl spec.
    */
   readonly attributeName?: string;
+}
+
+/**
+ * Reference to PointInTimeRecovey Specification
+ * for continuous backups
+ */
+export interface PointInTimeRecoverySpecification {
+  /**
+   * Indicates whether point in time recovery is enabled (true) or disabled (false) on the table.
+   */
+  readonly pointInTimeRecoveryEnabled: boolean;
+  /**
+   * The number of preceding days for which continuous backups are taken and maintained.
+   * Your table data is only recoverable to any point-in-time from within the configured recovery period.
+   * If no value is provided, the value will default to 35.
+   */
+  readonly recoveryPeriodInDays?: number;
 }
 
 /**
@@ -111,6 +128,14 @@ export class AmplifyDynamoDbTableWrapper {
   }
 
   /**
+   * Set the deletion policy of the resource based on the removal policy specified.
+   * @param policy removal policy to set
+   */
+  applyRemovalPolicy(policy: RemovalPolicy): void {
+    this.resource.applyRemovalPolicy(policy);
+  }
+
+  /**
    * Specify how you are charged for read and write throughput and how you manage capacity.
    */
   set billingMode(billingMode: BillingMode) {
@@ -129,6 +154,14 @@ export class AmplifyDynamoDbTableWrapper {
    */
   set pointInTimeRecoveryEnabled(pointInTimeRecoveryEnabled: boolean) {
     this.resource.addPropertyOverride('pointInTimeRecoverySpecification', { pointInTimeRecoveryEnabled });
+  }
+
+  /**
+   * Whether point-in-time recovery is enabled
+   * and recoveryPeriodInDays is set.
+   */
+  set pointInTimeRecoverySpecification(pointInTimeRecoverySpecification: PointInTimeRecoverySpecification) {
+    this.resource.addPropertyOverride('pointInTimeRecoverySpecification', pointInTimeRecoverySpecification);
   }
 
   /**

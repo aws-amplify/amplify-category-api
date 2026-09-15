@@ -1,6 +1,6 @@
 {
   "name": "graphql-transformer-core",
-  "version": "8.2.4",
+  "version": "9.0.7",
   "description": "A framework to transform from GraphQL SDL to AWS cloudFormation.",
   "repository": {
     "type": "git",
@@ -14,7 +14,8 @@
   "keywords": [
     "graphql",
     "cloudformation",
-    "aws"
+    "aws",
+    "amplify"
   ],
   "scripts": {
     "test": "jest",
@@ -29,42 +30,14 @@
     "fs-extra": "^8.1.0",
     "glob": "^10.3.0",
     "graphql": "^15.5.0",
-    "graphql-transformer-common": "4.27.1",
-    "lodash": "^4.17.21"
+    "graphql-transformer-common": "5.1.4",
+    "lodash": "^4.17.23"
   },
   "devDependencies": {
-    "@aws-amplify/amplify-cli-core": "^4.2.10",
+    "@aws-amplify/amplify-cli-core": "^4.4.0",
     "@types/fs-extra": "^8.0.1",
-    "@types/node": "^18.17.0",
-    "mock-fs": "5.2.0",
-    "@types/mock-fs": "4.13.4"
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testURL": "http://localhost",
-    "testRegex": "(src/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "collectCoverage": true,
-    "coverageProvider": "v8",
-    "coverageThreshold": {
-      "global": {
-        "branches": 67,
-        "functions": 33,
-        "lines": 48
-      }
-    },
-    "coverageReporters": [
-      "clover",
-      "text"
-    ]
+    "@types/mock-fs": "4.13.4",
+    "@types/node": "^24.0.0",
+    "mock-fs": "5.2.0"
   }
 }

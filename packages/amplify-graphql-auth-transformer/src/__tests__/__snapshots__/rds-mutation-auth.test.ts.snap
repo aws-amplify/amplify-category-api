@@ -1,5 +1,328 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 1`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"private\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.authRole,
+  \\"cognitoIdentityPoolId\\": $ctx.stash.identityPoolId,
+  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+}))
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 2`] = `
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 3`] = `
+"## [Start] Get existing record. **
+#set( $lambdaInput = {} )
+#set( $lambdaInput.args = {} )
+#set( $lambdaInput.table = \\"PostPrivate\\" )
+#set( $lambdaInput.operation = \\"GET\\" )
+#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.args.metadata = {} )
+#set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
+#set( $lambdaInput.args.metadata.fieldMap = {} )
+$util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
+#set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\":   $util.toJson($lambdaInput)
+}
+## [End] Get existing record. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 4`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"private\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.authRole,
+  \\"cognitoIdentityPoolId\\": $ctx.stash.identityPoolId,
+  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+}))
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 5`] = `
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 6`] = `
+"## [Start] Get existing record. **
+#set( $lambdaInput = {} )
+#set( $lambdaInput.args = {} )
+#set( $lambdaInput.table = \\"PostPrivate\\" )
+#set( $lambdaInput.operation = \\"GET\\" )
+#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.args.metadata = {} )
+#set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
+#set( $lambdaInput.args.metadata.fieldMap = {} )
+$util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
+#set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\":   $util.toJson($lambdaInput)
+}
+## [End] Get existing record. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 7`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"private\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.authRole,
+  \\"cognitoIdentityPoolId\\": $ctx.stash.identityPoolId,
+  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+}))
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 8`] = `
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 9`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole,
+  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+}))
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"create\\", $ctx.args.input, null) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 10`] = `
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 11`] = `
+"## [Start] Get existing record. **
+#set( $lambdaInput = {} )
+#set( $lambdaInput.args = {} )
+#set( $lambdaInput.table = \\"PostPublic\\" )
+#set( $lambdaInput.operation = \\"GET\\" )
+#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.args.metadata = {} )
+#set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
+#set( $lambdaInput.args.metadata.fieldMap = {} )
+$util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
+#set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\":   $util.toJson($lambdaInput)
+}
+## [End] Get existing record. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 12`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole,
+  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+}))
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"update\\", $ctx.args.input, $ctx.result) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 13`] = `
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 14`] = `
+"## [Start] Get existing record. **
+#set( $lambdaInput = {} )
+#set( $lambdaInput.args = {} )
+#set( $lambdaInput.table = \\"PostPublic\\" )
+#set( $lambdaInput.operation = \\"GET\\" )
+#set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
+#set( $lambdaInput.args.metadata = {} )
+#set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
+#set( $lambdaInput.args.metadata.fieldMap = {} )
+$util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
+$util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
+#set( $lambdaInput.args.input = $util.map.copyAndRetainAllKeys($context.arguments.input, $ctx.stash.keys) )
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\":   $util.toJson($lambdaInput)
+}
+## [End] Get existing record. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 15`] = `
+"## [Start] Authorization rules. **
+$util.qr($ctx.stash.put(\\"hasAuth\\", true))
+#set( $authRules = [] )
+#if( $ctx.stash.adminRoles && $ctx.stash.adminRoles.size() > 0 )
+  $util.qr($authRules.add({
+  \\"provider\\": \\"iam\\",
+  \\"type\\": \\"admin\\",
+  \\"strict\\": false,
+  \\"roles\\": $ctx.stash.adminRoles
+}))
+#end
+$util.qr($authRules.add({
+  \\"type\\": \\"public\\",
+  \\"provider\\": \\"iam\\",
+  \\"roleArn\\": $ctx.stash.unauthRole,
+  \\"allowedFields\\":   [\\"id\\", \\"title\\"]
+}))
+#set( $authResult = $util.authRules.mutationAuth($authRules, \\"delete\\", $ctx.args.input, $ctx.result) )
+#if( !$authResult || ($authResult && !$authResult.authorized) )
+  $util.unauthorized()
+#end
+#if( $authResult && !$util.isNullOrEmpty($authResult.authorizedInput) )
+  #set( $ctx.args.input = $authResult.authorizedInput )
+#end
+$util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
+## [End] Authorization rules. **"
+`;
+
+exports[`Verify RDS Model level Auth rules on mutations: should successfully transform IdentityPool auth rules 16`] = `
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
+`;
+
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform apiKey auth rule 1`] = `
 "## [Start] Authorization rules. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
@@ -29,12 +352,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform apiKey auth rule 2`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform apiKey auth rule 3`] = `
@@ -46,6 +369,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -87,12 +412,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform apiKey auth rule 5`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform apiKey auth rule 6`] = `
@@ -104,6 +429,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -145,12 +472,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform apiKey auth rule 8`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 1`] = `
@@ -182,12 +509,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 2`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 3`] = `
@@ -199,6 +526,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -240,12 +569,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 5`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 6`] = `
@@ -257,6 +586,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -298,12 +629,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 8`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 9`] = `
@@ -337,12 +668,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 10`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 11`] = `
@@ -354,6 +685,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -397,12 +730,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 13`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 14`] = `
@@ -414,6 +747,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -457,12 +792,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 16`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 17`] = `
@@ -496,12 +831,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 18`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 19`] = `
@@ -513,6 +848,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [\\"owners\\"] )
+#set( $lambdaInput.args.metadata.arrayFields = [\\"owners\\"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -556,12 +893,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 21`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 22`] = `
@@ -573,6 +910,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [\\"owners\\"] )
+#set( $lambdaInput.args.metadata.arrayFields = [\\"owners\\"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -616,12 +955,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 24`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 25`] = `
@@ -662,12 +1001,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 26`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 27`] = `
@@ -679,6 +1018,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -729,12 +1070,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 29`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 30`] = `
@@ -746,6 +1087,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -796,12 +1139,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 32`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 33`] = `
@@ -836,12 +1179,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 34`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 35`] = `
@@ -853,6 +1196,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -897,12 +1242,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 37`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 38`] = `
@@ -914,6 +1259,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -958,12 +1305,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 40`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 41`] = `
@@ -998,12 +1345,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 42`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 43`] = `
@@ -1015,6 +1362,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [\\"groups\\"] )
+#set( $lambdaInput.args.metadata.arrayFields = [\\"groups\\"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -1059,12 +1408,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 45`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 46`] = `
@@ -1076,6 +1425,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [\\"groups\\"] )
+#set( $lambdaInput.args.metadata.arrayFields = [\\"groups\\"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -1120,12 +1471,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform cognito auth rules 48`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform function auth rule 1`] = `
@@ -1157,12 +1508,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform function auth rule 2`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform function auth rule 3`] = `
@@ -1174,6 +1525,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -1215,12 +1568,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform function auth rule 5`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform function auth rule 6`] = `
@@ -1232,6 +1585,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -1273,12 +1628,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform function auth rule 8`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform iam auth rules 1`] = `
@@ -1312,12 +1667,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform iam auth rules 2`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform iam auth rules 3`] = `
@@ -1329,6 +1684,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -1372,12 +1729,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform iam auth rules 5`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform iam auth rules 6`] = `
@@ -1389,6 +1746,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -1432,12 +1791,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform iam auth rules 8`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform iam auth rules 9`] = `
@@ -1470,12 +1829,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform iam auth rules 10`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform iam auth rules 11`] = `
@@ -1487,6 +1846,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -1529,12 +1890,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform iam auth rules 13`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform iam auth rules 14`] = `
@@ -1546,6 +1907,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -1588,12 +1951,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform iam auth rules 16`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 1`] = `
@@ -1625,12 +1988,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 2`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 3`] = `
@@ -1642,6 +2005,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -1683,12 +2048,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 5`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 6`] = `
@@ -1700,6 +2065,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -1741,12 +2108,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 8`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 9`] = `
@@ -1781,12 +2148,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 10`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 11`] = `
@@ -1798,6 +2165,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -1842,12 +2211,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 13`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 14`] = `
@@ -1859,6 +2228,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -1903,12 +2274,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 16`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 17`] = `
@@ -1943,12 +2314,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 18`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 19`] = `
@@ -1960,6 +2331,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [\\"owners\\"] )
+#set( $lambdaInput.args.metadata.arrayFields = [\\"owners\\"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -2004,12 +2377,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 21`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 22`] = `
@@ -2021,6 +2394,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [\\"owners\\"] )
+#set( $lambdaInput.args.metadata.arrayFields = [\\"owners\\"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -2065,12 +2440,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 24`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 25`] = `
@@ -2111,12 +2486,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 26`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 27`] = `
@@ -2128,6 +2503,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -2178,12 +2555,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 29`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 30`] = `
@@ -2195,6 +2572,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -2245,12 +2624,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 32`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 33`] = `
@@ -2285,12 +2664,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 34`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 35`] = `
@@ -2302,6 +2681,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -2346,12 +2727,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 37`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 38`] = `
@@ -2363,6 +2744,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [] )
+#set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -2407,12 +2790,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 40`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 41`] = `
@@ -2447,12 +2830,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 42`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 43`] = `
@@ -2464,6 +2847,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [\\"groups\\"] )
+#set( $lambdaInput.args.metadata.arrayFields = [\\"groups\\"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -2508,12 +2893,12 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 45`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 46`] = `
@@ -2525,6 +2910,8 @@ exports[`Verify RDS Model level Auth rules on mutations: should successfully tra
 #set( $lambdaInput.operationName = \\"GET_EXISTING_RECORD\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
+#set( $lambdaInput.args.metadata.nonScalarFields = [\\"groups\\"] )
+#set( $lambdaInput.args.metadata.arrayFields = [\\"groups\\"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
 $util.qr($lambdaInput.args.metadata.fieldMap.putAll($util.defaultIfNull($context.stash.fieldMap, {})))
 $util.qr($lambdaInput.args.metadata.keys.addAll($util.defaultIfNull($ctx.stash.keys, [])))
@@ -2569,10 +2956,10 @@ $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 `;
 
 exports[`Verify RDS Model level Auth rules on mutations: should successfully transform oidc auth rules 48`] = `
-"## [Start] Sandbox Mode Disabled. **
+"## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **"
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **"
 `;

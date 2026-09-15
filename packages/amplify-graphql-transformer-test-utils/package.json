@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-transformer-test-utils",
-  "version": "0.4.2",
+  "version": "1.2.0",
   "description": "Test utils for graphql transformers",
   "repository": {
     "type": "git",
@@ -23,51 +23,22 @@
     "cloudformation",
     "aws",
     "amplify",
-    "api"
+    "api",
+    "transformer"
   ],
   "publishConfig": {
     "access": "public"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "2.4.2",
-    "@aws-amplify/graphql-transformer-interfaces": "3.3.3"
+    "@aws-amplify/graphql-transformer-core": "3.6.1",
+    "@aws-amplify/graphql-transformer-interfaces": "4.4.0"
   },
   "devDependencies": {
-    "@types/node": "^12.12.6",
-    "rimraf": "^3.0.0",
-    "ts-jest": "26.4.4"
+    "@types/node": "^24.0.0",
+    "rimraf": "^3.0.0"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.80.0",
-    "constructs": "^10.0.5"
-  },
-  "jest": {
-    "testURL": "http://localhost",
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "collectCoverage": true,
-    "coverageProvider": "v8",
-    "coverageThreshold": {
-      "global": {
-        "branches": 64,
-        "functions": 74,
-        "lines": 78
-      }
-    },
-    "coverageReporters": [
-      "clover",
-      "text"
-    ],
-    "testEnvironment": "../../FixJestEnvironment.js"
+    "aws-cdk-lib": "^2.224.0",
+    "constructs": "^10.3.0"
   }
 }

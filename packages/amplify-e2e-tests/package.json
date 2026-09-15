@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-e2e-tests",
-  "version": "3.19.2",
+  "version": "4.1.16",
   "description": "E2e test suite",
   "repository": {
     "type": "git",
@@ -24,13 +24,28 @@
     "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts"
   },
   "dependencies": {
-    "@aws-amplify/amplify-app": "^5.0.21",
-    "@aws-amplify/graphql-transformer-core": "2.4.2",
-    "amplify-category-api-e2e-core": "4.4.5",
+    "@aws-amplify/amplify-app": "^5.0.35",
+    "@aws-amplify/graphql-schema-generator": "0.11.16",
+    "@aws-amplify/graphql-transformer-core": "3.6.1",
+    "@aws-sdk/client-amplify": "^3.973.0",
+    "@aws-sdk/client-appsync": "^3.973.0",
+    "@aws-sdk/client-cloudformation": "^3.973.0",
+    "@aws-sdk/client-codebuild": "^3.973.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.973.0",
+    "@aws-sdk/client-dynamodb": "^3.973.0",
+    "@aws-sdk/client-iam": "^3.973.0",
+    "@aws-sdk/client-organizations": "^3.973.0",
+    "@aws-sdk/client-rds": "^3.973.0",
+    "@aws-sdk/client-s3": "^3.973.0",
+    "@aws-sdk/client-ssm": "^3.973.0",
+    "@aws-sdk/client-sts": "^3.973.0",
+    "@aws-sdk/credential-provider-node": "^3.972.0",
+    "@aws-sdk/credential-providers": "^3.973.0",
+    "@smithy/util-retry": "^4.1.2",
+    "amplify-category-api-e2e-core": "5.0.13",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
-    "aws-sdk": "^2.1113.0",
-    "axios": "^1.6.0",
+    "axios": "^1.13.5",
     "circleci-api": "^4.1.4",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
@@ -38,20 +53,20 @@
     "generate-password": "~1.7.0",
     "graphql": "^15.5.0",
     "graphql-tag": "^2.10.1",
-    "graphql-transformer-common": "4.27.1",
-    "graphql-transformer-core": "8.2.4",
-    "lodash": "^4.17.21",
+    "graphql-transformer-common": "5.1.4",
+    "graphql-transformer-core": "9.0.7",
+    "lodash": "^4.17.23",
     "node-fetch": "^2.6.7",
     "pluralize": "^8.0.0",
     "uuid": "^8.3.2",
-    "ws": "^7.5.7",
+    "ws": "^7.5.11",
     "yargs": "^15.1.0"
   },
   "peerDependencies": {
-    "@aws-amplify/amplify-cli-core": "^4.2.10"
+    "@aws-amplify/amplify-cli-core": "^4.4.0"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-interfaces": "3.3.3",
+    "@aws-amplify/graphql-transformer-interfaces": "4.4.0",
     "@types/lodash": "^4.14.149",
     "@types/ws": "^7.4.4",
     "ts-node": "^8.10.2"
@@ -61,10 +76,18 @@
     "preset": "ts-jest",
     "testRunner": "amplify-category-api-e2e-core/runner",
     "testEnvironment": "amplify-category-api-e2e-core/environment",
+    "globalSetup": "amplify-category-api-e2e-core/global-setup",
     "transform": {
-      "^.+\\.tsx?$": "ts-jest"
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "diagnostics": false
+        }
+      ]
     },
-    "testURL": "http://localhost",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
     "testRegex": "(src/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
     "testPathIgnorePatterns": [
       "/node_modules/",
@@ -72,10 +95,7 @@
     ],
     "collectCoverage": false,
     "collectCoverageFrom": [
-      "src/**/*.ts",
-      "!**/node_modules/**",
-      "!src/__tests__/**",
-      "!**/*.d.ts"
+      "src/**/*.ts"
     ],
     "reporters": [
       "default",
@@ -108,13 +128,18 @@
       "<rootDir>/src/setup-tests.ts"
     ],
     "globals": {
-      "window": {},
-      "ts-jest": {
-        "diagnostics": false
-      }
+      "window": {}
     },
     "moduleNameMapper": {
-      "axios": "axios/dist/node/axios.cjs"
+      "^csv-parse/sync": "<rootDir>/../../node_modules/csv-parse/dist/cjs/sync.cjs"
+    },
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/__tests__/"
+    ],
+    "snapshotFormat": {
+      "escapeString": true,
+      "printBasicPrototype": true
     }
   },
   "jest-junit": {

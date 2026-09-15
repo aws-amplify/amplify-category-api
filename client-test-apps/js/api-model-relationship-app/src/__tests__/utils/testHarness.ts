@@ -114,6 +114,7 @@ export const executeAmplifyTestHarness = (testName: string, projectRoot: string,
           },
           config: {
             video: true,
+            watchForFileChanges: false
           },
         })
         expect(runResult.status).toEqual('finished');

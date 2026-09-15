@@ -8,6 +8,7 @@ import {
   bool,
   compoundExpression,
   equals,
+  forEach,
   ifElse,
   iff,
   int,
@@ -37,6 +38,7 @@ import {
   toCamelCase,
 } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode } from 'graphql';
+import { OPERATION_KEY } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from '../types';
 import { condenseRangeKey } from '../resolvers';
 import { RelationalResolverGenerator } from './generator';
@@ -183,7 +185,7 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
       MappingTemplate.s3MappingTemplateFromString(
         print(
           compoundExpression([
-            iff(ref('ctx.stash.deniedField'), raw('#return($util.toJson(null))')),
+            iff(ref('ctx.stash.deniedField'), compoundExpression([set(ref('result'), obj({ items: list([]) })), raw('#return($result)')])),
             set(
               ref(PARTITION_KEY_VALUE),
               methodCall(
@@ -205,7 +207,21 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
         print(
           DynamoDBMappingTemplate.dynamoDBResponse(
             false,
-            compoundExpression([iff(raw('!$result'), set(ref('result'), ref('ctx.result'))), raw('$util.toJson($result)')]),
+            compoundExpression([
+              iff(raw('!$result'), set(ref('result'), ref('ctx.result'))),
+
+              // Make sure each retrieved item has the __operation field, so the individual type resolver can appropriately redact fields
+              compoundExpression([
+                iff(
+                  equals(
+                    methodCall(ref('util.defaultIfNull'), methodCall(ref('ctx.source.get'), str(OPERATION_KEY)), nul()),
+                    str('Mutation'),
+                  ),
+                  forEach(ref('item'), ref('result.items'), [qref(methodCall(ref('item.put'), str(OPERATION_KEY), str('Mutation')))]),
+                ),
+                raw('$util.toJson($result)'),
+              ]),
+            ]),
           ),
         ),
         `${object.name.value}.${field.name.value}.res.vtl`,
@@ -221,7 +237,15 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
    * @param config The connection directive configuration.
    * @param ctx The transformer context provider.
    */
-  makeHasOneGetItemConnectionWithKeyResolver = (
+  makeHasOneGetItemConnectionWithKeyResolver = (config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void => {
+    this.makeHasOneBelongToGetItemConnectionWithKeyResolver(config, ctx);
+  };
+
+  makeBelongsToGetItemConnectionWithKeyResolver = (config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider): void => {
+    this.makeHasOneBelongToGetItemConnectionWithKeyResolver(config, ctx);
+  };
+
+  makeHasOneBelongToGetItemConnectionWithKeyResolver = (
     config: HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration,
     ctx: TransformerContextProvider,
   ): void => {
@@ -322,7 +346,16 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
             false,
             ifElse(
               and([not(ref('ctx.result.items.isEmpty()')), equals(ref('ctx.result.scannedCount'), int(1))]),
-              toJson(ref('ctx.result.items[0]')),
+              // Make sure the retrieved item has the __operation field, so the individual type resolver can appropriately redact fields
+              compoundExpression([
+                set(ref('resultValue'), ref('ctx.result.items[0]')),
+                set(ref('operation'), methodCall(ref('util.defaultIfNull'), methodCall(ref('ctx.source.get'), str(OPERATION_KEY)), nul())),
+                iff(
+                  equals(ref('operation'), str('Mutation')),
+                  qref(methodCall(ref('resultValue.put'), str(OPERATION_KEY), str('Mutation'))),
+                ),
+                toJson(ref('resultValue')),
+              ]),
               compoundExpression([
                 iff(and([ref('ctx.result.items.isEmpty()'), equals(ref('ctx.result.scannedCount'), int(1))]), ref('util.unauthorized()')),
                 toJson(nul()),
@@ -349,9 +382,5 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
         isPartitionKey ? `$${PARTITION_KEY_VALUE}` : `$ctx.source.${fieldName}`
       }, "${NONE_VALUE}")))`,
     );
-  };
-
-  makeBelongsToGetItemConnectionWithKeyResolver = (config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-    this.makeHasOneGetItemConnectionWithKeyResolver(config, ctx);
   };
 }

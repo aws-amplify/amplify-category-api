@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-model-transformer",
-  "version": "2.4.2",
+  "version": "3.5.0",
   "description": "Amplify graphql @model transformer",
   "repository": {
     "type": "git",
@@ -15,7 +15,8 @@
     "graphql",
     "cloudformation",
     "aws",
-    "amplify"
+    "amplify",
+    "transformer"
   ],
   "publishConfig": {
     "access": "public"
@@ -24,7 +25,8 @@
     "build-rds-lambda": "cd rds-lambda && mkdir -p node_modules && rm -rf node_modules && npm install && tsc && cp -r node_modules lib && cd lib && bestzip --force node ../../lib/rds-lambda.zip ./* && cd ../..",
     "build-rds-patching-lambda": "cd rds-patching-lambda && mkdir -p node_modules && rm -rf node_modules && npm install && tsc && cp -r node_modules lib && cd lib && bestzip --force node ../../lib/rds-patching-lambda.zip ./* && cd ../..",
     "build-notification-lambda": "cd publish-notification-lambda && mkdir -p node_modules && rm -rf node_modules && npm install && tsc && cp -r node_modules lib && cd lib && bestzip --force node ../../lib/rds-notification-lambda.zip ./* && cd ../..",
-    "build": "tsc && yarn build-rds-lambda && yarn build-rds-patching-lambda && yarn build-notification-lambda",
+    "build-table-manager-lambda": "cp src/resources/amplify-dynamodb-table/amplify-table-manager-lambda/package.json lib/resources/amplify-dynamodb-table/amplify-table-manager-lambda/package.json && (cd lib/resources/amplify-dynamodb-table/amplify-table-manager-lambda/ && mkdir -p node_modules && rm -rf node_modules && npm install)",
+    "build": "tsc && yarn build-rds-lambda && yarn build-rds-patching-lambda && yarn build-notification-lambda && yarn build-table-manager-lambda",
     "watch": "tsc -w",
     "clean": "rimraf ./lib && rimraf ./rds-lambda/lib && rimraf ./rds-patching-lambda/lib && rimraf ./publish-notification-lambda/lib",
     "test": "jest",
@@ -32,51 +34,25 @@
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "2.4.2",
-    "@aws-amplify/graphql-transformer-interfaces": "3.3.3",
+    "@aws-amplify/graphql-directives": "2.8.0",
+    "@aws-amplify/graphql-transformer-core": "3.6.1",
+    "@aws-amplify/graphql-transformer-interfaces": "4.4.0",
     "graphql": "^15.5.0",
-    "graphql-mapping-template": "4.20.14",
-    "graphql-transformer-common": "4.27.1"
+    "graphql-mapping-template": "5.0.2",
+    "graphql-transformer-common": "5.1.4"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.80.0",
-    "constructs": "^10.0.5"
+    "aws-cdk-lib": "^2.224.0",
+    "constructs": "^10.3.0"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-test-utils": "0.4.2",
-    "@aws-sdk/client-dynamodb": "^3.431.0",
+    "@aws-amplify/graphql-transformer-test-utils": "1.2.0",
+    "@aws-sdk/client-dynamodb": "^3.973.0",
+    "@aws-sdk/client-lambda": "^3.973.0",
+    "@aws-sdk/client-sfn": "^3.973.0",
     "@types/aws-lambda": "8.10.119",
-    "@types/node": "^12.12.6"
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testRegex": "(src/__tests__/.*\\.(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "collectCoverage": true,
-    "coverageProvider": "v8",
-    "coverageThreshold": {
-      "global": {
-        "branches": 75,
-        "functions": 80,
-        "lines": 85
-      }
-    },
-    "coverageReporters": [
-      "clover",
-      "text"
-    ],
-    "modulePathIgnorePatterns": [
-      "overrides"
-    ],
-    "testEnvironment": "../../FixJestEnvironment.js"
+    "@types/lodash.isequal": "^4.5.8",
+    "@types/node": "^24.0.0",
+    "lodash.isequal": "^4.5.0"
   }
 }

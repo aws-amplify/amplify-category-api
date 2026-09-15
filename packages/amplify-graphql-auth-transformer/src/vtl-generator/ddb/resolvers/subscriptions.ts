@@ -22,13 +22,13 @@ import {
   int,
 } from 'graphql-mapping-template';
 import { COGNITO_AUTH_TYPE, ConfiguredAuthProviders, IS_AUTHORIZED_FLAG, OIDC_AUTH_TYPE, RoleDefinition, splitRoles } from '../../../utils';
+import { setHasAuthExpression } from '../../common';
 import {
   generateStaticRoleExpression,
   apiKeyExpression,
   iamExpression,
   lambdaExpression,
   emptyPayload,
-  setHasAuthExpression,
   generateOwnerClaimExpression,
   generateOwnerClaimListExpression,
   generateOwnerMultiClaimExpression,
@@ -170,7 +170,14 @@ export const generateAuthExpressionForSubscriptions = (providers: ConfiguredAuth
     totalAuthExpressions.push(lambdaExpression(lambdaRoles));
   }
   if (providers.hasIAM) {
-    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.hasIdentityPoolId));
+    totalAuthExpressions.push(
+      iamExpression({
+        roles: iamRoles,
+        adminRolesEnabled: providers.hasAdminRolesEnabled,
+        hasIdentityPoolId: providers.hasIdentityPoolId,
+        genericIamAccessEnabled: providers.genericIamAccessEnabled,
+      }),
+    );
   }
   if (providers.hasUserPools) {
     totalAuthExpressions.push(

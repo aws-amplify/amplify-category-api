@@ -450,14 +450,84 @@ describe('Verify RDS Model level Auth rules on mutations:', () => {
     });
   });
 
-  it('should throw error if auth is defined on a field', async () => {
-    const invalidSchema = `
+  it('should successfully transform IdentityPool auth rules', async () => {
+    const validSchema = `
+      type PostPrivate @model
+        @auth(rules: [
+          {allow: private, provider: identityPool}
+        ]) {
+          id: ID! @primaryKey
+          title: String!
+      }
+
+      type PostPublic @model
+        @auth(rules: [
+          {allow: public, provider: identityPool}
+        ]) {
+          id: ID! @primaryKey
+          title: String!
+      }
+    `;
+
+    const authConfig: AppSyncAuthConfiguration = {
+      defaultAuthentication: {
+        authenticationType: 'AWS_IAM',
+      },
+      additionalAuthenticationProviders: [],
+    };
+
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
+      authConfig,
+      dataSourceStrategies: constructDataSourceStrategies(validSchema, mysqlStrategy),
+      synthParameters: {
+        identityPoolId: 'TEST_IDENTITY_POOL_ID',
+      },
+    });
+    expect(out).toBeDefined();
+
+    validateModelSchema(parse(out.schema));
+    parse(out.schema);
+
+    const authResolvers = [
+      // Private
+      'Mutation.createPostPrivate.auth.1.req.vtl',
+      'Mutation.createPostPrivate.postAuth.1.req.vtl',
+      'Mutation.updatePostPrivate.auth.1.req.vtl',
+      'Mutation.updatePostPrivate.auth.1.res.vtl',
+      'Mutation.updatePostPrivate.postAuth.1.req.vtl',
+      'Mutation.deletePostPrivate.auth.1.req.vtl',
+      'Mutation.deletePostPrivate.auth.1.res.vtl',
+      'Mutation.deletePostPrivate.postAuth.1.req.vtl',
+      // Public
+      'Mutation.createPostPublic.auth.1.req.vtl',
+      'Mutation.createPostPublic.postAuth.1.req.vtl',
+      'Mutation.updatePostPublic.auth.1.req.vtl',
+      'Mutation.updatePostPublic.auth.1.res.vtl',
+      'Mutation.updatePostPublic.postAuth.1.req.vtl',
+      'Mutation.deletePostPublic.auth.1.req.vtl',
+      'Mutation.deletePostPublic.auth.1.res.vtl',
+      'Mutation.deletePostPublic.postAuth.1.req.vtl',
+    ];
+
+    authResolvers.forEach((resolver) => {
+      expect(out.resolvers[resolver]).toBeDefined();
+      expect(out.resolvers[resolver]).toMatchSnapshot();
+    });
+  });
+
+  it('should not throw error if auth is defined on a field', async () => {
+    const validSchema = `
       type Post @model
         @auth(rules: [
           {allow: private, provider: iam}
           {allow: public, provider: iam}
         ]) {
           id: ID! @primaryKey
+            @auth(rules: [
+              {allow: private, provider: iam}
+            ])
           title: String!
             @auth(rules: [
               {allow: private, provider: iam}
@@ -474,14 +544,47 @@ describe('Verify RDS Model level Auth rules on mutations:', () => {
 
     expect(() =>
       testTransform({
-        schema: invalidSchema,
+        schema: validSchema,
         transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
         authConfig,
-        dataSourceStrategies: constructDataSourceStrategies(invalidSchema, mysqlStrategy),
+        dataSourceStrategies: constructDataSourceStrategies(validSchema, mysqlStrategy),
       }),
-    ).toThrow(
-      '@auth rules are not supported on fields on relational database models. Check field "title" on type "Post". Please use @auth on the type instead.',
-    );
+    ).not.toThrowError();
+  });
+
+  it('should not throw error if auth is defined on a field with identityPool', async () => {
+    const validSchema = `
+      type Post @model
+        @auth(rules: [
+          {allow: private, provider: identityPool}
+          {allow: public, provider: identityPool}
+        ]) {
+          id: ID! @primaryKey
+            @auth(rules: [
+              {allow: private, provider: identityPool}
+            ])
+          title: String!
+            @auth(rules: [
+              {allow: private, provider: identityPool}
+            ])
+      }
+    `;
+
+    const authConfig: AppSyncAuthConfiguration = {
+      defaultAuthentication: {
+        authenticationType: 'AWS_IAM',
+      },
+      additionalAuthenticationProviders: [],
+    };
+
+    expect(() =>
+      testTransform({
+        schema: validSchema,
+        transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
+        authConfig,
+        dataSourceStrategies: constructDataSourceStrategies(validSchema, mysqlStrategy),
+      }),
+    ).not.toThrowError();
   });
 
   it('should allow field auth on mutation type', async () => {

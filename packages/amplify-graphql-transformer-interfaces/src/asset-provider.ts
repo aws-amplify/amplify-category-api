@@ -13,6 +13,6 @@ export type S3Asset = {
   s3ObjectUrl: string;
 };
 
-export type AssetProvider = {
+export interface AssetProvider {
   provide: (scope: Construct, name: string, props: AssetProps) => S3Asset;
-};
+}

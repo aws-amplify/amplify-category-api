@@ -1,5 +1,0 @@
-type Post {
-  id: ID! @primaryKey
-  title: String! @index
-  blog: String!
-}

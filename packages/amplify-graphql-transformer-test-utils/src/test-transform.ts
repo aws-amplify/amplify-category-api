@@ -2,6 +2,7 @@ import { AppSyncAuthConfiguration, TransformerPluginProvider, TransformerLogLeve
 import type {
   ModelDataSourceStrategy,
   RDSLayerMappingProvider,
+  RDSSNSTopicMappingProvider,
   SqlDirectiveDataSourceStrategy,
   SynthParameters,
   TransformParameters,
@@ -16,19 +17,31 @@ import {
 import { OverrideConfig, TransformManager } from './cdk-compat/transform-manager';
 import { DeploymentResources } from './deployment-resources';
 
-export type TestTransformParameters = RDSLayerMappingProvider & {
-  authConfig?: AppSyncAuthConfiguration;
-  // Making this optional so test code can simply use a default DDB strategy for each model in the schema.
-  dataSourceStrategies?: Record<string, ModelDataSourceStrategy>;
-  overrideConfig?: OverrideConfig;
-  resolverConfig?: ResolverConfig;
-  schema: string;
-  sqlDirectiveDataSourceStrategies?: SqlDirectiveDataSourceStrategy[];
-  stackMapping?: Record<string, string>;
-  synthParameters?: Partial<SynthParameters>;
-  transformers: TransformerPluginProvider[];
-  transformParameters?: Partial<TransformParameters>;
-  userDefinedSlots?: Record<string, UserDefinedSlot[]>;
+export type TestTransformParameters = RDSLayerMappingProvider &
+  RDSSNSTopicMappingProvider & {
+    authConfig?: AppSyncAuthConfiguration;
+    // Making this optional so test code can simply use a default DDB strategy for each model in the schema.
+    dataSourceStrategies?: Record<string, ModelDataSourceStrategy>;
+    overrideConfig?: OverrideConfig;
+    resolverConfig?: ResolverConfig;
+    schema: string;
+    sqlDirectiveDataSourceStrategies?: SqlDirectiveDataSourceStrategy[];
+    stackMapping?: Record<string, string>;
+    synthParameters?: Partial<SynthParameters>;
+    transformers: TransformerPluginProvider[];
+    transformParameters?: Partial<TransformParameters>;
+    userDefinedSlots?: Record<string, UserDefinedSlot[]>;
+    transformerManager?: TransformManager;
+  };
+
+/**
+ * Defaults for transform parameters in tests, if they're not set explicitly.
+ *
+ * Will be applied to e2e tests, so also affect actually deployed infrastructure.
+ */
+const DEFAULT_TEST_TRANSFORM_PARAMETERS: Partial<TransformParameters> = {
+  enableSearchNodeToNodeEncryption: true,
+  enableSearchEncryptionAtRest: true,
 };
 
 /**
@@ -41,6 +54,7 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     dataSourceStrategies,
     overrideConfig,
     rdsLayerMapping,
+    rdsSnsTopicMapping,
     resolverConfig,
     schema,
     sqlDirectiveDataSourceStrategies,
@@ -49,18 +63,22 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     transformers,
     transformParameters,
     userDefinedSlots,
+    transformerManager,
   } = params;
 
   const transform = new GraphQLTransform({
     transformers,
     stackMapping,
     authConfig,
-    transformParameters,
+    transformParameters: {
+      ...DEFAULT_TEST_TRANSFORM_PARAMETERS,
+      ...transformParameters,
+    },
     userDefinedSlots,
     resolverConfig,
   });
 
-  const transformManager = new TransformManager(overrideConfig);
+  const transformManager = transformerManager ?? new TransformManager(overrideConfig);
 
   const authConfigTypes = [authConfig?.defaultAuthentication, ...(authConfig?.additionalAuthenticationProviders ?? [])].map(
     (authConfigEntry) => authConfigEntry?.authenticationType,
@@ -79,6 +97,7 @@ export const testTransform = (params: TestTransformParameters): DeploymentResour
     },
     schema,
     rdsLayerMapping,
+    rdsSnsTopicMapping,
     dataSourceStrategies: dataSourceStrategies ?? constructDataSourceStrategies(schema, DDB_DEFAULT_DATASOURCE_STRATEGY),
     sqlDirectiveDataSourceStrategies,
   });

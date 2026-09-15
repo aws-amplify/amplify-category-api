@@ -115,9 +115,7 @@ exports[`@refersTo with SQL Models model table names are mapped 4`] = `
 #set( $lambdaInput.operationName = \\"getTodo\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
-#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-  #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
-#end
+#set( $lambdaInput.args.metadata.authFilter = {} )
 #set( $lambdaInput.args.metadata.nonScalarFields = [] )
 #set( $lambdaInput.args.metadata.arrayFields = [] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )

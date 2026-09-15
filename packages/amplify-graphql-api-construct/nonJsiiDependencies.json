@@ -1,6 +1,7 @@
 [
   "@aws-amplify/backend-output-storage",
   "@aws-amplify/backend-output-schemas",
+  "@aws-amplify/graphql-directives",
   "@aws-amplify/graphql-transformer",
   "@aws-amplify/graphql-transformer-core",
   "@aws-amplify/graphql-transformer-interfaces",

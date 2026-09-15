@@ -29,7 +29,6 @@ import {
 } from '@aws-sdk/client-lambda';
 import * as fs from 'fs-extra';
 import ora from 'ora';
-import { printer } from '@aws-amplify/amplify-prompts';
 import { VpcConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import { checkHostInDBClusters } from './vpc-helper-cluster';
 import { checkHostInDBProxies } from './vpc-helper-proxy';
@@ -40,12 +39,12 @@ const spinner = ora('');
 /**
  * Searches for the host in DB Proxies, then DB Clusters, and finally DB Instances. Returns the VPC configuration if found. Note that some
  * inspections may require additional API calls to derive subnet and availability zone configurations.
- *
+ * When region is not provided, we will use the region configured in the AWS profile.
  * @param hostname Hostname of the database.
  * @param region AWS region.
  * @returns the VpcConfig for the database or undefined if not found.
  */
-export const getHostVpc = async (hostname: string, region: string): Promise<VpcConfig | undefined> => {
+export const getHostVpc = async (hostname: string, region?: string): Promise<VpcConfig | undefined> => {
   const proxyResult = await checkHostInDBProxies(hostname, region);
   if (proxyResult) {
     return proxyResult;
@@ -60,13 +59,13 @@ export const getHostVpc = async (hostname: string, region: string): Promise<VpcC
 
   const clusterResult = await checkHostInDBClusters(hostname, region);
   if (clusterResult) {
-    printer.warn(warning('cluster'));
+    console.warn(warning('cluster'));
     return clusterResult;
   }
 
   const instanceResult = await checkHostInDBInstances(hostname, region);
   if (instanceResult) {
-    printer.warn(warning('instance'));
+    console.warn(warning('instance'));
     return instanceResult;
   }
 
@@ -104,7 +103,7 @@ export const provisionSchemaInspectorLambda = async (lambdaName: string, vpc: Vp
     }
   } catch (err) {
     spinner.fail('Failed to provision a function to introspect the database schema.');
-    printer.debug(`Error provisioning a function to introspect the database schema: ${err}`);
+    console.debug(`Error provisioning a function to introspect the database schema: ${err}`);
     throw err;
   }
   spinner.succeed('Successfully provisioned a function to introspect the database schema.');
@@ -149,7 +148,7 @@ const createSchemaInspectorLambda = async (lambdaName: string, iamRole: Role, vp
     FunctionName: lambdaName,
     Handler: 'index.handler',
     Role: iamRole.Arn,
-    Runtime: 'nodejs18.x',
+    Runtime: 'nodejs24.x',
     VpcConfig: {
       SecurityGroupIds: vpc.securityGroupIds,
       SubnetIds: subnetIds,

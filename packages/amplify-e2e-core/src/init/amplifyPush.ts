@@ -156,7 +156,7 @@ export function cancelIterativeAmplifyPush(
           if (process.env.CODEBUILD) {
             // In codebuild the code 130 is not sent but with exit code 2
             // This is to catch the error in that scenario so that the test will proceed
-            if (!/Killed the process as no output receive/.test(err.message)) {
+            if (!/Killed the process as no output received/.test(err.message)) {
               reject(err);
             }
           } else if (!/Process exited with non zero exit code 130/.test(err.message)) {

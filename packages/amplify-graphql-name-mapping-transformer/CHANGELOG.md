@@ -3,6 +3,206 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.24](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@4.0.23...@aws-amplify/graphql-maps-to-transformer@4.0.24) (2026-07-13)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [4.0.23](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@4.0.22...@aws-amplify/graphql-maps-to-transformer@4.0.23) (2026-07-01)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [4.0.22](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@4.0.21...@aws-amplify/graphql-maps-to-transformer@4.0.22) (2026-04-13)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [4.0.21](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@4.0.20...@aws-amplify/graphql-maps-to-transformer@4.0.21) (2026-03-24)
+
+### Reverts
+
+- Revert "chore(release): Publish [ci skip]" ([dd1f693](https://github.com/aws-amplify/amplify-category-api/commit/dd1f693d8ad6059d6a53af117b16505f40e1e657))
+
+## [4.0.20](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@4.0.19...@aws-amplify/graphql-maps-to-transformer@4.0.20) (2026-02-05)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [4.0.19](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@4.0.18...@aws-amplify/graphql-maps-to-transformer@4.0.19) (2025-06-09)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [4.0.18](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@4.0.17...@aws-amplify/graphql-maps-to-transformer@4.0.18) (2025-04-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [4.0.17](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@4.0.16...@aws-amplify/graphql-maps-to-transformer@4.0.17) (2025-04-09)
+
+### Reverts
+
+- Revert "chore: upgrade to node 20 (#3250)" (#3255) ([a2815c7](https://github.com/aws-amplify/amplify-category-api/commit/a2815c76ee6d12e687193ca6eca84609c79ee268)), closes [#3250](https://github.com/aws-amplify/amplify-category-api/issues/3250) [#3255](https://github.com/aws-amplify/amplify-category-api/issues/3255)
+
+## [4.0.16](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@4.0.15...@aws-amplify/graphql-maps-to-transformer@4.0.16) (2025-03-06)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [4.0.15](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@4.0.14...@aws-amplify/graphql-maps-to-transformer@4.0.15) (2025-02-26)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [4.0.14](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@4.0.13...@aws-amplify/graphql-maps-to-transformer@4.0.14) (2025-02-07)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [4.0.13](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@4.0.12...@aws-amplify/graphql-maps-to-transformer@4.0.13) (2025-01-30)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [4.0.12](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@4.0.10...@aws-amplify/graphql-maps-to-transformer@4.0.12) (2025-01-16)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [4.0.11](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@4.0.10...@aws-amplify/graphql-maps-to-transformer@4.0.11) (2024-12-23)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [4.0.10](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@4.0.9...@aws-amplify/graphql-maps-to-transformer@4.0.10) (2024-12-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [4.0.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@4.0.8...@aws-amplify/graphql-maps-to-transformer@4.0.9) (2024-11-14)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [4.0.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@4.0.7...@aws-amplify/graphql-maps-to-transformer@4.0.8) (2024-11-08)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [4.0.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@4.0.6...@aws-amplify/graphql-maps-to-transformer@4.0.7) (2024-10-28)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [4.0.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@4.0.5...@aws-amplify/graphql-maps-to-transformer@4.0.6) (2024-10-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [4.0.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@4.0.4...@aws-amplify/graphql-maps-to-transformer@4.0.5) (2024-10-10)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [4.0.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@4.0.3...@aws-amplify/graphql-maps-to-transformer@4.0.4) (2024-10-01)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [4.0.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@4.0.2...@aws-amplify/graphql-maps-to-transformer@4.0.3) (2024-09-16)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [4.0.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@4.0.1...@aws-amplify/graphql-maps-to-transformer@4.0.2) (2024-09-06)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [4.0.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@4.0.0...@aws-amplify/graphql-maps-to-transformer@4.0.1) (2024-08-28)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+# [4.0.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.23...@aws-amplify/graphql-maps-to-transformer@4.0.0) (2024-08-20)
+
+- feat!: bump version for v2 transformer packages ([7dac35c](https://github.com/aws-amplify/amplify-category-api/commit/7dac35cceb971b256b5688b0745ef82afc78b641))
+
+### BREAKING CHANGES
+
+- distinguish from LTS version
+
+## [3.4.23](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.22...@aws-amplify/graphql-maps-to-transformer@3.4.23) (2024-08-12)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [3.4.22](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.21...@aws-amplify/graphql-maps-to-transformer@3.4.22) (2024-07-25)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [3.4.21](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.20...@aws-amplify/graphql-maps-to-transformer@3.4.21) (2024-07-15)
+
+### Bug Fixes
+
+- add nonScalarFields and arrayFields to schemas with mapped names ([#2689](https://github.com/aws-amplify/amplify-category-api/issues/2689)) ([4feb898](https://github.com/aws-amplify/amplify-category-api/commit/4feb898ae21710bb86dd900faef082c24bc08960)), closes [#2581](https://github.com/aws-amplify/amplify-category-api/issues/2581)
+
+## [3.4.20](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.19...@aws-amplify/graphql-maps-to-transformer@3.4.20) (2024-07-02)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [3.4.19](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.18...@aws-amplify/graphql-maps-to-transformer@3.4.19) (2024-07-01)
+
+### Bug Fixes
+
+- auth to use validateUsingSource in place of auth filter to show error message ([#2523](https://github.com/aws-amplify/amplify-category-api/issues/2523)) ([b7d83f9](https://github.com/aws-amplify/amplify-category-api/commit/b7d83f991f85eaffb2408cff98e1880c7fa680ef))
+
+## [3.4.18](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.17...@aws-amplify/graphql-maps-to-transformer@3.4.18) (2024-06-25)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [3.4.17](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.16...@aws-amplify/graphql-maps-to-transformer@3.4.17) (2024-06-06)
+
+### Bug Fixes
+
+- fix selection sets for SQL models with optional dependencies ([#2587](https://github.com/aws-amplify/amplify-category-api/issues/2587)) ([f6b68d9](https://github.com/aws-amplify/amplify-category-api/commit/f6b68d9cf1ce8ff0509e63dcd09447d97303e5c6))
+
+## [3.4.16](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.15...@aws-amplify/graphql-maps-to-transformer@3.4.16) (2024-06-04)
+
+### Bug Fixes
+
+- redact relational field in mutation & subscription based on model auth rules ([#2536](https://github.com/aws-amplify/amplify-category-api/issues/2536)) ([f72f40e](https://github.com/aws-amplify/amplify-category-api/commit/f72f40e941f5b48966b60f40222abd80505fb034))
+
+## [3.4.15](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.14...@aws-amplify/graphql-maps-to-transformer@3.4.15) (2024-05-15)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [3.4.14](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.13...@aws-amplify/graphql-maps-to-transformer@3.4.14) (2024-05-10)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [3.4.13](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.12...@aws-amplify/graphql-maps-to-transformer@3.4.13) (2024-05-01)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [3.4.12](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.11...@aws-amplify/graphql-maps-to-transformer@3.4.12) (2024-04-26)
+
+### Bug Fixes
+
+- add non-scalar and array fields to SQL relations ([#2501](https://github.com/aws-amplify/amplify-category-api/issues/2501)) ([511f020](https://github.com/aws-amplify/amplify-category-api/commit/511f0202583e3e2110a2c22f3bfd24845ea038c0))
+
+## [3.4.11](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.10...@aws-amplify/graphql-maps-to-transformer@3.4.11) (2024-04-16)
+
+### Bug Fixes
+
+- **api:** protect sql relational fields when using owner rule ([#2463](https://github.com/aws-amplify/amplify-category-api/issues/2463)) ([53cabe2](https://github.com/aws-amplify/amplify-category-api/commit/53cabe2316a32c5cc6e2f9522d82aa92fd5c0689))
+
+## [3.4.10](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.9...@aws-amplify/graphql-maps-to-transformer@3.4.10) (2024-04-11)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [3.4.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.8...@aws-amplify/graphql-maps-to-transformer@3.4.9) (2024-03-28)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [3.4.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.7...@aws-amplify/graphql-maps-to-transformer@3.4.8) (2024-03-13)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [3.4.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.6...@aws-amplify/graphql-maps-to-transformer@3.4.7) (2024-02-28)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [3.4.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.5...@aws-amplify/graphql-maps-to-transformer@3.4.6) (2024-02-05)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [3.4.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.4...@aws-amplify/graphql-maps-to-transformer@3.4.5) (2024-01-30)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
+## [3.4.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.3...@aws-amplify/graphql-maps-to-transformer@3.4.4) (2024-01-22)
+
+**Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer
+
 ## [3.4.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-maps-to-transformer@3.4.2...@aws-amplify/graphql-maps-to-transformer@3.4.3) (2023-12-21)
 
 **Note:** Version bump only for package @aws-amplify/graphql-maps-to-transformer

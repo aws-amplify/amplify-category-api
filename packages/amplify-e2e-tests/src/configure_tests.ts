@@ -1,6 +1,6 @@
 import { amplifyConfigure as configure, injectSessionToken, isCI } from 'amplify-category-api-e2e-core';
 
-async function setupAmplify() {
+const setupAmplify = async (): Promise<void> => {
   if (isCI()) {
     const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
     const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
@@ -20,7 +20,7 @@ async function setupAmplify() {
   } else {
     console.log('AWS Profile is already configured');
   }
-}
+};
 
 process.nextTick(async () => {
   try {

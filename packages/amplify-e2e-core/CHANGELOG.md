@@ -3,6 +3,165 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.13](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@5.0.12...amplify-category-api-e2e-core@5.0.13) (2026-07-01)
+
+### Bug Fixes
+
+- add sa-east-1 region back to E2E test pool ([#3480](https://github.com/aws-amplify/amplify-category-api/issues/3480)) ([9a2c742](https://github.com/aws-amplify/amplify-category-api/commit/9a2c74251a2c53471326f58dab607a9e2d4ff7ea))
+
+## [5.0.12](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@5.0.11...amplify-category-api-e2e-core@5.0.12) (2026-05-07)
+
+### Bug Fixes
+
+- dep updates ([#3441](https://github.com/aws-amplify/amplify-category-api/issues/3441)) ([bddb2c8](https://github.com/aws-amplify/amplify-category-api/commit/bddb2c84dfb1288d45f91f852f8b48207e10aecd)), closes [#295](https://github.com/aws-amplify/amplify-category-api/issues/295) [#294](https://github.com/aws-amplify/amplify-category-api/issues/294) [#302](https://github.com/aws-amplify/amplify-category-api/issues/302) [#307-310](https://github.com/aws-amplify/amplify-category-api/issues/307-310) [#236](https://github.com/aws-amplify/amplify-category-api/issues/236) [#273-275](https://github.com/aws-amplify/amplify-category-api/issues/273-275) [#282-285](https://github.com/aws-amplify/amplify-category-api/issues/282-285) [#290](https://github.com/aws-amplify/amplify-category-api/issues/290) [#292](https://github.com/aws-amplify/amplify-category-api/issues/292)
+- stabilize E2E tests — exclude broken regions, fix Node 22 compatibility ([#3468](https://github.com/aws-amplify/amplify-category-api/issues/3468)) ([c756f3f](https://github.com/aws-amplify/amplify-category-api/commit/c756f3fc7ad5c79d37f664a1a3403c53e307bb25))
+
+## [5.0.11](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@5.0.10...amplify-category-api-e2e-core@5.0.11) (2026-03-24)
+
+### Bug Fixes
+
+- address all e2e test failures - credential refresh, cleanup error handling, OOM, timeouts, region assignments ([b2b0446](https://github.com/aws-amplify/amplify-category-api/commit/b2b044627fce327df5b5e4e2cc6967c3cb9f1fe9))
+- dependabots + scripting and prompting to help with dependabots ([#3417](https://github.com/aws-amplify/amplify-category-api/issues/3417)) ([fb79e92](https://github.com/aws-amplify/amplify-category-api/commit/fb79e927edeefdca9b8388f447b6fd954b1a369a))
+- **e2e:** fix e2e rds tests, conversation tests and sql tests ([#3431](https://github.com/aws-amplify/amplify-category-api/issues/3431)) ([43ef58e](https://github.com/aws-amplify/amplify-category-api/commit/43ef58e5c0867035dfc674aa1851ed13f19393d9))
+
+### Reverts
+
+- Revert "chore(release): Publish [ci skip]" ([dd1f693](https://github.com/aws-amplify/amplify-category-api/commit/dd1f693d8ad6059d6a53af117b16505f40e1e657))
+
+## [5.0.10](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@5.0.9...amplify-category-api-e2e-core@5.0.10) (2026-02-05)
+
+### Bug Fixes
+
+- update Lambda Python version 3.8 -> 3.13 ([#3338](https://github.com/aws-amplify/amplify-category-api/issues/3338)) ([97e0402](https://github.com/aws-amplify/amplify-category-api/commit/97e04021e4d1abe2a76c05e0d4d12e09f03021cd))
+
+## [5.0.9](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@5.0.8...amplify-category-api-e2e-core@5.0.9) (2025-06-09)
+
+### Bug Fixes
+
+- reduce frequency to 10 minutes ([ea83734](https://github.com/aws-amplify/amplify-category-api/commit/ea83734dbb9f74662159215a044c8c9772cb3e70))
+- remove logging ([03c993b](https://github.com/aws-amplify/amplify-category-api/commit/03c993bc3da667d4e8ca48dae093f9c9dcfa2777))
+- try adding child account creds rotator ([7eabd7a](https://github.com/aws-amplify/amplify-category-api/commit/7eabd7a0f955a6514f713327538afc6c8cabfc6f))
+- try something ([7d3d602](https://github.com/aws-amplify/amplify-category-api/commit/7d3d602f97ac6810baa6e65cbf9f7bd4f321aed0))
+- try something ([f4ae608](https://github.com/aws-amplify/amplify-category-api/commit/f4ae6081b59ee159b60f3cdc3a2c8f57d47ace0c))
+- try something ([05ebf39](https://github.com/aws-amplify/amplify-category-api/commit/05ebf39603b5ac16ffe20068a4bdc097df8a79fe))
+- try something ([7816a53](https://github.com/aws-amplify/amplify-category-api/commit/7816a53fbc4903afa72b5df9a29f58dab7753d18))
+- try something ([dce8bd6](https://github.com/aws-amplify/amplify-category-api/commit/dce8bd6eab3308a27eef6df90b5af7b4ac500d36))
+
+## [5.0.8](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@5.0.7...amplify-category-api-e2e-core@5.0.8) (2025-04-17)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
+## [5.0.7](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@5.0.6...amplify-category-api-e2e-core@5.0.7) (2024-12-17)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
+## [5.0.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@5.0.5...amplify-category-api-e2e-core@5.0.6) (2024-11-08)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
+## [5.0.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@5.0.4...amplify-category-api-e2e-core@5.0.5) (2024-10-28)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
+## [5.0.4](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@5.0.3...amplify-category-api-e2e-core@5.0.4) (2024-10-17)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
+## [5.0.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@5.0.2...amplify-category-api-e2e-core@5.0.3) (2024-10-10)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
+## [5.0.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@5.0.1...amplify-category-api-e2e-core@5.0.2) (2024-10-01)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
+## [5.0.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.9.1...amplify-category-api-e2e-core@5.0.1) (2024-09-06)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
+## [4.9.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.9.0...amplify-category-api-e2e-core@4.9.1) (2024-08-28)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
+# [4.9.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.8.6...amplify-category-api-e2e-core@4.9.0) (2024-08-20)
+
+### Bug Fixes
+
+- **amplify-category-api:** data api call print the full error object ([#2759](https://github.com/aws-amplify/amplify-category-api/issues/2759)) ([f19283b](https://github.com/aws-amplify/amplify-category-api/commit/f19283b932f4d8eff78e73c5a9c19d7a65d93f55))
+- refactor data api execute queries ([#2760](https://github.com/aws-amplify/amplify-category-api/issues/2760)) ([b1b8de8](https://github.com/aws-amplify/amplify-category-api/commit/b1b8de8c459a8cef5bd6792f4e075fe83e070df5))
+
+### Features
+
+- add ([7a42189](https://github.com/aws-amplify/amplify-category-api/commit/7a42189e0c26276350e7f05954953a167f39d5cd))
+
+## [4.8.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.8.5...amplify-category-api-e2e-core@4.8.6) (2024-08-12)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
+## [4.8.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.8.4...amplify-category-api-e2e-core@4.8.5) (2024-07-25)
+
+### Bug Fixes
+
+- add tags to dynamodb tables ([#2694](https://github.com/aws-amplify/amplify-category-api/issues/2694)) ([e8070b9](https://github.com/aws-amplify/amplify-category-api/commit/e8070b94077a706ba95ed94cdd52f27f15490ea2))
+
+## [4.8.4](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.8.3...amplify-category-api-e2e-core@4.8.4) (2024-07-15)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
+## [4.8.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.8.2...amplify-category-api-e2e-core@4.8.3) (2024-07-02)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
+## [4.8.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.8.1...amplify-category-api-e2e-core@4.8.2) (2024-06-25)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
+## [4.8.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.8.0...amplify-category-api-e2e-core@4.8.1) (2024-05-01)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
+# [4.8.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.7.1...amplify-category-api-e2e-core@4.8.0) (2024-04-26)
+
+### Features
+
+- **api:** enable cors on codegen asset bucket ([#2366](https://github.com/aws-amplify/amplify-category-api/issues/2366)) ([b69a492](https://github.com/aws-amplify/amplify-category-api/commit/b69a4924002ecb17780b9c3a0f33f44f59d9b642))
+- generic iam authorization ([#2385](https://github.com/aws-amplify/amplify-category-api/issues/2385)) ([550ee80](https://github.com/aws-amplify/amplify-category-api/commit/550ee803275817d25447ff1400d55eb1ad4cd0c2))
+- support multiple connection Uris for SQL databases ([#2481](https://github.com/aws-amplify/amplify-category-api/issues/2481)) ([7ea8000](https://github.com/aws-amplify/amplify-category-api/commit/7ea8000026d3f8fe9c791720701250fa958c9bc8))
+
+## [4.7.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.7.0...amplify-category-api-e2e-core@4.7.1) (2024-04-16)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
+# [4.7.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.6.0...amplify-category-api-e2e-core@4.7.0) (2024-04-11)
+
+### Features
+
+- add cdk sql connection string support ([#2409](https://github.com/aws-amplify/amplify-category-api/issues/2409)) ([274d117](https://github.com/aws-amplify/amplify-category-api/commit/274d1176d96e265d02817a975848c767d6d43c31))
+
+# [4.6.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.5.2...amplify-category-api-e2e-core@4.6.0) (2024-03-28)
+
+### Features
+
+- add secrets manager as credential store for sql lambda ([#2289](https://github.com/aws-amplify/amplify-category-api/issues/2289)) ([affdb98](https://github.com/aws-amplify/amplify-category-api/commit/affdb988b499591c3a96608f772b637ddd8c3a0c))
+
+## [4.5.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.5.1...amplify-category-api-e2e-core@4.5.2) (2024-03-13)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
+## [4.5.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.5.0...amplify-category-api-e2e-core@4.5.1) (2024-02-28)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
+# [4.5.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.4.6...amplify-category-api-e2e-core@4.5.0) (2024-02-05)
+
+### Features
+
+- **api:** generate typescript data schema from sql schema internal representation ([#2225](https://github.com/aws-amplify/amplify-category-api/issues/2225)) ([460b077](https://github.com/aws-amplify/amplify-category-api/commit/460b0776af82932d2b42a2b7720b49b91fdbd45c))
+
+## [4.4.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.4.5...amplify-category-api-e2e-core@4.4.6) (2024-01-22)
+
+**Note:** Version bump only for package amplify-category-api-e2e-core
+
 ## [4.4.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@4.4.4...amplify-category-api-e2e-core@4.4.5) (2023-12-18)
 
 **Note:** Version bump only for package amplify-category-api-e2e-core

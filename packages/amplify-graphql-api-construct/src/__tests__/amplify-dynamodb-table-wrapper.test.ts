@@ -1,4 +1,4 @@
-import { CfnResource, Stack } from 'aws-cdk-lib';
+import { CfnResource, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import { BillingMode, StreamViewType } from 'aws-cdk-lib/aws-dynamodb';
 import { Match, Template } from 'aws-cdk-lib/assertions';
@@ -141,6 +141,41 @@ describe('AmplifyDynamoDbTable', () => {
         tableWrapper.pointInTimeRecoveryEnabled = false;
         validateProps({
           pointInTimeRecoverySpecification: { pointInTimeRecoveryEnabled: false },
+        });
+      });
+
+      it('round trips a value with direct specification setting', () => {
+        tableWrapper.pointInTimeRecoverySpecification = {
+          pointInTimeRecoveryEnabled: true,
+        };
+        validateProps({
+          pointInTimeRecoverySpecification: { pointInTimeRecoveryEnabled: true },
+        });
+      });
+
+      it('round trips a value with recovery period days', () => {
+        tableWrapper.pointInTimeRecoverySpecification = {
+          pointInTimeRecoveryEnabled: true,
+          recoveryPeriodInDays: 7,
+        };
+        validateProps({
+          pointInTimeRecoverySpecification: {
+            pointInTimeRecoveryEnabled: true,
+            recoveryPeriodInDays: 7,
+          },
+        });
+      });
+
+      it('round trips a value with recovery period days when disabled', () => {
+        tableWrapper.pointInTimeRecoverySpecification = {
+          pointInTimeRecoveryEnabled: false,
+          recoveryPeriodInDays: 14,
+        };
+        validateProps({
+          pointInTimeRecoverySpecification: {
+            pointInTimeRecoveryEnabled: false,
+            recoveryPeriodInDays: 14,
+          },
         });
       });
     });
@@ -290,6 +325,17 @@ describe('AmplifyDynamoDbTable', () => {
         validateProps({
           deletionProtectionEnabled: false,
         });
+      });
+    });
+
+    describe('applyRemovalPolicy', () => {
+      it('overrides the removal policy', () => {
+        testResource.applyRemovalPolicy(RemovalPolicy.DESTROY);
+        expect(testResource.cfnOptions.deletionPolicy).toBe('Delete');
+        expect(testResource.cfnOptions.updateReplacePolicy).toBe('Delete');
+        tableWrapper.applyRemovalPolicy(RemovalPolicy.RETAIN);
+        expect(testResource.cfnOptions.deletionPolicy).toBe('Retain');
+        expect(testResource.cfnOptions.updateReplacePolicy).toBe('Retain');
       });
     });
   });

@@ -461,6 +461,75 @@ describe('Verify RDS Model level Auth rules on subscriptions:', () => {
     });
   });
 
+  it('should successfully transform IdentityPool auth rules', async () => {
+    const validSchema = `
+      type PostPrivate @model
+        @auth(rules: [
+          {allow: private, provider: identityPool}
+        ]) {
+          id: ID! @primaryKey
+          title: String!
+      }
+
+      type PostPublic @model
+        @auth(rules: [
+          {allow: public, provider: identityPool}
+        ]) {
+          id: ID! @primaryKey
+          title: String!
+      }
+    `;
+
+    const authConfig: AppSyncAuthConfiguration = {
+      defaultAuthentication: {
+        authenticationType: 'AWS_IAM',
+      },
+      additionalAuthenticationProviders: [],
+    };
+
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
+      authConfig,
+      dataSourceStrategies: constructDataSourceStrategies(validSchema, mysqlStrategy),
+      synthParameters: {
+        identityPoolId: 'TEST_IDENTITY_POOL_ID',
+      },
+    });
+    expect(out).toBeDefined();
+
+    validateModelSchema(parse(out.schema));
+    parse(out.schema);
+
+    const authResolvers = [
+      // Private
+      'Subscription.onCreatePostPrivate.auth.1.req.vtl',
+      'Subscription.onCreatePostPrivate.postAuth.1.req.vtl',
+      'Subscription.onCreatePostPrivate.res.vtl',
+      'Subscription.onUpdatePostPrivate.auth.1.req.vtl',
+      'Subscription.onUpdatePostPrivate.postAuth.1.req.vtl',
+      'Subscription.onUpdatePostPrivate.res.vtl',
+      'Subscription.onDeletePostPrivate.auth.1.req.vtl',
+      'Subscription.onDeletePostPrivate.postAuth.1.req.vtl',
+      'Subscription.onDeletePostPrivate.res.vtl',
+      // Public
+      'Subscription.onCreatePostPublic.auth.1.req.vtl',
+      'Subscription.onCreatePostPublic.postAuth.1.req.vtl',
+      'Subscription.onCreatePostPublic.res.vtl',
+      'Subscription.onUpdatePostPublic.auth.1.req.vtl',
+      'Subscription.onUpdatePostPublic.postAuth.1.req.vtl',
+      'Subscription.onUpdatePostPublic.res.vtl',
+      'Subscription.onDeletePostPublic.auth.1.req.vtl',
+      'Subscription.onDeletePostPublic.postAuth.1.req.vtl',
+      'Subscription.onDeletePostPublic.res.vtl',
+    ];
+
+    authResolvers.forEach((resolver) => {
+      expect(out.resolvers[resolver]).toBeDefined();
+      expect(out.resolvers[resolver]).toMatchSnapshot();
+    });
+  });
+
   it('should allow field auth on subscription type', async () => {
     const validSchema = `
       type Post @model

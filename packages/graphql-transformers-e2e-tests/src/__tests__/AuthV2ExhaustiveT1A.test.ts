@@ -32,6 +32,8 @@ let ACCESS_TOKEN: string;
 let API_KEY: string;
 let GRAPHQL_ENDPOINT: string;
 
+jest.setTimeout(1000 * 60 * 30);
+
 describe('e2e auth resolvers tests', () => {
   const schemaModels: string[] = [];
   const authStrategies: AuthStrategy[] = ['owner', 'groups', 'public', 'private'];

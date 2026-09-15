@@ -1,0 +1,13 @@
+type RelatedManyCPKSKOne @model {
+  id: String! @primaryKey
+  primaryId: ID
+  primarySkOne: ID
+  primary: PrimaryCPKSKOne @belongsTo(references: ["primaryId", "primarySkOne"])
+}
+
+type RelatedOneCPKSKOne @model {
+  id: String! @primaryKey
+  primaryId: ID
+  primarySkOne: ID
+  primary: PrimaryCPKSKOne @belongsTo(references: ["primaryId", "primarySkOne"])
+}

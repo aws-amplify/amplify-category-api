@@ -1,0 +1,42 @@
+import { ModelDataSourceStrategyDbType } from '@aws-amplify/graphql-transformer-interfaces';
+import { HasOneDirectiveConfiguration } from '../types';
+import { DataSourceBasedDirectiveTransformer } from '../data-source-based-directive-transformer';
+import { HasOneDirectiveDDBFieldsTransformer } from './has-one-directive-ddb-fields-transformer';
+import { HasOneDirectiveSQLTransformer } from './has-one-directive-sql-transformer';
+import { HasOneDirectiveDDBReferencesTransformer } from './has-one-directive-ddb-references-transformer';
+import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
+
+const hasOneDirectiveMySqlTransformer = new HasOneDirectiveSQLTransformer();
+const hasOneDirectivePostgresTransformer = new HasOneDirectiveSQLTransformer();
+const hasOneDirectiveDdbFieldsTransformer = new HasOneDirectiveDDBFieldsTransformer();
+const hasOneDirectiveDdbReferencesTransformer = new HasOneDirectiveDDBReferencesTransformer();
+
+export const getHasOneDirectiveTransformer = (
+  dbType: ModelDataSourceStrategyDbType,
+  config: HasOneDirectiveConfiguration,
+  // eslint-disable-next-line consistent-return
+): DataSourceBasedDirectiveTransformer<HasOneDirectiveConfiguration> => {
+  switch (dbType) {
+    case 'MYSQL':
+      return hasOneDirectiveMySqlTransformer;
+    case 'POSTGRES':
+      return hasOneDirectivePostgresTransformer;
+    case 'DYNAMODB':
+      // If references are passed to the directive, we'll use the references relational
+      // modeling approach.
+      if (config.references) {
+        // Passing both references and fields is not supported.
+        if (config.fields) {
+          throw new InvalidDirectiveError(`fields and references cannot be defined in the same ${config.directiveName}. Use 'references'`);
+        }
+        if (config.references.length < 1) {
+          throw new Error(`Invalid @hasOne directive on ${config.field.name.value} - empty references list`);
+        }
+        return hasOneDirectiveDdbReferencesTransformer;
+      }
+
+      // fields based relational modeling is the default because it supports implicit
+      // field creation / doesn't require explicitly defining the fields in the directive.
+      return hasOneDirectiveDdbFieldsTransformer;
+  }
+};

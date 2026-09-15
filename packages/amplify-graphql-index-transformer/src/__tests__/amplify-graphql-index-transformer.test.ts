@@ -8,7 +8,7 @@ import {
   validateModelSchema,
 } from '@aws-amplify/graphql-transformer-core';
 import { Template as AssertionTemplate } from 'aws-cdk-lib/assertions';
-import { DocumentNode, parse } from 'graphql';
+import { DocumentNode, InputObjectTypeDefinitionNode, parse } from 'graphql';
 import {
   AmplifyApiGraphQlResourceStackTemplate,
   mockSqlDataSourceStrategy,
@@ -329,6 +329,39 @@ test('@index with multiple sort keys adds a query field and GSI correctly', () =
   expect(queryField.arguments[5].type.name.value).toEqual('String');
 });
 
+test('@index query field filter input type name is PascalCased for a lowercase-first model name (issue #3267)', () => {
+  const inputSchema = `
+    type userPrivateSyncItem @model {
+      id: ID!
+      dataType: String! @index(name: "byDataType", queryField: "userPrivateSyncItemsByDataType")
+    }`;
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new IndexTransformer()],
+  });
+  const schema = parse(out.schema);
+
+  validateModelSchema(schema);
+
+  const expectedFilterName = 'ModelUserPrivateSyncItemFilterInput';
+  const queryType = schema.definitions.find((def: any) => def.name && def.name.value === 'Query') as any;
+
+  const listField = queryType.fields.find((f: any) => f.name && f.name.value === 'listUserPrivateSyncItems');
+  const listFilterArg = listField.arguments.find((a: any) => a.name.value === 'filter');
+  expect(listFilterArg.type.name.value).toEqual(expectedFilterName);
+
+  const queryField = queryType.fields.find((f: any) => f.name && f.name.value === 'userPrivateSyncItemsByDataType');
+  const gsiFilterArg = queryField.arguments.find((a: any) => a.name.value === 'filter');
+  // Before the fix this was 'ModeluserPrivateSyncItemFilterInput', mismatching the client-sent variable type.
+  expect(gsiFilterArg.type.name.value).toEqual(expectedFilterName);
+
+  const filterInputNames = schema.definitions
+    .filter((def: any) => def.kind === 'InputObjectTypeDefinition' && /PrivateSyncItemFilterInput$/.test(def.name.value))
+    .map((def: any) => def.name.value);
+  expect(filterInputNames).toContain(expectedFilterName);
+  expect(filterInputNames).not.toContain('ModeluserPrivateSyncItemFilterInput');
+});
+
 test('@index with a single sort key adds a query field and GSI correctly', () => {
   const inputSchema = `
     type Test @model {
@@ -619,6 +652,53 @@ test('sort direction and filter input are generated if default list query does n
   expect(sortDirection).toBeDefined();
   const todoInputType = schema.definitions.find((def: any) => def.name && def.name.value === 'ModelTodoFilterInput');
   expect(todoInputType).toBeDefined();
+});
+
+test('enum input types within the filter input are generated if default list query does not exist', () => {
+  const inputSchema = `
+    type Todo @model(queries: { get: "getTodo", list: null }) {
+      id: ID!
+      description: String
+      createdAt: AWSDateTime @index(name: "byCreatedAt", queryField: "byCreatedAt")
+      status: Status!
+      statusList: [Status!]
+    }
+    enum Status {
+      progress
+      completed
+      rejected
+    }
+  `;
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new IndexTransformer()],
+  });
+  const schema = parse(out.schema);
+
+  validateModelSchema(schema);
+
+  const todoInputType = schema.definitions.find(
+    (d: any) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'ModelTodoFilterInput',
+  );
+  expect(todoInputType).toBeDefined();
+  const enumInputType = schema.definitions.find(
+    (d: any) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'ModelStatusInput',
+  ) as InputObjectTypeDefinitionNode;
+  expect(enumInputType).toBeDefined();
+  const enumInputTypeFields = enumInputType.fields;
+  expect(enumInputTypeFields).toBeDefined();
+  expect(enumInputTypeFields?.length).toBe(2);
+  const enumInputTypeFieldNames = enumInputTypeFields?.map((f) => f.name.value);
+  expect(enumInputTypeFieldNames).toEqual(['eq', 'ne']);
+  const enumInputListType = schema.definitions.find(
+    (d: any) => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'ModelStatusListInput',
+  ) as InputObjectTypeDefinitionNode;
+  expect(enumInputListType).toBeDefined();
+  const enumInputListTypeFields = enumInputListType.fields;
+  expect(enumInputListTypeFields).toBeDefined();
+  expect(enumInputListTypeFields?.length).toBe(4);
+  const enumInputListTypeFieldNames = enumInputListTypeFields?.map((f) => f.name.value);
+  expect(enumInputListTypeFieldNames).toEqual(['eq', 'ne', 'contains', 'notContains']);
 });
 
 test('@index adds an LSI with secondaryKeyAsGSI FF set to false', () => {
@@ -1351,7 +1431,7 @@ describe('Index query resolver creation', () => {
 
   const modelName = 'Test';
   const mockResolver = {
-    addToSlot: jest.fn(),
+    addVtlFunctionToSlot: jest.fn(),
     setScope: jest.fn(),
   };
   const mockModelFieldMap = {
@@ -1432,6 +1512,8 @@ describe('Index query resolver creation', () => {
       },
       output: {
         getQueryTypeName: jest.fn().mockReturnValue('Query'),
+        getObject: jest.fn().mockReturnValue(undefined),
+        getTypeDefinitionsOfKind: jest.fn().mockReturnValue([]),
       },
       resolvers: {
         generateQueryResolver: jest.fn().mockReturnValue(mockResolver),
@@ -1450,6 +1532,258 @@ describe('Index query resolver creation', () => {
       dataSources: {
         get: jest.fn(),
       },
+      synthParameters: {},
     };
   };
+});
+
+describe('RDS index query template includes authFilter', () => {
+  it('generates VTL that forwards ctx.stash.authFilter to the SQL Lambda payload', () => {
+    const { RDSIndexVTLGenerator } = require('../resolvers/generators/rds-vtl-generator');
+    const generator = new RDSIndexVTLGenerator();
+    const mockCtx: any = {
+      resourceHelper: {
+        getModelNameMapping: jest.fn().mockReturnValue('customer'),
+      },
+      output: {
+        getObject: jest.fn().mockReturnValue(undefined),
+        getTypeDefinitionsOfKind: jest.fn().mockReturnValue([]),
+      },
+    };
+    const vtl = generator.generateIndexQueryRequestTemplate(
+      { name: 'byRep', queryField: 'listByRep' } as any,
+      mockCtx,
+      'Customer',
+      'listByRep',
+    );
+    expect(vtl).toContain('$ctx.stash.authFilter');
+    expect(vtl).toContain('lambdaInput.args.metadata.authFilter');
+  });
+});
+
+describe('auth', () => {
+  const API_KEY = 'API Key Authorization';
+  const IAM_AUTH_TYPE = 'IAM Authorization';
+
+  const schema = /* GraphQL */ `
+    type Test @model {
+      id: ID!
+      description: String @index(name: "index1")
+    }
+  `;
+
+  it('sandbox auth enabled should add apiKey if not default mode of auth', () => {
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
+      synthParameters: {
+        enableIamAccess: false,
+      },
+      authConfig: {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [
+          {
+            authenticationType: 'API_KEY',
+          },
+        ],
+      },
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).toContain('aws_api_key');
+    expect(out.schema).not.toContain('aws_iam');
+    expect(out.schema).toMatchSnapshot();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toBeDefined();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toContain(API_KEY);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).not.toContain(IAM_AUTH_TYPE);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toMatchSnapshot();
+  });
+
+  it('iam auth enabled should add aws_iam if not default mode of auth', () => {
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: false,
+      },
+      synthParameters: {
+        enableIamAccess: true,
+      },
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).not.toContain('aws_api_key');
+    expect(out.schema).toContain('aws_iam');
+    expect(out.schema).toMatchSnapshot();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toBeDefined();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).not.toContain(API_KEY);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toContain(IAM_AUTH_TYPE);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toMatchSnapshot();
+  });
+
+  it('iam and sandbox auth enabled should add aws_iam and aws_api_key if not default mode of auth', () => {
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: true,
+      },
+      synthParameters: {
+        enableIamAccess: true,
+      },
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).toContain('aws_api_key');
+    expect(out.schema).toContain('aws_iam');
+    expect(out.schema).toMatchSnapshot();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toBeDefined();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toContain(API_KEY);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toContain(IAM_AUTH_TYPE);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toMatchSnapshot();
+  });
+
+  it('iam and sandbox auth disable should not add service directives', () => {
+    const out = testTransform({
+      schema,
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+      transformParameters: {
+        sandboxModeEnabled: false,
+      },
+      synthParameters: {
+        enableIamAccess: false,
+      },
+    });
+    expect(out).toBeDefined();
+    expect(out.schema).not.toContain('aws_api_key');
+    expect(out.schema).not.toContain('aws_iam');
+    expect(out.schema).toMatchSnapshot();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toBeDefined();
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).not.toContain(API_KEY);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).not.toContain(IAM_AUTH_TYPE);
+    expect(out.resolvers['Query.testsByDescription.postAuth.1.res.vtl']).toMatchSnapshot();
+  });
+});
+
+test('@index with KEYS_ONLY projection creates GSI with correct projection type', () => {
+  const inputSchema = `
+    type Product @model {
+      id: ID!
+      name: String! @index(name: "byName", queryField: "productsByName", projection: { type: KEYS_ONLY })
+      category: String!
+      price: Float!
+    }`;
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new IndexTransformer()],
+  });
+  const stack = out.stacks.Product;
+
+  AssertionTemplate.fromJSON(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'byName',
+        Projection: {
+          ProjectionType: 'KEYS_ONLY',
+        },
+      },
+    ],
+  });
+});
+
+test('@index with INCLUDE projection creates GSI with nonKeyAttributes', () => {
+  const inputSchema = `
+    type Product @model {
+      id: ID!
+      name: String!
+      category: String! @index(name: "byCategory", queryField: "productsByCategory", projection: { type: INCLUDE, nonKeyAttributes: ["name", "price"] })
+      price: Float!
+      inStock: Boolean!
+    }`;
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new IndexTransformer()],
+  });
+  const stack = out.stacks.Product;
+
+  AssertionTemplate.fromJSON(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'byCategory',
+        Projection: {
+          ProjectionType: 'INCLUDE',
+          NonKeyAttributes: ['name', 'price'],
+        },
+      },
+    ],
+  });
+});
+
+test('@index with ALL projection creates GSI with ALL projection type', () => {
+  const inputSchema = `
+    type Product @model {
+      id: ID!
+      name: String!
+      category: String! @index(name: "byCategory", queryField: "productsByCategory", projection: { type: ALL })
+      price: Float!
+    }`;
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new IndexTransformer()],
+  });
+  const stack = out.stacks.Product;
+
+  AssertionTemplate.fromJSON(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'byCategory',
+        Projection: {
+          ProjectionType: 'ALL',
+        },
+      },
+    ],
+  });
+});
+
+test('@index throws error when INCLUDE projection has no nonKeyAttributes', () => {
+  const inputSchema = `
+    type Product @model {
+      id: ID!
+      category: String! @index(name: "byCategory", projection: { type: INCLUDE })
+    }`;
+
+  expect(() =>
+    testTransform({
+      schema: inputSchema,
+      transformers: [new ModelTransformer(), new IndexTransformer()],
+    }),
+  ).toThrow("@index 'byCategory': nonKeyAttributes must be specified when projection type is INCLUDE");
+});
+
+test('@index without projection defaults to ALL projection type', () => {
+  const inputSchema = `
+    type Product @model {
+      id: ID!
+      name: String!
+      category: String! @index(name: "byCategory", queryField: "productsByCategory")
+      price: Float!
+    }`;
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new IndexTransformer()],
+  });
+  const stack = out.stacks.Product;
+
+  AssertionTemplate.fromJSON(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'byCategory',
+        Projection: {
+          ProjectionType: 'ALL',
+        },
+      },
+    ],
+  });
 });

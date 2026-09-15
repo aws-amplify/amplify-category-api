@@ -4,13 +4,18 @@ import { GraphQLAPIProvider, MappingTemplateProvider } from '../graphql-api-prov
 import { DataSourceProvider } from './transformer-datasource-provider';
 import { TransformerContextProvider } from './transformer-context-provider';
 
+export type VTLRuntimeTemplate = { requestMappingTemplate: MappingTemplateProvider; responseMappingTemplate: MappingTemplateProvider };
+export type JSRuntimeTemplate = { codeMappingTemplate: MappingTemplateProvider };
+export type FunctionRuntimeTemplate = VTLRuntimeTemplate | JSRuntimeTemplate;
+
 export interface TransformerResolverProvider {
-  addToSlot: (
+  addVtlFunctionToSlot: (
     slotName: string,
     requestMappingTemplate?: MappingTemplateProvider,
     responseMappingTemplate?: MappingTemplateProvider,
     dataSource?: DataSourceProvider,
   ) => void;
+  addJsFunctionToSlot: (slotName: string, codeMappingTemplate: MappingTemplateProvider, dataSource?: DataSourceProvider) => void;
   synthesize: (context: TransformerContextProvider, api: GraphQLAPIProvider) => void;
   setScope: (scope: Construct) => void;
 

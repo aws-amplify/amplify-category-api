@@ -37,7 +37,7 @@ export const createPolicyDocumentForManagedPolicy = (context: TransformerContext
 
     if (fieldName !== 'null') {
       policyDocumentResources.push(
-        cdk.Fn.sub('arn:aws:appsync:${AWS::Region}:${AWS::AccountId}:apis/${apiId}/types/${typeName}/fields/${fieldName}', {
+        cdk.Fn.sub('arn:${AWS::Partition}:appsync:${AWS::Region}:${AWS::AccountId}:apis/${apiId}/types/${typeName}/fields/${fieldName}', {
           apiId: context.api.apiId,
           typeName,
           fieldName,
@@ -46,7 +46,7 @@ export const createPolicyDocumentForManagedPolicy = (context: TransformerContext
       resourceSize += RESOURCE_OVERHEAD + typeName.length + fieldName.length;
     } else {
       policyDocumentResources.push(
-        cdk.Fn.sub('arn:aws:appsync:${AWS::Region}:${AWS::AccountId}:apis/${apiId}/types/${typeName}/*', {
+        cdk.Fn.sub('arn:${AWS::Partition}:appsync:${AWS::Region}:${AWS::AccountId}:apis/${apiId}/types/${typeName}/*', {
           apiId: context.api.apiId,
           typeName,
         }).toString(),

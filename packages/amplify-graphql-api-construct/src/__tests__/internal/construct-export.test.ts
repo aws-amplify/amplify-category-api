@@ -31,5 +31,47 @@ describe('AmplifyGraphqlApi', () => {
         ]),
       );
     });
+    it('returns both table interface and L1 table construct(amplifyTable) when using amplify table strategy', () => {
+      const { resources } = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
+        definition: AmplifyGraphqlDefinition.fromString(
+          /* GraphQL */ `
+            type Todo @model @auth(rules: [{ allow: public }]) {
+              description: String!
+            }
+          `,
+          {
+            dbType: 'DYNAMODB',
+            provisionStrategy: 'AMPLIFY_TABLE',
+          },
+        ),
+        authorizationModes: {
+          apiKeyConfig: { expires: cdk.Duration.days(7) },
+        },
+      });
+      expect(resources.cfnResources.amplifyDynamoDbTables['Todo']).toBeDefined();
+      expect(resources.tables['Todo']).toBeDefined();
+      expect(resources.cfnResources.cfnTables['Todo']).toBeUndefined();
+    });
+    it('returns both table interface and L1 table construct(cfnTable) when using default DDB strategy', () => {
+      const { resources } = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
+        definition: AmplifyGraphqlDefinition.fromString(
+          /* GraphQL */ `
+            type Todo @model @auth(rules: [{ allow: public }]) {
+              description: String!
+            }
+          `,
+          {
+            dbType: 'DYNAMODB',
+            provisionStrategy: 'DEFAULT',
+          },
+        ),
+        authorizationModes: {
+          apiKeyConfig: { expires: cdk.Duration.days(7) },
+        },
+      });
+      expect(resources.cfnResources.cfnTables['Todo']).toBeDefined();
+      expect(resources.tables['Todo']).toBeDefined();
+      expect(resources.cfnResources.amplifyDynamoDbTables['Todo']).toBeUndefined();
+    });
   });
 });

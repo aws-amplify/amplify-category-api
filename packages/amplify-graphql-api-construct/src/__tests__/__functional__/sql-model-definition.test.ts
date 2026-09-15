@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import { CfnFunction, CfnAlias } from 'aws-cdk-lib/aws-lambda';
+import { CfnVPCEndpoint } from 'aws-cdk-lib/aws-ec2';
 import { mockSqlDataSourceStrategy } from '@aws-amplify/graphql-transformer-test-utils';
 import { getResourceNamesForStrategy } from '@aws-amplify/graphql-transformer-core';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
@@ -67,35 +68,117 @@ describe('sql-bound API generated resource access', () => {
         // implementation is private.
       });
 
-      it('provides the generated VPC Endpoints and security group inbound rules as L1 constructs when provided a VPC configuration', () => {
-        const strategy = mockSqlDataSourceStrategy({
-          vpcConfiguration: {
-            vpcId: 'vpc-123abc',
-            securityGroupIds: ['sg-123abc'],
-            subnetAvailabilityZoneConfig: [{ subnetId: 'subnet-123abc', availabilityZone: 'us-east-1a' }],
-          },
+      describe('provides the generated VPC Endpoints and security group inbound rules as L1 constructs when provided a VPC configuration', () => {
+        it('ssm as credential store', () => {
+          const strategy = mockSqlDataSourceStrategy({
+            vpcConfiguration: {
+              vpcId: 'vpc-123abc',
+              securityGroupIds: ['sg-123abc'],
+              subnetAvailabilityZoneConfig: [{ subnetId: 'subnet-123abc', availabilityZone: 'us-east-1a' }],
+            },
+          });
+
+          const stack = new cdk.Stack();
+          const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
+          const api = new AmplifyGraphqlApi(stack, 'TestSqlBoundApi', {
+            definition: AmplifyGraphqlDefinition.fromString(defaultSchema, strategy),
+            authorizationModes: {
+              userPoolConfig: { userPool },
+            },
+          });
+
+          const {
+            resources: {
+              cfnResources: { additionalCfnResources },
+            },
+          } = api;
+
+          expect(additionalCfnResources).toBeDefined();
+          const endpoints = Object.values(additionalCfnResources).filter(
+            (resource) => resource.cfnResourceType === 'AWS::EC2::VPCEndpoint',
+          );
+
+          // 5 endpoints per SQL Lambda function. Update this test accordingly as we add additional data sources bound to separate functions.
+          expect(endpoints.length).toBe(5);
         });
 
-        const stack = new cdk.Stack();
-        const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
-        const api = new AmplifyGraphqlApi(stack, 'TestSqlBoundApi', {
-          definition: AmplifyGraphqlDefinition.fromString(defaultSchema, strategy),
-          authorizationModes: {
-            userPoolConfig: { userPool },
-          },
+        it('ssm as credential store with minimizeRdsVpcEndpoints enabled', () => {
+          const strategy = mockSqlDataSourceStrategy({
+            vpcConfiguration: {
+              vpcId: 'vpc-123abc',
+              securityGroupIds: ['sg-123abc'],
+              subnetAvailabilityZoneConfig: [{ subnetId: 'subnet-123abc', availabilityZone: 'us-east-1a' }],
+            },
+            minimizeRdsVpcEndpoints: true,
+          });
+
+          const stack = new cdk.Stack();
+          const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
+          const api = new AmplifyGraphqlApi(stack, 'TestSqlBoundApi', {
+            definition: AmplifyGraphqlDefinition.fromString(defaultSchema, strategy),
+            authorizationModes: {
+              userPoolConfig: { userPool },
+            },
+          });
+
+          const {
+            resources: {
+              cfnResources: { additionalCfnResources },
+            },
+          } = api;
+
+          expect(additionalCfnResources).toBeDefined();
+          const endpoints = Object.values(additionalCfnResources).filter(
+            (resource) => resource.cfnResourceType === 'AWS::EC2::VPCEndpoint',
+          );
+
+          // With minimizeRdsVpcEndpoints enabled, only the `ssm` endpoint is provisioned.
+          expect(endpoints.length).toBe(1);
+          const [ssmEndpoint] = endpoints as CfnVPCEndpoint[];
+          const resolvedServiceName = JSON.stringify(cdk.Stack.of(ssmEndpoint).resolve(ssmEndpoint.serviceName));
+          expect(resolvedServiceName).toContain('ssm');
+          expect(resolvedServiceName).not.toContain('ssmmessages');
+          expect(resolvedServiceName).not.toContain('ec2');
+          expect(resolvedServiceName).not.toContain('kms');
         });
 
-        const {
-          resources: {
-            cfnResources: { additionalCfnResources },
-          },
-        } = api;
+        it('secrets manager as credentials store', () => {
+          const strategy = mockSqlDataSourceStrategy({
+            dbConnectionConfig: {
+              databaseName: 'myfakedatabase',
+              hostname: 'myfakehostname',
+              port: 12345,
+              secretArn: 'arn:aws:secretsmanager:us-west-2:12345678910:secret:fakearn-abdc',
+            },
+            vpcConfiguration: {
+              vpcId: 'vpc-123abc',
+              securityGroupIds: ['sg-123abc'],
+              subnetAvailabilityZoneConfig: [{ subnetId: 'subnet-123abc', availabilityZone: 'us-east-1a' }],
+            },
+          });
 
-        expect(additionalCfnResources).toBeDefined();
-        const endpoints = Object.values(additionalCfnResources).filter((resource) => resource.cfnResourceType === 'AWS::EC2::VPCEndpoint');
+          const stack = new cdk.Stack();
+          const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
+          const api = new AmplifyGraphqlApi(stack, 'TestSqlBoundApi', {
+            definition: AmplifyGraphqlDefinition.fromString(defaultSchema, strategy),
+            authorizationModes: {
+              userPoolConfig: { userPool },
+            },
+          });
 
-        // 5 endpoints per SQL Lambda function. Update this test accordingly as we add additional data sources bound to separate functions.
-        expect(endpoints.length).toBe(5);
+          const {
+            resources: {
+              cfnResources: { additionalCfnResources },
+            },
+          } = api;
+
+          expect(additionalCfnResources).toBeDefined();
+          const endpoints = Object.values(additionalCfnResources).filter(
+            (resource) => resource.cfnResourceType === 'AWS::EC2::VPCEndpoint',
+          );
+
+          expect(endpoints.length).toBe(1);
+        });
       });
 
       it('provides the generated SQL Lambda function as an L1 construct without a VPC configuration', () => {

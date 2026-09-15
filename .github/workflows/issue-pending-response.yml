@@ -6,10 +6,11 @@ permissions:
   issues: write
 jobs:
   issue_commented:
-    if: ${{ !github.event.issue.pull_request  && contains(github.event.issue.labels.*.name, 'pending-response') }}
+    if: ${{ !github.event.issue.pull_request && contains(github.event.issue.labels.*.name, 'pending-community-response') }}
     runs-on: ubuntu-latest
     steps:
       - uses: siegerts/pending-author-response@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          pending-response-label: pending-response
+          pending-response-label: pending-community-response
+          actionable-label: pending-maintainer-response

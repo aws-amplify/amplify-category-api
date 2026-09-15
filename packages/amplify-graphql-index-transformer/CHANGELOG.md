@@ -3,6 +3,189 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.1.2...@aws-amplify/graphql-index-transformer@3.1.3) (2026-07-13)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [3.1.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.1.1...@aws-amplify/graphql-index-transformer@3.1.2) (2026-07-01)
+
+### Bug Fixes
+
+- forward authFilter in RDS index query to prevent cross-tenant data exposure ([bfd5bf7](https://github.com/aws-amplify/amplify-category-api/commit/bfd5bf7141ec951532c807c26d7e280e66d80fc2))
+
+## [3.1.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.1.0...@aws-amplify/graphql-index-transformer@3.1.1) (2026-03-24)
+
+### Reverts
+
+- Revert "chore(release): Publish [ci skip]" ([dd1f693](https://github.com/aws-amplify/amplify-category-api/commit/dd1f693d8ad6059d6a53af117b16505f40e1e657))
+
+# [3.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.0.19...@aws-amplify/graphql-index-transformer@3.1.0) (2026-02-05)
+
+### Features
+
+- add projection support for [@index](https://github.com/index) directive ([#3359](https://github.com/aws-amplify/amplify-category-api/issues/3359)) ([d986592](https://github.com/aws-amplify/amplify-category-api/commit/d986592f8ce8503e2c3f37dcaf0443bf7436baf7))
+
+## [3.0.19](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.0.18...@aws-amplify/graphql-index-transformer@3.0.19) (2025-06-09)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [3.0.18](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.0.17...@aws-amplify/graphql-index-transformer@3.0.18) (2025-04-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [3.0.17](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.0.16...@aws-amplify/graphql-index-transformer@3.0.17) (2025-04-09)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [3.0.16](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.0.15...@aws-amplify/graphql-index-transformer@3.0.16) (2025-03-06)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [3.0.15](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.0.14...@aws-amplify/graphql-index-transformer@3.0.15) (2025-02-26)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [3.0.14](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.0.13...@aws-amplify/graphql-index-transformer@3.0.14) (2025-02-07)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [3.0.13](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.0.12...@aws-amplify/graphql-index-transformer@3.0.13) (2025-01-30)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [3.0.12](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.0.10...@aws-amplify/graphql-index-transformer@3.0.12) (2025-01-16)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [3.0.11](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.0.10...@aws-amplify/graphql-index-transformer@3.0.11) (2024-12-23)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [3.0.10](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.0.9...@aws-amplify/graphql-index-transformer@3.0.10) (2024-12-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [3.0.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.0.8...@aws-amplify/graphql-index-transformer@3.0.9) (2024-11-14)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [3.0.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.0.7...@aws-amplify/graphql-index-transformer@3.0.8) (2024-11-08)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [3.0.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.0.6...@aws-amplify/graphql-index-transformer@3.0.7) (2024-10-28)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [3.0.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.0.5...@aws-amplify/graphql-index-transformer@3.0.6) (2024-10-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [3.0.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.0.4...@aws-amplify/graphql-index-transformer@3.0.5) (2024-10-10)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [3.0.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.0.3...@aws-amplify/graphql-index-transformer@3.0.4) (2024-10-01)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [3.0.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.0.2...@aws-amplify/graphql-index-transformer@3.0.3) (2024-09-16)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [3.0.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.0.1...@aws-amplify/graphql-index-transformer@3.0.2) (2024-09-06)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [3.0.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.0.0...@aws-amplify/graphql-index-transformer@3.0.1) (2024-08-28)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+# [3.0.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.4.9...@aws-amplify/graphql-index-transformer@3.0.0) (2024-08-20)
+
+- feat!: bump version for v2 transformer packages ([7dac35c](https://github.com/aws-amplify/amplify-category-api/commit/7dac35cceb971b256b5688b0745ef82afc78b641))
+
+### BREAKING CHANGES
+
+- distinguish from LTS version
+
+## [2.4.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.4.8...@aws-amplify/graphql-index-transformer@2.4.9) (2024-08-12)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [2.4.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.4.7...@aws-amplify/graphql-index-transformer@2.4.8) (2024-07-25)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [2.4.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.4.6...@aws-amplify/graphql-index-transformer@2.4.7) (2024-07-15)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [2.4.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.4.5...@aws-amplify/graphql-index-transformer@2.4.6) (2024-07-02)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [2.4.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.4.4...@aws-amplify/graphql-index-transformer@2.4.5) (2024-07-01)
+
+### Bug Fixes
+
+- auth to use validateUsingSource in place of auth filter to show error message ([#2523](https://github.com/aws-amplify/amplify-category-api/issues/2523)) ([b7d83f9](https://github.com/aws-amplify/amplify-category-api/commit/b7d83f991f85eaffb2408cff98e1880c7fa680ef))
+
+## [2.4.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.4.3...@aws-amplify/graphql-index-transformer@2.4.4) (2024-06-25)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [2.4.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.4.2...@aws-amplify/graphql-index-transformer@2.4.3) (2024-05-15)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [2.4.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.4.1...@aws-amplify/graphql-index-transformer@2.4.2) (2024-05-10)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [2.4.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.4.0...@aws-amplify/graphql-index-transformer@2.4.1) (2024-05-01)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+# [2.4.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.3.9...@aws-amplify/graphql-index-transformer@2.4.0) (2024-04-26)
+
+### Bug Fixes
+
+- auto generated id when timestamps: null ([#2470](https://github.com/aws-amplify/amplify-category-api/issues/2470)) ([936a4f9](https://github.com/aws-amplify/amplify-category-api/commit/936a4f9b40ae21a7bd4250616c8d83835bb75784))
+- enum input type in filter input when list is disabled ([#2446](https://github.com/aws-amplify/amplify-category-api/issues/2446)) ([13c2716](https://github.com/aws-amplify/amplify-category-api/commit/13c27168708149207427a7c83493b02a61df070f))
+
+### Features
+
+- iam access support for searchable, index and sql directives ([#2398](https://github.com/aws-amplify/amplify-category-api/issues/2398)) ([c2a3d92](https://github.com/aws-amplify/amplify-category-api/commit/c2a3d92e89891e9585aa1c26731f132171e271be))
+
+## [2.3.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.3.8...@aws-amplify/graphql-index-transformer@2.3.9) (2024-04-11)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [2.3.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.3.7...@aws-amplify/graphql-index-transformer@2.3.8) (2024-03-28)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [2.3.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.3.6...@aws-amplify/graphql-index-transformer@2.3.7) (2024-03-13)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [2.3.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.3.5...@aws-amplify/graphql-index-transformer@2.3.6) (2024-02-28)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [2.3.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.3.4...@aws-amplify/graphql-index-transformer@2.3.5) (2024-02-05)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [2.3.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.3.3...@aws-amplify/graphql-index-transformer@2.3.4) (2024-01-30)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [2.3.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.3.2...@aws-amplify/graphql-index-transformer@2.3.3) (2024-01-22)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
 ## [2.3.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@2.3.1...@aws-amplify/graphql-index-transformer@2.3.2) (2023-12-18)
 
 **Note:** Version bump only for package @aws-amplify/graphql-index-transformer

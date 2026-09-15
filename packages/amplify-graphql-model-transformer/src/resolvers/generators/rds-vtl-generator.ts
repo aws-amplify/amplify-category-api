@@ -43,7 +43,7 @@ export class RDSModelVTLGenerator implements ModelVTLGenerator {
   }
 
   generateGetRequestTemplate(config: ModelRequestConfig, ctx: TransformerContextProvider): string {
-    return generateLambdaRequestTemplate(config.modelName, config.operation, config.operationName, ctx);
+    return generateLambdaRequestTemplate(config.modelName, config.operation, config.operationName, ctx, true);
   }
 
   generateGetResponseTemplate(config: ModelUpdateRequestConfig): string {

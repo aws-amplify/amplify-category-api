@@ -1,12 +1,6 @@
 import { AmplifyGraphqlApi } from '@aws-amplify/graphql-api-construct';
 import { BillingMode } from 'aws-cdk-lib/aws-dynamodb';
 
-const ONE_MINUTE = 60 * 1000;
-export const DURATION_10_MINUTES = 10 * ONE_MINUTE;
-export const DURATION_20_MINUTES = 20 * ONE_MINUTE;
-export const DURATION_30_MINUTES = 30 * ONE_MINUTE;
-export const DURATION_1_HOUR = 60 * ONE_MINUTE;
-
 export const COUNT_1_THOUSAND = 1000;
 export const COUNT_10_THOUSAND = 10000;
 export const COUNT_100_THOUSAND = 100000;
@@ -66,7 +60,7 @@ export const MUTATION_FOUR_FIELD_CREATE = (uuid: string, i: number): string =>
   `mut${i}: createTodo(input: { field1: "${uuid}", field2: "${uuid}", field3: "${uuid}", field4: "${uuid}" }) { id }`;
 
 export const API_POST_PROCESSOR_SET_PROVISIONED_THROUGHPUT_TWO_GSIS = (api: AmplifyGraphqlApi): void => {
-  const table = api.resources.amplifyDynamoDbTables.Todo;
+  const table = api.resources.cfnResources.amplifyDynamoDbTables.Todo;
   table.billingMode = BillingMode.PROVISIONED; // This will require `BillingMode` be imported in the generated file.
   table.provisionedThroughput = { readCapacityUnits: 10, writeCapacityUnits: 10 };
 };

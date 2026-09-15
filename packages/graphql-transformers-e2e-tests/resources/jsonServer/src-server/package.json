@@ -3,10 +3,12 @@
   "private": true,
   "version": "1.0.0",
   "dependencies": {
-    "aws-serverless-express": "^3.3.8",
+    "@codegenie/serverless-express": "^4.15.0",
     "json-server": "^0.17.0"
   },
   "resolutions": {
-    "got": "^11.8.5"
+    "got": "^11.8.5",
+    "path-to-regexp": "^1.9.0",
+    "lodash": ">=4.17.23"
   }
 }

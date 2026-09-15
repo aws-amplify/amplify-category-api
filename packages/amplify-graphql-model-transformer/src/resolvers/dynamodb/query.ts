@@ -160,7 +160,7 @@ export const generateListRequestTemplate = (): string => {
       ]),
       qref(methodCall(ref(`${requestVariable}.put`), str('operation'), str('Scan'))),
     ),
-    iff(not(methodCall(ref('util.isNull'), ref(indexNameVariable))), set(ref(`${requestVariable}.IndexName`), ref(indexNameVariable))),
+    iff(not(methodCall(ref('util.isNull'), ref(indexNameVariable))), set(ref(`${requestVariable}.index`), ref(indexNameVariable))),
     toJson(ref(requestVariable)),
   ]);
   return printBlock('List Request')(expression);

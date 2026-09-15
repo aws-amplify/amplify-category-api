@@ -273,6 +273,10 @@ export class AmplifyCLI {
     console.log(`Using CLI path '${cliPath}'`);
     console.log(`Project root: '${this.projectRoot}'`);
     const chain = spawn(cliPath, cliArgs, { cwd: this.projectRoot, env, disableCIDetection: s.disableCIDetection })
+      .wait('Do you want to continue with Amplify Gen 1?')
+      .sendConfirmYes()
+      .wait('Why would you like to use Amplify Gen 1?')
+      .sendCarriageReturn()
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')

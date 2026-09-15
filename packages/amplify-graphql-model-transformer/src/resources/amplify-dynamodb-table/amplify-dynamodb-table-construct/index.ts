@@ -14,6 +14,7 @@ import {
   TableEncryption,
   TableProps,
 } from 'aws-cdk-lib/aws-dynamodb';
+import { IGrantable, Grant } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 
 const HASH_KEY_TYPE = 'HASH';
@@ -23,11 +24,13 @@ const RANGE_KEY_TYPE = 'RANGE';
 const MAX_LOCAL_SECONDARY_INDEX_COUNT = 5;
 
 export const CUSTOM_DDB_CFN_TYPE = 'Custom::AmplifyDynamoDBTable';
+export const CUSTOM_IMPORTED_DDB_CFN_TYPE = 'Custom::ImportedAmplifyDynamoDBTable';
 
 export interface AmplifyDynamoDBTableProps extends TableProps {
   customResourceServiceToken: string;
   allowDestructiveGraphqlSchemaUpdates?: boolean;
   replaceTableUponGsiUpdate?: boolean;
+  isImported?: boolean;
 }
 export class AmplifyDynamoDBTable extends Resource {
   public readonly encryptionKey?: kms.IKey;
@@ -71,7 +74,7 @@ export class AmplifyDynamoDBTable extends Resource {
     // Refer https://docs.aws.amazon.com/cdk/api/v2/docs/constructs.Node.html#defaultchild
     this.table = new CustomResource(this, 'Default', {
       serviceToken: this.customResourceServiceToken,
-      resourceType: CUSTOM_DDB_CFN_TYPE,
+      resourceType: props.isImported ? CUSTOM_IMPORTED_DDB_CFN_TYPE : CUSTOM_DDB_CFN_TYPE,
       properties: {
         tableName: this.tableName,
         attributeDefinitions: this.attributeDefinitions,
@@ -95,6 +98,7 @@ export class AmplifyDynamoDBTable extends Resource {
         deletionProtectionEnabled: props.deletionProtection,
         allowDestructiveGraphqlSchemaUpdates: props.allowDestructiveGraphqlSchemaUpdates ?? false,
         replaceTableUponGsiUpdate: props.replaceTableUponGsiUpdate ?? false,
+        isImported: props.isImported,
       },
       removalPolicy: props.removalPolicy,
     });
@@ -108,8 +112,8 @@ export class AmplifyDynamoDBTable extends Resource {
       tableStreamArn: this.tableStreamArn,
     });
 
-    this.addKey(props.partitionKey, HASH_KEY_TYPE);
-    this.tablePartitionKey = props.partitionKey;
+    this.addKey(props.partitionKey!, HASH_KEY_TYPE);
+    this.tablePartitionKey = props.partitionKey!;
 
     if (props.sortKey) {
       this.addKey(props.sortKey, RANGE_KEY_TYPE);
@@ -129,7 +133,7 @@ export class AmplifyDynamoDBTable extends Resource {
     this.validateIndexName(props.indexName);
 
     // build key schema and projection for index
-    const gsiKeySchema = this.buildIndexKeySchema(props.partitionKey, props.sortKey);
+    const gsiKeySchema = this.buildIndexKeySchema(props.partitionKey!, props.sortKey);
     const gsiProjection = this.buildIndexProjection(props);
 
     this.globalSecondaryIndexes.push({
@@ -197,6 +201,20 @@ export class AmplifyDynamoDBTable extends Resource {
       throw new Error(`Cannot find schema for index: ${indexName}. Use 'addGlobalSecondaryIndex' or 'addLocalSecondaryIndex' to add index`);
     }
     return schema;
+  }
+
+  public grantStreamRead(grantee: IGrantable): Grant {
+    if (!this.tableStreamArn) {
+      throw new Error(`No stream ARNs found on the table ${this.node.path}`);
+    }
+    if (this.encryptionKey) {
+      this.encryptionKey.grant(grantee, 'kms:Decrypt', 'kms:DescribeKey');
+    }
+    return Grant.addToPrincipal({
+      grantee,
+      actions: ['dynamodb:ListStreams', 'dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator'],
+      resourceArns: [this.tableStreamArn],
+    });
   }
 
   private addKey(attribute: Attribute, keyType: string) {

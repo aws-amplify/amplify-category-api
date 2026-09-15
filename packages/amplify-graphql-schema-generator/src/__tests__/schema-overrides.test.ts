@@ -1,9 +1,7 @@
-import { applySchemaOverrides } from '../schema-generator';
-import { print, parse, FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
-import { printer } from '@aws-amplify/amplify-prompts';
-import { findMatchingField } from '../schema-generator';
+import { print, parse } from 'graphql';
+import { applySchemaOverrides, findMatchingField } from '../schema-generator';
 
-jest.mock('@aws-amplify/amplify-prompts');
+jest.spyOn(global.console, 'warn');
 
 describe('apply schema overrides for JSON fields', () => {
   it('should retain JSON to List type edits', () => {
@@ -201,7 +199,7 @@ describe('apply schema overrides for JSON fields', () => {
     const editedDocument = parse(editedSchema);
     const updatedDocument = applySchemaOverrides(document, editedDocument);
     stringsMatchWithoutWhitespace(print(updatedDocument), editedSchema);
-    expect(printer.warn).toHaveBeenCalledWith(
+    expect(console.warn).toHaveBeenCalledWith(
       'The field title has been changed to an optional type while it is required in the database. This may result in SQL errors in the mutations.',
     );
   });
@@ -226,7 +224,7 @@ describe('apply schema overrides for JSON fields', () => {
     const editedDocument = parse(editedSchema);
     const updatedDocument = applySchemaOverrides(document, editedDocument);
     stringsMatchWithoutWhitespace(print(updatedDocument), editedSchema);
-    expect(printer.warn).toHaveBeenCalledWith(
+    expect(console.warn).toHaveBeenCalledWith(
       'The field title has been changed to an optional type while it is required in the database. This may result in SQL errors in the mutations.',
     );
   });

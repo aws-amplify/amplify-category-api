@@ -1,15 +1,20 @@
 import * as cdk from 'aws-cdk-lib';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ModelResourceIDs, ResourceConstants } from 'graphql-transformer-common';
-import { ObjectTypeDefinitionNode } from 'graphql';
-import { setResourceName } from '@aws-amplify/graphql-transformer-core';
-import { AttributeType, StreamViewType, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
+import { ModelResourceIDs, ResourceConstants, attributeTypeFromScalar, getBaseType } from 'graphql-transformer-common';
+import { Kind, ObjectTypeDefinitionNode, TypeNode } from 'graphql';
+import {
+  setResourceName,
+  isImportedAmplifyDynamoDbModelDataSourceStrategy,
+  getPrimaryKeyFieldNodes,
+} from '@aws-amplify/graphql-transformer-core';
+import { Attribute, AttributeType, StreamViewType, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
-
-import { Duration, aws_iam, aws_lambda, custom_resources, aws_logs } from 'aws-cdk-lib';
+import { Duration, aws_iam, aws_lambda } from 'aws-cdk-lib';
 import { DynamoModelResourceGenerator } from '../dynamo-model-resource-generator';
 import * as path from 'path';
 import { AmplifyDynamoDBTable } from './amplify-dynamodb-table-construct';
+import { WaiterStateMachine } from './waiter-state-machine';
+import { Provider } from './provider';
 
 /**
  * AmplifyDynamoModelResourceGenerator is a subclass of DynamoModelResourceGenerator,
@@ -18,8 +23,7 @@ import { AmplifyDynamoDBTable } from './amplify-dynamodb-table-construct';
 
 export const ITERATIVE_TABLE_STACK_NAME = 'AmplifyTableManager';
 export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGenerator {
-  private customResourceServiceToken: string = '';
-  private ddbManagerPolicy?: aws_iam.Policy;
+  private customResourceServiceToken = '';
 
   generateResources(ctx: TransformerContextProvider): void {
     if (!this.isEnabled()) {
@@ -44,8 +48,22 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
       this.createModelTable(scope, model, ctx);
     });
 
-    if (this.ddbManagerPolicy) {
-      this.ddbManagerPolicy?.addStatements(
+    this.generateResolvers(ctx);
+  }
+
+  protected createCustomProviderResource(scope: Construct, context: TransformerContextProvider): void {
+    const lambdaCode = aws_lambda.Code.fromAsset(
+      path.join(__dirname, '..', '..', '..', 'lib', 'resources', 'amplify-dynamodb-table', 'amplify-table-manager-lambda'),
+      { exclude: ['*.ts', '*.json', 'LICENSE', 'README.md'] },
+    );
+
+    const importedTableNames = Object.values(context.dataSourceStrategies)
+      .filter(isImportedAmplifyDynamoDbModelDataSourceStrategy)
+      .map((strategy) => strategy.tableName);
+
+    // PolicyDocument that grants access to Create/Update/Delete relevant DynamoDB tables
+    const lambdaPolicyDocument = new aws_iam.PolicyDocument({
+      statements: [
         new aws_iam.PolicyStatement({
           actions: [
             'dynamodb:CreateTable',
@@ -56,70 +74,126 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
             'dynamodb:DescribeTimeToLive',
             'dynamodb:UpdateContinuousBackups',
             'dynamodb:UpdateTimeToLive',
+            'dynamodb:TagResource',
+            'dynamodb:UntagResource',
+            'dynamodb:ListTagsOfResource',
           ],
           resources: [
-            cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}', {
-              apiId: ctx.api.apiId,
-              envName: ctx.synthParameters.amplifyEnvironmentName,
+            // eslint-disable-next-line no-template-curly-in-string
+            cdk.Fn.sub('arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*-${apiId}-${envName}', {
+              apiId: context.api.apiId,
+              envName: context.synthParameters.amplifyEnvironmentName,
             }),
+            ...importedTableNames.map((tableName) =>
+              cdk.Fn.sub('arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}', {
+                tableName,
+              }),
+            ),
           ],
         }),
-      );
-    }
-
-    this.generateResolvers(ctx);
-  }
-
-  protected createCustomProviderResource(scope: Construct, context: TransformerContextProvider): void {
-    // Policy that grants access to Create/Update/Delete DynamoDB tables
-    this.ddbManagerPolicy = new aws_iam.Policy(scope, 'CreateUpdateDeleteTablesPolicy');
-
-    const lambdaCode = aws_lambda.Code.fromAsset(
-      path.join(__dirname, '..', '..', '..', 'lib', 'resources', 'amplify-dynamodb-table', 'amplify-table-manager-lambda'),
-    );
-
-    // lambda that will handle DDB CFN events
-    const gsiOnEventHandler = new aws_lambda.Function(scope, ResourceConstants.RESOURCES.TableManagerOnEventHandlerLogicalID, {
-      runtime: aws_lambda.Runtime.NODEJS_18_X,
-      code: lambdaCode,
-      handler: 'amplify-table-manager-handler.onEvent',
-      timeout: Duration.minutes(14),
+        new aws_iam.PolicyStatement({
+          actions: ['lambda:ListTags'],
+          resources: [
+            // eslint-disable-next-line no-template-curly-in-string
+            cdk.Fn.sub('arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:*TableManager*', {}),
+          ],
+        }),
+      ],
     });
 
-    // lambda that will poll for provisioning to complete
-    const gsiIsCompleteHandler = new aws_lambda.Function(scope, ResourceConstants.RESOURCES.TableManagerIsCompleteHandlerLogicalID, {
-      runtime: aws_lambda.Runtime.NODEJS_18_X,
-      code: lambdaCode,
-      handler: 'amplify-table-manager-handler.isComplete',
-      timeout: Duration.minutes(14),
+    // Note: The isCompleteRole and onEventRole are similar enough that you might ask "why not just use a single role?"
+    // 1. Doing so creates a circular dependency between someCombinedRole <-> waiterStateMachine
+    // 2. The isCompleteHandler doesn't need permissions to invoke the waiterStateMachine.
+
+    // Role assumed by the isCompleteHandler.
+    // We want to avoid the auto-generated default policy for this to avoid unnecessary deployment time
+    // slowdowns, hence the `withoutPolicyUpdates()`
+    const isCompleteRole = new aws_iam.Role(scope, 'AmplifyManagedTableIsCompleteRole', {
+      assumedBy: new aws_iam.ServicePrincipal('lambda.amazonaws.com'),
+      managedPolicies: [aws_iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
+      inlinePolicies: {
+        CreateUpdateDeleteTablesPolicy: lambdaPolicyDocument,
+      },
+    }).withoutPolicyUpdates();
+
+    // Role assumed by the onEventHandler (custom resource entry point).
+    // We need to keep this open to modification so that waiter state machine can grant it
+    // invocation permissions below, hence no `withoutPolicyUpdates()`
+    const onEventRole = new aws_iam.Role(scope, 'AmplifyManagedTableOnEventRole', {
+      assumedBy: new aws_iam.ServicePrincipal('lambda.amazonaws.com'),
+      managedPolicies: [aws_iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
+      inlinePolicies: {
+        CreateUpdateDeleteTablesPolicy: lambdaPolicyDocument,
+      },
     });
 
-    this.ddbManagerPolicy.attachToRole(gsiOnEventHandler.role!);
-    this.ddbManagerPolicy.attachToRole(gsiIsCompleteHandler.role!);
-    const customResourceProvider = new custom_resources.Provider(scope, ResourceConstants.RESOURCES.TableManagerCustomProviderLogicalID, {
-      onEventHandler: gsiOnEventHandler,
-      isCompleteHandler: gsiIsCompleteHandler,
-      logRetention: aws_logs.RetentionDays.ONE_MONTH,
-      queryInterval: Duration.seconds(30),
-      totalTimeout: Duration.hours(2),
+    // Create the custom resource provider with the infrastructure to handle resource modifications.
+    /** !! Be extra cautious about any modifications to this code -- see inline note in {@link Provider} !! */
+    const customResourceProvider = new Provider(scope, ResourceConstants.RESOURCES.TableManagerCustomProviderLogicalID, {
+      lambdaCode,
+      onEventHandlerName: 'amplify-table-manager-handler.onEvent',
+      onEventRole,
+      isCompleteHandlerName: 'amplify-table-manager-handler.isComplete',
+      isCompleteRole,
     });
-    this.customResourceServiceToken = customResourceProvider.serviceToken;
+
+    const { onEventHandler, isCompleteHandler, serviceToken } = customResourceProvider;
+
+    // --- Waiter state machine configuration
+    // Invoke isCompleteHandler every 10 seconds to query completion status.
+    // 10 seconds is the current value because it showed deployment time improvements
+    // over higher values. < 10 seconds showed diminishing returns of those improvements
+    // at the cost of more lambda invocations.
+    const queryInterval = Duration.seconds(10);
+    // CloudFormation times out custom resource requests at 1 hour.
+    // https://github.com/aws/aws-cdk/blob/11621e78c8f8188fcdd528d01cd2aa8bd97db58f/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts#L59-L66
+    // Once that happens, there's no use continuing to invoke the isComplete handler.
+    const totalTimeout = Duration.hours(1);
+    const stateMachineProps = {
+      isCompleteHandler,
+      queryInterval,
+      totalTimeout,
+      maxAttempts: totalTimeout.toSeconds() / queryInterval.toSeconds(),
+      backoffRate: 1,
+    };
+
+    const waiterStateMachine = new WaiterStateMachine(scope, 'AmplifyTableWaiterStateMachine', stateMachineProps);
+
+    // The onEventHandler needs to know the state machine ARN to start it, so that it can query completion status
+    // when invoking the isCompleteHandler.
+    onEventHandler.addEnvironment('WAITER_STATE_MACHINE_ARN', waiterStateMachine.stateMachineArn);
+    // It also needs permissions to invoke it.
+    waiterStateMachine.grantStartExecution(onEventHandler);
+    // This is the entry point of the custom resource -- make sure this value never changes!
+    /** See inline note in {@link Provider} for more details */
+    this.customResourceServiceToken = serviceToken;
   }
 
   protected createModelTable(scope: Construct, def: ObjectTypeDefinitionNode, context: TransformerContextProvider): void {
     const modelName = def!.name.value;
     const tableLogicalName = ModelResourceIDs.ModelTableResourceID(modelName);
-    const tableName = context.resourceHelper.generateTableName(modelName);
+    const strategy = context.dataSourceStrategies[modelName];
+    const isTableImported = isImportedAmplifyDynamoDbModelDataSourceStrategy(strategy);
+    const tableName = isTableImported ? strategy.tableName : context.resourceHelper.generateTableName(modelName);
+
+    // Determine the table's key schema. Owned tables default to an `id` partition key and are
+    // corrected downstream by the `@primaryKey` transformer; imported tables need their real key
+    // schema up front (see getImportedTableKeySchema).
+    let partitionKey: Attribute = {
+      name: 'id',
+      type: AttributeType.STRING,
+    };
+    let sortKey: Attribute | undefined;
+    if (isTableImported) {
+      ({ partitionKey, sortKey } = this.getImportedTableKeySchema(def, context));
+    }
 
     // Add parameters.
-    const { readIops, writeIops, billingMode, pointInTimeRecovery, enableSSE } = this.createDynamoDBParameters(scope, true);
+    const { readIops, writeIops, billingMode, pointInTimeRecovery } = this.createDynamoDBParameters(scope, true);
 
     // Add conditions.
     new cdk.CfnCondition(scope, ResourceConstants.CONDITIONS.HasEnvironmentParameter, {
       expression: cdk.Fn.conditionNot(cdk.Fn.conditionEquals(context.synthParameters.amplifyEnvironmentName, ResourceConstants.NONE)),
-    });
-    const useSSE = new cdk.CfnCondition(scope, ResourceConstants.CONDITIONS.ShouldUseServerSideEncryption, {
-      expression: cdk.Fn.conditionEquals(enableSSE, 'true'),
     });
     const usePayPerRequestBilling = new cdk.CfnCondition(scope, ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling, {
       expression: cdk.Fn.conditionEquals(billingMode, 'PAY_PER_REQUEST'),
@@ -128,7 +202,7 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
       expression: cdk.Fn.conditionEquals(pointInTimeRecovery, 'true'),
     });
 
-    const removalPolicy = this.options.EnableDeletionProtection ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY;
+    const removalPolicy = isTableImported || this.options.EnableDeletionProtection ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY;
 
     // TODO: The attribute of encryption and TTL should be added
     const table = new AmplifyDynamoDBTable(scope, `${tableLogicalName}`, {
@@ -136,19 +210,20 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
       allowDestructiveGraphqlSchemaUpdates: context.transformParameters.allowDestructiveGraphqlSchemaUpdates,
       replaceTableUponGsiUpdate: context.transformParameters.replaceTableUponGsiUpdate,
       tableName,
-      partitionKey: {
-        name: 'id',
-        type: AttributeType.STRING,
-      },
+      partitionKey,
+      ...(sortKey ? { sortKey } : undefined),
       stream: StreamViewType.NEW_AND_OLD_IMAGES,
       encryption: TableEncryption.DEFAULT,
       removalPolicy,
+      deletionProtection: isTableImported,
       ...(context.isProjectUsingDataStore() ? { timeToLiveAttribute: '_ttl' } : undefined),
+      ...(isTableImported ? { isImported: true } : undefined),
     });
     setResourceName(table, { name: modelName, setOnDefaultChild: false });
 
     // construct a wrapper around the custom table to allow normal CDK operations on top of it
     const tableRepresentative = table.tableFromAttr;
+    setResourceName(tableRepresentative, { name: modelName, setOnDefaultChild: false });
 
     const cfnTable = table.node.defaultChild?.node.defaultChild as cdk.CfnCustomResource;
     setResourceName(cfnTable, { name: modelName, setOnDefaultChild: false });
@@ -167,9 +242,6 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
       'billingMode',
       cdk.Fn.conditionIf(usePayPerRequestBilling.logicalId, 'PAY_PER_REQUEST', cdk.Fn.ref('AWS::NoValue')).toString(),
     );
-    cfnTable.addPropertyOverride('sseSpecification', {
-      sseEnabled: cdk.Fn.conditionIf(useSSE.logicalId, true, false),
-    });
 
     const streamArnOutputId = `GetAtt${ModelResourceIDs.ModelTableStreamArn(def!.name.value)}`;
     if (table.tableStreamArn) {
@@ -190,5 +262,62 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
     const role = this.createIAMRole(context, def, scope, tableName);
     const tableDataSourceLogicalName = `${def!.name.value}Table`;
     this.createModelTableDataSource(def, context, tableRepresentative, scope, role, tableDataSourceLogicalName);
+  }
+
+  /**
+   * Derive an imported table's key schema (partition key and optional sort key) from the model's
+   * `@primaryKey` directive.
+   *
+   * For owned (Amplify-managed) tables the partition key is left as the default `id` and the
+   * `@primaryKey` transformer corrects the key schema downstream via a CloudFormation property
+   * override. That correction never reaches the TableManager import-validation path (which reads
+   * the initial construct properties directly), so an imported table must have its real key schema
+   * up front, mirroring how GSIs are already derived from the model. `getPrimaryKeyFieldNodes`
+   * returns the implicit `id`/`ID!` field when no `@primaryKey` is declared, so the result always
+   * has a partition key.
+   */
+  private getImportedTableKeySchema(
+    def: ObjectTypeDefinitionNode,
+    context: TransformerContextProvider,
+  ): { partitionKey: Attribute; sortKey?: Attribute } {
+    const [primaryKeyFieldNode, ...sortKeyFieldNodes] = getPrimaryKeyFieldNodes(def);
+    const partitionKey: Attribute = {
+      name: primaryKeyFieldNode.name.value,
+      type: this.keyAttributeType(primaryKeyFieldNode.type, context),
+    };
+
+    let sortKey: Attribute | undefined;
+    if (sortKeyFieldNodes.length === 1) {
+      // A single sort key field maps directly to a sort key attribute of the field's type.
+      sortKey = {
+        name: sortKeyFieldNodes[0].name.value,
+        type: this.keyAttributeType(sortKeyFieldNodes[0].type, context),
+      };
+    } else if (sortKeyFieldNodes.length > 1) {
+      // Composite sort keys are stored as a single string attribute whose name is the sort key
+      // field names joined by the model composite key separator (matches how the index transformer
+      // names composite sort keys in `replaceDdbPrimaryKey`).
+      sortKey = {
+        name: ModelResourceIDs.ModelCompositeAttributeName(sortKeyFieldNodes.map((node) => node.name.value)),
+        type: AttributeType.STRING,
+      };
+    }
+
+    return { partitionKey, sortKey };
+  }
+
+  /**
+   * Resolve a key field's DynamoDB attribute type. Enum-backed fields are stored as strings; they
+   * are not GraphQL scalars, so `attributeTypeFromScalar` would throw on them. This mirrors
+   * `attributeTypeFromType` in the index transformer. (Non-scalar, non-enum key types are rejected
+   * earlier by the `@primaryKey` transformer's validation, so they cannot reach here.)
+   */
+  private keyAttributeType(type: TypeNode, context: TransformerContextProvider): AttributeType {
+    const baseType = getBaseType(type);
+    const named = context.output.getType(baseType);
+    if (named?.kind === Kind.ENUM_TYPE_DEFINITION) {
+      return AttributeType.STRING;
+    }
+    return attributeTypeFromScalar(type) === 'N' ? AttributeType.NUMBER : AttributeType.STRING;
   }
 }

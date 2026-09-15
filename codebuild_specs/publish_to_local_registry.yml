@@ -1,6 +1,8 @@
 version: 0.2
 env:
   shell: bash
+  variables:
+    CI: true
 phases:
   build:
     commands:

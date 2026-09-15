@@ -10,8 +10,8 @@ import {
 
 const strategyProviders: Record<AuthStrategy, AuthProvider[]> = {
   owner: [],
-  public: ['apiKey', 'iam'],
-  private: ['iam'],
+  public: ['apiKey', 'iam', 'identityPool'],
+  private: ['iam', 'identityPool'],
   groups: [],
   custom: [],
 };
@@ -31,6 +31,8 @@ let ID_TOKEN: string;
 let ACCESS_TOKEN: string;
 let API_KEY: string;
 let GRAPHQL_ENDPOINT: string;
+
+jest.setTimeout(1000 * 60 * 30);
 
 describe('e2e auth resolvers tests', () => {
   const schemaModels: string[] = [];

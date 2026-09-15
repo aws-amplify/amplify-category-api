@@ -37,17 +37,18 @@ import {
   NULL_ALLOWED_FIELDS,
   DENIED_FIELDS,
 } from '../../../utils';
+import { setHasAuthExpression } from '../../common';
 import {
   getIdentityClaimExp,
   responseCheckForErrors,
   getInputFields,
-  setHasAuthExpression,
   iamCheck,
   iamAdminRoleCheckExpression,
   generateOwnerClaimExpression,
   generateOwnerClaimListExpression,
   generateOwnerMultiClaimExpression,
   generateInvalidClaimsCondition,
+  generateIAMAccessCheck,
 } from './helpers';
 
 /**
@@ -89,7 +90,12 @@ const lambdaExpression = (roles: Array<RoleDefinition>): Expression | null => {
   return iff(equals(ref('util.authType()'), str(LAMBDA_AUTH_TYPE)), compoundExpression(expression));
 };
 
-const iamExpression = (roles: Array<RoleDefinition>, hasAdminRolesEnabled = false, hasIdentityPoolId: boolean): Expression => {
+const iamExpression = (
+  roles: Array<RoleDefinition>,
+  hasAdminRolesEnabled = false,
+  hasIdentityPoolId: boolean,
+  genericIamAccessEnabled: boolean,
+): Expression => {
   const expression = new Array<Expression>();
   // allow if using an admin role
   if (hasAdminRolesEnabled) {
@@ -115,7 +121,11 @@ const iamExpression = (roles: Array<RoleDefinition>, hasAdminRolesEnabled = fals
   } else {
     expression.push(ref('util.unauthorized()'));
   }
-  return iff(equals(ref('util.authType()'), str(IAM_AUTH_TYPE)), compoundExpression(expression));
+
+  return iff(
+    equals(ref('util.authType()'), str(IAM_AUTH_TYPE)),
+    generateIAMAccessCheck(genericIamAccessEnabled, compoundExpression(expression)),
+  );
 };
 
 const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Expression[] => {
@@ -287,7 +297,9 @@ export const generateAuthExpressionForUpdate = (
     totalAuthExpressions.push(lambdaExpression(lambdaRoles));
   }
   if (providers.hasIAM) {
-    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.hasIdentityPoolId));
+    totalAuthExpressions.push(
+      iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.hasIdentityPoolId, providers.genericIamAccessEnabled),
+    );
   }
   if (providers.hasUserPools) {
     totalAuthExpressions.push(

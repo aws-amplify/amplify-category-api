@@ -1,9 +1,0 @@
-type Foo @model {
-  id: ID!
-  bars: [Bar] @manyToMany(relationName: "fooBar")
-}
-
-type Bar @model {
-  id: ID!
-  foos: [Foo] @manyToMany(relationName: "fooBar")
-}

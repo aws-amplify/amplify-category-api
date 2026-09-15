@@ -54,8 +54,25 @@ export class DirectiveWrapper {
       }),
       {},
     );
-    if (options?.deepMergeArguments) {
-      return _.merge(_.cloneDeep(defaultValue), argValues);
+    if (options?.deepMergeArguments && needsDeepMerge(defaultValue, argValues)) {
+      return _.merge(
+        _.cloneDeepWith(defaultValue, (value) => {
+          if (value instanceof Location) {
+            // Skip cloning for 'Locations'
+            // Some transformers are using AST nodes as arguments.
+            // These AST nodes contain 'loc: Location' property which contains information
+            // about where tokens were found in the schema during parsing.
+            // This is a deeply nested structure for large schemas and cloning it may
+            // hit recursive call limits.
+            // Location is typed as read-only and doesn't change in post processing after parsing.
+            // Therefore, is safe to keep original values.
+            return value;
+          }
+          // Returning undefined let's Lodash know to use it's algorithm to clone.
+          return undefined;
+        }),
+        argValues,
+      );
     }
     return Object.assign(defaultValue, argValues);
   };
@@ -64,3 +81,20 @@ export class DirectiveWrapper {
 export const generateGetArgumentsInput = ({ shouldDeepMergeDirectiveConfigDefaults }: TransformParameters): GetArgumentsOptions => ({
   deepMergeArguments: shouldDeepMergeDirectiveConfigDefaults,
 });
+
+/**
+ * Checks for cases where we don't need to do deep cloning and merging of arguments.
+ * These include cases when the user provided arguments are empty or when there are no common keys between the default and user provided arguments.
+ * @param defaultValue the default properties set for the directive
+ * @param argValues the user provided arguments for the directive
+ * @returns if deep cloning and merging of arguments is needed
+ */
+export const needsDeepMerge = <T>(defaultValue: Required<T>, argValues: { [x: string]: any }): boolean => {
+  if (_.isEmpty(argValues)) {
+    return false;
+  }
+  if (typeof defaultValue === 'object') {
+    return Object.keys(argValues)?.some((key) => Object.keys(defaultValue)?.includes(key));
+  }
+  return true;
+};

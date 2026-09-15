@@ -1,6 +1,15 @@
 import * as os from 'os';
 import { Field, Index, Model } from '../schema-representation';
 
+export interface DataSourceConfig {
+  host: string;
+  port: number;
+  database: string;
+  username: string;
+  password: string;
+  sslCertificate?: string;
+}
+
 export abstract class DataSourceAdapter {
   public abstract getTablesList(): string[];
 

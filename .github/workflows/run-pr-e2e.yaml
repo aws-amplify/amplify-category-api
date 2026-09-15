@@ -1,5 +1,6 @@
 name: run-pr-e2e
 on:
+  workflow_dispatch:
   pull_request:
     types: [labeled]
 
@@ -11,5 +12,6 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
       - name: cloud-e2e
+        shell: bash
         run: |
           yarn cloud-e2e

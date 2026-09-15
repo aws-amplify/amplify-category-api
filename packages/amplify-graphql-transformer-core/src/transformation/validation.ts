@@ -57,6 +57,16 @@ import { UniqueDirectivesPerLocationRule } from 'graphql/validation/rules/Unique
 // AuthMode Types
 import { AppSyncAuthConfiguration, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
 import { validateSDL } from 'graphql/validation/validate';
+import {
+  AwsSubscribeDirective,
+  AwsAuthDirective,
+  AwsApiKeyDirective,
+  AwsIamDirective,
+  AwsOidcDirective,
+  AwsCognitoUserPoolsDirective,
+  AwsLambdaDirective,
+  DeprecatedDirective,
+} from '@aws-amplify/graphql-directives';
 
 /**
  * This set includes all validation rules defined by the GraphQL spec.
@@ -106,18 +116,18 @@ scalar BigInt
 scalar Double
 `);
 
-export const EXTRA_DIRECTIVES_DOCUMENT = parse(`
-directive @aws_subscribe(mutations: [String!]!) on FIELD_DEFINITION
-directive @aws_auth(cognito_groups: [String!]!) on FIELD_DEFINITION
-directive @aws_api_key on FIELD_DEFINITION | OBJECT
-directive @aws_iam on FIELD_DEFINITION | OBJECT
-directive @aws_oidc on FIELD_DEFINITION | OBJECT
-directive @aws_cognito_user_pools(cognito_groups: [String!]) on FIELD_DEFINITION | OBJECT
-directive @aws_lambda on FIELD_DEFINITION | OBJECT
-
-# Allows transformer libraries to deprecate directive arguments.
-directive @deprecated(reason: String) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION | ENUM | ENUM_VALUE
-`);
+export const EXTRA_DIRECTIVES_DOCUMENT = parse(
+  [
+    AwsSubscribeDirective.definition,
+    AwsAuthDirective.definition,
+    AwsApiKeyDirective.definition,
+    AwsIamDirective.definition,
+    AwsOidcDirective.definition,
+    AwsCognitoUserPoolsDirective.definition,
+    AwsLambdaDirective.definition,
+    DeprecatedDirective.definition,
+  ].join('\n'),
+);
 
 // As query type is mandatory in the schema we've to append a dummy one if it is not present
 const NOOP_QUERY = parse(`

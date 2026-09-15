@@ -1,0 +1,12 @@
+type Post @model @auth(rules: [{ allow: public }]) {
+  id: ID!
+  title: String!
+  content: String
+  tags: [Tag] @manyToMany(relationName: "PostTags")
+}
+
+type Tag @model @auth(rules: [{ allow: public }]) {
+  id: ID!
+  label: String!
+  posts: [Post] @manyToMany(relationName: "PostTags")
+}

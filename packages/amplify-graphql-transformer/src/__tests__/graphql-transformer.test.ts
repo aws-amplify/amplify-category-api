@@ -20,7 +20,7 @@ import {
   defaultPrintTransformerLog,
 } from '../graphql-transformer';
 
-const numOfTransformers = 16;
+const numOfTransformers = 19;
 describe('constructTransformerChain', () => {
   it(`returns ${numOfTransformers} transformers when no custom transformers are provided`, () => {
     expect(constructTransformerChain().length).toEqual(numOfTransformers);
@@ -39,10 +39,14 @@ describe('constructTransformerChain', () => {
   });
 });
 
+/**
+ * Default transform config for the unit tests in this file
+ */
 const defaultTransformConfig: TransformConfig = {
   transformersFactoryArgs: {},
   transformParameters: {
     shouldDeepMergeDirectiveConfigDefaults: false,
+    subscriptionsInheritPrimaryAuth: false,
     disableResolverDeduping: false,
     sandboxModeEnabled: false,
     useSubUsernameForDefaultIdentityClaim: false,
@@ -52,9 +56,11 @@ const defaultTransformConfig: TransformConfig = {
     enableAutoIndexQueryNames: false,
     respectPrimaryKeyAttributesOnConnectionField: false,
     enableSearchNodeToNodeEncryption: false,
+    enableSearchEncryptionAtRest: true,
     enableTransformerCfnOutputs: true,
     allowDestructiveGraphqlSchemaUpdates: false,
     replaceTableUponGsiUpdate: false,
+    allowGen1Patterns: true,
   },
 };
 

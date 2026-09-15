@@ -1,13 +1,10 @@
 /**
  * Entry point for our lambda.
  */
-export const handler = (event: any, _: any, callback: (errorMsg: string | null, responseMsg?: string | null) => void) => {
+export const handler = async (event: any): Promise<string> => {
   const messageToReverse: string = event.arguments.message;
   if (!messageToReverse) {
-    callback("Didn't receive a `message` to reverse");
+    throw new Error("Didn't receive a `message` to reverse");
   }
-  callback(
-    null,
-    messageToReverse.split('').reduce((acc, char) => char + acc, ''),
-  );
+  return messageToReverse.split('').reduce((acc, char) => char + acc, '');
 };

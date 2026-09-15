@@ -1,9 +1,15 @@
 import * as path from 'path';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
+import {
+  createNewProjectDir,
+  deleteProjectDir,
+  getBucketNameFromModelSchemaS3Uri,
+  getBucketCorsPolicy,
+} from 'amplify-category-api-e2e-core';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { graphql } from '../graphql-request';
+import { DURATION_1_HOUR } from '../utils/duration-constants';
 
-jest.setTimeout(1000 * 60 * 60 /* 1 hour */);
+jest.setTimeout(DURATION_1_HOUR);
 
 describe('CDK GraphQL Transformer', () => {
   let projRoot: string;
@@ -24,11 +30,26 @@ describe('CDK GraphQL Transformer', () => {
     deleteProjectDir(projRoot);
   });
 
-  ['2.80.0', 'latest'].forEach((cdkVersion) => {
+  ['2.260.0', 'latest'].forEach((cdkVersion) => {
     test(`CDK base case - aws-cdk-lib@${cdkVersion}`, async () => {
       const templatePath = path.resolve(path.join(__dirname, 'backends', 'base-cdk'));
       const name = await initCDKProject(projRoot, templatePath, { cdkVersion });
       const outputs = await cdkDeploy(projRoot, '--all');
+
+      // Console requires CORS enabled on codegen asset bucket.
+      const { awsAppsyncRegion: region, amplifyApiModelSchemaS3Uri: codegenModelSchemaS3Uri } = outputs[name];
+      const codegenBucketName = getBucketNameFromModelSchemaS3Uri(codegenModelSchemaS3Uri);
+      const corsPolicy = await getBucketCorsPolicy(codegenBucketName, region);
+      expect(corsPolicy).toMatchObject(
+        expect.arrayContaining([
+          expect.objectContaining({
+            AllowedHeaders: expect.arrayContaining(['*']),
+            AllowedMethods: expect.arrayContaining(['GET', 'HEAD']),
+            AllowedOrigins: expect.arrayContaining([`https://${region}.console.aws.amazon.com/amplify`]),
+          }),
+        ]),
+      );
+
       const { awsAppsyncApiEndpoint: apiEndpoint, awsAppsyncApiKey: apiKey } = outputs[name];
 
       const result = await graphql(

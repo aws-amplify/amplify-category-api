@@ -28,7 +28,7 @@ describe('Amplify Input read/write from schema', () => {
       engine: String = \"mysql\"
       globalAuthRule: AuthRule = { allow: public } # This "input" configures a global authorization rule to enable public access to all models in this schema. Learn more about authorization rules here:${authDocLink}
     }`;
-    const constructedInputString = await constructDefaultGlobalAmplifyInput(ImportedRDSType.MYSQL, true, authDocLink);
+    const constructedInputString = constructDefaultGlobalAmplifyInput(ImportedRDSType.MYSQL, true, authDocLink);
     expect(constructedInputString?.replace(/\s/g, '')).toEqual(expectedGraphQLInputString.replace(/\s/g, ''));
   });
 
@@ -45,7 +45,7 @@ describe('Amplify Input read/write from schema', () => {
       globalAuthRule: AuthRule = { allow: public } # This "input" configures a global authorization rule to enable public access to all models in this schema. Learn more about authorization rules here:https://docs.amplify.aws/cli/graphql/authorization-rules 
     }`;
 
-    const readInputNode = await readRDSGlobalAmplifyInput(parse(mockInputSchema));
+    const readInputNode = readRDSGlobalAmplifyInput(parse(mockInputSchema));
     expect(readInputNode).toMatchSnapshot();
   });
 
@@ -68,7 +68,7 @@ describe('Amplify Input read/write from schema', () => {
       database: 'mockdatabase',
     };
 
-    const constructedInputDefinition = await constructRDSGlobalAmplifyInput(userInputs, parse(mockInputSchema));
+    const constructedInputDefinition = constructRDSGlobalAmplifyInput(userInputs, parse(mockInputSchema));
     expect(constructedInputDefinition).toMatchSnapshot();
   });
 });

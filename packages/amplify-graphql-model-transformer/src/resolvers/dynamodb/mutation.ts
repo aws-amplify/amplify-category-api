@@ -20,6 +20,7 @@ import {
 } from 'graphql-mapping-template';
 import { setArgs } from 'graphql-transformer-common';
 import { ModelDirectiveConfiguration } from '../../directive';
+import { defaultAutoId } from '../common';
 import { generateConditionSlot } from './common';
 
 /**
@@ -234,9 +235,11 @@ export const generateCreateInitSlotTemplate = (modelConfig: ModelDirectiveConfig
     ),
   ];
 
+  if (initializeIdField) {
+    statements.push(defaultAutoId());
+  }
   if (modelConfig?.timestamps) {
     statements.push(set(ref('createdAt'), methodCall(ref('util.time.nowISO8601'))));
-    statements.push(qref(methodCall(ref('ctx.stash.defaultValues.put'), str('id'), methodCall(ref('util.autoId')))));
     if (modelConfig.timestamps.createdAt) {
       statements.push(qref(methodCall(ref('ctx.stash.defaultValues.put'), str(modelConfig.timestamps.createdAt), ref('createdAt'))));
     }

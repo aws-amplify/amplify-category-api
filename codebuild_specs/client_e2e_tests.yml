@@ -7,6 +7,7 @@ env:
     CI: true
     CODEBUILD: true
     NODE_OPTIONS: --max-old-space-size=8096
+    JSII_DEPRECATED: 'quiet'
 phases:
   build:
     commands:

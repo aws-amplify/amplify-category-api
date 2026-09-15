@@ -1,5 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
+import { AuthorizationType, Visibility } from 'aws-cdk-lib/aws-appsync';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { AmplifyGraphqlApi } from '../../amplify-graphql-api';
 import { AmplifyGraphqlDefinition } from '../../amplify-graphql-definition';
 
@@ -238,8 +240,49 @@ describe('generated resource access', () => {
           },
         });
 
-        expect(Object.values(cfnDataSources).length).toEqual(1);
+        expect(Object.values(cfnDataSources).length).toEqual(2);
         expect(cfnDataSources.EchoLambdaDataSource).toBeDefined();
+      });
+
+      it('re-uses a none datasource if one already exists', () => {
+        const apiResources = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
+          definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+            type Todo @model @auth(rules: [{ allow: public }]) {
+              description: String!
+            }
+          `),
+          authorizationModes: {
+            apiKeyConfig: { expires: cdk.Duration.days(7) },
+          },
+        });
+        const {
+          resources: {
+            cfnResources: { cfnDataSources },
+          },
+        } = apiResources;
+
+        expect(cfnDataSources.NONE_DS).toBeDefined();
+        expect(Object.values(cfnDataSources).length).toEqual(2); // NONE_DS + model data source
+      });
+
+      it('adds a none datasource when there are no models in the schema', () => {
+        const {
+          resources: {
+            cfnResources: { cfnDataSources },
+          },
+        } = new AmplifyGraphqlApi(new cdk.Stack(), 'TestApi', {
+          definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+            type Query {
+              echo(message: String!): String!
+            }
+          `),
+          authorizationModes: {
+            apiKeyConfig: { expires: cdk.Duration.days(7) },
+          },
+        });
+
+        expect(Object.values(cfnDataSources).length).toEqual(1);
+        expect(cfnDataSources.NONE_DS).toBeDefined();
       });
     });
 
@@ -352,8 +395,7 @@ describe('generated resource access', () => {
         const stack = new cdk.Stack();
         const {
           resources: {
-            amplifyDynamoDbTables,
-            cfnResources: { cfnTables },
+            cfnResources: { cfnTables, amplifyDynamoDbTables },
           },
         } = new AmplifyGraphqlApi(stack, 'TestApi', {
           definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
@@ -380,8 +422,7 @@ describe('generated resource access', () => {
         const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
         const {
           resources: {
-            amplifyDynamoDbTables,
-            cfnResources: { cfnTables },
+            cfnResources: { cfnTables, amplifyDynamoDbTables },
           },
         } = new AmplifyGraphqlApi(stack, 'TestApi', {
           definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
@@ -405,8 +446,7 @@ describe('generated resource access', () => {
         const userPool = cognito.UserPool.fromUserPoolId(stack, 'ImportedUserPool', 'ImportedUserPoolId');
         const {
           resources: {
-            amplifyDynamoDbTables,
-            cfnResources: { cfnTables },
+            cfnResources: { cfnTables, amplifyDynamoDbTables },
           },
         } = new AmplifyGraphqlApi(stack, 'TestApi', {
           definition: AmplifyGraphqlDefinition.fromString(
@@ -435,8 +475,7 @@ describe('generated resource access', () => {
         const stack = new cdk.Stack();
         const {
           resources: {
-            amplifyDynamoDbTables,
-            cfnResources: { cfnTables },
+            cfnResources: { cfnTables, amplifyDynamoDbTables },
           },
         } = new AmplifyGraphqlApi(stack, 'TestApi', {
           definition: AmplifyGraphqlDefinition.fromString(
@@ -571,6 +610,59 @@ describe('generated resource access', () => {
       });
 
       expect(graphqlApi).toBeDefined();
+    });
+
+    it('provides a graphql api with populated properties from the L1 construct', () => {
+      const stack = new cdk.Stack();
+      const authFunction = lambda.Function.fromFunctionName(stack, 'ImportedFn', 'ImportedFn');
+
+      const api = new AmplifyGraphqlApi(stack, 'TestApi', {
+        definition: AmplifyGraphqlDefinition.fromString(/* GraphQL */ `
+          type Todo @model @auth(rules: [{ allow: public }]) {
+            description: String!
+          }
+        `),
+        authorizationModes: {
+          defaultAuthorizationMode: 'API_KEY',
+          apiKeyConfig: { expires: cdk.Duration.days(7) },
+          userPoolConfig: { userPool: new cognito.UserPool(stack, 'TestUserPool', {}) },
+          lambdaConfig: {
+            function: authFunction,
+            ttl: cdk.Duration.minutes(5),
+          },
+          oidcConfig: {
+            oidcProviderName: 'testProvider',
+            oidcIssuerUrl: 'https://test.client/',
+            clientId: 'testClient',
+            tokenExpiryFromAuth: cdk.Duration.minutes(5),
+            tokenExpiryFromIssue: cdk.Duration.minutes(5),
+          },
+          iamConfig: {
+            enableIamAuthorizationMode: true,
+          },
+        },
+      });
+
+      const {
+        resources: { graphqlApi, cfnResources },
+      } = api;
+
+      expect(graphqlApi.apiId).toEqual(api.apiId);
+      expect(graphqlApi.apiId).toEqual(cfnResources.cfnGraphqlApi.attrApiId);
+      expect(graphqlApi.arn).toEqual(cfnResources.cfnGraphqlApi.attrArn);
+      expect(graphqlApi.graphQLEndpointArn).toEqual(cfnResources.cfnGraphqlApi.attrGraphQlEndpointArn);
+      expect(graphqlApi.visibility.toString()).toEqual(Visibility.GLOBAL);
+
+      expect(graphqlApi.modes).toBeDefined();
+      expect(graphqlApi.modes).toEqual(
+        expect.arrayContaining([
+          AuthorizationType.API_KEY,
+          AuthorizationType.IAM,
+          AuthorizationType.LAMBDA,
+          AuthorizationType.OIDC,
+          AuthorizationType.USER_POOL,
+        ]),
+      );
     });
 
     it('provides tables', () => {

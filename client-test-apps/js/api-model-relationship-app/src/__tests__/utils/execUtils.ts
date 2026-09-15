@@ -549,7 +549,7 @@ const chain = (context: Context): ExecutionContext => {
                 .join('\n')
             : 'No output';
           const err = new Error(
-            `Killed the process as no output receive for ${context.noOutputTimeout / 1000} Sec. The no output timeout is set to ${
+            `Killed the process as no output received for ${context.noOutputTimeout / 1000} Sec. The no output timeout is set to ${
               context.noOutputTimeout / 1000
             } seconds.\n\nLast 10 lines:👇🏽👇🏽👇🏽👇🏽\n\n\n\n\n${lastScreen}\n\n\n👆🏼👆🏼👆🏼👆🏼`,
           );

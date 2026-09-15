@@ -1,9 +1,0 @@
-type Bar @model @auth(rules: [{ allow: public }]) {
-  id: ID!
-  foos: [Foo] @manyToMany(relationName: "FooBar")
-}
-
-type Foo @model @auth(rules: [{ allow: public }]) {
-  id: ID!
-  Bars: [Bar] @manyToMany(relationName: "FooBar")
-}

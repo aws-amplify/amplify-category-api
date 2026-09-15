@@ -6,12 +6,16 @@
 
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { AssetProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { BackendOutputEntry } from '@aws-amplify/plugin-types';
+import { BackendOutputStorageStrategy } from '@aws-amplify/plugin-types';
 import { Construct } from 'constructs';
 import type { DataSourceStrategiesProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import type { LogConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import { NestedStackProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import type { RDSLayerMappingProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import type { RDSSNSTopicMappingProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResolverConfig } from '@aws-amplify/graphql-transformer-core';
 import { SynthParameters } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerLog } from '@aws-amplify/graphql-transformer-interfaces';
@@ -30,7 +34,7 @@ export const constructTransformerChain: (options?: TransformerFactoryArgs) => Tr
 export const executeTransform: (config: ExecuteTransformConfig) => void;
 
 // @public (undocumented)
-export type ExecuteTransformConfig = TransformConfig & DataSourceStrategiesProvider & RDSLayerMappingProvider & {
+export type ExecuteTransformConfig = TransformConfig & DataSourceStrategiesProvider & RDSLayerMappingProvider & RDSSNSTopicMappingProvider & {
     schema: string;
     printTransformerLog?: (log: TransformerLog) => void;
     scope: Construct;
@@ -38,6 +42,7 @@ export type ExecuteTransformConfig = TransformConfig & DataSourceStrategiesProvi
     parameterProvider?: TransformParameterProvider;
     assetProvider: AssetProvider;
     synthParameters: SynthParameters;
+    logging?: true | LogConfig;
 };
 
 // @public (undocumented)
@@ -55,6 +60,7 @@ export type TransformerFactoryArgs = {
     storageConfig?: any;
     customTransformers?: TransformerPluginProvider[];
     functionNameMap?: Record<string, IFunction>;
+    outputStorageStrategy?: BackendOutputStorageStrategy<BackendOutputEntry>;
 };
 
 // (No @packageDocumentation comment for this package)

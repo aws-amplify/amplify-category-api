@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-searchable-transformer",
-  "version": "2.4.2",
+  "version": "3.1.4",
   "description": "Amplfy GraphQL @searchable transformer",
   "repository": {
     "type": "git",
@@ -15,64 +15,34 @@
     "graphql",
     "cloudformation",
     "aws",
-    "amplify"
+    "amplify",
+    "transformer"
   ],
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "build": "tsc && cd streaming-lambda && bestzip --force node ../lib/streaming-lambda.zip python_streaming_function.py",
+    "build": "tsc && cd streaming-lambda && rm -rf dist && mkdir -p dist && cp python_streaming_function.py dist/ && pip3 install -r requirements.txt -t dist/ --upgrade && cd dist && bestzip --force node ../../lib/streaming-lambda.zip . && cd .. && rm -rf dist",
     "watch": "tsc -w",
-    "clean": "rimraf ./lib",
+    "clean": "rimraf ./lib ./streaming-lambda/dist",
     "test": "jest",
     "extract-api": "ts-node ../../scripts/extract-api.ts"
   },
   "dependencies": {
-    "@aws-amplify/graphql-model-transformer": "2.4.2",
-    "@aws-amplify/graphql-transformer-core": "2.4.2",
-    "@aws-amplify/graphql-transformer-interfaces": "3.3.3",
+    "@aws-amplify/graphql-directives": "2.8.0",
+    "@aws-amplify/graphql-model-transformer": "3.5.0",
+    "@aws-amplify/graphql-transformer-core": "3.6.1",
+    "@aws-amplify/graphql-transformer-interfaces": "4.4.0",
     "graphql": "^15.5.0",
-    "graphql-mapping-template": "4.20.14",
-    "graphql-transformer-common": "4.27.1"
+    "graphql-mapping-template": "5.0.2",
+    "graphql-transformer-common": "5.1.4"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.80.0",
-    "constructs": "^10.0.5"
+    "aws-cdk-lib": "^2.224.0",
+    "constructs": "^10.3.0"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-test-utils": "0.4.2",
-    "@types/node": "^12.12.6"
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testURL": "http://localhost",
-    "testRegex": "(src/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "collectCoverage": true,
-    "coverageProvider": "v8",
-    "coverageThreshold": {
-      "global": {
-        "branches": 74,
-        "functions": 90,
-        "lines": 90
-      }
-    },
-    "coverageReporters": [
-      "clover",
-      "text"
-    ],
-    "modulePathIgnorePatterns": [
-      "overrides"
-    ],
-    "testEnvironment": "../../FixJestEnvironment.js"
+    "@aws-amplify/graphql-transformer-test-utils": "1.2.0",
+    "@types/node": "^24.0.0"
   }
 }

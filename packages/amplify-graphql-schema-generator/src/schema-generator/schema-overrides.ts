@@ -1,6 +1,5 @@
 import { DocumentNode, EnumTypeDefinitionNode, FieldDefinitionNode, ObjectTypeDefinitionNode, StringValueNode, visit } from 'graphql';
 import { isArrayOrObject, getNonModelTypes, isOfType, isNonNullType } from 'graphql-transformer-common';
-import { printer } from '@aws-amplify/amplify-prompts';
 import { FieldWrapper, ObjectDefinitionWrapper } from '@aws-amplify/graphql-transformer-core';
 
 const MODEL_DIRECTIVE_NAME = 'model';
@@ -214,7 +213,7 @@ export const checkDestructiveNullabilityChange = (field: FieldDefinitionNode, ex
   const isFieldRequired = isNonNullType(field?.type);
   const isExistingFieldRequired = isNonNullType(existingField?.type);
   if (isFieldRequired && !isExistingFieldRequired) {
-    printer.warn(
+    console.warn(
       `The field ${field?.name?.value} has been changed to an optional type while it is required in the database. This may result in SQL errors in the mutations.`,
     );
   }

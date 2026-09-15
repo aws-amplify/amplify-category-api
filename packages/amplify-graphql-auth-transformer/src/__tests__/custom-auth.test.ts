@@ -142,6 +142,33 @@ test('allow: custom and provider: iam error out for invalid combination', () => 
   ).toThrowError("@auth directive with 'custom' strategy only supports 'function' (default) provider, but found 'iam' assigned.");
 });
 
+test('allow: custom and provider: identityPool error out for invalid combination', () => {
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AWS_LAMBDA',
+      lambdaAuthorizerConfig: {
+        lambdaFunction: 'test',
+        ttlSeconds: 600,
+      },
+    },
+    additionalAuthenticationProviders: [],
+  };
+  const validSchema = `
+    type Post @model @auth(rules: [{ allow: custom, provider: identityPool }]) {
+        id: ID!
+        title: String!
+        createdAt: String
+        updatedAt: String
+    }`;
+  expect(() =>
+    testTransform({
+      schema: validSchema,
+      authConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer()],
+    }),
+  ).toThrowError("@auth directive with 'custom' strategy only supports 'function' (default) provider, but found 'identityPool' assigned.");
+});
+
 test('allow: non-custom and provider: function error out for invalid combination', () => {
   const authConfig: AppSyncAuthConfiguration = {
     defaultAuthentication: {
@@ -167,6 +194,6 @@ test('allow: non-custom and provider: function error out for invalid combination
       transformers: [new ModelTransformer(), new AuthTransformer()],
     }),
   ).toThrowError(
-    "@auth directive with 'public' strategy only supports 'apiKey' (default) and 'iam' providers, but found 'function' assigned.",
+    "@auth directive with 'public' strategy only supports 'apiKey' (default) and 'identityPool' providers, but found 'function' assigned.",
   );
 });

@@ -1,6 +1,6 @@
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { EbsDeviceVolumeType } from 'aws-cdk-lib/aws-ec2';
-import { CfnDomain, Domain, ElasticsearchVersion } from 'aws-cdk-lib/aws-elasticsearch';
+import { CfnDomain, Domain, ElasticsearchVersion, TLSSecurityPolicy } from 'aws-cdk-lib/aws-elasticsearch';
 import { IRole, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { CfnParameter, Fn, RemovalPolicy } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
@@ -12,20 +12,28 @@ export const createSearchableDomain = (
   parameterMap: Map<string, CfnParameter>,
   apiId: string,
   nodeToNodeEncryption: boolean,
+  encryptionAtRest: boolean,
 ): Domain => {
   const { OpenSearchEBSVolumeGB, OpenSearchInstanceType, OpenSearchInstanceCount } = ResourceConstants.PARAMETERS;
   const { OpenSearchDomainLogicalID } = ResourceConstants.RESOURCES;
   const { HasEnvironmentParameter } = ResourceConstants.CONDITIONS;
 
+  // Encryption at rest is not supported with t2.small.elasticsearch instances
+  // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html
+
   const domain = new Domain(stack, OpenSearchDomainLogicalID, {
     version: { version: '7.10' } as ElasticsearchVersion,
     enforceHttps: true,
+    tlsSecurityPolicy: TLSSecurityPolicy.TLS_1_2,
     ebs: {
       enabled: true,
       volumeType: EbsDeviceVolumeType.GP2,
       volumeSize: parameterMap.get(OpenSearchEBSVolumeGB)?.valueAsNumber,
     },
     nodeToNodeEncryption,
+    encryptionAtRest: {
+      enabled: encryptionAtRest,
+    },
     zoneAwareness: {
       enabled: false,
     },

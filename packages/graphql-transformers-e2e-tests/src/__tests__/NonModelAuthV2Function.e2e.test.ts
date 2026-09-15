@@ -1,12 +1,12 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { Auth } from 'aws-amplify';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { CognitoIdentity } from 'aws-sdk';
-import { Output } from 'aws-sdk/clients/cloudformation';
-import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import { default as S3 } from 'aws-sdk/clients/s3';
+import { Output } from '@aws-sdk/client-cloudformation';
+import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
+import { CognitoIdentity } from '@aws-sdk/client-cognito-identity';
 import { ResourceConstants } from 'graphql-transformer-common';
 import gql from 'graphql-tag';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
@@ -37,10 +37,9 @@ const REGION = resolveTestRegion();
 jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient(REGION);
-const identityClient = new CognitoIdentity({ apiVersion: '2014-06-30', region: REGION });
-const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: REGION });
+const identityClient = new CognitoIdentity({ region: REGION });
+const cognitoClient = new CognitoIdentityProviderClient({ region: REGION });
 const customS3Client = new S3Client(REGION);
-const awsS3Client = new S3({ region: REGION });
 const iamHelper = new IAMHelper(REGION);
 
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
@@ -81,7 +80,7 @@ beforeAll(async () => {
     const policy = await IAM_HELPER.createLambdaExecutionPolicy(LAMBDA_EXECUTION_POLICY_NAME);
     await wait(5000);
     LAMBDA_EXECUTION_POLICY_ARN = policy.Policy.Arn;
-    await IAM_HELPER.attachLambdaExecutionPolicy(policy.Policy.Arn, role.Role.RoleName);
+    await IAM_HELPER.attachPolicy(policy.Policy.Arn, role.Role.RoleName);
     await wait(10000);
     await LAMBDA_HELPER.createFunction(ECHO_FUNCTION_NAME, role.Role.Arn, 'echoResolverFunction');
   } catch (e) {
@@ -95,7 +94,7 @@ beforeAll(async () => {
   `;
 
   try {
-    await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
+    await customS3Client.createBucket(BUCKET_NAME);
   } catch (e) {
     console.warn(`Could not create bucket: ${e}`);
   }
@@ -215,7 +214,7 @@ afterAll(async () => {
     console.warn(`Error during function cleanup: ${e}`);
   }
   try {
-    await IAM_HELPER.detachLambdaExecutionPolicy(LAMBDA_EXECUTION_POLICY_ARN, LAMBDA_EXECUTION_ROLE_NAME);
+    await IAM_HELPER.detachPolicy(LAMBDA_EXECUTION_POLICY_ARN, LAMBDA_EXECUTION_ROLE_NAME);
   } catch (e) {
     console.warn(`Error during policy dissociation: ${e}`);
   }

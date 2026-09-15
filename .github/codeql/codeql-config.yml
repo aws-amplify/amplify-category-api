@@ -1,2 +1,1 @@
-paths-ignore:
-  - packages/amplify-category-api/resources/awscloudformation/container-templates/**/*.js
+name: 'CodeQL config'

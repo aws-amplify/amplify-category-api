@@ -126,7 +126,7 @@ describe('@refersTo directive on models', () => {
     stubDirective.arguments = [];
     expect(() =>
       refersToTransformer.object(stubDefinition as ObjectTypeDefinitionNode, stubDirective as DirectiveNode, stubTransformerContext),
-    ).toThrowErrorMatchingInlineSnapshot('"@refersTo is only supported on RDS models. DDBModel is not an RDS model."');
+    ).toThrowErrorMatchingInlineSnapshot(`"@refersTo is only supported on SQL models. DDBModel is not a SQL model."`);
   });
 
   it('requires a name to be specified', () => {
@@ -286,7 +286,7 @@ describe('@refersTo directive on fields', () => {
     context.dataSourceStrategies[modelName] = DDB_DEFAULT_DATASOURCE_STRATEGY;
     expect(() =>
       refersToTransformer.field(parent as ObjectTypeDefinitionNode, field as FieldDefinitionNode, directive as DirectiveNode, context),
-    ).toThrowErrorMatchingInlineSnapshot('"@refersTo is only supported on RDS models. DDBModel is not an RDS model."');
+    ).toThrowErrorMatchingInlineSnapshot(`"@refersTo is only supported on SQL models. DDBModel is not a SQL model."`);
   });
 
   it('cannot be applied on relational fields in a model', () => {

@@ -4,7 +4,7 @@ import { attachInputMappingSlot, attachResponseMappingSlot, attachFieldMappingSl
 const addToSlot_mock = jest.fn();
 
 const resolver_stub = {
-  addToSlot: addToSlot_mock,
+  addVtlFunctionToSlot: addToSlot_mock,
 };
 
 const resolver_typed = resolver_stub as unknown as TransformerResolverProvider;

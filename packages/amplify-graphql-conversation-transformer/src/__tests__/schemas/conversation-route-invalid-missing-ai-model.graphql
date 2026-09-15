@@ -1,0 +1,12 @@
+type Mutation {
+  invalidChat(
+    conversationId: ID!,
+    content: [AmplifyAIContentBlockInput],
+    aiContext: AWSJSON,
+    toolConfiguration: AmplifyAIToolConfigurationInput
+  ): AmplifyAIConversationMessage
+  @conversation(
+    systemPrompt: "You are a helpful chatbot.",
+    auth: { strategy: owner, provider: userPools },
+  )
+}

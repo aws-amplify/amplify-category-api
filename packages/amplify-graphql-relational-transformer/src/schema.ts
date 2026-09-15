@@ -33,7 +33,7 @@ import {
   toUpper,
   wrapNonNull,
 } from 'graphql-transformer-common';
-import { getSortKeyFieldNames } from '@aws-amplify/graphql-transformer-core';
+import { getFilterInputName, getSortKeyFieldNames, getSubscriptionFilterInputName } from '@aws-amplify/graphql-transformer-core';
 import { WritableDraft } from 'immer/dist/types/types-external';
 import {
   BelongsToDirectiveConfiguration,
@@ -126,7 +126,10 @@ const ensureModelSortDirectionEnum = (ctx: TransformerContextProvider): void => 
 /**
  * ensureHasOneConnectionField
  */
-export const ensureHasOneConnectionField = (config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider): void => {
+export const ensureHasOneConnectionField = (
+  config: HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+): void => {
   const { field, fieldNodes, references, object, relatedType } = config;
 
   // If fields were explicitly provided to the directive, there is nothing else to do here.
@@ -223,6 +226,21 @@ export const ensureHasOneConnectionField = (config: HasOneDirectiveConfiguration
       primaryKeyConnectionFieldType,
       field,
       sortKeyFields,
+    );
+  }
+
+  const subscriptionFilterInputName = getSubscriptionFilterInputName(object.name.value);
+  const filterSubscriptionInput = ctx.output.getType(subscriptionFilterInputName) as InputObjectTypeDefinitionNode;
+  if (filterSubscriptionInput) {
+    updateFilterConnectionInputWithConnectionFields(
+      ctx,
+      filterSubscriptionInput,
+      object,
+      connectionAttributeName,
+      primaryKeyConnectionFieldType,
+      field,
+      sortKeyFields,
+      true,
     );
   }
 
@@ -366,6 +384,21 @@ export const ensureHasManyConnectionField = (
       sortKeyFields,
     );
   }
+
+  const subscriptionFilterInputName = getSubscriptionFilterInputName(object.name.value);
+  const filterSubscriptionInput = ctx.output.getType(subscriptionFilterInputName) as InputObjectTypeDefinitionNode;
+  if (filterSubscriptionInput) {
+    updateFilterConnectionInputWithConnectionFields(
+      ctx,
+      filterSubscriptionInput,
+      object,
+      connectionAttributeName,
+      primaryKeyConnectionFieldType,
+      field,
+      sortKeyFields,
+      true,
+    );
+  }
 };
 
 const getTypeFieldsWithConnectionField = (
@@ -418,7 +451,7 @@ const getFilterConnectionInputFieldsWithConnectionField = (
 const makeModelConnectionField = (config: HasManyDirectiveConfiguration): FieldDefinitionNode => {
   const { field, fields, indexName, relatedType, relatedTypeIndex } = config;
   const args = [
-    makeInputValueDefinition('filter', makeNamedType(ModelResourceIDs.ModelFilterInputTypeName(relatedType.name.value))),
+    makeInputValueDefinition('filter', makeNamedType(getFilterInputName(relatedType.name.value))),
     makeInputValueDefinition('sortDirection', makeNamedType('ModelSortDirection')),
     makeInputValueDefinition('limit', makeNamedType('Int')),
     makeInputValueDefinition('nextToken', makeNamedType('String')),
@@ -460,7 +493,7 @@ const makeModelXFilterInputObject = (
   ctx: TransformerContextProvider,
 ): InputObjectTypeDefinitionNode => {
   const { relatedType } = config;
-  const name = ModelResourceIDs.ModelFilterInputTypeName(relatedType.name.value);
+  const name = getFilterInputName(relatedType.name.value);
   const fields = relatedType
     .fields!.filter((field: FieldDefinitionNode) => {
       const fieldType = ctx.output.getType(getBaseType(field.type));
@@ -634,13 +667,14 @@ const updateFilterConnectionInputWithConnectionFields = (
   primaryKeyConnectionFieldType: string,
   field: FieldDefinitionNode,
   sortKeyFields: FieldDefinitionNode[],
+  isSubscriptionFilter = false,
 ): void => {
   const updatedFields = [...input.fields!];
   updatedFields.push(
     ...getFilterConnectionInputFieldsWithConnectionField(
       updatedFields,
       connectionAttributeName,
-      generateModelScalarFilterInputName(primaryKeyConnectionFieldType, false),
+      generateModelScalarFilterInputName(primaryKeyConnectionFieldType, false, isSubscriptionFilter),
     ),
   );
   sortKeyFields.forEach((it) => {
@@ -648,7 +682,7 @@ const updateFilterConnectionInputWithConnectionFields = (
       ...getFilterConnectionInputFieldsWithConnectionField(
         updatedFields,
         getSortKeyConnectionAttributeName(object.name.value, field.name.value, it.name.value),
-        generateModelScalarFilterInputName(getBaseType(it.type), false),
+        generateModelScalarFilterInputName(getBaseType(it.type), false, isSubscriptionFilter),
       ),
     );
   });

@@ -38,7 +38,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:owner:sub::username',
+            roleType: 'Model:userPools:owner:owner:sub::username',
             operations: {
               create: ['id', 'description'],
               search: ['id', 'description'],
@@ -73,7 +73,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:owner:sub::username',
+            roleType: 'Model:userPools:owner:owner:sub::username',
             operations: {
               create: [],
               search: [],
@@ -108,7 +108,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:owner:sub::username',
+            roleType: 'Model:userPools:owner:owner:sub::username',
             operations: {
               create: ['id', 'description'],
               search: ['id', 'description'],
@@ -143,7 +143,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:owner:sub::username',
+            roleType: 'Model:userPools:owner:owner:sub::username',
             operations: {
               create: ['id', 'description'],
               search: ['id', 'description'],
@@ -178,7 +178,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:owner:sub::username',
+            roleType: 'Model:userPools:owner:owner:sub::username',
             operations: {
               create: ['id', 'description'],
               search: ['id', 'description'],
@@ -213,7 +213,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:owner:sub::username',
+            roleType: 'Model:userPools:owner:owner:sub::username',
             operations: {
               create: ['id', 'description'],
               search: ['id', 'description'],
@@ -248,7 +248,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:owner:sub::username',
+            roleType: 'Model:userPools:owner:owner:sub::username',
             operations: {
               create: ['id', 'description'],
               search: ['description'],
@@ -283,7 +283,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:owner:sub::username',
+            roleType: 'Model:userPools:owner:owner:sub::username',
             operations: {
               create: ['id', 'description'],
               search: ['id', 'description'],
@@ -318,7 +318,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:owner:sub::username',
+            roleType: 'Model:userPools:owner:owner:sub::username',
             operations: {
               create: ['id', 'description'],
               search: ['id', 'description'],
@@ -353,7 +353,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'apiKey:public',
+            roleType: 'Model:apiKey:public',
             operations: {
               create: ['id', 'description'],
               search: ['id', 'description'],
@@ -388,7 +388,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'apiKey:public',
+            roleType: 'Model:apiKey:public',
             operations: {
               create: [],
               search: [],
@@ -423,7 +423,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'apiKey:public',
+            roleType: 'Model:apiKey:public',
             operations: {
               create: ['id', 'description'],
               search: ['id', 'description'],
@@ -458,7 +458,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'apiKey:public',
+            roleType: 'Model:apiKey:public',
             operations: {
               create: ['id', 'description'],
               search: ['id', 'description'],
@@ -493,7 +493,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'apiKey:public',
+            roleType: 'Model:apiKey:public',
             operations: {
               create: ['id', 'description'],
               get: ['id', 'description'],
@@ -528,7 +528,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'apiKey:public',
+            roleType: 'Model:apiKey:public',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -563,7 +563,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'apiKey:public',
+            roleType: 'Model:apiKey:public',
             operations: {
               create: ['id', 'description'],
               get: ['description'],
@@ -598,7 +598,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'apiKey:public',
+            roleType: 'Model:apiKey:public',
             operations: {
               create: ['id', 'description'],
               get: ['id', 'description'],
@@ -633,7 +633,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'apiKey:public',
+            roleType: 'Model:apiKey:public',
             operations: {
               create: ['id', 'description'],
               get: ['id', 'description'],
@@ -668,7 +668,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:private',
+            roleType: 'Model:userPools:private',
             operations: {
               create: ['id', 'description'],
               get: ['id', 'description'],
@@ -703,7 +703,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:private',
+            roleType: 'Model:userPools:private',
             operations: {
               create: [],
               search: [],
@@ -738,7 +738,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:private',
+            roleType: 'Model:userPools:private',
             operations: {
               create: ['id', 'description'],
               get: ['id', 'description'],
@@ -773,7 +773,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:private',
+            roleType: 'Model:userPools:private',
             operations: {
               create: ['id', 'description'],
               get: ['id', 'description'],
@@ -808,7 +808,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:private',
+            roleType: 'Model:userPools:private',
             operations: {
               create: ['id', 'description'],
               get: ['id', 'description'],
@@ -843,7 +843,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:private',
+            roleType: 'Model:userPools:private',
             operations: {
               create: ['id', 'description'],
               get: ['id', 'description'],
@@ -878,7 +878,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:private',
+            roleType: 'Model:userPools:private',
             operations: {
               create: ['id', 'description'],
               search: ['description'],
@@ -913,7 +913,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:private',
+            roleType: 'Model:userPools:private',
             operations: {
               create: ['id', 'description'],
               get: ['id', 'description'],
@@ -948,7 +948,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:private',
+            roleType: 'Model:userPools:private',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -983,7 +983,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:staticGroup:Admin:cognito:groups',
+            roleType: 'Model:userPools:staticGroup:Admin:cognito:groups',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -1018,7 +1018,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:staticGroup:Admin:cognito:groups',
+            roleType: 'Model:userPools:staticGroup:Admin:cognito:groups',
             operations: {
               create: [],
               search: [],
@@ -1053,7 +1053,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:staticGroup:Admin:cognito:groups',
+            roleType: 'Model:userPools:staticGroup:Admin:cognito:groups',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -1088,7 +1088,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:staticGroup:Admin:cognito:groups',
+            roleType: 'Model:userPools:staticGroup:Admin:cognito:groups',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -1123,7 +1123,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:staticGroup:Admin:cognito:groups',
+            roleType: 'Model:userPools:staticGroup:Admin:cognito:groups',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -1158,7 +1158,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:staticGroup:Admin:cognito:groups',
+            roleType: 'Model:userPools:staticGroup:Admin:cognito:groups',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -1193,7 +1193,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:staticGroup:Admin:cognito:groups',
+            roleType: 'Model:userPools:staticGroup:Admin:cognito:groups',
             operations: {
               create: ['id', 'description'],
               search: ['description'],
@@ -1228,7 +1228,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:staticGroup:Admin:cognito:groups',
+            roleType: 'Model:userPools:staticGroup:Admin:cognito:groups',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -1263,7 +1263,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:staticGroup:Admin:cognito:groups',
+            roleType: 'Model:userPools:staticGroup:Admin:cognito:groups',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -1298,7 +1298,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:owner:sub::username',
+            roleType: 'Model:userPools:owner:owner:sub::username',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -1311,7 +1311,7 @@ export const acmTests: { [key: string]: AcmTest } = {
             },
           },
           {
-            roleType: 'userPools:private',
+            roleType: 'Model:userPools:private',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -1346,7 +1346,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:owner:sub::username',
+            roleType: 'Model:userPools:owner:owner:sub::username',
             operations: {
               create: ['id'],
               search: ['id'],
@@ -1359,7 +1359,7 @@ export const acmTests: { [key: string]: AcmTest } = {
             },
           },
           {
-            roleType: 'userPools:private',
+            roleType: 'Model:userPools:private',
             operations: {
               create: ['description'],
               search: ['description'],
@@ -1395,7 +1395,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:author:sub::username',
+            roleType: 'Model:userPools:owner:author:sub::username',
             operations: {
               create: ['id', 'description', 'author'],
               list: ['id', 'description'],
@@ -1431,7 +1431,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:authors:sub::username',
+            roleType: 'Model:userPools:owner:authors:sub::username',
             operations: {
               create: ['id', 'description', 'authors'],
               list: ['id', 'description'],
@@ -1467,7 +1467,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:author:sub',
+            roleType: 'Model:userPools:owner:author:sub',
             operations: {
               create: ['id', 'description', 'author'],
               list: ['id', 'description'],
@@ -1502,7 +1502,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:id:sub::username',
+            roleType: 'Model:userPools:owner:id:sub::username',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -1537,7 +1537,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:description:sub::username',
+            roleType: 'Model:userPools:owner:description:sub::username',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -1575,7 +1575,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:description:sub::username',
+            roleType: 'Model:userPools:owner:description:sub::username',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -1593,7 +1593,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:id:sub::username',
+            roleType: 'Model:userPools:owner:id:sub::username',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -1630,7 +1630,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:description:sub::username',
+            roleType: 'Model:userPools:owner:description:sub::username',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -1668,7 +1668,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:description:sub::username',
+            roleType: 'Model:userPools:owner:description:sub::username',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -1686,7 +1686,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:id:sub::username',
+            roleType: 'Model:userPools:owner:id:sub::username',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -1724,7 +1724,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:description:sub::username',
+            roleType: 'Model:userPools:owner:description:sub::username',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -1742,7 +1742,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:id:sub::username',
+            roleType: 'Model:userPools:owner:id:sub::username',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -1780,7 +1780,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:description:sub::username',
+            roleType: 'Model:userPools:owner:description:sub::username',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -1798,7 +1798,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:owner:id:sub::username',
+            roleType: 'Model:userPools:owner:id:sub::username',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -1833,7 +1833,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:dynamicGroup:id:cognito:groups',
+            roleType: 'Model:userPools:dynamicGroup:id:cognito:groups',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -1868,7 +1868,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:dynamicGroup:description:cognito:groups',
+            roleType: 'Model:userPools:dynamicGroup:description:cognito:groups',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -1906,7 +1906,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:dynamicGroup:id:cognito:groups',
+            roleType: 'Model:userPools:dynamicGroup:id:cognito:groups',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -1924,7 +1924,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:dynamicGroup:description:cognito:groups',
+            roleType: 'Model:userPools:dynamicGroup:description:cognito:groups',
             operations: {
               create: ['id', 'description'],
               get: ['id', 'description'],
@@ -1961,7 +1961,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:dynamicGroup:description:cognito:groups',
+            roleType: 'Model:userPools:dynamicGroup:description:cognito:groups',
             operations: {
               create: ['id', 'description'],
               get: ['id', 'description'],
@@ -1999,7 +1999,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:dynamicGroup:description:cognito:groups',
+            roleType: 'Model:userPools:dynamicGroup:description:cognito:groups',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -2017,7 +2017,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:dynamicGroup:id:cognito:groups',
+            roleType: 'Model:userPools:dynamicGroup:id:cognito:groups',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -2055,7 +2055,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:dynamicGroup:id:cognito:groups',
+            roleType: 'Model:userPools:dynamicGroup:id:cognito:groups',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -2073,7 +2073,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:dynamicGroup:description:cognito:groups',
+            roleType: 'Model:userPools:dynamicGroup:description:cognito:groups',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -2111,7 +2111,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:dynamicGroup:description:cognito:groups',
+            roleType: 'Model:userPools:dynamicGroup:description:cognito:groups',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],
@@ -2129,7 +2129,7 @@ export const acmTests: { [key: string]: AcmTest } = {
         name: 'Model',
         validations: [
           {
-            roleType: 'userPools:dynamicGroup:id:cognito:groups',
+            roleType: 'Model:userPools:dynamicGroup:id:cognito:groups',
             operations: {
               create: ['id', 'description'],
               list: ['id', 'description'],

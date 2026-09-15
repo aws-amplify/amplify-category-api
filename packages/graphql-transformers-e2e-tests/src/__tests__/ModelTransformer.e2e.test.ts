@@ -1,7 +1,7 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { testTransform } from '@aws-amplify/graphql-transformer-test-utils';
-import { Output } from 'aws-sdk/clients/cloudformation';
-import { default as S3 } from 'aws-sdk/clients/s3';
+import { Output } from '@aws-sdk/client-cloudformation';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { default as moment } from 'moment';
 import { CloudFormationClient } from '../CloudFormationClient';
@@ -16,7 +16,6 @@ jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient(region);
 const customS3Client = new S3Client(region);
-const awsS3Client = new S3({ region: region });
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `ModelTransformerTest-${BUILD_TIMESTAMP}`;
 const BUCKET_NAME = `appsync-model-transformer-test-bucket-${BUILD_TIMESTAMP}`;
@@ -95,11 +94,7 @@ beforeAll(async () => {
   });
 
   try {
-    await awsS3Client
-      .createBucket({
-        Bucket: BUCKET_NAME,
-      })
-      .promise();
+    await customS3Client.createBucket(BUCKET_NAME);
   } catch (e) {
     console.error(`Failed to create S3 bucket: ${e}`);
   }

@@ -1,7 +1,0 @@
-type Post @auth(rules: [{ allow: groups, groupsField: "groups" }]) {
-  id: ID!
-  title: String!
-  group: String
-  createdAt: String
-  updatedAt: String
-}

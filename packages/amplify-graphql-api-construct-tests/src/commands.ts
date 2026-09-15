@@ -1,7 +1,19 @@
 import * as path from 'path';
 import * as fs from 'fs';
-import { copySync, moveSync, readFileSync } from 'fs-extra';
-import { getScriptRunnerPath, nspawn as spawn } from 'amplify-category-api-e2e-core';
+import { copySync, moveSync, readFileSync, writeFileSync } from 'fs-extra';
+import {
+  addApiWithoutSchema,
+  amplifyPush,
+  getProjectMeta,
+  getScriptRunnerPath,
+  initJSProjectWithProfile,
+  nspawn as spawn,
+  sleep,
+  updateApiSchema,
+  addFeatureFlag,
+  amplifyPushForce,
+} from 'amplify-category-api-e2e-core';
+import { DynamoDBClient, DeleteTableCommand, ListTablesCommand, UpdateTableCommand } from '@aws-sdk/client-dynamodb';
 
 /**
  * Retrieve the path to the `npx` executable for interacting with the aws-cdk cli.
@@ -38,8 +50,62 @@ const copyTemplateDirectory = (projectPath: string, templatePath: string): void 
   moveSync(path.join(binDir, 'app.ts'), path.join(binDir, `${path.basename(projectPath)}.ts`), { overwrite: true });
 };
 
+/**
+ * Adds additional values to cdk context persisted in cdk.json file.
+ */
+const appendToCDKContext = (projectPath: string, additionalContext: Record<string, string>): void => {
+  const cdkJsonPath = path.join(projectPath, 'cdk.json');
+  const cdkJson = JSON.parse(readFileSync(cdkJsonPath, 'utf-8'));
+  if (!cdkJson.context) {
+    cdkJson.context = {};
+  }
+  Object.entries(additionalContext).forEach(([contextKey, contextValue]) => {
+    cdkJson.context[contextKey] = contextValue;
+  });
+  writeFileSync(cdkJsonPath, JSON.stringify(cdkJson, null, 2));
+};
+
+/**
+ * Pinned version of the `aws-cdk` CLI used to scaffold e2e test projects.
+ *
+ * The CLI must be pinned independently of `aws-cdk-lib`: the two have used separate version lines since CLI v2.1000.0, so there is no
+ * `aws-cdk` release matching a modern `aws-cdk-lib` version. Leaving the CLI floating means `cdk init` silently picks up upstream template
+ * changes, which has broken e2e groups before (the template switched the synth command from `ts-node` to `tsc && tsx`, turning synth into a
+ * whole-project typecheck).
+ */
+const CDK_CLI_VERSION = '2.1134.0';
+
+/**
+ * Removes the whole-project `tsc` typecheck from the generated `cdk.json` synth command.
+ *
+ * Backend templates are copied wholesale into the scratch project's `bin/` directory, and some of those files are lambda entry points that
+ * are only ever referenced by esbuild as a path string -- they are never imported by `app.ts`. A whole-project typecheck compiles them
+ * anyway, in a directory they were never written to resolve from, failing synth before it starts. Transpiling only the import graph (the
+ * historical behavior) keeps synth scoped to code the app actually loads.
+ */
+const removeWholeProjectTypecheckFromSynth = (projectPath: string): void => {
+  const cdkJsonPath = path.join(projectPath, 'cdk.json');
+  const cdkJson = JSON.parse(readFileSync(cdkJsonPath, 'utf-8'));
+  if (typeof cdkJson.app !== 'string') {
+    return;
+  }
+  const appWithoutTypecheck = cdkJson.app.replace(/^\s*npx\s+tsc\s*&&\s*/, '');
+  if (appWithoutTypecheck === cdkJson.app) {
+    if (cdkJson.app.includes('tsc')) {
+      throw new Error(
+        `[initCDKProject] cdk.json synth command still contains 'tsc' but did not match the removal pattern (the CDK CLI template likely ` +
+          `changed): "${cdkJson.app}". Update this strip logic and/or CDK_CLI_VERSION (currently ${CDK_CLI_VERSION}).`,
+      );
+    }
+    return;
+  }
+  cdkJson.app = appWithoutTypecheck;
+  writeFileSync(cdkJsonPath, JSON.stringify(cdkJson, null, 2));
+};
+
 export type InitCDKProjectProps = {
   construct?: CdkConstruct;
+  cdkContext?: Record<string, string>;
   cdkVersion?: string;
   additionalDependencies?: Array<string>;
 };
@@ -52,9 +118,9 @@ export type InitCDKProjectProps = {
  * @returns a promise which resolves to the stack name
  */
 export const initCDKProject = async (cwd: string, templatePath: string, props?: InitCDKProjectProps): Promise<string> => {
-  const { cdkVersion = '2.80.0', additionalDependencies = [] } = props ?? {};
+  const { cdkVersion = '2.260.0', additionalDependencies = [] } = props ?? {};
 
-  await spawn(getNpxPath(), ['cdk', 'init', 'app', '--language', 'typescript'], {
+  await spawn(getNpxPath(), [`aws-cdk@${CDK_CLI_VERSION}`, 'init', 'app', '--language', 'typescript'], {
     cwd,
     stripColors: true,
     // npx cdk does not work on verdaccio
@@ -65,6 +131,12 @@ export const initCDKProject = async (cwd: string, templatePath: string, props?: 
     .sendYes()
     .runAsync();
 
+  removeWholeProjectTypecheckFromSynth(cwd);
+
+  if (props?.cdkContext) {
+    appendToCDKContext(cwd, props.cdkContext);
+  }
+
   copyTemplateDirectory(cwd, templatePath);
 
   const deps = [getPackagedConstructPath(props?.construct ?? 'GraphqlApi'), `aws-cdk-lib@${cdkVersion}`, ...additionalDependencies];
@@ -74,7 +146,15 @@ export const initCDKProject = async (cwd: string, templatePath: string, props?: 
 };
 
 export type CdkDeployProps = {
-  timeoutMs: number;
+  /**
+   * Amount of time to wait with no output from CDK before failing.
+   */
+  timeoutMs?: number;
+
+  /**
+   * Amount of time to wait after deployment before returning. This allows time for certain resources to propagate and finalize.
+   */
+  postDeployWaitMs?: number;
 };
 
 /**
@@ -84,13 +164,27 @@ export type CdkDeployProps = {
  * @returns the generated outputs file as a JSON object
  */
 export const cdkDeploy = async (cwd: string, option: string, props?: CdkDeployProps): Promise<any> => {
-  await spawn(getNpxPath(), ['cdk', 'deploy', '--outputs-file', 'outputs.json', '--require-approval', 'never', option], {
+  // The CodegenAssets BucketDeployment resource takes a while. Set the timeout to 15m account for that. (Note that this is the "no output
+  // timeout"--the overall deployment is still allowed to take longer than 15m)
+  const noOutputTimeout = props?.timeoutMs ?? 15 * 60 * 1000;
+  const commandOptions = {
     cwd,
     stripColors: true,
     // npx cdk does not work on verdaccio
     env: { npm_config_registry: 'https://registry.npmjs.org/' },
-    noOutputTimeout: props?.timeoutMs,
-  }).runAsync();
+    noOutputTimeout,
+  };
+
+  await spawn(
+    getNpxPath(),
+    ['cdk', 'deploy', '--outputs-file', 'outputs.json', '--require-approval', 'never', option],
+    commandOptions,
+  ).runAsync();
+
+  if (props?.postDeployWaitMs) {
+    console.log(`Waiting for ${props.postDeployWaitMs} ms to let resources propagate and finalize`);
+    await sleep(props.postDeployWaitMs);
+  }
 
   return JSON.parse(readFileSync(path.join(cwd, 'outputs.json'), 'utf8'));
 };
@@ -102,7 +196,7 @@ export const cdkDeploy = async (cwd: string, option: string, props?: CdkDeployPr
  * @returns a promise which resolves after teardown of the stack
  */
 export const cdkDestroy = async (cwd: string, option: string): Promise<void> => {
-  return spawn(getNpxPath(), ['cdk', 'destroy', '--force', option], { cwd, stripColors: true }).runAsync();
+  return spawn(getNpxPath(), ['cdk', 'destroy', '--force', option], { cwd, stripColors: true, noOutputTimeout: 15 * 60 * 1000 }).runAsync();
 };
 
 /**
@@ -114,4 +208,55 @@ export const updateCDKAppWithTemplate = (cwd: string, templatePath: string): voi
   const binDir = path.join(cwd, 'bin');
   copySync(templatePath, binDir, { overwrite: true });
   moveSync(path.join(binDir, 'app.ts'), path.join(binDir, `${path.basename(cwd)}.ts`), { overwrite: true });
+};
+
+/**
+ * Helper function to create a gen 1 project with for migration.
+ *
+ * @param name project name
+ * @param projRoot project root directory
+ * @param schema schema file to use
+ */
+export const createGen1ProjectForMigration = async (
+  name: string,
+  projRoot: string,
+  schema: string,
+): Promise<{
+  GraphQLAPIEndpointOutput: string;
+  GraphQLAPIKeyOutput: string;
+  DataSourceMappingOutput: string;
+}> => {
+  await initJSProjectWithProfile(projRoot, { name });
+  await addApiWithoutSchema(projRoot, { transformerVersion: 2 });
+  await updateApiSchema(projRoot, name, schema);
+  await amplifyPush(projRoot);
+
+  addFeatureFlag(projRoot, 'graphqltransformer', 'enablegen2migration', true);
+  await amplifyPushForce(projRoot);
+
+  const meta = getProjectMeta(projRoot);
+  const { output } = meta.api[name];
+
+  const { GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput, DataSourceMappingOutput } = output;
+
+  return {
+    GraphQLAPIEndpointOutput,
+    GraphQLAPIKeyOutput,
+    DataSourceMappingOutput,
+  };
+};
+
+/**
+ * Helper function to delete DDB tables.
+ * Used to delete tables set to retain on delete.
+ * @param tableNames table names to delete
+ */
+export const deleteDDBTables = async (tableNames: string[]): Promise<void> => {
+  const client = new DynamoDBClient({ region: process.env.CLI_REGION || 'us-west-2' });
+  // deletion protection is enabled for migrated tables
+  // disable deletion protection to teardown the tests
+  await Promise.allSettled(
+    tableNames.map((tableName) => client.send(new UpdateTableCommand({ TableName: tableName, DeletionProtectionEnabled: false }))),
+  );
+  await Promise.allSettled(tableNames.map((tableName) => client.send(new DeleteTableCommand({ TableName: tableName }))));
 };

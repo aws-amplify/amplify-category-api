@@ -25,6 +25,7 @@ import { DynamoDbDataSource } from 'aws-cdk-lib/aws-appsync';
 import { ElasticsearchDataSource } from 'aws-cdk-lib/aws-appsync';
 import { EventBridgeDataSource } from 'aws-cdk-lib/aws-appsync';
 import { ExtendedResolverProps } from 'aws-cdk-lib/aws-appsync';
+import { FieldLogLevel } from 'aws-cdk-lib/aws-appsync';
 import { FunctionRuntime } from 'aws-cdk-lib/aws-appsync';
 import { HttpDataSource } from 'aws-cdk-lib/aws-appsync';
 import { HttpDataSourceOptions } from 'aws-cdk-lib/aws-appsync';
@@ -45,7 +46,10 @@ import { NestedStack } from 'aws-cdk-lib';
 import { NoneDataSource } from 'aws-cdk-lib/aws-appsync';
 import { OpenSearchDataSource } from 'aws-cdk-lib/aws-appsync';
 import { RdsDataSource } from 'aws-cdk-lib/aws-appsync';
+import { RemovalPolicy } from 'aws-cdk-lib';
 import { Resolver } from 'aws-cdk-lib/aws-appsync';
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { Stack } from 'aws-cdk-lib';
 import { StreamViewType } from 'aws-cdk-lib/aws-dynamodb';
 
 // @public
@@ -70,10 +74,12 @@ export interface AmplifyDynamoDbModelDataSourceStrategy {
 // @public
 export class AmplifyDynamoDbTableWrapper {
     constructor(resource: CfnResource);
+    applyRemovalPolicy(policy: RemovalPolicy): void;
     set billingMode(billingMode: BillingMode);
     set deletionProtectionEnabled(deletionProtectionEnabled: boolean);
     static isAmplifyDynamoDbTableResource(x: any): x is CfnResource;
     set pointInTimeRecoveryEnabled(pointInTimeRecoveryEnabled: boolean);
+    set pointInTimeRecoverySpecification(pointInTimeRecoverySpecification: PointInTimeRecoverySpecification);
     set provisionedThroughput(provisionedThroughput: ProvisionedThroughput);
     setGlobalSecondaryIndexProvisionedThroughput(indexName: string, provisionedThroughput: ProvisionedThroughput): void;
     set sseSpecification(sseSpecification: SSESpecification);
@@ -101,11 +107,13 @@ export class AmplifyGraphqlApi extends Construct {
     readonly graphqlUrl: string;
     readonly realtimeUrl: string;
     readonly resources: AmplifyGraphqlApiResources;
+    readonly stack: Stack;
 }
 
 // @public
 export interface AmplifyGraphqlApiCfnResources {
     readonly additionalCfnResources: Record<string, CfnResource>;
+    readonly amplifyDynamoDbTables: Record<string, AmplifyDynamoDbTableWrapper>;
     readonly cfnApiKey?: CfnApiKey;
     readonly cfnDataSources: Record<string, CfnDataSource>;
     readonly cfnFunctionConfigurations: Record<string, CfnFunctionConfiguration>;
@@ -121,10 +129,13 @@ export interface AmplifyGraphqlApiCfnResources {
 export interface AmplifyGraphqlApiProps {
     readonly apiName?: string;
     readonly authorizationModes: AuthorizationModes;
+    // @deprecated
     readonly conflictResolution?: ConflictResolution;
+    readonly dataStoreConfiguration?: DataStoreConfiguration;
     readonly definition: IAmplifyGraphqlDefinition;
     readonly functionNameMap?: Record<string, IFunction>;
     readonly functionSlots?: FunctionSlot[];
+    readonly logging?: Logging;
     readonly outputStorageStrategy?: IBackendOutputStorageStrategy;
     readonly predictionsBucket?: IBucket;
     readonly stackMappings?: Record<string, string>;
@@ -134,7 +145,6 @@ export interface AmplifyGraphqlApiProps {
 
 // @public
 export interface AmplifyGraphqlApiResources {
-    readonly amplifyDynamoDbTables: Record<string, AmplifyDynamoDbTableWrapper>;
     readonly cfnResources: AmplifyGraphqlApiCfnResources;
     readonly functions: Record<string, IFunction>;
     readonly graphqlApi: IGraphqlApi;
@@ -163,6 +173,7 @@ export interface AuthorizationModes {
     readonly apiKeyConfig?: ApiKeyAuthorizationConfig;
     readonly defaultAuthorizationMode?: 'AWS_IAM' | 'AMAZON_COGNITO_USER_POOLS' | 'OPENID_CONNECT' | 'API_KEY' | 'AWS_LAMBDA';
     readonly iamConfig?: IAMAuthorizationConfig;
+    readonly identityPoolConfig?: IdentityPoolAuthorizationConfig;
     readonly lambdaConfig?: LambdaAuthorizationConfig;
     readonly oidcConfig?: OIDCAuthorizationConfig;
     readonly userPoolConfig?: UserPoolAuthorizationConfig;
@@ -176,10 +187,8 @@ export interface AutomergeConflictResolutionStrategy extends ConflictResolutionS
 // @public
 export type ConflictDetectionType = 'VERSION' | 'NONE';
 
-// @public
-export interface ConflictResolution {
-    readonly models?: Record<string, ConflictResolutionStrategy>;
-    readonly project?: ConflictResolutionStrategy;
+// @public @deprecated
+export interface ConflictResolution extends DataStoreConfiguration {
 }
 
 // @public
@@ -204,12 +213,20 @@ export interface CustomSqlDataSourceStrategy {
 }
 
 // @public
+export interface DataStoreConfiguration {
+    readonly models?: Record<string, ConflictResolutionStrategy>;
+    readonly project?: ConflictResolutionStrategy;
+}
+
+// @public
 export interface DefaultDynamoDbModelDataSourceStrategy {
     // (undocumented)
     readonly dbType: 'DYNAMODB';
     // (undocumented)
     readonly provisionStrategy: 'DEFAULT';
 }
+
+export { FieldLogLevel }
 
 // @public
 export type FunctionSlot = MutationFunctionSlot | QueryFunctionSlot | SubscriptionFunctionSlot;
@@ -229,10 +246,15 @@ export interface FunctionSlotOverride {
 
 // @public
 export interface IAMAuthorizationConfig {
+    // @deprecated
     readonly allowListedRoles?: (IRole | string)[];
-    readonly authenticatedUserRole: IRole;
-    readonly identityPoolId: string;
-    readonly unauthenticatedUserRole: IRole;
+    // @deprecated
+    readonly authenticatedUserRole?: IRole;
+    readonly enableIamAuthorizationMode?: boolean;
+    // @deprecated
+    readonly identityPoolId?: string;
+    // @deprecated
+    readonly unauthenticatedUserRole?: IRole;
 }
 
 // @public
@@ -256,13 +278,40 @@ export interface IBackendOutputStorageStrategy {
 }
 
 // @public
+export interface IdentityPoolAuthorizationConfig {
+    readonly authenticatedUserRole: IRole;
+    readonly identityPoolId: string;
+    readonly unauthenticatedUserRole: IRole;
+}
+
+// @public
+export interface ImportedAmplifyDynamoDbModelDataSourceStrategy {
+    // (undocumented)
+    readonly dbType: 'DYNAMODB';
+    // (undocumented)
+    readonly provisionStrategy: 'IMPORTED_AMPLIFY_TABLE';
+    // (undocumented)
+    readonly tableName: string;
+}
+
+// @public
 export interface LambdaAuthorizationConfig {
     readonly function: IFunction;
     readonly ttl: Duration;
 }
 
 // @public
-export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
+export interface LogConfig {
+    readonly excludeVerboseContent?: boolean;
+    readonly fieldLogLevel?: FieldLogLevel;
+    readonly retention?: RetentionDays;
+}
+
+// @public
+export type Logging = true | LogConfig;
+
+// @public
+export type ModelDataSourceStrategy = DefaultDynamoDbModelDataSourceStrategy | AmplifyDynamoDbModelDataSourceStrategy | ImportedAmplifyDynamoDbModelDataSourceStrategy | SQLLambdaModelDataSourceStrategy;
 
 // @public
 export type ModelDataSourceStrategyDbType = 'DYNAMODB' | ModelDataSourceStrategySqlDbType;
@@ -272,7 +321,7 @@ export type ModelDataSourceStrategySqlDbType = 'MYSQL' | 'POSTGRES';
 
 // @public
 export interface MutationFunctionSlot extends FunctionSlotBase {
-    readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'preUpdate' | 'postUpdate' | 'finish';
+    readonly slotName: 'init' | 'preAuth' | 'auth' | 'postAuth' | 'validate' | 'preUpdate' | 'postUpdate' | 'finish';
     readonly typeName: 'Mutation';
 }
 
@@ -295,16 +344,26 @@ export interface PartialTranslationBehavior {
     readonly allowDestructiveGraphqlSchemaUpdates?: boolean;
     readonly disableResolverDeduping?: boolean;
     readonly enableAutoIndexQueryNames?: boolean;
+    readonly enableSearchEncryptionAtRest?: boolean;
     readonly enableSearchNodeToNodeEncryption?: boolean;
     readonly enableTransformerCfnOutputs?: boolean;
     readonly populateOwnerFieldForStaticGroupAuth?: boolean;
+    // @internal
+    readonly _provisionHotswapFriendlyResources?: boolean;
     readonly replaceTableUponGsiUpdate?: boolean;
     readonly respectPrimaryKeyAttributesOnConnectionField?: boolean;
     readonly sandboxModeEnabled?: boolean;
     readonly secondaryKeyAsGSI?: boolean;
     readonly shouldDeepMergeDirectiveConfigDefaults?: boolean;
+    readonly subscriptionsInheritPrimaryAuth?: boolean;
     readonly suppressApiKeyGeneration?: boolean;
     readonly useSubUsernameForDefaultIdentityClaim?: boolean;
+}
+
+// @public
+export interface PointInTimeRecoverySpecification {
+    readonly pointInTimeRecoveryEnabled: boolean;
+    readonly recoveryPeriodInDays?: number;
 }
 
 // @public
@@ -324,11 +383,14 @@ export interface QueryFunctionSlot extends FunctionSlotBase {
     readonly typeName: 'Query';
 }
 
+export { RetentionDays }
+
 // @public
 export interface SQLLambdaModelDataSourceStrategy {
     readonly customSqlStatements?: Record<string, string>;
     readonly dbConnectionConfig: SqlModelDataSourceDbConnectionConfig;
     readonly dbType: ModelDataSourceStrategySqlDbType;
+    readonly minimizeRdsVpcEndpoints?: boolean;
     readonly name: string;
     readonly sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;
     readonly vpcConfiguration?: VpcConfig;
@@ -340,12 +402,32 @@ export class SQLLambdaModelDataSourceStrategyFactory {
 }
 
 // @public
-export interface SqlModelDataSourceDbConnectionConfig {
+export type SqlModelDataSourceDbConnectionConfig = SqlModelDataSourceSecretsManagerDbConnectionConfig | SqlModelDataSourceSsmDbConnectionConfig | SqlModelDataSourceSsmDbConnectionStringConfig;
+
+// @public
+export interface SqlModelDataSourceSecretsManagerDbConnectionConfig {
+    readonly databaseName: string;
+    readonly hostname: string;
+    readonly keyArn?: string;
+    readonly port: number;
+    readonly secretArn: string;
+    readonly sslCertConfig?: SslCertConfig;
+}
+
+// @public
+export interface SqlModelDataSourceSsmDbConnectionConfig {
     readonly databaseNameSsmPath: string;
     readonly hostnameSsmPath: string;
     readonly passwordSsmPath: string;
     readonly portSsmPath: string;
+    readonly sslCertConfig?: SslCertConfig;
     readonly usernameSsmPath: string;
+}
+
+// @public
+export interface SqlModelDataSourceSsmDbConnectionStringConfig {
+    readonly connectionUriSsmPath: string | string[];
+    readonly sslCertConfig?: SslCertConfig;
 }
 
 // @public
@@ -359,6 +441,15 @@ export interface SSESpecification {
 export enum SSEType {
     // (undocumented)
     KMS = "KMS"
+}
+
+// @public
+export interface SslCertConfig {
+}
+
+// @public (undocumented)
+export interface SslCertSsmPathConfig extends SslCertConfig {
+    readonly ssmPath: string | string[];
 }
 
 // @public
@@ -389,7 +480,7 @@ export interface TranslationBehavior {
     readonly allowDestructiveGraphqlSchemaUpdates: boolean;
     readonly disableResolverDeduping: boolean;
     readonly enableAutoIndexQueryNames: boolean;
-    // (undocumented)
+    readonly enableSearchEncryptionAtRest: boolean;
     readonly enableSearchNodeToNodeEncryption: boolean;
     readonly enableTransformerCfnOutputs: boolean;
     readonly populateOwnerFieldForStaticGroupAuth: boolean;
@@ -398,6 +489,7 @@ export interface TranslationBehavior {
     readonly sandboxModeEnabled: boolean;
     readonly secondaryKeyAsGSI: boolean;
     readonly shouldDeepMergeDirectiveConfigDefaults: boolean;
+    readonly subscriptionsInheritPrimaryAuth: boolean;
     readonly suppressApiKeyGeneration: boolean;
     readonly useSubUsernameForDefaultIdentityClaim: boolean;
 }

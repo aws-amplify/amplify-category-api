@@ -1,5 +1,6 @@
 import { EnumType, Field, FieldDataType, FieldType, Index } from '../schema-representation';
 import { StringDataSourceAdapter, EmptySchemaError, InvalidSchemaError } from './string-datasource-adapter';
+import { toPascalCase } from 'graphql-transformer-common';
 
 export interface PostgresIndex {
   tableName: string;
@@ -147,12 +148,18 @@ export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
     return tableIndexes;
   }
 
+  private generateEnumName(tableName: string, fieldName: string): string {
+    return toPascalCase([tableName, fieldName]);
+  }
+
   protected setEnums(parsedSchema: PostgresSchema): void {
     this.enums = new Map<string, EnumType>();
     parsedSchema
       .filter(({ enum_name }) => !!enum_name)
       .forEach((row) => {
-        const enumName = row.enum_name;
+        const tableName = row.table_name;
+        const columnName = row.column_name;
+        const enumName = this.generateEnumName(tableName, columnName);
         const enumValues = row.enum_values.substring(1, row.enum_values.length - 1).split(',');
         const enumType: EnumType = {
           kind: 'Enum',
@@ -262,7 +269,7 @@ export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
         fieldDatatype = 'AWSIPAddress';
         break;
       default:
-        if (this.enums.has(columntype)) {
+        if (this.enums.has(this.generateEnumName(tableName, fieldName))) {
           fieldDatatype = 'ENUM';
         }
         break;
@@ -270,12 +277,11 @@ export class PostgresStringDataSourceAdapter extends StringDataSourceAdapter {
 
     let result: FieldType;
     if (fieldDatatype === 'ENUM') {
-      const enumName = this.getEnumName(columntype);
-      const enumRef = this.enums.get(columntype);
+      const enumRef = this.enums.get(this.generateEnumName(tableName, fieldName));
       result = {
         kind: 'Enum',
         values: enumRef.values,
-        name: enumName,
+        name: enumRef.name,
       };
     } else {
       result = {

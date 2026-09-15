@@ -1,4 +1,14 @@
 import {
+  TableDescription,
+  UpdateTableCommandInput,
+  UpdateTimeToLiveCommandInput,
+  TimeToLiveDescription,
+  UpdateContinuousBackupsCommandInput,
+  ContinuousBackupsDescription,
+  ContinuousBackupsUnavailableException,
+  InternalServerError,
+} from '@aws-sdk/client-dynamodb';
+import {
   getNextAtomicUpdate,
   toCreateTableInput,
   getStreamUpdate,
@@ -6,18 +16,37 @@ import {
   getSseUpdate,
   getPointInTimeRecoveryUpdate,
   getDeletionProtectionUpdate,
+  extractOldTableInputFromEvent,
+  isTtlModified,
+  processIsComplete,
 } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
+import * as ddbTableManagerLambda from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
 import * as CustomDDB from '../resources/amplify-dynamodb-table/amplify-table-types';
-import {
-  TableDescription,
-  UpdateTableCommandInput,
-  UpdateTimeToLiveCommandInput,
-  TimeToLiveDescription,
-  UpdateContinuousBackupsCommandInput,
-  ContinuousBackupsDescription,
-} from '@aws-sdk/client-dynamodb';
 import { extractTableInputFromEvent } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
 import { RequestType } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda-types';
+
+jest.spyOn(ddbTableManagerLambda, 'getLambdaTags').mockReturnValue(
+  Promise.resolve([
+    { Key: 'key1', Value: 'value1' },
+    { Key: 'key2', Value: 'value2' },
+    { Key: 'key3', Value: 'value3' },
+  ]),
+);
+
+// Mock client-ssm
+const mockDescribeTable = jest.fn();
+const mockDescribeContinuousBackups = jest.fn();
+const mockUpdateContinuousBackups = jest.fn();
+jest.mock('@aws-sdk/client-dynamodb', () => {
+  return {
+    ...jest.requireActual('@aws-sdk/client-dynamodb'),
+    DynamoDB: jest.fn().mockImplementation(() => ({
+      describeTable: (input: any) => mockDescribeTable(input),
+      describeContinuousBackups: (input: any) => mockDescribeContinuousBackups(input),
+      updateContinuousBackups: (input: any) => mockUpdateContinuousBackups(input),
+    })),
+  };
+});
 
 describe('Custom Resource Lambda Tests', () => {
   describe('Get next GSI update', () => {
@@ -466,7 +495,7 @@ describe('Custom Resource Lambda Tests', () => {
     });
   });
   describe('Extract table definition input from event test', () => {
-    it('should extract the correct table definition from event object and parse it into create table input', () => {
+    it('should extract the correct table definition from event object and parse it into create table input', async () => {
       const mockEvent = {
         ServiceToken: 'mockServiceToken',
         ResponseURL: 'mockResponseURL',
@@ -533,10 +562,86 @@ describe('Custom Resource Lambda Tests', () => {
           },
         },
       };
-      const tableDef = extractTableInputFromEvent(mockEvent);
+      const mockContext = {
+        invokedFunctionArn: 'mockInvokedFunctionArn',
+      };
+      const tableDef = await extractTableInputFromEvent(mockEvent, mockContext);
       expect(tableDef).toMatchSnapshot();
       const createTableInput = toCreateTableInput(tableDef);
       expect(createTableInput).toMatchSnapshot();
+    });
+    it('should extract the correct old table definition from event object', () => {
+      const mockEvent = {
+        ServiceToken: 'mockServiceToken',
+        ResponseURL: 'mockResponseURL',
+        StackId: 'mockStackId',
+        RequestId: 'mockRequestId',
+        LogicalResourceId: 'mockLogicalResourceId',
+        ResourceType: 'mockResourceType',
+        RequestType: 'Create' as RequestType,
+        ResourceProperties: {
+          ServiceToken: 'mockServiceToken',
+        },
+        OldResourceProperties: {
+          ServiceToken: 'mockServiceToken',
+          tableName: 'mockTableName',
+          attributeDefinitions: [
+            {
+              attributeName: 'todoId',
+              attributeType: 'S',
+            },
+            {
+              attributeName: 'name',
+              attributeType: 'S',
+            },
+            {
+              attributeName: 'name2',
+              attributeType: 'S',
+            },
+          ],
+          keySchema: [
+            {
+              attributeName: 'todoId',
+              keyType: 'HASH',
+            },
+            {
+              attributeName: 'name',
+              keyType: 'RANGE',
+            },
+          ],
+          globalSecondaryIndexes: [
+            {
+              indexName: 'byName2',
+              keySchema: [
+                {
+                  attributeName: 'name2',
+                  keyType: 'HASH',
+                },
+              ],
+              projection: {
+                projectionType: 'ALL',
+              },
+              provisionedThroughput: {
+                readCapacityUnits: '5',
+                writeCapacityUnits: '5',
+              },
+            },
+          ],
+          billingMode: 'PROVISIONED',
+          provisionedThroughput: {
+            readCapacityUnits: '5',
+            writeCapacityUnits: '5',
+          },
+          sseSpecification: {
+            sseEnabled: 'true',
+          },
+          streamSpecification: {
+            streamViewType: 'NEW_AND_OLD_IMAGES',
+          },
+        },
+      };
+      const tableDef = extractOldTableInputFromEvent(mockEvent);
+      expect(tableDef).toMatchSnapshot();
     });
   });
   describe('Non GSI update', () => {
@@ -1009,6 +1114,382 @@ describe('Custom Resource Lambda Tests', () => {
         nextUpdate = getNextAtomicUpdate(currentState, endState);
         expect(nextUpdate).toMatchSnapshot();
       });
+      describe('per-index provisioned throughput', () => {
+        const keySchemaFor = (attributeName: string) => [{ attributeName, keyType: 'HASH' }];
+        const currentGsi = (indexName: string, attributeName: string, throughput?: { read: number; write: number }) => ({
+          IndexName: indexName,
+          KeySchema: [{ AttributeName: attributeName, KeyType: 'HASH' as const }],
+          Projection: { ProjectionType: 'ALL' as const },
+          ...(throughput ? { ProvisionedThroughput: { ReadCapacityUnits: throughput.read, WriteCapacityUnits: throughput.write } } : {}),
+        });
+        const endStateGsi = (indexName: string, attributeName: string, throughput?: { read: number; write: number }) => ({
+          indexName,
+          keySchema: keySchemaFor(attributeName),
+          projection: { projectionType: 'ALL' },
+          ...(throughput ? { provisionedThroughput: { readCapacityUnits: throughput.read, writeCapacityUnits: throughput.write } } : {}),
+        });
+        const twoIndexAttributeDefinitions = [
+          { attributeName: 'pk', attributeType: 'S' },
+          { attributeName: 'sk', attributeType: 'S' },
+          { attributeName: 'name', attributeType: 'S' },
+          { attributeName: 'title', attributeType: 'S' },
+        ];
+
+        it('populates non-null capacity for every GSI when billingMode flips to PROVISIONED and only one GSI declares its own throughput', () => {
+          currentState = {
+            ...currentStateBase,
+            BillingModeSummary: { BillingMode: 'PAY_PER_REQUEST' },
+            GlobalSecondaryIndexes: [currentGsi('gsi1', 'name'), currentGsi('gsi2', 'title')],
+          };
+          endState = {
+            ...baseTableDef,
+            billingMode: 'PROVISIONED',
+            provisionedThroughput: { readCapacityUnits: 10, writeCapacityUnits: 10 },
+            attributeDefinitions: twoIndexAttributeDefinitions,
+            globalSecondaryIndexes: [endStateGsi('gsi1', 'name', { read: 3, write: 4 }), endStateGsi('gsi2', 'title')],
+          };
+
+          nextUpdate = getNextAtomicUpdate(currentState, endState);
+
+          const gsiUpdates = nextUpdate!.GlobalSecondaryIndexUpdates!;
+          expect(gsiUpdates).toHaveLength(2);
+          // gsi1 keeps its own declared throughput, gsi2 inherits the table-level default
+          expect(gsiUpdates[0].Update).toEqual({
+            IndexName: 'gsi1',
+            ProvisionedThroughput: { ReadCapacityUnits: 3, WriteCapacityUnits: 4 },
+          });
+          expect(gsiUpdates[1].Update).toEqual({
+            IndexName: 'gsi2',
+            ProvisionedThroughput: { ReadCapacityUnits: 10, WriteCapacityUnits: 10 },
+          });
+          gsiUpdates.forEach((gsiUpdate) => {
+            expect(gsiUpdate.Update!.ProvisionedThroughput!.ReadCapacityUnits).toEqual(expect.any(Number));
+            expect(gsiUpdate.Update!.ProvisionedThroughput!.WriteCapacityUnits).toEqual(expect.any(Number));
+          });
+        });
+
+        // Regression: the GSI Update action used to source capacity from the end-state index only, emitting
+        // undefined read/write capacity when the index inherited the table-level throughput. DynamoDB then
+        // rejected UpdateTable with "Value null at 'globalSecondaryIndexUpdates.1.member.update.provisionedThroughput.*'".
+        it('falls back to table-level throughput when an existing GSI does not declare its own throughput', () => {
+          currentState = {
+            ...currentStateBase,
+            BillingModeSummary: { BillingMode: 'PROVISIONED' },
+            ProvisionedThroughput: { ReadCapacityUnits: 10, WriteCapacityUnits: 10 },
+            GlobalSecondaryIndexes: [
+              currentGsi('gsi1', 'name', { read: 10, write: 10 }),
+              currentGsi('gsi2', 'title', { read: 5, write: 5 }),
+            ],
+          };
+          endState = {
+            ...baseTableDef,
+            billingMode: 'PROVISIONED',
+            provisionedThroughput: { readCapacityUnits: 10, writeCapacityUnits: 10 },
+            attributeDefinitions: twoIndexAttributeDefinitions,
+            globalSecondaryIndexes: [endStateGsi('gsi1', 'name'), endStateGsi('gsi2', 'title')],
+          };
+
+          nextUpdate = getNextAtomicUpdate(currentState, endState);
+
+          // gsi1 already matches the table-level default so only gsi2 needs an update, with real numbers
+          expect(nextUpdate!.GlobalSecondaryIndexUpdates).toEqual([
+            {
+              Update: {
+                IndexName: 'gsi2',
+                ProvisionedThroughput: { ReadCapacityUnits: 10, WriteCapacityUnits: 10 },
+              },
+            },
+          ]);
+        });
+
+        it('does not emit a GSI throughput update when no throughput can be resolved', () => {
+          currentState = {
+            ...currentStateBase,
+            BillingModeSummary: { BillingMode: 'PROVISIONED' },
+            GlobalSecondaryIndexes: [currentGsi('gsi1', 'name', { read: 5, write: 5 })],
+          };
+          endState = {
+            ...baseTableDef,
+            billingMode: 'PROVISIONED',
+            attributeDefinitions: twoIndexAttributeDefinitions,
+            globalSecondaryIndexes: [endStateGsi('gsi1', 'name')],
+          };
+
+          expect(getNextAtomicUpdate(currentState, endState)).toBeUndefined();
+        });
+
+        it('omits ProvisionedThroughput on GSI updates when the table is billed PAY_PER_REQUEST', () => {
+          currentState = {
+            ...currentStateBase,
+            BillingModeSummary: { BillingMode: 'PAY_PER_REQUEST' },
+            GlobalSecondaryIndexes: [currentGsi('gsi1', 'name', { read: 5, write: 5 })],
+          };
+          endState = {
+            ...baseTableDef,
+            billingMode: 'PAY_PER_REQUEST',
+            attributeDefinitions: twoIndexAttributeDefinitions,
+            globalSecondaryIndexes: [endStateGsi('gsi1', 'name', { read: 9, write: 9 })],
+          };
+
+          expect(getNextAtomicUpdate(currentState, endState)).toBeUndefined();
+        });
+      });
+    });
+  });
+  describe('isTtlModified', () => {
+    it('return false if two ttl are undefined', () => {
+      expect(isTtlModified(undefined, undefined)).toBe(false);
+    });
+    it('return false if two ttl are same', () => {
+      const oldTtl = {
+        enabled: true,
+        attributeName: '_ttl',
+      };
+      const newTtl = {
+        enabled: true,
+        attributeName: '_ttl',
+      };
+      expect(isTtlModified(oldTtl, newTtl)).toBe(false);
+    });
+    it('return true if one of the ttl is undefined', () => {
+      const newTtl = {
+        enabled: true,
+        attributeName: '_ttl',
+      };
+      expect(isTtlModified(undefined, newTtl)).toBe(true);
+    });
+    it('return true if ttl switch is different', () => {
+      const oldTtl = {
+        enabled: true,
+        attributeName: '_ttl',
+      };
+      const newTtl = {
+        enabled: false,
+        attributeName: '_ttl',
+      };
+      expect(isTtlModified(oldTtl, newTtl)).toBe(true);
+    });
+    it('return true if ttl attribute name is different', () => {
+      const oldTtl = {
+        enabled: true,
+        attributeName: '_ttl',
+      };
+      const newTtl = {
+        enabled: true,
+        attributeName: '_ttl2',
+      };
+      expect(isTtlModified(oldTtl, newTtl)).toBe(true);
+    });
+  });
+  describe('processIsComplete', () => {
+    const createEvent = {
+      RequestType: 'Create',
+      ServiceToken: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
+      ResponseURL: '[redacted]',
+      StackId: 'mockStackId',
+      RequestId: 'mockRequestId',
+      LogicalResourceId: 'ResourceTable',
+      ResourceType: 'Custom::AmplifyDynamoDBTable',
+      ResourceProperties: {
+        tableName: 'mockTable',
+        ServiceToken: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
+        pointInTimeRecoverySpecification: { pointInTimeRecoveryEnabled: true },
+      },
+      PhysicalResourceId: 'mockTable',
+      Data: {
+        TableArn: 'arn:aws:dynamodb:ap-northeast-1:123456789100:table/mockTable',
+        TableStreamArn: 'arn:aws:dynamodb:ap-northeast-1:123456789100:table/mockTable/stream/2025-03-05T01:11:03.258',
+        TableName: 'mockTable',
+      },
+    } as const;
+
+    const updateEvent = {
+      RequestType: 'Update',
+      ServiceToken: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
+      ResponseURL: '[redacted]',
+      StackId: 'mockStackId',
+      RequestId: 'mockRequestId',
+      LogicalResourceId: 'ResourceTable',
+      ResourceType: 'Custom::AmplifyDynamoDBTable',
+      ResourceProperties: {
+        tableName: 'mockTable',
+        ServiceToken: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
+        pointInTimeRecoverySpecification: { pointInTimeRecoveryEnabled: true },
+      },
+      PhysicalResourceId: 'mockTable',
+      Data: {
+        TableArn: 'arn:aws:dynamodb:ap-northeast-1:123456789100:table/mockTable',
+        TableStreamArn: 'arn:aws:dynamodb:ap-northeast-1:123456789100:table/mockTable/stream/2025-03-05T01:11:03.258',
+        TableName: 'mockTable',
+        IsTableReplaced: true,
+      },
+    } as const;
+
+    const deleteEvent = {
+      RequestType: 'Delete',
+      ServiceToken: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
+      ResponseURL: '[redacted]',
+      StackId: 'mockStackId',
+      RequestId: 'mockRequestId',
+      LogicalResourceId: 'ResourceTable',
+      ResourceType: 'Custom::AmplifyDynamoDBTable',
+      ResourceProperties: {
+        tableName: 'mockTable',
+        ServiceToken: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
+      },
+      PhysicalResourceId: 'mockTable',
+      Data: {
+        TableArn: 'arn:aws:dynamodb:ap-northeast-1:123456789100:table/mockTable',
+        TableStreamArn: 'arn:aws:dynamodb:ap-northeast-1:123456789100:table/mockTable/stream/2025-03-05T01:11:03.258',
+        TableName: 'mockTable',
+      },
+    } as const;
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should return IsComplete false when thrown ContinuousBackupsUnavailableException if requestType is `Create` with PITR enabled', async () => {
+      mockDescribeTable.mockResolvedValueOnce({
+        Table: {
+          TableStatus: 'ACTIVE',
+          ContinuousBackupsDescription: {
+            ContinuousBackupsStatus: 'DISABLED',
+            PointInTimeRecoveryDescription: {
+              PointInTimeRecoveryStatus: 'DISABLED',
+            },
+          },
+        },
+      });
+      mockDescribeContinuousBackups.mockResolvedValueOnce({
+        ContinuousBackupsDescription: {
+          ContinuousBackupsStatus: 'DISABLED',
+          PointInTimeRecoveryDescription: {
+            PointInTimeRecoveryStatus: 'DISABLED',
+          },
+        },
+      });
+      mockUpdateContinuousBackups.mockRejectedValueOnce(
+        new ContinuousBackupsUnavailableException({
+          message: 'Backups are being enabled for the table: mockTable. Please retry later',
+          $metadata: {},
+        }),
+      );
+      const { IsComplete } = await processIsComplete(createEvent, {
+        invokedFunctionArn: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
+      });
+      expect(IsComplete).toBe(false);
+    });
+    it('should throw error when thrown it other than ContinuousBackupsUnavailableException if requestType is `Create` with PITR enabled', async () => {
+      mockDescribeTable.mockResolvedValueOnce({
+        Table: {
+          TableStatus: 'ACTIVE',
+          ContinuousBackupsDescription: {
+            ContinuousBackupsStatus: 'DISABLED',
+            PointInTimeRecoveryDescription: {
+              PointInTimeRecoveryStatus: 'DISABLED',
+            },
+          },
+        },
+      });
+      mockDescribeContinuousBackups.mockResolvedValueOnce({
+        ContinuousBackupsDescription: {
+          ContinuousBackupsStatus: 'DISABLED',
+          PointInTimeRecoveryDescription: {
+            PointInTimeRecoveryStatus: 'DISABLED',
+          },
+        },
+      });
+      mockUpdateContinuousBackups.mockRejectedValueOnce(
+        new InternalServerError({
+          message: 'internal server error',
+          $metadata: {},
+        }),
+      );
+      await expect(
+        processIsComplete(createEvent, {
+          invokedFunctionArn: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
+        }),
+      ).rejects.toThrow(InternalServerError);
+    });
+    it('should return IsComplete false when not thrown error if requestType is `Create` with PITR enabled', async () => {
+      mockDescribeTable.mockResolvedValueOnce({
+        Table: {
+          TableStatus: 'ACTIVE',
+          ContinuousBackupsDescription: {
+            ContinuousBackupsStatus: 'DISABLED',
+            PointInTimeRecoveryDescription: {
+              PointInTimeRecoveryStatus: 'DISABLED',
+            },
+          },
+        },
+      });
+      mockDescribeContinuousBackups.mockResolvedValueOnce({
+        ContinuousBackupsDescription: {
+          ContinuousBackupsStatus: 'DISABLED',
+          PointInTimeRecoveryDescription: {
+            PointInTimeRecoveryStatus: 'DISABLED',
+          },
+        },
+      });
+      const { IsComplete } = await processIsComplete(createEvent, {
+        invokedFunctionArn: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
+      });
+      expect(IsComplete).toBe(false);
+    });
+    it('should return IsComplete false when thrown ContinuousBackupsUnavailableException if replace table with PITR enabling', async () => {
+      mockDescribeTable.mockResolvedValueOnce({
+        Table: {
+          TableStatus: 'ACTIVE',
+          ContinuousBackupsDescription: {
+            ContinuousBackupsStatus: 'DISABLED',
+            PointInTimeRecoveryDescription: {
+              PointInTimeRecoveryStatus: 'DISABLED',
+            },
+          },
+        },
+      });
+      mockDescribeContinuousBackups.mockResolvedValueOnce({
+        ContinuousBackupsDescription: {
+          ContinuousBackupsStatus: 'DISABLED',
+          PointInTimeRecoveryDescription: {
+            PointInTimeRecoveryStatus: 'DISABLED',
+          },
+        },
+      });
+      mockUpdateContinuousBackups.mockRejectedValueOnce(
+        new ContinuousBackupsUnavailableException({
+          message: 'Backups are being enabled for the table: mockTable. Please retry later',
+          $metadata: {},
+        }),
+      );
+      const { IsComplete } = await processIsComplete(updateEvent, {
+        invokedFunctionArn: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
+      });
+      expect(IsComplete).toBe(false);
+    });
+    it('should return IsComplete false when table is not acitve', async () => {
+      mockDescribeTable.mockResolvedValueOnce({
+        Table: {
+          TableStatus: 'CREATING',
+          ContinuousBackupsDescription: {
+            ContinuousBackupsStatus: 'DISABLED',
+            PointInTimeRecoveryDescription: {
+              PointInTimeRecoveryStatus: 'DISABLED',
+            },
+          },
+        },
+      });
+      const { IsComplete } = await processIsComplete(createEvent, {
+        invokedFunctionArn: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
+      });
+      expect(IsComplete).toBe(false);
+    });
+    it('should return IsComplete true if requestType is `Delete`', async () => {
+      const { IsComplete } = await processIsComplete(deleteEvent, {
+        invokedFunctionArn: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
+      });
+      expect(IsComplete).toBe(true);
     });
   });
 });

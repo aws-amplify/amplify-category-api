@@ -377,6 +377,65 @@ describe('Verify RDS Model level Auth rules on queries:', () => {
     });
   });
 
+  it('should successfully transform IdentityPool auth rules', async () => {
+    const validSchema = `
+      type PostPrivate @model
+        @auth(rules: [
+          {allow: private, provider: identityPool}
+        ]) {
+          id: ID! @primaryKey
+          title: String!
+      }
+
+      type PostPublic @model
+        @auth(rules: [
+          {allow: public, provider: identityPool}
+        ]) {
+          id: ID! @primaryKey
+          title: String!
+      }
+    `;
+
+    const authConfig: AppSyncAuthConfiguration = {
+      defaultAuthentication: {
+        authenticationType: 'AWS_IAM',
+      },
+      additionalAuthenticationProviders: [],
+    };
+
+    const out = testTransform({
+      schema: validSchema,
+      transformers: [new ModelTransformer(), new AuthTransformer(), new PrimaryKeyTransformer()],
+      authConfig,
+      dataSourceStrategies: constructDataSourceStrategies(validSchema, mysqlStrategy),
+      synthParameters: {
+        identityPoolId: 'TEST_IDENTITY_POOL_ID',
+      },
+    });
+    expect(out).toBeDefined();
+
+    validateModelSchema(parse(out.schema));
+    parse(out.schema);
+
+    const authResolvers = [
+      // Private
+      'Query.getPostPrivate.auth.1.req.vtl',
+      'Query.getPostPrivate.postAuth.1.req.vtl',
+      'Query.listPostPrivates.auth.1.req.vtl',
+      'Query.listPostPrivates.postAuth.1.req.vtl',
+      // Public
+      'Query.getPostPublic.auth.1.req.vtl',
+      'Query.getPostPublic.postAuth.1.req.vtl',
+      'Query.listPostPublics.auth.1.req.vtl',
+      'Query.listPostPublics.postAuth.1.req.vtl',
+    ];
+
+    authResolvers.forEach((resolver) => {
+      expect(out.resolvers[resolver]).toBeDefined();
+      expect(out.resolvers[resolver]).toMatchSnapshot();
+    });
+  });
+
   it('should allow field auth on query type', async () => {
     const validSchema = `
       type Post @model

@@ -27,11 +27,17 @@ import {
 import type {
   DataSourceStrategiesProvider,
   RDSLayerMappingProvider,
+  RDSSNSTopicMappingProvider,
   TransformParameters,
+  LogConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLTransform, ResolverConfig, UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 import { Construct } from 'constructs';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { GenerationTransformer } from '@aws-amplify/graphql-generation-transformer';
+import { ConversationTransformer } from '@aws-amplify/graphql-conversation-transformer';
+import { BackendOutputEntry, BackendOutputStorageStrategy } from '@aws-amplify/plugin-types';
+import { ValidateTransformer } from '@aws-amplify/graphql-validate-transformer';
 
 /**
  * Arguments passed into a TransformerFactory
@@ -41,6 +47,7 @@ export type TransformerFactoryArgs = {
   storageConfig?: any;
   customTransformers?: TransformerPluginProvider[];
   functionNameMap?: Record<string, IFunction>;
+  outputStorageStrategy?: BackendOutputStorageStrategy<BackendOutputEntry>;
 };
 
 /**
@@ -60,7 +67,10 @@ export const constructTransformerChain = (options?: TransformerFactoryArgs): Tra
   const authTransformer = new AuthTransformer();
   const indexTransformer = new IndexTransformer();
   const hasOneTransformer = new HasOneTransformer();
+  const hasManyTransformer = new HasManyTransformer();
+  const belongsToTransformer = new BelongsToTransformer();
 
+  // The default list of transformers should match DefaultDirectives in packages/amplify-graphql-directives/src/index.ts
   return [
     modelTransformer,
     new FunctionTransformer(options?.functionNameMap),
@@ -68,16 +78,26 @@ export const constructTransformerChain = (options?: TransformerFactoryArgs): Tra
     new PredictionsTransformer(options?.storageConfig),
     new PrimaryKeyTransformer(),
     indexTransformer,
-    new HasManyTransformer(),
+    hasManyTransformer,
     hasOneTransformer,
     new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
-    new BelongsToTransformer(),
+    belongsToTransformer,
+    new ConversationTransformer(
+      modelTransformer,
+      hasManyTransformer,
+      belongsToTransformer,
+      authTransformer,
+      options?.outputStorageStrategy,
+      options?.functionNameMap,
+    ),
+    new GenerationTransformer(),
     new DefaultValueTransformer(),
     authTransformer,
     new MapsToTransformer(),
     new SqlTransformer(),
     new RefersToTransformer(),
     new SearchableModelTransformer(),
+    new ValidateTransformer(),
     ...(options?.customTransformers ?? []),
   ];
 };
@@ -104,7 +124,8 @@ export const constructTransform = (config: TransformConfig): GraphQLTransform =>
 
 export type ExecuteTransformConfig = TransformConfig &
   DataSourceStrategiesProvider &
-  RDSLayerMappingProvider & {
+  RDSLayerMappingProvider &
+  RDSSNSTopicMappingProvider & {
     schema: string;
     printTransformerLog?: (log: TransformerLog) => void;
     scope: Construct;
@@ -112,6 +133,7 @@ export type ExecuteTransformConfig = TransformConfig &
     parameterProvider?: TransformParameterProvider;
     assetProvider: AssetProvider;
     synthParameters: SynthParameters;
+    logging?: true | LogConfig;
   };
 
 /**
@@ -150,10 +172,12 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
     parameterProvider,
     printTransformerLog,
     rdsLayerMapping,
+    rdsSnsTopicMapping,
     schema,
     scope,
     sqlDirectiveDataSourceStrategies,
     synthParameters,
+    logging,
   } = config;
 
   const printLog = printTransformerLog ?? defaultPrintTransformerLog;
@@ -165,10 +189,12 @@ export const executeTransform = (config: ExecuteTransformConfig): void => {
       nestedStackProvider,
       parameterProvider,
       rdsLayerMapping,
+      rdsSnsTopicMapping,
       schema,
       scope,
       sqlDirectiveDataSourceStrategies,
       synthParameters,
+      logging,
     });
   } finally {
     transform.getLogs().forEach(printLog);

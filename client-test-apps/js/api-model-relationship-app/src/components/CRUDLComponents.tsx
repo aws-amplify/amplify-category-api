@@ -35,7 +35,7 @@ export const createDetailComponent = <T extends any>({ deleteMutation, recordNam
               ? <ViewComp record={record} />
               : <EditComp record={record} />
             }
-            <Button id={`delete-${recordName}`} size='small' onClick={() => wrappedFn(context)}>Delete</Button>
+            <Button id={`delete-${recordName}`} size='small' onClick={async () => { await wrappedFn(context); }}>Delete</Button>
             <OperationStateIndicator id={`${recordName}-is-deleted`} state={opState} />
             { detailState === 'view'
               ? <Button size='small' onClick={() => setDetailState('edit')}>Edit</Button>
@@ -67,7 +67,7 @@ export const createCreateRecordComponent = ({ recordName, createMutation, sentin
             <Heading level={3}>Create A { capitalizedRecordName }</Heading>
             <Flex direction='row'>
               <TextField id={`${recordName}-id-input`} label='Test Id' onChange={(event: any) => { setId(event.target.value) }}/>
-              <Button id={`${recordName}-create`} onClick={() => wrappedFn(context)}>Create { capitalizedRecordName }</Button>
+              <Button id={`${recordName}-create`} onClick={async () => { await wrappedFn(context); }}>Create { capitalizedRecordName }</Button>
               <OperationStateIndicator id={`${recordName}-is-created`} state={opState} />
             </Flex>
           </Flex>
@@ -102,7 +102,7 @@ export const createGetRecordComponent = <T extends any>({ getQuery, recordName, 
             <Heading level={3}>Get A { capitalizedRecordName }</Heading>
             <Flex direction='row'>
               <TextField id={`retrieve-${recordName}-id`} label={`${capitalizedRecordName} Id`} onChange={(event: any) => { setId(event.target.value) }}/>
-              <Button id={`retrieve-${recordName}-button`} onClick={() => wrappedFn(context)}>Get { capitalizedRecordName }</Button>
+              <Button id={`retrieve-${recordName}-button`} onClick={async () => { await wrappedFn(context); }}>Get { capitalizedRecordName }</Button>
               <OperationStateIndicator id={`${recordName}-is-retrieved`} state={opState} />
             </Flex>
             <div id={`retrieved-${recordName}`}>
@@ -138,7 +138,7 @@ export const createListComponent = <T extends any>({ listQuery, recordName, Deta
           <Flex direction='column'>
             <Heading level={3}>List { capitalizedPluralizedRecordName }</Heading>
             <Flex direction='row'>
-              <Button id={`list-${pluralizedRecordName}`} onClick={() => wrappedFn(context)}>Load { capitalizedPluralizedRecordName }</Button>
+              <Button id={`list-${pluralizedRecordName}`} onClick={async () => { await wrappedFn(context); }}>Load { capitalizedPluralizedRecordName }</Button>
               <OperationStateIndicator id={`${pluralizedRecordName}-are-listed`} state={opState} />
             </Flex>
             <div id={`listed-${pluralizedRecordName}`}>
@@ -204,7 +204,7 @@ export const createEditComp = <T extends object>({ updateMutation, fields, recor
                 }}
               />
             ) }) }
-            <Button id={`update-${recordName}`} onClick={() => wrappedFn(context)}>Update</Button>
+            <Button id={`update-${recordName}`} onClick={async () => { await wrappedFn(context); }}>Update</Button>
             <OperationStateIndicator id={`${recordName}-is-updated`} state={opState} />
           </Flex>
         }

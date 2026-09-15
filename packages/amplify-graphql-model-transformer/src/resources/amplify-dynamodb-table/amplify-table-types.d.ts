@@ -6,6 +6,10 @@
 
 export as namespace CustomDDB;
 
+/**
+ * The CustomDDB.Input defines how data is stored in the CFN custom resource properties.
+ * Changes to this type should be backward compatible with all previous versions.
+ */
 export type Input = CfnTableProps & {
   /**
    * Determines if a table is allowed for destructive updates. When enabled, the table will be replaced when key schema is changed. This setting is disabled by default.
@@ -15,6 +19,10 @@ export type Input = CfnTableProps & {
    * Determines if a table is in sandbox mode. When enabled along with 'allowDestructiveGraphqlSchemaUpdates' , the table will be replaced when GSI updates are detected. This setting is disabled by default.
    */
   replaceTableUponGsiUpdate?: boolean;
+  /**
+   * Determines if a table is imported or not. The table will be imported when this value is set to true.
+   */
+  isImported?: boolean;
 };
 
 /**

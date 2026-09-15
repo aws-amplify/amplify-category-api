@@ -79,7 +79,7 @@ are writing a new snapshot test, here are a few points to keep in mind:
     snapshot test:
     ```ts
     const fakeDate = Date.UTC(2024, 0, 1, 0, 0, 0);
-    jest.useFakeTimers('modern');
+    jest.useFakeTimers();
     jest.setSystemTime(fakeDate);
     ```
   - Some resources use local filesystem paths. If these are not important to

@@ -1,7 +1,14 @@
 import * as cdk from 'aws-cdk-lib';
-import { AmplifyDynamoDBTable, CUSTOM_DDB_CFN_TYPE } from '../resources/amplify-dynamodb-table/amplify-dynamodb-table-construct';
+import {
+  AmplifyDynamoDBTable,
+  CUSTOM_DDB_CFN_TYPE,
+  CUSTOM_IMPORTED_DDB_CFN_TYPE,
+} from '../resources/amplify-dynamodb-table/amplify-dynamodb-table-construct';
 import { AttributeType, StreamViewType, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { Template } from 'aws-cdk-lib/assertions';
+import { Role, ArnPrincipal, PolicyDocument } from 'aws-cdk-lib/aws-iam';
+import { Key } from 'aws-cdk-lib/aws-kms';
+import { Match } from 'aws-cdk-lib/assertions';
 
 describe('Amplify DynamoDB Table Construct Tests', () => {
   it('render the default amplify dynamodb table in correct form', () => {
@@ -145,6 +152,111 @@ describe('Amplify DynamoDB Table Construct Tests', () => {
       tableName: 'mockTableName2',
       allowDestructiveGraphqlSchemaUpdates: false,
       replaceTableUponGsiUpdate: false,
+    });
+  });
+  it('render the imported amplify dynamodb table in correct form', () => {
+    const stack = new cdk.Stack();
+    new AmplifyDynamoDBTable(stack, 'MockTable', {
+      customResourceServiceToken: 'mockResourceServiceToken',
+      tableName: 'mockTableName',
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      isImported: true,
+    });
+    const template = Template.fromStack(stack);
+    // The correct template should be generated with default input
+    template.hasResourceProperties(CUSTOM_IMPORTED_DDB_CFN_TYPE, {
+      ServiceToken: 'mockResourceServiceToken',
+      tableName: 'mockTableName',
+      isImported: true,
+    });
+  });
+
+  describe('grantStreamRead', () => {
+    it('grants read access table stream', () => {
+      const stack = new cdk.Stack();
+      const table = new AmplifyDynamoDBTable(stack, 'MockTable', {
+        customResourceServiceToken: 'mockResourceServiceToken',
+        tableName: 'mockTableName',
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING,
+        },
+        encryptionKey: new Key(stack, 'MockKey', {}),
+        stream: StreamViewType.NEW_AND_OLD_IMAGES,
+      });
+      table.grantStreamRead(
+        new Role(stack, 'MockRole', {
+          assumedBy: new ArnPrincipal('mock_principal'),
+        }),
+      );
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: Match.objectLike({
+          Statement: Match.arrayWith([
+            {
+              Action: ['dynamodb:ListStreams', 'dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator'],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': ['MockTable', 'TableStreamArn'],
+              },
+            },
+          ]),
+        }),
+      });
+    });
+
+    it('throws when stream arn is undefined', () => {
+      const stack = new cdk.Stack();
+      const table = new AmplifyDynamoDBTable(stack, 'MockTable', {
+        customResourceServiceToken: 'mockResourceServiceToken',
+        tableName: 'mockTableName',
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING,
+        },
+        isImported: true,
+      });
+
+      expect(() =>
+        table.grantStreamRead(
+          new Role(stack, 'MockRole', {
+            assumedBy: new ArnPrincipal('mock_principal'),
+          }),
+        ),
+      ).toThrow('No stream ARNs found on the table Default/MockTable');
+    });
+  });
+
+  it('grants access to encryption key', () => {
+    const stack = new cdk.Stack();
+    const table = new AmplifyDynamoDBTable(stack, 'MockTable', {
+      customResourceServiceToken: 'mockResourceServiceToken',
+      tableName: 'mockTableName',
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      encryptionKey: new Key(stack, 'MockKey', {}),
+      stream: StreamViewType.NEW_AND_OLD_IMAGES,
+    });
+    table.grantStreamRead(
+      new Role(stack, 'MockRole', {
+        assumedBy: new ArnPrincipal('mock_principal'),
+      }),
+    );
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: Match.objectLike({
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: ['kms:Decrypt', 'kms:DescribeKey'],
+            Effect: 'Allow',
+          }),
+        ]),
+      }),
     });
   });
 });

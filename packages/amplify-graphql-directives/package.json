@@ -1,0 +1,30 @@
+{
+  "name": "@aws-amplify/graphql-directives",
+  "version": "2.8.0",
+  "description": "Directive definitions for Amplify GraphQL transformers.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-category-api.git",
+    "directory": "packages/amplify-graphql-directives"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "keywords": [
+    "graphql",
+    "aws",
+    "amplify",
+    "directives"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rimraf ./lib",
+    "test": "jest",
+    "extract-api": "ts-node ../../scripts/extract-api.ts"
+  }
+}

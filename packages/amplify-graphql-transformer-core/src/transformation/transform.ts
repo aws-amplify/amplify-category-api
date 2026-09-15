@@ -4,8 +4,10 @@ import {
   TransformerPluginProvider,
   TransformHostProvider,
   TransformerLog,
+  TransformerLogLevel,
   NestedStackProvider,
   SynthParameters,
+  LogConfig,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import type {
   AssetProvider,
@@ -14,6 +16,7 @@ import type {
   TransformParameters,
   DataSourceStrategiesProvider,
   RDSLayerMappingProvider,
+  RDSSNSTopicMappingProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import { Aws, CfnOutput, Fn, Stack } from 'aws-cdk-lib';
@@ -33,17 +36,18 @@ import {
   UnionTypeDefinitionNode,
 } from 'graphql';
 import _ from 'lodash';
-import { DocumentNode } from 'graphql/language';
+import { DocumentNode, ObjectTypeExtensionNode } from 'graphql/language';
 import { Construct } from 'constructs';
 import { ResolverConfig } from '../config/transformer-config';
-import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
+import { InvalidDirectiveError, InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
-import { TransformerContext } from '../transformer-context';
+import { TransformerContext, NONE_DATA_SOURCE_NAME, TransformerResolver } from '../transformer-context';
 import { TransformerOutput } from '../transformer-context/output';
 import { adoptAuthModes } from '../utils/authType';
 import { MappingTemplate } from '../cdk-compat';
 import { TransformerPreProcessContext } from '../transformer-context/pre-process-context';
 import { defaultTransformParameters } from '../transformer-context/transform-parameters';
+import { isBuiltInGraphqlNode } from '../utils';
 import * as SyncUtils from './sync-utils';
 import { UserDefinedSlot } from './types';
 import {
@@ -87,13 +91,14 @@ export interface GraphQLTransformOptions {
   readonly resolverConfig?: ResolverConfig;
 }
 
-export interface TransformOption extends DataSourceStrategiesProvider, RDSLayerMappingProvider {
+export interface TransformOption extends DataSourceStrategiesProvider, RDSLayerMappingProvider, RDSSNSTopicMappingProvider {
   scope: Construct;
   nestedStackProvider: NestedStackProvider;
   parameterProvider?: TransformParameterProvider;
   assetProvider: AssetProvider;
   synthParameters: SynthParameters;
   schema: string;
+  logging?: true | LogConfig;
 }
 
 export type StackMapping = { [resourceId: string]: string };
@@ -189,10 +194,12 @@ export class GraphQLTransform {
     nestedStackProvider,
     parameterProvider,
     rdsLayerMapping,
+    rdsSnsTopicMapping,
     schema,
     scope,
     sqlDirectiveDataSourceStrategies,
     synthParameters,
+    logging,
   }: TransformOption): void {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
@@ -204,12 +211,14 @@ export class GraphQLTransform {
       nestedStackProvider,
       parameterProvider,
       rdsLayerMapping,
+      rdsSnsTopicMapping,
       resolverConfig: this.resolverConfig,
       scope,
       sqlDirectiveDataSourceStrategies: sqlDirectiveDataSourceStrategies ?? [],
       stackMapping: this.stackMappingOverrides,
       synthParameters,
       transformParameters: this.transformParameters,
+      logging,
     });
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),
@@ -250,6 +259,10 @@ export class GraphQLTransform {
           case 'ObjectTypeDefinition':
             this.transformObject(transformer, def, validDirectiveNameMap, context);
             // Walk the fields and call field transformers.
+            break;
+          case 'ObjectTypeExtension':
+            // Invokes `transformer.extendedObject` if present, and walks the fields of the extended types to call field transformers.
+            this.transformObject(transformer, def, validDirectiveNameMap, context);
             break;
           case 'InterfaceTypeDefinition':
             this.transformInterface(transformer, def, validDirectiveNameMap, context);
@@ -297,7 +310,14 @@ export class GraphQLTransform {
 
     // Synth the API and make it available to allow transformer plugins to manipulate the API
     const output: TransformerOutput = context.output as TransformerOutput;
-    const api = this.generateGraphQlApi(context.stackManager, context.synthParameters, output, context.transformParameters);
+    const api = this.generateGraphQlApi(
+      context.stackManager,
+      context.assetProvider,
+      context.synthParameters,
+      output,
+      context.transformParameters,
+      context.logging,
+    );
 
     // generate resolvers
     (context as TransformerContext).bind(api);
@@ -326,14 +346,18 @@ export class GraphQLTransform {
         this.logs.push(...logs);
       }
     }
+
     this.collectResolvers(context, context.api);
+    this.ensureNoneDataSource(context.api);
   }
 
   protected generateGraphQlApi(
     stackManager: StackManagerProvider,
+    assetProvider: AssetProvider,
     synthParameters: SynthParameters,
     output: TransformerOutput,
     transformParameters: TransformParameters,
+    logging?: true | LogConfig,
   ): GraphQLApi {
     // Todo: Move this to its own transformer plugin to support modifying the API
     // Like setting the auth mode and enabling logging and such
@@ -353,6 +377,8 @@ export class GraphQLTransform {
       sandboxModeEnabled: this.transformParameters.sandboxModeEnabled,
       environmentName: env,
       disableResolverDeduping: this.transformParameters.disableResolverDeduping,
+      assetProvider,
+      logging,
     });
     const authModes = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].map(
       (mode) => mode?.authorizationType,
@@ -400,8 +426,14 @@ export class GraphQLTransform {
 
   private collectResolvers(context: TransformerContext, api: GraphQLAPIProvider): void {
     const resolverEntries = context.resolvers.collectResolvers();
+    const seenMappingKeys = new Set<string>();
 
     for (const [resolverName, resolver] of resolverEntries) {
+      const logicalId = (resolver as TransformerResolver).resolverLogicalId;
+      if (this.stackMappingOverrides[logicalId]) {
+        seenMappingKeys.add(logicalId);
+      }
+
       const userSlots = this.userDefinedSlots[resolverName] || [];
 
       userSlots.forEach((slot) => {
@@ -411,16 +443,32 @@ export class GraphQLTransform {
         const responseTemplate = slot.responseResolver
           ? MappingTemplate.s3MappingTemplateFromString(slot.responseResolver.template, slot.responseResolver.fileName)
           : undefined;
-        resolver.addToSlot(slot.slotName, requestTemplate, responseTemplate);
+
+        resolver.addVtlFunctionToSlot(slot.slotName, requestTemplate, responseTemplate);
       });
 
       resolver.synthesize(context, api);
     }
+
+    const unusedKeys = Object.keys(this.stackMappingOverrides).filter((key) => !seenMappingKeys.has(key));
+    if (unusedKeys.length > 0) {
+      this.logs.push({
+        level: TransformerLogLevel.WARN,
+        message: `stackMappings contains keys that don't match any generated resolver: [${unusedKeys.join(
+          ', ',
+        )}]. These keys will be ignored. You can discover valid resolver names by running \`npx ampx sandbox\` and examining the CloudFormation output, or by running \`cdk synth\` to see the generated template.`,
+      });
+    }
   }
 
+  /**
+   * For each directive on the object or extended type, invoke the appropriate transformer. The transformer must implement `object` (for
+   * {@link ObjectTypeDefinitionNode}s) or `extendedObject` (for {@link ObjectTypeExtensionNode}s). Then, invoke the field transformer for
+   * each field in the object.
+   */
   private transformObject(
     transformer: TransformerPluginProvider,
-    def: ObjectTypeDefinitionNode,
+    def: ObjectTypeDefinitionNode | ObjectTypeExtensionNode,
     validDirectiveNameMap: { [k: string]: boolean },
     context: TransformerContext,
   ): void {
@@ -431,19 +479,38 @@ export class GraphQLTransform {
           `Unknown directive '${dir.name.value}'. Either remove the directive from the schema or add a transformer to handle it.`,
         );
       }
-      if (matchDirective(transformer.directive, dir, def)) {
-        if (isFunction(transformer.object)) {
-          const transformKey = makeSeenTransformationKey(dir, def, undefined, undefined, index);
-          if (!this.seenTransformations[transformKey]) {
-            transformer.object(def, dir, context);
-            this.seenTransformations[transformKey] = true;
-          }
-        } else {
+
+      // Wrapping all this in a try/finally so we can reliably remember to increment `index` in all of our early exit conditions. That lets
+      // us use early-exit guards and flattens the control flow. (TS doesn't have the equivalent of a Golang/swift `defer` clause, so this
+      // is a workaround for that pattern.)
+      try {
+        if (!matchDirective(transformer.directive, dir, def)) {
+          continue;
+        }
+
+        const transformKey = makeSeenTransformationKey(dir, def, undefined, undefined, index);
+        if (this.seenTransformations[transformKey]) {
+          continue;
+        }
+
+        if (def.kind === Kind.OBJECT_TYPE_EXTENSION) {
+          // This should be caught by `matchDirective`, but we'll leave it here for safety.
+          throw new InvalidTransformerError(
+            `Directives are not supported on object or interface extensions. See the '@${dir.name.value}' directive on '${def.name.value}'`,
+          );
+        }
+
+        if (!isFunction(transformer.object)) {
           throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'object()' method`);
         }
+
+        transformer.object(def, dir, context);
+        this.seenTransformations[transformKey] = true;
+      } finally {
+        index++;
       }
-      index++;
     }
+
     for (const field of def.fields ?? []) {
       this.transformField(transformer, def, field, validDirectiveNameMap, context);
     }
@@ -451,7 +518,7 @@ export class GraphQLTransform {
 
   private transformField(
     transformer: TransformerPluginProvider,
-    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode,
     def: FieldDefinitionNode,
     validDirectiveNameMap: { [k: string]: boolean },
     context: TransformerContext,
@@ -463,19 +530,44 @@ export class GraphQLTransform {
           `Unknown directive '${dir.name.value}'. Either remove the directive from the schema or add a transformer to handle it.`,
         );
       }
-      if (matchFieldDirective(transformer.directive, dir, def)) {
-        if (isFunction(transformer.field)) {
-          const transformKey = makeSeenTransformationKey(dir, parent, def, undefined, index);
-          if (!this.seenTransformations[transformKey]) {
-            transformer.field(parent, def, dir, context);
-            this.seenTransformations[transformKey] = true;
-          }
-        } else {
-          throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'field()' method`);
+
+      // Wrapping all this in a try/finally so we can reliably remember to increment `index` in all of our early exit conditions. That lets
+      // us use early-exit guards and flattens the control flow. (TS doesn't have the equivalent of a Golang/swift `defer` clause, so this
+      // is a workaround for that pattern.)
+      try {
+        if (!matchFieldDirective(transformer.directive, dir, def)) {
+          continue;
         }
+
+        const transformKey = makeSeenTransformationKey(dir, parent, def, undefined, index);
+        if (this.seenTransformations[transformKey]) {
+          continue;
+        }
+
+        if (parent.kind === Kind.OBJECT_TYPE_EXTENSION) {
+          if (!isFunction(transformer.fieldOfExtendedType)) {
+            throw new InvalidTransformerError(`The '@${dir.name.value}' directive is not supported on fields of extended types`);
+          }
+
+          // We only support directives on fields of Query, Mutation, and Subscription type extensions
+          if (!isBuiltInGraphqlNode(parent)) {
+            throw new InvalidDirectiveError(
+              `The '@${dir.name.value}' directive cannot be used on fields of type extensions other than 'Query', 'Mutation', and 'Subscription'. See ${parent.name.value}.${def.name.value}`,
+            );
+          }
+          transformer.fieldOfExtendedType(parent, def, dir, context);
+        } else {
+          if (!isFunction(transformer.field)) {
+            throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'field()' method`);
+          }
+          transformer.field(parent, def, dir, context);
+        }
+        this.seenTransformations[transformKey] = true;
+      } finally {
+        index++;
       }
-      index++;
     }
+
     for (const arg of def.arguments ?? []) {
       this.transformArgument(transformer, parent, def, arg, validDirectiveNameMap, context);
     }
@@ -483,7 +575,7 @@ export class GraphQLTransform {
 
   private transformArgument(
     transformer: TransformerPluginProvider,
-    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode | ObjectTypeExtensionNode,
     field: FieldDefinitionNode,
     arg: InputValueDefinitionNode,
     validDirectiveNameMap: { [k: string]: boolean },
@@ -720,5 +812,14 @@ export class GraphQLTransform {
 
   public getLogs(): TransformerLog[] {
     return this.logs;
+  }
+
+  private ensureNoneDataSource(api: GraphQLAPIProvider): void {
+    if (!api.host.hasDataSource(NONE_DATA_SOURCE_NAME)) {
+      api.host.addNoneDataSource(NONE_DATA_SOURCE_NAME, {
+        name: NONE_DATA_SOURCE_NAME,
+        description: 'None Data Source for Pipeline functions',
+      });
+    }
   }
 }

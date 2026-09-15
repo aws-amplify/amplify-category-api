@@ -166,6 +166,8 @@ type ModelTaskConnection {
 input ModelTaskFilterInput {
   id: ModelIntInput
   title: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelTaskFilterInput]
   or: [ModelTaskFilterInput]
   not: ModelTaskFilterInput
@@ -182,6 +184,8 @@ input ModelTaskConditionInput {
   and: [ModelTaskConditionInput]
   or: [ModelTaskConditionInput]
   not: ModelTaskConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateTaskInput {
@@ -207,6 +211,8 @@ type Mutation {
 input ModelSubscriptionTaskFilterInput {
   id: ModelSubscriptionIntInput
   title: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
   and: [ModelSubscriptionTaskFilterInput]
   or: [ModelSubscriptionTaskFilterInput]
 }
@@ -215,6 +221,1098 @@ type Subscription {
   onCreateTask(filter: ModelSubscriptionTaskFilterInput): Task @aws_subscribe(mutations: [\\"createTask\\"])
   onUpdateTask(filter: ModelSubscriptionTaskFilterInput): Task @aws_subscribe(mutations: [\\"updateTask\\"])
   onDeleteTask(filter: ModelSubscriptionTaskFilterInput): Task @aws_subscribe(mutations: [\\"deleteTask\\"])
+}
+"
+`;
+
+exports[`ModelTransformer: remove null timestamp fields from input createdAt null 1`] = `
+"type CreatedAtNull {
+  id: ID!
+  title: String!
+  updatedAt: AWSDateTime!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelCreatedAtNullConnection {
+  items: [CreatedAtNull]!
+  nextToken: String
+}
+
+input ModelCreatedAtNullFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelCreatedAtNullFilterInput]
+  or: [ModelCreatedAtNullFilterInput]
+  not: ModelCreatedAtNullFilterInput
+}
+
+type Query {
+  getCreatedAtNull(id: ID!): CreatedAtNull
+  listCreatedAtNulls(filter: ModelCreatedAtNullFilterInput, limit: Int, nextToken: String): ModelCreatedAtNullConnection
+}
+
+input ModelCreatedAtNullConditionInput {
+  title: ModelStringInput
+  and: [ModelCreatedAtNullConditionInput]
+  or: [ModelCreatedAtNullConditionInput]
+  not: ModelCreatedAtNullConditionInput
+  updatedAt: ModelStringInput
+}
+
+input CreateCreatedAtNullInput {
+  id: ID
+  title: String!
+}
+
+input UpdateCreatedAtNullInput {
+  id: ID!
+  title: String
+}
+
+input DeleteCreatedAtNullInput {
+  id: ID!
+}
+
+type Mutation {
+  createCreatedAtNull(input: CreateCreatedAtNullInput!, condition: ModelCreatedAtNullConditionInput): CreatedAtNull
+  updateCreatedAtNull(input: UpdateCreatedAtNullInput!, condition: ModelCreatedAtNullConditionInput): CreatedAtNull
+  deleteCreatedAtNull(input: DeleteCreatedAtNullInput!, condition: ModelCreatedAtNullConditionInput): CreatedAtNull
+}
+
+input ModelSubscriptionCreatedAtNullFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionCreatedAtNullFilterInput]
+  or: [ModelSubscriptionCreatedAtNullFilterInput]
+}
+
+type Subscription {
+  onCreateCreatedAtNull(filter: ModelSubscriptionCreatedAtNullFilterInput): CreatedAtNull @aws_subscribe(mutations: [\\"createCreatedAtNull\\"])
+  onUpdateCreatedAtNull(filter: ModelSubscriptionCreatedAtNullFilterInput): CreatedAtNull @aws_subscribe(mutations: [\\"updateCreatedAtNull\\"])
+  onDeleteCreatedAtNull(filter: ModelSubscriptionCreatedAtNullFilterInput): CreatedAtNull @aws_subscribe(mutations: [\\"deleteCreatedAtNull\\"])
+}
+"
+`;
+
+exports[`ModelTransformer: remove null timestamp fields from input createdAt null and updatedAt null 1`] = `
+"type CreatedAtAndUpdatedAtNull {
+  id: ID!
+  title: String!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelCreatedAtAndUpdatedAtNullConnection {
+  items: [CreatedAtAndUpdatedAtNull]!
+  nextToken: String
+}
+
+input ModelCreatedAtAndUpdatedAtNullFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  and: [ModelCreatedAtAndUpdatedAtNullFilterInput]
+  or: [ModelCreatedAtAndUpdatedAtNullFilterInput]
+  not: ModelCreatedAtAndUpdatedAtNullFilterInput
+}
+
+type Query {
+  getCreatedAtAndUpdatedAtNull(id: ID!): CreatedAtAndUpdatedAtNull
+  listCreatedAtAndUpdatedAtNulls(filter: ModelCreatedAtAndUpdatedAtNullFilterInput, limit: Int, nextToken: String): ModelCreatedAtAndUpdatedAtNullConnection
+}
+
+input ModelCreatedAtAndUpdatedAtNullConditionInput {
+  title: ModelStringInput
+  and: [ModelCreatedAtAndUpdatedAtNullConditionInput]
+  or: [ModelCreatedAtAndUpdatedAtNullConditionInput]
+  not: ModelCreatedAtAndUpdatedAtNullConditionInput
+}
+
+input CreateCreatedAtAndUpdatedAtNullInput {
+  id: ID
+  title: String!
+}
+
+input UpdateCreatedAtAndUpdatedAtNullInput {
+  id: ID!
+  title: String
+}
+
+input DeleteCreatedAtAndUpdatedAtNullInput {
+  id: ID!
+}
+
+type Mutation {
+  createCreatedAtAndUpdatedAtNull(input: CreateCreatedAtAndUpdatedAtNullInput!, condition: ModelCreatedAtAndUpdatedAtNullConditionInput): CreatedAtAndUpdatedAtNull
+  updateCreatedAtAndUpdatedAtNull(input: UpdateCreatedAtAndUpdatedAtNullInput!, condition: ModelCreatedAtAndUpdatedAtNullConditionInput): CreatedAtAndUpdatedAtNull
+  deleteCreatedAtAndUpdatedAtNull(input: DeleteCreatedAtAndUpdatedAtNullInput!, condition: ModelCreatedAtAndUpdatedAtNullConditionInput): CreatedAtAndUpdatedAtNull
+}
+
+input ModelSubscriptionCreatedAtAndUpdatedAtNullFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  and: [ModelSubscriptionCreatedAtAndUpdatedAtNullFilterInput]
+  or: [ModelSubscriptionCreatedAtAndUpdatedAtNullFilterInput]
+}
+
+type Subscription {
+  onCreateCreatedAtAndUpdatedAtNull(filter: ModelSubscriptionCreatedAtAndUpdatedAtNullFilterInput): CreatedAtAndUpdatedAtNull @aws_subscribe(mutations: [\\"createCreatedAtAndUpdatedAtNull\\"])
+  onUpdateCreatedAtAndUpdatedAtNull(filter: ModelSubscriptionCreatedAtAndUpdatedAtNullFilterInput): CreatedAtAndUpdatedAtNull @aws_subscribe(mutations: [\\"updateCreatedAtAndUpdatedAtNull\\"])
+  onDeleteCreatedAtAndUpdatedAtNull(filter: ModelSubscriptionCreatedAtAndUpdatedAtNullFilterInput): CreatedAtAndUpdatedAtNull @aws_subscribe(mutations: [\\"deleteCreatedAtAndUpdatedAtNull\\"])
+}
+"
+`;
+
+exports[`ModelTransformer: remove null timestamp fields from input custom createdAt and updatedAt null 1`] = `
+"type CustomCreatedAtAndUpdatedAtNull {
+  id: ID!
+  title: String!
+  createdOn: AWSDateTime!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelCustomCreatedAtAndUpdatedAtNullConnection {
+  items: [CustomCreatedAtAndUpdatedAtNull]!
+  nextToken: String
+}
+
+input ModelCustomCreatedAtAndUpdatedAtNullFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  createdOn: ModelStringInput
+  and: [ModelCustomCreatedAtAndUpdatedAtNullFilterInput]
+  or: [ModelCustomCreatedAtAndUpdatedAtNullFilterInput]
+  not: ModelCustomCreatedAtAndUpdatedAtNullFilterInput
+}
+
+type Query {
+  getCustomCreatedAtAndUpdatedAtNull(id: ID!): CustomCreatedAtAndUpdatedAtNull
+  listCustomCreatedAtAndUpdatedAtNulls(filter: ModelCustomCreatedAtAndUpdatedAtNullFilterInput, limit: Int, nextToken: String): ModelCustomCreatedAtAndUpdatedAtNullConnection
+}
+
+input ModelCustomCreatedAtAndUpdatedAtNullConditionInput {
+  title: ModelStringInput
+  and: [ModelCustomCreatedAtAndUpdatedAtNullConditionInput]
+  or: [ModelCustomCreatedAtAndUpdatedAtNullConditionInput]
+  not: ModelCustomCreatedAtAndUpdatedAtNullConditionInput
+  createdOn: ModelStringInput
+}
+
+input CreateCustomCreatedAtAndUpdatedAtNullInput {
+  id: ID
+  title: String!
+}
+
+input UpdateCustomCreatedAtAndUpdatedAtNullInput {
+  id: ID!
+  title: String
+}
+
+input DeleteCustomCreatedAtAndUpdatedAtNullInput {
+  id: ID!
+}
+
+type Mutation {
+  createCustomCreatedAtAndUpdatedAtNull(input: CreateCustomCreatedAtAndUpdatedAtNullInput!, condition: ModelCustomCreatedAtAndUpdatedAtNullConditionInput): CustomCreatedAtAndUpdatedAtNull
+  updateCustomCreatedAtAndUpdatedAtNull(input: UpdateCustomCreatedAtAndUpdatedAtNullInput!, condition: ModelCustomCreatedAtAndUpdatedAtNullConditionInput): CustomCreatedAtAndUpdatedAtNull
+  deleteCustomCreatedAtAndUpdatedAtNull(input: DeleteCustomCreatedAtAndUpdatedAtNullInput!, condition: ModelCustomCreatedAtAndUpdatedAtNullConditionInput): CustomCreatedAtAndUpdatedAtNull
+}
+
+input ModelSubscriptionCustomCreatedAtAndUpdatedAtNullFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  createdOn: ModelSubscriptionStringInput
+  and: [ModelSubscriptionCustomCreatedAtAndUpdatedAtNullFilterInput]
+  or: [ModelSubscriptionCustomCreatedAtAndUpdatedAtNullFilterInput]
+}
+
+type Subscription {
+  onCreateCustomCreatedAtAndUpdatedAtNull(filter: ModelSubscriptionCustomCreatedAtAndUpdatedAtNullFilterInput): CustomCreatedAtAndUpdatedAtNull @aws_subscribe(mutations: [\\"createCustomCreatedAtAndUpdatedAtNull\\"])
+  onUpdateCustomCreatedAtAndUpdatedAtNull(filter: ModelSubscriptionCustomCreatedAtAndUpdatedAtNullFilterInput): CustomCreatedAtAndUpdatedAtNull @aws_subscribe(mutations: [\\"updateCustomCreatedAtAndUpdatedAtNull\\"])
+  onDeleteCustomCreatedAtAndUpdatedAtNull(filter: ModelSubscriptionCustomCreatedAtAndUpdatedAtNullFilterInput): CustomCreatedAtAndUpdatedAtNull @aws_subscribe(mutations: [\\"deleteCustomCreatedAtAndUpdatedAtNull\\"])
+}
+"
+`;
+
+exports[`ModelTransformer: remove null timestamp fields from input timestamps null 1`] = `
+"type TimeStampsNull {
+  id: ID!
+  title: String!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelTimeStampsNullConnection {
+  items: [TimeStampsNull]!
+  nextToken: String
+}
+
+input ModelTimeStampsNullFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  and: [ModelTimeStampsNullFilterInput]
+  or: [ModelTimeStampsNullFilterInput]
+  not: ModelTimeStampsNullFilterInput
+}
+
+type Query {
+  getTimeStampsNull(id: ID!): TimeStampsNull
+  listTimeStampsNulls(filter: ModelTimeStampsNullFilterInput, limit: Int, nextToken: String): ModelTimeStampsNullConnection
+}
+
+input ModelTimeStampsNullConditionInput {
+  title: ModelStringInput
+  and: [ModelTimeStampsNullConditionInput]
+  or: [ModelTimeStampsNullConditionInput]
+  not: ModelTimeStampsNullConditionInput
+}
+
+input CreateTimeStampsNullInput {
+  id: ID
+  title: String!
+}
+
+input UpdateTimeStampsNullInput {
+  id: ID!
+  title: String
+}
+
+input DeleteTimeStampsNullInput {
+  id: ID!
+}
+
+type Mutation {
+  createTimeStampsNull(input: CreateTimeStampsNullInput!, condition: ModelTimeStampsNullConditionInput): TimeStampsNull
+  updateTimeStampsNull(input: UpdateTimeStampsNullInput!, condition: ModelTimeStampsNullConditionInput): TimeStampsNull
+  deleteTimeStampsNull(input: DeleteTimeStampsNullInput!, condition: ModelTimeStampsNullConditionInput): TimeStampsNull
+}
+
+input ModelSubscriptionTimeStampsNullFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  and: [ModelSubscriptionTimeStampsNullFilterInput]
+  or: [ModelSubscriptionTimeStampsNullFilterInput]
+}
+
+type Subscription {
+  onCreateTimeStampsNull(filter: ModelSubscriptionTimeStampsNullFilterInput): TimeStampsNull @aws_subscribe(mutations: [\\"createTimeStampsNull\\"])
+  onUpdateTimeStampsNull(filter: ModelSubscriptionTimeStampsNullFilterInput): TimeStampsNull @aws_subscribe(mutations: [\\"updateTimeStampsNull\\"])
+  onDeleteTimeStampsNull(filter: ModelSubscriptionTimeStampsNullFilterInput): TimeStampsNull @aws_subscribe(mutations: [\\"deleteTimeStampsNull\\"])
+}
+"
+`;
+
+exports[`ModelTransformer: remove null timestamp fields from input updatedAt null 1`] = `
+"type UpdatedAtNull {
+  id: ID!
+  title: String!
+  createdAt: AWSDateTime!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelUpdatedAtNullConnection {
+  items: [UpdatedAtNull]!
+  nextToken: String
+}
+
+input ModelUpdatedAtNullFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  createdAt: ModelStringInput
+  and: [ModelUpdatedAtNullFilterInput]
+  or: [ModelUpdatedAtNullFilterInput]
+  not: ModelUpdatedAtNullFilterInput
+}
+
+type Query {
+  getUpdatedAtNull(id: ID!): UpdatedAtNull
+  listUpdatedAtNulls(filter: ModelUpdatedAtNullFilterInput, limit: Int, nextToken: String): ModelUpdatedAtNullConnection
+}
+
+input ModelUpdatedAtNullConditionInput {
+  title: ModelStringInput
+  and: [ModelUpdatedAtNullConditionInput]
+  or: [ModelUpdatedAtNullConditionInput]
+  not: ModelUpdatedAtNullConditionInput
+  createdAt: ModelStringInput
+}
+
+input CreateUpdatedAtNullInput {
+  id: ID
+  title: String!
+}
+
+input UpdateUpdatedAtNullInput {
+  id: ID!
+  title: String
+}
+
+input DeleteUpdatedAtNullInput {
+  id: ID!
+}
+
+type Mutation {
+  createUpdatedAtNull(input: CreateUpdatedAtNullInput!, condition: ModelUpdatedAtNullConditionInput): UpdatedAtNull
+  updateUpdatedAtNull(input: UpdateUpdatedAtNullInput!, condition: ModelUpdatedAtNullConditionInput): UpdatedAtNull
+  deleteUpdatedAtNull(input: DeleteUpdatedAtNullInput!, condition: ModelUpdatedAtNullConditionInput): UpdatedAtNull
+}
+
+input ModelSubscriptionUpdatedAtNullFilterInput {
+  id: ModelSubscriptionIDInput
+  title: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionUpdatedAtNullFilterInput]
+  or: [ModelSubscriptionUpdatedAtNullFilterInput]
+}
+
+type Subscription {
+  onCreateUpdatedAtNull(filter: ModelSubscriptionUpdatedAtNullFilterInput): UpdatedAtNull @aws_subscribe(mutations: [\\"createUpdatedAtNull\\"])
+  onUpdateUpdatedAtNull(filter: ModelSubscriptionUpdatedAtNullFilterInput): UpdatedAtNull @aws_subscribe(mutations: [\\"updateUpdatedAtNull\\"])
+  onDeleteUpdatedAtNull(filter: ModelSubscriptionUpdatedAtNullFilterInput): UpdatedAtNull @aws_subscribe(mutations: [\\"deleteUpdatedAtNull\\"])
 }
 "
 `;
@@ -397,6 +1495,8 @@ type ModelTestConnection {
 
 input ModelTestFilterInput {
   id: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelTestFilterInput]
   or: [ModelTestFilterInput]
   not: ModelTestFilterInput
@@ -417,6 +1517,8 @@ input ModelTestConditionInput {
   or: [ModelTestConditionInput]
   not: ModelTestConditionInput
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateTestInput {
@@ -445,6 +1547,8 @@ type Mutation {
 
 input ModelSubscriptionTestFilterInput {
   id: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
   and: [ModelSubscriptionTestFilterInput]
   or: [ModelSubscriptionTestFilterInput]
   _deleted: ModelBooleanInput
@@ -467,6 +1571,8 @@ type ModelEmailConnection {
 
 input ModelEmailFilterInput {
   id: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelEmailFilterInput]
   or: [ModelEmailFilterInput]
   not: ModelEmailFilterInput
@@ -478,6 +1584,8 @@ input ModelEmailConditionInput {
   or: [ModelEmailConditionInput]
   not: ModelEmailConditionInput
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateEmailInput {
@@ -497,6 +1605,8 @@ input DeleteEmailInput {
 
 input ModelSubscriptionEmailFilterInput {
   id: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
   and: [ModelSubscriptionEmailFilterInput]
   or: [ModelSubscriptionEmailFilterInput]
   _deleted: ModelBooleanInput
@@ -873,6 +1983,8 @@ type ModelAuthorConnection {
 input ModelAuthorFilterInput {
   id: ModelIDInput
   name: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelAuthorFilterInput]
   or: [ModelAuthorFilterInput]
   not: ModelAuthorFilterInput
@@ -885,6 +1997,8 @@ input ModelAuthorConditionInput {
   or: [ModelAuthorConditionInput]
   not: ModelAuthorConditionInput
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateAuthorInput {
@@ -911,6 +2025,8 @@ input DeleteAuthorInput {
 input ModelSubscriptionAuthorFilterInput {
   id: ModelSubscriptionIDInput
   name: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
   and: [ModelSubscriptionAuthorFilterInput]
   or: [ModelSubscriptionAuthorFilterInput]
   _deleted: ModelBooleanInput
@@ -926,6 +2042,8 @@ input ModelRequireFilterInput {
   id: ModelIDInput
   requiredField: ModelStringInput
   notRequiredField: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelRequireFilterInput]
   or: [ModelRequireFilterInput]
   not: ModelRequireFilterInput
@@ -939,6 +2057,8 @@ input ModelRequireConditionInput {
   or: [ModelRequireConditionInput]
   not: ModelRequireConditionInput
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateRequireInput {
@@ -964,6 +2084,8 @@ input ModelSubscriptionRequireFilterInput {
   id: ModelSubscriptionIDInput
   requiredField: ModelSubscriptionStringInput
   notRequiredField: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
   and: [ModelSubscriptionRequireFilterInput]
   or: [ModelSubscriptionRequireFilterInput]
   _deleted: ModelBooleanInput
@@ -980,6 +2102,7 @@ input ModelCommentFilterInput {
   title: ModelStringInput
   content: ModelStringInput
   updatedOn: ModelIntInput
+  createdOn: ModelStringInput
   and: [ModelCommentFilterInput]
   or: [ModelCommentFilterInput]
   not: ModelCommentFilterInput
@@ -994,6 +2117,7 @@ input ModelCommentConditionInput {
   or: [ModelCommentConditionInput]
   not: ModelCommentConditionInput
   _deleted: ModelBooleanInput
+  createdOn: ModelStringInput
 }
 
 input CreateCommentInput {
@@ -1022,6 +2146,7 @@ input ModelSubscriptionCommentFilterInput {
   title: ModelSubscriptionStringInput
   content: ModelSubscriptionStringInput
   updatedOn: ModelSubscriptionIntInput
+  createdOn: ModelSubscriptionStringInput
   and: [ModelSubscriptionCommentFilterInput]
   or: [ModelSubscriptionCommentFilterInput]
   _deleted: ModelBooleanInput
@@ -1033,8 +2158,8 @@ exports[`ModelTransformer: should generate sync resolver with ConflictHandlerTyp
 Object {
   "Mutation.createPost.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
+#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
 $util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
 $util.toJson({
@@ -1042,12 +2167,12 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.createPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.createPost.req.vtl": "## [Start] Create Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -1122,12 +2247,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Mutation.deletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.deletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.deletePost.req.vtl": "## [Start] Delete Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
@@ -1204,12 +2329,12 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.updatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.updatePost.req.vtl": "## [Start] Mutation Update resolver. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -1349,12 +2474,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Query.getPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.getPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.getPost.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -1402,12 +2527,12 @@ $util.unauthorized()
   $util.toJson(null)
 #end
 ## [End] Get Response template. **",
-  "Query.listPosts.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.listPosts.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.listPosts.req.vtl": "## [Start] List Request. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $limit = $util.defaultIfNull($args.limit, 100) )
@@ -1454,7 +2579,7 @@ $util.toJson({})
   $util.qr($ListRequest.put(\\"operation\\", \\"Scan\\"))
 #end
 #if( !$util.isNull($ctx.stash.metadata.index) )
-  #set( $ListRequest.IndexName = $ctx.stash.metadata.index )
+  #set( $ListRequest.index = $ctx.stash.metadata.index )
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
@@ -1465,12 +2590,12 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Query.syncPosts.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.syncPosts.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.syncPosts.req.vtl": "## [Start] Sync Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $queryFilterContainsAuthField = false )
@@ -1559,12 +2684,12 @@ null
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Subscription.onCreatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onCreatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onCreatePost.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -1577,12 +2702,12 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 #end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
-  "Subscription.onDeletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onDeletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onDeletePost.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -1595,12 +2720,12 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 #end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
-  "Subscription.onUpdatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onUpdatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onUpdatePost.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -1620,8 +2745,8 @@ exports[`ModelTransformer: should generate sync resolver with ConflictHandlerTyp
 Object {
   "Mutation.createPost.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
+#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
 $util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
 $util.toJson({
@@ -1629,12 +2754,12 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.createPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.createPost.req.vtl": "## [Start] Create Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -1709,12 +2834,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Mutation.deletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.deletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.deletePost.req.vtl": "## [Start] Delete Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
@@ -1791,12 +2916,12 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.updatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.updatePost.req.vtl": "## [Start] Mutation Update resolver. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -1936,12 +3061,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Query.getPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.getPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.getPost.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -1989,12 +3114,12 @@ $util.unauthorized()
   $util.toJson(null)
 #end
 ## [End] Get Response template. **",
-  "Query.listPosts.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.listPosts.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.listPosts.req.vtl": "## [Start] List Request. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $limit = $util.defaultIfNull($args.limit, 100) )
@@ -2041,7 +3166,7 @@ $util.toJson({})
   $util.qr($ListRequest.put(\\"operation\\", \\"Scan\\"))
 #end
 #if( !$util.isNull($ctx.stash.metadata.index) )
-  #set( $ListRequest.IndexName = $ctx.stash.metadata.index )
+  #set( $ListRequest.index = $ctx.stash.metadata.index )
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
@@ -2052,12 +3177,12 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Query.syncPosts.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.syncPosts.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.syncPosts.req.vtl": "## [Start] Sync Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $queryFilterContainsAuthField = false )
@@ -2146,12 +3271,12 @@ null
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Subscription.onCreatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onCreatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onCreatePost.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -2164,12 +3289,12 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 #end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
-  "Subscription.onDeletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onDeletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onDeletePost.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -2182,12 +3307,12 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 #end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
-  "Subscription.onUpdatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onUpdatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onUpdatePost.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -2207,8 +3332,8 @@ exports[`ModelTransformer: should generate sync resolver with ConflictHandlerTyp
 Object {
   "Mutation.createPost.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
+#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
 $util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
 $util.toJson({
@@ -2216,12 +3341,12 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.createPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.createPost.req.vtl": "## [Start] Create Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -2296,12 +3421,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Mutation.deletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.deletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.deletePost.req.vtl": "## [Start] Delete Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $DeleteRequest = {
@@ -2378,12 +3503,12 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.updatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.updatePost.req.vtl": "## [Start] Mutation Update resolver. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 ## Set the default values to put request **
@@ -2523,12 +3648,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Query.getPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.getPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.getPost.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -2576,12 +3701,12 @@ $util.unauthorized()
   $util.toJson(null)
 #end
 ## [End] Get Response template. **",
-  "Query.listPosts.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.listPosts.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.listPosts.req.vtl": "## [Start] List Request. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $limit = $util.defaultIfNull($args.limit, 100) )
@@ -2628,7 +3753,7 @@ $util.toJson({})
   $util.qr($ListRequest.put(\\"operation\\", \\"Scan\\"))
 #end
 #if( !$util.isNull($ctx.stash.metadata.index) )
-  #set( $ListRequest.IndexName = $ctx.stash.metadata.index )
+  #set( $ListRequest.index = $ctx.stash.metadata.index )
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
@@ -2639,12 +3764,12 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Query.syncPosts.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.syncPosts.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.syncPosts.req.vtl": "## [Start] Sync Request template. **
 #set( $args = $util.defaultIfNull($ctx.stash.transformedArgs, $ctx.args) )
 #set( $queryFilterContainsAuthField = false )
@@ -2733,12 +3858,12 @@ null
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Subscription.onCreatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onCreatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onCreatePost.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -2751,12 +3876,12 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 #end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
-  "Subscription.onDeletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onDeletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onDeletePost.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -2769,12 +3894,12 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 #end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
-  "Subscription.onUpdatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onUpdatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onUpdatePost.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -4576,19 +5701,19 @@ exports[`ModelTransformer: should successfully transform rds schema with array a
 Object {
   "Mutation.createNote.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
+#set( $createdAt = $util.time.nowISO8601() )
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.createNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.createNote.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
@@ -4626,12 +5751,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Mutation.deleteNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.deleteNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.deleteNote.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
@@ -4673,12 +5798,12 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.updateNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.updateNote.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
@@ -4717,12 +5842,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Query.getNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.getNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.getNote.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
@@ -4737,9 +5862,7 @@ $util.qr($ctx.stash.put(\\"keys\\", $keys))
 #set( $lambdaInput.operationName = \\"getNote\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
-#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-  #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
-#end
+#set( $lambdaInput.args.metadata.authFilter = {} )
 #set( $lambdaInput.args.metadata.nonScalarFields = [\\"tags\\", \\"attachments\\"] )
 #set( $lambdaInput.args.metadata.arrayFields = [\\"tags\\"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
@@ -4757,15 +5880,25 @@ $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments, 
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.toJson($ctx.result)
+  #if( !$ctx.stash.authRules )
+    $util.toJson($ctx.result)
+  #else
+    #set( $authResult = $util.authRules.validateUsingSource($ctx.stash.authRules, $ctx.result) )
+    #if( !$authResult )
+      $util.unauthorized()
+      $util.toJson(null)
+    #else
+      $util.toJson($ctx.result)
+    #end
+  #end
 #end
 ## [End] ResponseTemplate. **",
-  "Query.listNotes.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.listNotes.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.listNotes.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
@@ -4808,12 +5941,12 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Subscription.onCreateNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onCreateNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onCreateNote.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -4826,12 +5959,12 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 #end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
-  "Subscription.onDeleteNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onDeleteNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onDeleteNote.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -4844,12 +5977,12 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 #end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
-  "Subscription.onUpdateNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onUpdateNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onUpdateNote.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -5104,19 +6237,19 @@ exports[`ModelTransformer: should successfully transform rds schema with array a
 Object {
   "Mutation.createNote.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
-#set( $createdAt = $util.time.nowISO8601() )
 $util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
+#set( $createdAt = $util.time.nowISO8601() )
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.createNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.createNote.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
@@ -5154,12 +6287,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Mutation.deleteNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.deleteNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.deleteNote.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
@@ -5201,12 +6334,12 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Mutation.updateNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Mutation.updateNote.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
@@ -5245,12 +6378,12 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Query.getNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.getNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.getNote.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
@@ -5265,9 +6398,7 @@ $util.qr($ctx.stash.put(\\"keys\\", $keys))
 #set( $lambdaInput.operationName = \\"getNote\\" )
 #set( $lambdaInput.args.metadata = {} )
 #set( $lambdaInput.args.metadata.keys = [] )
-#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-  #set( $lambdaInput.args.metadata.authFilter = $ctx.stash.authFilter )
-#end
+#set( $lambdaInput.args.metadata.authFilter = {} )
 #set( $lambdaInput.args.metadata.nonScalarFields = [\\"tags\\", \\"attachments\\"] )
 #set( $lambdaInput.args.metadata.arrayFields = [\\"tags\\"] )
 #set( $lambdaInput.args.metadata.fieldMap = {} )
@@ -5285,15 +6416,25 @@ $util.qr($lambdaInput.args.input.putAll($util.defaultIfNull($context.arguments, 
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.toJson($ctx.result)
+  #if( !$ctx.stash.authRules )
+    $util.toJson($ctx.result)
+  #else
+    #set( $authResult = $util.authRules.validateUsingSource($ctx.stash.authRules, $ctx.result) )
+    #if( !$authResult )
+      $util.unauthorized()
+      $util.toJson(null)
+    #else
+      $util.toJson($ctx.result)
+    #end
+  #end
 #end
 ## [End] ResponseTemplate. **",
-  "Query.listNotes.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Query.listNotes.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Query.listNotes.preAuth.1.req.vtl": "## [Start] Set the primary key information in metadata. **
 #set( $keys = [] )
 $util.qr($keys.add(\\"id\\"))
@@ -5336,12 +6477,12 @@ $util.qr($lambdaInput.args.putAll($util.defaultIfNull($context.arguments, {})))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Subscription.onCreateNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onCreateNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onCreateNote.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -5354,12 +6495,12 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 #end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
-  "Subscription.onDeleteNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onDeleteNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onDeleteNote.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -5372,12 +6513,12 @@ $extensions.setSubscriptionFilter($util.transform.toSubscriptionFilter($ctx.args
 #end
 $util.toJson(null)
 ## [End] Subscription Response template. **",
-  "Subscription.onUpdateNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+  "Subscription.onUpdateNote.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled, IAM Access Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
 #end
 $util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Sandbox Mode Disabled, IAM Access Disabled. **",
   "Subscription.onUpdateNote.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -5732,6 +6873,8 @@ type ModelModelTypeConnection {
 input ModelModelTypeFilterInput {
   id: ModelIDInput
   title: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelModelTypeFilterInput]
   or: [ModelModelTypeFilterInput]
   not: ModelModelTypeFilterInput
@@ -5750,6 +6893,8 @@ input ModelModelTypeConditionInput {
   or: [ModelModelTypeConditionInput]
   not: ModelModelTypeConditionInput
   _deleted: ModelBooleanInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
 }
 
 input CreateModelTypeInput {
@@ -5780,6 +6925,8 @@ type Mutation {
 input ModelSubscriptionModelTypeFilterInput {
   id: ModelSubscriptionIDInput
   title: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
   and: [ModelSubscriptionModelTypeFilterInput]
   or: [ModelSubscriptionModelTypeFilterInput]
   _deleted: ModelBooleanInput
@@ -5963,6 +7110,8 @@ type ModelPostConnection {
 input ModelPostFilterInput {
   id: ModelIDInput
   str: ModelStringInput
+  createdOn: ModelStringInput
+  updatedOn: ModelStringInput
   and: [ModelPostFilterInput]
   or: [ModelPostFilterInput]
   not: ModelPostFilterInput
@@ -5981,6 +7130,8 @@ input ModelPostConditionInput {
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
   _deleted: ModelBooleanInput
+  createdOn: ModelStringInput
+  updatedOn: ModelStringInput
 }
 
 input CreatePostInput {
@@ -6009,6 +7160,8 @@ type Mutation {
 input ModelSubscriptionPostFilterInput {
   id: ModelSubscriptionIDInput
   str: ModelSubscriptionStringInput
+  createdOn: ModelSubscriptionStringInput
+  updatedOn: ModelSubscriptionStringInput
   and: [ModelSubscriptionPostFilterInput]
   or: [ModelSubscriptionPostFilterInput]
   _deleted: ModelBooleanInput

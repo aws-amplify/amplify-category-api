@@ -1,0 +1,11 @@
+type RelatedMany @model {
+  id: ID! @primaryKey
+  primaryId: String
+  primary: Primary @belongsTo(references: ["primaryId"])
+}
+
+type RelatedOne @model {
+  id: ID! @primaryKey
+  primaryId: String
+  primary: Primary @belongsTo(references: ["primaryId"])
+}

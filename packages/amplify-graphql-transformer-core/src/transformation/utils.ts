@@ -11,21 +11,23 @@ import {
   print,
   StringValueNode,
   TypeDefinitionNode,
+  TypeExtensionNode,
   TypeSystemDefinitionNode,
+  TypeSystemExtensionNode,
 } from 'graphql';
 import {
   ModelDataSourceStrategy,
   SqlDirectiveDataSourceStrategy,
-  SQLLambdaModelDataSourceStrategy,
   TransformerPluginProvider,
   TransformerPluginType,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import _ from 'lodash';
 import { fieldsWithSqlDirective, isMutationNode, isQueryNode, isSqlStrategy } from '../utils';
+import { InvalidDirectiveError } from '../errors';
 
 export const makeSeenTransformationKey = (
   directive: DirectiveNode,
-  type: TypeDefinitionNode,
+  type: TypeDefinitionNode | TypeExtensionNode,
   field?: FieldDefinitionNode | InputValueDefinitionNode | EnumValueDefinitionNode,
   arg?: InputValueDefinitionNode,
   index?: number,
@@ -48,10 +50,15 @@ export const makeSeenTransformationKey = (
 /**
  * If this instance of the directive validates against its definition return true.
  * If the definition does not apply to the instance return false.
- * @param directive The directive definition to validate against.
- * @param nodeKind The kind of the current node where the directive was found.
+ * @param definition The directive definition to validate against.
+ * @param directive The directive declaration to be validated.
+ * @param node The node where the directive was found.
  */
-export const matchDirective = (definition: DirectiveDefinitionNode, directive: DirectiveNode, node: TypeSystemDefinitionNode): boolean => {
+export const matchDirective = (
+  definition: DirectiveDefinitionNode,
+  directive: DirectiveNode,
+  node: TypeSystemDefinitionNode | TypeSystemExtensionNode,
+): boolean => {
   if (!directive) {
     return false;
   }
@@ -60,6 +67,19 @@ export const matchDirective = (definition: DirectiveDefinitionNode, directive: D
     return false;
   }
   let isValidLocation = false;
+
+  // At this point, we know that the directive applied to the node matches the definition. Before we validate the location, we need to
+  // explicitly disallow directives on extended types.
+  //
+  // Per https://spec.graphql.org/October2021/#sec-Type-System.Directives, this is not supported (the locations enum does not include any
+  // type extensions), but the `graphql.parse()` function does not throw an error when parsing.
+  // when encountering an extended type. So we need to explicitly check for extended types here.
+  if (node.kind === Kind.OBJECT_TYPE_EXTENSION || node.kind === Kind.INTERFACE_TYPE_EXTENSION) {
+    throw new InvalidDirectiveError(
+      `Directives are not supported on object or interface extensions. See the '@${directive.name.value}' directive on '${node.name.value}'`,
+    );
+  }
+
   for (const location of definition.locations) {
     // tslint:disable-next-line: switch-default
     switch (location.value) {

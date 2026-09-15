@@ -20,6 +20,7 @@ export * from './sleep';
 export * from './transformConfig';
 export * from './rds';
 export * from './credentials-rotator';
+export * from './test-regions';
 
 // run dotenv config to update env variable
 config();
@@ -28,6 +29,10 @@ config();
 export const TEST_PROFILE_NAME = 'amplify-integ-test-user';
 
 export function deleteProjectDir(root: string) {
+  if (process.env.SKIP_DELETE) {
+    console.warn(`🌋 Did not delete project dir: ${root}`);
+    return;
+  }
   rimraf.sync(root);
 }
 

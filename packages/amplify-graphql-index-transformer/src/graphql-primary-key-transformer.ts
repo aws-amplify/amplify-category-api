@@ -12,6 +12,7 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { PrimaryKeyDirective } from '@aws-amplify/graphql-directives';
 import {
   DirectiveNode,
   EnumTypeDefinitionNode,
@@ -35,18 +36,13 @@ import {
 import { PrimaryKeyDirectiveConfiguration } from './types';
 import { validateNotSelfReferencing, validateNotOwnerAuth, lookupResolverName } from './utils';
 
-const directiveName = 'primaryKey';
-const directiveDefinition = `
-  directive @${directiveName}(sortKeyFields: [String]) on FIELD_DEFINITION
-`;
-
 export class PrimaryKeyTransformer extends TransformerPluginBase {
   private directiveList: PrimaryKeyDirectiveConfiguration[] = [];
 
   private resolverMap: Map<TransformerResolverProvider, string> = new Map();
 
   constructor() {
-    super('amplify-primary-key-transformer', directiveDefinition);
+    super('amplify-primary-key-transformer', PrimaryKeyDirective.definition);
   }
 
   field = (
@@ -120,7 +116,9 @@ const validate = (config: PrimaryKeyDirectiveConfiguration, ctx: TransformerCont
   });
 
   if (!modelDirective) {
-    throw new InvalidDirectiveError(`The @${directiveName} directive may only be added to object definitions annotated with @model.`);
+    throw new InvalidDirectiveError(
+      `The @${PrimaryKeyDirective.name} directive may only be added to object definitions annotated with @model.`,
+    );
   }
 
   config.modelDirective = modelDirective;
@@ -135,7 +133,7 @@ const validate = (config: PrimaryKeyDirectiveConfiguration, ctx: TransformerCont
     }
 
     for (const directive of objectField.directives!) {
-      if (directive.name.value === directiveName) {
+      if (directive.name.value === PrimaryKeyDirective.name) {
         throw new InvalidDirectiveError(`You may only supply one primary key on type '${object.name.value}'.`);
       }
     }

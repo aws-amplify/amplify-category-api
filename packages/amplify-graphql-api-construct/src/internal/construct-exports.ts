@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import {
+  AuthorizationType,
   CfnGraphQLApi,
   CfnGraphQLSchema,
   CfnApiKey,
@@ -7,15 +8,28 @@ import {
   CfnFunctionConfiguration,
   CfnDataSource,
   GraphqlApi,
+  GraphqlApiAttributes,
+  Visibility,
 } from 'aws-cdk-lib/aws-appsync';
-import { CfnTable, Table } from 'aws-cdk-lib/aws-dynamodb';
+import { CfnTable, Table, ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { CfnRole, Role } from 'aws-cdk-lib/aws-iam';
-import { CfnResource, NestedStack } from 'aws-cdk-lib';
+import { CfnResource, isResolvableObject, NestedStack } from 'aws-cdk-lib';
 import { getResourceName } from '@aws-amplify/graphql-transformer-core';
 import { CfnFunction, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
 import { AmplifyGraphqlApiResources, FunctionSlot } from '../types';
 import { AmplifyDynamoDbTableWrapper } from '../amplify-dynamodb-table-wrapper';
 import { walkAndProcessNodes } from './construct-tree';
+
+/**
+ * Check if a resource is implementing table interface
+ * The required properties need to be present in the input
+ * https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_dynamodb.ITable.html#properties
+ * @param table table resource
+ * @returns whether the resource is a ITable or not
+ */
+const isITable = (table: any): table is ITable => {
+  return 'env' in table && 'node' in table && 'stack' in table && 'tableArn' in table && 'tableName' in table;
+};
 
 /**
  * Everything below here is intended to help us gather the
@@ -33,7 +47,7 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
   const cfnResolvers: Record<string, CfnResolver> = {};
   const cfnFunctionConfigurations: Record<string, CfnFunctionConfiguration> = {};
   const cfnDataSources: Record<string, CfnDataSource> = {};
-  const tables: Record<string, Table> = {};
+  const tables: Record<string, ITable> = {};
   const cfnTables: Record<string, CfnTable> = {};
   const amplifyDynamoDbTables: Record<string, AmplifyDynamoDbTableWrapper> = {};
   const roles: Record<string, Role> = {};
@@ -72,7 +86,7 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
       cfnFunctionConfigurations[resourceName] = currentScope;
       return;
     }
-    if (currentScope instanceof Table) {
+    if (currentScope instanceof Table || isITable(currentScope)) {
       tables[resourceName] = currentScope;
       return;
     }
@@ -120,10 +134,11 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
     scope.node.children.filter(NestedStack.isNestedStack).map((nestedStack: NestedStack) => [nestedStack.node.id, nestedStack]),
   );
 
+  const proxiedApiAttributes = graphqlApiAttributesFromCfnGraphQLApi(cfnGraphqlApi);
+
   return {
-    graphqlApi: GraphqlApi.fromGraphqlApiAttributes(scope, 'L2GraphqlApi', { graphqlApiId: cfnGraphqlApi.attrApiId }),
+    graphqlApi: GraphqlApi.fromGraphqlApiAttributes(scope, 'L2GraphqlApi', proxiedApiAttributes),
     tables,
-    amplifyDynamoDbTables,
     roles,
     functions,
     nestedStacks,
@@ -135,11 +150,89 @@ export const getGeneratedResources = (scope: Construct): AmplifyGraphqlApiResour
       cfnFunctionConfigurations,
       cfnDataSources,
       cfnTables,
+      amplifyDynamoDbTables,
       cfnRoles,
       cfnFunctions,
       additionalCfnResources,
     },
   };
+};
+
+/**
+ * Creates a set of L2 {@link GraphqlApiAttributes} from a CfnGraphqlApi L1 construct. Allows for getGeneratedResources to easily pass
+ * attributes of the CfnGraphqlApi to the `resources` member. Without this the `resources.graphqlApi` member has no properties except for
+ * the API ID.
+ */
+const graphqlApiAttributesFromCfnGraphQLApi = (cfnGraphqlApi: CfnGraphQLApi): GraphqlApiAttributes => {
+  const visiblityStruct: { visibility?: Visibility } = {};
+  if (typeof cfnGraphqlApi.visibility === 'string') {
+    switch (cfnGraphqlApi.visibility) {
+      case 'GLOBAL':
+        visiblityStruct.visibility = Visibility.GLOBAL;
+        break;
+      case 'PRIVATE':
+        visiblityStruct.visibility = Visibility.PRIVATE;
+        break;
+      default:
+        console.warn(`Unsupported AppSync API Visibility setting: ${cfnGraphqlApi.visibility}`);
+    }
+  }
+
+  const proxiedApiAttributes: GraphqlApiAttributes = {
+    graphqlApiId: cfnGraphqlApi.attrApiId,
+    graphqlApiArn: cfnGraphqlApi.attrArn,
+    graphQLEndpointArn: cfnGraphqlApi.attrGraphQlEndpointArn,
+    ...visiblityStruct,
+    modes: authenticationTypesFromCfnGraphQLApi(cfnGraphqlApi),
+  };
+
+  return proxiedApiAttributes;
+};
+
+const authenticationTypesFromCfnGraphQLApi = (cfnGraphqlApi: CfnGraphQLApi): AuthorizationType[] => {
+  const additionalAuthenticationProviders = cfnGraphqlApi.additionalAuthenticationProviders;
+  if (!additionalAuthenticationProviders) {
+    return [];
+  }
+
+  // If this is a deploy-time value rather than an array, we can't convert accurately.
+  if (isResolvableObject(additionalAuthenticationProviders)) {
+    return [];
+  }
+
+  const unfilteredAuthorizationTypes: (AuthorizationType | undefined)[] = additionalAuthenticationProviders
+    .filter(
+      (additionalAuthProvider): additionalAuthProvider is CfnGraphQLApi.AdditionalAuthenticationProviderProperty =>
+        !isResolvableObject(additionalAuthProvider),
+    )
+    .map((provider) => provider.authenticationType)
+    .map(l2AuthorizationTypeFromL1AuthenticationProvider);
+
+  const authorizationTypes = unfilteredAuthorizationTypes.filter((type): type is AuthorizationType => typeof type !== 'undefined');
+
+  const defaultAuthorizationType = l2AuthorizationTypeFromL1AuthenticationProvider(cfnGraphqlApi.authenticationType);
+  if (defaultAuthorizationType) {
+    authorizationTypes.push(defaultAuthorizationType);
+  }
+  return authorizationTypes;
+};
+
+const l2AuthorizationTypeFromL1AuthenticationProvider = (authenticationType: string): AuthorizationType | undefined => {
+  switch (authenticationType) {
+    case 'API_KEY':
+      return AuthorizationType.API_KEY;
+    case 'AWS_IAM':
+      return AuthorizationType.IAM;
+    case 'OPENID_CONNECT':
+      return AuthorizationType.OIDC;
+    case 'AMAZON_COGNITO_USER_POOLS':
+      return AuthorizationType.USER_POOL;
+    case 'AWS_LAMBDA':
+      return AuthorizationType.LAMBDA;
+    default:
+      console.warn(`Unrecognized Authentication type ${authenticationType}`);
+      return undefined;
+  }
 };
 
 /**

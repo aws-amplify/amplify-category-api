@@ -67,11 +67,11 @@ function createSyncIAMRole(context: TransformerContext, scope: Construct, tableN
           ],
           resources: [
             // eslint-disable-next-line no-template-curly-in-string
-            cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
+            cdk.Fn.sub('arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
               tablename: tableName,
             }),
             // eslint-disable-next-line no-template-curly-in-string
-            cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
+            cdk.Fn.sub('arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
               tablename: tableName,
             }),
           ],
@@ -166,8 +166,8 @@ function referencesEnv(value: string): boolean {
 
 function lambdaArnKey(name: string, region?: string): string {
   return region
-    ? `arn:aws:lambda:${region}:\${AWS::AccountId}:function:${name}`
-    : `arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:${name}`;
+    ? `arn:\${AWS:Partition}:lambda:${region}:\${AWS::AccountId}:function:${name}`
+    : `arn:\${AWS:Partition}:lambda:\${AWS::Region}:\${AWS::AccountId}:function:${name}`;
 }
 
 function removeEnvReference(value: string): string {

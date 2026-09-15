@@ -6,14 +6,18 @@ import { InlineTemplate } from '../cdk-compat/template-asset';
 describe('addResolver', () => {
   const app = new App();
   const stack = new Stack(app, 'test-root-stack');
-  const transformHost = new DefaultTransformHost({ api: new GraphQLApi(stack, 'testId', { name: 'testApiName' }) });
+  const transformHost = new DefaultTransformHost({
+    api: new GraphQLApi(stack, 'testId', { name: 'testApiName', assetProvider: { provide: jest.fn() } }),
+  });
 
   it('generates resolver name with hash for non-alphanumeric type names', () => {
     const cfnResolver = transformHost.addResolver(
       'test_type',
       'testField',
-      new InlineTemplate('testTemplate'),
-      new InlineTemplate('testTemplate'),
+      {
+        requestMappingTemplate: new InlineTemplate('testTemplate'),
+        responseMappingTemplate: new InlineTemplate('testTemplate'),
+      },
       undefined,
       undefined,
       ['testPipelineConfig'],
@@ -26,8 +30,10 @@ describe('addResolver', () => {
     const cfnResolver = transformHost.addResolver(
       'testType',
       'test_field',
-      new InlineTemplate('testTemplate'),
-      new InlineTemplate('testTemplate'),
+      {
+        requestMappingTemplate: new InlineTemplate('testTemplate'),
+        responseMappingTemplate: new InlineTemplate('testTemplate'),
+      },
       undefined,
       undefined,
       ['testPipelineConfig'],

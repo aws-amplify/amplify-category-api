@@ -9,6 +9,7 @@
     "moduleResolution": "node",
     "module": "CommonJS",
     "lib": ["ES2017"],
+    "types": ["node"],
     "rootDir": "./"
   }
 }

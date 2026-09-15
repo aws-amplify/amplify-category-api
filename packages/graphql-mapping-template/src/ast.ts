@@ -111,6 +111,22 @@ export function notEquals(leftExpr: Expression, rightExpr: Expression): NotEqual
 }
 
 /**
+ * Compares to expressions with greater than (>)
+ */
+export interface GreaterThanNode {
+  kind: 'GreaterThan';
+  leftExpr: Expression;
+  rightExpr: Expression;
+}
+export function greaterThan(leftExpr: Expression, rightExpr: Expression): GreaterThanNode {
+  return {
+    kind: 'GreaterThan',
+    leftExpr,
+    rightExpr,
+  };
+}
+
+/**
  * Compares two expressions for unequality.
  */
 export interface NotNode {
@@ -407,6 +423,7 @@ export type Expression =
   | ParensNode
   | EqualsNode
   | NotEqualsNode
+  | GreaterThanNode
   | ForEachNode
   | StringNode
   | RawNode

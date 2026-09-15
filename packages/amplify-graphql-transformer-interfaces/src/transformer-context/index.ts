@@ -6,7 +6,13 @@ export {
 } from './transformer-datasource-provider';
 export { TransformerContextOutputProvider } from './transformer-context-output-provider';
 export { TransformerProviderRegistry } from './transformer-provider-registry';
-export { TransformerResolverProvider, TransformerResolversManagerProvider } from './transformer-resolver-provider';
+export {
+  TransformerResolverProvider,
+  TransformerResolversManagerProvider,
+  FunctionRuntimeTemplate,
+  VTLRuntimeTemplate,
+  JSRuntimeTemplate,
+} from './transformer-resolver-provider';
 export * from './resource-resource-provider';
 export {
   TransformerBeforeStepContextProvider,
@@ -23,3 +29,4 @@ export { TransformerPreProcessContextProvider } from './transformer-preprocess-c
 export { StackManagerProvider } from './stack-manager-provider';
 export { SynthParameters } from './synth-parameters';
 export { TransformParameterProvider } from './transform-parameter-provider';
+export { LogConfig } from './logConfig';

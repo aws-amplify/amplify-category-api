@@ -44,6 +44,8 @@ import {
   toJson,
   CompoundExpressionNode,
   ObjectNode,
+  equals,
+  ret,
 } from 'graphql-mapping-template';
 import {
   applyKeyExpressionForCompositeKey,
@@ -55,13 +57,13 @@ import {
   ResourceConstants,
   toCamelCase,
 } from 'graphql-transformer-common';
-import _ from 'lodash';
 import { isDynamoDbType, isSqlModel } from '@aws-amplify/graphql-transformer-core';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../types';
 import { lookupResolverName } from '../utils';
 import { RDSIndexVTLGenerator, DynamoDBIndexVTLGenerator } from './generators';
 
 const API_KEY = 'API Key Authorization';
+const IAM_AUTH_TYPE = 'IAM Authorization';
 
 /**
  * replaceDdbPrimaryKey
@@ -366,7 +368,7 @@ export const validateSortDirectionInput = (config: PrimaryKeyDirectiveConfigurat
  * appendSecondaryIndex
  */
 export const appendSecondaryIndex = (config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void => {
-  const { name, object, primaryKeyField } = config;
+  const { name, object, primaryKeyField, projection } = config;
   if (isSqlModel(ctx, object.name.value)) {
     return;
   }
@@ -380,11 +382,19 @@ export const appendSecondaryIndex = (config: IndexDirectiveConfiguration, ctx: T
   const partitionKeyType = attrDefs.find((attr) => attr.attributeName === partitionKeyName)?.attributeType ?? 'S';
   const sortKeyType = sortKeyName ? attrDefs.find((attr) => attr.attributeName === sortKeyName)?.attributeType ?? 'S' : undefined;
 
+  const projectionType = projection?.type || 'ALL';
+  const nonKeyAttributes = projection?.nonKeyAttributes || [];
+
+  if (projectionType === 'INCLUDE' && (!nonKeyAttributes || nonKeyAttributes.length === 0)) {
+    throw new Error(`@index '${name}': nonKeyAttributes must be specified when projection type is INCLUDE`);
+  }
+
   if (!ctx.transformParameters.secondaryKeyAsGSI && primaryKeyPartitionKeyName === partitionKeyName) {
     // Create an LSI.
     table.addLocalSecondaryIndex({
       indexName: name,
-      projectionType: 'ALL',
+      projectionType,
+      ...(projectionType === 'INCLUDE' ? { nonKeyAttributes } : {}),
       sortKey: sortKeyName
         ? {
             name: sortKeyName,
@@ -396,7 +406,8 @@ export const appendSecondaryIndex = (config: IndexDirectiveConfiguration, ctx: T
     // Create a GSI.
     table.addGlobalSecondaryIndex({
       indexName: name,
-      projectionType: 'ALL',
+      projectionType,
+      ...(projectionType === 'INCLUDE' ? { nonKeyAttributes } : {}),
       partitionKey: {
         name: partitionKeyName,
         type: partitionKeyType,
@@ -417,7 +428,7 @@ export const appendSecondaryIndex = (config: IndexDirectiveConfiguration, ctx: T
     const newIndex = {
       indexName: name,
       keySchema,
-      projection: { projectionType: 'ALL' },
+      projection: { projectionType, ...(projectionType === 'INCLUDE' ? { nonKeyAttributes } : {}) },
       provisionedThroughput: cdk.Fn.conditionIf(ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling, cdk.Fn.ref('AWS::NoValue'), {
         ReadCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
         WriteCapacityUnits: cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS),
@@ -560,10 +571,10 @@ export const makeQueryResolver = (
       `${queryTypeName}.${queryField}.res.vtl`,
     ),
   );
-  resolver.addToSlot(
+  resolver.addVtlFunctionToSlot(
     'postAuth',
     MappingTemplate.s3MappingTemplateFromString(
-      generateAuthExpressionForSandboxMode(ctx.transformParameters.sandboxModeEnabled),
+      generatePostAuthExpression(ctx.transformParameters.sandboxModeEnabled, ctx.synthParameters.enableIamAccess),
       `${queryTypeName}.${queryField}.{slotName}.{slotIndex}.res.vtl`,
     ),
   );
@@ -617,7 +628,7 @@ export const mergeInputsAndDefaultsSnippet = (): string => {
 export const addIndexToResolverSlot = (resolver: TransformerResolverProvider, lines: string[], isSync = false): void => {
   const res = resolver as any;
 
-  res.addToSlot(
+  resolver.addVtlFunctionToSlot(
     'preAuth',
     MappingTemplate.s3MappingTemplateFromString(
       `${lines.join('\n')}\n${!isSync ? '{}' : ''}`,
@@ -899,17 +910,36 @@ const generateSyncResolverInit = (): CompoundExpressionNode => {
 };
 
 /**
- * Util function to generate sandbox mode expression
+ * Util function to generate post auth resolver expression
+ *
+ * 1. Pass through if 'ctx.stash.hasAuth' is true (auth directive is present)
+ * 2. Pass through for API key auth type if sandbox is enabled.
+ * 3. Pass through for IAM auth type if generic IAM access is enabled and principal is not coming from Cognito.
+ * 4. Otherwise, rejects as unauthorized.
+ *
+ * @param isSandboxModeEnabled a flag indicating if sandbox is enabled.
+ * @param genericIamAccessEnabled a flag indicating if generic IAM access is enabled.
+ * @param fields list of fields authorized to access.
+ * @returns an expression.
  */
-export const generateAuthExpressionForSandboxMode = (enabled: boolean): string => {
-  let exp;
+export const generatePostAuthExpression = (isSandboxModeEnabled: boolean, genericIamAccessEnabled: boolean | undefined): string => {
+  const expressions: Array<Expression> = [];
+  if (isSandboxModeEnabled) {
+    expressions.push(iff(equals(methodCall(ref('util.authType')), str(API_KEY)), ret(toJson(obj({})))));
+  }
+  if (genericIamAccessEnabled) {
+    const isNonCognitoIAMPrincipal = and([
+      equals(ref('util.authType()'), str(IAM_AUTH_TYPE)),
+      methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityPoolId')),
+      methodCall(ref('util.isNull'), ref('ctx.identity.cognitoIdentityId')),
+    ]);
+    expressions.push(iff(isNonCognitoIAMPrincipal, ret(toJson(obj({})))));
+  }
+  expressions.push(methodCall(ref('util.unauthorized')));
 
-  if (enabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY)), methodCall(ref('util.unauthorized')));
-  else exp = methodCall(ref('util.unauthorized'));
-
-  return printBlock(`Sandbox Mode ${enabled ? 'Enabled' : 'Disabled'}`)(
-    compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), exp), toJson(obj({}))]),
-  );
+  return printBlock(
+    `Sandbox Mode ${isSandboxModeEnabled ? 'Enabled' : 'Disabled'}, IAM Access ${genericIamAccessEnabled ? 'Enabled' : 'Disabled'}`,
+  )(compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), compoundExpression(expressions)), toJson(obj({}))]));
 };
 
 export const getVTLGenerator = (dbType: ModelDataSourceStrategyDbType | undefined): RDSIndexVTLGenerator | DynamoDBIndexVTLGenerator => {

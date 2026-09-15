@@ -1,25 +1,28 @@
-import { APIIAMResourceProvider, GraphQLAPIProvider, TransformHostProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { AssetProvider, GraphQLAPIProvider, TransformHostProvider, LogConfig } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   ApiKeyConfig,
   AuthorizationConfig,
   AuthorizationMode,
   AuthorizationType,
   GraphqlApiBase,
-  LogConfig,
+  FieldLogLevel,
   OpenIdConnectConfig,
   UserPoolConfig,
   UserPoolDefaultAction,
   CfnApiKey,
   CfnGraphQLApi,
   CfnGraphQLSchema,
+  Visibility,
+  IamResource,
 } from 'aws-cdk-lib/aws-appsync';
 import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import { ArnFormat, CfnResource, Duration, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import { LogRetention, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { TransformerSchema } from './cdk-compat/schema-asset';
 import { DefaultTransformHost } from './transform-host';
-import { setResourceName } from './utils';
+import { addCfnResourceDependency, setResourceName } from './utils';
 
 export interface GraphqlApiProps {
   /**
@@ -38,7 +41,7 @@ export interface GraphqlApiProps {
    *
    * @default - None
    */
-  readonly logConfig?: LogConfig;
+  readonly logging?: true | LogConfig;
   /**
    *  GraphQL schema definition. Specify how you want to define your schema.
    *
@@ -55,70 +58,13 @@ export interface GraphqlApiProps {
   readonly xrayEnabled?: boolean;
 }
 
-export class IamResource implements APIIAMResourceProvider {
-  /**
-   * Generate the resource names given custom arns
-   *
-   * @param arns The custom arns that need to be permissioned
-   *
-   * Example: custom('/types/Query/fields/getExample')
-   */
-  public static custom(...arns: string[]): IamResource {
-    if (arns.length === 0) {
-      throw new Error('At least 1 custom ARN must be provided.');
-    }
-    return new IamResource(arns);
-  }
-
-  /**
-   * Generate the resource names given a type and fields
-   *
-   * @param type The type that needs to be allowed
-   * @param fields The fields that need to be allowed, if empty grant permissions to ALL fields
-   *
-   * Example: ofType('Query', 'GetExample')
-   */
-  public static ofType(type: string, ...fields: string[]): IamResource {
-    const arns = fields.length ? fields.map((field) => `types/${type}/fields/${field}`) : [`types/${type}/*`];
-    return new IamResource(arns);
-  }
-
-  /**
-   * Generate the resource names that accepts all types: `*`
-   */
-  public static all(): IamResource {
-    return new IamResource(['*']);
-  }
-
-  private arns: string[];
-
-  private constructor(arns: string[]) {
-    this.arns = arns;
-  }
-
-  /**
-   * Return the Resource ARN
-   *
-   * @param api The GraphQL API to give permissions
-   */
-  public resourceArns(api: GraphQLAPIProvider): string[] {
-    return this.arns.map((arn) =>
-      Stack.of(api).formatArn({
-        service: 'appsync',
-        resource: `apis/${api.apiId}`,
-        arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
-        resourceName: `${arn}`,
-      }),
-    );
-  }
-}
-
 export type TransformerAPIProps = GraphqlApiProps & {
   readonly createApiKey?: boolean;
   readonly host?: TransformHostProvider;
   readonly sandboxModeEnabled?: boolean;
   readonly environmentName?: string;
   readonly disableResolverDeduping?: boolean;
+  readonly assetProvider: AssetProvider;
 };
 export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   /**
@@ -182,6 +128,21 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
    */
   public readonly environmentName?: string;
 
+  /**
+   * The asset manager to store file assets in a temporary directory.
+   */
+  public readonly assetProvider: AssetProvider;
+
+  /**
+   * The GraphQL API endpoint ARN
+   */
+  public readonly graphQLEndpointArn: string;
+
+  /**
+   * The scope of the GraphQL API. public (GLOBAL) or private (PRIVATE)
+   */
+  public readonly visibility: Visibility;
+
   private schemaResource: CfnGraphQLSchema;
 
   private api: CfnGraphQLApi;
@@ -208,19 +169,22 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     this.api = new CfnGraphQLApi(this, 'Resource', {
       name: props.name,
       authenticationType: defaultMode.authorizationType,
-      logConfig: this.setupLogConfig(props.logConfig),
       openIdConnectConfig: this.setupOpenIdConnectConfig(defaultMode.openIdConnectConfig),
       userPoolConfig: this.setupUserPoolConfig(defaultMode.userPoolConfig),
       lambdaAuthorizerConfig: this.setupLambdaConfig(defaultMode.lambdaAuthorizerConfig),
       additionalAuthenticationProviders: this.setupAdditionalAuthorizationModes(additionalModes),
       xrayEnabled: props.xrayEnabled,
+      logConfig: this.setupLogConfig(props.logging),
     });
 
     this.apiId = this.api.attrApiId;
     this.arn = this.api.attrArn;
     this.graphqlUrl = this.api.attrGraphQlUrl;
     this.name = this.api.name;
+    this.graphQLEndpointArn = this.api.attrGraphQlEndpointArn;
+    this.visibility = this.api.visibility === 'PRIVATE' ? Visibility.PRIVATE : Visibility.GLOBAL;
     this.schema = props.schema ?? new TransformerSchema();
+    this.assetProvider = props.assetProvider;
     this.schemaResource = this.schema.bind(this);
 
     const hasApiKey = modes.some((mode) => mode.authorizationType === AuthorizationType.API_KEY);
@@ -230,7 +194,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
         (mode: AuthorizationMode) => mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig,
       )?.apiKeyConfig;
       this.apiKeyResource = this.createAPIKey(config);
-      this.apiKeyResource.addDependency(this.schemaResource);
+      addCfnResourceDependency(this.apiKeyResource, this.schemaResource);
       this.apiKey = this.apiKeyResource.attrApiKey;
     }
 
@@ -245,6 +209,18 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
         api: this,
       });
     }
+
+    // set up log retention
+    if (props.logging) {
+      const defaultRetention = RetentionDays.ONE_WEEK;
+
+      const retention = props.logging === true ? defaultRetention : props.logging.retention ?? defaultRetention;
+
+      new LogRetention(this, 'LogRetention', {
+        logGroupName: this.getAppSyncLogGroupName(),
+        retention: retention,
+      });
+    }
   }
 
   /**
@@ -255,7 +231,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
    * @param resources The set of resources to allow (i.e. ...:[region]:[accountId]:apis/GraphQLId/...)
    * @param actions The actions that should be granted to the principal (i.e. appsync:graphql )
    */
-  public grant(grantee: IGrantable, resources: APIIAMResourceProvider, ...actions: string[]): Grant {
+  public grant(grantee: IGrantable, resources: IamResource, ...actions: string[]): Grant {
     return Grant.addToPrincipal({
       grantee,
       actions,
@@ -321,14 +297,26 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   }
 
   public addSchemaDependency(construct: CfnResource): boolean {
-    construct.addDependency(this.schemaResource);
+    addCfnResourceDependency(construct, this.schemaResource);
     return true;
   }
 
-  private setupLogConfig(config?: LogConfig) {
-    if (!config) {
-      return undefined;
-    }
+  private setupLogConfig(logging?: true | LogConfig): CfnGraphQLApi.LogConfigProperty | undefined {
+    if (!logging) return undefined;
+
+    const defaultExcludeVerboseContent = true;
+    const defaultFieldLogLevel = FieldLogLevel.NONE;
+
+    const excludeVerboseContent =
+      logging === true || (typeof logging === 'object' && Object.keys(logging).length === 0)
+        ? defaultExcludeVerboseContent
+        : logging.excludeVerboseContent ?? defaultExcludeVerboseContent;
+
+    const fieldLogLevel =
+      logging === true || (typeof logging === 'object' && Object.keys(logging).length === 0)
+        ? defaultFieldLogLevel
+        : logging.fieldLogLevel ?? defaultFieldLogLevel;
+
     const role = new Role(this, 'ApiLogsRole', {
       assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
       managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs')],
@@ -337,8 +325,8 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
 
     return {
       cloudWatchLogsRoleArn: role.roleArn,
-      excludeVerboseContent: config.excludeVerboseContent,
-      fieldLogLevel: config.fieldLogLevel,
+      excludeVerboseContent,
+      fieldLogLevel,
     };
   }
 
@@ -395,5 +383,17 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       ],
       [],
     );
+  }
+
+  /**
+   * Creates the log group name for an AppSync API following AppSync's log group naming convention
+   *
+   * According to AppSync documentation, the log group name for AppSync APIs follows the convention: `/aws/appsync/apis/{apiId}`
+   *
+   * @see https://docs.aws.amazon.com/appsync/latest/devguide/monitoring.html#cwl
+   * @returns The formatted log group name
+   */
+  private getAppSyncLogGroupName(): string {
+    return `/aws/appsync/apis/${this.apiId}`;
   }
 }

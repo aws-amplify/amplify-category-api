@@ -12,6 +12,7 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
+import { PredictionsDirective } from '@aws-amplify/graphql-directives';
 import { DataSourceOptions, HttpDataSource, LambdaDataSource, CfnResolver, AuthorizationType } from 'aws-cdk-lib/aws-appsync';
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -47,7 +48,6 @@ import { actionToDataSourceMap, actionToRoleAction, allowedActions } from './uti
 import {
   amzJsonContentType,
   convertTextToSpeech,
-  directiveDefinition,
   identifyEntities,
   identifyLabels,
   identifyLabelsAmzTarget,
@@ -74,7 +74,7 @@ export class PredictionsTransformer extends TransformerPluginBase {
   private bucketName: string;
 
   constructor(predictionsConfig?: PredictionsConfig) {
-    super('amplify-predictions-transformer', directiveDefinition);
+    super('amplify-predictions-transformer', PredictionsDirective.definition);
     this.bucketName = predictionsConfig?.bucketName ?? '';
   }
 
@@ -155,6 +155,13 @@ export class PredictionsTransformer extends TransformerPluginBase {
   generateResolvers = (context: TransformerContextProvider): void => {
     if (this.directiveList.length === 0) {
       return;
+    }
+
+    // This validation can't occur in validate because the api has not been initialized until generateResolvers
+    if (!context.transformParameters.allowGen1Patterns) {
+      cdk.Annotations.of(context.api).addWarning(
+        `@${PredictionsDirective.name} is deprecated. This functionality will be removed in the next major release.`,
+      );
     }
 
     const stack: cdk.Stack = context.stackManager.createStack(PREDICTIONS_DIRECTIVE_STACK);
@@ -344,7 +351,7 @@ function createResolver(
         }),
       ) as unknown as string);
 
-  return context.api.host.addResolver(
+  return context.api.host.addVtlRuntimeResolver(
     config.resolverTypeName,
     config.resolverFieldName,
     MappingTemplate.inlineTemplateFromString(
@@ -396,7 +403,7 @@ function createPredictionsLambda(context: TransformerContextProvider, stack: cdk
     `functions/${functionId}.zip`,
     PredictionsResourceIDs.lambdaHandlerName,
     path.join(__dirname, '..', 'lib', 'predictionsLambdaFunction.zip'),
-    lambda.Runtime.NODEJS_18_X,
+    lambda.Runtime.NODEJS_24_X,
     [],
     role,
     {},
@@ -690,7 +697,7 @@ function createActionFunction(context: TransformerContextProvider, stack: cdk.St
       break;
   }
 
-  return context.api.host.addAppSyncFunction(
+  return context.api.host.addAppSyncVtlRuntimeFunction(
     `${action}Function`,
     MappingTemplate.inlineTemplateFromString(print(actionFunctionResolver.request)),
     MappingTemplate.inlineTemplateFromString(print(actionFunctionResolver.response)),

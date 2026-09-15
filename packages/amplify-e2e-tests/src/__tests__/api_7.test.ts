@@ -56,15 +56,7 @@ describe('amplify add api (GraphQL)', () => {
     expect(graphqlApi).toBeDefined();
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
     const tableName = `AmplifyDataStore-${graphqlApi.apiId}-${envName}`;
-    const error = { message: null };
-    try {
-      const table = await getDDBTable(tableName, region);
-      expect(table).toBeUndefined();
-    } catch (ex) {
-      Object.assign(error, ex);
-    }
-    expect(error).toBeDefined();
-    expect(error.message).toContain(`${tableName} not found`);
+    await expect(getDDBTable(tableName, region)).rejects.toThrow(`${tableName} not found`);
 
     await amplifyOverrideApi(projRoot, {});
 

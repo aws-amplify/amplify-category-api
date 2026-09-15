@@ -3,6 +3,232 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.2.8...@aws-amplify/graphql-auth-transformer@4.2.9) (2026-07-13)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [4.2.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.2.7...@aws-amplify/graphql-auth-transformer@4.2.8) (2026-07-01)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [4.2.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.2.6...@aws-amplify/graphql-auth-transformer@4.2.7) (2026-04-13)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [4.2.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.2.5...@aws-amplify/graphql-auth-transformer@4.2.6) (2026-03-24)
+
+### Bug Fixes
+
+- dependabots + scripting and prompting to help with dependabots ([#3417](https://github.com/aws-amplify/amplify-category-api/issues/3417)) ([fb79e92](https://github.com/aws-amplify/amplify-category-api/commit/fb79e927edeefdca9b8388f447b6fd954b1a369a))
+
+### Reverts
+
+- Revert "chore(release): Publish [ci skip]" ([dd1f693](https://github.com/aws-amplify/amplify-category-api/commit/dd1f693d8ad6059d6a53af117b16505f40e1e657))
+
+## [4.2.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.2.4...@aws-amplify/graphql-auth-transformer@4.2.5) (2026-02-05)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [4.2.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.2.3...@aws-amplify/graphql-auth-transformer@4.2.4) (2025-06-09)
+
+### Bug Fixes
+
+- add missing aws_iam directive on custom types ([#3270](https://github.com/aws-amplify/amplify-category-api/issues/3270)) ([2d08997](https://github.com/aws-amplify/amplify-category-api/commit/2d0899764356df9c51e4b400ea4f97df7a0b31a4))
+- remove aws_iam directive incorrectly added to interfaces ([#3283](https://github.com/aws-amplify/amplify-category-api/issues/3283)) ([5b7f4c3](https://github.com/aws-amplify/amplify-category-api/commit/5b7f4c3c3298144ad6a9028f78c5e263d6093b3a))
+
+## [4.2.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.2.2...@aws-amplify/graphql-auth-transformer@4.2.3) (2025-04-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [4.2.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.2.1...@aws-amplify/graphql-auth-transformer@4.2.2) (2025-04-09)
+
+### Reverts
+
+- Revert "chore: upgrade to node 20 (#3250)" (#3255) ([a2815c7](https://github.com/aws-amplify/amplify-category-api/commit/a2815c76ee6d12e687193ca6eca84609c79ee268)), closes [#3250](https://github.com/aws-amplify/amplify-category-api/issues/3250) [#3255](https://github.com/aws-amplify/amplify-category-api/issues/3255)
+
+## [4.2.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.2.0...@aws-amplify/graphql-auth-transformer@4.2.1) (2025-03-06)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+# [4.2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.1.12...@aws-amplify/graphql-auth-transformer@4.2.0) (2025-02-26)
+
+### Features
+
+- dynamic resolve partition in arn ([#3178](https://github.com/aws-amplify/amplify-category-api/issues/3178)) ([3aa98cd](https://github.com/aws-amplify/amplify-category-api/commit/3aa98cd4d02a1ae9c0c7bb615728225f20614fcc))
+
+## [4.1.12](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.1.11...@aws-amplify/graphql-auth-transformer@4.1.12) (2025-02-07)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [4.1.11](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.1.10...@aws-amplify/graphql-auth-transformer@4.1.11) (2025-01-30)
+
+### Bug Fixes
+
+- **gen2:** transform directives on fields of supported extended types ([#3127](https://github.com/aws-amplify/amplify-category-api/issues/3127)) ([3aca7b8](https://github.com/aws-amplify/amplify-category-api/commit/3aca7b89f530c536c28a53b7290fdab877b2260b))
+
+## [4.1.10](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.1.8...@aws-amplify/graphql-auth-transformer@4.1.10) (2025-01-16)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [4.1.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.1.8...@aws-amplify/graphql-auth-transformer@4.1.9) (2024-12-23)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [4.1.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.1.7...@aws-amplify/graphql-auth-transformer@4.1.8) (2024-12-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [4.1.7](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.1.6...@aws-amplify/graphql-auth-transformer@4.1.7) (2024-11-14)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [4.1.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.1.5...@aws-amplify/graphql-auth-transformer@4.1.6) (2024-11-08)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [4.1.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.1.4...@aws-amplify/graphql-auth-transformer@4.1.5) (2024-10-28)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [4.1.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.1.3...@aws-amplify/graphql-auth-transformer@4.1.4) (2024-10-17)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [4.1.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.1.2...@aws-amplify/graphql-auth-transformer@4.1.3) (2024-10-10)
+
+### Bug Fixes
+
+- add aws_iam to custom operations when enableIamAuthorization is enabled; fix graphql type utils ([#2921](https://github.com/aws-amplify/amplify-category-api/issues/2921)) ([5cb5a2b](https://github.com/aws-amplify/amplify-category-api/commit/5cb5a2bcacf30ca9ff0f29fe32be57d1ffb6c1cf))
+
+## [4.1.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.1.1...@aws-amplify/graphql-auth-transformer@4.1.2) (2024-10-01)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [4.1.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.1.0...@aws-amplify/graphql-auth-transformer@4.1.1) (2024-09-16)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+# [4.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.0.1...@aws-amplify/graphql-auth-transformer@4.1.0) (2024-09-06)
+
+### Features
+
+- **conversation:** add conversation transformer ([#2827](https://github.com/aws-amplify/amplify-category-api/issues/2827)) ([cee6aef](https://github.com/aws-amplify/amplify-category-api/commit/cee6aef1358293fe51909a64d1cf9941afc46aba))
+
+## [4.0.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.0.0...@aws-amplify/graphql-auth-transformer@4.0.1) (2024-08-28)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+# [4.0.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.6.5...@aws-amplify/graphql-auth-transformer@4.0.0) (2024-08-20)
+
+- feat!: bump version for v2 transformer packages ([7dac35c](https://github.com/aws-amplify/amplify-category-api/commit/7dac35cceb971b256b5688b0745ef82afc78b641))
+
+### BREAKING CHANGES
+
+- distinguish from LTS version
+
+## [3.6.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.6.4...@aws-amplify/graphql-auth-transformer@3.6.5) (2024-08-12)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [3.6.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.6.3...@aws-amplify/graphql-auth-transformer@3.6.4) (2024-07-25)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [3.6.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.6.2...@aws-amplify/graphql-auth-transformer@3.6.3) (2024-07-15)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [3.6.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.6.1...@aws-amplify/graphql-auth-transformer@3.6.2) (2024-07-02)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [3.6.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.6.0...@aws-amplify/graphql-auth-transformer@3.6.1) (2024-07-01)
+
+### Bug Fixes
+
+- auth to use validateUsingSource in place of auth filter to show error message ([#2523](https://github.com/aws-amplify/amplify-category-api/issues/2523)) ([b7d83f9](https://github.com/aws-amplify/amplify-category-api/commit/b7d83f991f85eaffb2408cff98e1880c7fa680ef))
+
+# [3.6.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.5.5...@aws-amplify/graphql-auth-transformer@3.6.0) (2024-06-25)
+
+### Features
+
+- allow subscriptions to inherit primary model auth rules for relational fields behind a feature flag ([#2649](https://github.com/aws-amplify/amplify-category-api/issues/2649)) ([56a853a](https://github.com/aws-amplify/amplify-category-api/commit/56a853ace0026de97395cfa17ca156cf360ac5c2))
+
+## [3.5.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.5.4...@aws-amplify/graphql-auth-transformer@3.5.5) (2024-06-06)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [3.5.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.5.3...@aws-amplify/graphql-auth-transformer@3.5.4) (2024-06-04)
+
+### Bug Fixes
+
+- redact relational field in mutation & subscription based on model auth rules ([#2536](https://github.com/aws-amplify/amplify-category-api/issues/2536)) ([f72f40e](https://github.com/aws-amplify/amplify-category-api/commit/f72f40e941f5b48966b60f40222abd80505fb034))
+
+## [3.5.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.5.2...@aws-amplify/graphql-auth-transformer@3.5.3) (2024-05-15)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [3.5.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.5.1...@aws-amplify/graphql-auth-transformer@3.5.2) (2024-05-10)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [3.5.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.5.0...@aws-amplify/graphql-auth-transformer@3.5.1) (2024-05-01)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+# [3.5.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.4.4...@aws-amplify/graphql-auth-transformer@3.5.0) (2024-04-26)
+
+### Bug Fixes
+
+- **api:** handle error on generate ts data schema when no tables with primary key ([#2483](https://github.com/aws-amplify/amplify-category-api/issues/2483)) ([30a333b](https://github.com/aws-amplify/amplify-category-api/commit/30a333b97934d732c724a9e165edae278cb0c8f5))
+- relational bidirectionality validation and improved error messages ([#2482](https://github.com/aws-amplify/amplify-category-api/issues/2482)) ([568fbc3](https://github.com/aws-amplify/amplify-category-api/commit/568fbc365e4945693f685ba8896d2e5f14031f2d))
+- some API updates that were automerged ([1a1f120](https://github.com/aws-amplify/amplify-category-api/commit/1a1f12043d0cba99a7572778acb9e265aa71ba67))
+
+### Features
+
+- deprecate iam auth provider and rename it to identityPool ([#2320](https://github.com/aws-amplify/amplify-category-api/issues/2320)) ([#2394](https://github.com/aws-amplify/amplify-category-api/issues/2394)) ([383985b](https://github.com/aws-amplify/amplify-category-api/commit/383985ba20dcb04acada10593f8398b7dae79190))
+- generic iam authorization ([#2385](https://github.com/aws-amplify/amplify-category-api/issues/2385)) ([550ee80](https://github.com/aws-amplify/amplify-category-api/commit/550ee803275817d25447ff1400d55eb1ad4cd0c2))
+
+## [3.4.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.4.3...@aws-amplify/graphql-auth-transformer@3.4.4) (2024-04-16)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [3.4.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.4.2...@aws-amplify/graphql-auth-transformer@3.4.3) (2024-04-11)
+
+### Bug Fixes
+
+- **api:** dynamic auth fields use correct data type on related models ([#2419](https://github.com/aws-amplify/amplify-category-api/issues/2419)) ([a3688c2](https://github.com/aws-amplify/amplify-category-api/commit/a3688c27f9287998f3db54efd6f2bae3d15ebbcc))
+
+## [3.4.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.4.1...@aws-amplify/graphql-auth-transformer@3.4.2) (2024-03-28)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [3.4.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.4.0...@aws-amplify/graphql-auth-transformer@3.4.1) (2024-03-13)
+
+### Bug Fixes
+
+- field auth resolver to use "validateUsingSource" auth util method ([#2170](https://github.com/aws-amplify/amplify-category-api/issues/2170)) ([b344d0d](https://github.com/aws-amplify/amplify-category-api/commit/b344d0d3b4b0ad430dd3572954b2e93ea887b28d))
+
+# [3.4.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.3.6...@aws-amplify/graphql-auth-transformer@3.4.0) (2024-02-28)
+
+### Features
+
+- add implicit fields to filter input ([#2236](https://github.com/aws-amplify/amplify-category-api/issues/2236)) ([f7ec601](https://github.com/aws-amplify/amplify-category-api/commit/f7ec6014d4eecfede186129a6ea19041780bafb3))
+
+## [3.3.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.3.5...@aws-amplify/graphql-auth-transformer@3.3.6) (2024-02-05)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [3.3.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.3.4...@aws-amplify/graphql-auth-transformer@3.3.5) (2024-01-30)
+
+**Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
+
+## [3.3.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.3.3...@aws-amplify/graphql-auth-transformer@3.3.4) (2024-01-22)
+
+### Bug Fixes
+
+- support 'read' operation alias for SQL data sources ([#2204](https://github.com/aws-amplify/amplify-category-api/issues/2204)) ([e3264db](https://github.com/aws-amplify/amplify-category-api/commit/e3264db29f3d498fec6aff6e6c30e91f71ded29b))
+
 ## [3.3.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@3.3.2...@aws-amplify/graphql-auth-transformer@3.3.3) (2023-12-21)
 
 **Note:** Version bump only for package @aws-amplify/graphql-auth-transformer

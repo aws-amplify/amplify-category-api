@@ -6,9 +6,9 @@ import {
   S3Asset,
   S3MappingFunctionCodeProvider,
   S3MappingTemplateProvider,
+  AssetProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Construct } from 'constructs';
-import { assetManager } from '../transformer-context/asset-manager';
 
 export class S3MappingFunctionCode implements S3MappingFunctionCodeProvider {
   public readonly type = MappingTemplateType.S3_LOCATION;
@@ -24,14 +24,41 @@ export class S3MappingFunctionCode implements S3MappingFunctionCodeProvider {
     this.filePath = filePath;
   }
 
-  bind(scope: Construct): S3Asset {
+  bind(scope: Construct, assetProvider: AssetProvider): S3Asset {
     if (!this.asset) {
-      this.asset = assetManager.createAsset(scope, `Code${this.fileName}`, {
+      this.asset = assetProvider.provide(scope, `Code${this.fileName}`, {
         fileContent: this.filePath,
         fileName: this.fileName,
       });
     }
     return this.asset;
+  }
+}
+
+export class S3MappingJSResolverFunctionCode implements S3MappingTemplateProvider {
+  public readonly type = MappingTemplateType.S3_LOCATION;
+  public asset?: S3Asset;
+  private content: string;
+  public readonly name: string;
+
+  constructor(content: string, name?: string) {
+    this.content = content;
+    const assetHash = crypto.createHash('sha256').update(content).digest('hex');
+    this.name = name || `function-code-${assetHash}.js`;
+  }
+
+  bind(scope: Construct, assetProvider: AssetProvider): string {
+    if (!this.asset) {
+      this.asset = assetProvider.provide(scope, `Code${this.name}`, {
+        fileContent: this.content,
+        fileName: this.name,
+      });
+    }
+    return this.asset.s3ObjectUrl;
+  }
+
+  getTemplateHash(): string {
+    return crypto.createHash('sha256').update(this.content).digest('base64');
   }
 }
 
@@ -54,10 +81,10 @@ export class S3MappingTemplate implements S3MappingTemplateProvider {
     this.name = name || `mapping-template-${assetHash}.vtl`;
   }
 
-  bind(scope: Construct): string {
+  bind(scope: Construct, assetProvider: AssetProvider): string {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
-      this.asset = assetManager.createAsset(scope, `Template${this.name}`, {
+      this.asset = assetProvider.provide(scope, `Template${this.name}`, {
         fileContent: this.content,
         fileName: this.name,
       });
@@ -110,5 +137,10 @@ export class MappingTemplate {
   static s3MappingTemplateFromString(template: string, templateName: string): S3MappingTemplate {
     const templatePrefix = 'resolvers';
     return new S3MappingTemplate(template, `${templatePrefix}/${templateName}`);
+  }
+
+  static s3MappingFunctionCodeFromString(template: string, templateName: string): S3MappingJSResolverFunctionCode {
+    const templatePrefix = 'resolvers';
+    return new S3MappingJSResolverFunctionCode(template, `${templatePrefix}/${templateName}`);
   }
 }

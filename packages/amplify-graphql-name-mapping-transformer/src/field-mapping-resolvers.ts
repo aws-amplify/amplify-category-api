@@ -37,7 +37,7 @@ type AttachInputMappingSlotParams = {
  * Calls createPostDataLoadMapping to create a slot to map origAttrName back to currAttrName in the response
  */
 export const attachInputMappingSlot = ({ resolver, resolverTypeName, resolverFieldName, fieldMap }: AttachInputMappingSlotParams): void => {
-  resolver.addToSlot(
+  resolver.addVtlFunctionToSlot(
     'preUpdate',
     MappingTemplate.s3MappingTemplateFromString(
       print(compoundExpression([createMultiRemapExpression('ctx.args.input', fieldMap, 'CURR_TO_ORIG'), toJson(raw('{}'))])),
@@ -51,7 +51,7 @@ export const attachInputMappingSlot = ({ resolver, resolverTypeName, resolverFie
  * Calls createPostDataLoadMapping to create a slot to map origAttrName back to currAttrName in the response
  */
 export const attachFieldMappingSlot = ({ resolver, resolverTypeName, resolverFieldName, fieldMap }: AttachInputMappingSlotParams): void => {
-  resolver.addToSlot(
+  resolver.addVtlFunctionToSlot(
     'preAuth',
     MappingTemplate.s3MappingTemplateFromString(
       print(compoundExpression([createFieldMapExpression(fieldMap), toJson(raw('{}'))])),
@@ -81,7 +81,7 @@ export const attachResponseMappingSlot = ({
   fieldMap,
   isList,
 }: AttachResponseMappingSlotParams) => {
-  resolver.addToSlot(
+  resolver.addVtlFunctionToSlot(
     slotName,
     undefined,
     MappingTemplate.s3MappingTemplateFromString(
@@ -120,7 +120,7 @@ export const attachFilterAndConditionInputMappingSlot = ({
     return acc;
   }, {} as Record<string, string>);
   const fieldMapRef = ref('fieldMap');
-  resolver.addToSlot(
+  resolver.addVtlFunctionToSlot(
     slotName,
     MappingTemplate.s3MappingTemplateFromString(
       print(

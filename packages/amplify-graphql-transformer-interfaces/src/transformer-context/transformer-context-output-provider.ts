@@ -144,6 +144,10 @@ export interface TransformerContextOutputProvider {
    */
   addInput(inp: InputObjectTypeDefinitionNode): void;
 
+  updateInput(obj: InputObjectTypeDefinitionNode): void;
+
+  getInput(name: string): InputObjectTypeDefinitionNode | undefined;
+
   /**
    * Add an enum type definition node to the context.
    * @param en The enum type definition node to add.
