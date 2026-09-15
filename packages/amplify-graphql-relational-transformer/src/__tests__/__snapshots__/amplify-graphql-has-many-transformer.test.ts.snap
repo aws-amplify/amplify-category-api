@@ -13022,6 +13022,33 @@ Object {
   }
 } )
   ## [Start] Applying Key Condition **
+  #if( !$util.isNull($ctx.args.childName) )
+    #set( $keyConditionOperatorCount = 0 )
+    #if( !$util.isNull($ctx.args.childName.beginsWith) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.childName.between) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.childName.eq) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.childName.lt) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.childName.le) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.childName.gt) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.childName.ge) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( $keyConditionOperatorCount > 1 )
+      $util.error(\\"KeyConditionExpressions must only contain one condition per key. Provide a single operator (one of eq, lt, le, gt, ge, beginsWith, between) on the sort key argument.\\", \\"InvalidArgumentsError\\")
+    #end
+  #end
   #if( !$util.isNull($ctx.args.childName) && !$util.isNull($ctx.args.childName.beginsWith) )
     #set( $query.expression = \\"$query.expression AND begins_with(#sortKey, :sortKey)\\" )
     $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"childName\\"))
@@ -13145,6 +13172,33 @@ $util.error($ctx.error.message, $ctx.error.type)
   }
 } )
   ## [Start] Applying Key Condition **
+  #if( !$util.isNull($ctx.args.nameSurname) )
+    #set( $keyConditionOperatorCount = 0 )
+    #if( !$util.isNull($ctx.args.nameSurname.beginsWith) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.nameSurname.between) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.nameSurname.eq) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.nameSurname.lt) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.nameSurname.le) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.nameSurname.gt) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.nameSurname.ge) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( $keyConditionOperatorCount > 1 )
+      $util.error(\\"KeyConditionExpressions must only contain one condition per key. Provide a single operator (one of eq, lt, le, gt, ge, beginsWith, between) on the sort key argument.\\", \\"InvalidArgumentsError\\")
+    #end
+  #end
   #set( $sortKeyValue = \\"\\" )
   #set( $sortKeyValue2 = \\"\\" )
   #if( !$util.isNull($ctx.args.nameSurname) && !$util.isNull($ctx.args.nameSurname.beginsWith) )
@@ -16070,6 +16124,33 @@ $util.unauthorized()
   }
 } )
   ## [Start] Applying Key Condition **
+  #if( !$util.isNull($ctx.args.nameSurname) )
+    #set( $keyConditionOperatorCount = 0 )
+    #if( !$util.isNull($ctx.args.nameSurname.beginsWith) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.nameSurname.between) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.nameSurname.eq) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.nameSurname.lt) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.nameSurname.le) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.nameSurname.gt) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.nameSurname.ge) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( $keyConditionOperatorCount > 1 )
+      $util.error(\\"KeyConditionExpressions must only contain one condition per key. Provide a single operator (one of eq, lt, le, gt, ge, beginsWith, between) on the sort key argument.\\", \\"InvalidArgumentsError\\")
+    #end
+  #end
   #set( $sortKeyValue = \\"\\" )
   #set( $sortKeyValue2 = \\"\\" )
   #if( !$util.isNull($ctx.args.nameSurname) && !$util.isNull($ctx.args.nameSurname.beginsWith) )
@@ -16839,6 +16920,33 @@ $util.toJson({})
 } )
 #end
 ## [Start] Applying Key Condition **
+#if( !$util.isNull($ctx.args.name) )
+  #set( $keyConditionOperatorCount = 0 )
+  #if( !$util.isNull($ctx.args.name.beginsWith) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.name.between) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.name.eq) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.name.lt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.name.le) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.name.gt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.name.ge) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( $keyConditionOperatorCount > 1 )
+    $util.error(\\"KeyConditionExpressions must only contain one condition per key. Provide a single operator (one of eq, lt, le, gt, ge, beginsWith, between) on the sort key argument.\\", \\"InvalidArgumentsError\\")
+  #end
+#end
 #if( !$util.isNull($ctx.args.name) && !$util.isNull($ctx.args.name.beginsWith) )
   #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND begins_with(#sortKey, :sortKey)\\" )
   $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"name\\"))
@@ -17279,6 +17387,33 @@ $util.toJson({})
 } )
 #end
 ## [Start] Applying Key Condition **
+#if( !$util.isNull($ctx.args.rollNumber) )
+  #set( $keyConditionOperatorCount = 0 )
+  #if( !$util.isNull($ctx.args.rollNumber.beginsWith) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.rollNumber.between) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.rollNumber.eq) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.rollNumber.lt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.rollNumber.le) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.rollNumber.gt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.rollNumber.ge) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( $keyConditionOperatorCount > 1 )
+    $util.error(\\"KeyConditionExpressions must only contain one condition per key. Provide a single operator (one of eq, lt, le, gt, ge, beginsWith, between) on the sort key argument.\\", \\"InvalidArgumentsError\\")
+  #end
+#end
 #if( !$util.isNull($ctx.args.rollNumber) && !$util.isNull($ctx.args.rollNumber.beginsWith) )
   #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND begins_with(#sortKey, :sortKey)\\" )
   $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"rollNumber\\"))
@@ -17427,6 +17562,33 @@ $util.toJson({})
 } )
 #end
 ## [Start] Applying Key Condition **
+#if( !$util.isNull($ctx.args.nameSurname) )
+  #set( $keyConditionOperatorCount = 0 )
+  #if( !$util.isNull($ctx.args.nameSurname.beginsWith) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.nameSurname.between) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.nameSurname.eq) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.nameSurname.lt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.nameSurname.le) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.nameSurname.gt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.nameSurname.ge) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( $keyConditionOperatorCount > 1 )
+    $util.error(\\"KeyConditionExpressions must only contain one condition per key. Provide a single operator (one of eq, lt, le, gt, ge, beginsWith, between) on the sort key argument.\\", \\"InvalidArgumentsError\\")
+  #end
+#end
 #set( $sortKeyValue = \\"\\" )
 #set( $sortKeyValue2 = \\"\\" )
 #if( !$util.isNull($ctx.args.nameSurname) && !$util.isNull($ctx.args.nameSurname.beginsWith) )
@@ -18003,6 +18165,33 @@ $util.toJson(null)
   }
 } )
   ## [Start] Applying Key Condition **
+  #if( !$util.isNull($ctx.args.friendID) )
+    #set( $keyConditionOperatorCount = 0 )
+    #if( !$util.isNull($ctx.args.friendID.beginsWith) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.friendID.between) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.friendID.eq) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.friendID.lt) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.friendID.le) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.friendID.gt) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.friendID.ge) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( $keyConditionOperatorCount > 1 )
+      $util.error(\\"KeyConditionExpressions must only contain one condition per key. Provide a single operator (one of eq, lt, le, gt, ge, beginsWith, between) on the sort key argument.\\", \\"InvalidArgumentsError\\")
+    #end
+  #end
   #if( !$util.isNull($ctx.args.friendID) && !$util.isNull($ctx.args.friendID.beginsWith) )
     #set( $query.expression = \\"$query.expression AND begins_with(#sortKey, :sortKey)\\" )
     $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"friendID\\"))
@@ -18126,6 +18315,33 @@ $util.error($ctx.error.message, $ctx.error.type)
   }
 } )
   ## [Start] Applying Key Condition **
+  #if( !$util.isNull($ctx.args.postID) )
+    #set( $keyConditionOperatorCount = 0 )
+    #if( !$util.isNull($ctx.args.postID.beginsWith) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.postID.between) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.postID.eq) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.postID.lt) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.postID.le) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.postID.gt) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( !$util.isNull($ctx.args.postID.ge) )
+      #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+    #end
+    #if( $keyConditionOperatorCount > 1 )
+      $util.error(\\"KeyConditionExpressions must only contain one condition per key. Provide a single operator (one of eq, lt, le, gt, ge, beginsWith, between) on the sort key argument.\\", \\"InvalidArgumentsError\\")
+    #end
+  #end
   #if( !$util.isNull($ctx.args.postID) && !$util.isNull($ctx.args.postID.beginsWith) )
     #set( $query.expression = \\"$query.expression AND begins_with(#sortKey, :sortKey)\\" )
     $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"postID\\"))
