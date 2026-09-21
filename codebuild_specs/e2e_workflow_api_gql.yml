@@ -81,25 +81,25 @@ batch:
       depend-on:
         - publish_to_local_registry
     - identifier: >-
-        api_5_schema_function_1_generate_ts_data_schema_resolvers_sync_query_datastore
+        api_5_schema_function_1_cleanup_e2e_resources_cleanup_e2e_region_guards_generate_ts_data_schema
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848 --experimental-vm-modules'
           TEST_SUITE: >-
-            src/__tests__/api_5.test.ts|src/__tests__/schema-function-1.test.ts|src/__tests__/generate_ts_data_schema.test.ts|src/__tests__/resolvers.test.ts|src/__tests__/graphql-v2/sync_query_datastore.test.ts
-          CLI_REGION: ca-central-1
+            src/__tests__/api_5.test.ts|src/__tests__/schema-function-1.test.ts|src/__unit_tests__/cleanup-e2e-resources.test.ts|src/__unit_tests__/cleanup-e2e-region-guards.test.ts|src/__tests__/generate_ts_data_schema.test.ts
+          CLI_REGION: ap-northeast-3
       depend-on:
         - publish_to_local_registry
-    - identifier: api_6_api_lambda_auth
+    - identifier: resolvers_sync_query_datastore_api_6_api_lambda_auth
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848 --experimental-vm-modules'
           TEST_SUITE: >-
-            src/__tests__/api_6.test.ts|src/__tests__/graphql-v2/api_lambda_auth.test.ts
+            src/__tests__/resolvers.test.ts|src/__tests__/graphql-v2/sync_query_datastore.test.ts|src/__tests__/api_6.test.ts|src/__tests__/graphql-v2/api_lambda_auth.test.ts
           CLI_REGION: eu-west-3
       depend-on:
         - publish_to_local_registry
@@ -650,7 +650,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/schema-auth-9.test.ts
-          CLI_REGION: ap-south-1
+          CLI_REGION: ap-southeast-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_7
@@ -660,7 +660,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/schema-auth-7.test.ts
-          CLI_REGION: ap-southeast-1
+          CLI_REGION: ap-southeast-2
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_14
@@ -670,7 +670,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/schema-auth-14.test.ts
-          CLI_REGION: ap-southeast-2
+          CLI_REGION: ca-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_auth_5
@@ -680,7 +680,7 @@ batch:
         variables:
           NODE_OPTIONS: '--max-old-space-size=6656 --experimental-vm-modules'
           TEST_SUITE: src/__tests__/schema-auth-5.test.ts
-          CLI_REGION: ca-central-1
+          CLI_REGION: eu-central-1
       depend-on:
         - publish_to_local_registry
     - identifier: schema_searchable

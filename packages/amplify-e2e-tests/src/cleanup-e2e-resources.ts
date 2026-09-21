@@ -201,16 +201,7 @@ const listStaleTestBuckets = async (account: AWSAccountInfo): Promise<Bucket[]> 
     const listBucketResponse = await s3Client.send(new ListBucketsCommand({}));
     return (listBucketResponse.Buckets ?? []).filter(testBucketStalenessFilter);
   } catch (e) {
-    // `code` is read before `name` on purpose: a socket level failure like the ETIMEDOUT that motivated this guard
-    // carries the useful identifier on `code` and leaves `name` as the generic 'Error', so reading `name` first would
-    // log 'Error' and hide the very detail this guard exists to surface. Log the error too, since JSON.stringify drops
-    // an Error's non enumerable message and stack.
-    console.log(
-      `(opt-in region failure) Listing S3 buckets for account ${account.accountId} failed with error with code ${
-        e?.code ?? e?.name
-      }. Skipping.`,
-      e,
-    );
+    logRegionSkip(`Listing S3 buckets for account ${account.accountId}`, e);
     return [];
   }
 };
@@ -232,17 +223,44 @@ export const getOrphanS3TestBuckets = async (account: AWSAccountInfo): Promise<S
       } catch (e) {
         // Resolving the region talks to the bucket's own region, so an unreachable region fails only this
         // bucket. Skip it instead of rejecting the Promise.all and aborting cleanup for every account.
-        console.log(
-          `(opt-in region failure) Resolving the region of bucket ${staleBucket.Name} for account ${
-            account.accountId
-          } failed with error with code ${e?.code ?? e?.name}. Skipping.`,
-          e,
-        );
+        logRegionSkip(`Resolving the region of bucket ${staleBucket.Name} for account ${account.accountId}`, e);
         return undefined;
       }
     }),
   );
   return bucketInfos.filter((bucketInfo): bucketInfo is S3BucketInfo => !!bucketInfo);
+};
+
+/**
+ * A region-level discovery failure means "this region is unreachable right now", never a reason to abandon the
+ * remaining regions and accounts. Two shapes reach us: an opt-in region the account is not opted into (the SDK
+ * raises a recognizable *name* like InvalidClientTokenId / UnrecognizedClientException), and a hard-down region
+ * whose socket times out (a bare ETIMEDOUT / ECONNRESET / ENOTFOUND that carries the identifier on `code` and
+ * leaves `name` as the generic 'Error'). Cleanup sweeps every region of every account in one process, so treating
+ * either shape as fatal lets one dead region abort the whole run (ticket P492565382). Classify both as skippable.
+ */
+const skippableRegionErrorNames = new Set(['InvalidClientTokenId', 'UnrecognizedClientException']);
+const connectivityErrorCodes = new Set(['ETIMEDOUT', 'ECONNRESET', 'ENOTFOUND', 'EAI_AGAIN', 'ECONNREFUSED']);
+export const isUnreachableRegionError = (e: any): boolean => {
+  const code = e?.code ?? e?.$metadata?.code;
+  const name = e?.name;
+  return (
+    (typeof name === 'string' && skippableRegionErrorNames.has(name)) ||
+    (typeof code === 'string' && connectivityErrorCodes.has(code)) ||
+    name === 'TimeoutError' ||
+    // The SDK surfaces some socket timeouts only in the message, with no code/name to key on.
+    /ETIMEDOUT|ECONNRESET|ENOTFOUND|EAI_AGAIN|getaddrinfo/i.test(String(e?.message ?? ''))
+  );
+};
+
+/**
+ * Log a skipped region-level discovery failure. `code` is read before `name` on purpose: a socket-level failure
+ * like the ETIMEDOUT that motivated this carries the useful identifier on `code` and leaves `name` as the generic
+ * 'Error', so reading `name` first would log 'Error' and hide the very detail this log exists to surface. The Error
+ * itself is logged too, since JSON.stringify drops an Error's non-enumerable message and stack.
+ */
+const logRegionSkip = (scope: string, e: any): void => {
+  console.log(`(opt-in region failure) ${scope} failed with error with code ${e?.code ?? e?.name}. Skipping.`, e);
 };
 
 /**
@@ -258,19 +276,18 @@ const getOrphanTestIamRoles = async (account: AWSAccountInfo): Promise<IamRoleIn
 /**
  * Get all RDS instances in the account, and filter down to the ones we consider stale.
  */
-const getOrphanRdsInstances = async (account: AWSAccountInfo, region: string): Promise<RdsInstanceInfo[]> => {
+export const getOrphanRdsInstances = async (account: AWSAccountInfo, region: string): Promise<RdsInstanceInfo[]> => {
   try {
     const rdsClient = new RDSClient({ credentials: account.credentials, region });
     const listRdsInstanceResponse = await rdsClient.send(new DescribeDBInstancesCommand({}));
     const staleInstances = listRdsInstanceResponse.DBInstances.filter(testInstanceStalenessFilter);
     return staleInstances.map((i) => ({ identifier: i.DBInstanceIdentifier, region }));
   } catch (e) {
-    if (e?.name === 'InvalidClientTokenId') {
-      // Do not fail the cleanup and continue
-      // This is due to either child account or parent account not available in that region
-      console.log(
-        `(opt-in region failure) Listing RDS instances for account ${account.accountId}-${region} failed with error with code ${e?.name}. Skipping.`,
-      );
+    if (isUnreachableRegionError(e)) {
+      // Do not fail the cleanup and continue.
+      // Either the child/parent account is not available in that region (opt-in), or the region is
+      // unreachable (e.g. ETIMEDOUT). Either way it is scoped to this region, not a reason to abort the run.
+      logRegionSkip(`Listing RDS instances for account ${account.accountId}-${region}`, e);
       return [];
     } else {
       console.log('Irrecoverable error in getOrphanedRdsInstances', JSON.stringify(e));
@@ -286,7 +303,7 @@ const getOrphanRdsInstances = async (account: AWSAccountInfo, region: string): P
  * @param region aws region to query for amplify Apps
  * @returns Promise<AmplifyAppInfo[]> a list of Amplify Apps in the region with build info
  */
-const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<AmplifyAppInfo[]> => {
+export const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<AmplifyAppInfo[]> => {
   const amplifyClient = new AmplifyClient({
     credentials: account.credentials,
     region,
@@ -298,11 +315,10 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
     const listAppsCommand = new ListAppsCommand({ maxResults: 50 });
     amplifyApps = await amplifyClient.send(listAppsCommand);
   } catch (e) {
-    if (e?.name === 'UnrecognizedClientException' || e?.name === 'InvalidClientTokenId') {
-      // Do not fail the cleanup and continue
-      console.log(
-        `(opt-in region failure) Listing apps for account ${account.accountId}-${region} failed with error with code ${e?.name}. Skipping.`,
-      );
+    if (isUnreachableRegionError(e)) {
+      // Do not fail the cleanup and continue: an opt-in region the account is not enrolled in, or a region that
+      // is unreachable (e.g. ETIMEDOUT). Scoped to this region, never a reason to abort every account's cleanup.
+      logRegionSkip(`Listing apps for account ${account.accountId}-${region}`, e);
       return result;
     } else {
       console.log('Irrecoverable error in getAmplifyApps', JSON.stringify(e));
@@ -421,8 +437,8 @@ const listStacks = async (client: CloudFormationClient, stackStatusFilter: Stack
       return { token: response.NextToken, items: response.StackSummaries };
     });
   } catch (e: any) {
-    if (e?.name === 'InvalidClientTokenId') {
-      console.log(`(opt-in region failure) Listing stacks failed with error with code ${e?.name}. Skipping.`);
+    if (isUnreachableRegionError(e)) {
+      logRegionSkip('Listing stacks', e);
       return [];
     }
     throw e;
@@ -482,6 +498,11 @@ const getAllCfnManagedResources = async (account: AWSAccountInfo, region: string
       }
     } catch (e: any) {
       if (e.name === 'ValidationError') {
+        continue;
+      }
+      if (isUnreachableRegionError(e)) {
+        // A region going unreachable mid-sweep must not reject this account's discovery and abort the whole run.
+        logRegionSkip(`Listing resources of stack ${stack.StackName} for account ${account.accountId}-${region}`, e);
         continue;
       }
       throw e;
@@ -557,12 +578,7 @@ export const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInf
         // region being unreachable (e.g. ETIMEDOUT) can only ever mean "this bucket is unprocessable right now".
         // Rethrowing here used to reject cleanupAccount's Promise.all and abort the run for every account, which
         // let stacks pile up to the CFN quota, so skip the bucket and keep sweeping the remaining regions.
-        console.log(
-          `(opt-in region failure) Describing bucket ${bucket.Name} for account ${account.accountId}-${
-            region ?? 'unknown region'
-          } failed with error with code ${e?.code ?? e?.name}. Skipping.`,
-          e,
-        );
+        logRegionSkip(`Describing bucket ${bucket.Name} for account ${account.accountId}-${region ?? 'unknown region'}`, e);
       }
     }
   }
