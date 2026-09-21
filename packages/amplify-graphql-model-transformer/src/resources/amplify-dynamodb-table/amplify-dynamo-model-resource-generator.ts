@@ -1,9 +1,13 @@
 import * as cdk from 'aws-cdk-lib';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ModelResourceIDs, ResourceConstants } from 'graphql-transformer-common';
-import { ObjectTypeDefinitionNode } from 'graphql';
-import { setResourceName, isImportedAmplifyDynamoDbModelDataSourceStrategy } from '@aws-amplify/graphql-transformer-core';
-import { AttributeType, StreamViewType, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
+import { ModelResourceIDs, ResourceConstants, attributeTypeFromScalar, getBaseType } from 'graphql-transformer-common';
+import { Kind, ObjectTypeDefinitionNode, TypeNode } from 'graphql';
+import {
+  setResourceName,
+  isImportedAmplifyDynamoDbModelDataSourceStrategy,
+  getPrimaryKeyFieldNodes,
+} from '@aws-amplify/graphql-transformer-core';
+import { Attribute, AttributeType, StreamViewType, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 import { Duration, aws_iam, aws_lambda } from 'aws-cdk-lib';
 import { DynamoModelResourceGenerator } from '../dynamo-model-resource-generator';
@@ -172,6 +176,18 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
     const isTableImported = isImportedAmplifyDynamoDbModelDataSourceStrategy(strategy);
     const tableName = isTableImported ? strategy.tableName : context.resourceHelper.generateTableName(modelName);
 
+    // Determine the table's key schema. Owned tables default to an `id` partition key and are
+    // corrected downstream by the `@primaryKey` transformer; imported tables need their real key
+    // schema up front (see getImportedTableKeySchema).
+    let partitionKey: Attribute = {
+      name: 'id',
+      type: AttributeType.STRING,
+    };
+    let sortKey: Attribute | undefined;
+    if (isTableImported) {
+      ({ partitionKey, sortKey } = this.getImportedTableKeySchema(def, context));
+    }
+
     // Add parameters.
     const { readIops, writeIops, billingMode, pointInTimeRecovery } = this.createDynamoDBParameters(scope, true);
 
@@ -194,10 +210,8 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
       allowDestructiveGraphqlSchemaUpdates: context.transformParameters.allowDestructiveGraphqlSchemaUpdates,
       replaceTableUponGsiUpdate: context.transformParameters.replaceTableUponGsiUpdate,
       tableName,
-      partitionKey: {
-        name: 'id',
-        type: AttributeType.STRING,
-      },
+      partitionKey,
+      ...(sortKey ? { sortKey } : undefined),
       stream: StreamViewType.NEW_AND_OLD_IMAGES,
       encryption: TableEncryption.DEFAULT,
       removalPolicy,
@@ -248,5 +262,62 @@ export class AmplifyDynamoModelResourceGenerator extends DynamoModelResourceGene
     const role = this.createIAMRole(context, def, scope, tableName);
     const tableDataSourceLogicalName = `${def!.name.value}Table`;
     this.createModelTableDataSource(def, context, tableRepresentative, scope, role, tableDataSourceLogicalName);
+  }
+
+  /**
+   * Derive an imported table's key schema (partition key and optional sort key) from the model's
+   * `@primaryKey` directive.
+   *
+   * For owned (Amplify-managed) tables the partition key is left as the default `id` and the
+   * `@primaryKey` transformer corrects the key schema downstream via a CloudFormation property
+   * override. That correction never reaches the TableManager import-validation path (which reads
+   * the initial construct properties directly), so an imported table must have its real key schema
+   * up front, mirroring how GSIs are already derived from the model. `getPrimaryKeyFieldNodes`
+   * returns the implicit `id`/`ID!` field when no `@primaryKey` is declared, so the result always
+   * has a partition key.
+   */
+  private getImportedTableKeySchema(
+    def: ObjectTypeDefinitionNode,
+    context: TransformerContextProvider,
+  ): { partitionKey: Attribute; sortKey?: Attribute } {
+    const [primaryKeyFieldNode, ...sortKeyFieldNodes] = getPrimaryKeyFieldNodes(def);
+    const partitionKey: Attribute = {
+      name: primaryKeyFieldNode.name.value,
+      type: this.keyAttributeType(primaryKeyFieldNode.type, context),
+    };
+
+    let sortKey: Attribute | undefined;
+    if (sortKeyFieldNodes.length === 1) {
+      // A single sort key field maps directly to a sort key attribute of the field's type.
+      sortKey = {
+        name: sortKeyFieldNodes[0].name.value,
+        type: this.keyAttributeType(sortKeyFieldNodes[0].type, context),
+      };
+    } else if (sortKeyFieldNodes.length > 1) {
+      // Composite sort keys are stored as a single string attribute whose name is the sort key
+      // field names joined by the model composite key separator (matches how the index transformer
+      // names composite sort keys in `replaceDdbPrimaryKey`).
+      sortKey = {
+        name: ModelResourceIDs.ModelCompositeAttributeName(sortKeyFieldNodes.map((node) => node.name.value)),
+        type: AttributeType.STRING,
+      };
+    }
+
+    return { partitionKey, sortKey };
+  }
+
+  /**
+   * Resolve a key field's DynamoDB attribute type. Enum-backed fields are stored as strings; they
+   * are not GraphQL scalars, so `attributeTypeFromScalar` would throw on them. This mirrors
+   * `attributeTypeFromType` in the index transformer. (Non-scalar, non-enum key types are rejected
+   * earlier by the `@primaryKey` transformer's validation, so they cannot reach here.)
+   */
+  private keyAttributeType(type: TypeNode, context: TransformerContextProvider): AttributeType {
+    const baseType = getBaseType(type);
+    const named = context.output.getType(baseType);
+    if (named?.kind === Kind.ENUM_TYPE_DEFINITION) {
+      return AttributeType.STRING;
+    }
+    return attributeTypeFromScalar(type) === 'N' ? AttributeType.NUMBER : AttributeType.STRING;
   }
 }

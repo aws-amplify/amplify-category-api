@@ -20,6 +20,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { validate } from './validation';
 import { toUpper } from 'graphql-transformer-common';
+import { bedrockInvokeModelResources } from './utils/bedrock-model-resources';
 
 export type GenerationDirectiveConfiguration = {
   parent: ObjectTypeDefinitionNode;
@@ -207,7 +208,12 @@ export class GenerationTransformer extends TransformerPluginBase {
             new iam.PolicyStatement({
               effect: iam.Effect.ALLOW,
               actions: ['bedrock:InvokeModel'],
-              resources: [`arn:${cdk.Stack.of(dataSourceScope).partition}:bedrock:${region}::foundation-model/${bedrockModelId}`],
+              resources: bedrockInvokeModelResources(
+                cdk.Stack.of(dataSourceScope).partition,
+                region,
+                cdk.Stack.of(dataSourceScope).account,
+                bedrockModelId,
+              ),
             }),
           ],
         }),
