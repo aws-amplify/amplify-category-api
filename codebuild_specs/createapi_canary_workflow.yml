@@ -204,7 +204,7 @@ batch:
         variables:
           TEST_SUITE: >-
             src/__tests__/api_canary.test.ts
-          CLI_REGION: me-south-1
+          CLI_REGION: us-west-2
       depend-on:
         - publish_to_local_registry
     - identifier: api_test_sa_east_1
