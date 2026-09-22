@@ -58,6 +58,18 @@ const supportedRegionsPath = path.join(repoRoot, 'scripts', 'e2e-test-regions.js
 const suportedRegions: TestRegion[] = JSON.parse(fs.readFileSync(supportedRegionsPath, 'utf-8'));
 const testRegions = suportedRegions.map((region) => region.name);
 
+/**
+ * Regions the e2e fleet cannot reach and should never make a call into during cleanup. The region-list-driven
+ * discovery (apps/stacks/RDS/CFN) already only visits testRegions, which excludes these, but the S3 bucket paths
+ * resolve a bucket's region from its own LocationConstraint, so a bucket physically created in one of these regions
+ * still drags cleanup into a call there. Each such call then sits through the SDK's full retry budget before the
+ * connectivity guard skips it, and across every stale bucket in every account that added latency is enough to blow
+ * the cleanup job's wall-clock timeout (ticket P492565382). Skipping the region up front avoids the doomed call
+ * entirely instead of paying for it and then discarding the result.
+ */
+const unreachableRegions = new Set(['me-south-1']);
+const isUnreachableRegion = (region: string | undefined): boolean => !!region && unreachableRegions.has(region);
+
 const retryStrategy = new ConfiguredRetryStrategy(
   10, // max attempts.
   (attempt: number) => Math.floor(Math.random() * 2 ** attempt * 100),
@@ -216,6 +228,11 @@ export const getOrphanS3TestBuckets = async (account: AWSAccountInfo): Promise<S
     staleBuckets.map(async (staleBucket): Promise<S3BucketInfo | undefined> => {
       try {
         const region = await getBucketRegion(account, staleBucket.Name);
+        if (isUnreachableRegion(region)) {
+          // Its region is unreachable, so any later delete would only time out. Drop it from this run's candidates.
+          console.log(`Skipping orphan bucket ${staleBucket.Name} for account ${account.accountId}: region ${region} is unreachable.`);
+          return undefined;
+        }
         return {
           name: staleBucket.Name,
           region,
@@ -546,6 +563,13 @@ export const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInf
     let region: string | undefined;
     try {
       region = await getBucketRegion(account, bucket.Name);
+      if (isUnreachableRegion(region)) {
+        // The bucket lives in a region the fleet cannot reach, so the regionalized describe below would only sit
+        // through the SDK retry budget before timing out. Skip it up front to keep the sweep inside its wall-clock
+        // budget; the bucket will be revisited on a run from a host that can reach the region.
+        console.log(`Skipping bucket ${bucket.Name} for account ${account.accountId}: region ${region} is unreachable.`);
+        continue;
+      }
       // Operations on buckets created in opt-in regions appear to require region-specific clients
       const regionalizedClient = new S3Client({
         region,
