@@ -736,6 +736,7 @@ const deleteAmplifyApp = async (account: AWSAccountInfo, accountIndex: number, a
   try {
     const deleteAppCommand = new DeleteAppCommand({ appId });
     await amplifyClient.send(deleteAppCommand);
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleted App ${name}(${appId}) in ${region}`);
   } catch (e) {
     console.log('Error', JSON.stringify(e));
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting Amplify App ${appId} failed with the following error`, e);
@@ -764,6 +765,7 @@ const deleteIamRole = async (account: AWSAccountInfo, accountIndex: number, role
     await deleteAttachedRolePolicies(account, accountIndex, roleName);
     await deleteRolePolicies(account, accountIndex, roleName);
     await iamClient.send(new DeleteRoleCommand({ RoleName: roleName }));
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleted Iam Role ${roleName}`);
   } catch (e) {
     console.log('Error', JSON.stringify(e));
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting iam role ${roleName} failed with error ${e.message}`);
@@ -830,6 +832,7 @@ const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucke
       credentials: account.credentials,
     });
     await deleteS3Bucket(name, regionalizedS3Client);
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleted S3 Bucket ${name} in ${bucket.region}`);
   } catch (e) {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting bucket ${name} failed with error ${e.message}`);
     if (e.name === 'ExpiredTokenException') {
@@ -848,6 +851,7 @@ const deleteRdsInstance = async (account: AWSAccountInfo, accountIndex: number, 
   try {
     const rdsClient = new RDSClient({ credentials: account.credentials, region });
     await rdsClient.send(new DeleteDBInstanceCommand({ DBInstanceIdentifier: identifier, SkipFinalSnapshot: true }));
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleted RDS instance ${identifier} in ${region}`);
   } catch (e) {
     console.log('Error', JSON.stringify(e));
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting instance ${identifier} failed with error ${e.message}`);
@@ -875,6 +879,7 @@ const deleteCfnStack = async (account: AWSAccountInfo, accountIndex: number, sta
       }),
     );
     await waitUntilStackDeleteComplete({ client: cfnClient, maxWaitTime: 600 }, { StackName: stackName });
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleted CloudFormation stack ${stackName} in ${region}`);
   } catch (e) {
     console.log('Error', JSON.stringify(e));
     console.log(`Deleting CloudFormation stack ${stackName} failed with error ${e.message}`);
@@ -899,28 +904,50 @@ const deleteResources = async (
   accountIndex: number,
   staleResources: Record<string, ReportEntry>,
 ): Promise<void> => {
+  // Tally what this account is about to delete so the log carries a per-account summary alongside the per-resource
+  // "Deleting X" / "Deleted X" lines. The per-resource "Deleted" lines are the source of truth for what actually
+  // succeeded; this summary is the count of what was queued for deletion.
+  let appCount = 0;
+  let stackCount = 0;
+  let bucketCount = 0;
+  let roleCount = 0;
+  let instanceCount = 0;
   for (const jobId of Object.keys(staleResources)) {
     const resources = staleResources[jobId];
     if (resources.amplifyApps) {
-      await deleteAmplifyApps(account, accountIndex, Object.values(resources.amplifyApps));
+      const apps = Object.values(resources.amplifyApps);
+      appCount += apps.length;
+      await deleteAmplifyApps(account, accountIndex, apps);
     }
 
     if (resources.stacks) {
-      await deleteCfnStacks(account, accountIndex, Object.values(resources.stacks));
+      const stacks = Object.values(resources.stacks);
+      stackCount += stacks.length;
+      await deleteCfnStacks(account, accountIndex, stacks);
     }
 
     if (resources.buckets) {
-      await deleteBuckets(account, accountIndex, Object.values(resources.buckets));
+      const buckets = Object.values(resources.buckets);
+      bucketCount += buckets.length;
+      await deleteBuckets(account, accountIndex, buckets);
     }
 
     if (resources.roles) {
-      await deleteIamRoles(account, accountIndex, Object.values(resources.roles));
+      const roles = Object.values(resources.roles);
+      roleCount += roles.length;
+      await deleteIamRoles(account, accountIndex, roles);
     }
 
     if (resources.instances) {
-      await deleteRdsInstances(account, accountIndex, Object.values(resources.instances));
+      const instances = Object.values(resources.instances);
+      instanceCount += instances.length;
+      await deleteRdsInstances(account, accountIndex, instances);
     }
   }
+  console.log(
+    `${generateAccountInfo(account, accountIndex)} Queued for deletion: ${appCount} Amplify app(s), ${stackCount} CloudFormation stack(s), ` +
+      `${bucketCount} S3 bucket(s), ${roleCount} IAM role(s), ${instanceCount} RDS instance(s). See the per-resource "Deleted" lines above for what succeeded.`,
+  );
 };
 
 /**
