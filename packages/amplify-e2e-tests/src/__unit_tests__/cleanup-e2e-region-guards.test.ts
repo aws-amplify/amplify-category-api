@@ -3,6 +3,7 @@ import {
   getAmplifyApps,
   getOrphanRdsInstances,
   getOrphanS3TestBuckets,
+  getOrphanTestAppSyncApis,
   getOrphanTestIamPolicies,
   getS3Buckets,
   isUnreachableRegionError,
@@ -177,6 +178,24 @@ jest.mock('@aws-sdk/client-iam', () => {
   };
 });
 
+// The orphan AppSync sweep lists GraphQL APIs per region and reaps the ones the harness tagged codebuild=true.
+jest.mock('@aws-sdk/client-appsync', () => {
+  const state: { send: () => any } = { send: () => ({ graphqlApis: [] }) };
+  class AppSyncClient {
+    constructor(readonly config: unknown) {}
+    async send(): Promise<any> {
+      return state.send();
+    }
+  }
+  class ListGraphqlApisCommand {
+    constructor(readonly input: unknown) {}
+  }
+  class DeleteGraphqlApiCommand {
+    constructor(readonly input: unknown) {}
+  }
+  return { AppSyncClient, ListGraphqlApisCommand, DeleteGraphqlApiCommand, __appsyncState: state };
+});
+
 const { __rdsState: rdsState } = jest.requireMock('@aws-sdk/client-rds') as { __rdsState: { send: () => any } };
 const { __amplifyState: amplifyState } = jest.requireMock('@aws-sdk/client-amplify') as { __amplifyState: { send: () => any } };
 const { __s3State: s3State } = jest.requireMock('@aws-sdk/client-s3') as {
@@ -185,6 +204,7 @@ const { __s3State: s3State } = jest.requireMock('@aws-sdk/client-s3') as {
 const { __iamState: iamState } = jest.requireMock('@aws-sdk/client-iam') as {
   __iamState: { policies: any[]; deletedArns: string[] };
 };
+const { __appsyncState: appsyncState } = jest.requireMock('@aws-sdk/client-appsync') as { __appsyncState: { send: () => any } };
 
 const account = { accountId: '123456789012', credentials: {} } as any;
 
@@ -198,6 +218,7 @@ beforeEach(() => {
   s3State.taggingCalls = [];
   iamState.policies = [];
   iamState.deletedArns = [];
+  appsyncState.send = () => ({ graphqlApis: [] });
   logSpy = jest.spyOn(console, 'log').mockImplementation(() => undefined);
 });
 
@@ -349,5 +370,37 @@ describe('getOrphanTestIamPolicies', () => {
     const result = await getOrphanTestIamPolicies(account);
 
     expect(result).toEqual([]);
+  });
+});
+
+describe('getOrphanTestAppSyncApis', () => {
+  it('returns only the APIs the harness tagged codebuild=true', async () => {
+    appsyncState.send = () => ({
+      graphqlApis: [
+        { name: 'simplemodel-devtest', apiId: 'api-leaked', tags: { codebuild: 'true' } },
+        { name: 'my-real-api', apiId: 'api-real', tags: {} }, // not a test resource -> kept
+        { name: 'another-untagged', apiId: 'api-untagged' }, // no tags -> kept
+      ],
+    });
+
+    const result = await getOrphanTestAppSyncApis(account, 'us-east-2');
+
+    expect(result).toEqual([{ name: 'simplemodel-devtest', apiId: 'api-leaked', region: 'us-east-2' }]);
+  });
+
+  it('returns [] instead of rejecting when the region is unreachable (ETIMEDOUT)', async () => {
+    appsyncState.send = () => {
+      throw timeoutError();
+    };
+
+    await expect(getOrphanTestAppSyncApis(account, 'me-south-1')).resolves.toEqual([]);
+  });
+
+  it('still rethrows a non-region error', async () => {
+    appsyncState.send = () => {
+      throw Object.assign(new Error('boom'), { name: 'AccessDeniedException' });
+    };
+
+    await expect(getOrphanTestAppSyncApis(account, 'us-east-2')).rejects.toThrow('boom');
   });
 });
