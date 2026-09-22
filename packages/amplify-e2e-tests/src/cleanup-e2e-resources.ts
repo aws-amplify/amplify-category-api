@@ -14,7 +14,12 @@ import {
   DeleteRoleCommand,
   DetachRolePolicyCommand,
   DeleteRolePolicyCommand,
+  ListPoliciesCommand,
+  ListPolicyVersionsCommand,
+  DeletePolicyCommand,
+  DeletePolicyVersionCommand,
   Role,
+  Policy,
   AttachedPolicy,
 } from '@aws-sdk/client-iam';
 import { RDSClient, DescribeDBInstancesCommand, DeleteDBInstanceCommand, DBInstance } from '@aws-sdk/client-rds';
@@ -40,6 +45,7 @@ import {
   ListAppsCommandOutput,
   ListBackendEnvironmentsCommand,
 } from '@aws-sdk/client-amplify';
+import { AppSyncClient, ListGraphqlApisCommand, DeleteGraphqlApiCommand, GraphqlApi } from '@aws-sdk/client-appsync';
 import { BatchGetBuildsCommand, Build, CodeBuildClient } from '@aws-sdk/client-codebuild';
 import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import { OrganizationsClient, ListAccountsCommand } from '@aws-sdk/client-organizations';
@@ -56,7 +62,19 @@ type TestRegion = {
 const repoRoot = path.join(__dirname, '..', '..', '..');
 const supportedRegionsPath = path.join(repoRoot, 'scripts', 'e2e-test-regions.json');
 const suportedRegions: TestRegion[] = JSON.parse(fs.readFileSync(supportedRegionsPath, 'utf-8'));
-const testRegions = suportedRegions.map((region) => region.name);
+
+/**
+ * Regions the e2e fleet cannot reach, so cleanup must never make ANY call into them: not S3, CloudFormation, Amplify,
+ * or RDS. me-south-1 has been unreachable from the fleet for months; every call into it sits through the SDK's full
+ * retry budget before failing, and across every account that latency piled up until it blew the cleanup job's
+ * wall-clock timeout (ticket P492565382). Two entry points reach a region: the region-list loop below (apps / stacks /
+ * RDS / CFN), which we filter here so those getters are never even invoked for an unreachable region; and the S3
+ * bucket paths, which resolve a region from each bucket's own LocationConstraint and are guarded separately via
+ * isUnreachableRegion. Together they guarantee the region is skipped completely.
+ */
+const unreachableRegions = new Set(['me-south-1']);
+const isUnreachableRegion = (region: string | undefined): boolean => !!region && unreachableRegions.has(region);
+export const testRegions = suportedRegions.map((region) => region.name).filter((region) => !isUnreachableRegion(region));
 
 const retryStrategy = new ConfiguredRetryStrategy(
   10, // max attempts.
@@ -107,6 +125,17 @@ type IamRoleInfo = {
   cbInfo?: Build;
 };
 
+type IamPolicyInfo = {
+  name: string;
+  arn: string;
+};
+
+type AppSyncApiInfo = {
+  name: string;
+  apiId: string;
+  region: string;
+};
+
 type RdsInstanceInfo = {
   identifier: string;
   region: string;
@@ -122,6 +151,8 @@ type ReportEntry = {
   stacks: Record<string, StackInfo>;
   buckets: Record<string, S3BucketInfo>;
   roles: Record<string, IamRoleInfo>;
+  policies: Record<string, IamPolicyInfo>;
+  appSyncApis: Record<string, AppSyncApiInfo>;
   instances: Record<string, RdsInstanceInfo>;
 };
 
@@ -181,6 +212,32 @@ const testRoleStalenessFilter = (resource: Role): boolean => {
   return !!isTestResource && !!isStaleResource;
 };
 
+/**
+ * A customer-managed policy is a cleanup candidate when its name looks like a test policy, it is stale, and nothing
+ * references it (AttachmentCount === 0 covers roles/users/groups; PermissionsBoundaryUsageCount === 0 covers use as a
+ * permissions boundary). Orphaned policies accumulate because a DELETE_FAILED stack can strand the policy after its
+ * role is gone, and IAM refuses to delete a policy that is still attached anywhere.
+ */
+const testPolicyStalenessFilter = (resource: Policy): boolean => {
+  const isTestResource = resource.PolicyName?.match(IAM_TEST_REGEX);
+  const isStaleResource = resource.CreateDate && before(resource.CreateDate, staleHorizonDate);
+  const isOrphan = (resource.AttachmentCount ?? 0) === 0 && (resource.PermissionsBoundaryUsageCount ?? 0) === 0;
+  return !!isTestResource && !!isStaleResource && isOrphan;
+};
+
+/**
+ * An orphaned AppSync GraphQL API is a cleanup candidate when it was created by an e2e run (it carries the
+ * `codebuild` tag the test harness stamps on every resource) and it is not owned by a live CloudFormation stack (that
+ * exclusion is applied by the caller against the account's live-resource set, exactly like the S3/role/policy paths).
+ * ListGraphqlApis returns no creation timestamp, so there is no stale-age gate here; the codebuild tag plus the
+ * CFN-managed exclusion is what distinguishes a leaked test API from anything real. These APIs leak the same way
+ * stacks/roles/policies do - a rolled-back or DELETE_FAILED stack strands its API - and once ~100 pile up in a region
+ * the account hits AppSync's ApiLimitExceededException and every deploy in that region fails (ticket P492565382).
+ */
+const testAppSyncApiStalenessFilter = (resource: GraphqlApi): boolean => {
+  return resource.tags?.codebuild === 'true';
+};
+
 const testInstanceStalenessFilter = (resource: DBInstance): boolean => {
   const isTestResource = resource.DBInstanceIdentifier?.match(RDS_TEST_REGEX);
   const isStaleResource =
@@ -189,23 +246,83 @@ const testInstanceStalenessFilter = (resource: DBInstance): boolean => {
 };
 
 /**
+ * List the stale test buckets of an account.
+ *
+ * Cleanup sweeps every e2e account in a single process, so a listing failure must stay scoped to the
+ * account it happened in: we log it as a skip and return no buckets rather than rejecting and taking
+ * the whole run down with us.
+ */
+const listStaleTestBuckets = async (account: AWSAccountInfo): Promise<Bucket[]> => {
+  try {
+    const s3Client = new S3Client({ credentials: account.credentials });
+    const listBucketResponse = await s3Client.send(new ListBucketsCommand({}));
+    return (listBucketResponse.Buckets ?? []).filter(testBucketStalenessFilter);
+  } catch (e) {
+    logRegionSkip(`Listing S3 buckets for account ${account.accountId}`, e);
+    return [];
+  }
+};
+
+/**
  * Get all S3 buckets in the account, and filter down to the ones we consider stale.
  */
-const getOrphanS3TestBuckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> => {
-  const s3Client = new S3Client({ credentials: account.credentials });
-  const listBucketResponse = await s3Client.send(new ListBucketsCommand({}));
-  const staleBuckets = listBucketResponse.Buckets.filter(testBucketStalenessFilter);
+export const getOrphanS3TestBuckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> => {
+  const staleBuckets = await listStaleTestBuckets(account);
 
   const bucketInfos = await Promise.all(
-    staleBuckets.map(async (staleBucket): Promise<S3BucketInfo> => {
-      const region = await getBucketRegion(account, staleBucket.Name);
-      return {
-        name: staleBucket.Name,
-        region,
-      };
+    staleBuckets.map(async (staleBucket): Promise<S3BucketInfo | undefined> => {
+      try {
+        const region = await getBucketRegion(account, staleBucket.Name);
+        if (isUnreachableRegion(region)) {
+          // Its region is unreachable, so any later delete would only time out. Drop it from this run's candidates.
+          console.log(`Skipping orphan bucket ${staleBucket.Name} for account ${account.accountId}: region ${region} is unreachable.`);
+          return undefined;
+        }
+        return {
+          name: staleBucket.Name,
+          region,
+        };
+      } catch (e) {
+        // Resolving the region talks to the bucket's own region, so an unreachable region fails only this
+        // bucket. Skip it instead of rejecting the Promise.all and aborting cleanup for every account.
+        logRegionSkip(`Resolving the region of bucket ${staleBucket.Name} for account ${account.accountId}`, e);
+        return undefined;
+      }
     }),
   );
-  return bucketInfos;
+  return bucketInfos.filter((bucketInfo): bucketInfo is S3BucketInfo => !!bucketInfo);
+};
+
+/**
+ * A region-level discovery failure means "this region is unreachable right now", never a reason to abandon the
+ * remaining regions and accounts. Two shapes reach us: an opt-in region the account is not opted into (the SDK
+ * raises a recognizable *name* like InvalidClientTokenId / UnrecognizedClientException), and a hard-down region
+ * whose socket times out (a bare ETIMEDOUT / ECONNRESET / ENOTFOUND that carries the identifier on `code` and
+ * leaves `name` as the generic 'Error'). Cleanup sweeps every region of every account in one process, so treating
+ * either shape as fatal lets one dead region abort the whole run (ticket P492565382). Classify both as skippable.
+ */
+const skippableRegionErrorNames = new Set(['InvalidClientTokenId', 'UnrecognizedClientException']);
+const connectivityErrorCodes = new Set(['ETIMEDOUT', 'ECONNRESET', 'ENOTFOUND', 'EAI_AGAIN', 'ECONNREFUSED']);
+export const isUnreachableRegionError = (e: any): boolean => {
+  const code = e?.code ?? e?.$metadata?.code;
+  const name = e?.name;
+  return (
+    (typeof name === 'string' && skippableRegionErrorNames.has(name)) ||
+    (typeof code === 'string' && connectivityErrorCodes.has(code)) ||
+    name === 'TimeoutError' ||
+    // The SDK surfaces some socket timeouts only in the message, with no code/name to key on.
+    /ETIMEDOUT|ECONNRESET|ENOTFOUND|EAI_AGAIN|getaddrinfo/i.test(String(e?.message ?? ''))
+  );
+};
+
+/**
+ * Log a skipped region-level discovery failure. `code` is read before `name` on purpose: a socket-level failure
+ * like the ETIMEDOUT that motivated this carries the useful identifier on `code` and leaves `name` as the generic
+ * 'Error', so reading `name` first would log 'Error' and hide the very detail this log exists to surface. The Error
+ * itself is logged too, since JSON.stringify drops an Error's non-enumerable message and stack.
+ */
+const logRegionSkip = (scope: string, e: any): void => {
+  console.log(`(opt-in region failure) ${scope} failed with error with code ${e?.code ?? e?.name}. Skipping.`, e);
 };
 
 /**
@@ -219,21 +336,65 @@ const getOrphanTestIamRoles = async (account: AWSAccountInfo): Promise<IamRoleIn
 };
 
 /**
+ * Get all customer-managed iam policies in the account, and filter down to the stale ones that are attached to
+ * nothing. Policies leak the same way roles do: a DELETE_FAILED stack strands the policy once its owning role is
+ * gone, and they accumulate unbounded because nothing reaps them. IAM lists policies 100 at a time and there can be
+ * thousands, so paginate fully (with throttle-aware retry) rather than reading only the first page.
+ */
+export const getOrphanTestIamPolicies = async (account: AWSAccountInfo): Promise<IamPolicyInfo[]> => {
+  const iamClient = new IAMClient({ credentials: account.credentials });
+  const policies = await paginate<Policy>(async (token) => {
+    // Scope: 'Local' = customer-managed only (never AWS-managed); OnlyAttached: false so we can find the orphans.
+    const response = await iamClient.send(new ListPoliciesCommand({ Scope: 'Local', OnlyAttached: false, Marker: token }));
+    return { nextPage: response.Marker, items: response.Policies };
+  });
+  const stalePolicies = policies.filter(testPolicyStalenessFilter);
+  return stalePolicies.map((it) => ({ name: it.PolicyName, arn: it.Arn }));
+};
+
+/**
+ * Get all AppSync GraphQL APIs in a region and filter down to the leaked e2e ones (tagged codebuild=true). AppSync
+ * caps the number of APIs per account/region, and leaked test APIs from rolled-back stacks accumulate to that cap
+ * until every deploy in the region fails with ApiLimitExceededException, so they must be reaped like any other
+ * orphan. A region being unreachable is scoped to that region and never a reason to abort the whole run.
+ */
+export const getOrphanTestAppSyncApis = async (account: AWSAccountInfo, region: string): Promise<AppSyncApiInfo[]> => {
+  try {
+    const appSyncClient = new AppSyncClient({ credentials: account.credentials, region });
+    const apis = await paginate<GraphqlApi>(async (token) => {
+      const response = await appSyncClient.send(new ListGraphqlApisCommand({ maxResults: 25, nextToken: token }));
+      return { nextPage: response.nextToken, items: response.graphqlApis };
+    });
+    const staleApis = apis.filter(testAppSyncApiStalenessFilter);
+    return staleApis.map((api) => ({ name: api.name, apiId: api.apiId, region }));
+  } catch (e) {
+    if (isUnreachableRegionError(e)) {
+      // Do not fail the cleanup: an opt-in region the account is not enrolled in, or a region that is unreachable
+      // (e.g. ETIMEDOUT). Scoped to this region, never a reason to abort every account's cleanup.
+      logRegionSkip(`Listing AppSync APIs for account ${account.accountId}-${region}`, e);
+      return [];
+    } else {
+      console.log('Irrecoverable error in getOrphanTestAppSyncApis', JSON.stringify(e));
+      throw e;
+    }
+  }
+};
+
+/**
  * Get all RDS instances in the account, and filter down to the ones we consider stale.
  */
-const getOrphanRdsInstances = async (account: AWSAccountInfo, region: string): Promise<RdsInstanceInfo[]> => {
+export const getOrphanRdsInstances = async (account: AWSAccountInfo, region: string): Promise<RdsInstanceInfo[]> => {
   try {
     const rdsClient = new RDSClient({ credentials: account.credentials, region });
     const listRdsInstanceResponse = await rdsClient.send(new DescribeDBInstancesCommand({}));
     const staleInstances = listRdsInstanceResponse.DBInstances.filter(testInstanceStalenessFilter);
     return staleInstances.map((i) => ({ identifier: i.DBInstanceIdentifier, region }));
   } catch (e) {
-    if (e?.name === 'InvalidClientTokenId') {
-      // Do not fail the cleanup and continue
-      // This is due to either child account or parent account not available in that region
-      console.log(
-        `(opt-in region failure) Listing RDS instances for account ${account.accountId}-${region} failed with error with code ${e?.name}. Skipping.`,
-      );
+    if (isUnreachableRegionError(e)) {
+      // Do not fail the cleanup and continue.
+      // Either the child/parent account is not available in that region (opt-in), or the region is
+      // unreachable (e.g. ETIMEDOUT). Either way it is scoped to this region, not a reason to abort the run.
+      logRegionSkip(`Listing RDS instances for account ${account.accountId}-${region}`, e);
       return [];
     } else {
       console.log('Irrecoverable error in getOrphanedRdsInstances', JSON.stringify(e));
@@ -249,7 +410,7 @@ const getOrphanRdsInstances = async (account: AWSAccountInfo, region: string): P
  * @param region aws region to query for amplify Apps
  * @returns Promise<AmplifyAppInfo[]> a list of Amplify Apps in the region with build info
  */
-const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<AmplifyAppInfo[]> => {
+export const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<AmplifyAppInfo[]> => {
   const amplifyClient = new AmplifyClient({
     credentials: account.credentials,
     region,
@@ -261,11 +422,10 @@ const getAmplifyApps = async (account: AWSAccountInfo, region: string): Promise<
     const listAppsCommand = new ListAppsCommand({ maxResults: 50 });
     amplifyApps = await amplifyClient.send(listAppsCommand);
   } catch (e) {
-    if (e?.name === 'UnrecognizedClientException' || e?.name === 'InvalidClientTokenId') {
-      // Do not fail the cleanup and continue
-      console.log(
-        `(opt-in region failure) Listing apps for account ${account.accountId}-${region} failed with error with code ${e?.name}. Skipping.`,
-      );
+    if (isUnreachableRegionError(e)) {
+      // Do not fail the cleanup and continue: an opt-in region the account is not enrolled in, or a region that
+      // is unreachable (e.g. ETIMEDOUT). Scoped to this region, never a reason to abort every account's cleanup.
+      logRegionSkip(`Listing apps for account ${account.accountId}-${region}`, e);
       return result;
     } else {
       console.log('Irrecoverable error in getAmplifyApps', JSON.stringify(e));
@@ -384,8 +544,8 @@ const listStacks = async (client: CloudFormationClient, stackStatusFilter: Stack
       return { token: response.NextToken, items: response.StackSummaries };
     });
   } catch (e: any) {
-    if (e?.name === 'InvalidClientTokenId') {
-      console.log(`(opt-in region failure) Listing stacks failed with error with code ${e?.name}. Skipping.`);
+    if (isUnreachableRegionError(e)) {
+      logRegionSkip('Listing stacks', e);
       return [];
     }
     throw e;
@@ -447,6 +607,11 @@ const getAllCfnManagedResources = async (account: AWSAccountInfo, region: string
       if (e.name === 'ValidationError') {
         continue;
       }
+      if (isUnreachableRegionError(e)) {
+        // A region going unreachable mid-sweep must not reject this account's discovery and abort the whole run.
+        logRegionSkip(`Listing resources of stack ${stack.StackName} for account ${account.accountId}-${region}`, e);
+        continue;
+      }
       throw e;
     }
   }
@@ -482,14 +647,19 @@ const getBucketRegion = async (account: AWSAccountInfo, bucketName: string): Pro
   return region;
 };
 
-const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> => {
-  const s3Client = new S3Client({ credentials: account.credentials });
-  const buckets = await s3Client.send(new ListBucketsCommand({}));
+export const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> => {
   const result: S3BucketInfo[] = [];
-  for (const bucket of buckets.Buckets.filter(testBucketStalenessFilter)) {
+  for (const bucket of await listStaleTestBuckets(account)) {
     let region: string | undefined;
     try {
       region = await getBucketRegion(account, bucket.Name);
+      if (isUnreachableRegion(region)) {
+        // The bucket lives in a region the fleet cannot reach, so the regionalized describe below would only sit
+        // through the SDK retry budget before timing out. Skip it up front to keep the sweep inside its wall-clock
+        // budget; the bucket will be revisited on a run from a host that can reach the region.
+        console.log(`Skipping bucket ${bucket.Name} for account ${account.accountId}: region ${region} is unreachable.`);
+        continue;
+      }
       // Operations on buckets created in opt-in regions appear to require region-specific clients
       const regionalizedClient = new S3Client({
         region,
@@ -518,8 +688,11 @@ const getS3Buckets = async (account: AWSAccountInfo): Promise<S3BucketInfo[]> =>
         // processing the rest of the buckets.
         console.error(`Skipping processing ${account.accountId}, bucket ${bucket.Name}`, e);
       } else {
-        console.log('Irrecoverable error in getS3Buckets', JSON.stringify(e));
-        throw e;
+        // Every remaining failure is scoped to this one bucket, and a bucket lives in exactly one region, so a
+        // region being unreachable (e.g. ETIMEDOUT) can only ever mean "this bucket is unprocessable right now".
+        // Rethrowing here used to reject cleanupAccount's Promise.all and abort the run for every account, which
+        // let stacks pile up to the CFN quota, so skip the bucket and keep sweeping the remaining regions.
+        logRegionSkip(`Describing bucket ${bucket.Name} for account ${account.accountId}-${region ?? 'unknown region'}`, e);
       }
     }
   }
@@ -552,6 +725,8 @@ const mergeResourcesByCCIJob = async (
   s3Buckets: S3BucketInfo[],
   orphanS3Buckets: S3BucketInfo[],
   orphanIamRoles: IamRoleInfo[],
+  orphanIamPolicies: IamPolicyInfo[],
+  orphanAppSyncApis: AppSyncApiInfo[],
   orphanRdsInstances: RdsInstanceInfo[],
 ): Promise<Record<string, ReportEntry>> => {
   const result: Record<string, ReportEntry> = {};
@@ -629,6 +804,26 @@ const mergeResourcesByCCIJob = async (
     roles: src,
   }));
 
+  const orphanIamPoliciesGroup = {
+    [ORPHAN]: orphanIamPolicies,
+  };
+
+  _.mergeWith(result, orphanIamPoliciesGroup, (val, src, key) => ({
+    ...val,
+    jobId: key,
+    policies: src,
+  }));
+
+  const orphanAppSyncApisGroup = {
+    [ORPHAN]: orphanAppSyncApis,
+  };
+
+  _.mergeWith(result, orphanAppSyncApisGroup, (val, src, key) => ({
+    ...val,
+    jobId: key,
+    appSyncApis: src,
+  }));
+
   const orphanRdsInstancesGroup = {
     [ORPHAN]: orphanRdsInstances,
   };
@@ -653,6 +848,7 @@ const deleteAmplifyApp = async (account: AWSAccountInfo, accountIndex: number, a
   try {
     const deleteAppCommand = new DeleteAppCommand({ appId });
     await amplifyClient.send(deleteAppCommand);
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleted App ${name}(${appId}) in ${region}`);
   } catch (e) {
     console.log('Error', JSON.stringify(e));
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting Amplify App ${appId} failed with the following error`, e);
@@ -681,6 +877,7 @@ const deleteIamRole = async (account: AWSAccountInfo, accountIndex: number, role
     await deleteAttachedRolePolicies(account, accountIndex, roleName);
     await deleteRolePolicies(account, accountIndex, roleName);
     await iamClient.send(new DeleteRoleCommand({ RoleName: roleName }));
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleted Iam Role ${roleName}`);
   } catch (e) {
     console.log('Error', JSON.stringify(e));
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting iam role ${roleName} failed with error ${e.message}`);
@@ -734,6 +931,59 @@ const deleteIamRolePolicy = async (account: AWSAccountInfo, accountIndex: number
   }
 };
 
+const deleteIamPolicies = async (account: AWSAccountInfo, accountIndex: number, policies: IamPolicyInfo[]): Promise<void> => {
+  // IAM throttles consecutive delete requests, so batch with a brief pause between batches (mirrors deleteIamRoles).
+  const batchSize = 20;
+  for (let i = 0; i < policies.length; i += batchSize) {
+    const policiesToDelete = policies.slice(i, i + batchSize);
+    await Promise.all(policiesToDelete.map((policy) => deleteIamPolicy(account, accountIndex, policy)));
+    await sleep(5000);
+  }
+};
+
+const deleteIamPolicy = async (account: AWSAccountInfo, accountIndex: number, policy: IamPolicyInfo): Promise<void> => {
+  const { name, arn } = policy;
+  try {
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleting Iam Policy ${name}`);
+    const iamClient = new IAMClient({ credentials: account.credentials });
+    // A managed policy cannot be deleted while it has non-default versions, so remove those first.
+    const versions = await iamClient.send(new ListPolicyVersionsCommand({ PolicyArn: arn }));
+    await Promise.all(
+      (versions.Versions ?? [])
+        .filter((v) => !v.IsDefaultVersion)
+        .map((v) => iamClient.send(new DeletePolicyVersionCommand({ PolicyArn: arn, VersionId: v.VersionId }))),
+    );
+    await iamClient.send(new DeletePolicyCommand({ PolicyArn: arn }));
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleted Iam Policy ${name}`);
+  } catch (e) {
+    console.log('Error', JSON.stringify(e));
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleting iam policy ${name} failed with error ${e.message}`);
+    if (e.name === 'ExpiredTokenException') {
+      handleExpiredTokenException();
+    }
+  }
+};
+
+const deleteAppSyncApis = async (account: AWSAccountInfo, accountIndex: number, apis: AppSyncApiInfo[]): Promise<void> => {
+  await Promise.all(apis.map((api) => deleteAppSyncApi(account, accountIndex, api)));
+};
+
+const deleteAppSyncApi = async (account: AWSAccountInfo, accountIndex: number, api: AppSyncApiInfo): Promise<void> => {
+  const { name, apiId, region } = api;
+  try {
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleting AppSync API ${name}(${apiId})`);
+    const appSyncClient = new AppSyncClient({ credentials: account.credentials, region });
+    await appSyncClient.send(new DeleteGraphqlApiCommand({ apiId }));
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleted AppSync API ${name}(${apiId}) in ${region}`);
+  } catch (e) {
+    console.log('Error', JSON.stringify(e));
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleting AppSync API ${apiId} failed with error ${e.message}`);
+    if (e.name === 'ExpiredTokenException') {
+      handleExpiredTokenException();
+    }
+  }
+};
+
 const deleteBuckets = async (account: AWSAccountInfo, accountIndex: number, buckets: S3BucketInfo[]): Promise<void> => {
   await Promise.all(buckets.map((bucket) => deleteBucket(account, accountIndex, bucket)));
 };
@@ -747,6 +997,7 @@ const deleteBucket = async (account: AWSAccountInfo, accountIndex: number, bucke
       credentials: account.credentials,
     });
     await deleteS3Bucket(name, regionalizedS3Client);
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleted S3 Bucket ${name} in ${bucket.region}`);
   } catch (e) {
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting bucket ${name} failed with error ${e.message}`);
     if (e.name === 'ExpiredTokenException') {
@@ -765,6 +1016,7 @@ const deleteRdsInstance = async (account: AWSAccountInfo, accountIndex: number, 
   try {
     const rdsClient = new RDSClient({ credentials: account.credentials, region });
     await rdsClient.send(new DeleteDBInstanceCommand({ DBInstanceIdentifier: identifier, SkipFinalSnapshot: true }));
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleted RDS instance ${identifier} in ${region}`);
   } catch (e) {
     console.log('Error', JSON.stringify(e));
     console.log(`${generateAccountInfo(account, accountIndex)} Deleting instance ${identifier} failed with error ${e.message}`);
@@ -792,6 +1044,7 @@ const deleteCfnStack = async (account: AWSAccountInfo, accountIndex: number, sta
       }),
     );
     await waitUntilStackDeleteComplete({ client: cfnClient, maxWaitTime: 600 }, { StackName: stackName });
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleted CloudFormation stack ${stackName} in ${region}`);
   } catch (e) {
     console.log('Error', JSON.stringify(e));
     console.log(`Deleting CloudFormation stack ${stackName} failed with error ${e.message}`);
@@ -816,28 +1069,65 @@ const deleteResources = async (
   accountIndex: number,
   staleResources: Record<string, ReportEntry>,
 ): Promise<void> => {
+  // Tally what this account is about to delete so the log carries a per-account summary alongside the per-resource
+  // "Deleting X" / "Deleted X" lines. The per-resource "Deleted" lines are the source of truth for what actually
+  // succeeded; this summary is the count of what was queued for deletion.
+  let appCount = 0;
+  let stackCount = 0;
+  let bucketCount = 0;
+  let roleCount = 0;
+  let policyCount = 0;
+  let appSyncApiCount = 0;
+  let instanceCount = 0;
   for (const jobId of Object.keys(staleResources)) {
     const resources = staleResources[jobId];
     if (resources.amplifyApps) {
-      await deleteAmplifyApps(account, accountIndex, Object.values(resources.amplifyApps));
+      const apps = Object.values(resources.amplifyApps);
+      appCount += apps.length;
+      await deleteAmplifyApps(account, accountIndex, apps);
     }
 
     if (resources.stacks) {
-      await deleteCfnStacks(account, accountIndex, Object.values(resources.stacks));
+      const stacks = Object.values(resources.stacks);
+      stackCount += stacks.length;
+      await deleteCfnStacks(account, accountIndex, stacks);
     }
 
     if (resources.buckets) {
-      await deleteBuckets(account, accountIndex, Object.values(resources.buckets));
+      const buckets = Object.values(resources.buckets);
+      bucketCount += buckets.length;
+      await deleteBuckets(account, accountIndex, buckets);
     }
 
     if (resources.roles) {
-      await deleteIamRoles(account, accountIndex, Object.values(resources.roles));
+      const roles = Object.values(resources.roles);
+      roleCount += roles.length;
+      await deleteIamRoles(account, accountIndex, roles);
+    }
+
+    if (resources.policies) {
+      const policies = Object.values(resources.policies);
+      policyCount += policies.length;
+      await deleteIamPolicies(account, accountIndex, policies);
+    }
+
+    if (resources.appSyncApis) {
+      const appSyncApis = Object.values(resources.appSyncApis);
+      appSyncApiCount += appSyncApis.length;
+      await deleteAppSyncApis(account, accountIndex, appSyncApis);
     }
 
     if (resources.instances) {
-      await deleteRdsInstances(account, accountIndex, Object.values(resources.instances));
+      const instances = Object.values(resources.instances);
+      instanceCount += instances.length;
+      await deleteRdsInstances(account, accountIndex, instances);
     }
   }
+  console.log(
+    `${generateAccountInfo(account, accountIndex)} Queued for deletion: ${appCount} Amplify app(s), ${stackCount} CloudFormation stack(s), ` +
+      `${bucketCount} S3 bucket(s), ${roleCount} IAM role(s), ${policyCount} IAM policy(ies), ${appSyncApiCount} AppSync API(s), ${instanceCount} RDS instance(s). ` +
+      `See the per-resource "Deleted" lines above for what succeeded.`,
+  );
 };
 
 /**
@@ -930,6 +1220,8 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const bucketPromise = getS3Buckets(account);
   const orphanBucketPromise = getOrphanS3TestBuckets(account);
   const orphanIamRolesPromise = getOrphanTestIamRoles(account);
+  const orphanIamPoliciesPromise = getOrphanTestIamPolicies(account);
+  const orphanAppSyncApisPromise = testRegions.map((region) => getOrphanTestAppSyncApis(account, region));
   const orphanRdsInstancesPromise = testRegions.map((region) => getOrphanRdsInstances(account, region));
   const cfnResourcesPromise = testRegions.map((region) => getAllCfnManagedResources(account, region));
 
@@ -940,11 +1232,24 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const buckets = (await bucketPromise).filter((x) => !cfnManaged.has(resourceId('AWS::S3::Bucket', x.name)));
   const orphanBuckets = (await orphanBucketPromise).filter((x) => !cfnManaged.has(resourceId('AWS::S3::Bucket', x.name)));
   const orphanIamRoles = (await orphanIamRolesPromise).filter((x) => !cfnManaged.has(resourceId('AWS::IAM::Role', x.name)));
+  const orphanIamPolicies = (await orphanIamPoliciesPromise).filter((x) => !cfnManaged.has(resourceId('AWS::IAM::ManagedPolicy', x.arn)));
+  const orphanAppSyncApis = (await Promise.all(orphanAppSyncApisPromise))
+    .flat()
+    .filter((x) => !cfnManaged.has(resourceId('AWS::AppSync::GraphQLApi', x.apiId)));
   const orphanRdsInstances = (await Promise.all(orphanRdsInstancesPromise))
     .flat()
     .filter((b) => !cfnManaged.has(resourceId('AWS::RDS::DBInstance', b.identifier)));
 
-  const allResources = await mergeResourcesByCCIJob(apps, stacks, buckets, orphanBuckets, orphanIamRoles, orphanRdsInstances);
+  const allResources = await mergeResourcesByCCIJob(
+    apps,
+    stacks,
+    buckets,
+    orphanBuckets,
+    orphanIamRoles,
+    orphanIamPolicies,
+    orphanAppSyncApis,
+    orphanRdsInstances,
+  );
   const staleResources = _.pickBy(allResources, filterPredicate);
 
   generateReport(staleResources, accountIndex);
@@ -1026,7 +1331,11 @@ function chunk<A>(n: number, xs: A[]): A[][] {
   return ret;
 }
 
-cleanup().catch((e) => {
-  console.error(e);
-  process.exitCode = 1;
-});
+// Only sweep when invoked as a script (`yarn clean-e2e-resources`); importing this module from a unit test must not
+// start deleting real resources.
+if (require.main === module) {
+  cleanup().catch((e) => {
+    console.error(e);
+    process.exitCode = 1;
+  });
+}
