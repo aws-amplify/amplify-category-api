@@ -1,5 +1,5 @@
 /* eslint-disable spellcheck/spell-checker, @typescript-eslint/no-explicit-any, max-classes-per-file */
-import { getAmplifyApps, getOrphanRdsInstances, getOrphanS3TestBuckets, getS3Buckets, isUnreachableRegionError } from '../cleanup-e2e-resources';
+import { getAmplifyApps, getOrphanRdsInstances, getOrphanS3TestBuckets, getS3Buckets, isUnreachableRegionError, testRegions } from '../cleanup-e2e-resources';
 
 /**
  * These cover the region-level discovery guards that sit on cleanupAccount's Promise.all. Before this change only the
@@ -225,5 +225,11 @@ describe('getOrphanS3TestBuckets unreachable-region skip', () => {
     expect(result.map((b) => b.name)).toEqual(['amplify-test-usw2']);
     const logged = logSpy.mock.calls.map(([m]) => String(m));
     expect(logged.some((m) => m.includes('Skipping orphan bucket amplify-test-me-south'))).toBe(true);
+  });
+});
+
+describe('testRegions region-list', () => {
+  it('never contains an unreachable region, so the list-driven getters (apps/stacks/RDS/CFN) never visit one', () => {
+    expect(testRegions).not.toContain('me-south-1');
   });
 });

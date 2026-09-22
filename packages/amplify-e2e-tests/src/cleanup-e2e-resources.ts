@@ -56,19 +56,19 @@ type TestRegion = {
 const repoRoot = path.join(__dirname, '..', '..', '..');
 const supportedRegionsPath = path.join(repoRoot, 'scripts', 'e2e-test-regions.json');
 const suportedRegions: TestRegion[] = JSON.parse(fs.readFileSync(supportedRegionsPath, 'utf-8'));
-const testRegions = suportedRegions.map((region) => region.name);
 
 /**
- * Regions the e2e fleet cannot reach and should never make a call into during cleanup. The region-list-driven
- * discovery (apps/stacks/RDS/CFN) already only visits testRegions, which excludes these, but the S3 bucket paths
- * resolve a bucket's region from its own LocationConstraint, so a bucket physically created in one of these regions
- * still drags cleanup into a call there. Each such call then sits through the SDK's full retry budget before the
- * connectivity guard skips it, and across every stale bucket in every account that added latency is enough to blow
- * the cleanup job's wall-clock timeout (ticket P492565382). Skipping the region up front avoids the doomed call
- * entirely instead of paying for it and then discarding the result.
+ * Regions the e2e fleet cannot reach, so cleanup must never make ANY call into them: not S3, CloudFormation, Amplify,
+ * or RDS. me-south-1 has been unreachable from the fleet for months; every call into it sits through the SDK's full
+ * retry budget before failing, and across every account that latency piled up until it blew the cleanup job's
+ * wall-clock timeout (ticket P492565382). Two entry points reach a region: the region-list loop below (apps / stacks /
+ * RDS / CFN), which we filter here so those getters are never even invoked for an unreachable region; and the S3
+ * bucket paths, which resolve a region from each bucket's own LocationConstraint and are guarded separately via
+ * isUnreachableRegion. Together they guarantee the region is skipped completely.
  */
 const unreachableRegions = new Set(['me-south-1']);
 const isUnreachableRegion = (region: string | undefined): boolean => !!region && unreachableRegions.has(region);
+export const testRegions = suportedRegions.map((region) => region.name).filter((region) => !isUnreachableRegion(region));
 
 const retryStrategy = new ConfiguredRetryStrategy(
   10, // max attempts.
