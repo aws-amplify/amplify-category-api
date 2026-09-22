@@ -5,12 +5,6 @@ source $scriptDir/.env set
 
 CURR_BRANCH=$(git branch --show-current)
 
-if [[ -n $USE_FIDO_KEY ]] ; then
-  mwinit -s -f
-else
-  mwinit
-fi
-
 ada cred update --profile=AmplifyAPIE2EProd --account=$E2E_ACCOUNT_PROD --role=CodebuildDeveloper --provider=isengard --once
 RESULT=$(aws codebuild start-build-batch \
 --profile=AmplifyAPIE2EProd \
