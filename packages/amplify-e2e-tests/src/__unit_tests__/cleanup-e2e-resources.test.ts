@@ -101,26 +101,19 @@ const skipLogFor = (fragment: string): { message: string; loggedError: unknown }
 
 describe('getS3Buckets', () => {
   it('skips a bucket whose region is unreachable and still returns the buckets of every other region', async () => {
-    const thrown = timeoutError();
-    mockState.getBucketTagging = (bucketName, region) => {
-      if (region === 'me-south-1') {
-        throw thrown;
-      }
-      return { TagSet: [{ Key: 'codebuild:build_id', Value: `job-${bucketName}` }] };
-    };
-
     const buckets = await getS3Buckets(account);
 
     expect(buckets.map((bucket) => bucket.name)).toEqual(['amplify-test-bucket-alpha', 'amplify-test-bucket-omega']);
     expect(buckets.map((bucket) => bucket.region)).toEqual(['us-east-2', 'eu-west-2']);
-    // The dead region really was attempted, otherwise this test would pass without exercising the guard.
-    expect(mockState.calls).toContainEqual({ command: 'GetBucketTagging', bucket: 'amplify-test-bucket-dead', region: 'me-south-1' });
-    const skipLog = skipLogFor('Describing bucket amplify-test-bucket-dead for account 123456789012-me-south-1');
-    // ETIMEDOUT lives on `code` while `name` is the generic 'Error', so resolving `name` first would log 'code Error'
-    // and hide the only detail that identifies the dead region.
-    expect(skipLog.message).toContain('failed with error with code ETIMEDOUT');
-    // The Error itself reaches the log, rather than a JSON.stringify copy that would drop its message and stack.
-    expect(skipLog.loggedError).toBe(thrown);
+    // The unreachable region is skipped up front (right after resolving the bucket's region), so NO regionalized
+    // GetBucketTagging call is ever made against it - that is the point of the skip: we do not pay the SDK retry
+    // budget on a region the fleet cannot reach.
+    expect(mockState.calls).not.toContainEqual(
+      expect.objectContaining({ command: 'GetBucketTagging', bucket: 'amplify-test-bucket-dead' }),
+    );
+    // The skip is logged so the run makes clear it deliberately left the dead-region bucket alone.
+    const skipLog = skipLogFor('Skipping bucket amplify-test-bucket-dead for account 123456789012');
+    expect(skipLog.message).toContain('region me-south-1 is unreachable');
   });
 
   it('keeps sweeping the remaining regions when resolving a bucket region times out', async () => {
@@ -157,7 +150,7 @@ describe('getS3Buckets', () => {
       if (bucketName === 'amplify-test-bucket-alpha') {
         throw Object.assign(new Error('no tags'), { name: 'NoSuchTagSet' });
       }
-      if (bucketName === 'amplify-test-bucket-dead') {
+      if (bucketName === 'amplify-test-bucket-omega') {
         throw Object.assign(new Error('invalid token'), { name: 'InvalidToken' });
       }
       return { TagSet: [{ Key: 'codebuild:build_id', Value: `job-${bucketName}` }] };
@@ -165,13 +158,17 @@ describe('getS3Buckets', () => {
 
     const buckets = await getS3Buckets(account);
 
-    expect(buckets).toEqual([
-      { name: 'amplify-test-bucket-alpha', region: 'us-east-2' },
-      { name: 'amplify-test-bucket-omega', jobId: 'job-amplify-test-bucket-omega', region: 'eu-west-2' },
-    ]);
+    // amplify-test-bucket-dead lives in me-south-1, so it is skipped up front by region and never reaches the tag
+    // path at all. amplify-test-bucket-alpha (NoSuchTagSet) is still recorded with no jobId; amplify-test-bucket-omega
+    // (InvalidToken) is skipped via console.error.
+    expect(buckets).toEqual([{ name: 'amplify-test-bucket-alpha', region: 'us-east-2' }]);
     expect(errorSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Skipping processing 123456789012, bucket amplify-test-bucket-dead'),
+      expect.stringContaining('Skipping processing 123456789012, bucket amplify-test-bucket-omega'),
       expect.any(Error),
+    );
+    // The dead-region bucket was skipped before any tagging call.
+    expect(mockState.calls).not.toContainEqual(
+      expect.objectContaining({ command: 'GetBucketTagging', bucket: 'amplify-test-bucket-dead' }),
     );
   });
 });
