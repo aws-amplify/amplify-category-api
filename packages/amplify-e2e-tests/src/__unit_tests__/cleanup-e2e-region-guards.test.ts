@@ -1,5 +1,13 @@
 /* eslint-disable spellcheck/spell-checker, @typescript-eslint/no-explicit-any, max-classes-per-file */
-import { getAmplifyApps, getOrphanRdsInstances, getOrphanS3TestBuckets, getS3Buckets, isUnreachableRegionError, testRegions } from '../cleanup-e2e-resources';
+import {
+  getAmplifyApps,
+  getOrphanRdsInstances,
+  getOrphanS3TestBuckets,
+  getOrphanTestIamPolicies,
+  getS3Buckets,
+  isUnreachableRegionError,
+  testRegions,
+} from '../cleanup-e2e-resources';
 
 /**
  * These cover the region-level discovery guards that sit on cleanupAccount's Promise.all. Before this change only the
@@ -99,10 +107,83 @@ jest.mock('@aws-sdk/client-s3', () => {
   };
 });
 
+// The orphan-policy sweep lists customer-managed policies (paginated) and deletes those attached to nothing. The mock
+// records which policy ARNs a DeletePolicy was issued for, so a test can assert only orphaned, stale, test-named
+// policies are deleted and in-use / non-test / fresh ones are left alone.
+jest.mock('@aws-sdk/client-iam', () => {
+  const state: { policies: any[]; deletedArns: string[] } = { policies: [], deletedArns: [] };
+  class IAMClient {
+    constructor(readonly config: unknown) {}
+    async send(command: any): Promise<any> {
+      if (command instanceof ListPoliciesCommand) {
+        return { Policies: state.policies, Marker: undefined };
+      }
+      if (command instanceof ListPolicyVersionsCommand) {
+        return { Versions: [{ VersionId: 'v1', IsDefaultVersion: true }] };
+      }
+      if (command instanceof DeletePolicyCommand) {
+        state.deletedArns.push(command.input.PolicyArn);
+        return {};
+      }
+      if (command instanceof ListRolesCommand) {
+        return { Roles: [] };
+      }
+      return {};
+    }
+  }
+  class ListPoliciesCommand {
+    constructor(readonly input: any) {}
+  }
+  class ListPolicyVersionsCommand {
+    constructor(readonly input: any) {}
+  }
+  class DeletePolicyCommand {
+    constructor(readonly input: any) {}
+  }
+  class DeletePolicyVersionCommand {
+    constructor(readonly input: any) {}
+  }
+  class ListRolesCommand {
+    constructor(readonly input: unknown) {}
+  }
+  class ListAttachedRolePoliciesCommand {
+    constructor(readonly input: unknown) {}
+  }
+  class ListRolePoliciesCommand {
+    constructor(readonly input: unknown) {}
+  }
+  class DeleteRoleCommand {
+    constructor(readonly input: unknown) {}
+  }
+  class DetachRolePolicyCommand {
+    constructor(readonly input: unknown) {}
+  }
+  class DeleteRolePolicyCommand {
+    constructor(readonly input: unknown) {}
+  }
+  return {
+    IAMClient,
+    ListPoliciesCommand,
+    ListPolicyVersionsCommand,
+    DeletePolicyCommand,
+    DeletePolicyVersionCommand,
+    ListRolesCommand,
+    ListAttachedRolePoliciesCommand,
+    ListRolePoliciesCommand,
+    DeleteRoleCommand,
+    DetachRolePolicyCommand,
+    DeleteRolePolicyCommand,
+    __iamState: state,
+  };
+});
+
 const { __rdsState: rdsState } = jest.requireMock('@aws-sdk/client-rds') as { __rdsState: { send: () => any } };
 const { __amplifyState: amplifyState } = jest.requireMock('@aws-sdk/client-amplify') as { __amplifyState: { send: () => any } };
 const { __s3State: s3State } = jest.requireMock('@aws-sdk/client-s3') as {
   __s3State: { buckets: { Name: string }[]; locationByBucket: Record<string, string | undefined>; taggingCalls: string[] };
+};
+const { __iamState: iamState } = jest.requireMock('@aws-sdk/client-iam') as {
+  __iamState: { policies: any[]; deletedArns: string[] };
 };
 
 const account = { accountId: '123456789012', credentials: {} } as any;
@@ -115,6 +196,8 @@ beforeEach(() => {
   s3State.buckets = [];
   s3State.locationByBucket = {};
   s3State.taggingCalls = [];
+  iamState.policies = [];
+  iamState.deletedArns = [];
   logSpy = jest.spyOn(console, 'log').mockImplementation(() => undefined);
 });
 
@@ -231,5 +314,40 @@ describe('getOrphanS3TestBuckets unreachable-region skip', () => {
 describe('testRegions region-list', () => {
   it('never contains an unreachable region, so the list-driven getters (apps/stacks/RDS/CFN) never visit one', () => {
     expect(testRegions).not.toContain('me-south-1');
+  });
+});
+
+describe('getOrphanTestIamPolicies', () => {
+  const oldDate = new Date(Date.now() - 24 * 60 * 60 * 1000); // 1 day old -> stale
+  const freshDate = new Date();
+
+  it('returns only stale, test-named, unattached customer-managed policies', async () => {
+    iamState.policies = [
+      // orphan: test name, stale, attached to nothing -> deleted
+      { PolicyName: 'amplify-orphan-policy', Arn: 'arn:aws:iam::123456789012:policy/amplify-orphan-policy', CreateDate: oldDate, AttachmentCount: 0, PermissionsBoundaryUsageCount: 0 },
+      // in use: attached to a role -> kept
+      { PolicyName: 'amplify-inuse-policy', Arn: 'arn:aws:iam::123456789012:policy/amplify-inuse-policy', CreateDate: oldDate, AttachmentCount: 2, PermissionsBoundaryUsageCount: 0 },
+      // used as a permissions boundary -> kept
+      { PolicyName: 'amplify-boundary-policy', Arn: 'arn:aws:iam::123456789012:policy/amplify-boundary-policy', CreateDate: oldDate, AttachmentCount: 0, PermissionsBoundaryUsageCount: 1 },
+      // non-test name -> kept
+      { PolicyName: 'company-prod-policy', Arn: 'arn:aws:iam::123456789012:policy/company-prod-policy', CreateDate: oldDate, AttachmentCount: 0, PermissionsBoundaryUsageCount: 0 },
+      // too fresh -> kept
+      { PolicyName: 'amplify-fresh-policy', Arn: 'arn:aws:iam::123456789012:policy/amplify-fresh-policy', CreateDate: freshDate, AttachmentCount: 0, PermissionsBoundaryUsageCount: 0 },
+    ];
+
+    const result = await getOrphanTestIamPolicies(account);
+
+    expect(result.map((p) => p.name)).toEqual(['amplify-orphan-policy']);
+    expect(result[0].arn).toBe('arn:aws:iam::123456789012:policy/amplify-orphan-policy');
+  });
+
+  it('returns nothing when no policy is an orphan (nothing to delete)', async () => {
+    iamState.policies = [
+      { PolicyName: 'amplify-inuse-policy', Arn: 'arn:aws:iam::123456789012:policy/amplify-inuse-policy', CreateDate: oldDate, AttachmentCount: 1, PermissionsBoundaryUsageCount: 0 },
+    ];
+
+    const result = await getOrphanTestIamPolicies(account);
+
+    expect(result).toEqual([]);
   });
 });

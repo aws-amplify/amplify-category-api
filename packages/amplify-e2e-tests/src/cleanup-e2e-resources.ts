@@ -14,7 +14,12 @@ import {
   DeleteRoleCommand,
   DetachRolePolicyCommand,
   DeleteRolePolicyCommand,
+  ListPoliciesCommand,
+  ListPolicyVersionsCommand,
+  DeletePolicyCommand,
+  DeletePolicyVersionCommand,
   Role,
+  Policy,
   AttachedPolicy,
 } from '@aws-sdk/client-iam';
 import { RDSClient, DescribeDBInstancesCommand, DeleteDBInstanceCommand, DBInstance } from '@aws-sdk/client-rds';
@@ -119,6 +124,11 @@ type IamRoleInfo = {
   cbInfo?: Build;
 };
 
+type IamPolicyInfo = {
+  name: string;
+  arn: string;
+};
+
 type RdsInstanceInfo = {
   identifier: string;
   region: string;
@@ -134,6 +144,7 @@ type ReportEntry = {
   stacks: Record<string, StackInfo>;
   buckets: Record<string, S3BucketInfo>;
   roles: Record<string, IamRoleInfo>;
+  policies: Record<string, IamPolicyInfo>;
   instances: Record<string, RdsInstanceInfo>;
 };
 
@@ -191,6 +202,19 @@ const testRoleStalenessFilter = (resource: Role): boolean => {
   const isTestResource = resource.RoleName?.match(IAM_TEST_REGEX);
   const isStaleResource = resource.CreateDate && before(resource.CreateDate, staleHorizonDate);
   return !!isTestResource && !!isStaleResource;
+};
+
+/**
+ * A customer-managed policy is a cleanup candidate when its name looks like a test policy, it is stale, and nothing
+ * references it (AttachmentCount === 0 covers roles/users/groups; PermissionsBoundaryUsageCount === 0 covers use as a
+ * permissions boundary). Orphaned policies accumulate because a DELETE_FAILED stack can strand the policy after its
+ * role is gone, and IAM refuses to delete a policy that is still attached anywhere.
+ */
+const testPolicyStalenessFilter = (resource: Policy): boolean => {
+  const isTestResource = resource.PolicyName?.match(IAM_TEST_REGEX);
+  const isStaleResource = resource.CreateDate && before(resource.CreateDate, staleHorizonDate);
+  const isOrphan = (resource.AttachmentCount ?? 0) === 0 && (resource.PermissionsBoundaryUsageCount ?? 0) === 0;
+  return !!isTestResource && !!isStaleResource && isOrphan;
 };
 
 const testInstanceStalenessFilter = (resource: DBInstance): boolean => {
@@ -288,6 +312,23 @@ const getOrphanTestIamRoles = async (account: AWSAccountInfo): Promise<IamRoleIn
   const listRoleResponse = await iamClient.send(new ListRolesCommand({}));
   const staleRoles = listRoleResponse.Roles.filter(testRoleStalenessFilter);
   return staleRoles.map((it) => ({ name: it.RoleName }));
+};
+
+/**
+ * Get all customer-managed iam policies in the account, and filter down to the stale ones that are attached to
+ * nothing. Policies leak the same way roles do: a DELETE_FAILED stack strands the policy once its owning role is
+ * gone, and they accumulate unbounded because nothing reaps them. IAM lists policies 100 at a time and there can be
+ * thousands, so paginate fully (with throttle-aware retry) rather than reading only the first page.
+ */
+export const getOrphanTestIamPolicies = async (account: AWSAccountInfo): Promise<IamPolicyInfo[]> => {
+  const iamClient = new IAMClient({ credentials: account.credentials });
+  const policies = await paginate<Policy>(async (token) => {
+    // Scope: 'Local' = customer-managed only (never AWS-managed); OnlyAttached: false so we can find the orphans.
+    const response = await iamClient.send(new ListPoliciesCommand({ Scope: 'Local', OnlyAttached: false, Marker: token }));
+    return { nextPage: response.Marker, items: response.Policies };
+  });
+  const stalePolicies = policies.filter(testPolicyStalenessFilter);
+  return stalePolicies.map((it) => ({ name: it.PolicyName, arn: it.Arn }));
 };
 
 /**
@@ -635,6 +676,7 @@ const mergeResourcesByCCIJob = async (
   s3Buckets: S3BucketInfo[],
   orphanS3Buckets: S3BucketInfo[],
   orphanIamRoles: IamRoleInfo[],
+  orphanIamPolicies: IamPolicyInfo[],
   orphanRdsInstances: RdsInstanceInfo[],
 ): Promise<Record<string, ReportEntry>> => {
   const result: Record<string, ReportEntry> = {};
@@ -710,6 +752,16 @@ const mergeResourcesByCCIJob = async (
     ...val,
     jobId: key,
     roles: src,
+  }));
+
+  const orphanIamPoliciesGroup = {
+    [ORPHAN]: orphanIamPolicies,
+  };
+
+  _.mergeWith(result, orphanIamPoliciesGroup, (val, src, key) => ({
+    ...val,
+    jobId: key,
+    policies: src,
   }));
 
   const orphanRdsInstancesGroup = {
@@ -819,6 +871,39 @@ const deleteIamRolePolicy = async (account: AWSAccountInfo, accountIndex: number
   }
 };
 
+const deleteIamPolicies = async (account: AWSAccountInfo, accountIndex: number, policies: IamPolicyInfo[]): Promise<void> => {
+  // IAM throttles consecutive delete requests, so batch with a brief pause between batches (mirrors deleteIamRoles).
+  const batchSize = 20;
+  for (let i = 0; i < policies.length; i += batchSize) {
+    const policiesToDelete = policies.slice(i, i + batchSize);
+    await Promise.all(policiesToDelete.map((policy) => deleteIamPolicy(account, accountIndex, policy)));
+    await sleep(5000);
+  }
+};
+
+const deleteIamPolicy = async (account: AWSAccountInfo, accountIndex: number, policy: IamPolicyInfo): Promise<void> => {
+  const { name, arn } = policy;
+  try {
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleting Iam Policy ${name}`);
+    const iamClient = new IAMClient({ credentials: account.credentials });
+    // A managed policy cannot be deleted while it has non-default versions, so remove those first.
+    const versions = await iamClient.send(new ListPolicyVersionsCommand({ PolicyArn: arn }));
+    await Promise.all(
+      (versions.Versions ?? [])
+        .filter((v) => !v.IsDefaultVersion)
+        .map((v) => iamClient.send(new DeletePolicyVersionCommand({ PolicyArn: arn, VersionId: v.VersionId }))),
+    );
+    await iamClient.send(new DeletePolicyCommand({ PolicyArn: arn }));
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleted Iam Policy ${name}`);
+  } catch (e) {
+    console.log('Error', JSON.stringify(e));
+    console.log(`${generateAccountInfo(account, accountIndex)} Deleting iam policy ${name} failed with error ${e.message}`);
+    if (e.name === 'ExpiredTokenException') {
+      handleExpiredTokenException();
+    }
+  }
+};
+
 const deleteBuckets = async (account: AWSAccountInfo, accountIndex: number, buckets: S3BucketInfo[]): Promise<void> => {
   await Promise.all(buckets.map((bucket) => deleteBucket(account, accountIndex, bucket)));
 };
@@ -911,6 +996,7 @@ const deleteResources = async (
   let stackCount = 0;
   let bucketCount = 0;
   let roleCount = 0;
+  let policyCount = 0;
   let instanceCount = 0;
   for (const jobId of Object.keys(staleResources)) {
     const resources = staleResources[jobId];
@@ -938,6 +1024,12 @@ const deleteResources = async (
       await deleteIamRoles(account, accountIndex, roles);
     }
 
+    if (resources.policies) {
+      const policies = Object.values(resources.policies);
+      policyCount += policies.length;
+      await deleteIamPolicies(account, accountIndex, policies);
+    }
+
     if (resources.instances) {
       const instances = Object.values(resources.instances);
       instanceCount += instances.length;
@@ -946,7 +1038,8 @@ const deleteResources = async (
   }
   console.log(
     `${generateAccountInfo(account, accountIndex)} Queued for deletion: ${appCount} Amplify app(s), ${stackCount} CloudFormation stack(s), ` +
-      `${bucketCount} S3 bucket(s), ${roleCount} IAM role(s), ${instanceCount} RDS instance(s). See the per-resource "Deleted" lines above for what succeeded.`,
+      `${bucketCount} S3 bucket(s), ${roleCount} IAM role(s), ${policyCount} IAM policy(ies), ${instanceCount} RDS instance(s). ` +
+      `See the per-resource "Deleted" lines above for what succeeded.`,
   );
 };
 
@@ -1040,6 +1133,7 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const bucketPromise = getS3Buckets(account);
   const orphanBucketPromise = getOrphanS3TestBuckets(account);
   const orphanIamRolesPromise = getOrphanTestIamRoles(account);
+  const orphanIamPoliciesPromise = getOrphanTestIamPolicies(account);
   const orphanRdsInstancesPromise = testRegions.map((region) => getOrphanRdsInstances(account, region));
   const cfnResourcesPromise = testRegions.map((region) => getAllCfnManagedResources(account, region));
 
@@ -1050,11 +1144,20 @@ const cleanupAccount = async (account: AWSAccountInfo, accountIndex: number, fil
   const buckets = (await bucketPromise).filter((x) => !cfnManaged.has(resourceId('AWS::S3::Bucket', x.name)));
   const orphanBuckets = (await orphanBucketPromise).filter((x) => !cfnManaged.has(resourceId('AWS::S3::Bucket', x.name)));
   const orphanIamRoles = (await orphanIamRolesPromise).filter((x) => !cfnManaged.has(resourceId('AWS::IAM::Role', x.name)));
+  const orphanIamPolicies = (await orphanIamPoliciesPromise).filter((x) => !cfnManaged.has(resourceId('AWS::IAM::ManagedPolicy', x.arn)));
   const orphanRdsInstances = (await Promise.all(orphanRdsInstancesPromise))
     .flat()
     .filter((b) => !cfnManaged.has(resourceId('AWS::RDS::DBInstance', b.identifier)));
 
-  const allResources = await mergeResourcesByCCIJob(apps, stacks, buckets, orphanBuckets, orphanIamRoles, orphanRdsInstances);
+  const allResources = await mergeResourcesByCCIJob(
+    apps,
+    stacks,
+    buckets,
+    orphanBuckets,
+    orphanIamRoles,
+    orphanIamPolicies,
+    orphanRdsInstances,
+  );
   const staleResources = _.pickBy(allResources, filterPredicate);
 
   generateReport(staleResources, accountIndex);
