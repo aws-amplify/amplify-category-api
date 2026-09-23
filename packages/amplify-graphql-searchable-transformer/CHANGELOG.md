@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.21-gen1-schema-logicalid-fix-v3.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@2.7.20...@aws-amplify/graphql-searchable-transformer@2.7.21-gen1-schema-logicalid-fix-v3.0) (2026-09-23)
+
+**Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer
+
 ## [2.7.20](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-searchable-transformer@2.7.19...@aws-amplify/graphql-searchable-transformer@2.7.20) (2026-04-15)
 
 ### Bug Fixes

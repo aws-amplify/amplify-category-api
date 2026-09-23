@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-transformer-interfaces",
-  "version": "3.12.1",
+  "version": "3.12.2-gen1-schema-logicalid-fix-v3.0",
   "description": "Amplify GraphQL transformer interface definitions",
   "repository": {
     "type": "git",

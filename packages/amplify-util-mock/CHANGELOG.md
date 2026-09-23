@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.7.8-gen1-schema-logicalid-fix-v3.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.7.7...amplify-category-api-util-mock@6.7.8-gen1-schema-logicalid-fix-v3.0) (2026-09-23)
+
+**Note:** Version bump only for package amplify-category-api-util-mock
+
 ## [6.7.7](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.7.6...amplify-category-api-util-mock@6.7.7) (2026-07-13)
 
 **Note:** Version bump only for package amplify-category-api-util-mock
