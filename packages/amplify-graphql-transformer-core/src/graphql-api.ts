@@ -65,6 +65,13 @@ export type TransformerAPIProps = GraphqlApiProps & {
   readonly environmentName?: string;
   readonly disableResolverDeduping?: boolean;
   readonly assetProvider: AssetProvider;
+  /**
+   * When true, pin the schema resource's CloudFormation logical ID to the Gen1 value
+   * (`GraphQLSchema`) so a v1->v2 migration is an in-place update instead of a colliding
+   * create-before-delete. Set ONLY on the migration of an API whose deployed template already
+   * carries the schema at logical ID `GraphQLSchema`.
+   */
+  readonly preserveGraphQLSchemaLogicalId?: boolean;
 };
 export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   /**
@@ -185,7 +192,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     this.visibility = this.api.visibility === 'PRIVATE' ? Visibility.PRIVATE : Visibility.GLOBAL;
     this.schema = props.schema ?? new TransformerSchema();
     this.assetProvider = props.assetProvider;
-    this.schemaResource = this.schema.bind(this);
+    this.schemaResource = this.schema.bind(this, props.preserveGraphQLSchemaLogicalId ?? false);
 
     const hasApiKey = modes.some((mode) => mode.authorizationType === AuthorizationType.API_KEY);
 

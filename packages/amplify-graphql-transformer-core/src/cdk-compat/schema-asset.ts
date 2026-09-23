@@ -1,6 +1,7 @@
 import { CfnGraphQLSchema } from 'aws-cdk-lib/aws-appsync';
 import { Lazy } from 'aws-cdk-lib';
 import { S3Asset } from '@aws-amplify/graphql-transformer-interfaces';
+import { ResourceConstants } from 'graphql-transformer-common';
 import { GraphQLApi } from '../graphql-api';
 import { removeAmplifyInputDefinition } from '../transformation/utils';
 
@@ -13,7 +14,18 @@ export class TransformerSchema {
 
   private schemaConstruct?: CfnGraphQLSchema;
 
-  bind = (api: GraphQLApi): CfnGraphQLSchema => {
+  /**
+   * Binds the schema to the API, creating the `AWS::AppSync::GraphQLSchema` resource.
+   *
+   * @param api the GraphQL API to attach the schema to
+   * @param preserveLegacyLogicalId when true, forces the schema resource's CloudFormation logical
+   *   ID to the Gen1 value (`GraphQLSchema`) instead of the CDK-generated
+   *   `GraphQLAPITransformerSchema<hash>`. Set ONLY during a Gen1 v1->v2 migration of an API whose
+   *   deployed template already carries the schema at `GraphQLSchema`, so the migration is an
+   *   in-place update rather than a create-before-delete that collides on the deterministic
+   *   physical ID `<apiId>GraphQLSchema`.
+   */
+  bind = (api: GraphQLApi, preserveLegacyLogicalId = false): CfnGraphQLSchema => {
     if (!this.schemaConstruct) {
       const schema = this;
       this.api = api;
@@ -26,6 +38,9 @@ export class TransformerSchema {
           },
         }),
       });
+      if (preserveLegacyLogicalId) {
+        this.schemaConstruct.overrideLogicalId(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID);
+      }
     }
     return this.schemaConstruct;
   };
