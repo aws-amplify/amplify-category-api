@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-e2e-tests",
-  "version": "3.22.24",
+  "version": "3.22.25-gen1-graphqlschema-logicalid-fix.0",
   "description": "E2e test suite ",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
   "dependencies": {
     "@aws-amplify/amplify-app": "^5.0.35",
     "@aws-amplify/graphql-schema-generator": "^0.9.4",
-    "@aws-amplify/graphql-transformer-core": "2.11.3",
+    "@aws-amplify/graphql-transformer-core": "2.11.4-gen1-graphqlschema-logicalid-fix.0",
     "@aws-sdk/client-amplify": "~3.600.0",
     "@aws-sdk/client-cloudformation": "~3.600.0",
     "@aws-sdk/client-codebuild": "~3.600.0",
@@ -61,7 +61,7 @@
     "@aws-amplify/amplify-cli-core": "^4.4.3"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-transformer-interfaces": "3.12.1",
+    "@aws-amplify/graphql-transformer-interfaces": "3.12.2-gen1-graphqlschema-logicalid-fix.0",
     "@types/lodash": "^4.14.149",
     "@types/ws": "^7.4.4",
     "ts-node": "^8.10.2"

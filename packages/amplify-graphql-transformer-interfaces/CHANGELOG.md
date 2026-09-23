@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.12.2-gen1-graphqlschema-logicalid-fix.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.12.1...@aws-amplify/graphql-transformer-interfaces@3.12.2-gen1-graphqlschema-logicalid-fix.0) (2026-09-23)
+
+### Bug Fixes
+
+- **graphql:** preserve GraphQLSchema logical id on Gen1 v1->v2 migration ([f079c63](https://github.com/aws-amplify/amplify-category-api/commit/f079c6359ba5e04d6bf814c3621c9333cd24e16c))
+
 ## [3.12.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-interfaces@3.12.0...@aws-amplify/graphql-transformer-interfaces@3.12.1) (2025-09-25)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-interfaces

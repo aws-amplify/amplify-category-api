@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.22.25-gen1-graphqlschema-logicalid-fix.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.24...amplify-category-api-e2e-tests@3.22.25-gen1-graphqlschema-logicalid-fix.0) (2026-09-23)
+
+**Note:** Version bump only for package amplify-category-api-e2e-tests
+
 ## [3.22.24](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.23...amplify-category-api-e2e-tests@3.22.24) (2026-07-13)
 
 ### Bug Fixes
