@@ -30,6 +30,7 @@ import { searchablePushChecks } from './api-utils';
 import { parseUserDefinedSlots } from './user-defined-slots';
 import { applyFileBasedOverride } from './override';
 import { OverrideConfig } from './cdk-compat/transform-manager';
+import { isMigratingFromV1SchemaLogicalId } from './schema-logical-id-migration';
 
 export const APPSYNC_RESOURCE_SERVICE = 'AppSync';
 
@@ -172,6 +173,10 @@ export const generateTransformerOptions = async (context: $TSContext, options: a
   const lastDeployedProjectConfig = fs.existsSync(previouslyDeployedBackendDir)
     ? await loadProject(previouslyDeployedBackendDir)
     : undefined;
+  // Detect a Gen1 v1->v2 migration where the previously-deployed template still carries the schema
+  // at logical ID `GraphQLSchema`. In that case we must pin the v2 schema logical ID back to
+  // `GraphQLSchema` to avoid the create-before-delete physical-ID collision on `<apiId>GraphQLSchema`.
+  const preserveGraphQLSchemaLogicalId = isMigratingFromV1SchemaLogicalId(lastDeployedProjectConfig);
   const docLink = getGraphQLTransformerAuthDocLink(2);
   const sandboxModeEnabled = schemaHasSandboxModeEnabled(project.schema, docLink);
   const directiveMap = collectDirectivesByTypeNames(project.schema);
@@ -252,7 +257,13 @@ export const generateTransformerOptions = async (context: $TSContext, options: a
     overrideConfig,
     stacks: project.stacks,
     stackMapping: project.config.StackMapping,
-    transformParameters: generateTransformParameters(apiName, parameters, project.config, sandboxModeEnabled),
+    transformParameters: generateTransformParameters(
+      apiName,
+      parameters,
+      project.config,
+      sandboxModeEnabled,
+      preserveGraphQLSchemaLogicalId,
+    ),
   };
 };
 
@@ -262,6 +273,9 @@ export const generateTransformerOptions = async (context: $TSContext, options: a
  * @param parameters invocation params, bag of bits, used for determining suppressApiKeyGeneration state
  * @param projectConfig hydrated project config object, with additional metadata, bag of bits, determines if resolver deduping is disabled
  * @param sandboxModeEnabled whether or not to enable sandbox mode on the transformed project
+ * @param preserveGraphQLSchemaLogicalId when true (a Gen1 v1->v2 migration of an API whose deployed
+ *   template still carries the schema at logical ID `GraphQLSchema`), pin the v2 schema logical ID
+ *   back to `GraphQLSchema` so the migration is an in-place update rather than a colliding rename.
  * @returns a single set of params to configure the transform behavior.
  */
 const generateTransformParameters = (
@@ -269,6 +283,7 @@ const generateTransformParameters = (
   parameters: any,
   projectConfig: any,
   sandboxModeEnabled: boolean,
+  preserveGraphQLSchemaLogicalId: boolean,
 ): TransformParameters => {
   const featureFlagProvider = new AmplifyCLIFeatureFlagAdapter();
   return {
@@ -292,6 +307,7 @@ const generateTransformParameters = (
     replaceTableUponGsiUpdate: false,
     allowGen1Patterns: true,
     enableGen2Migration: featureFlagProvider.getBoolean('enableGen2Migration'),
+    preserveGraphQLSchemaLogicalId,
   };
 };
 

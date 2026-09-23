@@ -30,4 +30,8 @@ export const defaultTransformParameters: TransformParameters = {
 
   // Migration
   enableGen2Migration: false,
+
+  // Migration: only set true on a Gen1 v1->v2 migration whose deployed template
+  // already carries the schema at logical ID `GraphQLSchema`. See TransformParameters.
+  preserveGraphQLSchemaLogicalId: false,
 };
