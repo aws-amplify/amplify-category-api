@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.6-gen1-schema-logicalid-fix-v2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.8.5...@aws-amplify/graphql-transformer@1.8.6-gen1-schema-logicalid-fix-v2.0) (2026-09-23)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer
+
 ## [1.8.5](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer@1.8.4...@aws-amplify/graphql-transformer@1.8.5) (2026-04-15)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer

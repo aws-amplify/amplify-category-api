@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.15.7-gen1-schema-logicalid-fix-v2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.15.6...@aws-amplify/amplify-category-api@5.15.7-gen1-schema-logicalid-fix-v2.0) (2026-09-23)
+
+### Bug Fixes
+
+- **graphql:** preserve GraphQLSchema logical id on Gen1 v1->v2 migration ([f079c63](https://github.com/aws-amplify/amplify-category-api/commit/f079c6359ba5e04d6bf814c3621c9333cd24e16c))
+
 ## [5.15.6](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/amplify-category-api@5.15.5...@aws-amplify/amplify-category-api@5.15.6) (2026-07-13)
 
 ### Bug Fixes

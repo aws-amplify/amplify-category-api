@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.21-gen1-schema-logicalid-fix-v2.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.5.20...@aws-amplify/graphql-relational-transformer@2.5.21-gen1-schema-logicalid-fix-v2.0) (2026-09-23)
+
+**Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
+
 ## [2.5.20](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@2.5.19...@aws-amplify/graphql-relational-transformer@2.5.20) (2025-11-19)
 
 **Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
