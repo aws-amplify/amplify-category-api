@@ -176,7 +176,12 @@ export const generateTransformerOptions = async (context: $TSContext, options: a
   // Detect a Gen1 v1->v2 migration where the previously-deployed template still carries the schema
   // at logical ID `GraphQLSchema`. In that case we must pin the v2 schema logical ID back to
   // `GraphQLSchema` to avoid the create-before-delete physical-ID collision on `<apiId>GraphQLSchema`.
-  const preserveGraphQLSchemaLogicalId = isMigratingFromV1SchemaLogicalId(lastDeployedProjectConfig);
+  // Reads the deployed build templates directly from the #current-cloud-backend API resource dir
+  // (the v1 schema lives in the ROOT build/cloudformation-template.json, not the parsed project's
+  // child `stacks` map).
+  const preserveGraphQLSchemaLogicalId = fs.existsSync(previouslyDeployedBackendDir)
+    ? isMigratingFromV1SchemaLogicalId(previouslyDeployedBackendDir)
+    : false;
   const docLink = getGraphQLTransformerAuthDocLink(2);
   const sandboxModeEnabled = schemaHasSandboxModeEnabled(project.schema, docLink);
   const directiveMap = collectDirectivesByTypeNames(project.schema);
