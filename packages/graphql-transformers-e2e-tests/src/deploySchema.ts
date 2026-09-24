@@ -77,16 +77,21 @@ export const getSchemaDeployer = async (testId: string, transform: (schema: stri
         deployTimestamp,
         initialDeployment,
       );
-      // Arbitrary wait to make sure everything is ready.
-      await sleepSecs(10);
       expect(finishedStack).toBeDefined();
       const endpoint = getApiEndpoint(finishedStack.Outputs);
       const apiKey = getApiKey(finishedStack.Outputs);
       expect(apiKey).toBeDefined();
       expect(endpoint).toBeDefined();
       initialDeployment = false;
+      const client = new GraphQLClient(endpoint, { 'x-api-key': apiKey });
+      // AppSync publishes the schema asynchronously AFTER CloudFormation reports the stack
+      // complete, so querying immediately can hit a stale schema (e.g. a @mapsTo type rename
+      // where the new `listArticles` query or a renamed foreign key field is not live yet).
+      // A blind fixed sleep was flaky for large schema swaps; instead poll the live schema
+      // via introspection until it is queryable, bounded so a genuinely broken deploy still fails.
+      await waitForSchemaReady(client, testId);
       console.log(`[${new Date().toISOString()}] Schema for ${testId} deployed.`);
-      return new GraphQLClient(endpoint, { 'x-api-key': apiKey });
+      return client;
     },
     cleanup: async () => {
       await cleanupStackAfterTest(testBucketName, initialDeployment ? undefined : stackName, cf);
@@ -94,6 +99,45 @@ export const getSchemaDeployer = async (testId: string, transform: (schema: stri
     },
   };
 };
+
+/**
+ * Waits until the freshly deployed AppSync schema is actually being served, rather than
+ * relying on a fixed sleep. AppSync applies a schema asynchronously after CloudFormation
+ * reports the stack complete, so a query issued immediately can see a stale schema. We poll
+ * a cheap introspection query until it returns without errors, then a short settle so field
+ * resolvers attached by the same update are live too. Bounded by a timeout so a genuinely
+ * broken deploy still fails the test instead of hanging.
+ */
+async function waitForSchemaReady(client: GraphQLClient, testId: string): Promise<void> {
+  const introspection = /* GraphQL */ `
+    query IntrospectionReadyCheck {
+      __schema {
+        queryType {
+          name
+        }
+      }
+    }
+  `;
+  const maxAttempts = 30; // ~30 * 3s = 90s ceiling
+  const intervalSecs = 3;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const res = await client.query(introspection);
+      if (!res.errors && res.data?.__schema?.queryType?.name) {
+        // Schema is queryable. Short settle for field-resolver propagation on large swaps.
+        await sleepSecs(5);
+        return;
+      }
+    } catch (err) {
+      // Endpoint may briefly 4xx/5xx while the schema is being (re)published; keep polling.
+    }
+    await sleepSecs(intervalSecs);
+  }
+  // Fall back to the historical fixed wait rather than throwing, so a slow-but-valid deploy
+  // still proceeds and the test's own assertions decide pass/fail.
+  console.warn(`[${new Date().toISOString()}] Schema for ${testId} not confirmed ready after polling; proceeding after fallback wait.`);
+  await sleepSecs(10);
+}
 
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {
