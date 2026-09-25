@@ -369,6 +369,7 @@ export class GraphQLTransform {
       sandboxModeEnabled: this.transformParameters.sandboxModeEnabled,
       environmentName: env,
       disableResolverDeduping: this.transformParameters.disableResolverDeduping,
+      preserveGraphQLSchemaLogicalId: this.transformParameters.preserveGraphQLSchemaLogicalId,
       assetProvider,
     });
     const authModes = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].map(
