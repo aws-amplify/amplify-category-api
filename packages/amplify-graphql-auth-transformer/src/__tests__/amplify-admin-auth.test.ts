@@ -462,3 +462,46 @@ test('admin roles should be return the field name inside field resolvers', () =>
   expectNoStashValueLike(out, 'Student', IDENTITY_POOL_ASSIGNMENT_PREFIX);
   expect(out.resolvers['Mutation.createStudent.auth.1.req.vtl']).toMatchSnapshot();
 });
+
+test('admin role check anchors each admin role on the caller assumed role name segment', () => {
+  const validSchema = `
+    type Post @model @auth(rules: [{ allow: private, provider: iam }]) {
+      id: ID!
+      title: String!
+    }`;
+  const out = testTransform({
+    schema: validSchema,
+    authConfig: {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [
+        {
+          authenticationType: 'AWS_IAM',
+        },
+      ],
+    },
+    synthParameters: {
+      adminRoles: ADMIN_UI_ROLES,
+    },
+    transformers: [new ModelTransformer(), new AuthTransformer()],
+  });
+  expect(out).toBeDefined();
+
+  const adminRoleCheckResolvers = Object.values(out.resolvers).filter((vtl) =>
+    vtl.includes('#foreach( $adminRole in $ctx.stash.adminRoles )'),
+  );
+  expect(adminRoleCheckResolvers.length).toBeGreaterThan(0);
+  adminRoleCheckResolvers.forEach((vtl) => {
+    // the `${...}` sequences are Velocity interpolations in the generated template, not JavaScript template placeholders
+    // eslint-disable-next-line no-template-curly-in-string
+    expect(vtl).toContain('#set( $userArnWithTrailingSlash = "${ctx.identity.userArn}/" )');
+    // eslint-disable-next-line no-template-curly-in-string
+    expect(vtl).toContain('$userArnWithTrailingSlash.contains(":assumed-role/${adminRole}/")');
+  });
+
+  // an unanchored search of the caller arn is the over-broad match this check exists to prevent
+  Object.values(out.resolvers).forEach((vtl) => {
+    expect(vtl).not.toContain('$ctx.identity.userArn.contains($adminRole)');
+  });
+});
